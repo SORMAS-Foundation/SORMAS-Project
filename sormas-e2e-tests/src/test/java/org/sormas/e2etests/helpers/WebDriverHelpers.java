@@ -200,6 +200,42 @@ public class WebDriverHelpers {
     }
   }
 
+  public void fillInAndLeaveWebElement(By selector, String text) {
+    try {
+      await()
+          .pollInterval(ONE_HUNDRED_MILLISECONDS)
+          .ignoreExceptions()
+          .catchUncaughtExceptions()
+          .timeout(ofSeconds(FLUENT_WAIT_TIMEOUT_SECONDS))
+          .untilAsserted(
+              () -> {
+                assertWithMessage("The element: %s was not enabled", selector)
+                    .that(baseSteps.getDriver().findElement(selector).isEnabled())
+                    .isTrue();
+                assertWithMessage("The element: %s was not displayed", selector)
+                    .that(baseSteps.getDriver().findElement(selector).isDisplayed())
+                    .isTrue();
+                scrollToElement(selector);
+                clearWebElement(selector);
+                assertWithMessage("Field %s wasn't cleared", selector)
+                    .that(getValueFromWebElement(selector))
+                    .isEqualTo("");
+                baseSteps.getDriver().findElement(selector).sendKeys(text);
+                baseSteps.getDriver().findElement(By.cssSelector("body")).sendKeys(Keys.TAB);
+                String valueFromWebElement = getValueFromWebElement(selector);
+                assertWithMessage("The expected text %s was not %s", valueFromWebElement, text)
+                    .that(valueFromWebElement)
+                    .isEqualTo(text);
+              });
+
+    } catch (ConditionTimeoutException ignored) {
+      log.error("Unable to fill on element identified by locator: {} and text {}", selector, text);
+      takeScreenshot(baseSteps.getDriver());
+      throw new TimeoutException(
+          "Unable to fill on element identified by locator: " + selector + " and text : " + text);
+    }
+  }
+
   public void fillAndSubmitInWebElement(By selector, String text) {
     fillInWebElement(selector, text);
     submitInWebElement(selector);
@@ -231,7 +267,7 @@ public class WebDriverHelpers {
             + "') or starts-with(text(), '\" + text + \"') ]";
     waitUntilIdentifiedElementIsVisibleAndClickable(comboboxInput);
     comboboxInput.sendKeys(text);
-    waitUntilElementIsVisibleAndClickable(By.className("v-filterselect-suggestpopup"));
+    waitUntilElementIsVisibleAndClickable(By.className("v-filterselect-suggestmenu"));
     waitUntilANumberOfElementsAreVisibleAndClickable(By.xpath("//td[@role='listitem']/span"), 1);
     By dropDownValueXpath = By.xpath(comboBoxItemWithText);
     TimeUnit.MILLISECONDS.sleep(500);
@@ -278,6 +314,7 @@ public class WebDriverHelpers {
           .timeout(ofSeconds(FLUENT_WAIT_TIMEOUT_SECONDS))
           .untilAsserted(
               () -> {
+                scrollToElement(selector);
                 Assert.assertTrue(
                     baseSteps.getDriver().findElements(selector).get(index).isDisplayed(),
                     String.format("The element: %s is not displayed", selector));
@@ -545,17 +582,20 @@ public class WebDriverHelpers {
       if (selector instanceof WebElement) {
         WebElement element = (WebElement) selector;
         assertHelpers.assertWithPoll20Second(
-            () ->
-                Assert.assertTrue(
-                    element.isDisplayed(),
-                    String.format("Webelement: %s is not displayed within 20s", element)));
-
+            () -> {
+              scrollToElement(selector);
+              Assert.assertTrue(
+                  element.isDisplayed(),
+                  String.format("Webelement: %s is not displayed within 20s", element));
+            });
       } else {
         assertHelpers.assertWithPoll20Second(
-            () ->
-                Assert.assertTrue(
-                    baseSteps.getDriver().findElement((By) selector).isDisplayed(),
-                    String.format("Locator: %s is not displayed within 20s", selector)));
+            () -> {
+              scrollToElement(selector);
+              Assert.assertTrue(
+                  baseSteps.getDriver().findElement((By) selector).isDisplayed(),
+                  String.format("Locator: %s is not displayed within 20s", selector));
+            });
       }
     } catch (StaleElementReferenceException staleEx) {
       log.warn("StaleElement found at: {}", selector);
@@ -626,8 +666,9 @@ public class WebDriverHelpers {
     while (!"".contentEquals(getValueFromWebElement(selector))) {
       log.debug("Deleted char: {}", getValueFromWebElement(selector));
       webElement.clear();
-      webElement.sendKeys(Keys.chord(Keys.SHIFT, Keys.END));
-      webElement.sendKeys(Keys.chord(Keys.BACK_SPACE));
+      webElement.sendKeys(Keys.LEFT_CONTROL);
+      webElement.sendKeys("A");
+      webElement.sendKeys((Keys.BACK_SPACE));
       webElement.click();
       if (Instant.now().isAfter(start.plus(1, ChronoUnit.MINUTES))) {
         throw new Error("The field didn't clear");
@@ -649,13 +690,19 @@ public class WebDriverHelpers {
   // style.substring(style.length() - 17) matches the width value for the selector. it will be used
   // to match the header and the rows by the length.
   public String getValueFromTableRowUsingTheHeader(String headerValue, int rowIndex) {
-    By header = By.xpath("//div[contains(text(), '" + headerValue + "')]/ancestor::th");
-    waitUntilIdentifiedElementIsPresent(header);
-    scrollToElement(header);
-    String style = getAttributeFromWebElement(header, "style");
-    By selector = By.cssSelector("[style*='" + style.substring(style.length() - 17) + "']");
-    waitUntilIdentifiedElementIsPresent(selector);
-    return baseSteps.getDriver().findElements(selector).get(rowIndex).getText();
+    // TODO remove try catch after Jenkins investigation
+    try {
+      By header = By.xpath("//div[contains(text(), '" + headerValue + "')]/ancestor::th");
+      waitUntilIdentifiedElementIsPresent(header);
+      scrollToElement(header);
+      String style = getAttributeFromWebElement(header, "style");
+      By selector = By.cssSelector("[style*='" + style.substring(style.length() - 17) + "']");
+      waitUntilIdentifiedElementIsPresent(selector);
+      return baseSteps.getDriver().findElements(selector).get(rowIndex).getText();
+    } catch (Exception e) {
+      Assert.fail("Failed due to: " + e.getMessage());
+    }
+    return null;
   }
 
   public boolean isElementDisplayedIn20SecondsOrThrowException(Object selector) {
@@ -739,5 +786,9 @@ public class WebDriverHelpers {
             Assert.assertTrue(
                 getAttributeFromWebElement(rowLocator, "class").contains("row-selected"),
                 String.format("Row element: %s wasn't selected within 20s", rowLocator)));
+  }
+
+  public void sendFile(By selector, String filePath) {
+    baseSteps.getDriver().findElement(selector).sendKeys(filePath);
   }
 }

@@ -6,6 +6,7 @@ import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCas
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.sormas.e2etests.enums.DiseasesValues;
@@ -27,6 +28,8 @@ public class EpidemiologicalDataCaseSteps implements En {
   final WebDriverHelpers webDriverHelpers;
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
   private static EpidemiologicalData epidemiologicalData;
+  private static EpidemiologicalData specificCaseData;
+  private static EpidemiologicalData epidemiologialDataSavedFromFields;
 
   @Inject
   public EpidemiologicalDataCaseSteps(
@@ -45,9 +48,74 @@ public class EpidemiologicalDataCaseSteps implements En {
           webDriverHelpers.waitForPageLoaded();
         });
 
+    When(
+        "I click on Exposure details known with ([^\"]*) option",
+        (String option) -> {
+          webDriverHelpers.clickWebElementByText(EXPOSURE_DETAILS_KNOWN_OPTIONS, option);
+        });
+
+    When(
+        "I click on Activity details known with ([^\"]*) option",
+        (String option) ->
+            webDriverHelpers.clickWebElementByText(ACTIVITY_DETAILS_KNOWN_OPTIONS, option));
+
+    When(
+        "I click on Residing or working in an area with high risk of transmission of the disease with ([^\"]*) option",
+        (String option) -> {
+          epidemiologialDataSavedFromFields =
+              epidemiologialDataSavedFromFields.toBuilder()
+                  .residingAreaWithRisk(YesNoUnknownOptions.valueOf(option))
+                  .build();
+          webDriverHelpers.clickWebElementByText(RESIDING_OR_WORKING_DETAILS_KNOWN_OPTIONS, option);
+        });
+
+    When(
+        "I click on Residing or travelling to countries, territories, areas experiencing larger outbreaks of local transmission with ([^\"]*) option",
+        (String option) -> {
+          epidemiologialDataSavedFromFields =
+              epidemiologialDataSavedFromFields.toBuilder()
+                  .largeOutbreaksArea(YesNoUnknownOptions.valueOf(option))
+                  .build();
+          webDriverHelpers.clickWebElementByText(
+              RESIDING_OR_TRAVELING_DETAILS_KNOWN_OPTIONS, option);
+        });
+
+    When(
+        "I click on Contacts with source case known with ([^\"]*) option",
+        (String option) -> {
+          epidemiologialDataSavedFromFields =
+              epidemiologialDataSavedFromFields.toBuilder()
+                  .contactsWithSourceCaseKnown(YesNoUnknownOptions.valueOf(option))
+                  .build();
+          webDriverHelpers.clickWebElementByText(CONTACT_WITH_SOURCE_CASE_KNOWN, option);
+        });
+
+    When(
+        "I check if Contacts of Source filed is available",
+        () -> webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEW_CONTACT_BUTTON));
+
+    When(
+        "I am checking if options in checkbox are displayed correctly",
+        () -> {
+          specificCaseData = collectSpecificData();
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              specificCaseData,
+              epidemiologialDataSavedFromFields,
+              List.of(
+                  "exposureDetailsKnown",
+                  "activityDetailsKnown",
+                  "residingAreaWithRisk",
+                  "largeOutbreaksArea",
+                  "contactsWithSourceCaseKnown"));
+        });
+
     Then(
         "I create a new Exposure for Epidemiological data tab and fill all the data",
         () -> {
+          epidemiologialDataSavedFromFields =
+              EpidemiologicalData.builder()
+                  .exposureDetailsKnown(YesNoUnknownOptions.valueOf("YES"))
+                  .build();
           epidemiologicalData =
               epidemiologicalDataService.buildGeneratedEpidemiologicalData(
                   apiState
@@ -69,6 +137,10 @@ public class EpidemiologicalDataCaseSteps implements En {
     Then(
         "I create a new Activity from Epidemiological data tab and fill all the data",
         () -> {
+          epidemiologialDataSavedFromFields =
+              epidemiologialDataSavedFromFields.toBuilder()
+                  .activityDetailsKnown(YesNoUnknownOptions.valueOf("YES"))
+                  .build();
           EpidemiologicalData epidemiologicalData =
               epidemiologicalDataService.buildGeneratedEpidemiologicalData(
                   apiState.getCreatedCase().getDisease().contains("CORONA"));
@@ -257,6 +329,31 @@ public class EpidemiologicalDataCaseSteps implements En {
         .continent(webDriverHelpers.getValueFromCombobox(ACTIVITY_CONTINENT_COMBOBOX))
         .subcontinent(webDriverHelpers.getValueFromCombobox(ACTIVITY_SUBCONTINENT_COMBOBOX))
         .country(webDriverHelpers.getValueFromCombobox(ACTIVITY_COUNTRY_COMBOBOX))
+        .build();
+  }
+
+  private EpidemiologicalData collectSpecificData() {
+    return EpidemiologicalData.builder()
+        .activityDetailsKnown(
+            YesNoUnknownOptions.valueOf(
+                webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                    ACTIVITY_DETAILS_KNOWN_OPTIONS)))
+        .exposureDetailsKnown(
+            YesNoUnknownOptions.valueOf(
+                webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                    EXPOSURE_DETAILS_KNOWN_OPTIONS)))
+        .residingAreaWithRisk(
+            YesNoUnknownOptions.valueOf(
+                webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                    RESIDING_OR_WORKING_DETAILS_KNOWN_OPTIONS)))
+        .largeOutbreaksArea(
+            YesNoUnknownOptions.valueOf(
+                webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                    RESIDING_OR_TRAVELING_DETAILS_KNOWN_OPTIONS)))
+        .contactsWithSourceCaseKnown(
+            YesNoUnknownOptions.valueOf(
+                webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                    CONTACT_WITH_SOURCE_CASE_KNOWN)))
         .build();
   }
 }

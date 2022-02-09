@@ -16,20 +16,28 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.backend.importexport;
+package org.sormas.e2etests.services;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
+import com.github.javafaker.Faker;
+import com.google.inject.Inject;
+import org.sormas.e2etests.pojo.web.QuarantineOrder;
 
-public class ImportErrorException extends Exception {
+public class ContactDocumentService {
+  private final Faker faker;
 
-	private static final long serialVersionUID = -5852533615013283186L;
+  private final String emailDomain = "@CONTACT-DOCUMENT.com";
 
-	public ImportErrorException(String value, String column) {
-		super(I18nProperties.getString(Strings.errorInvalidValue) + " " + value + " " + I18nProperties.getString(Strings.inColumn) + " " + column);
-	}
+  @Inject
+  public ContactDocumentService(Faker faker) {
+    this.faker = faker;
+  }
 
-	public ImportErrorException(String message) {
-		super(message);
-	}
+  public QuarantineOrder buildQuarantineOrder() {
+    return QuarantineOrder.builder()
+        .documentTemplate("ExampleDocumentTemplateContacts.docx")
+        .sample("")
+        .pathogenTest("")
+        .extraComment("This is a test comment")
+        .build();
+  }
 }

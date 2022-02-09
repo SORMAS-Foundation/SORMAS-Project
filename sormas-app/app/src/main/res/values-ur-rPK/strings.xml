@@ -87,7 +87,7 @@
     <string name="action_pick_gps">پتے کے لیے موجودہ GPS کا انتخاب کریں</string>
     <string name="action_redownload_app">دوبارہ ڈاؤن لوڈ کریں</string>
     <string name="action_redownload_app_later">بعد میں دوبارہ ڈاؤن لوڈ کری</string>
-    <string name="action_refer_case_from_poe">ملک میں داخلے کا جگہ  سے کیس کا حوالہ دیں</string>
+    <string name="action_refer_case_from_poe">داخلے کا جگہ سے کیس کا حوالہ دیں</string>
     <string name="action_report">مسئلے سے آگاہ کیجئے</string>
     <string name="action_repull_data">ڈیٹا کو دوبارہ سنکرونائز کریں</string>
     <string name="action_reset_filters">فلٹرز کو دوبارہ ترتیب دیں</string>
@@ -360,7 +360,7 @@
     <string name="heading_prescription_new">نیا نسخہ</string>
     <string name="heading_previous_hospitalization">گزشتہ ہسپتال میں داخلہ</string>
     <string name="heading_previous_hospitalizations">گزشتہ ہسپتال میں داخلے</string>
-    <string name="heading_refer_case_from_poe">ملک میں داخلے کی جگہ  سے کیس کا حوالہ دیں</string>
+    <string name="heading_refer_case_from_poe">داخلے کی جگہ سے کیس کا حوالہ دیں</string>
     <string name="heading_reset_PIN">پن کو دوبارہ ترتیب دیں</string>
     <string name="heading_response_management">رسپانس مینجمنٹ اور تجزیہ کا نظام</string>
     <string name="heading_sample_edit">نمونہ میں ترمیم کریں</string>
@@ -617,7 +617,7 @@
     <string name="value_no_username">کوئی صارفی نام موجود نہیں ہے</string>
     <string name="value_not_available">دستیاب نہیں ہے</string>
     <string name="value_person_unknown">شخص دستیاب نہیں ہے</string>
-    <string name="value_point_of_entry_unknown">ملک میں داخلے کا جگہ دستیاب نہیں ہے</string>
+    <string name="value_point_of_entry_unknown">داخلے کا جگہ دستیاب نہیں ہے</string>
     <string name="value_prescribing_clinician_unknown">تجویز کرنے والا معالج  دستیاب نہیں ہے</string>
     <string name="value_prescription_date_unknown">نسخہ جاری کرنے کی تاریخ دستیاب نہیں ہے</string>
     <string name="value_prescription_period_unknown">نسخے کی مدت دستیاب نہیں ہے</string>

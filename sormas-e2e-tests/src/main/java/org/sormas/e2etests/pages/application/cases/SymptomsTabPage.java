@@ -21,6 +21,7 @@ package org.sormas.e2etests.pages.application.cases;
 import org.openqa.selenium.By;
 
 public class SymptomsTabPage {
+  public static final By CLEAR_ALL_BUTTON = new By.ById("actionClearAll");
   public static final By MAXIMUM_BODY_TEMPERATURE_IN_C_COMBOBOX =
       By.cssSelector("#temperature div");
   public static final By SOURCE_OF_BODY_TEMPERATURE_COMBOBOX =
@@ -59,5 +60,6 @@ public class SymptomsTabPage {
   public static final By SYMPTOMS_COMMENTS_INPUT = By.cssSelector("#symptomsComments");
   public static final By FIRST_SYMPTOM_COMBOBOX = By.cssSelector("#onsetSymptom div");
   public static final By DATE_OF_SYMPTOM_INPUT = By.cssSelector("#onsetDate input");
+  public static final By CASE_TAB = By.cssSelector("#tab-cases-data span");
   public static final By SAVE_BUTTON = By.cssSelector("#commit");
 }

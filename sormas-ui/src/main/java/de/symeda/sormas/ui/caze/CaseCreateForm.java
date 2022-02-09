@@ -40,6 +40,7 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.google.common.collect.Sets;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.validator.EmailValidator;
@@ -83,15 +84,15 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.location.LocationEditForm;
-import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
+import de.symeda.sormas.ui.utils.PersonDependentEditForm;
 import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 
-public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
+public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -122,6 +123,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	private ComboBox pointOfEntryDistrictCombo;
 
 	private LocationEditForm homeAddressForm;
+	private Button searchPersonButton;
 
 	private final boolean showHomeAddressForm;
 
@@ -152,7 +154,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
         + fluidRowLocs(DIFFERENT_POINT_OF_ENTRY_JURISDICTION)
         + fluidRowLocs(POINT_OF_ENTRY_REGION, POINT_OF_ENTRY_DISTRICT)
         + fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS)
-        + fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME)
+        + fluidRowLocs(6, PersonDto.FIRST_NAME, 4, PersonDto.LAST_NAME, 2, PERSON_SEARCH_LOC)
         + fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
         fluidRowLocs(PersonDto.SEX))
         + fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER)
@@ -216,6 +218,10 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.RABIES_TYPE, NullableOptionGroup.class);
 		addCustomField(PersonDto.FIRST_NAME, String.class, TextField.class);
 		addCustomField(PersonDto.LAST_NAME, String.class, TextField.class);
+
+		searchPersonButton = createPersonSearchButton(PERSON_SEARCH_LOC);
+		getContent().addComponent(searchPersonButton, PERSON_SEARCH_LOC);
+
 		addCustomField(PersonDto.NATIONAL_HEALTH_ID, String.class, TextField.class);
 		addCustomField(PersonDto.PASSPORT_NUMBER, String.class, TextField.class);
 
@@ -793,6 +799,11 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			((ComboBox) getField(PersonDto.PRESENT_CONDITION)).setValue(person.getPresentCondition());
 			((TextField) getField(PersonDto.PHONE)).setValue(person.getPhone());
 			((TextField) getField(PersonDto.EMAIL_ADDRESS)).setValue(person.getEmailAddress());
+			((TextField) getField(PersonDto.PASSPORT_NUMBER)).setValue(person.getPassportNumber());
+			((TextField) getField(PersonDto.NATIONAL_HEALTH_ID)).setValue(person.getNationalHealthId());
+			if (showHomeAddressForm) {
+				homeAddressForm.setValue(person.getAddress());
+			}
 		} else {
 			getField(PersonDto.FIRST_NAME).clear();
 			getField(PersonDto.LAST_NAME).clear();
@@ -803,6 +814,28 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			getField(PersonDto.PRESENT_CONDITION).clear();
 			getField(PersonDto.PHONE).clear();
 			getField(PersonDto.EMAIL_ADDRESS).clear();
+			getField(PersonDto.PASSPORT_NUMBER).clear();
+			getField(PersonDto.NATIONAL_HEALTH_ID).clear();
+			if (showHomeAddressForm) {
+				homeAddressForm.clear();
+			}
+		}
+	}
+
+	protected void enablePersonFields(Boolean enable) {
+		getField(PersonDto.FIRST_NAME).setEnabled(enable);
+		getField(PersonDto.LAST_NAME).setEnabled(enable);
+		getField(PersonDto.BIRTH_DATE_DD).setEnabled(enable);
+		getField(PersonDto.BIRTH_DATE_MM).setEnabled(enable);
+		getField(PersonDto.BIRTH_DATE_YYYY).setEnabled(enable);
+		getField(PersonDto.SEX).setEnabled(enable);
+		getField(PersonDto.PRESENT_CONDITION).setEnabled(enable);
+		getField(PersonDto.PHONE).setEnabled(enable);
+		getField(PersonDto.EMAIL_ADDRESS).setEnabled(enable);
+		getField(PersonDto.PASSPORT_NUMBER).setEnabled(enable);
+		getField(PersonDto.NATIONAL_HEALTH_ID).setEnabled(enable);
+		if (showHomeAddressForm) {
+			homeAddressForm.setEnabled(enable);
 		}
 	}
 
@@ -819,6 +852,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 		getField(PersonDto.FIRST_NAME).setEnabled(!readOnly);
 		getField(PersonDto.LAST_NAME).setEnabled(!readOnly);
+		searchPersonButton.setEnabled(!readOnly);
 		if (getField(PersonDto.SEX).getValue() != null) {
 			getField(PersonDto.SEX).setEnabled(!readOnly);
 		}
@@ -861,6 +895,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			boolean isChecked = (boolean) e.getProperty().getValue();
 			addressHeader.setVisible(isChecked);
 			homeAddressForm.setVisible(isChecked);
+			homeAddressForm.clear();
+			homeAddressForm.setFacilityFieldsVisible(isChecked, true);
 		});
 	}
 

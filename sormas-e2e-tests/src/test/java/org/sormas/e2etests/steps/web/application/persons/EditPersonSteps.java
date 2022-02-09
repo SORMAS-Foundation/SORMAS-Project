@@ -27,6 +27,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.openqa.selenium.ElementClickInterceptedException;
@@ -96,6 +97,8 @@ public class EditPersonSteps implements En {
           fillExternalId(newGeneratedPerson.getExternalId());
           fillExternalToken(newGeneratedPerson.getExternalToken());
           selectTypeOfOccupation(newGeneratedPerson.getTypeOfOccupation());
+          TimeUnit.SECONDS.sleep(3);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           selectStaffOfArmedForces(newGeneratedPerson.getStaffOfArmedForces());
           selectRegion(newGeneratedPerson.getRegion());
           selectDistrict(newGeneratedPerson.getDistrict());
@@ -104,6 +107,8 @@ public class EditPersonSteps implements En {
           selectFacilityType(newGeneratedPerson.getFacilityType());
           selectFacility(newGeneratedPerson.getFacility());
           fillFacilityNameAndDescription(newGeneratedPerson.getFacilityNameAndDescription());
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           fillStreet(newGeneratedPerson.getStreet());
           fillHouseNumber(newGeneratedPerson.getHouseNumber());
           fillAdditionalInformation(newGeneratedPerson.getAdditionalInformation());
@@ -313,6 +318,7 @@ public class EditPersonSteps implements En {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(USER_INFORMATION, 60);
     String contactInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
+    webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
     String uuid = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
     String[] personInfos = contactInfo.split(" ");
     LocalDate localDate = LocalDate.parse(personInfos[3].replace(")", ""), formatter);

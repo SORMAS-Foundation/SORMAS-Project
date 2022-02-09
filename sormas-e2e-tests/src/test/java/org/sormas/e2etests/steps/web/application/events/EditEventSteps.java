@@ -31,6 +31,9 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.*;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -39,16 +42,22 @@ import javax.inject.Named;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.events.EditEventPage;
 import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.pojo.web.*;
 import org.sormas.e2etests.pojo.web.Event;
 import org.sormas.e2etests.pojo.web.EventGroup;
 import org.sormas.e2etests.pojo.web.EventParticipant;
 import org.sormas.e2etests.pojo.web.Person;
+import org.sormas.e2etests.services.EventDocumentService;
 import org.sormas.e2etests.services.EventGroupService;
 import org.sormas.e2etests.services.EventParticipantService;
 import org.sormas.e2etests.services.EventService;
 import org.sormas.e2etests.state.ApiState;
+import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
 
 public class EditEventSteps implements En {
 
@@ -58,15 +67,20 @@ public class EditEventSteps implements En {
   public static Event createdEvent;
   public static EventGroup groupEvent;
   public static Person person;
+  public static EventHandout aEventHandout;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
+  public static final String userDirPath = System.getProperty("user.dir");
 
   @Inject
   public EditEventSteps(
       WebDriverHelpers webDriverHelpers,
       EventService eventService,
+      EventDocumentService eventDocumentService,
       Faker faker,
       EventGroupService eventGroupService,
+      SoftAssert softly,
       EventParticipantService eventParticipant,
+      AssertHelpers assertHelpers,
       @Named("ENVIRONMENT_URL") String environmentUrl,
       ApiState apiState) {
     this.webDriverHelpers = webDriverHelpers;
@@ -296,6 +310,48 @@ public class EditEventSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(EVENT_ACTIONS_TAB);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(CREATE_BUTTON);
         });
+
+    When(
+        "I click on the Create button from Event Document Templates",
+        () -> webDriverHelpers.clickOnWebElementBySelector(EditEventPage.CREATE_DOCUMENT_BUTTON));
+
+    When(
+        "I create an event document from template",
+        () -> {
+          aEventHandout = eventDocumentService.buildEventHandout();
+          aEventHandout = aEventHandout.toBuilder().build();
+          selectEventHandoutTemplate(aEventHandout.getDocumentTemplate());
+          webDriverHelpers.clickOnWebElementBySelector(EditEventPage.CREATE_EVENT_HANDOUT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EditEventPage.CANCEL_EVENT_HANDOUT_BUTTON);
+        });
+    And(
+        "I check that number of actions in Edit Event Tab is {int}",
+        (Integer number) ->
+            assertHelpers.assertWithPoll20Second(
+                () ->
+                    Assert.assertEquals(
+                        Integer.parseInt(
+                            webDriverHelpers.getTextFromPresentWebElement(TOTAL_ACTIONS_COUNTER)),
+                        number.intValue(),
+                        "Number of displayed actions is not correct")));
+
+    And(
+        "I verify that the event document is downloaded and correctly named",
+        () -> {
+          String uuid = webDriverHelpers.getValueFromWebElement(EditEventPage.UUID_INPUT);
+          Path path =
+              Paths.get(
+                  userDirPath
+                      + "/downloads/"
+                      + uuid.substring(0, 6)
+                      + "-"
+                      + aEventHandout.getDocumentTemplate());
+          softly.assertTrue(
+              Files.exists(path),
+              "The document with expected name was not downloaded. Searched after path: "
+                  + path.toAbsolutePath());
+          softly.assertAll();
+        });
   }
 
   private Person collectPersonUuid() {
@@ -398,5 +454,9 @@ public class EditEventSteps implements En {
     return EventGroup.builder()
         .uuid(webDriverHelpers.getValueFromWebElement(GROUP_EVENT_UUID))
         .build();
+  }
+
+  private void selectEventHandoutTemplate(String templateName) {
+    webDriverHelpers.selectFromCombobox(EVENT_HANDOUT_COMBOBOX, templateName);
   }
 }

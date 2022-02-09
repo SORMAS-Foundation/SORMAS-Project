@@ -21,7 +21,7 @@ package org.sormas.e2etests.pages.application.contacts;
 import org.openqa.selenium.By;
 
 public class ContactDirectoryPage {
-  public static final By NEW_CONTACT_BUTTON = By.id("contactNewContact");
+  public static final By NEW_CONTACT_PAGE_BUTTON = By.id("contactNewContact");
   public static final By LINE_LISTING = By.cssSelector("[id='lineListing']");
   public static final By MULTIPLE_OPTIONS_SEARCH_INPUT = By.cssSelector("#contactOrCaseLike");
   public static final By APPLY_FILTERS_BUTTON = By.id("actionApplyFilters");
@@ -47,4 +47,39 @@ public class ContactDirectoryPage {
   public static final By TO_INPUT = By.cssSelector("#toReferenceDateField input");
   public static final By GRID_HEADERS = By.xpath("//thead//tr//th");
   public static final String RESULTS_GRID_HEADER = "//div[contains(text(), '%s')]";
+  public static final By FIRST_CONTACT_ID_BUTTON = By.cssSelector(".v-grid-row-has-data a[title]");
+  public static final By EPIDEMIOLOGICAL_DATA_TAB = By.cssSelector("#tab-contacts-epidata");
+  public static final By CONTACT_APPLY_FILTERS_BUTTON = By.cssSelector("[id='actionApplyFilters']");
+  public static final By CONTACT_RESET_FILTERS_BUTTON = By.cssSelector("[id='actionResetFilters']");
+  public static final By CONTACT_DISEASE_FILTER_COMBOBOX =
+      By.cssSelector("[id='disease'] [class='v-filterselect-button']");
+  public static final By CONTACT_CLASSIFICATION_FILTER_COMBOBOX =
+      By.cssSelector("[id='contactClassification'] [class='v-filterselect-button']");
+  public static final By CONTACT_CASE_CLASSIFICATION_FILTER_COMBOBOX =
+      By.cssSelector("[id='caseClassification'] [class='v-filterselect-button']");
+  public static final By CONTACT_CATEGORY_CLASSIFICATION_FILTER_COMBOBOX =
+      By.cssSelector("[id='contactCategory'] [class='v-filterselect-button']");
+  public static final By CONTACT_FOLLOW_UP_FILTER_COMBOBOX =
+      By.cssSelector("[id='followUpStatus'] [class='v-filterselect-button']");
+  public static final By CONTACT_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON =
+      By.cssSelector("div#actionApplyFilters");
+  public static final By TOTAL_CONTACTS_COUNTER = By.cssSelector(".badge");
+  public static final By CONTACTS_WITH_QUARANTINE_ORDERED_VERBALLY_CHECKBOX =
+      By.id("quarantineOrderedVerbally");
+  public static final By CONTACTS_WITH_QUARANTINE_ORDERED_BY_OFFICIAL_DOCUMENT_CHECKBOX =
+      By.id("quarantineOrderedOfficialDocument");
+  public static final By CONTACTS_WITH_NO_QUARANTINE_ORDERED_CHECKBOX =
+      By.id("quarantineNotOrdered");
+  public static final By CONTACTS_WITH_HELP_NEEDED_IN_QUARANTINE_ORDERED_CHECKBOX =
+      By.id("onlyQuarantineHelpNeeded");
+  public static final By CONTACTS_ONLY_HIGH_PRIOROTY_CHECKBOX = By.id("onlyHighPriorityContacts");
+  public static final By CONTACTS_WITH_EXTENDED_QUARANTINE_CHECKBOX =
+      By.id("withExtendedQuarantine");
+  public static final By CONTACTS_WITH_REDUCED_QUARANTINE_CHECKBOX = By.id("withReducedQuarantine");
+  public static final By CONTACTS_FROM_OTHER_INSTANCES_CHECKBOX =
+      By.id("onlyContactsFromOtherInstances");
+  public static final By ALLBUTTON_CONTACT = By.id("All");
+  public static final By ACTIVE_CONTACT_BUTTON = By.id("status-Active contact");
+  public static final By CONVERTED_TO_CASE_BUTTON = By.id("status-Converted to case");
+  public static final By DROPPED_BUTTON = By.id("status-Dropped");
 }

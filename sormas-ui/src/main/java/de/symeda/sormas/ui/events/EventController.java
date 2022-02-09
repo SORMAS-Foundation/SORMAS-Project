@@ -28,6 +28,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
@@ -50,6 +51,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventGroupReferenceDto;
@@ -83,6 +85,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.components.automaticdeletion.AutomaticDeletionLabel;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 
 public class EventController {
@@ -189,7 +192,8 @@ public class EventController {
 
 		EventSelectionField eventSelect = new EventSelectionField(
 			caseDataDtos.stream().findFirst().get().getDisease(),
-			I18nProperties.getString(Strings.infoPickOrCreateEventForCases), null);
+			I18nProperties.getString(Strings.infoPickOrCreateEventForCases),
+			null);
 		eventSelect.setWidth(1100, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(eventSelect);
@@ -220,7 +224,8 @@ public class EventController {
 
 		EventSelectionField eventSelect = new EventSelectionField(
 			contactDtos.stream().findFirst().get().getDisease(),
-			I18nProperties.getString(Strings.infoPickOrCreateEventForContact), null);
+			I18nProperties.getString(Strings.infoPickOrCreateEventForContact),
+			null);
 		eventSelect.setWidth(1100, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(eventSelect);
@@ -728,12 +733,18 @@ public class EventController {
 	public CommitDiscardWrapperComponent<EventDataForm> getEventDataEditComponent(final String eventUuid, Consumer<EventStatus> saveCallback) {
 
 		EventDto event = findEvent(eventUuid);
+		AutomaticDeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getEventFacade().getAutomaticDeletionInfo(eventUuid);
+
 		EventDataForm eventEditForm = new EventDataForm(false, event.isPseudonymized());
 		eventEditForm.setValue(event);
 		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(
 			eventEditForm,
 			UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EDIT),
 			eventEditForm.getFieldGroup());
+
+		if (automaticDeletionInfoDto != null) {
+			editView.getButtonsPanel().addComponentAsFirst(new AutomaticDeletionLabel(automaticDeletionInfoDto));
+		}
 
 		editView.addCommitListener(() -> {
 			if (!eventEditForm.getFieldGroup().isModified()) {
@@ -1108,23 +1119,28 @@ public class EventController {
 		}
 
 		// Show an error when at least one selected case is not owned by this server because ownership has been handed over
-		String ownershipHandedOverUuid = FacadeProvider.getEventFacade().getFirstEventUuidWithOwnershipHandedOver(selectedUuids);
-		if (ownershipHandedOverUuid != null) {
-			Notification.show(
-				String.format(
-					I18nProperties.getString(Strings.errorExternalSurveillanceToolEventNotOwned),
-					DataHelper.getShortUuid(ownershipHandedOverUuid)),
-				"",
-				Type.ERROR_MESSAGE);
-			return;
+		List<String> ownershipHandedOverUuids = FacadeProvider.getEventFacade().getEventUuidsWithOwnershipHandedOver(selectedUuids);
+		if (CollectionUtils.isNotEmpty(ownershipHandedOverUuids)) {
+			List<String> uuidsWithoutNotSharable =
+					selectedUuids.stream().filter(uuid -> !ownershipHandedOverUuids.contains(uuid)).collect(Collectors.toList());
+
+			VaadinUiUtil.showConfirmationPopup(
+					I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
+					new Label(
+							String.format(
+									I18nProperties.getString(Strings.errorExternalSurveillanceToolEventNotOwned),
+									ownershipHandedOverUuids.size(),
+									ownershipHandedOverUuids.stream().map(DataHelper::getShortUuid).collect(Collectors.joining())), ContentMode.HTML),
+					String.format(I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_excludeAndSend), uuidsWithoutNotSharable.size(), selectedUuids.size()),
+					I18nProperties.getCaption(Captions.actionCancel),
+					800,
+					(confirmed) -> {
+						if (confirmed) {
+							ExternalSurveillanceServiceGateway.sendEventsToExternalSurveillanceTool(selectedUuids, callback, false);
+						}
+					});
+		} else {
+			ExternalSurveillanceServiceGateway.sendEventsToExternalSurveillanceTool(selectedUuids, callback, true);
 		}
-
-		ExternalSurveillanceServiceGateway.sendEventsToExternalSurveillanceTool(selectedUuids, callback);
-
-		new Notification(
-			I18nProperties.getString(Strings.headingEventsSentToExternalSurveillanceTool),
-			I18nProperties.getString(Strings.messageEventsSentToExternalSurveillanceTool),
-			Type.HUMANIZED_MESSAGE,
-			false).show(Page.getCurrent());
 	}
 }

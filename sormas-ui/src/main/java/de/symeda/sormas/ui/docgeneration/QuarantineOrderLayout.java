@@ -18,6 +18,7 @@ package de.symeda.sormas.ui.docgeneration;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
+import de.symeda.sormas.api.vaccination.VaccinationReferenceDto;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
@@ -37,6 +38,8 @@ import de.symeda.sormas.api.docgeneneration.DocumentTemplateException;
 import de.symeda.sormas.api.docgeneneration.DocumentVariables;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.docgeneneration.RootEntityType;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -46,6 +49,8 @@ import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
+import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
 import de.symeda.sormas.ui.document.DocumentListComponent;
 
 public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
@@ -55,11 +60,13 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 
 	private ComboBox<SampleIndexDto> sampleSelector;
 	private ComboBox<PathogenTestDto> pathogenTestSelector;
+	private ComboBox<VaccinationListEntryDto> vaccinationSelector;
 	private DocumentListComponent documentListComponent;
 
 	public QuarantineOrderLayout(
 		DocumentWorkflow workflow,
 		@Nullable SampleCriteria sampleCriteria,
+		@Nullable VaccinationListCriteria vaccinationCriteria,
 		DocumentListComponent documentListComponent,
 		DocumentStreamSupplier documentStreamSupplier,
 		Function<String, String> fileNameFunction) {
@@ -76,6 +83,11 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 
 		if (sampleCriteria != null) {
 			createSampleSelector(sampleCriteria);
+		}
+
+		if (vaccinationCriteria != null
+			&& FacadeProvider.getFeatureConfigurationFacade().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+			createVaccinationSelector(vaccinationCriteria);
 		}
 	}
 
@@ -112,6 +124,22 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 		additionalParametersComponent.addComponent(pathogenTestSelector);
 	}
 
+	protected void createVaccinationSelector(VaccinationListCriteria vaccinationCriteria) {
+		List<VaccinationListEntryDto> vaccinations = FacadeProvider.getVaccinationFacade()
+			.getEntriesList(vaccinationCriteria, 0, 20, Collections.singletonList(new SortProperty("vaccinationDate", false)));
+
+		vaccinationSelector = new ComboBox<>(I18nProperties.getCaption(Captions.Vaccination));
+		vaccinationSelector.setWidth(100F, Unit.PERCENTAGE);
+		vaccinationSelector.setItems(vaccinations);
+		vaccinationSelector.setEnabled(!vaccinations.isEmpty());
+
+		if (vaccinations.size() == 1) {
+			vaccinationSelector.setSelectedItem(vaccinations.get(0));
+		}
+
+		additionalParametersComponent.addComponent(vaccinationSelector);
+	}
+
 	@Override
 	protected List<String> getAvailableTemplates() {
 		try {
@@ -136,14 +164,16 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 			PathogenTestReferenceDto pathogenTestReference =
 				pathogenTestSelector != null && pathogenTestSelector.getValue() != null ? pathogenTestSelector.getValue().toReference() : null;
 
+			VaccinationReferenceDto vaccinationReference = vaccinationSelector != null && vaccinationSelector.getValue() != null ? vaccinationSelector.getValue().toReference() : null;
+
 			try {
-				InputStream stream =
-					documentStreamSupplier.getStream(
-						templateFile,
-						sampleReference,
-						pathogenTestReference,
-						readAdditionalVariables(),
-						checkBoxUploadGeneratedDoc.getValue());
+				InputStream stream = documentStreamSupplier.getStream(
+					templateFile,
+					sampleReference,
+					pathogenTestReference,
+					vaccinationReference,
+					readAdditionalVariables(),
+					checkBoxUploadGeneratedDoc.getValue());
 
 				new Notification(
 					I18nProperties.getString(Strings.headingDocumentCreated),
@@ -187,6 +217,7 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 			String templateFile,
 			SampleReferenceDto sample,
 			PathogenTestReferenceDto pathogenTest,
+			VaccinationReferenceDto vaccinationReference,
 			Properties extraProperties,
 			Boolean shouldUploadGeneratedDoc)
 			throws DocumentTemplateException;

@@ -658,7 +658,6 @@ public class TestDataCreator {
 		return createContact(reportingUser, null, contactPerson, null, new Date(), null, null, rdcf);
 	}
 
-
 	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson) {
 		return createContact(reportingUser, null, contactPerson, null, new Date(), null, null, null);
 	}

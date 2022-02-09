@@ -25,6 +25,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
@@ -69,6 +70,7 @@ import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.SimilarContactDto;
+import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -87,6 +89,7 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsContext;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
@@ -129,6 +132,7 @@ import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
+import de.symeda.sormas.ui.utils.components.automaticdeletion.AutomaticDeletionLabel;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayoutHelper;
 
@@ -667,6 +671,8 @@ public class CaseController {
 					ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(convertedContact.getUuid());
 					// automatically change the contact status to "converted"
 					updatedContact.setContactStatus(ContactStatus.CONVERTED);
+					// automatically change the contact classification to "confirmed"
+					updatedContact.setContactClassification(ContactClassification.CONFIRMED);
 					// set resulting case on contact and save it
 					updatedContact.setResultingCase(dto.toReference());
 					FacadeProvider.getContactFacade().saveContact(updatedContact);
@@ -735,31 +741,45 @@ public class CaseController {
 						saveCase(dto);
 					}
 				} else {
-					// look for potential duplicate
-					final PersonDto duplicatePerson = PersonDto.build();
-					transferDataToPerson(createForm, duplicatePerson);
 
-					ControllerProvider.getPersonController()
-						.selectOrCreatePerson(duplicatePerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase), selectedPerson -> {
-							if (selectedPerson != null) {
-								dto.setPerson(selectedPerson);
-								selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
-									if (uuid == null) {
-										dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
-										saveCase(dto);
-										navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
-									} else {
-										navigateToView(CaseDataView.VIEW_NAME, uuid, null);
+					PersonDto searchedPerson = createForm.getSearchedPerson();
+					if (searchedPerson != null) {
+						dto.setPerson(searchedPerson.toReference());
+						selectOrCreateCase(createForm, dto, searchedPerson.toReference());
+					} else {
+						// look for potential duplicate
+						final PersonDto duplicatePerson = PersonDto.build();
+						transferDataToPerson(createForm, duplicatePerson);
+						ControllerProvider.getPersonController()
+							.selectOrCreatePerson(
+								duplicatePerson,
+								I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase),
+								selectedPerson -> {
+									if (selectedPerson != null) {
+										dto.setPerson(selectedPerson);
+										selectOrCreateCase(createForm, dto, selectedPerson);
 									}
-								});
-							}
-						}, true);
+								},
+								true);
+					}
 				}
 			}
 		});
 
 		return editView;
 
+	}
+
+	private void selectOrCreateCase(CaseCreateForm createForm, CaseDataDto dto, PersonReferenceDto selectedPerson) {
+		selectOrCreateCase(dto, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
+			if (uuid == null) {
+				dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
+				saveCase(dto);
+				navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
+			} else {
+				navigateToView(CaseDataView.VIEW_NAME, uuid, null);
+			}
+		});
 	}
 
 	private void transferDataToPerson(CaseCreateForm createForm, PersonDto person) {
@@ -856,6 +876,8 @@ public class CaseController {
 
 	public CommitDiscardWrapperComponent<CaseDataForm> getCaseDataEditComponent(final String caseUuid, final ViewMode viewMode) {
 		CaseDataDto caze = findCase(caseUuid);
+		AutomaticDeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getCaseFacade().getAutomaticDeletionInfo(caseUuid);
+
 		CaseDataForm caseEditForm = new CaseDataForm(
 			caseUuid,
 			FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()),
@@ -869,6 +891,10 @@ public class CaseController {
 			caseEditForm,
 			UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
 			caseEditForm.getFieldGroup());
+
+		if (automaticDeletionInfoDto != null) {
+			editView.getButtonsPanel().addComponentAsFirst(new AutomaticDeletionLabel(automaticDeletionInfoDto));
+		}
 
 		editView.addCommitListener(() -> {
 			CaseDataDto oldCase = findCase(caseUuid);
@@ -1721,17 +1747,31 @@ public class CaseController {
 		}
 
 		// Show an error when at least one selected case is not owned by this server because ownership has been handed over
-		String notSharableUuid = FacadeProvider.getCaseFacade().getFirstUuidNotShareableWithExternalReportingTools(selectedUuids);
-		if (notSharableUuid != null) {
-			Notification.show(
-				String
-					.format(I18nProperties.getString(Strings.errorExternalSurveillanceToolCaseNotSharable), DataHelper.getShortUuid(notSharableUuid)),
-				"",
-				Type.ERROR_MESSAGE);
-			return;
-		}
+		List<String> notSharableUuids = FacadeProvider.getCaseFacade().getUuidsNotShareableWithExternalReportingTools(selectedUuids);
+		if (CollectionUtils.isNotEmpty(notSharableUuids)) {
 
-		ExternalSurveillanceServiceGateway.sendCasesToExternalSurveillanceTool(selectedUuids, reloadCallback);
+			List<String> uuidsWithoutNotSharable =
+					selectedUuids.stream().filter(uuid -> !notSharableUuids.contains(uuid)).collect(Collectors.toList());
+
+			VaadinUiUtil.showConfirmationPopup(
+				I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
+				new Label(
+					String.format(
+						I18nProperties.getString(Strings.errorExternalSurveillanceToolCasesNotSharable),
+						notSharableUuids.size(),
+						notSharableUuids.stream().map(DataHelper::getShortUuid).collect(Collectors.joining())), ContentMode.HTML),
+				String.format(I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_excludeAndSend), uuidsWithoutNotSharable.size(), selectedUuids.size()),
+				I18nProperties.getCaption(Captions.actionCancel),
+				800,
+				(confirmed) -> {
+					if (confirmed) {
+						ExternalSurveillanceServiceGateway.sendCasesToExternalSurveillanceTool(uuidsWithoutNotSharable, reloadCallback, false);
+					}
+				});
+
+		} else {
+			ExternalSurveillanceServiceGateway.sendCasesToExternalSurveillanceTool(selectedUuids, reloadCallback, true);
+		}
 	}
 
 }

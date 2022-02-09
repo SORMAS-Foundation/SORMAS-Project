@@ -19,13 +19,13 @@
 package org.sormas.e2etests.services;
 
 import static org.sormas.e2etests.enums.AvailableAndCooperative.*;
+import static org.sormas.e2etests.enums.SourceOfTemperature.getRandomTemperature;
 import static org.sormas.e2etests.enums.YesNoUnknownOptions.*;
 
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import org.sormas.e2etests.enums.SourceOfTemperature;
 import org.sormas.e2etests.pojo.web.*;
 import org.sormas.e2etests.pojo.web.FollowUpVisit;
 
@@ -45,7 +45,7 @@ public class FollowUpVisitService {
         .timeOfVisit(LocalTime.now())
         .visitRemarks(faker.book().title())
         .currentBodyTemperature("35.5")
-        .sourceOfBodyTemperature(SourceOfTemperature.getRandomTemperature())
+        .sourceOfBodyTemperature(getRandomTemperature())
         .setClearToNo("Set cleared to No")
         .chillsAndSweats(YES.toString())
         .feelingIll(YES.toString())
@@ -73,18 +73,18 @@ public class FollowUpVisitService {
         .acuteRespiratoryDistressSyndrome(NO.toString())
         .cough(NO.toString())
         .difficultyBreathing(NO.toString())
-        .oxygenSaturation94(UNKNOW.toString())
-        .pneumoniaClinicalRadiologic(UNKNOW.toString())
-        .rapidBreathing(UNKNOW.toString())
-        .respiratoryDiseaseRequiringVentilation(UNKNOW.toString())
-        .runnyNose(UNKNOW.toString())
-        .soreThroatPharyngitis(UNKNOW.toString())
+        .oxygenSaturation94(UNKNOWN.toString())
+        .pneumoniaClinicalRadiologic(UNKNOWN.toString())
+        .rapidBreathing(UNKNOWN.toString())
+        .respiratoryDiseaseRequiringVentilation(UNKNOWN.toString())
+        .runnyNose(UNKNOWN.toString())
+        .soreThroatPharyngitis(UNKNOWN.toString())
         .fastHeartRate(NO.toString())
         .diarrhea(YES.toString())
         .nausea(NO.toString())
         .newLossOfSmell(YES.toString())
         .newLossOfTaste(NO.toString())
-        .otherClinicalSymptoms(UNKNOW.toString())
+        .otherClinicalSymptoms(UNKNOWN.toString())
         .comments("Automated -comment" + LocalTime.now())
         .firstSymptom("Diarrhea")
         .dateOfSymptomOnset(LocalDate.now().minusDays(1))
@@ -97,6 +97,24 @@ public class FollowUpVisitService {
         .dateOfVisit(LocalDate.now())
         .timeOfVisit(LocalTime.now())
         .visitRemarks("Automated changed - visit remark" + currentTimeMillis)
+        .build();
+  }
+
+  public Visit buildSpecifiedFollowUpVisitForAvailableAndCooperative() {
+    return Visit.builder()
+        .personAvailableAndCooperative(AVAILABLE_AND_COOPERATIVE.getAvailable())
+        .dateOfVisit(LocalDate.now().minusDays(faker.number().numberBetween(1, 10)))
+        .timeOfVisit(LocalTime.of(faker.number().numberBetween(10, 23), 30))
+        .visitRemarks(faker.book().title())
+        .currentBodyTemperature("36.6")
+        .sourceOfBodyTemperature(getRandomTemperature())
+        .build();
+  }
+
+  public Visit buildTemperatureOnlySymptoms(String temperature) {
+    return Visit.builder()
+        .currentBodyTemperature(temperature)
+        .sourceOfBodyTemperature(getRandomTemperature())
         .build();
   }
 }

@@ -15,6 +15,7 @@ import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -36,6 +37,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.components.automaticdeletion.AutomaticDeletionLabel;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayoutHelper;
 
@@ -80,15 +82,24 @@ public class ImmunizationController {
 
 			viewComponent.addCommitListener(() -> {
 				if (!createForm.getFieldGroup().isModified()) {
-
 					final ImmunizationDto dto = createForm.getValue();
-					final PersonDto person = createForm.getPerson();
-					ControllerProvider.getPersonController()
-						.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForImmunization), selectedPerson -> {
-							if (selectedPerson != null) {
-								selectOrCreateimmunizationForPerson(dto, selectedPerson);
-							}
-						}, true);
+					PersonDto searchedPerson = createForm.getSearchedPerson();
+					if (searchedPerson != null) {
+						dto.setPerson(searchedPerson.toReference());
+						selectOrCreateimmunizationForPerson(dto, searchedPerson.toReference());
+					} else {
+						final PersonDto person = createForm.getPerson();
+						ControllerProvider.getPersonController()
+							.selectOrCreatePerson(
+								person,
+								I18nProperties.getString(Strings.infoSelectOrCreatePersonForImmunization),
+								selectedPerson -> {
+									if (selectedPerson != null) {
+										selectOrCreateimmunizationForPerson(dto, selectedPerson);
+									}
+								},
+								true);
+					}
 				}
 			});
 			return viewComponent;
@@ -133,6 +144,12 @@ public class ImmunizationController {
 			immunizationDataForm,
 			currentUserProvider != null && currentUserProvider.hasUserRight(UserRight.IMMUNIZATION_EDIT),
 			immunizationDataForm.getFieldGroup());
+
+		AutomaticDeletionInfoDto automaticDeletionInfoDto =
+			FacadeProvider.getImmunizationFacade().getAutomaticDeletionInfo(immunizationDto.getUuid());
+		if (automaticDeletionInfoDto != null) {
+			editComponent.getButtonsPanel().addComponentAsFirst(new AutomaticDeletionLabel(automaticDeletionInfoDto));
+		}
 
 		editComponent.addCommitListener(() -> {
 			if (!immunizationDataForm.getFieldGroup().isModified()) {

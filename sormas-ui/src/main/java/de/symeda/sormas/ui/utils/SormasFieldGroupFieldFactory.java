@@ -32,6 +32,7 @@ import de.symeda.sormas.ui.hospitalization.PreviousHospitalizationsField;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.person.LocationsField;
 import de.symeda.sormas.ui.utils.components.JsonForm;
+import de.symeda.sormas.ui.utils.components.MultiSelect;
 import de.symeda.sormas.ui.vaccination.VaccinationsField;
 
 public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory {
@@ -140,6 +141,8 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			} else if (ReferenceDto.class.isAssignableFrom(type)) {
 				return (T) ComboBoxHelper.createComboBoxV7();
 			}
+		} else if (MultiSelect.class.isAssignableFrom(fieldType)) {
+			return (T) MultiSelect.create(type);
 		}
 		return super.createField(type, fieldType);
 	}

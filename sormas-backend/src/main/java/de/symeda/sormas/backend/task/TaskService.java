@@ -29,6 +29,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
+import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
@@ -429,6 +430,19 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		task.setPriority(TaskPriority.NORMAL);
 		task.setTaskStatus(TaskStatus.PENDING);
 		return task;
+	}
+
+	public User getTaskAssigneeByUuid(String uuid) {
+		try {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<User> cq = cb.createQuery(User.class);
+			Root<Task> from = cq.from(getElementClass());
+			cq.where(cb.equal(from.get(Task.UUID), uuid));
+			cq.select(from.get(Task.ASSIGNEE_USER));
+			return em.createQuery(cq).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 
 	public User getTaskAssignee(Contact contact) throws TaskCreationException {

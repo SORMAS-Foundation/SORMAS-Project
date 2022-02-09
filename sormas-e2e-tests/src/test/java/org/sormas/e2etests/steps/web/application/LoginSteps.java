@@ -86,14 +86,16 @@ public class LoginSteps implements En {
         });
 
     Given(
-        "I log in as a ([^\"]*)",
+        "^I log in as a ([^\"]*)$",
         (String userRole) -> {
           webDriverHelpers.accessWebSite(environmentUrl);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(LoginPage.USER_NAME_INPUT);
           webDriverHelpers.fillInWebElement(
               LoginPage.USER_NAME_INPUT, gertUserByRole(userRole).getUsername());
           webDriverHelpers.fillInWebElement(
               LoginPage.USER_PASSWORD_INPUT, gertUserByRole(userRole).getPassword());
           webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
+          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOGOUT_BUTTON, 30);
         });
   }

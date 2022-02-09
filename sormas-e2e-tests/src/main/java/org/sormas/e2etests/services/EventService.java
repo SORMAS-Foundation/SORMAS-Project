@@ -21,6 +21,9 @@ package org.sormas.e2etests.services;
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalDate;
+import org.sormas.e2etests.enums.CommunityValues;
+import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.pojo.web.Event;
 
 public class EventService {
@@ -44,6 +47,9 @@ public class EventService {
         .eventLocation("Home")
         .riskLevel("Moderate risk")
         .sourceType("Not applicable")
+        .region(RegionsValues.VoreingestellteBundeslander.getName())
+        .district(DistrictsValues.VoreingestellterLandkreis.getName())
+        .community(CommunityValues.VoreingestellteGemeinde.getName())
         .build();
   }
 

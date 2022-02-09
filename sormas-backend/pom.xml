@@ -233,7 +233,7 @@
 			<artifactId>google-http-client-gson</artifactId>
 		</dependency>
 
-	</dependencies>
+    </dependencies>
 
 	<build>
 		<finalName>${project.artifactId}</finalName>

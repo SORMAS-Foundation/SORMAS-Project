@@ -206,7 +206,7 @@ public class CaseDataView extends AbstractCaseView {
 			layout.addComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
-		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, getCaseRef(), documentList);
+		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, caze, documentList);
 
 		setCaseEditPermission(container);
 	}

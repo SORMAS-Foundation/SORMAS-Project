@@ -9,6 +9,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
 import javax.inject.Inject;
+import org.openqa.selenium.By;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.web.Case;
 import org.sormas.e2etests.services.CaseService;
@@ -52,7 +53,14 @@ public class CaseLineListingSteps implements En {
         "^I save the new case using line listing feature$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_SAVE_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(15);
+          // TODO remove this logic once problem is investigated in Jenkins
+          // start
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              By.xpath("//*[@class='v-Notification-caption']"));
+          webDriverHelpers.clickOnWebElementBySelector(
+              By.xpath("//*[@class='v-Notification-caption']"));
+          // end
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(25);
         });
 
     When(
