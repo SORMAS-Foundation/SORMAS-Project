@@ -166,7 +166,7 @@ public class TestDataCreator {
 		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "First", "Name", roles);
 	}
 
-	public UserDto createUser(RDCFEntities rdcf, String firstName, String lastName, UserRole... roles) {
+	public UserDto createUser(RDCF rdcf, String firstName, String lastName, UserRole... roles) {
 		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), firstName, lastName, roles);
 	}
 

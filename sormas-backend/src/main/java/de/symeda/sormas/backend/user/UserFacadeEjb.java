@@ -46,6 +46,8 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import org.apache.commons.beanutils.BeanUtils;
 
 import de.symeda.sormas.api.HasUuid;
@@ -185,28 +187,22 @@ public class UserFacadeEjb implements UserFacade {
 		target.setHasConsentedToGdpr(source.isHasConsentedToGdpr());
 
 		source.getUserRoles().size();
-		target.setUserRoles(new HashSet<UserRole>(source.getUserRoles()));
+		target.setUserRoles(new HashSet<>(source.getUserRoles()));
 		return target;
 	}
 
 	public static UserReferenceDto toReferenceDto(User entity) {
-
 		if (entity == null) {
 			return null;
 		}
-
-		UserReferenceDto dto = new UserReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName(), entity.getUserRoles());
-		return dto;
+		return new UserReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName(), entity.getUserRoles());
 	}
 
 	public static UserReferenceDto toReferenceDto(UserReference entity) {
-
 		if (entity == null) {
 			return null;
 		}
-
-		UserReferenceDto dto = new UserReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName(), entity.getUserRoles());
-		return dto;
+		return new UserReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName(), entity.getUserRoles());
 	}
 
 	private List<String> toUuidList(HasUuid hasUuid) {
@@ -215,7 +211,7 @@ public class UserFacadeEjb implements UserFacade {
 		 * Supports conversion of a null object into a list with one "null" value in it.
 		 * Uncertain if that use case exists, but wasn't suppose to be broken when replacing the Dto to Entity lookup.
 		 */
-		return Arrays.asList(hasUuid == null ? null : hasUuid.getUuid());
+		return Collections.singletonList(hasUuid == null ? null : hasUuid.getUuid());
 	}
 
 	@Override
@@ -223,7 +219,7 @@ public class UserFacadeEjb implements UserFacade {
 
 		return userService.getReferenceList(toUuidList(regionRef), null, false, true, true, assignableRoles)
 			.stream()
-			.map(f -> toReferenceDto(f))
+			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
 	}
 
@@ -234,7 +230,8 @@ public class UserFacadeEjb implements UserFacade {
 			.filter(r -> userRoleConfigFacade.getEffectiveUserRights(r).contains(userRight))
 			.collect(Collectors.toList());
 
-		return userService.getReferenceList(region == null ? null : Arrays.asList(region.getUuid()), null, null, false, true, true, userRoles)
+		return userService
+			.getReferenceList(region == null ? null : Collections.singletonList(region.getUuid()), null, null, false, true, true, userRoles)
 			.stream()
 			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
@@ -273,7 +270,7 @@ public class UserFacadeEjb implements UserFacade {
 			break;
 		case REGION:
 			superiorUsersList = userService.getReferenceList(
-				Arrays.asList(user.getRegion().getUuid()),
+				Collections.singletonList(user.getRegion().getUuid()),
 				null,
 				null,
 				false,
@@ -298,12 +295,12 @@ public class UserFacadeEjb implements UserFacade {
 
 			if (community == null) {
 				superiorUsersList =
-					userService.getReferenceList(null, Arrays.asList(district.getUuid()), null, false, false, true, superordinateRoles);
+					userService.getReferenceList(null, Collections.singletonList(district.getUuid()), null, false, false, true, superordinateRoles);
 			} else if (district != null) {
 				superiorUsersList = userService.getReferenceList(
 					null,
-					Arrays.asList(district.getUuid()),
-					Arrays.asList(community.getUuid()),
+					Collections.singletonList(district.getUuid()),
+					Collections.singletonList(community.getUuid()),
 					false,
 					false,
 					true,
@@ -313,7 +310,7 @@ public class UserFacadeEjb implements UserFacade {
 			break;
 		}
 
-		return superiorUsersList.stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
+		return superiorUsersList.stream().map(UserFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -321,7 +318,7 @@ public class UserFacadeEjb implements UserFacade {
 
 		return userService.getReferenceList(null, toUuidList(districtRef), includeSupervisors, true, true, userRoles)
 			.stream()
-			.map(f -> toReferenceDto(f))
+			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
 	}
 
@@ -346,7 +343,7 @@ public class UserFacadeEjb implements UserFacade {
 
 		return userService.getReferenceList(null, null, false, true, !includeInactive)
 			.stream()
-			.map(c -> toReferenceDto(c))
+			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
 	}
 
@@ -391,7 +388,7 @@ public class UserFacadeEjb implements UserFacade {
 	public List<UserDto> getUsersByAssociatedOfficer(UserReferenceDto associatedOfficerRef, UserRole... userRoles) {
 
 		User associatedOfficer = userService.getByReferenceDto(associatedOfficerRef);
-		return userService.getAllByAssociatedOfficer(associatedOfficer, userRoles).stream().map(f -> toDto(f)).collect(Collectors.toList());
+		return userService.getAllByAssociatedOfficer(associatedOfficer, userRoles).stream().map(UserFacadeEjb::toDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -482,7 +479,7 @@ public class UserFacadeEjb implements UserFacade {
 		cq.distinct(true);
 		cq.orderBy(cb.asc(root.get(User.ID)));
 		List<User> resultList = em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
-		return resultList.stream().map(c -> toReferenceDto(c)).collect(Collectors.toList());
+		return resultList.stream().map(UserFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	public interface JurisdictionOverEntitySubqueryBuilder<ADO extends AbstractDomainObject> {
@@ -499,12 +496,12 @@ public class UserFacadeEjb implements UserFacade {
 
 	@Override
 	public List<UserDto> getAllAfter(Date date) {
-		return userService.getAllAfter(date).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return userService.getAllAfter(date).stream().map(UserFacadeEjb::toDto).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<UserDto> getByUuids(List<String> uuids) {
-		return userService.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return userService.getByUuids(uuids).stream().map(UserFacadeEjb::toDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -547,6 +544,10 @@ public class UserFacadeEjb implements UserFacade {
 			throw new ValidationException(e);
 		}
 
+		if (!isLoginUnique(oldUser == null ? null : oldUser.getUuid(), dto.getUserName())) {
+			throw new ValidationException(I18nProperties.getValidationError(Validations.userNameNotUnique));
+		}
+
 		userService.ensurePersisted(user);
 
 		if (oldUser == null) {
@@ -585,8 +586,8 @@ public class UserFacadeEjb implements UserFacade {
 			cq.where(filter);
 		}
 
-		if (sortProperties != null && sortProperties.size() > 0) {
-			List<Order> order = new ArrayList<Order>(sortProperties.size());
+		if (sortProperties != null && !sortProperties.isEmpty()) {
+			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
