@@ -9949,7 +9949,7 @@ ALTER TABLE eventparticipant_history ADD COLUMN archived BOOLEAN;
 
 INSERT INTO schema_version (version_number, comment) VALUES (440, 'Refactor CoreAdo to include archiving #7246');
 
--- 2022-02-09 Create missing history tables for entities #7907
+-- 2022-02-09 Align username handling of Keycloak and legacy login #7907
 DROP INDEX idx_users_username;
 CREATE UNIQUE INDEX idx_users_username_lower ON users(LOWER(username));
 REINDEX INDEX idx_users_username_lower;
