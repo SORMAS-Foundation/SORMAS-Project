@@ -400,7 +400,10 @@ public class WebDriverHelpers {
             actions.moveToElement(menuOption).perform();
             waitUntilIdentifiedElementIsVisibleAndClickable(selector);
           });
-    } catch (Exception ignored) {
+    } catch (ConditionTimeoutException ignored) {
+      log.error("Unable to fill on element identified by locator: {}", selector);
+      takeScreenshot(baseSteps.getDriver());
+      throw new TimeoutException("Unable to fill on element identified by locator: " + selector);
     }
   }
 
