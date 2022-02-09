@@ -208,26 +208,19 @@ public class FollowUpStep implements En {
         });
 
     When(
-        "I check if popup is displayed next to Fever in Symptoms if temperature is >=38",
-        () -> {
-          String expected =
+        "I check if popup is displayed next to Fever in Symptoms if temperature is ([^\"]*)",
+        (String temp) -> {
+          String expectedForLowerThan =
+              "A body temperature of less than 38 C has been specified. It is recommended to also set Fever to \"No\".";
+          String expectedForHigherThan =
               "A body temperature of at least 38 C has been specified. It is recommended to also set Fever to \"Yes\".";
           webDriverHelpers.hoverToElement(BLUE_ERROR_EXCLAMATION_MARK);
           String displayedText =
               webDriverHelpers.getTextFromWebElement(BLUE_ERROR_EXCLAMATION_MARK_TEXT);
-          softly.assertEquals(expected, (displayedText.replaceAll("\\u00B0", "")));
-          softly.assertAll();
-        });
-
-    When(
-        "I check if popup is displayed next to Fever in Symptoms if temperature is <=38",
-        () -> {
-          String expected =
-              "A body temperature of less than 38 C has been specified. It is recommended to also set Fever to \"No\".";
-          webDriverHelpers.hoverToElement(BLUE_ERROR_EXCLAMATION_MARK);
-          String displayedText =
-              webDriverHelpers.getTextFromWebElement(BLUE_ERROR_EXCLAMATION_MARK_TEXT);
-          softly.assertEquals(expected, (displayedText.replaceAll("\\u00B0", "")));
+          if (temp.equals(">=38"))
+            softly.assertEquals(expectedForHigherThan, (displayedText.replaceAll("\\u00B0", "")));
+          else if (temp.equals("<=38"))
+            softly.assertEquals(expectedForLowerThan, (displayedText.replaceAll("\\u00B0", "")));
           softly.assertAll();
         });
 
