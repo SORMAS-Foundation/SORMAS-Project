@@ -27,6 +27,7 @@ import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.helpers.strings.ASCIIHelper;
 import org.sormas.e2etests.pojo.web.Case;
 
 public class CaseService {
@@ -66,7 +67,8 @@ public class CaseService {
         .presentConditionOfPerson("Alive")
         .dateOfSymptomOnset(LocalDate.now().minusDays(1))
         .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
-        .primaryEmailAddress(firstName + "." + lastName + emailDomain)
+        .primaryEmailAddress(
+            ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
         .build();
   }
 
@@ -133,6 +135,25 @@ public class CaseService {
                 faker.number().numberBetween(1, 27)))
         .sex(GenderValues.getRandomGender())
         .dateOfSymptomOnset(LocalDate.now().minusDays(1))
+        .build();
+  }
+
+  public Case buildAddress() {
+    return Case.builder()
+        .country("Germany")
+        .region(RegionsValues.VoreingestellteBundeslander.getName())
+        .district(DistrictsValues.VoreingestellterLandkreis.getName())
+        .community(CommunityValues.VoreingestellteGemeinde.getName())
+        .facilityCategory("Accommodation")
+        .facilityType("Campsite")
+        .facility("Other facility")
+        .facilityNameAndDescription("Dummy description" + System.currentTimeMillis())
+        .street(faker.address().streetAddress())
+        .houseNumber(faker.address().buildingNumber())
+        .additionalInformation("Dummy description" + System.currentTimeMillis())
+        .postalCode(faker.address().zipCode())
+        .city(faker.address().cityName())
+        .areaType("Urban")
         .build();
   }
 }

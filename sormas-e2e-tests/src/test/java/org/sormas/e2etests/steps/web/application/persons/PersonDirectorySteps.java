@@ -18,27 +18,37 @@
 
 package org.sormas.e2etests.steps.web.application.persons;
 
-import static org.sormas.e2etests.pages.application.persons.EditPersonPage.UUID_INPUT;
-import static org.sormas.e2etests.pages.application.persons.EditPersonPage.getByPersonUuid;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.*;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.*;
 
+import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.openqa.selenium.By;
+import org.sormas.e2etests.common.DataOperations;
+import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.web.Person;
+import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
 import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
+import org.testng.Assert;
 
 public class PersonDirectorySteps implements En {
   private final WebDriverHelpers webDriverHelpers;
-  protected Person createdPerson;
 
   @Inject
   public PersonDirectorySteps(
-      WebDriverHelpers webDriverHelpers, @Named("ENVIRONMENT_URL") String environmentUrl) {
+      WebDriverHelpers webDriverHelpers,
+      @Named("ENVIRONMENT_URL") String environmentUrl,
+      ApiState apiState,
+      AssertHelpers assertHelpers,
+      DataOperations dataOperations) {
     this.webDriverHelpers = webDriverHelpers;
+
+    // TODO refactor all BDD methods naming to be more explicit regarding where data comes from
 
     /** Avoid using this method until Person's performance is fixed */
     Then(
@@ -58,6 +68,33 @@ public class PersonDirectorySteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(120);
           webDriverHelpers.isElementVisibleWithTimeout(UUID_INPUT, 20);
         });
+
+    Then(
+        "I check the result for UID for second person in grid PERSON ID column",
+        () -> {
+          webDriverHelpers.waitUntilAListOfElementsHasText(
+              CASE_GRID_RESULTS_ROWS, apiState.getLastCreatedPerson().getUuid());
+          assertHelpers.assertWithPoll20Second(
+              () ->
+                  Truth.assertWithMessage(
+                          apiState.getLastCreatedPerson().getUuid()
+                              + " value is not displayed in grid Disease column")
+                      .that(apiState.getLastCreatedPerson().getUuid())
+                      .isEqualTo(
+                          String.valueOf(
+                              webDriverHelpers.getTextFromPresentWebElement(
+                                  CASE_PERSON_ID_COLUMN_HEADERS))));
+        });
+
+    Then(
+        "I check that number of displayed Persons results is {int}",
+        (Integer number) ->
+            assertHelpers.assertWithPoll20Second(
+                () ->
+                    Assert.assertEquals(
+                        webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS),
+                        number.intValue(),
+                        "Number of displayed cases is not correct")));
 
     When(
         "I navigate to the last created Person page via URL",
@@ -84,6 +121,25 @@ public class PersonDirectorySteps implements En {
         () -> {
           final String personUuid = EditEventSteps.person.getUuid();
           webDriverHelpers.clickOnWebElementBySelector(getByPersonUuid(personUuid));
+        });
+
+    When(
+        "I apply on the APPLY FILTERS button",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              APPLY_FILTERS_BUTTON, 30);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
+          TimeUnit.SECONDS.sleep(10);
+        });
+
+    When(
+        "I click on the RESET FILTERS button",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              RESET_FILTERS_BUTTON, 30);
+          TimeUnit.SECONDS.sleep(10);
+          webDriverHelpers.clickOnWebElementBySelector(RESET_FILTERS_BUTTON);
+          TimeUnit.SECONDS.sleep(10);
         });
   }
 }

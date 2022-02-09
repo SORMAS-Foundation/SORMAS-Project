@@ -42,6 +42,7 @@ public class EditContactPersonSteps implements En {
   protected Person aPerson;
   protected static Person newGeneratedPerson;
   public static Person fullyDetailedPerson;
+  public static Contact createdContact;
 
   @Inject
   public EditContactPersonSteps(
@@ -55,7 +56,7 @@ public class EditContactPersonSteps implements En {
         "I check the created data is correctly displayed on Edit Contact Person page",
         () -> {
           aPerson = collectPersonData();
-          Contact createdContact = CreateNewContactSteps.contact;
+          createdContact = CreateNewContactSteps.contact;
           softly.assertEquals(
               aPerson.getFirstName(), createdContact.getFirstName(), "First name is not correct");
           softly.assertEquals(
@@ -90,6 +91,8 @@ public class EditContactPersonSteps implements En {
           fillExternalToken(newGeneratedPerson.getExternalToken());
           fillExternalToken(newGeneratedPerson.getExternalToken());
           selectTypeOfOccupation(newGeneratedPerson.getTypeOfOccupation());
+          TimeUnit.SECONDS.sleep(3);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           selectStaffOfArmedForces(newGeneratedPerson.getStaffOfArmedForces());
           selectRegion(newGeneratedPerson.getRegion());
           selectDistrict(newGeneratedPerson.getDistrict());

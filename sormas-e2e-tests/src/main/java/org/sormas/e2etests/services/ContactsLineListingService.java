@@ -25,6 +25,7 @@ import com.google.inject.Inject;
 import java.time.LocalDate;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.GenderValues;
+import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.pojo.web.ContactsLineListing;
 
 public class ContactsLineListingService {
@@ -32,7 +33,6 @@ public class ContactsLineListingService {
 
   private String firstName;
   private String lastName;
-  private final String emailDomain = "@CASE.com";
 
   @Inject
   public ContactsLineListingService(Faker faker) {
@@ -45,7 +45,7 @@ public class ContactsLineListingService {
 
     return ContactsLineListing.builder()
         .disease(getRandomDiseaseCaption())
-        .region("Voreingestellte")
+        .region(RegionsValues.VoreingestellteBundeslander.getName())
         .district(DistrictsValues.VoreingestellterLandkreis.getName())
         .dateOfReport(LocalDate.now().minusDays(5))
         .dateOfLastContact(LocalDate.now().minusDays(8))

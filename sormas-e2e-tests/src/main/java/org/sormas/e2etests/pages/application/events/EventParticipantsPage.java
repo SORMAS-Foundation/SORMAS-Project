@@ -35,4 +35,6 @@ public class EventParticipantsPage {
       By.xpath("//label[contains(text(),'Create a new person')]");
   public static final By EVENT_PARTICIPANTS_TAB = By.id("tab-events-eventparticipants");
   public static final By PICK_OR_CREATE_POPUP_SAVE_BUTTON = By.cssSelector("#commit");
+  public static final By ERROR_MESSAGE_TEXT = By.cssSelector("p.v-Notification-description");
+  public static final By DISCARD_BUTTON = By.id("discard");
 }

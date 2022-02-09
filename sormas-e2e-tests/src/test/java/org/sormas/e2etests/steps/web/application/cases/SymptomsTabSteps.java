@@ -18,9 +18,8 @@
 
 package org.sormas.e2etests.steps.web.application.cases;
 
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.cases.SymptomsTabPage.*;
-import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.DISEASE_COLUMNS;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -33,7 +32,6 @@ import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pojo.web.Symptoms;
 import org.sormas.e2etests.services.SymptomService;
 import org.sormas.e2etests.state.ApiState;
-import org.testng.Assert;
 
 public class SymptomsTabSteps implements En {
 
@@ -53,7 +51,7 @@ public class SymptomsTabSteps implements En {
     When(
         "I check the created data is correctly displayed on Symptoms tab page",
         () -> {
-          Symptoms actualSymptoms = collectCSymptomsData();
+          Symptoms actualSymptoms = collectSymptomsData();
           ComparisonHelper.compareEqualEntities(actualSymptoms, symptoms);
         });
 
@@ -101,6 +99,7 @@ public class SymptomsTabSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
 
+    // TODO refactor this to be provide the checkbox and select any option not only yes
     And(
         "I check Yes Option for Soar Throat on Symptoms tab page",
         () -> webDriverHelpers.clickOnWebElementBySelector(SORE_THROAT_YES_OPTION));
@@ -113,20 +112,21 @@ public class SymptomsTabSteps implements En {
           // TODO refactor this to allow selecting any option from this view
         });
 
-    And("I click on save button", () -> webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON));
-
-    When(
-        "I am checking that the case classification is changed to Suspect Case",
+    Then(
+        "From Symptoms Tab I click on Case tab",
         () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(DISEASE_COLUMNS);
-          Assert.assertEquals(
-              firstSymptom,
-              getCaseClassificationColumn(),
-              "Case classification hasn't been changed");
+          webDriverHelpers.clickOnWebElementBySelector(CASE_TAB);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
+        });
+
+    And(
+        "From Symptoms Tab I click on Clear All button",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CLEAR_ALL_BUTTON);
         });
   }
 
-  private Symptoms collectCSymptomsData() {
+  private Symptoms collectSymptomsData() {
 
     return Symptoms.builder()
         .maximumBodyTemperatureInC(
@@ -299,9 +299,5 @@ public class SymptomsTabSteps implements En {
 
   private void fillDateOfSymptom(LocalDate dateOfSymptom) {
     webDriverHelpers.fillInWebElement(DATE_OF_SYMPTOM_INPUT, DATE_FORMATTER.format(dateOfSymptom));
-  }
-
-  private String getCaseClassificationColumn() {
-    return webDriverHelpers.getValueOfListElement(CASE_CLASSIFICATION_COLUMNS, 0);
   }
 }

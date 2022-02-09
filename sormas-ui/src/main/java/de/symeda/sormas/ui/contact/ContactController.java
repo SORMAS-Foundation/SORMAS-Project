@@ -52,6 +52,7 @@ import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.SimilarContactDto;
+import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
@@ -81,6 +82,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
+import de.symeda.sormas.ui.utils.components.automaticdeletion.AutomaticDeletionLabel;
 import de.symeda.sormas.ui.utils.components.page.title.RowLayout;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 
@@ -420,23 +422,35 @@ public class ContactController {
 						});
 					}
 				} else {
-					final PersonDto person = PersonDto.build();
-					transferDataToPerson(createForm, person);
 
-					ControllerProvider.getPersonController()
-						.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForContact), selectedPerson -> {
-							if (selectedPerson != null) {
-								dto.setPerson(selectedPerson);
-
-								fillPersonAddressIfEmpty(dto, () -> FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()));
-
-								selectOrCreateContact(dto, person, selectedContactUuid -> {
-									if (selectedContactUuid != null) {
-										editData(selectedContactUuid);
-									}
-								});
+					PersonDto searchedPerson = createForm.getSearchedPerson();
+					if (searchedPerson != null) {
+						dto.setPerson(searchedPerson.toReference());
+						selectOrCreateContact(dto, searchedPerson, selectedContactUuid -> {
+							if (selectedContactUuid != null) {
+								editData(selectedContactUuid);
 							}
-						}, true);
+						});
+					} else {
+
+						final PersonDto person = PersonDto.build();
+						transferDataToPerson(createForm, person);
+
+						ControllerProvider.getPersonController()
+							.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForContact), selectedPerson -> {
+								if (selectedPerson != null) {
+									dto.setPerson(selectedPerson);
+
+									fillPersonAddressIfEmpty(dto, () -> FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()));
+
+									selectOrCreateContact(dto, person, selectedContactUuid -> {
+										if (selectedContactUuid != null) {
+											editData(selectedContactUuid);
+										}
+									});
+								}
+							}, true);
+					}
 				}
 			}
 		});
@@ -547,12 +561,18 @@ public class ContactController {
 
 		//editForm.setWidth(editForm.getWidth() * 8/12, Unit.PIXELS);
 		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);
+		AutomaticDeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getContactFacade().getAutomaticDeletionInfo(contactUuid);
+
 		ContactDataForm editForm = new ContactDataForm(contact.getDisease(), viewMode, isPsuedonymized);
 		editForm.setValue(contact);
 		final CommitDiscardWrapperComponent<ContactDataForm> editComponent = new CommitDiscardWrapperComponent<ContactDataForm>(
 			editForm,
 			UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT),
 			editForm.getFieldGroup());
+
+		if (automaticDeletionInfoDto != null) {
+			editComponent.getButtonsPanel().addComponentAsFirst(new AutomaticDeletionLabel(automaticDeletionInfoDto));
+		}
 
 		editComponent.addCommitListener(() -> {
 			if (!editForm.getFieldGroup().isModified()) {

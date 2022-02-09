@@ -16,29 +16,28 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.enums;
+package org.sormas.e2etests.services;
 
-import java.util.Random;
-import lombok.Getter;
+import com.github.javafaker.Faker;
+import com.google.inject.Inject;
+import org.sormas.e2etests.pojo.web.QuarantineOrder;
 
-@Getter
-public enum CaseClasification {
-  NOT_CLASSIFIED("Not yet classified"),
-  SUSPECT("Suspect case"),
-  PROBABLE("Probable case"),
-  CONFIRMED("Confirmed case"),
-  CONFIRMED_NO_SYMPTOMS("Confirmed case with no symptoms"),
-  CONFIRMED_UNKNOWN_SYMPTOMS("Confirmed case with unknown symptoms"),
-  NO_CASE("Not a case");
+public class ContactDocumentService {
+  private final Faker faker;
 
-  private final String classification;
+  private final String emailDomain = "@CONTACT-DOCUMENT.com";
 
-  CaseClasification(String caseClassification) {
-    classification = caseClassification;
+  @Inject
+  public ContactDocumentService(Faker faker) {
+    this.faker = faker;
   }
 
-  public static String getRandomClassification() {
-    Random random = new Random();
-    return String.valueOf(CaseClasification.values()[random.nextInt(values().length)]);
+  public QuarantineOrder buildQuarantineOrder() {
+    return QuarantineOrder.builder()
+        .documentTemplate("ExampleDocumentTemplateContacts.docx")
+        .sample("")
+        .pathogenTest("")
+        .extraComment("This is a test comment")
+        .build();
   }
 }

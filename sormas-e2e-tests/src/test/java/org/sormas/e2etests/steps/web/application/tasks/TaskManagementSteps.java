@@ -102,6 +102,7 @@ public class TaskManagementSteps implements En {
     When(
         "^I filter Task context by ([^\"]*)$",
         (String filterType) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.selectFromCombobox(TASK_CONTEXT_COMBOBOX, filterType);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
           TimeUnit.SECONDS.sleep(2);
@@ -122,6 +123,7 @@ public class TaskManagementSteps implements En {
     When(
         "^I filter Task status ([^\"]*)$",
         (String statusType) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.selectFromCombobox(TASK_STATUS_COMBOBOX, statusType);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
           TimeUnit.SECONDS.sleep(2);
@@ -226,6 +228,7 @@ public class TaskManagementSteps implements En {
     When(
         "^I collect the task column objects$",
         () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           List<Map<String, String>> tableRowsData = getTableRowsData();
           taskTableRows = new ArrayList<>();
           tableRowsData.forEach(

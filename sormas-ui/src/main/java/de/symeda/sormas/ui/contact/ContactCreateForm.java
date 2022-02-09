@@ -58,16 +58,16 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
+import de.symeda.sormas.ui.utils.PersonDependentEditForm;
 import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 
-public class ContactCreateForm extends AbstractEditForm<ContactDto> {
+public class ContactCreateForm extends PersonDependentEditForm<ContactDto> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -79,7 +79,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	//@formatter:off
 	private static final String HTML_LAYOUT =
 			LayoutUtil.loc(PERSON_NAME_LOC) +
-			LayoutUtil.fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME) +
+			LayoutUtil.fluidRowLocs(6, PersonDto.FIRST_NAME, 4, PersonDto.LAST_NAME, 2, PERSON_SEARCH_LOC) +
 					LayoutUtil.fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
 							fluidRowLocs(PersonDto.SEX)) +
 					LayoutUtil.fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER) +
@@ -111,6 +111,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 	private NullableOptionGroup contactCategory;
 	private TextField contactProximityDetails;
 	private ComboBox birthDateDay;
+	private Button searchPersonButton;
 
 	/**
 	 * TODO use disease and case relation information given in ContactDto
@@ -140,8 +141,22 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		addField(ContactDto.DISEASE_DETAILS, TextField.class);
 		TextField firstName = addCustomField(PersonDto.FIRST_NAME, String.class, TextField.class);
 		TextField lastName = addCustomField(PersonDto.LAST_NAME, String.class, TextField.class);
-		addCustomField(PersonDto.NATIONAL_HEALTH_ID, String.class, TextField.class);
-		addCustomField(PersonDto.PASSPORT_NUMBER, String.class, TextField.class);
+
+		searchPersonButton = createPersonSearchButton(PERSON_SEARCH_LOC);
+		getContent().addComponent(searchPersonButton, PERSON_SEARCH_LOC);
+
+		TextField nationalHealthIdField = addCustomField(PersonDto.NATIONAL_HEALTH_ID, String.class, TextField.class);
+		TextField passportNumberField = addCustomField(PersonDto.PASSPORT_NUMBER, String.class, TextField.class);
+		if (CountryHelper.isCountry(FacadeProvider.getConfigFacade().getCountryLocale(), CountryHelper.COUNTRY_CODE_GERMANY)) {
+			nationalHealthIdField.setVisible(false);
+		}
+		if (CountryHelper.isInCountries(
+			FacadeProvider.getConfigFacade().getCountryLocale(),
+			CountryHelper.COUNTRY_CODE_GERMANY,
+			CountryHelper.COUNTRY_CODE_FRANCE)) {
+			passportNumberField.setVisible(false);
+		}
+
 		TextField phone = addCustomField(PersonDto.PHONE, String.class, TextField.class);
 		phone.setCaption(I18nProperties.getCaption(Captions.Person_phone));
 		TextField email = addCustomField(PersonDto.EMAIL_ADDRESS, String.class, TextField.class);
@@ -330,6 +345,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 				personNameField.setCaption(I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.PERSON));
 				personNameField.setValue(getValue().getPerson().getCaption());
 				personNameField.setReadOnly(true);
+
+				searchPersonButton.setVisible(false);
 			}
 		});
 	}
@@ -477,6 +494,20 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		}
 	}
 
+	@Override
+	protected void enablePersonFields(Boolean enable) {
+		getField(PersonDto.FIRST_NAME).setEnabled(enable);
+		getField(PersonDto.LAST_NAME).setEnabled(enable);
+		getField(PersonDto.BIRTH_DATE_DD).setEnabled(enable);
+		getField(PersonDto.BIRTH_DATE_MM).setEnabled(enable);
+		getField(PersonDto.BIRTH_DATE_YYYY).setEnabled(enable);
+		getField(PersonDto.SEX).setEnabled(enable);
+		getField(PersonDto.NATIONAL_HEALTH_ID).setEnabled(enable);
+		getField(PersonDto.PASSPORT_NUMBER).setEnabled(enable);
+		getField(PersonDto.PHONE).setEnabled(enable);
+		getField(PersonDto.EMAIL_ADDRESS).setEnabled(enable);
+	}
+
 	public void setPersonDetailsReadOnly() {
 		setEnabled(
 			false,
@@ -490,6 +521,8 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 			PersonDto.PASSPORT_NUMBER,
 			PersonDto.PHONE,
 			PersonDto.EMAIL_ADDRESS);
+
+		searchPersonButton.setEnabled(false);
 
 		setRequired(false, PersonDto.FIRST_NAME, PersonDto.LAST_NAME, PersonDto.SEX);
 	}

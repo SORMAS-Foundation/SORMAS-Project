@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.api.vaccination;
 
+import de.symeda.sormas.api.utils.SortProperty;
 import java.util.List;
 import java.util.Map;
 
@@ -56,7 +57,7 @@ public interface VaccinationFacade {
 
 	List<VaccinationDto> getAllVaccinations(String personUuid, Disease disease);
 
-	List<VaccinationListEntryDto> getEntriesList(VaccinationListCriteria criteria, Integer first, Integer max);
+	List<VaccinationListEntryDto> getEntriesList(VaccinationListCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	List<VaccinationListEntryDto> getEntriesListWithRelevance(
 		CaseReferenceDto caseReferenceDto,

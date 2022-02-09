@@ -39,7 +39,6 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
-import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
 
 import de.symeda.sormas.api.Disease;
@@ -66,6 +65,7 @@ import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.TaskStatusValidator;
+import de.symeda.sormas.ui.utils.components.MultiSelect;
 
 @SuppressWarnings("deprecation")
 public class TaskEditForm extends AbstractEditForm<TaskDto> {
@@ -163,7 +163,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		creatorComment.setImmediate(true);
 		addField(TaskDto.ASSIGNEE_REPLY, TextArea.class).setRows(4);
 
-		OptionGroup observerUsers = addField(TaskDto.OBSERVER_USERS, OptionGroup.class);
+		MultiSelect<UserReferenceDto> observerUsers = addField(TaskDto.OBSERVER_USERS, MultiSelect.class);
 		observerUsers.addValueChangeListener(e -> {
 			Collection<UserReferenceDto> userReferences = (Collection<UserReferenceDto>) e.getProperty().getValue();
 			for (UserReferenceDto userReference : userReferences) {
@@ -174,7 +174,6 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 					OBSERVER_MISSING_INFO);
 			}
 		});
-		observerUsers.setMultiSelect(true);
 		observerUsers.setImmediate(true);
 		CssStyles.style(observerUsers, CssStyles.OPTIONGROUP_MAX_HEIGHT_150);
 
@@ -259,7 +258,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 
 	private void updateObserversList() {
 		ComboBox assigneeField = getField(TaskDto.ASSIGNEE_USER);
-		OptionGroup observersField = getField(TaskDto.OBSERVER_USERS);
+		MultiSelect<UserReferenceDto> observersField = getField(TaskDto.OBSERVER_USERS);
 
 		Collection<UserReferenceDto> selectedObservers = (Collection<UserReferenceDto>) observersField.getValue();
 		if (selectedObservers == null) {
@@ -284,7 +283,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		// As we removed everything from observers field, let's apply again its value
 		Set<UserReferenceDto> filteredObservers =
 			selectedObservers.stream().filter(userReferenceDto -> !userReferenceDto.equals(assigneeField.getValue())).collect(Collectors.toSet());
-		observersField.setValue(filteredObservers);
+		observersField.setValue(filteredObservers, true);
 	}
 
 	private void checkIfUserEmailOrPhoneIsProvided(

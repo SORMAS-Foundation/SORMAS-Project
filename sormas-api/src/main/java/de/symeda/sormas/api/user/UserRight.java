@@ -1501,6 +1501,9 @@ public enum UserRight {
 	),
 	TRAVEL_ENTRY_ARCHIVE(
 			ADMIN
+	),
+	EXPORT_DATA_PROTECTION_DATA(
+			ADMIN
 	);
 	//@formatter:on
 

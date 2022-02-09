@@ -20,19 +20,31 @@ package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.*;
+import static org.sormas.e2etests.pages.application.cases.SymptomsTabPage.SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 
 import cucumber.api.java8.En;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Named;
 import lombok.SneakyThrows;
+import org.sormas.e2etests.enums.CaseOutcome;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
+import org.sormas.e2etests.pages.application.cases.EditCasePage;
 import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pojo.web.Case;
+import org.sormas.e2etests.pojo.web.QuarantineOrder;
+import org.sormas.e2etests.services.CaseDocumentService;
 import org.sormas.e2etests.services.CaseService;
+import org.sormas.e2etests.state.ApiState;
+import org.testng.asserts.SoftAssert;
 
 public class EditCaseSteps implements En {
 
@@ -40,23 +52,53 @@ public class EditCaseSteps implements En {
   public static Case aCase;
   private static Case createdCase;
   private static Case editedCase;
+  public static QuarantineOrder aQuarantineOrder;
+  private static Case specificCaseData;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
+  public static final String userDirPath = System.getProperty("user.dir");
 
   @SneakyThrows
   @Inject
   public EditCaseSteps(
       WebDriverHelpers webDriverHelpers,
       CaseService caseService,
+      CaseDocumentService caseDocumentService,
+      SoftAssert softly,
+      ApiState apiState,
       @Named("ENVIRONMENT_URL") String environmentUrl) {
     this.webDriverHelpers = webDriverHelpers;
 
     And(
+        "I click on save button from Edit Case page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CASE_SAVED_POPUP);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+        });
+    Then(
+        "I click on Clinical Course tab from Edit Case page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CLINICAL_COURSE_TAB));
+
+    When(
+        "I click on save button from Edit Case page with current hospitalization",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL);
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    And(
         "I navigate to follow-up tab",
-        () -> webDriverHelpers.clickOnWebElementBySelector(FOLLOW_UP_BUTTON));
+        () -> webDriverHelpers.clickOnWebElementBySelector(FOLLOW_UP_TAB));
 
     And(
         "I navigate to symptoms tab",
-        () -> webDriverHelpers.clickOnWebElementBySelector(SYMPTOMS_BUTTON));
+        () -> webDriverHelpers.clickOnWebElementBySelector(SYMPTOMS_TAB));
+
+    When(
+        "I navigate to Hospitalization tab in Cases",
+        () -> webDriverHelpers.clickOnWebElementBySelector(HOSPITALIZATION_TAB));
 
     When(
         "I check the created data is correctly displayed on Edit case page",
@@ -81,8 +123,253 @@ public class EditCaseSteps implements En {
         });
 
     When(
+        "I select Investigation Status ([^\"]*)",
+        (String investigationStatus) -> {
+          webDriverHelpers.clickWebElementByText(
+              INVESTIGATION_STATUS_OPTIONS,
+              CaseOutcome.getValueFor("INVESTIGATION " + investigationStatus).toUpperCase());
+          editedCase =
+              Case.builder()
+                  .investigationStatus("Investigation " + investigationStatus)
+                  .build(); // TODO: Create POJO updater class
+        });
+
+    When(
+        "I check if date of investigation filed is available",
+        () -> webDriverHelpers.waitUntilElementIsVisibleAndClickable(INVESTIGATED_DATE_FIELD));
+
+    When(
+        "I select Outcome Of Case Status ([^\"]*)",
+        (String caseStatus) -> {
+          webDriverHelpers.clickWebElementByText(
+              OUTCOME_OF_CASE_OPTIONS, CaseOutcome.getValueFor(caseStatus).toUpperCase());
+          editedCase = editedCase.toBuilder().outcomeOfCase(caseStatus).build();
+        });
+
+    When(
+        "I check if date of outcome filed is available",
+        () -> webDriverHelpers.waitUntilElementIsVisibleAndClickable(DATE_OF_OUTCOME));
+
+    When(
+        "I click on ([^\"]*) option in Sequelae",
+        (String option) -> {
+          webDriverHelpers.clickWebElementByText(
+              SEQUELAE_OPTIONS, CaseOutcome.getValueFor(option).toUpperCase());
+          editedCase = editedCase.toBuilder().sequelae(option).build();
+        });
+
+    When(
+        "I check if Sequelae Details field is available",
+        () -> webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEQUELAE_DETAILS));
+
+    When(
+        "I click on Place of stay of this case differs from its responsible jurisdiction",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(PLACE_OF_STAY_CHECKBOX_LABEL);
+          editedCase =
+              editedCase.toBuilder()
+                  .differentPlaceOfStayJurisdiction(
+                      webDriverHelpers.getTextFromLabelIfCheckboxIsChecked(
+                          PLACE_OF_STAY_CHECKBOX_INPUT))
+                  .build();
+        });
+
+    When(
+        "I check if region combobox is available and I select Responsible Region",
+        () -> {
+          aCase = caseService.buildEditGeneratedCase();
+          webDriverHelpers.selectFromCombobox(PLACE_OF_STAY_REGION_COMBOBOX, aCase.getRegion());
+          editedCase = editedCase.toBuilder().region(aCase.getRegion()).build();
+        });
+
+    When(
+        "I check if district combobox is available and i select Responsible District",
+        () -> {
+          aCase = caseService.buildEditGeneratedCase();
+          webDriverHelpers.selectFromCombobox(PLACE_OF_STAY_DISTRICT_COMBOBOX, aCase.getDistrict());
+          editedCase = editedCase.toBuilder().district(aCase.getDistrict()).build();
+        });
+
+    When(
+        "I check if community combobox is available",
+        () ->
+            webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+                COMMUNITY_COMBOBOX_BY_PLACE_OF_STAY));
+
+    When(
+        "I click on ([^\"]*) as place of stay",
+        (String placeOfStay) -> {
+          webDriverHelpers.clickWebElementByText(
+              PLACE_OF_STAY_OPTIONS, CaseOutcome.getValueFor(placeOfStay).toUpperCase());
+          editedCase = editedCase.toBuilder().placeOfStay(placeOfStay).build();
+        });
+
+    When(
+        "I check if Facility Category combobox is available",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FACILITY_CATEGORY_COMBOBOX);
+          editedCase =
+              editedCase.toBuilder()
+                  .facilityCategory(
+                      webDriverHelpers.getValueFromCombobox(FACILITY_CATEGORY_COMBOBOX))
+                  .build();
+        });
+
+    When(
+        "I check if Facility Type combobox is available",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FACILITY_TYPE_COMBOBOX);
+          editedCase =
+              editedCase.toBuilder()
+                  .facilityType(webDriverHelpers.getValueFromCombobox(FACILITY_TYPE_COMBOBOX))
+                  .build();
+        });
+
+    When(
+        "I set Facility as a ([^\"]*)",
+        (String facility) -> {
+          webDriverHelpers.selectFromCombobox(
+              FACILITY_HEALTH_COMBOBOX, CaseOutcome.getValueFor(facility));
+          editedCase = editedCase.toBuilder().facility(facility).build();
+        });
+
+    When(
+        "I fill Facility name and description filed by ([^\"]*)",
+        (String description) -> {
+          webDriverHelpers.fillInWebElement(PLACE_DESCRIPTION_INPUT, description);
+          editedCase = editedCase.toBuilder().facilityNameAndDescription(description).build();
+        });
+
+    When(
+        "I check if Facility name and description field is available",
+        () -> webDriverHelpers.waitUntilElementIsVisibleAndClickable(PLACE_DESCRIPTION_INPUT));
+
+    When(
+        "I set Quarantine ([^\"]*)",
+        (String option) -> {
+          webDriverHelpers.selectFromCombobox(QUARANTINE_COMBOBOX, CaseOutcome.getValueFor(option));
+          editedCase = editedCase.toBuilder().quarantine(option).build();
+        });
+
+    When(
+        "I check if Quarantine start field is available",
+        () -> webDriverHelpers.waitUntilElementIsVisibleAndClickable(QUARANTINE_DATE_FROM));
+
+    When(
+        "I check if Quarantine end field is available",
+        () -> webDriverHelpers.waitUntilElementIsVisibleAndClickable(QUARANTINE_DATE_TO));
+
+    When(
+        "I select Quarantine ordered verbally checkbox",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(QUARANTINE_ORDERED_VERBALLY_CHECKBOX_LABEL);
+          editedCase =
+              editedCase.toBuilder()
+                  .quarantineOrderedVerbally(
+                      webDriverHelpers.getTextFromLabelIfCheckboxIsChecked(
+                          QUARANTINE_ORDERED_VERBALLY_CHECKBOX_INPUT))
+                  .build();
+        });
+
+    When(
+        "I check if Date of verbal order field is available",
+        () -> webDriverHelpers.waitUntilElementIsVisibleAndClickable(DATE_OF_THE_VERBAL_ORDER));
+
+    When(
+        "I select Quarantine ordered by official document checkbox",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              QUARANTINE_ORDERED_BY_DOCUMENT_CHECKBOX_LABEL);
+          editedCase =
+              editedCase.toBuilder()
+                  .quarantineOrderedByDocument(
+                      webDriverHelpers.getTextFromLabelIfCheckboxIsChecked(
+                          QUARANTINE_ORDERED_BY_DOCUMENT_CHECKBOX_INPUT))
+                  .build();
+        });
+
+    When(
+        "I check if Date of the official document ordered field is available",
+        () ->
+            webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+                QUARANTINE_ORDERED_BY_DOCUMENT_DATE));
+
+    When(
+        "I select Official quarantine order sent",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              OFFICIAL_QUARANTINE_ORDER_SENT_CHECKBOX_LABEL);
+          editedCase =
+              editedCase.toBuilder()
+                  .quarantineOrderSet(
+                      webDriverHelpers.getTextFromLabelIfCheckboxIsChecked(
+                          OFFICIAL_QUARANTINE_ORDER_SENT_CHECKBOX_INPUT))
+                  .build();
+        });
+    When(
+        "I check if Date official quarantine order was sent field is available",
+        () ->
+            webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+                DATE_OFFICIAL_QUARANTINE_ORDER_WAS_SENT));
+
+    When(
+        "I check if Quarantine details field is available",
+        () -> webDriverHelpers.waitUntilElementIsVisibleAndClickable(QUARANTINE_TYPE_DETAILS));
+
+    When(
+        "I set Vaccination Status as ([^\"]*)",
+        (String vaccinationStatus) -> {
+          webDriverHelpers.selectFromCombobox(
+              VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX,
+              CaseOutcome.getValueFor(vaccinationStatus));
+          editedCase = editedCase.toBuilder().vaccinationStatus(vaccinationStatus).build();
+        });
+
+    When(
+        "I check if the specific data is correctly displayed",
+        () -> {
+          specificCaseData = collectSpecificData();
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              specificCaseData,
+              editedCase,
+              List.of(
+                  "investigationStatus",
+                  "outomeOfCase",
+                  "sequelae",
+                  "differentPlaceOfStayJurisdiction",
+                  "placeOfStay",
+                  "region",
+                  "district",
+                  "facilityNameAndDescription",
+                  "facility",
+                  "facilityCategory",
+                  "facilityType",
+                  "quarantine",
+                  "vaccinationStatus"));
+        });
+
+    When(
         "I collect the case person UUID displayed on Edit case page",
         () -> aCase = collectCasePersonUuid());
+
+    When(
+        "I check case created from created contact is correctly displayed on Edit Case page",
+        () -> {
+          aCase = collectCasePersonData();
+          createdCase = CreateNewCaseSteps.caze;
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              aCase,
+              createdCase,
+              List.of(
+                  "dateOfReport",
+                  "disease",
+                  "externalId",
+                  "responsibleRegion",
+                  "responsibleDistrict",
+                  "responsibleCommunity",
+                  "placeOfStay",
+                  "placeDescription"));
+        });
 
     When(
         "I click on New Task from Case page",
@@ -101,14 +388,58 @@ public class EditCaseSteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(EDIT_SAMPLE_BUTTON));
 
     When(
+        "I click on the Create button from Case Document Templates",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_DOCUMENT_BUTTON));
+
+    When(
+        "I create a case document from template",
+        () -> {
+          aQuarantineOrder = caseDocumentService.buildQuarantineOrder();
+          aQuarantineOrder = aQuarantineOrder.toBuilder().build();
+          selectQuarantineOrderTemplate(aQuarantineOrder.getDocumentTemplate());
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EXTRA_COMMENT_INPUT);
+          fillExtraComment(aQuarantineOrder.getExtraComment());
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_QUARANTINE_ORDER_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CASE_SAVED_POPUP);
+        });
+
+    And(
+        "I verify that the case document is downloaded and correctly named",
+        () -> {
+          String uuid = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
+          Path path =
+              Paths.get(
+                  userDirPath
+                      + "/downloads/"
+                      + uuid.substring(0, 6)
+                      + "-"
+                      + aQuarantineOrder.getDocumentTemplate());
+          softly.assertTrue(
+              Files.exists(path),
+              String.format(
+                  "The document with expected name was not downloaded. Searching path was: %s",
+                  path.toAbsolutePath()));
+          softly.assertAll();
+        });
+
+    When(
         "I open last edited case by link",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               NavBarPage.SAMPLE_BUTTON);
-          String caseLinkPath = "/sormas-webdriver/#!cases/data/";
+          String caseLinkPath = "/sormas-ui/#!cases/data/";
           String uuid = aCase.getUuid();
           webDriverHelpers.accessWebSite(environmentUrl + caseLinkPath + uuid);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(REPORT_DATE_INPUT);
+        });
+
+    When(
+        "I open last edited case by API via URL navigation",
+        () -> {
+          String caseLinkPath = "/sormas-ui/#!cases/data/";
+          String uuid = apiState.getCreatedCase().getUuid();
+          webDriverHelpers.accessWebSite(environmentUrl + caseLinkPath + uuid);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
         });
 
     When(
@@ -283,6 +614,31 @@ public class EditCaseSteps implements En {
             webDriverHelpers.getValueFromCombobox(VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX))
         .responsibleSurveillanceOfficer(
             webDriverHelpers.getValueFromCombobox(RESPONSIBLE_SURVEILLANCE_OFFICER_COMBOBOX))
+        .build();
+  }
+
+  private Case collectSpecificData() {
+    return Case.builder()
+        .investigationStatus(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                INVESTIGATION_STATUS_OPTIONS))
+        .outcomeOfCase(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(OUTCOME_OF_CASE_OPTIONS))
+        .sequelae(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SEQUELAE_OPTIONS))
+        .differentPlaceOfStayJurisdiction(
+            webDriverHelpers.getTextFromLabelIfCheckboxIsChecked(PLACE_OF_STAY_CHECKBOX_INPUT))
+        .placeOfStay(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(PLACE_OF_STAY_OPTIONS))
+        .facilityCategory(webDriverHelpers.getValueFromCombobox(FACILITY_CATEGORY_COMBOBOX))
+        .facilityType(webDriverHelpers.getValueFromCombobox(FACILITY_TYPE_COMBOBOX))
+        .facility(webDriverHelpers.getValueFromCombobox(FACILITY_HEALTH_COMBOBOX))
+        .facilityNameAndDescription(
+            webDriverHelpers.getValueFromWebElement(PLACE_DESCRIPTION_INPUT))
+        .quarantine(webDriverHelpers.getValueFromCombobox(QUARANTINE_COMBOBOX))
+        .vaccinationStatus(
+            webDriverHelpers.getValueFromCombobox(VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX))
+        .region(webDriverHelpers.getValueFromCombobox(PLACE_OF_STAY_REGION_COMBOBOX))
+        .district(webDriverHelpers.getValueFromCombobox(PLACE_OF_STAY_DISTRICT_COMBOBOX))
         .build();
   }
 
@@ -466,5 +822,13 @@ public class EditCaseSteps implements En {
 
   private void fillGeneralComment(String generalComment) {
     webDriverHelpers.fillInWebElement(GENERAL_COMMENT_TEXTAREA, generalComment);
+  }
+
+  private void selectQuarantineOrderTemplate(String templateName) {
+    webDriverHelpers.selectFromCombobox(EditCasePage.QUARANTINE_ORDER_COMBOBOX, templateName);
+  }
+
+  private void fillExtraComment(String extraComment) {
+    webDriverHelpers.fillInAndLeaveWebElement(EditCasePage.EXTRA_COMMENT_TEXTAREA, extraComment);
   }
 }

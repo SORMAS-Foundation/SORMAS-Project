@@ -20,27 +20,20 @@ package org.sormas.e2etests.services;
 
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
-import java.time.LocalDate;
-import org.sormas.e2etests.pojo.web.Action;
-import org.sormas.e2etests.pojo.web.Event;
+import org.sormas.e2etests.pojo.web.EventHandout;
 
-public class EventActionTableEntryService {
+public class EventDocumentService {
   private final Faker faker;
 
   @Inject
-  public EventActionTableEntryService(Faker faker) {
+  public EventDocumentService(Faker faker) {
     this.faker = faker;
   }
 
-  public Action buildEventActionTableEntryInput(Event event, Action action) {
-    String timestamp = String.valueOf(System.currentTimeMillis());
-    return Action.builder()
-        .date(LocalDate.now())
-        .priority("Normal")
-        .measure("Closure of facility")
-        .title("Dummy Action " + timestamp)
-        .description("Dummy Action " + timestamp)
-        .actionStatus("PENDING")
+  public EventHandout buildEventHandout() {
+
+    return EventHandout.builder()
+        .documentTemplate("ExampleDocumentTemplateEventHandout.html")
         .build();
   }
 }

@@ -65,6 +65,15 @@ public class EpidemiologicalDataCasePage {
   public static final By CITY_INPUT = By.cssSelector(".v-window input#city");
   public static final By DONE_BUTTON = By.cssSelector(".v-window #commit");
   public static final By DISCARD_BUTTON = By.cssSelector(".v-window #discard");
+  public static final By RESIDING_DETAILS_KNOWN_OPTIONS =
+      By.cssSelector("#highTransmissionRiskArea .v-select-option");
+  public static final By RESIDING_OR_WORKING_DETAILS_KNOWN_OPTIONS =
+      By.cssSelector("#highTransmissionRiskArea .v-select-option");
+  public static final By RESIDING_OR_TRAVELING_DETAILS_KNOWN_OPTIONS =
+      By.cssSelector("#largeOutbreaksArea .v-select-option");
+  public static final By CONTACT_WITH_SOURCE_CASE_KNOWN =
+      By.cssSelector("#contactWithSourceCaseKnown .v-select-option");
+  public static final By NEW_CONTACT_BUTTON = By.id("contactNewContact");
   public static final By ACTIVITY_DETAILS_KNOWN_OPTIONS =
       By.cssSelector("#activityAsCaseDetailsKnown .v-select-option");
   public static final By ACTIVITY_DETAILS_NEW_ENTRY_BUTTON =

@@ -1,6 +1,7 @@
 ## This is a comment line
 ##This is also a comment line
 ## This is a comment line with a , inside
+"Contact","Contact","Contact","Contact","Contact","Contact","Contact","Contact","Contact","Contact","Contact","Contact","Contact","Contact"
 "caseIdExternalSystem","caseOrEventInformation","disease","diseaseDetails","reportDateTime","region","district","lastContactDate","person.firstName","person.lastName","person.sex","person.birthdateDD","person.birthdateMM","person.birthdateYYYY"
 ## This is a comment line after the headers
 ABCDEF-GHIJKL-MNOPQR,,CORONAVIRUS,,03.14.2020,Abia,Umuahia North,,Number,One

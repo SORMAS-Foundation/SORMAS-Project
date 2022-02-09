@@ -32,7 +32,6 @@ import java.util.function.Supplier;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.Label;
 import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.Disease;
@@ -52,6 +51,7 @@ import de.symeda.sormas.ui.exposure.ExposuresField;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
+import de.symeda.sormas.ui.utils.components.MultilineLabel;
 
 public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
@@ -151,7 +151,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 	private void addActivityAsCaseFields() {
 
 		getContent().addComponent(
-			new Label(
+			new MultilineLabel(
 				h3(I18nProperties.getString(Strings.headingActivityAsCase))
 					+ divsCss(VSPACE_3, I18nProperties.getString(Strings.infoActivityAsCaseInvestigation)),
 				ContentMode.HTML),
@@ -176,7 +176,7 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 
 	private void addHeadingsAndInfoTexts() {
 		getContent().addComponent(
-			new Label(
+			new MultilineLabel(
 				h3(I18nProperties.getString(Strings.headingExposureInvestigation))
 					+ divsCss(
 						VSPACE_3,
@@ -186,11 +186,11 @@ public class EpiDataForm extends AbstractEditForm<EpiDataDto> {
 			LOC_EXPOSURE_INVESTIGATION_HEADING);
 
 		getContent().addComponent(
-			new Label(divsCss(VSPACE_3, I18nProperties.getString(Strings.infoEpiDataFieldsHint)), ContentMode.HTML),
+			new MultilineLabel(divsCss(VSPACE_3, I18nProperties.getString(Strings.infoEpiDataFieldsHint)), ContentMode.HTML),
 			LOC_EPI_DATA_FIELDS_HINT);
 
 		getContent().addComponent(
-			new Label(
+			new MultilineLabel(
 				h3(I18nProperties.getString(Strings.headingEpiDataSourceCaseContacts))
 					+ divsCss(VSPACE_3, I18nProperties.getString(Strings.infoEpiDataSourceCaseContacts)),
 				ContentMode.HTML),

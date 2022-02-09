@@ -124,6 +124,7 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataHelper;
@@ -223,6 +224,8 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.contact.VisitSummaryExportDetails;
+import de.symeda.sormas.backend.deletionconfiguration.AbstractCoreEntityFacade;
+import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.document.Document;
 import de.symeda.sormas.backend.document.DocumentService;
@@ -326,7 +329,7 @@ import de.symeda.sormas.backend.visit.VisitService;
 import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless(name = "CaseFacade")
-public class CaseFacadeEjb implements CaseFacade {
+public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements CaseFacade {
 
 	private static final int ARCHIVE_BATCH_SIZE = 1000;
 
@@ -453,6 +456,10 @@ public class CaseFacadeEjb implements CaseFacade {
 	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
 	@Resource
 	private ManagedScheduledExecutorService executorService;
+
+	public CaseFacadeEjb() {
+		super(Case.class);
+	}
 
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date) {
@@ -1960,7 +1967,7 @@ public class CaseFacadeEjb implements CaseFacade {
 			syncSharesAsync(new ShareTreeCriteria(existingCase.getUuid()));
 		}
 
-		// This logic should be consistent with CaseDataForm.onQuarantineEndChange 
+		// This logic should be consistent with CaseDataForm.onQuarantineEndChange
 		if (existingCase != null && existingCase.getQuarantineTo() != null && !existingCase.getQuarantineTo().equals(newCase.getQuarantineTo())) {
 			newCase.setPreviousQuarantineTo(existingCase.getQuarantineTo());
 		}
@@ -2802,6 +2809,11 @@ public class CaseFacadeEjb implements CaseFacade {
 		} else {
 			return reinfectionDetails;
 		}
+	}
+
+	@Override
+	public AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid) {
+		return getAutomaticDeletionInfo(uuid, CoreEntityType.CASE);
 	}
 
 	public void updateInvestigationByStatus(CaseDataDto existingCase, Case caze) {
@@ -3673,7 +3685,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public String getFirstUuidNotShareableWithExternalReportingTools(List<String> caseUuids) {
+	public List<String> getUuidsNotShareableWithExternalReportingTools(List<String> caseUuids) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Case> caseRoot = cq.from(Case.class);
@@ -3690,7 +3702,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				caseRoot.get(Case.UUID).in(caseUuids)));
 		cq.orderBy(cb.asc(caseRoot.get(AbstractDomainObject.CREATION_DATE)));
 
-		return QueryHelper.getFirstResult(em, cq);
+		return QueryHelper.getResultList(em, cq, null, null);
 	}
 
 	/**
@@ -3847,6 +3859,11 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Override
 	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		caseService.updateExternalData(externalData);
+	}
+
+	@Override
+	protected void delete(Case entity) {
+		caseService.delete(entity);
 	}
 
 	@LocalBean

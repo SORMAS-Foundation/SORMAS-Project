@@ -16,7 +16,7 @@
 package org.sormas.e2etests.steps.web.application;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NEW_CASE_BUTTON;
-import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.NEW_CONTACT_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.NEW_CONTACT_PAGE_BUTTON;
 import static org.sormas.e2etests.pages.application.dashboard.Contacts.ContactsDashboardPage.CONTACTS_DASHBOARD_NAME;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.CONTACTS_BUTTON;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.SURVEILLANCE_DASHBOARD_NAME;
@@ -51,8 +51,10 @@ public class NavBarSteps implements En {
         "^I click on the Cases button from navbar$",
         () -> {
           webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.CASES_BUTTON);
           startTime = ZonedDateTime.now().toInstant().toEpochMilli();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
         });
 
     When(
@@ -84,6 +86,7 @@ public class NavBarSteps implements En {
         "^I click on the Tasks button from navbar$",
         () -> {
           webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NavBarPage.TASKS_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.TASKS_BUTTON);
           startTime = ZonedDateTime.now().toInstant().toEpochMilli();
         });
@@ -94,6 +97,13 @@ public class NavBarSteps implements En {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.PERSONS_BUTTON);
           startTime = ZonedDateTime.now().toInstant().toEpochMilli();
+        });
+
+    When(
+        "^I click on the Configuration button from navbar$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.CONFIGURATION_BUTTON);
         });
 
     When(
@@ -179,7 +189,8 @@ public class NavBarSteps implements En {
                 webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(NEW_CASE_BUTTON);
                 break;
               case ("Contacts"):
-                webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(NEW_CONTACT_BUTTON);
+                webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
+                    NEW_CONTACT_PAGE_BUTTON);
                 break;
               case ("Events"):
                 webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(NEW_EVENT_BUTTON);

@@ -29,6 +29,7 @@ import java.util.Collections;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.AbstractSelect;
@@ -38,6 +39,7 @@ import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Month;
@@ -62,15 +64,16 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
+import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.NumberValidator;
+import de.symeda.sormas.ui.utils.PersonDependentEditForm;
 import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 
-public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> {
+public class ImmunizationCreationForm extends PersonDependentEditForm<ImmunizationDto> {
 
 	private static final String OVERWRITE_IMMUNIZATION_MANAGEMENT_STATUS = "overwriteImmunizationManagementStatus";
 	private static final String RESPONSIBLE_JURISDICTION_HEADING_LOC = "responsibleJurisdictionHeadingLoc";
@@ -91,7 +94,7 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		+ fluidRowLocs(ImmunizationDto.VALID_FROM, ImmunizationDto.VALID_UNTIL)
 		+ fluidRowLocs(VACCINATION_HEADING_LOC)
 		+ fluidRow(fluidColumnLoc(6, 0, ImmunizationDto.NUMBER_OF_DOSES))
-		+ fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME)
+		+ LayoutUtil.fluidRowLocs(6, PersonDto.FIRST_NAME, 4, PersonDto.LAST_NAME, 2, PERSON_SEARCH_LOC)
 		+ fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
 		fluidRowLocs(PersonDto.SEX))
 		+ fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER)
@@ -194,8 +197,21 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 
 		addCustomField(PersonDto.FIRST_NAME, String.class, TextField.class);
 		addCustomField(PersonDto.LAST_NAME, String.class, TextField.class);
-		addCustomField(PersonDto.NATIONAL_HEALTH_ID, String.class, TextField.class);
-		addCustomField(PersonDto.PASSPORT_NUMBER, String.class, TextField.class);
+
+		Button searchPersonButton = createPersonSearchButton(PERSON_SEARCH_LOC);
+		getContent().addComponent(searchPersonButton, PERSON_SEARCH_LOC);
+
+		TextField nationalHealthIdField = addCustomField(PersonDto.NATIONAL_HEALTH_ID, String.class, TextField.class);
+		TextField passportNumberField = addCustomField(PersonDto.PASSPORT_NUMBER, String.class, TextField.class);
+		if (CountryHelper.isCountry(FacadeProvider.getConfigFacade().getCountryLocale(), CountryHelper.COUNTRY_CODE_GERMANY)) {
+			nationalHealthIdField.setVisible(false);
+		}
+		if (CountryHelper.isInCountries(
+			FacadeProvider.getConfigFacade().getCountryLocale(),
+			CountryHelper.COUNTRY_CODE_GERMANY,
+			CountryHelper.COUNTRY_CODE_FRANCE)) {
+			passportNumberField.setVisible(false);
+		}
 
 		birthDateDay = addCustomField(PersonDto.BIRTH_DATE_DD, Integer.class, ComboBox.class);
 		// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
@@ -420,6 +436,8 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 					PersonDto.PRESENT_CONDITION,
 					PersonDto.PHONE,
 					PersonDto.EMAIL_ADDRESS);
+
+				searchPersonButton.setVisible(false);
 			} else {
 				setRequired(true, PersonDto.FIRST_NAME, PersonDto.LAST_NAME, PersonDto.SEX);
 			}
@@ -512,5 +530,49 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 			.setImmunizationManagementStatus((ImmunizationManagementStatus) getField(ImmunizationDto.IMMUNIZATION_MANAGEMENT_STATUS).getValue());
 		immunizationDto.setImmunizationStatus((ImmunizationStatus) getField(ImmunizationDto.IMMUNIZATION_STATUS).getValue());
 		return immunizationDto;
+	}
+
+	@Override
+	public void setPerson(PersonDto person) {
+		if (person != null) {
+			((TextField) getField(PersonDto.FIRST_NAME)).setValue(person.getFirstName());
+			((TextField) getField(PersonDto.LAST_NAME)).setValue(person.getLastName());
+			((ComboBox) getField(PersonDto.BIRTH_DATE_YYYY)).setValue(person.getBirthdateYYYY());
+			((ComboBox) getField(PersonDto.BIRTH_DATE_MM)).setValue(person.getBirthdateMM());
+			((ComboBox) getField(PersonDto.BIRTH_DATE_DD)).setValue(person.getBirthdateDD());
+			((ComboBox) getField(PersonDto.SEX)).setValue(person.getSex());
+			((TextField) getField(PersonDto.NATIONAL_HEALTH_ID)).setValue(person.getNationalHealthId());
+			((TextField) getField(PersonDto.PASSPORT_NUMBER)).setValue(person.getPassportNumber());
+			((ComboBox) getField(PersonDto.PRESENT_CONDITION)).setValue(person.getPresentCondition());
+			((TextField) getField(PersonDto.PHONE)).setValue(person.getPhone());
+			((TextField) getField(PersonDto.EMAIL_ADDRESS)).setValue(person.getEmailAddress());
+		} else {
+			getField(PersonDto.FIRST_NAME).clear();
+			getField(PersonDto.LAST_NAME).clear();
+			getField(PersonDto.BIRTH_DATE_DD).clear();
+			getField(PersonDto.BIRTH_DATE_MM).clear();
+			getField(PersonDto.BIRTH_DATE_YYYY).clear();
+			getField(PersonDto.SEX).clear();
+			getField(PersonDto.NATIONAL_HEALTH_ID).clear();
+			getField(PersonDto.PASSPORT_NUMBER).clear();
+			getField(PersonDto.PRESENT_CONDITION).clear();
+			getField(PersonDto.PHONE).clear();
+			getField(PersonDto.EMAIL_ADDRESS).clear();
+		}
+	}
+
+	@Override
+	protected void enablePersonFields(Boolean enable) {
+		getField(PersonDto.FIRST_NAME).setEnabled(enable);
+		getField(PersonDto.LAST_NAME).setEnabled(enable);
+		getField(PersonDto.BIRTH_DATE_DD).setEnabled(enable);
+		getField(PersonDto.BIRTH_DATE_MM).setEnabled(enable);
+		getField(PersonDto.BIRTH_DATE_YYYY).setEnabled(enable);
+		getField(PersonDto.SEX).setEnabled(enable);
+		getField(PersonDto.NATIONAL_HEALTH_ID).setEnabled(enable);
+		getField(PersonDto.PASSPORT_NUMBER).setEnabled(enable);
+		getField(PersonDto.PRESENT_CONDITION).setEnabled(enable);
+		getField(PersonDto.PHONE).setEnabled(enable);
+		getField(PersonDto.EMAIL_ADDRESS).setEnabled(enable);
 	}
 }

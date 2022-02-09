@@ -42,4 +42,5 @@ public class Person {
   Boolean covidCodeDelivered;
   Address address;
   List<Object> personContactDetails;
+  String presentCondition;
 }
