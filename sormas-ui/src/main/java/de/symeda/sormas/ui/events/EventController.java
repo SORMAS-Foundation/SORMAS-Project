@@ -17,6 +17,10 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import com.vaadin.ui.TextArea;
+import com.vaadin.ui.VerticalLayout;
+import de.symeda.sormas.ui.utils.CssStyles;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
@@ -1118,19 +1122,24 @@ public class EventController {
 			return;
 		}
 
-		// Show an error when at least one selected case is not owned by this server because ownership has been handed over
+		// Show an error when at least one selected event is not owned by this server because ownership has been handed over
 		List<String> ownershipHandedOverUuids = FacadeProvider.getEventFacade().getEventUuidsWithOwnershipHandedOver(selectedUuids);
 		if (CollectionUtils.isNotEmpty(ownershipHandedOverUuids)) {
 			List<String> uuidsWithoutNotSharable =
 					selectedUuids.stream().filter(uuid -> !ownershipHandedOverUuids.contains(uuid)).collect(Collectors.toList());
 
+			TextArea notShareableListComponent = new TextArea("", new ArrayList<>(ownershipHandedOverUuids).toString());
+			notShareableListComponent.setWidthFull();
+			notShareableListComponent.setEnabled(false);
+			Label notSharableLabel = new Label(
+					String.format(I18nProperties.getString(Strings.errorExternalSurveillanceToolEventNotOwned), ownershipHandedOverUuids.size()),
+					ContentMode.HTML);
+			notSharableLabel.addStyleName(CssStyles.LABEL_WHITE_SPACE_NORMAL);
 			VaadinUiUtil.showConfirmationPopup(
 					I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
-					new Label(
-							String.format(
-									I18nProperties.getString(Strings.errorExternalSurveillanceToolEventNotOwned),
-									ownershipHandedOverUuids.size(),
-									ownershipHandedOverUuids.stream().map(DataHelper::getShortUuid).collect(Collectors.joining())), ContentMode.HTML),
+					new VerticalLayout(
+							notSharableLabel,
+							notShareableListComponent),
 					String.format(I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_excludeAndSend), uuidsWithoutNotSharable.size(), selectedUuids.size()),
 					I18nProperties.getCaption(Captions.actionCancel),
 					800,
