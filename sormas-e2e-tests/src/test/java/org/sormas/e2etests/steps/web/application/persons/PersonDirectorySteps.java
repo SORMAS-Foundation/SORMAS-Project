@@ -124,6 +124,12 @@ public class PersonDirectorySteps implements En {
         });
 
     When(
+        "I click on first person in person directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(By.cssSelector("[role='gridcell'] a"));
+        });
+
+    When(
         "I apply on the APPLY FILTERS button",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(

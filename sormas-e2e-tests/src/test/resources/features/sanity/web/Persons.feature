@@ -17,3 +17,19 @@ Feature: Edit Persons
     And I edit all Person primary contact details and save
     Then I click on save button from Edit Person page
     And I check that previous edited person is correctly displayed in Edit Person page
+
+@issue=SORDEV-8468
+  Scenario: Edit existent person and provoke errors
+    Given I log in with National User
+    When I click on the Persons button from navbar
+    And I click on first person in person directory
+    And I clear the mandatory Person fields
+    And I click on save button from Edit Person page
+    Then I check that an invalid data error message appears
+    When I fill in the home address, facility category and type
+    Then I check that the empty district highlight appears
+    When I click on new entry button from Contact Information section
+    And I enter an incorrect phone number and confirm
+    Then I check that an invalid data error message appears
+    When I enter an incorrect email and confirm
+    Then I check that an invalid data error message appears

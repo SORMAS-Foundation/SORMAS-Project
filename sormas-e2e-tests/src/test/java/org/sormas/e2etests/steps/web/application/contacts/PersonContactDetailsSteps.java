@@ -44,6 +44,22 @@ public class PersonContactDetailsSteps implements En {
               newGeneratedPerson.getPersonContactDetailsContactInformation());
           webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
         });
+
+    Then(
+        "I enter an incorrect phone number and confirm",
+        () -> {
+          selectTypeOfContactDetails("Phone");
+          fillContactInformationInput("ABCdef!@#.");
+          webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
+        });
+
+    Then(
+        "I enter an incorrect email and confirm",
+        () -> {
+          selectTypeOfContactDetails("Email");
+          fillContactInformationInput("1234567890");
+          webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
+        });
   }
 
   private void selectTypeOfContactDetails(String type) {

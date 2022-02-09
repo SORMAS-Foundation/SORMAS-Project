@@ -103,6 +103,10 @@ public class EditPersonPage {
           "//*[contains(text(),'The case person was added as an event participant to the selected event.')]");
   public static final By SEE_EVENTS_FOR_PERSON =
       By.cssSelector("div#See\\ events\\ for\\ this\\ person");
+  public static final By INVALID_DATA_ERROR =
+      By.cssSelector(".v-Notification.error.v-Notification-error");
+  public static final By ERROR_INDICATOR =
+      By.cssSelector(".v-errorindicator.v-errorindicator-info");
 
   public static By getByPersonUuid(String personUuid) {
     return By.cssSelector("a[title='" + personUuid + "']");
