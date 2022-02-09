@@ -9932,4 +9932,12 @@ ALTER TABLE subcontinent_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (438, 'Create missing history tables for entities #7113');
 
+ALTER TABLE testreport ADD COLUMN testeddiseasevariant varchar(255);
+ALTER TABLE testreport ADD COLUMN testeddiseasevariantdetails varchar(255);
+
+ALTER TABLE testreport_history ADD COLUMN testeddiseasevariant varchar(255);
+ALTER TABLE testreport_history ADD COLUMN testeddiseasevariantdetails varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (439, 'Add disease variant mapping to test reports #7209');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

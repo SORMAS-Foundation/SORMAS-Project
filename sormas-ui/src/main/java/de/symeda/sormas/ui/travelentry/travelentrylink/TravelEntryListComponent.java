@@ -34,7 +34,7 @@ public class TravelEntryListComponent extends SideComponent {
 			addCreateButton(
 				I18nProperties.getCaption(Captions.travelEntryNewTravelEntry),
 				UserRight.TRAVEL_ENTRY_CREATE,
-				e -> ControllerProvider.getTravelEntryController().create(travelEntryListCriteria.getCaseReferenceDto()));
+				e -> ControllerProvider.getTravelEntryController().create(travelEntryListCriteria));
 		}
 
 		TravelEntryList travelEntryList = new TravelEntryList(travelEntryListCriteria);
