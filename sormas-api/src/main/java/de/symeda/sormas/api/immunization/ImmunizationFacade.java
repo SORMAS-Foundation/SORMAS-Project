@@ -22,6 +22,7 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
@@ -54,4 +55,6 @@ public interface ImmunizationFacade extends CoreFacade<ImmunizationDto, Immuniza
 	boolean linkRecoveryImmunizationToSearchedCase(String specificCaseSearchValue, ImmunizationDto immunization);
 
 	List<ImmunizationDto> getByPersonUuids(List<String> uuids);
+
+	AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid);
 }

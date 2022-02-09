@@ -42,10 +42,10 @@ public class LabMessage extends DeletableAdo {
 	public static final String SAMPLE_MATERIAL = "sampleMaterial";
 	public static final String SAMPLE_MATERIAL_TEXT = "sampleMaterialText";
 	public static final String SPECIMEN_CONDITION = "specimenCondition";
-	public static final String TEST_LAB_NAME = "labName";
-	public static final String TEST_LAB_EXTERNAL_ID = "labExternalId";
-	public static final String TEST_LAB_POSTAL_CODE = "labPostalCode";
-	public static final String TEST_LAB_CITY = "labCity";
+	public static final String LAB_NAME = "labName";
+	public static final String LAB_EXTERNAL_ID = "labExternalId";
+	public static final String LAB_POSTAL_CODE = "labPostalCode";
+	public static final String LAB_CITY = "labCity";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
 	public static final String PERSON_LAST_NAME = "personLastName";
 	public static final String PERSON_SEX = "personSex";

@@ -57,6 +57,7 @@ import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -98,6 +99,8 @@ import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.deletionconfiguration.AbstractCoreEntityFacade;
+import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.ImmunizationEntityHelper;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
@@ -1064,6 +1067,11 @@ public class EventParticipantFacadeEjb
 		public EventParticipantFacadeEjbLocal(EventParticipantService service, UserService userService) {
 			super(service, userService);
 		}
+	}
+
+	@Override
+	public AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid) {
+		return getAutomaticDeletionInfo(uuid, CoreEntityType.EVENT_PARTICIPANT);
 	}
 
 	@Override

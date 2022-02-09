@@ -38,6 +38,7 @@ public enum ExportEntityName {
 	USER_ROLES("entityUserRoles", "user roles"),
 	DOCUMENTS("entityDocuments", "documents"),
 	DATA_DICTIONARY("entityDataDictionary", "data dictionary"),
+	DATA_PROTECTION_DICTIONARY("entityDataProtectionDictionary", "data protection dictionary"),
 	PERSONS("entityPersons", "persons");
 
 	private final String languageKey;

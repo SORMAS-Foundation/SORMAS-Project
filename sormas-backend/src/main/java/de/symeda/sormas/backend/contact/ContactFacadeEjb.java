@@ -89,6 +89,7 @@ import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.contact.MergeContactIndexDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
+import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataHelper;
@@ -143,6 +144,8 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.TaskCreationException;
+import de.symeda.sormas.backend.deletionconfiguration.AbstractCoreEntityFacade;
+import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.document.Document;
 import de.symeda.sormas.backend.document.DocumentService;
@@ -2063,6 +2066,11 @@ public class ContactFacadeEjb extends AbstractCoreFacadeEjb<Contact, ContactDto,
 	@Override
 	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		service.updateExternalData(externalData);
+	}
+
+	@Override
+	public AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid) {
+		return getAutomaticDeletionInfo(uuid, CoreEntityType.CONTACT);
 	}
 
 	@Override

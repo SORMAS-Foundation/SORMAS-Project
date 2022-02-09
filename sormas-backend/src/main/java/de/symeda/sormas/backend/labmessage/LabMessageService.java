@@ -73,8 +73,8 @@ public class LabMessageService extends AbstractDeletableAdoService<LabMessage> {
 					CriteriaBuilderHelper.unaccentedIlike(cb, labMessage.get(LabMessage.PERSON_FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, labMessage.get(LabMessage.PERSON_LAST_NAME), textFilter),
 					CriteriaBuilderHelper.ilike(cb, labMessage.get(LabMessage.PERSON_POSTAL_CODE), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, labMessage.get(LabMessage.TEST_LAB_NAME), textFilter),
-					CriteriaBuilderHelper.ilike(cb, labMessage.get(LabMessage.TEST_LAB_POSTAL_CODE), textFilter));
+					CriteriaBuilderHelper.unaccentedIlike(cb, labMessage.get(LabMessage.LAB_NAME), textFilter),
+					CriteriaBuilderHelper.ilike(cb, labMessage.get(LabMessage.LAB_POSTAL_CODE), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}

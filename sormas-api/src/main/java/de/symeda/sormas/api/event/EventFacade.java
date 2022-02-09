@@ -30,6 +30,7 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
@@ -89,4 +90,6 @@ public interface EventFacade extends CoreFacade<EventDto, EventIndexDto, EventRe
 	boolean hasRegionAndDistrict(String eventUuid);
 
 	boolean hasAnyEventParticipantWithoutJurisdiction(String eventUuid);
+
+	AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid);
 }

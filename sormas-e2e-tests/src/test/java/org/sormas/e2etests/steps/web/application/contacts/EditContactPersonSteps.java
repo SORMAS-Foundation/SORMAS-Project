@@ -91,6 +91,8 @@ public class EditContactPersonSteps implements En {
           fillExternalToken(newGeneratedPerson.getExternalToken());
           fillExternalToken(newGeneratedPerson.getExternalToken());
           selectTypeOfOccupation(newGeneratedPerson.getTypeOfOccupation());
+          TimeUnit.SECONDS.sleep(3);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           selectStaffOfArmedForces(newGeneratedPerson.getStaffOfArmedForces());
           selectRegion(newGeneratedPerson.getRegion());
           selectDistrict(newGeneratedPerson.getDistrict());

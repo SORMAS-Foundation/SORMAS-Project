@@ -10,6 +10,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.Captions;
@@ -28,6 +29,8 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.deletionconfiguration.AbstractCoreEntityFacade;
+import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
@@ -188,6 +191,11 @@ public class TravelEntryFacadeEjb
 		pseudonymizer.pseudonymizeDtoCollection(TravelEntryListEntryDto.class, entries, TravelEntryListEntryDto::isInJurisdiction, null);
 
 		return entries;
+	}
+
+	@Override
+	public AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid) {
+		return getAutomaticDeletionInfo(uuid, CoreEntityType.TRAVEL_ENTRY);
 	}
 
 	@Override

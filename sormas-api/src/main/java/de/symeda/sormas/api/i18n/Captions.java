@@ -17,6 +17,7 @@ public interface Captions {
 	String aboutChangelog = "aboutChangelog";
 	String aboutCopyright = "aboutCopyright";
 	String aboutDataDictionary = "aboutDataDictionary";
+	String aboutDataProtectionDictionary = "aboutDataProtectionDictionary";
 	String aboutDocuments = "aboutDocuments";
 	String aboutExternalSurveillanceToolGateway = "aboutExternalSurveillanceToolGateway";
 	String aboutLabMessageAdapter = "aboutLabMessageAdapter";

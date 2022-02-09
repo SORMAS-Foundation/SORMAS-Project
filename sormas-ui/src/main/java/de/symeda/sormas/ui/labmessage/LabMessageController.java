@@ -493,7 +493,7 @@ public class LabMessageController {
 		LabMessageDto labMessageDto,
 		EventParticipantDto eventParticipant,
 		Window window) {
-		EventParticipantEditForm createForm = new EventParticipantEditForm(eventDto, false, eventParticipant.getPerson().isPseudonymized());
+		EventParticipantEditForm createForm = new EventParticipantEditForm(eventDto, false, eventParticipant.getPerson().isPseudonymized(), true);
 		createForm.setValue(eventParticipant);
 		final CommitDiscardWrapperComponent<EventParticipantEditForm> createComponent = new CommitDiscardWrapperComponent<>(
 			createForm,

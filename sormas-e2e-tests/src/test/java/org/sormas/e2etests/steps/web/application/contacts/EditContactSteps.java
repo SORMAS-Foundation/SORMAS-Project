@@ -48,6 +48,7 @@ public class EditContactSteps implements En {
   public static Contact collectedContact;
   public static QuarantineOrder aQuarantineOrder;
   public static Contact editedContact;
+  public static Contact aContact;
   public static final String userDirPath = System.getProperty("user.dir");
 
   @Inject
@@ -263,6 +264,10 @@ public class EditContactSteps implements En {
                   "relationshipWithCase",
                   "descriptionOfHowContactTookPlace"));
         });
+
+    When(
+        "I collect the contact person UUID displayed on Edit contact page",
+        () -> aContact = collectContactPersonUuid());
   }
 
   private void selectContactClassification(String classification) {
@@ -626,5 +631,10 @@ public class EditContactSteps implements En {
 
   private void fillExtraComment(String extraComment) {
     webDriverHelpers.fillInAndLeaveWebElement(EditContactPage.EXTRA_COMMENT_TEXTAREA, extraComment);
+  }
+
+  private Contact collectContactPersonUuid() {
+    webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 40);
+    return Contact.builder().uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT)).build();
   }
 }

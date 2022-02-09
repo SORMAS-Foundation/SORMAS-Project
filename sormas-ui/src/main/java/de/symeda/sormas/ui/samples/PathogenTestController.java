@@ -279,7 +279,7 @@ public class PathogenTestController {
 				showChangeAssociatedSampleResultDialog(dto, null);
 			} else if (PathogenTestResultType.POSITIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
 				if (equalDisease) {
-					if (!ContactStatus.CONVERTED.equals(contact.getContactStatus())) {
+					if (contact.getResultingCase() == null && !ContactStatus.CONVERTED.equals(contact.getContactStatus())) {
 						showConvertContactToCaseDialog(contact, converted -> {
 							handleCaseCreationFromContactOrEventParticipant(converted, dto);
 						});

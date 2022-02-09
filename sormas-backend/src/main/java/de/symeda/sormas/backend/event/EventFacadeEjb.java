@@ -64,6 +64,7 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDetailedReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -95,6 +96,8 @@ import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.deletionconfiguration.AbstractCoreEntityFacade;
+import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -1282,6 +1285,11 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	public Boolean isEventEditAllowed(String eventUuid) {
 		Event event = service.getByUuid(eventUuid);
 		return service.isEventEditAllowed(event);
+	}
+
+	@Override
+	public AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid) {
+		return getAutomaticDeletionInfo(uuid, CoreEntityType.EVENT);
 	}
 
 	@LocalBean

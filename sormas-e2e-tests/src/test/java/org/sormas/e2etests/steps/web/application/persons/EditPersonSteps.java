@@ -107,6 +107,8 @@ public class EditPersonSteps implements En {
           selectFacilityType(newGeneratedPerson.getFacilityType());
           selectFacility(newGeneratedPerson.getFacility());
           fillFacilityNameAndDescription(newGeneratedPerson.getFacilityNameAndDescription());
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           fillStreet(newGeneratedPerson.getStreet());
           fillHouseNumber(newGeneratedPerson.getHouseNumber());
           fillAdditionalInformation(newGeneratedPerson.getAdditionalInformation());

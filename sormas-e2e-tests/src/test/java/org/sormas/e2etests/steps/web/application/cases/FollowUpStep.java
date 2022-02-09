@@ -82,7 +82,7 @@ public class FollowUpStep implements En {
           fillComments(visit.getComments(), SYMPTOMS_COMMENTS_INPUT);
           selectFirstSymptom(visit.getFirstSymptom(), FIRST_SYMPTOM_COMBOBOX);
           fillDateOfSymptoms(visit.getDateOfSymptom());
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_VISIT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
 
     When(
@@ -112,8 +112,17 @@ public class FollowUpStep implements En {
     When(
         "I save the Visit data",
         () -> {
-          webDriverHelpers.scrollToElement(SAVE_VISIT_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_VISIT_BUTTON);
+          webDriverHelpers.scrollToElement(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+        });
+
+    When(
+        "I save the Symptoms data",
+        () -> {
+          webDriverHelpers.scrollToElement(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
 
     When(
@@ -140,7 +149,53 @@ public class FollowUpStep implements En {
           webDriverHelpers.clickOnWebElementBySelector(CLEAR_ALL);
           TimeUnit.SECONDS.sleep(1);
           webDriverHelpers.clickWebElementByText(OPTION_FOR_SET_BUTTONS, parameter);
+        });
+
+    When(
+        "I fill specific data of symptoms with ([^\"]*) option to all Clinical Signs and Symptoms",
+        (String parameter) -> {
+          visit = followUpVisitService.buildTemperatureOnlySymptoms("36.6");
+          selectCurrentTemperature(visit.getCurrentBodyTemperature());
+          selectSourceOfTemperature(visit.getSourceOfBodyTemperature());
+          webDriverHelpers.clickOnWebElementBySelector(CLEAR_ALL);
+          TimeUnit.SECONDS.sleep(1);
+          webDriverHelpers.clickWebElementByText(OPTION_FOR_SET_BUTTONS, parameter);
           TimeUnit.SECONDS.sleep(2);
+        });
+
+    When(
+        "I set Other clinican symptomps to ([^\"]*)",
+        (String option) -> {
+          webDriverHelpers.clickWebElementByText(OTHER_OPTIONS, option);
+        });
+
+    When(
+        "I check if Specify Other Symptoms field is available and I fill it",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SPECIFY_OTHER_SYMPTOMS);
+          webDriverHelpers.fillInWebElement(SPECIFY_OTHER_SYMPTOMS, faker.book().title());
+        });
+
+    When(
+        "I set Feeling Ill Symptoms to ([^\"]*)",
+        (String parameter) -> setFeelingIllSymptoms(parameter));
+
+    When(
+        "I set Chills and Sweats Symptoms to ([^\"]*)",
+        (String parameter) -> setChillsSweatsSymptoms(parameter));
+
+    When("I set Fever Symptoms to ([^\"]*)", (String parameter) -> setFeverSymptoms(parameter));
+
+    When(
+        "I set First Symptom as ([^\"]*)",
+        (String parameter) -> {
+          webDriverHelpers.selectFromCombobox(FIRST_SYMPTOM_COMBOBOX, parameter);
+        });
+
+    When(
+        "I set Date of symptom onset",
+        () -> {
+          fillDateOfSymptoms(LocalDate.now());
         });
 
     When(
@@ -242,6 +297,18 @@ public class FollowUpStep implements En {
   private void fillDateOfSymptoms(LocalDate dateOfSymptom) {
     webDriverHelpers.clearAndFillInWebElement(
         DATE_OF_ONSET_INPUT, DATE_FORMATTER.format(dateOfSymptom));
+  }
+
+  private void setFeelingIllSymptoms(String parameter) {
+    webDriverHelpers.clickWebElementByText(FEELING_ILL_OPTIONS, parameter.toUpperCase());
+  }
+
+  private void setChillsSweatsSymptoms(String parameter) {
+    webDriverHelpers.clickWebElementByText(CHILLS_SWEATS_OPTIONS, parameter.toUpperCase());
+  }
+
+  private void setFeverSymptoms(String parameter) {
+    webDriverHelpers.clickWebElementByText(FEVER_OPTIONS, parameter.toUpperCase());
   }
 
   private Visit collectTestResultsData() {

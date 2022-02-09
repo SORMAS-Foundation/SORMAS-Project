@@ -51,6 +51,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventGroupReferenceDto;
@@ -84,6 +85,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.components.automaticdeletion.AutomaticDeletionLabel;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 
 public class EventController {
@@ -190,7 +192,8 @@ public class EventController {
 
 		EventSelectionField eventSelect = new EventSelectionField(
 			caseDataDtos.stream().findFirst().get().getDisease(),
-			I18nProperties.getString(Strings.infoPickOrCreateEventForCases), null);
+			I18nProperties.getString(Strings.infoPickOrCreateEventForCases),
+			null);
 		eventSelect.setWidth(1100, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(eventSelect);
@@ -221,7 +224,8 @@ public class EventController {
 
 		EventSelectionField eventSelect = new EventSelectionField(
 			contactDtos.stream().findFirst().get().getDisease(),
-			I18nProperties.getString(Strings.infoPickOrCreateEventForContact), null);
+			I18nProperties.getString(Strings.infoPickOrCreateEventForContact),
+			null);
 		eventSelect.setWidth(1100, Sizeable.Unit.PIXELS);
 
 		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(eventSelect);
@@ -729,12 +733,18 @@ public class EventController {
 	public CommitDiscardWrapperComponent<EventDataForm> getEventDataEditComponent(final String eventUuid, Consumer<EventStatus> saveCallback) {
 
 		EventDto event = findEvent(eventUuid);
+		AutomaticDeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getEventFacade().getAutomaticDeletionInfo(eventUuid);
+
 		EventDataForm eventEditForm = new EventDataForm(false, event.isPseudonymized());
 		eventEditForm.setValue(event);
 		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<EventDataForm>(
 			eventEditForm,
 			UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EDIT),
 			eventEditForm.getFieldGroup());
+
+		if (automaticDeletionInfoDto != null) {
+			editView.getButtonsPanel().addComponentAsFirst(new AutomaticDeletionLabel(automaticDeletionInfoDto));
+		}
 
 		editView.addCommitListener(() -> {
 			if (!eventEditForm.getFieldGroup().isModified()) {
