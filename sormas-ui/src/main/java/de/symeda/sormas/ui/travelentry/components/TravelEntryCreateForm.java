@@ -29,6 +29,7 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -170,8 +171,17 @@ public class TravelEntryCreateForm extends PersonDependentEditForm<TravelEntryDt
 		Button searchPersonButton = createPersonSearchButton(PERSON_SEARCH_LOC);
 		getContent().addComponent(searchPersonButton, PERSON_SEARCH_LOC);
 
-		addCustomField(PersonDto.NATIONAL_HEALTH_ID, String.class, TextField.class);
-		addCustomField(PersonDto.PASSPORT_NUMBER, String.class, TextField.class);
+		TextField nationalHealthIdField = addCustomField(PersonDto.NATIONAL_HEALTH_ID, String.class, TextField.class);
+		TextField passportNumberField = addCustomField(PersonDto.PASSPORT_NUMBER, String.class, TextField.class);
+		if (CountryHelper.isCountry(FacadeProvider.getConfigFacade().getCountryLocale(), CountryHelper.COUNTRY_CODE_GERMANY)) {
+			nationalHealthIdField.setVisible(false);
+		}
+		if (CountryHelper.isInCountries(
+			FacadeProvider.getConfigFacade().getCountryLocale(),
+			CountryHelper.COUNTRY_CODE_GERMANY,
+			CountryHelper.COUNTRY_CODE_FRANCE)) {
+			passportNumberField.setVisible(false);
+		}
 
 		birthDateDay = addCustomField(PersonDto.BIRTH_DATE_DD, Integer.class, ComboBox.class);
 		// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
@@ -306,31 +316,31 @@ public class TravelEntryCreateForm extends PersonDependentEditForm<TravelEntryDt
 		addValueChangeListener(e -> {
 			if (personDto != null) {
 				setVisible(
-						false,
-						PersonDto.FIRST_NAME,
-						PersonDto.LAST_NAME,
-						PersonDto.SEX,
-						PersonDto.NATIONAL_HEALTH_ID,
-						PersonDto.PASSPORT_NUMBER,
-						PersonDto.BIRTH_DATE_DD,
-						PersonDto.BIRTH_DATE_MM,
-						PersonDto.BIRTH_DATE_YYYY,
-						PersonDto.PRESENT_CONDITION,
-						PersonDto.PHONE,
-						PersonDto.EMAIL_ADDRESS);
+					false,
+					PersonDto.FIRST_NAME,
+					PersonDto.LAST_NAME,
+					PersonDto.SEX,
+					PersonDto.NATIONAL_HEALTH_ID,
+					PersonDto.PASSPORT_NUMBER,
+					PersonDto.BIRTH_DATE_DD,
+					PersonDto.BIRTH_DATE_MM,
+					PersonDto.BIRTH_DATE_YYYY,
+					PersonDto.PRESENT_CONDITION,
+					PersonDto.PHONE,
+					PersonDto.EMAIL_ADDRESS);
 				setReadOnly(
-						false,
-						PersonDto.FIRST_NAME,
-						PersonDto.LAST_NAME,
-						PersonDto.SEX,
-						PersonDto.NATIONAL_HEALTH_ID,
-						PersonDto.PASSPORT_NUMBER,
-						PersonDto.BIRTH_DATE_DD,
-						PersonDto.BIRTH_DATE_MM,
-						PersonDto.BIRTH_DATE_YYYY,
-						PersonDto.PRESENT_CONDITION,
-						PersonDto.PHONE,
-						PersonDto.EMAIL_ADDRESS);
+					false,
+					PersonDto.FIRST_NAME,
+					PersonDto.LAST_NAME,
+					PersonDto.SEX,
+					PersonDto.NATIONAL_HEALTH_ID,
+					PersonDto.PASSPORT_NUMBER,
+					PersonDto.BIRTH_DATE_DD,
+					PersonDto.BIRTH_DATE_MM,
+					PersonDto.BIRTH_DATE_YYYY,
+					PersonDto.PRESENT_CONDITION,
+					PersonDto.PHONE,
+					PersonDto.EMAIL_ADDRESS);
 
 				searchPersonButton.setVisible(false);
 			} else {
