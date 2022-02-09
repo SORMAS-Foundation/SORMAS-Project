@@ -18,6 +18,7 @@ Feature: Edit Persons
     Then I click on save button from Edit Person page
     And I check that previous edited person is correctly displayed in Edit Person page
 
+    @issue=SORDEV-8469
   Scenario: Form card navigation in Edit Person Directory
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
