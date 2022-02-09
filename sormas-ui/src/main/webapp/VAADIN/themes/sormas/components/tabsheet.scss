@@ -20,7 +20,7 @@
           padding-left: 8px;
           padding-right: 8px;
           margin-top: -3px;
-          border-bottom: none;
+         /* border-bottom: none;*/
           border-top: $v-border; 
           border-top-width: 3px;
           border-top-color: transparent;
@@ -44,7 +44,7 @@
 
         &.selected {
           .v-caption {
-            border-top-color: $v-selection-color;
+           /* border-top-color: $v-selection-color;*/
             font-size: 16px;
           }
         } 
@@ -60,3 +60,4 @@
     }
   }
 }
+

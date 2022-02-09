@@ -61,8 +61,10 @@ public class CampaignFormMetaService extends AdoServiceWithUserFilter<CampaignFo
 		Root<Campaign> campaignRoot = cq.from(Campaign.class);
 		Join<Campaign, CampaignFormMeta> campaignFormMetaJoin = campaignRoot.join(Campaign.CAMPAIGN_FORM_METAS);
 		Predicate filter = cb.equal(campaignRoot.get(Campaign.UUID), uuid);
+		//TODO: post campaign implementations
 		cq = cq.where(filter);
 		cq.multiselect(campaignFormMetaJoin.get(CampaignFormMeta.UUID), campaignFormMetaJoin.get(CampaignFormMeta.FORM_NAME));
+		System.out.println("SSSSSSSSSSSSSSSSSSSSSSSSSSdSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"+cq.toString());
 		return em.createQuery(cq).getResultList();
 	}
 }

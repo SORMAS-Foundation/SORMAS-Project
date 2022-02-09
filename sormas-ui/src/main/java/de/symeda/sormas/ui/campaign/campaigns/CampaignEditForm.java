@@ -31,11 +31,14 @@ import de.symeda.sormas.ui.UserProvider;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.icons.VaadinIcons;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.util.converter.Converter;
@@ -63,20 +66,27 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 	private static final String STATUS_CHANGE = "statusChange";
 	private static final String CAMPAIGN_BASIC_HEADING_LOC = "campaignBasicHeadingLoc";
 	private static final String USAGE_INFO = "usageInfo";
+	private static final String ROUND_COMPONETS = "roundComponet";
+	private static final String CAMPAIGN_TYPE_LOC = "typeLocation";
 	private static final String CAMPAIGN_DATA_LOC = "campaignDataLoc";
 	private static final String CAMPAIGN_DASHBOARD_LOC = "campaignDashboardLoc";
 	private static final String SPACE_LOC = "spaceLoc";
+	private static final String SPACE_LOCX = "spaceLocx";
 	
 	private OptionGroup clusterfieldx;
 
 	private static final String HTML_LAYOUT = loc(CAMPAIGN_BASIC_HEADING_LOC)
 		+ fluidRowLocs(CampaignDto.UUID, CampaignDto.CREATING_USER)
-		+ fluidRowLocs(CampaignDto.START_DATE, CampaignDto.END_DATE)
 		+ fluidRowLocs(CampaignDto.NAME) 
+		+ fluidRowLocs(CampaignDto.START_DATE, CampaignDto.END_DATE)
 		+ fluidRowLocs(CampaignDto.CLUSTER)
 		+ fluidRowLocs(CampaignDto.DESCRIPTION)
-		+ fluidRowLocs(CampaignDto.CAMPAIGN_TYPES)
+		+ fluidRowLocs(SPACE_LOCX)
+		//+ fluidRowLocs(CampaignDto.CAMPAIGN_TYPES)
 		+ fluidRowLocs(USAGE_INFO)
+		+ fluidRowLocs(CAMPAIGN_TYPE_LOC)
+		
+		+ fluidRowLocs(ROUND_COMPONETS)
 		+ fluidRowLocs(CAMPAIGN_DATA_LOC)
 		+ fluidRowLocs(CAMPAIGN_DASHBOARD_LOC)
 		+ fluidRowLocs(SPACE_LOC);
@@ -163,24 +173,27 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 		TextArea description = addField(CampaignDto.DESCRIPTION, TextArea.class);
 		description.setRows(6);
 		
+		
+		
+		final Label spacerx = new Label();
+		spacerx.setHeight("10%");
+		getContent().addComponent(spacerx, SPACE_LOCX);
+	/*	
 		clusterfieldx = new OptionGroup();
-		
-		clusterfieldx.setDescription("Campaign Switch");
-		
 		clusterfieldx = addField(CampaignDto.CAMPAIGN_TYPES, OptionGroup.class);
 		CssStyles.style(clusterfieldx, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
 		clusterfieldx.addItem("Pre-Campaign");
-		clusterfieldx.addItem("Intra-Campign");
-		clusterfieldx.addItem("Post-Campign");
-		clusterfieldx.setEnabled(false);
-
+		clusterfieldx.addItem("Intra-Campaign");
+		clusterfieldx.addItem("Post-Campaign");
+		//clusterfieldx.setDescription("Campaign Switch");
+		//clusterfieldx.setEnabled(true);
+		*/
 		setReadOnly(true, CampaignDto.UUID, CampaignDto.CREATING_USER);
 		setVisible(!isCreateForm, CampaignDto.UUID, CampaignDto.CREATING_USER);
 
-		setRequired(true, CampaignDto.UUID, CampaignDto.CREATING_USER, CampaignDto.START_DATE, CampaignDto.END_DATE, CampaignDto.CLUSTER, CampaignDto.CAMPAIGN_TYPES);
+		setRequired(true, CampaignDto.UUID, CampaignDto.NAME, CampaignDto.CREATING_USER, CampaignDto.START_DATE, CampaignDto.END_DATE, CampaignDto.CLUSTER);
 
 		FieldHelper.addSoftRequiredStyle(description);
-
 		final HorizontalLayout usageLayout = new HorizontalLayout();
 		usageLayout.setWidthFull();
 		Label usageLabel = new Label(
@@ -191,12 +204,39 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 		usageLayout.setSpacing(true);
 		usageLayout.setMargin(new MarginInfo(true, false, true, false));
 		getContent().addComponent(usageLayout, USAGE_INFO);
+		
+		
+		final HorizontalLayout layoutParent = new HorizontalLayout();
+		layoutParent.setWidthFull();
+		
+		
+		//start of a child campaign
+		TabSheet tabsheetParent = new TabSheet();
+		layoutParent.addComponent(tabsheetParent);
+		
+		
+		VerticalLayout parentTab1 = new VerticalLayout();
+		final HorizontalLayout layout = new HorizontalLayout();
+		layout.setWidthFull();
+		
+		
+		TabSheet tabsheet = new TabSheet();
+		layout.addComponent(tabsheet);
 
+		// Create the first tab
+		VerticalLayout tab1 = new VerticalLayout();
+		
 		campaignFormsGridComponent = new CampaignFormsGridComponent(
-			this.campaignDto == null ? Collections.EMPTY_LIST : new ArrayList<>(campaignDto.getCampaignFormMetas()),
-			FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences());
-		getContent().addComponent(campaignFormsGridComponent, CAMPAIGN_DATA_LOC);
+				this.campaignDto == null ? Collections.EMPTY_LIST : new ArrayList<>(campaignDto.getCampaignFormMetas()),
+				FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences());
+			getContent().addComponent(campaignFormsGridComponent, CAMPAIGN_DATA_LOC);
+		tab1.addComponent(campaignFormsGridComponent);
+		tab1.setCaption("Pre Campaign-Round Forms");
+		tabsheet.addTab(tab1);
+		
 
+		// This tab gets its caption from the component caption
+		VerticalLayout tab2 = new VerticalLayout();
 		final List<CampaignDashboardElement> campaignDashboardElements = FacadeProvider.getCampaignFacade().getCampaignDashboardElements(null);
 		campaignDashboardGridComponent = new CampaignDashboardElementsGridComponent(
 			this.campaignDto == null
@@ -204,7 +244,146 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 				: FacadeProvider.getCampaignFacade().getCampaignDashboardElements(campaignDto.getUuid()),
 			campaignDashboardElements);
 		getContent().addComponent(campaignDashboardGridComponent, CAMPAIGN_DASHBOARD_LOC);
+		tab2.addComponent(campaignDashboardGridComponent);
+		tab2.setCaption("Pre Campaign-Round Dashboard");
+		tabsheet.addTab(tab2);
 
+
+		
+		getContent().addComponent(layout, ROUND_COMPONETS);
+		
+		
+		
+		
+		parentTab1.addComponent(layout);
+		parentTab1.setCaption("Pre-Campaign");
+		tabsheetParent.addTab(parentTab1);
+		
+		
+		
+		//stop
+		
+		
+
+		
+
+		//start of a child campaign
+		
+		
+		VerticalLayout parentTab3 = new VerticalLayout();
+		
+		final HorizontalLayout layoutPost = new HorizontalLayout();
+		layoutPost.setWidthFull();
+		
+		
+		TabSheet tabsheetPost = new TabSheet();
+		layoutPost.addComponent(tabsheetPost);
+
+		// Create the first tab
+		VerticalLayout tab1Post = new VerticalLayout();
+		
+		campaignFormsGridComponent = new CampaignFormsGridComponent(
+				this.campaignDto == null ? Collections.EMPTY_LIST : new ArrayList<>(campaignDto.getCampaignFormMetas()),
+				FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences());
+			getContent().addComponent(campaignFormsGridComponent, CAMPAIGN_DATA_LOC);
+			tab1Post.addComponent(campaignFormsGridComponent);
+			tab1Post.setCaption("Intra Campaign-Round Forms");
+			tabsheetPost.addTab(tab1Post);
+		
+
+		// This tab gets its caption from the component caption
+		VerticalLayout tab2Post = new VerticalLayout();
+		final List<CampaignDashboardElement> campaignDashboardElementsxx = FacadeProvider.getCampaignFacade().getCampaignDashboardElements(null);
+		campaignDashboardGridComponent = new CampaignDashboardElementsGridComponent(
+			this.campaignDto == null
+				? Collections.EMPTY_LIST
+				: FacadeProvider.getCampaignFacade().getCampaignDashboardElements(campaignDto.getUuid()),
+			campaignDashboardElementsxx);
+		getContent().addComponent(campaignDashboardGridComponent, CAMPAIGN_DASHBOARD_LOC);
+		tab2Post.addComponent(campaignDashboardGridComponent);
+		tab2Post.setCaption("Intra Campaign-Round Dashboard");
+		tabsheetPost.addTab(tab2Post);
+
+
+		
+		getContent().addComponent(layoutPost, ROUND_COMPONETS);
+		
+		
+		
+		
+		parentTab3.addComponent(layoutPost);
+		parentTab3.setCaption("Intra-Campaign");
+		tabsheetParent.addTab(parentTab3);
+		
+		//stop
+		
+		
+		
+		
+		
+		
+
+		//start of a child campaign
+		
+		
+		VerticalLayout parentTab2 = new VerticalLayout();
+		
+		final HorizontalLayout layoutIntra = new HorizontalLayout();
+		layoutIntra.setWidthFull();
+		
+		
+		TabSheet tabsheetIntra = new TabSheet();
+		layoutIntra.addComponent(tabsheetIntra);
+
+		// Create the first tab
+		VerticalLayout tab1Intra = new VerticalLayout();
+		
+		campaignFormsGridComponent = new CampaignFormsGridComponent(
+				this.campaignDto == null ? Collections.EMPTY_LIST : new ArrayList<>(campaignDto.getCampaignFormMetas()),
+				FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences());
+			getContent().addComponent(campaignFormsGridComponent, CAMPAIGN_DATA_LOC);
+			tab1Intra.addComponent(campaignFormsGridComponent);
+			tab1Intra.setCaption("Post Campaign-Round Forms");
+		tabsheetIntra.addTab(tab1Intra);
+		
+
+		// This tab gets its caption from the component caption
+		VerticalLayout tab2Intra = new VerticalLayout();
+		final List<CampaignDashboardElement> campaignDashboardElementsx = FacadeProvider.getCampaignFacade().getCampaignDashboardElements(null);
+		campaignDashboardGridComponent = new CampaignDashboardElementsGridComponent(
+			this.campaignDto == null
+				? Collections.EMPTY_LIST
+				: FacadeProvider.getCampaignFacade().getCampaignDashboardElements(campaignDto.getUuid()),
+			campaignDashboardElementsx);
+		getContent().addComponent(campaignDashboardGridComponent, CAMPAIGN_DASHBOARD_LOC);
+		tab2Intra.addComponent(campaignDashboardGridComponent);
+		tab2Intra.setCaption("Post Campaign-Round Dashboard");
+		tabsheetIntra.addTab(tab2Intra);
+
+
+		
+		getContent().addComponent(layoutIntra, ROUND_COMPONETS);
+		
+		
+		
+		
+		parentTab2.addComponent(layoutIntra);
+		parentTab2.setCaption("Post-Campaign");
+		tabsheetParent.addTab(parentTab2);
+		
+		//stop
+		
+		//style todo
+		tabsheetParent.setPrimaryStyleName("view-header"); 
+		
+
+		getContent().addComponent(layoutParent, CAMPAIGN_TYPE_LOC);
+		
+		
+		
+		
+		
+		
 		final Label spacer = new Label();
 		getContent().addComponent(spacer, SPACE_LOC);
 	}
