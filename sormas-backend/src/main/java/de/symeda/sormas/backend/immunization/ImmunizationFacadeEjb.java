@@ -22,7 +22,6 @@ import java.util.Comparator;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
-import java.util.Optional;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
@@ -31,6 +30,9 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
+import javax.inject.Inject;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -43,6 +45,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -73,9 +76,8 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.contact.ContactService;
-import de.symeda.sormas.backend.event.EventParticipantService;
-import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
+import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
+import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
@@ -107,18 +109,16 @@ import de.symeda.sormas.backend.vaccination.Vaccination;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb.VaccinationFacadeEjbLocal;
 
 @Stateless(name = "ImmunizationFacade")
-public class ImmunizationFacadeEjb implements ImmunizationFacade {
+public class ImmunizationFacadeEjb
+	extends AbstractCoreFacadeEjb<Immunization, ImmunizationDto, ImmunizationIndexDto, ImmunizationReferenceDto, ImmunizationService, ImmunizationCriteria>
+	implements ImmunizationFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(ImmunizationFacadeEjb.class);
 
 	@EJB
-	private ImmunizationService immunizationService;
-	@EJB
 	private DirectoryImmunizationService directoryImmunizationService;
 	@EJB
 	private PersonService personService;
-	@EJB
-	private UserService userService;
 	@EJB
 	private RegionService regionService;
 	@EJB
@@ -133,10 +133,6 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	private CountryService countryService;
 	@EJB
 	private VaccinationFacadeEjbLocal vaccinationFacade;
-	@EJB
-	private ContactService contactService;
-	@EJB
-	private EventParticipantService eventParticipantService;
 	@EJB
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
 	@EJB
@@ -155,8 +151,14 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	private SormasToSormasContactFacadeEjb.SormasToSormasContactFacadeEjbLocal sormasToSormasContactFacade;
 	@EJB
 	private SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal sormasToSormasEventFacadeEjbLocal;
-	@EJB
-	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+
+	public ImmunizationFacadeEjb() {
+	}
+
+	@Inject
+	public ImmunizationFacadeEjb(ImmunizationService service, UserService userService) {
+		super(Immunization.class, ImmunizationDto.class, service, userService);
+	}
 
 	public static ImmunizationReferenceDto toReferenceDto(Immunization entity) {
 		if (entity == null) {
@@ -172,281 +174,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		return new ImmunizationReferenceDto(dto.getUuid(), dto.toString(), dto.getExternalId());
 	}
 
-	@Override
-	public ImmunizationDto getByUuid(String uuid) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefaultWithInaccessibleValuePlaceHolder(userService::hasRight);
-		return convertToDto(immunizationService.getByUuid(uuid), pseudonymizer);
-	}
-
-	@Override
-	public void archive(String uuid) {
-		Immunization immunization = immunizationService.getByUuid(uuid);
-		if (immunization != null) {
-			immunization.setArchived(true);
-			immunizationService.ensurePersisted(immunization);
-		}
-	}
-
-	@Override
-	public void dearchive(String uuid) {
-		Immunization immunization = immunizationService.getByUuid(uuid);
-		if (immunization != null) {
-			immunization.setArchived(false);
-			immunizationService.ensurePersisted(immunization);
-		}
-	}
-
-	@Override
-	public List<ImmunizationDto> getAllAfter(Date date) {
-		return getAllAfter(date, null, null);
-	}
-
-	@Override
-	public List<ImmunizationDto> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefaultWithInaccessibleValuePlaceHolder(userService::hasRight);
-		return immunizationService.getAllActiveAfter(date, batchSize, lastSynchronizedUuid)
-			.stream()
-			.map(c -> convertToDto(c, pseudonymizer))
-			.collect(Collectors.toList());
-	}
-
-	@Override
-	public List<ImmunizationDto> getByUuids(List<String> uuids) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefaultWithInaccessibleValuePlaceHolder(userService::hasRight);
-		return immunizationService.getByUuids(uuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
-	}
-
-	@Override
-	public List<String> getAllUuids() {
-		return immunizationService.getAllUuids();
-	}
-
-	@Override
-	public List<String> getArchivedUuidsSince(Date since) {
-
-		if (userService.getCurrentUser() == null) {
-			return Collections.emptyList();
-		}
-
-		return immunizationService.getArchivedUuidsSince(since);
-	}
-
-	@Override
-	public List<String> getDeletedUuidsSince(Date since) {
-
-		if (userService.getCurrentUser() == null) {
-			return Collections.emptyList();
-		}
-		return immunizationService.getDeletedUuidsSince(since);
-	}
-
-	@Override
-	public boolean exists(String uuid) {
-		return immunizationService.exists(uuid);
-	}
-
-	@Override
-	public ImmunizationReferenceDto getReferenceByUuid(String uuid) {
-		return Optional.of(uuid).map(u -> immunizationService.getByUuid(u)).map(ImmunizationFacadeEjb::toReferenceDto).orElse(null);
-	}
-
-	@Override
-	public void deleteImmunization(String uuid) {
-		if (!userService.hasRight(UserRight.IMMUNIZATION_DELETE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete immunizations");
-		}
-
-		Immunization immunization = immunizationService.getByUuid(uuid);
-		immunizationService.delete(immunization);
-	}
-
-	@Override
-	public boolean isArchived(String uuid) {
-		return immunizationService.isArchived(uuid);
-	}
-
-	@Override
-	public void archiveOrDearchiveImmunization(String uuid, boolean archive) {
-		Immunization immunization = immunizationService.getByUuid(uuid);
-		immunization.setArchived(archive);
-		immunizationService.ensurePersisted(immunization);
-	}
-
-	@Override
-	public boolean isImmunizationEditAllowed(String uuid) {
-		Immunization immunization = immunizationService.getByUuid(uuid);
-
-		return immunizationService.isImmunizationEditAllowed(immunization);
-	}
-
-	@Override
-	public List<ImmunizationDto> getSimilarImmunizations(ImmunizationSimilarityCriteria criteria) {
-		return immunizationService.getSimilarImmunizations(criteria).stream().map(result -> {
-			ImmunizationDto immunizationDto = new ImmunizationDto();
-			immunizationDto.setUuid((String) result[0]);
-			immunizationDto.setMeansOfImmunization((MeansOfImmunization) result[1]);
-			immunizationDto.setImmunizationManagementStatus((ImmunizationManagementStatus) result[2]);
-			immunizationDto.setImmunizationStatus((ImmunizationStatus) result[3]);
-			immunizationDto.setStartDate((Date) result[4]);
-			immunizationDto.setEndDate((Date) result[5]);
-			immunizationDto.setRecoveryDate((Date) result[6]);
-			return immunizationDto;
-		}).collect(Collectors.toList());
-	}
-
-	@Override
-	public ImmunizationDto save(ImmunizationDto dto, boolean allowMerge) {
-		return save(dto, true, true);
-	}
-
-	public ImmunizationDto save(@Valid ImmunizationDto dto, boolean checkChangeDate, boolean internal) {
-		Immunization existingImmunization = immunizationService.getByUuid(dto.getUuid());
-
-		if (internal && existingImmunization != null && !immunizationService.isImmunizationEditAllowed(existingImmunization)) {
-			throw new AccessDeniedException(I18nProperties.getString(Strings.errorImmunizationNotEditable));
-		}
-
-		ImmunizationDto existingDto = toDto(existingImmunization);
-
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		restorePseudonymizedDto(dto, existingDto, existingImmunization, pseudonymizer);
-
-		validate(dto);
-
-		Immunization immunization = fillOrBuildEntity(dto, existingImmunization, checkChangeDate, false);
-
-		immunizationService.updateImmunizationStatusBasedOnVaccinations(immunization);
-
-		immunization.getVaccinations().forEach(vaccination -> {
-			VaccinationDto existingVaccination = null;
-			if (existingDto != null) {
-				existingVaccination = existingDto.getVaccinations()
-					.stream()
-					.filter(vaccinationDto -> vaccination.getUuid().equals(vaccinationDto.getUuid()))
-					.findAny()
-					.orElse(null);
-			}
-			Date oldVaccinationDate = existingVaccination != null ? existingVaccination.getVaccinationDate() : null;
-			vaccinationFacade.updateVaccinationStatuses(
-				vaccination.getVaccinationDate(),
-				oldVaccinationDate,
-				immunization.getPersonId(),
-				immunization.getDisease());
-		});
-
-		immunizationService.ensurePersisted(immunization);
-
-		if (existingImmunization != null && internal && sormasToSormasFacade.isFeatureConfigured()) {
-			syncSharesAsync(existingImmunization);
-		}
-
-		return convertToDto(immunization, pseudonymizer);
-	}
-
-	@Override
-	public ImmunizationDto save(ImmunizationDto dto) {
-		return save(dto, false);
-	}
-
-	public ImmunizationDto convertToDto(Immunization source, Pseudonymizer pseudonymizer) {
-
-		ImmunizationDto dto = toDto(source);
-
-		pseudonymizeDto(source, dto, pseudonymizer);
-
-		return dto;
-	}
-
-	private void pseudonymizeDto(Immunization source, ImmunizationDto dto, Pseudonymizer pseudonymizer) {
-		if (dto != null) {
-			boolean inJurisdiction = immunizationService.inJurisdictionOrOwned(source);
-			pseudonymizer.pseudonymizeDto(ImmunizationDto.class, dto, inJurisdiction, c -> {
-				User currentUser = userService.getCurrentUser();
-				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
-				pseudonymizer.pseudonymizeDto(PersonReferenceDto.class, c.getPerson(), inJurisdiction, null);
-			});
-		}
-	}
-
-	private void restorePseudonymizedDto(ImmunizationDto dto, ImmunizationDto existingDto, Immunization immunization, Pseudonymizer pseudonymizer) {
-		if (existingDto != null) {
-			final boolean inJurisdiction = immunizationService.inJurisdictionOrOwned(immunization);
-			final User currentUser = userService.getCurrentUser();
-			pseudonymizer.restoreUser(immunization.getReportingUser(), currentUser, dto, dto::setReportingUser);
-			pseudonymizer.restorePseudonymizedValues(ImmunizationDto.class, dto, existingDto, inJurisdiction);
-		}
-	}
-
-	@Override
-	public void validate(ImmunizationDto immunizationDto) throws ValidationRuntimeException {
-		if (DateHelper.isStartDateBeforeEndDate(immunizationDto.getStartDate(), immunizationDto.getEndDate())) {
-			String validationError = String.format(
-				I18nProperties.getValidationError(Validations.afterDate),
-				I18nProperties.getPrefixCaption(ImmunizationDto.I18N_PREFIX, ImmunizationDto.END_DATE),
-				I18nProperties.getPrefixCaption(ImmunizationDto.I18N_PREFIX, ImmunizationDto.START_DATE));
-			throw new ValidationRuntimeException(validationError);
-		}
-
-		if (DateHelper.isStartDateBeforeEndDate(immunizationDto.getValidFrom(), immunizationDto.getValidUntil())) {
-			String validationError = String.format(
-				I18nProperties.getValidationError(Validations.afterDate),
-				I18nProperties.getPrefixCaption(ImmunizationDto.I18N_PREFIX, ImmunizationDto.VALID_UNTIL),
-				I18nProperties.getPrefixCaption(ImmunizationDto.I18N_PREFIX, ImmunizationDto.VALID_FROM));
-			throw new ValidationRuntimeException(validationError);
-		}
-
-		// Check whether any required field that does not have a not null constraint in the database is empty
-		if (immunizationDto.getPerson() == null) {
-			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validPerson));
-		}
-	}
-
-	@Override
-	public long count(ImmunizationCriteria criteria) {
-		return directoryImmunizationService.count(criteria);
-	}
-
-	@Override
-	public List<ImmunizationIndexDto> getIndexList(ImmunizationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
-		List<ImmunizationIndexDto> resultsList = directoryImmunizationService.getIndexList(criteria, first, max, sortProperties);
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
-		pseudonymizer.pseudonymizeDtoCollection(ImmunizationIndexDto.class, resultsList, ImmunizationIndexDto::isInJurisdiction, null);
-		return resultsList;
-	}
-
-	@Override
-	public List<ImmunizationListEntryDto> getEntriesList(ImmunizationListCriteria criteria, Integer first, Integer max) {
-		Long personId = personService.getIdByUuid(criteria.getPerson().getUuid());
-		return immunizationService.getEntriesList(personId, criteria.getDisease(), first, max);
-	}
-
-	@Override
-	public Page<ImmunizationIndexDto> getIndexPage(
-		ImmunizationCriteria immunizationCriteria,
-		Integer offset,
-		Integer size,
-		List<SortProperty> sortProperties) {
-		List<ImmunizationIndexDto> immunizationIndexList = getIndexList(immunizationCriteria, offset, size, sortProperties);
-		long totalElementCount = count(immunizationCriteria);
-		return new Page<>(immunizationIndexList, offset, size, totalElementCount);
-	}
-
-	public List<String> deleteImmunizations(List<String> immunizationUuids) {
-		if (!userService.hasRight(UserRight.IMMUNIZATION_DELETE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete immunizations.");
-		}
-		List<String> deletedImmunizationUuids = new ArrayList<>();
-		List<Immunization> immunizationsToBeDeleted = immunizationService.getByUuids(immunizationUuids);
-		if (immunizationsToBeDeleted != null) {
-			immunizationsToBeDeleted.forEach(immunizationToBeDeleted -> {
-				immunizationService.delete(immunizationToBeDeleted);
-				deletedImmunizationUuids.add(immunizationToBeDeleted.getUuid());
-			});
-		}
-		return deletedImmunizationUuids;
-	}
-
-	public static ImmunizationDto toDto(Immunization entity) {
+	public ImmunizationDto toDto(Immunization entity) {
 		if (entity == null) {
 			return null;
 		}
@@ -497,14 +225,215 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		return dto;
 	}
 
-	private Immunization fillOrBuildEntity(@NotNull ImmunizationDto source, Immunization target, boolean checkChangeDate, boolean immunizationCopy) {
+	@Override
+	protected CoreEntityType getCoreEntityType() {
+		return CoreEntityType.IMMUNIZATION;
+	}
+
+	@Override
+	protected void selectDtoFields(CriteriaQuery<ImmunizationDto> cq, Root<Immunization> root) {
+	}
+
+	@Override
+	public List<String> getArchivedUuidsSince(Date since) {
+
+		if (userService.getCurrentUser() == null) {
+			return Collections.emptyList();
+		}
+
+		return service.getArchivedUuidsSince(since);
+	}
+
+	@Override
+	public List<String> getDeletedUuidsSince(Date since) {
+
+		if (userService.getCurrentUser() == null) {
+			return Collections.emptyList();
+		}
+		return service.getDeletedUuidsSince(since);
+	}
+
+	@Override
+	public void deleteImmunization(String uuid) {
+		if (!userService.hasRight(UserRight.IMMUNIZATION_DELETE)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete immunizations");
+		}
+
+		Immunization immunization = service.getByUuid(uuid);
+		service.delete(immunization);
+	}
+
+	@Override
+	public boolean isImmunizationEditAllowed(String uuid) {
+		Immunization immunization = service.getByUuid(uuid);
+
+		return service.isImmunizationEditAllowed(immunization);
+	}
+
+	@Override
+	public List<ImmunizationDto> getSimilarImmunizations(ImmunizationSimilarityCriteria criteria) {
+		return service.getSimilarImmunizations(criteria).stream().map(result -> {
+			ImmunizationDto immunizationDto = new ImmunizationDto();
+			immunizationDto.setUuid((String) result[0]);
+			immunizationDto.setMeansOfImmunization((MeansOfImmunization) result[1]);
+			immunizationDto.setImmunizationManagementStatus((ImmunizationManagementStatus) result[2]);
+			immunizationDto.setImmunizationStatus((ImmunizationStatus) result[3]);
+			immunizationDto.setStartDate((Date) result[4]);
+			immunizationDto.setEndDate((Date) result[5]);
+			immunizationDto.setRecoveryDate((Date) result[6]);
+			return immunizationDto;
+		}).collect(Collectors.toList());
+	}
+
+	@Override
+	public ImmunizationDto save(@Valid @NotNull ImmunizationDto dto) {
+		return save(dto, true, true);
+	}
+
+	public ImmunizationDto save(@Valid @NotNull ImmunizationDto dto, boolean checkChangeDate, boolean internal) {
+		Immunization existingImmunization = service.getByUuid(dto.getUuid());
+
+		if (internal && existingImmunization != null && !service.isImmunizationEditAllowed(existingImmunization)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorImmunizationNotEditable));
+		}
+
+		ImmunizationDto existingDto = toDto(existingImmunization);
+
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		restorePseudonymizedDto(dto, existingDto, existingImmunization, pseudonymizer);
+
+		validate(dto);
+
+		Immunization immunization = fillOrBuildEntity(dto, existingImmunization, checkChangeDate);
+
+		service.updateImmunizationStatusBasedOnVaccinations(immunization);
+
+		immunization.getVaccinations().forEach(vaccination -> {
+			VaccinationDto existingVaccination = null;
+			if (existingDto != null) {
+				existingVaccination = existingDto.getVaccinations()
+					.stream()
+					.filter(vaccinationDto -> vaccination.getUuid().equals(vaccinationDto.getUuid()))
+					.findAny()
+					.orElse(null);
+			}
+			Date oldVaccinationDate = existingVaccination != null ? existingVaccination.getVaccinationDate() : null;
+			vaccinationFacade.updateVaccinationStatuses(
+				vaccination.getVaccinationDate(),
+				oldVaccinationDate,
+				immunization.getPersonId(),
+				immunization.getDisease());
+		});
+
+		service.ensurePersisted(immunization);
+
+		if (existingImmunization != null && internal && sormasToSormasFacade.isFeatureConfigured()) {
+			syncSharesAsync(existingImmunization);
+		}
+
+		return convertToDto(immunization, pseudonymizer);
+	}
+
+	protected void pseudonymizeDto(Immunization source, ImmunizationDto dto, Pseudonymizer pseudonymizer) {
+		if (dto != null) {
+			boolean inJurisdiction = service.inJurisdictionOrOwned(source);
+			pseudonymizer.pseudonymizeDto(ImmunizationDto.class, dto, inJurisdiction, c -> {
+				User currentUser = userService.getCurrentUser();
+				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
+				pseudonymizer.pseudonymizeDto(PersonReferenceDto.class, c.getPerson(), inJurisdiction, null);
+			});
+		}
+	}
+
+	protected void restorePseudonymizedDto(ImmunizationDto dto, ImmunizationDto existingDto, Immunization entity, Pseudonymizer pseudonymizer) {
+		if (existingDto != null) {
+			final boolean inJurisdiction = service.inJurisdictionOrOwned(entity);
+			final User currentUser = userService.getCurrentUser();
+			pseudonymizer.restoreUser(entity.getReportingUser(), currentUser, dto, dto::setReportingUser);
+			pseudonymizer.restorePseudonymizedValues(ImmunizationDto.class, dto, existingDto, inJurisdiction);
+		}
+	}
+
+	@Override
+	public void validate(ImmunizationDto immunizationDto) throws ValidationRuntimeException {
+		if (DateHelper.isStartDateBeforeEndDate(immunizationDto.getStartDate(), immunizationDto.getEndDate())) {
+			String validationError = String.format(
+				I18nProperties.getValidationError(Validations.afterDate),
+				I18nProperties.getPrefixCaption(ImmunizationDto.I18N_PREFIX, ImmunizationDto.END_DATE),
+				I18nProperties.getPrefixCaption(ImmunizationDto.I18N_PREFIX, ImmunizationDto.START_DATE));
+			throw new ValidationRuntimeException(validationError);
+		}
+
+		if (DateHelper.isStartDateBeforeEndDate(immunizationDto.getValidFrom(), immunizationDto.getValidUntil())) {
+			String validationError = String.format(
+				I18nProperties.getValidationError(Validations.afterDate),
+				I18nProperties.getPrefixCaption(ImmunizationDto.I18N_PREFIX, ImmunizationDto.VALID_UNTIL),
+				I18nProperties.getPrefixCaption(ImmunizationDto.I18N_PREFIX, ImmunizationDto.VALID_FROM));
+			throw new ValidationRuntimeException(validationError);
+		}
+
+		// Check whether any required field that does not have a not null constraint in the database is empty
+		if (immunizationDto.getPerson() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validPerson));
+		}
+	}
+
+	@Override
+	public long count(ImmunizationCriteria criteria) {
+		return directoryImmunizationService.count(criteria);
+	}
+
+	@Override
+	public List<ImmunizationIndexDto> getIndexList(ImmunizationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
+		List<ImmunizationIndexDto> resultsList = directoryImmunizationService.getIndexList(criteria, first, max, sortProperties);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer.pseudonymizeDtoCollection(ImmunizationIndexDto.class, resultsList, ImmunizationIndexDto::isInJurisdiction, null);
+		return resultsList;
+	}
+
+	@Override
+	public List<ImmunizationListEntryDto> getEntriesList(ImmunizationListCriteria criteria, Integer first, Integer max) {
+		Long personId = personService.getIdByUuid(criteria.getPerson().getUuid());
+		return service.getEntriesList(personId, criteria.getDisease(), first, max);
+	}
+
+	@Override
+	public Page<ImmunizationIndexDto> getIndexPage(
+		ImmunizationCriteria immunizationCriteria,
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties) {
+		List<ImmunizationIndexDto> immunizationIndexList = getIndexList(immunizationCriteria, offset, size, sortProperties);
+		long totalElementCount = count(immunizationCriteria);
+		return new Page<>(immunizationIndexList, offset, size, totalElementCount);
+	}
+
+	public List<String> deleteImmunizations(List<String> immunizationUuids) {
+		if (!userService.hasRight(UserRight.IMMUNIZATION_DELETE)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete immunizations.");
+		}
+		List<String> deletedImmunizationUuids = new ArrayList<>();
+		List<Immunization> immunizationsToBeDeleted = service.getByUuids(immunizationUuids);
+		if (immunizationsToBeDeleted != null) {
+			immunizationsToBeDeleted.forEach(immunizationToBeDeleted -> {
+				service.delete(immunizationToBeDeleted);
+				deletedImmunizationUuids.add(immunizationToBeDeleted.getUuid());
+			});
+		}
+		return deletedImmunizationUuids;
+	}
+
+	@Override
+	public ImmunizationReferenceDto toRefDto(Immunization immunization) {
+		return toReferenceDto(immunization);
+	}
+
+	protected Immunization fillOrBuildEntity(@NotNull ImmunizationDto source, Immunization target, boolean checkChangeDate) {
 		target = DtoHelper.fillOrBuildEntity(source, target, Immunization::new, checkChangeDate);
 
 		target.setDisease(source.getDisease());
 		target.setDiseaseDetails(source.getDiseaseDetails());
-		if (!immunizationCopy) {
-			target.setPerson(personService.getByReferenceDto(source.getPerson()));
-		}
+		target.setPerson(personService.getByReferenceDto(source.getPerson()));
 		target.setReportDate(source.getReportDate());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setArchived(source.isArchived());
@@ -534,12 +463,10 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 		target.setRelatedCase(caseService.getByReferenceDto(source.getRelatedCase()));
 
 		List<Vaccination> vaccinationEntities = new ArrayList<>();
-		if (!immunizationCopy) {
-			for (VaccinationDto vaccinationDto : source.getVaccinations()) {
-				Vaccination vaccination = vaccinationFacade.fromDto(vaccinationDto, checkChangeDate);
-				vaccination.setImmunization(target);
-				vaccinationEntities.add(vaccination);
-			}
+		for (VaccinationDto vaccinationDto : source.getVaccinations()) {
+			Vaccination vaccination = vaccinationFacade.fromDto(vaccinationDto, checkChangeDate);
+			vaccination.setImmunization(target);
+			vaccinationEntities.add(vaccination);
 		}
 		target.getVaccinations().clear();
 		target.getVaccinations().addAll(vaccinationEntities);
@@ -553,7 +480,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 
 	@Override
 	public void updateImmunizationStatuses() {
-		immunizationService.updateImmunizationStatuses();
+		service.updateImmunizationStatuses();
 	}
 
 	@Override
@@ -607,7 +534,7 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 
 	@Override
 	public List<ImmunizationDto> getByPersonUuids(List<String> uuids) {
-		return immunizationService.getByPersonUuids(uuids).stream().map(ImmunizationFacadeEjb::toDto).collect(Collectors.toList());
+		return service.getByPersonUuids(uuids).stream().map(i -> toDto(i)).collect(Collectors.toList());
 	}
 
 	public void syncSharesAsync(Immunization immunization) {
@@ -660,17 +587,31 @@ public class ImmunizationFacadeEjb implements ImmunizationFacade {
 	public void copyImmunizationsToLeadPerson(ImmunizationDto immunizationDto, PersonDto leadPerson) {
 		Immunization newImmunization = new Immunization();
 		newImmunization.setUuid(DataHelper.createUuid());
-		newImmunization = fillOrBuildEntity(immunizationDto, newImmunization, false, true);
+		newImmunization = fillOrBuildEntity(immunizationDto, newImmunization, false);
 
 		newImmunization.setPerson(personService.getByReferenceDto(leadPerson.toReference()));
+		newImmunization.setVaccinations(new ArrayList<>());
 
 		vaccinationFacade.copyExistingVaccinationsToNewImmunization(immunizationDto, newImmunization);
-		immunizationService.ensurePersisted(newImmunization);
+		service.ensurePersisted(newImmunization);
+	}
+
+	@Override
+	protected void delete(Immunization entity) {
+		service.delete(entity);
 	}
 
 	@LocalBean
 	@Stateless
 	public static class ImmunizationFacadeEjbLocal extends ImmunizationFacadeEjb {
 
+		public ImmunizationFacadeEjbLocal() {
+			super();
+		}
+
+		@Inject
+		public ImmunizationFacadeEjbLocal(ImmunizationService service, UserService userService) {
+			super(service, userService);
+		}
 	}
 }

@@ -52,6 +52,7 @@ public class EventParticipantCreateForm extends PersonDependentEditForm<EventPar
 		+ fluidRowLocs(EventParticipantDto.REGION, EventParticipantDto.DISTRICT);
 
 	private boolean jurisdictionFieldsRequired;
+	private Button searchPersonButton;
 
 	public EventParticipantCreateForm(boolean jurisdictionFieldsRequired) {
 
@@ -68,7 +69,7 @@ public class EventParticipantCreateForm extends PersonDependentEditForm<EventPar
 		addCustomField(FIRST_NAME, String.class, TextField.class);
 		addCustomField(LAST_NAME, String.class, TextField.class);
 
-		Button searchPersonButton = createPersonSearchButton(PERSON_SEARCH_LOC);
+		searchPersonButton = createPersonSearchButton(PERSON_SEARCH_LOC);
 		getContent().addComponent(searchPersonButton, PERSON_SEARCH_LOC);
 
 		ComboBox sex = addCustomField(PERSON_SEX, Sex.class, ComboBox.class);
@@ -104,6 +105,7 @@ public class EventParticipantCreateForm extends PersonDependentEditForm<EventPar
 				firstNameField.setVisible(false);
 				lastNameField.setRequired(false);
 				lastNameField.setVisible(false);
+				searchPersonButton.setVisible(false);
 			} else {
 				firstNameField.setEnabled(false);
 				firstNameField.setValue(person.getFirstName());
@@ -111,6 +113,7 @@ public class EventParticipantCreateForm extends PersonDependentEditForm<EventPar
 				lastNameField.setValue(person.getLastName());
 				personSexField.setEnabled(false);
 				personSexField.setValue(person.getSex());
+				searchPersonButton.setEnabled(false);
 			}
 			personSexField.setEnabled(false);
 			personSexField.setValue(person.getSex());

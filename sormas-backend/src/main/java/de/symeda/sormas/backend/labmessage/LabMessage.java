@@ -24,13 +24,13 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SpecimenCondition;
-import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name = "labmessage")
 @Audited
-public class LabMessage extends CoreAdo {
+public class LabMessage extends DeletableAdo {
 
 	public static final String TABLE_NAME = "labmessage";
 
@@ -42,10 +42,10 @@ public class LabMessage extends CoreAdo {
 	public static final String SAMPLE_MATERIAL = "sampleMaterial";
 	public static final String SAMPLE_MATERIAL_TEXT = "sampleMaterialText";
 	public static final String SPECIMEN_CONDITION = "specimenCondition";
-	public static final String TEST_LAB_NAME = "labName";
-	public static final String TEST_LAB_EXTERNAL_ID = "labExternalId";
-	public static final String TEST_LAB_POSTAL_CODE = "labPostalCode";
-	public static final String TEST_LAB_CITY = "labCity";
+	public static final String LAB_NAME = "labName";
+	public static final String LAB_EXTERNAL_ID = "labExternalId";
+	public static final String LAB_POSTAL_CODE = "labPostalCode";
+	public static final String LAB_CITY = "labCity";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
 	public static final String PERSON_LAST_NAME = "personLastName";
 	public static final String PERSON_SEX = "personSex";

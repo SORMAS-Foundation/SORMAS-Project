@@ -14,6 +14,7 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
+import de.symeda.sormas.api.utils.SortProperty;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
@@ -250,7 +251,7 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 		VaccinationDto vaccination212 = creator.createVaccination(nationalUser.toReference(), immunization21.toReference());
 
 		List<VaccinationListEntryDto> vaccinations = getVaccinationFacade()
-			.getEntriesList(new VaccinationListCriteria.Builder(person1.toReference()).withDisease(disease1).build(), null, null);
+			.getEntriesList(new VaccinationListCriteria.Builder(person1.toReference()).withDisease(disease1).build(), null, null, null);
 		assertThat(vaccinations, hasSize(3));
 		assertThat(
 			vaccinations,
@@ -259,17 +260,17 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 				hasProperty(EntityDto.UUID, is(vaccination112.getUuid())),
 				hasProperty(EntityDto.UUID, is(vaccination121.getUuid()))));
 		vaccinations = getVaccinationFacade()
-			.getEntriesList(new VaccinationListCriteria.Builder(person1.toReference()).withDisease(disease2).build(), null, null);
+			.getEntriesList(new VaccinationListCriteria.Builder(person1.toReference()).withDisease(disease2).build(), null, null, null);
 		assertThat(vaccinations, hasSize(1));
 		assertThat(vaccinations, hasItem(hasProperty(EntityDto.UUID, is(vaccination131.getUuid()))));
 		vaccinations = getVaccinationFacade()
-			.getEntriesList(new VaccinationListCriteria.Builder(person2.toReference()).withDisease(disease1).build(), null, null);
+			.getEntriesList(new VaccinationListCriteria.Builder(person2.toReference()).withDisease(disease1).build(), null, null, null);
 		assertThat(vaccinations, hasSize(2));
 		assertThat(
 			vaccinations,
 			hasItems(hasProperty(EntityDto.UUID, is(vaccination211.getUuid())), hasProperty(EntityDto.UUID, is(vaccination212.getUuid()))));
 		vaccinations = getVaccinationFacade()
-			.getEntriesList(new VaccinationListCriteria.Builder(person2.toReference()).withDisease(disease2).build(), null, null);
+			.getEntriesList(new VaccinationListCriteria.Builder(person2.toReference()).withDisease(disease2).build(), null, null, null);
 		assertThat(vaccinations, hasSize(0));
 	}
 
@@ -324,10 +325,10 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 		assertNull(getCaseFacade().getByUuid(case12.getUuid()).getVaccinationStatus());
 		assertNull(getCaseFacade().getByUuid(case2.getUuid()).getVaccinationStatus());
 		assertNull(getCaseFacade().getByUuid(case3.getUuid()).getVaccinationStatus());
-		assertNull(getContactFacade().getContactByUuid(contact11.getUuid()).getVaccinationStatus());
-		assertNull(getContactFacade().getContactByUuid(contact12.getUuid()).getVaccinationStatus());
-		assertNull(getContactFacade().getContactByUuid(contact2.getUuid()).getVaccinationStatus());
-		assertNull(getContactFacade().getContactByUuid(contact3.getUuid()).getVaccinationStatus());
+		assertNull(getContactFacade().getByUuid(contact11.getUuid()).getVaccinationStatus());
+		assertNull(getContactFacade().getByUuid(contact12.getUuid()).getVaccinationStatus());
+		assertNull(getContactFacade().getByUuid(contact2.getUuid()).getVaccinationStatus());
+		assertNull(getContactFacade().getByUuid(contact3.getUuid()).getVaccinationStatus());
 		assertNull(getEventParticipantFacade().getByUuid(ep111.getUuid()).getVaccinationStatus());
 		assertNull(getEventParticipantFacade().getByUuid(ep112.getUuid()).getVaccinationStatus());
 		assertNull(getEventParticipantFacade().getByUuid(ep121.getUuid()).getVaccinationStatus());
@@ -342,8 +343,8 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 
 		assertNull(getCaseFacade().getByUuid(case11.getUuid()).getVaccinationStatus());
 		assertThat(getCaseFacade().getByUuid(case12.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
-		assertNull(getContactFacade().getContactByUuid(contact11.getUuid()).getVaccinationStatus());
-		assertThat(getContactFacade().getContactByUuid(contact12.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
+		assertNull(getContactFacade().getByUuid(contact11.getUuid()).getVaccinationStatus());
+		assertThat(getContactFacade().getByUuid(contact12.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
 		assertNull(getEventParticipantFacade().getByUuid(ep111.getUuid()).getVaccinationStatus());
 		assertNull(getEventParticipantFacade().getByUuid(ep121.getUuid()).getVaccinationStatus());
 		assertNull(getEventParticipantFacade().getByUuid(ep131.getUuid()).getVaccinationStatus());
@@ -355,7 +356,7 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 		getVaccinationFacade().createWithImmunization(vaccination3, rdcf1.region, rdcf1.district, person1.toReference(), Disease.EVD);
 
 		assertThat(getCaseFacade().getByUuid(case11.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
-		assertThat(getContactFacade().getContactByUuid(contact11.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
+		assertThat(getContactFacade().getByUuid(contact11.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
 		assertNull(getEventParticipantFacade().getByUuid(ep111.getUuid()).getVaccinationStatus());
 		assertThat(getEventParticipantFacade().getByUuid(ep121.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));
 		assertThat(getEventParticipantFacade().getByUuid(ep131.getUuid()).getVaccinationStatus(), is(VaccinationStatus.VACCINATED));

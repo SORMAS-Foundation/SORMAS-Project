@@ -40,6 +40,7 @@ import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.sormas.e2etests.common.TimerLite;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.Assert;
@@ -267,7 +268,7 @@ public class WebDriverHelpers {
             + "') or starts-with(text(), '\" + text + \"') ]";
     waitUntilIdentifiedElementIsVisibleAndClickable(comboboxInput);
     comboboxInput.sendKeys(text);
-    waitUntilElementIsVisibleAndClickable(By.className("v-filterselect-suggestpopup"));
+    waitUntilElementIsVisibleAndClickable(By.className("v-filterselect-suggestmenu"));
     waitUntilANumberOfElementsAreVisibleAndClickable(By.xpath("//td[@role='listitem']/span"), 1);
     By dropDownValueXpath = By.xpath(comboBoxItemWithText);
     TimeUnit.MILLISECONDS.sleep(500);
@@ -387,6 +388,23 @@ public class WebDriverHelpers {
     } catch (Exception ignored) {
     }
     waitForPageLoaded();
+  }
+
+  public void hoverToElement(By selector) {
+    WebElement menuOption = baseSteps.getDriver().findElement(selector);
+    Actions actions = new Actions(baseSteps.getDriver());
+    try {
+      assertHelpers.assertWithPoll20Second(
+          () -> {
+            scrollToElement(selector);
+            actions.moveToElement(menuOption).perform();
+            waitUntilIdentifiedElementIsVisibleAndClickable(selector);
+          });
+    } catch (ConditionTimeoutException ignored) {
+      log.error("Unable to fill on element identified by locator: {}", selector);
+      takeScreenshot(baseSteps.getDriver());
+      throw new TimeoutException("Unable to fill on element identified by locator: " + selector);
+    }
   }
 
   public void javaScriptClickElement(final Object selector) {
@@ -666,8 +684,9 @@ public class WebDriverHelpers {
     while (!"".contentEquals(getValueFromWebElement(selector))) {
       log.debug("Deleted char: {}", getValueFromWebElement(selector));
       webElement.clear();
-      webElement.sendKeys(Keys.chord(Keys.SHIFT, Keys.END));
-      webElement.sendKeys(Keys.chord(Keys.BACK_SPACE));
+      webElement.sendKeys(Keys.LEFT_CONTROL);
+      webElement.sendKeys("A");
+      webElement.sendKeys((Keys.BACK_SPACE));
       webElement.click();
       if (Instant.now().isAfter(start.plus(1, ChronoUnit.MINUTES))) {
         throw new Error("The field didn't clear");
@@ -785,5 +804,9 @@ public class WebDriverHelpers {
             Assert.assertTrue(
                 getAttributeFromWebElement(rowLocator, "class").contains("row-selected"),
                 String.format("Row element: %s wasn't selected within 20s", rowLocator)));
+  }
+
+  public void sendFile(By selector, String filePath) {
+    baseSteps.getDriver().findElement(selector).sendKeys(filePath);
   }
 }

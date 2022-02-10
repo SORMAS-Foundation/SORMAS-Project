@@ -1,5 +1,6 @@
 package org.sormas.e2etests.enums.cases.epidemiologicalData;
 
+import java.util.Random;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
@@ -14,7 +15,8 @@ public enum TypeOfPlace {
   UNKNOWN("Unknown"),
   OTHER("Other");
 
-  private String place;
+  private final String place;
+  private static Random random = new Random();
 
   TypeOfPlace(String place) {
     this.place = place;
@@ -40,6 +42,10 @@ public enum TypeOfPlace {
     for (TypeOfPlace value : typeOfPlaceOptions) {
       if (value.name().equalsIgnoreCase(option)) return value.getPlace();
     }
-    throw new Exception("Unable to find " + option + " value in TypeOfPlace Enum");
+    throw new Exception("Unable to find " + option + " value in TypeOfPlaceValues Enum");
+  }
+
+  public static String getRandomTypeOfPlace() {
+    return String.valueOf(TypeOfPlace.values()[random.nextInt(values().length)]);
   }
 }

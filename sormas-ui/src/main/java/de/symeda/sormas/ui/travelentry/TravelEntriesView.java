@@ -76,7 +76,7 @@ public class TravelEntriesView extends AbstractView {
 			long countTravelEntries = FacadeProvider.getTravelEntryFacade().count(new TravelEntryCriteria(), true);
 			if (countTravelEntries > 0) {
 				final ExpandableButton createButton =
-					new ExpandableButton(Captions.travelEntryNewTravelEntry).expand(e -> ControllerProvider.getTravelEntryController().create(null));
+					new ExpandableButton(Captions.travelEntryNewTravelEntry).expand(e -> ControllerProvider.getTravelEntryController().create());
 				addHeaderComponent(createButton);
 			}
 		}

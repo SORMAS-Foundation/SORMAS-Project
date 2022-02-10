@@ -98,6 +98,7 @@ public class CreateNewContactSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_CREATED_POPUP);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
   }
 

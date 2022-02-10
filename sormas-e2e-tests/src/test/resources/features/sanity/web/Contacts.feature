@@ -247,3 +247,31 @@ Feature: Contacts end to end tests
     And I select Travel option in Type of activity from Combobox in Exposure form
     Then I fill Location form for Type of place by Facility option
     And I click on save button from Epidemiological Data
+
+  @issue=SORDEV-5670
+  Scenario: Fill the follow-up tab
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And I log in with National User
+    And I am accessing the Follow-up visits tab using of created contact via api
+    And I click on new Visit button
+    Then I set Person available and cooperative to UNAVAILABLE
+    And I set Date and time of visit
+    Then I save the Visit data
+    And I click on edit Visit button
+    Then I check last Person status and date with time
+    Then I set Person available and cooperative to AVAILABLE, BUT UNCOOPERATIVE
+    And I set Date and time of visit
+    Then I save the Visit data
+    And I click on edit Visit button
+    Then I check last Person status and date with time
+    And I fill the specific data of visit with Set cleared to No option to all symptoms
+    Then I save the Visit data
+    Then I click on edit Visit button
+    And I fill the specific data of visit with Set cleared to Unknown option to all symptoms
+    Then I save the Visit data
+

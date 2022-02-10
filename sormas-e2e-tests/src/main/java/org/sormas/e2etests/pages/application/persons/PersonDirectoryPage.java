@@ -24,8 +24,13 @@ public class PersonDirectoryPage {
 
   public static final By MULTIPLE_OPTIONS_SEARCH_INPUT =
       By.cssSelector("#nameAddressPhoneEmailLike");
-  public static final By APPLY_FILTERS_BUTTON = By.cssSelector("#actionApplyFilters");
+  public static final By APPLY_FILTERS_BUTTON = By.cssSelector("[id='actionApplyFilters']");
+  public static final By RESET_FILTERS_BUTTON = By.cssSelector("[id='actionResetFilters']");
   public static final String PERSON_RESULTS_UUID_LOCATOR = "[title = '%s']";
   public static final By SEARCH_PERSON_BY_FREE_TEXT = By.id("nameAddressPhoneEmailLike");
   public static final By ALL_BUTTON = By.id("All");
+  public static final By CASE_PERSON_ID_COLUMN_HEADERS =
+      By.cssSelector("v-grid-column-header-content v-grid-column-default-header-content");
+  public static final By PRESENT_CONDITION_FILTER_COMBOBOX =
+      By.cssSelector("#presentCondition div");
 }

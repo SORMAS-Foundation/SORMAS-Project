@@ -133,7 +133,6 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 	public static final String TASKS = "tasks";
 	public static final String REPORT_LAT = "reportLat";
 	public static final String REPORT_LON = "reportLon";
-	public static final String ARCHIVED = "archived";
 	public static final String DISEASE_TRANSMISSION_MODE = "diseaseTransmissionMode";
 	public static final String TRANSREGIONAL_OUTBREAK = "transregionalOutbreak";
 	public static final String SUPERORDINATE_EVENT = "superordinateEvent";
@@ -200,8 +199,6 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
 	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
 	private EventManagementStatus eventManagementStatus;
-
-	private boolean archived;
 
 	private InfectionPathCertainty infectionPathCertainty;
 	private HumanTransmissionMode humanTransmissionMode;
@@ -674,15 +671,6 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 
 	public void setDiseaseTransmissionMode(DiseaseTransmissionMode diseaseTransmissionMode) {
 		this.diseaseTransmissionMode = diseaseTransmissionMode;
-	}
-
-	@Column
-	public boolean isArchived() {
-		return archived;
-	}
-
-	public void setArchived(boolean archived) {
-		this.archived = archived;
 	}
 
 	@Override

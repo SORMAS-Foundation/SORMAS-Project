@@ -158,7 +158,7 @@ public class TestDataCreator {
 		eventParticipant.setPerson(eventPerson);
 		eventParticipant.setInvolvementDescription(involvementDescription);
 
-		eventParticipant = FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipant);
+		eventParticipant = FacadeProviderMock.getEventParticipantFacade().saveEventParticipant(eventParticipant);
 		return eventParticipant;
 	}
 
@@ -211,7 +211,7 @@ public class TestDataCreator {
 			customConfig.accept(contact);
 		}
 
-		contact = FacadeProvider.getContactFacade().saveContact(contact);
+		contact = FacadeProviderMock.getContactFacade().save(contact);
 
 		return contact;
 	}
@@ -233,7 +233,7 @@ public class TestDataCreator {
 			customSettings.accept(sample);
 		}
 
-		sample = FacadeProvider.getSampleFacade().saveSample(sample);
+		sample = FacadeProviderMock.getSampleFacade().saveSample(sample);
 
 		return sample;
 	}
@@ -253,7 +253,7 @@ public class TestDataCreator {
 		contact.setReportDateTime(reportDateTime);
 		contact.setLastContactDate(lastContactDate);
 
-		contact = FacadeProvider.getContactFacade().saveContact(contact);
+		contact = FacadeProviderMock.getContactFacade().save(contact);
 
 		return contact;
 	}
@@ -299,7 +299,7 @@ public class TestDataCreator {
 		caze.setFacilityType(facility.getType());
 		caze.setHealthFacility(facility.toReference());
 
-		caze = FacadeProvider.getCaseFacade().saveCase(caze);
+		caze = FacadeProviderMock.getCaseFacade().save(caze);
 
 		return caze;
 	}
@@ -454,7 +454,7 @@ public class TestDataCreator {
 			customSettings.accept(event);
 		}
 
-		event = FacadeProvider.getEventFacade().saveEvent(event);
+		event = FacadeProviderMock.getEventFacade().save(event);
 
 		return event;
 	}
@@ -487,7 +487,7 @@ public class TestDataCreator {
 		event.setResponsibleUser(responsibleUser);
 		event.setDisease(disease);
 
-		event = FacadeProvider.getEventFacade().saveEvent(event);
+		event = FacadeProvider.getEventFacade().save(event);
 
 		return event;
 	}
@@ -627,10 +627,20 @@ public class TestDataCreator {
 		DistrictReferenceDto district,
 		CommunityReferenceDto community) {
 
+		return createFacility(facilityName, FacilityType.HOSPITAL, region, district, community);
+	}
+
+	public FacilityDto createFacility(
+		String facilityName,
+		FacilityType facilityType,
+		RegionReferenceDto region,
+		DistrictReferenceDto district,
+		CommunityReferenceDto community) {
+
 		FacilityDto facility = FacilityDto.build();
 		facility.setUuid(DataHelper.createUuid());
 		facility.setName(facilityName);
-		facility.setType(FacilityType.HOSPITAL);
+		facility.setType(facilityType);
 		facility.setCommunity(community);
 		facility.setDistrict(district);
 		facility.setRegion(region);
@@ -658,7 +668,7 @@ public class TestDataCreator {
 		campaign.setName("CampaignName");
 		campaign.setDescription("Campaign description");
 
-		campaign = FacadeProvider.getCampaignFacade().saveCampaign(campaign);
+		campaign = FacadeProvider.getCampaignFacade().save(campaign);
 
 		return campaign;
 	}

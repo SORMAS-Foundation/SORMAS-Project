@@ -955,7 +955,7 @@ public class DevModeView extends AbstractConfigurationView {
 			}
 
 			FacadeProvider.getPersonFacade().savePerson(person);
-			FacadeProvider.getCaseFacade().saveCase(caze);
+			FacadeProvider.getCaseFacade().save(caze);
 		}
 
 		dt = System.nanoTime() - dt;
@@ -1209,7 +1209,7 @@ public class DevModeView extends AbstractConfigurationView {
 			contact.setDescription("Contact generated using DevMode on " + LocalDate.now());
 
 			FacadeProvider.getPersonFacade().savePerson(person);
-			contact = FacadeProvider.getContactFacade().saveContact(contact);
+			contact = FacadeProvider.getContactFacade().save(contact);
 
 			if (FacadeProvider.getDiseaseConfigurationFacade().hasFollowUp(contact.getDisease())) {
 				contact.setFollowUpStatus(random(FollowUpStatus.values()));
@@ -1320,7 +1320,7 @@ public class DevModeView extends AbstractConfigurationView {
 			// status
 			event.setEventStatus(EventStatus.EVENT);
 
-			FacadeProvider.getEventFacade().saveEvent(event);
+			FacadeProvider.getEventFacade().save(event);
 
 			// EventParticipants
 			int numParticipants = randomInt(config.getMinParticipantsPerEvent(), config.getMaxParticipantsPerEvent());
@@ -1351,7 +1351,7 @@ public class DevModeView extends AbstractConfigurationView {
 						caze.setHealthFacility(facility.toReference());
 						caze.setFacilityType(facility.getType());
 						caze.setAdditionalDetails("Case generated using DevMode on " + LocalDate.now());
-						FacadeProvider.getCaseFacade().saveCase(caze);
+						FacadeProvider.getCaseFacade().save(caze);
 						eventParticipant.setResultingCase(caze.toReference());
 						generatedCases++;
 					}
@@ -1370,7 +1370,7 @@ public class DevModeView extends AbstractConfigurationView {
 						contact.setReportingUser(UserProvider.getCurrent().getUserReference());
 						contact.setReportDateTime(Date.from(referenceDateTime.atZone(ZoneId.systemDefault()).toInstant()));
 						contact.setDescription("Contact generated using DevMode on " + LocalDate.now());
-						FacadeProvider.getContactFacade().saveContact(contact);
+						FacadeProvider.getContactFacade().save(contact);
 						generatedContacts++;
 					}
 				}

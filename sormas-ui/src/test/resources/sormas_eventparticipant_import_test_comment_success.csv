@@ -1,6 +1,7 @@
 ## This is a comment line
 ##This is also a comment line
 ## This is a comment line with a , inside
+EventParticipant,EventParticipant,EventParticipant
 person.firstName,person.lastName,involvementDescription
 ## This is a comment line after the headers
 Günther,Heinze,description 1
