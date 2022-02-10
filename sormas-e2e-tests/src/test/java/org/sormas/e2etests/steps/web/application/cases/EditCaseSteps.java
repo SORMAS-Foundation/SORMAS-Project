@@ -21,6 +21,7 @@ package org.sormas.e2etests.steps.web.application.cases;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.*;
 import static org.sormas.e2etests.pages.application.cases.SymptomsTabPage.SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.FOLLOW_UP_UNTIL_DATE;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 
 import cucumber.api.java8.En;
@@ -54,6 +55,7 @@ public class EditCaseSteps implements En {
   private static Case editedCase;
   public static QuarantineOrder aQuarantineOrder;
   private static Case specificCaseData;
+  private static LocalDate dateFollowUp;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
   public static final String userDirPath = System.getProperty("user.dir");
 
@@ -250,6 +252,100 @@ public class EditCaseSteps implements En {
           webDriverHelpers.selectFromCombobox(QUARANTINE_COMBOBOX, CaseOutcome.getValueFor(option));
           editedCase = editedCase.toBuilder().quarantine(option).build();
         });
+
+    When(
+        "I set place for Quarantine as ([^\"]*)",
+        (String option) -> {
+          webDriverHelpers.selectFromCombobox(QUARANTINE_COMBOBOX, CaseOutcome.getValueFor(option));
+        });
+
+    When(
+        "I set Start date of Quarantine ([^\"]*) days ago",
+        (Integer days) -> {
+          webDriverHelpers.scrollToElement(QUARANTINE_DATE_TO_INPUT);
+          webDriverHelpers.fillInWebElement(
+              QUARANTINE_DATE_FROM_INPUT, DATE_FORMATTER.format(LocalDate.now().minusDays(days)));
+        });
+
+    When(
+        "I set End date of Quarantine to ([^\"]*) days",
+        (Integer days) -> {
+          webDriverHelpers.scrollToElement(QUARANTINE_DATE_TO_INPUT);
+          webDriverHelpers.fillInWebElement(
+              QUARANTINE_DATE_TO_INPUT, DATE_FORMATTER.format(LocalDate.now().plusDays(days)));
+        });
+
+    When(
+        "I check if ([^\"]*) quarantine popup is displayed",
+        (String option) -> {
+          String quarantineText;
+          String expectedTextReduce = "Are you sure you want to reduce the quarantine?";
+          String expectedTextExtend = "Are you sure you want to extend the quarantine?";
+          webDriverHelpers.clickOnWebElementBySelector(QUARANTINE_ORDERED_VERBALLY_CHECKBOX_LABEL);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(QUARANTINE_POPUP_MESSAGE);
+          quarantineText = webDriverHelpers.getTextFromWebElement(QUARANTINE_POPUP_MESSAGE);
+          if (option.equals("Reduce")) softly.assertEquals(quarantineText, expectedTextReduce);
+          else if (option.equals("Extend")) softly.assertEquals(quarantineText, expectedTextExtend);
+          softly.assertAll();
+        });
+
+    When(
+        "I check if Quarantine End date stayed reduce to ([^\"]*) days",
+        (Integer days) -> {
+          String date = webDriverHelpers.getValueFromWebElement(QUARANTINE_DATE_TO_INPUT);
+          LocalDate endDate = LocalDate.now().plusDays(days);
+          softly.assertEquals(DATE_FORMATTER.format(endDate), date);
+          softly.assertAll();
+        });
+    When(
+        "I check if Quarantine Follow up until date was extended to ([^\"]*) day",
+        (Integer days) -> {
+          String date = webDriverHelpers.getValueFromWebElement(FOLLOW_UP_UNTIL_DATE);
+          softly.assertEquals(DATE_FORMATTER.format(dateFollowUp.plusDays(days)), date);
+          softly.assertAll();
+        });
+
+    When(
+        "I set the quarantine end to a date ([^\"]*) day after the Follow-up until date",
+        (Integer days) -> {
+          dateFollowUp =
+              LocalDate.parse(
+                  webDriverHelpers.getValueFromWebElement(FOLLOW_UP_UNTIL_DATE), DATE_FORMATTER);
+          webDriverHelpers.scrollToElement(QUARANTINE_DATE_TO_INPUT);
+          webDriverHelpers.fillInWebElement(
+              QUARANTINE_DATE_TO_INPUT, DATE_FORMATTER.format(dateFollowUp.plusDays(days)));
+          webDriverHelpers.clickOnWebElementBySelector(QUARANTINE_DATE_FROM_INPUT);
+        });
+
+    When(
+        "I fill Quarantine change comment field",
+        () -> {
+          webDriverHelpers.scrollToElement(QUARANTINE_CHANGE_COMMENT);
+          webDriverHelpers.fillInWebElement(QUARANTINE_CHANGE_COMMENT, dateFollowUp.toString());
+        });
+
+    When(
+        "I check if Quarantine change comment field was saved correctly",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          String commentText = webDriverHelpers.getValueFromWebElement(QUARANTINE_CHANGE_COMMENT);
+          softly.assertEquals(commentText, dateFollowUp.toString());
+          softly.assertAll();
+        });
+
+    When(
+        "I click on yes quarantine popup button",
+        () -> webDriverHelpers.clickOnWebElementBySelector(QUARANTINE_POPUP_SAVE_BUTTON));
+
+    When(
+        "I click on yes Extend follow up period popup button",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(QUARANTINE_POPUP_SAVE_BUTTON);
+        });
+
+    When(
+        "I discard changes in quarantine popup",
+        () -> webDriverHelpers.clickOnWebElementBySelector(QUARANTINE_POPUP_DISCARD_BUTTON));
 
     When(
         "I check if Quarantine start field is available",
@@ -643,7 +739,6 @@ public class EditCaseSteps implements En {
   }
 
   private LocalDate getDateOfReport() {
-
     String dateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE_INPUT);
     return LocalDate.parse(dateOfReport, DATE_FORMATTER);
   }
@@ -655,21 +750,18 @@ public class EditCaseSteps implements En {
   }
 
   private LocalDate getDateReceivedAtRegionLevel() {
-
     String dateOfReport =
         webDriverHelpers.getValueFromWebElement(DATE_RECEIVED_AT_REGION_LEVEL_INPUT);
     return LocalDate.parse(dateOfReport, DATE_FORMATTER);
   }
 
   private LocalDate getDateReceivedAtNationalLevel() {
-
     String dateOfReport =
         webDriverHelpers.getValueFromWebElement(DATE_RECEIVED_AT_NATIONAL_LEVEL_INPUT);
     return LocalDate.parse(dateOfReport, DATE_FORMATTER);
   }
 
   private Case getUserInformation() {
-
     String userInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
     String[] userInfos = userInfo.split(" ");
     LocalDate localDate = LocalDate.parse(userInfos[3].replace(")", ""), DATE_FORMATTER);
