@@ -398,7 +398,7 @@ public class TestDataCreator {
 
 		final CaseDataDto aCase = createCase(user, cazePerson, disease, caseClassification, investigationStatus, reportAndOnsetDate, new RDCF(rdcf));
 		aCase.setHealthFacilityDetails(healthFacilityDetails);
-		return beanTest.getCaseFacade().saveCase(aCase);
+		return beanTest.getCaseFacade().save(aCase);
 	}
 
 	public CaseDataDto createCase(
@@ -440,7 +440,7 @@ public class TestDataCreator {
 			setCustomFields.accept(caze);
 		}
 
-		caze = beanTest.getCaseFacade().saveCase(caze);
+		caze = beanTest.getCaseFacade().save(caze);
 
 		return caze;
 	}
@@ -739,7 +739,7 @@ public class TestDataCreator {
 			customConfig.accept(contact);
 		}
 
-		contact = beanTest.getContactFacade().saveContact(contact);
+		contact = beanTest.getContactFacade().save(contact);
 
 		return contact;
 	}
@@ -924,7 +924,7 @@ public class TestDataCreator {
 			customSettings.accept(event);
 		}
 
-		event = beanTest.getEventFacade().saveEvent(event);
+		event = beanTest.getEventFacade().save(event);
 
 		return event;
 	}
@@ -1326,7 +1326,7 @@ public class TestDataCreator {
 		campaign.setName("CampaignName");
 		campaign.setDescription("Campaign description");
 
-		campaign = beanTest.getCampaignFacade().saveCampaign(campaign);
+		campaign = beanTest.getCampaignFacade().save(campaign);
 
 		return campaign;
 	}

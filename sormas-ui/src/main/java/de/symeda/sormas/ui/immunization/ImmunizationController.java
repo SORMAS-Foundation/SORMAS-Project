@@ -242,7 +242,7 @@ public class ImmunizationController {
 				640,
 				e -> {
 					if (e) {
-						FacadeProvider.getImmunizationFacade().archiveOrDearchiveImmunization(uuid, true);
+						FacadeProvider.getImmunizationFacade().archive(uuid);
 						Notification.show(
 							String.format(
 								I18nProperties.getString(Strings.messageImmunizationArchived),
@@ -265,7 +265,7 @@ public class ImmunizationController {
 				640,
 				e -> {
 					if (e) {
-						FacadeProvider.getImmunizationFacade().archiveOrDearchiveImmunization(uuid, false);
+						FacadeProvider.getImmunizationFacade().dearchive(uuid);
 						Notification.show(
 							String.format(
 								I18nProperties.getString(Strings.messageImmunizationDearchived),

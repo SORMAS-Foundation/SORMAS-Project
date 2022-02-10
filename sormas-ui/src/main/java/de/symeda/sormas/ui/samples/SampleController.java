@@ -459,7 +459,7 @@ public class SampleController {
 					final CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
 					ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.CASE, associatedCase, dto, caseDto.getDisease());
 				} else if (associatedContact != null) {
-					final ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(associatedContact.getUuid());
+					final ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(associatedContact.getUuid());
 					ControllerProvider.getTaskController()
 						.createSampleCollectionTask(TaskContext.CONTACT, associatedContact, dto, contactDto.getDisease());
 				} else if (associatedEventParticipant != null) {
@@ -587,7 +587,7 @@ public class SampleController {
 		}
 		ContactReferenceDto contactRef = sample.getAssociatedContact();
 		if (contactRef != null) {
-			return FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid()).getDisease();
+			return FacadeProvider.getContactFacade().getByUuid(contactRef.getUuid()).getDisease();
 		}
 		EventParticipantReferenceDto eventPartRef = sample.getAssociatedEventParticipant();
 		if (eventPartRef != null) {

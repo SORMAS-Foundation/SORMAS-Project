@@ -295,7 +295,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		caseDataDto.setFacilityType(rdcf.facility.getType());
 		caseDataDto.setHealthFacility(new FacilityReferenceDto(rdcf.facility.getUuid(), null, null));
 		caseDataDto.setReportingUser(user.toReference());
-		CaseDataDto caseConvertedFromContact = getCaseFacade().saveCase(caseDataDto);
+		CaseDataDto caseConvertedFromContact = getCaseFacade().save(caseDataDto);
 
 		getCaseFacade().setSampleAssociations(contact.toReference(), caseConvertedFromContact.toReference());
 
@@ -507,7 +507,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, getSampleTestFacade().getAllActivePathogenTestsAfter(null).size());
 		assertEquals(1, getSampleTestFacade().getAllActiveUuids().size());
 
-		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), true);
+		getCaseFacade().archive(caze.getUuid());
 
 		// getAllActiveSamples/getAllActiveSampleTests and getAllUuids should return length 0
 		assertEquals(0, getSampleFacade().getAllActiveSamplesAfter(null).size());
@@ -515,7 +515,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(0, getSampleTestFacade().getAllActivePathogenTestsAfter(null).size());
 		assertEquals(0, getSampleTestFacade().getAllActiveUuids().size());
 
-		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), false);
+		getCaseFacade().dearchive(caze.getUuid());
 
 		// getAllActiveSamples/getAllActiveSampleTests and getAllUuids should return length 1
 		assertEquals(1, getSampleFacade().getAllActiveSamplesAfter(null).size());

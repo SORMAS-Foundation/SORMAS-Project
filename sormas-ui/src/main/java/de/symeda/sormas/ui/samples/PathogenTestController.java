@@ -169,7 +169,7 @@ public class PathogenTestController {
 					CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(existingCaseDto.getUuid());
 					caseDataByUuid.setDiseaseVariant(diseaseVariant);
 					caseDataByUuid.setDiseaseVariantDetails(diseaseVariantDetails);
-					FacadeProvider.getCaseFacade().saveCase(caseDataByUuid);
+					FacadeProvider.getCaseFacade().save(caseDataByUuid);
 				}
 				if (callback != null) {
 					callback.accept(yes);
@@ -268,7 +268,7 @@ public class PathogenTestController {
 		// a.2) If contact is not converted (or there already is a resulting case), ask user whether to update the sample pathogen test result
 		// b) Tested disease != contact disease: Ask user to create a new case for the tested disease
 
-		final ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(associatedContact.getUuid());
+		final ContactDto contact = FacadeProvider.getContactFacade().getByUuid(associatedContact.getUuid());
 		final boolean equalDisease = dto.getTestedDisease() == contact.getDisease();
 
 		Runnable callback = () -> {
@@ -469,7 +469,7 @@ public class PathogenTestController {
 					clonedCase.setDiseaseVariantDetails(diseaseVariantDetails);
 					clonedCase.setEpidNumber(null);
 					clonedCase.setReportDate(new Date());
-					FacadeProvider.getCaseFacade().saveCase(clonedCase);
+					FacadeProvider.getCaseFacade().save(clonedCase);
 					ControllerProvider.getCaseController().navigateToCase(clonedCase.getUuid());
 				}
 			});
@@ -495,7 +495,7 @@ public class PathogenTestController {
 				if (confirmed) {
 					CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(caze.getUuid());
 					caseDataByUuid.setCaseClassification(CaseClassification.CONFIRMED);
-					FacadeProvider.getCaseFacade().saveCase(caseDataByUuid);
+					FacadeProvider.getCaseFacade().save(caseDataByUuid);
 					ControllerProvider.getCaseController().navigateToCase(caseDataByUuid.getUuid());
 				}
 			});
