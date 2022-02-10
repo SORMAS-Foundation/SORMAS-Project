@@ -112,7 +112,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		// Has LAB_MASSAGES right
 		UserDto natUser = creator.createUser(rdcf, NATIONAL_USER);
 		// Does not have LAB_MASSAGES right
-		creator.createUser(rdcf, POE_INFORMANT);
+		creator.createUser(rdcf, "Some", "User", POE_INFORMANT);
 		result = getUserFacade().getUsersByRegionAndRight(region, UserRight.LAB_MESSAGES);
 
 		assertThat(result, contains(equalTo(natUser.toReference())));
@@ -140,8 +140,8 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		creator.createUser(rdcf, "my", "User", CASE_OFFICER, CONTACT_OFFICER);
 
 		// some other users to be filtered out
-		creator.createUser(rdcf, SURVEILLANCE_SUPERVISOR, CONTACT_SUPERVISOR);
-		creator.createUser(rdcf, SURVEILLANCE_OFFICER, DISTRICT_OBSERVER);
+		creator.createUser(rdcf, "Some", "User", SURVEILLANCE_SUPERVISOR, CONTACT_SUPERVISOR);
+		creator.createUser(rdcf, "Other", "User", SURVEILLANCE_OFFICER, DISTRICT_OBSERVER);
 
 		List<UserDto> result;
 

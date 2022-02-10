@@ -52,6 +52,10 @@ public class CurrentUserService {
 		final CriteriaQuery<User> cq = cb.createQuery(User.class);
 		final Root<User> from = cq.from(User.class);
 
+		// avoid "Hibernate could not initialize proxy – no Session" Exception
+		// do eager loading in this case
+		from.fetch(User.ADDRESS);
+
 		// case-insensitive check
 		cq.where(cb.equal(cb.lower(from.get(User.USER_NAME)), userNameParam));
 		final TypedQuery<User> q = em.createQuery(cq).setParameter(userNameParam, userName.toLowerCase());

@@ -77,7 +77,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ad", "Min", UserRole.ADMIN);
+		UserDto admin = getUserFacade().getByUserName("admin");
 		EventDto event = creator.createEvent(
 			EventStatus.SIGNAL,
 			EventInvestigationStatus.PENDING,
@@ -116,7 +116,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ad", "Min", UserRole.ADMIN);
+		UserDto admin = getUserFacade().getByUserName("admin");
 		EventDto event = creator.createEvent(
 			EventStatus.SIGNAL,
 			EventInvestigationStatus.PENDING,

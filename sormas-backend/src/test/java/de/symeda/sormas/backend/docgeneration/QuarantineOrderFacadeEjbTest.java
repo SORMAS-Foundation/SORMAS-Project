@@ -243,7 +243,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 	@Test
 	public void testBulkContactDocumentCreation() throws DocumentTemplateException, IOException {
 		ReferenceDto rootEntityReference = contactDto.toReference();
-
+		loginWith(creator.createUser(creator.createRDCF(), UserRole.SURVEILLANCE_SUPERVISOR));
 		Properties properties = new Properties();
 		properties.setProperty("extraremark1", "the first remark");
 		properties.setProperty("extra.remark.no3", "the third remark");

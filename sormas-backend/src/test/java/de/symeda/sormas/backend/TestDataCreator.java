@@ -337,8 +337,12 @@ public class TestDataCreator {
 	public CaseDataDto createUnclassifiedCase(Disease disease) {
 
 		RDCFEntities rdcf = createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user =
-			createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = beanTest.getUserFacade().getByUserName("SurvSup");
+		if (user == null) {
+			user =
+				createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		}
+
 		PersonDto cazePerson = createPerson("Case", "Person", Sex.UNKNOWN);
 		return createCase(
 			user.toReference(),

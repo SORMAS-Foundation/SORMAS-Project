@@ -55,6 +55,7 @@ import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.vaccination.VaccinationReferenceDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
@@ -315,7 +316,8 @@ public class DocumentTemplateEntitiesBuilder {
 			entities.addEntity(RootEntityType.ROOT_VACCINATION, vaccination);
 		}
 
-		entities.addEntity(RootEntityType.ROOT_USER, userFacade.getCurrentUser());
+		final UserDto currentUser = userFacade.getCurrentUser();
+		entities.addEntity(RootEntityType.ROOT_USER, currentUser);
 
 		return entities;
 	}
