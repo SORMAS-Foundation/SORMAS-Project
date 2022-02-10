@@ -313,8 +313,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		EventDto inactiveEvent = creator.createEvent(user.toReference());
 		creator.createEventParticipant(inactiveEvent.toReference(), person7, user.toReference());
 
-		getCaseFacade().archiveOrDearchiveCase(inactiveCase.getUuid(), true);
-		getEventFacade().archiveOrDearchiveEvent(inactiveEvent.getUuid(), true);
+		getCaseFacade().archive(inactiveCase.getUuid());
+		getEventFacade().archive(inactiveEvent.getUuid());
 
 		// Only persons that have active case, contact or event participant associations should be retrieved
 		List<String> relevantNameUuids = getPersonFacade().getSimilarPersonDtos(user.toReference(), new PersonSimilarityCriteria())
@@ -327,8 +327,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			containsInAnyOrder(person1.getUuid(), person2.getUuid(), person3.getUuid(), person5.getUuid(), person6.getUuid(), person7.getUuid()));
 
 		creator.createCase(user.toReference(), person4.toReference(), rdcf);
-		getCaseFacade().archiveOrDearchiveCase(inactiveCase.getUuid(), false);
-		getEventFacade().archiveOrDearchiveEvent(inactiveEvent.getUuid(), false);
+		getCaseFacade().dearchive(inactiveCase.getUuid());
+		getEventFacade().archive(inactiveEvent.getUuid());
 
 		PersonSimilarityCriteria criteria = new PersonSimilarityCriteria().sex(Sex.MALE).birthdateYYYY(1980).birthdateMM(1).birthdateDD(1);
 		List<String> matchingUuids = getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria)
@@ -451,9 +451,9 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		contact12.setFollowUpUntil(DateHelper.subtractDays(now, 8));
 		contact2.setFollowUpUntil(now);
 
-		getContactFacade().saveContact(contact11);
-		getContactFacade().saveContact(contact12);
-		getContactFacade().saveContact(contact2);
+		getContactFacade().save(contact11);
+		getContactFacade().save(contact12);
+		getContactFacade().save(contact2);
 
 		List<PersonFollowUpEndDto> followUpEndDtos = getPersonFacade().getLatestFollowUpEndDates(null, false);
 
@@ -502,8 +502,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		contact2.setFollowUpUntil(DateHelper.subtractDays(now, 8));
 
 		getPersonFacade().savePerson(person);
-		getContactFacade().saveContact(contact1);
-		getContactFacade().saveContact(contact2);
+		getContactFacade().save(contact1);
+		getContactFacade().save(contact2);
 
 		JournalPersonDto exportPerson = getPersonFacade().getPersonForJournal(person.getUuid());
 		assertEquals(person.getFirstName(), exportPerson.getFirstName());
@@ -541,9 +541,9 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		case12.setFollowUpUntil(DateHelper.subtractDays(now, 8));
 		case2.setFollowUpUntil(now);
 
-		getCaseFacade().saveCase(case11);
-		getCaseFacade().saveCase(case12);
-		getCaseFacade().saveCase(case2);
+		getCaseFacade().save(case11);
+		getCaseFacade().save(case12);
+		getCaseFacade().save(case2);
 
 		List<PersonFollowUpEndDto> followUpEndDtos = getPersonFacade().getLatestFollowUpEndDates(null, false);
 
@@ -606,15 +606,15 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		case5.setFollowUpStatus(FollowUpStatus.CANCELED);
 		contact4.setFollowUpUntil(now);
 
-		getContactFacade().saveContact(contact1);
-		getContactFacade().saveContact(contact2);
-		getContactFacade().saveContact(contact3);
-		getContactFacade().saveContact(contact4);
-		getCaseFacade().saveCase(case1);
-		getCaseFacade().saveCase(case2);
-		getCaseFacade().saveCase(case3);
-		getCaseFacade().saveCase(case4);
-		getCaseFacade().saveCase(case5);
+		getContactFacade().save(contact1);
+		getContactFacade().save(contact2);
+		getContactFacade().save(contact3);
+		getContactFacade().save(contact4);
+		getCaseFacade().save(case1);
+		getCaseFacade().save(case2);
+		getCaseFacade().save(case3);
+		getCaseFacade().save(case4);
+		getCaseFacade().save(case5);
 
 		List<PersonFollowUpEndDto> followUpEndDtos = getPersonFacade().getLatestFollowUpEndDates(null, false);
 
@@ -643,7 +643,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person1 = creator.createPerson();
 		person1 = getPersonFacade().savePerson(person1);
 		final ContactDto contact1 = creator.createContact(natUser.toReference(), person1.toReference());
-		getContactFacade().saveContact(contact1);
+		getContactFacade().save(contact1);
 
 		List<PersonDto> personsAfterT1 = getPersonFacade().getPersonsAfter(t1);
 		assertEquals(1, personsAfterT1.size());
@@ -654,7 +654,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person2 = creator.createPerson();
 		person2 = getPersonFacade().savePerson(person2);
 		final ContactDto contact2 = creator.createContact(natUser.toReference(), person2.toReference());
-		getContactFacade().saveContact(contact2);
+		getContactFacade().save(contact2);
 
 		List<PersonDto> personsAfterT2 = getPersonFacade().getPersonsAfter(t2);
 		assertEquals(1, personsAfterT2.size());
@@ -733,7 +733,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		for (FollowUpStatus status : FollowUpStatus.values()) {
 			contact1.setFollowUpStatus(status);
-			getContactFacade().saveContact(contact1);
+			getContactFacade().save(contact1);
 
 			if (FollowUpStatus.COMPLETED.equals(status) || FollowUpStatus.NO_FOLLOW_UP.equals(status)) {
 				// In this case the status is automatically updated to FOLLOW_UP, because the end of the follow up period has not yet been reached.
@@ -805,15 +805,15 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	private void updateFollowUpStatus(ContactDto contact, FollowUpStatus status) {
-		contact = getContactFacade().getContactByUuid(contact.getUuid());
+		contact = getContactFacade().getByUuid(contact.getUuid());
 		contact.setFollowUpStatus(status);
-		getContactFacade().saveContact(contact);
+		getContactFacade().save(contact);
 	}
 
 	private void updateFollowUpStatus(CaseDataDto caze, FollowUpStatus status) {
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		caze.setFollowUpStatus(status);
-		getCaseFacade().saveCase(caze);
+		getCaseFacade().save(caze);
 	}
 
 	@Test

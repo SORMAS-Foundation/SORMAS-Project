@@ -45,4 +45,6 @@ public class PersonDirectoryPage {
       By.cssSelector("[id='community'] [class='v-filterselect-button']");
   public static final By CASE_PERSON_ID_COLUMN_HEADERS =
       By.cssSelector("v-grid-column-header-content v-grid-column-default-header-content");
+  public static final By PRESENT_CONDITION_FILTER_COMBOBOX =
+      By.cssSelector("#presentCondition div");
 }

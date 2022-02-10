@@ -52,7 +52,7 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 
 	@Override
 	public List<UserRoleConfigDto> getAllAfter(Date since) {
-		return userRoleConfigService.getAllAfter(since, null).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return userRoleConfigService.getAllAfter(since).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
 
 	@Override

@@ -127,8 +127,11 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 		EventSelectionField eventSelectionField,
 		Date selectedToDate,
 		AbstractComponent component) {
-		boolean isSelectedDateAfterEventDate =
-			selectedToDate == null || selectedToDate.before(EventHelper.getStartOrEndDate(eventDto.getStartDate(), eventDto.getEndDate()));
+		boolean isSelectedDateAfterEventDate = true;
+		Date eventStartOrEndDate = EventHelper.getStartOrEndDate(eventDto.getStartDate(), eventDto.getEndDate());
+		if (eventStartOrEndDate != null) {
+			isSelectedDateAfterEventDate = selectedToDate == null || selectedToDate.before(eventStartOrEndDate);
+		}
 		eventSelectionField.applyButton.setEnabled(isSelectedDateAfterEventDate);
 		if (isSelectedDateAfterEventDate) {
 			component.setComponentError(null);
@@ -166,7 +169,6 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 		eventSelectionField.weekAndDateFilter.getDateFromFilter().addValueChangeListener(valueChangeEvent -> {
 			Date selectedFromDate = eventSelectionField.weekAndDateFilter.getDateFromFilter().getValue();
 			prepareSubordinateFilters(eventDto, eventSelectionField, selectedFromDate, eventSelectionField.weekAndDateFilter.getDateFromFilter());
-
 		});
 
 		eventSelectionField.weekAndDateFilter.getWeekFromFilter().addValueChangeListener(valueChangeEvent -> {
@@ -183,8 +185,11 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 		EventSelectionField eventSelectionField,
 		Date selectedFromDate,
 		AbstractComponent component) {
-		boolean isSelectedDateBeforeEventDate =
-			selectedFromDate == null || selectedFromDate.after(EventHelper.getStartOrEndDate(eventDto.getStartDate(), eventDto.getEndDate()));
+		boolean isSelectedDateBeforeEventDate = true;
+		Date eventStartOrEndDate = EventHelper.getStartOrEndDate(eventDto.getStartDate(), eventDto.getEndDate());
+		if (eventStartOrEndDate != null) {
+			isSelectedDateBeforeEventDate = selectedFromDate == null || selectedFromDate.after(eventStartOrEndDate);
+		}
 		eventSelectionField.applyButton.setEnabled(isSelectedDateBeforeEventDate);
 		if (isSelectedDateBeforeEventDate) {
 			component.setComponentError(null);

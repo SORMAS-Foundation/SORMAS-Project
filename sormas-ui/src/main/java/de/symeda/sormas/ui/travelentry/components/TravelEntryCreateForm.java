@@ -16,12 +16,10 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
-import com.vaadin.ui.Button;
-import de.symeda.sormas.ui.utils.LayoutUtil;
-import de.symeda.sormas.ui.utils.PersonDependentEditForm;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.data.validator.EmailValidator;
@@ -31,6 +29,7 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -45,6 +44,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.travelentry.DeaContentEntry;
@@ -56,9 +56,10 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.travelentry.DEAFormBuilder;
-import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
+import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.PersonDependentEditForm;
 import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 
 public class TravelEntryCreateForm extends PersonDependentEditForm<TravelEntryDto> {
@@ -99,11 +100,18 @@ public class TravelEntryCreateForm extends PersonDependentEditForm<TravelEntryDt
 	private ComboBox responsibleDistrict;
 	private ComboBox responsibleCommunity;
 
+	private final PersonReferenceDto personDto;
+
 	public TravelEntryCreateForm() {
+		this(null);
+	}
+
+	public TravelEntryCreateForm(PersonReferenceDto personDto) {
 		super(
 			TravelEntryDto.class,
 			TravelEntryDto.I18N_PREFIX,
 			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()));
+		this.personDto = personDto;
 		setWidth(720, Unit.PIXELS);
 		hideValidationUntilNextCommit();
 	}
@@ -163,8 +171,17 @@ public class TravelEntryCreateForm extends PersonDependentEditForm<TravelEntryDt
 		Button searchPersonButton = createPersonSearchButton(PERSON_SEARCH_LOC);
 		getContent().addComponent(searchPersonButton, PERSON_SEARCH_LOC);
 
-		addCustomField(PersonDto.NATIONAL_HEALTH_ID, String.class, TextField.class);
-		addCustomField(PersonDto.PASSPORT_NUMBER, String.class, TextField.class);
+		TextField nationalHealthIdField = addCustomField(PersonDto.NATIONAL_HEALTH_ID, String.class, TextField.class);
+		TextField passportNumberField = addCustomField(PersonDto.PASSPORT_NUMBER, String.class, TextField.class);
+		if (CountryHelper.isCountry(FacadeProvider.getConfigFacade().getCountryLocale(), CountryHelper.COUNTRY_CODE_GERMANY)) {
+			nationalHealthIdField.setVisible(false);
+		}
+		if (CountryHelper.isInCountries(
+			FacadeProvider.getConfigFacade().getCountryLocale(),
+			CountryHelper.COUNTRY_CODE_GERMANY,
+			CountryHelper.COUNTRY_CODE_FRANCE)) {
+			passportNumberField.setVisible(false);
+		}
 
 		birthDateDay = addCustomField(PersonDto.BIRTH_DATE_DD, Integer.class, ComboBox.class);
 		// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
@@ -249,14 +266,7 @@ public class TravelEntryCreateForm extends PersonDependentEditForm<TravelEntryDt
 		// Set initial visibilities & accesses
 		initializeVisibilitiesAndAllowedVisibilities();
 
-		setRequired(
-			true,
-			TravelEntryDto.REPORT_DATE,
-			TravelEntryDto.POINT_OF_ENTRY,
-			PersonDto.FIRST_NAME,
-			PersonDto.LAST_NAME,
-			TravelEntryDto.DISEASE,
-			PersonDto.SEX);
+		setRequired(true, TravelEntryDto.REPORT_DATE, TravelEntryDto.POINT_OF_ENTRY, TravelEntryDto.DISEASE);
 
 		FieldHelper.setVisibleWhen(
 			getFieldGroup(),
@@ -301,6 +311,41 @@ public class TravelEntryCreateForm extends PersonDependentEditForm<TravelEntryDt
 		diseaseVariantField.addValueChangeListener(e -> {
 			DiseaseVariant diseaseVariant = (DiseaseVariant) e.getProperty().getValue();
 			diseaseVariantDetailsField.setVisible(diseaseVariant != null && diseaseVariant.matchPropertyValue(DiseaseVariant.HAS_DETAILS, true));
+		});
+
+		addValueChangeListener(e -> {
+			if (personDto != null) {
+				setVisible(
+					false,
+					PersonDto.FIRST_NAME,
+					PersonDto.LAST_NAME,
+					PersonDto.SEX,
+					PersonDto.NATIONAL_HEALTH_ID,
+					PersonDto.PASSPORT_NUMBER,
+					PersonDto.BIRTH_DATE_DD,
+					PersonDto.BIRTH_DATE_MM,
+					PersonDto.BIRTH_DATE_YYYY,
+					PersonDto.PRESENT_CONDITION,
+					PersonDto.PHONE,
+					PersonDto.EMAIL_ADDRESS);
+				setReadOnly(
+					false,
+					PersonDto.FIRST_NAME,
+					PersonDto.LAST_NAME,
+					PersonDto.SEX,
+					PersonDto.NATIONAL_HEALTH_ID,
+					PersonDto.PASSPORT_NUMBER,
+					PersonDto.BIRTH_DATE_DD,
+					PersonDto.BIRTH_DATE_MM,
+					PersonDto.BIRTH_DATE_YYYY,
+					PersonDto.PRESENT_CONDITION,
+					PersonDto.PHONE,
+					PersonDto.EMAIL_ADDRESS);
+
+				searchPersonButton.setVisible(false);
+			} else {
+				setRequired(true, PersonDto.FIRST_NAME, PersonDto.LAST_NAME, PersonDto.SEX);
+			}
 		});
 	}
 
@@ -371,24 +416,6 @@ public class TravelEntryCreateForm extends PersonDependentEditForm<TravelEntryDt
 		getField(PersonDto.PRESENT_CONDITION).setEnabled(enable);
 		getField(PersonDto.PHONE).setEnabled(enable);
 		getField(PersonDto.EMAIL_ADDRESS).setEnabled(enable);
-	}
-
-	public void setPersonalDetailsReadOnlyIfNotEmpty(boolean readOnly) {
-
-		getField(PersonDto.FIRST_NAME).setEnabled(!readOnly);
-		getField(PersonDto.LAST_NAME).setEnabled(!readOnly);
-		if (getField(PersonDto.SEX).getValue() != null) {
-			getField(PersonDto.SEX).setEnabled(!readOnly);
-		}
-		if (getField(PersonDto.BIRTH_DATE_YYYY).getValue() != null) {
-			getField(PersonDto.BIRTH_DATE_YYYY).setEnabled(!readOnly);
-		}
-		if (getField(PersonDto.BIRTH_DATE_MM).getValue() != null) {
-			getField(PersonDto.BIRTH_DATE_MM).setEnabled(!readOnly);
-		}
-		if (getField(PersonDto.BIRTH_DATE_DD).getValue() != null) {
-			getField(PersonDto.BIRTH_DATE_DD).setEnabled(!readOnly);
-		}
 	}
 
 	public void setDiseaseReadOnly(boolean readOnly) {

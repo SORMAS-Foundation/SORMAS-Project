@@ -81,7 +81,6 @@ import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -627,10 +626,10 @@ public class VisitFacadeEjb implements VisitFacade {
 
 		if (newVisit.getCaze() != null) {
 			// Update case symptoms
-			CaseDataDto caze = CaseFacadeEjb.toDto(newVisit.getCaze());
+			CaseDataDto caze = caseFacade.toDto(newVisit.getCaze());
 			SymptomsDto caseSymptoms = caze.getSymptoms();
 			SymptomsHelper.updateSymptoms(toDto(newVisit).getSymptoms(), caseSymptoms);
-			caseFacade.saveCase(caze, true);
+			caseFacade.save(caze, true);
 		}
 	}
 

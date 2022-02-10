@@ -243,7 +243,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 		ContactImporter contactImporter = new ContactImporterExtension(csvFile, user, caze);
 		ImportResultStatus importResult = contactImporter.runImport();
 
-		List<ContactDto> contacts = getContactFacade().getAllActiveContactsAfter(null);
+		List<ContactDto> contacts = getContactFacade().getAllAfter(null);
 
 		assertEquals(3, contacts.size());
 
@@ -287,7 +287,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 
 		assertEquals(contactImporter.stringBuilder.toString(), ImportResultStatus.COMPLETED, importResult);
 
-		List<ContactDto> contacts = getContactFacade().getAllActiveContactsAfter(null);
+		List<ContactDto> contacts = getContactFacade().getAllAfter(null);
 		assertEquals(3, contacts.size());
 
 		ContactDto contact1 = contacts.stream().filter(c -> c.getCaseIdExternalSystem().equals("case1")).findFirst().get();

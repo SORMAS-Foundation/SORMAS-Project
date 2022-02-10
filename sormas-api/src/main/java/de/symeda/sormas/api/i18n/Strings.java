@@ -809,6 +809,7 @@ public interface Strings {
 	String infoSaveOfTask = "infoSaveOfTask";
 	String infoSearchCaseForContact = "infoSearchCaseForContact";
 	String infoSearchPerson = "infoSearchPerson";
+	String infoSearchPersonOnDependentForm = "infoSearchPersonOnDependentForm";
 	String infoSelectOrCreateContact = "infoSelectOrCreateContact";
 	String infoSelectOrCreateContactImport = "infoSelectOrCreateContactImport";
 	String infoSelectOrCreateEntry = "infoSelectOrCreateEntry";
