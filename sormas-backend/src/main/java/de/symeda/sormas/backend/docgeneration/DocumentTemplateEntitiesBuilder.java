@@ -124,7 +124,7 @@ public class DocumentTemplateEntitiesBuilder {
 			return buildEntities(RootEntityType.ROOT_CASE, caseDataDto, caseDataDto.getPerson(), sample, pathogenTest, vaccination);
 
 		case QUARANTINE_ORDER_CONTACT:
-			ContactDto contactDto = contactFacade.getContactByUuid(rootEntityUuid);
+			ContactDto contactDto = contactFacade.getByUuid(rootEntityUuid);
 
 			return buildEntities(ROOT_CONTACT, contactDto, contactDto.getPerson(), sample, pathogenTest, vaccination);
 

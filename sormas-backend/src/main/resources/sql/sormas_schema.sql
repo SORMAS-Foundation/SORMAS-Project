@@ -9940,4 +9940,13 @@ ALTER TABLE testreport_history ADD COLUMN testeddiseasevariantdetails varchar(25
 
 INSERT INTO schema_version (version_number, comment) VALUES (439, 'Add disease variant mapping to test reports #7209');
 
+-- 2022-02-02 Refactor CoreAdo to include archiving #7246
+
+ALTER TABLE contact ADD COLUMN archived BOOLEAN;
+ALTER TABLE contact_history ADD COLUMN archived BOOLEAN;
+ALTER TABLE eventparticipant ADD COLUMN archived BOOLEAN;
+ALTER TABLE eventparticipant_history ADD COLUMN archived BOOLEAN;
+
+INSERT INTO schema_version (version_number, comment) VALUES (440, 'Refactor CoreAdo to include archiving #7246');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

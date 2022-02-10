@@ -71,13 +71,13 @@ public class ProcessedContactDataPersister extends ProcessedDataPersister<Contac
 				Captions.Person,
 				contactValidationGroupName);
 			handleValidationError(
-				() -> contactFacade.saveContact(processedData.getEntity(), true, true, false, false),
+				() -> contactFacade.save(processedData.getEntity(), true, true, false, false),
 				Captions.Contact,
 				contactValidationGroupName);
 		} else {
 			//save contact first during update
 			handleValidationError(
-				() -> contactFacade.saveContact(processedData.getEntity(), true, true, false, false),
+				() -> contactFacade.save(processedData.getEntity(), true, true, false, false),
 				Captions.Contact,
 				contactValidationGroupName);
 			handleValidationError(

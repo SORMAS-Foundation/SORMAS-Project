@@ -124,6 +124,19 @@ public class PersonDirectorySteps implements En {
         });
 
     When(
+        "I filter for persons who are alive",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.selectFromCombobox(PRESENT_CONDITION_FILTER_COMBOBOX, "Alive");
+        });
+
+    When(
+        "I click on first person in person directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(By.cssSelector("[role='gridcell'] a"));
+        });
+
+    When(
         "I apply on the APPLY FILTERS button",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(

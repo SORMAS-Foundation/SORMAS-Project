@@ -18,11 +18,11 @@ import javax.persistence.TemporalType;
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
-import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.common.DeletableAdo;
 
 @Entity(name = TestReport.TABLE_NAME)
 @Audited
-public class TestReport extends CoreAdo {
+public class TestReport extends DeletableAdo {
 
 	private static final long serialVersionUID = -9164498173635523905L;
 

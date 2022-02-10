@@ -37,6 +37,7 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -50,7 +51,6 @@ import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -62,7 +62,6 @@ import de.symeda.sormas.backend.immunization.transformers.ImmunizationListEntryD
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonJoins;
 import de.symeda.sormas.backend.person.PersonJurisdictionPredicateValidator;
-import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -83,8 +82,6 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
-	@EJB
-	private PersonService personService;
 
 	public ImmunizationService() {
 		super(Immunization.class);
@@ -163,7 +160,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			.build();
 	}
 
-	public List<Immunization> getAllActiveAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+	public List<Immunization> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Immunization> cq = cb.createQuery(getElementClass());

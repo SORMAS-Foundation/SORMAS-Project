@@ -125,7 +125,7 @@ public class CampaignController {
 				640,
 				e -> {
 					if (e) {
-						FacadeProvider.getCampaignFacade().archiveOrDearchiveCampaign(campaignUuid, true);
+						FacadeProvider.getCampaignFacade().archive(campaignUuid);
 						SormasUI.refreshView();
 					}
 				});
@@ -143,7 +143,7 @@ public class CampaignController {
 				640,
 				e -> {
 					if (e) {
-						FacadeProvider.getCampaignFacade().archiveOrDearchiveCampaign(campaignUuid, false);
+						FacadeProvider.getCampaignFacade().dearchive(campaignUuid);
 						SormasUI.refreshView();
 					}
 				});
@@ -197,7 +197,7 @@ public class CampaignController {
 		campaignComponent.addCommitListener(() -> {
 			if (!campaignEditForm.getFieldGroup().isModified()) {
 				CampaignDto dto = campaignEditForm.getValue();
-				FacadeProvider.getCampaignFacade().saveCampaign(dto);
+				FacadeProvider.getCampaignFacade().save(dto);
 				SormasUI.refreshView();
 				callback.run();
 			}
