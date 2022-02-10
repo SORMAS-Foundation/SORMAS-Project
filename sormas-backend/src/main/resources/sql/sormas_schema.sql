@@ -9950,6 +9950,18 @@ ALTER TABLE eventparticipant_history ADD COLUMN archived BOOLEAN;
 INSERT INTO schema_version (version_number, comment) VALUES (440, 'Refactor CoreAdo to include archiving #7246');
 
 -- 2022-02-09 Align username handling of Keycloak and legacy login #7907
+/*
+* In case the current DB violates the new uniqueness constraint on usernames, please use the following script to detect
+* all conflicting usernames. Usernames are case-insensitive now, that means "ADMIN" and "admin" will both map to the
+* same user in the DB. To resolve the conflict, rename the conflicting usernames found with the script.
+*
+* SELECT username, creationdate, id, uuid FROM users
+* WHERE LOWER(username) IN
+*      (SELECT LOWER(username) FROM users GROUP BY LOWER(username) HAVING COUNT(*) > 1)
+* ORDER BY username, creationdate;
+*
+*/
+
 DROP INDEX idx_users_username;
 CREATE UNIQUE INDEX idx_users_username_lower ON users(LOWER(username));
 REINDEX INDEX idx_users_username_lower;
