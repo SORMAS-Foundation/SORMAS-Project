@@ -125,7 +125,8 @@ public class EditCaseSteps implements En {
               Case.builder()
                   .investigationStatus("Investigation " + investigationStatus)
                   .build(); // TODO: Create POJO updater class
-          TimeUnit.SECONDS.sleep(1);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(
@@ -151,7 +152,8 @@ public class EditCaseSteps implements En {
           webDriverHelpers.clickWebElementByText(
               SEQUELAE_OPTIONS, CaseOutcome.getValueFor(option).toUpperCase());
           editedCase = editedCase.toBuilder().sequelae(option).build();
-          TimeUnit.SECONDS.sleep(1);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(

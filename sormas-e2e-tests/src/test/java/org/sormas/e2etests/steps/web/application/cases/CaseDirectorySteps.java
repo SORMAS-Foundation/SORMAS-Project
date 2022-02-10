@@ -66,7 +66,7 @@ public class CaseDirectorySteps implements En {
         () -> {
           webDriverHelpers.fillAndSubmitInWebElement(
               NAME_UUID_EPID_NUMBER_LIKE_INPUT, EditCaseSteps.aCase.getUuid());
-          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
     When(

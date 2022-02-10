@@ -24,7 +24,6 @@ import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
@@ -61,7 +60,6 @@ public class CreateNewTaskSteps implements En {
     When(
         "^I check the created task is correctly displayed on Edit task page",
         () -> {
-          TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.waitForPageLoaded();
           final Task actualTask = collectTaskData();
           ComparisonHelper.compareEqualEntities(task, actualTask);
