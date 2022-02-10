@@ -106,7 +106,7 @@ public class ImportExportTest extends AbstractBeanTest {
 		caze.getSymptoms().setTremor(SymptomState.YES);
 		caze.getSymptoms().setVomiting(SymptomState.YES);
 
-		getCaseFacade().saveCase(caze);
+		getCaseFacade().save(caze);
 
 		person.setSex(Sex.MALE);
 		person.setBirthdateDD(11);
@@ -261,7 +261,7 @@ public class ImportExportTest extends AbstractBeanTest {
 		contact.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
 		contact.setFollowUpUntil(dateNow);
 
-		getContactFacade().saveContact(contact);
+		getContactFacade().save(contact);
 
 		person.setSex(Sex.MALE);
 		person.setBirthdateDD(11);

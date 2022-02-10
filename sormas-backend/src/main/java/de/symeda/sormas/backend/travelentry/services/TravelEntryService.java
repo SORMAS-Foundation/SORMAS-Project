@@ -174,33 +174,6 @@ public class TravelEntryService extends BaseTravelEntryService {
 		return cb.and(cb.isFalse(root.get(TravelEntry.ARCHIVED)), cb.isFalse(root.get(TravelEntry.DELETED)));
 	}
 
-	public List<TravelEntry> getAllActiveAfter(Date date) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<TravelEntry> cq = cb.createQuery(getElementClass());
-		Root<TravelEntry> from = cq.from(getElementClass());
-
-		Predicate filter = createDefaultFilter(cb, from);
-
-		if (getCurrentUser() != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from);
-			if (userFilter != null) {
-				filter = cb.and(filter, userFilter);
-			}
-		}
-
-		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
-			if (dateFilter != null) {
-				filter = cb.and(filter, dateFilter);
-			}
-		}
-		cq.where(filter);
-		cq.orderBy(cb.desc(from.get(TravelEntry.CHANGE_DATE)));
-		cq.distinct(true);
-
-		return em.createQuery(cq).getResultList();
-	}
-
 	public List<TravelEntry> getAllByResultingCase(Case caze) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -243,17 +216,6 @@ public class TravelEntryService extends BaseTravelEntryService {
 		Root<TravelEntry> from = cq.from(TravelEntry.class);
 
 		cq.where(cb.and(cb.isTrue(from.get(TravelEntry.DELETED)), cb.equal(from.get(AbstractDomainObject.UUID), travelEntryUuid)));
-		cq.select(cb.count(from));
-		long count = em.createQuery(cq).getSingleResult();
-		return count > 0;
-	}
-
-	public boolean isArchived(String travelEntryUuid) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<TravelEntry> from = cq.from(TravelEntry.class);
-
-		cq.where(cb.and(cb.equal(from.get(TravelEntry.ARCHIVED), true), cb.equal(from.get(AbstractDomainObject.UUID), travelEntryUuid)));
 		cq.select(cb.count(from));
 		long count = em.createQuery(cq).getSingleResult();
 		return count > 0;

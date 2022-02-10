@@ -159,7 +159,7 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	public static final String SEQUELAE = "sequelae";
 	public static final String SEQUELAE_DETAILS = "sequelaeDetails";
 	public static final String CASE_AGE = "caseAge";
-	public static final String ARCHIVED = "archived";
+
 	public static final String THERAPY = "therapy";
 	public static final String CLINICIAN_DETAILS = "clinicianDetails";
 	public static final String CASE_ORIGIN = "caseOrigin";
@@ -314,7 +314,7 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 
 	private Integer caseAge;
 
-	private boolean archived;
+
 	private String creationVersion;
 	private Case duplicateOf;
 
@@ -1067,15 +1067,6 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 
 	public void setCaseAge(Integer caseAge) {
 		this.caseAge = caseAge;
-	}
-
-	@Column
-	public boolean isArchived() {
-		return archived;
-	}
-
-	public void setArchived(boolean archived) {
-		this.archived = archived;
 	}
 
 	@Column(length = 32)

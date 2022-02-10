@@ -7,7 +7,7 @@ import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.infrastructure.InfrastructureBaseFacade;
+import de.symeda.sormas.api.infrastructure.InfrastructureFacade;
 import de.symeda.sormas.api.infrastructure.InfrastructureDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -18,19 +18,23 @@ import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.DtoHelper;
 
-public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, DTO extends InfrastructureDto, INDEX_DTO extends Serializable, REF_DTO extends InfrastructureDataReferenceDto, SRV extends AbstractInfrastructureAdoService<ADO, CRITERIA>, CRITERIA extends BaseCriteria>
+import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
+
+public abstract class AbstractInfrastructureFacadeEjb<ADO extends InfrastructureAdo, DTO extends InfrastructureDto, INDEX_DTO extends Serializable, REF_DTO extends InfrastructureDataReferenceDto, SRV extends AbstractInfrastructureAdoService<ADO, CRITERIA>, CRITERIA extends BaseCriteria>
 	extends AbstractBaseEjb<ADO, DTO, INDEX_DTO, REF_DTO, SRV, CRITERIA>
-	implements InfrastructureBaseFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA> {
+	implements InfrastructureFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA> {
 
 	protected FeatureConfigurationFacadeEjb featureConfiguration;
 	private String duplicateErrorMessageProperty;
 
-	protected AbstractInfrastructureEjb() {
+	protected AbstractInfrastructureFacadeEjb() {
 		super();
 	}
 
-	protected AbstractInfrastructureEjb(
+	protected AbstractInfrastructureFacadeEjb(
 		Class<ADO> adoClass,
 		Class<DTO> dtoClass,
 		SRV service,
@@ -40,6 +44,11 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 		super(adoClass, dtoClass, service, userService);
 		this.featureConfiguration = featureConfiguration;
 		this.duplicateErrorMessageProperty = duplicateErrorMessageProperty;
+	}
+
+	@Override
+	public DTO save(@Valid @NotNull DTO dtoToSave) {
+		return save(dtoToSave, false);
 	}
 
 	public DTO save(DTO dto, boolean allowMerge) {
@@ -89,6 +98,19 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 		return persistEntity(dtoToSave, existingEntity, checkChangeDate);
 	}
 
+	protected DTO persistEntity(DTO dto, ADO entityToPersist, boolean checkChangeDate) {
+		entityToPersist = fillOrBuildEntity(dto, entityToPersist, checkChangeDate);
+		service.ensurePersisted(entityToPersist);
+		return toDto(entityToPersist);
+	}
+
+	protected DTO mergeAndPersist(DTO dtoToSave, List<ADO> duplicates, boolean checkChangeDate) {
+		ADO existingEntity = duplicates.get(0);
+		DTO existingDto = toDto(existingEntity);
+		DtoHelper.copyDtoValues(existingDto, dtoToSave, true);
+		return persistEntity(dtoToSave, existingEntity, checkChangeDate);
+	}
+
 	@Override
 	public void archive(String uuid) {
 		// todo this should be really in the parent but right now there the setter for archived is not available there
@@ -120,6 +142,9 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 	public long count(CRITERIA criteria) {
 		return service.count((cb, root) -> service.buildCriteriaFilter(criteria, cb, root));
 	}
+
+
+	protected abstract List<ADO> findDuplicates(DTO dto, boolean includeArchived);
 
 	// todo implement toDto() here
 }

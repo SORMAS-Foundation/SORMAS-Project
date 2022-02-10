@@ -150,7 +150,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		ContactDto contact1 =
 			creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
 		contact1.setContactClassification(ContactClassification.CONFIRMED);
-		getContactFacade().saveContact(contact1);
+		getContactFacade().save(contact1);
 		ContactDto contact2 = creator.createContact(
 			user.toReference(),
 			user.toReference(),
@@ -212,7 +212,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		// drop
 		contact.setContactClassification(ContactClassification.NO_CONTACT);
-		contact = getContactFacade().saveContact(contact);
+		contact = getContactFacade().save(contact);
 		assertEquals(ContactStatus.DROPPED, contact.getContactStatus());
 
 		// add result case
@@ -226,7 +226,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			rdcf);
 		contact.setContactClassification(ContactClassification.CONFIRMED);
 		contact.setResultingCase(getCaseFacade().getReferenceByUuid(resultingCaze.getUuid()));
-		contact = getContactFacade().saveContact(contact);
+		contact = getContactFacade().save(contact);
 		assertEquals(ContactStatus.CONVERTED, contact.getContactStatus());
 	}
 
@@ -254,7 +254,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		contact.setContactClassification(ContactClassification.CONFIRMED);
 		contact.setContactStatus(ContactStatus.DROPPED);
-		contact = getContactFacade().saveContact(contact);
+		contact = getContactFacade().save(contact);
 		assertEquals(ContactClassification.CONFIRMED, contact.getContactClassification());
 		assertEquals(ContactStatus.DROPPED, contact.getContactStatus());
 		assertEquals(FollowUpStatus.CANCELED, contact.getFollowUpStatus());
@@ -284,7 +284,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertNull(contact.getResultingCase());
 
 		contact.setContactClassification(ContactClassification.CONFIRMED);
-		contact = getContactFacade().saveContact(contact);
+		contact = getContactFacade().save(contact);
 
 		final CaseDataDto resultingCase = creator.createCase(
 			user.toReference(),
@@ -295,7 +295,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			new Date(),
 			rdcf);
 		contact.setResultingCase(resultingCase.toReference());
-		contact = getContactFacade().saveContact(contact);
+		contact = getContactFacade().save(contact);
 		assertEquals(ContactClassification.CONFIRMED, contact.getContactClassification());
 		assertEquals(ContactStatus.CONVERTED, contact.getContactStatus());
 		assertEquals(FollowUpStatus.CANCELED, contact.getFollowUpStatus());
@@ -437,7 +437,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		getSampleFacade().saveSample(sample2);
 
 		// Database should contain the created contact, visit and task
-		assertNotNull(getContactFacade().getContactByUuid(contact.getUuid()));
+		assertNotNull(getContactFacade().getByUuid(contact.getUuid()));
 		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
 		assertNotNull(getVisitFacade().getVisitByUuid(visit.getUuid()));
 		assertNotNull(getSampleFacade().getSampleByUuid(sample.getUuid()));
@@ -657,11 +657,11 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		DistrictReferenceDto districtReferenceDto,
 		CaseReferenceDto caze) {
 
-		ContactDto contactDto = getContactFacade().getContactByUuid(contactUuid);
+		ContactDto contactDto = getContactFacade().getByUuid(contactUuid);
 		contactDto.setRegion(regionReferenceDto);
 		contactDto.setDistrict(districtReferenceDto);
 		contactDto.setCaze(caze);
-		contactDto = getContactFacade().saveContact(contactDto);
+		contactDto = getContactFacade().save(contactDto);
 	}
 
 	@Test
@@ -871,7 +871,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			new Date(),
 			rdcf);
 		contact.setResultingCase(caseWithContact.toReference());
-		contact = getContactFacade().saveContact(contact);
+		contact = getContactFacade().save(contact);
 		assertThat(cut.getNonSourceCaseCountForDashboard(Arrays.asList(caseWithoutContact.getUuid(), caseWithContact.getUuid())), equalTo(1));
 
 		// 3. Some more cases
@@ -895,7 +895,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 				new Date(),
 				rdcf);
 			contact2.setResultingCase(caseWithContact2.toReference());
-			contact2 = getContactFacade().saveContact(contact2);
+			contact2 = getContactFacade().save(contact2);
 
 			ContactDto contact3 = creator.createContact(user.toReference(), person.toReference(), disease);
 			CaseDataDto caseWithContact3 = creator.createCase(
@@ -907,7 +907,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 				new Date(),
 				rdcf);
 			contact3.setResultingCase(caseWithContact3.toReference());
-			contact3 = getContactFacade().saveContact(contact3);
+			contact3 = getContactFacade().save(contact3);
 
 			assertThat(
 				cut.getNonSourceCaseCountForDashboard(
@@ -968,9 +968,9 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
 
 		// database contains the created contact
-		assertEquals(true, getContactFacade().isValidContactUuid(contact.getUuid()));
+		assertEquals(true, getContactFacade().exists(contact.getUuid()));
 		// database contains the created contact
-		assertEquals(false, getContactFacade().isValidContactUuid("nonExistingContactUUID"));
+		assertEquals(false, getContactFacade().exists("nonExistingContactUUID"));
 	}
 
 	@Test
@@ -1009,7 +1009,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		travels.add(exposure);
 		epiData.setExposures(travels);
 		contact.setEpiData(epiData);
-		getContactFacade().saveContact(contact);
+		getContactFacade().save(contact);
 
 		contactPerson.getAddress().setRegion(new RegionReferenceDto(rdcf.region.getUuid(), null, null));
 		contactPerson.getAddress().setDistrict(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
@@ -1280,23 +1280,23 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvSup");
 
 		// getAllActiveContacts and getAllUuids should return length 1
-		assertEquals(1, getContactFacade().getAllActiveContactsAfter(null).size());
+		assertEquals(1, getContactFacade().getAllAfter(null).size());
 		assertEquals(1, getContactFacade().getAllActiveUuids().size());
 		assertEquals(1, getVisitFacade().getAllActiveVisitsAfter(null).size());
 		assertEquals(1, getVisitFacade().getAllActiveUuids().size());
 
-		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), true);
+		getCaseFacade().archive(caze.getUuid());
 
 		// getAllActiveContacts and getAllUuids should return length 0
-		assertEquals(0, getContactFacade().getAllActiveContactsAfter(null).size());
+		assertEquals(0, getContactFacade().getAllAfter(null).size());
 		assertEquals(0, getContactFacade().getAllActiveUuids().size());
 		assertEquals(0, getVisitFacade().getAllActiveVisitsAfter(null).size());
 		assertEquals(0, getVisitFacade().getAllActiveUuids().size());
 
-		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), false);
+		getCaseFacade().dearchive(caze.getUuid());
 
 		// getAllActiveContacts and getAllUuids should return length 1
-		assertEquals(1, getContactFacade().getAllActiveContactsAfter(null).size());
+		assertEquals(1, getContactFacade().getAllAfter(null).size());
 		assertEquals(1, getContactFacade().getAllActiveUuids().size());
 		assertEquals(1, getVisitFacade().getAllActiveVisitsAfter(null).size());
 		assertEquals(1, getVisitFacade().getAllActiveUuids().size());
@@ -1317,19 +1317,19 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		// Updating the contact but not changing the report date or last contact date should not alter the association
 		contact.setDescription("Description");
-		getContactFacade().saveContact(contact);
+		getContactFacade().save(contact);
 
 		assertThat(getVisitService().getAllByContact(contactEntity), hasSize(1));
 
 		// Changing the report date to a value beyond the threshold should remove the association
 		contact.setReportDateTime(DateHelper.addDays(visit.getVisitDateTime(), FollowUpLogic.ALLOWED_DATE_OFFSET + 20));
-		getContactFacade().saveContact(contact);
+		getContactFacade().save(contact);
 
 		assertThat(getVisitService().getAllByContact(contactEntity), empty());
 
 		// Changing the report date back to a value in the threshold should re-add the association
 		contact.setReportDateTime(new Date());
-		getContactFacade().saveContact(contact);
+		getContactFacade().save(contact);
 
 		assertThat(getVisitService().getAllByContact(contactEntity), hasSize(1));
 
@@ -1355,7 +1355,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		// Changing the contact disease should decrease the collection size
 		contact2.setDisease(Disease.CSM);
-		getContactFacade().saveContact(contact2);
+		getContactFacade().save(contact2);
 
 		assertThat(getContactService().getAllByVisit(visitEntity), hasSize(1));
 	}
@@ -1366,7 +1366,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		ContactDto contact =
 			creator.createContact(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), creator.createPerson().toReference());
 		contact.setQuarantineExtended(true);
-		getContactFacade().saveContact(contact);
+		getContactFacade().save(contact);
 
 		List<ContactIndexDto> indexList = getContactFacade().getIndexList(new ContactCriteria(), 0, 100, Collections.emptyList());
 		assertThat(indexList.get(0).getUuid(), is(contact.getUuid()));
@@ -1384,7 +1384,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		ContactDto contact =
 			creator.createContact(creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference(), creator.createPerson().toReference());
 		contact.setQuarantineReduced(true);
-		getContactFacade().saveContact(contact);
+		getContactFacade().save(contact);
 
 		List<ContactIndexDto> indexList = getContactFacade().getIndexList(new ContactCriteria(), 0, 100, Collections.emptyList());
 		assertThat(indexList.get(0).getUuid(), is(contact.getUuid()));
@@ -1409,7 +1409,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		contact.setDistrict(rdcf.district);
 		contact.setHealthConditions(new HealthConditionsDto());
 
-		ContactDto savedContact = getContactFacade().saveContact(contact);
+		ContactDto savedContact = getContactFacade().save(contact);
 
 		assertThat(savedContact.getUuid(), not(isEmptyOrNullString()));
 		assertThat(savedContact.getHealthConditions().getUuid(), not(isEmptyOrNullString()));
@@ -1421,10 +1421,10 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		UserReferenceDto user = creator.createUser(creator.createRDCFEntities(), UserRole.SURVEILLANCE_SUPERVISOR).toReference();
 
 		PersonReferenceDto person1 = creator.createPerson().toReference();
-		ContactDto contact1 = getContactFacade().saveContact(creator.createContact(user, person1));
+		ContactDto contact1 = getContactFacade().save(creator.createContact(user, person1));
 
 		PersonReferenceDto person2 = creator.createPerson().toReference();
-		ContactDto contact2 = getContactFacade().saveContact(creator.createContact(user, person2));
+		ContactDto contact2 = getContactFacade().save(creator.createContact(user, person2));
 
 		List<ContactDto> contactsByPerson = getContactFacade().getByPersonUuids(Collections.singletonList(person1.getUuid()));
 
@@ -1476,7 +1476,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 				c.setAdditionalDetails("Test additional details");
 				c.setFollowUpComment("Test followup comment");
 			});
-		getContactFacade().saveContact(leadContact);
+		getContactFacade().save(leadContact);
 		VisitDto leadVisit = creator.createVisit(leadContact.getDisease(), leadContact.getPerson(), leadContact.getReportDateTime());
 		getVisitFacade().saveVisit(leadVisit);
 
@@ -1521,7 +1521,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			new EventReferenceDto(),
 			new Date(),
 			otherUserReference);
-		getContactFacade().saveContact(otherContact);
+		getContactFacade().save(otherContact);
 		VisitDto otherVisit = creator.createVisit(otherContact.getDisease(), otherContact.getPerson(), otherContact.getReportDateTime());
 		otherVisit.getSymptoms().setAbdominalPain(SymptomState.YES);
 		getVisitFacade().saveVisit(otherVisit);
@@ -1549,7 +1549,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		// 3. Test
 
-		ContactDto mergedContact = getContactFacade().getContactByUuid(leadContact.getUuid());
+		ContactDto mergedContact = getContactFacade().getByUuid(leadContact.getUuid());
 
 		PersonDto mergedPerson = getPersonFacade().getPersonByUuid(mergedContact.getPerson().getUuid());
 

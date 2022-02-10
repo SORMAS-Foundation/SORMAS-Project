@@ -2,7 +2,11 @@ package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.ClinicalCourseTabCasePage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
-import static org.sormas.e2etests.pages.application.cases.FollowUpTabPage.*;
+import static org.sormas.e2etests.pages.application.cases.FollowUpTabPage.CURRENT_BODY_TEMPERATURE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.FollowUpTabPage.DATE_OF_VISIT_INPUT;
+import static org.sormas.e2etests.pages.application.cases.FollowUpTabPage.SOURCE_OF_BODY_TEMPERATURE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.FollowUpTabPage.TIME_OF_VISIT_INPUT;
+import static org.sormas.e2etests.pages.application.cases.FollowUpTabPage.VISIT_REMARKS;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;

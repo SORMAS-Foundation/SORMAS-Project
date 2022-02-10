@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities.event;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -38,6 +39,9 @@ public class ReceivedEventProcessor
 	extends
 	ReceivedDataProcessor<Event, EventDto, SormasToSormasEventDto, SormasToSormasEventPreview, Event, EventService, SormasToSormasEventDtoValidator> {
 
+	@EJB
+	private EventFacadeEjb.EventFacadeEjbLocal eventFacade;
+
 	public ReceivedEventProcessor() {
 	}
 
@@ -52,7 +56,7 @@ public class ReceivedEventProcessor
 
 	@Override
 	public void handleReceivedData(SormasToSormasEventDto sharedData, Event existingData) {
-		handleIgnoredProperties(sharedData.getEntity(), EventFacadeEjb.toDto(existingData));
+		handleIgnoredProperties(sharedData.getEntity(), eventFacade.toDto(existingData));
 
 		EventDto event = sharedData.getEntity();
 		updateReportingUser(event, existingData);
