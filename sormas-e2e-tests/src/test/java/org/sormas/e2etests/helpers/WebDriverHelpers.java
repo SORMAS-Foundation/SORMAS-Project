@@ -40,6 +40,7 @@ import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.sormas.e2etests.common.TimerLite;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.Assert;
@@ -387,6 +388,23 @@ public class WebDriverHelpers {
     } catch (Exception ignored) {
     }
     waitForPageLoaded();
+  }
+
+  public void hoverToElement(By selector) {
+    WebElement menuOption = baseSteps.getDriver().findElement(selector);
+    Actions actions = new Actions(baseSteps.getDriver());
+    try {
+      assertHelpers.assertWithPoll20Second(
+          () -> {
+            scrollToElement(selector);
+            actions.moveToElement(menuOption).perform();
+            waitUntilIdentifiedElementIsVisibleAndClickable(selector);
+          });
+    } catch (ConditionTimeoutException ignored) {
+      log.error("Unable to fill on element identified by locator: {}", selector);
+      takeScreenshot(baseSteps.getDriver());
+      throw new TimeoutException("Unable to fill on element identified by locator: " + selector);
+    }
   }
 
   public void javaScriptClickElement(final Object selector) {
