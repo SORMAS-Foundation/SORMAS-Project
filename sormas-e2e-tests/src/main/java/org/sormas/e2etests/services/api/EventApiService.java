@@ -21,9 +21,7 @@ package org.sormas.e2etests.services.api;
 import com.google.inject.Inject;
 import java.util.Date;
 import java.util.UUID;
-import org.sormas.e2etests.enums.DiseasesValues;
-import org.sormas.e2etests.enums.RiskLevelValues;
-import org.sormas.e2etests.enums.SourceTypeValues;
+import org.sormas.e2etests.enums.*;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
 import org.sormas.e2etests.pojo.api.*;
 
@@ -41,9 +39,28 @@ public class EventApiService {
         .srcType(SourceTypeValues.getRandomSourceTypeName())
         .eventInvestigationStatus("PENDING")
         .eventTitle(String.valueOf(System.currentTimeMillis()))
+        .eventDesc("Event description")
         .startDate(new Date())
         .reportDateTime(new Date())
-        .eventLocation(EventLocation.builder().uuid(UUID.randomUUID().toString()).build())
+        // .eventLocation(EventLocation.builder().uuid(UUID.randomUUID().toString()).build())
+        .eventLocation(
+            EventLocation.builder()
+                .uuid(UUID.randomUUID().toString())
+                .region(
+                    Region.builder()
+                        .caption(RegionsValues.VoreingestellteBundeslander.getName())
+                        .uuid(RegionsValues.VoreingestellteBundeslander.getUuid())
+                        .build())
+                .district(
+                    District.builder()
+                        .caption(DistrictsValues.VoreingestellterLandkreis.getName())
+                        .uuid(DistrictsValues.VoreingestellterLandkreis.getUuid())
+                        .build())
+                .community(
+                    Community.builder()
+                        .uuid(CommunityValues.VoreingestellteGemeinde.getUuid())
+                        .build())
+                .build())
         .riskLevel(RiskLevelValues.getRandomRiskLevelName())
         .typeOfPlace(TypeOfPlace.getRandomTypeOfPlace())
         .build();

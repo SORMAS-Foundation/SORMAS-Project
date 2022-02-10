@@ -54,18 +54,61 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(EVENT_GROUPS_RADIOBUTTON);
         });
-    //I fill {string} option filter by API in Event Group Directory
-      When(
-              "I fill {string} option filter by API in Event Group Directory",
-              (String searchCriteria) -> {
-                  String searchString = "";
-                 switch (searchCriteria){
-//                     case "GROUP_ID":
-//                         searchString = apiState.getCreatedEvent().
-                     case "GROUP_TITLE":
-                         //searchString = apiState.getCreatedEvent();
-                 }
-              });
+
+    When(
+        "I chose Region option by API in Event Group Directory",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          String region = apiState.getCreatedEvent().getEventLocation().getRegion().getUuid();
+          webDriverHelpers.selectFromCombobox(
+              EVENT_REGION_COMBOBOX_INPUT, RegionsValues.getValueFor(region));
+          TimeUnit.SECONDS.sleep(5);
+        });
+    //
+    When(
+        "I chose District option by API in Event Group Directory",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          String district =
+              apiState.getCreatedEvent().getEventLocation().getDistrict().getCaption();
+          webDriverHelpers.selectFromCombobox(
+              EVENT_DISTRICT_COMBOBOX_INPUT, DistrictsValues.getValueFor(district));
+        });
+
+    When(
+        "I chose Community option by API in Event Group Directory",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          String community = apiState.getCreatedEvent().getEventLocation().getCommunity().getUuid();
+          webDriverHelpers.selectFromCombobox(
+              EVENT_COMMUNITY_COMBOBOX_INPUT, CommunityValues.getValueFor(community));
+        });
+
+    When(
+        "I sort all rows by Group ID",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(EVENT_GROUP_ID_SORT);
+        });
+
+    When(
+        "I chose {string} option from Relevnce Status filter in Event Group Directory",
+        (String searchCriteria) -> {
+          String searchText = "";
+          switch (searchCriteria) {
+            case "Active groups":
+              searchText = "Active groups";
+              break;
+            case "Archived groups":
+              searchText = "Archived groups";
+              break;
+            case "All groups":
+              searchText = "All groups";
+              break;
+          }
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(EVENT_STATUS_FILTER_COMBOBOX, searchText);
+        });
 
     When(
         "I fill EVENT ID filter by API",
@@ -218,6 +261,29 @@ public class EventDirectorySteps implements En {
               SEARCH_EVENT_BY_FREE_TEXT_INPUT, 15);
           webDriverHelpers.fillAndSubmitInWebElement(SEARCH_EVENT_BY_FREE_TEXT_INPUT, eventUuid);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
+        });
+
+    // I search last created Event by "EVENT_ID" option filter by API in Event Group Directory
+    When(
+        "I search last created Event by {string} option filter by API in Event Group Directory",
+        (String searchCriteria) -> {
+          String searchText = "";
+          switch (searchCriteria) {
+            case "EVENT_ID":
+              searchText = apiState.getCreatedEvent().getUuid();
+              break;
+            case "TITLE":
+              searchText = apiState.getCreatedEvent().getEventTitle();
+              break;
+            case "LOCATION":
+              searchText = apiState.getCreatedEvent().getTypeOfPlace();
+              break;
+            case "DESCRIPTION":
+              searchText = apiState.getCreatedEvent().getEventDesc();
+              break;
+          }
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.fillInWebElement(SEARCH_EVENT_BY_FREE_TEXT_EVENT_INPUT, searchText);
         });
 
     When(

@@ -240,11 +240,24 @@ Feature: Create events
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    When I log in with National User
+    Given I log in with National User
+#    When I am accessing the event tab using the created event via api
+#    And I click on link event group
+#    And I create a new event group
+#    When I am accessing the event tab using the created event via api
+#    Then I am checking event group name and id is correctly displayed
+
     And I click on the Events button from navbar
     And I click on radio button Groups in Event directory
-    #And I fill EVENT ID filter by API
-    Then I fill {string} option filter by API in Event Group Directory
+#    Then I search last created groups Event by "GROUP_ID" option filter by API in Event Group Directory
+#    Then I search last created Event by "TITLE" option filter by API in Event Group Directory
+#    And I chose Region option by API in Event Group Directory
+#    And I chose District option by API in Event Group Directory
+#    And I chose Community option by API in Event Group Directory
+   # And I chose "Active groups" option from Relevnce Status filter in Event Group Directory
+    #ToDO standard false data must be add to filters!!!
+    And I sort all rows by Group ID
+
 
     # groups view !!!!
     # add to Title or Id filter

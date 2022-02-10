@@ -23,6 +23,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPU
 import static org.sormas.e2etests.pages.application.events.EditEventPage.*;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventActionsPage.CREATE_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SEARCH_EVENT_BY_FREE_TEXT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.*;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_PARTICIPANTS_TAB;
@@ -257,6 +258,22 @@ public class EditEventSteps implements En {
           fillGroupEventName(groupEvent.getName());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_FOR_POPUP_WINDOWS);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEW_GROUP_EVENT_CREATED_MESSAGE);
+        });
+
+    When(
+        "I search last created groups Event by {string} option filter by API in Event Group Directory",
+        (String searchCriteria) -> {
+          String searchText = "";
+          switch (searchCriteria) {
+            case "GROUP_ID":
+              searchText = groupEvent.getUuid();
+              break;
+            case "GROUP_TITLE":
+              searchText = groupEvent.getName();
+              break;
+          }
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.fillInWebElement(SEARCH_EVENT_BY_FREE_TEXT, searchText);
         });
 
     When(

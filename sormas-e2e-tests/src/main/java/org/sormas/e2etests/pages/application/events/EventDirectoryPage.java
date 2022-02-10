@@ -23,8 +23,7 @@ import org.openqa.selenium.By;
 public class EventDirectoryPage {
   public static final By NEW_EVENT_BUTTON = By.id("eventNewEvent");
   public static final By SEARCH_EVENT_BY_FREE_TEXT_INPUT = By.id("freeText");
-  public static final By SEARCH_EVENT_BY_FREE_TEXT_EVENT_PARTICIPANTS_INPUT =
-      By.id("freeTextEventParticipants");
+  public static final By SEARCH_EVENT_BY_FREE_TEXT_EVENT_INPUT = By.id("freeTextEvent");
   public static final By SEARCH_EVENT_BY_FREE_TEXT_EVENT_GROUPS_INPUT =
       By.id("freeTextEventGroups");
   public static final By RESET_FILTER = By.id("actionResetFilters");
@@ -66,6 +65,12 @@ public class EventDirectoryPage {
       By.xpath("//td//span[contains(@class, 'v-icon-edit')]");
   public static final By EVENT_GROUPS_RADIOBUTTON =
       By.cssSelector("div#eventsViewSwitcher span:nth-child(3)");
+  public static final By EVENT_REGION_COMBOBOX_INPUT = By.cssSelector("#region div");
+  public static final By EVENT_DISTRICT_COMBOBOX_INPUT = By.cssSelector("#district div");
+  public static final By EVENT_COMMUNITY_COMBOBOX_INPUT = By.cssSelector("#community div");
+  public static final By EVENT_STATUS_FILTER_COMBOBOX =
+      By.cssSelector("#relevanceStatusFilter div");
+  public static final By EVENT_GROUP_ID_SORT = By.id("Group id");
 
   public static By getByEventUuid(String eventUuid) {
     return By.xpath(String.format("//a[@title='%s']", eventUuid));
