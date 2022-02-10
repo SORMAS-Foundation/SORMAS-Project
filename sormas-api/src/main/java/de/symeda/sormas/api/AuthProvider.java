@@ -50,9 +50,13 @@ public class AuthProvider {
 		name = configuredProvider;
 	}
 
-	public static synchronized AuthProvider getProvider(ConfigFacade configFacade) {
+	public static AuthProvider getProvider(ConfigFacade configFacade) {
 		if (provider == null) {
-			provider = new AuthProvider(configFacade);
+			synchronized (AuthProvider.class) {
+				if (provider == null) {
+					provider = new AuthProvider(configFacade);
+				}
+			}
 		}
 		return provider;
 	}
