@@ -266,8 +266,18 @@ public class EventDirectorySteps implements En {
         "I click Create Case for Event Participant",
         () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_CASE_BUTTON));
 
+      Then(
+              "I check that number of displayed Event results is {int}",
+              (Integer number) ->
+                      assertHelpers.assertWithPoll20Second(
+                              () ->
+                                      Assert.assertEquals(
+                                              webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS),
+                                              number.intValue(),
+                                              "Number of displayed cases is not correct")));
+
     Then(
-        "I check that number of displayed Event results is {int}",
+        "I check the number of displayed Event results from All button is {int}",
         (Integer number) ->
             assertHelpers.assertWithPoll20Second(
                 () ->

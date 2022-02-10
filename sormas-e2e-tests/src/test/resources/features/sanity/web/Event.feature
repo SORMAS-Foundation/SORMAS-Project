@@ -252,4 +252,4 @@ Feature: Create events
     And I click on Edit event group button from event groups box
     And I click on Edit event button for the first event in Events section
     And I click on the Navigate to event directory filtered on this event group
-    And I check that number of displayed Event results is 1
+    And I check the number of displayed Event results from All button is 1
