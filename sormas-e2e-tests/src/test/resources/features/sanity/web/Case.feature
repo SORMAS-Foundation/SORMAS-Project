@@ -204,7 +204,7 @@ Feature: Case end to end tests
     And I search last create contact by UUID case in Contact Directory
     Then I check that number of displayed cases results is 1
     Then I click on the Cases button from navbar
-    And I search last create case by UUID in Contact Directory
+    And API: I search last create case by UUID in Contact Directory
     Then I check that number of displayed cases results is 1
 
     @issue=SORDEV-5518 @DE

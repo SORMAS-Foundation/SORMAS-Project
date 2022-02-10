@@ -53,6 +53,7 @@ public class EditContactsSteps implements En {
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
   String LAST_CREATED_CASE_CONTACTS_TAB_URL;
   protected Contact contact;
+  protected ApiState apistate;
   public static Contact collectedContact;
   protected String contactUUID;
 
@@ -84,13 +85,7 @@ public class EditContactsSteps implements En {
     When(
         "I create a new contact from Cases Contacts tab base on Person created by API",
         () -> {
-          fillFirstName(apiState.getLastCreatedPerson().getFirstName());
-          fillLastName(apiState.getLastCreatedPerson().getLastName());
-          String sex = apiState.getLastCreatedPerson().getSex();
-          selectSex(sex.substring(0, 1).toUpperCase() + sex.substring(1).toLowerCase());
-          fillPrimaryPhoneNumber(apiState.getLastCreatedPerson().getPhone());
-          fillPrimaryEmailAddress(apiState.getLastCreatedPerson().getEmailAddress());
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          createNewContactByApi(apiState);
         });
     When(
         "^I create a new contact from Cases Contacts tab$",
@@ -269,6 +264,16 @@ public class EditContactsSteps implements En {
     By uuidLocator = By.cssSelector(String.format(CONTACT_RESULTS_UUID_LOCATOR, uuid));
     webDriverHelpers.clickOnWebElementBySelector((uuidLocator));
     webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
+  }
+
+  private void createNewContactByApi(ApiState apiState) {
+    fillFirstName(apiState.getLastCreatedPerson().getFirstName());
+    fillLastName(apiState.getLastCreatedPerson().getLastName());
+    String sex = apiState.getLastCreatedPerson().getSex();
+    selectSex(sex.substring(0, 1).toUpperCase() + sex.substring(1).toLowerCase());
+    fillPrimaryPhoneNumber(apiState.getLastCreatedPerson().getPhone());
+    fillPrimaryEmailAddress(apiState.getLastCreatedPerson().getEmailAddress());
+    webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
   }
 
   private Contact collectContactData() {

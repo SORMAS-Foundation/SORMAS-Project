@@ -51,7 +51,7 @@ public class CaseDirectorySteps implements En {
       Faker faker) {
 
     When(
-        "I search last create case by UUID in Contact Directory",
+        "API: I search last create case by UUID in Contact Directory",
         () -> {
           String caseUUID = apiState.getCreatedCase().getUuid();
           webDriverHelpers.fillAndSubmitInWebElement(NAME_UUID_EPID_NUMBER_LIKE_INPUT, caseUUID);
