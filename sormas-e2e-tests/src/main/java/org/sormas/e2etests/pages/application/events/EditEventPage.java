@@ -51,6 +51,8 @@ public class EditEventPage {
   public static final By LINK_EVENT_GROUP_BUTTON = By.cssSelector("div#Link\\ event\\ group");
   public static final By NEW_EVENT_GROUP_RADIOBUTTON =
       By.xpath("//*[contains(text(),'New event group')]/..");
+  public static final By SELECT_EVENT_GROUP_RADIOBUTTON =
+      By.xpath("//*[contains(text(),'Select event group')]/..");
   public static final By GROUP_EVENT_NAME_POPUP_INPUT = By.cssSelector(".popupContent #name");
   public static final By GROUP_EVENT_UUID =
       By.xpath("//*[contains(text(),'Group id')]/../following-sibling::input[1]");
@@ -64,6 +66,11 @@ public class EditEventPage {
       By.cssSelector(".popupContent [id='Create']");
   public static final By CANCEL_EVENT_HANDOUT_BUTTON =
       By.cssSelector(".popupContent [id='Cancel']");
+  public static final By UNLINK_EVENT_BUTTON = By.id("unlink-event-1");
+  public static final By EDIT_EVENT_GROUP_BUTTON = By.id("add-event-0");
+  public static final By NAVIGATE_TO_EVENT_DIRECTORY_EVENT_GROUP_BUTTON = By.id("list-events-0");
+  public static final By SAVE_BUTTON_FOR_EDIT_EVENT_GROUP = By.id("commit");
+  public static final By FIRST_GROUP_ID = By.xpath("//table/tbody/tr[1]/td[2]");
   public static final By TOTAL_ACTIONS_COUNTER = By.cssSelector(".badge");
 
   public static By getGroupEventName(String groupEventName) {
