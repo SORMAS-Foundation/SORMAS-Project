@@ -166,7 +166,7 @@ public class TestDataCreator {
 		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "First", "Name", roles);
 	}
 
-	public UserDto createUser(RDCFEntities rdcf, String firstName, String lastName, UserRole... roles) {
+	public UserDto createUser(RDCF rdcf, String firstName, String lastName, UserRole... roles) {
 		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), firstName, lastName, roles);
 	}
 
@@ -337,8 +337,12 @@ public class TestDataCreator {
 	public CaseDataDto createUnclassifiedCase(Disease disease) {
 
 		RDCFEntities rdcf = createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user =
-			createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = beanTest.getUserFacade().getByUserName("SurvSup");
+		if (user == null) {
+			user =
+				createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		}
+
 		PersonDto cazePerson = createPerson("Case", "Person", Sex.UNKNOWN);
 		return createCase(
 			user.toReference(),
@@ -398,7 +402,7 @@ public class TestDataCreator {
 
 		final CaseDataDto aCase = createCase(user, cazePerson, disease, caseClassification, investigationStatus, reportAndOnsetDate, new RDCF(rdcf));
 		aCase.setHealthFacilityDetails(healthFacilityDetails);
-		return beanTest.getCaseFacade().saveCase(aCase);
+		return beanTest.getCaseFacade().save(aCase);
 	}
 
 	public CaseDataDto createCase(
@@ -440,7 +444,7 @@ public class TestDataCreator {
 			setCustomFields.accept(caze);
 		}
 
-		caze = beanTest.getCaseFacade().saveCase(caze);
+		caze = beanTest.getCaseFacade().save(caze);
 
 		return caze;
 	}
@@ -739,7 +743,7 @@ public class TestDataCreator {
 			customConfig.accept(contact);
 		}
 
-		contact = beanTest.getContactFacade().saveContact(contact);
+		contact = beanTest.getContactFacade().save(contact);
 
 		return contact;
 	}
@@ -924,7 +928,7 @@ public class TestDataCreator {
 			customSettings.accept(event);
 		}
 
-		event = beanTest.getEventFacade().saveEvent(event);
+		event = beanTest.getEventFacade().save(event);
 
 		return event;
 	}
@@ -1326,7 +1330,7 @@ public class TestDataCreator {
 		campaign.setName("CampaignName");
 		campaign.setDescription("Campaign description");
 
-		campaign = beanTest.getCampaignFacade().saveCampaign(campaign);
+		campaign = beanTest.getCampaignFacade().save(campaign);
 
 		return campaign;
 	}

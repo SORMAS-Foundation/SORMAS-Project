@@ -101,9 +101,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 
 	@Override
 	public List<FeatureConfigurationDto> getAllAfter(Date date) {
-
-		User user = userService.getCurrentUser();
-		return service.getAllAfter(date, user).stream().map(FeatureConfigurationFacadeEjb::toDto).collect(Collectors.toList());
+		return service.getAllAfter(date).stream().map(FeatureConfigurationFacadeEjb::toDto).collect(Collectors.toList());
 	}
 
 	@Override

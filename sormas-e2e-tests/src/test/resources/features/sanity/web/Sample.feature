@@ -1,7 +1,7 @@
 @UI @Sanity @Sample
 Feature: Sample Functionalities
 
-  Scenario: Edit a new Sample
+  Scenario: Edit a new case Sample
     Given I log in with National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
@@ -16,6 +16,65 @@ Feature: Sample Functionalities
     Then I check the created Sample is correctly displayed on Edit Sample page
     When I change all Sample fields and save
     Then I check the edited Sample is correctly displayed on Edit Sample page
+
+  @issue=SORDEV-5471
+  Scenario: Edit a new contact Sample
+    Given I log in with National User
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form
+    And I click on the popup Save button
+    And I collect the contact person UUID displayed on Edit contact page
+    And I click on New Sample
+    When I collect the sample UUID displayed on create new sample page
+    And I create a new Sample with specific data and save
+    And I click on the Sample button from navbar
+    And I search for Sample using Sample UUID from the created Sample
+    When I open created Sample
+    Then I check the created Sample is correctly displayed on Edit Sample page
+    When I change all Sample fields and save
+    Then I check the edited Sample is correctly displayed on Edit Sample page
+
+  @issue=SORDEV-5471
+  Scenario: Edit a new contact Sample with alternate purpose
+    Given I log in with National User
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form
+    And I click on the popup Save button
+    And I collect the contact person UUID displayed on Edit contact page
+    And I click on New Sample
+    When I collect the sample UUID displayed on create new sample page
+    And I create a new Sample with alternate purpose
+    And I save the created sample
+    And I click on the Sample button from navbar
+    And I search for Sample using Sample UUID from the created Sample
+    When I open created Sample
+    Then I check the alternate Sample is correctly displayed on Edit Sample page
+
+  @issue=SORDEV-5471
+  Scenario: Edit a new event participant Sample
+    Given I log in with National User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with specific data
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    And I collect the UUID displayed on Edit event page
+    And I add a participant to the event
+    And I check if participant appears in the event participants list
+    And I click on the created event participant from the list
+    And I click on New Sample
+    When I collect the sample UUID displayed on create new sample page
+    And I create a new Sample with specific data and save
+    And I click on the Sample button from navbar
+    And I search for Sample using Sample UUID from the created Sample
+    When I open created Sample
+    Then I check the created Sample is correctly displayed on Edit Sample page
+    When I change all Sample fields and save
+    Then I check the edited Sample is correctly displayed on Edit Sample page
+
 
   Scenario: Add a Pathogen test from Samples and verify the fields
     Given API: I create a new person

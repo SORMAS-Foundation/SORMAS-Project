@@ -19,11 +19,11 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
-import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.common.DeletableAdo;
 
 @Entity(name = TestReport.TABLE_NAME)
 @Audited
-public class TestReport extends CoreAdo {
+public class TestReport extends DeletableAdo {
 
 	private static final long serialVersionUID = -9164498173635523905L;
 
@@ -55,6 +55,8 @@ public class TestReport extends CoreAdo {
 	private String typingId;
 	private String externalId;
 	private String externalOrderId;
+	private String testedDiseaseVariant;
+	private String testedDiseaseVariantDetails;
 	private Boolean preliminary;
 	private PCRTestSpecification testPcrTestSpecification;
 
@@ -173,6 +175,22 @@ public class TestReport extends CoreAdo {
 
 	public void setExternalOrderId(String externalOrderId) {
 		this.externalOrderId = externalOrderId;
+	}
+
+	public String getTestedDiseaseVariant() {
+		return testedDiseaseVariant;
+	}
+
+	public void setTestedDiseaseVariant(String diseaseVariant) {
+		this.testedDiseaseVariant = diseaseVariant;
+	}
+
+	public String getTestedDiseaseVariantDetails() {
+		return testedDiseaseVariantDetails;
+	}
+
+	public void setTestedDiseaseVariantDetails(String diseaseVariantDetails) {
+		this.testedDiseaseVariantDetails = diseaseVariantDetails;
 	}
 
 	@Column

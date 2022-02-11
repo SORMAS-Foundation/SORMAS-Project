@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
+import de.symeda.sormas.ui.utils.CssStyles;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -42,6 +44,7 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
@@ -234,7 +237,7 @@ public class CaseController {
 			if (uuid == null) {
 				CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent = getCaseCreateComponent(contact, null, null, null, false);
 				caseCreateComponent.addCommitListener(() -> {
-					ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
+					ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(contact.getUuid());
 					if (contactDto.getResultingCase() != null) {
 						String caseUuid = contactDto.getResultingCase().getUuid();
 						CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
@@ -247,13 +250,13 @@ public class CaseController {
 			} else {
 				CaseDataDto selectedCase = FacadeProvider.getCaseFacade().getCaseDataByUuid(uuid);
 				selectedCase.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.YES);
-				FacadeProvider.getCaseFacade().saveCase(selectedCase);
+				FacadeProvider.getCaseFacade().save(selectedCase);
 
-				ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
+				ContactDto updatedContact = FacadeProvider.getContactFacade().getByUuid(contact.getUuid());
 				updatedContact.setContactStatus(ContactStatus.CONVERTED);
 				updatedContact.setResultingCase(selectedCase.toReference());
 				updatedContact.setResultingCaseUser(UserProvider.getCurrent().getUserReference());
-				FacadeProvider.getContactFacade().saveContact(updatedContact);
+				FacadeProvider.getContactFacade().save(updatedContact);
 
 				FacadeProvider.getCaseFacade().setSampleAssociations(updatedContact.toReference(), selectedCase.toReference());
 
@@ -389,7 +392,7 @@ public class CaseController {
 				contact.setContactStatus(ContactStatus.CONVERTED);
 				contact.setResultingCase(caze.toReference());
 				contact.setResultingCaseUser(UserProvider.getCurrent().getUserReference());
-				FacadeProvider.getContactFacade().saveContact(contact);
+				FacadeProvider.getContactFacade().save(contact);
 			}
 		}
 
@@ -477,7 +480,7 @@ public class CaseController {
 		CaseDataDto existingDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(cazeDto.getUuid());
 		onCaseChanged(existingDto, cazeDto);
 
-		CaseDataDto resultDto = FacadeProvider.getCaseFacade().saveCase(cazeDto);
+		CaseDataDto resultDto = FacadeProvider.getCaseFacade().save(cazeDto);
 
 		if (resultDto.getPlagueType() != cazeDto.getPlagueType()) {
 			// TODO would be much better to have a notification for this triggered in the backend
@@ -668,12 +671,14 @@ public class CaseController {
 
 					saveCase(dto);
 					// retrieve the contact just in case it has been changed during case saving
-					ContactDto updatedContact = FacadeProvider.getContactFacade().getContactByUuid(convertedContact.getUuid());
+					ContactDto updatedContact = FacadeProvider.getContactFacade().getByUuid(convertedContact.getUuid());
 					// automatically change the contact status to "converted"
 					updatedContact.setContactStatus(ContactStatus.CONVERTED);
+					// automatically change the contact classification to "confirmed"
+					updatedContact.setContactClassification(ContactClassification.CONFIRMED);
 					// set resulting case on contact and save it
 					updatedContact.setResultingCase(dto.toReference());
-					FacadeProvider.getContactFacade().saveContact(updatedContact);
+					FacadeProvider.getContactFacade().save(updatedContact);
 					FacadeProvider.getCaseFacade().setSampleAssociations(updatedContact.toReference(), dto.toReference());
 					Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
 					if (!createdFromLabMessage) {
@@ -1170,7 +1175,7 @@ public class CaseController {
 					cazeDtoInner.setFacilityType(FacilityType.HOSPITAL);
 					cazeDtoInner.setHealthFacility(dto.getHealthFacility());
 					cazeDtoInner.setHealthFacilityDetails(dto.getHealthFacilityDetails());
-					FacadeProvider.getCaseFacade().saveCase(cazeDtoInner);
+					FacadeProvider.getCaseFacade().save(cazeDtoInner);
 					ControllerProvider.getCaseController().navigateToView(HospitalizationView.VIEW_NAME, caze.getUuid(), null);
 				});
 				VaadinUiUtil.showModalPopupWindow(wrapperComponent, I18nProperties.getString(Strings.headingPlaceOfStayInHospital));
@@ -1374,7 +1379,7 @@ public class CaseController {
 			if (!form.getFieldGroup().isModified()) {
 				CaseDataDto dto = form.getValue();
 				dto.getHospitalization().setAdmissionDate(new Date());
-				FacadeProvider.getCaseFacade().saveCase(dto);
+				FacadeProvider.getCaseFacade().save(dto);
 				window.close();
 				Notification.show(I18nProperties.getString(Strings.messageCaseReferredFromPoe), Type.ASSISTIVE_NOTIFICATION);
 				SormasUI.refreshView();
@@ -1404,7 +1409,7 @@ public class CaseController {
 				640,
 				e -> {
 					if (e.booleanValue() == true) {
-						FacadeProvider.getCaseFacade().archiveOrDearchiveCase(caseUuid, true);
+						FacadeProvider.getCaseFacade().archive(caseUuid);
 						Notification.show(
 							String.format(I18nProperties.getString(Strings.messageCaseArchived), I18nProperties.getString(Strings.entityCase)),
 							Type.ASSISTIVE_NOTIFICATION);
@@ -1425,7 +1430,7 @@ public class CaseController {
 				640,
 				e -> {
 					if (e.booleanValue()) {
-						FacadeProvider.getCaseFacade().archiveOrDearchiveCase(caseUuid, false);
+						FacadeProvider.getCaseFacade().dearchive(caseUuid);
 						Notification.show(
 							String.format(I18nProperties.getString(Strings.messageCaseDearchived), I18nProperties.getString(Strings.entityCase)),
 							Type.ASSISTIVE_NOTIFICATION);
@@ -1701,7 +1706,7 @@ public class CaseController {
 
 						selectOrCreateCase(newCase, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
 							if (uuid == null) {
-								FacadeProvider.getCaseFacade().saveCase(newCase);
+								FacadeProvider.getCaseFacade().save(newCase);
 								Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
 							}
 						});
@@ -1749,16 +1754,24 @@ public class CaseController {
 		if (CollectionUtils.isNotEmpty(notSharableUuids)) {
 
 			List<String> uuidsWithoutNotSharable =
-					selectedUuids.stream().filter(uuid -> !notSharableUuids.contains(uuid)).collect(Collectors.toList());
+				selectedUuids.stream().filter(uuid -> !notSharableUuids.contains(uuid)).collect(Collectors.toList());
 
+			TextArea notShareableListComponent = new TextArea("", new ArrayList<>(notSharableUuids).toString());
+			notShareableListComponent.setWidthFull();
+			notShareableListComponent.setEnabled(false);
+			Label notSharableLabel = new Label(
+					String.format(I18nProperties.getString(Strings.errorExternalSurveillanceToolCasesNotSharable), notSharableUuids.size()),
+					ContentMode.HTML);
+			notSharableLabel.addStyleName(CssStyles.LABEL_WHITE_SPACE_NORMAL);
 			VaadinUiUtil.showConfirmationPopup(
 				I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
-				new Label(
-					String.format(
-						I18nProperties.getString(Strings.errorExternalSurveillanceToolCasesNotSharable),
-						notSharableUuids.size(),
-						notSharableUuids.stream().map(DataHelper::getShortUuid).collect(Collectors.joining())), ContentMode.HTML),
-				String.format(I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_excludeAndSend), uuidsWithoutNotSharable.size(), selectedUuids.size()),
+				new VerticalLayout(
+						notSharableLabel,
+						notShareableListComponent),
+				String.format(
+					I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_excludeAndSend),
+					uuidsWithoutNotSharable.size(),
+					selectedUuids.size()),
 				I18nProperties.getCaption(Captions.actionCancel),
 				800,
 				(confirmed) -> {

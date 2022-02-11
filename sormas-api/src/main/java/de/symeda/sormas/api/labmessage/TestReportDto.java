@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.labmessage;
 
+import de.symeda.sormas.api.sample.PCRTestSpecification;
 import java.util.Date;
 
 import javax.validation.constraints.Size;
@@ -15,7 +16,7 @@ import de.symeda.sormas.api.utils.Required;
 
 public class TestReportDto extends EntityDto {
 
-	public static final String I18N_PREFIX = "TestResult";
+	public static final String I18N_PREFIX = "TestReport";
 
 	public static final String TEST_LAB_NAME = "testLabName";
 	public static final String TEST_LAB_EXTERNAL_ID = "testLabExternalId";
@@ -38,6 +39,7 @@ public class TestReportDto extends EntityDto {
 	private String testLabCity;
 
 	private PathogenTestType testType;
+	private PCRTestSpecification pcrTestSpecification;
 	private Date testDateTime;
 	private PathogenTestResultType testResult;
 	private Boolean testResultVerified;
@@ -49,6 +51,11 @@ public class TestReportDto extends EntityDto {
 	private String externalId;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalOrderId;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	private String testedDiseaseVariant;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	private String testedDiseaseVariantDetails;
+
 	private Boolean preliminary;
 	private PCRTestSpecification testPcrTestSpecification;
 
@@ -98,6 +105,14 @@ public class TestReportDto extends EntityDto {
 
 	public void setTestType(PathogenTestType testType) {
 		this.testType = testType;
+	}
+
+	public PCRTestSpecification getPcrTestSpecification() {
+		return pcrTestSpecification;
+	}
+
+	public void setPcrTestSpecification(PCRTestSpecification pcrTestSpecification) {
+		this.pcrTestSpecification = pcrTestSpecification;
 	}
 
 	public Date getTestDateTime() {
@@ -160,6 +175,22 @@ public class TestReportDto extends EntityDto {
 
 	public void setExternalOrderId(String externalOrderId) {
 		this.externalOrderId = externalOrderId;
+	}
+
+	public String getTestedDiseaseVariant() {
+		return testedDiseaseVariant;
+	}
+
+	public void setTestedDiseaseVariant(String testedDiseaseVariant) {
+		this.testedDiseaseVariant = testedDiseaseVariant;
+	}
+
+	public String getTestedDiseaseVariantDetails() {
+		return testedDiseaseVariantDetails;
+	}
+
+	public void setTestedDiseaseVariantDetails(String testedDiseaseVariantDetails) {
+		this.testedDiseaseVariantDetails = testedDiseaseVariantDetails;
 	}
 
 	public Boolean getPreliminary() {

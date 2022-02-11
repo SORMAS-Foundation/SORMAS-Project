@@ -54,6 +54,10 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 
 	@EJB
 	private ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
+	@EJB
+	private EventFacadeEjb.EventFacadeEjbLocal eventFacade;
+	@EJB
+	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
 
 	public SormasToSormasShareInfoService() {
 		super(SormasToSormasShareInfo.class);
@@ -241,11 +245,11 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 		throws ExternalSurveillanceToolException {
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && isOwnershipHandedOver) {
 			if (cases.size() > 0) {
-				externalSurveillanceToolGatewayFacade.deleteCases(cases.stream().map(CaseFacadeEjb::toDto).collect(Collectors.toList()));
+				externalSurveillanceToolGatewayFacade.deleteCases(cases.stream().map(caseFacade::toDto).collect(Collectors.toList()));
 			}
 
 			if (events.size() > 0) {
-				externalSurveillanceToolGatewayFacade.deleteEvents(events.stream().map(EventFacadeEjb::toDto).collect(Collectors.toList()));
+				externalSurveillanceToolGatewayFacade.deleteEvents(events.stream().map(eventFacade::toDto).collect(Collectors.toList()));
 			}
 		}
 	}

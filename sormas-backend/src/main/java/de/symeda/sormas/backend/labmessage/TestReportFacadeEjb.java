@@ -75,6 +75,8 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setTypingId(source.getTypingId());
 		target.setExternalId(source.getExternalId());
 		target.setExternalOrderId(source.getExternalOrderId());
+		target.setTestedDiseaseVariant(source.getTestedDiseaseVariant());
+		target.setTestedDiseaseVariantDetails(source.getTestedDiseaseVariantDetails());
 		target.setPreliminary(source.getPreliminary());
 		target.setTestPcrTestSpecification(source.getTestPcrTestSpecification());
 
@@ -97,6 +99,8 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setTypingId(source.getTypingId());
 		target.setExternalId(source.getExternalId());
 		target.setExternalOrderId(source.getExternalOrderId());
+		target.setTestedDiseaseVariant(source.getTestedDiseaseVariant());
+		target.setTestedDiseaseVariantDetails(source.getTestedDiseaseVariantDetails());
 		target.setPreliminary(source.getPreliminary());
 		target.setTestPcrTestSpecification(source.getTestPcrTestSpecification());
 

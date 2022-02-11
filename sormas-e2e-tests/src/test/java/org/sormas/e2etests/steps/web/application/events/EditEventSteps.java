@@ -42,6 +42,7 @@ import javax.inject.Named;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.events.EditEventPage;
 import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
@@ -55,6 +56,7 @@ import org.sormas.e2etests.services.EventGroupService;
 import org.sormas.e2etests.services.EventParticipantService;
 import org.sormas.e2etests.services.EventService;
 import org.sormas.e2etests.state.ApiState;
+import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
 public class EditEventSteps implements En {
@@ -78,6 +80,7 @@ public class EditEventSteps implements En {
       EventGroupService eventGroupService,
       SoftAssert softly,
       EventParticipantService eventParticipant,
+      AssertHelpers assertHelpers,
       @Named("ENVIRONMENT_URL") String environmentUrl,
       ApiState apiState) {
     this.webDriverHelpers = webDriverHelpers;
@@ -321,6 +324,16 @@ public class EditEventSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(EditEventPage.CREATE_EVENT_HANDOUT_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(EditEventPage.CANCEL_EVENT_HANDOUT_BUTTON);
         });
+    And(
+        "I check that number of actions in Edit Event Tab is {int}",
+        (Integer number) ->
+            assertHelpers.assertWithPoll20Second(
+                () ->
+                    Assert.assertEquals(
+                        Integer.parseInt(
+                            webDriverHelpers.getTextFromPresentWebElement(TOTAL_ACTIONS_COUNTER)),
+                        number.intValue(),
+                        "Number of displayed actions is not correct")));
 
     And(
         "I verify that the event document is downloaded and correctly named",

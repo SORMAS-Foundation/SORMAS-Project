@@ -44,7 +44,6 @@ public class UserServiceTest extends AbstractBeanTest {
 		mockAuthProvider = mockStatic(AuthProvider.class);
 		assertNotNull(mockAuthProvider);
 		Mockito.when(AuthProvider.getProvider(any())).thenReturn(authProvider);
-		when(authProvider.isUsernameCaseSensitive()).thenReturn(true);
 	}
 
 	@AfterClass
