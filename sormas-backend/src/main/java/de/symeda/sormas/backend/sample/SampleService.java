@@ -603,7 +603,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 			});
 			return results.stream()
 				.filter(e -> e[0] != null)
-				.collect(Collectors.toMap(e -> PathogenTestResultType.valueOf((String) e[0]), e -> ((BigInteger) e[1]).longValue()));
+				.collect(Collectors.toMap(e -> PathogenTestResultType.valueOf((String) e[0]), e -> ((BigInteger) e[1]).longValue(), Long::sum));
 		}
 	}
 
