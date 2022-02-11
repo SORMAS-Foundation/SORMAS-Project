@@ -52,6 +52,7 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 	private UserDto districtUser1;
 	private UserDto districtUser2;
 	private UserDto nationalUser;
+	private UserDto covidLimitedDistrictUser;
 
 	@Override
 	public void init() {
@@ -72,6 +73,11 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 
 		districtUser2 = creator
 			.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "Surv", "Off2", UserRole.SURVEILLANCE_OFFICER);
+
+		covidLimitedDistrictUser = creator
+			.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(), "Surv", "OffCovid", UserRole.SURVEILLANCE_OFFICER);
+		covidLimitedDistrictUser.setLimitedDisease(Disease.CORONAVIRUS);
+		getUserFacade().saveUser(covidLimitedDistrictUser);
 	}
 
 	@Test
@@ -617,6 +623,37 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertEquals(2, immWithTwoVac.getVaccinations().size());
 		Assert.assertEquals(ImmunizationManagementStatus.SCHEDULED, immWithTwoVac.getImmunizationManagementStatus());
 		Assert.assertEquals(ImmunizationStatus.NOT_ACQUIRED, immWithTwoVac.getImmunizationStatus());
+	}
+
+	@Test
+	public void testGetIndexListIsFilteredByCurrentUserLimitedDisease() {
+		loginWith(nationalUser);
+
+		final PersonDto person = creator.createPerson("John", "Doe");
+
+		creator.createImmunization(
+				Disease.ANTHRAX,
+				person.toReference(),
+				nationalUser.toReference(),
+				ImmunizationStatus.ACQUIRED,
+				MeansOfImmunization.VACCINATION,
+				ImmunizationManagementStatus.COMPLETED,
+				rdcf1);
+
+		creator.createImmunization(
+				Disease.CORONAVIRUS,
+				person.toReference(),
+				nationalUser.toReference(),
+				ImmunizationStatus.ACQUIRED,
+				MeansOfImmunization.VACCINATION,
+				ImmunizationManagementStatus.COMPLETED,
+				rdcf1);
+
+		loginWith(districtUser1);
+		Assert.assertEquals(2, getImmunizationFacade().getIndexList(new ImmunizationCriteria(), 0, 100, null).size());
+
+		loginWith(covidLimitedDistrictUser);
+		Assert.assertEquals(1, getImmunizationFacade().getIndexList(new ImmunizationCriteria(), 0, 100, null).size());
 	}
 
 }
