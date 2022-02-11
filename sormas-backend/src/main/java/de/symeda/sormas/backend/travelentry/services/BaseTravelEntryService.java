@@ -12,6 +12,8 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
@@ -44,8 +46,14 @@ public class BaseTravelEntryService extends AbstractCoreAdoService<TravelEntry> 
 		return cb.isFalse(root.get(TravelEntry.DELETED));
 	}
 
-	protected Predicate createUserFilter(TravelEntryQueryContext travelEntryQueryContext) {
-		return inJurisdictionOrOwned(travelEntryQueryContext);
+	protected Predicate createUserFilter(TravelEntryQueryContext qc) {
+		final User currentUser = userService.getCurrentUser();
+		final CriteriaBuilder cb = qc.getCriteriaBuilder();
+		Predicate filter = inJurisdictionOrOwned(qc);
+		if (currentUser.getLimitedDisease() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(qc.getRoot().get(Contact.DISEASE), currentUser.getLimitedDisease()));
+		}
+		return filter;
 	}
 
 	public List<TravelEntry> getAllActiveAfter(Date date) {

@@ -37,7 +37,6 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -51,9 +50,11 @@ import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
@@ -447,22 +448,30 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 	private Predicate createUserFilter(ImmunizationQueryContext<Immunization> qc) {
 		final User currentUser = userService.getCurrentUser();
+		final CriteriaBuilder cb = qc.getCriteriaBuilder();
 
+		Predicate filter;
 		if (!featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
-			return ImmunizationJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
+			filter = ImmunizationJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
 		} else {
-			return CriteriaBuilderHelper.or(
-				qc.getCriteriaBuilder(),
-				qc.getCriteriaBuilder().equal(qc.getRoot().get(Immunization.REPORTING_USER), currentUser),
+			filter = CriteriaBuilderHelper.or(
+					cb,
+				cb.equal(qc.getRoot().get(Immunization.REPORTING_USER), currentUser),
 				PersonJurisdictionPredicateValidator
 					.of(
 						qc.getQuery(),
-						qc.getCriteriaBuilder(),
+							cb,
 						new PersonJoins<>(((ImmunizationJoins<Immunization>) qc.getJoins()).getPerson()),
 						currentUser,
 						false)
 					.inJurisdictionOrOwned());
 		}
+
+		if (currentUser.getLimitedDisease() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(qc.getRoot().get(Contact.DISEASE), currentUser.getLimitedDisease()));
+		}
+
+		return filter;
 	}
 
 	private Predicate createDateFilter(CriteriaBuilder cb, Root<Immunization> from, ImmunizationSimilarityCriteria criteria) {

@@ -21,6 +21,7 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.backend.contact.Contact;
 import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.feature.FeatureType;
@@ -325,11 +326,14 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 
 	private Predicate createUserFilter(DirectoryImmunizationQueryContext<DirectoryImmunization> qc) {
 		final User currentUser = userService.getCurrentUser();
+		final CriteriaBuilder cb = qc.getCriteriaBuilder();
+
+		Predicate filter;
 
 		if (!featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
-			return DirectoryImmunizationJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
+			filter = DirectoryImmunizationJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
 		} else {
-			return CriteriaBuilderHelper.or(
+			filter = CriteriaBuilderHelper.or(
 				qc.getCriteriaBuilder(),
 				qc.getCriteriaBuilder().equal(qc.getRoot().get(Immunization.REPORTING_USER), currentUser),
 				PersonJurisdictionPredicateValidator
@@ -341,5 +345,11 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 						false)
 					.inJurisdictionOrOwned());
 		}
+
+		if (currentUser.getLimitedDisease() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(qc.getRoot().get(Contact.DISEASE), currentUser.getLimitedDisease()));
+		}
+
+		return filter;
 	}
 }
