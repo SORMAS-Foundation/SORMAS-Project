@@ -38,7 +38,7 @@ public class RegionDto extends InfrastructureDto {
 	public static final String GROWTH_RATE = "growthRate";
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String AREA = "area";
-	public static final String COUNTRY = "Country";
+	public static final String COUNTRY = "country";
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String name;
@@ -151,8 +151,6 @@ public class RegionDto extends InfrastructureDto {
 	public RegionReferenceDto toReference() {
 		return new RegionReferenceDto(getUuid(), name, externalID);
 	}
-
-
 
 	public static RegionDto build() {
 		RegionDto dto = new RegionDto();

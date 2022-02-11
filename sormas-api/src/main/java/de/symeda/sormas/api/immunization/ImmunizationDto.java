@@ -55,7 +55,7 @@ public class ImmunizationDto extends SormasToSormasShareableDto {
 	public static final String I18N_PREFIX = "Immunization";
 
 	public static final String ADDITIONAL_DETAILS = "additionalDetails";
-	public static final String COUNTRY = "Country";
+	public static final String COUNTRY = "country";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_DETAILS = "diseaseDetails";
 	public static final String END_DATE = "endDate";
