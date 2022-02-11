@@ -31,14 +31,14 @@ public class CoreAdo extends DeletableAdo {
 
     public static final String ARCHIVED = "archived";
 
-    private boolean archived;
+    private Boolean archived = Boolean.FALSE;
 
     @Column
-    public boolean isArchived() {
+    public Boolean isArchived() {
         return archived;
     }
 
-    public void setArchived(boolean archived) {
+    public void setArchived(Boolean archived) {
         this.archived = archived;
     }
 
