@@ -9985,4 +9985,10 @@ ALTER TABLE eventparticipant_history ALTER COLUMN archived SET DEFAULT false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (442, 'Refactor CoreAdo to include archiving #7246');
 
+-- 2022-02-11 Map variant specific Nucleic acid detection methods #5285
+ALTER TABLE testreport ADD COLUMN testpcrtestspecification varchar(255);
+ALTER TABLE testreport_history ADD COLUMN testpcrtestspecification varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (443, 'Map variant specific Nucleic acid detection methods #5285');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
