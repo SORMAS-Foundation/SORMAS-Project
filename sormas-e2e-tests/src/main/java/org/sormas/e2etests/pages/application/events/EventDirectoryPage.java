@@ -24,8 +24,6 @@ public class EventDirectoryPage {
   public static final By NEW_EVENT_BUTTON = By.id("eventNewEvent");
   public static final By SEARCH_EVENT_BY_FREE_TEXT_INPUT = By.id("freeText");
   public static final By SEARCH_EVENT_BY_FREE_TEXT_EVENT_INPUT = By.id("freeTextEvent");
-  public static final By SEARCH_EVENT_BY_FREE_TEXT_EVENT_GROUPS_INPUT =
-      By.id("freeTextEventGroups");
   public static final By RESET_FILTER = By.id("actionResetFilters");
   public static final By APPLY_FILTER = By.id("actionApplyFilters");
   public static final By EVENT_STATUS_FILTER_BUTTONS =
@@ -70,7 +68,10 @@ public class EventDirectoryPage {
   public static final By EVENT_COMMUNITY_COMBOBOX_INPUT = By.cssSelector("#community div");
   public static final By EVENT_STATUS_FILTER_COMBOBOX =
       By.cssSelector("#relevanceStatusFilter div");
-  public static final By EVENT_GROUP_ID_SORT = By.id("Group id");
+  public static final By EVENT_GROUP_ID_SORT = By.xpath("//div[text()='Group id']");
+  public static final By EVENT_GROUP_NAME_SORT = By.xpath("//div[text()='Group name']");
+  public static final By EVENT_EXPORT_BUTTON = By.id("export");
+  public static final By EVENT_EXPORT_BASIC_BUTTON = By.id("exportBasic");
 
   public static By getByEventUuid(String eventUuid) {
     return By.xpath(String.format("//a[@title='%s']", eventUuid));

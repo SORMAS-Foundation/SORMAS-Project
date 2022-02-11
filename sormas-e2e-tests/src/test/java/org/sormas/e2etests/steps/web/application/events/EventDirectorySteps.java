@@ -62,9 +62,28 @@ public class EventDirectorySteps implements En {
           String region = apiState.getCreatedEvent().getEventLocation().getRegion().getUuid();
           webDriverHelpers.selectFromCombobox(
               EVENT_REGION_COMBOBOX_INPUT, RegionsValues.getValueFor(region));
-          TimeUnit.SECONDS.sleep(5);
         });
-    //
+
+    When(
+        "I chose Region {string} option in Event Group Directory",
+        (String regionOption) -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(EVENT_REGION_COMBOBOX_INPUT, regionOption);
+        });
+
+    When(
+        "I chose District {string} option in Event Group Directory",
+        (String districtOption) -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(EVENT_DISTRICT_COMBOBOX_INPUT, districtOption);
+        });
+    When(
+        "I chose Community {string} option in Event Group Directory",
+        (String communityOption) -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(EVENT_COMMUNITY_COMBOBOX_INPUT, communityOption);
+        });
+
     When(
         "I chose District option by API in Event Group Directory",
         () -> {
@@ -89,6 +108,21 @@ public class EventDirectorySteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(EVENT_GROUP_ID_SORT);
+        });
+
+    When(
+        "I sort all rows by Group NAME",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(EVENT_GROUP_NAME_SORT);
+        });
+
+    When(
+        "I click on a Export button in Event Group Directory",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(EVENT_EXPORT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EVENT_EXPORT_BASIC_BUTTON);
         });
 
     When(
@@ -263,7 +297,6 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
         });
 
-    // I search last created Event by "EVENT_ID" option filter by API in Event Group Directory
     When(
         "I search last created Event by {string} option filter by API in Event Group Directory",
         (String searchCriteria) -> {
