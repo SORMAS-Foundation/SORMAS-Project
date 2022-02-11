@@ -38,7 +38,7 @@ public class RegionDto extends InfrastructureDto {
 	public static final String GROWTH_RATE = "growthRate";
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String AREA = "area";
-	public static final String COUNTRY = "country";
+	public static final String COUNTRY = "Country";
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String name;

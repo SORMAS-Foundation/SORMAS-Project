@@ -57,7 +57,7 @@ public class LocationDto extends PseudonymizableDto {
 	public static final String AREA_TYPE = "areaType";
 	public static final String CONTINENT = "continent";
 	public static final String SUB_CONTINENT = "subcontinent";
-	public static final String COUNTRY = "country";
+	public static final String COUNTRY = "Country";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -89,7 +89,9 @@ public class LocationDto extends PseudonymizableDto {
 	@PersonalData
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
-	@HideForCountries(countries = {CountryHelper.COUNTRY_CODE_GERMANY, CountryHelper.COUNTRY_CODE_FRANCE})
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_GERMANY,
+		CountryHelper.COUNTRY_CODE_FRANCE })
 	private String details;
 	@PersonalData
 	@SensitiveData

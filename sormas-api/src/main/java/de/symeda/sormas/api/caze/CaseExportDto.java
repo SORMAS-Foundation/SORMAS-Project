@@ -88,7 +88,7 @@ public class CaseExportDto implements Serializable {
 	public static final String I18N_PREFIX = "CaseExport";
 
 	public static final String ID = "id";
-	public static final String COUNTRY = "country";
+	public static final String COUNTRY = "Country";
 	public static final String BIRTH_DATE = "birthdate";
 	public static final String AGE_GROUP = "ageGroup";
 	public static final String INITIAL_DETECTION_PLACE = "initialDetectionPlace";

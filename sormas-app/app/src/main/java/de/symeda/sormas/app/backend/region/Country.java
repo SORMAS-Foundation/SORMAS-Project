@@ -17,7 +17,7 @@ public class Country extends InfrastructureAdo {
 
 	private static final long serialVersionUID = -2958216667876104351L;
 
-	public static final String TABLE_NAME = "country";
+	public static final String TABLE_NAME = "Country";
 	public static final String I18N_PREFIX = "Country";
 
 	public static final String NAME = "name";

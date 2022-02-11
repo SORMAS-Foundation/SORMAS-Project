@@ -47,7 +47,7 @@ public class CentralInfraSyncFacade {
 
 	public static final String CONTINENT = "continent";
 	public static final String SUBCONTINENT = "subcontinent";
-	public static final String COUNTRY = "country";
+	public static final String COUNTRY = "Country";
 	public static final String AREA = "area";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";

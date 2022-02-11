@@ -33,7 +33,7 @@ public class RegionIndexDto extends EntityDto {
 	public static final String GROWTH_RATE = "growthRate";
 	public static final String EXTERNAL_ID = "externalID";
 	public static final String AREA = "area";
-	public static final String COUNTRY = "country";
+	public static final String COUNTRY = "Country";
 
 	private String name;
 	private String epidCode;
