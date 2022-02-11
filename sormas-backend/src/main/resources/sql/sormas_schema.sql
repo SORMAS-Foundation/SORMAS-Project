@@ -9975,9 +9975,13 @@ UPDATE contact_history set archived = false;
 UPDATE eventparticipant set archived = false;
 UPDATE eventparticipant_history set archived = false;
 ALTER TABLE contact ALTER COLUMN archived SET NOT NULL;
+ALTER TABLE contact ALTER COLUMN archived SET DEFAULT false;
 ALTER TABLE contact_history ALTER COLUMN archived SET NOT NULL;
+ALTER TABLE contact_history ALTER COLUMN archived SET DEFAULT false;
 ALTER TABLE eventparticipant ALTER COLUMN archived SET NOT NULL;
+ALTER TABLE eventparticipant ALTER COLUMN archived SET DEFAULT false;
 ALTER TABLE eventparticipant_history ALTER COLUMN archived SET NOT NULL;
+ALTER TABLE eventparticipant_history ALTER COLUMN archived SET DEFAULT false;
 
 INSERT INTO schema_version (version_number, comment) VALUES (442, 'Refactor CoreAdo to include archiving #7246');
 
