@@ -196,7 +196,7 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(RESET_FILTER);
           final String eventUuid = CreateNewEventSteps.newEvent.getUuid();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              SEARCH_EVENT_BY_FREE_TEXT_INPUT, 15);
+              SEARCH_EVENT_BY_FREE_TEXT_INPUT, 20);
           webDriverHelpers.fillAndSubmitInWebElement(SEARCH_EVENT_BY_FREE_TEXT_INPUT, eventUuid);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
         });

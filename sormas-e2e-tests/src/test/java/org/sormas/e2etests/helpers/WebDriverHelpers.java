@@ -50,6 +50,10 @@ public class WebDriverHelpers {
 
   public static final By SELECTED_RADIO_BUTTON =
       By.xpath("ancestor::div[contains(@role,'group')]//input[@checked]/following-sibling::label");
+  public static final By SELECTED_RADIO_DISABLED_AND_CHECKED_BUTTON =
+      By.xpath(
+          "//div[contains(@class,'v-select-optiongroup')]//input[@checked and @disabled]/following-sibling::label");
+
   public static final int FLUENT_WAIT_TIMEOUT_SECONDS = 20;
   public static final By CHECKBOX_TEXT_LABEL = By.xpath("ancestor::span//label");
   public static final By TABLE_SCROLLER =
@@ -674,6 +678,16 @@ public class WebDriverHelpers {
     waitUntilIdentifiedElementIsPresent(options);
     scrollToElement(options);
     return baseSteps.getDriver().findElement(options).findElement(SELECTED_RADIO_BUTTON).getText();
+  }
+
+  public String getCheckedDisabledOptionFromHorizontalOptionGroup(By options) {
+    waitUntilIdentifiedElementIsPresent(options);
+    scrollToElement(options);
+    return baseSteps
+        .getDriver()
+        .findElement(options)
+        .findElement(SELECTED_RADIO_DISABLED_AND_CHECKED_BUTTON)
+        .getText();
   }
 
   public void clearWebElement(By selector) {

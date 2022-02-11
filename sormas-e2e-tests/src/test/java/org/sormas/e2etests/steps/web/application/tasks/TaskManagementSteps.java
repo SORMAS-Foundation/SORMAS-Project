@@ -75,6 +75,7 @@ public class TaskManagementSteps implements En {
           do {
             webDriverHelpers.scrollInTable(10);
           } while (!webDriverHelpers.isElementVisibleWithTimeout(lastTaskEditButton, 2));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.clickOnWebElementBySelector(lastTaskEditButton);
           webDriverHelpers.isElementVisibleWithTimeout(TASK_POPUP, 5);
         });
@@ -91,6 +92,7 @@ public class TaskManagementSteps implements En {
     When(
         "^I am checking if the associated linked event appears in task management and click on it$",
         () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           String eventUuid = apiState.getCreatedEvent().getUuid();
           webDriverHelpers.fillAndSubmitInWebElement(GENERAL_SEARCH_INPUT, eventUuid);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(15);
