@@ -22,6 +22,10 @@ import java.lang.reflect.Method;
 import java.util.EventObject;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.ui.AbstractJavaScriptComponent;
@@ -32,8 +36,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.geo.GeoLatLon;
 import elemental.json.Json;
 import elemental.json.JsonArray;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * JS and CSS files are in the VAADIN folder, so we can also access required
@@ -75,6 +77,13 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 		getState().setTileLayerVisible(true);
 		getState().setTileLayerOpacity(1);
 
+		String tilesUrl = FacadeProvider.getConfigFacade().getMapTilersUrl();
+		if(StringUtils.isNoneBlank(tilesUrl)) {
+			callFunction(
+					"setTileLayer",
+					tilesUrl,
+					FacadeProvider.getConfigFacade().getMapTilersAttribution());
+		}
 		addFunction("onClick", new JavaScriptFunction() {
 
 			@Override
@@ -88,6 +97,16 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 		String attribution = FacadeProvider.getGeoShapeProvider().loadShapefileAttributions();
 		this.addShapefileAttribution(attribution);
 
+		/*
+		 * var Stamen_Toner = L.tileLayer('https://stamen-tiles-{s}.a.ssl.fastly.net/toner/{z}/{x}/{y}{r}.{ext}', {
+		 * attribution: 'Map tiles by <a href="http://stamen.com">Stamen Design</a>, <a href="http://creativecommons.org/licenses/by/3.0">CC
+		 * BY 3.0</a> &mdash; Map data &copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors',
+		 * subdomains: 'abcd',
+		 * minZoom: 0,
+		 * maxZoom: 20,
+		 * ext: 'png'
+		 * });
+		 */
 	}
 
 	/**
