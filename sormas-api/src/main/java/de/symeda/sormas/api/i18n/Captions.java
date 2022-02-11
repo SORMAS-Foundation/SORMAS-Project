@@ -1963,7 +1963,7 @@ public interface Captions {
 	String statisticsSpecifySelection = "statisticsSpecifySelection";
 	String statisticsStatistics = "statisticsStatistics";
 	String statisticsVisualizationType = "statisticsVisualizationType";
-	String Subcontinent = "subcontinent";
+	String Subcontinent = "Subcontinent";
 	String Subcontinent_archived = "Subcontinent.archived";
 	String Subcontinent_continent = "Subcontinent.continent";
 	String Subcontinent_defaultName = "Subcontinent.defaultName";
