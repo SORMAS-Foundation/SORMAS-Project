@@ -230,6 +230,7 @@ public class TaskManagementSteps implements En {
     When(
         "^I collect the task column objects$",
         () -> {
+          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           List<Map<String, String>> tableRowsData = getTableRowsData();
           taskTableRows = new ArrayList<>();
@@ -310,7 +311,7 @@ public class TaskManagementSteps implements En {
   }
 
   private LocalDateTime getLocalDateTimeFromColumns(String date) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy h:mm a");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy h:m a");
     try {
       return LocalDateTime.parse(date.trim(), formatter);
     } catch (Exception e) {
