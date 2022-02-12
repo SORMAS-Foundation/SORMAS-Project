@@ -64,8 +64,8 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
-import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -77,7 +77,6 @@ import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleJurisdictionPredicateValidator;
-import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
@@ -110,14 +109,13 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
 	private ExternalShareInfoService externalShareInfoService;
-	@EJB
-	private SampleService sampleService;
 
 	public EventService() {
 		super(Event.class);
 	}
 
-	public List<Event> getAllActiveEventsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+	@Override
+	public List<Event> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Event> cq = cb.createQuery(getElementClass());
@@ -788,14 +786,14 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	}
 
 	/**
-	 * Creates a filter that excludes all events that are either {@link Event#isArchived()} or {@link CoreAdo#isDeleted()}.
+	 * Creates a filter that excludes all events that are either {@link Event#isArchived()} or {@link DeletableAdo#isDeleted()}.
 	 */
 	public Predicate createActiveEventsFilter(CriteriaBuilder cb, Root<Event> root) {
 		return cb.and(cb.isFalse(root.get(Event.ARCHIVED)), cb.isFalse(root.get(Event.DELETED)));
 	}
 
 	/**
-	 * Creates a filter that excludes all events that are either {@link Event#isArchived()} or {@link CoreAdo#isDeleted()}.
+	 * Creates a filter that excludes all events that are either {@link Event#isArchived()} or {@link DeletableAdo#isDeleted()}.
 	 */
 	public Predicate createActiveEventsFilter(CriteriaBuilder cb, Path<Event> root) {
 		return cb.and(cb.isFalse(root.get(Event.ARCHIVED)), cb.isFalse(root.get(Event.DELETED)));
@@ -803,7 +801,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 	/**
 	 * Creates a default filter that should be used as the basis of queries that do not use {@link EventCriteria}.
-	 * This essentially removes {@link CoreAdo#isDeleted()} events from the queries.
+	 * This essentially removes {@link DeletableAdo#isDeleted()} events from the queries.
 	 */
 	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<Event> root) {
 		return cb.isFalse(root.get(Event.DELETED));
@@ -999,5 +997,4 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		return em.createQuery(cq).getSingleResult() > 0;
 	}
-
 }

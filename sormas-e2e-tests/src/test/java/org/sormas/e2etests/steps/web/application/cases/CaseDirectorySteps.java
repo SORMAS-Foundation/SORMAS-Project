@@ -60,13 +60,20 @@ public class CaseDirectorySteps implements En {
 
     When(
         "^I open last created case",
-        () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_CASE_ID_BUTTON));
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_CASE_ID_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_CASE_ID_BUTTON);
+        });
 
     When(
         "^Search for Case using Case UUID from the created Task",
-        () ->
-            webDriverHelpers.fillAndSubmitInWebElement(
-                NAME_UUID_EPID_NUMBER_LIKE_INPUT, EditCaseSteps.aCase.getUuid()));
+        () -> {
+          webDriverHelpers.fillAndSubmitInWebElement(
+              NAME_UUID_EPID_NUMBER_LIKE_INPUT, EditCaseSteps.aCase.getUuid());
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
     When(
         "I click on the DETAILED button from Case directory",
         () -> {
@@ -308,7 +315,7 @@ public class CaseDirectorySteps implements En {
     And(
         "I fill Cases from input to {int} days before mocked Case created on Case directory page",
         (Integer number) -> {
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
           webDriverHelpers.fillInWebElement(
               DATE_FROM_COMBOBOX,
               formatter.format(
@@ -320,7 +327,7 @@ public class CaseDirectorySteps implements En {
     And(
         "I fill Cases from input to {int} days after before mocked Case created on Case directory page",
         (Integer number) -> {
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
           webDriverHelpers.fillInWebElement(
               DATE_FROM_COMBOBOX, formatter.format(LocalDate.now().plusDays(number)));
         });
@@ -395,7 +402,7 @@ public class CaseDirectorySteps implements En {
     And(
         "I fill Cases to input to {int} days after mocked Case created on Case directory page",
         (Integer number) -> {
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
           webDriverHelpers.fillInWebElement(
               DATE_TO_COMBOBOX,
               formatter.format(

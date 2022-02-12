@@ -160,6 +160,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	@EJB
 	private EventParticipantFacadeEjbLocal eventParticipantFacade;
 	@EJB
+	private EventFacadeEjbLocal eventFacade;
+	@EJB
 	private MessagingService messagingService;
 	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
@@ -979,18 +981,18 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	private void handleAssotiatedObjectChanges(Sample newSample, boolean syncShares) {
 		if (newSample.getAssociatedCase() != null) {
-			caseFacade.onCaseChanged(CaseFacadeEjb.toDto(newSample.getAssociatedCase()), newSample.getAssociatedCase(), syncShares);
+			caseFacade.onCaseChanged(caseFacade.toDto(newSample.getAssociatedCase()), newSample.getAssociatedCase(), syncShares);
 		}
 
 		if (newSample.getAssociatedContact() != null) {
-			contactFacade.onContactChanged(ContactFacadeEjb.toDto(newSample.getAssociatedContact()), syncShares);
+			contactFacade.onContactChanged(contactFacade.toDto(newSample.getAssociatedContact()), syncShares);
 		}
 
 		EventParticipant associatedEventParticipant = newSample.getAssociatedEventParticipant();
 		if (associatedEventParticipant != null) {
 			eventParticipantFacade.onEventParticipantChanged(
-				EventFacadeEjb.toDto(associatedEventParticipant.getEvent()),
-				EventParticipantFacadeEjb.toDto(associatedEventParticipant),
+				eventFacade.toDto(associatedEventParticipant.getEvent()),
+				eventParticipantFacade.toDto(associatedEventParticipant),
 				associatedEventParticipant,
 				syncShares);
 		}

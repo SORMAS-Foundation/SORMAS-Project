@@ -16,13 +16,14 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
+import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
-import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.common.DeletableAdo;
 
 @Entity(name = TestReport.TABLE_NAME)
 @Audited
-public class TestReport extends CoreAdo {
+public class TestReport extends DeletableAdo {
 
 	private static final long serialVersionUID = -9164498173635523905L;
 
@@ -38,6 +39,7 @@ public class TestReport extends CoreAdo {
 	public static final String TEST_RESULT = "testResult";
 	public static final String TEST_RESULT_VERIFIED = "testResultVerified";
 	public static final String TEST_RESULT_TEXT = "testResultText";
+	public static final String TEST_PCR_TEST_SPECIFICATION = "testPcrTestSpecification";
 
 	private LabMessage labMessage;
 	private String testLabName;
@@ -56,6 +58,7 @@ public class TestReport extends CoreAdo {
 	private String testedDiseaseVariant;
 	private String testedDiseaseVariantDetails;
 	private Boolean preliminary;
+	private PCRTestSpecification testPcrTestSpecification;
 
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(nullable = false)
@@ -197,5 +200,14 @@ public class TestReport extends CoreAdo {
 
 	public void setPreliminary(Boolean preliminary) {
 		this.preliminary = preliminary;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public PCRTestSpecification getTestPcrTestSpecification() {
+		return testPcrTestSpecification;
+	}
+
+	public void setTestPcrTestSpecification(PCRTestSpecification testPcrTestSpecification) {
+		this.testPcrTestSpecification = testPcrTestSpecification;
 	}
 }
