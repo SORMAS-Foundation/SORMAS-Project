@@ -263,3 +263,66 @@ Feature: Case end to end tests
     And I set Cardiovascular disease including hypertension radio button to UNKNOWN
     Then I click Save button on Clinical Course Tab
     And I check if Case saved popup appeared and close it
+
+  @issue=SORDEV-8412
+  Scenario: Change of Isolation/Quarantine should be documented
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    Then I set place for Quarantine as Home
+    And I set Start date of Quarantine 2 days ago
+    And I set End date of Quarantine to 5 days
+    Then I click on save case button
+    And I set End date of Quarantine to 4 days
+    And I check if Reduce quarantine popup is displayed
+    Then I click on yes quarantine popup button
+    Then I click on save case button
+    And I set End date of Quarantine to 6 days
+    And I check if Extend quarantine popup is displayed
+    Then I discard changes in quarantine popup
+    And I check if Quarantine End date stayed reduce to 4 days
+    And I set the quarantine end to a date 1 day after the Follow-up until date
+    Then I click on yes quarantine popup button
+    Then I click on yes Extend follow up period popup button
+    Then I click on save case button
+    And I check if Quarantine Follow up until date was extended to 1 day
+    And I fill Quarantine change comment field
+    Then I click on save case button
+    And I check if Quarantine change comment field was saved correctly
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I click on the Contacts button from navbar
+    Then I open the last created contact
+    Then I set place for Quarantine as Home
+    And I set Start date of Quarantine 2 days ago
+    And I set End date of Quarantine to 5 days
+    Then I click on save Contact button
+    And I set End date of Quarantine to 4 days
+    And I check if Reduce quarantine popup is displayed
+    Then I click on yes quarantine popup button
+    Then I click on save Contact button
+    And I set End date of Quarantine to 6 days
+    And I check if Extend quarantine popup is displayed
+    Then I discard changes in quarantine popup
+    And I check if Quarantine End date stayed reduce to 4 days
+    And I set the quarantine end to a date 1 day after the Follow-up until date
+    Then I click on yes quarantine popup button
+    Then I click on yes Extend follow up period popup button
+    Then I click on save Contact button
+    And I check if Quarantine Follow up until date was extended to 1 day
+    And I fill Quarantine change comment field
+    Then I click on save Contact button
+    And I check if Quarantine change comment field was saved correctly
+
+
+

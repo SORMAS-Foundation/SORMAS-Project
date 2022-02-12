@@ -397,10 +397,10 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		Date since = new Date();
 
-		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ad", "Min", UserRole.ADMIN);
+		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Another", "Admin", UserRole.ADMIN);
 		String adminUuid = admin.getUuid();
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
@@ -1446,7 +1446,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		// 1. Create
 
 		// Create leadContact
-		UserDto leadUser = creator.createUser("", "", "", "", "");
+		UserDto leadUser = creator.createUser("", "", "", "First", "User");
 		UserReferenceDto leadUserReference = new UserReferenceDto(leadUser.getUuid());
 		PersonDto leadPerson = creator.createPerson("Alex", "Miller");
 		PersonContactDetailDto leadContactDetail =
@@ -1481,7 +1481,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		getVisitFacade().saveVisit(leadVisit);
 
 		// Create otherContact
-		UserDto otherUser = creator.createUser("", "", "", "", "");
+		UserDto otherUser = creator.createUser("", "", "", "Some", "User");
 		UserReferenceDto otherUserReference = new UserReferenceDto(otherUser.getUuid());
 		PersonDto otherPerson = creator.createPerson("Max", "Smith");
 		PersonContactDetailDto otherContactDetail =

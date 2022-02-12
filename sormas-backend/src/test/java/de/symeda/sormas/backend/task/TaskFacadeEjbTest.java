@@ -69,7 +69,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ad", "Min", UserRole.ADMIN);
+		UserDto admin = getUserFacade().getByUserName("admin");
 		String adminUuid = admin.getUuid();
 		TaskDto task = creator.createTask(
 			TaskContext.GENERAL,
@@ -379,8 +379,8 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 
 		// 1. one user with tasks, one without
 		RDCF rdcf = new RDCF(creator.createRDCFEntities());
-		UserDto user1 = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
-		UserDto user2 = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user1 = creator.createUser(rdcf, "First", "User", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user2 = creator.createUser(rdcf, "Second", "User", UserRole.SURVEILLANCE_SUPERVISOR);
 
 		creator.createTask(user1.toReference());
 

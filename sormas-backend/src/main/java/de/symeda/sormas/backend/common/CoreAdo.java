@@ -33,7 +33,7 @@ public class CoreAdo extends DeletableAdo {
 
     private boolean archived;
 
-    @Column
+    @Column(nullable = false)
     public boolean isArchived() {
         return archived;
     }
@@ -41,5 +41,4 @@ public class CoreAdo extends DeletableAdo {
     public void setArchived(boolean archived) {
         this.archived = archived;
     }
-
 }
