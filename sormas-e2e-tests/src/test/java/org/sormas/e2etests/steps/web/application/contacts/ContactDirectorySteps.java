@@ -23,9 +23,9 @@ import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCas
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.GRID_HEADERS;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.RESULTS_GRID_HEADER;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.*;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.FIRST_NAME_OF_CONTACT_PERSON_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SAVE_BUTTON;
-import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 
 import cucumber.api.java8.En;
@@ -36,11 +36,11 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.openqa.selenium.By;
+import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.enums.AreaTypeValues;
+import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.TypeOfActivity;
 import org.sormas.e2etests.enums.TypeOfGathering;
-import org.sormas.e2etests.common.DataOperations;
-import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.YesNoUnknownOptions;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.ExposureDetailsRole;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfActivityExposure;
@@ -249,25 +249,25 @@ public class ContactDirectorySteps implements En {
     And(
         "I click on All button in Contact Directory Page",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(ALLBUTTON_CONTACT);
+          webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(ALLBUTTON_CONTACT);
           TimeUnit.SECONDS.sleep(8); // needed for table refresh
         });
     And(
         "I click on Converted to case pending button on Contact Directory Page",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(CONVERTED_TO_CASE_BUTTON);
+          webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(CONVERTED_TO_CASE_BUTTON);
           TimeUnit.SECONDS.sleep(8); // needed for table refresh
         });
     And(
         "I click on Active contact button in Contact Directory Page",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(ACTIVE_CONTACT_BUTTON);
+          webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(ACTIVE_CONTACT_BUTTON);
           TimeUnit.SECONDS.sleep(8); // needed for table refresh
         });
     And(
         "I click on Dropped button on Contact Directory Page",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(DROPPED_BUTTON);
+          webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(DROPPED_BUTTON);
           TimeUnit.SECONDS.sleep(8); // needed for table refresh
         });
 
