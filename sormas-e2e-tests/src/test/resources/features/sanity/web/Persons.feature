@@ -36,52 +36,52 @@ Feature: Edit Persons
     And I choose random value of Region in Persons for the last created person by API
     And I choose random value of District in Persons for the last created person by API
     And I choose random value of Community in Persons for the last created person by API
-    Then I click on the APPLY FILTERS button for Person
+    Then I apply on the APPLY FILTERS button
     And I check that number of displayed Person results is 1
     And I change Year of birth filter by random value for Person
-    Then I click on the APPLY FILTERS button for Person
+    Then I apply on the APPLY FILTERS button
     And I check that number of displayed Person results is 0
     Then I choose random value for Year of birth filter in Persons for the last created person by API
-    Then I click on the APPLY FILTERS button for Person
+    Then I apply on the APPLY FILTERS button
     And I check that number of displayed Person results is 1
     And I change Month of birth filter  by random value for Person
-    Then I click on the APPLY FILTERS button for Person
+    Then I apply on the APPLY FILTERS button
     And I check that number of displayed Person results is 0
     And I choose random value for Month of birth filter in Persons for the last created person by API
-    Then I click on the APPLY FILTERS button for Person
+    Then I apply on the APPLY FILTERS button
     And I check that number of displayed Person results is 1
     And I change Day of birth filter by random value for Person
-    Then I click on the APPLY FILTERS button for Person
+    Then I apply on the APPLY FILTERS button
     And I check that number of displayed Person results is 0
     And I choose random value for Day of birth filter in Persons for the last created person by API
-    Then I click on the APPLY FILTERS button for Person
+    Then I apply on the APPLY FILTERS button
     And  I search after last created person from API by factor "full name" in Person directory
-    And I click on the APPLY FILTERS button for Person
+    And I apply on the APPLY FILTERS button
     And I check that number of displayed Person results is 1
     Then I change "full name" information data field for Person
-    And I click on the APPLY FILTERS button for Person
+    And I apply on the APPLY FILTERS button
     And I check that number of displayed Person results is 0
     Then I fill Persons UUID for the last created person by API
     And I change present condition filter to random for Person
-    And I click on the APPLY FILTERS button for Person
+    And I apply on the APPLY FILTERS button
     And I check that number of displayed Person results is 0
     And I choose present condition field from specific range for the last created person by API
-    Then I click on the APPLY FILTERS button for Person
+    Then I apply on the APPLY FILTERS button
     And I check that number of displayed Person results is 1
     And I change REGION filter to "Berlin" for Person
-    And I click on the APPLY FILTERS button for Person
+    And I apply on the APPLY FILTERS button
     And I check that number of displayed Person results is 0
     And I choose random value of Region in Persons for the last created person by API
     And I choose random value of District in Persons for the last created person by API
-    Then I click on the APPLY FILTERS button for Person
+    Then I apply on the APPLY FILTERS button
     And I check that number of displayed Person results is 1
     Then I change Community filter to "Community2" for Person
-    And I click on the APPLY FILTERS button for Person
+    And I apply on the APPLY FILTERS button
     And I check that number of displayed Person results is 0
     And I choose random value of Community in Persons for the last created person by API
-    Then I click on the APPLY FILTERS button for Person
+    Then I apply on the APPLY FILTERS button
     And I check that number of displayed Person results is 1
-    And I click on the APPLY FILTERS button for Person
+    And I apply on the APPLY FILTERS button
     And I click on the RESET FILTERS button for Person
 
 @issue=SORDEV-8468

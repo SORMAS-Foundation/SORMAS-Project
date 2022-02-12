@@ -159,15 +159,6 @@ public class PersonDirectorySteps implements En {
                       "Number of displayed persons is not correct"));
         });
 
-    When(
-        "I click on the APPLY FILTERS button for Person",
-        () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              APPLY_FILTERS_BUTTON, 30);
-          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
-          TimeUnit.SECONDS.sleep(10);
-        });
-
     Then(
         "I change Year of birth filter by random value for Person",
         () -> {
