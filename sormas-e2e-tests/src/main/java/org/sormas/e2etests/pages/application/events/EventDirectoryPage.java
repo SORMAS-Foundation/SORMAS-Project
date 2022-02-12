@@ -23,6 +23,8 @@ import org.openqa.selenium.By;
 public class EventDirectoryPage {
   public static final By NEW_EVENT_BUTTON = By.id("eventNewEvent");
   public static final By SEARCH_EVENT_BY_FREE_TEXT_INPUT = By.id("freeText");
+  public static final By SEARCH_EVENT_BY_FREE_TEXT_EVENT_INPUT = By.id("freeTextEvent");
+  public static final By TOTAL_EVENTS_COUNTER = By.cssSelector(".badge");
   public static final By RESET_FILTER = By.id("actionResetFilters");
   public static final By APPLY_FILTER = By.id("actionApplyFilters");
   public static final By EVENT_STATUS_FILTER_BUTTONS =

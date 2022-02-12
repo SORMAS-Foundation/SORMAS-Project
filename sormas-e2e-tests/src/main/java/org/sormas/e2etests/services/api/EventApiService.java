@@ -42,7 +42,6 @@ public class EventApiService {
         .eventDesc("Event description")
         .startDate(new Date())
         .reportDateTime(new Date())
-        // .eventLocation(EventLocation.builder().uuid(UUID.randomUUID().toString()).build())
         .eventLocation(
             EventLocation.builder()
                 .uuid(UUID.randomUUID().toString())

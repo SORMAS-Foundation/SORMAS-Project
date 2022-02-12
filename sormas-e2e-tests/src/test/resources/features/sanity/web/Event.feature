@@ -248,11 +248,11 @@ Feature: Create events
     Then I am checking event group name and id is correctly displayed
     And I click on the Events button from navbar
     And I click on radio button Groups in Event directory
-    Then I search last created groups Event by "GROUP_ID" option filter by API in Event Group Directory
-    Then I search last created Event by "TITLE" option filter by API in Event Group Directory
-    And I chose Region option by API in Event Group Directory
-    And I chose District option by API in Event Group Directory
-    And I chose Community option by API in Event Group Directory
+    Then API: I search last created groups Event by "GROUP_ID" option filter in Event Group Directory
+    Then API: I search last created Event by "TITLE" option filter in Event Group Directory
+    And API: I chose Region option in Event Group Directory
+    And API: I chose District option in Event Group Directory
+    And API: I chose Community option in Event Group Directory
     And I apply on the APPLY FILTERS button from Event
     And I check that number of displayed Event results is 1
     And I chose Region "Berlin" option in Event Group Directory
@@ -262,12 +262,12 @@ Feature: Create events
     And I chose District "District11" option in Event Group Directory
     And I apply on the APPLY FILTERS button from Event
     And I check that number of displayed Event results is 0
-    And I chose Region option by API in Event Group Directory
-    And I chose District option by API in Event Group Directory
+    And API: I chose Region option in Event Group Directory
+    And API: I chose District option in Event Group Directory
     And I chose Community "Community1" option in Event Group Directory
     And I apply on the APPLY FILTERS button from Event
     And I check that number of displayed Event results is 0
-    And I chose Community option by API in Event Group Directory
+    And API: I chose Community option in Event Group Directory
     And I apply on the APPLY FILTERS button from Event
     And I chose "Active groups" option from Relevnce Status filter in Event Group Directory
     And I check that number of displayed Event results is 1
@@ -277,8 +277,8 @@ Feature: Create events
     And I check that number of displayed Event results is 1
     And I chose "Active groups" option from Relevnce Status filter in Event Group Directory
     And I click on the RESET FILTERS button from Event
-    And I sort all rows by Group ID
-    And I sort all rows by Group NAME
+    And I sort all rows by Group ID in Event Group Directory
+    And I sort all rows by Group NAME in Event Group Directory
     And I click on a Export button in Event Group Directory
 
   @issue=SORDEV-5570

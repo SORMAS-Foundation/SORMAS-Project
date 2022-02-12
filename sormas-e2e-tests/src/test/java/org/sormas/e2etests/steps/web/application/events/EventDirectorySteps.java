@@ -56,7 +56,7 @@ public class EventDirectorySteps implements En {
         });
 
     When(
-        "I chose Region option by API in Event Group Directory",
+        "API: I chose Region option in Event Group Directory",
         () -> {
           webDriverHelpers.waitForPageLoaded();
           String region = apiState.getCreatedEvent().getEventLocation().getRegion().getUuid();
@@ -85,17 +85,16 @@ public class EventDirectorySteps implements En {
         });
 
     When(
-        "I chose District option by API in Event Group Directory",
+        "API: I chose District option in Event Group Directory",
         () -> {
           webDriverHelpers.waitForPageLoaded();
           String district =
               apiState.getCreatedEvent().getEventLocation().getDistrict().getCaption();
-          webDriverHelpers.selectFromCombobox(
-              EVENT_DISTRICT_COMBOBOX_INPUT, DistrictsValues.getValueFor(district));
+          webDriverHelpers.selectFromCombobox(EVENT_DISTRICT_COMBOBOX_INPUT, district);
         });
 
     When(
-        "I chose Community option by API in Event Group Directory",
+        "API: I chose Community option in Event Group Directory",
         () -> {
           webDriverHelpers.waitForPageLoaded();
           String community = apiState.getCreatedEvent().getEventLocation().getCommunity().getUuid();
@@ -104,14 +103,14 @@ public class EventDirectorySteps implements En {
         });
 
     When(
-        "I sort all rows by Group ID",
+        "I sort all rows by Group ID in Event Group Directory",
         () -> {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(EVENT_GROUP_ID_SORT);
         });
 
     When(
-        "I sort all rows by Group NAME",
+        "I sort all rows by Group NAME in Event Group Directory",
         () -> {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(EVENT_GROUP_NAME_SORT);
@@ -299,7 +298,7 @@ public class EventDirectorySteps implements En {
         });
 
     When(
-        "I search last created Event by {string} option filter by API in Event Group Directory",
+        "API: I search last created Event by {string} option filter in Event Group Directory",
         (String searchCriteria) -> {
           String searchText = "";
           switch (searchCriteria) {
@@ -384,15 +383,15 @@ public class EventDirectorySteps implements En {
         "I click Create Case for Event Participant",
         () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_CASE_BUTTON));
 
-      Then(
-              "I check that number of displayed Event results is {int}",
-              (Integer number) ->
-                      assertHelpers.assertWithPoll20Second(
-                              () ->
-                                      Assert.assertEquals(
-                                              webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS),
-                                              number.intValue(),
-                                              "Number of displayed cases is not correct")));
+    Then(
+        "I check that number of displayed Event results is {int}",
+        (Integer number) ->
+            assertHelpers.assertWithPoll20Second(
+                () ->
+                    Assert.assertEquals(
+                        webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS),
+                        number.intValue(),
+                        "Number of displayed cases is not correct")));
 
     Then(
         "I check the number of displayed Event results from All button is {int}",
