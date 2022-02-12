@@ -19,6 +19,8 @@
 package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.FollowUpTabPage.*;
+import static org.sormas.e2etests.pages.application.cases.HospitalizationTabPage.BLUE_ERROR_EXCLAMATION_MARK;
+import static org.sormas.e2etests.pages.application.cases.HospitalizationTabPage.BLUE_ERROR_EXCLAMATION_MARK_TEXT;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
@@ -188,14 +190,38 @@ public class FollowUpStep implements En {
 
     When(
         "I set First Symptom as ([^\"]*)",
-        (String parameter) -> {
-          webDriverHelpers.selectFromCombobox(FIRST_SYMPTOM_COMBOBOX, parameter);
-        });
+        (String parameter) ->
+            webDriverHelpers.selectFromCombobox(FIRST_SYMPTOM_COMBOBOX, parameter));
 
     When(
         "I set Date of symptom onset",
         () -> {
           fillDateOfSymptoms(LocalDate.now());
+        });
+
+    When(
+        "I set Maximum body temperature as a ([^\"]*)",
+        (String temperature) -> {
+          visit = followUpVisitService.buildTemperatureOnlySymptoms(temperature);
+          selectCurrentTemperature(visit.getCurrentBodyTemperature());
+          selectSourceOfTemperature(visit.getSourceOfBodyTemperature());
+        });
+
+    When(
+        "I check if popup is displayed next to Fever in Symptoms if temperature is ([^\"]*)",
+        (String temp) -> {
+          String expectedForLowerThan =
+              "A body temperature of less than 38 C has been specified. It is recommended to also set Fever to \"No\".";
+          String expectedForHigherThan =
+              "A body temperature of at least 38 C has been specified. It is recommended to also set Fever to \"Yes\".";
+          webDriverHelpers.hoverToElement(BLUE_ERROR_EXCLAMATION_MARK);
+          String displayedText =
+              webDriverHelpers.getTextFromWebElement(BLUE_ERROR_EXCLAMATION_MARK_TEXT);
+          if (temp.equals(">=38"))
+            softly.assertEquals(expectedForHigherThan, (displayedText.replaceAll("\\u00B0", "")));
+          else if (temp.equals("<=38"))
+            softly.assertEquals(expectedForLowerThan, (displayedText.replaceAll("\\u00B0", "")));
+          softly.assertAll();
         });
 
     When(

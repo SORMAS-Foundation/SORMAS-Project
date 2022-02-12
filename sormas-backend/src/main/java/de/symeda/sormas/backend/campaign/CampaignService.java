@@ -1,6 +1,5 @@
 package de.symeda.sormas.backend.campaign;
 
-import java.util.Date;
 import java.util.List;
 
 import javax.ejb.LocalBean;
@@ -17,7 +16,6 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
@@ -88,29 +86,6 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 
 		cq.where(filter);
 		cq.select(from.get(Campaign.UUID));
-
-		return em.createQuery(cq).getResultList();
-	}
-
-	public List<Campaign> getAllAfter(Date since, User user) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Campaign> cq = cb.createQuery(getElementClass());
-		Root<Campaign> root = cq.from(getElementClass());
-
-		Predicate filter = createUserFilter(cb, cq, root);
-		if (since != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, root, since);
-			if (filter != null) {
-				filter = cb.and(filter, dateFilter);
-			} else {
-				filter = dateFilter;
-			}
-		}
-		if (filter != null) {
-			cq.where(filter);
-		}
-		cq.orderBy(cb.desc(root.get(AbstractDomainObject.CHANGE_DATE)));
 
 		return em.createQuery(cq).getResultList();
 	}

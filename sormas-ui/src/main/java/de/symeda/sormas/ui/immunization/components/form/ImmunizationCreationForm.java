@@ -27,11 +27,9 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 import java.util.Collections;
 
-import com.vaadin.ui.Button;
-import de.symeda.sormas.ui.utils.LayoutUtil;
-import de.symeda.sormas.ui.utils.PersonDependentEditForm;
 import org.apache.commons.lang3.StringUtils;
 
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.AbstractSelect;
@@ -41,6 +39,7 @@ import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Month;
@@ -65,12 +64,13 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
+import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.NumberValidator;
+import de.symeda.sormas.ui.utils.PersonDependentEditForm;
 import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 
 public class ImmunizationCreationForm extends PersonDependentEditForm<ImmunizationDto> {
@@ -201,8 +201,17 @@ public class ImmunizationCreationForm extends PersonDependentEditForm<Immunizati
 		Button searchPersonButton = createPersonSearchButton(PERSON_SEARCH_LOC);
 		getContent().addComponent(searchPersonButton, PERSON_SEARCH_LOC);
 
-		addCustomField(PersonDto.NATIONAL_HEALTH_ID, String.class, TextField.class);
-		addCustomField(PersonDto.PASSPORT_NUMBER, String.class, TextField.class);
+		TextField nationalHealthIdField = addCustomField(PersonDto.NATIONAL_HEALTH_ID, String.class, TextField.class);
+		TextField passportNumberField = addCustomField(PersonDto.PASSPORT_NUMBER, String.class, TextField.class);
+		if (CountryHelper.isCountry(FacadeProvider.getConfigFacade().getCountryLocale(), CountryHelper.COUNTRY_CODE_GERMANY)) {
+			nationalHealthIdField.setVisible(false);
+		}
+		if (CountryHelper.isInCountries(
+			FacadeProvider.getConfigFacade().getCountryLocale(),
+			CountryHelper.COUNTRY_CODE_GERMANY,
+			CountryHelper.COUNTRY_CODE_FRANCE)) {
+			passportNumberField.setVisible(false);
+		}
 
 		birthDateDay = addCustomField(PersonDto.BIRTH_DATE_DD, Integer.class, ComboBox.class);
 		// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3

@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.caze;
 
+import de.symeda.sormas.api.utils.HideForCountries;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -1640,6 +1641,7 @@ public class CaseExportDto implements Serializable {
 		CaseDataDto.PERSON,
 		PersonDto.EDUCATION_TYPE })
 	@ExportGroup(ExportGroupType.PERSON)
+	@HideForCountries(countries = {CountryHelper.COUNTRY_CODE_GERMANY, CountryHelper.COUNTRY_CODE_FRANCE})
 	public EducationType getEducationType() {
 		return educationType;
 	}

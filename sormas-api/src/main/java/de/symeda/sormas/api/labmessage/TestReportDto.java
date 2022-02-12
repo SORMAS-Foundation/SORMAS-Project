@@ -7,6 +7,7 @@ import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -24,6 +25,7 @@ public class TestReportDto extends EntityDto {
 	public static final String TEST_TYPE = "testType";
 	public static final String TEST_DATE_TIME = "testDateTime";
 	public static final String TEST_RESULT = "testResult";
+	public static final String TEST_PCR_TEST_SPECIFICATION = "testPcrTestSpecification";
 
 	@Required
 	private LabMessageReferenceDto labMessage;
@@ -49,7 +51,13 @@ public class TestReportDto extends EntityDto {
 	private String externalId;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String externalOrderId;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	private String testedDiseaseVariant;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
+	private String testedDiseaseVariantDetails;
+
 	private Boolean preliminary;
+	private PCRTestSpecification testPcrTestSpecification;
 
 	public LabMessageReferenceDto getLabMessage() {
 		return labMessage;
@@ -169,11 +177,35 @@ public class TestReportDto extends EntityDto {
 		this.externalOrderId = externalOrderId;
 	}
 
+	public String getTestedDiseaseVariant() {
+		return testedDiseaseVariant;
+	}
+
+	public void setTestedDiseaseVariant(String testedDiseaseVariant) {
+		this.testedDiseaseVariant = testedDiseaseVariant;
+	}
+
+	public String getTestedDiseaseVariantDetails() {
+		return testedDiseaseVariantDetails;
+	}
+
+	public void setTestedDiseaseVariantDetails(String testedDiseaseVariantDetails) {
+		this.testedDiseaseVariantDetails = testedDiseaseVariantDetails;
+	}
+
 	public Boolean getPreliminary() {
 		return preliminary;
 	}
 
 	public void setPreliminary(Boolean preliminary) {
 		this.preliminary = preliminary;
+	}
+
+	public PCRTestSpecification getTestPcrTestSpecification() {
+		return testPcrTestSpecification;
+	}
+
+	public void setTestPcrTestSpecification(PCRTestSpecification testPcrTestSpecification) {
+		this.testPcrTestSpecification = testPcrTestSpecification;
 	}
 }

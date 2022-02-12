@@ -30,7 +30,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.action.ActionFacade;
 import de.symeda.sormas.api.bagexport.BAGExportFacade;
-import de.symeda.sormas.api.campaign.CampaignFacade;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataFacade;
 import de.symeda.sormas.api.campaign.diagram.CampaignDiagramDefinitionFacade;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaFacade;
@@ -48,8 +47,6 @@ import de.symeda.sormas.api.docgeneneration.EventDocumentFacade;
 import de.symeda.sormas.api.docgeneneration.QuarantineOrderFacade;
 import de.symeda.sormas.api.document.DocumentFacade;
 import de.symeda.sormas.api.epidata.EpiDataFacade;
-import de.symeda.sormas.api.event.EventFacade;
-import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
 import de.symeda.sormas.api.feature.FeatureConfigurationFacade;
 import de.symeda.sormas.api.geo.GeoShapeProvider;
@@ -225,6 +222,7 @@ import info.novatec.beantest.api.BaseBeanTest;
 public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	protected final TestDataCreator creator = new TestDataCreator(this);
+	public static final String CONFIDENTIAL = "Confidential";
 
 	/**
 	 * Resets mocks to their initial state so that mock configurations are not
@@ -283,7 +281,11 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(ConfigFacadeEjbLocal.class);
 	}
 
-	public CaseFacade getCaseFacade() {
+	/**
+	 * Using local bean here to avoid multiple transactions in test.
+	 * @return
+	 */
+	public CaseFacadeEjbLocal getCaseFacade() {
 		return getBean(CaseFacadeEjbLocal.class);
 	}
 
@@ -315,7 +317,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(CaseClassificationFacadeEjb.class);
 	}
 
-	public ContactFacade getContactFacade() {
+	public ContactFacadeEjbLocal getContactFacade() {
 		return getBean(ContactFacadeEjbLocal.class);
 	}
 
@@ -327,7 +329,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(DashboardFacadeEjb.DashboardFacadeEjbLocal.class);
 	}
 
-	public EventFacade getEventFacade() {
+	public EventFacadeEjbLocal getEventFacade() {
 		return getBean(EventFacadeEjbLocal.class);
 	}
 
@@ -335,7 +337,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(EventService.class);
 	}
 
-	public EventParticipantFacade getEventParticipantFacade() {
+	public EventParticipantFacadeEjbLocal getEventParticipantFacade() {
 		return getBean(EventParticipantFacadeEjbLocal.class);
 	}
 
@@ -655,7 +657,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(CampaignFormDataFacadeEjbLocal.class);
 	}
 
-	public CampaignFacade getCampaignFacade() {
+	public CampaignFacadeEjbLocal getCampaignFacade() {
 		return getBean(CampaignFacadeEjbLocal.class);
 	}
 

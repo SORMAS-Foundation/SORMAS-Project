@@ -39,4 +39,10 @@ public enum PathogenTestResults {
     Random random = new Random();
     return String.valueOf(PathogenTestResults.values()[random.nextInt(values().length)]);
   }
+
+  public static String geRandomResultName() {
+    Random random = new Random();
+    return String.valueOf(
+        PathogenTestResults.values()[random.nextInt(values().length)].pathogenResults);
+  }
 }

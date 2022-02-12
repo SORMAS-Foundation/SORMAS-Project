@@ -18,7 +18,6 @@ package de.symeda.sormas.ui.person;
 import com.vaadin.server.UserError;
 import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.Field;
-import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -34,9 +33,6 @@ public class PersonSelectionFilterForm extends AbstractFilterForm<PersonSimilari
 
 	private static final long serialVersionUID = 3261148255867475008L;
 
-	private TextField firstName;
-	private TextField lastName;
-
 	protected PersonSelectionFilterForm() {
 		super(PersonSimilarityCriteria.class, CaseDataDto.I18N_PREFIX, null, Captions.actionSearch, Captions.actionReset);
 	}
@@ -51,10 +47,9 @@ public class PersonSelectionFilterForm extends AbstractFilterForm<PersonSimilari
 
 	@Override
 	protected void addFields() {
-		firstName = addField(
+		addField(
 			FieldConfiguration.withCaptionAndPixelSized(PersonSimilarityCriteria.FIRST_NAME, I18nProperties.getCaption(Captions.firstName), 100));
-		lastName = addField(
-			FieldConfiguration.withCaptionAndPixelSized(PersonSimilarityCriteria.LAST_NAME, I18nProperties.getCaption(Captions.lastName), 100));
+		addField(FieldConfiguration.withCaptionAndPixelSized(PersonSimilarityCriteria.LAST_NAME, I18nProperties.getCaption(Captions.lastName), 100));
 
 		addField(
 			FieldConfiguration.withCaptionAndPixelSized(
@@ -80,19 +75,6 @@ public class PersonSelectionFilterForm extends AbstractFilterForm<PersonSimilari
 			});
 
 			return false;
-		} else {
-			if (!firstName.isEmpty() && lastName.isEmpty()) {
-				lastName.setComponentError(
-					new UserError(I18nProperties.getValidationError(Validations.required, I18nProperties.getCaption(Captions.lastName))));
-				return false;
-			}
-
-			if (firstName.isEmpty() && !lastName.isEmpty()) {
-				firstName.setComponentError(
-					new UserError(I18nProperties.getValidationError(Validations.required, I18nProperties.getCaption(Captions.firstName))));
-
-				return false;
-			}
 		}
 
 		return true;
