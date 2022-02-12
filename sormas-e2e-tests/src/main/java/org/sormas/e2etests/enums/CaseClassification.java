@@ -44,7 +44,7 @@ public enum CaseClassification {
   public static String getUIValueFor(String option) {
     CaseClassification[] classifications = CaseClassification.values();
     for (CaseClassification value : classifications) {
-      if (value.getClassificationUIvalue().equalsIgnoreCase(option))
+      if (value.getClassificationAPIvalue().equalsIgnoreCase(option))
         return value.getClassificationUIvalue();
     }
     throw new Exception("Unable to find " + option + " value in CaseClassification Enum");

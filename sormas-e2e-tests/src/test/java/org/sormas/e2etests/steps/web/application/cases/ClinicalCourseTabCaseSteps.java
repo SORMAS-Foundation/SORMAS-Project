@@ -1,6 +1,19 @@
 package org.sormas.e2etests.steps.web.application.cases;
 
-import static org.sormas.e2etests.pages.application.cases.ClinicalCourseTabCasePage.*;
+import static org.sormas.e2etests.pages.application.cases.ClinicalCourseTabCasePage.CARDIOVASCULAR_DISEASE_INCLUDING_HYPERTENSION_RADIO_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.ClinicalCourseTabCasePage.CHRONIC_NEUROLOGICAL_NEUROMUSCULAR_DISEASE_RADIO_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.ClinicalCourseTabCasePage.CHRONIC_PULMONARY_DISEASE_RADIO_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.ClinicalCourseTabCasePage.CLEAR_ALL_OPTION;
+import static org.sormas.e2etests.pages.application.cases.ClinicalCourseTabCasePage.DIABETES_RADIO_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.ClinicalCourseTabCasePage.EDIT_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.ClinicalCourseTabCasePage.IMMUNODEFICIENCY_INCLUDING_HIV_RADIO_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.ClinicalCourseTabCasePage.LIVER_DISEASE_RADIO_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.ClinicalCourseTabCasePage.MALIGNANCY_RADIO_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.ClinicalCourseTabCasePage.NEW_CLINICAL_ASSESEMENT_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.ClinicalCourseTabCasePage.RENAL_DISEASE_RADIO_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.ClinicalCourseTabCasePage.SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.ClinicalCourseTabCasePage.SAVE_CLINICAL_VISIT_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.ClinicalCourseTabCasePage.SET_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
 import static org.sormas.e2etests.pages.application.cases.FollowUpTabPage.CURRENT_BODY_TEMPERATURE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.FollowUpTabPage.DATE_OF_VISIT_INPUT;

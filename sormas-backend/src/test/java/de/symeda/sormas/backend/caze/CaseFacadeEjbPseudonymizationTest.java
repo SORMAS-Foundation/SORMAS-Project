@@ -239,11 +239,8 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	@Test
 	public void testUpdatePseudonymizedCase() {
-
 		CaseDataDto caze = createCase(rdcf1, user1);
-
 		loginWith(observerUser);
-
 		updateCase(caze, observerUser);
 		assertPseudonymizedDataNotUpdated(caze, rdcf1, user1);
 	}

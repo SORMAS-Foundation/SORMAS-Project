@@ -91,7 +91,16 @@ public class EditCasePage {
       By.cssSelector("#quarantineHomePossible label");
   public static final By QUARANTINE_COMBOBOX = By.cssSelector("#quarantine div");
   public static final By QUARANTINE_DATE_FROM = By.cssSelector("#quarantineFrom");
+  public static final By QUARANTINE_DATE_FROM_INPUT = By.cssSelector("#quarantineFrom input");
   public static final By QUARANTINE_DATE_TO = By.cssSelector("#quarantineTo");
+  public static final By QUARANTINE_DATE_TO_INPUT = By.cssSelector("#quarantineTo input");
+  public static final By QUARANTINE_CHANGE_COMMENT = By.cssSelector("#quarantineChangeComment");
+  public static final By QUARANTINE_POPUP_MESSAGE =
+      By.xpath("//div[@class='v-label v-widget v-has-width']");
+  public static final By QUARANTINE_POPUP_SAVE_BUTTON =
+      By.cssSelector(".popupContent #actionConfirm");
+  public static final By QUARANTINE_POPUP_DISCARD_BUTTON =
+      By.cssSelector(".popupContent #actionCancel");
   public static final By QUARANTINE_ORDERED_VERBALLY_CHECKBOX_LABEL =
       By.xpath("//*[@id='quarantineOrderedVerbally']/label");
   public static final By QUARANTINE_ORDERED_VERBALLY_CHECKBOX_INPUT =

@@ -40,4 +40,13 @@ public enum DistrictsValues {
     }
     throw new Exception("Unable to find " + option + " value in District Enum");
   }
+
+  @SneakyThrows
+  public static String getNameFor(String option) {
+    DistrictsValues[] districtsValues = DistrictsValues.values();
+    for (DistrictsValues value : districtsValues) {
+      if (value.uuid.equalsIgnoreCase(option)) return value.name;
+    }
+    throw new Exception("Unable to find " + option + " value in District Enum");
+  }
 }

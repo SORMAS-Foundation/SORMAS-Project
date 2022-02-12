@@ -60,6 +60,7 @@ public class CreateNewTaskSteps implements En {
     When(
         "^I check the created task is correctly displayed on Edit task page",
         () -> {
+          webDriverHelpers.waitForPageLoaded();
           final Task actualTask = collectTaskData();
           ComparisonHelper.compareEqualEntities(task, actualTask);
         });
@@ -129,7 +130,7 @@ public class CreateNewTaskSteps implements En {
 
   private Task collectTaskData() {
     return Task.builder()
-        .taskContext(getTaskContext())
+        .taskContext(getDisabledTaskContext())
         .taskType(webDriverHelpers.getValueFromWebElement(TASK_TYPE_INPUT))
         .suggestedStartDate(getSuggestedStartDate())
         .suggestedStartTime(getSuggestedStartTime())
@@ -185,7 +186,8 @@ public class CreateNewTaskSteps implements En {
     return webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(TASK_STATUS_OPTIONS);
   }
 
-  private String getTaskContext() {
-    return webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SELECTED_TASK_CONTEXT);
+  private String getDisabledTaskContext() {
+    return webDriverHelpers.getCheckedDisabledOptionFromHorizontalOptionGroup(
+        SELECTED_TASK_CONTEXT);
   }
 }
