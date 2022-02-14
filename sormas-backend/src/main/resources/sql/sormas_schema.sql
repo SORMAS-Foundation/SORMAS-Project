@@ -10002,6 +10002,6 @@ UPDATE cases c SET healthconditions_id = (SELECT cc.healthconditions_id from cli
 ALTER TABLE clinicalcourse DROP CONSTRAINT fk_clinicalcourse_healthconditions_id;
 ALTER TABLE clinicalcourse DROP COLUMN healthconditions_id;
 
-INSERT INTO schema_version (version_number, comment) VALUES (443, 'Move health conditions from clinical course to the case #6879');
+INSERT INTO schema_version (version_number, comment) VALUES (444, 'Move health conditions from clinical course to the case #6879');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

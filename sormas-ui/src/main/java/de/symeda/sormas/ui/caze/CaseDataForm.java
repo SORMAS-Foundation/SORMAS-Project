@@ -271,8 +271,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.FOLLOW_UP_UNTIL, EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC, CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL) +
 					fluidRowLocs(CaseDataDto.FOLLOW_UP_COMMENT);
 	
-	private static final String PAPER_FORM_DATES_AND_COMMENTS_HTML_LAYOUT =
+	private static final String PAPER_FORM_DATES_AND_HEALTH_CONDITIONS_HTML_LAYOUT =
 			fluidRowLocs(6, CaseDataDto.SURVEILLANCE_OFFICER) +
+					fluidRowLocs(CaseDataDto.HEALTH_CONDITIONS) +
 					loc(PAPER_FORM_DATES_LOC) +
 					fluidRowLocs(CaseDataDto.DISTRICT_LEVEL_DATE, CaseDataDto.REGION_LEVEL_DATE, CaseDataDto.NATIONAL_LEVEL_DATE) +
 					loc(GENERAL_COMMENT_LOC) + fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS);
@@ -1737,8 +1738,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	protected String createHtmlLayout() {
 		return MAIN_HTML_LAYOUT
 			+ (caseFollowUpEnabled ? FOLLOWUP_LAYOUT : "")
-			+ fluidRowLocs(CaseDataDto.HEALTH_CONDITIONS)
-			+ PAPER_FORM_DATES_AND_COMMENTS_HTML_LAYOUT;
+			+ PAPER_FORM_DATES_AND_HEALTH_CONDITIONS_HTML_LAYOUT;
 	}
 
 	private void setEpidNumberError(TextField epidField, Button assignNewEpidNumberButton, Label epidNumberWarningLabel, String fieldValue) {
