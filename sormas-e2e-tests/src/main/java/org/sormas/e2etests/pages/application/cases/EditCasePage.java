@@ -25,6 +25,8 @@ public class EditCasePage {
       By.id("caseClassificationCalculationButton");
   public static final By FOLLOW_UP_TAB = By.cssSelector("[id='tab-cases-visits'] a");
   public static final By SYMPTOMS_TAB = By.cssSelector("[id='tab-cases-symptoms']");
+  public static final By THERAPY_TAB = By.cssSelector("[id='tab-cases-therapy']");
+  public static final By HOSPITALIZATION_TAB = By.cssSelector("[id='tab-cases-hospitalization']");
   public static final By REGION_INPUT = By.cssSelector("#responsibleRegion input");
   public static final By DISTRICT_INPUT = By.cssSelector("#responsibleDistrict input");
   public static final By COMMUNITY_INPUT = By.cssSelector("#responsibleCommunity input");
@@ -89,7 +91,16 @@ public class EditCasePage {
       By.cssSelector("#quarantineHomePossible label");
   public static final By QUARANTINE_COMBOBOX = By.cssSelector("#quarantine div");
   public static final By QUARANTINE_DATE_FROM = By.cssSelector("#quarantineFrom");
+  public static final By QUARANTINE_DATE_FROM_INPUT = By.cssSelector("#quarantineFrom input");
   public static final By QUARANTINE_DATE_TO = By.cssSelector("#quarantineTo");
+  public static final By QUARANTINE_DATE_TO_INPUT = By.cssSelector("#quarantineTo input");
+  public static final By QUARANTINE_CHANGE_COMMENT = By.cssSelector("#quarantineChangeComment");
+  public static final By QUARANTINE_POPUP_MESSAGE =
+      By.xpath("//div[@class='v-label v-widget v-has-width']");
+  public static final By QUARANTINE_POPUP_SAVE_BUTTON =
+      By.cssSelector(".popupContent #actionConfirm");
+  public static final By QUARANTINE_POPUP_DISCARD_BUTTON =
+      By.cssSelector(".popupContent #actionCancel");
   public static final By QUARANTINE_ORDERED_VERBALLY_CHECKBOX_LABEL =
       By.xpath("//*[@id='quarantineOrderedVerbally']/label");
   public static final By QUARANTINE_ORDERED_VERBALLY_CHECKBOX_INPUT =
@@ -127,7 +138,7 @@ public class EditCasePage {
       By.cssSelector("#nationalLevelDate input");
   public static final By GENERAL_COMMENT_TEXTAREA = By.cssSelector("textarea#additionalDetails");
   public static final By SAVE_BUTTON = By.id("commit");
-  public static final By ACTION_CANCEL = By.id("actionCancel");
+  public static final By ACTION_CANCEL = By.cssSelector(".popupContent #actionCancel");
   public static final By DELETE_BUTTON = By.id("delete");
   public static final By DELETE_POPUP_YES_BUTTON = By.cssSelector(".popupContent #actionConfirm");
   public static final By CASE_SAVED_POPUP = By.cssSelector(".v-Notification-caption");
@@ -140,4 +151,5 @@ public class EditCasePage {
       By.cssSelector(".popupContent [class='v-textfield v-widget v-has-width']");
   public static final By QUARANTINE_ORDER_COMBOBOX =
       By.cssSelector(".popupContent div[role='combobox'] div");
+  public static final By CLINICAL_COURSE_TAB = By.id("tab-cases-clinicalcourse");
 }

@@ -37,6 +37,7 @@ public class SampleApiService {
         .associatedCase(AssociatedCase.builder().uuid(caze.getUuid()).build())
         .sampleMaterial("BLOOD")
         .samplePurpose("EXTERNAL")
+        .specimenCondition("ADEQUATE")
         .pathogenTestResult("PENDING")
         .lab(
             Lab.builder()

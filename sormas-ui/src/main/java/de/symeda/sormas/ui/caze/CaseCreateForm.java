@@ -51,6 +51,7 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -123,6 +124,7 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 	private ComboBox pointOfEntryDistrictCombo;
 
 	private LocationEditForm homeAddressForm;
+	private Button searchPersonButton;
 
 	private final boolean showHomeAddressForm;
 
@@ -218,11 +220,20 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 		addCustomField(PersonDto.FIRST_NAME, String.class, TextField.class);
 		addCustomField(PersonDto.LAST_NAME, String.class, TextField.class);
 
-		Button searchPersonButton = createPersonSearchButton(PERSON_SEARCH_LOC);
+		searchPersonButton = createPersonSearchButton(PERSON_SEARCH_LOC);
 		getContent().addComponent(searchPersonButton, PERSON_SEARCH_LOC);
 
-		addCustomField(PersonDto.NATIONAL_HEALTH_ID, String.class, TextField.class);
-		addCustomField(PersonDto.PASSPORT_NUMBER, String.class, TextField.class);
+		TextField nationalHealthIdField = addCustomField(PersonDto.NATIONAL_HEALTH_ID, String.class, TextField.class);
+		TextField passportNumberField = addCustomField(PersonDto.PASSPORT_NUMBER, String.class, TextField.class);
+		if (CountryHelper.isCountry(FacadeProvider.getConfigFacade().getCountryLocale(), CountryHelper.COUNTRY_CODE_GERMANY)) {
+			nationalHealthIdField.setVisible(false);
+		}
+		if (CountryHelper.isInCountries(
+			FacadeProvider.getConfigFacade().getCountryLocale(),
+			CountryHelper.COUNTRY_CODE_GERMANY,
+			CountryHelper.COUNTRY_CODE_FRANCE)) {
+			passportNumberField.setVisible(false);
+		}
 
 		birthDateDay = addCustomField(PersonDto.BIRTH_DATE_DD, Integer.class, ComboBox.class);
 		// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
@@ -800,7 +811,9 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 			((TextField) getField(PersonDto.EMAIL_ADDRESS)).setValue(person.getEmailAddress());
 			((TextField) getField(PersonDto.PASSPORT_NUMBER)).setValue(person.getPassportNumber());
 			((TextField) getField(PersonDto.NATIONAL_HEALTH_ID)).setValue(person.getNationalHealthId());
-			homeAddressForm.setValue(person.getAddress());
+			if (showHomeAddressForm) {
+				homeAddressForm.setValue(person.getAddress());
+			}
 		} else {
 			getField(PersonDto.FIRST_NAME).clear();
 			getField(PersonDto.LAST_NAME).clear();
@@ -813,10 +826,12 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 			getField(PersonDto.EMAIL_ADDRESS).clear();
 			getField(PersonDto.PASSPORT_NUMBER).clear();
 			getField(PersonDto.NATIONAL_HEALTH_ID).clear();
-			homeAddressForm.clear();
+			if (showHomeAddressForm) {
+				homeAddressForm.clear();
+			}
 		}
 	}
-	
+
 	protected void enablePersonFields(Boolean enable) {
 		getField(PersonDto.FIRST_NAME).setEnabled(enable);
 		getField(PersonDto.LAST_NAME).setEnabled(enable);
@@ -829,7 +844,9 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 		getField(PersonDto.EMAIL_ADDRESS).setEnabled(enable);
 		getField(PersonDto.PASSPORT_NUMBER).setEnabled(enable);
 		getField(PersonDto.NATIONAL_HEALTH_ID).setEnabled(enable);
-		homeAddressForm.setEnabled(enable);
+		if (showHomeAddressForm) {
+			homeAddressForm.setEnabled(enable);
+		}
 	}
 
 	public void setSymptoms(SymptomsDto symptoms) {
@@ -845,6 +862,7 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 
 		getField(PersonDto.FIRST_NAME).setEnabled(!readOnly);
 		getField(PersonDto.LAST_NAME).setEnabled(!readOnly);
+		searchPersonButton.setEnabled(!readOnly);
 		if (getField(PersonDto.SEX).getValue() != null) {
 			getField(PersonDto.SEX).setEnabled(!readOnly);
 		}
@@ -887,6 +905,8 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 			boolean isChecked = (boolean) e.getProperty().getValue();
 			addressHeader.setVisible(isChecked);
 			homeAddressForm.setVisible(isChecked);
+			homeAddressForm.clear();
+			homeAddressForm.setFacilityFieldsVisible(isChecked, true);
 		});
 	}
 

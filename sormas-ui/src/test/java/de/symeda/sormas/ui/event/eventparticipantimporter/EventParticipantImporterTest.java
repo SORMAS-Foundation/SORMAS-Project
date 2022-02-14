@@ -18,12 +18,11 @@ package de.symeda.sormas.ui.event.eventparticipantimporter;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
 import java.io.File;
 import java.io.IOException;
-import java.io.OutputStream;
-import java.io.OutputStreamWriter;
 import java.io.Writer;
 import java.net.URISyntaxException;
 import java.nio.file.Path;
@@ -36,6 +35,8 @@ import java.util.function.BiFunction;
 import java.util.function.Consumer;
 
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.io.output.StringBuilderWriter;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import com.opencsv.exceptions.CsvValidationException;
@@ -45,6 +46,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -61,6 +63,8 @@ import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator.RDCF;
@@ -97,7 +101,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 
 		// Successful import of 5 event participant
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_success.csv").toURI());
-		EventParticipantImporterExtension eventParticipantImporter = new EventParticipantImporterExtension(csvFile, false, user, eventRef);
+		EventParticipantImporterExtension eventParticipantImporter = new EventParticipantImporterExtension(csvFile, user, event);
 		ImportResultStatus importResult = eventParticipantImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
@@ -144,10 +148,10 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 			rdcf);
 
 		// Person Similarity: pick
-		List<SimilarPersonDto> persons = FacadeProvider.getPersonFacade().getSimilarPersonDtos(user.toReference(), new PersonSimilarityCriteria());
+		List<SimilarPersonDto> persons = FacadeProvider.getPersonFacade().getSimilarPersonDtos(new PersonSimilarityCriteria());
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_similarities.csv").toURI());
 
-		EventParticipantImporterExtension eventParticipantImporter = new EventParticipantImporterExtension(csvFile, false, user, eventRef) {
+		EventParticipantImporterExtension eventParticipantImporter = new EventParticipantImporterExtension(csvFile, user, event) {
 
 			@Override
 			protected <T extends PersonImportSimilarityResult> void handlePersonSimilarity(
@@ -208,10 +212,10 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		EventParticipantDto eventParticipant = creator.createEventParticipant(eventRef, person, "old desc", user.toReference());
 
 		// Person Similarity: pick event participant
-		List<SimilarPersonDto> persons = FacadeProvider.getPersonFacade().getSimilarPersonDtos(user.toReference(), new PersonSimilarityCriteria());
+		List<SimilarPersonDto> persons = FacadeProvider.getPersonFacade().getSimilarPersonDtos(new PersonSimilarityCriteria());
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_similarities.csv").toURI());
 
-		EventParticipantImporterExtension eventParticipantImporter = new EventParticipantImporterExtension(csvFile, false, user, eventRef) {
+		EventParticipantImporterExtension eventParticipantImporter = new EventParticipantImporterExtension(csvFile, user, event) {
 
 			@Override
 			protected <T extends PersonImportSimilarityResult> void handlePersonSimilarity(
@@ -279,7 +283,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		// Person Similarity: create
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_similarities.csv").toURI());
 
-		EventParticipantImporterExtension eventParticipantImporter = new EventParticipantImporterExtension(csvFile, false, user, eventRef);
+		EventParticipantImporterExtension eventParticipantImporter = new EventParticipantImporterExtension(csvFile, user, event);
 		ImportResultStatus importResult = eventParticipantImporter.runImport();
 
 		EventParticipantIndexDto importedEventParticipant =
@@ -317,7 +321,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		// Person Similarity: create
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_similarities.csv").toURI());
 
-		EventParticipantImporterExtension eventParticipantImporter = new EventParticipantImporterExtension(csvFile, false, user, eventRef) {
+		EventParticipantImporterExtension eventParticipantImporter = new EventParticipantImporterExtension(csvFile, user, event) {
 
 			@Override
 			protected <T extends PersonImportSimilarityResult> void handlePersonSimilarity(
@@ -361,7 +365,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 
 		// Successful import of 5 event participant
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_comment_success.csv").toURI());
-		EventParticipantImporterExtension eventParticipantImporter = new EventParticipantImporterExtension(csvFile, false, user, eventRef);
+		EventParticipantImporterExtension eventParticipantImporter = new EventParticipantImporterExtension(csvFile, user, event);
 		ImportResultStatus importResult = eventParticipantImporter.runImport();
 
 		assertEquals(ImportResultStatus.COMPLETED, importResult);
@@ -394,7 +398,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 
 		// import of 3 event participants with different address types
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_address_types.csv").toURI());
-		EventParticipantImporterExtension eventParticipantImporter = new EventParticipantImporterExtension(csvFile, false, user, eventRef);
+		EventParticipantImporterExtension eventParticipantImporter = new EventParticipantImporterExtension(csvFile, user, event);
 		ImportResultStatus importResult = eventParticipantImporter.runImport();
 
 		List<EventParticipantDto> eventParticipants = getEventParticipantFacade().getByEventUuids(Collections.singletonList(eventRef.getUuid()));
@@ -428,11 +432,69 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		assertTrue("Not all eventparticipants found.", foundOtto && foundOskar && foundOona);
 	}
 
+	@Test
+	@Ignore("Remove ignore once we have replaced H2, and feature properties can be changed by code")
+	public void testImportWithVaccinations()
+		throws URISyntaxException, IOException, InterruptedException, CsvValidationException, InvalidColumnException {
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		EventDto event = creator.createEvent(
+			EventStatus.SIGNAL,
+			"Title",
+			"Description",
+			"First",
+			"Name",
+			"12345",
+			TypeOfPlace.PUBLIC_PLACE,
+			DateHelper.subtractDays(new Date(), 2),
+			new Date(),
+			user.toReference(),
+			user.toReference(),
+			Disease.CORONAVIRUS);
+
+		// Successful import of 5 event participant
+		File csvFile = new File(getClass().getClassLoader().getResource("sormas_eventparticipant_import_test_vaccinations.csv").toURI());
+		EventParticipantImporterExtension eventParticipantImporter = new EventParticipantImporterExtension(csvFile, user, event);
+		ImportResultStatus importResult = eventParticipantImporter.runImport();
+
+		assertEquals(eventParticipantImporter.stringBuilder.toString(), ImportResultStatus.COMPLETED, importResult);
+		assertEquals(ImportResultStatus.COMPLETED, importResult);
+
+		List<EventParticipantDto> eventParticipants = getEventParticipantFacade().getByEventUuids(Collections.singletonList(event.getUuid()));
+		assertEquals(3, eventParticipants.size());
+
+		EventParticipantDto ep1 = eventParticipants.stream().filter(e -> e.getPerson().getFirstName().equals("Günther")).findFirst().get();
+		EventParticipantDto ep2 = eventParticipants.stream().filter(e -> e.getPerson().getFirstName().equals("Peter")).findFirst().get();
+		EventParticipantDto ep3 = eventParticipants.stream().filter(e -> e.getPerson().getFirstName().equals("Hans")).findFirst().get();
+
+		List<VaccinationDto> case1Vaccinations =
+			FacadeProvider.getVaccinationFacade().getAllVaccinations(ep1.getPerson().getUuid(), Disease.CORONAVIRUS);
+		assertEquals(0, case1Vaccinations.size());
+
+		List<VaccinationDto> case2Vaccinations =
+			FacadeProvider.getVaccinationFacade().getAllVaccinations(ep2.getPerson().getUuid(), Disease.CORONAVIRUS);
+		assertEquals(1, case2Vaccinations.size());
+		assertEquals(Vaccine.COMIRNATY, case2Vaccinations.get(0).getVaccineName());
+		assertNull(case2Vaccinations.get(0).getHealthConditions().getChronicPulmonaryDisease());
+
+		List<VaccinationDto> case3Vaccinations =
+			FacadeProvider.getVaccinationFacade().getAllVaccinations(ep3.getPerson().getUuid(), Disease.CORONAVIRUS);
+		assertEquals(2, case3Vaccinations.size());
+		assertEquals(Vaccine.MRNA_1273, case3Vaccinations.get(0).getVaccineName());
+		assertEquals(YesNoUnknown.YES, case3Vaccinations.get(0).getHealthConditions().getChronicPulmonaryDisease());
+		assertEquals(Vaccine.MRNA_1273, case3Vaccinations.get(1).getVaccineName());
+		assertNull(case3Vaccinations.get(1).getHealthConditions().getChronicPulmonaryDisease());
+
+	}
+
 	private static class EventParticipantImporterExtension extends EventParticipantImporter {
 
-		private EventParticipantImporterExtension(File inputFile, boolean hasEntityClassRow, UserDto currentUser, EventReferenceDto event)
-			throws IOException {
-			super(inputFile, hasEntityClassRow, currentUser, event, ValueSeparator.DEFAULT);
+		public StringBuilder stringBuilder = new StringBuilder();
+		private StringBuilderWriter writer = new StringBuilderWriter(stringBuilder);
+
+		private EventParticipantImporterExtension(File inputFile, UserDto currentUser, EventDto event) throws IOException {
+			super(inputFile, currentUser, event, ValueSeparator.DEFAULT);
 		}
 
 		@Override
@@ -446,13 +508,7 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		}
 
 		protected Writer createErrorReportWriter() {
-			return new OutputStreamWriter(new OutputStream() {
-
-				@Override
-				public void write(int b) {
-					// Do nothing
-				}
-			});
+			return writer;
 		}
 
 		@Override

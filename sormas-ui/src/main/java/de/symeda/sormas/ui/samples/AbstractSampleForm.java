@@ -179,7 +179,7 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		} else {
 			final ContactReferenceDto associatedContact = getValue().getAssociatedContact();
 			if (associatedContact != null) {
-				disease = FacadeProvider.getContactFacade().getContactByUuid(associatedContact.getUuid()).getDisease();
+				disease = FacadeProvider.getContactFacade().getByUuid(associatedContact.getUuid()).getDisease();
 			}
 		}
 

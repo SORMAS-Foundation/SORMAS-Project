@@ -18,6 +18,10 @@
 
 package org.sormas.e2etests.steps.web.application.persons;
 
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.CONTACT_PERSON_FIRST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.CONTACT_PERSON_LAST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.SEX_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.*;
 
@@ -27,6 +31,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.openqa.selenium.ElementClickInterceptedException;
@@ -96,6 +101,8 @@ public class EditPersonSteps implements En {
           fillExternalId(newGeneratedPerson.getExternalId());
           fillExternalToken(newGeneratedPerson.getExternalToken());
           selectTypeOfOccupation(newGeneratedPerson.getTypeOfOccupation());
+          TimeUnit.SECONDS.sleep(3);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           selectStaffOfArmedForces(newGeneratedPerson.getStaffOfArmedForces());
           selectRegion(newGeneratedPerson.getRegion());
           selectDistrict(newGeneratedPerson.getDistrict());
@@ -104,6 +111,8 @@ public class EditPersonSteps implements En {
           selectFacilityType(newGeneratedPerson.getFacilityType());
           selectFacility(newGeneratedPerson.getFacility());
           fillFacilityNameAndDescription(newGeneratedPerson.getFacilityNameAndDescription());
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           fillStreet(newGeneratedPerson.getStreet());
           fillHouseNumber(newGeneratedPerson.getHouseNumber());
           fillAdditionalInformation(newGeneratedPerson.getAdditionalInformation());
@@ -139,6 +148,43 @@ public class EditPersonSteps implements En {
           final String personUuid = EditEventSteps.person.getUuid();
           webDriverHelpers.accessWebSite(
               environmentUrl + "/sormas-webdriver/#!persons/data/" + personUuid);
+        });
+
+    When(
+        "I clear the mandatory Person fields",
+        () -> {
+          webDriverHelpers.clearWebElement(FIRST_NAME_INPUT);
+          webDriverHelpers.clearWebElement(LAST_NAME_INPUT);
+          webDriverHelpers.selectFromCombobox(SEX_COMBOBOX, "");
+        });
+
+    When(
+        "^I check that an invalid data error message appears$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(INVALID_DATA_ERROR);
+          webDriverHelpers.clickOnWebElementBySelector(INVALID_DATA_ERROR);
+        });
+
+    Then(
+        "I fill in the home address, facility category and type in the Home Address section of the Edit Person Page",
+        () -> {
+          newGeneratedPerson = personService.buildGeneratedPerson();
+          selectFacilityCategory(newGeneratedPerson.getFacilityCategory());
+          selectFacilityType(newGeneratedPerson.getFacilityType());
+          fillStreet(newGeneratedPerson.getStreet());
+          fillHouseNumber(newGeneratedPerson.getHouseNumber());
+          fillAdditionalInformation(newGeneratedPerson.getAdditionalInformation());
+          fillPostalCode(newGeneratedPerson.getPostalCode());
+          fillCity(newGeneratedPerson.getCity());
+          selectAreaType(newGeneratedPerson.getAreaType());
+        });
+
+    When(
+        "^I check that an empty district highlight appears above the facility combobox$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(ERROR_INDICATOR);
         });
   }
 

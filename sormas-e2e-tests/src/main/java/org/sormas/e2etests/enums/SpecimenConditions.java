@@ -20,6 +20,7 @@ package org.sormas.e2etests.enums;
 
 import java.util.Random;
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 @Getter
 public enum SpecimenConditions {
@@ -32,8 +33,22 @@ public enum SpecimenConditions {
     condition = aSpecimen;
   }
 
+  @SneakyThrows
+  public static String getForName(String option) {
+    SpecimenConditions[] specimenConditionOptions = SpecimenConditions.values();
+    for (SpecimenConditions value : specimenConditionOptions) {
+      if (value.condition.equalsIgnoreCase(option)) return value.condition;
+    }
+    throw new Exception("Unable to find " + option + " value in SpecimenConditions Enum");
+  }
+
   public static String getRandomCondition() {
     Random random = new Random();
     return String.valueOf(SpecimenConditions.values()[random.nextInt(values().length)]);
+  }
+
+  public static String getRandomConditionName() {
+    Random random = new Random();
+    return String.valueOf(SpecimenConditions.values()[random.nextInt(values().length)].condition);
   }
 }

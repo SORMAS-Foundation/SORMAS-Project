@@ -63,5 +63,67 @@ public class CaseDirectoryPage {
   public static final By CASE_CLASSIFICATION_COLUMNS =
       By.cssSelector("[role=rowgroup] tr>td:nth-child(7)");
   public static final String RESULTS_GRID_HEADER = "//div[contains(text(), '%s')]";
+  public static final By CASE_FOLLOWUP_FILTER_COMBOBOX =
+      By.cssSelector("[id='followUpStatus'] [class='v-filterselect-button']");
+  public static final By SHOW_MORE_LESS_FILTERS = By.id("showHideMoreFilters");
+  public static final By CASE_ORIGIN_FILTER_COMBOBOX =
+      By.cssSelector("[id='caseOrigin'] [class='v-filterselect-button']");
+
+  public static final By CASE_COMMUNITY_FILTER_COMBOBOX =
+      By.cssSelector("[id='community'] [class='v-filterselect-button']");
+  public static final By CASE_PRESENT_CONDITION_COMBOBOX =
+      By.cssSelector("[id='presentCondition'] [class='v-filterselect-button']");
+  public static final By CASE_REGION_FILTER_COMBOBOX =
+      By.cssSelector("[id='region'] [class='v-filterselect-button']");
+  public static final By CASE_FACILITY_CATEGORY_FILTER_COMBOBOX =
+      By.cssSelector("[id='facilityTypeGroup'] [class='v-filterselect-button']");
+  public static final By CASE_FACILITY_TYPE_FILTER_COMBOBOX =
+      By.cssSelector("[id='facilityType'] [class='v-filterselect-button']");
+  public static final By CASE_FACILITY_FILTER_COMBOBOX =
+      By.cssSelector("[id='healthFacility'] [class='v-filterselect-button']");
+  public static final By CASE_SURVOFF_FILTER_COMBOBOX =
+      By.cssSelector("[id='surveillanceOfficer'] [class='v-filterselect-button']");
+  public static final By CASE_VACCINATION_STATUS_FILTER_COMBOBOX =
+      By.cssSelector("[id='vaccinationStatus'] [class='v-filterselect-button']");
+  public static final By CASE_QUARANTINE_FILTER_COMBOBOX =
+      By.cssSelector("[id='quarantineType'] [class='v-filterselect-button']");
+  public static final By CASE_REINFECTION_FILTER_COMBOBOX =
+      By.cssSelector("[id='reinfectionStatus'] [class='v-filterselect-button']");
+  public static final By CASE_DATA_TYPE_FILTER_COMBOBOX =
+      By.cssSelector("[id='dateType'] [class='v-filterselect-button']");
+  public static final By CASE_DISPLAY_FILTER_COMBOBOX =
+      By.cssSelector("[id='relevanceStatus'] [class='v-filterselect-button']");
+  public static final By CASE_REPORTING_USER_FILTER = By.cssSelector("[id='reportingUserLike']");
+  public static final By CASE_YEAR_FILTER =
+      By.cssSelector("[id='birthdateYYYY'] [class='v-filterselect-button']");
+  public static final By CASE_MONTH_FILTER =
+      By.cssSelector("[id='birthdateMM'] [class='v-filterselect-button']");
+  public static final By CASE_DAY_FILTER =
+      By.cssSelector("[id='birthdateDD'] [class='v-filterselect-button']");
+  public static final By CASE_DISTRICT_FILTER_COMBOBOX =
+      By.cssSelector("[id='district'] [class='v-filterselect-button']");
+  public static final By CASES_WITHOUT_GEO_COORDINATES_CHECKBOX = By.id("mustHaveNoGeoCoordinates");
+  public static final By CASES_WITHOUT_RESPONSIBLE_OFFICER_CHECKBOX =
+      By.id("withoutResponsibleOfficer");
+  public static final By CASES_WITH_EXTENDED_QUARANTINE_CHECKBOX = By.id("withExtendedQuarantine");
+  public static final By CASES_WITH_REDUCED_QUARANTINE_CHECKBOX = By.id("withReducedQuarantine");
+  public static final By CASES_HELP_NEEDED_IN_QUARANTINE_CHECKBOX =
+      By.id("onlyQuarantineHelpNeeded");
+  public static final By CASES_WITH_EVENTS_CHECKBOX = By.id("onlyCasesWithEvents");
+  public static final By CASES_FROM_OTHER_INSTANCES_CHECKBOX =
+      By.id("onlyContactsFromOtherInstances");
+  public static final By CASES_WITH_REINFECTION_CHECKBOX = By.id("onlyCasesWithReinfection");
+  public static final By CASES_FROM_OTHER_JURISDICTIONS_CHECKBOX =
+      By.id("includeCasesFromOtherJurisdictions");
+  public static final By CASES_WITH_FULFILLED_REFERENCE_DEFINITION_CHECKBOX =
+      By.id("onlyShowCasesWithFulfilledReferenceDefinition");
+  public static final By CASES_WITHOUT_FACILITY_CHECKBOX =
+      By.id("mustBePortHealthCaseWithoutFacility");
+  public static final By ALLBUTTON = By.id("all");
+  public static final By INVESTIGATION_PENDING_BUTTON = By.id("Investigation pending");
+  public static final By INVESTIGATION_DONE_BUTTON = By.id("Investigation done");
+  public static final By INVESTIGATION_DISCARDED_BUTTON = By.id("Investigation discarded");
+  public static final By DATE_FROM_COMBOBOX = By.cssSelector("#dateFrom input");
+  public static final By DATE_TO_COMBOBOX = By.cssSelector("#dateTo input");
   // TODO refactor the other headers based on the last one added
 }

@@ -27,6 +27,7 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -144,6 +145,8 @@ public class TaskFacadeEjb implements TaskFacade {
 	private ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private TravelEntryService travelEntryService;
+	@EJB
+	private TravelEntryFacadeEjb.TravelEntryFacadeEjbLocal travelEntryFacade;
 
 	public Task fromDto(TaskDto source, boolean checkChangeDate) {
 
@@ -251,7 +254,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		target.setCaze(CaseFacadeEjb.toReferenceDto(source.getCaze()));
 		target.setContact(ContactFacadeEjb.toReferenceDto(source.getContact()));
 		target.setEvent(EventFacadeEjb.toReferenceDto(source.getEvent()));
-		target.setTravelEntry(TravelEntryFacadeEjb.toReferenceDto(source.getTravelEntry()));
+		target.setTravelEntry(travelEntryFacade.toRefDto(source.getTravelEntry()));
 
 		target.setClosedLat(source.getClosedLat());
 		target.setClosedLon(source.getClosedLon());
@@ -289,12 +292,18 @@ public class TaskFacadeEjb implements TaskFacade {
 
 	@Override
 	public TaskDto saveTask(@Valid TaskDto dto) {
+		// Let's retrieve the old assignee before updating the task
+		User oldAssignee = taskService.getTaskAssigneeByUuid(dto.getUuid());
 
 		Task ado = fromDto(dto, true);
 
 		validate(dto);
 
 		taskService.ensurePersisted(ado);
+
+		User newAssignee = dto.getAssigneeUser() != null ? userService.getByUuid(dto.getAssigneeUser().getUuid()) : null;
+
+		notifyAboutNewAssignee(ado, newAssignee, oldAssignee);
 
 		// once we have to handle additional logic this should be moved to it's own function or even class 
 		if (ado.getTaskType() == TaskType.CASE_INVESTIGATION && ado.getCaze() != null) {
@@ -331,6 +340,39 @@ public class TaskFacadeEjb implements TaskFacade {
 		}
 
 		return toDto(ado, Pseudonymizer.getDefault(userService::hasRight));
+	}
+
+	private void notifyAboutNewAssignee(Task task, User newAssignee, User oldAssignee) {
+		// oldAssignee == null => it means it's a new task, this notification should only be sent in case the assignee is changed
+		if (oldAssignee == null || Objects.equals(newAssignee, oldAssignee)) {
+			return;
+		}
+
+		try {
+			messagingService.sendMessages(() -> {
+				final Map<User, String> mapToReturn = new HashMap<>();
+				final TaskContext context = task.getTaskContext();
+				final AbstractDomainObject associatedEntity = context == TaskContext.CASE
+					? task.getCaze()
+					: context == TaskContext.CONTACT ? task.getContact() : context == TaskContext.EVENT ? task.getEvent() : null;
+
+				String oldAssigneeMessage = context == TaskContext.GENERAL
+					? String.format(I18nProperties.getString(MessageContents.CONTENT_TASK_GENERAL_UPDATED_ASSIGNEE_SOURCE), task.getTaskType().toString())
+					: buildSpecificTaskMessage(MessageContents.CONTENT_TASK_SPECIFIC_UPDATED_ASSIGNEE_SOURCE, task.getTaskType(), context, associatedEntity);
+				mapToReturn.put(oldAssignee, oldAssigneeMessage);
+
+				if (newAssignee != null) {
+					String newAssigneeMessage = context == TaskContext.GENERAL
+						? String.format(I18nProperties.getString(MessageContents.CONTENT_TASK_GENERAL_UPDATED_ASSIGNEE_TARGET), task.getTaskType().toString())
+						: buildSpecificTaskMessage(MessageContents.CONTENT_TASK_SPECIFIC_UPDATED_ASSIGNEE_TARGET, task.getTaskType(), context, associatedEntity);
+					mapToReturn.put(newAssignee, newAssigneeMessage);
+				}
+
+				return mapToReturn;
+			}, MessageSubject.TASK_UPDATED_ASSIGNEE, MessageType.EMAIL, MessageType.SMS);
+		} catch (NotificationDeliveryFailedException e) {
+			logger.error(String.format("EmailDeliveryFailedException when trying to notify a user about an updated task assignee."));
+		}
 	}
 
 	@Override
@@ -856,16 +898,14 @@ public class TaskFacadeEjb implements TaskFacade {
 						: context == TaskContext.CONTACT ? task.getContact() : context == TaskContext.EVENT ? task.getEvent() : null;
 					String message = context == TaskContext.GENERAL
 						? String.format(I18nProperties.getString(MessageContents.CONTENT_TASK_START_GENERAL), task.getTaskType().toString())
-						: String.format(
-							I18nProperties.getString(MessageContents.CONTENT_TASK_START_SPECIFIC),
-							task.getTaskType().toString(),
-							buildAssociatedEntityLinkContent(context, associatedEntity));
+						: buildSpecificTaskMessage(MessageContents.CONTENT_TASK_START_SPECIFIC, task.getTaskType(), context, associatedEntity);
 					if (task.getAssigneeUser() != null) {
 						mapToReturn.put(task.getAssigneeUser(), message);
 					}
 					if (task.getObserverUsers() != null) {
+						String observerUserMessage = I18nProperties.getString(MessageContents.CONTENT_TASK_OBSERVER_INFORMATION) + "\n\n" + message;
 						for (User observerUser : task.getObserverUsers()) {
-							mapToReturn.put(observerUser, message);
+							mapToReturn.put(observerUser, observerUserMessage);
 						}
 					}
 				}
@@ -886,16 +926,14 @@ public class TaskFacadeEjb implements TaskFacade {
 						: context == TaskContext.CONTACT ? task.getContact() : context == TaskContext.EVENT ? task.getEvent() : null;
 					String message = context == TaskContext.GENERAL
 						? String.format(I18nProperties.getString(MessageContents.CONTENT_TASK_DUE_GENERAL), task.getTaskType().toString())
-						: String.format(
-							I18nProperties.getString(MessageContents.CONTENT_TASK_DUE_SPECIFIC),
-							task.getTaskType().toString(),
-							buildAssociatedEntityLinkContent(context, associatedEntity));
+						: buildSpecificTaskMessage(MessageContents.CONTENT_TASK_DUE_SPECIFIC, task.getTaskType(), context, associatedEntity);
 					if (task.getAssigneeUser() != null) {
 						mapToReturn.put(task.getAssigneeUser(), message);
 					}
 					if (task.getObserverUsers() != null) {
+						String observerUserMessage = I18nProperties.getString(MessageContents.CONTENT_TASK_OBSERVER_INFORMATION) + "\n\n" + message;
 						for (User observerUser : task.getObserverUsers()) {
-							mapToReturn.put(observerUser, message);
+							mapToReturn.put(observerUser, observerUserMessage);
 						}
 					}
 				}
@@ -973,21 +1011,36 @@ public class TaskFacadeEjb implements TaskFacade {
 		return taskService.getArchivedUuidsSince(since);
 	}
 
-	private String buildAssociatedEntityLinkContent(TaskContext taskContext, AbstractDomainObject entity) {
-		StringBuilder contentBuilder = new StringBuilder().append(taskContext);
+	private String buildSpecificTaskMessage(String messageTemplate, TaskType taskType, TaskContext taskContext, AbstractDomainObject entity) {
+		String entityReference = buildAssociatedEntityReference(taskContext, entity);
+		String linkContent = buildAssociatedEntityLinkContent(taskContext, entity);
+		return String.format(
+			I18nProperties.getString(messageTemplate) + "%s",
+			taskType,
+			entityReference,
+			linkContent);
+	}
+
+	private String buildAssociatedEntityReference(TaskContext taskContext, AbstractDomainObject entity) {
 		if (taskContext.getUrlPattern() == null || entity == null) {
-			return contentBuilder.toString();
+			return taskContext.toString();
 		}
 
-		contentBuilder.append(" ").append(DataHelper.getShortUuid(entity.getUuid()));
+		return taskContext + " " + DataHelper.getShortUuid(entity.getUuid());
+	}
+
+	private String buildAssociatedEntityLinkContent(TaskContext taskContext, AbstractDomainObject entity) {
+		if (taskContext.getUrlPattern() == null || entity == null) {
+			return "";
+		}
 
 		String url = getUiUrl(taskContext, entity.getUuid());
-		if (url != null) {
-			String associatedEntityLinkMessage = taskContext.getAssociatedEntityLinkMessage();
-			contentBuilder.append("\n").append(String.format(I18nProperties.getString(associatedEntityLinkMessage), url));
+		if (url == null) {
+			return "";
 		}
 
-		return contentBuilder.toString();
+		String associatedEntityLinkMessage = taskContext.getAssociatedEntityLinkMessage();
+		return "\n" + String.format(I18nProperties.getString(associatedEntityLinkMessage), url);
 	}
 
 	/**

@@ -75,6 +75,7 @@ public class TaskManagementSteps implements En {
           do {
             webDriverHelpers.scrollInTable(10);
           } while (!webDriverHelpers.isElementVisibleWithTimeout(lastTaskEditButton, 2));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.clickOnWebElementBySelector(lastTaskEditButton);
           webDriverHelpers.isElementVisibleWithTimeout(TASK_POPUP, 5);
         });
@@ -91,6 +92,7 @@ public class TaskManagementSteps implements En {
     When(
         "^I am checking if the associated linked event appears in task management and click on it$",
         () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           String eventUuid = apiState.getCreatedEvent().getUuid();
           webDriverHelpers.fillAndSubmitInWebElement(GENERAL_SEARCH_INPUT, eventUuid);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(15);
@@ -102,6 +104,7 @@ public class TaskManagementSteps implements En {
     When(
         "^I filter Task context by ([^\"]*)$",
         (String filterType) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.selectFromCombobox(TASK_CONTEXT_COMBOBOX, filterType);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
           TimeUnit.SECONDS.sleep(2);
@@ -122,6 +125,7 @@ public class TaskManagementSteps implements En {
     When(
         "^I filter Task status ([^\"]*)$",
         (String statusType) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.selectFromCombobox(TASK_STATUS_COMBOBOX, statusType);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
           TimeUnit.SECONDS.sleep(2);
@@ -226,6 +230,7 @@ public class TaskManagementSteps implements En {
     When(
         "^I collect the task column objects$",
         () -> {
+          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           List<Map<String, String>> tableRowsData = getTableRowsData();
           taskTableRows = new ArrayList<>();
@@ -306,7 +311,7 @@ public class TaskManagementSteps implements En {
   }
 
   private LocalDateTime getLocalDateTimeFromColumns(String date) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy h:mm a");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy h:m a");
     try {
       return LocalDateTime.parse(date.trim(), formatter);
     } catch (Exception e) {

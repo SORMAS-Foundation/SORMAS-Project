@@ -25,11 +25,11 @@ import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 
+import de.symeda.sormas.backend.deletionconfiguration.CoreEntityDeletionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRole;
@@ -79,6 +79,8 @@ public class CronService {
 	private ImmunizationFacadeEjb.ImmunizationFacadeEjbLocal immunizationFacade;
 	@EJB
 	private CentralInfraSyncFacade centralInfraSyncFacade;
+	@EJB
+	private CoreEntityDeletionService coreEntityDeletionService;
 
 	@Schedule(hour = "*", minute = "*/" + TASK_UPDATE_INTERVAL, second = "0", persistent = false)
 	public void sendNewAndDueTaskMessages() {
@@ -185,5 +187,10 @@ public class CronService {
 	@Schedule(hour = "1", minute = "50", persistent = false)
 	public void syncInfraWithCentral() {
 		centralInfraSyncFacade.syncAll();
+	}
+
+	@Schedule(hour = "1", minute =  "55", persistent = false)
+	public void deleteExpiredEntities(){
+		coreEntityDeletionService.executeAutomaticDeletion();
 	}
 }

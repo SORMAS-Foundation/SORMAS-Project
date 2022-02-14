@@ -27,7 +27,10 @@ public class FollowUpTabPage {
       By.cssSelector("[id='visitStatus'] [class='v-radiobutton v-select-option']");
   public static final By AVAILABLE_AND_COOPERATIVE =
       By.cssSelector("[id='visitStatus'] span:last-child");
+  public static final By PERSON_AVAILABLE_AND_COOPERATIVE = By.cssSelector("#visitStatus label");
   public static final By DATE_OF_VISIT_INPUT = By.cssSelector("[id='visitDateTime_date'] input");
+  public static final By TIME_OF_VISIT_INPUT =
+      By.cssSelector("[id='visitDateTime_time'] [class='v-filterselect-button']");
   public static final By VISIT_REMARKS = By.cssSelector("[id='visitRemarks']");
   public static final By CURRENT_BODY_TEMPERATURE_COMBOBOX =
       By.cssSelector("[id='temperature'] div");
@@ -38,7 +41,10 @@ public class FollowUpTabPage {
   public static final By SOURCE_OF_BODY_TEMPERATURE_INPUT =
       By.cssSelector("[id='temperatureSource'] input");
   public static final By CLEAR_ALL = By.cssSelector("[id='actionClearAll']");
+  public static final By ACTION_CONFIRM = By.cssSelector("[id='actionConfirm']");
   public static final By SET_CLEARED_TO_NO_BUTTON = By.cssSelector("[id='symptomsSetClearedToNo']");
+  public static final By OPTION_FOR_SET_BUTTONS =
+      By.cssSelector("[class='v-button v-widget link v-button-link']");
   public static final By CHILLS_SWEATS_OPTIONS =
       By.cssSelector("[id='chillsSweats'] [class='v-checkbox v-select-option']");
   public static final By CHILLS_SWEATS_YES_BUTTON =
@@ -51,10 +57,49 @@ public class FollowUpTabPage {
       By.cssSelector("[id='fever'] [class='v-checkbox v-select-option']");
   public static final By FEVER_YES_BUTTON =
       By.xpath("//div[@id='fever']//label[contains(text(), 'Yes')]");
+  public static final By HEADACHE_OPTIONS =
+      By.cssSelector("[id='headache'] [class='v-checkbox v-select-option']");
+  public static final By MUSCLE_PAIN_OPTIONS =
+      By.cssSelector("[id='musclePain'] [class='v-checkbox v-select-option']");
+  public static final By SHIVERING_OPTIONS =
+      By.cssSelector("[id='shivering'] [class='v-checkbox v-select-option']");
+  public static final By ACUTE_RESPIRATORY_OPTIONS =
+      By.cssSelector(
+          "[id='acuteRespiratoryDistressSyndrome'] [class='v-checkbox v-select-option']");
+  public static final By COUGH_OPTIONS =
+      By.cssSelector("[id='cough'] [class='v-checkbox v-select-option']");
+  public static final By DIFFICULTY_BREATHING_OPTIONS =
+      By.cssSelector("[id='difficultyBreathing'] [class='v-checkbox v-select-option']");
+  public static final By OXYGEN_SATURATION_OPTIONS =
+      By.cssSelector("[id='oxygenSaturationLower94'] [class='v-checkbox v-select-option']");
+  public static final By PNEUMONIA_OPTIONS =
+      By.cssSelector("[id='pneumoniaClinicalOrRadiologic'] [class='v-checkbox v-select-option']");
+  public static final By RAPID_BREATHING_OPTIONS =
+      By.cssSelector("[id='rapidBreathing'] [class='v-checkbox v-select-option']");
+  public static final By RESPIRATORY_DISEASE_OPTIONS =
+      By.cssSelector("[id='respiratoryDiseaseVentilation'] [class='v-checkbox v-select-option']");
+  public static final By RUNNY_NOSE_OPTIONS =
+      By.cssSelector("[id='runnyNose'] [class='v-checkbox v-select-option']");
+  public static final By SORE_THROAT_OPTIONS =
+      By.cssSelector("[id='soreThroat'] [class='v-checkbox v-select-option']");
+  public static final By FAST_HEART_OPTIONS =
+      By.cssSelector("[id='fastHeartRate'] [class='v-checkbox v-select-option']");
+  public static final By DIARRHEA_OPTIONS =
+      By.cssSelector("[id='diarrhea'] [class='v-checkbox v-select-option']");
+  public static final By NAUSEA_OPTIONS =
+      By.cssSelector("[id='nausea'] [class='v-checkbox v-select-option']");
+  public static final By LOSS_OF_SMELL_OPTIONS =
+      By.cssSelector("[id='lossOfSmell'] [class='v-checkbox v-select-option']");
+  public static final By LOSS_OF_TASTE_OPTIONS =
+      By.cssSelector("[id='lossOfTaste'] [class='v-checkbox v-select-option']");
+  public static final By OTHER_OPTIONS =
+      By.cssSelector("[id='otherNonHemorrhagicSymptoms'] [class='v-checkbox v-select-option']");
   public static final By SYMPTOMS_COMMENTS_INPUT = By.cssSelector("[id='symptomsComments']");
   public static final By FIRST_SYMPTOM_COMBOBOX = By.cssSelector("[id='onsetSymptom'] div");
   public static final By FIRST_SYMPTOM_INPUT = By.cssSelector("[id='onsetSymptom'] input");
   public static final By DATE_OF_ONSET_INPUT = By.cssSelector("[id='onsetDate'] input");
-  public static final By SAVE_VISIT_BUTTON = By.cssSelector("[id='commit']");
+  public static final By SAVE_BUTTON = By.cssSelector("[id='commit']");
   public static final By EDIT_VISIT_BUTTON = By.cssSelector("table span");
+  public static final By SPECIFY_OTHER_SYMPTOMS =
+      By.cssSelector("[id='otherNonHemorrhagicSymptomsText']");
 }

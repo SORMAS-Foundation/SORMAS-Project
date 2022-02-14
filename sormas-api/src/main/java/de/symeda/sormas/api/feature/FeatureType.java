@@ -59,6 +59,8 @@ public enum FeatureType {
 	IMMUNIZATION_MANAGEMENT(true, true, null, ImmutableMap.of(FeatureTypeProperty.REDUCED, Boolean.FALSE)),
 	TRAVEL_ENTRIES(true, false, null, null),
 
+	DASHBOARD(true, true, null, null),
+
 	// FEATURE EXTENSIONS
 	ASSIGN_TASKS_TO_HIGHER_LEVEL(true,
 		true,

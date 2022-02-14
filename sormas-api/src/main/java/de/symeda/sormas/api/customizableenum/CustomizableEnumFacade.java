@@ -47,6 +47,23 @@ public interface CustomizableEnumFacade {
 	<T extends CustomizableEnum> T getEnumValue(CustomizableEnumType type, String value);
 
 	/**
+	 * Works similar to the {@link CustomizableEnumFacade#getEnumValues(CustomizableEnumType, Disease)}, but looks up a specific value.
+	 * Unlike the {@link CustomizableEnumFacade#getEnumValue(CustomizableEnumType, String)}, this method does not throw a RuntimeException
+	 * when an enum can not be found.
+	 * 
+	 * @param type
+	 *            The type for which to retrieve the enum value
+	 * @param value
+	 *            The value used as the identifier in the database, identical to {@link CustomizableEnumValueDto#getValue()}
+	 * @param disease
+	 *            The disease for which to retrieve the enum values. If null, all enum values that are disease-independent are retrieved
+	 * @param <T>
+	 *            The specific extension of {@link CustomizableEnum} for type safety
+	 * @return The enum instance containing its value, internationalized caption, and optional properties
+	 */
+	<T extends CustomizableEnum> T getEnumValue(CustomizableEnumType type, String value, Disease disease) throws CustomEnumNotFoundException;
+
+	/**
 	 * Retrieves the cached contents of all enum value instances of the specified type. The results are already
 	 * internationalized based on the user's language, or the server language as a fallback. If the enum values for the
 	 * specified type and disease have not been requested yet, the cache is extended with them on demand.

@@ -44,6 +44,7 @@ import com.vaadin.v7.data.Validator.InvalidValueException;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 
+import com.vaadin.v7.ui.Field;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -81,6 +82,7 @@ import de.symeda.sormas.ui.utils.ConfirmationComponent;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.DateTimeField;
+import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 
@@ -185,6 +187,12 @@ public class SampleController {
 			testDiseaseField.setValue(FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease());
 
 		}
+		// setup field updates
+		Field testLabField = pathogenTestForm.getField(PathogenTestDto.LAB);
+		NullableOptionGroup samplePurposeField = sampleComponent.getWrappedComponent().getField(SampleDto.SAMPLE_PURPOSE);
+		Runnable updateTestLabFieldRequired = () -> testLabField.setRequired(!SamplePurpose.INTERNAL.equals(samplePurposeField.getValue()));
+		updateTestLabFieldRequired.run();
+		samplePurposeField.addValueChangeListener(e -> updateTestLabFieldRequired.run());
 		// validate pathogen test create component before saving the sample
 		sampleComponent.addFieldGroups(pathogenTestForm.getFieldGroup());
 		CommitDiscardWrapperComponent.CommitListener savePathogenTest = () -> {
@@ -451,7 +459,7 @@ public class SampleController {
 					final CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
 					ControllerProvider.getTaskController().createSampleCollectionTask(TaskContext.CASE, associatedCase, dto, caseDto.getDisease());
 				} else if (associatedContact != null) {
-					final ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(associatedContact.getUuid());
+					final ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(associatedContact.getUuid());
 					ControllerProvider.getTaskController()
 						.createSampleCollectionTask(TaskContext.CONTACT, associatedContact, dto, contactDto.getDisease());
 				} else if (associatedEventParticipant != null) {
@@ -579,7 +587,7 @@ public class SampleController {
 		}
 		ContactReferenceDto contactRef = sample.getAssociatedContact();
 		if (contactRef != null) {
-			return FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid()).getDisease();
+			return FacadeProvider.getContactFacade().getByUuid(contactRef.getUuid()).getDisease();
 		}
 		EventParticipantReferenceDto eventPartRef = sample.getAssociatedEventParticipant();
 		if (eventPartRef != null) {

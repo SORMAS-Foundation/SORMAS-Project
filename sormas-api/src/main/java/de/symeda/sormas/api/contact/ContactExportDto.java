@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.api.contact;
 
+import de.symeda.sormas.api.importexport.ExportEntity;
 import java.io.Serializable;
 import java.util.Date;
 import java.util.Set;
@@ -58,6 +59,7 @@ import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.PostalCodePseudonymizer;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 
+@ExportEntity(ContactDto.class)
 public class ContactExportDto implements Serializable {
 
 	private static final long serialVersionUID = 2054231712903661096L;

@@ -21,7 +21,8 @@ import lombok.Getter;
 
 @Getter
 public enum FacilityUUIDs {
-  OtherFacility("SORMAS-CONSTID-OTHERS-FACILITY");
+  OtherFacility("SORMAS-CONSTID-OTHERS-FACILITY"),
+  StandardEinrichtung("Standard Einrichtung");
 
   private final String option;
 

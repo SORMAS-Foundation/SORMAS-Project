@@ -61,8 +61,8 @@ import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventGroupFacadeEjb.EventGroupFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
-import de.symeda.sormas.backend.importexport.ImportCellData;
-import de.symeda.sormas.backend.importexport.ImportErrorException;
+import de.symeda.sormas.api.importexport.ImportCellData;
+import de.symeda.sormas.api.importexport.ImportErrorException;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ImportHelper;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
@@ -141,7 +141,7 @@ public class EventImportFacadeEjb implements EventImportFacade {
 		List<EventGroupReferenceDto> eventGroupReferences = entities.getEventGroupReferences();
 
 		try {
-			event = eventFacade.saveEvent(event);
+			event = eventFacade.save(event);
 
 			for (EventParticipantDto eventParticipant : eventParticipants) {
 				PersonDto existingPerson = personFacade.getPersonByUuid(eventParticipant.getPerson().getUuid());

@@ -19,9 +19,9 @@ import de.symeda.sormas.api.labmessage.LabMessageCriteria;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.common.AbstractDeletableAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
@@ -30,7 +30,7 @@ import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
-public class LabMessageService extends AbstractCoreAdoService<LabMessage> {
+public class LabMessageService extends AbstractDeletableAdoService<LabMessage> {
 
 	public LabMessageService() {
 		super(LabMessage.class);
@@ -38,7 +38,7 @@ public class LabMessageService extends AbstractCoreAdoService<LabMessage> {
 
 	/**
 	 * Creates a default filter that should be used as the basis of queries that do not use {@link LabMessageCriteria}.
-	 * This essentially removes {@link CoreAdo#isDeleted()} lab messages from the queries.
+	 * This essentially removes {@link DeletableAdo#isDeleted()} lab messages from the queries.
 	 */
 	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<LabMessage> root) {
 		return cb.isFalse(root.get(LabMessage.DELETED));
@@ -73,8 +73,8 @@ public class LabMessageService extends AbstractCoreAdoService<LabMessage> {
 					CriteriaBuilderHelper.unaccentedIlike(cb, labMessage.get(LabMessage.PERSON_FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, labMessage.get(LabMessage.PERSON_LAST_NAME), textFilter),
 					CriteriaBuilderHelper.ilike(cb, labMessage.get(LabMessage.PERSON_POSTAL_CODE), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, labMessage.get(LabMessage.TEST_LAB_NAME), textFilter),
-					CriteriaBuilderHelper.ilike(cb, labMessage.get(LabMessage.TEST_LAB_POSTAL_CODE), textFilter));
+					CriteriaBuilderHelper.unaccentedIlike(cb, labMessage.get(LabMessage.LAB_NAME), textFilter),
+					CriteriaBuilderHelper.ilike(cb, labMessage.get(LabMessage.LAB_POSTAL_CODE), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}

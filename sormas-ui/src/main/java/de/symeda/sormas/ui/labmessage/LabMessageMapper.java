@@ -24,6 +24,10 @@ import java.util.stream.Stream;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.customizableenum.CustomEnumNotFoundException;
+import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
+import de.symeda.sormas.api.disease.DiseaseVariant;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityFacade;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
@@ -37,6 +41,8 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.commons.lang3.tuple.ImmutableTriple;
 
 public class LabMessageMapper {
 
@@ -142,9 +148,28 @@ public class LabMessageMapper {
 		List<String[]> changedFields = new ArrayList<>();
 
 		if (sourceTestReport != null) {
+			// <testResultText, diseaseVariant, diseaseVariantDetails>
+			ImmutableTriple<String, DiseaseVariant, String> migratedDiseaseVariant = migrateDiseaseVariant(sourceTestReport);
+
+			String testResultText = StringUtils.isEmpty(migratedDiseaseVariant.getLeft())
+				? sourceTestReport.getTestResultText()
+				: migratedDiseaseVariant.getLeft() + sourceTestReport.getTestResultText();
+
 			changedFields.addAll(
 				map(
 					Stream.of(
+						Mapping
+							.of(pathogenTest::setTestResultText, pathogenTest.getTestResultText(), testResultText, PathogenTestDto.TEST_RESULT_TEXT),
+						Mapping.of(
+							pathogenTest::setTestedDiseaseVariant,
+							pathogenTest.getTestedDiseaseVariant(),
+							migratedDiseaseVariant.getMiddle(),
+							PathogenTestDto.TESTED_DISEASE_VARIANT),
+						Mapping.of(
+							pathogenTest::setTestedDiseaseVariantDetails,
+							pathogenTest.getTestedDiseaseVariantDetails(),
+							migratedDiseaseVariant.getRight(),
+							PathogenTestDto.TESTED_DISEASE_VARIANT_DETAILS),
 						Mapping.of(
 							pathogenTest::setTestResult,
 							pathogenTest.getTestResult(),
@@ -161,11 +186,6 @@ public class LabMessageMapper {
 							pathogenTest.getTestDateTime(),
 							sourceTestReport.getTestDateTime(),
 							PathogenTestDto.TEST_DATE_TIME),
-						Mapping.of(
-							pathogenTest::setTestResultText,
-							pathogenTest.getTestResultText(),
-							sourceTestReport.getTestResultText(),
-							PathogenTestDto.TEST_RESULT_TEXT),
 						Mapping.of(pathogenTest::setTypingId, pathogenTest.getTypingId(), sourceTestReport.getTypingId(), PathogenTestDto.TYPING_ID),
 						Mapping.of(
 							pathogenTest::setExternalId,
@@ -191,7 +211,12 @@ public class LabMessageMapper {
 							pathogenTest::setPreliminary,
 							pathogenTest.getPreliminary(),
 							sourceTestReport.getPreliminary(),
-							PathogenTestDto.PRELIMINARY))));
+							PathogenTestDto.PRELIMINARY),
+						Mapping.of(
+							pathogenTest::setPcrTestSpecification,
+							pathogenTest.getPcrTestSpecification(),
+							sourceTestReport.getTestPcrTestSpecification(),
+							PathogenTestDto.PCR_TEST_SPECIFICATION))));
 		}
 
 		changedFields.addAll(
@@ -259,6 +284,41 @@ public class LabMessageMapper {
 
 			return m;
 		}
+	}
+
+	/**
+	 * The migration depends on whether the disease variant can be found as a customizable enum value or not.
+	 * If yes, the enum is set as disease variant. If not, the disease variant is added to the test result text,
+	 * along with the disease variant details.
+	 */
+	protected ImmutableTriple<String, DiseaseVariant, String> migrateDiseaseVariant(TestReportDto sourceTestReport) {
+		if (sourceTestReport.getTestedDiseaseVariant() == null && sourceTestReport.getTestedDiseaseVariantDetails() == null) {
+			return new ImmutableTriple<>(null, null, null);
+		}
+		String testResultText = null;
+		DiseaseVariant testedDiseaseVariant = null;
+		String testedDiseaseVariantDetails = null;
+
+		try {
+			testedDiseaseVariant = FacadeProvider.getCustomizableEnumFacade()
+				.getEnumValue(CustomizableEnumType.DISEASE_VARIANT, sourceTestReport.getTestedDiseaseVariant(), labMessage.getTestedDisease());
+			testedDiseaseVariantDetails = sourceTestReport.getTestedDiseaseVariantDetails();
+		} catch (CustomEnumNotFoundException e) {
+			String diseaseVariantString = sourceTestReport.getTestedDiseaseVariant();
+			testResultText = StringUtils.isEmpty(diseaseVariantString)
+				? null
+				: I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TESTED_DISEASE_VARIANT) + ": " + diseaseVariantString
+					+ "\n";
+
+			String diseaseVariantDetailsString = sourceTestReport.getTestedDiseaseVariantDetails();
+			if (!StringUtils.isEmpty(diseaseVariantDetailsString)) {
+				diseaseVariantDetailsString =
+					I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TESTED_DISEASE_VARIANT_DETAILS) + ": "
+						+ diseaseVariantDetailsString + "\n";
+				testResultText = StringUtils.isEmpty(testResultText) ? diseaseVariantDetailsString : testResultText + diseaseVariantDetailsString;
+			}
+		}
+		return new ImmutableTriple<>(testResultText, testedDiseaseVariant, testedDiseaseVariantDetails);
 	}
 
 	private FacilityReferenceDto getLabReference(String labExternalId) {

@@ -251,7 +251,7 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 
-		UserDto user = creator.createUser(creator.createRDCFEntities(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(rdcf, "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 
 		PersonDto person = creator.createPerson();
 		PersonDto person2 = creator.createPerson();
@@ -287,9 +287,8 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetAllActiveVisitsAfter() throws InterruptedException, ExternalSurveillanceToolException {
-
-		UserDto user = creator.createUser(creator.createRDCFEntities(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		Date date = new Date();
 
 		PersonDto person = creator.createPerson();
@@ -336,8 +335,7 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetLastVisitByContact() {
-
-		UserDto user = creator.createUser(creator.createRDCFEntities(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(creator.createRDCF(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 
 		PersonDto person = creator.createPerson();
 		ContactDto contact = creator.createContact(user.toReference(), person.toReference());
@@ -351,7 +349,7 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetVisitsByContactAndPeriod() {
 
-		UserDto user = creator.createUser(creator.createRDCFEntities(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(creator.createRDCF(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 
 		PersonDto person = creator.createPerson();
 		ContactDto contact = creator.createContact(user.toReference(), person.toReference());
@@ -377,8 +375,7 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetLastVisitByCase() {
-
-		UserDto user = creator.createUser(creator.createRDCFEntities(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(creator.createRDCF(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 
 		PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), creator.createRDCF());
@@ -391,8 +388,7 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetIndexList() {
-
-		UserDto user = creator.createUser(creator.createRDCFEntities(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(creator.createRDCF(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 
 		PersonDto person = creator.createPerson();
 		PersonDto person2 = creator.createPerson();

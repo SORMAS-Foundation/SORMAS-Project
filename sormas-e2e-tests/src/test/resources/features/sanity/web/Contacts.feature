@@ -187,3 +187,57 @@ Feature: Contacts end to end tests
     And I check the created data for complex contact is correctly displayed on Edit Contact page
     Then I open Contact Person tab
     And I check the created data is correctly displayed on Edit Contact Person page
+
+  @issue=SORDEV-5641
+  Scenario: Fill the epidemiological data tab in Contacts
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    When I click on the Contacts button from navbar
+    Then I open the last created contact
+    And I click on the Epidemiological Data button
+    And I click on Exposure details known with UNKNOWN option
+    And I click on Exposure details known with NO option
+    Then I fill all the data in Exposure for Epidemiological data tab in Contacts
+    Then I click on Residing or working in an area with high risk of transmission of the disease in Contact with UNKNOWN option
+    And I click on Residing or working in an area with high risk of transmission of the disease in Contact with NO option
+    And I click on Residing or working in an area with high risk of transmission of the disease in Contact with YES option
+    Then I click on Residing or travelling to countries, territories, areas experiencing larger outbreaks of local transmission in Contact with UNKNOWN option
+    And I click on Residing or travelling to countries, territories, areas experiencing larger outbreaks of local transmission in Contact with NO option
+    And I click on Residing or travelling to countries, territories, areas experiencing larger outbreaks of local transmission in Contact with YES option
+    And I click on save button from Epidemiological Data
+    Then I am checking all Exposure data is saved and displayed in Contacts
+    And I am checking if options in checkbox for Contact are displayed correctly
+
+
+  @issue=SORDEV-5670
+  Scenario: Fill the follow-up tab
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And I log in with National User
+    And I am accessing the Follow-up visits tab using of created contact via api
+    And I click on new Visit button
+    Then I set Person available and cooperative to UNAVAILABLE
+    And I set Date and time of visit
+    Then I save the Visit data
+    And I click on edit Visit button
+    Then I check last Person status and date with time
+    Then I set Person available and cooperative to AVAILABLE, BUT UNCOOPERATIVE
+    And I set Date and time of visit
+    Then I save the Visit data
+    And I click on edit Visit button
+    Then I check last Person status and date with time
+    And I fill the specific data of visit with Set cleared to No option to all symptoms
+    Then I save the Visit data
+    Then I click on edit Visit button
+    And I fill the specific data of visit with Set cleared to Unknown option to all symptoms
+    Then I save the Visit data
+

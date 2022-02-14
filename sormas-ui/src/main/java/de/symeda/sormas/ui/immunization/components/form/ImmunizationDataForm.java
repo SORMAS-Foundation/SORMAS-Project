@@ -118,6 +118,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 	private final CaseReferenceDto relatedCase;
 	private boolean ignoreMeansOfImmunizationChange = false;
 	private MeansOfImmunization previousMeansOfImmunization;
+	private CheckBox overwriteImmunizationManagementStatus;
 
 	public ImmunizationDataForm(boolean isPseudonymized, CaseReferenceDto relatedCase) {
 		super(
@@ -154,7 +155,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		ComboBox meansOfImmunizationField = addField(ImmunizationDto.MEANS_OF_IMMUNIZATION, ComboBox.class);
 		addField(ImmunizationDto.MEANS_OF_IMMUNIZATION_DETAILS, TextField.class);
 
-		CheckBox overwriteImmunizationManagementStatus = addCustomField(OVERWRITE_IMMUNIZATION_MANAGEMENT_STATUS, Boolean.class, CheckBox.class);
+		overwriteImmunizationManagementStatus = addCustomField(OVERWRITE_IMMUNIZATION_MANAGEMENT_STATUS, Boolean.class, CheckBox.class);
 		overwriteImmunizationManagementStatus.addStyleName(VSPACE_3);
 
 		ComboBox managementStatusField = addField(ImmunizationDto.IMMUNIZATION_MANAGEMENT_STATUS, ComboBox.class);
@@ -546,5 +547,11 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		super.setValue(newFieldValue);
 		ignoreMeansOfImmunizationChange = false;
 		previousMeansOfImmunization = newFieldValue.getMeansOfImmunization();
+	}
+
+	@Override
+	public void discard() throws SourceException {
+		super.discard();
+		overwriteImmunizationManagementStatus.setValue(false);
 	}
 }

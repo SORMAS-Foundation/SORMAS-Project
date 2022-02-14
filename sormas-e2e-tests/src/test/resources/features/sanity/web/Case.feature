@@ -87,7 +87,7 @@ Feature: Case end to end tests
     Then I set Vaccination Status as vaccinated
     Then I set Vaccination Status as unvaccinated
     Then I set Vaccination Status as unknown
-    And I click on save button from Edit Case page
+    And I click on save button from Edit Case page with current hospitalization
     Then I check if the specific data is correctly displayed
 
   Scenario: Delete created case
@@ -139,3 +139,190 @@ Feature: Case end to end tests
     And I click on the Create button from Case Document Templates
     When I create a case document from template
     Then I verify that the case document is downloaded and correctly named
+
+  @issue=SORDEV-5527
+  Scenario: Fill the therapy tab
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    Then I am accessing the Therapy tab of created case
+    And I create and fill Prescriptions with specific data for drug intake
+    And I choose Antimicrobial option as a Type of drug
+    And I choose Antiviral option as a Type of drug
+    And I choose Other option as a Type of drug
+    And I choose Other option as a Prescription type
+    Then I click on the popup Save button
+    Then I check if created data is correctly displayed in Perscription section
+    And I choose Oral rehydration salts option as a Prescription type
+    And I choose Blood transfusion option as a Prescription type
+    And I choose Renal replacement therapy option as a Prescription type
+    And I choose IV fluid therapy option as a Prescription type
+    And I choose Oxygen therapy option as a Prescription type
+    And I choose Invasive mechanical ventilation option as a Prescription type
+    And I choose Vasopressors/Inotropes option as a Prescription type
+    Then I click on the popup Save button
+    Then I check if created data is correctly displayed in Perscription section
+    And I click on the popup Save button
+    Then I create and fill Treatment with specific data for drug intake
+    And I choose Antimicrobial option as a Type of drug
+    And I choose Antiviral option as a Type of drug
+    And I choose Other option as a Type of drug
+    And I choose Other option as a Treatment type
+    Then I click on the popup Save button
+    Then I check if created data is correctly displayed in Treatment section
+    And I choose Oral rehydration salts option as a Treatment type
+    And I choose Blood transfusion option as a Treatment type
+    And I choose Renal replacement therapy option as a Treatment type
+    And I choose IV fluid therapy option as a Treatment type
+    And I choose Oxygen therapy option as a Treatment type
+    And I choose Invasive mechanical ventilation option as a Treatment type
+    And I choose Vasopressors/Inotropes option as a Treatment type
+    Then I click on the popup Save button
+    Then I check if created data is correctly displayed in Treatment section
+
+    @issue=SORDEV-5518 @DE
+  Scenario: Fill the case person tab
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data
+    Then I check the created data is correctly displayed on Edit case page
+    And I check the created data is correctly displayed on Edit case person page
+    Then I set Present condition of Person to Dead in Case Person tab
+    And I check if death data fields are available in Case Person tab
+    Then I set Present condition of Person to Buried in Case Person tab
+    And I check if buried data fields are available in Case Person tab
+    Then I fill specific address data in Case Person tab
+    Then I click on Geocode button to get GPS coordinates in Case Person Tab
+    And I click on save button to Save Person data in Case Person Tab
+    Then I check if saved Person data is correct
+
+  @issue=SORDEV-5529
+  Scenario: Fill the clinical course tab
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    Then I click on Clinical Course tab from Edit Case page
+    And I click on New Clinical Assesement button on Clinical Course page
+    And I fill the specific data of clinical visit with Set cleared to No option to all symptoms
+    Then I click Save button in New Clinical Assessement popup
+    Then I navigate to symptoms tab
+    And I check if created data is correctly displayed in Symptoms tab for Set cleared to NO
+    Then I clear Clinical Signs and Symptoms list
+    Then I click on Clinical Course tab from Edit Case page
+    And I am saving clear Clinical Signs and Symptoms list
+    And I click on Edit Clinical Visit button
+    And I fill the specific data of clinical visit with Set cleared to Unknown option to all symptoms
+    Then I click Save button in New Clinical Assessement popup
+    Then I navigate to symptoms tab
+    And I check if created data is correctly displayed in Symptoms tab for Set cleared to Unknown
+    Then I click on Clinical Course tab from Edit Case page
+    And I set Diabetes radio button to YES
+    And I set Diabetes radio button to NO
+    And I set Diabetes radio button to UNKNOWN
+    And I set Diabetes radio button to UNKNOWN
+    And I set Immunodeficiency including HIV radio button to YES
+    And I set Immunodeficiency including HIV radio button to NO
+    And I set Immunodeficiency including HIV radio button to UNKNOWN
+    And I set Immunodeficiency including HIV radio button to UNKNOWN
+    And I set Liver disease radio button to YES
+    And I set Liver disease radio button to NO
+    And I set Liver disease radio button to UNKNOWN
+    And I set Liver disease radio button to UNKNOWN
+    And I set Malignancy radio button to YES
+    And I set Malignancy radio button to NO
+    And I set Malignancy radio button to UNKNOWN
+    And I set Malignancy radio button to UNKNOWN
+    And I set Chronic pulmonary disease radio button to YES
+    And I set Chronic pulmonary disease radio button to NO
+    And I set Chronic pulmonary disease radio button to UNKNOWN
+    And I set Chronic pulmonary disease radio button to UNKNOWN
+    And I set Renal disease radio button to YES
+    And I set Renal disease radio button to NO
+    And I set Renal disease radio button to UNKNOWN
+    And I set Renal disease radio button to UNKNOWN
+    And I set Chronic neurological/neuromuscular disease radio button to YES
+    And I set Chronic neurological/neuromuscular disease radio button to NO
+    And I set Chronic neurological/neuromuscular disease radio button to UNKNOWN
+    And I set Chronic neurological/neuromuscular disease radio button to UNKNOWN
+    And I set Cardiovascular disease including hypertension radio button to YES
+    And I set Cardiovascular disease including hypertension radio button to NO
+    And I set Cardiovascular disease including hypertension radio button to UNKNOWN
+    And I set Cardiovascular disease including hypertension radio button to UNKNOWN
+    Then I click Save button on Clinical Course Tab
+    And I check if Case saved popup appeared and close it
+
+  @issue=SORDEV-8412
+  Scenario: Change of Isolation/Quarantine should be documented
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    Then I set place for Quarantine as Home
+    And I set Start date of Quarantine 2 days ago
+    And I set End date of Quarantine to 5 days
+    Then I click on save case button
+    And I set End date of Quarantine to 4 days
+    And I check if Reduce quarantine popup is displayed
+    Then I click on yes quarantine popup button
+    Then I click on save case button
+    And I set End date of Quarantine to 6 days
+    And I check if Extend quarantine popup is displayed
+    Then I discard changes in quarantine popup
+    And I check if Quarantine End date stayed reduce to 4 days
+    And I set the quarantine end to a date 1 day after the Follow-up until date
+    Then I click on yes quarantine popup button
+    Then I click on yes Extend follow up period popup button
+    Then I click on save case button
+    And I check if Quarantine Follow up until date was extended to 1 day
+    And I fill Quarantine change comment field
+    Then I click on save case button
+    And I check if Quarantine change comment field was saved correctly
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I click on the Contacts button from navbar
+    Then I open the last created contact
+    Then I set place for Quarantine as Home
+    And I set Start date of Quarantine 2 days ago
+    And I set End date of Quarantine to 5 days
+    Then I click on save Contact button
+    And I set End date of Quarantine to 4 days
+    And I check if Reduce quarantine popup is displayed
+    Then I click on yes quarantine popup button
+    Then I click on save Contact button
+    And I set End date of Quarantine to 6 days
+    And I check if Extend quarantine popup is displayed
+    Then I discard changes in quarantine popup
+    And I check if Quarantine End date stayed reduce to 4 days
+    And I set the quarantine end to a date 1 day after the Follow-up until date
+    Then I click on yes quarantine popup button
+    Then I click on yes Extend follow up period popup button
+    Then I click on save Contact button
+    And I check if Quarantine Follow up until date was extended to 1 day
+    And I fill Quarantine change comment field
+    Then I click on save Contact button
+    And I check if Quarantine change comment field was saved correctly
+
+
+

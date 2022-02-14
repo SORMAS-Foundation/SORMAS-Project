@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.events;
 
+import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
@@ -17,6 +18,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
+import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class EventParticipantsFilterForm extends AbstractFilterForm<EventParticipantCriteria> {
 
@@ -73,5 +75,42 @@ public class EventParticipantsFilterForm extends AbstractFilterForm<EventPartici
 				null,
 				CssStyles.CHECKBOX_FILTER_INLINE),
 			CheckBox.class);
+	}
+
+	@Override
+	protected void applyDependenciesOnFieldChange(String propertyId, Property.ValueChangeEvent event) {
+		super.applyDependenciesOnFieldChange(propertyId, event);
+
+		switch (propertyId) {
+		case EventParticipantCriteria.BIRTHDATE_MM: {
+			Integer birthMM = (Integer) event.getProperty().getValue();
+
+			ComboBox birthDayDD = getField(EventParticipantCriteria.BIRTHDATE_DD);
+			birthDayDD.setEnabled(birthMM != null);
+			FieldHelper.updateItems(
+				birthDayDD,
+				DateHelper.getDaysInMonth(
+					(Integer) getField(EventParticipantCriteria.BIRTHDATE_MM).getValue(),
+					(Integer) getField(EventParticipantCriteria.BIRTHDATE_YYYY).getValue()));
+
+			break;
+		}
+		}
+	}
+
+	@Override
+	protected void applyDependenciesOnNewValue(EventParticipantCriteria criteria) {
+		ComboBox birthDateDD = getField(EventParticipantCriteria.BIRTHDATE_DD);
+		if (getField(EventParticipantCriteria.BIRTHDATE_YYYY).getValue() != null
+			&& getField(EventParticipantCriteria.BIRTHDATE_MM).getValue() != null) {
+			birthDateDD.addItems(
+				DateHelper.getDaysInMonth(
+					(Integer) getField(EventParticipantCriteria.BIRTHDATE_MM).getValue(),
+					(Integer) getField(EventParticipantCriteria.BIRTHDATE_YYYY).getValue()));
+			birthDateDD.setEnabled(true);
+		} else {
+			birthDateDD.clear();
+			birthDateDD.setEnabled(false);
+		}
 	}
 }
