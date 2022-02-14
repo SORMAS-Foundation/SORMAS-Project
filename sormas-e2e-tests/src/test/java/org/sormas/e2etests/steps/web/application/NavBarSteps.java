@@ -164,6 +164,13 @@ public class NavBarSteps implements En {
           startTime = ZonedDateTime.now().toInstant().toEpochMilli();
         });
 
+    When(
+        "I click on logout button from navbar$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.LOGOUT_BUTTON);
+        });
+
     Then(
         "I wait for {string} page to load and calculate elapsed time",
         (String page) -> {
