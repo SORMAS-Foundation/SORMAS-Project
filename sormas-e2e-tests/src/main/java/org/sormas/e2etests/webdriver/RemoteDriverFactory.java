@@ -53,7 +53,8 @@ public class RemoteDriverFactory implements DriverFactory {
   @Override
   public ChromeDriver getRemoteWebDriver() {
     log.info("Setting Chrome Driver's path");
-    System.setProperty("webdriver.chrome.driver", "/usr/lib64/chromium-browser/chromedriver");
+    System.setProperty(
+        "webdriver.chrome.driver", "C:\\usr\\lib64\\chromium-browser\\chromedriver.exe");
     log.info("Adding all chrome preferences");
     final ChromeOptions options = new ChromeOptions();
     final HashMap<String, Object> chromePreferences = new HashMap<>();
