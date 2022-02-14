@@ -106,6 +106,7 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 		return cb.and(cb.isFalse(root.get(Campaign.ARCHIVED)), cb.isFalse(root.get(Campaign.DELETED)));
 	}
 
+	@Override
 	public List<Campaign> getAllAfter(Date since) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Campaign> cq = cb.createQuery(getElementClass());
