@@ -69,11 +69,11 @@ public class ProcessedCaseDataPersister extends ProcessedDataPersister<CaseDataD
 				Captions.Person,
 				buildCaseValidationGroupName(caze));
 
-			handleValidationError(() -> caseFacade.saveCase(caze, true, false, false), Captions.CaseData, buildCaseValidationGroupName(caze));
+			handleValidationError(() -> caseFacade.saveCase(caze, true, false, false, false), Captions.CaseData, buildCaseValidationGroupName(caze));
 		} else {
 			//save case first during update
 
-			handleValidationError(() -> caseFacade.saveCase(caze, true, false, false), Captions.CaseData, buildCaseValidationGroupName(caze));
+			handleValidationError(() -> caseFacade.saveCase(caze, true, false, false, false), Captions.CaseData, buildCaseValidationGroupName(caze));
 			handleValidationError(
 				() -> personFacade.savePerson(caseData.getPerson(), false, false, false),
 				Captions.Person,

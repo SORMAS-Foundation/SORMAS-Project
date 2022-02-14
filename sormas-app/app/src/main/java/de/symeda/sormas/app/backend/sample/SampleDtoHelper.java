@@ -48,8 +48,8 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
 	}
 
 	@Override
-	protected Call<List<SampleDto>> pullAllSince(long since) throws NoConnectionException {
-		return RetroProvider.getSampleFacade().pullAllSince(since);
+	protected Call<List<SampleDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+		return RetroProvider.getSampleFacade().pullAllSince(since, size, lastSynchronizedUuid);
 	}
 
 	@Override
@@ -183,7 +183,12 @@ public class SampleDtoHelper extends AdoDtoHelper<Sample, SampleDto> {
 		target.setPseudonymized(source.isPseudonymized());
 	}
 
-	public static SampleReferenceDto toReferenceDto(Sample ado) {
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return SampleDto.APPROXIMATE_JSON_SIZE_IN_BYTES;
+    }
+
+    public static SampleReferenceDto toReferenceDto(Sample ado) {
 		if (ado == null) {
 			return null;
 		}

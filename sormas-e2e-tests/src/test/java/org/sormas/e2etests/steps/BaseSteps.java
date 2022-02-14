@@ -32,7 +32,7 @@ import java.time.Duration;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.sormas.e2etests.ui.DriverManager;
+import org.sormas.e2etests.webdriver.DriverManager;
 import recorders.StepsLogger;
 
 @Slf4j
@@ -40,7 +40,6 @@ public class BaseSteps implements StepLifecycleListener {
 
   public static RemoteWebDriver driver;
   private final DriverManager driverManager;
-  private final String textFilePath = "customReports/data/results.txt";
 
   @Inject
   public BaseSteps(DriverManager driverManager) {

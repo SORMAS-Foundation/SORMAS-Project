@@ -105,7 +105,11 @@ public class CentralInfraSyncFacade {
 		Date newestChangeDate = newDtos.stream().map(DTO::getChangeDate).max(Date::compareTo).orElse(lastSync);
 		logger.info("The newest change date is {}", newestChangeDate);
 
-		newDtos.forEach(facade::save);
+		newDtos.forEach(d -> {
+			logger.info("Processing: {} - {}", d, d.getUuid());
+			facade.saveFromCentral(d);
+		});
+		logger.info("Successfully imported all entities from central");
 		return newestChangeDate;
 	}
 

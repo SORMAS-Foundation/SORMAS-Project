@@ -1,10 +1,12 @@
 package de.symeda.sormas.backend.dashboard;
 
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
@@ -23,6 +25,7 @@ import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.dashboard.DashboardEventDto;
 import de.symeda.sormas.api.dashboard.DashboardFacade;
 import de.symeda.sormas.api.dashboard.DashboardQuarantineDataDto;
+import de.symeda.sormas.api.dashboard.EpiCurveGrouping;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventStatus;
@@ -32,6 +35,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.outbreak.OutbreakCriteria;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
@@ -88,6 +92,42 @@ public class DashboardFacadeEjb implements DashboardFacade {
 		return getTestResultCountByResultType(getCases(dashboardCriteria));
 	}
 
+	public Map<Date, Map<CaseClassification, Integer>> getEpiCurveSeriesElementsPerCaseClassification(DashboardCriteria dashboardCriteria) {
+		Map<Date, Map<CaseClassification, Integer>> epiCurveSeriesElements = new TreeMap<>();
+		List<Date> dates = buildListOfFilteredDates(
+			dashboardCriteria.getDateFrom(),
+			dashboardCriteria.getDateTo(),
+			dashboardCriteria.getEpiCurveGrouping(),
+			dashboardCriteria.isShowMinimumEntries());
+		for (int i = 0; i < dates.size(); i++) {
+			dashboardCriteria = setNewCaseDatesInCaseCriteria(dates.get(i), dashboardCriteria);
+			Map<CaseClassification, Integer> caseCounts = getCasesCountByClassification(dashboardCriteria);
+			epiCurveSeriesElements.put(dates.get(i), caseCounts);
+
+		}
+
+		return epiCurveSeriesElements;
+	}
+
+	public Map<Date, Map<PresentCondition, Integer>> getEpiCurveSeriesElementsPerPresentCondition(DashboardCriteria dashboardCriteria) {
+		Map<Date, Map<PresentCondition, Integer>> epiCurveSeriesElements = new TreeMap<>();
+		List<Date> dates = buildListOfFilteredDates(
+			dashboardCriteria.getDateFrom(),
+			dashboardCriteria.getDateTo(),
+			dashboardCriteria.getEpiCurveGrouping(),
+			dashboardCriteria.isShowMinimumEntries());
+		for (int i = 0; i < dates.size(); i++) {
+			dashboardCriteria = setNewCaseDatesInCaseCriteria(dates.get(i), dashboardCriteria);
+
+			Map<PresentCondition, Integer> caseCounts = getCasesCountPerPersonCondition(dashboardCriteria);
+
+			epiCurveSeriesElements.put(dates.get(i), caseCounts);
+
+		}
+
+		return epiCurveSeriesElements;
+	}
+
 	@Override
 	public long countCasesConvertedFromContacts(DashboardCriteria dashboardCriteria) {
 		return dashboardService.countCasesConvertedFromContacts(dashboardCriteria);
@@ -106,6 +146,73 @@ public class DashboardFacadeEjb implements DashboardFacade {
 	@Override
 	public Map<EventStatus, Long> getEventCountByStatus(DashboardCriteria dashboardCriteria) {
 		return dashboardService.getEventCountByStatus(dashboardCriteria);
+	}
+
+	/**
+	 * Builds a list that contains an object for each day, week or month between the
+	 * from and to dates. Additional previous days, weeks or months might be added
+	 * when showMinimumEntries is true.
+	 */
+	protected List<Date> buildListOfFilteredDates(Date fromDate, Date toDate, EpiCurveGrouping epiCurveGrouping, boolean showMinimumEntries) {
+
+		List<Date> filteredDates = new ArrayList<>();
+		Date fromDateDayStart = DateHelper.getStartOfDay(fromDate);
+		Date toDateDayStart = DateHelper.getEndOfDay(toDate);
+		Date currentDate;
+
+		switch (epiCurveGrouping) {
+		case DAY:
+			if (!showMinimumEntries || DateHelper.getDaysBetween(fromDateDayStart, toDateDayStart) >= 7) {
+				currentDate = fromDateDayStart;
+			} else {
+				currentDate = DateHelper.subtractDays(toDateDayStart, 6);
+			}
+			while (!currentDate.after(toDateDayStart)) {
+				filteredDates.add(currentDate);
+				currentDate = DateHelper.addDays(currentDate, 1);
+			}
+			break;
+		case WEEK:
+			if (!showMinimumEntries || DateHelper.getWeeksBetween(fromDateDayStart, toDateDayStart) >= 7) {
+				currentDate = fromDateDayStart;
+			} else {
+				currentDate = DateHelper.subtractWeeks(toDateDayStart, 6);
+			}
+			while (!currentDate.after(toDateDayStart)) {
+				filteredDates.add(currentDate);
+				currentDate = DateHelper.addWeeks(currentDate, 1);
+			}
+			break;
+		default:
+			if (!showMinimumEntries || DateHelper.getMonthsBetween(fromDateDayStart, toDateDayStart) >= 7) {
+				currentDate = fromDateDayStart;
+			} else {
+				currentDate = DateHelper.subtractMonths(toDateDayStart, 6);
+			}
+			while (!currentDate.after(toDateDayStart)) {
+				filteredDates.add(currentDate);
+				currentDate = DateHelper.addMonths(currentDate, 1);
+			}
+			break;
+		}
+
+		return filteredDates;
+	}
+
+	protected DashboardCriteria setNewCaseDatesInCaseCriteria(Date date, DashboardCriteria dashboardCriteria) {
+		EpiCurveGrouping epiCurveGrouping = dashboardCriteria.getEpiCurveGrouping();
+		switch (epiCurveGrouping) {
+		case DAY:
+			dashboardCriteria.dateBetween(DateHelper.getStartOfDay(date), DateHelper.getEndOfDay(date));
+			break;
+		case WEEK:
+			dashboardCriteria.dateBetween(DateHelper.getStartOfWeek(date), DateHelper.getEndOfWeek(date));
+			break;
+		default:
+			dashboardCriteria.dateBetween(DateHelper.getStartOfMonth(date), DateHelper.getEndOfMonth(date));
+
+		}
+		return dashboardCriteria;
 	}
 
 	private Predicate<DashboardQuarantineDataDto> quarantineData(Date fromDate, Date toDate) {

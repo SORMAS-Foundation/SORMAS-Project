@@ -58,6 +58,7 @@ import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -89,6 +90,8 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.messaging.MessageContents;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
@@ -96,6 +99,8 @@ import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.deletionconfiguration.AbstractCoreEntityFacade;
+import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.ImmunizationEntityHelper;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
@@ -129,7 +134,7 @@ import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 import de.symeda.sormas.utils.EventParticipantJoins;
 
 @Stateless(name = "EventParticipantFacade")
-public class EventParticipantFacadeEjb implements EventParticipantFacade {
+public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventParticipant> implements EventParticipantFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
@@ -160,6 +165,10 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	private SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal sormasToSormasOriginInfoFacade;
 	@EJB
 	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
+
+	public EventParticipantFacadeEjb() {
+		super(EventParticipant.class);
+	}
 
 	@Override
 	public List<EventParticipantDto> getAllEventParticipantsByEventAfter(Date date, String eventUuid) {
@@ -192,6 +201,11 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 	@Override
 	public List<EventParticipantDto> getAllActiveEventParticipantsAfter(Date date) {
+		return getAllActiveEventParticipantsAfter(date, null, null);
+	}
+
+	@Override
+	public List<EventParticipantDto> getAllActiveEventParticipantsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		User user = userService.getCurrentUser();
 		if (user == null) {
@@ -199,7 +213,7 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return eventParticipantService.getAllActiveEventParticipantsAfter(date, user)
+		return eventParticipantService.getAllActiveEventParticipantsAfter(date, user, batchSize, lastSynchronizedUuid)
 			.stream()
 			.map(c -> convertToDto(c, pseudonymizer))
 			.collect(Collectors.toList());
@@ -398,6 +412,10 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 		Join<EventParticipant, Case> resultingCase = joins.getResultingCase();
 		Join<EventParticipant, Event> event = joins.getEvent();
 		final Join<EventParticipant, Sample> samples = eventParticipant.join(EventParticipant.SAMPLES, JoinType.LEFT);
+		samples.on(
+			cb.and(
+				cb.isFalse(samples.get(CoreAdo.DELETED)),
+				cb.equal(samples.get(Sample.ASSOCIATED_EVENT_PARTICIPANT), eventParticipant.get(AbstractDomainObject.ID))));
 
 		Expression<Object> inJurisdictionSelector = JurisdictionHelper.booleanSelector(cb, eventParticipantService.inJurisdiction(queryContext));
 		Expression<Object> inJurisdictionOrOwnedSelector =
@@ -439,30 +457,16 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 			inJurisdictionSelector,
 			inJurisdictionOrOwnedSelector);
 
-		Subquery<Date> dateSubquery = cq.subquery(Date.class);
-		Root<Sample> subRoot = dateSubquery.from(Sample.class);
-		final Expression<Date> maxSampleDateTime = cb.<Date> greatest(subRoot.get(Sample.SAMPLE_DATE_TIME));
-
 		Predicate filter = eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, queryContext);
-		Predicate pathogenTestResultWhereCondition = CriteriaBuilderHelper.and(
-			cb,
-			cb.isFalse(subRoot.get(Sample.DELETED)),
-			cb.equal(subRoot.get(Sample.ASSOCIATED_EVENT_PARTICIPANT), eventParticipant.get(EventParticipant.ID)));
+
 		if (eventParticipantCriteria.getPathogenTestResult() != null) {
-			pathogenTestResultWhereCondition = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				pathogenTestResultWhereCondition,
-				cb.equal(samples.get(Sample.PATHOGEN_TEST_RESULT), eventParticipantCriteria.getPathogenTestResult()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(samples.get(Sample.PATHOGEN_TEST_RESULT), eventParticipantCriteria.getPathogenTestResult()));
 		}
-		final Predicate nullOrMaxSampleDateTime = CriteriaBuilderHelper.or(
-			cb,
-			cb.isNull(samples.get(Sample.SAMPLE_DATE_TIME)),
-			CriteriaBuilderHelper.and(
-				cb,
-				cb.isFalse(samples.get(Sample.DELETED)),
-				cb.equal(samples.get(Sample.SAMPLE_DATE_TIME), dateSubquery.select(maxSampleDateTime).where(pathogenTestResultWhereCondition))));
-		cq.where(CriteriaBuilderHelper.and(cb, nullOrMaxSampleDateTime, filter));
+
+		if (filter != null) {
+			cq.where(filter);
+		}
 
 		if (sortProperties != null && sortProperties.size() > 0) {
 			List<Order> order = new ArrayList<>(sortProperties.size());
@@ -832,6 +836,14 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 	}
 
 	@Override
+	public boolean exists(String personUuid, String eventUuid) {
+		return eventParticipantService.exists(
+			(cb, root, cq) -> cb.and(
+				cb.equal(root.get(EventParticipant.PERSON).get(AbstractDomainObject.UUID), personUuid),
+				cb.equal(root.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID), eventUuid)));
+	}
+
+	@Override
 	public EventParticipantReferenceDto getReferenceByUuid(String uuid) {
 		EventParticipant eventParticipant = eventParticipantService.getByUuid(uuid);
 		return new EventParticipantReferenceDto(eventParticipant.getUuid());
@@ -1066,5 +1078,15 @@ public class EventParticipantFacadeEjb implements EventParticipantFacade {
 
 		List<EventParticipant> resultList = em.createQuery(cq).getResultList();
 		return resultList.stream().map(EventParticipantFacadeEjb::toDto).collect(Collectors.toList());
+	}
+
+	@Override
+	public AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid) {
+		return getAutomaticDeletionInfo(uuid, CoreEntityType.EVENT_PARTICIPANT);
+	}
+
+	@Override
+	protected void delete(EventParticipant entity) {
+		eventParticipantService.delete(entity);
 	}
 }

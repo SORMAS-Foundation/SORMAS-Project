@@ -29,11 +29,12 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
-import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pojo.web.Contact;
 import org.sormas.e2etests.pojo.web.Person;
 import org.sormas.e2etests.services.PersonService;
 import org.sormas.e2etests.steps.BaseSteps;
+import org.testng.asserts.SoftAssert;
 
 public class EditContactPersonSteps implements En {
 
@@ -41,12 +42,13 @@ public class EditContactPersonSteps implements En {
   protected Person aPerson;
   protected static Person newGeneratedPerson;
   public static Person fullyDetailedPerson;
+  public static Contact createdContact;
 
   @Inject
   public EditContactPersonSteps(
       WebDriverHelpers webDriverHelpers,
       PersonService personService,
-      final SoftAssertions softly,
+      SoftAssert softly,
       BaseSteps baseSteps) {
     this.webDriverHelpers = webDriverHelpers;
 
@@ -54,28 +56,26 @@ public class EditContactPersonSteps implements En {
         "I check the created data is correctly displayed on Edit Contact Person page",
         () -> {
           aPerson = collectPersonData();
-          softly
-              .assertThat(aPerson.getFirstName())
-              .isEqualToIgnoringCase(CreateNewContactSteps.contact.getFirstName());
-          softly
-              .assertThat(aPerson.getLastName())
-              .isEqualToIgnoringCase(CreateNewContactSteps.contact.getLastName());
-          softly
-              .assertThat(aPerson.getDateOfBirth())
-              .isEqualTo(CreateNewContactSteps.contact.getDateOfBirth());
-          softly.assertThat(aPerson.getSex()).isEqualTo(CreateNewContactSteps.contact.getSex());
-          softly
-              .assertThat(aPerson.getNationalHealthId())
-              .isEqualTo(CreateNewContactSteps.contact.getNationalHealthId());
-          softly
-              .assertThat(aPerson.getPassportNumber())
-              .isEqualTo(CreateNewContactSteps.contact.getPassportNumber());
-          softly
-              .assertThat(aPerson.getEmailAddress())
-              .isEqualTo(CreateNewContactSteps.contact.getPrimaryEmailAddress());
-          softly
-              .assertThat(aPerson.getPhoneNumber())
-              .isEqualTo(CreateNewContactSteps.contact.getPrimaryPhoneNumber());
+          createdContact = CreateNewContactSteps.contact;
+          softly.assertEquals(
+              aPerson.getFirstName(), createdContact.getFirstName(), "First name is not correct");
+          softly.assertEquals(
+              aPerson.getLastName(),
+              createdContact.getLastName().toUpperCase(),
+              "Last name is not correct");
+          softly.assertEquals(
+              aPerson.getDateOfBirth(),
+              createdContact.getDateOfBirth(),
+              "Date of birth is not correct");
+          softly.assertEquals(aPerson.getSex(), createdContact.getSex(), "Sex is not correct");
+          softly.assertEquals(
+              aPerson.getEmailAddress(),
+              createdContact.getPrimaryEmailAddress(),
+              "Primary email address is not correct");
+          softly.assertEquals(
+              aPerson.getPhoneNumber(),
+              createdContact.getPrimaryPhoneNumber(),
+              "Phone number is not correct");
           softly.assertAll();
         });
 
@@ -91,8 +91,9 @@ public class EditContactPersonSteps implements En {
           fillExternalToken(newGeneratedPerson.getExternalToken());
           fillExternalToken(newGeneratedPerson.getExternalToken());
           selectTypeOfOccupation(newGeneratedPerson.getTypeOfOccupation());
+          TimeUnit.SECONDS.sleep(3);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           selectStaffOfArmedForces(newGeneratedPerson.getStaffOfArmedForces());
-          selectEducation(newGeneratedPerson.getEducation());
           selectRegion(newGeneratedPerson.getRegion());
           selectDistrict(newGeneratedPerson.getDistrict());
           selectCommunity(newGeneratedPerson.getCommunity());
@@ -108,12 +109,7 @@ public class EditContactPersonSteps implements En {
           selectAreaType(newGeneratedPerson.getAreaType());
           fillContactPersonFirstName(newGeneratedPerson.getContactPersonFirstName());
           fillContactPersonLastName(newGeneratedPerson.getContactPersonLastName());
-          fillCommunityContactPerson(newGeneratedPerson.getCommunityContactPerson());
           fillBirthName(newGeneratedPerson.getBirthName());
-          fillNickName(newGeneratedPerson.getNickname());
-          fillMotherMaidenName(newGeneratedPerson.getMotherMaidenName());
-          fillMotherName(newGeneratedPerson.getMotherName());
-          fillFatherName(newGeneratedPerson.getFatherName());
           fillNamesOfGuardians(newGeneratedPerson.getNameOfGuardians());
         });
 
@@ -136,8 +132,6 @@ public class EditContactPersonSteps implements En {
                   contactInfo.getFirstName(),
                   contactInfo.getLastName(),
                   contactInfo.getUuid(),
-                  CreateNewContactSteps.contact.getPassportNumber(),
-                  CreateNewContactSteps.contact.getNationalHealthId(),
                   CreateNewContactSteps.contact.getPrimaryEmailAddress(),
                   CreateNewContactSteps.contact.getPrimaryPhoneNumber());
         });
@@ -183,10 +177,6 @@ public class EditContactPersonSteps implements En {
 
   private void selectStaffOfArmedForces(String armedForces) {
     webDriverHelpers.selectFromCombobox(STAFF_OF_ARMED_FORCES_COMBOBOX, armedForces);
-  }
-
-  private void selectEducation(String education) {
-    webDriverHelpers.selectFromCombobox(EDUCATION_COMBOBOX, education);
   }
 
   private void selectRegion(String region) {
@@ -249,35 +239,15 @@ public class EditContactPersonSteps implements En {
     webDriverHelpers.fillInWebElement(CONTACT_PERSON_LAST_NAME_INPUT, last);
   }
 
-  private void fillCommunityContactPerson(String name) {
-    webDriverHelpers.fillInWebElement(COMMUNITY_CONTACT_PERSON_INPUT, name);
-  }
-
   private void fillBirthName(String name) {
     webDriverHelpers.fillInWebElement(BIRTH_NAME_INPUT, name);
-  }
-
-  private void fillNickName(String name) {
-    webDriverHelpers.fillInWebElement(NICKNAME_INPUT, name);
-  }
-
-  private void fillMotherMaidenName(String name) {
-    webDriverHelpers.fillInWebElement(MOTHER_MAIDEN_NAME_INPUT, name);
-  }
-
-  private void fillMotherName(String name) {
-    webDriverHelpers.fillInWebElement(MOTHER_NAME_INPUT, name);
-  }
-
-  private void fillFatherName(String name) {
-    webDriverHelpers.fillInWebElement(FATHER_NAME_INPUT, name);
   }
 
   private void fillNamesOfGuardians(String name) {
     webDriverHelpers.fillInWebElement(NAMES_OF_GUARDIANS_INPUT, name);
   }
 
-  public Person collectPersonData() {
+  private Person collectPersonData() {
     Person contactInfo = getPersonInformation();
 
     return Person.builder()
@@ -285,14 +255,12 @@ public class EditContactPersonSteps implements En {
         .lastName(contactInfo.getLastName())
         .dateOfBirth(contactInfo.getDateOfBirth())
         .sex(webDriverHelpers.getValueFromWebElement(SEX_INPUT))
-        .nationalHealthId(webDriverHelpers.getValueFromWebElement(NATIONAL_HEALTH_ID_INPUT))
-        .passportNumber(webDriverHelpers.getValueFromWebElement(PASSPORT_NUMBER_INPUT))
         .emailAddress(webDriverHelpers.getTextFromPresentWebElement(EMAIL_FIELD))
         .phoneNumber(webDriverHelpers.getTextFromPresentWebElement(PHONE_FIELD))
         .build();
   }
 
-  public Person getPersonInformation() {
+  private Person getPersonInformation() {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     String contactInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
     String uuid = webDriverHelpers.getValueFromWebElement(UUID_INPUT);

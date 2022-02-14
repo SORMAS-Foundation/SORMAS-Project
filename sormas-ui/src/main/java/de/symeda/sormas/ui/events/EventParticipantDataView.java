@@ -16,11 +16,8 @@ package de.symeda.sormas.ui.events;
 
 import static de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent.QUARANTINE_LOC;
 
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
-import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -34,6 +31,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
+import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
@@ -45,6 +43,7 @@ import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
 import de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent;
 import de.symeda.sormas.ui.labmessage.LabMessagesView;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
+import de.symeda.sormas.ui.samples.sampleLink.SampleListComponentLayout;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -133,25 +132,16 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 
 		EventDto event = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false);
 
+		SampleCriteria sampleCriteria = new SampleCriteria().eventParticipant(eventParticipantRef);
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
-			VerticalLayout sampleLocLayout = new VerticalLayout();
-			sampleLocLayout.setMargin(false);
-			sampleLocLayout.setSpacing(false);
+			SampleListComponent sampleList = new SampleListComponent(
+				sampleCriteria.sampleAssociationType(SampleAssociationType.EVENT_PARTICIPANT),
+				e -> showNavigationConfirmPopupIfDirty(
+					() -> ControllerProvider.getSampleController().create(eventParticipantRef, event.getDisease())));
 
-			SampleListComponent sampleList = new SampleListComponent(eventParticipantRef, event.getDisease(), this);
-			sampleList.addStyleNames(CssStyles.SIDE_COMPONENT, CssStyles.VSPACE_NONE);
-			sampleLocLayout.addComponent(sampleList);
-
-			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE)) {
-				Label infoSample = new Label(
-					VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesEventParticipant),
-					ContentMode.HTML);
-				infoSample.addStyleNames(CssStyles.VSPACE_3, CssStyles.VSPACE_TOP_4);
-
-				sampleLocLayout.addComponent(infoSample);
-			}
-
-			layout.addComponent(sampleLocLayout, SAMPLES_LOC);
+			SampleListComponentLayout sampleListComponentLayout =
+				new SampleListComponentLayout(sampleList, I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesEventParticipant));
+			layout.addComponent(sampleListComponentLayout, SAMPLES_LOC);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
@@ -179,11 +169,14 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
 		}
 
+		VaccinationListCriteria vaccinationCriteria =
+			new VaccinationListCriteria.Builder(eventParticipant.getPerson().toReference()).withDisease(event.getDisease()).build();
 		QuarantineOrderDocumentsComponent.addComponentToLayout(
 			layout,
 			eventParticipantRef,
 			DocumentWorkflow.QUARANTINE_ORDER_EVENT_PARTICIPANT,
-			new SampleCriteria().eventParticipant(eventParticipantRef));
+			sampleCriteria,
+			vaccinationCriteria);
 
 		boolean isEditAllowed = FacadeProvider.getEventParticipantFacade().isEventParticipantEditAllowed(eventParticipantRef.getUuid());
 		if (!isEditAllowed) {
@@ -199,8 +192,7 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 					new ImmunizationListCriteria.Builder(eventParticipant.getPerson().toReference()).wihDisease(event.getDisease()).build();
 				layout.addComponent(new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria)), IMMUNIZATION_LOC);
 			} else {
-				VaccinationListCriteria criteria =
-					new VaccinationListCriteria.Builder(eventParticipant.getPerson().toReference()).withDisease(event.getDisease()).build();
+				VaccinationListCriteria criteria = vaccinationCriteria;
 				layout.addComponent(
 					new SideComponentLayout(
 						new VaccinationListComponent(

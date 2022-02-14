@@ -22,7 +22,9 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.sample.SormasToSormasSampleDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
@@ -34,6 +36,8 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePrevie
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasContactPreview;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventParticipantPreview;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasEventPreview;
+import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.sormastosormas.entities.caze.CaseShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.entities.contact.ContactShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.entities.event.EventShareDataBuilder;
@@ -65,7 +69,7 @@ public class ShareDataBuilder {
 	@EJB
 	private ShareDataBuilderHelper shareDataBuilderHelper;
 
-	public SormasToSormasDto buildShareDataForRequest(ShareRequestInfo requestInfo, User user) {
+	public SormasToSormasDto buildShareDataForRequest(ShareRequestInfo requestInfo, User user) throws SormasToSormasException {
 		SormasToSormasOriginInfoDto originInfo = shareDataBuilderHelper.createSormasToSormasOriginInfo(user, requestInfo);
 
 		return buildShareData(requestInfo.getShares(), originInfo, requestInfo);
@@ -74,7 +78,8 @@ public class ShareDataBuilder {
 	public SormasToSormasDto buildShareData(
 		List<SormasToSormasShareInfo> shares,
 		SormasToSormasOriginInfoDto originInfo,
-		ShareRequestInfo requestInfo) {
+		ShareRequestInfo requestInfo)
+		throws SormasToSormasException {
 
 		List<SormasToSormasCaseDto> cases = new ArrayList<>();
 		List<SormasToSormasContactDto> contacts = new ArrayList<>();
@@ -83,31 +88,61 @@ public class ShareDataBuilder {
 		List<SormasToSormasEventParticipantDto> eventParticipants = new ArrayList<>();
 		List<SormasToSormasImmunizationDto> immunizations = new ArrayList<>();
 
+		List<ValidationErrors> validationErrors = new ArrayList<>();
+
 		shares.forEach(s -> {
 			if (s.getCaze() != null) {
-				cases.add(caseShareDataBuilder.buildShareData(s.getCaze(), requestInfo));
+				try {
+					cases.add(caseShareDataBuilder.buildShareData(s.getCaze(), requestInfo));
+				} catch (SormasToSormasValidationException e) {
+					validationErrors.addAll(e.getErrors());
+				}
 			}
 
 			if (s.getContact() != null) {
-				contacts.add(contactShareDataBuilder.buildShareData(s.getContact(), requestInfo));
+				try {
+					contacts.add(contactShareDataBuilder.buildShareData(s.getContact(), requestInfo));
+				} catch (SormasToSormasValidationException e) {
+					validationErrors.addAll(e.getErrors());
+				}
 
 			}
 			if (s.getSample() != null) {
-				samples.add(sampleShareDataBuilder.buildShareData(s.getSample(), requestInfo));
+				try {
+					samples.add(sampleShareDataBuilder.buildShareData(s.getSample(), requestInfo));
+				} catch (SormasToSormasValidationException e) {
+					validationErrors.addAll(e.getErrors());
+				}
 			}
 
 			if (s.getEvent() != null) {
-				events.add(eventShareDataBuilder.buildShareData(s.getEvent(), requestInfo));
+				try {
+					events.add(eventShareDataBuilder.buildShareData(s.getEvent(), requestInfo));
+				} catch (SormasToSormasValidationException e) {
+					validationErrors.addAll(e.getErrors());
+				}
 			}
 
 			if (s.getEventParticipant() != null) {
-				eventParticipants.add(eventParticipantShareDataBuilder.buildShareData(s.getEventParticipant(), requestInfo));
+				try {
+					eventParticipants.add(eventParticipantShareDataBuilder.buildShareData(s.getEventParticipant(), requestInfo));
+				} catch (SormasToSormasValidationException e) {
+					validationErrors.addAll(e.getErrors());
+				}
 			}
 
 			if (s.getImmunization() != null) {
-				immunizations.add(immunizationShareDataBuilder.buildShareData(s.getImmunization(), requestInfo));
+				try {
+					immunizations.add(immunizationShareDataBuilder.buildShareData(s.getImmunization(), requestInfo));
+				} catch (SormasToSormasValidationException e) {
+					validationErrors.addAll(e.getErrors());
+				}
 			}
 		});
+
+		if (!validationErrors.isEmpty()) {
+			throw SormasToSormasException.fromStringProperty(validationErrors, Strings.errorSormasToSormasShare);
+		}
 
 		SormasToSormasDto dto = new SormasToSormasDto();
 		dto.setOriginInfo(originInfo);
@@ -121,29 +156,51 @@ public class ShareDataBuilder {
 		return dto;
 	}
 
-	public ShareRequestPreviews buildShareDataPreview(ShareRequestInfo requestInfo) {
+	public ShareRequestPreviews buildShareDataPreview(ShareRequestInfo requestInfo) throws SormasToSormasException {
 		List<SormasToSormasCasePreview> cases = new ArrayList<>();
 		List<SormasToSormasContactPreview> contacts = new ArrayList<>();
 		List<SormasToSormasEventPreview> events = new ArrayList<>();
 		List<SormasToSormasEventParticipantPreview> eventParticipants = new ArrayList<>();
 
+		List<ValidationErrors> validationErrors = new ArrayList<>();
+
 		requestInfo.getShares().forEach(s -> {
 			if (s.getCaze() != null) {
-				cases.add(caseShareDataBuilder.buildShareDataPreview(s.getCaze(), requestInfo));
+				try {
+					cases.add(caseShareDataBuilder.buildShareDataPreview(s.getCaze(), requestInfo));
+				} catch (SormasToSormasValidationException e) {
+					validationErrors.addAll(e.getErrors());
+				}
 			}
 
 			if (s.getContact() != null) {
-				contacts.add(contactShareDataBuilder.buildShareDataPreview(s.getContact(), requestInfo));
+				try {
+					contacts.add(contactShareDataBuilder.buildShareDataPreview(s.getContact(), requestInfo));
+				} catch (SormasToSormasValidationException e) {
+					validationErrors.addAll(e.getErrors());
+				}
 			}
 
 			if (s.getEvent() != null) {
-				events.add(eventShareDataBuilder.buildShareDataPreview(s.getEvent(), requestInfo));
+				try {
+					events.add(eventShareDataBuilder.buildShareDataPreview(s.getEvent(), requestInfo));
+				} catch (SormasToSormasValidationException e) {
+					validationErrors.addAll(e.getErrors());
+				}
 			}
 
 			if (s.getEventParticipant() != null) {
-				eventParticipants.add(eventParticipantShareDataBuilder.buildShareDataPreview(s.getEventParticipant(), requestInfo));
+				try {
+					eventParticipants.add(eventParticipantShareDataBuilder.buildShareDataPreview(s.getEventParticipant(), requestInfo));
+				} catch (SormasToSormasValidationException e) {
+					validationErrors.addAll(e.getErrors());
+				}
 			}
 		});
+
+		if (!validationErrors.isEmpty()) {
+			throw SormasToSormasException.fromStringProperty(validationErrors, Strings.errorSormasToSormasShare);
+		}
 
 		return new ShareRequestPreviews(cases, contacts, events, eventParticipants);
 	}

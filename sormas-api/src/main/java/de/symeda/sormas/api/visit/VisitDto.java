@@ -38,6 +38,8 @@ public class VisitDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = -441664767075414789L;
 
+	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 7356;
+
 	public static final String I18N_PREFIX = "Visit";
 
 	public static final String PERSON = "person";

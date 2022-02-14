@@ -3,17 +3,13 @@
     <parent>
         <groupId>de.symeda.sormas</groupId>
         <artifactId>sormas-base</artifactId>
-        <version>1.67.0-SNAPSHOT</version>
+        <version>1.68.0-SNAPSHOT</version>
         <relativePath>../sormas-base</relativePath>
     </parent>
 
     <artifactId>sormas-cargoserver</artifactId>
     <name>${project.artifactId}</name>
     <packaging>pom</packaging>
-
-    <properties>
-        <payara.version>5.194</payara.version>
-    </properties>
 
     <dependencies>
         <dependency>

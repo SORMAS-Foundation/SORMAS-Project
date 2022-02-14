@@ -35,6 +35,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.InfrastructureAdo;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.common.Page;
@@ -83,7 +85,7 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 
 	@Inject
 	protected RegionFacadeEjb(RegionService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
-		super(Region.class, RegionDto.class, service, featureConfiguration, userService);
+		super(Region.class, RegionDto.class, service, featureConfiguration, userService, Validations.importRegionAlreadyExists);
 	}
 
 	@Override
@@ -92,7 +94,7 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 
 		return getAllActiveByPredicate((cb, root) -> {
 			if (serverCountry != null) {
-				Path<Object> countryUuid = root.join(Region.COUNTRY, JoinType.LEFT).get(Country.UUID);
+				Path<Object> countryUuid = root.join(Region.COUNTRY, JoinType.LEFT).get(AbstractDomainObject.UUID);
 				return CriteriaBuilderHelper.or(cb, cb.isNull(countryUuid), cb.equal(countryUuid, serverCountry.getUuid()));
 			}
 
@@ -102,12 +104,12 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 
 	@Override
 	public List<RegionReferenceDto> getAllActiveByCountry(String countryUuid) {
-		return getAllActiveByPredicate((cb, root) -> cb.equal(root.get(Region.COUNTRY).get(Country.UUID), countryUuid));
+		return getAllActiveByPredicate((cb, root) -> cb.equal(root.get(Region.COUNTRY).get(AbstractDomainObject.UUID), countryUuid));
 	}
 
 	@Override
 	public List<RegionReferenceDto> getAllActiveByArea(String areaUuid) {
-		return getAllActiveByPredicate((cb, root) -> cb.equal(root.get(Region.AREA).get(Area.UUID), areaUuid));
+		return getAllActiveByPredicate((cb, root) -> cb.equal(root.get(Region.AREA).get(AbstractDomainObject.UUID), areaUuid));
 	}
 
 	@Override
@@ -122,18 +124,18 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 		Join<Region, Area> area = root.join(Region.AREA, JoinType.LEFT);
 		// Needs to be in the same order as in the constructor
 		cq.multiselect(
-			root.get(Region.CREATION_DATE),
-			root.get(Region.CHANGE_DATE),
-			root.get(Region.UUID),
-			root.get(Region.ARCHIVED),
+			root.get(AbstractDomainObject.CREATION_DATE),
+			root.get(AbstractDomainObject.CHANGE_DATE),
+			root.get(AbstractDomainObject.UUID),
+			root.get(InfrastructureAdo.ARCHIVED),
 			root.get(Region.NAME),
 			root.get(Region.EPID_CODE),
 			root.get(Region.GROWTH_RATE),
 			root.get(Region.EXTERNAL_ID),
-			country.get(Country.UUID),
+			country.get(AbstractDomainObject.UUID),
 			country.get(Country.DEFAULT_NAME),
 			country.get(Country.ISO_CODE),
-			area.get(Area.UUID));
+			area.get(AbstractDomainObject.UUID));
 	}
 
 	@Override
@@ -198,12 +200,11 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 
 	@Override
 	public List<String> getNamesByIds(List<Long> regionIds) {
-
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Region> root = cq.from(Region.class);
 
-		Predicate filter = root.get(Region.ID).in(regionIds);
+		Predicate filter = root.get(AbstractDomainObject.ID).in(regionIds);
 		cq.where(filter);
 		cq.select(root.get(Region.NAME));
 		return em.createQuery(cq).getResultList();
@@ -211,14 +212,12 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 
 	@Override
 	public boolean isUsedInOtherInfrastructureData(Collection<String> regionUuids) {
-
 		return service.isUsedInInfrastructureData(regionUuids, District.REGION, District.class)
 			|| service.isUsedInInfrastructureData(regionUuids, Facility.REGION, Facility.class)
 			|| service.isUsedInInfrastructureData(regionUuids, PointOfEntry.REGION, PointOfEntry.class);
 	}
 
 	public static RegionReferenceDto toReferenceDto(Region entity) {
-
 		if (entity == null) {
 			return null;
 		}
@@ -226,7 +225,6 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 	}
 
 	public RegionDto toDto(Region entity) {
-
 		if (entity == null) {
 			return null;
 		}
@@ -240,6 +238,7 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 		dto.setExternalID(entity.getExternalID());
 		dto.setArea(AreaFacadeEjb.toReferenceDto(entity.getArea()));
 		dto.setCountry(CountryFacadeEjb.toReferenceDto(entity.getCountry()));
+		dto.setCentrallyManaged(entity.isCentrallyManaged());
 
 		return dto;
 	}
@@ -250,7 +249,6 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 	}
 
 	public RegionIndexDto toIndexDto(Region entity) {
-
 		if (entity == null) {
 			return null;
 		}
@@ -269,13 +267,8 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 	}
 
 	@Override
-	public RegionDto save(RegionDto dtoToSave, boolean allowMerge) throws ValidationRuntimeException {
-		return save(dtoToSave, allowMerge, Validations.importRegionAlreadyExists);
-	}
-
-	@Override
-	protected List<Region> findDuplicates(RegionDto dto) {
-		return service.getByName(dto.getName(), true);
+	protected List<Region> findDuplicates(RegionDto dto, boolean includeArchived) {
+		return service.getByName(dto.getName(), includeArchived);
 	}
 
 	@Override
@@ -310,7 +303,6 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionDto
 
 	@Override
 	protected Region fillOrBuildEntity(@NotNull RegionDto source, Region target, boolean checkChangeDate) {
-
 		target = DtoHelper.fillOrBuildEntity(source, target, Region::new, checkChangeDate);
 
 		target.setName(source.getName());

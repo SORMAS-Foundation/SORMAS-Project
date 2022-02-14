@@ -14,6 +14,7 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.labmessage.LabMessageCriteria;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -25,6 +26,7 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
@@ -71,8 +73,8 @@ public class LabMessageService extends AbstractCoreAdoService<LabMessage> {
 					CriteriaBuilderHelper.unaccentedIlike(cb, labMessage.get(LabMessage.PERSON_FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, labMessage.get(LabMessage.PERSON_LAST_NAME), textFilter),
 					CriteriaBuilderHelper.ilike(cb, labMessage.get(LabMessage.PERSON_POSTAL_CODE), textFilter),
-					CriteriaBuilderHelper.unaccentedIlike(cb, labMessage.get(LabMessage.TEST_LAB_NAME), textFilter),
-					CriteriaBuilderHelper.ilike(cb, labMessage.get(LabMessage.TEST_LAB_POSTAL_CODE), textFilter));
+					CriteriaBuilderHelper.unaccentedIlike(cb, labMessage.get(LabMessage.LAB_NAME), textFilter),
+					CriteriaBuilderHelper.ilike(cb, labMessage.get(LabMessage.LAB_POSTAL_CODE), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
@@ -131,6 +133,14 @@ public class LabMessageService extends AbstractCoreAdoService<LabMessage> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(labMessage.get(LabMessage.DELETED), criteria.getDeleted()));
 		}
 
+		if (criteria.getAssignee() != null) {
+			if (ReferenceDto.NO_REFERENCE_UUID.equals(criteria.getAssignee().getUuid())) {
+				filter = cb.and(filter, labMessage.get(LabMessage.ASSIGNEE).isNull());
+			} else {
+				filter = CriteriaBuilderHelper
+					.and(cb, filter, cb.equal(labMessage.join(LabMessage.ASSIGNEE, JoinType.LEFT).get(User.UUID), criteria.getAssignee().getUuid()));
+			}
+		}
 		return filter;
 	}
 

@@ -19,6 +19,7 @@
 package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.*;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONTACT_CASE_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
 
 import cucumber.api.java8.En;
@@ -56,8 +57,6 @@ public class CreateNewCaseSteps implements En {
           fillLastName(caze.getLastName());
           fillDateOfBirth(caze.getDateOfBirth());
           selectSex(caze.getSex());
-          fillNationalHealthId(caze.getNationalHealthId());
-          fillPassportNumber(caze.getPassportNumber());
           selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
           fillDateOfSymptomOnset(caze.getDateOfSymptomOnset());
           fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
@@ -68,6 +67,28 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+        });
+    When(
+        "^I fill new case form with specific data$",
+        () -> {
+          caze = caseService.buildGeneratedCase();
+          selectCaseOrigin(caze.getCaseOrigin());
+          fillExternalId(caze.getExternalId());
+          fillDisease(caze.getDisease());
+          selectResponsibleRegion(caze.getResponsibleRegion());
+          selectResponsibleDistrict(caze.getResponsibleDistrict());
+          selectResponsibleCommunity(caze.getResponsibleCommunity());
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillFirstName(caze.getFirstName());
+          fillLastName(caze.getLastName());
+          fillDateOfBirth(caze.getDateOfBirth());
+          selectSex(caze.getSex());
+          selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+          fillDateOfSymptomOnset(caze.getDateOfSymptomOnset());
+          fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
+          fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
+          fillDateOfReport(caze.getDateOfReport());
+          fillPlaceDescription(caze.getPlaceDescription());
         });
 
     When(
@@ -81,8 +102,6 @@ public class CreateNewCaseSteps implements En {
           fillLastName(caze.getLastName());
           fillDateOfBirth(caze.getDateOfBirth());
           selectSex(caze.getSex());
-          fillNationalHealthId(caze.getNationalHealthId());
-          fillPassportNumber(caze.getPassportNumber());
           selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
           fillDateOfSymptomOnset(caze.getDateOfSymptomOnset());
           fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
@@ -93,54 +112,103 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
+    When(
+        "^I create a new case for contact with specific data$",
+        () -> {
+          caze = caseService.buildGeneratedCase();
+          fillDateOfReport(caze.getDateOfReport());
+          selectCaseOrigin(caze.getCaseOrigin());
+          fillExternalId(caze.getExternalId());
+          selectResponsibleRegion(caze.getResponsibleRegion());
+          selectResponsibleDistrict(caze.getResponsibleDistrict());
+          selectResponsibleCommunity(caze.getResponsibleCommunity());
+
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillPlaceDescription(caze.getPlaceDescription());
+          selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+          fillDateOfSymptomOnset(caze.getDateOfSymptomOnset());
+
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_CASE_SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+        });
+    Then(
+        "^I click on save case button$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+        });
+
+    When(
+        "^I fill all fields for a new case created for event participant$",
+        () -> {
+          caze = caseService.buildGeneratedCase();
+          selectCaseOrigin(caze.getCaseOrigin());
+          fillExternalId(caze.getExternalId());
+          selectResponsibleRegion(caze.getResponsibleRegion());
+          selectResponsibleDistrict(caze.getResponsibleDistrict());
+          selectResponsibleCommunity(caze.getResponsibleCommunity());
+          selectPlaceOfStay(caze.getPlaceOfStay());
+
+          fillDateOfBirth(caze.getDateOfBirth());
+          selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+          fillDateOfSymptomOnset(caze.getDateOfSymptomOnset());
+          fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
+          fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
+          fillDateOfReport(caze.getDateOfReport());
+          fillPlaceDescription(caze.getPlaceDescription());
+        });
   }
 
-  public void selectCaseOrigin(String caseOrigin) {
+  private void selectCaseOrigin(String caseOrigin) {
     webDriverHelpers.clickWebElementByText(CASE_ORIGIN_OPTIONS, caseOrigin);
   }
 
-  public void fillDateOfReport(LocalDate date) {
+  private void fillDateOfReport(LocalDate date) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     webDriverHelpers.fillInWebElement(DATE_OF_REPORT_INPUT, formatter.format(date));
   }
 
-  public void fillExternalId(String externalId) {
+  private void fillExternalId(String externalId) {
     webDriverHelpers.fillInWebElement(EXTERNAL_ID_INPUT, externalId);
   }
 
-  public void fillDisease(String disease) {
+  private void fillDisease(String disease) {
     webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, disease);
   }
 
-  public void selectResponsibleRegion(String selectResponsibleRegion) {
+  private void selectResponsibleRegion(String selectResponsibleRegion) {
     webDriverHelpers.selectFromCombobox(RESPONSIBLE_REGION_COMBOBOX, selectResponsibleRegion);
   }
 
-  public void selectResponsibleDistrict(String responsibleDistrict) {
+  private void selectResponsibleDistrict(String responsibleDistrict) {
     webDriverHelpers.selectFromCombobox(RESPONSIBLE_DISTRICT_COMBOBOX, responsibleDistrict);
   }
 
-  public void selectResponsibleCommunity(String responsibleCommunity) {
+  private void selectResponsibleCommunity(String responsibleCommunity) {
     webDriverHelpers.selectFromCombobox(RESPONSIBLE_COMMUNITY_COMBOBOX, responsibleCommunity);
   }
 
-  public void selectPlaceOfStay(String placeOfStay) {
+  private void selectPlaceOfStay(String placeOfStay) {
     webDriverHelpers.clickWebElementByText(PLACE_OF_STAY, placeOfStay);
   }
 
-  public void fillPlaceDescription(String placeDescription) {
+  private void fillPlaceDescription(String placeDescription) {
     webDriverHelpers.fillInWebElement(PLACE_DESCRIPTION_INPUT, placeDescription);
   }
 
-  public void fillFirstName(String firstName) {
+  private void fillFirstName(String firstName) {
     webDriverHelpers.fillInWebElement(FIRST_NAME_INPUT, firstName);
   }
 
-  public void fillLastName(String lastName) {
+  private void fillLastName(String lastName) {
     webDriverHelpers.fillInWebElement(LAST_NAME_INPUT, lastName);
   }
 
-  public void fillDateOfBirth(LocalDate localDate) {
+  private void fillDateOfBirth(LocalDate localDate) {
     webDriverHelpers.selectFromCombobox(
         DATE_OF_BIRTH_YEAR_COMBOBOX, String.valueOf(localDate.getYear()));
     webDriverHelpers.selectFromCombobox(
@@ -150,33 +218,25 @@ public class CreateNewCaseSteps implements En {
         DATE_OF_BIRTH_DAY_COMBOBOX, String.valueOf(localDate.getDayOfMonth()));
   }
 
-  public void selectSex(String sex) {
+  private void selectSex(String sex) {
     webDriverHelpers.selectFromCombobox(SEX_COMBOBOX, sex);
   }
 
-  public void fillNationalHealthId(String nationalHealthId) {
-    webDriverHelpers.fillInWebElement(NATIONAL_HEALTH_ID_INPUT, nationalHealthId);
-  }
-
-  public void fillPassportNumber(String passportNumber) {
-    webDriverHelpers.fillInWebElement(PASSPORT_NUMBER_INPUT, passportNumber);
-  }
-
-  public void selectPresentConditionOfPerson(String presentConditionOfPerson) {
+  private void selectPresentConditionOfPerson(String presentConditionOfPerson) {
     webDriverHelpers.selectFromCombobox(
         PRESENT_CONDITION_OF_PERSON_COMBOBOX, presentConditionOfPerson);
   }
 
-  public void fillDateOfSymptomOnset(LocalDate date) {
+  private void fillDateOfSymptomOnset(LocalDate date) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     webDriverHelpers.fillInWebElement(DATE_OF_SYMPTOM_ONSET_INPUT, formatter.format(date));
   }
 
-  public void fillPrimaryPhoneNumber(String primaryPhoneNumber) {
+  private void fillPrimaryPhoneNumber(String primaryPhoneNumber) {
     webDriverHelpers.fillInWebElement(PRIMARY_PHONE_NUMBER_INPUT, primaryPhoneNumber);
   }
 
-  public void fillPrimaryEmailAddress(String primaryPhoneNumber) {
+  private void fillPrimaryEmailAddress(String primaryPhoneNumber) {
     webDriverHelpers.fillInWebElement(PRIMARY_EMAIL_ADDRESS_INPUT, primaryPhoneNumber);
   }
 }

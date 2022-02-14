@@ -65,6 +65,15 @@ public enum DiseasesValues {
     throw new Exception("Unable to find " + option + " value in DiseasesValues Enum");
   }
 
+  @SneakyThrows
+  public static String getCaptionForName(String option) {
+    DiseasesValues[] diseasesOptions = DiseasesValues.values();
+    for (DiseasesValues value : diseasesOptions) {
+      if (value.getDiseaseName().equalsIgnoreCase(option)) return value.getDiseaseCaption();
+    }
+    throw new Exception("Unable to find " + option + " value in SourceTypeValues Enum");
+  }
+
   /** Returns values used for API tests */
   public static String getRandomDiseaseName() {
     return String.valueOf(DiseasesValues.values()[random.nextInt(values().length)].diseaseName);

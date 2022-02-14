@@ -55,6 +55,12 @@ public class SampleResource extends EntityDtoResource {
 	}
 
 	@GET
+	@Path("/all/{since}/{size}/{lastSynchronizedUuid}")
+	public List<SampleDto> getAllSamples(@PathParam("since") long since, @PathParam("size") int size, @PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
+		return FacadeProvider.getSampleFacade().getAllActiveSamplesAfter(new Date(since), size, lastSynchronizedUuid);
+	}
+
+	@GET
 	@Path("/{uuid}")
 	public SampleDto getByUuid(@PathParam("uuid") String uuid) {
 		return FacadeProvider.getSampleFacade().getSampleByUuid(uuid);

@@ -48,8 +48,11 @@ info:
     \ used to authenticate at the external journal.<br>``interface.patientdiary.defaultuser.username``:\
     \ This user will be created in SORMAS and can be used by the external journal\
     \ to authenticate.<br>``interface.patientdiary.defaultuser.password``: The above\
-    \ user's password.<br><br><ol><li><b>SORMAS fetching an authentication token from\
-    \ the external journal</b></li><br>POST to the interface.patientdiary.authurl<br>Request\
+    \ user's password.<br>``interface.patientdiary.acceptPhoneContact``: used to configure\
+    \ whether the phone number is considered relevant for registering a person in\
+    \ the external journal. It affects the validation of persons in SORMAS (see 2.\
+    \ below). Defaults to <b>true</b><br><br><ol><li><b>SORMAS fetching an authentication\
+    \ token from the external journal</b></li><br>POST to the interface.patientdiary.authurl<br>Request\
     \ body:<br>{<br>&emsp;&emsp;\"email\" : [patientdiary.email],<br>&emsp;&emsp;\"\
     password\" : [patientdiary.password]<br>}<br>where [patientdiary.email] is replaced\
     \ with interface.patientdiary.email and [patientdiary.password] with interface.patientdiary.password\
@@ -63,13 +66,14 @@ info:
     \ of the following user roles: national user, contact supervisor, contact officer,\
     \ community officer,surveillance officer, surveillance supervisor, or admin supervisor.<br><br>First\
     \ comes a SORMAS-internal validation of contact details. The person to be registered\
-    \ needs to have at least an email address or a phone number to pass this validation.Also,\
-    \ when there are several email addresses or phone numbers, one of them has to\
-    \ be marked primary contact detail, so that it is clear which contact detail shall\
-    \ be used.<br><br>Then comes an external validation of the contact details. For\
-    \ this, SORMAS fetches an authentication token as in 1. Then it sends a GET request\
-    \ to the following URL for each contact detail to be used in  the external journal:<br><tt>GET\
-    \ [interface.patientdiary.probandsurl]/probands?q=[URL-encoded-query-parameter-and-value]'</tt>,\
+    \ needs to have at least an email address (or a phone number if that is accepted\
+    \ for registration, see ``interface.patientdiary.acceptPhoneContact``) to pass\
+    \ this validation.Also, when there are several email addresses or phone numbers,\
+    \ one of them has to be marked primary contact detail, so that it is clear which\
+    \ contact detail shall be used.<br><br>Then comes an external validation of the\
+    \ contact details. For this, SORMAS fetches an authentication token as in 1. Then\
+    \ it sends a GET request to the following URL for each contact detail to be used\
+    \ in  the external journal:<br><tt>GET [interface.patientdiary.probandsurl]/probands?q=[URL-encoded-query-parameter-and-value]'</tt>,\
     \ with a header like <tt>'x-access-token: [token]'</tt><br>The [URL-encoded-query-parameter-and-value]\
     \ consists of a parameter-value-pair. The parameter is either 'Email' or 'Mobile\
     \ phone'. The value holds the contact detail to be validated.<br>An unencoded\
@@ -296,6 +300,8 @@ paths:
                   - OK
                   - TOO_OLD
                   - ERROR
+                  - VALIDATION_EXCEPTION
+                  - TRANSACTION_ROLLED_BACK_EXCEPTION
   /visits-external/person/{personUuid}/status:
     post:
       summary: Save symptom journal status

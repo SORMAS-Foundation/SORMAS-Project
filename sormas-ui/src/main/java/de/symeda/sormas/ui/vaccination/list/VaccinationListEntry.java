@@ -44,7 +44,7 @@ public class VaccinationListEntry extends SideComponentField {
 		this.vaccination = vaccination;
 
 		buildLayout(showDisease);
-		mainLayout.setEnabled(vaccination.isRelevant());
+		setEnabled(vaccination.isRelevant());
 	}
 
 	private void buildLayout(boolean showDisease) {

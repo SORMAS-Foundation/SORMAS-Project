@@ -14,10 +14,7 @@
  */
 package de.symeda.sormas.ui.caze;
 
-import com.vaadin.icons.VaadinIcons;
-import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.CustomLayout;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -28,6 +25,8 @@ import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationListCriteria;
+import de.symeda.sormas.api.sample.SampleAssociationType;
+import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
@@ -41,6 +40,7 @@ import de.symeda.sormas.ui.events.eventLink.EventListComponent;
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServiceGateway;
 import de.symeda.sormas.ui.immunization.immunizationlink.ImmunizationListComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
+import de.symeda.sormas.ui.samples.sampleLink.SampleListComponentLayout;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
@@ -138,25 +138,13 @@ public class CaseDataView extends AbstractCaseView {
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SAMPLES_LAB)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)
 			&& !caze.checkIsUnreferredPortHealthCase()) {
-			VerticalLayout sampleLocLayout = new VerticalLayout();
-			sampleLocLayout.setMargin(false);
-			sampleLocLayout.setSpacing(false);
+			SampleListComponent sampleList = new SampleListComponent(
+				new SampleCriteria().caze(getCaseRef()).sampleAssociationType(SampleAssociationType.CASE),
+				e -> showNavigationConfirmPopupIfDirty(() -> ControllerProvider.getSampleController().create(getCaseRef(), caze.getDisease())));
 
-			SampleListComponent sampleList = new SampleListComponent(getCaseRef(), caze.getDisease(), this);
-			sampleList.addStyleName(CssStyles.SIDE_COMPONENT);
-			sampleLocLayout.addComponent(sampleList);
-
-			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_CREATE)) {
-				sampleList.addStyleName(CssStyles.VSPACE_NONE);
-				Label sampleInfo = new Label(
-					VaadinIcons.INFO_CIRCLE.getHtml() + " " + I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChanges),
-					ContentMode.HTML);
-				sampleInfo.addStyleNames(CssStyles.VSPACE_2, CssStyles.VSPACE_TOP_4);
-
-				sampleLocLayout.addComponent(sampleInfo);
-			}
-
-			layout.addComponent(sampleLocLayout, SAMPLES_LOC);
+			SampleListComponentLayout sampleListComponentLayout =
+				new SampleListComponentLayout(sampleList, I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesCase));
+			layout.addComponent(sampleListComponentLayout, SAMPLES_LOC);
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)) {
@@ -211,14 +199,14 @@ public class CaseDataView extends AbstractCaseView {
 
 			layout.addComponent(surveillanceReportListLocLayout, SURVEILLANCE_REPORTS_LOC);
 		}
-
+		DocumentListComponent documentList = null;
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)) {
-			DocumentListComponent documentList =
+			documentList =
 				new DocumentListComponent(DocumentRelatedEntityType.CASE, getCaseRef(), UserRight.CASE_EDIT, caze.isPseudonymized());
 			layout.addComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
-		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, getCaseRef());
+		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, caze, documentList);
 
 		setCaseEditPermission(container);
 	}

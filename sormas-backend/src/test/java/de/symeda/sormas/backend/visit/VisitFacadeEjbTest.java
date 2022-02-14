@@ -319,6 +319,10 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 		assertThat(visits, not(contains(visitOfDeletedContact)));
 		assertThat(visits, not(contains(visitOfDeletedCase)));
 
+		List<VisitDto> visitsBatched = getVisitFacade().getAllActiveVisitsAfter(date, 2, null);
+		assertThat(visitsBatched, hasSize(2));
+		assertTrue(visitsBatched.get(0).getChangeDate().getTime() <= visitsBatched.get(1).getChangeDate().getTime());
+
 		date = new Date();
 
 		TimeUnit.MILLISECONDS.sleep(1);

@@ -9,8 +9,8 @@ import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
+import de.symeda.sormas.api.dashboard.EpiCurveGrouping;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.ui.dashboard.diagram.EpiCurveGrouping;
 
 public class CaseStatusCurveBuilder extends SurveillanceEpiCurveBuilder {
 

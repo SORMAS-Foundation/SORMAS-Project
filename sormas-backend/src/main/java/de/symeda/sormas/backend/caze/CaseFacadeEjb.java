@@ -110,6 +110,8 @@ import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.caze.PlagueType;
+import de.symeda.sormas.api.caze.PreviousCaseDto;
+import de.symeda.sormas.api.caze.ReinfectionDetail;
 import de.symeda.sormas.api.caze.maternalhistory.MaternalHistoryDto;
 import de.symeda.sormas.api.caze.porthealthinfo.PortHealthInfoDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
@@ -122,6 +124,7 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataHelper;
@@ -221,6 +224,8 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.contact.VisitSummaryExportDetails;
+import de.symeda.sormas.backend.deletionconfiguration.AbstractCoreEntityFacade;
+import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.document.Document;
 import de.symeda.sormas.backend.document.DocumentService;
@@ -324,7 +329,7 @@ import de.symeda.sormas.backend.visit.VisitService;
 import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless(name = "CaseFacade")
-public class CaseFacadeEjb implements CaseFacade {
+public class CaseFacadeEjb extends AbstractCoreEntityFacade<Case> implements CaseFacade {
 
 	private static final int ARCHIVE_BATCH_SIZE = 1000;
 
@@ -452,6 +457,10 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Resource
 	private ManagedScheduledExecutorService executorService;
 
+	public CaseFacadeEjb() {
+		super(Case.class);
+	}
+
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date) {
 		return getAllActiveCasesAfter(date, false);
@@ -459,13 +468,26 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public List<CaseDataDto> getAllActiveCasesAfter(Date date, boolean includeExtendedChangeDateFilters) {
+		return getAllActiveCasesAfter(date, includeExtendedChangeDateFilters, null, null);
+	}
+
+	@Override
+	public List<CaseDataDto> getAllActiveCasesAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+		return getAllActiveCasesAfter(date, false, batchSize, lastSynchronizedUuid);
+	}
+
+	private List<CaseDataDto> getAllActiveCasesAfter(
+		Date date,
+		boolean includeExtendedChangeDateFilters,
+		Integer batchSize,
+		String lastSynchronizedUuid) {
 
 		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return caseService.getAllActiveCasesAfter(date, includeExtendedChangeDateFilters)
+		return caseService.getAllActiveCasesAfter(date, includeExtendedChangeDateFilters, batchSize, lastSynchronizedUuid)
 			.stream()
 			.map(c -> convertToDto(c, pseudonymizer))
 			.collect(Collectors.toList());
@@ -725,7 +747,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				caseRoot.get(Case.FOLLOW_UP_STATUS), caseRoot.get(Case.FOLLOW_UP_UNTIL),
 				caseRoot.get(Case.NOSOCOMIAL_OUTBREAK), caseRoot.get(Case.INFECTION_SETTING),
 				caseRoot.get(Case.PROHIBITION_TO_WORK), caseRoot.get(Case.PROHIBITION_TO_WORK_FROM), caseRoot.get(Case.PROHIBITION_TO_WORK_UNTIL),
-				caseRoot.get(Case.RE_INFECTION), caseRoot.get(Case.PREVIOUS_INFECTION_DATE),
+				caseRoot.get(Case.RE_INFECTION), caseRoot.get(Case.PREVIOUS_INFECTION_DATE), caseRoot.get(Case.REINFECTION_STATUS), caseRoot.get(Case.REINFECTION_DETAILS),
 				// quarantine
 				caseRoot.get(Case.QUARANTINE), caseRoot.get(Case.QUARANTINE_TYPE_DETAILS), caseRoot.get(Case.QUARANTINE_FROM), caseRoot.get(Case.QUARANTINE_TO),
 				caseRoot.get(Case.QUARANTINE_HELP_NEEDED),
@@ -1335,7 +1357,12 @@ public class CaseFacadeEjb implements CaseFacade {
 
 	@Override
 	public CaseDataDto saveCase(@Valid CaseDataDto dto) throws ValidationRuntimeException {
-		return saveCase(dto, true, true);
+		return saveCase(dto, true, true, true, false);
+	}
+
+	@Override
+	public CaseDataDto saveCase(@Valid CaseDataDto dto, Boolean systemSave) throws ValidationRuntimeException {
+		return saveCase(dto, true, true, true, systemSave);
 	}
 
 	public void saveBulkCase(
@@ -1447,16 +1474,16 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 	}
 
-	public CaseDataDto saveCase(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate) {
-		return saveCase(dto, handleChanges, checkChangeDate, true);
+	public CaseDataDto saveCase(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, Boolean systemSave) {
+		return saveCase(dto, handleChanges, checkChangeDate, true, systemSave);
 	}
 
-	public CaseDataDto saveCase(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, boolean internal)
+	public CaseDataDto saveCase(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, boolean internal, Boolean systemSave)
 		throws ValidationRuntimeException {
 
 		Case existingCase = caseService.getByUuid(dto.getUuid());
 
-		if (internal && existingCase != null && !caseService.isCaseEditAllowed(existingCase)) {
+		if (!systemSave && internal && existingCase != null && !caseService.isCaseEditAllowed(existingCase)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorCaseNotEditable));
 		}
 
@@ -1940,13 +1967,19 @@ public class CaseFacadeEjb implements CaseFacade {
 			syncSharesAsync(new ShareTreeCriteria(existingCase.getUuid()));
 		}
 
-		// This logic should be consistent with CaseDataForm.onQuarantineEndChange 
+		// This logic should be consistent with CaseDataForm.onQuarantineEndChange
 		if (existingCase != null && existingCase.getQuarantineTo() != null && !existingCase.getQuarantineTo().equals(newCase.getQuarantineTo())) {
 			newCase.setPreviousQuarantineTo(existingCase.getQuarantineTo());
 		}
 
 		if (existingCase == null) {
 			vaccinationFacade.updateVaccinationStatuses(newCase);
+		}
+
+		// On German systems, correct and clean up reinfection data
+		if (configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			newCase.setReinfectionDetails(cleanUpReinfectionDetails(newCase.getReinfectionDetails()));
+			newCase.setReinfectionStatus(CaseLogic.calculateReinfectionStatus(newCase.getReinfectionDetails()));
 		}
 	}
 
@@ -2072,6 +2105,12 @@ public class CaseFacadeEjb implements CaseFacade {
 		IterableHelper.executeBatched(getCompletenessCheckCaseList, 10, caseCompletionBatch -> caseService.updateCompleteness(caseCompletionBatch));
 
 		return getCompletenessCheckCaseList.size();
+	}
+
+	@Override
+	public PreviousCaseDto getMostRecentPreviousCase(PersonReferenceDto person, Disease disease, Date startDate) {
+
+		return caseService.getMostRecentPreviousCase(person.getUuid(), disease, startDate);
 	}
 
 	private List<String> getCompletenessCheckNeededCaseList() {
@@ -2554,6 +2593,10 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		target.setReInfection(source.getReInfection());
 		target.setPreviousInfectionDate(source.getPreviousInfectionDate());
+		target.setReinfectionStatus(source.getReinfectionStatus());
+		if (source.getReinfectionDetails() != null) {
+			target.setReinfectionDetails(new HashMap<>(source.getReinfectionDetails()));
+		}
 
 		target.setBloodOrganOrTissueDonated(source.getBloodOrganOrTissueDonated());
 
@@ -2573,7 +2616,9 @@ public class CaseFacadeEjb implements CaseFacade {
 		target.setPreviousQuarantineTo(source.getPreviousQuarantineTo());
 		target.setQuarantineChangeComment(source.getQuarantineChangeComment());
 
-		target.setExternalData(source.getExternalData());
+		if (source.getExternalData() != null) {
+			target.setExternalData(new HashMap<>(source.getExternalData()));
+		}
 
 		return target;
 	}
@@ -2732,6 +2777,8 @@ public class CaseFacadeEjb implements CaseFacade {
 
 		target.setReInfection(source.getReInfection());
 		target.setPreviousInfectionDate(source.getPreviousInfectionDate());
+		target.setReinfectionStatus(source.getReinfectionStatus());
+		target.setReinfectionDetails(source.getReinfectionDetails());
 
 		target.setBloodOrganOrTissueDonated(source.getBloodOrganOrTissueDonated());
 
@@ -2750,6 +2797,23 @@ public class CaseFacadeEjb implements CaseFacade {
 		}
 
 		return target;
+	}
+
+	public Map<ReinfectionDetail, Boolean> cleanUpReinfectionDetails(Map<ReinfectionDetail, Boolean> reinfectionDetails) {
+		if (reinfectionDetails != null && reinfectionDetails.containsValue(Boolean.FALSE)) {
+			Map<ReinfectionDetail, Boolean> onlyTrueReinfectionDetails = new HashMap<>();
+			onlyTrueReinfectionDetails =
+				reinfectionDetails.entrySet().stream().filter(Map.Entry::getValue).collect(Collectors.toMap(Map.Entry::getKey, entry -> true));
+
+			return onlyTrueReinfectionDetails;
+		} else {
+			return reinfectionDetails;
+		}
+	}
+
+	@Override
+	public AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid) {
+		return getAutomaticDeletionInfo(uuid, CoreEntityType.CASE);
 	}
 
 	public void updateInvestigationByStatus(CaseDataDto existingCase, Case caze) {
@@ -3167,7 +3231,7 @@ public class CaseFacadeEjb implements CaseFacade {
 		// 1.1 Case
 
 		copyDtoValues(leadCaseData, otherCaseData, cloning);
-		saveCase(leadCaseData, !cloning, true);
+		saveCase(leadCaseData, !cloning, true, true, false);
 
 		// 1.2 Person - Only merge when the persons have different UUIDs
 		if (!cloning && !DataHelper.equal(leadCaseData.getPerson().getUuid(), otherCaseData.getPerson().getUuid())) {
@@ -3621,7 +3685,7 @@ public class CaseFacadeEjb implements CaseFacade {
 	}
 
 	@Override
-	public String getFirstUuidNotShareableWithExternalReportingTools(List<String> caseUuids) {
+	public List<String> getUuidsNotShareableWithExternalReportingTools(List<String> caseUuids) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Case> caseRoot = cq.from(Case.class);
@@ -3638,7 +3702,7 @@ public class CaseFacadeEjb implements CaseFacade {
 				caseRoot.get(Case.UUID).in(caseUuids)));
 		cq.orderBy(cb.asc(caseRoot.get(AbstractDomainObject.CREATION_DATE)));
 
-		return QueryHelper.getFirstResult(em, cq);
+		return QueryHelper.getResultList(em, cq, null, null);
 	}
 
 	/**
@@ -3795,6 +3859,11 @@ public class CaseFacadeEjb implements CaseFacade {
 	@Override
 	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		caseService.updateExternalData(externalData);
+	}
+
+	@Override
+	protected void delete(Case entity) {
+		caseService.delete(entity);
 	}
 
 	@LocalBean

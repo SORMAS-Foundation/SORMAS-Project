@@ -22,6 +22,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 public final class CountryHelper {
 
 	public static final String COUNTRY_CODE_GERMANY = "de";
+	public static final String COUNTRY_CODE_FRANCE = "fr";
 	public static final String COUNTRY_CODE_SWITZERLAND = "ch";
 
 	public static boolean isCountry(String countryLocale, String country) {

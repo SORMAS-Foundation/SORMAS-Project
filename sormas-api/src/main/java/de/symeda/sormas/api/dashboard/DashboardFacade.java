@@ -38,6 +38,10 @@ public interface DashboardFacade {
 
 	Map<PathogenTestResultType, Long> getTestResultCountByResultType(DashboardCriteria dashboardCriteria);
 
+	Map<Date, Map<CaseClassification, Integer>> getEpiCurveSeriesElementsPerCaseClassification(DashboardCriteria dashboardCriteria);
+
+	Map<Date, Map<PresentCondition, Integer>> getEpiCurveSeriesElementsPerPresentCondition(DashboardCriteria dashboardCriteria);
+
 	List<DiseaseBurdenDto> getDiseaseBurden(
 		RegionReferenceDto region,
 		DistrictReferenceDto district,

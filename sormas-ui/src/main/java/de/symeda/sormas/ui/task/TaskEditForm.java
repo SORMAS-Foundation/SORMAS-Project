@@ -30,8 +30,6 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import com.vaadin.v7.ui.OptionGroup;
-import de.symeda.sormas.ui.utils.CssStyles;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -61,11 +59,13 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.TaskStatusValidator;
+import de.symeda.sormas.ui.utils.components.MultiSelect;
 
 @SuppressWarnings("deprecation")
 public class TaskEditForm extends AbstractEditForm<TaskDto> {
@@ -103,7 +103,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		super(TaskDto.class, TaskDto.I18N_PREFIX, false, FieldVisibilityCheckers.withDisease(disease));
 
 		this.editedFromTaskGrid = editedFromTaskGrid;
-		this.editOrCreateUserRight = editOrCreateUserRight;
+		this.editOrCreateUserRight = create ? UserRight.TASK_CREATE : UserRight.TASK_EDIT;
 		this.disease = disease;
 		this.availableUsers = new ArrayList<>();
 
@@ -150,7 +150,11 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		assigneeUser.addValueChangeListener(e -> {
 			updateObserversList();
 			updateByCreatingAndAssignee();
-			checkIfUserEmailOrPhoneIsProvided((UserReferenceDto) e.getProperty().getValue(), Strings.infoAssigneeMissingEmail, Strings.infoAssigneeMissingEmailOrPhoneNumber, ASSIGNEE_MISSING_INFO);
+			checkIfUserEmailOrPhoneIsProvided(
+				(UserReferenceDto) e.getProperty().getValue(),
+				Strings.infoAssigneeMissingEmail,
+				Strings.infoAssigneeMissingEmailOrPhoneNumber,
+				ASSIGNEE_MISSING_INFO);
 		});
 		assigneeUser.setImmediate(true);
 
@@ -159,14 +163,17 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		creatorComment.setImmediate(true);
 		addField(TaskDto.ASSIGNEE_REPLY, TextArea.class).setRows(4);
 
-		OptionGroup observerUsers = addField(TaskDto.OBSERVER_USERS, OptionGroup.class);
+		MultiSelect<UserReferenceDto> observerUsers = addField(TaskDto.OBSERVER_USERS, MultiSelect.class);
 		observerUsers.addValueChangeListener(e -> {
 			Collection<UserReferenceDto> userReferences = (Collection<UserReferenceDto>) e.getProperty().getValue();
 			for (UserReferenceDto userReference : userReferences) {
-				checkIfUserEmailOrPhoneIsProvided(userReference, Strings.infoObserverMissingEmail, Strings.infoObserverMissingEmailOrPhoneNumber, OBSERVER_MISSING_INFO);
+				checkIfUserEmailOrPhoneIsProvided(
+					userReference,
+					Strings.infoObserverMissingEmail,
+					Strings.infoObserverMissingEmailOrPhoneNumber,
+					OBSERVER_MISSING_INFO);
 			}
 		});
-		observerUsers.setMultiSelect(true);
 		observerUsers.setImmediate(true);
 		CssStyles.style(observerUsers, CssStyles.OPTIONGROUP_MAX_HEIGHT_150);
 
@@ -233,8 +240,8 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 					false,
 					I18nProperties.getValidationError(Validations.afterDate, dueDate.getCaption(), startDate.getCaption())));
 
-			Map<String, Long> userTaskCounts =
-				FacadeProvider.getTaskFacade().getPendingTaskCountPerUser(availableUsers.stream().map(ReferenceDto::getUuid).collect(Collectors.toList()));
+			Map<String, Long> userTaskCounts = FacadeProvider.getTaskFacade()
+				.getPendingTaskCountPerUser(availableUsers.stream().map(ReferenceDto::getUuid).collect(Collectors.toList()));
 			for (UserReferenceDto user : availableUsers) {
 				assigneeUser.addItem(user);
 				Long userTaskCount = userTaskCounts.get(user.getUuid());
@@ -251,7 +258,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 
 	private void updateObserversList() {
 		ComboBox assigneeField = getField(TaskDto.ASSIGNEE_USER);
-		OptionGroup observersField = getField(TaskDto.OBSERVER_USERS);
+		MultiSelect<UserReferenceDto> observersField = getField(TaskDto.OBSERVER_USERS);
 
 		Collection<UserReferenceDto> selectedObservers = (Collection<UserReferenceDto>) observersField.getValue();
 		if (selectedObservers == null) {
@@ -274,13 +281,16 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		}
 
 		// As we removed everything from observers field, let's apply again its value
-		Set<UserReferenceDto> filteredObservers = selectedObservers.stream()
-			.filter(userReferenceDto -> !userReferenceDto.equals(assigneeField.getValue()))
-			.collect(Collectors.toSet());
-		observersField.setValue(filteredObservers);
+		Set<UserReferenceDto> filteredObservers =
+			selectedObservers.stream().filter(userReferenceDto -> !userReferenceDto.equals(assigneeField.getValue())).collect(Collectors.toSet());
+		observersField.setValue(filteredObservers, true);
 	}
 
-	private void checkIfUserEmailOrPhoneIsProvided(UserReferenceDto assigneeRef, String missingEmailLabel, String missingEmailOrPhoneLabel, String location) {
+	private void checkIfUserEmailOrPhoneIsProvided(
+		UserReferenceDto assigneeRef,
+		String missingEmailLabel,
+		String missingEmailOrPhoneLabel,
+		String location) {
 
 		if (assigneeRef == null || FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.TASK_NOTIFICATIONS)) {
 			return;
@@ -293,9 +303,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 		boolean isSmsServiceSetUp = FacadeProvider.getConfigFacade().isSmsServiceSetUp();
 
 		if (isSmsServiceSetUp && !hasEmail && !hasPhoneNumber) {
-			getContent().addComponent(
-				getMissingInfoComponent(I18nProperties.getString(missingEmailOrPhoneLabel)),
-				location);
+			getContent().addComponent(getMissingInfoComponent(I18nProperties.getString(missingEmailOrPhoneLabel)), location);
 		} else if (!isSmsServiceSetUp && !hasEmail) {
 			getContent().addComponent(getMissingInfoComponent(I18nProperties.getString(missingEmailLabel)), location);
 		} else {
@@ -322,28 +330,31 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			boolean creating = value.getCreationDate() == null;
 
 			UserDto user = UserProvider.getCurrent().getUser();
-			boolean creator = user.equals(value.getCreatorUser());
+			JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(user.getUserRoles());
+			boolean creator = value.getCreatorUser() != null && user.getUuid().equals(value.getCreatorUser().getUuid());
+			boolean nationalOrAdmin = jurisdictionLevel == null || jurisdictionLevel == JurisdictionLevel.NATION;
 			boolean supervisor = UserRole.isSupervisor(user.getUserRoles());
 			boolean assignee = user.equals(getFieldGroup().getField(TaskDto.ASSIGNEE_USER).getValue());
 
-			setVisible(!creating || assignee, TaskDto.ASSIGNEE_REPLY, TaskDto.TASK_STATUS);
-			if (creating && !assignee) {
+			setVisible(!creating || assignee || nationalOrAdmin, TaskDto.ASSIGNEE_REPLY, TaskDto.TASK_STATUS);
+			if (creating && !assignee && !nationalOrAdmin) {
 				discard(TaskDto.ASSIGNEE_REPLY, TaskDto.TASK_STATUS);
 			}
 
 			if (UserProvider.getCurrent().hasUserRight(editOrCreateUserRight)) {
-				setReadOnly(!(assignee || creator), TaskDto.TASK_STATUS);
-				setReadOnly(!assignee, TaskDto.ASSIGNEE_REPLY);
+				setReadOnly(!(assignee || creator || nationalOrAdmin), TaskDto.TASK_STATUS);
+				setReadOnly(!(assignee || nationalOrAdmin), TaskDto.ASSIGNEE_REPLY);
 				setReadOnly(
-					!creator,
+					!(creator || nationalOrAdmin),
 					TaskDto.TASK_TYPE,
 					TaskDto.PRIORITY,
 					TaskDto.SUGGESTED_START,
 					TaskDto.DUE_DATE,
 					TaskDto.ASSIGNEE_USER,
-					TaskDto.CREATOR_COMMENT);
+					TaskDto.CREATOR_COMMENT,
+					TaskDto.OBSERVER_USERS);
 				setReadOnly(
-					!(creator || supervisor),
+					!(creator || supervisor || nationalOrAdmin),
 					TaskDto.PRIORITY,
 					TaskDto.SUGGESTED_START,
 					TaskDto.DUE_DATE,

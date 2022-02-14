@@ -126,3 +126,25 @@ Optional, but strongly recommended:
 6. M2_HOME need to be set. By default, for newer version, it is set to MAVEN_HOME. But Ant script is looking for M2_HOME
 
 7. For eclipse formatted plugin, there is an issue for Idea: <https://plugins.jetbrains.com/plugin/6546-eclipse-code-formatter> - `cannot save settings Path to custom eclipse folder is not valid` - it works only when settings were saved from down to up. And not vice versa.
+
+## Avoid redeployment problems
+
+**Problem**: Due to currently a not mitigated problem, it is only possible to deploy the `sormas-ear.ear` (contains `sormas-backend`) once without problems. If you undeploy it and deploy `sormas-ear.ear` again, the other artifacts `sormas-ui`and `sormas-rest` cannot successfully call the backend.
+
+**Workaround**: Undeploy `sormas-ear` and all other sormas artifacts, restart the Payara domain, deploy `sormas-ear` again (the same or changed version).
+
+**Symptom**: This exception occurs when `sormas-ui` or `sormas-rest` calls the `sormas-backend`.
+```java
+Caused by: java.lang.IllegalArgumentException: Can not set java.util.Properties field de.symeda.sormas.backend.common.ConfigFacadeEjb.props to de.symeda.sormas.backend.common.ConfigFacadeEjb
+    at java.base/jdk.internal.reflect.UnsafeFieldAccessorImpl.throwSetIllegalArgumentException(UnsafeFieldAccessorImpl.java:167)
+    at java.base/jdk.internal.reflect.UnsafeFieldAccessorImpl.throwSetIllegalArgumentException(UnsafeFieldAccessorImpl.java:171)
+    at java.base/jdk.internal.reflect.UnsafeFieldAccessorImpl.ensureObj(UnsafeFieldAccessorImpl.java:58)
+    at java.base/jdk.internal.reflect.UnsafeObjectFieldAccessorImpl.set(UnsafeObjectFieldAccessorImpl.java:75)
+    at java.base/java.lang.reflect.Field.set(Field.java:780)
+   at com.sun.enterprise.container.common.impl.util.InjectionManagerImpl._inject(InjectionManagerImpl.java:594)
+```
+
+**Additional info**:
+- You can undeploy and deploy all other modules without restarting the Payara domain, as long as nothing changes on `sormas-ear` (implicates `sormas-api` and `sormas-backend`).
+- The problem occurs no matter if you deploy directly from your IDE or as packaged ears/wars into the autodeploy directory.
+- Related ticket: #2511

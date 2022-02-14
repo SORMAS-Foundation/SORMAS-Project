@@ -54,11 +54,7 @@ public class LabMessageUiHelperUnitTest {
 			new CommitDiscardWrapperComponent<>(createForm, true, createForm.getFieldGroup());
 		when(sampleComponent.getWrappedComponent().getValue()).thenReturn(sample);
 
-		CommitDiscardWrapperComponent.CommitListener defaultCallback = () -> {
-			String explanation = "This listener shall be present in the additionalFinalCommitButton";
-		};
-
-		LabMessageUiHelper.establishFinalCommitButtons(sampleComponent, defaultCallback);
+		LabMessageUiHelper.establishFinalCommitButtons(sampleComponent);
 
 		HorizontalLayout buttonsPanel = sampleComponent.getButtonsPanel();
 		Button saveAndOpenEntryButton = (Button) buttonsPanel.getComponent(buttonsPanel.getComponentCount() - 2);

@@ -19,10 +19,8 @@ import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.List;
-import java.util.Set;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
@@ -33,7 +31,6 @@ import de.symeda.sormas.api.caze.RabiesType;
 import de.symeda.sormas.api.customizableenum.CustomizableEnumType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.person.PresentCondition;
@@ -131,8 +128,9 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		initialRegions = InfrastructureDaoHelper.loadRegionsByServerCountry();
 		initialDistricts = InfrastructureDaoHelper.loadDistricts(record.getRegion());
 		initialCommunities = InfrastructureDaoHelper.loadCommunities(record.getDistrict());
-		initialFacilities = InfrastructureDaoHelper.loadFacilities(record.getDistrict(), record.getCommunity(), record.getFacilityType());
-		initialPointsOfEntry = InfrastructureDaoHelper.loadPointsOfEntry(record.getDistrict());
+		initialFacilities =
+			InfrastructureDaoHelper.loadFacilities(record.getResponsibleDistrict(), record.getResponsibleCommunity(), record.getFacilityType());
+		initialPointsOfEntry = InfrastructureDaoHelper.loadPointsOfEntry(record.getResponsibleDistrict());
 
 		facilityOrHomeList = DataUtils.toItems(TypeOfPlace.FOR_CASES, true);
 		facilityTypeGroupList = DataUtils.toItems(FacilityTypeGroup.getAccomodationGroups(), true);

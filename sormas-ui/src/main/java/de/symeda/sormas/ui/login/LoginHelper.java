@@ -16,7 +16,6 @@
 package de.symeda.sormas.ui.login;
 
 import javax.enterprise.context.spi.CreationalContext;
-import javax.enterprise.event.Event;
 import javax.enterprise.inject.spi.Bean;
 import javax.enterprise.inject.spi.BeanManager;
 import javax.enterprise.inject.spi.CDI;
@@ -30,6 +29,7 @@ import com.vaadin.server.Page;
 import com.vaadin.server.VaadinServletService;
 import com.vaadin.server.VaadinSession;
 
+import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -83,29 +83,22 @@ public final class LoginHelper {
 	/**
 	 * Trigger logout event for Authentication Mechanism or other components to react.
 	 */
-	@SuppressWarnings("unchecked")
 	public static boolean logout() {
 
-		BeanManager bm = CDI.current().getBeanManager();
-		Bean<Event> eventBean = (Bean<Event>) bm.getBeans(Event.class).iterator().next();
-		CreationalContext<Event> ctx = bm.createCreationalContext(eventBean);
-		Event<LogoutEvent> event = (Event<LogoutEvent>) bm.getReference(eventBean, Event.class, ctx);
-		event.fire(new LogoutEvent());
+		if (!AuthProvider.getProvider(FacadeProvider.getConfigFacade()).isDefaultProvider()) {
+			 Page.getCurrent().setLocation("logout");
+		} else {
+			try {
+				VaadinServletService.getCurrentServletRequest().logout();
+			} catch (ServletException e) {
+				return false;
+			}
 
-		try {
-			VaadinServletService.getCurrentServletRequest().logout();
-		} catch (ServletException e) {
-			return false;
+			VaadinSession.getCurrent().getSession().invalidate();
+
+			Page.getCurrent().reload();
 		}
-
-		VaadinSession.getCurrent().getSession().invalidate();
-		Page.getCurrent().reload();
 
 		return true;
 	}
-
-	public static class LogoutEvent {
-
-	}
-
 }

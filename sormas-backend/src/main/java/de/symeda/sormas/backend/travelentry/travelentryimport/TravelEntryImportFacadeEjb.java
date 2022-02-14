@@ -62,8 +62,8 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.EnumService;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
-import de.symeda.sormas.backend.importexport.ImportCellData;
-import de.symeda.sormas.backend.importexport.ImportErrorException;
+import de.symeda.sormas.api.importexport.ImportCellData;
+import de.symeda.sormas.api.importexport.ImportErrorException;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ImportHelper;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -130,11 +130,6 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 			buildEntities(values, entityClasses, entityPropertyPaths, ignoreEmptyEntries, entities);
 		if (importResult.isError()) {
 			return importResult;
-		}
-
-		if (travelEntry.getPointOfEntry() == null && configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
-			travelEntry.setPointOfEntry(pointOfEntryFacade.getByUuid(PointOfEntryDto.OTHER_POE_UUID).toReference());
-			travelEntry.setPointOfEntryDetails(I18nProperties.getString(Strings.messageTravelEntryPOEFilledBySystem));
 		}
 
 		ImportLineResultDto<TravelEntryImportEntities> validationResult = validateEntities(entities);
@@ -238,7 +233,7 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 		boolean ignoreEmptyEntries,
 		TravelEntryImportEntities entities) {
 
-		return insertRowIntoData(values, entityClasses, entityPropertyPaths, ignoreEmptyEntries, cellData -> {
+		ImportLineResultDto<TravelEntryImportEntities> importResult = insertRowIntoData(values, entityClasses, entityPropertyPaths, ignoreEmptyEntries, cellData -> {
 			try {
 				TravelEntryDto travelEntry = entities.getTravelEntry();
 				if (StringUtils.isNotEmpty(cellData.getValue())) {
@@ -251,6 +246,16 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 
 			return null;
 		});
+
+		if(!importResult.isError()) {
+			TravelEntryDto travelEntry = entities.getTravelEntry();
+			if (travelEntry.getPointOfEntry() == null && configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+				travelEntry.setPointOfEntry(pointOfEntryFacade.getByUuid(PointOfEntryDto.OTHER_POE_UUID).toReference());
+				travelEntry.setPointOfEntryDetails(I18nProperties.getString(Strings.messageTravelEntryPOEFilledBySystem));
+			}
+		}
+
+		return importResult;
 	}
 
 	private ImportLineResultDto<TravelEntryImportEntities> insertRowIntoData(
@@ -322,7 +327,9 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 				Calendar calendar = Calendar.getInstance();
 				calendar.setTime(birthDate);
 				person.setBirthdateDD(calendar.get(Calendar.DAY_OF_MONTH));
-				person.setBirthdateMM(calendar.get(Calendar.MONTH));
+				// In calendar API months are indexed from 0 @see https://docs.oracle.com/javase/7/docs/api/java/util/Calendar.html#MONTH
+				int birthdateMonth = calendar.get(Calendar.MONTH) + 1;
+				person.setBirthdateMM(birthdateMonth);
 				person.setBirthdateYYYY(calendar.get(Calendar.YEAR));
 				return;
 			} else if (PHONE_PRIVATE.equals(personProperty)) {

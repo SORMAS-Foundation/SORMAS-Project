@@ -16,16 +16,26 @@
 package de.symeda.sormas.api.docgeneneration;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 import javax.ejb.Remote;
 
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 
 @Remote
 public interface EventDocumentFacade {
 
-	String getGeneratedDocument(String templateName, EventReferenceDto eventReference, Properties extraProperties) throws DocumentTemplateException;
+	String getGeneratedDocument(String templateName, EventReferenceDto eventReference, Properties extraProperties, Boolean shouldUploadGeneratedDoc)
+		throws DocumentTemplateException;
+
+	Map<ReferenceDto, byte[]> getGeneratedDocuments(
+		String templateName,
+		List<EventReferenceDto> eventReferences,
+		Properties extraProperties,
+		Boolean shouldUploadGeneratedDoc)
+		throws DocumentTemplateException;
 
 	List<String> getAvailableTemplates();
 

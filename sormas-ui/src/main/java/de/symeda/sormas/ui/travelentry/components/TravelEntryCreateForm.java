@@ -16,6 +16,9 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 
+import com.vaadin.ui.Button;
+import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.PersonDependentEditForm;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -58,7 +61,7 @@ import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
 import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 
-public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
+public class TravelEntryCreateForm extends PersonDependentEditForm<TravelEntryDto> {
 
 	private static final long serialVersionUID = 2160497736783946091L;
 
@@ -80,7 +83,7 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 		+ fluidRowLocs(TravelEntryDto.REGION, TravelEntryDto.DISTRICT)
 		+ fluidRowLocs(TravelEntryDto.POINT_OF_ENTRY, TravelEntryDto.POINT_OF_ENTRY_DETAILS)
 			+ loc(DEA_CONTENT_LOC)
-		+ fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME)
+			+ LayoutUtil.fluidRowLocs(6, PersonDto.FIRST_NAME, 4, PersonDto.LAST_NAME, 2, PERSON_SEARCH_LOC)
 		+ fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
 		fluidRowLocs(PersonDto.SEX))
 		+ fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER)
@@ -156,6 +159,10 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 
 		addCustomField(PersonDto.FIRST_NAME, String.class, TextField.class);
 		addCustomField(PersonDto.LAST_NAME, String.class, TextField.class);
+
+		Button searchPersonButton = createPersonSearchButton(PERSON_SEARCH_LOC);
+		getContent().addComponent(searchPersonButton, PERSON_SEARCH_LOC);
+
 		addCustomField(PersonDto.NATIONAL_HEALTH_ID, String.class, TextField.class);
 		addCustomField(PersonDto.PASSPORT_NUMBER, String.class, TextField.class);
 
@@ -336,6 +343,8 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 			((ComboBox) getField(PersonDto.PRESENT_CONDITION)).setValue(person.getPresentCondition());
 			((TextField) getField(PersonDto.PHONE)).setValue(person.getPhone());
 			((TextField) getField(PersonDto.EMAIL_ADDRESS)).setValue(person.getEmailAddress());
+			((TextField) getField(PersonDto.NATIONAL_HEALTH_ID)).setValue(person.getNationalHealthId());
+			((TextField) getField(PersonDto.PASSPORT_NUMBER)).setValue(person.getPassportNumber());
 		} else {
 			getField(PersonDto.FIRST_NAME).clear();
 			getField(PersonDto.LAST_NAME).clear();
@@ -346,7 +355,22 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 			getField(PersonDto.PRESENT_CONDITION).clear();
 			getField(PersonDto.PHONE).clear();
 			getField(PersonDto.EMAIL_ADDRESS).clear();
+			getField(PersonDto.PASSPORT_NUMBER).clear();
+			getField(PersonDto.NATIONAL_HEALTH_ID).clear();
 		}
+	}
+
+	@Override
+	protected void enablePersonFields(Boolean enable) {
+		getField(PersonDto.FIRST_NAME).setEnabled(enable);
+		getField(PersonDto.LAST_NAME).setEnabled(enable);
+		getField(PersonDto.BIRTH_DATE_DD).setEnabled(enable);
+		getField(PersonDto.BIRTH_DATE_MM).setEnabled(enable);
+		getField(PersonDto.BIRTH_DATE_YYYY).setEnabled(enable);
+		getField(PersonDto.SEX).setEnabled(enable);
+		getField(PersonDto.PRESENT_CONDITION).setEnabled(enable);
+		getField(PersonDto.PHONE).setEnabled(enable);
+		getField(PersonDto.EMAIL_ADDRESS).setEnabled(enable);
 	}
 
 	public void setPersonalDetailsReadOnlyIfNotEmpty(boolean readOnly) {

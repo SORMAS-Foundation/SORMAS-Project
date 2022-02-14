@@ -14,6 +14,8 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildSampleValidationGroupName;
+
 @Stateless
 @LocalBean
 public class SormasToSormasSampleDtoValidator extends SormasToSormasDtoValidator<SampleDto, SormasToSormasSampleDto, PreviewNotImplementedDto> {
@@ -29,7 +31,7 @@ public class SormasToSormasSampleDtoValidator extends SormasToSormasDtoValidator
 	@Override
 	public ValidationErrors validate(SormasToSormasSampleDto sharedData, ValidationDirection direction) {
 		SampleDto sample = sharedData.getEntity();
-		ValidationErrors validationErrors = new ValidationErrors();
+		ValidationErrors validationErrors = new ValidationErrors(buildSampleValidationGroupName(sample));
 
 		// todo shouldn't this be FacilityType.LABORATORY?
 		infraValidator.validateFacility(sample.getLab(), null, sample.getLabDetails(), Captions.Sample_lab, validationErrors, f -> {

@@ -90,6 +90,7 @@ import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.contact.MergeContactIndexDto;
 import de.symeda.sormas.api.contact.SimilarContactDto;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
+import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataHelper;
@@ -143,6 +144,8 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.TaskCreationException;
+import de.symeda.sormas.backend.deletionconfiguration.AbstractCoreEntityFacade;
+import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.document.Document;
 import de.symeda.sormas.backend.document.DocumentService;
@@ -202,7 +205,7 @@ import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless(name = "ContactFacade")
-public class ContactFacadeEjb implements ContactFacade {
+public class ContactFacadeEjb extends AbstractCoreEntityFacade<Contact> implements ContactFacade {
 
 	private static final long SECONDS_30_DAYS = TimeUnit.DAYS.toSeconds(30L);
 
@@ -268,6 +271,10 @@ public class ContactFacadeEjb implements ContactFacade {
 	@Resource
 	private ManagedScheduledExecutorService executorService;
 
+	public ContactFacadeEjb() {
+		super(Contact.class);
+	}
+
 	@Override
 	public List<String> getAllActiveUuids() {
 
@@ -282,6 +289,11 @@ public class ContactFacadeEjb implements ContactFacade {
 
 	@Override
 	public List<ContactDto> getAllActiveContactsAfter(Date date) {
+		return getAllActiveContactsAfter(date, null, null);
+	}
+
+	@Override
+	public List<ContactDto> getAllActiveContactsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		User user = userService.getCurrentUser();
 
@@ -290,7 +302,10 @@ public class ContactFacadeEjb implements ContactFacade {
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return contactService.getAllActiveContactsAfter(date).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
+		return contactService.getAllActiveContactsAfter(date, batchSize, lastSynchronizedUuid)
+			.stream()
+			.map(c -> convertToDto(c, pseudonymizer))
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -378,16 +393,10 @@ public class ContactFacadeEjb implements ContactFacade {
 			final boolean dropped = entity.getContactStatus() == ContactStatus.DROPPED
 				&& (existingContactDto == null || existingContactDto.getContactStatus() != ContactStatus.DROPPED);
 			if (dropped || convertedToCase) {
-				StringBuilder sb = new StringBuilder();
-				if (entity.getFollowUpComment() != null) {
-					sb.append(entity.getFollowUpComment()).append(" ");
-				}
 				contactService.cancelFollowUp(
 					entity,
-					sb.append(
-						I18nProperties
-							.getString(convertedToCase ? Strings.messageSystemFollowUpCanceled : Strings.messageSystemFollowUpCanceledByDropping))
-						.toString());
+					I18nProperties
+						.getString(convertedToCase ? Strings.messageSystemFollowUpCanceled : Strings.messageSystemFollowUpCanceledByDropping));
 			} else {
 				contactService.updateFollowUpDetails(
 					entity,
@@ -2111,6 +2120,16 @@ public class ContactFacadeEjb implements ContactFacade {
 	@Override
 	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		contactService.updateExternalData(externalData);
+	}
+
+	@Override
+	public AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid) {
+		return getAutomaticDeletionInfo(uuid, CoreEntityType.CONTACT);
+	}
+
+	@Override
+	protected void delete(Contact entity) {
+		contactService.delete(entity);
 	}
 
 	private float calculateCompleteness(Contact contact) {

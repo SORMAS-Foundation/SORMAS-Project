@@ -23,6 +23,7 @@ import static org.hamcrest.Matchers.anyOf;
 import static org.hamcrest.Matchers.contains;
 import static org.hamcrest.Matchers.containsInAnyOrder;
 import static org.hamcrest.Matchers.empty;
+import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
@@ -41,6 +42,8 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -89,6 +92,32 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		UserDto user = creator.createUser(region.getUuid(), null, null, null, "Surv", "Off", SURVEILLANCE_OFFICER);
 		loginWith(user);
 		assertThat(getUserFacade().getUsersByRegionAndRoles(region, SURVEILLANCE_OFFICER), contains(user.toReference()));
+	}
+
+	@Test
+	public void testGetUsersByRegionAndRight() {
+		RDCFEntities rdcf = creator.createRDCFEntities();
+		RegionFacadeEjb.RegionFacadeEjbLocal regionFacade = (RegionFacadeEjb.RegionFacadeEjbLocal) getRegionFacade();
+		RegionReferenceDto region = regionFacade.toRefDto(rdcf.region);
+
+		List<UserReferenceDto> result = getUserFacade().getUsersByRegionAndRight(region, UserRight.LAB_MESSAGES);
+
+		assertTrue(result.isEmpty());
+
+		// Has LAB_MASSAGES right
+		UserDto natUser = creator.createUser(rdcf, NATIONAL_USER);
+		// Does not have LAB_MASSAGES right
+		creator.createUser(rdcf, POE_INFORMANT);
+		result = getUserFacade().getUsersByRegionAndRight(region, UserRight.LAB_MESSAGES);
+
+		assertThat(result, contains(equalTo(natUser.toReference())));
+
+		UserDto natUser2 = creator.createUser(rdcf, "Nat", "User2", NATIONAL_USER);
+		result = getUserFacade().getUsersByRegionAndRight(region, UserRight.LAB_MESSAGES);
+
+		assertThat(result, hasSize(2));
+		assertThat(result, hasItems(equalTo(natUser.toReference()), equalTo(natUser2.toReference())));
+
 	}
 
 	/**
@@ -200,9 +229,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 			containsInAnyOrder(userR1, userS1, userS2));
 		assertThat(getUserFacade().getUsersWithSuperiorJurisdiction(getUserFacade().getByUuid(userC1.getUuid())), containsInAnyOrder(userD1));
 
-		assertThat(
-			getUserFacade().getUsersWithSuperiorJurisdiction(getUserFacade().getByUuid(userHF1.getUuid())),
-			containsInAnyOrder(userC1));
+		assertThat(getUserFacade().getUsersWithSuperiorJurisdiction(getUserFacade().getByUuid(userHF1.getUuid())), containsInAnyOrder(userC1));
 
 		assertThat(getUserFacade().getAllUserRefs(false), hasSize(16));
 

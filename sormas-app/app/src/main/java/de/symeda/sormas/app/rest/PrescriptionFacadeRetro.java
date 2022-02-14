@@ -27,8 +27,11 @@ import retrofit2.http.Path;
 
 public interface PrescriptionFacadeRetro {
 
-	@GET("prescriptions/all/{since}")
-	Call<List<PrescriptionDto>> pullAllSince(@Path("since") long since);
+	@GET("prescriptions/all/{since}/{size}/{lastSynchronizedUuid}")
+	Call<List<PrescriptionDto>> pullAllSince(
+			@Path("since") long since,
+			@Path("size") int size,
+			@Path("lastSynchronizedUuid") String lastSynchronizedUuid);
 
 	@POST("prescriptions/query")
 	Call<List<PrescriptionDto>> pullByUuids(@Body List<String> uuids);

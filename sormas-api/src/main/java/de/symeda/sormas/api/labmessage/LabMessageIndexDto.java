@@ -6,6 +6,7 @@ import java.util.Date;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.user.UserReferenceDto;
 
 public class LabMessageIndexDto implements Serializable {
 
@@ -13,8 +14,8 @@ public class LabMessageIndexDto implements Serializable {
 
 	public static final String UUID = "uuid";
 	public static final String MESSAGE_DATE_TIME = "messageDateTime";
-	public static final String TEST_LAB_NAME = "labName";
-	public static final String TEST_LAB_POSTAL_CODE = "labPostalCode";
+	public static final String LAB_NAME = "labName";
+	public static final String LAB_POSTAL_CODE = "labPostalCode";
 	public static final String TESTED_DISEASE = "testedDisease";
 	public static final String SAMPLE_OVERALL_TEST_RESULT = "sampleOverallTestResult";
 	public static final String PERSON_FIRST_NAME = "personFirstName";
@@ -22,6 +23,7 @@ public class LabMessageIndexDto implements Serializable {
 	public static final String PERSON_BIRTH_DATE = "personBirthDate";
 	public static final String PERSON_POSTAL_CODE = "personPostalCode";
 	public static final String STATUS = "status";
+	public static final String ASSIGNEE = "assignee";
 
 	private String uuid;
 
@@ -35,6 +37,7 @@ public class LabMessageIndexDto implements Serializable {
 	private Date personBirthDate;
 	private String personPostalCode;
 	private LabMessageStatus status;
+	private UserReferenceDto assignee;
 
 	public LabMessageIndexDto(
 		String uuid,
@@ -49,7 +52,10 @@ public class LabMessageIndexDto implements Serializable {
 		Integer personBirthDateMM,
 		Integer personBirthDateDD,
 		String personPostalCode,
-		LabMessageStatus status) {
+		LabMessageStatus status,
+		String assigneeUuid,
+		String assigneeFirstName,
+		String assigneeLastName) {
 
 		this.uuid = uuid;
 		this.messageDateTime = messageDateTime;
@@ -61,6 +67,9 @@ public class LabMessageIndexDto implements Serializable {
 		this.personLastName = personLastName;
 		this.personPostalCode = personPostalCode;
 		this.status = status;
+		if (assigneeUuid != null) {
+			this.assignee = new UserReferenceDto(assigneeUuid, assigneeFirstName, assigneeLastName, null);
+		}
 
 		if (personBirthDateYYYY != null && personBirthDateMM != null && personBirthDateDD != null) {
 			Calendar birthdate = Calendar.getInstance();
@@ -90,19 +99,19 @@ public class LabMessageIndexDto implements Serializable {
 		this.messageDateTime = messageDateTime;
 	}
 
-	public String getlabName() {
+	public String getLabName() {
 		return labName;
 	}
 
-	public void setTestLabName(String labName) {
+	public void setLabName(String labName) {
 		this.labName = labName;
 	}
 
-	public String getlabPostalCode() {
+	public String getLabPostalCode() {
 		return labPostalCode;
 	}
 
-	public void setlabPostalCode(String testLabPostalCode) {
+	public void setLabPostalCode(String testLabPostalCode) {
 		this.labPostalCode = testLabPostalCode;
 	}
 
@@ -160,5 +169,13 @@ public class LabMessageIndexDto implements Serializable {
 
 	public void setStatus(LabMessageStatus status) {
 		this.status = status;
+	}
+
+	public UserReferenceDto getAssignee() {
+		return assignee;
+	}
+
+	public void setAssignee(UserReferenceDto assignee) {
+		this.assignee = assignee;
 	}
 }

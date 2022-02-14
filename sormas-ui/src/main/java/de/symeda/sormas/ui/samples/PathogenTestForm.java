@@ -32,6 +32,7 @@ import java.util.function.Consumer;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.ui.Label;
+import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
@@ -94,6 +95,10 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 
 	private Label pathogenTestHeadingLabel;
 
+	private TextField testTypeTextField;
+	private ComboBox pcrTestSpecification;
+	private TextField typingIdField;
+
 	public PathogenTestForm(SampleDto sample, boolean create, int caseSampleCount, boolean isPseudonymized) {
 		super(
 			PathogenTestDto.class,
@@ -130,8 +135,8 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		ComboBox testTypeField = addField(PathogenTestDto.TEST_TYPE, ComboBox.class);
 		testTypeField.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
 		testTypeField.setImmediate(true);
-		ComboBox pcrTestSpecification = addField(PathogenTestDto.PCR_TEST_SPECIFICATION, ComboBox.class);
-		TextField testTypeTextField = addField(PathogenTestDto.TEST_TYPE_TEXT, TextField.class);
+		pcrTestSpecification = addField(PathogenTestDto.PCR_TEST_SPECIFICATION, ComboBox.class);
+		testTypeTextField = addField(PathogenTestDto.TEST_TYPE_TEXT, TextField.class);
 		FieldHelper.addSoftRequiredStyle(testTypeTextField);
 		DateTimeField sampleTestDateField = addField(PathogenTestDto.TEST_DATE_TIME, DateTimeField.class);
 		sampleTestDateField.addValidator(
@@ -149,7 +154,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 		lab.addItems(FacadeProvider.getFacilityFacade().getAllActiveLaboratories(true));
 		TextField labDetails = addField(PathogenTestDto.LAB_DETAILS, TextField.class);
 		labDetails.setVisible(false);
-		TextField typingIdField = addField(PathogenTestDto.TYPING_ID, TextField.class);
+		typingIdField = addField(PathogenTestDto.TYPING_ID, TextField.class);
 		typingIdField.setVisible(false);
 		ComboBox diseaseField = addDiseaseField(PathogenTestDto.TESTED_DISEASE, true, create);
 		ComboBox diseaseVariantField = addField(PathogenTestDto.TESTED_DISEASE_VARIANT, ComboBox.class);
@@ -293,7 +298,7 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 			}
 		});
 
-		if (sample.getSamplePurpose() != SamplePurpose.INTERNAL) {
+		if (sample.getSamplePurpose() != SamplePurpose.INTERNAL) { // this only works for already saved samples
 			setRequired(true, PathogenTestDto.LAB);
 		}
 		setRequired(true, PathogenTestDto.TEST_TYPE, PathogenTestDto.TESTED_DISEASE, PathogenTestDto.TEST_RESULT);
@@ -307,5 +312,13 @@ public class PathogenTestForm extends AbstractEditForm<PathogenTestDto> {
 	@Override
 	public void setHeading(String heading) {
 		pathogenTestHeadingLabel.setValue(heading);
+	}
+
+	@Override
+	public void setValue(PathogenTestDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
+		super.setValue(newFieldValue);
+		pcrTestSpecification.setValue(newFieldValue.getPcrTestSpecification());
+		testTypeTextField.setValue(newFieldValue.getTestTypeText());
+		typingIdField.setValue(newFieldValue.getTypingId());
 	}
 }

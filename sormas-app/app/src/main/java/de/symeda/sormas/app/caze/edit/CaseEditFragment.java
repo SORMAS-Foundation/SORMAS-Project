@@ -21,6 +21,7 @@ import static de.symeda.sormas.api.caze.CaseConfirmationBasis.CLINICAL_CONFIRMAT
 import static de.symeda.sormas.api.caze.CaseConfirmationBasis.EPIDEMIOLOGICAL_CONFIRMATION;
 import static de.symeda.sormas.api.caze.CaseConfirmationBasis.LABORATORY_DIAGNOSTIC_CONFIRMATION;
 
+import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -145,13 +146,6 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		if (!isFieldAccessible(CaseDataDto.class, contentBinding.caseDataCommunity)) {
 			contentBinding.caseDataRegion.setEnabled(false);
 			contentBinding.caseDataDistrict.setEnabled(false);
-		}
-
-		// Pregnancy
-		if (record.getPerson().getSex() != Sex.FEMALE) {
-			contentBinding.caseDataPregnant.setVisibility(GONE);
-			contentBinding.caseDataPostpartum.setVisibility(GONE);
-			contentBinding.caseDataTrimester.setVisibility(GONE);
 		}
 
 		// Smallpox vaccination scar image

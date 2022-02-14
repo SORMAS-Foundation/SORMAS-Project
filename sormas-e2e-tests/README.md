@@ -18,6 +18,7 @@ issues that might block successful web development.
 * GUICE - sharing state between steps in Cucumber-JVM
 * CUCUMBER - software tool used for acceptance tests written in a
   behavior-driven development style
+* WebDriverManager  - webdriver provider
 * LOMBOK - Java library helps to avoid repetitive code
 * GRADLE - build automation tool
 * JAVA FAKER  - project dependency generates random data for test scenarios
@@ -49,17 +50,35 @@ issues that might block successful web development.
   Alternatively go to IDea Preferences and search for `gradle`
 
   ![config](./images/sc2.png)
+  
 * Open `Preferences` -> `Plugins` and install `Cucumber for Java` plugin
 
    ![config](./images/sc4.png)
+   
 * Open `Preferences` -> `Compiler` and enable checkbox `Annotation processing`
 
   ![config](./images/sc6.png)
-
+  
 * Open `Preferences` -> `Plugins` and install `Lombok` plugin
 
    ![config](./images/sc7.png)
+   
+##Enable tests execution from local machine   
 
+* Navigate to: resources/configuration/properties/common.properties
+The default setup is set for remote execution:
+
+```gherkin
+BROWSER=chrome
+REMOTE_DRIVER=true
+HEADLESS=true 
+LOG_RESTASSURED=false
+```
+
+* Change REMOTE_DRIVER value to false to run the tests from your local machine (optional HEADLESS to false to enable UI execution, and LOG_RESTASSURED to true to enable json logging)
+
+* To change testing environment, open: resources/configuration/properties/environment/test-performance.properties
+And update ENVIRONMENT_URL value (can be a local dev environments as well)
 ## Test case design
 
 A design pattern is implemented based on a behavior-driven development style.
@@ -105,10 +124,12 @@ gradlew clean startTests -Dcucumber.tags="@Login" -Denvironment=performance
 * Allure is a test report tool provides a nice visual representation of executed
 tests. Reporting requires [test execution](#test-execution) to generate some
 test report data.
+* Allure report is generated only from executions triggered via CLI.
 * Open `allureReport` folder in a project and click on `index.html`. A new
 generated report should be opened in the default browser.
 * After running the tests you will be able to find the allure report in the root
 of the project, in the allureReports folder.
+The report works for UI and API tests as well, displaying steps, logs, failure reason and exit screenshots.
 * You can add @issue=ticketNumber
 to link GitHub bugs/tickets
 
@@ -123,6 +144,7 @@ to link GitHub bugs/tickets
 ## Guide to further resources
 
 * [Cucumber Documentation](https://cucumber.io/docs/guides/)
+* [WebDriverManager](https://bonigarcia.dev/webdrivermanager/)
 * [Lombok](https://projectlombok.org/)
 * [Gradle](https://gradle.org/)
 * [Java faker](https://github.com/DiUS/java-faker)

@@ -215,15 +215,26 @@ public class LabMessageController {
 			} else if (result == HandlerResult.CANCELED_WITH_UPDATES) {
 				showCorrectionsSavedPopup();
 			} else if (result == HandlerResult.HANDLED) {
-				finishProcessingLabMessage(labMessage, labMessage.getSample());
 				SormasUI.get().getNavigator().navigateTo(LabMessagesView.VIEW_NAME);
 			}
 		});
 	}
 
+	public void assignAllSelectedItems(Collection<LabMessageIndexDto> selectedRows, Runnable callback) {
+		if (selectedRows.isEmpty()) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoLabMessagesSelected),
+				I18nProperties.getString(Strings.messageNoLabMessagesSelected),
+				Notification.Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+		} else {
+			bulkEditAssignee(selectedRows, callback);
+		}
+	}
+
 	public void deleteAllSelectedItems(Collection<LabMessageIndexDto> selectedRows, Runnable callback) {
 
-		if (selectedRows.size() == 0) {
+		if (selectedRows.isEmpty()) {
 			new Notification(
 				I18nProperties.getString(Strings.headingNoLabMessagesSelected),
 				I18nProperties.getString(Strings.messageNoLabMessagesSelected),
@@ -384,7 +395,7 @@ public class LabMessageController {
 
 	private void pickOrCreateEvent(LabMessageDto labMessageDto, PersonDto person) {
 		EventSelectionField eventSelect =
-			new EventSelectionField(labMessageDto.getTestedDisease(), I18nProperties.getString(Strings.infoPickOrCreateEventForLabMessage));
+			new EventSelectionField(labMessageDto.getTestedDisease(), I18nProperties.getString(Strings.infoPickOrCreateEventForLabMessage), null);
 		eventSelect.setWidth(1024, Sizeable.Unit.PIXELS);
 
 		Window window = VaadinUiUtil.createPopupWindow();
@@ -570,9 +581,9 @@ public class LabMessageController {
 	}
 
 	private void editSample(LabMessageDto labMessage, SampleDto sample, RelatedLabMessageHandlerChain chain) {
-		Window sampleWindow = showSampleEditWindow(sample, labMessage, () -> chain.next(true), false);
+		Window sampleWindow = showSampleEditWindow(sample, labMessage, () -> chain.next(true));
 
-		sampleWindow.addCloseListener((e) -> {
+		sampleWindow.addCloseListener(e -> {
 			if (!chain.done()) {
 				chain.cancel();
 			}
@@ -580,14 +591,10 @@ public class LabMessageController {
 	}
 
 	private void editSample(SampleDto sample, LabMessageDto labMessage) {
-		showSampleEditWindow(sample, labMessage, () -> finishProcessingLabMessage(labMessage, sample.toReference()), true);
+		showSampleEditWindow(sample, labMessage, null);
 	}
 
-	private Window showSampleEditWindow(
-		SampleDto sample,
-		LabMessageDto labMessage,
-		CommitDiscardWrapperComponent.CommitListener callback,
-		boolean establishFinalCommitButtons) {
+	private Window showSampleEditWindow(SampleDto sample, LabMessageDto labMessage, CommitDiscardWrapperComponent.CommitListener callback) {
 
 		SampleController sampleController = ControllerProvider.getSampleController();
 		CommitDiscardWrapperComponent<SampleEditForm> sampleEditComponent =
@@ -647,14 +654,15 @@ public class LabMessageController {
 
 		sampleController.addReferredFromButton(sampleEditComponent, editSample);
 
+		// add commit and discard listeners
+		if (callback != null) {
+			sampleEditComponent.addCommitListener(callback);
+		}
+		sampleEditComponent.addCommitListener(() -> finishProcessingLabMessage(labMessage, sample.toReference()));
 		sampleEditComponent.addCommitListener(window::close);
 		sampleEditComponent.addDiscardListener(window::close);
 
-		if (establishFinalCommitButtons) {
-			LabMessageUiHelper.establishFinalCommitButtons(sampleEditComponent, callback);
-		} else {
-			sampleEditComponent.addCommitListener(callback);
-		}
+		LabMessageUiHelper.establishFinalCommitButtons(sampleEditComponent);
 
 		showFormWithLabMessage(labMessage, sampleEditComponent, window, I18nProperties.getString(Strings.headingEditSample), false);
 
@@ -682,12 +690,12 @@ public class LabMessageController {
 		// add option to create additional pathogen tests
 		sampleController.addPathogenTestButton(sampleCreateComponent, true);
 
+		sampleCreateComponent
+			.addCommitListener(() -> finishProcessingLabMessage(labMessage, sampleCreateComponent.getWrappedComponent().getValue().toReference()));
 		sampleCreateComponent.addCommitListener(window::close);
 		sampleCreateComponent.addDiscardListener(window::close);
 
-		LabMessageUiHelper.establishFinalCommitButtons(
-			sampleCreateComponent,
-			() -> finishProcessingLabMessage(labMessage, sampleCreateComponent.getWrappedComponent().getValue().toReference()));
+		LabMessageUiHelper.establishFinalCommitButtons(sampleCreateComponent);
 
 		return sampleCreateComponent;
 	}
@@ -798,12 +806,12 @@ public class LabMessageController {
 		// add option to create additional pathogen tests
 		sampleController.addPathogenTestButton(sampleCreateComponent, true);
 
-		LabMessageUiHelper.establishFinalCommitButtons(sampleCreateComponent, () -> {
-			finishProcessingLabMessage(labMessageDto, sample.toReference());
-			window.close();
-		});
-
+		sampleCreateComponent.addCommitListener(() -> finishProcessingLabMessage(labMessageDto, sample.toReference()));
+		sampleCreateComponent.addCommitListener(window::close);
 		sampleCreateComponent.addDiscardListener(window::close);
+
+		LabMessageUiHelper.establishFinalCommitButtons(sampleCreateComponent);
+
 		return sampleCreateComponent;
 	}
 
@@ -880,7 +888,6 @@ public class LabMessageController {
 	}
 
 	/**
-	 *
 	 * @param component
 	 *            that holds a reference to the current state of processing a labMessage
 	 * @param entityCreated
@@ -905,7 +912,6 @@ public class LabMessageController {
 	}
 
 	/**
-	 *
 	 * @param component
 	 *            component is expected to not be null, as it should never be null in a correct call of this method. Calling this method
 	 *            with a null component will result in a NPE.
@@ -1275,7 +1281,7 @@ public class LabMessageController {
 		});
 	}
 
-	private CompletionStage<Boolean> confirmContinueProcessing(LabMessageDto labMessageDto) {
+	private CompletionStage<Boolean> confirmContinueProcessing(LabMessageDto labMessageDto, SampleReferenceDto sample) {
 
 		CompletableFuture<Boolean> ret = new CompletableFuture<>();
 
@@ -1297,6 +1303,7 @@ public class LabMessageController {
 			if (!ret.isDone()) {
 				ret.complete(false);
 			}
+			finishProcessingLabMessage(labMessageDto, sample);
 		});
 
 		showFormWithLabMessage(labMessageDto, confirmComponent, window, I18nProperties.getString(Strings.headingLabMessageCorrectionThrough), false);
@@ -1312,5 +1319,59 @@ public class LabMessageController {
 		warningLayout.addComponent(infoLabel);
 		popupWindow.addCloseListener(e -> popupWindow.close());
 		popupWindow.setWidth(400, Sizeable.Unit.PIXELS);
+	}
+
+	public void editAssignee(String labMessageUuid) {
+
+		EditAssigneeComponentContainer components = new EditAssigneeComponentContainer();
+
+		// get fresh data
+		LabMessageDto labMessageDto = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid);
+
+		if (labMessageDto.getAssignee() != null) {
+			components.getAssigneeComboBox().setValue(labMessageDto.getAssignee());
+		}
+
+		components.getAssignMeButton()
+			.addClickListener(e -> saveAssignee(labMessageDto, UserProvider.getCurrent().getUserReference(), components.getWindow()));
+		components.getWrapperComponent()
+			.addCommitListener(
+				() -> saveAssignee(labMessageDto, (UserReferenceDto) components.getAssigneeComboBox().getValue(), components.getWindow()));
+
+		UI.getCurrent().addWindow(components.getWindow());
+	}
+
+	private void bulkEditAssignee(Collection<LabMessageIndexDto> selectedRows, Runnable callback) {
+
+		EditAssigneeComponentContainer components = new EditAssigneeComponentContainer();
+
+		components.getAssignMeButton().addClickListener(e -> {
+			FacadeProvider.getLabMessageFacade()
+				.bulkAssignLabMessages(
+					selectedRows.stream().map(LabMessageIndexDto::getUuid).collect(Collectors.toList()),
+					UserProvider.getCurrent().getUserReference());
+			components.getWindow().close();
+			Notification.show(I18nProperties.getString(Strings.messageLabMessagesAssigned), Notification.Type.HUMANIZED_MESSAGE);
+			callback.run();
+		});
+
+		components.getWrapperComponent().addCommitListener(() -> {
+			FacadeProvider.getLabMessageFacade()
+				.bulkAssignLabMessages(
+					selectedRows.stream().map(LabMessageIndexDto::getUuid).collect(Collectors.toList()),
+					(UserReferenceDto) components.getAssigneeComboBox().getValue());
+			components.getWindow().close();
+			Notification.show(I18nProperties.getString(Strings.messageLabMessagesAssigned), Notification.Type.HUMANIZED_MESSAGE);
+			callback.run();
+		});
+
+		UI.getCurrent().addWindow(components.getWindow());
+	}
+
+	private void saveAssignee(LabMessageDto labMessageDto, UserReferenceDto assignee, Window popupWindow) {
+		labMessageDto.setAssignee(assignee);
+		FacadeProvider.getLabMessageFacade().save(labMessageDto);
+		popupWindow.close();
+		SormasUI.refreshView();
 	}
 }

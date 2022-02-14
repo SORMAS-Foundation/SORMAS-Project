@@ -3,11 +3,11 @@ package de.symeda.sormas.backend.infrastructure;
 import java.io.Serializable;
 import java.util.List;
 
-import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.InfrastructureBaseFacade;
 import de.symeda.sormas.api.infrastructure.InfrastructureDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -19,10 +19,12 @@ import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
-public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, DTO extends InfrastructureDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, SRV extends AbstractInfrastructureAdoService<ADO, CRITERIA>, CRITERIA extends BaseCriteria>
-	extends AbstractBaseEjb<ADO, DTO, INDEX_DTO, REF_DTO, SRV, CRITERIA> {
+public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, DTO extends InfrastructureDto, INDEX_DTO extends Serializable, REF_DTO extends InfrastructureDataReferenceDto, SRV extends AbstractInfrastructureAdoService<ADO, CRITERIA>, CRITERIA extends BaseCriteria>
+	extends AbstractBaseEjb<ADO, DTO, INDEX_DTO, REF_DTO, SRV, CRITERIA>
+	implements InfrastructureBaseFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA> {
 
 	protected FeatureConfigurationFacadeEjb featureConfiguration;
+	private String duplicateErrorMessageProperty;
 
 	protected AbstractInfrastructureEjb() {
 		super();
@@ -33,13 +35,26 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 		Class<DTO> dtoClass,
 		SRV service,
 		FeatureConfigurationFacadeEjb featureConfiguration,
-		UserService userService) {
+		UserService userService,
+		String duplicateErrorMessageProperty) {
 		super(adoClass, dtoClass, service, userService);
 		this.featureConfiguration = featureConfiguration;
+		this.duplicateErrorMessageProperty = duplicateErrorMessageProperty;
 	}
 
-	protected DTO save(DTO dtoToSave, boolean allowMerge, String duplicateErrorMessageProperty) {
+	public DTO save(DTO dto, boolean allowMerge) {
 		checkInfraDataLocked();
+		// default behaviour is to include archived data and check for the change date
+		return doSave(dto, allowMerge, true, true, duplicateErrorMessageProperty);
+	}
+
+	public DTO saveFromCentral(DTO dtoToSave) {
+		// merge, but do not include archived data (we consider archive data to be completely broken)
+		// also ignore change date as merging will always cause the date to be newer to what is present in central
+		return doSave(dtoToSave, true, false, false, duplicateErrorMessageProperty);
+	}
+
+	protected DTO doSave(DTO dtoToSave, boolean allowMerge, boolean includeArchived, boolean checkChangeDate, String duplicateErrorMessageProperty) {
 		if (dtoToSave == null) {
 			return null;
 		}
@@ -62,16 +77,16 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 		}
 
 		if (existingEntity == null) {
-			List<ADO> duplicates = findDuplicates(dtoToSave);
+			List<ADO> duplicates = findDuplicates(dtoToSave, includeArchived);
 			if (!duplicates.isEmpty()) {
 				if (allowMerge) {
-					return mergeAndPersist(dtoToSave, duplicates);
+					return mergeAndPersist(dtoToSave, duplicates, checkChangeDate);
 				} else {
 					throw new ValidationRuntimeException(I18nProperties.getValidationError(duplicateErrorMessageProperty));
 				}
 			}
 		}
-		return persistEntity(dtoToSave, existingEntity);
+		return persistEntity(dtoToSave, existingEntity, checkChangeDate);
 	}
 
 	@Override
@@ -106,4 +121,5 @@ public abstract class AbstractInfrastructureEjb<ADO extends InfrastructureAdo, D
 		return service.count((cb, root) -> service.buildCriteriaFilter(criteria, cb, root));
 	}
 
+	// todo implement toDto() here
 }

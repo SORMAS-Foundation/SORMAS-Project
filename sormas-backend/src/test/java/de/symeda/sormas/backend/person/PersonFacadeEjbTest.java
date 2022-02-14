@@ -9,6 +9,7 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
@@ -20,10 +21,10 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.junit.Assert;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -51,6 +52,7 @@ import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
+import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -215,23 +217,23 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		final PersonDto person1 = creator.createPerson("James", "Smith", Sex.MALE, 1920, 1, 1);
 		creator.createCase(
-				user.toReference(),
-				person1.toReference(),
-				Disease.EVD,
-				CaseClassification.PROBABLE,
-				InvestigationStatus.PENDING,
-				new Date(),
-				rdcf);
+			user.toReference(),
+			person1.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
 		person1.setPresentCondition(PresentCondition.DEAD);
 		final PersonDto person2 = creator.createPerson("Maria", "Garcia", Sex.FEMALE, 1920, 1, 1);
 		creator.createCase(
-				user.toReference(),
-				person2.toReference(),
-				Disease.EVD,
-				CaseClassification.PROBABLE,
-				InvestigationStatus.PENDING,
-				new Date(),
-				rdcf);
+			user.toReference(),
+			person2.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
 
 		getPersonFacade().savePerson(person1);
 
@@ -329,26 +331,34 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		getEventFacade().archiveOrDearchiveEvent(inactiveEvent.getUuid(), false);
 
 		PersonSimilarityCriteria criteria = new PersonSimilarityCriteria().sex(Sex.MALE).birthdateYYYY(1980).birthdateMM(1).birthdateDD(1);
-		List<String> matchingUuids =
-			getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
+		List<String> matchingUuids = getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria)
+			.stream()
+			.map(person -> person.getUuid())
+			.collect(Collectors.toList());
 		assertThat(matchingUuids, hasSize(2));
 		assertThat(matchingUuids, containsInAnyOrder(person1.getUuid(), person7.getUuid()));
 
 		criteria.birthdateMM(null).birthdateDD(null);
-		matchingUuids =
-			getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
+		matchingUuids = getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria)
+			.stream()
+			.map(person -> person.getUuid())
+			.collect(Collectors.toList());
 		assertThat(matchingUuids, hasSize(3));
 		assertThat(matchingUuids, containsInAnyOrder(person1.getUuid(), person3.getUuid(), person7.getUuid()));
 
 		criteria.sex(Sex.FEMALE).birthdateYYYY(1984);
-		matchingUuids =
-			getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
+		matchingUuids = getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria)
+			.stream()
+			.map(person -> person.getUuid())
+			.collect(Collectors.toList());
 		assertThat(matchingUuids, hasSize(3));
 		assertThat(matchingUuids, containsInAnyOrder(person4.getUuid(), person5.getUuid(), person6.getUuid()));
 
 		criteria.sex(null);
-		matchingUuids =
-			getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
+		matchingUuids = getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria)
+			.stream()
+			.map(person -> person.getUuid())
+			.collect(Collectors.toList());
 		assertThat(matchingUuids, hasSize(4));
 		assertThat(matchingUuids, containsInAnyOrder(person4.getUuid(), person5.getUuid(), person6.getUuid(), person7.getUuid()));
 
@@ -367,28 +377,36 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		criteria.sex(Sex.MALE).birthdateYYYY(1980);
 		criteria.passportNumber(passportNr);
-		matchingUuids =
-			getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
+		matchingUuids = getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria)
+			.stream()
+			.map(person -> person.getUuid())
+			.collect(Collectors.toList());
 		assertThat(matchingUuids, hasSize(6));
 		assertThat(
 			matchingUuids,
 			containsInAnyOrder(person1.getUuid(), person3.getUuid(), person7.getUuid(), person8.getUuid(), person9.getUuid(), person10.getUuid()));
 
 		criteria.nationalHealthId(healthId).passportNumber(null);
-		matchingUuids =
-			getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
+		matchingUuids = getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria)
+			.stream()
+			.map(person -> person.getUuid())
+			.collect(Collectors.toList());
 		assertThat(matchingUuids, hasSize(4));
 		assertThat(matchingUuids, containsInAnyOrder(person1.getUuid(), person3.getUuid(), person7.getUuid(), person8.getUuid()));
 
 		criteria.nationalHealthId(otherHealthId);
-		matchingUuids =
-			getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
+		matchingUuids = getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria)
+			.stream()
+			.map(person -> person.getUuid())
+			.collect(Collectors.toList());
 		assertThat(matchingUuids, hasSize(4));
 		assertThat(matchingUuids, containsInAnyOrder(person1.getUuid(), person3.getUuid(), person7.getUuid(), person9.getUuid()));
 
 		criteria.passportNumber(otherPassportNr);
-		matchingUuids =
-			getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
+		matchingUuids = getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria)
+			.stream()
+			.map(person -> person.getUuid())
+			.collect(Collectors.toList());
 		assertThat(matchingUuids, hasSize(5));
 		assertThat(matchingUuids, containsInAnyOrder(person1.getUuid(), person3.getUuid(), person7.getUuid(), person9.getUuid(), person11.getUuid()));
 	}
@@ -403,7 +421,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	public void testIsValidPersonUuid() {
 		final PersonDto person = creator.createPerson("James", "Smith", Sex.MALE, 1980, 1, 1);
 		assertTrue(getPersonFacade().isValidPersonUuid(person.getUuid()));
-		Assert.assertFalse(getPersonFacade().isValidPersonUuid("2341235234534"));
+		assertFalse(getPersonFacade().isValidPersonUuid("2341235234534"));
 	}
 
 	@Test
@@ -617,7 +635,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetPersonsAfter() {
+	public void testGetPersonsAfter() throws InterruptedException {
 		UserDto natUser = useNationalUserLogin();
 
 		Date t1 = new Date();
@@ -644,6 +662,49 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		personsAfterT1 = getPersonFacade().getPersonsAfter(t1);
 		assertEquals(2, personsAfterT1.size());
+
+		PersonDto person3 = creator.createPerson();
+		person3 = getPersonFacade().savePerson(person3);
+		RDCF rdcf = creator.createRDCF("region", "district", "community", "facility", "pointOfEntry");
+		TravelEntryDto travelEntry = creator
+			.createTravelEntry(person3.toReference(), natUser.toReference(), Disease.CORONAVIRUS, rdcf.region, rdcf.district, rdcf.pointOfEntry);
+		getTravelEntryFacade().save(travelEntry);
+
+		personsAfterT1 = getPersonFacade().getPersonsAfter(t1);
+		assertEquals(3, personsAfterT1.size());
+
+		personsAfterT1 = getPersonFacade().getPersonsAfter(t1, 4, EntityDto.NO_LAST_SYNCED_UUID);
+		assertEquals(2, personsAfterT1.size());
+
+		PersonDto personRead1 = personsAfterT1.get(0);
+		PersonDto personRead2 = personsAfterT1.get(1);
+
+		personsAfterT1 = getPersonFacade().getPersonsAfter(t1, 1, EntityDto.NO_LAST_SYNCED_UUID);
+		assertEquals(1, personsAfterT1.size());
+
+		personsAfterT1 = getPersonFacade().getPersonsAfter(personRead1.getChangeDate(), 4, null);
+		assertEquals(1, personsAfterT1.size());
+
+		personsAfterT1 = getPersonFacade().getPersonsAfter(personRead1.getChangeDate(), 4, EntityDto.NO_LAST_SYNCED_UUID);
+		assertEquals(1, personsAfterT1.size());
+
+		personsAfterT1 = getPersonFacade().getPersonsAfter(personRead2.getChangeDate(), 4, null);
+		assertEquals(0, personsAfterT1.size());
+
+		personsAfterT1 = getPersonFacade().getPersonsAfter(personRead2.getChangeDate(), 4, EntityDto.NO_LAST_SYNCED_UUID);
+		assertEquals(0, personsAfterT1.size());
+
+		personsAfterT1 = getPersonFacade().getPersonsAfter(new Date(personRead2.getChangeDate().getTime() - 1L), 4, EntityDto.NO_LAST_SYNCED_UUID);
+		assertEquals(1, personsAfterT1.size());
+
+		personsAfterT1 = getPersonFacade().getPersonsAfter(personRead2.getChangeDate(), 4, "AAAAAA-AAAAAA-AAAAAA-AAAAAA");
+		assertEquals(1, personsAfterT1.size());
+
+		personsAfterT1 = getPersonFacade().getPersonsAfter(personRead2.getChangeDate(), 4, "ZZZZZZ-ZZZZZZ-ZZZZZZ-ZZZZZZ");
+		assertEquals(0, personsAfterT1.size());
+
+		personsAfterT1 = getPersonFacade().getPersonsAfter(personRead2.getChangeDate(), 4, personRead2.getUuid());
+		assertEquals(0, personsAfterT1.size());
 	}
 
 	@Test

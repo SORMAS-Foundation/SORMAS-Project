@@ -13,6 +13,8 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildEventParticipantValidationGroupName;
+
 @Stateless
 @LocalBean
 public class SormasToSormasEventParticipantDtoValidator
@@ -29,7 +31,7 @@ public class SormasToSormasEventParticipantDtoValidator
 	@Override
 	public ValidationErrors validate(SormasToSormasEventParticipantDto sharedData, ValidationDirection direction) {
 		EventParticipantDto ep = sharedData.getEntity();
-		ValidationErrors validationErrors = new ValidationErrors();
+		ValidationErrors validationErrors = new ValidationErrors(buildEventParticipantValidationGroupName(ep));
 
 		ValidationErrors personValidationErrors = validatePerson(ep.getPerson(), direction);
 		validationErrors.addAll(personValidationErrors);
@@ -43,7 +45,8 @@ public class SormasToSormasEventParticipantDtoValidator
 
 	@Override
 	public ValidationErrors validatePreview(SormasToSormasEventParticipantPreview preview, ValidationDirection direction) {
-		return validatePersonPreview(preview.getPerson(), direction);
+		ValidationErrors validationErrors = new ValidationErrors(buildEventParticipantValidationGroupName(preview));
+		validationErrors.addAll(validatePersonPreview(preview.getPerson(), direction));
+		return validationErrors;
 	}
-
 }

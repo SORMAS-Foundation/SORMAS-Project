@@ -36,6 +36,9 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.region.RegionDtoHelper;
+import de.symeda.sormas.app.rest.NoConnectionException;
+import de.symeda.sormas.app.rest.ServerCommunicationException;
+import de.symeda.sormas.app.rest.ServerConnectionException;
 
 @RunWith(AndroidJUnit4.class)
 public class RegionBackendTest {
@@ -69,7 +72,7 @@ public class RegionBackendTest {
 		boolean hadException = false;
 		try {
 			new RegionDtoHelper().handlePulledList(DatabaseHelper.getRegionDao(), regions);
-		} catch (DaoException e) {
+		} catch (DaoException | NoConnectionException | ServerConnectionException | ServerCommunicationException e) {
 			hadException = true;
 		}
 		assertTrue(hadException);
@@ -82,7 +85,7 @@ public class RegionBackendTest {
 		hadException = false;
 		try {
 			new RegionDtoHelper().handlePulledList(DatabaseHelper.getRegionDao(), regions);
-		} catch (DaoException e) {
+		} catch (DaoException | NoConnectionException | ServerConnectionException | ServerCommunicationException e) {
 			hadException = true;
 		}
 		assertFalse(hadException);

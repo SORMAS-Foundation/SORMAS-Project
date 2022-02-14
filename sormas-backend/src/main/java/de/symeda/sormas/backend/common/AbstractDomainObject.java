@@ -111,7 +111,7 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, H
 		this.uuid = uuid;
 	}
 
-	@Column(nullable = false)
+	@Column(nullable = false, columnDefinition = "TIMESTAMP(3) not null")
 	public Timestamp getCreationDate() {
 		if (creationDate == null) {
 			creationDate = Timestamp.from(Instant.now());
@@ -124,7 +124,7 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, H
 	}
 
 	@Version
-	@Column(nullable = false)
+	@Column(nullable = false, columnDefinition = "TIMESTAMP(3) not null")
 	public Timestamp getChangeDate() {
 		return changeDate;
 	}

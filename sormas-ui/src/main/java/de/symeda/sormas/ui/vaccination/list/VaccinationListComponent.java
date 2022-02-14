@@ -18,10 +18,6 @@ package de.symeda.sormas.ui.vaccination.list;
 import java.util.List;
 import java.util.function.Function;
 
-import com.vaadin.icons.VaadinIcons;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.themes.ValoTheme;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -38,9 +34,7 @@ import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 import de.symeda.sormas.ui.utils.components.sidecomponent.event.EditSideComponentFieldEventListener;
 
@@ -49,7 +43,7 @@ public class VaccinationListComponent extends SideComponent {
 	private final AbstractDetailView<? extends ReferenceDto> view;
 
 	public VaccinationListComponent(VaccinationListCriteria criteria, AbstractDetailView<? extends ReferenceDto> view) {
-		this(criteria, maxDisplayedEntries -> FacadeProvider.getVaccinationFacade().getEntriesList(criteria, 0, maxDisplayedEntries), view);
+		this(criteria, maxDisplayedEntries -> FacadeProvider.getVaccinationFacade().getEntriesList(criteria, 0, maxDisplayedEntries, null), view);
 	}
 
 	public VaccinationListComponent(
@@ -131,23 +125,18 @@ public class VaccinationListComponent extends SideComponent {
 		RegionReferenceDto region,
 		DistrictReferenceDto district,
 		Runnable refreshCallback) {
-		UserProvider currentUser = UserProvider.getCurrent();
-		if (currentUser != null && currentUser.hasUserRight(UserRight.IMMUNIZATION_CREATE)) {
-			Button createButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.vaccinationNewVaccination));
-			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-			createButton.addClickListener(
-				e -> view.showNavigationConfirmPopupIfDirty(
-					() -> ControllerProvider.getVaccinationController()
-						.create(
-							region,
-							district,
-							criteria.getPerson(),
-							criteria.getDisease(),
-							UiFieldAccessCheckers.getNoop(),
-							v -> refreshCallback.run())));
-			addCreateButton(createButton);
-		}
+		addCreateButton(
+			I18nProperties.getCaption(Captions.vaccinationNewVaccination),
+			UserRight.IMMUNIZATION_CREATE,
+			e -> view.showNavigationConfirmPopupIfDirty(
+				() -> ControllerProvider.getVaccinationController()
+					.create(
+						region,
+						district,
+						criteria.getPerson(),
+						criteria.getDisease(),
+						UiFieldAccessCheckers.getNoop(),
+						v -> refreshCallback.run())));
 	}
 
 	private EditSideComponentFieldEventListener editSideComponentFieldEventListener(VaccinationList vaccinationList) {

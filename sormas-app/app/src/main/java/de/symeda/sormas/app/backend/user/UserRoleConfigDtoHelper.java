@@ -37,7 +37,7 @@ public class UserRoleConfigDtoHelper extends AdoDtoHelper<UserRoleConfig, UserRo
 	}
 
 	@Override
-	protected Call<List<UserRoleConfigDto>> pullAllSince(long since) throws NoConnectionException {
+	protected Call<List<UserRoleConfigDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
 		return RetroProvider.getUserRoleConfigFacade().pullAllSince(since);
 	}
 
@@ -61,4 +61,9 @@ public class UserRoleConfigDtoHelper extends AdoDtoHelper<UserRoleConfig, UserRo
 	public void fillInnerFromAdo(UserRoleConfigDto target, UserRoleConfig source) {
 		throw new UnsupportedOperationException("Entity is read-only");
 	}
+
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return 0;
+    }
 }

@@ -23,82 +23,82 @@ import com.vaadin.ui.Button.ClickListener;
 import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
-import de.symeda.sormas.api.sample.SampleIndexDto;
+import de.symeda.sormas.api.sample.SampleListEntryDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
 
 @SuppressWarnings("serial")
-public class SampleList extends PaginationList<SampleIndexDto> {
+public class SampleList extends PaginationList<SampleListEntryDto> {
 
-	private final SampleCriteria sampleCriteria = new SampleCriteria();
+	private static final int MAX_DISPLAYED_ENTRIES = 5;
 
-	public SampleList(ContactReferenceDto contactRef) {
-		super(5);
-		sampleCriteria.contact(contactRef);
-		sampleCriteria.sampleAssociationType(SampleAssociationType.CONTACT);
-	}
+	private final SampleCriteria sampleCriteria;
+	private final Label noSamplesLabel;
 
-	public SampleList(CaseReferenceDto caseRef) {
-		super(5);
-		sampleCriteria.caze(caseRef);
-		sampleCriteria.sampleAssociationType(SampleAssociationType.CASE);
-	}
-
-	public SampleList(EventParticipantReferenceDto eventParticipantRef) {
-		super(5);
-		sampleCriteria.eventParticipant(eventParticipantRef);
-		sampleCriteria.sampleAssociationType(SampleAssociationType.EVENT_PARTICIPANT);
+	public SampleList(SampleCriteria sampleCriteria) {
+		super(MAX_DISPLAYED_ENTRIES);
+		this.sampleCriteria = sampleCriteria;
+		noSamplesLabel = new Label(buildNoSamplesCaption(sampleCriteria.getSampleAssociationType()));
 	}
 
 	@Override
 	public void reload() {
-		List<SampleIndexDto> samples = FacadeProvider.getSampleFacade().getIndexList(sampleCriteria, 0, maxDisplayedEntries * 20, null);
+		List<SampleListEntryDto> samples = FacadeProvider.getSampleFacade().getEntriesList(sampleCriteria, 0, maxDisplayedEntries * 20);
 
 		setEntries(samples);
 		if (!samples.isEmpty()) {
 			showPage(1);
 		} else {
+			listLayout.removeAllComponents();
 			updatePaginationLayout();
-			Label noSamplesLabel = new Label(
-				I18nProperties.getCaption(
-					sampleCriteria.getCaze() != null
-						? Captions.sampleNoSamplesForCase
-						: sampleCriteria.getContact() != null ? Captions.sampleNoSamplesForContact : Captions.sampleNoSamplesForEventParticipant));
 			listLayout.addComponent(noSamplesLabel);
 		}
 	}
 
 	@Override
 	protected void drawDisplayedEntries() {
-		for (SampleIndexDto sample : getDisplayedEntries()) {
+		for (SampleListEntryDto sample : getDisplayedEntries()) {
 			SampleListEntry listEntry = new SampleListEntry(sample);
-			addEditButton(listEntry);
+			if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT)) {
+				String sampleUuid = sample.getUuid();
+				listEntry.addEditButton(
+					"edit-sample-" + sampleUuid,
+					(ClickListener) event -> ControllerProvider.getSampleController().navigateToData(sampleUuid));
+			}
 			addViewLabMessageButton(listEntry);
 			listLayout.addComponent(listEntry);
 		}
 	}
 
-	private void addEditButton(SampleListEntry listEntry) {
-		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_EDIT)) {
-			listEntry
-				.addEditListener((ClickListener) event -> ControllerProvider.getSampleController().navigateToData(listEntry.getSample().getUuid()));
-		}
-	}
-
 	private void addViewLabMessageButton(SampleListEntry listEntry) {
-		List<LabMessageDto> labMessages = FacadeProvider.getLabMessageFacade().getForSample(listEntry.getSample().toReference());
+		List<LabMessageDto> labMessages = FacadeProvider.getLabMessageFacade().getForSample(listEntry.getSampleListEntryDto().toReference());
 		if (!labMessages.isEmpty()) {
 			listEntry.addAssociatedLabMessagesListener(clickEvent -> ControllerProvider.getLabMessageController().showLabMessagesSlider(labMessages));
 		}
+	}
+
+	private String buildNoSamplesCaption(SampleAssociationType sampleAssociationType) {
+		String caption;
+		switch (sampleAssociationType) {
+		case CASE:
+			caption = Captions.sampleNoSamplesForCase;
+			break;
+		case CONTACT:
+			caption = Captions.sampleNoSamplesForContact;
+			break;
+		case EVENT_PARTICIPANT:
+			caption = Captions.sampleNoSamplesForEventParticipant;
+			break;
+		default:
+			caption = "";
+		}
+		return I18nProperties.getCaption(caption);
 	}
 }

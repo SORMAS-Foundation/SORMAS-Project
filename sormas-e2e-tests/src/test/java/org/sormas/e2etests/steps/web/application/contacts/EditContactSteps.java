@@ -18,100 +18,98 @@
 
 package org.sormas.e2etests.steps.web.application.contacts;
 
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRST_CASE_ID_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.CONTACT_PERSON_TAB;
+import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.GENERAL_SEARCH_INPUT;
 
 import cucumber.api.java8.En;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
-import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.contacts.EditContactPage;
+import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pojo.web.Contact;
+import org.sormas.e2etests.pojo.web.QuarantineOrder;
+import org.sormas.e2etests.services.ContactDocumentService;
 import org.sormas.e2etests.services.ContactService;
+import org.testng.asserts.SoftAssert;
 
 public class EditContactSteps implements En {
   DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
   private final WebDriverHelpers webDriverHelpers;
-  public static Contact aContact;
+  public static Contact createdContact;
+  public static Contact collectedContact;
+  public static QuarantineOrder aQuarantineOrder;
   public static Contact editedContact;
+  public static Contact aContact;
+  public static final String userDirPath = System.getProperty("user.dir");
 
   @Inject
-  public EditContactSteps(WebDriverHelpers webDriverHelpers, ContactService contactService) {
+  public EditContactSteps(
+      WebDriverHelpers webDriverHelpers,
+      ContactService contactService,
+      SoftAssert softly,
+      ContactDocumentService contactDocumentService) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
         "I check the created data is correctly displayed on Edit Contact page",
         () -> {
-          aContact = collectContactData();
-          SoftAssertions softly = new SoftAssertions();
-          softly
-              .assertThat(aContact.getFirstName())
-              .isEqualToIgnoringCase(CreateNewContactSteps.contact.getFirstName());
-          softly
-              .assertThat(aContact.getLastName())
-              .isEqualToIgnoringCase(CreateNewContactSteps.contact.getLastName());
-          softly
-              .assertThat(aContact.getReturningTraveler())
-              .isEqualToIgnoringCase(CreateNewContactSteps.contact.getReturningTraveler());
-          softly
-              .assertThat(aContact.getReportDate())
-              .isEqualTo(CreateNewContactSteps.contact.getReportDate());
-          softly
-              .assertThat(aContact.getDiseaseOfSourceCase())
-              .isEqualTo(CreateNewContactSteps.contact.getDiseaseOfSourceCase());
-          softly
-              .assertThat(aContact.getCaseIdInExternalSystem())
-              .isEqualTo(CreateNewContactSteps.contact.getCaseIdInExternalSystem());
-          softly
-              .assertThat(aContact.getDateOfLastContact())
-              .isEqualTo(CreateNewContactSteps.contact.getDateOfLastContact());
-          softly
-              .assertThat(aContact.getCaseOrEventInformation())
-              .isEqualTo(CreateNewContactSteps.contact.getCaseOrEventInformation());
-          softly
-              .assertThat(aContact.getResponsibleRegion())
-              .isEqualTo(CreateNewContactSteps.contact.getResponsibleRegion());
-          softly
-              .assertThat(aContact.getResponsibleDistrict())
-              .isEqualTo(CreateNewContactSteps.contact.getResponsibleDistrict());
-          softly
-              .assertThat(aContact.getResponsibleCommunity())
-              .isEqualTo(CreateNewContactSteps.contact.getResponsibleCommunity());
-          softly
-              .assertThat(
-                  aContact
-                      .getAdditionalInformationOnContactType()
-                      .equalsIgnoreCase(
-                          CreateNewContactSteps.contact.getAdditionalInformationOnContactType()))
-              .isTrue();
-          softly
-              .assertThat(aContact.getTypeOfContact())
-              .isEqualToIgnoringCase(CreateNewContactSteps.contact.getTypeOfContact());
-          softly
-              .assertThat(aContact.getContactCategory())
-              .isEqualToIgnoringCase(CreateNewContactSteps.contact.getContactCategory());
-          softly
-              .assertThat(aContact.getRelationshipWithCase())
-              .isEqualTo(CreateNewContactSteps.contact.getRelationshipWithCase());
-          softly
-              .assertThat(aContact.getDescriptionOfHowContactTookPlace())
-              .isEqualTo(CreateNewContactSteps.contact.getDescriptionOfHowContactTookPlace());
-          softly.assertAll();
+          collectedContact = collectContactData();
+          createdContact = CreateNewContactSteps.contact;
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              collectedContact,
+              createdContact,
+              List.of(
+                  "firstName",
+                  "lastName",
+                  "returningTraveler",
+                  "reportDate",
+                  "diseaseOfSourceCase",
+                  "caseIdInExternalSystem",
+                  "dateOfLastContact",
+                  "caseOrEventInformation",
+                  "responsibleRegion",
+                  "responsibleDistrict",
+                  "responsibleCommunity",
+                  "additionalInformationOnContactType",
+                  "typeOfContact",
+                  "contactCategory",
+                  "relationshipWithCase",
+                  "descriptionOfHowContactTookPlace"));
+        });
+
+    When(
+        "I search created task by Contact first and last name",
+        () -> {
+          createdContact = CreateNewContactSteps.contact;
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              GENERAL_SEARCH_INPUT, 50);
+          webDriverHelpers.fillAndSubmitInWebElement(
+              GENERAL_SEARCH_INPUT,
+              createdContact.getFirstName() + " " + createdContact.getLastName());
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
 
     When(
         "I check the edited data is correctly displayed on Edit Contact page after editing",
         () -> {
-          aContact = collectContactDataAfterEdit();
-          SoftAssertions softly = new SoftAssertions();
-          softly.assertThat(editedContact).isEqualTo(aContact);
-          softly.assertAll();
+          collectedContact = collectContactDataAfterEdit();
+          ComparisonHelper.compareEqualEntities(editedContact, collectedContact);
         });
 
     When(
         "I open Contact Person tab",
         () -> {
+          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.scrollToElement(CONTACT_PERSON_TAB);
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_PERSON_TAB);
         });
@@ -122,6 +120,12 @@ public class EditContactSteps implements En {
           webDriverHelpers.scrollToElement(DELETE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
+        });
+
+    When(
+        "I open the last created UI Contact",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_CASE_ID_BUTTON);
         });
 
     When(
@@ -181,196 +185,279 @@ public class EditContactSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_EDIT_BUTTON);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_EDIT_BUTTON);
         });
+
+    When(
+        "I click on the Create button from Contact Document Templates",
+        () -> {
+          webDriverHelpers.scrollToElement(EditContactPage.CREATE_DOCUMENT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EditContactPage.CREATE_DOCUMENT_BUTTON);
+        });
+
+    When(
+        "I create a contact document from template",
+        () -> {
+          aQuarantineOrder = contactDocumentService.buildQuarantineOrder();
+          aQuarantineOrder = aQuarantineOrder.toBuilder().build();
+          selectQuarantineOrderTemplate(aQuarantineOrder.getDocumentTemplate());
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EXTRA_COMMENT_INPUT);
+          fillExtraComment(aQuarantineOrder.getExtraComment());
+          webDriverHelpers.clickOnWebElementBySelector(
+              EditContactPage.CREATE_QUARANTINE_ORDER_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CONTACT_SAVED_POPUP);
+        });
+
+    And(
+        "I verify that the contact document is downloaded and correctly named",
+        () -> {
+          String uuid = webDriverHelpers.getValueFromWebElement(EditContactPage.UUID_INPUT);
+          Path path =
+              Paths.get(
+                  userDirPath
+                      + "/downloads/"
+                      + uuid.substring(0, 6)
+                      + "-"
+                      + aQuarantineOrder.getDocumentTemplate());
+          softly.assertTrue(
+              Files.exists(path),
+              "The document with expected name was not downloaded. Path used for check: "
+                  + path.toAbsolutePath());
+          softly.assertAll();
+        });
+    When(
+        "^I click on ([^\"]*) radio button Contact Person tab$",
+        (String buttonName) ->
+            webDriverHelpers.clickWebElementByText(
+                CONTACT_CLASSIFICATION_RADIO_BUTTON, buttonName));
+
+    When(
+        "^I click SAVE button on Edit Contact Page$",
+        () -> {
+          webDriverHelpers.scrollToElement(SAVE_EDIT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_EDIT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_SAVED_POPUP);
+        });
+    When(
+        "^I click Create Case from Contact button$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.scrollToElement(CREATE_CASE_FROM_CONTACT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_CASE_FROM_CONTACT_BUTTON);
+        });
+    When(
+        "I check the created data for complex contact is correctly displayed on Edit Contact page",
+        () -> {
+          collectedContact = collectComplexContactData();
+          createdContact = CreateNewContactSteps.contact;
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              collectedContact,
+              createdContact,
+              List.of(
+                  "firstName",
+                  "lastName",
+                  "reportDate",
+                  "dateOfLastContact",
+                  "responsibleRegion",
+                  "responsibleDistrict",
+                  "responsibleCommunity",
+                  "additionalInformationOnContactType",
+                  "contactCategory",
+                  "relationshipWithCase",
+                  "descriptionOfHowContactTookPlace"));
+        });
+
+    When(
+        "I collect the contact person UUID displayed on Edit contact page",
+        () -> aContact = collectContactPersonUuid());
   }
 
-  public void selectContactClassification(String classification) {
+  private void selectContactClassification(String classification) {
     webDriverHelpers.clickWebElementByText(CONTACT_CLASSIFICATION_OPTIONS, classification);
   }
 
-  public void selectMultiDayContact(String multiDayContact) {
+  private void selectMultiDayContact(String multiDayContact) {
     webDriverHelpers.clickWebElementByText(MULTI_DAY_CONTACT_LABEL, multiDayContact);
   }
 
-  public void fillDateOfFirstContact(LocalDate date) {
+  private void fillDateOfFirstContact(LocalDate date) {
     webDriverHelpers.clearAndFillInWebElement(FIRST_DAY_CONTACT_DATE, formatter.format(date));
   }
 
-  public void fillDateOfLastContact(LocalDate date) {
+  private void fillDateOfLastContact(LocalDate date) {
     webDriverHelpers.clearAndFillInWebElement(LAST_CONTACT_DATE, formatter.format(date));
   }
 
-  public void selectDiseaseOfSourceCase(String disease) {
+  private void selectDiseaseOfSourceCase(String disease) {
     webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, disease);
   }
 
-  public void fillExternalId(String text) {
+  private void fillExternalId(String text) {
     webDriverHelpers.clearAndFillInWebElement(EXTERNAL_ID_INPUT, text);
   }
 
-  public void fillExternalToken(String text) {
+  private void fillExternalToken(String text) {
     webDriverHelpers.clearAndFillInWebElement(EXTERNAL_TOKEN_INPUT, text);
   }
 
-  public void fillReportDate(LocalDate date) {
+  private void fillReportDate(LocalDate date) {
     webDriverHelpers.clearAndFillInWebElement(REPORT_DATE, formatter.format(date));
   }
 
-  public void selectReportingDistrict(String district) {
+  private void selectReportingDistrict(String district) {
     webDriverHelpers.selectFromCombobox(REPORTING_DISTRICT_COMBOBOX, district);
   }
 
-  public void selectResponsibleRegion(String region) {
+  private void selectResponsibleRegion(String region) {
     webDriverHelpers.selectFromCombobox(RESPONSIBLE_REGION_COMBOBOX, region);
   }
 
-  public void selectResponsibleDistrict(String district) {
+  private void selectResponsibleDistrict(String district) {
     webDriverHelpers.selectFromCombobox(RESPONSIBLE_DISTRICT_COMBOBOX, district);
   }
 
-  public void selectResponsibleCommunity(String community) {
+  private void selectResponsibleCommunity(String community) {
     webDriverHelpers.selectFromCombobox(RESPONSIBLE_COMMUNITY_COMBOBOX, community);
   }
 
-  public void selectReturningTraveler(String text) {
+  private void selectReturningTraveler(String text) {
     webDriverHelpers.clickWebElementByText(RETURNING_TRAVELER_OPTIONS, text);
   }
 
-  public void fillCaseIdExternalSystem(String date) {
+  private void fillCaseIdExternalSystem(String date) {
     webDriverHelpers.clearAndFillInWebElement(CASE_ID_IN_EXTERNAL_SYSTEM_INPUT, date);
   }
 
-  public void fillCaseOrEventInformation(String information) {
+  private void fillCaseOrEventInformation(String information) {
     webDriverHelpers.clearAndFillInWebElement(CASE_OR_EVENT_INFORMATION_INPUT, information);
   }
 
-  public void selectIdentificationSource(String source) {
+  private void selectIdentificationSource(String source) {
     webDriverHelpers.selectFromCombobox(CONTACT_IDENTIFICATION_SOURCE_DETAILS_COMBOBOX, source);
   }
 
-  public void fillIdentificationSource(String source) {
+  private void fillIdentificationSource(String source) {
     webDriverHelpers.clearAndFillInWebElement(IDENTIFICATION_SOURCE_INPUT, source);
   }
 
-  public void selectContactType(String proximity) {
+  private void selectContactType(String proximity) {
     webDriverHelpers.clickWebElementByText(TYPE_OF_CONTACT_OPTIONS, proximity);
   }
 
-  public void fillAdditionalInformationOnContactType(String information) {
+  private void fillAdditionalInformationOnContactType(String information) {
     webDriverHelpers.clearAndFillInWebElement(
         ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT, information);
   }
 
-  public void selectContactCategory(String category) {
+  private void selectContactCategory(String category) {
     webDriverHelpers.clickWebElementByText(CONTACT_CATEGORY_OPTIONS, category);
   }
 
-  public void selectRelationShipWithCase(String relationship) {
+  private void selectRelationShipWithCase(String relationship) {
     webDriverHelpers.selectFromCombobox(RELATIONSHIP_WITH_CASE_COMBOBOX, relationship);
   }
 
-  public void fillDescriptionOfHowContactTookPlace(String text) {
+  private void fillDescriptionOfHowContactTookPlace(String text) {
     webDriverHelpers.clearAndFillInWebElement(DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT, text);
   }
 
-  public void selectProhibitionToWork(String text) {
+  private void selectProhibitionToWork(String text) {
     webDriverHelpers.clickWebElementByText(PROHIBITION_TO_WORK_OPTIONS, text);
   }
 
-  public void selectHomeBasedQuarantinePossible(String text) {
+  private void selectHomeBasedQuarantinePossible(String text) {
     webDriverHelpers.clickWebElementByText(HOME_BASED_QUARANTINE_OPTIONS, text);
   }
 
-  public void selectQuarantine(String text) {
+  private void selectQuarantine(String text) {
     webDriverHelpers.selectFromCombobox(QUARANTINE_COMBOBOX, text);
   }
 
-  public void selectHighPriority(String text) {
+  private void selectHighPriority(String text) {
     webDriverHelpers.clickWebElementByText(HIGH_PRIORITY_LABEL, text);
   }
 
-  public void selectPreexistingConditionDiabetes(String text) {
+  private void selectPreexistingConditionDiabetes(String text) {
     webDriverHelpers.clickWebElementByText(DIABETES_OPTIONS, text);
   }
 
-  public void selectPreexistingConditionHiv(String text) {
+  private void selectPreexistingConditionHiv(String text) {
     webDriverHelpers.clickWebElementByText(HIV_OPTIONS, text);
   }
 
-  public void selectPreexistingConditionLiver(String text) {
+  private void selectPreexistingConditionLiver(String text) {
     webDriverHelpers.clickWebElementByText(LIVER_OPTIONS, text);
   }
 
-  public void selectPreexistingConditionMalignancy(String text) {
+  private void selectPreexistingConditionMalignancy(String text) {
     webDriverHelpers.clickWebElementByText(MALIGNANCY_OPTIONS, text);
   }
 
-  public void selectPreexistingConditionChronicPulmonary(String text) {
+  private void selectPreexistingConditionChronicPulmonary(String text) {
     webDriverHelpers.clickWebElementByText(PULMONARY_OPTIONS, text);
   }
 
-  public void selectPreexistingConditionRenal(String text) {
+  private void selectPreexistingConditionRenal(String text) {
     webDriverHelpers.clickWebElementByText(RENAL_OPTIONS, text);
   }
 
-  public void selectPreexistingConditionNeurologic(String text) {
+  private void selectPreexistingConditionNeurologic(String text) {
     webDriverHelpers.clickWebElementByText(NEUROLOGIC_OPTIONS, text);
   }
 
-  public void selectPreexistingConditionCardiovascular(String text) {
+  private void selectPreexistingConditionCardiovascular(String text) {
     webDriverHelpers.clickWebElementByText(CARDIOVASCULAR_OPTIONS, text);
   }
 
-  public void fillAdditionalRelevantPreexistingConditions(String source) {
+  private void fillAdditionalRelevantPreexistingConditions(String source) {
     webDriverHelpers.clearAndFillInWebElement(ADDITIONAL_RELEVANT_PRE_CONDITIONS_TEXT, source);
   }
 
-  public void selectVaccinationStatusForThisDisease(String vaccine) {
+  private void selectVaccinationStatusForThisDisease(String vaccine) {
     webDriverHelpers.selectFromCombobox(VACCINATION_STATUS_COMBOBOX, vaccine);
   }
 
-  public void selectImmunosuppressiveTherapy(String text) {
+  private void selectImmunosuppressiveTherapy(String text) {
     webDriverHelpers.clickWebElementByText(IMMUNOSUPPRESSIVE_THERAPY_OPTIONS, text);
   }
 
-  public void selectActiveInCare(String text) {
+  private void selectActiveInCare(String text) {
     webDriverHelpers.clickWebElementByText(CARE_OVER_60_OPTIONS, text);
   }
 
-  public void clickCancelFollowUpButton() {
+  private void clickCancelFollowUpButton() {
     if (editedContact.isCancelFollowUp()) {
       webDriverHelpers.clickOnWebElementBySelector(CANCEL_FOLLOW_UP_BUTTON);
     }
   }
 
-  public void selectOverwriteFollowUp(String text) {
+  private void selectOverwriteFollowUp(String text) {
     webDriverHelpers.clickWebElementByText(OVERWRITE_FOLLOW_UP_LABEL, text);
   }
 
-  public void fillDateOfFollowUpUntil(LocalDate date) {
+  private void fillDateOfFollowUpUntil(LocalDate date) {
     webDriverHelpers.clearAndFillInWebElement(FOLLOW_UP_UNTIL_DATE, formatter.format(date));
   }
 
-  public void fillFollowUpStatusComment(String source) {
+  private void fillFollowUpStatusComment(String source) {
     webDriverHelpers.clearAndFillInWebElement(FOLLOW_UP_STATUS_TEXT, source);
   }
 
-  public void selectResponsibleContactOfficer(String vaccine) {
+  private void selectResponsibleContactOfficer(String vaccine) {
     webDriverHelpers.selectFromCombobox(RESPONSIBLE_STATUS_OFFICER_COMBOBOX, vaccine);
   }
 
-  public void fillGeneralComment(String source) {
+  private void fillGeneralComment(String source) {
     webDriverHelpers.clearAndFillInWebElement(GENERAL_COMMENT_TEXT, source);
   }
 
-  public boolean isFollowUpIsVisible() {
+  private boolean isFollowUpIsVisible() {
     return webDriverHelpers.isElementVisibleWithTimeout(CANCEL_FOLLOW_UP_BUTTON, 1);
   }
 
-  public boolean isFollowUpNotVisible() {
+  private boolean isFollowUpNotVisible() {
     return !isFollowUpIsVisible();
   }
 
-  public Contact collectContactData() {
+  private Contact collectContactData() {
     String collectedDateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE);
     LocalDate parsedDateOfReport = LocalDate.parse(collectedDateOfReport, formatter);
     String collectedLastDateOfContact = webDriverHelpers.getValueFromWebElement(LAST_CONTACT_DATE);
@@ -407,7 +494,7 @@ public class EditContactSteps implements En {
         .build();
   }
 
-  public Contact collectContactDataAfterEdit() {
+  private Contact collectContactDataAfterEdit() {
     webDriverHelpers.waitForPageLoaded();
     String collectedDateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE);
     String classification =
@@ -498,7 +585,7 @@ public class EditContactSteps implements En {
         .build();
   }
 
-  public Contact getContactInformation() {
+  private Contact getContactInformation() {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     String contactInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
     String[] contactInfos = contactInfo.split(" ");
@@ -508,5 +595,46 @@ public class EditContactSteps implements En {
         .lastName(contactInfos[1])
         .dateOfBirth(localDate)
         .build();
+  }
+
+  public Contact collectComplexContactData() {
+    String collectedDateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE);
+    LocalDate parsedDateOfReport = LocalDate.parse(collectedDateOfReport, formatter);
+    String collectedLastDateOfContact = webDriverHelpers.getValueFromWebElement(LAST_CONTACT_DATE);
+    LocalDate parsedLastDateOfContact = LocalDate.parse(collectedLastDateOfContact, formatter);
+    Contact contactInfo = getContactInformation();
+
+    return Contact.builder()
+        .firstName(contactInfo.getFirstName())
+        .lastName(contactInfo.getLastName())
+        .reportDate(parsedDateOfReport)
+        .dateOfLastContact(parsedLastDateOfContact)
+        .responsibleRegion(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_REGION_COMBOBOX))
+        .responsibleDistrict(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_DISTRICT_COMBOBOX))
+        .responsibleCommunity(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_COMMUNITY_COMBOBOX))
+        .additionalInformationOnContactType(
+            webDriverHelpers.getValueFromWebElement(
+                ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT))
+        .contactCategory(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CATEGORY_OPTIONS))
+        .relationshipWithCase(
+            webDriverHelpers.getValueFromCombobox(RELATIONSHIP_WITH_CASE_COMBOBOX))
+        .descriptionOfHowContactTookPlace(
+            webDriverHelpers.getValueFromWebElement(DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT))
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+        .build();
+  }
+
+  private void selectQuarantineOrderTemplate(String templateName) {
+    webDriverHelpers.selectFromCombobox(QUARANTINE_ORDER_COMBOBOX, templateName);
+  }
+
+  private void fillExtraComment(String extraComment) {
+    webDriverHelpers.fillInAndLeaveWebElement(EditContactPage.EXTRA_COMMENT_TEXTAREA, extraComment);
+  }
+
+  private Contact collectContactPersonUuid() {
+    webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 40);
+    return Contact.builder().uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT)).build();
   }
 }

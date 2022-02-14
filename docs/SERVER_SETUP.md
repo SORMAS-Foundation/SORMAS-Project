@@ -142,13 +142,13 @@ Keycloak can be set up in two ways:
 
 **Setup**
 
-Setting Keycloak up as a standalone installation [Server Installation and Configuration Guide](https://www.keycloak.org/docs/11.0/server_installation/#installation)
-* Make sure to configure Keycloak with PostgreSQL Database [Relational Database Setup](https://www.keycloak.org/docs/11.0/server_installation/#_database)
+Setting Keycloak up as a standalone installation [Server Installation and Configuration Guide](https://www.keycloak.org/docs/16.1/server_installation/#installation)
+* Make sure to configure Keycloak with PostgreSQL Database [Relational Database Setup](https://www.keycloak.org/docs/16.1/server_installation/#_database)
 * Set up an Admin User
-* Copy the `themes` folder content to `${KEYCLOAK_HOME}/themes` [Deploying Themes](https://www.keycloak.org/docs/11.0/server_development/#deploying-themes)
-* Deploy the `sormas-keycloak-service-provider` [Using Keycloak Deployer](https://www.keycloak.org/docs/11.0/server_development/#using-the-keycloak-deployer)
+* Copy the `themes` folder content to `${KEYCLOAK_HOME}/themes` [Deploying Themes](https://www.keycloak.org/docs/16.1/server_development/#deploying-themes)
+* Deploy the `sormas-keycloak-service-provider` [Using Keycloak Deployer](https://www.keycloak.org/docs/16.1/server_development/#using-the-keycloak-deployer)
 * Update the `sormas-base/setup/keycloak/SORMAS.json` file by replacing the following placeholders: `${SORMAS_SERVER_URL}`, `${KEYCLOAK_SORMAS_UI_SECRET}`, `${KEYCLOAK_SORMAS_BACKEND_SECRET}`, `${KEYCLOAK_SORMAS_REST_SECRET}`
-* Create the SORMAS Realm by importing `sormas-base/setup/keycloak/SORMAS.json` see [Create a New Realm](https://www.keycloak.org/docs/11.0/server_admin/#_create-realm)
+* Create the SORMAS Realm by importing `sormas-base/setup/keycloak/SORMAS.json` see [Create a New Realm](https://www.keycloak.org/docs/16.1/server_admin/#proc-creating-a-realm_server_administration_guide)
 * Update the `sormas-*` clients by generating new secrets for them
 * Update the realm's email settings to allow sending emails to users
 
@@ -179,7 +179,7 @@ Then update `sormas.properties` file in the SORMAS domain with the property `aut
 *after setting up Keycloak as one of the described options above*
 
 In case Keycloak is set up alongside an already running instance of SORMAS, these are the steps to follow to make sure already existing users can access the system:
-1. Manually create an admin user in Keycloak for the SORMAS realm [Creating a user](https://www.keycloak.org/docs/11.0/getting_started/index.html#creating-a-user) *(username has to be the same as admin's username in SORMAS)*
+1. Manually create an admin user in Keycloak for the SORMAS realm [Creating a user](https://www.keycloak.org/docs/16.1/server_admin/#proc-creating-user_server_administration_guide) *(username has to be the same as admin's username in SORMAS)*
 2. Login to SORMAS and trigger the **Sync Users** button from the **Users** page
 3. This will sync users to Keycloak keeping their original password - see [SORMAS Keycloak Service Provider](sormas-keycloak-service-provider/README.md) for more information about this
 

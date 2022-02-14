@@ -18,14 +18,14 @@
 
 package org.sormas.e2etests.steps.web.application.contacts;
 
-import static com.google.common.truth.Truth.assertWithMessage;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
 
 import cucumber.api.java8.En;
 import javax.inject.Inject;
-import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
+import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
 
 public class ChooseSourceCaseSteps implements En {
 
@@ -33,7 +33,7 @@ public class ChooseSourceCaseSteps implements En {
 
   @Inject
   public ChooseSourceCaseSteps(
-      WebDriverHelpers webDriverHelpers, ApiState apiState, final SoftAssertions softly) {
+      WebDriverHelpers webDriverHelpers, ApiState apiState, SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -47,6 +47,8 @@ public class ChooseSourceCaseSteps implements En {
     When(
         "^I open the first found result in the CHOOSE SOURCE window$",
         () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION);
           webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION);
           webDriverHelpers.waitForRowToBeSelected(SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(SOURCE_CASE_WINDOW_CONFIRM_BUTTON);
@@ -85,21 +87,22 @@ public class ChooseSourceCaseSteps implements En {
                   : "Not expected string!";
           String caseId = webDriverHelpers.getTextFromWebElement(CASE_ID_LABEL);
 
-          softly
-              .assertThat(
-                  apiState.getCreatedCase().getPerson().getFirstName()
-                      + " "
-                      + apiState.getCreatedCase().getPerson().getLastName())
-              .isEqualToIgnoringCase(casePerson);
-          softly
-              .assertThat(apiState.getCreatedCase().getDisease())
-              .isEqualToIgnoringCase(caseDisease);
-          softly
-              .assertThat(apiState.getCreatedCase().getCaseClassification())
-              .isEqualToIgnoringCase(caseClassification);
-          softly
-              .assertThat(apiState.getCreatedCase().getUuid().substring(0, 6))
-              .isEqualToIgnoringCase(caseId);
+          softly.assertEquals(
+              apiState.getCreatedCase().getPerson().getFirstName().toUpperCase()
+                  + " "
+                  + apiState.getCreatedCase().getPerson().getLastName().toUpperCase(),
+              casePerson.toUpperCase(),
+              "Person name is not correct");
+          softly.assertEquals(
+              apiState.getCreatedCase().getDisease(), caseDisease, "Disease value is not correct");
+          softly.assertEquals(
+              apiState.getCreatedCase().getCaseClassification(),
+              caseClassification,
+              "Case classification is not correct");
+          softly.assertEquals(
+              apiState.getCreatedCase().getUuid().substring(0, 6).toUpperCase(),
+              caseId,
+              "Case ID is not correct");
           softly.assertAll();
         });
 
@@ -118,9 +121,9 @@ public class ChooseSourceCaseSteps implements En {
     Then(
         "I check the CHOOSE SOURCE CASE BUTTON is displayed",
         () ->
-            assertWithMessage("The expected element was not displayed")
-                .that(webDriverHelpers.isElementVisibleWithTimeout(CHOOSE_SOURCE_CASE_BUTTON, 1))
-                .isTrue());
+            Assert.assertTrue(
+                webDriverHelpers.isElementVisibleWithTimeout(CHOOSE_SOURCE_CASE_BUTTON, 1),
+                "Choose source case button is not displayed"));
 
     When(
         "I click yes on the CONFIRM REMOVAL popup from CONTACT page",

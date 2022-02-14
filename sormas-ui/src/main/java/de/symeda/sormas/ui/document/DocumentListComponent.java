@@ -14,6 +14,8 @@
  */
 package de.symeda.sormas.ui.document;
 
+import static java.util.Objects.nonNull;
+
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -83,5 +85,11 @@ public class DocumentListComponent extends SideComponent {
 		uploadLayout.addComponentsAndExpand(multiFileUpload);
 
 		return mainButton;
+	}
+
+	public void reload() {
+		if (nonNull(documentList)) {
+			documentList.reload();
+		}
 	}
 }

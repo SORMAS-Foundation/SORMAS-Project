@@ -53,6 +53,8 @@ public class TestReport extends CoreAdo {
 	private String typingId;
 	private String externalId;
 	private String externalOrderId;
+	private String testedDiseaseVariant;
+	private String testedDiseaseVariantDetails;
 	private Boolean preliminary;
 
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -170,6 +172,22 @@ public class TestReport extends CoreAdo {
 
 	public void setExternalOrderId(String externalOrderId) {
 		this.externalOrderId = externalOrderId;
+	}
+
+	public String getTestedDiseaseVariant() {
+		return testedDiseaseVariant;
+	}
+
+	public void setTestedDiseaseVariant(String diseaseVariant) {
+		this.testedDiseaseVariant = diseaseVariant;
+	}
+
+	public String getTestedDiseaseVariantDetails() {
+		return testedDiseaseVariantDetails;
+	}
+
+	public void setTestedDiseaseVariantDetails(String diseaseVariantDetails) {
+		this.testedDiseaseVariantDetails = diseaseVariantDetails;
 	}
 
 	@Column

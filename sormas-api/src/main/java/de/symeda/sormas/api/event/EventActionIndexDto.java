@@ -17,14 +17,13 @@
  *******************************************************************************/
 package de.symeda.sormas.api.event;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.disease.DiseaseVariant;
 import java.io.Serializable;
 import java.util.Date;
 
-import de.symeda.sormas.api.action.ActionMeasure;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.action.ActionPriority;
 import de.symeda.sormas.api.action.ActionStatus;
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
 public class EventActionIndexDto implements Serializable {
@@ -94,26 +93,17 @@ public class EventActionIndexDto implements Serializable {
 		RiskLevel eventRiskLevel,
 		EventInvestigationStatus eventInvestigationStatus,
 		EventManagementStatus eventManagementStatus,
-		String eventReportingUserUuid,
-		String eventReportingUserFirstName,
-		String eventReportingUserLastName,
-		String eventResponsibleUserUuid,
-		String eventResponsibleUserFirstName,
-		String eventResponsibleUserLastName,
-		ActionMeasure actionMeasure,
-		Date eventEvolutionDate,
+		UserReferenceDto eventReportingUser,
+		UserReferenceDto eventResponsibleUser,
 		String actionTitle,
+		Date eventEvolutionDate,
 		Date actionCreationDate,
 		Date actionChangeDate,
 		Date actionDate,
 		ActionStatus actionStatus,
 		ActionPriority actionPriority,
-		String actionLastModifiedByUuid,
-		String actionLastModifiedByFirstName,
-		String actionLastModifiedByLastName,
-		String actionCreatorUserUuid,
-		String actionCreatorUserFirstName,
-		String actionCreatorUserLastName) {
+		UserReferenceDto actionLastModifiedBy,
+		UserReferenceDto actionCreatorUser) {
 
 		this.eventUuid = eventUuid;
 		this.eventTitle = eventTitle;
@@ -126,19 +116,18 @@ public class EventActionIndexDto implements Serializable {
 		this.eventStatus = eventStatus;
 		this.eventRiskLevel = eventRiskLevel;
 		this.eventInvestigationStatus = eventInvestigationStatus;
-		this.eventReportingUser = new UserReferenceDto(eventReportingUserUuid, eventReportingUserFirstName, eventReportingUserLastName, null);
-		this.eventResponsibleUser = new UserReferenceDto(eventResponsibleUserUuid, eventResponsibleUserFirstName, eventResponsibleUserLastName, null);
-		this.actionTitle = EventHelper.buildEventActionTitleString(actionMeasure, actionTitle);
-		this.eventEvolutionDate = eventEvolutionDate;
+		this.eventManagementStatus = eventManagementStatus;
+		this.eventReportingUser = eventReportingUser;
+		this.eventResponsibleUser = eventResponsibleUser;
 		this.actionTitle = actionTitle;
+		this.eventEvolutionDate = eventEvolutionDate;
 		this.actionCreationDate = actionCreationDate;
 		this.actionChangeDate = actionChangeDate;
 		this.actionDate = actionDate;
 		this.actionStatus = actionStatus;
 		this.actionPriority = actionPriority;
-		this.actionLastModifiedBy = new UserReferenceDto(actionLastModifiedByUuid, actionLastModifiedByFirstName, actionLastModifiedByLastName, null);
-		this.actionCreatorUser = new UserReferenceDto(actionCreatorUserUuid, actionCreatorUserFirstName, actionCreatorUserLastName, null);
-		this.eventManagementStatus = eventManagementStatus;
+		this.actionLastModifiedBy = actionLastModifiedBy;
+		this.actionCreatorUser = actionCreatorUser;
 	}
 
 	public String getEventUuid() {

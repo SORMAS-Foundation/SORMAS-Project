@@ -10,6 +10,7 @@ public class PatientDiaryConfig implements Serializable, Cloneable {
 	private String url;
 	private String probandsUrl;
 	private String authUrl;
+	private String frontendAuthUrl;
 	private String email;
 	private String password;
 	private UserConfig defaultUser;
@@ -37,6 +38,14 @@ public class PatientDiaryConfig implements Serializable, Cloneable {
 
 	public void setAuthUrl(String authUrl) {
 		this.authUrl = authUrl;
+	}
+
+	public String getFrontendAuthUrl() {
+		return frontendAuthUrl;
+	}
+
+	public void setFrontendAuthUrl(String frontendAuthUrl) {
+		this.frontendAuthUrl = frontendAuthUrl;
 	}
 
 	public String getEmail() {

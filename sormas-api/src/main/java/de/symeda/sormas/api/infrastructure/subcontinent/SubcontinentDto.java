@@ -59,4 +59,9 @@ public class SubcontinentDto extends InfrastructureDto {
 	public void setContinent(ContinentReferenceDto continent) {
 		this.continent = continent;
 	}
+
+	@Override
+	public String toString() {
+		return getDefaultName();
+	}
 }

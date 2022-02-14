@@ -10,7 +10,6 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
-import org.assertj.core.api.SoftAssertions;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.enums.ContactOutcome;
@@ -18,6 +17,7 @@ import org.sormas.e2etests.enums.TestDataUser;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
+import org.testng.asserts.SoftAssert;
 
 public class ContactsDetailedTableViewSteps implements En {
 
@@ -30,7 +30,7 @@ public class ContactsDetailedTableViewSteps implements En {
       BaseSteps baseSteps,
       ApiState apiState,
       DataOperations dataOperations,
-      SoftAssertions softly) {
+      SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
     this.baseSteps = baseSteps;
 
@@ -39,72 +39,69 @@ public class ContactsDetailedTableViewSteps implements En {
         () -> {
           List<Map<String, String>> tableRowsData = getTableRowsData();
           Map<String, String> detailedContactDTableRow = tableRowsData.get(0);
-          softly
-              .assertThat(
-                  detailedContactDTableRow.get(
-                      ContactsDetailedTableViewHeaders.CONTACT_ID.toString()))
-              .containsIgnoringCase(
-                  dataOperations.getPartialUuidFromAssociatedLink(
-                      apiState.getCreatedContact().getUuid()));
-          softly
-              .assertThat(
-                  detailedContactDTableRow.get(ContactsDetailedTableViewHeaders.DISEASE.toString()))
-              .containsIgnoringCase(ContactOutcome.CORONAVIRUS.getOutcome());
-          softly
-              .assertThat(
-                  detailedContactDTableRow.get(
-                      ContactsDetailedTableViewHeaders.CONTACT_CLASSIFICATION.toString()))
-              .containsIgnoringCase(ContactOutcome.UNCONFIRMED.getOutcome());
-          softly
-              .assertThat(
-                  detailedContactDTableRow.get(
-                      ContactsDetailedTableViewHeaders.CONTACT_STATUS.toString()))
-              .containsIgnoringCase("Active Contact");
-          softly
-              .assertThat(
-                  detailedContactDTableRow.get(
-                      ContactsDetailedTableViewHeaders.FIRST_NAME_OF_CONTACT_PERSON.toString()))
-              .containsIgnoringCase(apiState.getLastCreatedPerson().getFirstName());
-          softly
-              .assertThat(
-                  detailedContactDTableRow.get(
-                      ContactsDetailedTableViewHeaders.LAST_NAME_OF_CONTACT_PERSON.toString()))
-              .containsIgnoringCase(apiState.getLastCreatedPerson().getLastName());
-          softly
-              .assertThat(
-                  detailedContactDTableRow.get(
-                      ContactsDetailedTableViewHeaders.DISTRICT.toString()))
-              .containsIgnoringCase(apiState.getCreatedContact().getDistrict().getCaption());
-          softly
-              .assertThat(
-                  detailedContactDTableRow.get(
-                      ContactsDetailedTableViewHeaders.RELATIONSHIP_WITH_CASE.toString()))
-              .containsIgnoringCase(ContactOutcome.SAME_HOUSEHOLD.getOutcome());
-          softly
-              .assertThat(
-                  detailedContactDTableRow.get(
-                      ContactsDetailedTableViewHeaders.FOLLOW_UP_STATUS.toString()))
-              .containsIgnoringCase(ContactOutcome.FOLLOW_UP.getOutcome());
-          softly
-              .assertThat(
-                  detailedContactDTableRow.get(
-                      ContactsDetailedTableViewHeaders.NUMBER_OF_VISITS.toString()))
-              .containsIgnoringCase("0 (0 missed)");
-          softly
-              .assertThat(
-                  detailedContactDTableRow.get(
-                      ContactsDetailedTableViewHeaders.PENDING_TASKS.toString()))
-              .containsIgnoringCase("1");
-          softly
-              .assertThat(
-                  detailedContactDTableRow.get(
-                      ContactsDetailedTableViewHeaders.COMPLETENESS.toString()))
-              .containsIgnoringCase("25 %");
-          softly
-              .assertThat(
-                  detailedContactDTableRow.get(
-                      ContactsDetailedTableViewHeaders.REPORTING_USER.toString()))
-              .containsIgnoringCase(TestDataUser.REST_AUTOMATION.getUserRole());
+          softly.assertEquals(
+              detailedContactDTableRow.get(ContactsDetailedTableViewHeaders.CONTACT_ID.toString()),
+              dataOperations
+                  .getPartialUuidFromAssociatedLink(apiState.getCreatedContact().getUuid())
+                  .toUpperCase(),
+              "UUID from associated link is not correct");
+          softly.assertEquals(
+              detailedContactDTableRow.get(ContactsDetailedTableViewHeaders.DISEASE.toString()),
+              ContactOutcome.CORONAVIRUS.getOutcome(),
+              "Disease value is not correct");
+          softly.assertEquals(
+              detailedContactDTableRow.get(
+                  ContactsDetailedTableViewHeaders.CONTACT_CLASSIFICATION.toString()),
+              ContactOutcome.UNCONFIRMED.getOutcome(),
+              "Contact classification is not correct");
+          softly.assertEquals(
+              detailedContactDTableRow.get(
+                  ContactsDetailedTableViewHeaders.CONTACT_STATUS.toString()),
+              "Active contact",
+              "Contact status is not correct");
+          softly.assertEquals(
+              detailedContactDTableRow.get(
+                  ContactsDetailedTableViewHeaders.FIRST_NAME_OF_CONTACT_PERSON.toString()),
+              apiState.getLastCreatedPerson().getFirstName(),
+              "First name of contact person is not correct");
+          softly.assertEquals(
+              detailedContactDTableRow.get(
+                  ContactsDetailedTableViewHeaders.LAST_NAME_OF_CONTACT_PERSON.toString()),
+              apiState.getLastCreatedPerson().getLastName(),
+              "Last name of contact person is not correct");
+          softly.assertEquals(
+              detailedContactDTableRow.get(ContactsDetailedTableViewHeaders.DISTRICT.toString()),
+              apiState.getCreatedContact().getDistrict().getCaption(),
+              "District value is not correct");
+          softly.assertEquals(
+              detailedContactDTableRow.get(
+                  ContactsDetailedTableViewHeaders.RELATIONSHIP_WITH_CASE.toString()),
+              ContactOutcome.SAME_HOUSEHOLD.getOutcome(),
+              "Relationship with case is not correct");
+          softly.assertEquals(
+              detailedContactDTableRow.get(
+                  ContactsDetailedTableViewHeaders.FOLLOW_UP_STATUS.toString()),
+              ContactOutcome.FOLLOW_UP.getOutcome(),
+              "Follow up status is not correct");
+          softly.assertEquals(
+              detailedContactDTableRow.get(
+                  ContactsDetailedTableViewHeaders.NUMBER_OF_VISITS.toString()),
+              "0 (0 missed)",
+              "Number of visits is not correct");
+          softly.assertEquals(
+              detailedContactDTableRow.get(
+                  ContactsDetailedTableViewHeaders.PENDING_TASKS.toString()),
+              "1");
+          softly.assertEquals(
+              detailedContactDTableRow.get(
+                  ContactsDetailedTableViewHeaders.COMPLETENESS.toString()),
+              "25 %",
+              "Completeness level is not correct");
+          softly.assertEquals(
+              detailedContactDTableRow.get(
+                  ContactsDetailedTableViewHeaders.REPORTING_USER.toString()),
+              TestDataUser.REST_AUTOMATION.getUserRole(),
+              "Reporting user is not correct");
           softly.assertAll();
         });
   }

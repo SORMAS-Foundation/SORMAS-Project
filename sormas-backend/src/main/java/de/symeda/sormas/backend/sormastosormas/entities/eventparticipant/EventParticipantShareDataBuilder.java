@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.sormastosormas.entities.eventparticipant;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.sormastosormas.event.SormasToSormasEventParticipantDto;
@@ -33,15 +34,24 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 @Stateless
 @LocalBean
 public class EventParticipantShareDataBuilder
-	implements ShareDataBuilder<EventParticipantDto, EventParticipant, SormasToSormasEventParticipantDto, SormasToSormasEventParticipantPreview> {
+	extends
+	ShareDataBuilder<EventParticipantDto, EventParticipant, SormasToSormasEventParticipantDto, SormasToSormasEventParticipantPreview, SormasToSormasEventParticipantDtoValidator> {
 
 	@EJB
 	private ShareDataBuilderHelper dataBuilderHelper;
 	@EJB
 	private EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal eventParticipantFacade;
 
+	public EventParticipantShareDataBuilder() {
+	}
+
+	@Inject
+	protected EventParticipantShareDataBuilder(SormasToSormasEventParticipantDtoValidator validator) {
+		super(validator);
+	}
+
 	@Override
-	public SormasToSormasEventParticipantDto buildShareData(EventParticipant data, ShareRequestInfo requestInfo) {
+	public SormasToSormasEventParticipantDto doBuildShareData(EventParticipant data, ShareRequestInfo requestInfo) {
 		Pseudonymizer pseudonymizer =
 			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
 
@@ -60,7 +70,7 @@ public class EventParticipantShareDataBuilder
 	}
 
 	@Override
-	public SormasToSormasEventParticipantPreview buildShareDataPreview(EventParticipant eventParticipant, ShareRequestInfo requestInfo) {
+	public SormasToSormasEventParticipantPreview doBuildShareDataPreview(EventParticipant eventParticipant, ShareRequestInfo requestInfo) {
 		Pseudonymizer pseudonymizer =
 			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
 

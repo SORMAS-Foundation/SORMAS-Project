@@ -21,6 +21,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.oneOfTwoCol;
 
+import com.vaadin.ui.Button;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.Field;
@@ -33,10 +34,11 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
+import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.PersonDependentEditForm;
 
-public class EventParticipantCreateForm extends AbstractEditForm<EventParticipantDto> {
+public class EventParticipantCreateForm extends PersonDependentEditForm<EventParticipantDto> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -45,11 +47,12 @@ public class EventParticipantCreateForm extends AbstractEditForm<EventParticipan
 	private static final String PERSON_SEX = PersonDto.SEX;
 
 	private static final String HTML_LAYOUT = fluidRowLocs(EventParticipantDto.INVOLVEMENT_DESCRIPTION)
-		+ fluidRowLocs(FIRST_NAME, LAST_NAME)
+		+ LayoutUtil.fluidRowLocs(6, PersonDto.FIRST_NAME, 4, PersonDto.LAST_NAME, 2, PERSON_SEARCH_LOC)
 		+ fluidRow(oneOfTwoCol(PERSON_SEX))
 		+ fluidRowLocs(EventParticipantDto.REGION, EventParticipantDto.DISTRICT);
 
 	private boolean jurisdictionFieldsRequired;
+	private Button searchPersonButton;
 
 	public EventParticipantCreateForm(boolean jurisdictionFieldsRequired) {
 
@@ -65,6 +68,9 @@ public class EventParticipantCreateForm extends AbstractEditForm<EventParticipan
 		addField(EventParticipantDto.INVOLVEMENT_DESCRIPTION, TextField.class);
 		addCustomField(FIRST_NAME, String.class, TextField.class);
 		addCustomField(LAST_NAME, String.class, TextField.class);
+
+		searchPersonButton = createPersonSearchButton(PERSON_SEARCH_LOC);
+		getContent().addComponent(searchPersonButton, PERSON_SEARCH_LOC);
 
 		ComboBox sex = addCustomField(PERSON_SEX, Sex.class, ComboBox.class);
 		sex.setCaption(I18nProperties.getCaption(Captions.Person_sex));
@@ -99,6 +105,7 @@ public class EventParticipantCreateForm extends AbstractEditForm<EventParticipan
 				firstNameField.setVisible(false);
 				lastNameField.setRequired(false);
 				lastNameField.setVisible(false);
+				searchPersonButton.setVisible(false);
 			} else {
 				firstNameField.setEnabled(false);
 				firstNameField.setValue(person.getFirstName());
@@ -106,6 +113,7 @@ public class EventParticipantCreateForm extends AbstractEditForm<EventParticipan
 				lastNameField.setValue(person.getLastName());
 				personSexField.setEnabled(false);
 				personSexField.setValue(person.getSex());
+				searchPersonButton.setEnabled(false);
 			}
 			personSexField.setEnabled(false);
 			personSexField.setValue(person.getSex());
@@ -141,5 +149,25 @@ public class EventParticipantCreateForm extends AbstractEditForm<EventParticipan
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
+	}
+
+	@Override
+	public void setPerson(PersonDto person) {
+		if (person != null) {
+			((TextField) getField(PersonDto.FIRST_NAME)).setValue(person.getFirstName());
+			((TextField) getField(PersonDto.LAST_NAME)).setValue(person.getLastName());
+			((ComboBox) getField(PersonDto.SEX)).setValue(person.getSex());
+		} else {
+			getField(PersonDto.FIRST_NAME).clear();
+			getField(PersonDto.LAST_NAME).clear();
+			getField(PersonDto.SEX).clear();
+		}
+	}
+
+	@Override
+	protected void enablePersonFields(Boolean enable) {
+		getField(PersonDto.FIRST_NAME).setEnabled(enable);
+		getField(PersonDto.LAST_NAME).setEnabled(enable);
+		getField(PersonDto.SEX).setEnabled(enable);
 	}
 }

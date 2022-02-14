@@ -43,11 +43,7 @@ public class LabMessageUiHelper {
 		return cancelButton;
 	}
 
-	public static void establishFinalCommitButtons(
-		CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent,
-		CommitDiscardWrapperComponent.CommitListener defaultCallback) {
-		// add default callback
-		sampleComponent.addCommitListener(defaultCallback);
+	public static void establishFinalCommitButtons(CommitDiscardWrapperComponent<? extends AbstractSampleForm> sampleComponent) {
 		// add option to navigate to related entry after saving
 		LabMessageUiHelper.addSaveAndOpenEntryButton(sampleComponent);
 		// add yet another listener just for the save button, it will not be added to the save and open entry button

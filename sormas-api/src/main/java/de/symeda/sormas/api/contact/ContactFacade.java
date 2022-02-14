@@ -29,6 +29,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
+import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
@@ -56,6 +57,8 @@ public interface ContactFacade {
 	List<String> getAllActiveUuids();
 
 	void generateContactFollowUpTasks();
+
+	List<ContactDto> getAllActiveContactsAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
 
 	List<ContactDto> getByUuids(List<String> uuids);
 
@@ -157,4 +160,6 @@ public interface ContactFacade {
 	void updateCompleteness(String uuid);
 
 	void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
+
+	AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid);
 }

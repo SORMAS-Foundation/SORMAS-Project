@@ -13,6 +13,8 @@ import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
 
+import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildContactValidationGroupName;
+
 @Stateless
 @LocalBean
 public class SormasToSormasContactDtoValidator
@@ -29,7 +31,7 @@ public class SormasToSormasContactDtoValidator
 	@Override
 	public ValidationErrors validate(SormasToSormasContactDto sharedData, ValidationDirection direction) {
 		ContactDto contact = sharedData.getEntity();
-		ValidationErrors validationErrors = new ValidationErrors();
+		ValidationErrors validationErrors = new ValidationErrors(buildContactValidationGroupName(contact));
 
 		ValidationErrors personValidationErrors = validatePerson(sharedData.getPerson(), direction);
 		validationErrors.addAll(personValidationErrors);
@@ -46,7 +48,7 @@ public class SormasToSormasContactDtoValidator
 	}
 
 	public ValidationErrors validatePreview(SormasToSormasContactPreview preview, ValidationDirection direction) {
-		ValidationErrors validationErrors = new ValidationErrors();
+		ValidationErrors validationErrors = new ValidationErrors(buildContactValidationGroupName(preview));
 
 		ValidationErrors personValidationErrors = validatePersonPreview(preview.getPerson(), direction);
 		validationErrors.addAll(personValidationErrors);

@@ -77,11 +77,7 @@ public enum CaseClassification
 	}
 
 	public static Set<CaseClassification> getConfirmedClassifications() {
-		return Collections
-				.unmodifiableSet(EnumSet.of(
-						CaseClassification.CONFIRMED,
-						CaseClassification.CONFIRMED_NO_SYMPTOMS,
-						CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS
-				));
+		return Collections.unmodifiableSet(
+			EnumSet.of(CaseClassification.CONFIRMED, CaseClassification.CONFIRMED_NO_SYMPTOMS, CaseClassification.CONFIRMED_UNKNOWN_SYMPTOMS));
 	}
 }

@@ -22,11 +22,18 @@ import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.labmessage.LabMessageCriteria;
 import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
+import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
+import de.symeda.sormas.ui.utils.ComboBoxWithPlaceholder;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.DateTimeField;
 import de.symeda.sormas.ui.utils.FieldConfiguration;
@@ -44,6 +51,7 @@ public class LabMessageGridFilterForm extends AbstractFilterForm<LabMessageCrite
 	protected String[] getMainFilterLocators() {
 		return new String[] {
 			LabMessageCriteria.SEARCH_FIELD_LIKE,
+			LabMessageCriteria.ASSIGNEE,
 			LabMessageCriteria.MESSAGE_DATE_FROM,
 			LabMessageCriteria.MESSAGE_DATE_TO,
 			LabMessageCriteria.BIRTH_DATE_FROM,
@@ -52,10 +60,17 @@ public class LabMessageGridFilterForm extends AbstractFilterForm<LabMessageCrite
 
 	@Override
 	protected void addFields() {
+		UserDto user = currentUserDto();
+
 		TextField searchField = addField(
 			FieldConfiguration
 				.withCaptionAndPixelSized(LabMessageCriteria.SEARCH_FIELD_LIKE, I18nProperties.getString(Strings.promptLabMessagesSearchField), 200));
 		searchField.setNullRepresentation("");
+
+		ComboBoxWithPlaceholder assignee = addField(LabMessageCriteria.ASSIGNEE, ComboBoxWithPlaceholder.class);
+		assignee.addItem(new UserReferenceDto(ReferenceDto.NO_REFERENCE_UUID, I18nProperties.getCaption(Captions.unassigned), "", null));
+		assignee.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRight(user.getRegion(), UserRight.LAB_MESSAGES));
+		assignee.setNullSelectionAllowed(true);
 
 		DateTimeField messageDateFrom = addField(LabMessageCriteria.MESSAGE_DATE_FROM, DateTimeField.class);
 		messageDateFrom.setCaption(I18nProperties.getPrefixCaption(LabMessageCriteria.I18N_PREFIX, LabMessageCriteria.MESSAGE_DATE_FROM));

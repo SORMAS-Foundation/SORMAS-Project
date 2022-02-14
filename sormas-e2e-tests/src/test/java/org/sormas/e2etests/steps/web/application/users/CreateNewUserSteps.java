@@ -37,8 +37,8 @@ public class CreateNewUserSteps implements En {
     this.webDriverHelpers = webDriverHelpers;
     When(
         "^I create a new user with ([^\"]*)$",
-        (String rights) -> {
-          user = userService.buildGeneratedUser();
+        (String role) -> {
+          user = userService.buildGeneratedUserWithRole(role);
           fillFirstName(user.getFirstName());
           fillLastName(user.getLastName());
           fillEmailAddress(user.getEmailAddress());
@@ -63,7 +63,7 @@ public class CreateNewUserSteps implements En {
           fillGpsAccuracy(user.getGpsAccuracy());
           selectActive(user.getActive());
           fillUserName(user.getUserName());
-          selectUserRole(rights);
+          selectUserRole(role);
           selectLimitedDisease(user.getLimitedDisease());
           webDriverHelpers.scrollToElement(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
@@ -107,128 +107,127 @@ public class CreateNewUserSteps implements En {
         });
   }
 
-  public void fillFirstName(String firstName) {
+  private void fillFirstName(String firstName) {
     webDriverHelpers.fillInWebElement(FIRST_NAME_OF_USER_INPUT, firstName);
   }
 
-  public void fillLastName(String lastName) {
+  private void fillLastName(String lastName) {
     webDriverHelpers.fillInWebElement(LAST_NAME_OF_USER_INPUT, lastName);
   }
 
-  public void fillEmailAddress(String emailAddress) {
+  private void fillEmailAddress(String emailAddress) {
     webDriverHelpers.fillInWebElement(EMAIL_ADDRESS_INPUT, emailAddress);
   }
 
-  public void fillPhoneNumber(String phoneNr) {
+  private void fillPhoneNumber(String phoneNr) {
     webDriverHelpers.fillInWebElement(PHONE_INPUT, phoneNr);
   }
 
-  public void selectLanguage(String language) {
+  private void selectLanguage(String language) {
     webDriverHelpers.selectFromCombobox(LANGUAGE_COMBOBOX, language);
   }
 
-  public void selectCountry(String country) {
+  private void selectCountry(String country) {
     webDriverHelpers.selectFromCombobox(COUNTRY_COMBOBOX, country);
   }
 
-  public void selectRegion(String region) {
+  private void selectRegion(String region) {
     webDriverHelpers.selectFromCombobox(REGION_COMBOBOX, region);
   }
 
-  public void selectDistrict(String district) {
+  private void selectDistrict(String district) {
     webDriverHelpers.waitUntilElementIsVisibleAndClickable(DISTRICT_COMBOBOX);
     webDriverHelpers.selectFromCombobox(DISTRICT_COMBOBOX, district);
   }
 
-  public void selectCommunity(String community) {
+  private void selectCommunity(String community) {
     webDriverHelpers.waitUntilElementIsVisibleAndClickable(COMMUNITY_COMBOBOX);
     webDriverHelpers.selectFromCombobox(COMMUNITY_COMBOBOX, community);
   }
 
-  public void selectFacilityCategory(String facilityCategory) {
+  private void selectFacilityCategory(String facilityCategory) {
     webDriverHelpers.waitUntilElementIsVisibleAndClickable(FACILITY_CATEGORY_COMBOBOX);
     webDriverHelpers.selectFromCombobox(FACILITY_CATEGORY_COMBOBOX, facilityCategory);
   }
 
-  public void selectFacilityType(String facilityType) {
+  private void selectFacilityType(String facilityType) {
     webDriverHelpers.waitUntilElementIsVisibleAndClickable(FACILITY_TYPE_COMBOBOX);
     webDriverHelpers.selectFromCombobox(FACILITY_TYPE_COMBOBOX, facilityType);
   }
 
-  public void selectFacility(String facility) {
+  private void selectFacility(String facility) {
     webDriverHelpers.waitUntilElementIsVisibleAndClickable(FACILITY_COMBOBOX);
     webDriverHelpers.selectFromCombobox(FACILITY_COMBOBOX, facility);
   }
 
-  public void fillFacilityNameAndDescription(String facilityName) {
+  private void fillFacilityNameAndDescription(String facilityName) {
     webDriverHelpers.fillInWebElement(FACILITY_NAME_DESCRIPTION, facilityName);
   }
 
-  public void fillStreet(String street) {
+  private void fillStreet(String street) {
     webDriverHelpers.fillInWebElement(STREET_INPUT, street);
   }
 
-  public void fillHouseNr(String houseNr) {
+  private void fillHouseNr(String houseNr) {
     webDriverHelpers.fillInWebElement(HOUSE_NUMBER_INPUT, houseNr);
   }
 
-  public void fillAdditionalInformation(String additionalInformation) {
+  private void fillAdditionalInformation(String additionalInformation) {
     webDriverHelpers.fillInWebElement(ADDITIONAL_INFORMATION_INPUT, additionalInformation);
   }
 
-  public void fillPostalCode(String postalCode) {
+  private void fillPostalCode(String postalCode) {
     webDriverHelpers.fillInWebElement(POSTAL_CODE_INPUT, postalCode);
   }
 
-  public void fillCity(String city) {
+  private void fillCity(String city) {
     webDriverHelpers.fillInWebElement(CITY_INPUT, city);
   }
 
-  public void selectAreaType(String areaType) {
+  private void selectAreaType(String areaType) {
     webDriverHelpers.waitForPageLoaded();
     webDriverHelpers.selectFromCombobox(AREA_TYPE_COMBOBOX, areaType);
   }
 
-  public void fillCommunityContactPerson(String communityContactPerson) {
-    webDriverHelpers.fillInWebElement(COMMUNITY_CONTACT_PERSON_INPUT, communityContactPerson);
-  }
-
-  public void fillGpsLatitude(String gpsLatitude) {
+  private void fillGpsLatitude(String gpsLatitude) {
     webDriverHelpers.fillInWebElement(LATITUDE_INPUT, gpsLatitude);
   }
 
-  public void fillGpsLongitude(String gpsLongitude) {
+  private void fillGpsLongitude(String gpsLongitude) {
     webDriverHelpers.fillInWebElement(LONGITUDE_INPUT, gpsLongitude);
   }
 
-  public void fillGpsAccuracy(String gpsAccuracy) {
+  private void fillGpsAccuracy(String gpsAccuracy) {
     webDriverHelpers.fillInWebElement(LAT_LON_ACCURACY_INPUT, gpsAccuracy);
   }
 
-  public void selectActive(String active) {
-    webDriverHelpers.clickWebElementByText(ACTIVE_CHECKBOX, active);
+  private void selectActive(boolean active) {
+    if (active && !webDriverHelpers.getWebElement(ACTIVE_CHECKBOX).isEnabled()) {
+      webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(ACTIVE_CHECKBOX);
+      webDriverHelpers.clickOnWebElementBySelector(ACTIVE_CHECKBOX);
+    }
   }
 
-  public void selectActiveUserRole() {
+  private void selectActiveUserRole() {
     webDriverHelpers.clickWebElementByText(
         USER_ROLE_CHECKBOX,
         webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(USER_ROLE_CHECKBOX));
   }
 
-  public void fillUserName(String userName) {
+  private void fillUserName(String userName) {
     webDriverHelpers.fillInWebElement(USER_NAME_INPUT, userName);
   }
 
-  public void selectUserRole(String role) {
+  private void selectUserRole(String role) {
     webDriverHelpers.clickWebElementByText(USER_ROLE_CHECKBOX, role);
   }
 
-  public void closeNewPasswordPopUp() {
+  private void closeNewPasswordPopUp() {
     webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CLOSE_DIALOG_BUTTON, 15);
     webDriverHelpers.clickOnWebElementBySelector(CLOSE_DIALOG_BUTTON);
   }
 
-  public void selectLimitedDisease(String limitedDisease) {
+  private void selectLimitedDisease(String limitedDisease) {
     webDriverHelpers.scrollToElement(LIMITED_DISEASE_COMBOBOX);
     webDriverHelpers.selectFromCombobox(LIMITED_DISEASE_COMBOBOX, limitedDisease);
   }

@@ -37,7 +37,6 @@ public class ExposureDetails {
   String postalCode;
   String city;
   String areaType;
-  String communityContactPerson;
   String gpsLatitude;
   String gpsLongitude;
   String gpsAccuracy;

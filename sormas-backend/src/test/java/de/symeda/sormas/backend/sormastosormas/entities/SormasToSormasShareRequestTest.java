@@ -50,13 +50,12 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.MockProducer;
-import de.symeda.sormas.backend.TestDataCreator;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeTest;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasTest;
 import de.symeda.sormas.backend.sormastosormas.share.ShareRequestData;
 import de.symeda.sormas.backend.user.User;
 
 @RunWith(MockitoJUnitRunner.class)
-public class SormasToSormasShareRequestTest extends SormasToSormasFacadeTest {
+public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 
 	@After
 	public void teardown() {
@@ -71,8 +70,6 @@ public class SormasToSormasShareRequestTest extends SormasToSormasFacadeTest {
 
 	@Test
 	public void testSendCaseShareRequest() throws SormasToSormasException {
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
-
 		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person = creator.createPerson("John", "Doe", Sex.MALE, 1964, 4, 12);
@@ -135,8 +132,6 @@ public class SormasToSormasShareRequestTest extends SormasToSormasFacadeTest {
 
 	@Test
 	public void testResendCaseShareRequest() throws SormasToSormasException {
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
-
 		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person = creator.createPerson("John", "Doe", Sex.MALE, 1964, 4, 12);
@@ -208,8 +203,6 @@ public class SormasToSormasShareRequestTest extends SormasToSormasFacadeTest {
 
 	@Test
 	public void testShareWithModifiedOptions() throws SormasToSormasException {
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
-
 		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person = creator.createPerson("John", "Doe", Sex.MALE, 1964, 4, 12);

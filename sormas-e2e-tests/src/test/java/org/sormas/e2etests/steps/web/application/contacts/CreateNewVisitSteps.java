@@ -22,18 +22,20 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.CreateNewVisitPage.*;
 import static org.sormas.e2etests.pages.application.contacts.FollowUpVisitsTabPage.CONTACTS_LIST_BUTTON;
 
-import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
-import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pojo.web.FollowUpVisit;
 import org.sormas.e2etests.services.FollowUpVisitService;
 import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.BaseSteps;
+import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
 
 public class CreateNewVisitSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
@@ -46,7 +48,7 @@ public class CreateNewVisitSteps implements En {
       WebDriverHelpers webDriverHelpers,
       FollowUpVisitService followUpVisitService,
       ApiState apiState,
-      final SoftAssertions softly) {
+      SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -92,7 +94,7 @@ public class CreateNewVisitSteps implements En {
         "^I validate recently created follow up is correctly displayed$",
         () -> {
           final FollowUpVisit actualFollowUpVisit = collectFollowUpData();
-          Truth.assertThat(followUpVisit).isEqualTo(actualFollowUpVisit);
+          ComparisonHelper.compareEqualEntities(followUpVisit, actualFollowUpVisit);
         });
 
     And(
@@ -113,7 +115,7 @@ public class CreateNewVisitSteps implements En {
         "^I check all changes from follow up are correctly displayed$",
         () -> {
           final FollowUpVisit editedFollowUpVisit = collectEditedFollowUpData();
-          Truth.assertThat(followUpEditVisit).isEqualTo(editedFollowUpVisit);
+          ComparisonHelper.compareEqualEntities(followUpEditVisit, editedFollowUpVisit);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_VISIT_BUTTON);
         });
 
@@ -128,6 +130,7 @@ public class CreateNewVisitSteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(FOLLOW_UP_VISITS_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(FROM_INPUT);
         });
 
     Then(
@@ -140,17 +143,17 @@ public class CreateNewVisitSteps implements En {
           fillDateFrom(followUpVisitService.buildGeneratedFollowUpVisit().getDateOfVisit());
           fillDateTo(followUpVisitService.buildGeneratedFollowUpVisit().getDateOfVisit());
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(CONTACT_GRID_RESULTS_ROWS);
-          softly
-              .assertThat(webDriverHelpers.getNumberOfElements(CONTACT_GRID_RESULTS_ROWS))
-              .isEqualTo(1)
-              .withFailMessage("Contact grid results rows are not equal with 1");
-          softly.assertAll();
+          Assert.assertEquals(
+              webDriverHelpers.getNumberOfElements(CONTACT_GRID_RESULTS_ROWS),
+              1,
+              "Contact grid results row is not correct");
         });
   }
 
   @SneakyThrows
-  public FollowUpVisit collectFollowUpData() {
+  private FollowUpVisit collectFollowUpData() {
     TimeUnit.SECONDS.sleep(2); // time needed to refresh the page
     String dateOfVisit = webDriverHelpers.getValueFromWebElement(DATE_AND_TIME_OF_VISIT_INPUT);
     LocalDate parsedDateOfVisit = LocalDate.parse(dateOfVisit, DATE_FORMATTER);
@@ -207,7 +210,7 @@ public class CreateNewVisitSteps implements En {
         .build();
   }
 
-  public FollowUpVisit collectEditedFollowUpData() {
+  private FollowUpVisit collectEditedFollowUpData() {
     String dateOfVisit = webDriverHelpers.getValueFromWebElement(DATE_AND_TIME_OF_VISIT_INPUT);
     LocalDate parsedDateOfVisit = LocalDate.parse(dateOfVisit, DATE_FORMATTER);
     String dateOfSymptomOnset =
@@ -227,139 +230,141 @@ public class CreateNewVisitSteps implements En {
     return LocalDate.parse(dateOfReport, DATE_FORMATTER);
   }
 
-  public void selectSourceOfBodyTemperature(String sourceOfBodyTemperature) {
+  private void selectSourceOfBodyTemperature(String sourceOfBodyTemperature) {
     webDriverHelpers.selectFromCombobox(SOURCE_BODY_TEMPERATURE_COMBOBOX, sourceOfBodyTemperature);
   }
 
-  public void selectBodyTemperature(String bodyTemperature) {
+  private void selectBodyTemperature(String bodyTemperature) {
     webDriverHelpers.selectFromCombobox(CURRENT_BODY_TEMPERATURE_COMBOBOX, bodyTemperature);
   }
 
-  public void selectFirstSymptom(String firstSymptom) {
+  private void selectFirstSymptom(String firstSymptom) {
     webDriverHelpers.selectFromCombobox(FIRST_SYMPTOM_COMBOBOX, firstSymptom);
   }
 
-  public void selectChillsOrSweats(String chillsOrSweats) {
+  private void selectChillsOrSweats(String chillsOrSweats) {
     webDriverHelpers.clickWebElementByText(CHILLS_OR_SWATS, chillsOrSweats);
   }
 
-  public void selectHeadache(String headache) {
+  private void selectHeadache(String headache) {
     webDriverHelpers.clickWebElementByText(HEADACHE, headache);
   }
 
-  public void selectFeelingIll(String feelingIll) {
+  private void selectFeelingIll(String feelingIll) {
     webDriverHelpers.clickWebElementByText(FEELING_ILL, feelingIll);
   }
 
-  public void selectMusclePain(String musclePain) {
+  private void selectMusclePain(String musclePain) {
     webDriverHelpers.clickWebElementByText(MUSCLE_PAIN, musclePain);
   }
 
-  public void fillDateOfFirstSymptom(LocalDate dateOfFirstSymptom) {
+  private void fillDateOfFirstSymptom(LocalDate dateOfFirstSymptom) {
     webDriverHelpers.fillInWebElement(
         DATE_OF_SYMPTOM_ONSET_INPUT, DATE_FORMATTER.format(dateOfFirstSymptom));
   }
 
-  public void selectFever(String fever) {
+  private void selectFever(String fever) {
     webDriverHelpers.clickWebElementByText(FEVER, fever);
   }
 
-  public void selectShivering(String shivering) {
+  private void selectShivering(String shivering) {
     webDriverHelpers.clickWebElementByText(SHIVERING, shivering);
   }
 
-  public void selectOtherClinicalSymptoms(String otherClinicalSymptoms) {
+  private void selectOtherClinicalSymptoms(String otherClinicalSymptoms) {
     webDriverHelpers.clickWebElementByText(OTHER_CLINICAL_SYMPTOMS, otherClinicalSymptoms);
   }
 
-  public void selectAcuteRespiratoryDistressSyndrome(String acuteRespiratoryDistressSyndrome) {
+  private void selectAcuteRespiratoryDistressSyndrome(String acuteRespiratoryDistressSyndrome) {
     webDriverHelpers.clickWebElementByText(
         ACUTE_RESPIRATORY_DISTRESS_SYNDROME, acuteRespiratoryDistressSyndrome);
   }
 
-  public void selectCough(String cough) {
+  private void selectCough(String cough) {
     webDriverHelpers.clickWebElementByText(COUGH, cough);
   }
 
-  public void selectDifficultyBreathing(String difficultyBreathing) {
+  private void selectDifficultyBreathing(String difficultyBreathing) {
     webDriverHelpers.clickWebElementByText(DIFFICULTY_BREATHING, difficultyBreathing);
   }
 
-  public void selectOxygenSaturationLower94(String oxygenSaturationLower94) {
+  private void selectOxygenSaturationLower94(String oxygenSaturationLower94) {
     webDriverHelpers.clickWebElementByText(OXIGEN_SATURANTION, oxygenSaturationLower94);
   }
 
-  public void selectPneumoniaClinicalOrRadiologic(String pneumoniaClinicalOrRadiologic) {
+  private void selectPneumoniaClinicalOrRadiologic(String pneumoniaClinicalOrRadiologic) {
     webDriverHelpers.clickWebElementByText(PNEUMONIA, pneumoniaClinicalOrRadiologic);
   }
 
-  public void selectPersonAvailableAndCooperative(String available) {
+  private void selectPersonAvailableAndCooperative(String available) {
     webDriverHelpers.clickWebElementByText(PERSON_AVAILABLE_AND_COOPERATIVE_OPTIONS, available);
   }
 
-  public void selectRapidBreathing(String rapidBreathing) {
+  private void selectRapidBreathing(String rapidBreathing) {
     webDriverHelpers.clickWebElementByText(RAPID_BREATHING, rapidBreathing);
   }
 
-  public void selectRespiratoryDiseaseVentilation(String respiratoryDiseaseVentilation) {
+  private void selectRespiratoryDiseaseVentilation(String respiratoryDiseaseVentilation) {
     webDriverHelpers.clickWebElementByText(
         RESPIRATORY_DISEASE_REQUIRING_VENTILATION, respiratoryDiseaseVentilation);
   }
 
-  public void selectRunnyNose(String runnyNose) {
+  private void selectRunnyNose(String runnyNose) {
     webDriverHelpers.clickWebElementByText(RUNNY_NOSE, runnyNose);
   }
 
-  public void fillDateOfSymptomOnset(LocalDate dateOfSymptomOnset) {
+  private void fillDateOfSymptomOnset(LocalDate dateOfSymptomOnset) {
     webDriverHelpers.fillInWebElement(
         DATE_OF_SYMPTOM_ONSET_INPUT, DATE_FORMATTER.format(dateOfSymptomOnset));
   }
 
-  public void fillDateFrom(LocalDate from) {
-    webDriverHelpers.clearAndFillInWebElement(FROM_INPUT, DATE_FORMATTER.format(from));
+  private void fillDateFrom(LocalDate from) {
+    BaseSteps.driver.findElement(FROM_INPUT).clear();
+    BaseSteps.driver.findElement(FROM_INPUT).sendKeys(DATE_FORMATTER.format(from));
   }
 
-  public void fillDateTo(LocalDate to) {
-    webDriverHelpers.clearAndFillInWebElement(TO_INPUT, DATE_FORMATTER.format(to));
+  private void fillDateTo(LocalDate to) {
+    BaseSteps.driver.findElement(FROM_INPUT).clear();
+    BaseSteps.driver.findElement(FROM_INPUT).sendKeys(DATE_FORMATTER.format(to));
   }
 
-  public void fillVisitRemark(String visitRemark) {
+  private void fillVisitRemark(String visitRemark) {
     webDriverHelpers.clearAndFillInWebElement(VISIT_REMARKS_INPUT, visitRemark);
   }
 
-  public void selectSoreThroat(String soreThroat) {
+  private void selectSoreThroat(String soreThroat) {
     webDriverHelpers.clickWebElementByText(SORE_THROAT_PHARYNGITIS, soreThroat);
   }
 
-  public void selectFastHeartRate(String fastHeartRate) {
+  private void selectFastHeartRate(String fastHeartRate) {
     webDriverHelpers.clickWebElementByText(FAST_HEART_RATE, fastHeartRate);
   }
 
-  public void selectDiarrhea(String diarrhea) {
+  private void selectDiarrhea(String diarrhea) {
     webDriverHelpers.clickWebElementByText(DIARRHEA, diarrhea);
   }
 
-  public void selectNausea(String nausea) {
+  private void selectNausea(String nausea) {
     webDriverHelpers.clickWebElementByText(NAUSEA, nausea);
   }
 
-  public void selectLossOfSmell(String lossOfSmell) {
+  private void selectLossOfSmell(String lossOfSmell) {
     webDriverHelpers.clickWebElementByText(LOSS_OF_SMELL, lossOfSmell);
   }
 
-  public void selectLossOfTaste(String lossOfTaste) {
+  private void selectLossOfTaste(String lossOfTaste) {
     webDriverHelpers.clickWebElementByText(LOSS_OF_TASTE, lossOfTaste);
   }
 
-  public void selectOtherNonHemorrhagicSymptoms(String otherNonHemorrhagicSymptoms) {
+  private void selectOtherNonHemorrhagicSymptoms(String otherNonHemorrhagicSymptoms) {
     webDriverHelpers.clickWebElementByText(OTHER_CLINICAL_SYMPTOMS, otherNonHemorrhagicSymptoms);
   }
 
-  public void fillComments(String symptomsComments) {
+  private void fillComments(String symptomsComments) {
     webDriverHelpers.fillInWebElement(COMMENTS_INPUT, symptomsComments);
   }
 
-  public void fillDateAndTimeVisit(LocalDate dateOfSymptomOnset) {
+  private void fillDateAndTimeVisit(LocalDate dateOfSymptomOnset) {
     webDriverHelpers.fillInWebElement(
         DATE_AND_TIME_OF_VISIT_INPUT, DATE_FORMATTER.format(dateOfSymptomOnset));
   }

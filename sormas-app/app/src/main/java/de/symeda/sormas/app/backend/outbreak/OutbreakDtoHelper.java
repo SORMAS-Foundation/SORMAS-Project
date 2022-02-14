@@ -38,7 +38,7 @@ public class OutbreakDtoHelper extends AdoDtoHelper<Outbreak, OutbreakDto> {
 	}
 
 	@Override
-	protected Call<List<OutbreakDto>> pullAllSince(long since) throws NoConnectionException {
+	protected Call<List<OutbreakDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
 		return RetroProvider.getOutbreakFacade().pullActiveSince(since);
 	}
 
@@ -66,4 +66,9 @@ public class OutbreakDtoHelper extends AdoDtoHelper<Outbreak, OutbreakDto> {
 	public void fillInnerFromAdo(OutbreakDto target, Outbreak source) {
 		throw new UnsupportedOperationException("Entity is read-only");
 	}
+
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return 0;
+    }
 }

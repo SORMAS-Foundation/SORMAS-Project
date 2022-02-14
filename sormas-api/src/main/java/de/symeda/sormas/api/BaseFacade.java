@@ -32,5 +32,4 @@ public interface BaseFacade<DTO extends EntityDto, INDEX_DTO extends Serializabl
 	List<INDEX_DTO> getIndexList(CRITERIA criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	List<DTO> getAllAfter(Date date);
-
 }

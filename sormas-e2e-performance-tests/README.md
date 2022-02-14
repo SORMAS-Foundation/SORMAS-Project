@@ -20,21 +20,31 @@ This project aims to help identify performance issues on the Sormas rest api's.
 
 ## Test execution
 
-Non-GUI execution of the performance tests is recommended:
+Non-GUI execution of the performance tests is recommended!
 
 > Execution from a terminal window:
 
-* open the console and navigate to the Jmeter bin folder
-* type the following in the command line:  
-  jmeter -n -t 'PathToTheJMXFile'\SormasPoc.jmx -Jmodule='moduleName'
+* Open the console and navigate to the Jmeter bin folder
+* Type the following in the command line:  
+  jmeter -n -t ./sormas-e2e-performance-tests/SormasPoc.jmx -Jmodule='moduleName'
   -l 'PathWhereTheResultsWillBeSaved'\Results.csv -e -o 'PathWhereTheHtmlReportWillBeSaved'\reports
+
+> Execution from Jmeter GUI:
+
+* Open Jmeter GUI application
+* Open project ./sormas-e2e-performance-tests/SormasPoc.jmx
+ ![config](./images/jmeter1.JPG)
+* Select tests thread and click on run button
+![config](./images/jmeter2.JPG)
+* Results will be displayed there
+* Same steps should be applied for a single test check, select the test from thread group and click on run button.
   
 -Jmodule=daily-build-scenario
 -Jmodule=load-scenario
 
 > Example:
-jmeter -n -t C:\projects\sormas\performance\SormasPoc.jmx -Jmodule=daily-build-scenario
--l C:\projects\sormas\performance\results\Results3.csv -e -o C:\projects\sormas\performance\reports
+jmeter -n -t C:\SORMAS\sormas-e2e-performance-tests\SormasPoc.jmx -Jmodule=daily-build-scenario
+-l C:\SORMAS\sormas-e2e-performance-tests\results\PerformanceResults.csv -e -o C:\SORMAS\sormas-e2e-performance-tests\reports
 
 ## Using Variables
 

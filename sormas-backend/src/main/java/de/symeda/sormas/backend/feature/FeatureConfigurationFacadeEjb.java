@@ -103,12 +103,12 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	public List<FeatureConfigurationDto> getAllAfter(Date date) {
 
 		User user = userService.getCurrentUser();
-		return service.getAllAfter(date, user).stream().map(d -> toDto(d)).collect(Collectors.toList());
+		return service.getAllAfter(date, user).stream().map(FeatureConfigurationFacadeEjb::toDto).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<FeatureConfigurationDto> getByUuids(List<String> uuids) {
-		return service.getByUuids(uuids).stream().map(d -> toDto(d)).collect(Collectors.toList());
+		return service.getByUuids(uuids).stream().map(FeatureConfigurationFacadeEjb::toDto).collect(Collectors.toList());
 	}
 
 	@Override

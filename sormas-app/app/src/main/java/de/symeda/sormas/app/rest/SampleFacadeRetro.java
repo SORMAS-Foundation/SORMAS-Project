@@ -31,8 +31,8 @@ import retrofit2.http.Path;
 
 public interface SampleFacadeRetro {
 
-	@GET("samples/all/{since}")
-	Call<List<SampleDto>> pullAllSince(@Path("since") long since);
+	@GET("samples/all/{since}/{size}/{lastSynchronizedUuid}")
+	Call<List<SampleDto>> pullAllSince(@Path("since") long since, @Path("size") int size, @Path("lastSynchronizedUuid") String lastSynchronizedUuid);
 
 	@POST("samples/query")
 	Call<List<SampleDto>> pullByUuids(@Body List<String> uuids);
