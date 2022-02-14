@@ -34,6 +34,7 @@ import java.util.Properties;
 import javax.inject.Singleton;
 import lombok.SneakyThrows;
 import org.sormas.e2etests.enums.TestDataUser;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.webdriver.DriverManager;
 import org.testng.asserts.SoftAssert;
 
@@ -50,6 +51,13 @@ public class CommonModule extends PrivateModule {
   @Exposed
   Faker provideFaker() {
     return new Faker(Locale.GERMANY);
+  }
+
+  @Provides
+  @Singleton
+  @Exposed
+  EnvironmentManager provideEnvManager() {
+    return new EnvironmentManager();
   }
 
   @Provides

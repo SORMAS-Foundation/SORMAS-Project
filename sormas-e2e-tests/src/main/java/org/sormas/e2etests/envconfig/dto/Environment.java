@@ -30,8 +30,8 @@ import lombok.Value;
 @Builder(toBuilder = true, builderClassName = "builder")
 public class Environment {
 
-    String name;
-    String locale;
-    String url;
-    List<EnvUser> users;
+  String name;
+  String locale;
+  String url;
+  List<EnvUser> users;
 }

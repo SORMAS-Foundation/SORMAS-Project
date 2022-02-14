@@ -18,6 +18,7 @@
 package org.sormas.e2etests.envconfig.manager;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import java.util.List;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.envconfig.configprovider.ConfigFileReader;
@@ -25,60 +26,51 @@ import org.sormas.e2etests.envconfig.dto.EnvUser;
 import org.sormas.e2etests.envconfig.dto.Environment;
 import org.sormas.e2etests.envconfig.dto.Environments;
 
-import java.util.List;
-
 @Slf4j
 public class EnvironmentManager {
 
-    private static EnvironmentManager environmentManager;
-    private ObjectMapper objectMapper;
-    private static Environments environments;
+  private ObjectMapper objectMapper;
+  private static Environments environments;
 
-    @SneakyThrows
-    private EnvironmentManager() {
-        objectMapper = new ObjectMapper();
-        environments =
-                objectMapper.readValue(ConfigFileReader.getConfigurationFile(), Environments.class);
-    }
+  @SneakyThrows
+  public EnvironmentManager() {
+    objectMapper = new ObjectMapper();
+    environments =
+        objectMapper.readValue(ConfigFileReader.getConfigurationFile(), Environments.class);
+  }
 
-    public static EnvironmentManager getInstance() {
-        if (environmentManager == null) environmentManager = new EnvironmentManager();
-        return environmentManager;
+  @SneakyThrows
+  public String getEnvironmentUrlForMarket(String market) {
+    try {
+      return environments.getEnvironments().stream()
+          .filter(env -> env.getLocale().equalsIgnoreCase(market))
+          .findFirst()
+          .get()
+          .getUrl();
+    } catch (NullPointerException e) {
+      throw new Exception(String.format("Unable to get Environment for market: %s", market));
     }
+  }
 
-    @SneakyThrows
-    public static String getEnvironmentUrlForMarket(String market) {
-        try {
-            return environments.getEnvironments().stream()
-                    .filter(env -> env.getLocale().equalsIgnoreCase(market))
-                    .findFirst()
-                    .get()
-                    .getUrl();
-        } catch (NullPointerException e) {
-            throw new Exception(String.format("Unable to get Environment for market: %s", market));
-        }
+  @SneakyThrows
+  public EnvUser getUserByRole(String market, String role) {
+    try {
+      List<EnvUser> users = getEnvironment(market).getUsers();
+      return users.stream()
+          .filter(user -> user.getUserRole().equalsIgnoreCase(role))
+          .findFirst()
+          .get();
+    } catch (NullPointerException e) {
+      throw new Exception(
+          String.format(
+              "Unable to get Environment User for market: %s, and role: %s", market, role));
     }
+  }
 
-    @SneakyThrows
-    public static EnvUser getUserByRole(String market, String role) {
-        try {
-            List<EnvUser> users = getEnvironment(market).getUsers();
-            return users.stream()
-                    .filter(user -> user.getUserRole().equalsIgnoreCase(role))
-                    .findFirst()
-                    .get();
-        } catch (NullPointerException e) {
-            throw new Exception(
-                    String.format(
-                            "Unable to get Environment User for market: %s, and role: %s", market, role));
-        }
-    }
-
-    private static Environment getEnvironment(String market) {
-        return environments.getEnvironments().stream()
-                .filter(env -> env.getLocale().equalsIgnoreCase(market))
-                .findFirst()
-                .get();
-    }
+  private Environment getEnvironment(String market) {
+    return environments.getEnvironments().stream()
+        .filter(env -> env.getLocale().equalsIgnoreCase(market))
+        .findFirst()
+        .get();
+  }
 }
-

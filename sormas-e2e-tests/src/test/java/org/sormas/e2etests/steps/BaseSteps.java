@@ -39,6 +39,7 @@ import recorders.StepsLogger;
 public class BaseSteps implements StepLifecycleListener {
 
   public static RemoteWebDriver driver;
+  public static String locale;
   private final DriverManager driverManager;
 
   @Inject
@@ -48,6 +49,11 @@ public class BaseSteps implements StepLifecycleListener {
 
   public RemoteWebDriver getDriver() {
     return driver;
+  }
+
+  @Before(order = 0)
+  public void setRunningLocale(Scenario scenario) {
+    setLocale(scenario);
   }
 
   @Before(value = "@UI")
@@ -89,5 +95,15 @@ public class BaseSteps implements StepLifecycleListener {
 
   private static boolean isNonApiScenario(Scenario scenario) {
     return !scenario.getSourceTagNames().contains("@API");
+  }
+
+  private void setLocale(Scenario scenario) {
+    String localeTag =
+        scenario.getSourceTagNames().stream()
+            .filter(value -> value.contains("Locale"))
+            .findFirst()
+            .get();
+    int indexOfSubstring = localeTag.indexOf("_");
+    locale = localeTag.substring(indexOfSubstring + 1);
   }
 }

@@ -24,24 +24,24 @@ import lombok.extern.slf4j.Slf4j;
 @Slf4j
 public abstract class ConfigFileReader {
 
-    private static final String systemVariableName = "envConfig";
+  private static final String systemVariableName = "envConfig";
 
-    @SneakyThrows
-    public static File getConfigurationFile() {
-        String jsonPath;
-        try {
-            log.info("Looking after environment environmentconfig file");
-            jsonPath = System.getProperty(systemVariableName);
-        } catch (NullPointerException e) {
-            throw new Exception("Unable to find environment environmentconfig file: " + e.getMessage());
-        }
-        try {
-            log.info("Returning environmentconfig file path");
-            return new File(jsonPath);
-        } catch (Exception any) {
-            throw new Exception(
-                    "Unable to convert provided environmentconfig file into File object: "
-                            + any.getMessage());
-        }
+  @SneakyThrows
+  public static File getConfigurationFile() {
+    String jsonPath;
+    try {
+      log.info("Looking after environment environmentconfig file");
+      jsonPath = System.getProperty(systemVariableName);
+    } catch (NullPointerException e) {
+      throw new Exception("Unable to find environment environmentconfig file: " + e.getMessage());
     }
+    try {
+      log.info("Returning environmentconfig file path");
+      return new File(jsonPath);
+    } catch (Exception any) {
+      throw new Exception(
+          "Unable to convert provided environmentconfig file into File object: "
+              + any.getMessage());
+    }
+  }
 }

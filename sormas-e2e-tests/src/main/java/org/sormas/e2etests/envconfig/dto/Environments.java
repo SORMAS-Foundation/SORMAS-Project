@@ -30,5 +30,5 @@ import lombok.Value;
 @Builder(toBuilder = true, builderClassName = "builder")
 public class Environments {
 
-    List<Environment> environments;
+  List<Environment> environments;
 }

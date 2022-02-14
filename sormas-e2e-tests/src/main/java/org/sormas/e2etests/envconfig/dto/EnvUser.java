@@ -30,8 +30,8 @@ import lombok.Value;
 @Builder(toBuilder = true, builderClassName = "builder")
 public class EnvUser {
 
-    String userRole;
-    String username;
-    String password;
-    String uuid;
+  String userRole;
+  String username;
+  String password;
+  String uuid;
 }
