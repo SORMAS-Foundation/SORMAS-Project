@@ -53,7 +53,22 @@ public class EventDirectoryPage {
   public static final By EVENT_CLUSTER = By.id("status-Cluster");
   public static final By EVENT_DROPPED = By.id("status-Dropped");
   public static final By CREATED_PARTICIPANT = By.cssSelector("[role='gridcell'] a");
-
+  public static final By EVENTS_RADIO_BUTTON = By.cssSelector(".v-radiobutton");
+  public static final By LINK_EVENT_BUTTON = By.id("Link event");
+  public static final By LINK_EVENT_BUTTON_EDIT_PAGE = By.id("Link event group");
+  public static final By UNLINK_EVENT_BUTTON = By.id("unlink-event-0");
+  public static final By ID_FIELD_FILTER = By.id("search");
+  public static final By LINKED_EVENT_GROUP_ID =
+      By.xpath(
+          "/html/body/div[1]/div/div[2]/div/div[2]/div/div/div[3]/div/div/div/div/div[8]/div/div[2]/div/div/div/div/div/div/div[1]/div/div/div/div/div/div/div[2]/div/div[2]/div/div/div");
+  public static final By SAVE_BUTTON_IN_LINK_FORM =
+      By.xpath("/html/body/div[2]/div[3]/div/div/div[3]/div/div/div[2]/div/div/div[3]/div");
+  public static final By FILTERED_EVENT_LINK_EVENT_FORM =
+      By.xpath(
+          "//*[@id=\"sormasui-1655777373-overlays\"]/div[3]/div/div/div[3]/div/div/div[1]/div/div[2]/div/div/div[5]/div/div[3]/table/tbody/tr[1]/td[1]");
+  public static final By FIRST_EVENT_GROUP =
+      By.xpath(
+          "/html/body/div[2]/div[3]/div/div/div[3]/div/div/div[1]/div/div[2]/div/div/div[7]/div/div[3]/table/tbody/tr[1]/td[1]");
   /*public static By getByEventUuid(String eventUuid) {
     return By.cssSelector("a[title=" + eventUuid + "]");
   }*/
