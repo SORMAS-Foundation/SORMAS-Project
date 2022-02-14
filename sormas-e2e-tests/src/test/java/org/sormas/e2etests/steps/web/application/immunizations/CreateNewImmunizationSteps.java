@@ -48,6 +48,31 @@ public class CreateNewImmunizationSteps implements En {
           fillPrimaryEmailAddress(immunization.getPrimaryEmailAddress());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
+
+    When(
+        "I check Overwrite immunization management status option",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(OVERWRITE_IMMUNIZATION_MANAGEMENT_STATUS);
+        });
+
+    When(
+        "I click on discard button from immunization tab",
+        () -> {
+          webDriverHelpers.scrollToElement(DISCARD_IMMUNIZATION);
+          webDriverHelpers.clickOnWebElementBySelector(DISCARD_IMMUNIZATION);
+        });
+
+    When(
+        "I check if Overwrite immunization management status is unchecked by Management Status",
+        () -> {
+          boolean status;
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(MANAGEMENT_STATUS);
+          webDriverHelpers.scrollToElement(MANAGEMENT_STATUS);
+          status = webDriverHelpers.isElementEnabled(MANAGEMENT_STATUS);
+          softly.assertEquals(status, false);
+          softly.assertAll();
+        });
   }
 
   private void fillDateOfReport(LocalDate date) {

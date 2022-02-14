@@ -50,4 +50,9 @@ public class CreateNewImmunizationPage {
   public static final By MEANS_OF_IMMUNIZATIONS_COMBOBOX =
       By.cssSelector(".v-window #meansOfImmunization div");
   public static final By END_DATA_INPUT = By.cssSelector(".popupContent #endDate input");
+  public static final By OVERWRITE_IMMUNIZATION_MANAGEMENT_STATUS =
+      By.xpath("//*[@id='overwriteImmunizationManagementStatus']/label");
+  public static final By DISCARD_IMMUNIZATION = By.cssSelector("#discard");
+  public static final By MANAGEMENT_STATUS =
+      By.xpath("//div[@id='immunizationManagementStatus']//input");
 }
