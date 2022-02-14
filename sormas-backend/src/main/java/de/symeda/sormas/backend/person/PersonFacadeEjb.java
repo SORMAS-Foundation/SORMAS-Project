@@ -225,12 +225,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	public List<SimilarPersonDto> getSimilarPersonDtos(UserReferenceDto userRef, PersonSimilarityCriteria criteria) {
-
-		User user = userService.getByReferenceDto(userRef);
-		if (user == null) {
-			return Collections.emptyList();
-		}
+	public List<SimilarPersonDto> getSimilarPersonDtos(PersonSimilarityCriteria criteria) {
 
 		return personService.getSimilarPersonDtos(criteria, null);
 	}

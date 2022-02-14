@@ -19,6 +19,7 @@ package org.sormas.e2etests.enums;
 
 import java.util.Random;
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 @Getter
 public enum CommunityValues {
@@ -35,5 +36,14 @@ public enum CommunityValues {
 
   public static String getRandomCommunityValuesName() {
     return String.valueOf(CommunityValues.values()[random.nextInt(values().length)].getName());
+  }
+
+  @SneakyThrows
+  public static String getValueFor(String option) {
+    CommunityValues[] communityValuesOptions = CommunityValues.values();
+    for (CommunityValues value : communityValuesOptions) {
+      if (value.uuid.equalsIgnoreCase(option)) return value.name;
+    }
+    throw new Exception("Unable to find " + option + " value in Community Enum");
   }
 }

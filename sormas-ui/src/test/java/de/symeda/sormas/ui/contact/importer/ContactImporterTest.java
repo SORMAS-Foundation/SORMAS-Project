@@ -6,9 +6,6 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
 
-import de.symeda.sormas.api.caze.Vaccine;
-import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.vaccination.VaccinationDto;
 import java.io.ByteArrayInputStream;
 import java.io.File;
 import java.io.IOException;
@@ -39,6 +36,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
@@ -49,6 +47,8 @@ import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.ui.AbstractBeanTest;
@@ -88,7 +88,7 @@ public class ContactImporterTest extends AbstractBeanTest {
 		assertEquals(5, contactFacade.count(null));
 
 		// Person Similarity: pick
-		List<SimilarPersonDto> persons = FacadeProvider.getPersonFacade().getSimilarPersonDtos(user.toReference(), new PersonSimilarityCriteria());
+		List<SimilarPersonDto> persons = FacadeProvider.getPersonFacade().getSimilarPersonDtos(new PersonSimilarityCriteria());
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_case_contact_import_test_similarities.csv").toURI());
 		contactImporter = new ContactImporterExtension(csvFile, user, caze) {
 
@@ -276,10 +276,11 @@ public class ContactImporterTest extends AbstractBeanTest {
 
 	@Test
 	@Ignore("Remove ignore once we have replaced H2, and feature properties can be changed by code")
-	public void testImportContactsWithVaccinations() throws IOException, InterruptedException, CsvValidationException, InvalidColumnException, URISyntaxException {
+	public void testImportContactsWithVaccinations()
+		throws IOException, InterruptedException, CsvValidationException, InvalidColumnException, URISyntaxException {
 		RDCF rdcf = creator.createRDCF("Abia", "Umuahia North", "Urban Ward 2", "Anelechi Hospital");
 		UserDto user = creator
-				.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 
 		File csvFile = new File(getClass().getClassLoader().getResource("sormas_contact_import_test_vaccinations.csv").toURI());
 		ContactImporterExtension contactImporter = new ContactImporterExtension(csvFile, user, null);
@@ -294,15 +295,18 @@ public class ContactImporterTest extends AbstractBeanTest {
 		ContactDto contact2 = contacts.stream().filter(c -> c.getCaseIdExternalSystem().equals("case2")).findFirst().get();
 		ContactDto contact3 = contacts.stream().filter(c -> c.getCaseIdExternalSystem().equals("case3")).findFirst().get();
 
-		List<VaccinationDto> case1Vaccinations = FacadeProvider.getVaccinationFacade().getAllVaccinations(contact1.getPerson().getUuid(), Disease.CORONAVIRUS);
+		List<VaccinationDto> case1Vaccinations =
+			FacadeProvider.getVaccinationFacade().getAllVaccinations(contact1.getPerson().getUuid(), Disease.CORONAVIRUS);
 		assertEquals(0, case1Vaccinations.size());
 
-		List<VaccinationDto> case2Vaccinations = FacadeProvider.getVaccinationFacade().getAllVaccinations(contact2.getPerson().getUuid(), Disease.CORONAVIRUS);
+		List<VaccinationDto> case2Vaccinations =
+			FacadeProvider.getVaccinationFacade().getAllVaccinations(contact2.getPerson().getUuid(), Disease.CORONAVIRUS);
 		assertEquals(1, case2Vaccinations.size());
 		assertEquals(Vaccine.COMIRNATY, case2Vaccinations.get(0).getVaccineName());
 		assertNull(case2Vaccinations.get(0).getHealthConditions().getChronicPulmonaryDisease());
 
-		List<VaccinationDto> case3Vaccinations = FacadeProvider.getVaccinationFacade().getAllVaccinations(contact3.getPerson().getUuid(), Disease.CORONAVIRUS);
+		List<VaccinationDto> case3Vaccinations =
+			FacadeProvider.getVaccinationFacade().getAllVaccinations(contact3.getPerson().getUuid(), Disease.CORONAVIRUS);
 		assertEquals(2, case3Vaccinations.size());
 		assertEquals(Vaccine.MRNA_1273, case3Vaccinations.get(0).getVaccineName());
 		assertEquals(YesNoUnknown.YES, case3Vaccinations.get(0).getHealthConditions().getChronicPulmonaryDisease());
