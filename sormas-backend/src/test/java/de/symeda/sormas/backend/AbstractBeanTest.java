@@ -245,8 +245,6 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		em.getTransaction().begin();
 		Query nativeQuery = em.createNativeQuery("CREATE ALIAS similarity FOR \"de.symeda.sormas.backend.H2Function.similarity\"");
 		nativeQuery.executeUpdate();
-		nativeQuery = em.createNativeQuery("CREATE ALIAS array_to_string FOR \"de.symeda.sormas.backend.H2Function.array_to_string\"");
-		nativeQuery.executeUpdate();
 		nativeQuery = em.createNativeQuery("CREATE ALIAS date_part FOR \"de.symeda.sormas.backend.H2Function.date_part\"");
 		nativeQuery.executeUpdate();
 		nativeQuery = em.createNativeQuery("CREATE ALIAS epi_week FOR \"de.symeda.sormas.backend.H2Function.epi_week\"");
@@ -258,8 +256,6 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		nativeQuery = em.createNativeQuery("CREATE ALIAS set_limit FOR \"de.symeda.sormas.backend.H2Function.set_limit\"");
 		nativeQuery.executeUpdate();
 		nativeQuery = em.createNativeQuery("CREATE ALIAS date FOR \"de.symeda.sormas.backend.H2Function.date\"");
-		nativeQuery.executeUpdate();
-		nativeQuery = em.createNativeQuery("CREATE TYPE \"JSONB\" AS other;");
 		nativeQuery.executeUpdate();
 		em.getTransaction().commit();
 	}
