@@ -44,7 +44,6 @@ public class TravelEntry extends CoreAdo {
 	public static final String PERSON_ID = "personId";
 	public static final String REPORT_DATE = "reportDate";
 	public static final String REPORTING_USER = "reportingUser";
-	public static final String ARCHIVED = "archived";
 	public static final String DELETED = "deleted";
 	public static final String DISEASE = "disease";
 	public static final String DISEASE_VARIANT = "diseaseVariant";
@@ -66,7 +65,6 @@ public class TravelEntry extends CoreAdo {
 	private Person person;
 	private Date reportDate;
 	private User reportingUser;
-	private boolean archived;
 	private boolean deleted;
 	private Disease disease;
 	private String diseaseDetails;
@@ -144,15 +142,6 @@ public class TravelEntry extends CoreAdo {
 
 	public void setReportingUser(User reportingUser) {
 		this.reportingUser = reportingUser;
-	}
-
-	@Column
-	public boolean isArchived() {
-		return archived;
-	}
-
-	public void setArchived(boolean archived) {
-		this.archived = archived;
 	}
 
 	@Override

@@ -85,7 +85,7 @@ public class EventFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		event.setConnectionNumber("updated");
 		event.setResponsibleUser(null);
-		getEventFacade().saveEvent(event);
+		getEventFacade().save(event);
 
 		Event savedEvent = getEventService().getByUuid(event.getUuid());
 
@@ -99,7 +99,7 @@ public class EventFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		event.setPseudonymized(true);
 		event.setResponsibleUser(null);
-		getEventFacade().saveEvent(event);
+		getEventFacade().save(event);
 
 		Event savedEvent = getEventService().getByUuid(event.getUuid());
 

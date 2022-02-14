@@ -361,13 +361,15 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 	}
 
 	@Override
-	public List<Person> getAllAfter(Date date, User user) {
-		return getAllAfter(date, user, null, null);
+	public List<Person> getAllAfter(Date date) {
+		return getAllAfter(date, null, null);
 	}
 
 	@Override
 	// todo refactor this to use the create user filter form persons
-	public List<Person> getAllAfter(Date date, User user, Integer batchSize, String lastSynchronizedUuid) {
+	public List<Person> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+
+		User user = getCurrentUser();
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 
@@ -739,6 +741,16 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			String name = criteria.getFirstName() + " " + criteria.getLastName();
 
 			filter = and(cb, filter, cb.isTrue(cb.function(SIMILARITY_OPERATOR, boolean.class, nameExpr, cb.literal(name))));
+		} else if (!StringUtils.isBlank(criteria.getFirstName())) {
+			filter = and(
+				cb,
+				filter,
+				cb.isTrue(cb.function(SIMILARITY_OPERATOR, boolean.class, personFrom.get(Person.FIRST_NAME), cb.literal(criteria.getFirstName()))));
+		} else if (!StringUtils.isBlank(criteria.getLastName())) {
+			filter = and(
+				cb,
+				filter,
+				cb.isTrue(cb.function(SIMILARITY_OPERATOR, boolean.class, personFrom.get(Person.LAST_NAME), cb.literal(criteria.getLastName()))));
 		}
 
 		if (criteria.getSex() != null) {

@@ -45,9 +45,9 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.common.AbstractDeletableAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
@@ -56,7 +56,7 @@ import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
-public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
+public class PathogenTestService extends AbstractDeletableAdoService<PathogenTest> {
 
 	@EJB
 	private SampleService sampleService;
@@ -324,7 +324,7 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 	}
 
 	/**
-	 * Creates a filter that excludes all pathogen tests that are {@link CoreAdo#deleted} or associated with
+	 * Creates a filter that excludes all pathogen tests that are {@link DeletableAdo#deleted} or associated with
 	 * cases that are {@link Case#archived}, contacts that are {@link Contact#deleted}. or event participants that are
 	 * {@link EventParticipant#deleted}
 	 */
@@ -336,7 +336,7 @@ public class PathogenTestService extends AbstractCoreAdoService<PathogenTest> {
 
 	/**
 	 * Creates a default filter that should be used as the basis of queries in this service..
-	 * This essentially removes {@link CoreAdo#deleted} pathogen tests from the queries.
+	 * This essentially removes {@link DeletableAdo#deleted} pathogen tests from the queries.
 	 */
 	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<PathogenTest> root) {
 		return cb.isFalse(root.get(PathogenTest.DELETED));

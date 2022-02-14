@@ -20,6 +20,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
+import de.symeda.sormas.api.travelentry.TravelEntryListCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -41,34 +42,42 @@ public class TravelEntryController {
 		navigator.addView(TravelEntryPersonView.VIEW_NAME, TravelEntryPersonView.class);
 	}
 
-	public void create(CaseReferenceDto caseReferenceDto) {
-		CommitDiscardWrapperComponent<TravelEntryCreateForm> travelEntryCreateComponent = getTravelEntryCreateComponent(caseReferenceDto);
+	public void create() {
+		CommitDiscardWrapperComponent<TravelEntryCreateForm> travelEntryCreateComponent =
+			getTravelEntryCreateComponent(null, null);
 		VaadinUiUtil.showModalPopupWindow(travelEntryCreateComponent, I18nProperties.getString(Strings.headingCreateNewTravelEntry));
 	}
 
-	private CommitDiscardWrapperComponent<TravelEntryCreateForm> getTravelEntryCreateComponent(CaseReferenceDto caseReferenceDto) {
+	public void create(TravelEntryListCriteria travelEntryListCriteria) {
+		CommitDiscardWrapperComponent<TravelEntryCreateForm> travelEntryCreateComponent =
+			getTravelEntryCreateComponent(travelEntryListCriteria.getCaseReferenceDto(), travelEntryListCriteria.getPersonReferenceDto());
+		VaadinUiUtil.showModalPopupWindow(travelEntryCreateComponent, I18nProperties.getString(Strings.headingCreateNewTravelEntry));
+	}
 
-		TravelEntryCreateForm createForm = new TravelEntryCreateForm();
+	private CommitDiscardWrapperComponent<TravelEntryCreateForm> getTravelEntryCreateComponent(CaseReferenceDto caseReferenceDto, PersonReferenceDto personReferenceDto) {
+
+		TravelEntryCreateForm createForm;
 		TravelEntryDto travelEntry = TravelEntryDto.build(null);
 		travelEntry.setDeaContent(FacadeProvider.getTravelEntryFacade().getDeaContentOfLastTravelEntry());
 
-		PersonDto personDto = null;
 		if (caseReferenceDto != null) {
 			CaseDataDto caseDataDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseReferenceDto.getUuid());
-			PersonReferenceDto personReferenceDto = caseDataDto.getPerson();
-			personDto = FacadeProvider.getPersonFacade().getPersonByUuid(personReferenceDto.getUuid());
+			PersonReferenceDto casePersonReferenceDto = caseDataDto.getPerson();
 			travelEntry.setResultingCase(caseReferenceDto);
-			travelEntry.setPerson(personReferenceDto);
+			travelEntry.setPerson(casePersonReferenceDto);
 			travelEntry.setDisease(caseDataDto.getDisease());
+			createForm = new TravelEntryCreateForm(casePersonReferenceDto);
+			createForm.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(casePersonReferenceDto.getUuid()));
+		} else if (personReferenceDto != null) {
+			travelEntry.setPerson(personReferenceDto);
+			createForm = new TravelEntryCreateForm(personReferenceDto);
+			createForm.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(personReferenceDto.getUuid()));
+		} else {
+			createForm = new TravelEntryCreateForm();
 		}
 
 		travelEntry.setReportingUser(UserProvider.getCurrent().getUserReference());
 		createForm.setValue(travelEntry);
-
-		if (personDto != null) {
-			createForm.setPerson(personDto);
-			createForm.setPersonalDetailsReadOnlyIfNotEmpty(true);
-		}
 
 		if (caseReferenceDto != null) {
 			createForm.setDiseaseReadOnly(true);

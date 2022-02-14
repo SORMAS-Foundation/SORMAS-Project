@@ -40,6 +40,7 @@ import org.openqa.selenium.StaleElementReferenceException;
 import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
+import org.openqa.selenium.interactions.Actions;
 import org.sormas.e2etests.common.TimerLite;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.Assert;
@@ -49,6 +50,10 @@ public class WebDriverHelpers {
 
   public static final By SELECTED_RADIO_BUTTON =
       By.xpath("ancestor::div[contains(@role,'group')]//input[@checked]/following-sibling::label");
+  public static final By SELECTED_RADIO_DISABLED_AND_CHECKED_BUTTON =
+      By.xpath(
+          "//div[contains(@class,'v-select-optiongroup')]//input[@checked and @disabled]/following-sibling::label");
+
   public static final int FLUENT_WAIT_TIMEOUT_SECONDS = 20;
   public static final By CHECKBOX_TEXT_LABEL = By.xpath("ancestor::span//label");
   public static final By TABLE_SCROLLER =
@@ -389,6 +394,23 @@ public class WebDriverHelpers {
     waitForPageLoaded();
   }
 
+  public void hoverToElement(By selector) {
+    WebElement menuOption = baseSteps.getDriver().findElement(selector);
+    Actions actions = new Actions(baseSteps.getDriver());
+    try {
+      assertHelpers.assertWithPoll20Second(
+          () -> {
+            scrollToElement(selector);
+            actions.moveToElement(menuOption).perform();
+            waitUntilIdentifiedElementIsVisibleAndClickable(selector);
+          });
+    } catch (ConditionTimeoutException ignored) {
+      log.error("Unable to fill on element identified by locator: {}", selector);
+      takeScreenshot(baseSteps.getDriver());
+      throw new TimeoutException("Unable to fill on element identified by locator: " + selector);
+    }
+  }
+
   public void javaScriptClickElement(final Object selector) {
     JavascriptExecutor javascriptExecutor = baseSteps.getDriver();
     waitUntilIdentifiedElementIsPresent(selector);
@@ -656,6 +678,16 @@ public class WebDriverHelpers {
     waitUntilIdentifiedElementIsPresent(options);
     scrollToElement(options);
     return baseSteps.getDriver().findElement(options).findElement(SELECTED_RADIO_BUTTON).getText();
+  }
+
+  public String getCheckedDisabledOptionFromHorizontalOptionGroup(By options) {
+    waitUntilIdentifiedElementIsPresent(options);
+    scrollToElement(options);
+    return baseSteps
+        .getDriver()
+        .findElement(options)
+        .findElement(SELECTED_RADIO_DISABLED_AND_CHECKED_BUTTON)
+        .getText();
   }
 
   public void clearWebElement(By selector) {

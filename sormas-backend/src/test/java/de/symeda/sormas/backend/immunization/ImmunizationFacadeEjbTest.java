@@ -52,6 +52,7 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 	private UserDto districtUser1;
 	private UserDto districtUser2;
 	private UserDto nationalUser;
+	private UserDto covidLimitedDistrictUser;
 
 	@Override
 	public void init() {
@@ -72,6 +73,11 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 
 		districtUser2 = creator
 			.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "Surv", "Off2", UserRole.SURVEILLANCE_OFFICER);
+
+		covidLimitedDistrictUser = creator
+			.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(), "Surv", "OffCovid", UserRole.SURVEILLANCE_OFFICER);
+		covidLimitedDistrictUser.setLimitedDisease(Disease.CORONAVIRUS);
+		getUserFacade().saveUser(covidLimitedDistrictUser);
 	}
 
 	@Test
@@ -216,8 +222,8 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		// assert getting non seen immunization in grid is pseudonymized
 		ImmunizationDto byUuid = getImmunizationFacade().getByUuid(nonSeenImmunization.getUuid());
 		assertEquals(nonSeenImmunization.getUuid(), byUuid.getUuid());
-		assertEquals("Confidential", byUuid.getPerson().getLastName());
-		assertEquals("Confidential", byUuid.getPerson().getFirstName());
+		assertEquals("", byUuid.getPerson().getLastName());
+		assertEquals("", byUuid.getPerson().getFirstName());
 
 		List<PersonDto> allPersonsAfter = getPersonFacade().getPersonsAfter(new DateTime(new Date()).minusDays(1).toDate());
 		assertEquals(1, allPersonsAfter.size());
@@ -538,14 +544,14 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 
 		final PersonDto person = creator.createPerson("John", "Doe");
 
-		final ImmunizationDto immunization = creator.createImmunizationDto(
-			Disease.DENGUE,
-			person.toReference(),
-			nationalUser.toReference(),
-			ImmunizationStatus.PENDING,
-			MeansOfImmunization.VACCINATION,
-			ImmunizationManagementStatus.SCHEDULED,
-			rdcf1);
+		ImmunizationDto immunization = getImmunizationFacade().save(creator.createImmunizationDto(
+				Disease.DENGUE,
+				person.toReference(),
+				nationalUser.toReference(),
+				ImmunizationStatus.PENDING,
+				MeansOfImmunization.VACCINATION,
+				ImmunizationManagementStatus.SCHEDULED,
+				rdcf1));
 
 		immunization.setNumberOfDoses(2);
 		immunization.setStartDate(DateHelper.subtractDays(new Date(), 1));
@@ -617,6 +623,37 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertEquals(2, immWithTwoVac.getVaccinations().size());
 		Assert.assertEquals(ImmunizationManagementStatus.SCHEDULED, immWithTwoVac.getImmunizationManagementStatus());
 		Assert.assertEquals(ImmunizationStatus.NOT_ACQUIRED, immWithTwoVac.getImmunizationStatus());
+	}
+
+	@Test
+	public void testGetIndexListIsFilteredByCurrentUserLimitedDisease() {
+		loginWith(nationalUser);
+
+		final PersonDto person = creator.createPerson("John", "Doe");
+
+		creator.createImmunization(
+				Disease.ANTHRAX,
+				person.toReference(),
+				nationalUser.toReference(),
+				ImmunizationStatus.ACQUIRED,
+				MeansOfImmunization.VACCINATION,
+				ImmunizationManagementStatus.COMPLETED,
+				rdcf1);
+
+		creator.createImmunization(
+				Disease.CORONAVIRUS,
+				person.toReference(),
+				nationalUser.toReference(),
+				ImmunizationStatus.ACQUIRED,
+				MeansOfImmunization.VACCINATION,
+				ImmunizationManagementStatus.COMPLETED,
+				rdcf1);
+
+		loginWith(districtUser1);
+		Assert.assertEquals(2, getImmunizationFacade().getIndexList(new ImmunizationCriteria(), 0, 100, null).size());
+
+		loginWith(covidLimitedDistrictUser);
+		Assert.assertEquals(1, getImmunizationFacade().getIndexList(new ImmunizationCriteria(), 0, 100, null).size());
 	}
 
 }
