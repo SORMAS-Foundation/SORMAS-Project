@@ -9991,4 +9991,17 @@ ALTER TABLE testreport_history ADD COLUMN testpcrtestspecification varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (443, 'Map variant specific Nucleic acid detection methods #5285');
 
+-- 2022-02-02 Move health conditions from clinical course to the case #6879
+
+ALTER TABLE cases ADD COLUMN healthconditions_id bigint;
+ALTER TABLE cases_history ADD COLUMN healthconditions_id bigint;
+ALTER TABLE cases ADD CONSTRAINT fk_cases_healthconditions_id FOREIGN KEY (healthconditions_id) REFERENCES healthconditions (id);
+
+UPDATE cases c SET healthconditions_id = (SELECT cc.healthconditions_id from clinicalcourse cc where cc.id = c.clinicalcourse_id);
+
+ALTER TABLE clinicalcourse DROP CONSTRAINT fk_clinicalcourse_healthconditions_id;
+ALTER TABLE clinicalcourse DROP COLUMN healthconditions_id;
+
+INSERT INTO schema_version (version_number, comment) VALUES (443, 'Move health conditions from clinical course to the case #6879');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
