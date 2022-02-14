@@ -24,4 +24,6 @@ public class ImmunizationsDirectoryPage {
 
   public static final By ADD_NEW_IMMUNIZATION_BUTTON =
       By.cssSelector("#immunizationNewImmunization");
+  public static final By FIRST_IMMUNIZATION_ID_BUTTON =
+      By.cssSelector(".v-grid-row-has-data a[title]");
 }
