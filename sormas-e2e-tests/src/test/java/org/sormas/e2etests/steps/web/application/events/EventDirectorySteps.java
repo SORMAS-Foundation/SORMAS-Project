@@ -19,8 +19,33 @@
 package org.sormas.e2etests.steps.web.application.events;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_GRID_RESULTS_ROWS;
-import static org.sormas.e2etests.pages.application.events.EditEventPage.*;
-import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.*;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_PARTICIPANTS_TAB;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_TASK_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.TITLE_INPUT;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.APPLY_FILTER;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CREATED_PARTICIPANT;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CREATE_CASE_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENTS_RADIO_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_STATUS_FILTER_BUTTONS;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTERED_EVENT_LINK_EVENT_FORM;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTER_BY_DISEASE;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTER_BY_RISK_LEVEL;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTER_BY_SOURCE_TYPE;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTER_BY_TYPE_OF_PLACE;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FIRST_EVENT_GROUP;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FIRST_EVENT_ID_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.ID_FIELD_FILTER;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LINKED_EVENT_GROUP_ID;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LINK_EVENT_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LINK_EVENT_BUTTON_EDIT_PAGE;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.RESET_FILTER;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SAVE_BUTTON_IN_LINK_FORM;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SEARCH_EVENT_BY_FREE_TEXT;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SEARCH_EVENT_BY_FREE_TEXT_INPUT;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.TOTAL_EVENTS_COUNTER;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.UNLINK_EVENT_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.RESET_FILTERS_BUTTON;
 
@@ -28,8 +53,11 @@ import cucumber.api.java8.En;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.openqa.selenium.By;
 import org.sormas.e2etests.common.DataOperations;
-import org.sormas.e2etests.enums.*;
+import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.enums.RiskLevelValues;
+import org.sormas.e2etests.enums.SourceTypeValues;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
@@ -56,6 +84,50 @@ public class EventDirectorySteps implements En {
               SEARCH_EVENT_BY_FREE_TEXT,
               dataOperations.getPartialUuidFromAssociatedLink(eventUuid));
         });
+
+    When(
+        "^I click on ([^\"]*) Radiobutton on Event Directory Page$",
+        (String buttonName) -> {
+          webDriverHelpers.clickWebElementByText(EVENTS_RADIO_BUTTON, buttonName);
+          webDriverHelpers.waitForPageLoaded();
+        });
+
+    When(
+        "^I click on Link Event button on Event Directory Page$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON));
+    When(
+        "^I click on Link Event button on Edit Event Page$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON_EDIT_PAGE));
+
+    When(
+        "^I click on Unlink Event button on Event Directory Page$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(UNLINK_EVENT_BUTTON));
+
+    When(
+        "^I fill Id filter with Id of last created event in Link Event to group form$",
+        () ->
+            webDriverHelpers.fillInWebElement(
+                ID_FIELD_FILTER, apiState.getCreatedEvent().getUuid()));
+    When(
+        "^I click on filtered Event in Link Event to group form$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(FILTERED_EVENT_LINK_EVENT_FORM));
+    When(
+        "^I click on first Event Group on the list in Link Event form$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_GROUP));
+
+    When(
+        "^I click on SAVE button in Link Event to group form$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_IN_LINK_FORM));
+
+    When(
+        "^I click on Linked Group Id on Edit Event Page$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(LINKED_EVENT_GROUP_ID));
+    When(
+        "^I click on Group Id in Events result on Event Directory Page$",
+        () ->
+            webDriverHelpers.clickOnWebElementBySelector(
+                By.xpath(
+                    "/html/body/div[1]/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div[3]/div/div[3]/table/tbody/tr/td[15]")));
 
     When(
         "I click on the NEW EVENT button",
