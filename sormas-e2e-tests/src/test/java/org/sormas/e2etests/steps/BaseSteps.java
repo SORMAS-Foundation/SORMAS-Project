@@ -39,7 +39,6 @@ import recorders.StepsLogger;
 public class BaseSteps implements StepLifecycleListener {
 
   public static RemoteWebDriver driver;
-  public static String locale;
   private final DriverManager driverManager;
 
   @Inject
