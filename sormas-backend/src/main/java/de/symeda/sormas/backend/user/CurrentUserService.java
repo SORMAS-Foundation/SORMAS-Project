@@ -5,7 +5,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.enterprise.context.RequestScoped;
-import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -30,7 +29,6 @@ public class CurrentUserService {
 
 	private final UserCache userCache;
 
-	@Inject
 	public CurrentUserService() {
 		this.userCache = UserCache.getInstance();
 	}
