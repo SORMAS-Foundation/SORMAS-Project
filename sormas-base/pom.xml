@@ -1188,6 +1188,31 @@
 					<artifactId>versions-maven-plugin</artifactId>
 					<version>2.8.1</version>
 				</plugin>
+				<plugin>
+					<groupId>org.owasp</groupId>
+					<artifactId>dependency-check-maven</artifactId>
+					<version>6.5.3</version>
+					<configuration>
+						<cveValidForHours>12</cveValidForHours>
+						<formats>HTML,XML</formats>
+						<outputDirectory>target/dependency-check</outputDirectory>
+						<prettyPrint>true</prettyPrint>
+						<skipDependencyManagement>false</skipDependencyManagement>
+						<skipTestScope>false</skipTestScope>
+						<suppressionFiles>
+							<suppressionFile>dependencies/check-suppressions.xml</suppressionFile>
+						</suppressionFiles>
+						<assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+					</configuration>
+					<executions>
+						<execution>
+							<goals>
+								<goal>check</goal>
+							</goals>
+						</execution>
+					</executions>
+					<!-- Usage (on sormas-base/pom.xml): "mvn org.owasp:dependency-check-maven:check" -->
+				</plugin>
 				<!-- *** Plugins for generate-reports END *** -->
 
 			</plugins>
