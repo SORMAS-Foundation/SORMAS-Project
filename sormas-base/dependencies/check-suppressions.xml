@@ -65,6 +65,27 @@
 	<filePath regex="true">.*\bmaven-ant-tasks.*\.jar</filePath>
     <vulnerabilityName>CVE-2020-22475</vulnerabilityName>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+    Addresses etcd itself
+    ]]></notes>
+	<filePath regex="true">.*\betcd-java.*\.jar</filePath>
+    <vulnerabilityName>CVE-2020-15106</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    Addresses etcd itself
+    ]]></notes>
+	<filePath regex="true">.*\betcd-java.*\.jar</filePath>
+    <vulnerabilityName>CVE-2020-15112</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    Addresses etcd itself
+    ]]></notes>
+	<filePath regex="true">.*\betcd-java.*\.jar</filePath>
+    <vulnerabilityName>CVE-2020-15113</vulnerabilityName>
+  </suppress>
   <!-- *** False positives END *** -->
 
   <!-- *** Not exploitable *** -->
