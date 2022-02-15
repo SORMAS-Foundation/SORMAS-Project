@@ -11,10 +11,10 @@ Feature: Immunization end to end tests
     And I check the created data is correctly displayed on Edit immunization person page
 
     @issue=SORDEV-9312
-    Scenario: Pressing 'Discard' on the 'Immunization' page does not reset the 'Overwrite immunization management status'
+    Scenario: Reset the 'Overwrite immunization management status' by Discard button
       Given I log in as a Surveillance Officer
       And I click on the Immunizations button from navbar
-      And I open last created immunization
+      And I open last created immunization from Immunization tab
       Then I check Overwrite immunization management status option
       Then I click on discard button from immunization tab
       And I check if Overwrite immunization management status is unchecked by Management Status
