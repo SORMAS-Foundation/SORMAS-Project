@@ -236,7 +236,7 @@ Feature: Create events
     And I click on the RESET FILTERS button
 
   @issue=SORDEV-5571
-  Scenario: Event group screen
+  Scenario: Event group screen from Event Directory Page
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
@@ -251,7 +251,7 @@ Feature: Create events
     And I click on Unlink Event button on Event Directory Page
 
   @issue=SORDEV-5571
-  Scenario: Event group screens
+  Scenario: Event group screen using Group Id on Edit Event Page
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
@@ -267,7 +267,7 @@ Feature: Create events
     And I click on Unlink Event button on Event Directory Page
 
   @issue=SORDEV-5571
-  Scenario: Event group screenss
+  Scenario: Event group screen using Group Id in grid
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200

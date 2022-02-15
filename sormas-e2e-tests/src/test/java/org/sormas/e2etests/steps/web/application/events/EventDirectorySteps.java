@@ -27,6 +27,7 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.AP
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CREATED_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CREATE_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENTS_RADIO_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_GROUP_ID_IN_GRID;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_STATUS_FILTER_BUTTONS;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTERED_EVENT_LINK_EVENT_FORM;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTER_BY_DISEASE;
@@ -53,7 +54,6 @@ import cucumber.api.java8.En;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.openqa.selenium.By;
 import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.RiskLevelValues;
@@ -124,10 +124,7 @@ public class EventDirectorySteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(LINKED_EVENT_GROUP_ID));
     When(
         "^I click on Group Id in Events result on Event Directory Page$",
-        () ->
-            webDriverHelpers.clickOnWebElementBySelector(
-                By.xpath(
-                    "/html/body/div[1]/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div[3]/div/div[3]/table/tbody/tr/td[15]")));
+        () -> webDriverHelpers.clickOnWebElementBySelector(EVENT_GROUP_ID_IN_GRID));
 
     When(
         "I click on the NEW EVENT button",
@@ -322,9 +319,8 @@ public class EventDirectorySteps implements En {
 
     When(
         "I click on the created event participant from the list",
-        () -> {
-          webDriverHelpers.clickOnWebElementBySelector(CREATED_PARTICIPANT);
-        });
+        () ->
+          webDriverHelpers.clickOnWebElementBySelector(CREATED_PARTICIPANT));
 
     When(
         "I click on New Task from event tab",
@@ -338,15 +334,15 @@ public class EventDirectorySteps implements En {
         "I click Create Case for Event Participant",
         () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_CASE_BUTTON));
 
-      Then(
-              "I check that number of displayed Event results is {int}",
-              (Integer number) ->
-                      assertHelpers.assertWithPoll20Second(
-                              () ->
-                                      Assert.assertEquals(
-                                              webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS),
-                                              number.intValue(),
-                                              "Number of displayed cases is not correct")));
+    Then(
+        "I check that number of displayed Event results is {int}",
+        (Integer number) ->
+            assertHelpers.assertWithPoll20Second(
+                () ->
+                    Assert.assertEquals(
+                        webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS),
+                        number.intValue(),
+                        "Number of displayed cases is not correct")));
 
     Then(
         "I check the number of displayed Event results from All button is {int}",
