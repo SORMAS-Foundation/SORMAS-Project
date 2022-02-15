@@ -82,6 +82,23 @@ public class CaseDirectorySteps implements En {
               By.xpath(String.format(RESULTS_GRID_HEADER, "Sex")), 20);
           webDriverHelpers.waitUntilANumberOfElementsAreVisibleAndClickable(GRID_HEADERS, 41);
         });
+    When(
+        "I click on the More button on Case directory page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(MORE_BUTTON);
+        });
+    When(
+        "I click Enter Bulk Edit Mode on Case directory page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ENTER_BULK_EDIT_MODE);
+          webDriverHelpers.waitForPageLoaded();
+        });
+    When(
+        "I click checkbox to choose all Case results",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_CHECKBOX);
+          webDriverHelpers.waitForPageLoaded();
+        });
 
     When(
         "I filter by CaseID on Case directory page",
@@ -215,6 +232,7 @@ public class CaseDirectorySteps implements En {
                 apiState.getLastCreatedPerson().getFirstName()
                     + " "
                     + apiState.getLastCreatedPerson().getLastName()));
+
     And(
         "I apply mocked Person Id filter on Case directory page",
         () ->
@@ -269,7 +287,7 @@ public class CaseDirectorySteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(
               CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
-          TimeUnit.SECONDS.sleep(3); // needed for table refresh
+          TimeUnit.SECONDS.sleep(5); // needed for table refresh
         });
 
     Then(
@@ -321,6 +339,18 @@ public class CaseDirectorySteps implements En {
               formatter.format(
                   LocalDate.ofInstant(
                           apiState.getCreatedCase().getReportDate().toInstant(),
+                          ZoneId.systemDefault())
+                      .minusDays(number)));
+        });
+    And(
+        "I fill Cases from input to {int} days before mocked Cases created on Case directory page",
+        (Integer number) -> {
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+          webDriverHelpers.fillInWebElement(
+              DATE_FROM_COMBOBOX,
+              formatter.format(
+                  LocalDate.ofInstant(
+                          apiState.getCreatedCases().get(0).getReportDate().toInstant(),
                           ZoneId.systemDefault())
                       .minusDays(number)));
         });

@@ -62,7 +62,7 @@ Feature: Case filter functionality
     Given API: I create a new case
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a Admin User
     And I click on the Cases button from navbar
     And I apply Case origin "In-Country" on Case directory page
     And I filter by CaseID on Case directory page
