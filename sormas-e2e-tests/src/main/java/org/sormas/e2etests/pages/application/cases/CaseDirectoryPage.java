@@ -125,5 +125,9 @@ public class CaseDirectoryPage {
   public static final By INVESTIGATION_DISCARDED_BUTTON = By.id("Investigation discarded");
   public static final By DATE_FROM_COMBOBOX = By.cssSelector("#dateFrom input");
   public static final By DATE_TO_COMBOBOX = By.cssSelector("#dateTo input");
+  public static final By MORE_BUTTON = By.id("more");
+  public static final By ENTER_BULK_EDIT_MODE = By.id("actionEnterBulkEditMode");
+  public static final By FIRST_CHECKBOX =
+      By.xpath("//th[@role='columnheader']//input[@type='checkbox']/../..");
   // TODO refactor the other headers based on the last one added
 }

@@ -324,5 +324,25 @@ Feature: Case end to end tests
     Then I click on save Contact button
     And I check if Quarantine change comment field was saved correctly
 
+  @issue=SORDEV-7452
+  Scenario: Bulk mode for linking/adding to Events
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    When API: I create 10 new cases
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I apply Date type filter to "Case report date" on Case directory page
+    And I fill Cases from input to 1 days before mocked Cases created on Case directory page
+    And I apply last created api Person Id filter on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I click on the More button on Case directory page
+    And I click Enter Bulk Edit Mode on Case directory page
+    And I click checkbox to choose all Case results
+    And I click on New Sample
 
+    
 
