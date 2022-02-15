@@ -73,7 +73,7 @@ public class CreateNewImmunizationSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(MANAGEMENT_STATUS);
           webDriverHelpers.scrollToElement(MANAGEMENT_STATUS);
           status = webDriverHelpers.isElementEnabled(MANAGEMENT_STATUS);
-          softly.assertEquals(status, false);
+          softly.assertEquals(status, false, "Expected management status is not correct");
           softly.assertAll();
         });
 
