@@ -222,7 +222,8 @@ public class TemplateEngine {
 		FieldsExtractor<FieldExtractor> extractor = FieldsExtractor.create();
 		ExtractVariablesVelocityVisitor visitor = new ExtractVariablesVelocityVisitor(extractor);
 		try {
-			SimpleNode document = RuntimeSingleton.parse(templateFileReader, templateName);
+			Template template = RuntimeSingleton.getTemplate(templateName);
+			SimpleNode document = RuntimeSingleton.parse(templateFileReader, template);
 			document.jjtAccept(visitor, null);
 			return extractor;
 		} catch (ParseException e) {
