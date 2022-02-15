@@ -49,8 +49,6 @@ public class PersonSelectionGrid extends SormasGrid {
 		GeneratedPropertyContainer generatedContainer = new GeneratedPropertyContainer(container);
 		setContainerDataSource(generatedContainer);
 
-		setColumn(SimilarPersonDto.class, SimilarPersonDto.FIRST_NAME);
-
 		setColumns(
 			SimilarPersonDto.class,
 			Arrays.asList(
@@ -78,9 +76,6 @@ public class PersonSelectionGrid extends SormasGrid {
 
 		getColumn(SimilarPersonDto.FIRST_NAME).setMinimumWidth(150);
 		getColumn(SimilarPersonDto.LAST_NAME).setMinimumWidth(150);
-	}
-
-	private void setColumn(Class<?> clazz, String propertyId) {
 	}
 
 	@SuppressWarnings("unchecked")
