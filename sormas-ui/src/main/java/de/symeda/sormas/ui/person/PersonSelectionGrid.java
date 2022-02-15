@@ -51,7 +51,7 @@ public class PersonSelectionGrid extends SormasGrid {
 
 		setColumn(SimilarPersonDto.class, SimilarPersonDto.FIRST_NAME);
 
-		setSormasColumns(
+		setColumns(
 			SimilarPersonDto.class,
 			Arrays.asList(
 				SimilarPersonDto.FIRST_NAME,

@@ -25,14 +25,14 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 
 public class SormasGrid extends Grid {
 
-	public void setSormasColumns(Class<?> clazz, List<String> propertyIds) {
+	public void setColumns(Class<?> clazz, List<String> propertyIds) {
 
 		FieldVisibilityCheckers fieldVisibilityCheckers = FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale());
 		super.setColumns(
 			propertyIds.stream().filter(propertyId -> fieldVisibilityCheckers.isVisible(clazz, propertyId)).collect(Collectors.toList()).toArray());
 	}
 
-	public void setSormasColumns(List<SormasColumn> columns) {
+	public void setColumns(List<SormasColumn> columns) {
 
 		FieldVisibilityCheckers fieldVisibilityCheckers = FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale());
 		super.setColumns(
@@ -40,6 +40,11 @@ public class SormasGrid extends Grid {
 				.filter(column -> fieldVisibilityCheckers.isVisible(column.getClazz(), column.getPropertyId()))
 				.collect(Collectors.toList())
 				.toArray());
+	}
+
+	@Override
+	public void setColumns(Object... propertyIds) {
+		throw new UnsupportedOperationException("This method should not be used! Please use setColumns of SormasGrid!");
 	}
 
 	public static class SormasColumn {
