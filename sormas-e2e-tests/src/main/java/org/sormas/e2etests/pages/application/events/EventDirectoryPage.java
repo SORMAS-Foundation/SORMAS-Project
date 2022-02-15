@@ -59,19 +59,15 @@ public class EventDirectoryPage {
   public static final By UNLINK_EVENT_BUTTON = By.id("unlink-event-0");
   public static final By ID_FIELD_FILTER = By.id("search");
   public static final By LINKED_EVENT_GROUP_ID =
-      By.xpath(
-          "/html/body/div[1]/div/div[2]/div/div[2]/div/div/div[3]/div/div/div/div/div[8]/div/div[2]/div/div/div/div/div/div/div[1]/div/div/div/div/div/div/div[2]/div/div[2]/div/div/div");
-  public static final By SAVE_BUTTON_IN_LINK_FORM =
-      By.xpath("/html/body/div[2]/div[3]/div/div/div[3]/div/div/div[2]/div/div/div[3]/div");
-  public static final By FILTERED_EVENT_LINK_EVENT_FORM =
-      By.xpath(
-          "//*[@id=\"sormasui-1655777373-overlays\"]/div[3]/div/div/div[3]/div/div/div[1]/div/div[2]/div/div/div[5]/div/div[3]/table/tbody/tr[1]/td[1]");
-  public static final By FIRST_EVENT_GROUP =
-      By.xpath(
-          "/html/body/div[2]/div[3]/div/div/div[3]/div/div/div[1]/div/div[2]/div/div/div[7]/div/div[3]/table/tbody/tr[1]/td[1]");
+      By.xpath("//div[@location = 'event-groups']//div[contains(@class, 'v-slot')]//a");
+  public static final By SAVE_BUTTON_IN_LINK_FORM = By.cssSelector(".popupContent #commit");
+  public static final By FILTERED_EVENT_LINK_EVENT_FORM = By.xpath("//tr[@role='row']");
+  public static final By FIRST_EVENT_GROUP = By.xpath("//tr[@role='row']");
   /*public static By getByEventUuid(String eventUuid) {
     return By.cssSelector("a[title=" + eventUuid + "]");
   }*/
+
+  public static final By EVENT_GROUP_ID_IN_GRID = By.xpath("//tr[@role='row']//td[15]/a");
   public static final By FIRST_EVENT_ID_BUTTON = By.cssSelector(".v-grid-row-has-data a[title]");
   public static final By CREATE_CASE_BUTTON =
       By.xpath("//td//span[contains(@class, 'v-icon-edit')]");
