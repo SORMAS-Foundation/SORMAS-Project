@@ -214,7 +214,7 @@ Feature: Contacts end to end tests
     And I am checking if options in checkbox for Contact are displayed correctly
 
   @issue=SORDEV-5640
-  Scenario: Fill an exposure data
+  Scenario: Fill an exposure data in Contacts
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
@@ -249,7 +249,7 @@ Feature: Contacts end to end tests
     And I click on save button from Epidemiological Data
 
   @issue=SORDEV-5670
-  Scenario: Fill the follow-up tab
+  Scenario: Fill the follow-up tab in Contacts
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
