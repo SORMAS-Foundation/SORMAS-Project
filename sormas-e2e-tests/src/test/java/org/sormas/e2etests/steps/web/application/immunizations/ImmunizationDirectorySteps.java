@@ -20,7 +20,7 @@ public class ImmunizationDirectorySteps implements En {
         });
 
     When(
-        "I open last created immunization",
+        "I open last created immunization from Immunization tab",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_IMMUNIZATION_ID_BUTTON);
