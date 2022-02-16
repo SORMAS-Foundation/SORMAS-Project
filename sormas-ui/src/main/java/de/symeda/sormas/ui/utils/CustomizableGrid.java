@@ -23,7 +23,7 @@ import com.vaadin.v7.ui.Grid;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 
-public class SormasGrid extends Grid {
+public class CustomizableGrid extends Grid {
 
 	public void setColumns(Class<?> clazz, List<String> propertyIds) {
 
@@ -32,7 +32,7 @@ public class SormasGrid extends Grid {
 			propertyIds.stream().filter(propertyId -> fieldVisibilityCheckers.isVisible(clazz, propertyId)).collect(Collectors.toList()).toArray());
 	}
 
-	public void setColumns(List<SormasColumn> columns) {
+	public void setColumns(List<CustomizableGridColumn> columns) {
 
 		FieldVisibilityCheckers fieldVisibilityCheckers = FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale());
 		super.setColumns(
@@ -47,12 +47,12 @@ public class SormasGrid extends Grid {
 		throw new UnsupportedOperationException("This method should not be used! Please use setColumns of SormasGrid!");
 	}
 
-	public static class SormasColumn {
+	public static class CustomizableGridColumn {
 
 		private Class<?> clazz;
 		private String propertyId;
 
-		public SormasColumn(Class<?> clazz, String propertyId) {
+		public CustomizableGridColumn(Class<?> clazz, String propertyId) {
 			this.clazz = clazz;
 			this.propertyId = propertyId;
 		}

@@ -28,10 +28,10 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.SimilarPersonDto;
-import de.symeda.sormas.ui.utils.SormasGrid;
+import de.symeda.sormas.ui.utils.CustomizableGrid;
 
 @SuppressWarnings("serial")
-public class PersonSelectionGrid extends SormasGrid {
+public class PersonSelectionGrid extends CustomizableGrid {
 
 	/**
 	 * Create a grid of persons listing all persons similar to the given criteria.
