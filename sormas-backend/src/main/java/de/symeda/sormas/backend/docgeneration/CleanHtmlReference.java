@@ -16,13 +16,14 @@
 package de.symeda.sormas.backend.docgeneration;
 
 import org.apache.velocity.app.event.ReferenceInsertionEventHandler;
+import org.apache.velocity.context.Context;
 
 import de.symeda.sormas.api.utils.HtmlHelper;
 
 public class CleanHtmlReference implements ReferenceInsertionEventHandler {
 
 	@Override
-	public Object referenceInsert(String s, Object o) {
-		return o == null ? null : HtmlHelper.cleanHtml(o.toString(), HtmlHelper.EVENTACTION_WHITELIST);
+	public Object referenceInsert(Context context, String reference, Object value) {
+		return value == null ? null : HtmlHelper.cleanHtml(value.toString(), HtmlHelper.EVENTACTION_WHITELIST);
 	}
 }

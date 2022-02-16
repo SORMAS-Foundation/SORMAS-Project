@@ -41,6 +41,8 @@ import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonIndexDto;
+import de.symeda.sormas.api.person.PersonSimilarityCriteria;
+import de.symeda.sormas.api.person.SimilarPersonDto;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
@@ -123,5 +125,11 @@ public class PersonResource extends EntityDtoResource {
 		} catch (ExternalDataUpdateException e) {
 			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
 		}
+	}
+
+	@POST
+	@Path("/similarPersons")
+	public List<SimilarPersonDto> getSimilarPersons(@RequestBody PersonSimilarityCriteria criteria) {
+		return FacadeProvider.getPersonFacade().getSimilarPersonDtos(criteria);
 	}
 }

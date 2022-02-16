@@ -47,6 +47,6 @@ public enum DistrictsValues {
     for (DistrictsValues value : districtsValues) {
       if (value.uuid.equalsIgnoreCase(option)) return value.name;
     }
-    throw new Exception("Unable to find " + option + " value in DistrictsValues Enum");
+    throw new Exception("Unable to find " + option + " value in District Enum");
   }
 }

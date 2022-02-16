@@ -86,11 +86,6 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		return user;
 	}
 
-	@Override
-	public User getCurrentUser() {
-		return super.getCurrentUser();
-	}
-
 	/**
 	 * Fetches a use from the DB by its username. The check is done case-insensitive.
 	 * 

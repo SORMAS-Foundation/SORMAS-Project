@@ -74,6 +74,40 @@ public class UserService {
         .build();
   }
 
+  public User buildGeneratedUserWithRoleAndDisease(String role, String disease) {
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+    return User.builder()
+        .firstName(firstName)
+        .lastName(lastName)
+        .emailAddress(ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
+        .phoneNumber(generatePhoneNumber())
+        .language("English")
+        .country("Germany")
+        .region(RegionsValues.VoreingestellteBundeslander.getName())
+        .district(DistrictsValues.VoreingestellterLandkreis.getName())
+        .community(CommunityValues.VoreingestellteGemeinde.getName())
+        .facilityCategory("Accommodation")
+        .facilityType("Campsite")
+        .facility("Other facility")
+        .facilityNameAndDescription("qa-automation run")
+        .street(faker.address().streetAddress())
+        .houseNumber(faker.address().buildingNumber())
+        .additionalInformation(
+            "Additional Information ".concat(String.valueOf(System.currentTimeMillis())))
+        .postalCode(faker.address().zipCode())
+        .city(faker.address().city())
+        .areaType("Urban")
+        .gpsLatitude(faker.random().nextInt(10, 20).toString())
+        .gpsLongitude(faker.random().nextInt(20, 40).toString())
+        .gpsAccuracy("1")
+        .active(true)
+        .userName("AutomationUser-".concat(LocalTime.now().toString()))
+        .userRole(role)
+        .limitedDisease(disease)
+        .build();
+  }
+
   public User buildEditUser() {
     long currentTimeMillis = System.currentTimeMillis();
     firstName = faker.name().firstName();

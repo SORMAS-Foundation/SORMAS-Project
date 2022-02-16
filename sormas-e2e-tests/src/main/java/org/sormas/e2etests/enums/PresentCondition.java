@@ -37,7 +37,7 @@ public enum PresentCondition {
 
   public static String getRandomPresentCondition() {
     Random random = new Random();
-    return String.valueOf(PresentCondition.values()[random.nextInt(values().length)]);
+    return String.valueOf(PresentCondition.values()[random.nextInt(values().length)].condition);
   }
 
   @SneakyThrows

@@ -201,7 +201,7 @@ public class SormasToSormasController {
 				VaadinUiUtil.showPopupWindowWithWidth(
 					new VerticalLayout(messageComponent),
 					I18nProperties.getCaption(Captions.sormasToSormasErrorDialogTitle),
-					38);
+					48);
 			}
 		} catch (SormasToSormasValidationException ex) {
 			Component messageComponent = buildShareErrorMessage(ex.getMessage(), ex.getErrors());
@@ -209,12 +209,13 @@ public class SormasToSormasController {
 			VaadinUiUtil.showPopupWindowWithWidth(
 				new VerticalLayout(messageComponent),
 				I18nProperties.getCaption(Captions.sormasToSormasErrorDialogTitle),
-				38);
+				48);
 		}
 	}
 
 	private Component buildShareErrorMessage(String message, List<ValidationErrors> errors) {
 		Label errorMessageLabel = new Label(message, ContentMode.HTML);
+		errorMessageLabel.addStyleName(CssStyles.LABEL_WHITE_SPACE_NORMAL);
 
 		if (errors == null || errors.isEmpty()) {
 			return errorMessageLabel;
@@ -228,6 +229,7 @@ public class SormasToSormasController {
 			groupErrorsLayout.setMargin(false);
 			groupErrorsLayout.setSpacing(false);
 			groupErrorsLayout.setStyleName(CssStyles.HSPACE_LEFT_3);
+			groupErrorsLayout.setWidth(92, Sizeable.Unit.PERCENTAGE);
 
 			VerticalLayout layout = new VerticalLayout(groupLabel, groupErrorsLayout);
 			layout.setMargin(false);
@@ -248,11 +250,12 @@ public class SormasToSormasController {
 		return errors.getSubGroups().stream().map(e -> {
 			Label groupLabel = new Label(e.getHumanMessage() + ":");
 			groupLabel.addStyleName(CssStyles.LABEL_BOLD);
-			HorizontalLayout layout = new HorizontalLayout(
-				groupLabel,
-				new Label(
+			Label label = new Label(
 					String
-						.join(", ", e.getMessages().stream().map(ValidationErrorMessage::getHumanMessage).collect(Collectors.toList()).toString())));
+							.join(", ", e.getMessages().stream().map(ValidationErrorMessage::getHumanMessage).collect(Collectors.toList()).toString()));
+			HorizontalLayout layout = new HorizontalLayout(
+				groupLabel, label);
+			label.addStyleName(CssStyles.LABEL_WHITE_SPACE_NORMAL);
 			layout.setMargin(false);
 
 			return layout;
