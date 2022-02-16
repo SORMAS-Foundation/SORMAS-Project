@@ -299,7 +299,7 @@ public class ContactDirectorySteps implements En {
         "I fill Location form for Type of place by options excluded Other and Facility",
         () -> {
           webDriverHelpers.selectFromCombobox(TYPE_OF_PLACE_COMBOBOX, TypeOfPlace.HOME.getPlace());
-          exposureData = contactService.buildGeneratedExposureDataForContact();
+          exposureData = contactService.buildGeneratedExposureDataContactForRandomInputs();
           fillLocation(exposureData);
           webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
         });
@@ -308,7 +308,7 @@ public class ContactDirectorySteps implements En {
         "I fill Location form for Type of place by Other option",
         () -> {
           webDriverHelpers.selectFromCombobox(TYPE_OF_PLACE_COMBOBOX, TypeOfPlace.OTHER.getPlace());
-          exposureData = contactService.buildGeneratedExposureDataForContact();
+          exposureData = contactService.buildGeneratedExposureDataContactForRandomInputs();
           fillLocation(exposureData);
           webDriverHelpers.fillInWebElement(
               TYPE_OF_PLACE_DETAILS, exposureData.getTypeOfPlaceDetails());
@@ -321,7 +321,7 @@ public class ContactDirectorySteps implements En {
         () -> {
           webDriverHelpers.selectFromCombobox(
               TYPE_OF_PLACE_COMBOBOX, TypeOfPlace.FACILITY.getPlace());
-          exposureData = contactService.buildGeneratedExposureDataForContact();
+          exposureData = contactService.buildGeneratedExposureDataContactForRandomInputs();
           fillLocation(exposureData);
           webDriverHelpers.selectFromCombobox(
               FACILITY_CATEGORY_COMBOBOX, exposureData.getFacilityCategory());
