@@ -1,6 +1,7 @@
 @UI @Sanity @Case @EpidemiologicalData
 Feature: Epidemiological data coverage
 
+  @Locale_DE
   Scenario: Edit all fields from Epidemiological data tab
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -20,7 +21,7 @@ Feature: Epidemiological data coverage
     And I open saved activity from Epidemiological Data
     Then I am checking all Activity data is saved and displayed
 
-    @issue=SORDEV-5522
+    @issue=SORDEV-5522 @Locale_DE
   Scenario: Validate all fields are present and functional on Epidemiological page
     Given API: I create a new person
     Then API: I check that POST call body is "OK"

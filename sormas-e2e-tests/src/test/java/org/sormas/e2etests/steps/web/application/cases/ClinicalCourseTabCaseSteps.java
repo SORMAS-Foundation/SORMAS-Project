@@ -28,12 +28,11 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
-import javax.inject.Named;
 import lombok.SneakyThrows;
 import org.openqa.selenium.By;
+import org.sormas.e2etests.entities.pojo.web.Visit;
+import org.sormas.e2etests.entities.services.ClinicalCourseVisitService;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.web.Visit;
-import org.sormas.e2etests.services.ClinicalCourseVisitService;
 import org.sormas.e2etests.state.ApiState;
 
 public class ClinicalCourseTabCaseSteps implements En {
@@ -49,8 +48,7 @@ public class ClinicalCourseTabCaseSteps implements En {
       WebDriverHelpers webDriverHelpers,
       Faker faker,
       ApiState apiState,
-      ClinicalCourseVisitService clinicalCourseVisitService,
-      @Named("ENVIRONMENT_URL") String environmentUrl) {
+      ClinicalCourseVisitService clinicalCourseVisitService) {
     this.webDriverHelpers = webDriverHelpers;
 
     Then(

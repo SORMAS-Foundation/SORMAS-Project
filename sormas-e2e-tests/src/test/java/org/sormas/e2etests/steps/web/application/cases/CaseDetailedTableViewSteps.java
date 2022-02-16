@@ -1,6 +1,7 @@
 package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static recorders.StepsLogger.PROCESS_ID_STRING;
 
 import cucumber.api.java8.En;
@@ -20,7 +21,7 @@ import org.sormas.e2etests.enums.ContactOutcome;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.RegionsValues;
-import org.sormas.e2etests.enums.TestDataUser;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
@@ -37,7 +38,8 @@ public class CaseDetailedTableViewSteps implements En {
       WebDriverHelpers webDriverHelpers,
       BaseSteps baseSteps,
       ApiState apiState,
-      SoftAssert softly) {
+      SoftAssert softly,
+      EnvironmentManager environmentManager) {
     this.webDriverHelpers = webDriverHelpers;
     this.baseSteps = baseSteps;
 
@@ -137,7 +139,7 @@ public class CaseDetailedTableViewSteps implements En {
           }
           softly.assertEquals(
               detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.REPORTING_USER.toString()),
-              TestDataUser.REST_AUTOMATION.getUserRole(),
+              environmentManager.getUserByRole(locale, "Rest AUTOMATION").getUserRole(),
               "Reporting user is not correct");
           softly.assertAll();
         });

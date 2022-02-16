@@ -1,6 +1,7 @@
 @UI @Sanity @Sample
 Feature: Sample filter functionality
 
+  @Locale_DE
   Scenario: Check Filters on Sample page work as expected
     Given API: I create 10 new cases with a new sample foreach of them
     Then API: I check that POST call body is "OK"
@@ -14,7 +15,7 @@ Feature: Sample filter functionality
     When I search for samples created with the API
     Then I check the displayed Laboratory filter dropdown
 
-  @issue=SORDEV-5981
+  @issue=SORDEV-5981 @Locale_DE
   Scenario: Check all filters are work properly in Samples directory
     Given API: I create a new person
     Then API: I check that POST call body is "OK"

@@ -1,6 +1,7 @@
 @UI @Sanity @Immunization
 Feature: Immunization end to end tests
 
+  @Locale_DE
   Scenario:Check a new immunization data
     Given I log in as a Surveillance Officer
     And I click on the Immunizations button from navbar

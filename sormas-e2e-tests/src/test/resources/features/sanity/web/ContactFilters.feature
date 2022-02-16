@@ -1,7 +1,7 @@
 @UI @Sanity @Contact @Filters
 Feature: Contact filter functionality
 
-  @issue=SORDEV-5692
+  @issue=SORDEV-5692 @Locale_DE
   Scenario: Check Contact basic filters on Contact directory page
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -42,7 +42,7 @@ Feature: Contact filter functionality
     And I check that number of displayed contact results is 0
     And I apply Follow-up status filter to "Completed follow-up" on Contact Directory Page
 
-  @issue=SORDEV-5692
+  @issue=SORDEV-5692 @Locale_DE
   Scenario: Check checkbox filters on Contact directory page
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -92,7 +92,7 @@ Feature: Contact filter functionality
     And I check that number of displayed contact results is 0
     And I click "Only contacts from other instances" checkbox on Contact directory page
 
-  @issue=SORDEV-5692
+  @issue=SORDEV-5692 @Locale_DE
   Scenario: Check aggregation buttons on Contact directory page
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -116,7 +116,3 @@ Feature: Contact filter functionality
     And I check that number of displayed contact results is 0
     And I click on Dropped button on Contact Directory Page
     And I check that number of displayed contact results is 0
-
-
-
-

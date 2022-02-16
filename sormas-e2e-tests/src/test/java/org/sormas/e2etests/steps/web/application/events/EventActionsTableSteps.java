@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,8 +30,8 @@ import javax.inject.Inject;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
+import org.sormas.e2etests.entities.pojo.web.EventActionTableEntry;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.web.EventActionTableEntry;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.asserts.SoftAssert;

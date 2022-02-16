@@ -1,6 +1,7 @@
 @UI @Sanity @Case @Classification
 Feature: Case Classification functionality
 
+  @Locale_DE
   Scenario: Case Classification change from Not Yet Classified to Suspect Case by confirming Sore Throat
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -20,6 +21,7 @@ Feature: Case Classification functionality
     And I click on save button from Edit Case page
     Then For the current Case the Case Classification value should be "Suspect case"
 
+  @Locale_DE
   Scenario: Case Classification change from Suspect Case to Not Yet Classified
     Given API: I create a new person
     Then API: I check that POST call body is "OK"

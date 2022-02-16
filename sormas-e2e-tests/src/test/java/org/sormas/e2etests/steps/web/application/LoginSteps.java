@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,13 +18,11 @@
 
 package org.sormas.e2etests.steps.web.application;
 
-import static org.sormas.e2etests.enums.TestDataUser.*;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.LOGOUT_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.google.inject.Inject;
 import cucumber.api.java8.En;
-import javax.inject.Named;
 import org.openqa.selenium.NoSuchElementException;
 import org.sormas.e2etests.envconfig.dto.EnvUser;
 import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
@@ -39,8 +37,7 @@ public class LoginSteps implements En {
   public LoginSteps(
       WebDriverHelpers webDriverHelpers,
       BaseSteps baseSteps,
-      EnvironmentManager environmentManager,
-      @Named("ENVIRONMENT_URL") String environmentUrl) {
+      EnvironmentManager environmentManager) {
 
     Given(
         "^I am logged in with name ([^\"]*)$",

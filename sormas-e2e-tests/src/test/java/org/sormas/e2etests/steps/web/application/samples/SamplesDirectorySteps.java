@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,13 +19,14 @@
 package org.sormas.e2etests.steps.web.application.samples;
 
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.*;
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.util.Arrays;
 import javax.inject.Inject;
-import javax.inject.Named;
 import org.sormas.e2etests.enums.*;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
@@ -37,7 +38,7 @@ public class SamplesDirectorySteps implements En {
   @Inject
   public SamplesDirectorySteps(
       WebDriverHelpers webDriverHelpers,
-      @Named("ENVIRONMENT_URL") String environmentUrl,
+      EnvironmentManager environmentManager,
       ApiState apiState,
       AssertHelpers assertHelpers) {
 
@@ -209,7 +210,7 @@ public class SamplesDirectorySteps implements En {
         "I am accessing the created sample via api",
         () -> {
           String CREATED_SAMPLE_VIA_API_URL =
-              environmentUrl
+              environmentManager.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!samples/data/"
                   + apiState.getCreatedSample().getUuid();
           webDriverHelpers.accessWebSite(CREATED_SAMPLE_VIA_API_URL);

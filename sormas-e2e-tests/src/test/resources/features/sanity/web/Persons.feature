@@ -1,5 +1,7 @@
 @UI @Sanity @Persons
 Feature: Edit Persons
+
+  @Locale_DE
   Scenario: Edit existent person
     Given I log in with National User
     When I click on the Contacts button from navbar
@@ -18,7 +20,7 @@ Feature: Edit Persons
     Then I click on save button from Edit Person page
     And I check that previous edited person is correctly displayed in Edit Person page
 
-@issue=SORDEV-8468
+@issue=SORDEV-8468 @Locale_DE
   Scenario: Edit existent person and provoke errors in the Edit Person page
     Given I log in with National User
     When I click on the Persons button from navbar

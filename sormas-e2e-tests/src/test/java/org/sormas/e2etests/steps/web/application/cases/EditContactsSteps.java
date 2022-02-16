@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CON
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.LAST_CONTACT_DATE;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.TYPE_OF_CONTACT_OPTIONS;
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -38,12 +39,12 @@ import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
 import javax.inject.Inject;
-import javax.inject.Named;
 import org.openqa.selenium.By;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Contact;
+import org.sormas.e2etests.entities.services.ContactService;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.pojo.web.Contact;
-import org.sormas.e2etests.services.ContactService;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.asserts.SoftAssert;
 
@@ -62,14 +63,14 @@ public class EditContactsSteps implements En {
       ApiState apiState,
       ContactService contactService,
       SoftAssert softly,
-      @Named("ENVIRONMENT_URL") String environmentUrl) {
+      EnvironmentManager environmentManager) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
         "I open the Case Contacts tab of the created case via api",
         () -> {
           LAST_CREATED_CASE_CONTACTS_TAB_URL =
-              environmentUrl
+              environmentManager.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!cases/contacts/"
                   + apiState.getCreatedCase().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_CASE_CONTACTS_TAB_URL);
