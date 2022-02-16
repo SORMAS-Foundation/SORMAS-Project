@@ -142,7 +142,7 @@ Feature: Pathogen Functionalities
     And I check that if Other field is correctly displayed
     And I delete the Pathogen test
 
-    @issue=SORDEV-8059
+    @issue=SORDEV-8059 @env_main
     Scenario: Unify pathogen test saving logic between cases and contacts
       When API: I create a new person
       Then API: I check that POST call body is "OK"
@@ -167,7 +167,7 @@ Feature: Pathogen Functionalities
       When I open created Sample
       Then I check if Pathogen test result in Samples is displayed correctly and save
 
-  @issue=SORDEV-8059
+  @issue=SORDEV-8059 @env_main
   Scenario: Unify pathogen test saving logic between cases and event participants
     When API: I create a new person
     Then API: I check that POST call body is "OK"
