@@ -116,6 +116,8 @@ public class ImmunizationFacadeEjb
 	private final Logger logger = LoggerFactory.getLogger(ImmunizationFacadeEjb.class);
 
 	@EJB
+	private ImmunizationService immunizationService;
+	@EJB
 	private DirectoryImmunizationService directoryImmunizationService;
 	@EJB
 	private PersonService personService;
@@ -158,6 +160,11 @@ public class ImmunizationFacadeEjb
 	@Inject
 	public ImmunizationFacadeEjb(ImmunizationService service, UserService userService) {
 		super(Immunization.class, ImmunizationDto.class, service, userService);
+	}
+
+	@Override
+	public AbstractCoreAdoService<Immunization> getEntityService() {
+		return immunizationService;
 	}
 
 	public static ImmunizationReferenceDto toReferenceDto(Immunization entity) {
