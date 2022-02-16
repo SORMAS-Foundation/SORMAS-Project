@@ -123,17 +123,17 @@ public class Menu extends CssLayout {
 				(Command) selectedItem -> showSettingsPopup());
 
 		settingsMenu.addStyleNames("user-menu", "settings-menu");
-		menuPart.addComponent(settingsMenu);
+		//menuPart.addComponent(settingsMenu);
 
 		// logout menu item
 		MenuBar logoutMenu = new MenuBar();
 		logoutMenu.setId(Captions.actionLogout);
 		logoutMenu.addItem(
 				I18nProperties.getCaption(Captions.actionLogout) + " (" + UserProvider.getCurrent().getUserName() + ")",
-				VaadinIcons.SIGN_OUT, (Command) selectedItem -> LoginHelper.logout());
+				VaadinIcons.POWER_OFF, (Command) selectedItem -> LoginHelper.logout());
 
 		logoutMenu.addStyleNames("user-menu", "logout-menu");
-		menuPart.addComponent(logoutMenu);
+		//menuPart.addComponent(logoutMenu);
 
 		addComponent(menuPart);
 	}

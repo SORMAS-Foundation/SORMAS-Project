@@ -10,21 +10,21 @@ public class CampaignIndexDto implements Serializable {
 	public static final String I18N_PREFIX = "Campaign";
 
 	public static final String UUID = "uuid";
-	public static final String CLUSTER = "cluster";
+	public static final String ROUND = "round";
 	public static final String NAME = "name";
 	public static final String START_DATE = "startDate";
 	public static final String END_DATE = "endDate";
 
 	private String uuid;
 	private String name;
-	private String cluster;
+	private String round;
 	private Date startDate;
 	private Date endDate;
 
 	public CampaignIndexDto(String uuid, String name, String cluster, Date startDate, Date endDate) {
 		this.uuid = uuid;
 		this.name = name;
-		this.cluster = cluster;
+		this.round = round;
 		this.startDate = startDate;
 		this.endDate = endDate;
 	}
@@ -46,12 +46,12 @@ public class CampaignIndexDto implements Serializable {
 	}
 
 	
-	public String getCluster() {
-		return cluster;
+	public String getRound() {
+		return round;
 	}
 
-	public void setCluster(String cluster) {
-		this.cluster = cluster;
+	public void setRound(String round) {
+		this.round = round;
 	}
 
 	public Date getStartDate() {

@@ -8295,8 +8295,8 @@ INSERT INTO schema_version (version_number, comment) VALUES (408, 'Add disease v
 
 
 -- 2021-09-27 Add disease variant details #5935
-ALTER TABLE campaigns ADD COLUMN cluster varchar(255);
+ALTER TABLE campaigns ADD COLUMN round varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (409, 'Add cluster to campaings #88');
+INSERT INTO schema_version (version_number, comment) VALUES (409, 'Add round to campaings #88');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

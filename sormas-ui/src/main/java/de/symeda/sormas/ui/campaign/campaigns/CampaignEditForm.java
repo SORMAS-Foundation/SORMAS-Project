@@ -77,9 +77,8 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 
 	private static final String HTML_LAYOUT = loc(CAMPAIGN_BASIC_HEADING_LOC)
 		+ fluidRowLocs(CampaignDto.UUID, CampaignDto.CREATING_USER)
-		+ fluidRowLocs(CampaignDto.NAME) 
+		+ fluidRowLocs(CampaignDto.NAME, CampaignDto.ROUND) 
 		+ fluidRowLocs(CampaignDto.START_DATE, CampaignDto.END_DATE)
-		+ fluidRowLocs(CampaignDto.CLUSTER)
 		+ fluidRowLocs(CampaignDto.DESCRIPTION)
 		+ fluidRowLocs(SPACE_LOCX)
 		//+ fluidRowLocs(CampaignDto.CAMPAIGN_TYPES)
@@ -153,7 +152,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 		
 		
 		//add textfied for cluster
-		ComboBox clusterfield = addField(CampaignDto.CLUSTER, ComboBox.class);
+		ComboBox clusterfield = addField(CampaignDto.ROUND, ComboBox.class);
 		clusterfield.addItem("NID");
 		clusterfield.addItem("SID");
 		clusterfield.addItem("bOPV");
@@ -179,7 +178,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 		spacerx.setHeight("10%");
 		getContent().addComponent(spacerx, SPACE_LOCX);
 	/*	
-		clusterfieldx = new OptionGroup();
+		clusterfieldx = new OptionGroup(); 
 		clusterfieldx = addField(CampaignDto.CAMPAIGN_TYPES, OptionGroup.class);
 		CssStyles.style(clusterfieldx, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
 		clusterfieldx.addItem("Pre-Campaign");
@@ -191,7 +190,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 		setReadOnly(true, CampaignDto.UUID, CampaignDto.CREATING_USER);
 		setVisible(!isCreateForm, CampaignDto.UUID, CampaignDto.CREATING_USER);
 
-		setRequired(true, CampaignDto.UUID, CampaignDto.NAME, CampaignDto.CREATING_USER, CampaignDto.START_DATE, CampaignDto.END_DATE, CampaignDto.CLUSTER);
+		setRequired(true, CampaignDto.UUID, CampaignDto.NAME, CampaignDto.CREATING_USER, CampaignDto.START_DATE, CampaignDto.END_DATE, CampaignDto.ROUND);
 
 		FieldHelper.addSoftRequiredStyle(description);
 		final HorizontalLayout usageLayout = new HorizontalLayout();
@@ -231,7 +230,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 				FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences());
 			getContent().addComponent(campaignFormsGridComponent, CAMPAIGN_DATA_LOC);
 		tab1.addComponent(campaignFormsGridComponent);
-		tab1.setCaption("Pre Campaign-Round Forms");
+		tab1.setCaption("Pre Campaign Forms");
 		tabsheet.addTab(tab1);
 		
 
@@ -245,7 +244,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 			campaignDashboardElements);
 		getContent().addComponent(campaignDashboardGridComponent, CAMPAIGN_DASHBOARD_LOC);
 		tab2.addComponent(campaignDashboardGridComponent);
-		tab2.setCaption("Pre Campaign-Round Dashboard");
+		tab2.setCaption("Pre Campaign Dashboard");
 		tabsheet.addTab(tab2);
 
 

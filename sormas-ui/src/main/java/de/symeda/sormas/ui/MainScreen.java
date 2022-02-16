@@ -239,9 +239,6 @@ public class MainScreen extends HorizontalLayout {
 				I18nProperties.getCaption(Captions.mainMenuStatistics),
 				VaadinIcons.BAR_CHART);
 		}
-		if (permitted(UserRight.USER_VIEW)) {
-			menu.addView(UsersView.class, UsersView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuUsers), VaadinIcons.USERS);
-		}
 		if (permitted(UserRight.CONFIGURATION_ACCESS)) {
 			AbstractConfigurationView.registerViews(navigator);
 			menu.addView(
@@ -250,10 +247,16 @@ public class MainScreen extends HorizontalLayout {
 				I18nProperties.getCaption(Captions.mainMenuConfiguration),
 				VaadinIcons.COG_O);
 		}
+		if (permitted(UserRight.USER_VIEW)) {
+			menu.addView(UsersView.class, UsersView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuUsers), VaadinIcons.USERS);
+		}
+		
 		
 		menu.addView(AboutView.class, AboutView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuAbout), VaadinIcons.INFO_CIRCLE_O);
 		
-		menu.addView(AboutView.class, "XDX", I18nProperties.getCaption(Captions.actionSettings), VaadinIcons.GLOBE_WIRE);
+		menu.addView(LanguageView.class, LanguageView.VIEW_NAME, "Language", VaadinIcons.GLOBE_WIRE);
+		
+		menu.addView(LogoutView.class, LogoutView.VIEW_NAME, "Logout", VaadinIcons.POWER_OFF);
 		
 		
 		
