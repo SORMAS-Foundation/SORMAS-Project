@@ -1311,6 +1311,10 @@ public interface Strings {
 	String promptTaskEpiWeekFrom = "promptTaskEpiWeekFrom";
 	String promptTaskEpiWeekTo = "promptTaskEpiWeekTo";
 	String promptTaskSearchField = "promptTaskSearchField";
+	String promptTravelEntryDateFrom = "promptTravelEntryDateFrom";
+	String promptTravelEntryDateTo = "promptTravelEntryDateTo";
+	String promptTravelEntryEpiWeekFrom = "promptTravelEntryEpiWeekFrom";
+	String promptTravelEntryEpiWeekTo = "promptTravelEntryEpiWeekTo";
 	String promptTravelEntrySearchField = "promptTravelEntrySearchField";
 	String promptTreatmentTextFilter = "promptTreatmentTextFilter";
 	String promptTypeToAdd = "promptTypeToAdd";
