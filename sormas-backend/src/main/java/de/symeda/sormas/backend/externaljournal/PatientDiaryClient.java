@@ -20,6 +20,7 @@ import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
 import java.util.Optional;
 import java.util.concurrent.ExecutionException;
+import java.util.concurrent.TimeUnit;
 
 import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
@@ -68,8 +69,12 @@ public class PatientDiaryClient {
 
 	@PostConstruct
 	private void init() {
-		backendAuthTokenCache = CacheBuilder.newBuilder().expireAfterWrite(configFacade.getPatientDiaryConfig().getTokenLifetime()).build();
-		frontendAuthTokenCache = CacheBuilder.newBuilder().expireAfterWrite(configFacade.getPatientDiaryConfig().getTokenLifetime()).build();
+		backendAuthTokenCache = CacheBuilder.newBuilder()
+			.expireAfterWrite(configFacade.getPatientDiaryConfig().getTokenLifetime().getSeconds(), TimeUnit.SECONDS)
+			.build();
+		frontendAuthTokenCache = CacheBuilder.newBuilder()
+			.expireAfterWrite(configFacade.getPatientDiaryConfig().getTokenLifetime().getSeconds(), TimeUnit.SECONDS)
+			.build();
 	}
 
 	/**
