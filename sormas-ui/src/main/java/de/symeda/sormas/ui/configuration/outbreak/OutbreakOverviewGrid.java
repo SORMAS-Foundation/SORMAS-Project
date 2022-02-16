@@ -34,10 +34,10 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.outbreak.OutbreakCriteria;
-import de.symeda.sormas.api.outbreak.OutbreakDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.outbreak.OutbreakCriteria;
+import de.symeda.sormas.api.outbreak.OutbreakDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -49,7 +49,7 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 @SuppressWarnings("serial")
 public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 
-	private static final String REGION = Captions.region;
+	private static final String REGION = Captions.Region;
 
 	private UserDto user;
 
@@ -61,7 +61,7 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 		user = UserProvider.getCurrent().getUser();
 
 		addColumn(REGION, RegionReferenceDto.class).setMaximumWidth(200);
-		getColumn(REGION).setHeaderCaption(I18nProperties.getCaption(Captions.region));
+		getColumn(REGION).setHeaderCaption(I18nProperties.getCaption(Captions.Region));
 
 		for (Disease disease : FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true)) {
 			addColumn(disease, OutbreakRegionConfiguration.class).setMaximumWidth(200)
