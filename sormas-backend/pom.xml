@@ -94,11 +94,6 @@
 			<artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>org.freemarker</groupId>
-			<artifactId>freemarker</artifactId>
-		</dependency>
-
 		<!-- Testing -->
 
 		<dependency>
