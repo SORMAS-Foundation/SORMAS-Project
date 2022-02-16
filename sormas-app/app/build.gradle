@@ -104,24 +104,24 @@ dependencies {
     implementation 'com.google.firebase:firebase-config'
     implementation("de.symeda.sormas:sormas-api:$sormasVersion") { changing = true }
     implementation 'com.github.mpkorstanje:simmetrics-core:4.1.1'
-    implementation 'com.google.guava:guava:30.0-jre'
-    implementation 'com.opencsv:opencsv:5.3'
+    implementation 'com.google.guava:guava:31.0.1-android'
+    implementation 'com.opencsv:opencsv:5.5.2'
     implementation 'commons-beanutils:commons-beanutils:1.9.4'
     implementation 'commons-codec:commons-codec:1.15'
     implementation 'commons-collections:commons-collections:3.2.2'
     implementation 'commons-logging:commons-logging:1.2'
-    implementation 'joda-time:joda-time:2.10.8'
+    implementation 'joda-time:joda-time:2.10.13'
     implementation 'org.apache.commons:commons-collections4:4.4'
-    implementation 'org.apache.commons:commons-lang3:3.11'
+    implementation 'org.apache.commons:commons-lang3:3.12.0'
     implementation 'org.apache.commons:commons-text:1.9'
-    implementation 'org.jsoup:jsoup:1.14.2'
+    implementation 'org.jsoup:jsoup:1.14.3'
     implementation 'com.googlecode:openbeans:1.0'
     implementation files('libs/MPAndroidChart-v3.0.2.jar')
     implementation(name: 'CircleProgress-v1.2.1', ext: 'aar')
     implementation 'io.reactivex:rxandroid:1.0.1'
     implementation 'io.reactivex:rxjava:1.0.14'
-    implementation 'com.fasterxml.jackson.core:jackson-core:2.10.2'
-    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.10.2'
+    implementation 'com.fasterxml.jackson.core:jackson-core:2.12.4'
+    implementation 'com.fasterxml.jackson.core:jackson-annotations:2.12.4'
     implementation "androidx.lifecycle:lifecycle-extensions:$lifecycle_version"
     implementation "androidx.paging:paging-runtime:$paging_version"
     testImplementation 'junit:junit:4.13.2'
