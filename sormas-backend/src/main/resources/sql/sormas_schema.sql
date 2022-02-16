@@ -9991,4 +9991,49 @@ ALTER TABLE testreport_history ADD COLUMN testpcrtestspecification varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (443, 'Map variant specific Nucleic acid detection methods #5285');
 
+-- 2022-01-31 CoreAdo: Introduce "end of processing date" #7247
+ALTER TABLE cases ADD COLUMN endofprocessingdate timestamp without time zone;
+ALTER TABLE cases ADD COLUMN archiveundonereason character varying(512);
+
+ALTER TABLE cases_history ADD COLUMN endofprocessingdate timestamp without time zone;
+ALTER TABLE cases_history ADD COLUMN archiveundonereason character varying(512);
+
+ALTER TABLE contact ADD COLUMN endofprocessingdate timestamp without time zone;
+ALTER TABLE contact ADD COLUMN archiveundonereason character varying(512);
+
+ALTER TABLE contact_history ADD COLUMN endofprocessingdate timestamp without time zone;
+ALTER TABLE contact_history ADD COLUMN archiveundonereason character varying(512);
+
+ALTER TABLE events ADD COLUMN endofprocessingdate timestamp without time zone;
+ALTER TABLE events ADD COLUMN archiveundonereason character varying(512);
+
+ALTER TABLE events_history ADD COLUMN endofprocessingdate timestamp without time zone;
+ALTER TABLE events_history ADD COLUMN archiveundonereason character varying(512);
+
+ALTER TABLE eventparticipant ADD COLUMN endofprocessingdate timestamp without time zone;
+ALTER TABLE eventparticipant ADD COLUMN archiveundonereason character varying(512);
+
+ALTER TABLE eventparticipant_history ADD COLUMN endofprocessingdate timestamp without time zone;
+ALTER TABLE eventparticipant_history ADD COLUMN archiveundonereason character varying(512);
+
+ALTER TABLE immunization ADD COLUMN endofprocessingdate timestamp without time zone;
+ALTER TABLE immunization ADD COLUMN archiveundonereason character varying(512);
+
+ALTER TABLE immunization_history ADD COLUMN endofprocessingdate timestamp without time zone;
+ALTER TABLE immunization_history ADD COLUMN archiveundonereason character varying(512);
+
+ALTER TABLE travelentry ADD COLUMN endofprocessingdate timestamp without time zone;
+ALTER TABLE travelentry ADD COLUMN archiveundonereason character varying(512);
+
+ALTER TABLE travelentry_history ADD COLUMN endofprocessingdate timestamp without time zone;
+ALTER TABLE travelentry_history ADD COLUMN archiveundonereason character varying(512);
+
+ALTER TABLE campaigns ADD COLUMN endofprocessingdate timestamp without time zone;
+ALTER TABLE campaigns ADD COLUMN archiveundonereason character varying(512);
+
+ALTER TABLE campaigns_history ADD COLUMN endofprocessingdate timestamp without time zone;
+ALTER TABLE campaigns_history ADD COLUMN archiveundonereason character varying(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (444, 'CoreAdo: Introduce "end of processing date" #7247');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

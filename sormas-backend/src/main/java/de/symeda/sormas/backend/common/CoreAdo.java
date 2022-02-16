@@ -15,6 +15,10 @@
 
 package de.symeda.sormas.backend.common;
 
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
+
+import java.sql.Timestamp;
+
 import javax.persistence.Column;
 import javax.persistence.MappedSuperclass;
 
@@ -30,15 +34,37 @@ import de.symeda.auditlog.api.Audited;
 public class CoreAdo extends DeletableAdo {
 
     public static final String ARCHIVED = "archived";
+	public static final String END_OF_PROCESSING_DATE = "endOfProcessingDate";
+	public static final String ARCHIVE_UNDONE_REASON = "archiveUndoneReason";
 
-    private boolean archived;
+	private boolean archived;
+	private Timestamp endOfProcessingDate;
+	private String archiveUndoneReason;
 
-    @Column(nullable = false)
-    public boolean isArchived() {
-        return archived;
-    }
+	@Column(nullable = false)
+	public boolean isArchived() {
+		return archived;
+	}
 
     public void setArchived(boolean archived) {
         this.archived = archived;
     }
+
+	@Column
+	public Timestamp getEndOfProcessingDate() {
+		return endOfProcessingDate;
+	}
+
+	public void setEndOfProcessingDate(Timestamp endOfProcessingDate) {
+		this.endOfProcessingDate = endOfProcessingDate;
+	}
+
+	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	public String getArchiveUndoneReason() {
+		return archiveUndoneReason;
+	}
+
+	public void setArchiveUndoneReason(String archiveUndoneReason) {
+		this.archiveUndoneReason = archiveUndoneReason;
+	}
 }

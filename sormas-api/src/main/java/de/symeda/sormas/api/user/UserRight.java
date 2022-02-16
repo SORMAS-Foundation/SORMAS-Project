@@ -525,6 +525,9 @@ public enum UserRight {
 			LAB_USER
 
 	),
+	CONTACT_ARCHIVE(
+			ADMIN
+	),
 	CONTACT_ASSIGN(
 			ADMIN,
 			NATIONAL_USER,
@@ -811,6 +814,9 @@ public enum UserRight {
 			ADMIN,
 			NATIONAL_USER,
 			ADMIN_SUPERVISOR
+	),
+	EVENTPARTICIPANT_ARHIVE(
+			ADMIN
 	),
 	EVENTPARTICIPANT_CREATE(
 			ADMIN,

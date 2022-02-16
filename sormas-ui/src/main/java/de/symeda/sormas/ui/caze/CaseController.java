@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
-import de.symeda.sormas.ui.utils.CssStyles;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -130,6 +129,7 @@ import de.symeda.sormas.ui.therapy.TherapyView;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
@@ -1120,8 +1120,32 @@ public class CaseController {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_ARCHIVE)) {
 			boolean archived = FacadeProvider.getCaseFacade().isArchived(caze.getUuid());
 			Button archiveCaseButton = ButtonHelper.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {
-				editView.commit();
-				archiveOrDearchiveCase(caze.getUuid(), !archived);
+				if (editView.isModified()) {
+					editView.commit();
+				}
+
+				if (archived) {
+					ControllerProvider.getArchiveController()
+						.dearchiveEntity(
+							caze,
+							FacadeProvider.getCaseFacade(),
+							Strings.headingDearchiveCase,
+							Strings.confirmationDearchiveCase,
+							Strings.entityCase,
+							Strings.messageCaseDearchived,
+							CaseDataView.VIEW_NAME);
+				} else {
+					ControllerProvider.getArchiveController()
+						.archiveEntity(
+							caze,
+							FacadeProvider.getCaseFacade(),
+							Strings.headingArchiveCase,
+							Strings.confirmationArchiveCase,
+							Strings.entityCase,
+							Strings.messageCaseArchived,
+							CaseDataView.VIEW_NAME);
+				}
+
 			}, ValoTheme.BUTTON_LINK);
 
 			editView.getButtonsPanel().addComponentAsFirst(archiveCaseButton);
@@ -1138,6 +1162,39 @@ public class CaseController {
 			editView.getButtonsPanel().addComponentAsFirst(btnReferToFacility);
 			editView.getButtonsPanel().setComponentAlignment(btnReferToFacility, Alignment.BOTTOM_LEFT);
 		}
+	}
+
+	public void archiveAllSelectedItems(Collection<? extends CaseIndexDto> selectedRows, Runnable callback) {
+
+		List<String> caseUuids = selectedRows.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList());
+
+		ControllerProvider.getArchiveController()
+			.archiveSelectedItems(
+				caseUuids,
+				FacadeProvider.getCaseFacade(),
+				Strings.headingNoCasesSelected,
+				Strings.confirmationArchiveCases,
+				Strings.headingCasesArchived,
+				Strings.messageCasesArchived,
+				callback);
+	}
+
+	public void dearchiveAllSelectedItems(Collection<? extends CaseIndexDto> selectedRows, Runnable callback) {
+
+		List<String> caseUuids = selectedRows.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList());
+
+		ControllerProvider.getArchiveController()
+			.dearchiveSelectedItems(
+				caseUuids,
+				FacadeProvider.getCaseFacade(),
+				Strings.headingNoCasesSelected,
+				Strings.messageNoCasesSelected,
+				Strings.confirmationDearchiveCases,
+				Strings.entityCase,
+				Strings.headingConfirmDearchiving,
+				Strings.headingCasesDearchived,
+				Strings.messageCasesDearchived,
+				callback);
 	}
 
 	public CommitDiscardWrapperComponent<HospitalizationForm> getHospitalizationComponent(final String caseUuid, ViewMode viewMode) {
@@ -1393,53 +1450,6 @@ public class CaseController {
 		view.getButtonsPanel().replaceComponent(view.getDiscardButton(), btnCancel);
 	}
 
-	private void archiveOrDearchiveCase(String caseUuid, boolean archive) {
-
-		if (archive) {
-			Label contentLabel = new Label(
-				String.format(
-					I18nProperties.getString(Strings.confirmationArchiveCase),
-					I18nProperties.getString(Strings.entityCase).toLowerCase(),
-					I18nProperties.getString(Strings.entityCase).toLowerCase()));
-			VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getString(Strings.headingArchiveCase),
-				contentLabel,
-				I18nProperties.getString(Strings.yes),
-				I18nProperties.getString(Strings.no),
-				640,
-				e -> {
-					if (e.booleanValue() == true) {
-						FacadeProvider.getCaseFacade().archive(caseUuid);
-						Notification.show(
-							String.format(I18nProperties.getString(Strings.messageCaseArchived), I18nProperties.getString(Strings.entityCase)),
-							Type.ASSISTIVE_NOTIFICATION);
-						navigateToView(CaseDataView.VIEW_NAME, caseUuid, null);
-					}
-				});
-		} else {
-			Label contentLabel = new Label(
-				String.format(
-					I18nProperties.getString(Strings.confirmationDearchiveCase),
-					I18nProperties.getString(Strings.entityCase).toLowerCase(),
-					I18nProperties.getString(Strings.entityCase).toLowerCase()));
-			VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getString(Strings.headingDearchiveCase),
-				contentLabel,
-				I18nProperties.getString(Strings.yes),
-				I18nProperties.getString(Strings.no),
-				640,
-				e -> {
-					if (e.booleanValue()) {
-						FacadeProvider.getCaseFacade().dearchive(caseUuid);
-						Notification.show(
-							String.format(I18nProperties.getString(Strings.messageCaseDearchived), I18nProperties.getString(Strings.entityCase)),
-							Type.ASSISTIVE_NOTIFICATION);
-						navigateToView(CaseDataView.VIEW_NAME, caseUuid, null);
-					}
-				});
-		}
-	}
-
 	public void openClassificationRulesPopup(DiseaseClassificationCriteriaDto diseaseCriteria) {
 
 		VerticalLayout classificationRulesLayout = new VerticalLayout();
@@ -1576,66 +1586,6 @@ public class CaseController {
 					if (confirmationEvent.booleanValue()) {
 						FacadeProvider.getCaseFacade().sendMessage(caseUuids, "", smsComponent.getValue(), MessageType.SMS);
 						Notification.show(null, I18nProperties.getString(Strings.notificationSmsSent), Type.TRAY_NOTIFICATION);
-					}
-				});
-		}
-	}
-
-	public void archiveAllSelectedItems(Collection<? extends CaseIndexDto> selectedRows, Runnable callback) {
-
-		if (selectedRows.size() == 0) {
-			new Notification(
-				I18nProperties.getString(Strings.headingNoCasesSelected),
-				I18nProperties.getString(Strings.messageNoCasesSelected),
-				Type.WARNING_MESSAGE,
-				false).show(Page.getCurrent());
-		} else {
-			VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getString(Strings.headingConfirmArchiving),
-				new Label(String.format(I18nProperties.getString(Strings.confirmationArchiveCases), selectedRows.size())),
-				I18nProperties.getString(Strings.yes),
-				I18nProperties.getString(Strings.no),
-				null,
-				e -> {
-					if (e.booleanValue() == true) {
-						List<String> caseUuids = selectedRows.stream().map(r -> r.getUuid()).collect(Collectors.toList());
-						FacadeProvider.getCaseFacade().updateArchived(caseUuids, true);
-						callback.run();
-						new Notification(
-							I18nProperties.getString(Strings.headingCasesArchived),
-							I18nProperties.getString(Strings.messageCasesArchived),
-							Type.HUMANIZED_MESSAGE,
-							false).show(Page.getCurrent());
-					}
-				});
-		}
-	}
-
-	public void dearchiveAllSelectedItems(Collection<? extends CaseIndexDto> selectedRows, Runnable callback) {
-
-		if (selectedRows.size() == 0) {
-			new Notification(
-				I18nProperties.getString(Strings.headingNoCasesSelected),
-				I18nProperties.getString(Strings.messageNoCasesSelected),
-				Type.WARNING_MESSAGE,
-				false).show(Page.getCurrent());
-		} else {
-			VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getString(Strings.headingConfirmDearchiving),
-				new Label(String.format(I18nProperties.getString(Strings.confirmationDearchiveCases), selectedRows.size())),
-				I18nProperties.getString(Strings.yes),
-				I18nProperties.getString(Strings.no),
-				null,
-				e -> {
-					if (e.booleanValue() == true) {
-						List<String> caseUuids = selectedRows.stream().map(r -> r.getUuid()).collect(Collectors.toList());
-						FacadeProvider.getCaseFacade().updateArchived(caseUuids, false);
-						callback.run();
-						new Notification(
-							I18nProperties.getString(Strings.headingCasesDearchived),
-							I18nProperties.getString(Strings.messageCasesDearchived),
-							Type.HUMANIZED_MESSAGE,
-							false).show(Page.getCurrent());
 					}
 				});
 		}

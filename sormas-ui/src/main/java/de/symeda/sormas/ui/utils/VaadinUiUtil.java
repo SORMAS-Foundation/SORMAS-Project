@@ -19,6 +19,7 @@ package de.symeda.sormas.ui.utils;
 
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Sizeable.Unit;
@@ -127,7 +128,6 @@ public final class VaadinUiUtil {
 			window.setWidth(width, Unit.PERCENTAGE);
 		}
 
-
 		UI.getCurrent().addWindow(window);
 		return window;
 	}
@@ -189,6 +189,41 @@ public final class VaadinUiUtil {
 				protected void onCancel() {
 					resultConsumer.accept(false);
 					popupWindow.close();
+				}
+			};
+
+			confirmationComponent.getConfirmButton().setCaption(confirmCaption);
+			confirmationComponent.getCancelButton().setCaption(cancelCaption);
+
+			return confirmationComponent;
+		}, width);
+	}
+
+	public static Window showConfirmationPopup(
+		String caption,
+		Component content,
+		String confirmCaption,
+		String cancelCaption,
+		Integer width,
+		UnaryOperator<Boolean> resultConsumer) {
+
+		return showConfirmationPopup(caption, content, popupWindow -> {
+			ConfirmationComponent confirmationComponent = new ConfirmationComponent(false) {
+
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				protected void onConfirm() {
+					if (Boolean.TRUE.equals(resultConsumer.apply(true))) {
+						popupWindow.close();
+					}
+				}
+
+				@Override
+				protected void onCancel() {
+					if (Boolean.TRUE.equals(resultConsumer.apply(false))) {
+						popupWindow.close();
+					}
 				}
 			};
 

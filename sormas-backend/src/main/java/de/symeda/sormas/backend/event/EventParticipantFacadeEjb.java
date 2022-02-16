@@ -57,7 +57,6 @@ import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -89,6 +88,7 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -141,6 +141,8 @@ public class EventParticipantFacadeEjb
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
+	private EventParticipantService eventParticipantService;
+	@EJB
 	private EventService eventService;
 	@EJB
 	private EventFacadeEjbLocal eventFacade;
@@ -180,6 +182,11 @@ public class EventParticipantFacadeEjb
 		Person person = entity.getPerson();
 
 		return new EventParticipantReferenceDto(entity.getUuid(), person.getFirstName(), person.getFirstName());
+	}
+
+	@Override
+	public AbstractCoreAdoService<EventParticipant> getEntityService() {
+		return eventParticipantService;
 	}
 
 	@Override

@@ -56,6 +56,8 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		super(adoClass, dtoClass, service, userService);
 	}
 
+	public abstract AbstractCoreAdoService<ADO> getEntityService();
+
 	@Override
 	public DTO getByUuid(String uuid) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
@@ -101,23 +103,6 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		return service.exists(uuid);
 	}
 
-	@Override
-	public void archive(String uuid) {
-		ADO ado = service.getByUuid(uuid);
-		if (ado != null) {
-			ado.setArchived(true);
-			service.ensurePersisted(ado);
-		}
-	}
-
-	public void dearchive(String uuid) {
-		ADO ado = service.getByUuid(uuid);
-		if (ado != null) {
-			ado.setArchived(false);
-			service.ensurePersisted(ado);
-		}
-	}
-
 	public boolean isArchived(String uuid) {
 		return service.isArchived(uuid);
 	}
@@ -161,12 +146,12 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 
 	protected String getDeleteReferenceField(DeletionReference deletionReference) {
 		switch (deletionReference) {
-			case CREATION:
-				return AbstractDomainObject.CREATION_DATE;
-			case END:
-				return AbstractDomainObject.CHANGE_DATE;
-			default:
-				throw new IllegalArgumentException("deletion reference " + deletionReference + " not supported in " + getClass().getSimpleName());
+		case CREATION:
+			return AbstractDomainObject.CREATION_DATE;
+		case END:
+			return AbstractDomainObject.CHANGE_DATE;
+		default:
+			throw new IllegalArgumentException("deletion reference " + deletionReference + " not supported in " + getClass().getSimpleName());
 		}
 	}
 
@@ -193,4 +178,16 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	protected abstract void restorePseudonymizedDto(DTO dto, DTO existingDto, ADO entity, Pseudonymizer pseudonymizer);
 
 	public abstract void validate(DTO dto) throws ValidationRuntimeException;
+
+	public void archiveCoreEntities(List<String> entityUuids, Date endOfProcessingDate) {
+		getEntityService().updateArchivedCoreEntities(entityUuids, endOfProcessingDate);
+	}
+
+	public void dearchiveCoreEntities(List<String> entityUuids, String dearchiveReason) {
+		getEntityService().updateDearchivedCoreEntities(entityUuids, dearchiveReason);
+	}
+
+	public Date calculateEndOfProcessingDate(List<String> entityUuids) {
+		return getEntityService().calculateCaseEndOfProcessingDate(entityUuids);
+	}
 }
