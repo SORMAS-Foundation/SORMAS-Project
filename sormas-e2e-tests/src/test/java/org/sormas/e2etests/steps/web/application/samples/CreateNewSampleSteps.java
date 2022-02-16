@@ -296,10 +296,6 @@ public class CreateNewSampleSteps implements En {
     webDriverHelpers.clearAndFillInWebElement(LABORATORY_NAME_INPUT, laboratoryName);
   }
 
-  public void selectLaboratoryNamePopup(String laboratoryName) {
-    webDriverHelpers.clearAndFillInWebElement(LABORATORY_NAME_POPUP_INPUT, laboratoryName);
-  }
-
   private void selectReceivedOptionButton(String received) {
     webDriverHelpers.clickWebElementByText(RECEIVED_OPTION_BUTTON, received);
   }
@@ -484,7 +480,6 @@ public class CreateNewSampleSteps implements En {
         .dateOfResult(getDateOfResult())
         .timeOfResult(getTimeOfResult())
         .laboratory(getPathogenPopupLaboratory())
-        .laboratoryName(getLaboratoryName())
         .resultVerifiedByLabSupervisor(getResultVerifiedByLabSupervisor())
         .testResultsComment(getTestResultComment())
         .build();

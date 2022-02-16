@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,6 +37,7 @@ import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.entities.pojo.web.Person;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
 import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
@@ -44,15 +45,16 @@ import org.testng.Assert;
 
 public class PersonDirectorySteps implements En {
   private final WebDriverHelpers webDriverHelpers;
+  protected Person createdPerson;
 
   @Inject
   public PersonDirectorySteps(
       WebDriverHelpers webDriverHelpers,
       ApiState apiState,
-      AssertHelpers assertHelpers,
       DataOperations dataOperations,
-      EnvironmentManager environmentManager,
-      Faker faker) {
+      Faker faker,
+      AssertHelpers assertHelpers,
+      EnvironmentManager environmentManager) {
     this.webDriverHelpers = webDriverHelpers;
 
     // TODO refactor all BDD methods naming to be more explicit regarding where data comes from
@@ -77,135 +79,336 @@ public class PersonDirectorySteps implements En {
         });
 
     Then(
-        "I choose random value for Year of birth filter in Persons for the last created person by API",
+        "I check the result for UID for second person in grid PERSON ID column",
         () -> {
-          String yearOfBirth = apiState.getLastCreatedPerson().getBirthdateYYYY().toString();
-          webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.selectFromCombobox(BIRTH_YEAR_COMBOBOX, yearOfBirth);
-        });
-
-    Then(
-        "I choose random value for Month of birth filter in Persons for the last created person by API",
-        () -> {
-          String monthOfBirth = apiState.getLastCreatedPerson().getBirthdateMM().toString();
-          webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.selectFromCombobox(BIRTH_MONTH_COMBOBOX, monthOfBirth);
-        });
-
-    Then(
-        "I choose random value for Day of birth filter in Persons for the last created person by API",
-        () -> {
-          String dayOfBirth = apiState.getLastCreatedPerson().getBirthdateDD().toString();
-          webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.selectFromCombobox(BIRTH_DAY_COMBOBOX, dayOfBirth);
-        });
-
-    Then(
-        "I fill Persons UUID for the last created person by API",
-        () -> {
-          String personUUID =
-              dataOperations.getPartialUuidFromAssociatedLink(
-                  apiState.getLastCreatedPerson().getUuid());
-          webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, personUUID);
-        });
-
-    Then(
-        "I choose present condition field from specific range for the last created person by API",
-        () -> {
-          String presentCondition = apiState.getLastCreatedPerson().getPresentCondition();
-          webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.selectFromCombobox(
-              PRESENT_CONDITION, PresentCondition.getValueFor(presentCondition));
-        });
-
-    Then(
-        "I choose random value of Region in Persons for the last created person by API",
-        () -> {
-          String regionName = apiState.getLastCreatedPerson().getAddress().getRegion();
-          webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.selectFromCombobox(
-              REGIONS_COMBOBOX, RegionsValues.getValueFor(regionName));
-        });
-
-    Then(
-        "I choose random value of District in Persons for the last created person by API",
-        () -> {
-          String districtName = apiState.getLastCreatedPerson().getAddress().getDistrict();
-          webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.selectFromCombobox(
-              DISTRICTS_COMBOBOX, DistrictsValues.getValueFor(districtName));
-        });
-
-    Then(
-        "I choose random value of Community in Persons for the last created person by API",
-        () -> {
-          String communityName = apiState.getLastCreatedPerson().getAddress().getCommunity();
-          webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.selectFromCombobox(
-              COMMUNITY_PERSON_COMBOBOX, CommunityValues.getValueFor(communityName));
-        });
-
-    Then(
-        "I check that number of displayed Person results is {int}",
-        (Integer number) -> {
-          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilAListOfElementsHasText(
+              CASE_GRID_RESULTS_ROWS, apiState.getLastCreatedPerson().getUuid());
           assertHelpers.assertWithPoll20Second(
               () ->
-                  Assert.assertEquals(
-                      webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS),
-                      number.intValue(),
-                      "Number of displayed persons is not correct"));
+                  Truth.assertWithMessage(
+                          apiState.getLastCreatedPerson().getUuid()
+                              + " value is not displayed in grid Disease column")
+                      .that(apiState.getLastCreatedPerson().getUuid())
+                      .isEqualTo(
+                          String.valueOf(
+                              webDriverHelpers.getTextFromPresentWebElement(
+                                  CASE_PERSON_ID_COLUMN_HEADERS))));
         });
 
     Then(
-        "I change Year of birth filter by random value for Person",
-        () -> {
-          Integer yearOfBirth = faker.number().numberBetween(1900, 2022);
-          webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.selectFromCombobox(BIRTH_YEAR_COMBOBOX, yearOfBirth.toString());
-        });
+        "I check that number of displayed Persons results is {int}",
+        (Integer number) ->
+            assertHelpers.assertWithPoll20Second(
+                () ->
+                    Assert.assertEquals(
+                        webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS),
+                        number.intValue(),
+                        "Number of displayed cases is not correct")));
 
-    Then(
-        "I change Month of birth filter  by random value for Person",
-        () -> {
-          Integer monthOfBirth = faker.number().numberBetween(1, 12);
-          webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.selectFromCombobox(BIRTH_MONTH_COMBOBOX, monthOfBirth.toString());
-        });
+          Then(
+                  "I choose random value for Year of birth filter in Persons for the last created person by API",
+                  () -> {
+                      String yearOfBirth = apiState.getLastCreatedPerson().getBirthdateYYYY().toString();
+                      webDriverHelpers.waitForPageLoaded();
+                      webDriverHelpers.selectFromCombobox(BIRTH_YEAR_COMBOBOX, yearOfBirth);
+                  });
 
-    Then(
-        "I change Day of birth filter by random value for Person",
-        () -> {
-          Integer dayOfBirth = faker.number().numberBetween(1, 29);
-          webDriverHelpers.selectFromCombobox(BIRTH_DAY_COMBOBOX, dayOfBirth.toString());
-        });
+          Then(
+                  "I choose random value for Month of birth filter in Persons for the last created person by API",
+                  () -> {
+                      String monthOfBirth = apiState.getLastCreatedPerson().getBirthdateMM().toString();
+                      webDriverHelpers.waitForPageLoaded();
+                      webDriverHelpers.selectFromCombobox(BIRTH_MONTH_COMBOBOX, monthOfBirth);
+                  });
 
-    Then(
-        "I change present condition filter to random for Person",
-        () -> {
-          webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.selectFromCombobox(
-              PRESENT_CONDITION, PresentCondition.getRandomPresentCondition());
-        });
+          Then(
+                  "I choose random value for Day of birth filter in Persons for the last created person by API",
+                  () -> {
+                      String dayOfBirth = apiState.getLastCreatedPerson().getBirthdateDD().toString();
+                      webDriverHelpers.waitForPageLoaded();
+                      webDriverHelpers.selectFromCombobox(BIRTH_DAY_COMBOBOX, dayOfBirth);
+                  });
 
-    Then(
-        "I change REGION filter to {string} for Person",
-        (String region) -> {
-          webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.selectFromCombobox(REGIONS_COMBOBOX, region);
-        });
+          Then(
+                  "I fill Persons UUID for the last created person by API",
+                  () -> {
+                      String personUUID =
+                              dataOperations.getPartialUuidFromAssociatedLink(
+                                      apiState.getLastCreatedPerson().getUuid());
+                      webDriverHelpers.waitForPageLoaded();
+                      webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, personUUID);
+                  });
 
-    Then(
-        "I change DISTRICT filter to {string} for Person",
-        (String district) -> webDriverHelpers.selectFromCombobox(DISTRICTS_COMBOBOX, district));
+          Then(
+                  "I choose present condition field from specific range for the last created person by API",
+                  () -> {
+                      String presentCondition = apiState.getLastCreatedPerson().getPresentCondition();
+                      webDriverHelpers.waitForPageLoaded();
+                      webDriverHelpers.selectFromCombobox(
+                              PRESENT_CONDITION, PresentCondition.getValueFor(presentCondition));
+                  });
 
-    Then(
-        "I change Community filter to {string} for Person",
-        (String community) ->
-            webDriverHelpers.selectFromCombobox(COMMUNITY_PERSON_COMBOBOX, community));
+          Then(
+                  "I choose random value of Region in Persons for the last created person by API",
+                  () -> {
+                      String regionName = apiState.getLastCreatedPerson().getAddress().getRegion();
+                      webDriverHelpers.waitForPageLoaded();
+                      webDriverHelpers.selectFromCombobox(
+                              REGIONS_COMBOBOX, RegionsValues.getValueFor(regionName));
+                  });
 
-    When(
+          Then(
+                  "I choose random value of District in Persons for the last created person by API",
+                  () -> {
+                      String districtName = apiState.getLastCreatedPerson().getAddress().getDistrict();
+                      webDriverHelpers.waitForPageLoaded();
+                      webDriverHelpers.selectFromCombobox(
+                              DISTRICTS_COMBOBOX, DistrictsValues.getValueFor(districtName));
+                  });
+
+          Then(
+                  "I choose random value of Community in Persons for the last created person by API",
+                  () -> {
+                      String communityName = apiState.getLastCreatedPerson().getAddress().getCommunity();
+                      webDriverHelpers.waitForPageLoaded();
+                      webDriverHelpers.selectFromCombobox(
+                              COMMUNITY_PERSON_COMBOBOX, CommunityValues.getValueFor(communityName));
+                  });
+
+          Then(
+                  "I check that number of displayed Person results is {int}",
+                  (Integer number) -> {
+                      webDriverHelpers.waitForPageLoaded();
+                      assertHelpers.assertWithPoll20Second(
+                              () ->
+                                      Assert.assertEquals(
+                                              webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS),
+                                              number.intValue(),
+                                              "Number of displayed persons is not correct"));
+                  });
+
+          Then(
+                  "I change Year of birth filter by random value for Person",
+                  () -> {
+                      Integer yearOfBirth = faker.number().numberBetween(1900, 2022);
+                      webDriverHelpers.waitForPageLoaded();
+                      webDriverHelpers.selectFromCombobox(BIRTH_YEAR_COMBOBOX, yearOfBirth.toString());
+                  });
+
+          Then(
+                  "I change Month of birth filter  by random value for Person",
+                  () -> {
+                      Integer monthOfBirth = faker.number().numberBetween(1, 12);
+                      webDriverHelpers.waitForPageLoaded();
+                      webDriverHelpers.selectFromCombobox(BIRTH_MONTH_COMBOBOX, monthOfBirth.toString());
+                  });
+
+          Then(
+                  "I change Day of birth filter by random value for Person",
+                  () -> {
+                      Integer dayOfBirth = faker.number().numberBetween(1, 29);
+                      webDriverHelpers.selectFromCombobox(BIRTH_DAY_COMBOBOX, dayOfBirth.toString());
+                  });
+
+          Then(
+                  "I change present condition filter to random for Person",
+                  () -> {
+                      webDriverHelpers.waitForPageLoaded();
+                      webDriverHelpers.selectFromCombobox(
+                              PRESENT_CONDITION, PresentCondition.getRandomPresentCondition());
+                  });
+
+          Then(
+                  "I change REGION filter to {string} for Person",
+                  (String region) -> {
+                      webDriverHelpers.waitForPageLoaded();
+                      webDriverHelpers.selectFromCombobox(REGIONS_COMBOBOX, region);
+                  });
+
+          Then(
+                  "I change DISTRICT filter to {string} for Person",
+                  (String district) -> webDriverHelpers.selectFromCombobox(DISTRICTS_COMBOBOX, district));
+
+          Then(
+                  "I change Community filter to {string} for Person",
+                  (String community) ->
+                          webDriverHelpers.selectFromCombobox(COMMUNITY_PERSON_COMBOBOX, community));
+
+
+          Then(
+                  "I choose random value of Region in Persons for the last created person by API",
+                  () -> {
+                      String regionName = apiState.getLastCreatedPerson().getAddress().getRegion();
+                      webDriverHelpers.waitForPageLoaded();
+                      webDriverHelpers.selectFromCombobox(
+                              REGIONS_COMBOBOX, RegionsValues.getValueFor(regionName));
+                  });
+
+          Then(
+                  "I choose random value of District in Persons for the last created person by API",
+                  () -> {
+                      String districtName = apiState.getLastCreatedPerson().getAddress().getDistrict();
+                      webDriverHelpers.waitForPageLoaded();
+                      webDriverHelpers.selectFromCombobox(
+                              DISTRICTS_COMBOBOX, DistrictsValues.getValueFor(districtName));
+                  });
+
+          Then(
+                  "I choose random value of Community in Persons for the last created person by API",
+                  () -> {
+                      String communityName = apiState.getLastCreatedPerson().getAddress().getCommunity();
+                      webDriverHelpers.waitForPageLoaded();
+                      webDriverHelpers.selectFromCombobox(
+                              COMMUNITY_PERSON_COMBOBOX, CommunityValues.getValueFor(communityName));
+                  });
+
+          Then(
+                  "I check that number of displayed Person results is {int}",
+                  (Integer number) -> {
+                      webDriverHelpers.waitForPageLoaded();
+                      assertHelpers.assertWithPoll20Second(
+                              () ->
+                                      Assert.assertEquals(
+                                              webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS),
+                                              number.intValue(),
+                                              "Number of displayed persons is not correct"));
+                  });
+
+          Then(
+                  "I change Year of birth filter by random value for Person",
+                  () -> {
+                      Integer yearOfBirth = faker.number().numberBetween(1900, 2022);
+                      webDriverHelpers.waitForPageLoaded();
+                      webDriverHelpers.selectFromCombobox(BIRTH_YEAR_COMBOBOX, yearOfBirth.toString());
+                  });
+
+          Then(
+                  "I change Month of birth filter  by random value for Person",
+                  () -> {
+                      Integer monthOfBirth = faker.number().numberBetween(1, 12);
+                      webDriverHelpers.waitForPageLoaded();
+                      webDriverHelpers.selectFromCombobox(BIRTH_MONTH_COMBOBOX, monthOfBirth.toString());
+                  });
+
+          Then(
+                  "I change Day of birth filter by random value for Person",
+                  () -> {
+                      Integer dayOfBirth = faker.number().numberBetween(1, 29);
+                      webDriverHelpers.selectFromCombobox(BIRTH_DAY_COMBOBOX, dayOfBirth.toString());
+                  });
+
+          Then(
+                  "I change present condition filter to random for Person",
+                  () -> {
+                      webDriverHelpers.waitForPageLoaded();
+                      webDriverHelpers.selectFromCombobox(
+                              PRESENT_CONDITION, PresentCondition.getRandomPresentCondition());
+                  });
+
+          Then(
+                  "I change REGION filter to {string} for Person",
+                  (String region) -> {
+                      webDriverHelpers.waitForPageLoaded();
+                      webDriverHelpers.selectFromCombobox(REGIONS_COMBOBOX, region);
+                  });
+
+          Then(
+                  "I change DISTRICT filter to {string} for Person",
+                  (String district) -> webDriverHelpers.selectFromCombobox(DISTRICTS_COMBOBOX, district));
+
+          Then(
+                  "I change Community filter to {string} for Person",
+                  (String community) ->
+                          webDriverHelpers.selectFromCombobox(COMMUNITY_PERSON_COMBOBOX, community));
+
+
+          Then(
+                  "I choose random value of Region in Persons for the last created person by API",
+                  () -> {
+                      String regionName = apiState.getLastCreatedPerson().getAddress().getRegion();
+                      webDriverHelpers.waitForPageLoaded();
+                      webDriverHelpers.selectFromCombobox(
+                              REGIONS_COMBOBOX, RegionsValues.getValueFor(regionName));
+                  });
+
+          Then(
+                  "I choose random value of District in Persons for the last created person by API",
+                  () -> {
+                      String districtName = apiState.getLastCreatedPerson().getAddress().getDistrict();
+                      webDriverHelpers.waitForPageLoaded();
+                      webDriverHelpers.selectFromCombobox(
+                              DISTRICTS_COMBOBOX, DistrictsValues.getValueFor(districtName));
+                  });
+
+          Then(
+                  "I choose random value of Community in Persons for the last created person by API",
+                  () -> {
+                      String communityName = apiState.getLastCreatedPerson().getAddress().getCommunity();
+                      webDriverHelpers.waitForPageLoaded();
+                      webDriverHelpers.selectFromCombobox(
+                              COMMUNITY_PERSON_COMBOBOX, CommunityValues.getValueFor(communityName));
+                  });
+
+          Then(
+                  "I check that number of displayed Person results is {int}",
+                  (Integer number) -> {
+                      webDriverHelpers.waitForPageLoaded();
+                      assertHelpers.assertWithPoll20Second(
+                              () ->
+                                      Assert.assertEquals(
+                                              webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS),
+                                              number.intValue(),
+                                              "Number of displayed persons is not correct"));
+                  });
+
+          Then(
+                  "I change Year of birth filter by random value for Person",
+                  () -> {
+                      Integer yearOfBirth = faker.number().numberBetween(1900, 2022);
+                      webDriverHelpers.waitForPageLoaded();
+                      webDriverHelpers.selectFromCombobox(BIRTH_YEAR_COMBOBOX, yearOfBirth.toString());
+                  });
+
+          Then(
+                  "I change Month of birth filter  by random value for Person",
+                  () -> {
+                      Integer monthOfBirth = faker.number().numberBetween(1, 12);
+                      webDriverHelpers.waitForPageLoaded();
+                      webDriverHelpers.selectFromCombobox(BIRTH_MONTH_COMBOBOX, monthOfBirth.toString());
+                  });
+
+          Then(
+                  "I change Day of birth filter by random value for Person",
+                  () -> {
+                      Integer dayOfBirth = faker.number().numberBetween(1, 29);
+                      webDriverHelpers.selectFromCombobox(BIRTH_DAY_COMBOBOX, dayOfBirth.toString());
+                  });
+
+          Then(
+                  "I change present condition filter to random for Person",
+                  () -> {
+                      webDriverHelpers.waitForPageLoaded();
+                      webDriverHelpers.selectFromCombobox(
+                              PRESENT_CONDITION, PresentCondition.getRandomPresentCondition());
+                  });
+
+          Then(
+                  "I change REGION filter to {string} for Person",
+                  (String region) -> {
+                      webDriverHelpers.waitForPageLoaded();
+                      webDriverHelpers.selectFromCombobox(REGIONS_COMBOBOX, region);
+                  });
+
+          Then(
+                  "I change DISTRICT filter to {string} for Person",
+                  (String district) -> webDriverHelpers.selectFromCombobox(DISTRICTS_COMBOBOX, district));
+
+          Then(
+                  "I change Community filter to {string} for Person",
+                  (String community) ->
+                          webDriverHelpers.selectFromCombobox(COMMUNITY_PERSON_COMBOBOX, community));
+
+          When(
         "I navigate to the last created Person page via URL",
         () -> {
           String createdPersonUUID = EditContactPersonSteps.fullyDetailedPerson.getUuid();
@@ -262,7 +465,6 @@ public class PersonDirectorySteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               RESET_FILTERS_BUTTON, 30);
           webDriverHelpers.clickOnWebElementBySelector(RESET_FILTERS_BUTTON);
-          TimeUnit.SECONDS.sleep(10);
         });
 
     Then(
