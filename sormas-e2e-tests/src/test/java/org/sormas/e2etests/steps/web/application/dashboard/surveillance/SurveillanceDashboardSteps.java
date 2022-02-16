@@ -16,11 +16,14 @@
 package org.sormas.e2etests.steps.web.application.dashboard.surveillance;
 
 import cucumber.api.java8.En;
-import java.util.concurrent.TimeUnit;
-import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage;
+import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
+
+import javax.inject.Inject;
+import java.util.concurrent.TimeUnit;
 
 public class SurveillanceDashboardSteps implements En {
 
@@ -90,6 +93,100 @@ public class SurveillanceDashboardSteps implements En {
           String newCasesCounterValue =
               webDriverHelpers.getTextFromWebElement(SurveillanceDashboardPage.CASE_COUNTER);
           newCasesCounterBefore = Integer.parseInt(newCasesCounterValue);
+        });
+
+    Then(
+        "^I validate contacts button is clickable$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.CONTACTS_BUTTON);
+        });
+    Then(
+        "^I validate filter components presence$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.CURRENT_PERIOD);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.COMPARISON_PERIOD);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.DATE_TYPE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.REGION_COMBOBOX);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.RESET_FILTERS);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.APPLY_FILTERS);
+        });
+    Then(
+        "^I validate presence of diseases metrics$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.DISEASE_METRICS);
+        });
+    Then(
+        "^I validate presence of diseases slider$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.DISEASE_SLIDER);
+        });
+    Then(
+        "^I validate presence of Epidemiological Curve$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.EPIDEMIOLOGICAL_CURVE);
+        });
+    Then(
+        "^I validate presence of maps$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.STATUS_MAP);
+        });
+    Then(
+        "^I validate show all diseases button is available and clickable$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.SHOW_ALL_DISEASES);
+        });
+    Then(
+        "^I validate only 6 disease categories are displayed$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
+          Assert.assertEquals(
+              webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.DISEASE_CATEGORIES),
+              6,
+              "Number of displayed cases is not correct");
+        });
+    Then(
+        "^I click on show all diseases$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.SHOW_ALL_DISEASES);
+        });
+    Then(
+        "^I validate presence of all diseases$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
+          Assert.assertEquals(
+              webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.DISEASE_CATEGORIES),
+              20,
+              "Number of displayed cases is not correct");
         });
   }
 }

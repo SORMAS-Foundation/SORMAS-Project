@@ -32,4 +32,26 @@ public class SurveillanceDashboardPage {
   public static final By CASE_COUNTER =
       By.cssSelector("[location='case'] > div > div > div > div > div");
   public static final By TAB_SHEET_CAPTION = By.cssSelector(".v-tabsheet > div > div > div > div");
+  public static final By CURRENT_PERIOD = By.id("currentPeriod");
+  public static final By COMPARISON_PERIOD = By.id("comparisonPeriod");
+  public static final By DATE_TYPE = By.id("dateType");
+  public static final By REGION_COMBOBOX =
+      By.cssSelector("div:nth-of-type(3) > div[role='combobox'] > .v-filterselect-input");
+  public static final By RESET_FILTERS = By.cssSelector("div#actionResetFilters");
+  public static final By APPLY_FILTERS = By.cssSelector("div#actionApplyFilters");
+  public static final By DISEASE_METRICS =
+      By.cssSelector(
+          ".v-has-width.v-layout.v-margin-left.v-margin-right.v-vertical.v-verticallayout.v-verticallayout-vspace-top-4.v-widget.vspace-top-4");
+  public static final By DISEASE_SLIDER =
+      By.cssSelector(
+          "div:nth-of-type(3) > .v-has-height.v-has-width.v-widget > .highcharts-container > .highcharts-root > .highcharts-background");
+  public static final By EPIDEMIOLOGICAL_CURVE =
+      By.cssSelector(
+          "div:nth-of-type(1) > .v-has-height.v-has-width.v-layout.v-margin-bottom.v-margin-left.v-margin-right.v-margin-top.v-vertical.v-verticallayout.v-widget > .v-expand > div:nth-of-type(1) > .v-has-width.v-horizontal.v-horizontallayout.v-horizontallayout-vspace-4.v-layout.v-widget.vspace-4 > .v-expand > .v-align-bottom.v-slot.v-slot-h2.v-slot-vspace-4.v-slot-vspace-top-none");
+  public static final By STATUS_MAP = By.cssSelector("[id^='leaflet_']");
+  public static final By SHOW_ALL_DISEASES = By.cssSelector("div#dashboardShowAllDiseases");
+  public static final By DISEASE_CATEGORIES_COUNTER =
+      By.cssSelector("[class='v-verticallayout v-layout v-vertical v-widget v-has-width']");
+  public static final By DISEASE_CATEGORIES =
+      By.cssSelector("[class='col-lg-6 col-xs-12 '][location='burden'] >div>div>div>div>div");
 }
