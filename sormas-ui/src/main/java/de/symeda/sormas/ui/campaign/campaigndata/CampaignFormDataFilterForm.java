@@ -29,6 +29,7 @@ import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -44,6 +45,7 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 
 	private Consumer<CampaignFormMetaReferenceDto> formMetaChangedCallback;
 	private ComboBox cbCampaignForm;
+	private ComboBox areaFilter;
 	private ComboBox regionFilter;
 	private ComboBox districtFilter;
 	private ComboBox communityFilter;
@@ -61,6 +63,7 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 	protected String[] getMainFilterLocators() {
 		return new String[] {
 			CampaignFormDataCriteria.CAMPAIGN_FORM_META,
+			CampaignFormDataCriteria.AREA,
 			CampaignFormDataCriteria.REGION,
 			CampaignFormDataCriteria.DISTRICT,
 			CampaignFormDataCriteria.COMMUNITY };
@@ -84,10 +87,15 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 			});
 		}
 
-		regionFilter = addField(
-			FieldConfiguration.withCaptionAndPixelSized(CampaignFormDataCriteria.REGION, I18nProperties.getCaption(Captions.Campaign_region), 200));
-		regionFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllRegions));
-		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
+		areaFilter = addField(
+				FieldConfiguration.withCaptionAndPixelSized(CampaignFormDataCriteria.AREA, I18nProperties.getCaption(Captions.Campaign_area), 200));
+		areaFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllAreas));
+		areaFilter.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
+
+			regionFilter = addField(
+					FieldConfiguration.withCaptionAndPixelSized(CampaignFormDataCriteria.REGION, I18nProperties.getCaption(Captions.Campaign_region), 200));
+				regionFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllRegions));
+				regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
 		districtFilter = addField(
 			FieldConfiguration
@@ -100,6 +108,7 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 		communityFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllCommunities));
 
 		UserDto user = currentUserDto();
+		final AreaReferenceDto userArea = user.getArea();
 		final RegionReferenceDto userRegion = user.getRegion();
 		final DistrictReferenceDto userDistrict = user.getDistrict();
 		final CommunityReferenceDto userCommunity = user.getCommunity();

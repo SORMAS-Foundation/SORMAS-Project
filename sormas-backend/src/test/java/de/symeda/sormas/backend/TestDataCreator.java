@@ -75,6 +75,7 @@ import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.importexport.ExportType;
 import de.symeda.sormas.api.infrastructure.PopulationDataDto;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -1705,17 +1706,17 @@ public class TestDataCreator {
 	}
 
 	public static class RDCF {
-
+		//public AreaReferenceDto area;
 		public RegionReferenceDto region;
 		public DistrictReferenceDto district;
 		public CommunityReferenceDto community;
 		public FacilityReferenceDto facility;
 		public PointOfEntryReferenceDto pointOfEntry;
 
-		public RDCF(RegionReferenceDto region, DistrictReferenceDto district, CommunityReferenceDto community, FacilityReferenceDto facility) {
-			this(region, district, community, facility, null);
+		/*public RDCF(AreaReferenceDto area, RegionReferenceDto region, DistrictReferenceDto district, CommunityReferenceDto community, FacilityReferenceDto facility) {
+			this(area, region, district, community, facility);
 		}
-
+*/
 		public RDCF(
 			RegionReferenceDto region,
 			DistrictReferenceDto district,

@@ -1286,7 +1286,7 @@ public class CaseClassificationLogicTest extends AbstractBeanTest {
 			ImmunizationStatus.ACQUIRED,
 			MeansOfImmunization.VACCINATION,
 			ImmunizationManagementStatus.COMPLETED,
-			new TestDataCreator.RDCF(caze.getRegion(), caze.getDistrict(), caze.getCommunity(), caze.getHealthFacility()));
+			new TestDataCreator.RDCF(caze.getRegion(), caze.getDistrict(), caze.getCommunity(), caze.getHealthFacility(), null));
 
 		VaccinationDto vaccination = creator.createVaccination(caze.getReportingUser(), immunization.toReference(), new HealthConditionsDto());
 		vaccination.setVaccinationDate(vaccinationDate);

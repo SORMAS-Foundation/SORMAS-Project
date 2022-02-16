@@ -29,6 +29,7 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -44,6 +45,7 @@ public class CampaignFormDataDto extends EntityDto {
 	public static final String CAMPAIGN = "campaign";
 	public static final String CAMPAIGN_FORM_META = "campaignFormMeta";
 	public static final String FORM_DATE = "formDate";
+	public static final String AREA = "area";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -56,6 +58,7 @@ public class CampaignFormDataDto extends EntityDto {
 	@Valid
 	private CampaignFormMetaReferenceDto campaignFormMeta;
 	private Date formDate;
+	private AreaReferenceDto area;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CommunityReferenceDto community;
@@ -65,6 +68,7 @@ public class CampaignFormDataDto extends EntityDto {
 	public static CampaignFormDataDto build(
 		CampaignReferenceDto campaign,
 		CampaignFormMetaReferenceDto campaignFormMeta,
+		//AreaReferenceDto area,
 		RegionReferenceDto region,
 		DistrictReferenceDto district,
 		CommunityReferenceDto community) {
@@ -72,6 +76,7 @@ public class CampaignFormDataDto extends EntityDto {
 		campaignFormData.setUuid(DataHelper.createUuid());
 		campaignFormData.setCampaign(campaign);
 		campaignFormData.setCampaignFormMeta(campaignFormMeta);
+		//campaignFormData.setArea(area);
 		campaignFormData.setRegion(region);
 		campaignFormData.setDistrict(district);
 		campaignFormData.setCommunity(community);
@@ -128,6 +133,15 @@ public class CampaignFormDataDto extends EntityDto {
 
 	public void setFormType(String formType) {
 		this.formType = formType;
+	}
+	
+
+	public AreaReferenceDto getArea() {
+		return area;
+	}
+
+	public void setArea(AreaReferenceDto area) {
+		this.area = area;
 	}
 
 	public RegionReferenceDto getRegion() {

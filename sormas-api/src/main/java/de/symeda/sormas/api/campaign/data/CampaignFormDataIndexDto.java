@@ -26,6 +26,7 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 	public static final String UUID = "uuid";
 	public static final String CAMPAIGN = "campaign";
 	public static final String FORM = "form";
+	public static final String AREA = "area";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -38,6 +39,7 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 	private String campaign;
 	private String form;
 	private List<CampaignFormDataEntry> formValues;
+	private String area;
 	private String region;
 	private String district;
 	private String community;
@@ -49,6 +51,7 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 		String campaign,
 		String form,
 		Object formValues,
+		//String area,
 		String region,
 		String district,
 		String community,
@@ -58,6 +61,7 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 		this.campaign = campaign;
 		this.form = form;
 		this.formValues = (List<CampaignFormDataEntry>) formValues;
+		//this.region = area;
 		this.region = region;
 		this.district = district;
 		this.community = community;
@@ -70,6 +74,7 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 			String campaign,
 			String form,
 			Object formValues,
+			String area,
 			String region,
 			String district,
 			String community,
@@ -79,6 +84,7 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 			this.campaign = campaign;
 			this.form = form;
 			this.formValues = (List<CampaignFormDataEntry>) formValues;
+			this.area = area;
 			this.region = region;
 			this.district = district;
 			this.community = community;
@@ -115,6 +121,14 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 
 	public void setFormValues(List<CampaignFormDataEntry> formValues) {
 		this.formValues = formValues;
+	}
+
+	public String getArea() {
+		return area;
+	}
+
+	public void setArea(String area) {
+		this.area = area;
 	}
 
 	public String getRegion() {

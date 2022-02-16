@@ -269,6 +269,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		Root<CampaignFormData> root = cq.from(CampaignFormData.class);
 		Join<CampaignFormData, Campaign> campaignJoin = root.join(CampaignFormData.CAMPAIGN, JoinType.LEFT);
 		Join<CampaignFormData, CampaignFormMeta> campaignFormMetaJoin = root.join(CampaignFormData.CAMPAIGN_FORM_META, JoinType.LEFT);
+		Join<CampaignFormData, Area> areaJoin = root.join(CampaignFormData.AREA, JoinType.LEFT);
 		Join<CampaignFormData, Region> regionJoin = root.join(CampaignFormData.REGION, JoinType.LEFT);
 		Join<CampaignFormData, District> districtJoin = root.join(CampaignFormData.DISTRICT, JoinType.LEFT);
 		Join<CampaignFormData, Community> communityJoin = root.join(CampaignFormData.COMMUNITY, JoinType.LEFT);
@@ -278,6 +279,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			campaignJoin.get(Campaign.NAME),
 			campaignFormMetaJoin.get(CampaignFormMeta.FORM_NAME),
 			criteria.getCampaignFormMeta() != null ? root.get(CampaignFormData.FORM_VALUES) : cb.nullLiteral(String.class),
+			areaJoin.get(Area.NAME),
 			regionJoin.get(Region.NAME),
 			districtJoin.get(District.NAME),
 			communityJoin.get(Community.NAME),
@@ -306,6 +308,9 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 					break;
 				case CampaignFormDataIndexDto.FORM:
 					expression = campaignFormMetaJoin.get(CampaignFormMeta.FORM_NAME);
+					break;
+				case CampaignFormDataIndexDto.AREA:
+					expression = areaJoin.get(Area.NAME);
 					break;
 				case CampaignFormDataIndexDto.REGION:
 					expression = regionJoin.get(Region.NAME);

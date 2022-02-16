@@ -39,6 +39,7 @@ import de.symeda.sormas.api.campaign.data.CampaignFormDataReferenceDto;
 import de.symeda.sormas.backend.campaign.Campaign;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.infrastructure.area.Area;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -55,6 +56,7 @@ public class CampaignFormData extends AbstractDomainObject {
 	public static final String CAMPAIGN = "campaign";
 	public static final String CAMPAIGN_FORM_META = "campaignFormMeta";
 	public static final String FORM_DATE = "formDate";
+	public static final String AREA = "area";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -66,6 +68,7 @@ public class CampaignFormData extends AbstractDomainObject {
 	private Campaign campaign;
 	private CampaignFormMeta campaignFormMeta;
 	private Date formDate;
+	private Area area;
 	private Region region;
 	private District district;
 	private Community community;
@@ -112,6 +115,15 @@ public class CampaignFormData extends AbstractDomainObject {
 		this.formDate = formDate;
 	}
 
+	@ManyToOne()
+	public Area getArea() {
+		return area;
+	}
+
+	public void setArea(Area area) {
+		this.area = area;
+	}
+	
 	@ManyToOne()
 	public Region getRegion() {
 		return region;

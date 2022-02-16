@@ -112,7 +112,7 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 			rdcf.region,
 			rdcf.district,
 			community2.toReference(),
-			creator.createFacility("Facility2", rdcf.region, rdcf.district, community2.toReference()).toReference());
+			creator.createFacility("Facility2", rdcf.region, rdcf.district, community2.toReference()).toReference(),null);
 
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);

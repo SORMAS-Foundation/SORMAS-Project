@@ -8300,3 +8300,12 @@ ALTER TABLE campaigns ADD COLUMN round varchar(255);
 INSERT INTO schema_version (version_number, comment) VALUES (409, 'Add round to campaings #88');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
+
+
+-- 2021-09-27 Add disease variant details #5935
+ALTER TABLE campaignformdata ADD COLUMN area_id bigint default 139;
+
+INSERT INTO schema_version (version_number, comment) VALUES (410, 'Add Area to campaignform to enable campaign filter by Area');
+
+-- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
+
