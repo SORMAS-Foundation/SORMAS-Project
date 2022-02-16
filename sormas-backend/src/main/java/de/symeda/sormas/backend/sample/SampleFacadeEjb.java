@@ -90,7 +90,6 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
-import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
@@ -159,6 +158,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	private ContactFacadeEjbLocal contactFacade;
 	@EJB
 	private EventParticipantFacadeEjbLocal eventParticipantFacade;
+	@EJB
+	private EventFacadeEjb.EventFacadeEjbLocal eventFacade;
 	@EJB
 	private MessagingService messagingService;
 	@EJB
@@ -979,18 +980,18 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	private void handleAssotiatedObjectChanges(Sample newSample, boolean syncShares) {
 		if (newSample.getAssociatedCase() != null) {
-			caseFacade.onCaseChanged(CaseFacadeEjb.toDto(newSample.getAssociatedCase()), newSample.getAssociatedCase(), syncShares);
+			caseFacade.onCaseChanged(caseFacade.toDto(newSample.getAssociatedCase()), newSample.getAssociatedCase(), syncShares);
 		}
 
 		if (newSample.getAssociatedContact() != null) {
-			contactFacade.onContactChanged(ContactFacadeEjb.toDto(newSample.getAssociatedContact()), syncShares);
+			contactFacade.onContactChanged(contactFacade.toDto(newSample.getAssociatedContact()), syncShares);
 		}
 
 		EventParticipant associatedEventParticipant = newSample.getAssociatedEventParticipant();
 		if (associatedEventParticipant != null) {
 			eventParticipantFacade.onEventParticipantChanged(
-				EventFacadeEjb.toDto(associatedEventParticipant.getEvent()),
-				EventParticipantFacadeEjb.toDto(associatedEventParticipant),
+				eventFacade.toDto(associatedEventParticipant.getEvent()),
+				eventParticipantFacade.toDto(associatedEventParticipant),
 				associatedEventParticipant,
 				syncShares);
 		}

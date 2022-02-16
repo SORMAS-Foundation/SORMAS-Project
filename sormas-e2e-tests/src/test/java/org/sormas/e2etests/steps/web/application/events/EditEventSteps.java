@@ -42,6 +42,7 @@ import javax.inject.Named;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.events.EditEventPage;
 import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
@@ -55,6 +56,7 @@ import org.sormas.e2etests.services.EventGroupService;
 import org.sormas.e2etests.services.EventParticipantService;
 import org.sormas.e2etests.services.EventService;
 import org.sormas.e2etests.state.ApiState;
+import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
 public class EditEventSteps implements En {
@@ -78,6 +80,7 @@ public class EditEventSteps implements En {
       EventGroupService eventGroupService,
       SoftAssert softly,
       EventParticipantService eventParticipant,
+      AssertHelpers assertHelpers,
       @Named("ENVIRONMENT_URL") String environmentUrl,
       ApiState apiState) {
     this.webDriverHelpers = webDriverHelpers;
@@ -242,6 +245,54 @@ public class EditEventSteps implements En {
         });
 
     When(
+        "I choose select event group Radiobutton",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(SELECT_EVENT_GROUP_RADIOBUTTON);
+        });
+
+    When(
+        "I select the first row from table and I click on save button",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_GROUP_ID);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_FOR_POPUP_WINDOWS);
+        });
+
+    When(
+        "I unlinked the first chosen group by click on Unlink event group button",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.scrollToElement(UNLINK_EVENT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(UNLINK_EVENT_BUTTON);
+        });
+
+    When(
+        "I click on Edit event group button from event groups box",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.scrollToElement(EDIT_EVENT_GROUP_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_EVENT_GROUP_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_FOR_EDIT_EVENT_GROUP);
+        });
+
+    When(
+        "I click on Edit event button for the first event in Events section",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_EVENT_GROUP_BUTTON);
+        });
+
+    When(
+        "I click on the Navigate to event directory filtered on this event group",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.scrollToElement(NAVIGATE_TO_EVENT_DIRECTORY_EVENT_GROUP_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(
+              NAVIGATE_TO_EVENT_DIRECTORY_EVENT_GROUP_BUTTON);
+        });
+
+    When(
         "^I create a new event group$",
         () -> {
           groupEvent = eventGroupService.buildGroupEvent();
@@ -321,6 +372,16 @@ public class EditEventSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(EditEventPage.CREATE_EVENT_HANDOUT_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(EditEventPage.CANCEL_EVENT_HANDOUT_BUTTON);
         });
+    And(
+        "I check that number of actions in Edit Event Tab is {int}",
+        (Integer number) ->
+            assertHelpers.assertWithPoll20Second(
+                () ->
+                    Assert.assertEquals(
+                        Integer.parseInt(
+                            webDriverHelpers.getTextFromPresentWebElement(TOTAL_ACTIONS_COUNTER)),
+                        number.intValue(),
+                        "Number of displayed actions is not correct")));
 
     And(
         "I verify that the event document is downloaded and correctly named",
@@ -360,13 +421,13 @@ public class EditEventSteps implements En {
         .eventDate(eventDate)
         .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
         .eventStatus(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SELECTED_EVENT_STATUS))
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(EVENT_STATUS_OPTIONS))
         .investigationStatus(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                SELECTED_EVENT_INVESTIGATION_STATUS))
+                EVENT_INVESTIGATION_STATUS_OPTIONS))
         .eventManagementStatus(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                SELECTED_EVENT_MANAGEMENT_STATUS))
+                EVENT_MANAGEMENT_STATUS_OPTIONS))
         .riskLevel(webDriverHelpers.getValueFromWebElement(RISK_LEVEL_INPUT))
         .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
         .title(webDriverHelpers.getValueFromWebElement(TITLE_INPUT))

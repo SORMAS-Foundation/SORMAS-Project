@@ -52,6 +52,7 @@ public class EventDirectoryPage {
   public static final By EVENT_SCREENING = By.id("status-Screening");
   public static final By EVENT_CLUSTER = By.id("status-Cluster");
   public static final By EVENT_DROPPED = By.id("status-Dropped");
+  public static final By CREATED_PARTICIPANT = By.cssSelector("[role='gridcell'] a");
 
   /*public static By getByEventUuid(String eventUuid) {
     return By.cssSelector("a[title=" + eventUuid + "]");
@@ -59,6 +60,7 @@ public class EventDirectoryPage {
   public static final By FIRST_EVENT_ID_BUTTON = By.cssSelector(".v-grid-row-has-data a[title]");
   public static final By CREATE_CASE_BUTTON =
       By.xpath("//td//span[contains(@class, 'v-icon-edit')]");
+  public static final By TOTAL_EVENTS_COUNTER = By.cssSelector(".badge");
 
   public static By getByEventUuid(String eventUuid) {
     return By.xpath(String.format("//a[@title='%s']", eventUuid));

@@ -9932,4 +9932,63 @@ ALTER TABLE subcontinent_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (438, 'Create missing history tables for entities #7113');
 
+ALTER TABLE testreport ADD COLUMN testeddiseasevariant varchar(255);
+ALTER TABLE testreport ADD COLUMN testeddiseasevariantdetails varchar(255);
+
+ALTER TABLE testreport_history ADD COLUMN testeddiseasevariant varchar(255);
+ALTER TABLE testreport_history ADD COLUMN testeddiseasevariantdetails varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (439, 'Add disease variant mapping to test reports #7209');
+
+-- 2022-02-02 Refactor CoreAdo to include archiving #7246
+
+ALTER TABLE contact ADD COLUMN archived BOOLEAN;
+ALTER TABLE contact_history ADD COLUMN archived BOOLEAN;
+ALTER TABLE eventparticipant ADD COLUMN archived BOOLEAN;
+ALTER TABLE eventparticipant_history ADD COLUMN archived BOOLEAN;
+
+INSERT INTO schema_version (version_number, comment) VALUES (440, 'Refactor CoreAdo to include archiving #7246');
+
+-- 2022-02-09 Align username handling of Keycloak and legacy login #7907
+/*
+* In case the current DB violates the new uniqueness constraint on usernames, please use the following script to detect
+* all conflicting usernames. Usernames are case-insensitive now, that means "ADMIN" and "admin" will both map to the
+* same user in the DB. To resolve the conflict, rename the conflicting usernames found with the script.
+*
+* SELECT username, creationdate, id, uuid FROM users
+* WHERE LOWER(username) IN
+*      (SELECT LOWER(username) FROM users GROUP BY LOWER(username) HAVING COUNT(*) > 1)
+* ORDER BY username, creationdate;
+*
+*/
+
+DROP INDEX idx_users_username;
+CREATE UNIQUE INDEX idx_users_username_lower ON users(LOWER(username));
+REINDEX INDEX idx_users_username_lower;
+
+INSERT INTO schema_version (version_number, comment) VALUES (441, ' Align username handling of Keycloak and legacy login #7907 ');
+
+-- 2022-02-02 Refactor CoreAdo to include archiving #7246
+
+UPDATE contact set archived = false;
+UPDATE contact_history set archived = false;
+UPDATE eventparticipant set archived = false;
+UPDATE eventparticipant_history set archived = false;
+ALTER TABLE contact ALTER COLUMN archived SET NOT NULL;
+ALTER TABLE contact ALTER COLUMN archived SET DEFAULT false;
+ALTER TABLE contact_history ALTER COLUMN archived SET NOT NULL;
+ALTER TABLE contact_history ALTER COLUMN archived SET DEFAULT false;
+ALTER TABLE eventparticipant ALTER COLUMN archived SET NOT NULL;
+ALTER TABLE eventparticipant ALTER COLUMN archived SET DEFAULT false;
+ALTER TABLE eventparticipant_history ALTER COLUMN archived SET NOT NULL;
+ALTER TABLE eventparticipant_history ALTER COLUMN archived SET DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (442, 'Refactor CoreAdo to include archiving #7246');
+
+-- 2022-02-11 Map variant specific Nucleic acid detection methods #5285
+ALTER TABLE testreport ADD COLUMN testpcrtestspecification varchar(255);
+ALTER TABLE testreport_history ADD COLUMN testpcrtestspecification varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (443, 'Map variant specific Nucleic acid detection methods #5285');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

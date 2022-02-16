@@ -18,18 +18,25 @@
 
 package org.sormas.e2etests.steps.web.application.contacts;
 
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.*;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.*;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.GRID_HEADERS;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.RESULTS_GRID_HEADER;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.FIRST_NAME_OF_CONTACT_PERSON_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.openqa.selenium.By;
+import org.sormas.e2etests.common.DataOperations;
+import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.YesNoUnknownOptions;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.ExposureDetailsRole;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfActivityExposure;
@@ -57,6 +64,7 @@ public class ContactDirectorySteps implements En {
       ApiState apiState,
       AssertHelpers assertHelpers,
       ContactService contactService,
+      DataOperations dataOperations,
       @Named("ENVIRONMENT_URL") String environmentUrl) {
     this.webDriverHelpers = webDriverHelpers;
 
@@ -78,6 +86,15 @@ public class ContactDirectorySteps implements En {
                 NEW_CONTACT_BUTTON, FIRST_NAME_OF_CONTACT_PERSON_INPUT));
 
     When(
+        "I click on save Contact button",
+        () -> {
+          webDriverHelpers.scrollToElement(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
         "I click on the DETAILED radiobutton from Contact directory",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_DIRECTORY_DETAILED_RADIOBUTTON);
@@ -96,7 +113,94 @@ public class ContactDirectorySteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(uuidLocator);
         });
+    When(
+        "I apply Id of last api created Contact on Contact Directory Page",
+        () -> {
+          String contactUuid =
+              dataOperations.getPartialUuidFromAssociatedLink(
+                  apiState.getCreatedContact().getUuid());
+          webDriverHelpers.fillAndSubmitInWebElement(
+              CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, apiState.getCreatedContact().getUuid());
+        });
+    And(
+        "I filter by mocked ContactID on Contact directory page",
+        () -> {
+          String partialUuid =
+              dataOperations.getPartialUuidFromAssociatedLink(
+                  "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee");
+          webDriverHelpers.fillAndSubmitInWebElement(
+              CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, partialUuid);
+        });
+    And(
+        "I click SHOW MORE FILTERS button on Contact directory page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SHOW_MORE_LESS_FILTERS));
+    Then(
+        "I apply Disease of source filter {string} on Contact Directory Page",
+        (String diseaseFilterOption) -> {
+          webDriverHelpers.selectFromCombobox(
+              CONTACT_DISEASE_FILTER_COMBOBOX, DiseasesValues.getCaptionFor(diseaseFilterOption));
+        });
+    Then(
+        "I apply Contact classification filter to {string} on Contact Directory Page",
+        (String contactClassification) -> {
+          webDriverHelpers.selectFromCombobox(
+              CONTACT_CLASSIFICATION_FILTER_COMBOBOX, contactClassification);
+        });
+    And(
+        "I apply Classification of source case filter to {string} on Contact Directory Page",
+        (String classification) -> {
+          webDriverHelpers.selectFromCombobox(
+              CONTACT_CASE_CLASSIFICATION_FILTER_COMBOBOX, classification);
+        });
+    And(
+        "I apply Follow-up status filter to {string} on Contact Directory Page",
+        (String followUp) -> {
+          webDriverHelpers.selectFromCombobox(CONTACT_FOLLOW_UP_FILTER_COMBOBOX, followUp);
+        });
+    And(
+        "I click APPLY BUTTON in Contact Directory Page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              CONTACT_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
+          TimeUnit.SECONDS.sleep(3); // needed for table refresh
+        });
 
+    And(
+        "I click {string} checkbox on Contact directory page",
+        (String checkboxDescription) -> {
+          switch (checkboxDescription) {
+            case ("Quarantine ordered verbally?"):
+              webDriverHelpers.clickOnWebElementBySelector(
+                  CONTACTS_WITH_QUARANTINE_ORDERED_VERBALLY_CHECKBOX);
+              break;
+            case ("Quarantine ordered by official document?"):
+              webDriverHelpers.clickOnWebElementBySelector(
+                  CONTACTS_WITH_QUARANTINE_ORDERED_BY_OFFICIAL_DOCUMENT_CHECKBOX);
+              break;
+            case ("No quarantine ordered"):
+              webDriverHelpers.clickOnWebElementBySelector(
+                  CONTACTS_WITH_NO_QUARANTINE_ORDERED_CHECKBOX);
+              break;
+            case ("Help needed in quarantine"):
+              webDriverHelpers.clickOnWebElementBySelector(
+                  CONTACTS_WITH_HELP_NEEDED_IN_QUARANTINE_ORDERED_CHECKBOX);
+              break;
+            case ("Only high priority contacts"):
+              webDriverHelpers.clickOnWebElementBySelector(CONTACTS_ONLY_HIGH_PRIOROTY_CHECKBOX);
+              break;
+            case ("Only contacts with extended quarantine"):
+              webDriverHelpers.clickOnWebElementBySelector(
+                  CONTACTS_WITH_EXTENDED_QUARANTINE_CHECKBOX);
+              break;
+            case ("Only contacts with reduced quarantine"):
+              webDriverHelpers.clickOnWebElementBySelector(
+                  CONTACTS_WITH_REDUCED_QUARANTINE_CHECKBOX);
+              break;
+            case ("Only contacts from other instances"):
+              webDriverHelpers.clickOnWebElementBySelector(CONTACTS_FROM_OTHER_INSTANCES_CHECKBOX);
+              break;
+          }
+        });
     When(
         "^I click on Line Listing button$",
         () -> webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING));
@@ -106,6 +210,30 @@ public class ContactDirectorySteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EPIDEMIOLOGICAL_DATA_TAB);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+    And(
+        "I click on All button in Contact Directory Page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ALLBUTTON_CONTACT);
+          TimeUnit.SECONDS.sleep(8); // needed for table refresh
+        });
+    And(
+        "I click on Converted to case pending button on Contact Directory Page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CONVERTED_TO_CASE_BUTTON);
+          TimeUnit.SECONDS.sleep(8); // needed for table refresh
+        });
+    And(
+        "I click on Active contact button in Contact Directory Page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ACTIVE_CONTACT_BUTTON);
+          TimeUnit.SECONDS.sleep(8); // needed for table refresh
+        });
+    And(
+        "I click on Dropped button on Contact Directory Page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DROPPED_BUTTON);
+          TimeUnit.SECONDS.sleep(8); // needed for table refresh
         });
 
     When(
@@ -177,7 +305,8 @@ public class ContactDirectorySteps implements En {
           assertHelpers.assertWithPoll20Second(
               () ->
                   Assert.assertEquals(
-                      webDriverHelpers.getNumberOfElements(CONTACT_GRID_RESULTS_ROWS),
+                      Integer.parseInt(
+                          webDriverHelpers.getTextFromPresentWebElement(TOTAL_CONTACTS_COUNTER)),
                       number.intValue(),
                       "Number of displayed contacts is not correct"));
         });

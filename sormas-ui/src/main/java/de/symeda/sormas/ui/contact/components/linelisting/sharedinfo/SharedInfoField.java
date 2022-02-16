@@ -40,8 +40,8 @@ public class SharedInfoField extends CustomField<SharedInfoFieldDto> {
 			? new CaseSelector(caseReferenceDto)
 			: new CaseSelector(I18nProperties.getString(Strings.infoNoSourceCaseSelectedLineListing));
 		disease = new ComboBox<>(I18nProperties.getCaption(Captions.lineListingDiseaseOfSourceCase));
-		region = new ComboBox<>(I18nProperties.getCaption(Captions.region));
-		district = new ComboBox<>(I18nProperties.getCaption(Captions.district));
+		region = new ComboBox<>(I18nProperties.getCaption(Captions.Region));
+		district = new ComboBox<>(I18nProperties.getCaption(Captions.District));
 
 		this.initialDiseaseValue = initialDiseaseValue;
 	}

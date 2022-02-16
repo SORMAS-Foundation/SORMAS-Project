@@ -17,7 +17,6 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.user.User;
 
 @Stateless
 @LocalBean
@@ -92,8 +91,23 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<Campaign> getAllAfter(Date since, User user) {
+	public List<Campaign> getAllActive() {
 
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Campaign> cq = cb.createQuery(getElementClass());
+		Root<Campaign> from = cq.from(getElementClass());
+		cq.where(createActiveCampaignsFilter(cb, from));
+		cq.orderBy(cb.desc(from.get(AbstractDomainObject.CHANGE_DATE)));
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	public Predicate createActiveCampaignsFilter(CriteriaBuilder cb, Root<Campaign> root) {
+		return cb.and(cb.isFalse(root.get(Campaign.ARCHIVED)), cb.isFalse(root.get(Campaign.DELETED)));
+	}
+
+	@Override
+	public List<Campaign> getAllAfter(Date since) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Campaign> cq = cb.createQuery(getElementClass());
 		Root<Campaign> root = cq.from(getElementClass());
@@ -113,20 +127,5 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 		cq.orderBy(cb.desc(root.get(AbstractDomainObject.CHANGE_DATE)));
 
 		return em.createQuery(cq).getResultList();
-	}
-
-	public List<Campaign> getAllActive() {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Campaign> cq = cb.createQuery(getElementClass());
-		Root<Campaign> from = cq.from(getElementClass());
-		cq.where(createActiveCampaignsFilter(cb, from));
-		cq.orderBy(cb.desc(from.get(AbstractDomainObject.CHANGE_DATE)));
-
-		return em.createQuery(cq).getResultList();
-	}
-
-	public Predicate createActiveCampaignsFilter(CriteriaBuilder cb, Root<Campaign> root) {
-		return cb.and(cb.isFalse(root.get(Campaign.ARCHIVED)), cb.isFalse(root.get(Campaign.DELETED)));
 	}
 }

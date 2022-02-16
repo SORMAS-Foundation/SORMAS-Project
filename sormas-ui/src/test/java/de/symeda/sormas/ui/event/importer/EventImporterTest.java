@@ -60,7 +60,7 @@ public class EventImporterTest extends AbstractBeanTest {
 		assertEquals(4, getEventFacade().count(null));
 		assertEquals(3, getPersonFacade().count(null));
 
-		List<EventDto> events = getEventFacade().getAllActiveEventsAfter(null);
+		List<EventDto> events = getEventFacade().getAllAfter(null);
 		Optional<EventDto> optionalEventWith2Participants =
 			events.stream().filter(event -> "Event title with 2 participants".equals(event.getEventTitle())).findFirst();
 		assertTrue(optionalEventWith2Participants.isPresent());
@@ -85,7 +85,7 @@ public class EventImporterTest extends AbstractBeanTest {
 		assertEquals(3, getPersonFacade().count(null));
 
 		// Similarity: pick
-		List<SimilarPersonDto> persons = FacadeProvider.getPersonFacade().getSimilarPersonDtos(user.toReference(), new PersonSimilarityCriteria());
+		List<SimilarPersonDto> persons = FacadeProvider.getPersonFacade().getSimilarPersonDtos(new PersonSimilarityCriteria());
 		csvFile = new File(getClass().getClassLoader().getResource("sormas_event_import_test_similarities.csv").toURI());
 		eventImporter = new EventImporterExtension(csvFile, true, user) {
 

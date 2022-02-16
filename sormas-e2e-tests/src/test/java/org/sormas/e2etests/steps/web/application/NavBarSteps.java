@@ -89,6 +89,8 @@ public class NavBarSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NavBarPage.TASKS_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.TASKS_BUTTON);
           startTime = ZonedDateTime.now().toInstant().toEpochMilli();
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(
@@ -162,6 +164,13 @@ public class NavBarSteps implements En {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.USERS_BUTTON);
           startTime = ZonedDateTime.now().toInstant().toEpochMilli();
+        });
+
+    When(
+        "I click on logout button from navbar$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.LOGOUT_BUTTON);
         });
 
     Then(
