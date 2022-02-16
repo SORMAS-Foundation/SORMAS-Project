@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -61,13 +60,12 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
-import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
+import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -84,10 +82,10 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.NotificationService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.messaging.MessageContents;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
-import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
@@ -130,7 +128,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	@EJB
 	private SymptomsFacadeEjbLocal symptomsFacade;
 	@EJB
-	private MessagingService messagingService;
+	private NotificationService notificationService;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -601,19 +599,14 @@ public class VisitFacadeEjb implements VisitFacade {
 							DataHelper.getShortUuid(contact.getUuid()));
 					}
 
-					messagingService.sendMessages(() -> {
-						final Map<User, String> mapToReturn = new HashMap<>();
-						userService
-							.getAllByRegionsAndUserRoles(
-								JurisdictionHelper.getContactRegions(contact),
-								UserRole.SURVEILLANCE_SUPERVISOR,
-								UserRole.CONTACT_SUPERVISOR)
-							.forEach(user -> mapToReturn.put(user, messageContent));
-						return mapToReturn;
-					}, MessageSubject.CONTACT_SYMPTOMATIC, MessageType.EMAIL, MessageType.SMS);
+					notificationService.sendNotifications(
+						NotificationType.CONTACT_SYMPTOMATIC,
+						JurisdictionHelper.getContactRegions(contact),
+						null,
+						MessageSubject.CONTACT_SYMPTOMATIC,
+						messageContent);
 				} catch (NotificationDeliveryFailedException e) {
-					logger.error(
-						String.format("EmailDeliveryFailedException when trying to notify supervisors about a contact that has become symptomatic."));
+					logger.error("EmailDeliveryFailedException when trying to notify supervisors about a contact that has become symptomatic.");
 				}
 			}
 		}
