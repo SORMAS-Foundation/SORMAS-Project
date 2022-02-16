@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
-import de.symeda.sormas.api.user.NotificationType;
-import de.symeda.sormas.backend.common.NotificationService;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -64,11 +62,13 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.NotificationService;
 import de.symeda.sormas.backend.common.messaging.MessageContents;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
@@ -461,7 +461,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 		notifyModificationOfEventGroup(
 			eventGroupReference,
 			Collections.emptyList(),
-				NotificationType.EVENT_GROUP_CREATED,
+			NotificationType.EVENT_GROUP_CREATED,
 			MessageSubject.EVENT_GROUP_CREATED,
 			MessageContents.CONTENT_EVENT_GROUP_CREATED);
 	}
@@ -471,7 +471,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 		notifyModificationOfEventGroup(
 			eventGroupReference,
 			eventReferences,
-				NotificationType.EVENT_ADDED_TO_EVENT_GROUP,
+			NotificationType.EVENT_ADDED_TO_EVENT_GROUP,
 			MessageSubject.EVENT_ADDED_TO_EVENT_GROUP,
 			MessageContents.CONTENT_EVENT_ADDED_TO_EVENT_GROUP);
 	}
@@ -481,7 +481,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 		notifyModificationOfEventGroup(
 			eventGroupReference,
 			eventReferences,
-				NotificationType.EVENT_REMOVED_FROM_EVENT_GROUP,
+			NotificationType.EVENT_REMOVED_FROM_EVENT_GROUP,
 			MessageSubject.EVENT_REMOVED_FROM_EVENT_GROUP,
 			MessageContents.CONTENT_EVENT_REMOVED_FROM_EVENT_GROUP);
 	}
@@ -535,8 +535,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 				return responsibleUserByEventUuid.values().stream().collect(Collectors.toMap(Function.identity(), (u) -> message));
 			});
 		} catch (NotificationDeliveryFailedException e) {
-			logger.error(
-				"NotificationDeliveryFailedException when trying to notify event responsible user about a modification on an EventGroup.");
+			logger.error("NotificationDeliveryFailedException when trying to notify event responsible user about a modification on an EventGroup.");
 		}
 	}
 
