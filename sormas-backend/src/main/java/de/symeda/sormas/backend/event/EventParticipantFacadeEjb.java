@@ -141,6 +141,8 @@ public class EventParticipantFacadeEjb
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
+	private EventParticipantService eventParticipantService;
+	@EJB
 	private EventService eventService;
 	@EJB
 	private EventFacadeEjbLocal eventFacade;
@@ -180,6 +182,11 @@ public class EventParticipantFacadeEjb
 		Person person = entity.getPerson();
 
 		return new EventParticipantReferenceDto(entity.getUuid(), person.getFirstName(), person.getFirstName());
+	}
+
+	@Override
+	public AbstractCoreAdoService<EventParticipant> getEntityService() {
+		return eventParticipantService;
 	}
 
 	@Override
