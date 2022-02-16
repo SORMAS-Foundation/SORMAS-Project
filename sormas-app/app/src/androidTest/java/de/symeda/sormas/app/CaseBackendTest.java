@@ -23,19 +23,19 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import androidx.test.rule.ActivityTestRule;
+import androidx.test.runner.AndroidJUnit4;
 
 import org.junit.Before;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 
-import androidx.test.rule.ActivityTestRule;
-import androidx.test.runner.AndroidJUnit4;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
 
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -154,6 +154,7 @@ public class CaseBackendTest {
 		mergeCase.getPortHealthInfo().setId(null);
 		mergeCase.getTherapy().setId(null);
 		mergeCase.getClinicalCourse().getHealthConditions().setId(null);
+		mergeCase.getHealthConditions().setId(null);
 		mergeCase.getMaternalHistory().setId(null);
 
 		mergeCase.setEpidNumber("ServerEpidNumber");
@@ -254,6 +255,7 @@ public class CaseBackendTest {
 		mergeCase.getPortHealthInfo().setId(null);
 		mergeCase.getTherapy().setId(null);
 		mergeCase.getClinicalCourse().getHealthConditions().setId(null);
+		mergeCase.getHealthConditions().setId(null);
 		mergeCase.getMaternalHistory().setId(null);
 		mergeCase.setEpidNumber("ServerEpidNumber");
 
