@@ -91,15 +91,4 @@ public class CommonModule extends PrivateModule {
     objectMapper.registerModule(new Jdk8Module());
     return objectMapper;
   }
-
-  //  @Provides
-  //  @Exposed
-  //  RequestSpecification provideRestAssured() {
-  //    return RestAssured.given()
-  //        .auth()
-  //        .preemptive()
-  //        .basic(
-  //            TestDataUser.REST_AUTOMATION.getUsername(),
-  // TestDataUser.REST_AUTOMATION.getPassword());
-  //  }
 }

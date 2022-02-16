@@ -18,9 +18,6 @@
 
 package org.sormas.e2etests.common;
 
-import static com.google.common.base.MoreObjects.firstNonNull;
-import static com.google.common.base.Strings.emptyToNull;
-
 import com.google.common.annotations.VisibleForTesting;
 import com.google.inject.AbstractModule;
 import com.google.inject.name.Names;
@@ -49,12 +46,6 @@ public class PropertiesModule extends AbstractModule {
 
   public static final String CONFIGURATION_PROPERTIES_COMMON_PROPERTIES_PATH =
       "configuration/properties/common.properties";
-  public static final String ENVIRONMENT =
-      firstNonNull(emptyToNull(System.getenv("ENVIRONMENT")), "test-performance");
-
-  private static final Map<String, String> DEFAULT_ENVIRONMENT_PROPERTIES =
-      MoreResources.getConfig(
-          String.format("configuration/properties/environment/%s.properties", ENVIRONMENT));
 
   private static final Map<String, String> DEFAULT_COMMON_ENVIRONMENT_PROPERTIES =
       MoreResources.getConfig(CONFIGURATION_PROPERTIES_COMMON_PROPERTIES_PATH);
@@ -63,7 +54,6 @@ public class PropertiesModule extends AbstractModule {
   public void configure() {
     Map<String, String> allProperties = new HashMap<>();
     allProperties.putAll(DEFAULT_COMMON_ENVIRONMENT_PROPERTIES);
-    allProperties.putAll(DEFAULT_ENVIRONMENT_PROPERTIES);
     allProperties.putAll(getProperties(System.getProperties()));
     allProperties.putAll(System.getenv());
     Names.bindProperties(binder(), allProperties);
