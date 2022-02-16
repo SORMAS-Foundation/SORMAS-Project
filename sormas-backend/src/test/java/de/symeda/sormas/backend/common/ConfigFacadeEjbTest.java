@@ -120,6 +120,12 @@ public class ConfigFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	/*
+	 * If you need to change this test to make it pass, you probably changed the behaviour of the ExternalVisitsResource.
+	 * Please note that other system used alongside with SORMAS are depending on this, so that their developers must be notified of any
+	 * relevant API changes some time before they go into any test and productive system. Please inform the SORMAS core development team at
+	 * https://gitter.im/SORMAS-Project!
+	 */
 	public void testPatientDiaryConfigTokenLifetime() {
 		// property not specified
 		assertThat(getConfigFacade().getPatientDiaryConfig().getTokenLifetime(), equalTo(Duration.ofSeconds(21600L)));
