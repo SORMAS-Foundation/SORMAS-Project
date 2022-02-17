@@ -25,10 +25,12 @@
   </suppress>
   <suppress>
     <notes><![CDATA[
-    CVE is fixed with Keycloak 3.4.2, we use at least version 11
+    CVE addresses Keycloak itself in old version, but triggers on artifacts with "keycloak" in the name.
     ]]></notes>
 	<filePath regex="true">.*\bkeycloak-.*\.jar</filePath>
-    <cve>CVE-2017-12161</cve>
+    <cve>CVE-2017-12161</cve><!-- CVE is fixed with Keycloak 3.4.2, we use at least version 16 -->
+    <cve>CVE-2018-10912</cve><!-- CVE is fixed with Keycloak 4.0.0, we use at least version 16 -->
+    <cve>CVE-2020-1728</cve><!--  CVE is fixed with Keycloak 10, we use at least version 16 -->
   </suppress>
   <suppress>
     <notes><![CDATA[
@@ -70,48 +72,36 @@
     Addresses etcd itself
     ]]></notes>
 	<filePath regex="true">.*\betcd-java.*\.jar</filePath>
-    <vulnerabilityName>CVE-2020-15106</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <notes><![CDATA[
-    Addresses etcd itself
-    ]]></notes>
-	<filePath regex="true">.*\betcd-java.*\.jar</filePath>
-    <vulnerabilityName>CVE-2020-15112</vulnerabilityName>
-  </suppress>
-  <suppress>
-    <notes><![CDATA[
-    Addresses etcd itself
-    ]]></notes>
-	<filePath regex="true">.*\betcd-java.*\.jar</filePath>
-    <vulnerabilityName>CVE-2020-15113</vulnerabilityName>
+    <cve>CVE-2020-15106</cve>
+    <cve>CVE-2020-15112</cve>
+    <cve>CVE-2020-15113</cve>
   </suppress>
   <suppress>
     <notes><![CDATA[
     Addresses another software: Apache James Server
     ]]></notes>
 	<filePath regex="true">.*\bapache-mime4j.*\.jar</filePath>
-    <vulnerabilityName>CVE-2021-38542</vulnerabilityName>
-    <vulnerabilityName>CVE-2021-40110</vulnerabilityName>
-    <vulnerabilityName>CVE-2021-40111</vulnerabilityName>
-    <vulnerabilityName>CVE-2021-40525</vulnerabilityName>
+    <cve>CVE-2021-38542</cve>
+    <cve>CVE-2021-40110</cve>
+    <cve>CVE-2021-40111</cve>
+    <cve>CVE-2021-40525</cve>
   </suppress>
   <suppress>
     <notes><![CDATA[
     Addresses another software: io.netty:netty
     ]]></notes>
 	<filePath regex="true">.*\bnetty-tcnative-classes.*\.jar</filePath>
-    <vulnerabilityName>CVE-2014-3488</vulnerabilityName>
-    <vulnerabilityName>CVE-2015-2156</vulnerabilityName>
-    <vulnerabilityName>CVE-2019-16869</vulnerabilityName>
-    <vulnerabilityName>CVE-2019-20444</vulnerabilityName>
-    <vulnerabilityName>CVE-2019-20445</vulnerabilityName>
-    <vulnerabilityName>CVE-2021-21290</vulnerabilityName>
-    <vulnerabilityName>CVE-2021-21295</vulnerabilityName>
-    <vulnerabilityName>CVE-2021-21409</vulnerabilityName>
-    <vulnerabilityName>CVE-2021-37136</vulnerabilityName>
-    <vulnerabilityName>CVE-2021-37137</vulnerabilityName>
-    <vulnerabilityName>CVE-2021-43797</vulnerabilityName>
+    <cve>CVE-2014-3488</cve>
+    <cve>CVE-2015-2156</cve>
+    <cve>CVE-2019-16869</cve>
+    <cve>CVE-2019-20444</cve>
+    <cve>CVE-2019-20445</cve>
+    <cve>CVE-2021-21290</cve>
+    <cve>CVE-2021-21295</cve>
+    <cve>CVE-2021-21409</cve>
+    <cve>CVE-2021-37136</cve>
+    <cve>CVE-2021-37137</cve>
+    <cve>CVE-2021-43797</cve>
   </suppress>
   <!-- *** False positives END *** -->
 
