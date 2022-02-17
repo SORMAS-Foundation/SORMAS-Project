@@ -122,8 +122,8 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 
 		Map<String, String> properties = new HashMap<>();
 		properties.put("javax.persistence.jdbc.url", container.getJdbcUrl());
-		properties.put("javax.persistence.jdbc.user", "sormas_user");
-		properties.put("javax.persistence.jdbc.password", "password");
+		properties.put("javax.persistence.jdbc.user", container.getUsername());
+		properties.put("javax.persistence.jdbc.password", container.getPassword());
 		properties.put("javax.persistence.jdbc.driver", container.getDriverClassName());
 		properties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQL94Dialect");
 		properties.put("hibernate.transaction.jta.platform", "org.hibernate.service.jta.platform.internal.SunOneJtaPlatform");
@@ -186,7 +186,7 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 
 		public SormasPostgresSQLContainer() {
 			super(
-				new ImageFromDockerfile().withFileFromClasspath("setup_sormas.sh", "testcontainers/setup_sormas.sh")
+				new ImageFromDockerfile().withFileFromClasspath("setup_sormas_db.sh", "testcontainers/setup_sormas_db.sh")
 					.withFileFromClasspath("sormas_schema.sql", "sql/sormas_schema.sql")
 					.withFileFromClasspath("Dockerfile", "testcontainers/Dockerfile"));
 			this.waitStrategy = new LogMessageWaitStrategy().withRegEx(".*database system is ready to accept connections.*\\s")
@@ -222,7 +222,7 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 
 		@Override
 		public String getUsername() {
-			return "postgres";
+			return "sormas_user";
 		}
 
 		@Override
