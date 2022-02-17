@@ -47,6 +47,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -283,6 +284,7 @@ public class EventParticipantExportDto implements Serializable {
 		EventParticipantDto.PERSON,
 		PersonDto.NATIONAL_HEALTH_ID })
 	@ExportGroup(ExportGroupType.PERSON)
+	@HideForCountries
 	public String getNationalHealthId() {
 		return nationalHealthId;
 	}
