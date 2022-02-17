@@ -117,7 +117,6 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 	@Test
 	public void testHistoryTablesMatch() throws IOException, URISyntaxException {
 
-		// temporal table now working
 		SormasPostgresSQLContainer container = new SormasPostgresSQLContainer().withDatabaseName("sormas");
 		container.start();
 
