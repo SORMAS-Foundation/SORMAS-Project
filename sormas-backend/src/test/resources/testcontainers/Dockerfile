@@ -6,5 +6,5 @@ RUN apk add --no-cache --repository http://dl-cdn.alpinelinux.org/alpine/v3.13/m
     pip install --no-cache-dir pgxnclient==1.3.2 && \
     pgxnclient install temporal_tables
 
-#COPY setup_sormas_db.sh /docker-entrypoint-initdb.d/
-#COPY sormas_schema.sql /tmp/sormas_schema.sql
+COPY setup_sormas_db.sh /docker-entrypoint-initdb.d/
+COPY sormas_schema.sql /tmp/sormas_schema.sql
