@@ -235,6 +235,16 @@ Feature: Create events
     And I select Dropped filter from quick filter
     And I click on the RESET FILTERS button
 
+  @issue=SORDEV-9426
+  Scenario: Filter for the report date of events
+    Given I log in with National User
+    And I click on the Events button from navbar
+    Then I click on Show more filters in Events
+    And I select Report Date among Event Reference Date options
+    And I fill in a date range
+    And I apply on the APPLY FILTERS button from Event
+    And I check that the dates of displayed Event results are correct
+
   @issue=SORDEV-5570
   Scenario: Testing Event screen Impact
     Given API: I create a new event
