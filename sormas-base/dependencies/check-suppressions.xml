@@ -86,6 +86,33 @@
 	<filePath regex="true">.*\betcd-java.*\.jar</filePath>
     <vulnerabilityName>CVE-2020-15113</vulnerabilityName>
   </suppress>
+  <suppress>
+    <notes><![CDATA[
+    Addresses another software: Apache James Server
+    ]]></notes>
+	<filePath regex="true">.*\bapache-mime4j.*\.jar</filePath>
+    <vulnerabilityName>CVE-2021-38542</vulnerabilityName>
+    <vulnerabilityName>CVE-2021-40110</vulnerabilityName>
+    <vulnerabilityName>CVE-2021-40111</vulnerabilityName>
+    <vulnerabilityName>CVE-2021-40525</vulnerabilityName>
+  </suppress>
+  <suppress>
+    <notes><![CDATA[
+    Addresses another software: io.netty:netty
+    ]]></notes>
+	<filePath regex="true">.*\bnetty-tcnative-classes.*\.jar</filePath>
+    <vulnerabilityName>CVE-2014-3488</vulnerabilityName>
+    <vulnerabilityName>CVE-2015-2156</vulnerabilityName>
+    <vulnerabilityName>CVE-2019-16869</vulnerabilityName>
+    <vulnerabilityName>CVE-2019-20444</vulnerabilityName>
+    <vulnerabilityName>CVE-2019-20445</vulnerabilityName>
+    <vulnerabilityName>CVE-2021-21290</vulnerabilityName>
+    <vulnerabilityName>CVE-2021-21295</vulnerabilityName>
+    <vulnerabilityName>CVE-2021-21409</vulnerabilityName>
+    <vulnerabilityName>CVE-2021-37136</vulnerabilityName>
+    <vulnerabilityName>CVE-2021-37137</vulnerabilityName>
+    <vulnerabilityName>CVE-2021-43797</vulnerabilityName>
+  </suppress>
   <!-- *** False positives END *** -->
 
   <!-- *** Not exploitable *** -->
