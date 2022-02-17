@@ -55,7 +55,7 @@
 
 		<dependency>
 			<groupId>com.vladmihalcea</groupId>
-			<artifactId>hibernate-types-52</artifactId>
+			<artifactId>hibernate-types-55</artifactId>
 		</dependency>
 
 		<dependency>
@@ -92,6 +92,10 @@
 		<dependency>
 			<groupId>org.apache.commons</groupId>
 			<artifactId>commons-collections4</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.commons</groupId>
+			<artifactId>commons-compress</artifactId>
 		</dependency>
 		<dependency>
 			<groupId>org.apache.commons</groupId>
