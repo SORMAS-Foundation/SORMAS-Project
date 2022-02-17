@@ -43,6 +43,33 @@ public class CreateNewCaseSteps implements En {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
+        "I create a new case with specific data for DE version",
+        () -> {
+          caze = caseService.buildGeneratedCaseDE();
+          selectCaseOrigin(caze.getCaseOrigin());
+          fillExternalId(caze.getExternalId());
+          fillDisease(caze.getDisease());
+          selectResponsibleRegion(caze.getResponsibleRegion());
+          selectResponsibleDistrict(caze.getResponsibleDistrict());
+          selectResponsibleCommunity(caze.getResponsibleCommunity());
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillFirstName(caze.getFirstName());
+          fillLastName(caze.getLastName());
+          fillDateOfBirthDE(caze.getDateOfBirth());
+          selectSex(caze.getSex());
+          selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+          fillDateOfSymptomOnsetDE(caze.getDateOfSymptomOnset());
+          fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
+          fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
+          fillDateOfReportDE(caze.getDateOfReport());
+          fillPlaceDescription(caze.getPlaceDescription());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+        });
+
+    When(
         "I create a new case with specific data for positive pathogen test result",
         () -> {
           caze = caseService.buildEditGeneratedCaseForPositivePathogenTestResult();
@@ -191,6 +218,11 @@ public class CreateNewCaseSteps implements En {
     webDriverHelpers.fillInWebElement(DATE_OF_REPORT_INPUT, formatter.format(date));
   }
 
+  private void fillDateOfReportDE(LocalDate date) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    webDriverHelpers.fillInWebElement(DATE_OF_REPORT_INPUT, formatter.format(date));
+  }
+
   private void fillExternalId(String externalId) {
     webDriverHelpers.fillInWebElement(EXTERNAL_ID_INPUT, externalId);
   }
@@ -237,6 +269,16 @@ public class CreateNewCaseSteps implements En {
         DATE_OF_BIRTH_DAY_COMBOBOX, String.valueOf(localDate.getDayOfMonth()));
   }
 
+  private void fillDateOfBirthDE(LocalDate localDate) {
+    webDriverHelpers.selectFromCombobox(
+        DATE_OF_BIRTH_YEAR_COMBOBOX, String.valueOf(localDate.getYear()));
+    webDriverHelpers.selectFromCombobox(
+        DATE_OF_BIRTH_MONTH_COMBOBOX,
+        localDate.getMonth().getDisplayName(TextStyle.FULL, Locale.GERMAN));
+    webDriverHelpers.selectFromCombobox(
+        DATE_OF_BIRTH_DAY_COMBOBOX, String.valueOf(localDate.getDayOfMonth()));
+  }
+
   private void selectSex(String sex) {
     webDriverHelpers.selectFromCombobox(SEX_COMBOBOX, sex);
   }
@@ -248,6 +290,11 @@ public class CreateNewCaseSteps implements En {
 
   private void fillDateOfSymptomOnset(LocalDate date) {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+    webDriverHelpers.fillInWebElement(DATE_OF_SYMPTOM_ONSET_INPUT, formatter.format(date));
+  }
+
+  private void fillDateOfSymptomOnsetDE(LocalDate date) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     webDriverHelpers.fillInWebElement(DATE_OF_SYMPTOM_ONSET_INPUT, formatter.format(date));
   }
 

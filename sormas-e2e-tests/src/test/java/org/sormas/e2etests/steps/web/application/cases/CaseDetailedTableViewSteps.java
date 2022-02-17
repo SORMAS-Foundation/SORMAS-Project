@@ -1,7 +1,6 @@
 package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
-import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static recorders.StepsLogger.PROCESS_ID_STRING;
 
 import cucumber.api.java8.En;
@@ -33,6 +32,7 @@ public class CaseDetailedTableViewSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   private static BaseSteps baseSteps;
+  static final String DATE_FORMAT_DE = "dd.MM.yyyy";
 
   @Inject
   public CaseDetailedTableViewSteps(
@@ -144,6 +144,34 @@ public class CaseDetailedTableViewSteps implements En {
               "Reporting user is not correct");
           softly.assertAll();
         });
+
+    When(
+        "I back to Case Directory using case list button",
+        () -> webDriverHelpers.clickOnWebElementBySelector(BACK_TO_CASES_LIST_BUTTON));
+
+    When(
+        "I check if Case date format is correct",
+        () -> {
+          List<Map<String, String>> tableRowsData = getTableRowsData();
+          Map<String, String> detailedCaseDTableRow = tableRowsData.get(0);
+          softly.assertTrue(
+              checkDateFormatDE(detailedCaseDTableRow, "NACHVERFOLGUNG BIS"),
+              "Date format is invalid");
+          softly.assertTrue(
+              checkDateFormatDE(detailedCaseDTableRow, "MELDEDATUM"), "Date format is invalid");
+          softly.assertAll();
+        });
+  }
+
+  boolean checkDateFormatDE(Map<String, String> map, String row) {
+    DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_DE);
+    dateFormat.setLenient(false);
+    try {
+      dateFormat.parse(map.get(row));
+      return true;
+    } catch (ParseException e) {
+      return false;
+    }
   }
 
   private List<Map<String, String>> getTableRowsData() {

@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,12 +16,13 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.entities.services;
+package org.sormas.e2etests.services;
 
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalDate;
 import java.util.UUID;
+import org.sormas.e2etests.enums.*;
 import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DiseasesValues;
@@ -29,6 +30,7 @@ import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.helpers.strings.ASCIIHelper;
+import org.sormas.e2etests.pojo.web.Case;
 
 public class CaseService {
   private final Faker faker;
@@ -76,6 +78,36 @@ public class CaseService {
                 faker.number().numberBetween(1, 27)))
         .sex(GenderValues.getRandomGender())
         .presentConditionOfPerson("Alive")
+        .dateOfSymptomOnset(LocalDate.now().minusDays(1))
+        .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
+        .primaryEmailAddress(
+            ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
+        .build();
+  }
+
+  public Case buildGeneratedCaseDE() {
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+
+    return Case.builder()
+        .firstName(firstName)
+        .lastName(lastName)
+        .caseOrigin("IM LAND")
+        .dateOfReport(LocalDate.now().minusDays(1))
+        .externalId(UUID.randomUUID().toString())
+        .disease("COVID-19")
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
+        .placeOfStay("ZUHAUSE")
+        .placeDescription(faker.harryPotter().location())
+        .dateOfBirth(
+            LocalDate.of(
+                faker.number().numberBetween(1900, 2002),
+                faker.number().numberBetween(1, 12),
+                faker.number().numberBetween(1, 27)))
+        .sex(GenderValuesDE.getRandomGenderDE())
+        .presentConditionOfPerson("Lebendig")
         .dateOfSymptomOnset(LocalDate.now().minusDays(1))
         .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
         .primaryEmailAddress(
