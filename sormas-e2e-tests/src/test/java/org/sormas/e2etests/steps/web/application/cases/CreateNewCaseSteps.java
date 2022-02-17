@@ -220,6 +220,11 @@ public class CreateNewCaseSteps implements En {
     webDriverHelpers.fillInWebElement(DATE_OF_REPORT_INPUT, formatter.format(date));
   }
 
+  private void fillDateOfReportDE(LocalDate date) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    webDriverHelpers.fillInWebElement(DATE_OF_REPORT_INPUT, formatter.format(date));
+  }
+
   private void fillExternalId(String externalId) {
     webDriverHelpers.fillInWebElement(EXTERNAL_ID_INPUT, externalId);
   }
@@ -265,6 +270,16 @@ public class CreateNewCaseSteps implements En {
         DATE_OF_BIRTH_DAY_COMBOBOX, String.valueOf(localDate.getDayOfMonth()));
   }
 
+  private void fillDateOfBirthDE(LocalDate localDate) {
+    webDriverHelpers.selectFromCombobox(
+        DATE_OF_BIRTH_YEAR_COMBOBOX, String.valueOf(localDate.getYear()));
+    webDriverHelpers.selectFromCombobox(
+        DATE_OF_BIRTH_MONTH_COMBOBOX,
+        localDate.getMonth().getDisplayName(TextStyle.FULL, Locale.GERMAN));
+    webDriverHelpers.selectFromCombobox(
+        DATE_OF_BIRTH_DAY_COMBOBOX, String.valueOf(localDate.getDayOfMonth()));
+  }
+
   private void selectSex(String sex) {
     webDriverHelpers.selectFromCombobox(SEX_COMBOBOX, sex);
   }
@@ -278,6 +293,11 @@ public class CreateNewCaseSteps implements En {
     DateTimeFormatter formatter;
     if (locale.equals(Locale.GERMAN)) formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     else formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+    webDriverHelpers.fillInWebElement(DATE_OF_SYMPTOM_ONSET_INPUT, formatter.format(date));
+  }
+
+  private void fillDateOfSymptomOnsetDE(LocalDate date) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
     webDriverHelpers.fillInWebElement(DATE_OF_SYMPTOM_ONSET_INPUT, formatter.format(date));
   }
 

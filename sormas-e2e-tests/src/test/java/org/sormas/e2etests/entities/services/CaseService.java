@@ -29,6 +29,7 @@ import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.helpers.strings.ASCIIHelper;
+import org.sormas.e2etests.pojo.web.Case;
 
 public class CaseService {
   private final Faker faker;
