@@ -9,3 +9,4 @@ RUN apk update --no-cache && \
     pgxnclient install temporal_tables
     
 COPY setup_sormas.sh /docker-entrypoint-initdb.d/
+COPY sormas_schema.sql /tmp/sormas_schema.sql

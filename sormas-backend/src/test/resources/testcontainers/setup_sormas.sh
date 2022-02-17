@@ -4,6 +4,11 @@ set -e
 # Set up the database
 echo "Starting database setup..."
 
+SORMAS_POSTGRES_USER=sormas_user
+SORMAS_POSTGRES_PASSWORD=password
+DB_NAME=sormas
+DB_NAME_AUDIT=sormas_audit
+
 psql -v ON_ERROR_STOP=1 --username "postgres" <<EOSQL
     CREATE USER ${SORMAS_POSTGRES_USER} WITH PASSWORD '${SORMAS_POSTGRES_PASSWORD}' CREATEDB;
     CREATE DATABASE ${DB_NAME} WITH OWNER = '${SORMAS_POSTGRES_USER}' ENCODING = 'UTF8';
@@ -23,3 +28,5 @@ psql -v ON_ERROR_STOP=1 --username "postgres" <<EOSQL
     GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO ${SORMAS_POSTGRES_USER};
     ALTER TABLE IF EXISTS schema_version OWNER TO ${SORMAS_POSTGRES_USER};
 EOSQL
+
+psql -v ON_ERROR_STOP=1 --username "${SORMAS_POSTGRES_USER}" -d ${DB_NAME} -f /tmp/sormas_schema.sql

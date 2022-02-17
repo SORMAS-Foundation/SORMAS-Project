@@ -10,16 +10,25 @@ import static org.testcontainers.containers.PostgreSQLContainer.POSTGRESQL_PORT;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.URISyntaxException;
 import java.nio.charset.StandardCharsets;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
+import java.util.Objects;
 import java.util.Scanner;
-import java.util.concurrent.Future;
 import java.util.stream.Collectors;
 
+import javax.persistence.EntityManager;
+import javax.persistence.EntityManagerFactory;
+import javax.persistence.Persistence;
+
+import org.apache.commons.collections.CollectionUtils;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 import org.testcontainers.containers.JdbcDatabaseContainer;
@@ -30,7 +39,7 @@ import info.novatec.beantest.api.BaseBeanTest;
 
 public class StartupShutdownServiceTest extends BaseBeanTest {
 
-	private String[] supportedDatabaseVersions = new String[] {
+	private final String[] SUPPORTED_DATABASE_VERSIONS = new String[] {
 		"9.5",
 		"9.5.25",
 		"9.6.5",
@@ -38,7 +47,7 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 		"10.1",
 		"10.14 (Ubuntu 10.14-1.pgdg20.04+1)" };
 
-	private String[] unsupportedDatabaseVersions = new String[] {
+	private final String[] UNSUPPORTED_DATABASE_VERSIONS = new String[] {
 		"8.4",
 		"8.4.22",
 		"9.1",
@@ -47,13 +56,13 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 	@Test
 	public void testIsSupportedDatabaseVersion() {
 
-		for (String version : supportedDatabaseVersions) {
+		for (String version : SUPPORTED_DATABASE_VERSIONS) {
 			assertTrue(
 				String.format("Supported version not recognized correctly: '%s'", version),
 				StartupShutdownService.isSupportedDatabaseVersion(version));
 		}
 
-		for (String version : unsupportedDatabaseVersions) {
+		for (String version : UNSUPPORTED_DATABASE_VERSIONS) {
 			assertFalse(
 				String.format("Unsupported version not recognized correctly: '%s'", version),
 				StartupShutdownService.isSupportedDatabaseVersion(version));
@@ -106,71 +115,87 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 	}
 
 	@Test
-	public void testHistoryTablesMatch() {
-
-		Map<String, String> env = new HashMap<>();
-		env.put("SORMAS_POSTGRES_USER", "sormas_user");
-		env.put("SORMAS_POSTGRES_PASSWORD", "password");
-		env.put("DB_NAME", "sormas");
-		env.put("DB_NAME_AUDIT", "sormas_audit");
-		env.put("POSTGRES_PASSWORD", "password");
-		env.put("POSTGRES_USER", "postgres");
+	public void testHistoryTablesMatch() throws IOException, URISyntaxException {
 
 		// temporal table now working
-		new SormasPostgresSQLContainer<>(
-			new ImageFromDockerfile().withFileFromClasspath("setup_sormas.sh", "db/setup_sormas.sh")
-				.withFileFromClasspath("Dockerfile", "db/Dockerfile")).withEnv(env).withDatabaseName("sormas")
-					.withInitScript("sql/sormas_schema.sql") // create schema and add test data
-					.start();
+		SormasPostgresSQLContainer container = new SormasPostgresSQLContainer().withDatabaseName("sormas");
+		container.start();
+
+		Map<String, String> properties = new HashMap<>();
+		properties.put("javax.persistence.jdbc.url", container.getJdbcUrl());
+		properties.put("javax.persistence.jdbc.user", "sormas_user");
+		properties.put("javax.persistence.jdbc.password", "password");
+		properties.put("javax.persistence.jdbc.driver", container.getDriverClassName());
+		properties.put("hibernate.dialect", "org.hibernate.dialect.PostgreSQL94Dialect");
+		properties.put("hibernate.transaction.jta.platform", "org.hibernate.service.jta.platform.internal.SunOneJtaPlatform");
+		properties.put("hibernate.jdbc.batch_size", "100");
+		properties.put("hibernate.order_inserts", "true");
+		properties.put("hibernate.order_updates", "true");
+
+		EntityManagerFactory emf = Persistence.createEntityManagerFactory("beanTestPU", properties);
+		EntityManager em = emf.createEntityManager();
+
+		String checkHistoryTablesSql = new String(
+			Files.readAllBytes(Paths.get(Objects.requireNonNull(getClass().getClassLoader().getResource("checkHistoryTables.sql")).toURI())));
+		@SuppressWarnings("unchecked")
+		List<Object[]> results = (List<Object[]>) em.createNativeQuery(checkHistoryTablesSql).getResultList();
+		assertTrue(CollectionUtils.isEmpty(results));
+
 	}
 
 	/**
 	 * Checks that the order of the updates is correct
-	 * 
+	 *
 	 * @param schemaResource
+	 *            {@link StartupShutdownService#SORMAS_SCHEMA} or {@link StartupShutdownService#AUDIT_SCHEMA}
 	 * @param omittedVersions
-	 * @throws IOException
+	 *            versions to skip
 	 */
 	private void assertContinuousSchemaVersions(String schemaResource, int... omittedVersions) throws IOException {
 
-		Collection<Integer> omittedVersionsList = Arrays.stream(omittedVersions).mapToObj(i -> i).collect(Collectors.toSet());
+		Collection<Integer> omittedVersionsList = Arrays.stream(omittedVersions).boxed().collect(Collectors.toSet());
 
-		try (InputStream schemaStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(schemaResource);
-			Scanner scanner = new Scanner(schemaStream, StandardCharsets.UTF_8.name())) {
+		try (InputStream schemaStream = Thread.currentThread().getContextClassLoader().getResourceAsStream(schemaResource)) {
+			try (Scanner scanner = new Scanner(Objects.requireNonNull(schemaStream), StandardCharsets.UTF_8.name())) {
 
-			int currentVersion = 0;
+				int currentVersion = 0;
 
-			while (scanner.hasNextLine()) {
-				String nextLine = scanner.nextLine();
+				while (scanner.hasNextLine()) {
+					String nextLine = scanner.nextLine();
 
-				Integer nextVersion = StartupShutdownService.extractSchemaVersion(nextLine);
-				if (nextVersion != null) {
+					Integer nextVersion = StartupShutdownService.extractSchemaVersion(nextLine);
+					if (nextVersion != null) {
 
-					assertThat(nextVersion, Matchers.greaterThan(currentVersion));
+						assertThat(nextVersion, Matchers.greaterThan(currentVersion));
 
-					for (int v = currentVersion + 1; v < nextVersion; v++) {
-						assertThat(
-							"Missing version: " + v + " ( found " + nextVersion + " after " + currentVersion + ")",
-							omittedVersionsList.contains(v));
+						for (int v = currentVersion + 1; v < nextVersion; v++) {
+							assertTrue(
+								"Missing version: " + v + " ( found " + nextVersion + " after " + currentVersion + ")",
+								omittedVersionsList.contains(v));
+						}
+
+						currentVersion = nextVersion;
 					}
-
-					currentVersion = nextVersion;
 				}
 			}
 		}
 	}
 
-	public static class SormasPostgresSQLContainer<SELF extends SormasPostgresSQLContainer<SELF>> extends JdbcDatabaseContainer<SELF> {
+	public static class SormasPostgresSQLContainer extends JdbcDatabaseContainer<SormasPostgresSQLContainer> {
 
 		private String databaseName;
 
-		public SormasPostgresSQLContainer(final Future<String> image) {
-			super(image);
-			this.waitStrategy = new LogMessageWaitStrategy()
-					.withRegEx(".*database system is ready to accept connections.*\\s")
-					.withTimes(2)
-					.withStartupTimeout(Duration.of(60, SECONDS));
+		public SormasPostgresSQLContainer() {
+			super(
+				new ImageFromDockerfile().withFileFromClasspath("setup_sormas.sh", "testcontainers/setup_sormas.sh")
+					.withFileFromClasspath("sormas_schema.sql", "sql/sormas_schema.sql")
+					.withFileFromClasspath("Dockerfile", "testcontainers/Dockerfile"));
+			this.waitStrategy = new LogMessageWaitStrategy().withRegEx(".*database system is ready to accept connections.*\\s")
+				.withTimes(2)
+				.withStartupTimeout(Duration.of(60, SECONDS));
 			addExposedPort(POSTGRESQL_PORT);
+			withEnv("POSTGRES_USER", getUsername());
+			withEnv("POSTGRES_PASSWORD", getPassword());
 		}
 
 		@Override
@@ -181,11 +206,12 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 		@Override
 		public String getJdbcUrl() {
 			String additionalUrlParams = constructUrlParameters("?", "&");
-			return "jdbc:postgresql://" + getContainerIpAddress() + ":" + getMappedPort(POSTGRESQL_PORT) + "/" + getDatabaseName() + additionalUrlParams;
+			return "jdbc:postgresql://" + getContainerIpAddress() + ":" + getMappedPort(POSTGRESQL_PORT) + "/" + getDatabaseName()
+				+ additionalUrlParams;
 		}
 
 		@Override
-		public SELF withDatabaseName(String dbName) {
+		public SormasPostgresSQLContainer withDatabaseName(String dbName) {
 			this.databaseName = dbName;
 			return self();
 		}
