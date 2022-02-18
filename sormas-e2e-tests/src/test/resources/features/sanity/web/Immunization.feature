@@ -14,7 +14,7 @@ Feature: Immunization end to end tests
     Scenario: Reset the 'Overwrite immunization management status' by Discard button
       Given I log in as a Surveillance Officer
       And I click on the Immunizations button from navbar
-      And I open last created immunization from Immunization tab
+      And I open first immunization from grid from Immunization tab
       Then I check Overwrite immunization management status option
       Then I click on discard button from immunization tab
       And I check if Overwrite immunization management status is unchecked by Management Status

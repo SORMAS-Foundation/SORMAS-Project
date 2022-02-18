@@ -66,11 +66,11 @@ public class CreateNewImmunizationSteps implements En {
     When(
         "I check if Overwrite immunization management status is unchecked by Management Status",
         () -> {
-          boolean status;
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(MANAGEMENT_STATUS);
           webDriverHelpers.scrollToElement(MANAGEMENT_STATUS);
-          status = webDriverHelpers.isElementEnabled(MANAGEMENT_STATUS);
-          softly.assertEquals(status, false, "Expected management status is not correct");
+          softly.assertFalse(
+              webDriverHelpers.isElementEnabled(MANAGEMENT_STATUS),
+              "Expected management status is not correct");
           softly.assertAll();
         });
   }
