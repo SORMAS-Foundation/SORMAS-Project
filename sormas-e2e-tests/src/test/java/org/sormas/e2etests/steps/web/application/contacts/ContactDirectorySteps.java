@@ -255,19 +255,19 @@ public class ContactDirectorySteps implements En {
     And(
         "I click on Converted to case pending button on Contact Directory Page",
         () -> {
-          webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(CONVERTED_TO_CASE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONVERTED_TO_CASE_BUTTON);
           webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(CONVERTED_TO_CASE_BUTTON);
         });
     And(
         "I click on Active contact button in Contact Directory Page",
         () -> {
-          webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(ACTIVE_CONTACT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ACTIVE_CONTACT_BUTTON);
           webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(ACTIVE_CONTACT_BUTTON);
         });
     And(
         "I click on Dropped button on Contact Directory Page",
         () -> {
-          webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(DROPPED_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(DROPPED_BUTTON);
           webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(DROPPED_BUTTON);
         });
 
