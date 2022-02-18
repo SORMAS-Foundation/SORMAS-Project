@@ -174,7 +174,7 @@ public class TravelEntryController {
 							Strings.confirmationDearchiveTravelEntry,
 							Strings.entityTravel,
 							Strings.messageTravelEntryDearchived,
-							TravelEntryDataView.VIEW_NAME);
+							() -> navigateToTravelEntry(travelEntry.getUuid()));
 				} else {
 					ControllerProvider.getArchiveController()
 						.archiveEntity(
@@ -184,7 +184,7 @@ public class TravelEntryController {
 							Strings.confirmationArchiveTravelEntry,
 							Strings.entityTravel,
 							Strings.messageTravelEntryArchived,
-							TravelEntryDataView.VIEW_NAME);
+							() -> navigateToTravelEntry(travelEntry.getUuid()));
 				}
 			}, ValoTheme.BUTTON_LINK);
 

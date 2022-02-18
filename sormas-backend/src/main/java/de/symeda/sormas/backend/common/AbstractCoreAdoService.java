@@ -17,8 +17,11 @@ package de.symeda.sormas.backend.common;
 
 import java.sql.Timestamp;
 import java.time.Instant;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -51,48 +54,72 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 		return count > 0;
 	}
 
-	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, From<?, ADO> adoPath, boolean includeExtendedChangeDateFilters){
+	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, From<?, ADO> adoPath, boolean includeExtendedChangeDateFilters) {
 		return builder.add(adoPath);
 	}
 
-	public Date calculateCaseEndOfProcessingDate(List<String> entityuuids) {
+	public Map<String, Date> calculateEndOfProcessingDate(List<String> entityuuids) {
 
 		if (entityuuids.isEmpty()) {
-			return null;
+			return Collections.emptyMap();
 		}
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Date> cq = cb.createQuery(Date.class);
+		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<ADO> from = cq.from(getElementClass());
 
-		Expression agregatedChangeDateExpression = addChangeDates(new AgregatedChangeDateExpressionBuilder(cb), from, true).build();
-		cq.select(cb.max(agregatedChangeDateExpression));
+		Expression aggregatedChangeDateExpression = addChangeDates(new AggregatedChangeDateExpressionBuilder(cb), from, true).build();
+		cq.multiselect(from.get(AbstractDomainObject.UUID), cb.max(aggregatedChangeDateExpression));
 		cq.where(from.get(ADO.UUID).in(entityuuids));
+		cq.groupBy(from.get(AbstractDomainObject.UUID));
 
-		return em.createQuery(cq).getSingleResult();
+		Map<String, Date> collect = em.createQuery(cq).getResultList().stream().collect(Collectors.toMap(r -> (String) r[0], r -> (Date) r[1]));
+		return collect;
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public void updateArchivedCoreEntities(List<String> entityUuids, Date endOfProcessingDate) {
+	public void archive(String entityUuid, Date endOfProcessingDate) {
 
-		final Date finalEndOfProcessingDate = endOfProcessingDate != null ? endOfProcessingDate : calculateCaseEndOfProcessingDate(entityUuids);
+		if (endOfProcessingDate == null) {
+			endOfProcessingDate = calculateEndOfProcessingDate(Collections.singletonList(entityUuid)).get(entityUuid);
+		}
 
-		IterableHelper.executeBatched(entityUuids, ARCHIVE_BATCH_SIZE, batchedUuids -> {
-			CriteriaBuilder cb = em.getCriteriaBuilder();
-			CriteriaUpdate<ADO> cu = cb.createCriteriaUpdate(getElementClass());
-			Root<ADO> root = cu.from(getElementClass());
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<ADO> cu = cb.createCriteriaUpdate(getElementClass());
+		Root<ADO> root = cu.from(getElementClass());
 
-			cu.set(AbstractDomainObject.CHANGE_DATE, Timestamp.from(Instant.now()));
-			cu.set(root.get(Case.ARCHIVED), true);
-			cu.set(root.get(CoreAdo.END_OF_PROCESSING_DATE), finalEndOfProcessingDate);
+		cu.set(AbstractDomainObject.CHANGE_DATE, Timestamp.from(Instant.now()));
+		cu.set(root.get(Case.ARCHIVED), true);
+		cu.set(root.get(CoreAdo.END_OF_PROCESSING_DATE), endOfProcessingDate);
 
-			cu.where(root.get(AbstractDomainObject.UUID).in(batchedUuids));
+		cu.where(cb.equal(root.get(AbstractDomainObject.UUID), entityUuid));
 
-			em.createQuery(cu).executeUpdate();
-		});
+		em.createQuery(cu).executeUpdate();
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public void updateDearchivedCoreEntities(List<String> entityUuids, String dearchiveReason) {
+	public void archive(List<String> entityUuids) {
+
+		IterableHelper.executeBatched(
+			entityUuids,
+			ARCHIVE_BATCH_SIZE,
+			batchedUuids -> calculateEndOfProcessingDate(batchedUuids).forEach((entityUuid, finalEndOfProcessingDate) -> {
+				CriteriaBuilder cb = em.getCriteriaBuilder();
+				CriteriaUpdate<ADO> cu = cb.createCriteriaUpdate(getElementClass());
+				Root<ADO> root = cu.from(getElementClass());
+
+				cu.set(AbstractDomainObject.CHANGE_DATE, Timestamp.from(Instant.now()));
+				cu.set(root.get(Case.ARCHIVED), true);
+				cu.set(root.get(CoreAdo.END_OF_PROCESSING_DATE), finalEndOfProcessingDate);
+
+				cu.where(cb.equal(root.get(AbstractDomainObject.UUID), entityUuid));
+
+				em.createQuery(cu).executeUpdate();
+			}));
+	}
+
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public void dearchive(List<String> entityUuids, String dearchiveReason) {
 
 		IterableHelper.executeBatched(entityUuids, ARCHIVE_BATCH_SIZE, batchedUuids -> {
 			CriteriaBuilder cb = em.getCriteriaBuilder();

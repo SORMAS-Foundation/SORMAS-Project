@@ -215,8 +215,6 @@ public class ContactFacadeEjb
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
 	@EJB
-	private ContactService contactService;
-	@EJB
 	private ContactListCriteriaBuilder listCriteriaBuilder;
 	@EJB
 	private CaseService caseService;
@@ -273,11 +271,6 @@ public class ContactFacadeEjb
 	@Inject
 	public ContactFacadeEjb(ContactService service, UserService userService) {
 		super(Contact.class, ContactDto.class, service, userService);
-	}
-
-	@Override
-	public AbstractCoreAdoService<Contact> getEntityService() {
-		return contactService;
 	}
 
 	@Override

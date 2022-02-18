@@ -86,7 +86,7 @@ public class CampaignController {
 		VaadinUiUtil.showModalPopupWindow(campaignComponent, heading);
 	}
 
-	private static void createArchiveButton(CommitDiscardWrapperComponent<CampaignEditForm> campaignComponent, CampaignDto campaign) {
+	private void createArchiveButton(CommitDiscardWrapperComponent<CampaignEditForm> campaignComponent, CampaignDto campaign) {
 		boolean archived = FacadeProvider.getCampaignFacade().isArchived(campaign.getUuid());
 		Button archiveCampaignButton = ButtonHelper.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {
 			campaignComponent.commit();
@@ -100,7 +100,7 @@ public class CampaignController {
 						Strings.confirmationDearchiveCampaign,
 						Strings.entityCampaign,
 						Strings.messageCampaignDearchived,
-						CampaignView.VIEW_NAME);
+						() -> navigateToCampaign(campaign.getUuid()));
 			} else {
 				ControllerProvider.getArchiveController()
 					.archiveEntity(
@@ -110,7 +110,7 @@ public class CampaignController {
 						Strings.confirmationArchiveCampaign,
 						Strings.entityCampaign,
 						Strings.messageCampaignArchived,
-						CampaignView.VIEW_NAME);
+						() -> navigateToCampaign(campaign.getUuid()));
 			}
 		}, ValoTheme.BUTTON_LINK);
 

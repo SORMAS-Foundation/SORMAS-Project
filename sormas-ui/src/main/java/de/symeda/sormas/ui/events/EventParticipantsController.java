@@ -230,31 +230,31 @@ public class EventParticipantsController {
 		}
 
 		// Initialize 'Archive' button
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_ARHIVE)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_ARCHIVE)) {
 			boolean archived = FacadeProvider.getEventParticipantFacade().isArchived(eventParticipant.getUuid());
 			Button archiveButton = ButtonHelper.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {
 				editComponent.commit();
 
 				if (archived) {
 					ControllerProvider.getArchiveController()
-							.dearchiveEntity(
-									eventParticipant,
-									FacadeProvider.getEventParticipantFacade(),
-									Strings.headingDearchiveEventParticipant,
-									Strings.confirmationDearchiveEventParticipant,
-									Strings.entityEventParticipant,
-									Strings.messageEventParticipantDearchived,
-									EventParticipantDataView.VIEW_NAME);
+						.dearchiveEntity(
+							eventParticipant,
+							FacadeProvider.getEventParticipantFacade(),
+							Strings.headingDearchiveEventParticipant,
+							Strings.confirmationDearchiveEventParticipant,
+							Strings.entityEventParticipant,
+							Strings.messageEventParticipantDearchived,
+							() -> navigateToData(eventParticipant.getUuid()));
 				} else {
 					ControllerProvider.getArchiveController()
-							.archiveEntity(
-									eventParticipant,
-									FacadeProvider.getEventParticipantFacade(),
-									Strings.headingArchiveEventParticipant,
-									Strings.confirmationArchiveEventParticipant,
-									Strings.entityEventParticipant,
-									Strings.messageEventParticipantArchived,
-									EventParticipantDataView.VIEW_NAME);
+						.archiveEntity(
+							eventParticipant,
+							FacadeProvider.getEventParticipantFacade(),
+							Strings.headingArchiveEventParticipant,
+							Strings.confirmationArchiveEventParticipant,
+							Strings.entityEventParticipant,
+							Strings.messageEventParticipantArchived,
+							() -> navigateToData(eventParticipant.getUuid()));
 				}
 
 			}, ValoTheme.BUTTON_LINK);
@@ -262,7 +262,6 @@ public class EventParticipantsController {
 			editComponent.getButtonsPanel().addComponentAsFirst(archiveButton);
 			editComponent.getButtonsPanel().setComponentAlignment(archiveButton, Alignment.BOTTOM_LEFT);
 		}
-
 
 		return editComponent;
 	}

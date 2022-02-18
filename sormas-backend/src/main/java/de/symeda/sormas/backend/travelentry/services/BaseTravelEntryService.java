@@ -99,13 +99,6 @@ public class BaseTravelEntryService extends AbstractCoreAdoService<TravelEntry> 
 		From<?, TravelEntry> travelEntryFrom,
 		boolean includeExtendedChangeDateFilters) {
 
-		builder = super.addChangeDates(builder, travelEntryFrom, includeExtendedChangeDateFilters);
-
-		if (includeExtendedChangeDateFilters) {
-			Join<TravelEntry, Case> resultingCase = travelEntryFrom.join(TravelEntry.RESULTING_CASE, JoinType.LEFT);
-			builder = builder.add(resultingCase);
-		}
-
-		return builder;
+		return super.addChangeDates(builder, travelEntryFrom, includeExtendedChangeDateFilters);
 	}
 }

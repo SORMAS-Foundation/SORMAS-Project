@@ -22,7 +22,7 @@ import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.caze.AbstractCaseView;
 import de.symeda.sormas.ui.events.EventDataView;
 
-public class ArchiveController {
+public class ArchivingController {
 
 	public void archiveEntity(
 		EntityDto coreEntityDto,
@@ -31,7 +31,7 @@ public class ArchiveController {
 		String archiveConfirmationMessage,
 		String entity,
 		String archiveMessage,
-		String detailViewName) {
+		Runnable callback) {
 		VerticalLayout verticalLayout = new VerticalLayout();
 
 		Label contentLabel = new Label(
@@ -43,8 +43,7 @@ public class ArchiveController {
 		verticalLayout.addComponent(contentLabel);
 
 		DateField endOfProcessingDate = new DateField();
-		endOfProcessingDate
-			.setValue(DateHelper8.toLocalDate(entityFacade.calculateEndOfProcessingDate(Collections.singletonList(coreEntityDto.getUuid()))));
+		endOfProcessingDate.setValue(DateHelper8.toLocalDate(entityFacade.calculateEndOfProcessingDate(coreEntityDto.getUuid())));
 		endOfProcessingDate.setCaption(I18nProperties.getCaption(Captions.endOfProcessingDate));
 		verticalLayout.addComponent(endOfProcessingDate);
 
@@ -56,13 +55,12 @@ public class ArchiveController {
 			640,
 			e -> {
 				if (Boolean.TRUE.equals(e)) {
-					entityFacade
-						.archiveCoreEntities(Collections.singletonList(coreEntityDto.getUuid()), DateHelper8.toDate(endOfProcessingDate.getValue()));
+					entityFacade.archive(coreEntityDto.getUuid(), DateHelper8.toDate(endOfProcessingDate.getValue()));
 
 					Notification.show(
 						String.format(I18nProperties.getString(archiveMessage), I18nProperties.getString(entity)),
 						Notification.Type.ASSISTIVE_NOTIFICATION);
-					navigateToView(detailViewName, coreEntityDto.getUuid(), null);
+					callback.run();
 				}
 			});
 	}
@@ -74,7 +72,7 @@ public class ArchiveController {
 		String dearchiveConfirmationMessage,
 		String entity,
 		String dearchiveMessage,
-		String detailViewName) {
+		Runnable callback) {
 		VerticalLayout verticalLayout = new VerticalLayout();
 
 		Label contentLabel = new Label(
@@ -104,11 +102,11 @@ public class ArchiveController {
 						dearchiveReason.setComponentError(new UserError(I18nProperties.getString(Strings.messageArchiveUndoneReasonMandatory)));
 						return false;
 					}
-					entityFacade.dearchiveCoreEntities(Collections.singletonList(coreEntityDto.getUuid()), dearchiveReason.getValue());
+					entityFacade.dearchive(Collections.singletonList(coreEntityDto.getUuid()), dearchiveReason.getValue());
 					Notification.show(
 						String.format(I18nProperties.getString(dearchiveMessage), I18nProperties.getString(entity)),
 						Notification.Type.ASSISTIVE_NOTIFICATION);
-					navigateToView(detailViewName, coreEntityDto.getUuid(), null);
+					callback.run();
 				}
 				return true;
 			});
@@ -138,8 +136,7 @@ public class ArchiveController {
 				null,
 				e -> {
 					if (Boolean.TRUE.equals(e)) {
-						Date endOfProcessingDate = entityFacade.calculateEndOfProcessingDate(entityUuids);
-						entityFacade.archiveCoreEntities(entityUuids, endOfProcessingDate);
+						entityFacade.archive(entityUuids);
 
 						callback.run();
 						new Notification(
@@ -194,13 +191,13 @@ public class ArchiveController {
 				I18nProperties.getString(Strings.yes),
 				I18nProperties.getString(Strings.no),
 				null,
-				connfirmed -> {
-					if (Boolean.TRUE.equals(connfirmed)) {
+				confirmed -> {
+					if (Boolean.TRUE.equals(confirmed)) {
 						if (dearchiveReason.getValue().isEmpty()) {
 							dearchiveReason.setComponentError(new UserError(I18nProperties.getString(Strings.messageArchiveUndoneReasonMandatory)));
 							return false;
 						}
-						entityFacade.dearchiveCoreEntities(entityUuids, dearchiveReason.getValue());
+						entityFacade.dearchive(entityUuids, dearchiveReason.getValue());
 
 						callback.run();
 						new Notification(
@@ -232,19 +229,4 @@ public class ArchiveController {
 			SormasUI.get().getNavigator().navigateTo(navigationState);
 		}
 	}
-
-	public void navigateToData(String eventUuid) {
-		navigateToData(eventUuid, false);
-	}
-
-	public void navigateToData(String eventUuid, boolean openTab) {
-
-		String navigationState = EventDataView.VIEW_NAME + "/" + eventUuid;
-		if (openTab) {
-			SormasUI.get().getPage().open(SormasUI.get().getPage().getLocation().getRawPath() + "#!" + navigationState, "_blank", false);
-		} else {
-			SormasUI.get().getNavigator().navigateTo(navigationState);
-		}
-	}
-
 }

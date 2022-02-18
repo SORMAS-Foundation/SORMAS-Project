@@ -54,8 +54,6 @@ public class TravelEntryFacadeEjb
 	implements TravelEntryFacade {
 
 	@EJB
-	private TravelEntryService travelEntryService;
-	@EJB
 	private TravelEntryListService travelEntryListService;
 	@EJB
 	private PersonService personService;
@@ -73,11 +71,6 @@ public class TravelEntryFacadeEjb
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
 
 	public TravelEntryFacadeEjb() {
-	}
-
-	@Override
-	public AbstractCoreAdoService<TravelEntry> getEntityService() {
-		return travelEntryService;
 	}
 
 	public static TravelEntryReferenceDto toReferenceDto(TravelEntry entity) {

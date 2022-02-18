@@ -313,8 +313,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		EventDto inactiveEvent = creator.createEvent(user.toReference());
 		creator.createEventParticipant(inactiveEvent.toReference(), person7, user.toReference());
 
-		getCaseFacade().archiveCoreEntities(Collections.singletonList(inactiveCase.getUuid()), null);
-		getEventFacade().archiveCoreEntities(Collections.singletonList(inactiveEvent.getUuid()), null);
+		getCaseFacade().archive(inactiveCase.getUuid(), null);
+		getEventFacade().archive(inactiveEvent.getUuid(), null);
 
 		// Only persons that have active case, contact or event participant associations should be retrieved
 		List<String> relevantNameUuids =
@@ -325,8 +325,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			containsInAnyOrder(person1.getUuid(), person2.getUuid(), person3.getUuid(), person5.getUuid(), person6.getUuid(), person7.getUuid()));
 
 		creator.createCase(user.toReference(), person4.toReference(), rdcf);
-		getCaseFacade().dearchiveCoreEntities(Collections.singletonList(inactiveCase.getUuid()), null);
-		getEventFacade().dearchiveCoreEntities(Collections.singletonList(inactiveEvent.getUuid()), null);
+		getCaseFacade().dearchive(Collections.singletonList(inactiveCase.getUuid()), null);
+		getEventFacade().dearchive(Collections.singletonList(inactiveEvent.getUuid()), null);
 
 		PersonSimilarityCriteria criteria = new PersonSimilarityCriteria().sex(Sex.MALE).birthdateYYYY(1980).birthdateMM(1).birthdateDD(1);
 		List<String> matchingUuids =

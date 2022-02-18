@@ -817,7 +817,7 @@ public class EventController {
 							Strings.confirmationDearchiveEvent,
 							Strings.entityEvent,
 							Strings.messageEventDearchived,
-							EventDataView.VIEW_NAME);
+							() -> navigateToData(event.getUuid()));
 				} else {
 					ControllerProvider.getArchiveController()
 						.archiveEntity(
@@ -827,7 +827,7 @@ public class EventController {
 							Strings.confirmationArchiveEvent,
 							Strings.entityEvent,
 							Strings.messageEventArchived,
-							EventDataView.VIEW_NAME);
+							() -> navigateToData(event.getUuid()));
 				}
 
 			}, ValoTheme.BUTTON_LINK);

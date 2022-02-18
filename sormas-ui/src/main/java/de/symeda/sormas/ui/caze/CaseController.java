@@ -1133,7 +1133,7 @@ public class CaseController {
 							Strings.confirmationDearchiveCase,
 							Strings.entityCase,
 							Strings.messageCaseDearchived,
-							CaseDataView.VIEW_NAME);
+							() -> navigateToView(CaseDataView.VIEW_NAME, caze.getUuid(), null));
 				} else {
 					ControllerProvider.getArchiveController()
 						.archiveEntity(
@@ -1143,7 +1143,7 @@ public class CaseController {
 							Strings.confirmationArchiveCase,
 							Strings.entityCase,
 							Strings.messageCaseArchived,
-							CaseDataView.VIEW_NAME);
+							() -> navigateToView(CaseDataView.VIEW_NAME, caze.getUuid(), null));
 				}
 
 			}, ValoTheme.BUTTON_LINK);
@@ -1710,14 +1710,12 @@ public class CaseController {
 			notShareableListComponent.setWidthFull();
 			notShareableListComponent.setEnabled(false);
 			Label notSharableLabel = new Label(
-					String.format(I18nProperties.getString(Strings.errorExternalSurveillanceToolCasesNotSharable), notSharableUuids.size()),
-					ContentMode.HTML);
+				String.format(I18nProperties.getString(Strings.errorExternalSurveillanceToolCasesNotSharable), notSharableUuids.size()),
+				ContentMode.HTML);
 			notSharableLabel.addStyleName(CssStyles.LABEL_WHITE_SPACE_NORMAL);
 			VaadinUiUtil.showConfirmationPopup(
 				I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
-				new VerticalLayout(
-						notSharableLabel,
-						notShareableListComponent),
+				new VerticalLayout(notSharableLabel, notShareableListComponent),
 				String.format(
 					I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_excludeAndSend),
 					uuidsWithoutNotSharable.size(),

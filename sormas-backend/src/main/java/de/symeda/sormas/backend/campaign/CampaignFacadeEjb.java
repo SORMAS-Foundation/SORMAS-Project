@@ -62,8 +62,6 @@ public class CampaignFacadeEjb
 	implements CampaignFacade {
 
 	@EJB
-	CampaignService campaignService;
-	@EJB
 	private CampaignFormMetaService campaignFormMetaService;
 	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
@@ -76,11 +74,6 @@ public class CampaignFacadeEjb
 	@Inject
 	public CampaignFacadeEjb(CampaignService service, UserService userService) {
 		super(Campaign.class, CampaignDto.class, service, userService);
-	}
-
-	@Override
-	public AbstractCoreAdoService<Campaign> getEntityService() {
-		return campaignService;
 	}
 
 	@Override
@@ -199,6 +192,7 @@ public class CampaignFacadeEjb
 
 	@Override
 	protected void delete(Campaign entity) {
+		service.delete(entity);
 	}
 
 	public void validate(CampaignReferenceDto campaignReferenceDto) {

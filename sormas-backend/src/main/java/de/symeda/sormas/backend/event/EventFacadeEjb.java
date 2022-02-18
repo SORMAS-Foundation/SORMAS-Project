@@ -90,7 +90,6 @@ import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -131,8 +130,6 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	@EJB
-	private EventService eventService;
 	@EJB
 	private UserService userService;
 	@EJB
@@ -189,11 +186,6 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			entity.getEventStatus(),
 			entity.getEventTitle(),
 			entity.getReportDateTime());
-	}
-
-	@Override
-	public AbstractCoreAdoService<Event> getEntityService() {
-		return eventService;
 	}
 
 	@Override
@@ -1195,12 +1187,12 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		Root<Event> from = cq.from(Event.class);
 
 		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
-		cq.where(cb.equal(from.get(Event.ARCHIVED), false), cb.not(eventService.createChangeDateFilter(cb, from, notChangedTimestamp)));
+		cq.where(cb.equal(from.get(Event.ARCHIVED), false), cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
 		cq.select(from.get(Event.UUID)).distinct(true);
 		List<String> eventUuids = em.createQuery(cq).getResultList();
 
 		if (!eventUuids.isEmpty()) {
-			archiveCoreEntities(eventUuids, null);
+			archive(eventUuids);
 		}
 	}
 

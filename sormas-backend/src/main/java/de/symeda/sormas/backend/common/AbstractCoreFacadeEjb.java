@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.common;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,6 +42,7 @@ import de.symeda.sormas.backend.deletionconfiguration.DeletionConfigurationServi
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
+import org.hibernate.mapping.Collection;
 
 public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, SRV extends AbstractCoreAdoService<ADO>, CRITERIA extends BaseCriteria>
 	extends AbstractBaseEjb<ADO, DTO, INDEX_DTO, REF_DTO, SRV, CRITERIA>
@@ -55,8 +57,6 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	protected AbstractCoreFacadeEjb(Class<ADO> adoClass, Class<DTO> dtoClass, SRV service, UserService userService) {
 		super(adoClass, dtoClass, service, userService);
 	}
-
-	public abstract AbstractCoreAdoService<ADO> getEntityService();
 
 	@Override
 	public DTO getByUuid(String uuid) {
@@ -179,15 +179,19 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 
 	public abstract void validate(DTO dto) throws ValidationRuntimeException;
 
-	public void archiveCoreEntities(List<String> entityUuids, Date endOfProcessingDate) {
-		getEntityService().updateArchivedCoreEntities(entityUuids, endOfProcessingDate);
+	public void archive(String entityUuid, Date endOfProcessingDate) {
+		service.archive(entityUuid, endOfProcessingDate);
 	}
 
-	public void dearchiveCoreEntities(List<String> entityUuids, String dearchiveReason) {
-		getEntityService().updateDearchivedCoreEntities(entityUuids, dearchiveReason);
+	public void archive(List<String> entityUuids) {
+		service.archive(entityUuids);
 	}
 
-	public Date calculateEndOfProcessingDate(List<String> entityUuids) {
-		return getEntityService().calculateCaseEndOfProcessingDate(entityUuids);
+	public void dearchive(List<String> entityUuids, String dearchiveReason) {
+		service.dearchive(entityUuids, dearchiveReason);
+	}
+
+	public Date calculateEndOfProcessingDate(String entityUuid) {
+		return service.calculateEndOfProcessingDate(Collections.singletonList(entityUuid)).get(entityUuid);
 	}
 }

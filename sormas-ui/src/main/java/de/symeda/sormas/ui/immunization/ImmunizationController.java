@@ -201,7 +201,7 @@ public class ImmunizationController {
 							Strings.confirmationDearchiveImmunization,
 							Strings.entityImmunization,
 							Strings.messageImmunizationDearchived,
-							ImmunizationDataView.VIEW_NAME);
+							() -> navigateToImmunization(immunizationDto.getUuid()));
 				} else {
 					ControllerProvider.getArchiveController()
 						.archiveEntity(
@@ -211,7 +211,7 @@ public class ImmunizationController {
 							Strings.confirmationArchiveImmunization,
 							Strings.entityImmunization,
 							Strings.messageImmunizationArchived,
-							ImmunizationDataView.VIEW_NAME);
+							() -> navigateToImmunization(immunizationDto.getUuid()));
 				}
 
 			}, ValoTheme.BUTTON_LINK);

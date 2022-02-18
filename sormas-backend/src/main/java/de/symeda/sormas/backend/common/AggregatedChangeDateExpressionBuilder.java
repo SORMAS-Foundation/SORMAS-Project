@@ -9,12 +9,12 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.JoinType;
 
-public class AgregatedChangeDateExpressionBuilder implements ChangeDateBuilder<AgregatedChangeDateExpressionBuilder> {
+public class AggregatedChangeDateExpressionBuilder implements ChangeDateBuilder<AggregatedChangeDateExpressionBuilder> {
 
 	private final CriteriaBuilder cb;
 	private List<Expression<? extends Date>> dateExpressions;
 
-	public AgregatedChangeDateExpressionBuilder(CriteriaBuilder cb) {
+	public AggregatedChangeDateExpressionBuilder(CriteriaBuilder cb) {
 		this.cb = cb;
 		this.dateExpressions = new ArrayList<>();
 	}
@@ -23,7 +23,7 @@ public class AgregatedChangeDateExpressionBuilder implements ChangeDateBuilder<A
 		return cb.function("greatest", Date.class, dateExpressions.toArray(new Expression[] {}));
 	}
 
-	public <C> AgregatedChangeDateExpressionBuilder add(From<?, C> path, String... joinFields) {
+	public <C> AggregatedChangeDateExpressionBuilder add(From<?, C> path, String... joinFields) {
 		dateExpressions.add(changeDateExpression(path, joinFields));
 		return this;
 	}

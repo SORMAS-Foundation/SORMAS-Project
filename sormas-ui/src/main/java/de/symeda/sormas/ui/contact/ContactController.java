@@ -614,7 +614,7 @@ public class ContactController {
 							Strings.confirmationDearchiveContact,
 							Strings.entityContact,
 							Strings.messageContactDearchived,
-							ContactDataView.VIEW_NAME);
+							() -> navigateToView(ContactDataView.VIEW_NAME, contact.getUuid(), false));
 				} else {
 					ControllerProvider.getArchiveController()
 						.archiveEntity(
@@ -624,7 +624,7 @@ public class ContactController {
 							Strings.confirmationArchiveContact,
 							Strings.entityContact,
 							Strings.messageContactArchived,
-							ContactDataView.VIEW_NAME);
+							() -> navigateToView(ContactDataView.VIEW_NAME, contact.getUuid(), false));
 				}
 
 			}, ValoTheme.BUTTON_LINK);

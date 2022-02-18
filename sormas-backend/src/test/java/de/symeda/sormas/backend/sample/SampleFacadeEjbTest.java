@@ -508,7 +508,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, getSampleTestFacade().getAllActivePathogenTestsAfter(null).size());
 		assertEquals(1, getSampleTestFacade().getAllActiveUuids().size());
 
-		getCaseFacade().archiveCoreEntities(Collections.singletonList(caze.getUuid()), null);
+		getCaseFacade().archive(caze.getUuid(), null);
 
 		// getAllActiveSamples/getAllActiveSampleTests and getAllUuids should return length 0
 		assertEquals(0, getSampleFacade().getAllActiveSamplesAfter(null).size());
@@ -516,7 +516,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(0, getSampleTestFacade().getAllActivePathogenTestsAfter(null).size());
 		assertEquals(0, getSampleTestFacade().getAllActiveUuids().size());
 
-		getCaseFacade().dearchiveCoreEntities(Collections.singletonList(caze.getUuid()), null);
+		getCaseFacade().dearchive(Collections.singletonList(caze.getUuid()), null);
 
 		// getAllActiveSamples/getAllActiveSampleTests and getAllUuids should return length 1
 		assertEquals(1, getSampleFacade().getAllActiveSamplesAfter(null).size());
