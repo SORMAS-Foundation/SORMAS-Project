@@ -120,8 +120,31 @@ public class ContactDirectorySteps implements En {
               dataOperations.getPartialUuidFromAssociatedLink(
                   apiState.getCreatedContact().getUuid());
           webDriverHelpers.fillAndSubmitInWebElement(
-              CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, apiState.getCreatedContact().getUuid());
+              CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, contactUuid);
         });
+    When(
+        "I click on the More button on Contact directory page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(MORE_BUTTON);
+        });
+    And(
+        "I click on Link to Event from Bulk Actions combobox on Contact Directory Page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(BULK_ACTIONS_CONTACT_VALUES));
+    When(
+        "I click Enter Bulk Edit Mode on Contact directory page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ENTER_BULK_EDIT_MODE);
+          webDriverHelpers.waitForPageLoaded();
+        });
+    When(
+        "I click checkbox to choose all Contact results",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_CHECKBOX);
+          webDriverHelpers.waitForPageLoaded();
+        });
+    And(
+        "I click on Bulk Actions combobox on Contact Directory Page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(BULK_ACTIONS));
     And(
         "I filter by mocked ContactID on Contact directory page",
         () -> {

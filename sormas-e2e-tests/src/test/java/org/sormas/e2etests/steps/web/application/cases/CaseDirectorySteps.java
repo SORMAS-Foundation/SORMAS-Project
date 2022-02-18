@@ -99,6 +99,36 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(FIRST_CHECKBOX);
           webDriverHelpers.waitForPageLoaded();
         });
+    And(
+        "I click on Bulk Actions combobox on Case Directory Page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(BULK_ACTIONS));
+
+    And(
+        "I click on Link to Event from Bulk Actions combobox on Case Directory Page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(BULK_ACTIONS_VALUES));
+
+    And(
+        "I click on New Event option in Link to Event Form",
+        () ->
+            webDriverHelpers.clickOnWebElementBySelector(
+                By.xpath(
+                    "/html/body/div[2]/div[3]/div/div/div[3]/div/div/div[1]/div/div[2]/div/div/div[9]/div")));
+    And(
+        "I fill Event Id filter with last created EventId on Link to Event form",
+        () -> {
+          String eventUuid = apiState.getCreatedEvent().getUuid();
+          webDriverHelpers.fillInWebElement(
+              By.id("search"), dataOperations.getPartialUuidFromAssociatedLink(eventUuid));
+          TimeUnit.SECONDS.sleep(5);
+        });
+    And(
+        "I click first result in grid on Link to Event form",
+        () ->
+            webDriverHelpers.clickOnWebElementBySelector(
+                By.xpath("//div[contains(@class, 'popupContent')]//tr[@role='row']")));
+    When(
+        "^I click on SAVE button in Link Event to group form$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_IN_LINK_FORM));
 
     When(
         "I filter by CaseID on Case directory page",

@@ -23,6 +23,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPU
 import static org.sormas.e2etests.pages.application.events.EditEventPage.*;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventActionsPage.CREATE_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.TOTAL_EVENTS_COUNTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.*;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_PARTICIPANTS_TAB;
@@ -371,6 +372,19 @@ public class EditEventSteps implements En {
           selectEventHandoutTemplate(aEventHandout.getDocumentTemplate());
           webDriverHelpers.clickOnWebElementBySelector(EditEventPage.CREATE_EVENT_HANDOUT_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(EditEventPage.CANCEL_EVENT_HANDOUT_BUTTON);
+        });
+    And(
+        "I check that number of displayed Event Participants is {int}",
+        (Integer number) -> {
+          webDriverHelpers.clickOnWebElementBySelector(EditEventPage.EVENT_PARTICIPANTS_TAB);
+          webDriverHelpers.waitForPageLoaded();
+          assertHelpers.assertWithPoll20Second(
+              () ->
+                  Assert.assertEquals(
+                      Integer.parseInt(
+                          webDriverHelpers.getTextFromPresentWebElement(TOTAL_EVENTS_COUNTER)),
+                      number.intValue(),
+                      "Number of displayed actions is not correct"));
         });
     And(
         "I check that number of actions in Edit Event Tab is {int}",
