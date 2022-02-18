@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
@@ -27,6 +28,7 @@ public abstract class SormasToSormasShareableDto extends PseudonymizableDto {
 	public static final String OWNERSHIP_HANDED_OVER = "ownershipHandedOver";
 	@Valid
 	protected SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
+	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	protected boolean ownershipHandedOver;
 
 	public abstract UserReferenceDto getReportingUser();
