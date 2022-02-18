@@ -37,7 +37,7 @@ public class CustomizableEnumValueDtoHelper extends AdoDtoHelper<CustomizableEnu
 	}
 
 	@Override
-	protected Call<List<CustomizableEnumValueDto>> pullAllSince(long since) throws NoConnectionException {
+	protected Call<List<CustomizableEnumValueDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
 		return RetroProvider.getCustomizableEnumValueFacade().pullAllSince(since);
 	}
 
@@ -67,4 +67,9 @@ public class CustomizableEnumValueDtoHelper extends AdoDtoHelper<CustomizableEnu
 	public void fillInnerFromAdo(CustomizableEnumValueDto target, CustomizableEnumValue source) {
 		// Not supported
 	}
+
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return 0;
+    }
 }

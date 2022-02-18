@@ -15,9 +15,11 @@
 
 package de.symeda.sormas.backend.vaccination;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.ejb.LocalBean;
@@ -25,16 +27,24 @@ import javax.ejb.Stateless;
 import javax.persistence.Query;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
-import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
+import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.person.Person;
 
@@ -55,28 +65,49 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 		return result;
 	}
 
-	public List<VaccinationListEntryDto> getEntriesList(VaccinationListCriteria criteria, Integer first, Integer max) {
-
+	public List<Vaccination> getVaccinationsByCriteria(
+		VaccinationListCriteria criteria,
+		Integer first,
+		Integer max,
+		List<SortProperty> sortProperties) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<VaccinationListEntryDto> cq = cb.createQuery(VaccinationListEntryDto.class);
+		final CriteriaQuery<Vaccination> cq = cb.createQuery(Vaccination.class);
 		final Root<Vaccination> root = cq.from(Vaccination.class);
 		final Join<Vaccination, Immunization> immunizationJoin = root.join(Vaccination.IMMUNIZATION, JoinType.LEFT);
 		final Join<Immunization, Person> personJoin = immunizationJoin.join(Immunization.PERSON, JoinType.LEFT);
 
-		cq.multiselect(
-			root.get(AbstractDomainObject.UUID),
-			root.get(Vaccination.VACCINE_NAME),
-			root.get(Vaccination.OTHER_VACCINE_NAME),
-			root.get(Vaccination.VACCINATION_DATE),
-			immunizationJoin.get(Immunization.DISEASE),
-			root.get(AbstractDomainObject.CHANGE_DATE));
+		Predicate filter = null;
 
-		Predicate filter = cb.equal(personJoin.get(AbstractDomainObject.UUID), criteria.getPerson().getUuid());
+		if (criteria.getPerson() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(personJoin.get(AbstractDomainObject.UUID), criteria.getPerson().getUuid()));
+		} else {
+			List<String> personUuids = criteria.getPersons().stream().map(PersonReferenceDto::getUuid).collect(Collectors.toList());
+			filter = CriteriaBuilderHelper.and(cb, filter, personJoin.get(AbstractDomainObject.UUID).in(personUuids));
+		}
+
 		if (criteria.getDisease() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(immunizationJoin.get(Immunization.DISEASE), criteria.getDisease()));
 		}
 		cq.where(filter);
-		cq.orderBy(cb.desc(root.get(Vaccination.VACCINATION_DATE)), cb.desc(root.get(AbstractDomainObject.CHANGE_DATE)));
+
+		if (sortProperties != null && sortProperties.size() > 0) {
+			List<Order> order = new ArrayList<>(sortProperties.size());
+			for (SortProperty sortProperty : sortProperties) {
+				Expression<?> expression;
+				switch (sortProperty.propertyName) {
+				case Vaccination.VACCINATION_DATE:
+					expression = root.get(sortProperty.propertyName);
+					break;
+				default:
+					throw new IllegalArgumentException(sortProperty.propertyName);
+				}
+				order.add(sortProperty.ascending ? cb.asc(expression) : cb.desc(expression));
+			}
+			cq.orderBy(order);
+		} else {
+			cq.orderBy(cb.desc(root.get(Vaccination.VACCINATION_DATE)), cb.desc(root.get(AbstractDomainObject.CHANGE_DATE)));
+		}
+
 		cq.distinct(true);
 
 		if (first != null && max != null) {
@@ -84,5 +115,31 @@ public class VaccinationService extends BaseAdoService<Vaccination> {
 		} else {
 			return em.createQuery(cq).getResultList();
 		}
+	}
+
+	public boolean isVaccinationRelevant(Case caze, Vaccination vaccination) {
+		return vaccination.getVaccinationDate() != null
+			&& (caze.getSymptoms().getOnsetDate() != null
+				? DateHelper.getEndOfDay(vaccination.getVaccinationDate()).before(caze.getSymptoms().getOnsetDate())
+				: DateHelper.getEndOfDay(vaccination.getVaccinationDate()).before(caze.getReportDate()));
+	}
+
+	public boolean isVaccinationRelevant(Contact contact, Vaccination vaccination) {
+		return vaccination.getVaccinationDate() != null
+			&& (contact.getLastContactDate() != null
+				? DateHelper.getEndOfDay(vaccination.getVaccinationDate()).before(contact.getLastContactDate())
+				: DateHelper.getEndOfDay(vaccination.getVaccinationDate()).before(contact.getReportDateTime()));
+	}
+
+	public boolean isVaccinationRelevant(Event event, Vaccination vaccination) {
+		if (vaccination.getVaccinationDate() == null) {
+			return false;
+		}
+		if (event.getStartDate() != null) {
+			return DateHelper.getEndOfDay(vaccination.getVaccinationDate()).before(event.getStartDate());
+		}
+		return event.getEndDate() != null
+			? DateHelper.getEndOfDay(vaccination.getVaccinationDate()).before(event.getEndDate())
+			: DateHelper.getEndOfDay(vaccination.getVaccinationDate()).before(event.getReportDateTime());
 	}
 }

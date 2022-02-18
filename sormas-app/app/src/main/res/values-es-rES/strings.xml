@@ -138,6 +138,7 @@
     <string name="caption_case_tasks">Case Tasks</string>
     <string name="caption_case_events">Case Events</string>
     <string name="caption_case_immunizations">Case Immunizations</string>
+    <string name="caption_case_vaccinations">Case Vaccinations</string>
     <string name="caption_case_treatments">Treatments</string>
     <string name="caption_case_similarity_create">Create a new case</string>
     <string name="caption_changed_data_lost">Changed data lost during re-sync.</string>
@@ -154,6 +155,7 @@
     <string name="caption_contact_epidemiological_data">Epidemiological info</string>
     <string name="caption_contact_visits">Follow-Up Information</string>
     <string name="caption_contact_immunizations">Contact Immunizations</string>
+    <string name="caption_contact_vaccinations">Contact Vaccinations</string>
     <string name="caption_converted_to_case">Converted to Case</string>
     <string name="caption_date_of_birth">Date of birth (year / month / day)</string>
     <string name="caption_date_of_sampling">Date of Sampling</string>
@@ -167,6 +169,7 @@
     <string name="caption_event_information">Event Information</string>
     <string name="caption_event_participants">Persons Involved</string>
     <string name="caption_event_participant_immunizations">Event participant Immunizations</string>
+    <string name="caption_event_participant_vaccinations">Event participant Vaccinations</string>
     <string name="caption_event_tasks">Event Tasks</string>
     <string name="caption_executed_by">Executed by</string>
     <string name="caption_facility_or_home">Place of stay</string>
@@ -643,4 +646,6 @@
     <string name="caption_facility_type_group">Facility category</string>
     <string name="caption_facility_type">Facility type</string>
     <string name="value_vaccine_date_unknown">Vaccination Date N/A</string>
+    <string name="value_vaccine_name_unknown">Vaccine N/A</string>
+    <string name="value_vaccine_manufacturer_unknown">Manufacturer N/A</string>
 </resources>

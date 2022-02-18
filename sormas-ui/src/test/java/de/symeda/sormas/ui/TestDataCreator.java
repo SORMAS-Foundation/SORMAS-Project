@@ -55,13 +55,17 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryType;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.report.WeeklyReportDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SamplePurpose;
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
@@ -72,7 +76,6 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
 
 public class TestDataCreator {
 
@@ -155,7 +158,7 @@ public class TestDataCreator {
 		eventParticipant.setPerson(eventPerson);
 		eventParticipant.setInvolvementDescription(involvementDescription);
 
-		eventParticipant = FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipant);
+		eventParticipant = FacadeProviderMock.getEventParticipantFacade().saveEventParticipant(eventParticipant);
 		return eventParticipant;
 	}
 
@@ -208,7 +211,7 @@ public class TestDataCreator {
 			customConfig.accept(contact);
 		}
 
-		contact = FacadeProvider.getContactFacade().saveContact(contact);
+		contact = FacadeProviderMock.getContactFacade().save(contact);
 
 		return contact;
 	}
@@ -230,7 +233,7 @@ public class TestDataCreator {
 			customSettings.accept(sample);
 		}
 
-		sample = FacadeProvider.getSampleFacade().saveSample(sample);
+		sample = FacadeProviderMock.getSampleFacade().saveSample(sample);
 
 		return sample;
 	}
@@ -250,7 +253,7 @@ public class TestDataCreator {
 		contact.setReportDateTime(reportDateTime);
 		contact.setLastContactDate(lastContactDate);
 
-		contact = FacadeProvider.getContactFacade().saveContact(contact);
+		contact = FacadeProviderMock.getContactFacade().save(contact);
 
 		return contact;
 	}
@@ -296,7 +299,7 @@ public class TestDataCreator {
 		caze.setFacilityType(facility.getType());
 		caze.setHealthFacility(facility.toReference());
 
-		caze = FacadeProvider.getCaseFacade().saveCase(caze);
+		caze = FacadeProviderMock.getCaseFacade().save(caze);
 
 		return caze;
 	}
@@ -451,7 +454,7 @@ public class TestDataCreator {
 			customSettings.accept(event);
 		}
 
-		event = FacadeProvider.getEventFacade().saveEvent(event);
+		event = FacadeProviderMock.getEventFacade().save(event);
 
 		return event;
 	}
@@ -484,7 +487,7 @@ public class TestDataCreator {
 		event.setResponsibleUser(responsibleUser);
 		event.setDisease(disease);
 
-		event = FacadeProvider.getEventFacade().saveEvent(event);
+		event = FacadeProvider.getEventFacade().save(event);
 
 		return event;
 	}
@@ -624,10 +627,20 @@ public class TestDataCreator {
 		DistrictReferenceDto district,
 		CommunityReferenceDto community) {
 
+		return createFacility(facilityName, FacilityType.HOSPITAL, region, district, community);
+	}
+
+	public FacilityDto createFacility(
+		String facilityName,
+		FacilityType facilityType,
+		RegionReferenceDto region,
+		DistrictReferenceDto district,
+		CommunityReferenceDto community) {
+
 		FacilityDto facility = FacilityDto.build();
 		facility.setUuid(DataHelper.createUuid());
 		facility.setName(facilityName);
-		facility.setType(FacilityType.HOSPITAL);
+		facility.setType(facilityType);
 		facility.setCommunity(community);
 		facility.setDistrict(district);
 		facility.setRegion(region);
@@ -655,7 +668,7 @@ public class TestDataCreator {
 		campaign.setName("CampaignName");
 		campaign.setDescription("Campaign description");
 
-		campaign = FacadeProvider.getCampaignFacade().saveCampaign(campaign);
+		campaign = FacadeProvider.getCampaignFacade().save(campaign);
 
 		return campaign;
 	}
@@ -676,6 +689,29 @@ public class TestDataCreator {
 		campaignForm = FacadeProvider.getCampaignFormMetaFacade().saveCampaignFormMeta(campaignForm);
 
 		return campaignForm;
+	}
+
+	public LabMessageDto createLabMessage(Consumer<LabMessageDto> config) {
+		LabMessageDto labMessage = LabMessageDto.build();
+
+		config.accept(labMessage);
+
+		labMessage = FacadeProvider.getLabMessageFacade().save(labMessage);
+
+		return labMessage;
+	}
+
+	public PathogenTestDto createPathogenTest(SampleReferenceDto sample, UserReferenceDto user, Consumer<PathogenTestDto> config) {
+		PathogenTestDto pathogenTest = PathogenTestDto.build(sample, user);
+		pathogenTest.setTestDateTime(new Date());
+		pathogenTest.setTestResultVerified(true);
+		pathogenTest.setTestType(PathogenTestType.RAPID_TEST);
+
+		config.accept(pathogenTest);
+
+		pathogenTest = FacadeProvider.getPathogenTestFacade().savePathogenTest(pathogenTest);
+
+		return pathogenTest;
 	}
 
 	public static class RDCF {

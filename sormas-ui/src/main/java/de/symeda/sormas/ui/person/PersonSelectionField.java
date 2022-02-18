@@ -46,15 +46,16 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 	public static final String SELECT_PERSON = Captions.personSelect;
 	public static final String SEARCH_AND_SELECT_PERSON = Captions.personSearchAndSelect;
 
-	private PersonDto referencePerson;
+	protected VerticalLayout mainLayout;
+	protected PersonSelectionGrid personGrid;
+
 	private String infoText;
-	private VerticalLayout mainLayout;
-	private PersonSelectionGrid personGrid;
+	protected Consumer<Boolean> selectionChangeCallback;
 	private PersonSimilarityCriteria defaultCriteria;
 	private RadioButtonGroup<String> rbSelectPerson;
 	private RadioButtonGroup<String> rbCreatePerson;
-	private Consumer<Boolean> selectionChangeCallback;
-	private PersonSelectionFilterForm filterForm;
+	protected PersonSelectionFilterForm filterForm;
+	private PersonDto referencePerson;
 
 	/**
 	 * Generate a selection field which contains a grid containing all similar persons to the `referencePerson`.
@@ -71,7 +72,7 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 		initializeGrid();
 	}
 
-	private void addInfoComponent() {
+	protected void addInfoComponent() {
 		mainLayout.addComponent(VaadinUiUtil.createInfoComponent(infoText));
 	}
 
@@ -211,12 +212,15 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 		mainLayout.addComponent(rbSelectPerson);
 	}
 
-	private void addFilterForm() {
+	protected void addFilterForm() {
 		filterForm = new PersonSelectionFilterForm();
 		filterForm.setVisible(false);
 
-		PersonSimilarityCriteria searchCriteria =
-			new PersonSimilarityCriteria().firstName(referencePerson.getFirstName()).lastName(referencePerson.getLastName());
+		final PersonSimilarityCriteria searchCriteria = new PersonSimilarityCriteria();
+		if (referencePerson != null) {
+			searchCriteria.setFirstName(referencePerson.getFirstName());
+			searchCriteria.setLastName(referencePerson.getLastName());
+		}
 		filterForm.setValue(searchCriteria);
 		filterForm.addApplyHandler((e) -> {
 			if (filterForm.validateFields()) {
@@ -231,7 +235,7 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 	/**
 	 * Load a grid of all persons similar to the given reference person.
 	 */
-	private void initializeGrid() {
+	protected void initializeGrid() {
 		defaultCriteria = new PersonSimilarityCriteria().firstName(referencePerson.getFirstName())
 			.lastName(referencePerson.getLastName())
 			.sex(referencePerson.getSex())

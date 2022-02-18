@@ -57,6 +57,8 @@ import de.symeda.sormas.ui.utils.NullableOptionGroup;
 
 public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 
+	private static final long serialVersionUID = 4516334613016719068L;
+
 	private static final String RESPONSIBLE_JURISDICTION_HEADING_LOC = "responsibleJurisdictionHeadingLoc";
 	private static final String DIFFERENT_POINT_OF_ENTRY_JURISDICTION = "differentPointOfEntryJurisdiction";
 	private static final String POINT_OF_ENTRY_HEADING_LOC = "pointOfEntryHeadingLoc";
@@ -92,7 +94,6 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 			fluidRowLocs(TravelEntryDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT, TravelEntryDto.QUARANTINE_ORDERED_OFFICIAL_DOCUMENT_DATE) +
 			fluidRowLocs(TravelEntryDto.QUARANTINE_OFFICIAL_ORDER_SENT, TravelEntryDto.QUARANTINE_OFFICIAL_ORDER_SENT_DATE) +
 			fluidRowLocs(TravelEntryDto.QUARANTINE_HELP_NEEDED);
-
 	//@formatter:on
 
 	private final String travelEntryUuid;
@@ -112,6 +113,7 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 	private ComboBox responsibleRegion;
 	private ComboBox responsibleDistrict;
 	private ComboBox responsibleCommunity;
+	private boolean ignoreDifferentPointOfEntryJurisdiction = false;
 
 	public TravelEntryDataForm(String travelEntryUuid, boolean isPseudonymized) {
 		super(
@@ -171,22 +173,20 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 		differentPointOfEntryJurisdiction = addCustomField(DIFFERENT_POINT_OF_ENTRY_JURISDICTION, Boolean.class, CheckBox.class);
 		differentPointOfEntryJurisdiction.addStyleName(VSPACE_3);
 
-		Label placeOfStayHeadingLabel = new Label(I18nProperties.getCaption(Captions.travelEntryPointOfEntry));
-		placeOfStayHeadingLabel.addStyleName(H3);
-		getContent().addComponent(placeOfStayHeadingLabel, POINT_OF_ENTRY_HEADING_LOC);
+		Label pointOfEntryHeadingLabel = new Label(I18nProperties.getCaption(Captions.travelEntryPointOfEntry));
+		pointOfEntryHeadingLabel.addStyleName(H3);
+		getContent().addComponent(pointOfEntryHeadingLabel, POINT_OF_ENTRY_HEADING_LOC);
 
 		ComboBox regionCombo = addInfrastructureField(TravelEntryDto.REGION);
 		districtCombo = addInfrastructureField(TravelEntryDto.DISTRICT);
 
 		differentPointOfEntryJurisdiction.addValueChangeListener(e -> {
-			DistrictReferenceDto districtDto;
-			if (differentPointOfEntryJurisdiction.getValue().booleanValue()) {
-				districtCombo.setValue(null);
-				getPointsOfEntryForDistrict(null);
-			} else {
+			if (!ignoreDifferentPointOfEntryJurisdiction) {
+				if (differentPointOfEntryJurisdiction.booleanValue()) {
+					districtCombo.setValue(null);
+				}
 				cbPointOfEntry.setValue(null);
-				districtDto = (DistrictReferenceDto) responsibleDistrict.getValue();
-				getPointsOfEntryForDistrict(districtDto);
+				updatePointsOfEntry();
 			}
 		});
 
@@ -202,16 +202,13 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 				.updateItems(districtCombo, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
 		});
 		districtCombo.addValueChangeListener(e -> {
-			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
-			if (differentPointOfEntryJurisdiction.getValue()) {
-				getPointsOfEntryForDistrict(districtDto);
-			} else {
-				getPointsOfEntryForDistrict((DistrictReferenceDto) responsibleDistrict.getValue());
+			if (differentPointOfEntryJurisdiction.booleanValue()) {
+				updatePointsOfEntry();
 			}
 		});
 
 		quarantine = addField(TravelEntryDto.QUARANTINE);
-		quarantine.addValueChangeListener(e -> onValueChange());
+		quarantine.addValueChangeListener(e -> onQuarantineValueChange());
 		quarantineFrom = addField(TravelEntryDto.QUARANTINE_FROM, DateField.class);
 		quarantineTo = addDateField(TravelEntryDto.QUARANTINE_TO, DateField.class, -1);
 
@@ -366,8 +363,9 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 		setReadOnly(true, TravelEntryDto.UUID, TravelEntryDto.REPORTING_USER);
 
 		responsibleDistrict.addValueChangeListener(e -> {
-			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
-			getPointsOfEntryForDistrict(districtDto);
+			if (!differentPointOfEntryJurisdiction.booleanValue()) {
+				updatePointsOfEntry();
+			}
 		});
 
 		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
@@ -384,7 +382,21 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 		});
 	}
 
-	private void getPointsOfEntryForDistrict(DistrictReferenceDto districtDto) {
+	public void onDiscard() {
+		ignoreDifferentPointOfEntryJurisdiction = true;
+		updateVisibilityDifferentPointOfEntryJurisdiction(getValue());
+		updatePointsOfEntry();
+		ignoreDifferentPointOfEntryJurisdiction = false;
+	}
+
+	private void updatePointsOfEntry() {
+		DistrictReferenceDto districtDto =
+			(DistrictReferenceDto) (differentPointOfEntryJurisdiction.booleanValue() ? districtCombo.getValue() : responsibleDistrict.getValue());
+
+		updatePointsOfEntryForDistrict(districtDto);
+	}
+
+	private void updatePointsOfEntryForDistrict(DistrictReferenceDto districtDto) {
 		FieldHelper.updateItems(
 			cbPointOfEntry,
 			districtDto != null ? FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(districtDto.getUuid(), true) : null);
@@ -399,11 +411,12 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 			if (!isOtherPointOfEntry) {
 				tfPointOfEntryDetails.clear();
 			}
-		} else {
+		} else if (!ignoreDifferentPointOfEntryJurisdiction) {
 			tfPointOfEntryDetails.setVisible(false);
 			tfPointOfEntryDetails.setRequired(false);
 			tfPointOfEntryDetails.clear();
 		}
+
 	}
 
 	private static UiFieldAccessCheckers createFieldAccessCheckers(boolean isPseudonymized, boolean withPersonalAndSensitive) {
@@ -414,7 +427,7 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 		return UiFieldAccessCheckers.getNoop();
 	}
 
-	private void onValueChange() {
+	private void onQuarantineValueChange() {
 		QuarantineType quarantineType = (QuarantineType) quarantine.getValue();
 		if (QuarantineType.isQuarantineInEffect(quarantineType)) {
 			TravelEntryDto travelEntryDto = FacadeProvider.getTravelEntryFacade().getByUuid(travelEntryUuid);
@@ -451,11 +464,9 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 
 	@Override
 	public void setValue(TravelEntryDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
-		if ((newFieldValue.getPointOfEntryRegion() != null && !newFieldValue.getPointOfEntryRegion().equals(newFieldValue.getResponsibleRegion()))
-			|| newFieldValue.getPointOfEntryDistrict() != null
-				&& !newFieldValue.getPointOfEntryDistrict().equals(newFieldValue.getResponsibleDistrict())) {
-			differentPointOfEntryJurisdiction.setValue(Boolean.TRUE);
-		}
+		updateVisibilityDifferentPointOfEntryJurisdiction(newFieldValue);
+		updatePointsOfEntryForDistrict(
+			newFieldValue.getPointOfEntryDistrict() != null ? newFieldValue.getPointOfEntryDistrict() : newFieldValue.getResponsibleDistrict());
 		super.setValue(newFieldValue);
 		buildDeaContent(newFieldValue);
 
@@ -468,6 +479,14 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 			responsibleDistrict.setReadOnly(true);
 			responsibleCommunity.setReadOnly(true);
 		}
+	}
+
+	private void updateVisibilityDifferentPointOfEntryJurisdiction(TravelEntryDto newFieldValue) {
+		boolean isDifferentPointOfEntryJurisdiction =
+			(newFieldValue.getPointOfEntryRegion() != null && !newFieldValue.getPointOfEntryRegion().equals(newFieldValue.getResponsibleRegion()))
+				|| newFieldValue.getPointOfEntryDistrict() != null
+					&& !newFieldValue.getPointOfEntryDistrict().equals(newFieldValue.getResponsibleDistrict());
+		differentPointOfEntryJurisdiction.setValue(isDifferentPointOfEntryJurisdiction);
 	}
 
 	private void buildDeaContent(TravelEntryDto newFieldValue) {

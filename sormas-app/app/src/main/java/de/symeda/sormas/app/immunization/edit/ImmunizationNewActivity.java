@@ -134,11 +134,11 @@ public class ImmunizationNewActivity extends BaseEditActivity<Immunization> {
 	protected BaseEditFragment buildEditFragment(PageMenuItem menuItem, Immunization activityRootData) {
 		BaseEditFragment fragment;
 
-		if (caseUuid != null) {
+		if (!DataHelper.isNullOrEmpty(caseUuid)) {
 			fragment = ImmunizationNewFragment.newInstanceFromCase(activityRootData, caseUuid);
-		} else if (contactUuid != null) {
+		} else if (!DataHelper.isNullOrEmpty(contactUuid)) {
 			fragment = ImmunizationNewFragment.newInstanceFromContact(activityRootData, contactUuid);
-		} else if (eventParticipantUuid != null) {
+		} else if (!DataHelper.isNullOrEmpty(eventParticipantUuid)) {
 			fragment = ImmunizationNewFragment.newInstanceFromEventParticipant(activityRootData, eventParticipantUuid);
 		} else {
 			fragment = ImmunizationNewFragment.newInstance(activityRootData);

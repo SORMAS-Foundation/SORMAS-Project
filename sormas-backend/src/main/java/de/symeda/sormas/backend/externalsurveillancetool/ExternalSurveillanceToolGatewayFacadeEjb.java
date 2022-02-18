@@ -27,23 +27,26 @@ import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.Response;
 
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolResponse;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolFacade;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolResponse;
+import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Stateless(name = "ExternalSurveillanceToolFacade")
 public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveillanceToolFacade {
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
@@ -108,7 +111,8 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 		default:
 			ExternalSurveillanceToolResponse entity = response.readEntity(ExternalSurveillanceToolResponse.class);
 			if (entity == null || StringUtils.isBlank(entity.getMessage())) {
-				throw new ExternalSurveillanceToolException(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationErrorSending));
+				throw new ExternalSurveillanceToolException(
+					I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationErrorSending));
 			} else if (StringUtils.isNotBlank(entity.getErrorCode())) {
 				throw new ExternalSurveillanceToolException(entity.getMessage(), entity.getErrorCode());
 			} else {
@@ -119,14 +123,12 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 
 	@Override
 	public void createCaseShareInfo(List<String> caseUuids) {
-		caseService.getByUuids(caseUuids)
-				.forEach(caze -> shareInfoService.createAndPersistShareInfo(caze, ExternalShareStatus.SHARED));
+		caseService.getByUuids(caseUuids).forEach(caze -> shareInfoService.createAndPersistShareInfo(caze, ExternalShareStatus.SHARED));
 	}
 
 	@Override
 	public void createEventShareInfo(List<String> eventUuids) {
-		eventService.getByUuids(eventUuids)
-				.forEach(event -> shareInfoService.createAndPersistShareInfo(event, ExternalShareStatus.SHARED));
+		eventService.getByUuids(eventUuids).forEach(event -> shareInfoService.createAndPersistShareInfo(event, ExternalShareStatus.SHARED));
 	}
 
 	@Override
@@ -170,9 +172,32 @@ public class ExternalSurveillanceToolGatewayFacadeEjb implements ExternalSurveil
 		case HttpServletResponse.SC_NO_CONTENT:
 			return;
 		case HttpServletResponse.SC_BAD_REQUEST:
-			throw new ExternalSurveillanceToolException(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntryNotDeleted));
+			throw new ExternalSurveillanceToolException(
+				I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntryNotDeleted));
 		default:
 			throw new ExternalSurveillanceToolException(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationErrorDeleting));
+		}
+	}
+
+	@Override
+	public String getVersion() throws ExternalSurveillanceToolException {
+		String serviceUrl = configFacade.getExternalSurveillanceToolGatewayUrl().trim();
+		String versionEndpoint = configFacade.getExternalSurveillanceToolVersionEndpoint().trim();
+
+		try {
+			Response response =
+					ClientBuilder.newBuilder().connectTimeout(30, TimeUnit.SECONDS).build().target(serviceUrl).path(versionEndpoint).request().get();
+			int status = response.getStatus();
+
+			if (status != HttpServletResponse.SC_OK) {
+				throw new ExternalSurveillanceToolException(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_versionRequestError));
+			}
+
+			ExternalSurveillanceToolResponse entity = response.readEntity(ExternalSurveillanceToolResponse.class);
+			return entity.getMessage();
+		} catch (Exception e){
+			logger.error("Couldn't get version of external surveillance tool at {}{}", serviceUrl, versionEndpoint, e);
+			throw new ExternalSurveillanceToolException(I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_versionRequestError));
 		}
 	}
 

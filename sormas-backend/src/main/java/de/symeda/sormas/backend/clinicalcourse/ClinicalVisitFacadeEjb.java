@@ -44,12 +44,12 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
-import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb.SymptomsFacadeEjbLocal;
@@ -237,7 +237,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 			CaseDataDto caze = caseFacade.getCaseDataByUuid(caseUuid);
 			SymptomsDto caseSymptoms = caze.getSymptoms();
 			SymptomsHelper.updateSymptoms(clinicalVisit.getSymptoms(), caseSymptoms);
-			caseFacade.saveCase(caze);
+			caseFacade.save(caze);
 		}
 
 		return convertToDto(entity, Pseudonymizer.getDefault(userService::hasRight));
@@ -267,13 +267,21 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 
 	@Override
 	public List<ClinicalVisitDto> getAllActiveClinicalVisitsAfter(Date date) {
+		return getAllActiveClinicalVisitsAfter(date, null, null);
+	}
+
+	@Override
+	public List<ClinicalVisitDto> getAllActiveClinicalVisitsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return service.getAllActiveClinicalVisitsAfter(date).stream().map(t -> convertToDto(t, pseudonymizer)).collect(Collectors.toList());
+		return service.getAllActiveClinicalVisitsAfter(date, batchSize, lastSynchronizedUuid)
+			.stream()
+			.map(t -> convertToDto(t, pseudonymizer))
+			.collect(Collectors.toList());
 	}
 
 	@Override

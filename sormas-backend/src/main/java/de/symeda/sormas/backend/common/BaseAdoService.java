@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
@@ -43,13 +42,13 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.user.CurrentUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.backend.user.CurrentUser;
-import de.symeda.sormas.backend.user.CurrentUserQualifier;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -62,8 +61,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 	private final Class<ADO> elementClass;
 
 	@Inject
-	@CurrentUserQualifier
-	private Instance<CurrentUser> currentUser;
+	private CurrentUserService currentUserService;
 
 	// protected to be used by implementations
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
@@ -73,18 +71,8 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		this.elementClass = elementClass;
 	}
 
-	protected User getCurrentUser() {
-		return currentUser.get().getUser();
-	}
-
-	/**
-	 * Should only be used for testing scenarios of user rights & jurisdiction!
-	 * 
-	 * @param user
-	 */
-	@Deprecated
-	public void setCurrentUser(User user) {
-		currentUser.get().setUser(user);
+	public User getCurrentUser() {
+		return currentUserService.getCurrentUser();
 	}
 
 	protected Class<ADO> getElementClass() {
@@ -143,16 +131,19 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 	}
 
 	public List<ADO> getAll(BiFunction<CriteriaBuilder, Root<ADO>, Predicate> filterBuilder) {
+		return getAll(filterBuilder, null);
+	}
+
+	public List<ADO> getAll(BiFunction<CriteriaBuilder, Root<ADO>, Predicate> filterBuilder, Integer batchSize) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
 		Root<ADO> from = cq.from(getElementClass());
-		cq.orderBy(cb.desc(from.get(AbstractDomainObject.CHANGE_DATE)));
 		Predicate filter = filterBuilder.apply(cb, from);
 		if (filter != null) {
 			cq.where(filter);
 		}
-		return em.createQuery(cq).getResultList();
+		return getBatchedQueryResults(cb, cq, from, batchSize);
 	}
 
 	public List<ADO> getAll(String orderProperty, boolean asc) {
@@ -163,6 +154,15 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		cq.orderBy(asc ? cb.asc(from.get(orderProperty)) : cb.desc(from.get(orderProperty)));
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	public List<ADO> getBatchedQueryResults(CriteriaBuilder cb, CriteriaQuery<ADO> cq, From<?, ADO> from, Integer batchSize) {
+
+		// Ordering by UUID is relevant if a batch includes some, but not all objects with the same timestamp.
+		// the next batch can then resume with the same timestamp and the next UUID in lexicographical order.y
+		cq.orderBy(cb.asc(from.get(AbstractDomainObject.CHANGE_DATE)), cb.asc(from.get(AbstractDomainObject.UUID)));
+
+		return createQuery(cq, 0, batchSize).getResultList();
 	}
 
 	public long countAfter(Date since) {
@@ -202,6 +202,21 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		return createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
 	}
 
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, ADO> from, Date date, String lastSynchronizedUuid) {
+		if (lastSynchronizedUuid == null || EntityDto.NO_LAST_SYNCED_UUID.equals(lastSynchronizedUuid)) {
+			return createChangeDateFilter(cb, from, date);
+		} else {
+			Timestamp timestampLower = new Timestamp(date.getTime());
+			Timestamp timestampUpper = new Timestamp(date.getTime() + 1L);
+			Predicate predicate = cb.or(
+				cb.greaterThanOrEqualTo(from.get(AbstractDomainObject.CHANGE_DATE), timestampUpper),
+				cb.and(
+					cb.greaterThanOrEqualTo(from.get(AbstractDomainObject.CHANGE_DATE), timestampLower),
+					cb.greaterThan(from.get(AbstractDomainObject.UUID), lastSynchronizedUuid)));
+			return predicate;
+		}
+	}
+
 	public Predicate recentDateFilter(CriteriaBuilder cb, Date date, Path<Date> datePath, int amountOfDays) {
 		return date != null ? cb.between(datePath, DateHelper.subtractDays(date, amountOfDays), DateHelper.addDays(date, amountOfDays)) : null;
 	}
@@ -229,9 +244,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 			return Collections.emptyList();
 		}
 
-		List<String> uuids = dtos.stream()
-			.map(ReferenceDto::getUuid)
-			.collect(Collectors.toList());
+		List<String> uuids = dtos.stream().map(ReferenceDto::getUuid).collect(Collectors.toList());
 		return getByUuids(uuids);
 	}
 

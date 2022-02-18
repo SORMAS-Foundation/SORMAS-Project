@@ -38,6 +38,8 @@ public interface ConfigFacade {
 
 	String getUiUrl();
 
+	String getSormasStatsUrl();
+
 	boolean isFeatureAutomaticCaseClassification();
 
 	String getEmailSenderAddress();
@@ -98,6 +100,10 @@ public interface ConfigFacade {
 
 	boolean isMapUseCountryCenter();
 
+	String getMapTilersUrl();
+
+	String getMapTilersAttribution();
+
 	int getMapZoom();
 
 	String getGeocodingServiceUrlTemplate();
@@ -117,6 +123,8 @@ public interface ConfigFacade {
 	SormasToSormasConfig getS2SConfig();
 
 	String getExternalSurveillanceToolGatewayUrl();
+
+	String getExternalSurveillanceToolVersionEndpoint();
 
 	String getAuthenticationProvider();
 

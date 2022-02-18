@@ -23,12 +23,12 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Pattern;
 
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.followup.FollowUpStartDateType;
@@ -36,6 +36,7 @@ import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.utils.ValidationException;
@@ -160,18 +161,18 @@ public final class CaseLogic {
 	 * the disease, the current follow-up until date and the date of the last cooperative visit.
 	 *
 	 * @param ignoreOverwrite
-	 *            Returns the expected follow-up until date based on case start date, follow-up duration of the disease and date of the
-	 *            last cooperative visit. Ignores current follow-up until date and whether or not follow-up until has been overwritten.
+	 *            Ignores current follow-up until date and whether or not follow-up until has been overwritten.
 	 */
 	public static FollowUpPeriodDto calculateFollowUpUntilDate(
 		CaseDataDto caze,
 		FollowUpPeriodDto followUpPeriod,
 		List<VisitDto> visits,
 		int followUpDuration,
-		boolean ignoreOverwrite) {
+		boolean ignoreOverwrite,
+		boolean allowFreeOverwrite) {
 
 		Date overwriteUntilDate = !ignoreOverwrite && caze.isOverwriteFollowUpUntil() ? caze.getFollowUpUntil() : null;
-		return FollowUpLogic.calculateFollowUpUntilDate(followUpPeriod, overwriteUntilDate, visits, followUpDuration);
+		return FollowUpLogic.calculateFollowUpUntilDate(followUpPeriod, overwriteUntilDate, visits, followUpDuration, allowFreeOverwrite);
 	}
 
 	public static RegionReferenceDto getRegionWithFallback(CaseDataDto caze) {
@@ -196,5 +197,38 @@ public final class CaseLogic {
 		}
 
 		return caze.getCommunity();
+	}
+
+	public static ReinfectionStatus calculateReinfectionStatus(Map<ReinfectionDetail, Boolean> reinfectionDetails) {
+
+		if (reinfectionDetails == null) {
+			return null;
+		}
+
+		if (reinfectionDetails.getOrDefault(ReinfectionDetail.GENOME_SEQUENCE_PREVIOUS_INFECTION_KNOWN, false)
+			&& reinfectionDetails.getOrDefault(ReinfectionDetail.GENOME_SEQUENCE_CURRENT_INFECTION_KNOWN, false)
+			&& reinfectionDetails.getOrDefault(ReinfectionDetail.GENOME_SEQUENCES_NOT_MATCHING, false)) {
+			return ReinfectionStatus.CONFIRMED;
+		}
+
+		if (!(reinfectionDetails.getOrDefault(ReinfectionDetail.GENOME_SEQUENCE_PREVIOUS_INFECTION_KNOWN, false)
+			&& reinfectionDetails.getOrDefault(ReinfectionDetail.GENOME_SEQUENCE_CURRENT_INFECTION_KNOWN, false))
+			&& (reinfectionDetails.getOrDefault(ReinfectionDetail.ACUTE_RESPIRATORY_ILLNESS_OVERCOME, false)
+				|| reinfectionDetails.getOrDefault(ReinfectionDetail.PREVIOUS_ASYMPTOMATIC_INFECTION, false))
+			&& (reinfectionDetails.getOrDefault(ReinfectionDetail.TESTED_NEGATIVE_AFTER_PREVIOUS_INFECTION, false)
+				|| reinfectionDetails.getOrDefault(ReinfectionDetail.LAST_PCR_DETECTION_NOT_RECENT, false))
+			&& reinfectionDetails.getOrDefault(ReinfectionDetail.GENOME_COPY_NUMBER_ABOVE_THRESHOLD, false)) {
+			return ReinfectionStatus.PROBABLE;
+		}
+
+		if ((reinfectionDetails.getOrDefault(ReinfectionDetail.ACUTE_RESPIRATORY_ILLNESS_OVERCOME, false)
+			|| reinfectionDetails.getOrDefault(ReinfectionDetail.PREVIOUS_ASYMPTOMATIC_INFECTION, false))
+			&& (reinfectionDetails.getOrDefault(ReinfectionDetail.TESTED_NEGATIVE_AFTER_PREVIOUS_INFECTION, false)
+				|| reinfectionDetails.getOrDefault(ReinfectionDetail.LAST_PCR_DETECTION_NOT_RECENT, false))
+			&& reinfectionDetails.getOrDefault(ReinfectionDetail.GENOME_COPY_NUMBER_BELOW_THRESHOLD, false)) {
+			return ReinfectionStatus.POSSIBLE;
+		}
+
+		return null;
 	}
 }

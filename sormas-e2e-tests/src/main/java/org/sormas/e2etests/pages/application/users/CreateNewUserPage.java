@@ -40,7 +40,6 @@ public class CreateNewUserPage {
   public static final By CITY_INPUT = By.id("city");
   public static final By AREA_TYPE_COMBOBOX = By.cssSelector("#areaType div");
   public static final By LANGUAGE_COMBOBOX = By.cssSelector("#language div");
-  public static final By COMMUNITY_CONTACT_PERSON_INPUT = By.cssSelector(".v-window #details");
   public static final By FACILITY_NAME_DESCRIPTION = By.id("facilityDetails");
   public static final By LATITUDE_INPUT = By.id("latitude");
   public static final By LONGITUDE_INPUT = By.id("longitude");
@@ -51,5 +50,8 @@ public class CreateNewUserPage {
   public static final By LIMITED_DISEASE_COMBOBOX = By.cssSelector("#limitedDisease > div");
   public static final By DISCARD_BUTTON = By.id("discard");
   public static final By SAVE_BUTTON = By.id("commit");
+  public static final By PASSWORD_FIELD =
+      By.xpath(
+          "//div[contains(@class, 'popupContent')]//div[@class='v-label v-widget h2 v-label-h2 v-label-undef-w']");
   public static final By CLOSE_DIALOG_BUTTON = By.className("v-window-closebox");
 }

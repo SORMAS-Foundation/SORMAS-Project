@@ -62,7 +62,13 @@ public class ContactResource extends EntityDtoResource {
 	@GET
 	@Path("/all/{since}")
 	public List<ContactDto> getAllContacts(@PathParam("since") long since) {
-		return FacadeProvider.getContactFacade().getAllActiveContactsAfter(new Date(since));
+		return FacadeProvider.getContactFacade().getAllAfter(new Date(since));
+	}
+
+	@GET
+	@Path("/all/{since}/{size}/{lastSynchronizedUuid}")
+	public List<ContactDto> getAllContacts(@PathParam("since") long since, @PathParam("size") int size, @PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
+		return FacadeProvider.getContactFacade().getAllAfter(new Date(since), size, lastSynchronizedUuid);
 	}
 
 	@POST
@@ -83,7 +89,7 @@ public class ContactResource extends EntityDtoResource {
 	@Path("/push")
 	public List<PushResult> postContacts(@Valid List<ContactDto> dtos) {
 
-		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getContactFacade()::saveContact);
+		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getContactFacade()::save);
 		return result;
 	}
 
@@ -129,7 +135,7 @@ public class ContactResource extends EntityDtoResource {
 	@GET
 	@Path("/{uuid}")
 	public ContactDto getByUuid(@PathParam("uuid") String uuid) {
-		return FacadeProvider.getContactFacade().getContactByUuid(uuid);
+		return FacadeProvider.getContactFacade().getByUuid(uuid);
 	}
 
 }

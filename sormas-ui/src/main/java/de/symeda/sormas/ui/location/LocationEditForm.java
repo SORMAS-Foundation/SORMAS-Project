@@ -464,7 +464,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 				if (!visibleAndRequired) {
 					facilityDetails.clear();
 				} else {
-					facilityDetails.setValue(getValue().getFacilityDetails());
+					String facilityDetailsValue = getValue() != null ? getValue().getFacilityDetails() : null;
+					facilityDetails.setValue(facilityDetailsValue);
 				}
 			} else {
 				facilityDetails.setVisible(false);
@@ -555,6 +556,21 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 		// Set initial visiblity of facility-contactperson-details (should only be visible if at least a facilityType has been selected)
 		setFacilityContactPersonFieldsVisible(facilityType.getValue() != null, true);
+	}
+
+	@Override
+	public void discard() throws SourceException {
+		super.discard();
+		LocationDto locationDto = getValue();
+		if (locationDto != null) {
+			FacilityType facilityType = locationDto.getFacilityType();
+			if (facilityType != null) {
+				facilityTypeGroup.setValue(facilityType.getFacilityTypeGroup());
+			} else {
+				facilityTypeGroup.setValue(null);
+			}
+			facility.setValue(locationDto.getFacility());
+		}
 	}
 
 	private void updateRegionCombo(ComboBox region, ComboBox country) {

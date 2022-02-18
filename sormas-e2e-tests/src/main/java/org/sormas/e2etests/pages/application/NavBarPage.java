@@ -31,4 +31,7 @@ public class NavBarPage {
   public static final By IMMUNIZATIONS_BUTTON = By.cssSelector("#immunizations");
   public static final By USERS_BUTTON = By.cssSelector("div#users");
   public static final By CONFIRM_NAVIGATION = By.cssSelector(("[id=actionConfirm]"));
+  public static final By REPORTS_BUTTON = By.cssSelector("div#reports");
+  public static final By CONFIGURATION_BUTTON = By.cssSelector("div#configuration");
+  public static final By LOGOUT_BUTTON = By.cssSelector("[id='actionLogout-2']");
 }

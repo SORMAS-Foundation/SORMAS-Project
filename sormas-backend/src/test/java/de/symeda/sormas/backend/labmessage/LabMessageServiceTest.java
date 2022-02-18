@@ -6,6 +6,9 @@ import static org.junit.Assert.assertEquals;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
@@ -83,6 +86,94 @@ public class LabMessageServiceTest extends AbstractBeanTest {
 		assertEquals(labMessage1a.getUuid(), result.get(2).getUuid());
 		assertEquals(labMessage1b.getUuid(), result.get(1).getUuid());
 		assertEquals(labMessage1c.getUuid(), result.get(0).getUuid());
+	}
+
+	@Test
+	public void testCountForCase() {
+
+		LabMessageService sut = getLabMessageService();
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
+		PersonDto person = creator.createPerson();
+		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
+
+		// create noise
+		CaseDataDto noiseCaze = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		creator.createSample(noiseCaze.toReference(), user.toReference(), rdcf.facility);
+
+		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		assertEquals(0L, sut.countForCase(caze.getUuid()));
+
+		creator.createLabMessage(lm -> lm.setSample(sample.toReference()));
+		assertEquals(1L, sut.countForCase(caze.getUuid()));
+
+		// create additional matches
+		creator.createLabMessage(lm -> lm.setSample(sample.toReference()));
+		SampleDto sample2 = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		creator.createLabMessage(lm -> lm.setSample(sample2.toReference()));
+		assertEquals(3L, sut.countForCase(caze.getUuid()));
+		assertEquals(0L, sut.countForContact(caze.getUuid()));
+		assertEquals(0L, sut.countForEventParticipant(caze.getUuid()));
+	}
+
+	@Test
+	public void testCountForContact() {
+
+		LabMessageService sut = getLabMessageService();
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
+		PersonDto person = creator.createPerson();
+		ContactDto contact = creator.createContact(user.toReference(), person.toReference());
+
+		// create noise
+		ContactDto noiseContact = creator.createContact(user.toReference(), person.toReference());
+		creator.createSample(noiseContact.toReference(), user.toReference(), rdcf.facility, null);
+
+		SampleDto sample = creator.createSample(contact.toReference(), user.toReference(), rdcf.facility, null);
+		assertEquals(0L, sut.countForContact(contact.getUuid()));
+
+		creator.createLabMessage(lm -> lm.setSample(sample.toReference()));
+		assertEquals(1L, sut.countForContact(contact.getUuid()));
+
+		// create additional matches
+		creator.createLabMessage(lm -> lm.setSample(sample.toReference()));
+		SampleDto sample2 = creator.createSample(contact.toReference(), user.toReference(), rdcf.facility, null);
+		creator.createLabMessage(lm -> lm.setSample(sample2.toReference()));
+		assertEquals(3L, sut.countForContact(contact.getUuid()));
+		assertEquals(0L, sut.countForCase(contact.getUuid()));
+		assertEquals(0L, sut.countForEventParticipant(contact.getUuid()));
+	}
+
+	@Test
+	public void testCountForEventParticipant() {
+
+		LabMessageService sut = getLabMessageService();
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
+		PersonDto person = creator.createPerson();
+		EventDto event = creator.createEvent(user.toReference());
+		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, user.toReference());
+
+		// create noise
+		EventParticipantDto noiseEventParticipant = creator.createEventParticipant(event.toReference(), person, user.toReference());
+		creator.createSample(noiseEventParticipant.toReference(), user.toReference(), rdcf.facility);
+
+		SampleDto sample = creator.createSample(eventParticipant.toReference(), user.toReference(), rdcf.facility);
+		assertEquals(0L, sut.countForEventParticipant(eventParticipant.getUuid()));
+
+		creator.createLabMessage(lm -> lm.setSample(sample.toReference()));
+		assertEquals(1L, sut.countForEventParticipant(eventParticipant.getUuid()));
+
+		// create additional matches
+		creator.createLabMessage(lm -> lm.setSample(sample.toReference()));
+		SampleDto sample2 = creator.createSample(eventParticipant.toReference(), user.toReference(), rdcf.facility);
+		creator.createLabMessage(lm -> lm.setSample(sample2.toReference()));
+		assertEquals(3L, sut.countForEventParticipant(eventParticipant.getUuid()));
+		assertEquals(0L, sut.countForContact(eventParticipant.getUuid()));
+		assertEquals(0L, sut.countForCase(eventParticipant.getUuid()));
 
 	}
 }

@@ -18,6 +18,10 @@
 
 package org.sormas.e2etests.steps.web.application.persons;
 
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.CONTACT_PERSON_FIRST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.CONTACT_PERSON_LAST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.SEX_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.*;
 
@@ -25,12 +29,14 @@ import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
+import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Named;
 import org.openqa.selenium.ElementClickInterceptedException;
-import org.sormas.e2etests.comparators.PersonComparator;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pojo.web.Person;
 import org.sormas.e2etests.services.PersonService;
 import org.sormas.e2etests.steps.BaseSteps;
@@ -49,7 +55,6 @@ public class EditPersonSteps implements En {
       WebDriverHelpers webDriverHelpers,
       PersonService personService,
       BaseSteps baseSteps,
-      PersonComparator personComparator,
       @Named("ENVIRONMENT_URL") String environmentUrl) {
     this.webDriverHelpers = webDriverHelpers;
 
@@ -58,14 +63,29 @@ public class EditPersonSteps implements En {
         () -> {
           previousCreatedPerson = EditContactPersonSteps.fullyDetailedPerson;
           collectedPerson = collectPersonData();
-          personComparator.comparePersonsAreEqual(previousCreatedPerson, collectedPerson);
+          ComparisonHelper.compareEqualEntities(previousCreatedPerson, collectedPerson);
         });
 
     When(
         "I check that previous edited person is correctly displayed in Edit Person page",
         () -> {
           collectedPerson = collectPersonData();
-          personComparator.checkPersonAreDifferent(previousCreatedPerson, collectedPerson);
+          ComparisonHelper.compareDifferentFieldsOfEntities(
+              previousCreatedPerson,
+              collectedPerson,
+              List.of(
+                  "firstName",
+                  "lastName",
+                  "externalId",
+                  "externalToken",
+                  "street",
+                  "houseNumber",
+                  "city",
+                  "postalCode",
+                  "contactPersonFirstName",
+                  "contactPersonLastName",
+                  "birthName",
+                  "nameOfGuardians"));
         });
 
     Then(
@@ -78,14 +98,12 @@ public class EditPersonSteps implements En {
           fillDateOfBirth(newGeneratedPerson.getDateOfBirth());
           selectSex(newGeneratedPerson.getSex());
           selectPresentConditionOfPerson(newGeneratedPerson.getPresentConditionOfPerson());
-          fillNationalHealthId(newGeneratedPerson.getNationalHealthId());
-          fillNationalHealthId(newGeneratedPerson.getNationalHealthId());
-          fillPassportNumber(newGeneratedPerson.getPassportNumber());
           fillExternalId(newGeneratedPerson.getExternalId());
           fillExternalToken(newGeneratedPerson.getExternalToken());
           selectTypeOfOccupation(newGeneratedPerson.getTypeOfOccupation());
+          TimeUnit.SECONDS.sleep(3);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           selectStaffOfArmedForces(newGeneratedPerson.getStaffOfArmedForces());
-          selectEducation(newGeneratedPerson.getEducation());
           selectRegion(newGeneratedPerson.getRegion());
           selectDistrict(newGeneratedPerson.getDistrict());
           selectCommunity(newGeneratedPerson.getCommunity());
@@ -93,6 +111,8 @@ public class EditPersonSteps implements En {
           selectFacilityType(newGeneratedPerson.getFacilityType());
           selectFacility(newGeneratedPerson.getFacility());
           fillFacilityNameAndDescription(newGeneratedPerson.getFacilityNameAndDescription());
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           fillStreet(newGeneratedPerson.getStreet());
           fillHouseNumber(newGeneratedPerson.getHouseNumber());
           fillAdditionalInformation(newGeneratedPerson.getAdditionalInformation());
@@ -101,12 +121,7 @@ public class EditPersonSteps implements En {
           selectAreaType(newGeneratedPerson.getAreaType());
           fillContactPersonFirstName(newGeneratedPerson.getContactPersonFirstName());
           fillContactPersonLastName(newGeneratedPerson.getContactPersonLastName());
-          fillCommunityContactPerson(newGeneratedPerson.getCommunityContactPerson());
           fillBirthName(newGeneratedPerson.getBirthName());
-          fillNickName(newGeneratedPerson.getNickname());
-          fillMotherMaidenName(newGeneratedPerson.getMotherMaidenName());
-          fillMotherName(newGeneratedPerson.getMotherName());
-          fillFatherName(newGeneratedPerson.getFatherName());
           fillNamesOfGuardians(newGeneratedPerson.getNameOfGuardians());
         });
 
@@ -123,7 +138,7 @@ public class EditPersonSteps implements En {
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEE_EVENTS_FOR_PERSON);
           webDriverHelpers.clickOnWebElementBySelector(SEE_EVENTS_FOR_PERSON);
-          final String eventUuid = EditEventSteps.event.getUuid();
+          final String eventUuid = EditEventSteps.collectedEvent.getUuid();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(eventUuid));
         });
 
@@ -132,7 +147,44 @@ public class EditPersonSteps implements En {
         () -> {
           final String personUuid = EditEventSteps.person.getUuid();
           webDriverHelpers.accessWebSite(
-              environmentUrl + "/sormas-ui/#!persons/data/" + personUuid);
+              environmentUrl + "/sormas-webdriver/#!persons/data/" + personUuid);
+        });
+
+    When(
+        "I clear the mandatory Person fields",
+        () -> {
+          webDriverHelpers.clearWebElement(FIRST_NAME_INPUT);
+          webDriverHelpers.clearWebElement(LAST_NAME_INPUT);
+          webDriverHelpers.selectFromCombobox(SEX_COMBOBOX, "");
+        });
+
+    When(
+        "^I check that an invalid data error message appears$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(INVALID_DATA_ERROR);
+          webDriverHelpers.clickOnWebElementBySelector(INVALID_DATA_ERROR);
+        });
+
+    Then(
+        "I fill in the home address, facility category and type in the Home Address section of the Edit Person Page",
+        () -> {
+          newGeneratedPerson = personService.buildGeneratedPerson();
+          selectFacilityCategory(newGeneratedPerson.getFacilityCategory());
+          selectFacilityType(newGeneratedPerson.getFacilityType());
+          fillStreet(newGeneratedPerson.getStreet());
+          fillHouseNumber(newGeneratedPerson.getHouseNumber());
+          fillAdditionalInformation(newGeneratedPerson.getAdditionalInformation());
+          fillPostalCode(newGeneratedPerson.getPostalCode());
+          fillCity(newGeneratedPerson.getCity());
+          selectAreaType(newGeneratedPerson.getAreaType());
+        });
+
+    When(
+        "^I check that an empty district highlight appears above the facility combobox$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(ERROR_INDICATOR);
         });
   }
 
@@ -171,14 +223,6 @@ public class EditPersonSteps implements En {
     webDriverHelpers.selectFromCombobox(PRESENT_CONDITION_COMBOBOX, condition);
   }
 
-  private void fillNationalHealthId(String nationalHealthId) {
-    webDriverHelpers.clearAndFillInWebElement(NATIONAL_HEALTH_ID_INPUT, nationalHealthId);
-  }
-
-  private void fillPassportNumber(String passportNumber) {
-    webDriverHelpers.clearAndFillInWebElement(PASSPORT_NUMBER_INPUT, passportNumber);
-  }
-
   private void fillExternalId(String id) {
     webDriverHelpers.clearAndFillInWebElement(EXTERNAL_ID_INPUT, id);
   }
@@ -193,10 +237,6 @@ public class EditPersonSteps implements En {
 
   private void selectStaffOfArmedForces(String armedForces) {
     webDriverHelpers.selectFromCombobox(STAFF_OF_ARMED_FORCES_COMBOBOX, armedForces);
-  }
-
-  private void selectEducation(String education) {
-    webDriverHelpers.selectFromCombobox(EDUCATION_COMBOBOX, education);
   }
 
   private void selectRegion(String region) {
@@ -259,28 +299,8 @@ public class EditPersonSteps implements En {
     webDriverHelpers.clearAndFillInWebElement(CONTACT_PERSON_LAST_NAME_INPUT, last);
   }
 
-  private void fillCommunityContactPerson(String name) {
-    webDriverHelpers.clearAndFillInWebElement(COMMUNITY_CONTACT_PERSON_INPUT, name);
-  }
-
   private void fillBirthName(String name) {
     webDriverHelpers.clearAndFillInWebElement(BIRTH_NAME_INPUT, name);
-  }
-
-  private void fillNickName(String name) {
-    webDriverHelpers.clearAndFillInWebElement(NICKNAME_INPUT, name);
-  }
-
-  private void fillMotherMaidenName(String name) {
-    webDriverHelpers.clearAndFillInWebElement(MOTHER_MAIDEN_NAME_INPUT, name);
-  }
-
-  private void fillMotherName(String name) {
-    webDriverHelpers.clearAndFillInWebElement(MOTHER_NAME_INPUT, name);
-  }
-
-  private void fillFatherName(String name) {
-    webDriverHelpers.clearAndFillInWebElement(FATHER_NAME_INPUT, name);
   }
 
   private void fillNamesOfGuardians(String name) {
@@ -298,13 +318,10 @@ public class EditPersonSteps implements En {
         .salutation(webDriverHelpers.getValueFromWebElement(SALUTATION_INPUT))
         .sex(webDriverHelpers.getValueFromWebElement(SEX_INPUT))
         .presentConditionOfPerson(webDriverHelpers.getValueFromWebElement(PRESENT_CONDITION_INPUT))
-        .nationalHealthId(webDriverHelpers.getValueFromWebElement(NATIONAL_HEALTH_ID_INPUT))
-        .passportNumber(webDriverHelpers.getValueFromWebElement(PASSPORT_NUMBER_INPUT))
         .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
         .externalToken(webDriverHelpers.getValueFromWebElement(EXTERNAL_TOKEN_INPUT))
         .typeOfOccupation(webDriverHelpers.getValueFromWebElement(TYPE_OF_OCCUPATION_INPUT))
         .staffOfArmedForces(webDriverHelpers.getValueFromWebElement(STAFF_OF_ARMED_FORCES_INPUT))
-        .education(webDriverHelpers.getValueFromWebElement(EDUCATION_INPUT))
         .region(webDriverHelpers.getValueFromWebElement(REGION_INPUT))
         .district(webDriverHelpers.getValueFromWebElement(DISTRICT_INPUT))
         .community(webDriverHelpers.getValueFromWebElement(COMMUNITY_INPUT))
@@ -324,13 +341,7 @@ public class EditPersonSteps implements En {
             webDriverHelpers.getValueFromWebElement(CONTACT_PERSON_FIRST_NAME_INPUT))
         .contactPersonLastName(
             webDriverHelpers.getValueFromWebElement(CONTACT_PERSON_LAST_NAME_INPUT))
-        .communityContactPerson(
-            webDriverHelpers.getValueFromWebElement(COMMUNITY_CONTACT_PERSON_INPUT))
         .birthName(webDriverHelpers.getValueFromWebElement(BIRTH_NAME_INPUT))
-        .nickname(webDriverHelpers.getValueFromWebElement(NICKNAME_INPUT))
-        .motherMaidenName(webDriverHelpers.getValueFromWebElement(MOTHER_MAIDEN_NAME_INPUT))
-        .motherName(webDriverHelpers.getValueFromWebElement(MOTHER_NAME_INPUT))
-        .fatherName(webDriverHelpers.getValueFromWebElement(FATHER_NAME_INPUT))
         .nameOfGuardians(webDriverHelpers.getValueFromWebElement(NAMES_OF_GUARDIANS_INPUT))
         .personContactDetailsContactInformation(
             webDriverHelpers.getTextFromPresentWebElement(
@@ -344,10 +355,11 @@ public class EditPersonSteps implements En {
         .build();
   }
 
-  public Person getPersonInformation() {
+  private Person getPersonInformation() {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(USER_INFORMATION, 60);
     String contactInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
+    webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
     String uuid = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
     String[] personInfos = contactInfo.split(" ");
     LocalDate localDate = LocalDate.parse(personInfos[3].replace(")", ""), formatter);

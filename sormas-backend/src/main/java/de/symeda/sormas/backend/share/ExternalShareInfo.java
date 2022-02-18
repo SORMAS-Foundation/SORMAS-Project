@@ -31,6 +31,8 @@ import de.symeda.sormas.backend.user.User;
 @Entity(name = "externalshareinfo")
 public class ExternalShareInfo extends AbstractDomainObject {
 
+	public static final String TABLE_NAME = "externalshareinfo";
+
 	public static final String CAZE = "caze";
 	public static final String EVENT = "event";
 	public static final String STATUS = "status";

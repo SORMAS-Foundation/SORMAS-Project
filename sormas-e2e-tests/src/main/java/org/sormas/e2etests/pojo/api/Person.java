@@ -32,6 +32,7 @@ import org.sormas.e2etests.pojo.api.chunks.Address;
 public class Person {
   String firstName;
   String lastName;
+  String emailAddress;
   Integer birthdateDD;
   Integer birthdateMM;
   Integer birthdateYYYY;
@@ -41,4 +42,5 @@ public class Person {
   Boolean covidCodeDelivered;
   Address address;
   List<Object> personContactDetails;
+  String presentCondition;
 }

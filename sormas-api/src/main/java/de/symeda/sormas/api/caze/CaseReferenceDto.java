@@ -60,6 +60,14 @@ public class CaseReferenceDto extends ReferenceDto {
 		return lastName;
 	}
 
+	public void setFirstName(String firstName) {
+		this.firstName = firstName;
+	}
+
+	public void setLastName(String lastName) {
+		this.lastName = lastName;
+	}
+
 	public static String buildCaption(String uuid, String firstName, String lastName) {
 
 		String personName = PersonDto.buildCaption(firstName, lastName);

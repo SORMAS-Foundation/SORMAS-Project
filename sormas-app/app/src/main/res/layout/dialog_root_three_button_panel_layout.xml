@@ -36,8 +36,8 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal"
-        android:paddingLeft="@dimen/dialog_panel_horizontal_padding"
-        android:paddingRight="@dimen/dialog_panel_horizontal_padding"
+        android:paddingLeft="@dimen/dialog_three_buttons_panel_horizontal_padding"
+        android:paddingRight="@dimen/dialog_three_buttons_panel_horizontal_padding"
         android:visibility="@{dialog.isButtonPanelVisible? View.VISIBLE : View.GONE}">
 
         <de.symeda.sormas.app.component.controls.ControlButton
@@ -72,7 +72,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="end"
-            android:layout_marginStart="@dimen/control_spacing_slim"
+            android:layout_marginStart="@dimen/serviceSeparatorMarginLeft"
             android:layout_alignParentEnd="true"
             android:visibility="@{dialog.isPositiveButtonVisible? View.VISIBLE : View.GONE}"
             android:text="@{config.positiveButtonText}"

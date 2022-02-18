@@ -95,6 +95,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	@EJB
 	private EventParticipantFacadeEjbLocal eventParticipantFacade;
 	@EJB
+	private EventFacadeEjbLocal eventFacade;
+	@EJB
 	private PathogenTestService pathogenTestService;
 	@EJB
 	private SampleService sampleService;
@@ -120,6 +122,11 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 
 	@Override
 	public List<PathogenTestDto> getAllActivePathogenTestsAfter(Date date) {
+		return getAllActivePathogenTestsAfter(date, null, null);
+	}
+
+	@Override
+	public List<PathogenTestDto> getAllActivePathogenTestsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 		User user = userService.getCurrentUser();
 
 		if (user == null) {
@@ -127,7 +134,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return pathogenTestService.getAllActivePathogenTestsAfter(date, user)
+		return pathogenTestService.getAllActivePathogenTestsAfter(date, user, batchSize, lastSynchronizedUuid)
 			.stream()
 			.map(p -> convertToDto(p, pseudonymizer))
 			.collect(Collectors.toList());
@@ -247,19 +254,23 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		// Update case classification if necessary
 		final Case associatedCase = pathogenTest.getSample().getAssociatedCase();
 		if (associatedCase != null) {
-			caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(associatedCase), associatedCase, syncShares);
+			caseFacade.onCaseChanged(caseFacade.toDto(associatedCase), associatedCase, syncShares);
 		}
 
 		// update contact if necessary
 		Contact associatedContact = pathogenTest.getSample().getAssociatedContact();
 		if (associatedContact != null) {
-			contactFacade.onContactChanged(ContactFacadeEjbLocal.toDto(associatedContact), syncShares);
+			contactFacade.onContactChanged(contactFacade.toDto(associatedContact), syncShares);
 		}
 
 		// update event participant if necessary
 		EventParticipant associatedEventParticipant = pathogenTest.getSample().getAssociatedEventParticipant();
 		if (associatedEventParticipant != null) {
-			eventParticipantFacade.onEventParticipantChanged(EventFacadeEjbLocal.toDto(associatedEventParticipant.getEvent()), syncShares);
+			eventParticipantFacade.onEventParticipantChanged(
+				eventFacade.toDto(associatedEventParticipant.getEvent()),
+					eventParticipantFacade.toDto(associatedEventParticipant),
+				associatedEventParticipant,
+				syncShares);
 		}
 	}
 

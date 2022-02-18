@@ -24,7 +24,9 @@ import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+import java.sql.Timestamp;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
@@ -34,9 +36,10 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -66,7 +69,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ad", "Min", UserRole.ADMIN);
+		UserDto admin = getUserFacade().getByUserName("admin");
 		String adminUuid = admin.getUuid();
 		TaskDto task = creator.createTask(
 			TaskContext.GENERAL,
@@ -170,19 +173,144 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(6, getTaskFacade().getAllActiveTasksAfter(null).size());
 		assertEquals(6, getTaskFacade().getAllActiveUuids().size());
 
-		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), true);
-		getEventFacade().archiveOrDearchiveEvent(event.getUuid(), true);
+		getCaseFacade().archive(caze.getUuid());
+		getEventFacade().archive(event.getUuid());
 
 		// getAllActiveTasks and getAllUuids should return length 1
 		assertEquals(1, getTaskFacade().getAllActiveTasksAfter(null).size());
 		assertEquals(1, getTaskFacade().getAllActiveUuids().size());
 
-		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), false);
-		getEventFacade().archiveOrDearchiveEvent(event.getUuid(), false);
+		getCaseFacade().dearchive(caze.getUuid());
+		getEventFacade().dearchive(event.getUuid());
 
 		// getAllActiveTasks and getAllUuids should return length 5 + 1 (contact investigation)
 		assertEquals(6, getTaskFacade().getAllActiveTasksAfter(null).size());
 		assertEquals(6, getTaskFacade().getAllActiveUuids().size());
+	}
+
+	@Test
+	public void testGetAllActiveTasksBatched() {
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+		ContactDto contact =
+			creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
+		EventDto event = creator.createEvent(
+			EventStatus.SIGNAL,
+			EventInvestigationStatus.PENDING,
+			"Title",
+			"Description",
+			"First",
+			"Name",
+			"12345",
+			TypeOfPlace.PUBLIC_PLACE,
+			DateHelper.subtractDays(new Date(), 1),
+			new Date(),
+			user.toReference(),
+			user.toReference(),
+			Disease.EVD,
+			rdcf.district);
+
+		creator.createTask(
+			TaskContext.GENERAL,
+			TaskType.OTHER,
+			TaskStatus.PENDING,
+			null,
+			null,
+			null,
+			DateHelper.addDays(new Date(), 1),
+			user.toReference());
+		creator.createTask(
+			TaskContext.CASE,
+			TaskType.OTHER,
+			TaskStatus.PENDING,
+			caze.toReference(),
+			null,
+			null,
+			DateHelper.addDays(new Date(), 1),
+			user.toReference());
+		creator.createTask(
+			TaskContext.CONTACT,
+			TaskType.OTHER,
+			TaskStatus.PENDING,
+			null,
+			contact.toReference(),
+			null,
+			DateHelper.addDays(new Date(), 1),
+			user.toReference());
+		creator.createTask(
+			TaskContext.EVENT,
+			TaskType.OTHER,
+			TaskStatus.PENDING,
+			null,
+			null,
+			event.toReference(),
+			DateHelper.addDays(new Date(), 1),
+			user.toReference());
+
+		// getAllActiveTasks batched
+		List<TaskDto> allActiveTasksAfterBatched = getTaskFacade().getAllActiveTasksAfter(null, 3, null);
+		assertEquals(3, allActiveTasksAfterBatched.size());
+		assertTrue(allActiveTasksAfterBatched.get(0).getChangeDate().getTime() <= allActiveTasksAfterBatched.get(1).getChangeDate().getTime());
+		assertTrue(allActiveTasksAfterBatched.get(1).getChangeDate().getTime() <= allActiveTasksAfterBatched.get(2).getChangeDate().getTime());
+
+		List<TaskDto> allActiveTasksAfterLargeBatch = getTaskFacade().getAllActiveTasksAfter(null, 10, null);
+		assertEquals(6, allActiveTasksAfterLargeBatch.size());
+
+		TaskDto taskRead = allActiveTasksAfterBatched.get(2);
+		List<TaskDto> allActiveTasksAfterBatchedOneMillisecondBefore =
+			getTaskFacade().getAllActiveTasksAfter(new Date(taskRead.getChangeDate().getTime() - 1L), 10, EntityDto.NO_LAST_SYNCED_UUID);
+		assertEquals(4, allActiveTasksAfterBatchedOneMillisecondBefore.size());
+
+		// getAllActiveTasks batched with Uuid
+		List<TaskDto> allActiveTasksAfterBatchedSameTime =
+			getTaskFacade().getAllActiveTasksAfter(taskRead.getChangeDate(), 10, "AAAAAA-AAAAAA-AAAAAA-AAAAAA");
+		assertEquals(4, allActiveTasksAfterBatchedSameTime.size());
+
+		List<TaskDto> allActiveTasksAfterBatchedSameTimeSameUuid =
+			getTaskFacade().getAllActiveTasksAfter(taskRead.getChangeDate(), 10, taskRead.getUuid());
+		assertEquals(3, allActiveTasksAfterBatchedSameTimeSameUuid.size());
+
+		TaskService taskService = getBean(TaskService.class);
+		Task byUuid = taskService.getByUuid(taskRead.getUuid());
+
+		Task taskWithNanoseconds = new Task();
+		Timestamp changeDate = new Timestamp(taskRead.getChangeDate().getTime());
+		changeDate.setNanos(changeDate.getNanos() + 150000);
+		taskWithNanoseconds.setChangeDate(changeDate);
+		taskWithNanoseconds.setUuid("ZZZZZZ-ZZZZZZ-ZZZZZZ-ZZZZZZ");
+		taskWithNanoseconds.setId(null);
+		taskWithNanoseconds.setTaskContext(byUuid.getTaskContext());
+		taskWithNanoseconds.setTaskType(byUuid.getTaskType());
+		taskWithNanoseconds.setCaze(byUuid.getCaze());
+		taskWithNanoseconds.setContact(byUuid.getContact());
+		taskWithNanoseconds.setTaskStatus(byUuid.getTaskStatus());
+		taskWithNanoseconds.setCreatorUser(byUuid.getCreatorUser());
+		taskWithNanoseconds.setAssigneeUser(byUuid.getAssigneeUser());
+
+		taskService.ensurePersisted(taskWithNanoseconds);
+
+		assertEquals(changeDate.getTime(), taskService.getByUuid("ZZZZZZ-ZZZZZZ-ZZZZZZ-ZZZZZZ").getChangeDate().getTime());
+
+		List<TaskDto> allAfterSeveralResultsSameTime = getTaskFacade().getAllActiveTasksAfter(taskRead.getChangeDate(), 10, taskRead.getUuid());
+		assertEquals(4, allAfterSeveralResultsSameTime.size());
+
+		List<TaskDto> allAfterSeveralResultsSameTimeWithUuid =
+			getTaskFacade().getAllActiveTasksAfter(taskRead.getChangeDate(), 10, "AAAAAA-AAAAAA-AAAAAA-AAAAAA");
+		assertEquals(5, allAfterSeveralResultsSameTimeWithUuid.size());
+
+		assertEquals(taskRead.getUuid(), allAfterSeveralResultsSameTimeWithUuid.get(0).getUuid());
+		assertEquals("ZZZZZZ-ZZZZZZ-ZZZZZZ-ZZZZZZ", allAfterSeveralResultsSameTimeWithUuid.get(1).getUuid());
 	}
 
 	@Test
@@ -251,8 +379,8 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 
 		// 1. one user with tasks, one without
 		RDCF rdcf = new RDCF(creator.createRDCFEntities());
-		UserDto user1 = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
-		UserDto user2 = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user1 = creator.createUser(rdcf, "First", "User", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user2 = creator.createUser(rdcf, "Second", "User", UserRole.SURVEILLANCE_SUPERVISOR);
 
 		creator.createTask(user1.toReference());
 

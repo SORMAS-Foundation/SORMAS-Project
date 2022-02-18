@@ -54,4 +54,5 @@ public class Contact {
   String followUpStatus;
   String relationToCase;
   String uuid;
+  Case caze;
 }

@@ -20,7 +20,9 @@ package org.sormas.e2etests.services.api;
 
 import com.google.inject.Inject;
 import java.util.Date;
+import java.util.LinkedHashMap;
 import java.util.UUID;
+import org.sormas.e2etests.enums.CaseClassification;
 import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.DistrictsValues;
@@ -35,7 +37,7 @@ public class CaseApiService {
 
   public Case buildGeneratedCase(Person person) {
     return Case.builder()
-        .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
+        .disease(DiseasesValues.getRandomDiseaseName())
         .diseaseDetails("Test Disease")
         .pseudonymized(false)
         .uuid(UUID.randomUUID().toString())
@@ -57,7 +59,7 @@ public class CaseApiService {
                 .firstName(person.getFirstName())
                 .lastName(person.getLastName())
                 .build())
-        .caseClassification("NOT_CLASSIFIED")
+        .caseClassification(CaseClassification.getRandomAPIClassification())
         .investigationStatus("PENDING")
         .outcome("NO_OUTCOME")
         .epiData(EpiData.builder().uuid(UUID.randomUUID().toString()).build())
@@ -104,6 +106,25 @@ public class CaseApiService {
         .notACaseReasonOther(false)
         .dontShareWithReportingTool(false)
         .caseReferenceDefinition("NOT_FULFILLED")
+        .vaccinationStatus("VACCINATED")
+        .quarantine("HOME")
+        .reInfection("YES")
+        .reinfectionStatus("CONFIRMED")
+        .reinfectionDetails(
+            new LinkedHashMap<String, Boolean>() {
+              {
+                put("GENOME_SEQUENCE_CURRENT_INFECTION_KNOWN", true);
+                put("GENOME_SEQUENCES_NOT_MATCHING", true);
+                put("GENOME_SEQUENCE_PREVIOUS_INFECTION_KNOWN", true);
+              }
+            })
+        .build();
+  }
+
+  public Case buildCaseWithClassification(Person person, String classification) {
+    Case caze = buildGeneratedCase(person);
+    return caze.toBuilder()
+        .caseClassification(CaseClassification.getAPIValueFor(classification))
         .build();
   }
 }

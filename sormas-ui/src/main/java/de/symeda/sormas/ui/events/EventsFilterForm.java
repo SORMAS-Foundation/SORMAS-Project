@@ -28,15 +28,15 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import com.vaadin.icons.VaadinIcons;
-import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.Label;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.google.common.collect.Sets;
+import com.vaadin.icons.VaadinIcons;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.CheckBox;
@@ -55,17 +55,17 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.SpecificRisk;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
-import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -229,7 +229,8 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 		moreFiltersContainer.addComponent(
 			buildWeekAndDateFilter(EventCriteria.DateType.EVENT_SIGNAL_EVOLUTION, isExternalShareEnabled),
 			EVENT_SIGNAL_EVOLUTION_WEEK_AND_DATE_FILTER);
-		moreFiltersContainer.addComponent(buildWeekAndDateFilter(EventCriteria.DateType.ACTION_CHANGE, isExternalShareEnabled), ACTION_CHANGE_WEEK_AND_DATE_FILTER);
+		moreFiltersContainer
+			.addComponent(buildWeekAndDateFilter(EventCriteria.DateType.ACTION_CHANGE, isExternalShareEnabled), ACTION_CHANGE_WEEK_AND_DATE_FILTER);
 		moreFiltersContainer.addComponent(buildWeekAndDateFilter(EventCriteria.DateType.ACTION, isExternalShareEnabled), ACTION_WEEK_AND_DATE_FILTER);
 
 		ComboBox facilityTypeGroupField = ComboBoxHelper.createComboBoxV7();
@@ -400,7 +401,7 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			Date dateFrom = weekAndDateFilter.getDateFromFilter().getValue();
 			fromDate = dateFrom != null ? DateHelper.getStartOfDay(dateFrom) : null;
 			Date dateTo = weekAndDateFilter.getDateToFilter().getValue();
-			toDate = dateFrom != null ? DateHelper.getEndOfDay(dateTo) : null;
+			toDate = dateTo != null ? DateHelper.getEndOfDay(dateTo) : null;
 		} else {
 			fromDate = DateHelper.getEpiWeekStart((EpiWeek) weekAndDateFilter.getWeekFromFilter().getValue());
 			toDate = DateHelper.getEpiWeekEnd((EpiWeek) weekAndDateFilter.getWeekToFilter().getValue());
@@ -507,10 +508,10 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			criteria.getActionChangeDateTo());
 
 		applyDateDependencyOnNewValue(
-				ACTION_WEEK_AND_DATE_FILTER,
-				criteria.getActionDateFilterOption(),
-				criteria.getActionDateFrom(),
-				criteria.getActionDateTo());
+			ACTION_WEEK_AND_DATE_FILTER,
+			criteria.getActionDateFilterOption(),
+			criteria.getActionDateFrom(),
+			criteria.getActionDateTo());
 
 		RegionReferenceDto region = criteria.getRegion();
 		DistrictReferenceDto district = criteria.getDistrict();

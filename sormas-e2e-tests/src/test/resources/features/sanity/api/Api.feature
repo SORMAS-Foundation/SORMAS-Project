@@ -22,6 +22,17 @@ Feature: Check basic POSTs RestApi endpoints
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
 
+  Scenario: Create a new contact linked to a case
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact linked to the previous created case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+
   Scenario: Create a new event
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -48,3 +59,17 @@ Feature: Check basic POSTs RestApi endpoints
     Given API: I create a new task
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
+
+  Scenario Outline: Create Person and attach <numberOfImmunizations> immunizations
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    When API: I create <numberOfImmunizations> new immunizations for last created person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+
+    Examples:
+      | numberOfImmunizations |
+      | 1                     |
+      | 5                     |
+

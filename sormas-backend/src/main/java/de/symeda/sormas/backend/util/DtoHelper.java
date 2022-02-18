@@ -23,7 +23,11 @@ import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
 import java.sql.Timestamp;
 import java.util.Collection;
+import java.util.EnumMap;
+import java.util.Map;
 import java.util.function.Supplier;
+
+import com.google.common.collect.Maps;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
@@ -124,7 +128,26 @@ public final class DtoHelper {
 								throw new UnsupportedOperationException(pd.getPropertyType().getName() + " is not supported as a list entry type.");
 							}
 						}
+					} else if (Map.class.isAssignableFrom(pd.getPropertyType())) {
 
+						if (targetValue == null) {
+							if (sourceValue.getClass() == EnumMap.class) {
+								// Enum map needs to be initialized with the content of the source map because it does not have an init method
+								targetValue = Maps.newEnumMap((EnumMap) sourceValue);
+								((EnumMap) targetValue).clear();
+							} else {
+								targetValue = sourceValue.getClass().newInstance();
+							}
+							pd.getWriteMethod().invoke(target, targetValue);
+						}
+
+						Map targetMap = (Map) targetValue;
+
+						for (Object sourceKey : ((Map) sourceValue).keySet()) {
+							if (override || !targetMap.containsKey(sourceKey)) {
+								targetMap.put(sourceKey, ((Map) sourceValue).get(sourceKey));
+							}
+						}
 					} else if (targetValue == null || override) {
 						if (DataHelper.isValueType(pd.getPropertyType()) || ReferenceDto.class.isAssignableFrom(pd.getPropertyType())) {
 							pd.getWriteMethod().invoke(target, sourceValue);

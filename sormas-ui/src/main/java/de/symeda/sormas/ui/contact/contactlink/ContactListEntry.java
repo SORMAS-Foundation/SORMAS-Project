@@ -1,24 +1,18 @@
 package de.symeda.sormas.ui.contact.contactlink;
 
-import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.contact.ContactCategory;
 import de.symeda.sormas.api.contact.ContactListEntryDto;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentField;
 
 public class ContactListEntry extends SideComponentField {
 
 	private final ContactListEntryDto contactListEntryDto;
-
-	private Button editButton;
 
 	public ContactListEntry(ContactListEntryDto contactListEntryDto) {
 		this.contactListEntryDto = contactListEntryDto;
@@ -71,24 +65,6 @@ public class ContactListEntry extends SideComponentField {
 			categoryLabel.setDescription(contactCategory.toString());
 			addComponentToField(categoryLabel);
 		}
-	}
-
-	public void addEditListener(int rowIndex, Button.ClickListener editClickListener) {
-		if (editButton == null) {
-			editButton = ButtonHelper.createIconButtonWithCaption(
-				"edit-participant-" + rowIndex,
-				null,
-				VaadinIcons.PENCIL,
-				null,
-				ValoTheme.BUTTON_LINK,
-				CssStyles.BUTTON_COMPACT);
-
-			addComponent(editButton);
-			setComponentAlignment(editButton, Alignment.MIDDLE_RIGHT);
-			setExpandRatio(editButton, 0);
-		}
-
-		editButton.addClickListener(editClickListener);
 	}
 
 	public ContactListEntryDto getContactListEntryDto() {

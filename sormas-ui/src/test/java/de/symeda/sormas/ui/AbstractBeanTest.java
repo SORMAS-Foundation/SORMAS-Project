@@ -78,7 +78,6 @@ import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
-import de.symeda.sormas.backend.user.CurrentUser;
 import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.UserService;
 import info.novatec.beantest.api.BaseBeanTest;
@@ -139,7 +138,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(PersonFacadeEjbLocal.class);
 	}
 
-	public CaseFacade getCaseFacade() {
+	public CaseFacadeEjbLocal getCaseFacade() {
 		return getBean(CaseFacadeEjbLocal.class);
 	}
 
@@ -151,7 +150,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(TravelEntryFacadeEjb.TravelEntryFacadeEjbLocal.class);
 	}
 
-	public ContactFacade getContactFacade() {
+	public ContactFacadeEjbLocal getContactFacade() {
 		return getBean(ContactFacadeEjbLocal.class);
 	}
 
@@ -217,7 +216,5 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	protected void loginWith(UserDto user) {
 		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
-		final CurrentUser currentUser = getCurrentUserService().getCurrentUser();
-		getUserService().setCurrentUser(currentUser.getUser());
 	}
 }

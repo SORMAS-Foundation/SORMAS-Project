@@ -5,7 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.66.0-SNAPSHOT</version>
+	<version>1.69.0-SNAPSHOT</version>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -17,27 +17,28 @@
 		<pushHotfixes>true</pushHotfixes>
 
 		<!-- *** Payara module versions *** -->
-		<jackson.version>2.10.2</jackson.version>
+		<jackson.version>2.12.4</jackson.version>
 		<jakarta.activation.version>1.2.1</jakarta.activation.version>
 		<javaee.version>8.0.1</javaee.version>
-		<jersey.version>2.30</jersey.version>
+		<jersey.version>2.34</jersey.version>
 		<!-- Payara version used for release. Overwrite them in settings.xml for local development with different versions -->
-		<payara.version>5.2020.2</payara.version>
+		<payara.version>5.2021.10</payara.version>
 
 		<!-- *** Other dependency versions *** -->
 		<glassfish.jaxb.version>2.3.3</glassfish.jaxb.version>
-		<slf4j.version>1.7.30</slf4j.version>
-		<logback.version>1.1.7</logback.version>
+		<slf4j.version>1.7.36</slf4j.version>
+		<logback.version>1.2.10</logback.version>
 		<vaadin.version.warning>TODO: Remove bootstrap.js in widgetset</vaadin.version.warning>
-		<vaadin.version>8.14.1</vaadin.version>
+		<vaadin.version>8.14.3</vaadin.version>
 		<vaadin.plugin.version>${vaadin.version}</vaadin.plugin.version>
-		<swagger.version>2.1.6</swagger.version>
-		<bouncycastle.version>1.67</bouncycastle.version>
-		<keycloak.version>12.0.4</keycloak.version>
-		<resteasy.version>3.15.1.Final</resteasy.version>
-		<xdocreport.version>2.0.2</xdocreport.version>
-		<docx4j.version>8.3.1</docx4j.version>
+		<swagger.version>2.1.13</swagger.version>
+		<bouncycastle.version>1.70</bouncycastle.version>
+		<keycloak.version>16.1.1</keycloak.version>
+		<resteasy.version>3.15.3.Final</resteasy.version>
+		<xdocreport.version>2.0.3</xdocreport.version>
+		<docx4j.version>8.3.2</docx4j.version>
 		<archunit.version>0.22.0</archunit.version>
+		<hamcrest.version>2.2</hamcrest.version>
 
 		<!-- Attention: Compile dependencies with versions are maintained redundantly in sormas-app/app/build.gradle -->
 
@@ -180,7 +181,7 @@
 			<dependency>
 				<groupId>fish.payara.security.connectors</groupId>
 				<artifactId>security-connector-oidc-client</artifactId>
-				<version>1.1.0</version>
+				<version>2.2.0</version>
 				<scope>provided</scope>
 			</dependency>
 
@@ -216,17 +217,9 @@
 			</dependency>
 
 			<dependency>
-				<groupId>net.minidev</groupId>
-				<artifactId>accessors-smart</artifactId>
-				<version>1.2</version>
-				<scope>provided</scope>
-				<!-- Avoid problems with finding the dependencies in Maven repos fixed by Payara -->
-			</dependency>
-
-			<dependency>
 				<groupId>org.eclipse.microprofile.config</groupId>
 				<artifactId>microprofile-config-api</artifactId>
-				<version>1.4</version>
+				<version>2.0</version>
 				<scope>provided</scope>
 			</dependency>
 
@@ -272,9 +265,8 @@
 			<dependency>
 				<groupId>org.glassfish.soteria</groupId>
 				<artifactId>javax.security.enterprise</artifactId>
-				<version>1.0</version>
+				<version>1.1-b01.payara-p4</version>
 				<scope>provided</scope>
-				<!-- Avoid problems with finding the dependencies in Maven repos fixed by Payara -->
 			</dependency>
 
 			<dependency>
@@ -287,14 +279,14 @@
 			<dependency>
 				<groupId>org.jboss.logging</groupId>
 				<artifactId>jboss-logging</artifactId>
-				<version>3.3.2.Final</version>
+				<version>3.4.2.Final</version>
 				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
 				<groupId>org.yaml</groupId>
 				<artifactId>snakeyaml</artifactId>
-				<version>1.25</version>
+				<version>1.28</version>
 				<scope>provided</scope>
 			</dependency>
 
@@ -357,14 +349,14 @@
 			<dependency>
 				<groupId>com.google.guava</groupId>
 				<artifactId>guava</artifactId>
-				<version>30.0-jre</version>
+				<version>31.0.1-jre</version>
 				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
 				<groupId>com.opencsv</groupId>
 				<artifactId>opencsv</artifactId>
-				<version>5.3</version>
+				<version>5.5.2</version>
 				<scope>provided</scope>
 			</dependency>
 
@@ -396,7 +388,7 @@
 			<dependency>
 				<groupId>commons-io</groupId>
 				<artifactId>commons-io</artifactId>
-				<version>2.8.0</version>
+				<version>2.11.0</version>
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
@@ -409,7 +401,7 @@
 			<dependency>
 				<groupId>joda-time</groupId>
 				<artifactId>joda-time</artifactId>
-				<version>2.10.8</version>
+				<version>2.10.13</version>
 				<scope>provided</scope>
 			</dependency>
 
@@ -422,7 +414,7 @@
 			<dependency>
 				<groupId>org.apache.httpcomponents</groupId>
 				<artifactId>httpcore</artifactId>
-				<version>4.4.14</version>
+				<version>4.4.15</version>
 				<scope>provided</scope>
 			</dependency>
 
@@ -434,8 +426,14 @@
 			</dependency>
 			<dependency>
 				<groupId>org.apache.commons</groupId>
+				<artifactId>commons-compress</artifactId>
+				<version>1.21</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.commons</groupId>
 				<artifactId>commons-lang3</artifactId>
-				<version>3.11</version>
+				<version>3.12.0</version>
 				<scope>provided</scope>
 			</dependency>
 			<dependency>
@@ -443,6 +441,17 @@
 				<artifactId>commons-text</artifactId>
 				<version>1.9</version>
 				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.apache.xmlgraphics</groupId>
+				<artifactId>fop-events</artifactId>
+				<version>2.7</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.xmlgraphics</groupId>
+				<artifactId>xmlgraphics-commons</artifactId>
+				<version>2.7</version>
 			</dependency>
 
 			<dependency>
@@ -461,7 +470,7 @@
 			<dependency>
 				<groupId>org.hibernate</groupId>
 				<artifactId>hibernate-core</artifactId>
-				<version>5.4.25.Final</version>
+				<version>5.6.5.Final</version>
 				<scope>provided</scope>
 				<exclusions>
 					<!-- Exclude Payara modules here -->
@@ -525,8 +534,8 @@
 			</dependency>
 			<dependency>
 				<groupId>com.vladmihalcea</groupId>
-				<artifactId>hibernate-types-52</artifactId>
-				<version>2.10.0</version>
+				<artifactId>hibernate-types-55</artifactId>
+				<version>2.14.0</version>
 				<scope>provided</scope>
 				<!-- Additional datatypes for hibernate-core -->
 				<exclusions>
@@ -540,14 +549,14 @@
 			<dependency>
 				<groupId>org.jsoup</groupId>
 				<artifactId>jsoup</artifactId>
-				<version>1.14.2</version>
+				<version>1.14.3</version>
 				<scope>provided</scope>
 			</dependency>
 
 			<dependency>
 				<groupId>org.postgresql</groupId>
 				<artifactId>postgresql</artifactId>
-				<version>42.2.18</version>
+				<version>42.3.3</version>
 				<scope>provided</scope>
 				<exclusions>
 					<exclusion>
@@ -583,13 +592,13 @@
 			<dependency>
 				<groupId>com.googlecode.libphonenumber</groupId>
 				<artifactId>libphonenumber</artifactId>
-				<version>8.12.14</version>
+				<version>8.12.43</version>
 			</dependency>
 
 			<dependency>
 				<groupId>com.jayway.jsonpath</groupId>
 				<artifactId>json-path</artifactId>
-				<version>2.6.0</version>
+				<version>2.7.0</version>
 			</dependency>
 
 			<dependency>
@@ -633,15 +642,9 @@
 			</dependency>
 
 			<dependency>
-				<groupId>org.freemarker</groupId>
-				<artifactId>freemarker</artifactId>
-				<version>2.3.30</version>
-			</dependency>
-
-			<dependency>
 				<groupId>org.geotools</groupId>
 				<artifactId>gt-shapefile</artifactId>
-				<version>24.1</version>
+				<version>26.2</version>
 			</dependency>
 
 			<dependency>
@@ -699,6 +702,16 @@
 				<artifactId>keycloak-core</artifactId>
 				<version>${keycloak.version}</version>
 				<!-- No Domain lib, because it ran with Ant into problem, see https://stackoverflow.com/questions/64857838/invalid-jdk-version-in-profile-compile-java8-release-flag-unbounded-range-9 -->
+			</dependency>
+			<dependency>
+				<groupId>org.keycloak</groupId>
+				<artifactId>keycloak-server-spi</artifactId>
+				<version>${keycloak.version}</version>
+			</dependency>
+			<dependency>
+				<groupId>org.keycloak</groupId>
+				<artifactId>keycloak-server-spi-private</artifactId>
+				<version>${keycloak.version}</version>
 			</dependency>
 			<dependency>
 				<groupId>org.keycloak</groupId>
@@ -767,6 +780,13 @@
 			</dependency>
 
 			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>postgresql</artifactId>
+				<version>1.16.3</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
 				<groupId>info.novatec</groupId>
 				<artifactId>bean-test</artifactId>
 				<version>0.2.Final</version>
@@ -776,7 +796,7 @@
 			<dependency>
 				<groupId>junit</groupId>
 				<artifactId>junit</artifactId>
-				<version>4.13.1</version>
+				<version>4.13.2</version>
 				<scope>test</scope>
 			</dependency>
 
@@ -790,20 +810,28 @@
 			<dependency>
 				<groupId>org.apache.poi</groupId>
 				<artifactId>poi-ooxml</artifactId>
-				<version>3.17</version>
+				<version>5.2.0</version>
 			</dependency>
 
 			<dependency>
 				<groupId>org.hamcrest</groupId>
-				<artifactId>hamcrest-core</artifactId>
-				<version>1.3</version>
+				<artifactId>hamcrest</artifactId>
+				<version>${hamcrest.version}</version>
 				<scope>test</scope>
 			</dependency>
 			<dependency>
 				<groupId>org.hamcrest</groupId>
-				<artifactId>hamcrest-library</artifactId>
-				<version>1.3</version>
+				<artifactId>hamcrest-core</artifactId>
+				<version>${hamcrest.version}</version>
 				<scope>test</scope>
+				<!-- Needed for junit4 -->
+			</dependency>
+			<dependency>
+				<groupId>org.hamcrest</groupId>
+				<artifactId>hamcrest-library</artifactId>
+				<version>${hamcrest.version}</version>
+				<scope>test</scope>
+				<!-- Needed for junit4 -->
 			</dependency>
 
 			<dependency>
@@ -816,7 +844,7 @@
 			<dependency>
 				<groupId>org.mockito</groupId>
 				<artifactId>mockito-inline</artifactId>
-				<version>3.5.15</version>
+				<version>4.3.1</version>
 				<scope>test</scope>
 			</dependency>
 
@@ -865,24 +893,24 @@
 			<dependency>
 				<groupId>com.ibm.etcd</groupId>
 				<artifactId>etcd-java</artifactId>
-				<version>0.0.18</version>
+				<version>0.0.19</version>
 			</dependency>
 
 			<!-- OIDC for S2S -->
 			<dependency>
 				<groupId>com.google.oauth-client</groupId>
 				<artifactId>google-oauth-client</artifactId>
-				<version>1.31.5</version>
+				<version>1.33.1</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.http-client</groupId>
 				<artifactId>google-http-client</artifactId>
-				<version>1.39.2</version>
+				<version>1.41.4</version>
 			</dependency>
 			<dependency>
 				<groupId>com.google.http-client</groupId>
 				<artifactId>google-http-client-gson</artifactId>
-				<version>1.39.2</version>
+				<version>1.41.4</version>
 			</dependency>
 
 		</dependencies>
@@ -891,19 +919,18 @@
 	<dependencies>
 
 		<!-- Test libraries for all modules as baseline -->
-		<!-- Order is important because of Matcher implementations -->
+
 		<dependency>
 			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-core</artifactId>
+			<artifactId>hamcrest</artifactId>
+			<!-- Order is important because of Matcher implementations -->
 		</dependency>
+
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
 		</dependency>
-		<dependency>
-			<groupId>org.hamcrest</groupId>
-			<artifactId>hamcrest-library</artifactId>
-		</dependency>
+
 		<dependency>
 			<groupId>org.mockito</groupId>
 			<artifactId>mockito-inline</artifactId>
@@ -1173,6 +1200,31 @@
 					<artifactId>versions-maven-plugin</artifactId>
 					<version>2.8.1</version>
 				</plugin>
+				<plugin>
+					<groupId>org.owasp</groupId>
+					<artifactId>dependency-check-maven</artifactId>
+					<version>6.5.3</version>
+					<configuration>
+						<cveValidForHours>12</cveValidForHours>
+						<formats>HTML,XML</formats>
+						<outputDirectory>target/dependency-check</outputDirectory>
+						<prettyPrint>true</prettyPrint>
+						<skipDependencyManagement>false</skipDependencyManagement>
+						<skipTestScope>false</skipTestScope>
+						<suppressionFiles>
+							<suppressionFile>dependencies/check-suppressions.xml</suppressionFile>
+						</suppressionFiles>
+						<assemblyAnalyzerEnabled>false</assemblyAnalyzerEnabled>
+					</configuration>
+					<executions>
+						<execution>
+							<goals>
+								<goal>check</goal>
+							</goals>
+						</execution>
+					</executions>
+					<!-- Usage (on sormas-base/pom.xml): "mvn org.owasp:dependency-check-maven:check" -->
+				</plugin>
 				<!-- *** Plugins for generate-reports END *** -->
 
 			</plugins>
@@ -1210,6 +1262,15 @@
 			<name>Open Source Geospatial Foundation Repository</name>
 			<url>https://repo.osgeo.org/repository/release/</url>
 		</repository>
+
+		<repository>
+			<!-- Needed for patched dependencies from Payara -->
+			<!-- It's readonly since 2021 and only listed for artifacts that are not found elsewhere -->
+			<id>payara-patched-externals</id>
+			<name>Payara Patched Externals</name>
+			<url>https://raw.github.com/payara/Payara_PatchedProjects/master</url>
+		</repository>
+
 		<repository>
 			<!-- this repo is readOnly since 2021 and only listed for older artifacts that may not be found elsewhere -->
 			<id>bintray</id>
@@ -1258,17 +1319,6 @@
 			</activation>
 			<modules>
 				<module>../sormas-app</module>
-			</modules>
-		</profile>
-
-		<profile>
-			<!-- Profile to build the keycloak hash provider -->
-			<id>with-keycloak</id>
-			<activation>
-				<activeByDefault>false</activeByDefault>
-			</activation>
-			<modules>
-				<module>../sormas-keycloak-service-provider</module>
 			</modules>
 		</profile>
 
@@ -1357,6 +1407,7 @@
 		<module>../sormas-api</module>
 		<module>../sormas-backend</module>
 		<module>../sormas-ear</module>
+		<module>../sormas-keycloak-service-provider</module>
 		<module>../sormas-rest</module>
 		<module>../sormas-ui</module>
 		<module>./dependencies/serverlibs.pom</module>

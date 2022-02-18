@@ -10,6 +10,8 @@
 		<class>de.symeda.sormas.backend.action.Action</class>
 		<class>de.symeda.sormas.backend.caze.Case</class>
 		<class>de.symeda.sormas.backend.common.AbstractDomainObject</class>
+		<class>de.symeda.sormas.backend.common.DeletableAdo</class>
+		<class>de.symeda.sormas.backend.common.CoreAdo</class>
 		<class>de.symeda.sormas.backend.contact.Contact</class>
 		<class>de.symeda.sormas.backend.epidata.EpiData</class>
 		<class>de.symeda.sormas.backend.event.Event</class>
@@ -80,6 +82,7 @@
 		<class>de.symeda.sormas.backend.vaccination.LastVaccinationDate</class>
 		<class>de.symeda.sormas.backend.vaccination.FirstVaccinationDate</class>
 		<class>de.symeda.sormas.backend.labmessage.TestReport</class>
+		<class>de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration</class>
 
 
 		<exclude-unlisted-classes>true</exclude-unlisted-classes>

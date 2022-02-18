@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui.importer;
 
+import static de.symeda.sormas.ui.docgeneration.DocGenerationHelper.isFileSizeLimitExceeded;
+
 import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -75,7 +77,7 @@ public class DocumentTemplateReceiver
 	public void uploadStarted(StartedEvent startedEvent) {
 		long fileSizeLimitMb = FacadeProvider.getConfigFacade().getDocumentUploadSizeLimitMb();
 
-		if (startedEvent.getContentLength() > fileSizeLimitMb * 1_000_000) {
+		if (isFileSizeLimitExceeded(startedEvent.getContentLength(), fileSizeLimitMb)) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.fileTooBig, fileSizeLimitMb));
 		}
 	}

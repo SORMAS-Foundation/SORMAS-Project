@@ -15,18 +15,14 @@
 
 package de.symeda.sormas.ui.travelentry.travelentrylink;
 
-import com.vaadin.icons.VaadinIcons;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.themes.ValoTheme;
-
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryListCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.UserProvider;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
 public class TravelEntryListComponent extends SideComponent {
@@ -34,13 +30,11 @@ public class TravelEntryListComponent extends SideComponent {
 	public TravelEntryListComponent(TravelEntryListCriteria travelEntryListCriteria) {
 		super(I18nProperties.getString(Strings.entityTravelEntries));
 
-		UserProvider currentUser = UserProvider.getCurrent();
-		if (travelEntryListCriteria.getCaseReferenceDto() != null && currentUser != null && currentUser.hasUserRight(UserRight.TRAVEL_ENTRY_CREATE)) {
-			Button createButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.travelEntryNewTravelEntry));
-			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
-			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-			createButton.addClickListener(e -> ControllerProvider.getTravelEntryController().create(travelEntryListCriteria.getCaseReferenceDto()));
-			addCreateButton(createButton);
+		if (FacadeProvider.getTravelEntryFacade().count(new TravelEntryCriteria(), true) > 0) {
+			addCreateButton(
+				I18nProperties.getCaption(Captions.travelEntryNewTravelEntry),
+				UserRight.TRAVEL_ENTRY_CREATE,
+				e -> ControllerProvider.getTravelEntryController().create(travelEntryListCriteria));
 		}
 
 		TravelEntryList travelEntryList = new TravelEntryList(travelEntryListCriteria);

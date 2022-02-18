@@ -25,10 +25,12 @@ import java.util.Map;
 import javax.ejb.Remote;
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
+import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
@@ -39,25 +41,13 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.visit.VisitSummaryExportDto;
 
 @Remote
-public interface ContactFacade {
+public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, ContactReferenceDto, ContactCriteria> {
 
-	List<ContactDto> getAllActiveContactsAfter(Date date);
-
-	ContactDto getContactByUuid(String uuid);
-
-	Boolean isValidContactUuid(String uuid);
-
-	ContactDto saveContact(@Valid ContactDto dto);
-
-	ContactDto saveContact(@Valid ContactDto dto, boolean handleChanges, boolean handleCaseChanges);
-
-	ContactReferenceDto getReferenceByUuid(String uuid);
+	ContactDto save(@Valid ContactDto dto, boolean handleChanges, boolean handleCaseChanges);
 
 	List<String> getAllActiveUuids();
 
 	void generateContactFollowUpTasks();
-
-	List<ContactDto> getByUuids(List<String> uuids);
 
 	Long countContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
 
@@ -68,8 +58,6 @@ public interface ContactFacade {
 	List<String> deleteContacts(List<String> contactUuids);
 
 	FollowUpPeriodDto calculateFollowUpUntilDate(ContactDto contactDto, boolean ignoreOverwrite);
-
-	List<ContactIndexDto> getIndexList(ContactCriteria contactCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	List<ContactListEntryDto> getEntriesList(String personUuid, Integer first, Integer max);
 
@@ -113,8 +101,6 @@ public interface ContactFacade {
 
 	int getFollowUpUntilCount(ContactCriteria contactCriteria);
 
-	long count(ContactCriteria contactCriteria);
-
 	List<String> getDeletedUuidsSince(Date since);
 
 	boolean isDeleted(String contactUuid);
@@ -141,8 +127,6 @@ public interface ContactFacade {
 	List<SimilarContactDto> getMatchingContacts(ContactSimilarityCriteria criteria);
 
 	boolean isContactEditAllowed(String contactUuid);
-
-	boolean exists(String uuid);
 
 	boolean doesExternalTokenExist(String externalToken, String contactUuid);
 

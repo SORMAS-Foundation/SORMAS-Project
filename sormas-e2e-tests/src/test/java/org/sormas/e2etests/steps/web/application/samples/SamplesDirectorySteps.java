@@ -25,13 +25,12 @@ import cucumber.api.java8.En;
 import java.util.Arrays;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.sormas.e2etests.enums.LaboratoryValues;
-import org.sormas.e2etests.enums.PathogenTestResults;
-import org.sormas.e2etests.enums.SpecimenConditions;
+import org.sormas.e2etests.enums.*;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
+import org.testng.Assert;
 
 public class SamplesDirectorySteps implements En {
 
@@ -41,6 +40,148 @@ public class SamplesDirectorySteps implements En {
       @Named("ENVIRONMENT_URL") String environmentUrl,
       ApiState apiState,
       AssertHelpers assertHelpers) {
+
+    When(
+        "I click a apply button on Sample",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER_BUTTON);
+        });
+
+    When(
+        "I click a Reset button on Sample",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(RESET_FILTER_BUTTON);
+        });
+
+    When(
+        "fill a Full name of person from API",
+        () -> {
+          webDriverHelpers.fillAndSubmitInWebElement(
+              SAMPLE_SEARCH_INPUT,
+              apiState.getLastCreatedPerson().getFirstName()
+                  + " "
+                  + apiState.getLastCreatedPerson().getLastName());
+        });
+
+    When(
+        "I select Test result filter among the filter options from API",
+        () -> {
+          String testResult = apiState.getCreatedSample().getPathogenTestResult();
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(
+              TEST_RESULTS_SEARCH_COMBOBOX,
+              testResult.substring(0, 1).toUpperCase() + testResult.substring(1).toLowerCase());
+        });
+
+    When(
+        "I select random Test result filter among the filter options",
+        () -> {
+          String testResult = PathogenTestResults.geRandomResultName();
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(TEST_RESULTS_SEARCH_COMBOBOX, testResult);
+        });
+
+    When(
+        "I select Specimen condition filter among the filter options from API",
+        () -> {
+          String specimenCondition = apiState.getCreatedSample().getSpecimenCondition();
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(
+              SPECIMEN_CONDITION_SEARCH_COMBOBOX, SpecimenConditions.getForName(specimenCondition));
+        });
+
+    When(
+        "I select {string} Specimen condition option among the filter options",
+        (String specimenCondition) -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(
+              SPECIMEN_CONDITION_SEARCH_COMBOBOX, specimenCondition);
+        });
+
+    When(
+        "I select Case clasification filter among the filter options from API",
+        () -> {
+          String caseSpecification = apiState.getCreatedCase().getCaseClassification();
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(
+              SAMPLE_CLASIFICATION_SEARCH_COMBOBOX,
+              CaseClassification.getUIValueFor(caseSpecification));
+        });
+
+    When(
+        "I select random Case clasification filter among the filter options",
+        () -> {
+          String caseSpecification = CaseClassification.getRandomUIClassification();
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(
+              SAMPLE_CLASIFICATION_SEARCH_COMBOBOX, caseSpecification);
+        });
+
+    When(
+        "I select Disease filter among the filter options from API",
+        () -> {
+          String disease = apiState.getCreatedCase().getDisease();
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(
+              SAMPLE_DISEASE_SEARCH_COMBOBOX, DiseasesValues.getCaptionForName(disease));
+        });
+
+    When(
+        "I select random Disease filter among the filter options in Sample directory",
+        () -> {
+          String disease = DiseasesValues.getRandomDiseaseCaption();
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(SAMPLE_DISEASE_SEARCH_COMBOBOX, disease);
+        });
+
+    When(
+        "I select Region filter among the filter options from API",
+        () -> {
+          String region = apiState.getCreatedCase().getRegion().getUuid();
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(
+              SAMPLE_REGION_SEARCH_COMBOBOX, RegionsValues.getValueFor(region));
+        });
+
+    When(
+        "I change Region filter to {string} option in Sample directory",
+        (String region) -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(SAMPLE_REGION_SEARCH_COMBOBOX, region);
+        });
+
+    When(
+        "I select District filter among the filter options from API",
+        () -> {
+          String district = apiState.getCreatedCase().getDistrict().getUuid();
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(
+              SAMPLE_DISTRICT_SEARCH_COMBOBOX, DistrictsValues.getNameFor(district));
+        });
+
+    When(
+        "I change District filter to {string} option in Sample directory",
+        (String district) -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(SAMPLE_DISTRICT_SEARCH_COMBOBOX, district);
+        });
+
+    When(
+        "I select Laboratory filter among the filter options from API",
+        () -> {
+          String laboratory = apiState.getCreatedSample().getLab().getCaption();
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(LABORATORY_SEARCH_COMBOBOX, laboratory);
+        });
+
+    When(
+        "I change Labolatory filter to {string} option in Sample directory",
+        (String laboratory) -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(LABORATORY_SEARCH_COMBOBOX, laboratory);
+        });
 
     When(
         "^I search last created Sample by Case ID$",
@@ -68,7 +209,9 @@ public class SamplesDirectorySteps implements En {
         "I am accessing the created sample via api",
         () -> {
           String CREATED_SAMPLE_VIA_API_URL =
-              environmentUrl + "/sormas-ui/#!samples/data/" + apiState.getCreatedSample().getUuid();
+              environmentUrl
+                  + "/sormas-webdriver/#!samples/data/"
+                  + apiState.getCreatedSample().getUuid();
           webDriverHelpers.accessWebSite(CREATED_SAMPLE_VIA_API_URL);
           webDriverHelpers.waitForPageLoaded();
         });
@@ -89,8 +232,29 @@ public class SamplesDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER_BUTTON);
           webDriverHelpers.waitUntilNumberOfElementsIsExactlyOrLess(
               SEARCH_RESULT_SAMPLE, apiState.getCreatedSamples().size());
-          Truth.assertThat(apiState.getCreatedSamples().size())
-              .isEqualTo(webDriverHelpers.getNumberOfElements(SAMPLE_GRID_RESULTS_ROWS));
+          Assert.assertEquals(
+              apiState.getCreatedSamples().size(),
+              webDriverHelpers.getNumberOfElements(SAMPLE_GRID_RESULTS_ROWS),
+              "Number of created samples is wrong");
+        });
+
+    Then(
+        "I select {string} filter from quick filter",
+        (String searchCriteria) -> {
+          switch (searchCriteria) {
+            case "Not shipped":
+              webDriverHelpers.clickOnWebElementBySelector(SAMPLE_NOT_SHIPPED);
+              break;
+            case "Shipped":
+              webDriverHelpers.clickOnWebElementBySelector(SAMPLE_SHIPPED);
+              break;
+            case "Received":
+              webDriverHelpers.clickOnWebElementBySelector(SAMPLE_RECEIVED);
+              break;
+            case "Referred to other lab":
+              webDriverHelpers.clickOnWebElementBySelector(SAMPLE_REFFERED_TO_OTHER_LAB);
+              break;
+          }
         });
 
     Then(
@@ -130,7 +294,9 @@ public class SamplesDirectorySteps implements En {
                           FINAL_LABORATORY_RESULT, aSpecimen.getCondition());
                       assertHelpers.assertWithPoll20Second(
                           () ->
-                              Truth.assertThat(
+                              Truth.assertWithMessage(
+                                      "Total number of displayed samples results is not correct")
+                                  .that(
                                       apiState.getCreatedSamples().stream()
                                           .filter(
                                               sample ->
@@ -156,7 +322,9 @@ public class SamplesDirectorySteps implements En {
                           FINAL_LABORATORY_RESULT, caption.getCaptionEnglish());
                       assertHelpers.assertWithPoll20Second(
                           () ->
-                              Truth.assertThat(
+                              Truth.assertWithMessage(
+                                      "Total number of sample results is not correct")
+                                  .that(
                                       apiState.getCreatedSamples().stream()
                                           .filter(
                                               sample ->
@@ -183,7 +351,9 @@ public class SamplesDirectorySteps implements En {
         (Integer number) ->
             assertHelpers.assertWithPoll20Second(
                 () ->
-                    Truth.assertThat(webDriverHelpers.getNumberOfElements(SAMPLE_GRID_RESULTS_ROWS))
-                        .isEqualTo(number)));
+                    Assert.assertEquals(
+                        webDriverHelpers.getNumberOfElements(SAMPLE_GRID_RESULTS_ROWS),
+                        number.intValue(),
+                        "Displayed number of sample results is not correct")));
   }
 }

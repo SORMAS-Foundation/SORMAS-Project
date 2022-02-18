@@ -21,6 +21,7 @@ import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.DataProviderListener;
 import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FileDownloader;
@@ -28,6 +29,8 @@ import com.vaadin.server.StreamResource;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.renderers.HtmlRenderer;
 import com.vaadin.ui.themes.ValoTheme;
@@ -37,6 +40,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.labmessage.LabMessageCriteria;
+import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -44,6 +48,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
@@ -56,8 +61,11 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 	private static final String COLUMN_DOWNLOAD = "download";
 	private static final String COLUMN_PROCESS = "process";
 	private static final String SHOW_MESSAGE = "show_message";
+	private static final String EDIT_ASSIGNEE = "edit_assignee";
 
 	private static final String PDF_FILENAME_FORMAT = "sormas_lab_message_%s_%s.pdf";
+
+	private DataProviderListener<LabMessageIndexDto> dataProviderListener;
 
 	@SuppressWarnings("unchecked")
 	public LabMessageGrid(LabMessageCriteria criteria) {
@@ -75,7 +83,11 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 			setCriteria(criteria);
 		}
 
-		addShowColumn(e -> ControllerProvider.getLabMessageController().showLabMessage(e.getUuid(), this::reload));
+		addShowColumn(e -> ControllerProvider.getLabMessageController().showLabMessage(e.getUuid(), true, this::reload));
+
+		addComponentColumn(this::buildAssigneeLayout).setId(EDIT_ASSIGNEE)
+			.setCaption(I18nProperties.getPrefixCaption(LabMessageDto.I18N_PREFIX, LabMessageDto.ASSIGNEE))
+			.setSortable(false);
 
 		addComponentColumn(
 			indexDto -> indexDto.getStatus().isProcessable()
@@ -91,20 +103,24 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 			SHOW_MESSAGE,
 			LabMessageIndexDto.UUID,
 			LabMessageIndexDto.MESSAGE_DATE_TIME,
-			LabMessageIndexDto.TEST_LAB_NAME,
-			LabMessageIndexDto.TEST_LAB_POSTAL_CODE,
+			LabMessageIndexDto.LAB_NAME,
+			LabMessageIndexDto.LAB_POSTAL_CODE,
 			LabMessageIndexDto.TESTED_DISEASE,
 			LabMessageIndexDto.SAMPLE_OVERALL_TEST_RESULT,
 			LabMessageIndexDto.PERSON_FIRST_NAME,
 			LabMessageIndexDto.PERSON_LAST_NAME,
+			LabMessageIndexDto.PERSON_BIRTH_DATE,
 			LabMessageIndexDto.PERSON_POSTAL_CODE,
 			LabMessageIndexDto.STATUS,
+			EDIT_ASSIGNEE,
 			COLUMN_PROCESS,
 			COLUMN_DOWNLOAD);
 
 		((Column<LabMessageIndexDto, String>) getColumn(LabMessageIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<LabMessageIndexDto, Date>) getColumn(LabMessageIndexDto.MESSAGE_DATE_TIME))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(I18nProperties.getUserLanguage())));
+		((Column<LabMessageIndexDto, Date>) getColumn(LabMessageIndexDto.PERSON_BIRTH_DATE))
+			.setRenderer(new DateRenderer(DateHelper.getLocalDateFormat(I18nProperties.getUserLanguage())));
 
 		getColumn(COLUMN_PROCESS).setSortable(false);
 		getColumn(COLUMN_DOWNLOAD).setSortable(false);
@@ -129,7 +145,12 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 		ListDataProvider<LabMessageIndexDto> dataProvider =
 			DataProvider.fromStream(FacadeProvider.getLabMessageFacade().getIndexList(getCriteria(), null, null, null).stream());
 		setDataProvider(dataProvider);
+
 		setSelectionMode(SelectionMode.MULTI);
+
+		if (dataProviderListener != null) {
+			dataProvider.addDataProviderListener(dataProviderListener);
+		}
 	}
 
 	public void setLazyDataProvider() {
@@ -148,6 +169,10 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
+
+		if (dataProviderListener != null) {
+			dataProvider.addDataProviderListener(dataProviderListener);
+		}
 	}
 
 	public void reload() {
@@ -155,11 +180,32 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 			deselectAll();
 		}
 
+		if (ViewModelProviders.of(LabMessagesView.class).get(ViewConfiguration.class).isInEagerMode()) {
+			setEagerDataProvider();
+		}
+
 		getDataProvider().refreshAll();
 	}
 
 	public void updateProcessColumnVisibility(boolean visible) {
 		getColumn(LabMessageGrid.COLUMN_PROCESS).setHidden(!visible);
+	}
+
+	private HorizontalLayout buildAssigneeLayout(LabMessageIndexDto labMessage) {
+		HorizontalLayout layout = new HorizontalLayout();
+		Button button = new Button();
+		CssStyles.style(button, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
+		if (labMessage.getAssignee() == null) {
+			button.setCaption(I18nProperties.getCaption(Captions.assign));
+		} else {
+			Label label = new Label(labMessage.getAssignee().getCaption());
+			layout.addComponent(label);
+			button.setIcon((VaadinIcons.ELLIPSIS_DOTS_V));
+			CssStyles.style(button, CssStyles.ALIGN_RIGHT);
+		}
+		button.addClickListener(e -> ControllerProvider.getLabMessageController().editAssignee(labMessage.getUuid()));
+		layout.addComponent(button);
+		return layout;
 	}
 
 	private Button buildDownloadButton(LabMessageIndexDto labMessage) {
@@ -181,5 +227,9 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 		fileDownloader.setFileDownloadResource(streamResource);
 
 		return downloadButton;
+	}
+
+	public void setDataProviderListener(DataProviderListener<LabMessageIndexDto> dataProviderListener) {
+		this.dataProviderListener = dataProviderListener;
 	}
 }

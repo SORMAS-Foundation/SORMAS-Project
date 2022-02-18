@@ -18,4 +18,27 @@
       height: calc(100vh - 197px) !important;
     }
   }
+
+  .no-required-border {
+    .v-textfield.v-required,
+    .v-filterselect.v-required .v-filterselect-input,
+    .v-customcomponent.v-required .v-datefield-textfield,
+    .v-select-optiongroup-horizontal.v-required .v-radiobutton,
+    .v-customcomponent.v-required .v-filterselect-input,
+    .v-textfield.soft-required,
+    .v-filterselect.soft-required .v-filterselect-input,
+    .v-customcomponent.soft-required .v-datefield-textfield,
+    .v-select-optiongroup-horizontal.soft-required .v-radiobutton,
+    .v-customcomponent.soft-required .v-filterselect-input {
+      border-color: #CDD8EC;
+
+      &.border-dirty {
+        border: 2px solid #005A9C;
+      }
+    }
+
+    .border-dirty {
+      border: 2px solid #005A9C;
+    }
+  }
 }

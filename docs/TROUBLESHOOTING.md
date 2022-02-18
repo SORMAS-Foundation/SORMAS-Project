@@ -87,3 +87,14 @@ If the problem occurred right after you've pulled new code from GitHub, your saf
 ### News Feeds Polling
 
 When running eclipse with JDK 11, you might encounter the following error message: `An internal error occurred during: "Polling news feeds".  javax/xml/bind/JAXBContext`. To fix it, disable `Window --> Preferences --> General --> News --> "Enable automatic news polling"`.
+
+## Redeployment problems
+
+If you face problems that `sormas-ui` or `sormas-rest` cannot call the backend anymore after redeploying, please follow [this instruction](DEVELOPMENT_ENVIRONMENT.md#avoid-redeployment-problems).
+
+## Malware detection triggers
+It might happen that a defensive program on your system falsely recognizes files needed to run SORMAS as vulnerability.
+
+Please ignore the following known findings (no quarantine, no deletion):
+* File: payara-5.2021.10.zip, Recognized: Trojan:Script/Oneeva.A!ml (found by Windows Defender). Has rarely happened when running server-setup.sh which downloads that file. The script subsequently fails because zip file cannot be extracted.
+* File: glassfish/modules/war-util.jar, Recognized: Exploit:Java/CVE-2012-0507.D!ldr (found by Windows Defender in payara-5.2021.10). The deployed OSGi bundle might also be recognized, for example under this path: osgi-cache/felix/bundle365/version0.0/bundle.jar . If the file is quarantined, the paraya domain fails to start, without any exception in the log.

@@ -57,6 +57,8 @@ public interface PersonFacade {
 
 	PersonDto getPersonByUuid(String uuid);
 
+	List<PersonDto> getPersonsAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
+
 	List<PersonDto> getByUuids(List<String> uuids);
 
 	/**
@@ -65,7 +67,7 @@ public interface PersonFacade {
 	 * 
 	 * @return
 	 */
-	List<SimilarPersonDto> getSimilarPersonDtos(UserReferenceDto user, PersonSimilarityCriteria criteria);
+	List<SimilarPersonDto> getSimilarPersonDtos(PersonSimilarityCriteria criteria);
 
 	boolean checkMatchingNameInDatabase(UserReferenceDto userRef, PersonSimilarityCriteria criteria);
 
@@ -100,4 +102,6 @@ public interface PersonFacade {
 	void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
 
 	void mergePerson(PersonDto leadPerson, PersonDto otherPerson);
+
+	PersonDto getByContext(PersonContext context, String contextUuid);
 }

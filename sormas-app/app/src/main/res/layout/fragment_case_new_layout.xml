@@ -218,6 +218,7 @@
                 style="@style/ControlSingleColumnStyle"
                 app:dependencyParentField="@{facilityOrHome}"
                 app:dependencyParentValue="@{TypeOfPlace.FACILITY}"
+                app:dependencyParentClearOnHide="@{false}"
                 app:required="true"
                 app:value="@={data.healthFacility}" />
 

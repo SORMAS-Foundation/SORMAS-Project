@@ -2,7 +2,6 @@ package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.HospitalizationTabPage.*;
 
-import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -12,6 +11,7 @@ import javax.inject.Named;
 import lombok.SneakyThrows;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
+import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pojo.web.Hospitalization;
 import org.sormas.e2etests.services.HospitalizationService;
 import org.sormas.e2etests.state.ApiState;
@@ -35,7 +35,7 @@ public class HospitalizationTabSteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               NavBarPage.SAMPLE_BUTTON);
-          String caseHospitalizationPath = "/sormas-ui/#!cases/hospitalization/";
+          String caseHospitalizationPath = "/sormas-webdriver/#!cases/hospitalization/";
           String uuid = apiState.getCreatedCase().getUuid();
           webDriverHelpers.accessWebSite(environmentUrl + caseHospitalizationPath + uuid);
         });
@@ -67,63 +67,88 @@ public class HospitalizationTabSteps implements En {
         "I check the edited and saved data is correctly displayed on Hospitalization tab page",
         () -> {
           Hospitalization actualHospitalization = collectHospitalizationData();
-          Truth.assertThat(actualHospitalization).isEqualTo(hospitalization);
+          ComparisonHelper.compareEqualEntities(actualHospitalization, hospitalization);
+        });
+
+    When(
+        "I set Patient Admitted at the facility as an inpatient as ([^\"]*)",
+        (String option) -> {
+          webDriverHelpers.clickWebElementByText(PATIENT_ADMITTED_AT_FACILITY_OPTIONS, option);
+        });
+
+    When(
+        "I set specific Date of visit or admission",
+        () -> {
+          fillDateOfVisitOrAdmission(LocalDate.now().minusDays(1));
+        });
+
+    When(
+        "I save data in Hospitalization",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
+
+    When(
+        "I check if error in Hospitalization data is available",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(BLUE_ERROR_EXCLAMATION_MARK);
         });
   }
 
   @SneakyThrows
-  public void selectPatientAdmittedAtTheFacility(String yesNoUnknown) {
+  private void selectPatientAdmittedAtTheFacility(String yesNoUnknown) {
     webDriverHelpers.clickWebElementByText(PATIENT_ADMITTED_AT_FACILITY_OPTIONS, yesNoUnknown);
     TimeUnit.SECONDS.sleep(1);
   }
 
-  public void fillDateOfVisitOrAdmission(LocalDate date) {
+  private void fillDateOfVisitOrAdmission(LocalDate date) {
     webDriverHelpers.fillInWebElement(
         DATE_OF_VISIT_OR_ADMISSION_INPUT, DATE_FORMATTER.format(date));
   }
 
-  public void fillDateOfDischargeOrTransfer(LocalDate date) {
+  private void fillDateOfDischargeOrTransfer(LocalDate date) {
     webDriverHelpers.fillInWebElement(
         DATE_OF_DISCHARGE_OR_TRANSFER_INPUT, DATE_FORMATTER.format(date));
   }
 
-  public void selectReasonForHospitalization(String reason) {
+  private void selectReasonForHospitalization(String reason) {
     webDriverHelpers.selectFromCombobox(REASON_FOR_HOSPITALIZATION_COMBOBOX, reason);
   }
 
-  public void fillSpecifyReason(String text) {
+  private void fillSpecifyReason(String text) {
     webDriverHelpers.fillInWebElement(SPECIFY_REASON_INPUT, text);
   }
 
-  public void selectStayInTheIntensiveCareUnit(String option) {
+  private void selectStayInTheIntensiveCareUnit(String option) {
     webDriverHelpers.clickWebElementByText(STAY_IN_THE_INTENSIVE_CARE_UNIT_OPTIONS, option);
   }
 
-  public void fillStartOfStayDate(LocalDate date) {
+  private void fillStartOfStayDate(LocalDate date) {
     webDriverHelpers.fillInWebElement(START_OF_STAY_DATE_INPUT, DATE_FORMATTER.format(date));
   }
 
-  public void fillEndOfStayDate(LocalDate date) {
+  private void fillEndOfStayDate(LocalDate date) {
+    webDriverHelpers.clickOnWebElementBySelector(END_OF_STAY_DATE_INPUT);
     webDriverHelpers.fillInWebElement(END_OF_STAY_DATE_INPUT, DATE_FORMATTER.format(date));
   }
 
-  public void selectIsolation(String option) {
+  private void selectIsolation(String option) {
     webDriverHelpers.clickWebElementByText(ISOLATION_OPTIONS, option);
   }
 
-  public void fillDateOfIsolation(LocalDate date) {
+  private void fillDateOfIsolation(LocalDate date) {
     webDriverHelpers.fillInWebElement(DATE_OF_ISOLATION_INPUT, DATE_FORMATTER.format(date));
   }
 
-  public void selectWasThePatientHospitalizedPreviously(String option) {
+  private void selectWasThePatientHospitalizedPreviously(String option) {
     webDriverHelpers.clickWebElementByText(WAS_THE_PATIENT_HOSPITALIZED_PREVIOUSLY_OPTIONS, option);
   }
 
-  public void selectLeftAgainstMedicalAdvice(String option) {
+  private void selectLeftAgainstMedicalAdvice(String option) {
     webDriverHelpers.clickWebElementByText(LEFT_AGAINST_MEDICAL_ADVICE_OPTIONS, option);
   }
 
-  public Hospitalization collectHospitalizationData() {
+  private Hospitalization collectHospitalizationData() {
     return Hospitalization.builder()
         .dateOfVisitOrAdmission(
             LocalDate.parse(

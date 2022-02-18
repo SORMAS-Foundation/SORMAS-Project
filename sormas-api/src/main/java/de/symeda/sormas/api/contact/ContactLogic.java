@@ -77,9 +77,10 @@ public final class ContactLogic {
 		FollowUpPeriodDto followUpPeriod,
 		List<VisitDto> visits,
 		int followUpDuration,
-		boolean ignoreOverwrite) {
+		boolean ignoreOverwrite,
+		boolean allowFreeOverwrite) {
 
 		Date overwriteUntilDate = !ignoreOverwrite && contact.isOverwriteFollowUpUntil() ? contact.getFollowUpUntil() : null;
-		return FollowUpLogic.calculateFollowUpUntilDate(followUpPeriod, overwriteUntilDate, visits, followUpDuration);
+		return FollowUpLogic.calculateFollowUpUntilDate(followUpPeriod, overwriteUntilDate, visits, followUpDuration, allowFreeOverwrite);
 	}
 }

@@ -36,7 +36,7 @@ public class PersonContactDetailDtoHelper extends AdoDtoHelper<PersonContactDeta
 	}
 
 	@Override
-	protected Call<List<PersonContactDetailDto>> pullAllSince(long since) throws NoConnectionException {
+	protected Call<List<PersonContactDetailDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid) throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 
@@ -74,5 +74,10 @@ public class PersonContactDetailDtoHelper extends AdoDtoHelper<PersonContactDeta
 		target.setThirdParty(source.isThirdParty());
 		target.setThirdPartyRole(source.getThirdPartyRole());
 		target.setThirdPartyName(source.getThirdPartyName());
+	}
+
+	@Override
+	protected long getApproximateJsonSizeInBytes() {
+		return 0;
 	}
 }

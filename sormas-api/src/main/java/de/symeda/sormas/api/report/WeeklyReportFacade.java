@@ -32,6 +32,8 @@ public interface WeeklyReportFacade {
 
 	List<WeeklyReportDto> getAllWeeklyReportsAfter(Date date);
 
+	List<WeeklyReportDto> getAllWeeklyReportsAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
+
 	List<WeeklyReportDto> getByUuids(List<String> uuids);
 
 	WeeklyReportDto saveWeeklyReport(@Valid WeeklyReportDto dto);

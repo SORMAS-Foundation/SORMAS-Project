@@ -31,6 +31,8 @@ public class TreatmentDto extends PseudonymizableDto {
 
 	private static final long serialVersionUID = 816932182306785932L;
 
+	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 1915;
+
 	public static final String I18N_PREFIX = "Treatment";
 
 	public static final String TREATMENT_DATE_TIME = "treatmentDateTime";

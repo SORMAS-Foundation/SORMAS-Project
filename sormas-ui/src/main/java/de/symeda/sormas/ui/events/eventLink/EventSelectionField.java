@@ -24,6 +24,9 @@ import java.util.Date;
 import java.util.Set;
 import java.util.function.Consumer;
 
+import com.vaadin.server.ErrorMessage;
+import com.vaadin.shared.ui.ErrorLevel;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomField;
@@ -38,12 +41,12 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventCriteriaDateType;
 import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.event.EventGroupReferenceDto;
 import de.symeda.sormas.api.event.EventHelper;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
@@ -68,8 +71,13 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 	private final TextField searchField;
 	private final EventCriteria criteria;
 	private final boolean allowCreation;
+	private final Consumer<EventCriteria> setDefaultFilters;
+	EpiWeekAndDateFilterComponent<DateFilterOption> weekAndDateFilter;
+	Button applyButton;
+	HorizontalLayout weekAndDateFilterLayout;
 
-	public EventSelectionField(Disease disease, String infoPickOrCreateEvent) {
+	public EventSelectionField(Disease disease, String infoPickOrCreateEvent, Consumer<EventCriteria> setDefaultFilters) {
+		this.setDefaultFilters = setDefaultFilters;
 		this.searchField = new TextField();
 		this.infoPickOrCreateEvent = infoPickOrCreateEvent;
 		this.allowCreation = true;
@@ -78,33 +86,131 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 		criteria.setDisease(disease);
 		criteria.setUserFilterIncluded(false);
 		criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
-
-		initializeGrid();
-	}
-
-	public EventSelectionField(EventDto event, Set<String> excludedUuids, boolean selectSuperordinateEvent) {
-		this.searchField = new TextField();
-		this.infoPickOrCreateEvent = I18nProperties.getString(Strings.infoPickOrCreateSuperordinateEventForEvent);
-		this.allowCreation = true;
-
-		this.criteria = new EventCriteria();
-		criteria.setDisease(event.getDisease());
-		criteria.setExcludedUuids(excludedUuids);
-		criteria.setUserFilterIncluded(false);
-		criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
-
-		if (!selectSuperordinateEvent) {
-			criteria.eventDateFrom(EventHelper.getStartOrEndDate(event.getStartDate(), event.getEndDate()));
-			// Users are not allowed to select a subordinate event that already has a superordinate event
-			criteria.setHasNoSuperordinateEvent(Boolean.TRUE);
-		} else {
-			criteria.eventDateTo(EventHelper.getStartOrEndDate(event.getStartDate(), event.getEndDate()));
+		if (setDefaultFilters != null) {
+			setDefaultFilters.accept(criteria);
 		}
 
+		this.weekAndDateFilterLayout = buildWeekAndDateFilter();
 		initializeGrid();
 	}
 
-	public EventSelectionField(EventGroupReferenceDto eventGroupReference, Set<String> excludedUuids) {
+	public static EventSelectionField forSuperordinateEvent(EventDto eventDto, Set<String> excludedUuids) {
+
+		EventSelectionField eventSelectionField = new EventSelectionField(
+			eventDto.getDisease(),
+			I18nProperties.getString(Strings.infoPickOrCreateSuperordinateEventForEvent),
+			eventCriteria -> {
+				eventCriteria.setExcludedUuids(excludedUuids);
+				eventCriteria.eventDateBetween(
+					null,
+					EventHelper.getStartOrEndDate(eventDto.getStartDate(), eventDto.getEndDate()),
+					null,
+					DateFilterOption.DATE);
+			});
+
+		eventSelectionField.weekAndDateFilter.getDateToFilter().addValueChangeListener(valueChangeEvent -> {
+			Date selectedToDate = eventSelectionField.weekAndDateFilter.getDateToFilter().getValue();
+			prepareSuperordinateFilters(eventDto, eventSelectionField, selectedToDate, eventSelectionField.weekAndDateFilter.getDateToFilter());
+		});
+
+		eventSelectionField.weekAndDateFilter.getWeekToFilter().addValueChangeListener(valueChangeEvent -> {
+			EpiWeek epiWeek = (EpiWeek) eventSelectionField.weekAndDateFilter.getWeekToFilter().getValue();
+			Date epiWeekEndDate = DateHelper.getEpiWeekEnd(epiWeek);
+			prepareSuperordinateFilters(eventDto, eventSelectionField, epiWeekEndDate, eventSelectionField.weekAndDateFilter.getWeekToFilter());
+		});
+
+		return eventSelectionField;
+	}
+
+	private static void prepareSuperordinateFilters(
+		EventDto eventDto,
+		EventSelectionField eventSelectionField,
+		Date selectedToDate,
+		AbstractComponent component) {
+		boolean isSelectedDateAfterEventDate = true;
+		Date eventStartOrEndDate = EventHelper.getStartOrEndDate(eventDto.getStartDate(), eventDto.getEndDate());
+		if (eventStartOrEndDate != null) {
+			isSelectedDateAfterEventDate = selectedToDate == null || selectedToDate.before(eventStartOrEndDate);
+		}
+		eventSelectionField.applyButton.setEnabled(isSelectedDateAfterEventDate);
+		if (isSelectedDateAfterEventDate) {
+			component.setComponentError(null);
+		} else {
+			component.setComponentError(new ErrorMessage() {
+
+				@Override
+				public ErrorLevel getErrorLevel() {
+					return ErrorLevel.ERROR;
+				}
+
+				@Override
+				public String getFormattedHtmlMessage() {
+					return I18nProperties.getValidationError(Validations.eventSuperordinateEventToDateFilterValidation);
+				}
+			});
+		}
+	}
+
+	public static EventSelectionField forSubordinateEvent(EventDto eventDto, Set<String> excludedUuids) {
+
+		EventSelectionField eventSelectionField = new EventSelectionField(
+			eventDto.getDisease(),
+			I18nProperties.getString(Strings.infoPickOrCreateSuperordinateEventForEvent),
+			eventCriteria -> {
+				eventCriteria.setExcludedUuids(excludedUuids);
+				eventCriteria.eventDateBetween(
+					EventHelper.getStartOrEndDate(eventDto.getStartDate(), eventDto.getEndDate()),
+					null,
+					null,
+					DateFilterOption.DATE);
+				eventCriteria.setHasNoSuperordinateEvent(Boolean.TRUE);
+			});
+
+		eventSelectionField.weekAndDateFilter.getDateFromFilter().addValueChangeListener(valueChangeEvent -> {
+			Date selectedFromDate = eventSelectionField.weekAndDateFilter.getDateFromFilter().getValue();
+			prepareSubordinateFilters(eventDto, eventSelectionField, selectedFromDate, eventSelectionField.weekAndDateFilter.getDateFromFilter());
+		});
+
+		eventSelectionField.weekAndDateFilter.getWeekFromFilter().addValueChangeListener(valueChangeEvent -> {
+			EpiWeek epiWeek = (EpiWeek) eventSelectionField.weekAndDateFilter.getWeekFromFilter().getValue();
+			Date epiWeekStartDate = DateHelper.getEpiWeekStart(epiWeek);
+			prepareSubordinateFilters(eventDto, eventSelectionField, epiWeekStartDate, eventSelectionField.weekAndDateFilter.getWeekFromFilter());
+		});
+
+		return eventSelectionField;
+	}
+
+	private static void prepareSubordinateFilters(
+		EventDto eventDto,
+		EventSelectionField eventSelectionField,
+		Date selectedFromDate,
+		AbstractComponent component) {
+		boolean isSelectedDateBeforeEventDate = true;
+		Date eventStartOrEndDate = EventHelper.getStartOrEndDate(eventDto.getStartDate(), eventDto.getEndDate());
+		if (eventStartOrEndDate != null) {
+			isSelectedDateBeforeEventDate = selectedFromDate == null || selectedFromDate.after(eventStartOrEndDate);
+		}
+		eventSelectionField.applyButton.setEnabled(isSelectedDateBeforeEventDate);
+		if (isSelectedDateBeforeEventDate) {
+			component.setComponentError(null);
+		} else {
+			component.setComponentError(new ErrorMessage() {
+
+				@Override
+				public ErrorLevel getErrorLevel() {
+					return ErrorLevel.ERROR;
+				}
+
+				@Override
+				public String getFormattedHtmlMessage() {
+					return I18nProperties.getValidationError(Validations.eventSubordinateEventFromDateFilterValidation);
+				}
+			});
+		}
+	}
+
+	public EventSelectionField(Set<String> excludedUuids) {
+		this.setDefaultFilters = null;
 		this.searchField = new TextField();
 		this.infoPickOrCreateEvent = I18nProperties.getString(Strings.infoPickOrCreateEventGroupForEvent);
 		this.allowCreation = false;
@@ -113,6 +219,7 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 		criteria.setExcludedUuids(excludedUuids);
 		criteria.setUserFilterIncluded(true);
 		criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
+		this.weekAndDateFilterLayout = buildWeekAndDateFilter();
 		initializeGrid();
 	}
 
@@ -127,9 +234,7 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 		}
 		rbSelectEvent = new RadioButtonGroup<>();
 		rbSelectEvent.setItems(SELECT_EVENT);
-		rbSelectEvent.setItemCaptionGenerator((item) -> {
-			return I18nProperties.getCaption(Captions.eventSelect);
-		});
+		rbSelectEvent.setItemCaptionGenerator((item) -> I18nProperties.getCaption(Captions.eventSelect));
 		CssStyles.style(rbSelectEvent, CssStyles.VSPACE_NONE);
 		rbSelectEvent.addValueChangeListener(e -> {
 			if (e.getValue() != null) {
@@ -198,7 +303,7 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 		filterLayout.setWidth(100, Unit.PERCENTAGE);
 
 		filterLayout.addComponent(createFilterBar());
-		filterLayout.addComponent(buildWeekAndDateFilter());
+		filterLayout.addComponent(weekAndDateFilterLayout);
 
 		mainLayout.addComponent(filterLayout);
 		addSelectEventRadioGroup();
@@ -227,8 +332,7 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 	public EventIndexDto getValue() {
 
 		if (eventGrid != null) {
-			EventIndexDto value = eventGrid.getSelectedItems().stream().findFirst().orElse(null);
-			return value;
+			return eventGrid.getSelectedItems().stream().findFirst().orElse(null);
 		}
 
 		return null;
@@ -266,9 +370,9 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 
 	public HorizontalLayout buildWeekAndDateFilter() {
 
-		Button applyButton = ButtonHelper.createButton(Captions.actionApplyDateFilter, null);
+		applyButton = ButtonHelper.createButton(Captions.actionApplyDateFilter, null);
 
-		EpiWeekAndDateFilterComponent<DateFilterOption> weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(false, false, null, null);
+		weekAndDateFilter = new EpiWeekAndDateFilterComponent<>(false, false, null, null);
 
 		weekAndDateFilter.getWeekFromFilter().setInputPrompt(I18nProperties.getString(Strings.promptEventEpiWeekFrom));
 		weekAndDateFilter.getWeekToFilter().setInputPrompt(I18nProperties.getString(Strings.promptEventEpiWeekTo));
@@ -278,22 +382,29 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 		applyButton.addClickListener(e -> {
 
 			DateFilterOption dateFilterOption = (DateFilterOption) weekAndDateFilter.getDateFilterOptionFilter().getValue();
-			Date fromDate, toDate;
+			Date fromDate = null;
+			Date toDate = null;
 			if (dateFilterOption == DateFilterOption.DATE) {
-				fromDate = DateHelper.getStartOfDay(weekAndDateFilter.getDateFromFilter().getValue());
-				toDate = DateHelper.getEndOfDay(weekAndDateFilter.getDateToFilter().getValue());
+				if (weekAndDateFilter.getDateFromFilter().getValue() != null) {
+					fromDate = DateHelper.getStartOfDay(weekAndDateFilter.getDateFromFilter().getValue());
+				}
+				if (weekAndDateFilter.getDateToFilter().getValue() != null) {
+					toDate = DateHelper.getEndOfDay(weekAndDateFilter.getDateToFilter().getValue());
+				}
 			} else {
 				fromDate = DateHelper.getEpiWeekStart((EpiWeek) weekAndDateFilter.getWeekFromFilter().getValue());
 				toDate = DateHelper.getEpiWeekEnd((EpiWeek) weekAndDateFilter.getWeekToFilter().getValue());
 			}
 
-			if ((fromDate != null && toDate != null) || (fromDate == null && toDate == null)) {
-				applyButton.removeStyleName(ValoTheme.BUTTON_PRIMARY);
-				criteria.eventDateBetween(fromDate, toDate, EventCriteriaDateType.EVENT_DATE, dateFilterOption);
-
-			} else {
-				weekAndDateFilter.setNotificationsForMissingFilters();
+			if (setDefaultFilters != null) {
+				EventCriteria defaultCriteria = new EventCriteria();
+				setDefaultFilters.accept(defaultCriteria);
+				fromDate = fromDate == null ? defaultCriteria.getEventDateFrom() : fromDate;
+				toDate = toDate == null ? defaultCriteria.getEventDateTo() : toDate;
 			}
+
+			applyButton.removeStyleName(ValoTheme.BUTTON_PRIMARY);
+			criteria.eventDateBetween(fromDate, toDate, EventCriteriaDateType.EVENT_DATE, dateFilterOption);
 			eventGrid.setCriteria(criteria);
 			eventGrid.getSelectedItems();
 		});
@@ -304,7 +415,15 @@ public class EventSelectionField extends CustomField<EventIndexDto> {
 
 			weekAndDateFilter.getDateFromFilter().setValue(null);
 			weekAndDateFilter.getDateToFilter().setValue(null);
-			criteria.eventDateBetween(null, null, null, DateFilterOption.DATE);
+			weekAndDateFilter.getWeekFromFilter().setValue(null);
+			weekAndDateFilter.getWeekToFilter().setValue(null);
+
+			criteria.freeText(null);
+			if (setDefaultFilters != null) {
+				setDefaultFilters.accept(criteria);
+			} else {
+				criteria.eventDateBetween(null, null, null, DateFilterOption.DATE);
+			}
 
 			eventGrid.setCriteria(criteria);
 			eventGrid.getSelectedItems();

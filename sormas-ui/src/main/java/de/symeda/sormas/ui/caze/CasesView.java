@@ -100,6 +100,7 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.expandablebutton.ExpandableButton;
+import de.symeda.sormas.ui.utils.components.popupmenu.PopupMenu;
 
 /**
  * A view for performing create-read-update-delete operations on products.
@@ -248,20 +249,12 @@ public class CasesView extends AbstractView {
 	}
 
 	private void addCommonCasesOverviewToolbar() {
-		final PopupButton moreButton = new PopupButton(I18nProperties.getCaption(Captions.moreActions));
-		moreButton.setId("more");
-		moreButton.setIcon(VaadinIcons.ELLIPSIS_DOTS_V);
-		final VerticalLayout moreLayout = new VerticalLayout();
-		moreLayout.setSpacing(true);
-		moreLayout.setMargin(true);
-		moreLayout.addStyleName(CssStyles.LAYOUT_MINIMAL);
-		moreLayout.setWidth(250, Unit.PIXELS);
-		moreButton.setContent(moreLayout);
+		final PopupMenu moreButton = new PopupMenu(I18nProperties.getCaption(Captions.moreActions));
 
 		Button openGuideButton = ButtonHelper
 			.createIconButton(Captions.caseOpenCasesGuide, VaadinIcons.QUESTION, e -> buildAndOpenCasesInstructions(), ValoTheme.BUTTON_PRIMARY);
 		openGuideButton.setWidth(100, Unit.PERCENTAGE);
-		moreLayout.addComponent(openGuideButton);
+		moreButton.addMenuEntry(openGuideButton);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_IMPORT)) {
 			VerticalLayout importLayout = new VerticalLayout();
@@ -431,7 +424,7 @@ public class CasesView extends AbstractView {
 
 			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
 			btnEnterBulkEditMode.setWidth(100, Unit.PERCENTAGE);
-			moreLayout.addComponent(btnEnterBulkEditMode);
+			moreButton.addMenuEntry(btnEnterBulkEditMode);
 
 			btnLeaveBulkEditMode = ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, e -> {
 				bulkOperationsDropdown.setVisible(false);
@@ -453,7 +446,7 @@ public class CasesView extends AbstractView {
 				e -> ControllerProvider.getCaseController().navigateToMergeCasesView(),
 				ValoTheme.BUTTON_PRIMARY);
 			mergeDuplicatesButton.setWidth(100, Unit.PERCENTAGE);
-			moreLayout.addComponent(mergeDuplicatesButton);
+			moreButton.addMenuEntry(mergeDuplicatesButton);
 		}
 
 		Button searchSpecificCaseButton = ButtonHelper.createIconButton(
@@ -462,7 +455,7 @@ public class CasesView extends AbstractView {
 			e -> buildAndOpenSearchSpecificCaseWindow(),
 			ValoTheme.BUTTON_PRIMARY);
 		searchSpecificCaseButton.setWidth(100, Unit.PERCENTAGE);
-		moreLayout.addComponent(searchSpecificCaseButton);
+		moreButton.addMenuEntry(searchSpecificCaseButton);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CREATE)) {
 			final ExpandableButton lineListingButton =
@@ -473,7 +466,10 @@ public class CasesView extends AbstractView {
 				new ExpandableButton(Captions.caseNewCase).expand(e -> ControllerProvider.getCaseController().create());
 			addHeaderComponent(createButton);
 		}
-		addHeaderComponent(moreButton);
+
+		if (moreButton.hasMenuEntries()) {
+			addHeaderComponent(moreButton);
+		}
 	}
 
 	protected void changeViewType(CasesViewType type) {
@@ -727,7 +723,7 @@ public class CasesView extends AbstractView {
 									}
 
 									ControllerProvider.getDocGenerationController()
-										.showQuarantineOrderDocumentDialog(references, DocumentWorkflow.QUARANTINE_ORDER_CASE);
+										.showBulkQuarantineOrderDocumentDialog(references, DocumentWorkflow.QUARANTINE_ORDER_CASE);
 								});
 							}));
 					}

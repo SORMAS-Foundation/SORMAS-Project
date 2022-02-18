@@ -1,20 +1,17 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.backend.contact;
 
 import java.sql.Timestamp;
@@ -22,6 +19,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
+import java.util.EnumMap;
 import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
@@ -66,6 +64,8 @@ import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -75,22 +75,26 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
-import de.symeda.sormas.backend.clinicalcourse.HealthConditionsService;
+import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.contact.transformers.ContactListEntryDtoResultTransformer;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.exposure.ExposureService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -128,8 +132,6 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	@EJB
 	private EpiDataService epiDataService;
 	@EJB
-	private HealthConditionsService healthConditionsService;
-	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
 	private ExposureService exposureService;
@@ -141,6 +143,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	private ExternalJournalService externalJournalService;
 	@EJB
 	private UserService userService;
+	@EJB
+	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	public ContactService() {
 		super(Contact.class);
@@ -166,7 +170,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<Contact> getAllActiveContactsAfter(Date date) {
+	public List<Contact> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Contact> cq = cb.createQuery(getElementClass());
@@ -180,32 +184,42 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, date);
+			Predicate dateFilter = createChangeDateFilter(cb, from, date, lastSynchronizedUuid);
 			filter = CriteriaBuilderHelper.and(cb, filter, dateFilter);
 		}
 
 		cq.where(filter);
-		cq.orderBy(cb.desc(from.get(Contact.CHANGE_DATE)));
 		cq.distinct(true);
 
-		return em.createQuery(cq).getResultList();
+		return getBatchedQueryResults(cb, cq, from, batchSize);
 	}
 
 	@Override
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Contact> from, Date date) {
-		return createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
+		return createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), null);
 	}
 
 	@Override
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Contact> from, Timestamp date) {
+		return createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), null);
+	}
 
-		Predicate dateFilter = changeDateFilter(cb, date, from);
-		dateFilter = cb.or(dateFilter, epiDataService.createChangeDateFilter(cb, from.join(Contact.EPI_DATA, JoinType.LEFT), date));
-		dateFilter = cb.or(dateFilter, healthConditionsService.createChangeDateFilter(cb, from.join(Contact.HEALTH_CONDITIONS, JoinType.LEFT), date));
-		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, from, Contact.SORMAS_TO_SORMAS_ORIGIN_INFO));
-		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, from, Contact.SORMAS_TO_SORMAS_SHARES));
+	@Override
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Contact> from, Date date, String lastSynchronizedUuid) {
+		return createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), null);
+	}
 
-		return dateFilter;
+	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Contact> from, Timestamp date, String lastSynchronizedUuid) {
+
+		ChangeDateFilterBuilder changeDateFilterBuilder = new ChangeDateFilterBuilder(cb, date, from, lastSynchronizedUuid);
+		Join<Object, EpiData> epiData = from.join(Contact.EPI_DATA, JoinType.LEFT);
+		Join<Object, HealthConditions> healthCondition = from.join(Contact.HEALTH_CONDITIONS, JoinType.LEFT);
+
+		changeDateFilterBuilder.add(from);
+		epiDataService.addChangeDateFilters(changeDateFilterBuilder, epiData);
+		changeDateFilterBuilder.add(healthCondition).add(from, Contact.SORMAS_TO_SORMAS_ORIGIN_INFO).add(from, Contact.SORMAS_TO_SORMAS_SHARES);
+
+		return changeDateFilterBuilder.build();
 	}
 
 	public List<String> getAllActiveUuids(User user) {
@@ -526,7 +540,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			List<DashboardContactDto> dashboardContacts = em.createQuery(cq).getResultList();
 
 			if (!dashboardContacts.isEmpty()) {
-				List<Long> dashboardContactIds = dashboardContacts.stream().map(d -> d.getId()).collect(Collectors.toList());
+				List<Long> dashboardContactIds = dashboardContacts.stream().map(DashboardContactDto::getId).collect(Collectors.toList());
 
 				CriteriaQuery<DashboardVisit> visitsCq = cb.createQuery(DashboardVisit.class);
 				Root<Contact> visitsCqRoot = visitsCq.from(getElementClass());
@@ -555,8 +569,15 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 						dashboardContact.setLastVisitDateTime(lastVisit.getVisitDateTime());
 						dashboardContact.setLastVisitStatus(lastVisit.getVisitStatus());
 						dashboardContact.setSymptomatic(lastVisit.isSymptomatic());
-						dashboardContact
-							.setVisitStatusMap(visits.stream().collect(Collectors.groupingBy(DashboardVisit::getVisitStatus, Collectors.counting())));
+
+						List<VisitStatus> visitStatuses = visits.stream().map(DashboardVisit::getVisitStatus).collect(Collectors.toList());
+						Map<VisitStatus, Integer> frequency = new EnumMap<>(VisitStatus.class);
+						for (VisitStatus status : VisitStatus.values()) {
+							int freq = Collections.frequency(visitStatuses, status);
+							frequency.put(status, freq);
+						}
+
+						dashboardContact.setVisitStatusMap(frequency);
 					}
 				}
 
@@ -803,7 +824,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 						ContactLogic.getFollowUpStartDate(contact.getLastContactDate(), contact.getReportDateTime(), earliestSampleDate),
 						contact.getVisits().stream().map(visit -> visitFacade.toDto(visit)).collect(Collectors.toList()),
 						diseaseConfigurationFacade.getFollowUpDuration(contact.getDisease()),
-						false)
+						false,
+						featureConfigurationFacade
+							.isPropertyValueTrue(FeatureType.CONTACT_TRACING, FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE))
 					.getFollowUpEndDate();
 			contact.setFollowUpUntil(untilDate);
 			if (DateHelper.getStartOfDay(currentFollowUpUntil).before(DateHelper.getStartOfDay(untilDate))) {
@@ -959,6 +982,13 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			filter = CriteriaBuilderHelper.or(cb, filter, cb.exists(sampleSubQuery));
 			break;
 		default:
+		}
+
+		if (currentUser.getLimitedDisease() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.or(cb.equal(contactPath.get(Contact.DISEASE), currentUser.getLimitedDisease()), cb.isNull(contactPath.get(Contact.DISEASE))));
 		}
 
 		return filter;
@@ -1312,7 +1342,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 	/**
 	 * Creates a filter that excludes all contacts that are either
-	 * {@link CoreAdo#isDeleted()} or associated with cases that are
+	 * {@link DeletableAdo#isDeleted()} or associated with cases that are
 	 * {@link Case#isArchived()}.
 	 */
 	public Predicate createActiveContactsFilter(CriteriaBuilder cb, Root<Contact> root) {
@@ -1331,7 +1361,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	/**
 	 * Creates a default filter that should be used as the basis of queries that do
 	 * not use {@link ContactCriteria}. This essentially removes
-	 * {@link CoreAdo#isDeleted()} contacts from the queries.
+	 * {@link DeletableAdo#isDeleted()} contacts from the queries.
 	 */
 	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, Contact> root) {
 		return cb.isFalse(root.get(Contact.DELETED));
@@ -1444,6 +1474,13 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	 */
 	public void updateVaccinationStatuses(Long personId, Disease disease, Date vaccinationDate) {
 
+		// Only consider contacts with relevance date at least one day after the vaccination date
+		if (vaccinationDate == null) {
+			return;
+		} else {
+			vaccinationDate = DateHelper.getEndOfDay(vaccinationDate);
+		}
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaUpdate<Contact> cu = cb.createCriteriaUpdate(Contact.class);
 		Root<Contact> root = cu.from(Contact.class);
@@ -1453,8 +1490,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		Predicate datePredicate = vaccinationDate != null
 			? cb.or(
-				cb.greaterThanOrEqualTo(root.get(Contact.LAST_CONTACT_DATE), vaccinationDate),
-				cb.and(cb.isNull(root.get(Contact.LAST_CONTACT_DATE)), cb.greaterThanOrEqualTo(root.get(Contact.REPORT_DATE_TIME), vaccinationDate)))
+				cb.greaterThan(root.get(Contact.LAST_CONTACT_DATE), vaccinationDate),
+				cb.and(cb.isNull(root.get(Contact.LAST_CONTACT_DATE)), cb.greaterThan(root.get(Contact.REPORT_DATE_TIME), vaccinationDate)))
 			: null;
 
 		cu.where(

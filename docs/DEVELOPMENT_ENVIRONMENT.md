@@ -38,7 +38,7 @@ If you plan to work on the Android App as well, you will also need the **Java 8 
   - Enter `http://localhost:6080/sormas-ui` into the `URL` field
   - Make sure that the correct JRE is specified (your Java 11 JDK)
   - Enter the path to the SORMAS domain and the credentials that you've specified when setting up the server
-  - Open the `Deployment` tab and add the artifacts `sormas-ear`, `sormas-rest` and `sormas-ui`
+  - Open the `Deployment` tab and add the artifacts `sormas-ear`, `sormas-rest` and `sormas-ui` (make sure to respect this order as there are dependencies between artifacts at startup)
   - Open the `Logs` tab and add a new log file pointing to the `logs/server.log` file in your SORMAS domain
   - Open the `Startup/Connection` tab and make sure that `Pass environment variables` is NOT checked; ignore warnings about the debug configuration not being correct
   - Open the `config/domain.xml` file in your domain directory and make sure that the `java-config` node contains the following code: `<java-config classpath-suffix="" debug-enabled="true" debug-options="-agentlib:jdwp=transport=dt_socket,address=6009,server=n,suspend=y" ...`
@@ -62,7 +62,7 @@ If you plan to work on the Android App as well, you will also need the **Java 8 
 - Either run `mvn install` on the `sormas-base` project or execute the `install [default]` Ant script (this needs a Maven installation on your system with the M2_HOME variable set)
 - Execute the `deploy-serverlibs` Ant script
 - Highlight all Eclipse projects and choose `Maven -> Update Project` from the right-click menu; perform the update for all projects
-- Start the Glassfish server and deploy `sormas-ear`, `sormas-rest` and `sormas-ui` by dragging the respective projects onto it, or use the `Add and Remove...` function by right-clicking on the server
+- Start the Glassfish server and deploy `sormas-ear`, `sormas-rest` and `sormas-ui` by dragging the respective projects onto it, or use the `Add and Remove...` function by right-clicking on the server (make sure to respect this order as there are depdendencies between artifacts at startup)
 - Open your browser and type in `http://localhost:6080/sormas-ui` to test whether the server and IDE have been set up correctly
 
 ### Android Studio
@@ -126,3 +126,25 @@ Optional, but strongly recommended:
 6. M2_HOME need to be set. By default, for newer version, it is set to MAVEN_HOME. But Ant script is looking for M2_HOME
 
 7. For eclipse formatted plugin, there is an issue for Idea: <https://plugins.jetbrains.com/plugin/6546-eclipse-code-formatter> - `cannot save settings Path to custom eclipse folder is not valid` - it works only when settings were saved from down to up. And not vice versa.
+
+## Avoid redeployment problems
+
+**Problem**: Due to currently a not mitigated problem, it is only possible to deploy the `sormas-ear.ear` (contains `sormas-backend`) once without problems. If you undeploy it and deploy `sormas-ear.ear` again, the other artifacts `sormas-ui`and `sormas-rest` cannot successfully call the backend.
+
+**Workaround**: Undeploy `sormas-ear` and all other sormas artifacts, restart the Payara domain, deploy `sormas-ear` again (the same or changed version).
+
+**Symptom**: This exception occurs when `sormas-ui` or `sormas-rest` calls the `sormas-backend`.
+```java
+Caused by: java.lang.IllegalArgumentException: Can not set java.util.Properties field de.symeda.sormas.backend.common.ConfigFacadeEjb.props to de.symeda.sormas.backend.common.ConfigFacadeEjb
+    at java.base/jdk.internal.reflect.UnsafeFieldAccessorImpl.throwSetIllegalArgumentException(UnsafeFieldAccessorImpl.java:167)
+    at java.base/jdk.internal.reflect.UnsafeFieldAccessorImpl.throwSetIllegalArgumentException(UnsafeFieldAccessorImpl.java:171)
+    at java.base/jdk.internal.reflect.UnsafeFieldAccessorImpl.ensureObj(UnsafeFieldAccessorImpl.java:58)
+    at java.base/jdk.internal.reflect.UnsafeObjectFieldAccessorImpl.set(UnsafeObjectFieldAccessorImpl.java:75)
+    at java.base/java.lang.reflect.Field.set(Field.java:780)
+   at com.sun.enterprise.container.common.impl.util.InjectionManagerImpl._inject(InjectionManagerImpl.java:594)
+```
+
+**Additional info**:
+- You can undeploy and deploy all other modules without restarting the Payara domain, as long as nothing changes on `sormas-ear` (implicates `sormas-api` and `sormas-backend`).
+- The problem occurs no matter if you deploy directly from your IDE or as packaged ears/wars into the autodeploy directory.
+- Related ticket: #2511

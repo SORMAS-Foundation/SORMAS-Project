@@ -21,14 +21,15 @@ import java.util.List;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.app.backend.caze.Case;
 import de.symeda.sormas.app.backend.caze.CaseDtoHelper;
-import de.symeda.sormas.app.backend.common.AdoDtoHelper;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.facility.FacilityDtoHelper;
 import de.symeda.sormas.app.backend.person.Person;
+import de.symeda.sormas.app.backend.person.PersonDependentDtoHelper;
 import de.symeda.sormas.app.backend.person.PersonDtoHelper;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.CommunityDtoHelper;
@@ -47,7 +48,7 @@ import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.RetroProvider;
 import retrofit2.Call;
 
-public class ImmunizationDtoHelper extends AdoDtoHelper<Immunization, ImmunizationDto> {
+public class ImmunizationDtoHelper extends PersonDependentDtoHelper<Immunization, ImmunizationDto> {
 
 	private VaccinationDtoHelper vaccinationDtoHelper = new VaccinationDtoHelper();
 	private SormasToSormasOriginInfoDtoHelper sormasToSormasOriginInfoDtoHelper = new SormasToSormasOriginInfoDtoHelper();
@@ -63,8 +64,8 @@ public class ImmunizationDtoHelper extends AdoDtoHelper<Immunization, Immunizati
 	}
 
 	@Override
-	protected Call<List<ImmunizationDto>> pullAllSince(long since) throws NoConnectionException {
-		return RetroProvider.getImmunizationFacade().pullAllSince(since);
+	protected Call<List<ImmunizationDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
+		return RetroProvider.getImmunizationFacade().pullAllSince(since, size, lastSynchronizedUuid);
 	}
 
 	@Override
@@ -205,12 +206,22 @@ public class ImmunizationDtoHelper extends AdoDtoHelper<Immunization, Immunizati
 		target.setPseudonymized(source.isPseudonymized());
 	}
 
-	public static ImmunizationReferenceDto toReferenceDto(Immunization ado) {
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return ImmunizationDto.APPROXIMATE_JSON_SIZE_IN_BYTES;
+    }
+
+    public static ImmunizationReferenceDto toReferenceDto(Immunization ado) {
 		if (ado == null) {
 			return null;
 		}
 		ImmunizationReferenceDto dto = new ImmunizationReferenceDto(ado.getUuid(), ado.toString(), ado.getExternalId());
 
 		return dto;
+	}
+
+	@Override
+	protected PersonReferenceDto getPerson(ImmunizationDto dto) {
+		return dto.getPerson();
 	}
 }

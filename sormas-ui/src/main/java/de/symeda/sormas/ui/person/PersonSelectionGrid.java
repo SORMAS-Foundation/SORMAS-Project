@@ -28,7 +28,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.SimilarPersonDto;
-import de.symeda.sormas.ui.UserProvider;
 
 @SuppressWarnings("serial")
 public class PersonSelectionGrid extends Grid {
@@ -89,8 +88,7 @@ public class PersonSelectionGrid extends Grid {
 	 *            The person criteria.
 	 */
 	public void loadData(PersonSimilarityCriteria criteria) {
-		List<SimilarPersonDto> similarPersons =
-			FacadeProvider.getPersonFacade().getSimilarPersonDtos(UserProvider.getCurrent().getUserReference(), criteria);
+		List<SimilarPersonDto> similarPersons = FacadeProvider.getPersonFacade().getSimilarPersonDtos(criteria);
 
 		getContainer().removeAllItems();
 		getContainer().addAll(similarPersons);

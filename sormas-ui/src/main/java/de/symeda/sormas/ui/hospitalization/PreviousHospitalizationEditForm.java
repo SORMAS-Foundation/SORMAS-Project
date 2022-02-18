@@ -246,6 +246,13 @@ public class PreviousHospitalizationEditForm extends AbstractEditForm<PreviousHo
 				true,
 				true,
 				I18nProperties.getValidationError(Validations.beforeDate, intensiveCareUnitStart.getCaption(), intensiveCareUnitEnd.getCaption())));
+		intensiveCareUnitStart.addValidator(
+			new DateComparisonValidator(
+				intensiveCareUnitStart,
+				dischargeDate,
+				true,
+				true,
+				I18nProperties.getValidationError(Validations.beforeDate, intensiveCareUnitStart.getCaption(), dischargeDate.getCaption())));
 		intensiveCareUnitEnd.addValidator(
 			new DateComparisonValidator(
 				intensiveCareUnitEnd,

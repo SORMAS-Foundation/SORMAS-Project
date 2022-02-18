@@ -138,6 +138,7 @@
     <string name="caption_case_tasks">Úkoly případu</string>
     <string name="caption_case_events">Události případu</string>
     <string name="caption_case_immunizations">Imunizace případu</string>
+    <string name="caption_case_vaccinations">Očkování případů</string>
     <string name="caption_case_treatments">Léčba</string>
     <string name="caption_case_similarity_create">Vytvořit nový případ</string>
     <string name="caption_changed_data_lost">Změněná data ztracená při opětovné synchronizaci.</string>
@@ -154,6 +155,7 @@
     <string name="caption_contact_epidemiological_data">Epidemiologické informace</string>
     <string name="caption_contact_visits">Následné informace</string>
     <string name="caption_contact_immunizations">Imunizace kontaktu</string>
+    <string name="caption_contact_vaccinations">Očkování kontaktu</string>
     <string name="caption_converted_to_case">Převedeno na Případ</string>
     <string name="caption_date_of_birth">Datum narození (rok / měsíc / den)</string>
     <string name="caption_date_of_sampling">Datum odběru vzorků</string>
@@ -167,6 +169,7 @@
     <string name="caption_event_information">Informace o události</string>
     <string name="caption_event_participants">Zapojené osoby</string>
     <string name="caption_event_participant_immunizations">Immunizace účastníků akce</string>
+    <string name="caption_event_participant_vaccinations">Vakcíny účastníka události</string>
     <string name="caption_event_tasks">Úkoly událostí</string>
     <string name="caption_executed_by">Provedl</string>
     <string name="caption_facility_or_home">Místo pobytu</string>
@@ -643,4 +646,6 @@
     <string name="caption_facility_type_group">Kategorie zařízení</string>
     <string name="caption_facility_type">Typ zařízení</string>
     <string name="value_vaccine_date_unknown">Datum očkování N/A</string>
+    <string name="value_vaccine_name_unknown">Očkovací látka N/A</string>
+    <string name="value_vaccine_manufacturer_unknown">Výrobce N/A</string>
 </resources>

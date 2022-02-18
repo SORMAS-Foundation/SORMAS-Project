@@ -11,6 +11,9 @@ import de.symeda.sormas.api.sormastosormas.sharerequest.PreviewNotImplementedDto
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidator;
 import de.symeda.sormas.backend.sormastosormas.data.validation.SormasToSormasDtoValidator;
+import de.symeda.sormas.backend.sormastosormas.data.validation.ValidationDirection;
+
+import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildImmunizationValidationGroupName;
 
 @Stateless
 @LocalBean
@@ -26,15 +29,17 @@ public class SormasToSormasImmunizationDtoValidator
 	}
 
 	@Override
-	public ValidationErrors validateIncoming(SormasToSormasImmunizationDto sharedData) {
-		ValidationErrors validationErrors = new ValidationErrors();
+	public ValidationErrors validate(SormasToSormasImmunizationDto sharedData, ValidationDirection direction) {
 		final ImmunizationDto im = sharedData.getEntity();
+		ValidationErrors validationErrors = new ValidationErrors(buildImmunizationValidationGroupName(im));
 
 		final String groupNameTag = Captions.Immunization;
-		infraValidator.validateCountry(im.getCountry(), groupNameTag, validationErrors, im::setCountry);
-		infraValidator.validateResponsibleRegion(im.getResponsibleRegion(), groupNameTag, validationErrors, im::setResponsibleRegion);
-		infraValidator.validateResponsibleDistrict(im.getResponsibleDistrict(), groupNameTag, validationErrors, im::setResponsibleDistrict);
-		infraValidator.validateResponsibleCommunity(im.getResponsibleCommunity(), groupNameTag, validationErrors, im::setResponsibleCommunity);
+		infraValidator.validateCountry(im.getCountry(), groupNameTag, validationErrors, im::setCountry, direction);
+		infraValidator.validateResponsibleRegion(im.getResponsibleRegion(), groupNameTag, validationErrors, im::setResponsibleRegion, direction);
+		infraValidator
+			.validateResponsibleDistrict(im.getResponsibleDistrict(), groupNameTag, validationErrors, im::setResponsibleDistrict, direction);
+		infraValidator
+			.validateResponsibleCommunity(im.getResponsibleCommunity(), groupNameTag, validationErrors, im::setResponsibleCommunity, direction);
 
 		infraValidator
 			.validateFacility(im.getHealthFacility(), im.getFacilityType(), im.getHealthFacilityDetails(), groupNameTag, validationErrors, f -> {
@@ -46,17 +51,8 @@ public class SormasToSormasImmunizationDtoValidator
 	}
 
 	@Override
-	public ValidationErrors validateIncomingPreview(PreviewNotImplementedDto previewNotImplementedDto) {
+	public ValidationErrors validatePreview(PreviewNotImplementedDto previewNotImplementedDto, ValidationDirection direction) {
+		// todo adjust test in InfraValidationSoundnessTest once preview is available for this entity
 		throw new RuntimeException("Immunizations preview not yet implemented");
-	}
-
-	@Override
-	public ValidationErrors validateOutgoing(SormasToSormasImmunizationDto sharedData) {
-		return null;
-	}
-
-	@Override
-	public ValidationErrors validateOutgoingPreview(PreviewNotImplementedDto previewNotImplementedDto) {
-		return null;
 	}
 }

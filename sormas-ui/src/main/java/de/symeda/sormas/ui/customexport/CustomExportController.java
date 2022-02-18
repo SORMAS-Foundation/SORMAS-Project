@@ -90,22 +90,23 @@ public class CustomExportController {
 	public void openEditExportConfigurationWindow(
 		ExportConfigurationsGrid grid,
 		ExportConfigurationDto config,
-		List<ExportPropertyMetaInfo> availableProperties) {
+		List<ExportPropertyMetaInfo> availableProperties,
+		String caption) {
 
-		Window newExportWindow = VaadinUiUtil.createPopupWindow();
+		Window exportWindow = VaadinUiUtil.createPopupWindow();
 		ExportConfigurationEditLayout editLayout = new ExportConfigurationEditLayout(config, availableProperties, (exportConfiguration) -> {
 			FacadeProvider.getExportFacade().saveExportConfiguration(exportConfiguration);
-			newExportWindow.close();
+			exportWindow.close();
 			new Notification(null, I18nProperties.getString(Strings.messageExportConfigurationSaved), Notification.Type.WARNING_MESSAGE, false)
 				.show(Page.getCurrent());
 			grid.reload(false);
 		}, () -> {
-			newExportWindow.close();
+			exportWindow.close();
 			grid.reload(false);
 		});
-		newExportWindow.setWidth(1024, Sizeable.Unit.PIXELS);
-		newExportWindow.setCaption(I18nProperties.getCaption(Captions.exportNewExportConfiguration));
-		newExportWindow.setContent(editLayout);
-		UI.getCurrent().addWindow(newExportWindow);
+		exportWindow.setWidth(1024, Sizeable.Unit.PIXELS);
+		exportWindow.setCaption(caption);
+		exportWindow.setContent(editLayout);
+		UI.getCurrent().addWindow(exportWindow);
 	}
 }

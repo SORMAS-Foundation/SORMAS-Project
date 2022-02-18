@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.api.vaccination;
 
+import de.symeda.sormas.api.utils.SortProperty;
 import java.util.List;
 import java.util.Map;
 
@@ -22,6 +23,9 @@ import javax.ejb.Remote;
 import javax.validation.Valid;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.contact.ContactReferenceDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
@@ -53,7 +57,25 @@ public interface VaccinationFacade {
 
 	List<VaccinationDto> getAllVaccinations(String personUuid, Disease disease);
 
-	List<VaccinationListEntryDto> getEntriesList(VaccinationListCriteria criteria, Integer first, Integer max);
+	List<VaccinationListEntryDto> getEntriesList(VaccinationListCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
+
+	List<VaccinationListEntryDto> getEntriesListWithRelevance(
+		CaseReferenceDto caseReferenceDto,
+		VaccinationListCriteria criteria,
+		Integer first,
+		Integer max);
+
+	List<VaccinationListEntryDto> getEntriesListWithRelevance(
+		ContactReferenceDto contactReferenceDto,
+		VaccinationListCriteria criteria,
+		Integer first,
+		Integer max);
+
+	List<VaccinationListEntryDto> getEntriesListWithRelevance(
+		EventParticipantReferenceDto eventParticipantReferenceDto,
+		VaccinationListCriteria criteria,
+		Integer first,
+		Integer max);
 
 	void validate(VaccinationDto vaccinationDto, boolean allowEmptyImmunization);
 

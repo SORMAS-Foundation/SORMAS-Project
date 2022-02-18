@@ -24,7 +24,7 @@ import de.symeda.sormas.api.sample.AdditionalTestCriteria;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
-import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
@@ -42,7 +42,7 @@ public class AdditionalTestService extends AdoServiceWithUserFilter<AdditionalTe
 		super(AdditionalTest.class);
 	}
 
-	public List<AdditionalTest> getAllActiveAdditionalTestsAfter(Date date, User user) {
+	public List<AdditionalTest> getAllActiveAdditionalTestsAfter(Date date, User user, Integer batchSize, String lastSynchronizedUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<AdditionalTest> cq = cb.createQuery(getElementClass());
@@ -56,15 +56,14 @@ public class AdditionalTestService extends AdoServiceWithUserFilter<AdditionalTe
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, date);
+			Predicate dateFilter = createChangeDateFilter(cb, from, date, lastSynchronizedUuid);
 			filter = cb.and(filter, dateFilter);
 		}
 
 		cq.where(filter);
-		cq.orderBy(cb.desc(from.get(AdditionalTest.CHANGE_DATE)));
 		cq.distinct(true);
 
-		return em.createQuery(cq).getResultList();
+		return getBatchedQueryResults(cb, cq, from, batchSize);
 	}
 
 	public Predicate buildCriteriaFilter(AdditionalTestCriteria additionalTestCriteria, CriteriaBuilder cb, Root<AdditionalTest> from) {
@@ -175,7 +174,7 @@ public class AdditionalTestService extends AdoServiceWithUserFilter<AdditionalTe
 	}
 
 	/**
-	 * Creates a filter that excludes all samples that are {@link CoreAdo#deleted} or associated with
+	 * Creates a filter that excludes all samples that are {@link DeletableAdo#deleted} or associated with
 	 * cases that are {@link Case#archived}, contacts that are {@link Contact#deleted}. or event participants that are
 	 * {@link EventParticipant#deleted}
 	 */

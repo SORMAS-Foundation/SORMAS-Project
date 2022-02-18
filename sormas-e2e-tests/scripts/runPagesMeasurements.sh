@@ -28,7 +28,9 @@ echo "Deleting custom report"
 rm -rf ./customReports/customReport.html
 eho "Deleting BarChart image"
 rm -rf ./customReports/images/BarChart.jpeg
+echo "Cleaning old results from results.txt file"
+cat /dev/null > ./customReports/data/results.txt
 echo "Executing gradle clean..."
 ./gradlew clean goJF
 echo "Starting all BDD tests under @PagesMeasurements tag..."
-./gradlew startTests -Dcucumber.tags="@PagesMeasurements" -Dheadless=false -Dcourgette.threads=1
+./gradlew startTests -Dcucumber.tags="@PagesMeasurements" -Dheadless=true -Dcourgette.threads=9

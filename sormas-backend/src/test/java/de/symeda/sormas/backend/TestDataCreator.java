@@ -139,6 +139,25 @@ public class TestDataCreator {
 		this.beanTest = beanTest;
 	}
 
+	public UserDto createUser(RDCF rdcf, UserRole userRole, Consumer<UserDto> customConfig) {
+
+		UserDto user = UserDto.build();
+		user.setFirstName("User");
+		user.setLastName("User");
+		user.setUserName("Username");
+		user.setUserRoles(new HashSet<>(Arrays.asList(userRole)));
+		user.setRegion(rdcf.region);
+		user.setDistrict(rdcf.district);
+		user.setCommunity(rdcf.community);
+		user.setHealthFacility(rdcf.facility);
+
+		if (customConfig != null) {
+			customConfig.accept(user);
+		}
+
+		return beanTest.getUserFacade().saveUser(user);
+	}
+
 	public UserDto createUser(RDCFEntities rdcf, UserRole... roles) {
 		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "First", "Name", roles);
 	}
@@ -147,7 +166,7 @@ public class TestDataCreator {
 		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "First", "Name", roles);
 	}
 
-	public UserDto createUser(RDCFEntities rdcf, String firstName, String lastName, UserRole... roles) {
+	public UserDto createUser(RDCF rdcf, String firstName, String lastName, UserRole... roles) {
 		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), firstName, lastName, roles);
 	}
 
@@ -318,8 +337,12 @@ public class TestDataCreator {
 	public CaseDataDto createUnclassifiedCase(Disease disease) {
 
 		RDCFEntities rdcf = createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user =
-			createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = beanTest.getUserFacade().getByUserName("SurvSup");
+		if (user == null) {
+			user =
+				createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		}
+
 		PersonDto cazePerson = createPerson("Case", "Person", Sex.UNKNOWN);
 		return createCase(
 			user.toReference(),
@@ -379,7 +402,7 @@ public class TestDataCreator {
 
 		final CaseDataDto aCase = createCase(user, cazePerson, disease, caseClassification, investigationStatus, reportAndOnsetDate, new RDCF(rdcf));
 		aCase.setHealthFacilityDetails(healthFacilityDetails);
-		return beanTest.getCaseFacade().saveCase(aCase);
+		return beanTest.getCaseFacade().save(aCase);
 	}
 
 	public CaseDataDto createCase(
@@ -421,7 +444,7 @@ public class TestDataCreator {
 			setCustomFields.accept(caze);
 		}
 
-		caze = beanTest.getCaseFacade().saveCase(caze);
+		caze = beanTest.getCaseFacade().save(caze);
 
 		return caze;
 	}
@@ -635,6 +658,10 @@ public class TestDataCreator {
 		return treatment;
 	}
 
+	public ContactDto createContact(RDCF rdcf, UserReferenceDto reportingUser, PersonReferenceDto contactPerson) {
+		return createContact(reportingUser, null, contactPerson, null, new Date(), null, null, rdcf);
+	}
+
 	public ContactDto createContact(UserReferenceDto reportingUser, PersonReferenceDto contactPerson) {
 		return createContact(reportingUser, null, contactPerson, null, new Date(), null, null, null);
 	}
@@ -716,7 +743,7 @@ public class TestDataCreator {
 			customConfig.accept(contact);
 		}
 
-		contact = beanTest.getContactFacade().saveContact(contact);
+		contact = beanTest.getContactFacade().save(contact);
 
 		return contact;
 	}
@@ -901,7 +928,7 @@ public class TestDataCreator {
 			customSettings.accept(event);
 		}
 
-		event = beanTest.getEventFacade().saveEvent(event);
+		event = beanTest.getEventFacade().save(event);
 
 		return event;
 	}
@@ -1124,6 +1151,10 @@ public class TestDataCreator {
 		return sample;
 	}
 
+	public SampleDto createSample(EventParticipantReferenceDto associatedEventParticipant, UserReferenceDto reportingUser, FacilityReferenceDto lab) {
+		return createSample(associatedEventParticipant, new Date(), new Date(), reportingUser, SampleMaterial.BLOOD, lab);
+	}
+
 	public SampleDto createSample(
 		EventParticipantReferenceDto associatedEventParticipant,
 		Date sampleDateTime,
@@ -1299,7 +1330,7 @@ public class TestDataCreator {
 		campaign.setName("CampaignName");
 		campaign.setDescription("Campaign description");
 
-		campaign = beanTest.getCampaignFacade().saveCampaign(campaign);
+		campaign = beanTest.getCampaignFacade().save(campaign);
 
 		return campaign;
 	}
@@ -1451,14 +1482,25 @@ public class TestDataCreator {
 	}
 
 	public Region createRegion(String regionName, String externalId) {
+		Region region = getRegion(regionName, externalId);
+		beanTest.getRegionService().persist(region);
+		return region;
+	}
+
+	public Region createRegionCentrally(String regionName, String externalId) {
+		Region region = getRegion(regionName, externalId);
+		region.setCentrallyManaged(true);
+		beanTest.getRegionService().persist(region);
+		return region;
+	}
+
+	@NotNull
+	private Region getRegion(String regionName, String externalId) {
 		Region region = new Region();
 		region.setUuid(DataHelper.createUuid());
 		region.setName(regionName);
 		region.setEpidCode("COU-REG");
 		region.setExternalID(externalId);
-
-		beanTest.getRegionService().persist(region);
-
 		return region;
 	}
 
@@ -1467,15 +1509,26 @@ public class TestDataCreator {
 	}
 
 	public District createDistrict(String districtName, Region region, String externalId) {
+		District district = getDistrict(districtName, region, externalId);
+		beanTest.getDistrictService().persist(district);
+		return district;
+	}
 
+	public District createDistrictCentrally(String districtName, Region region, String externalId) {
+		District district = getDistrict(districtName, region, externalId);
+		district.setCentrallyManaged(true);
+		beanTest.getDistrictService().persist(district);
+		return district;
+	}
+
+	@NotNull
+	private District getDistrict(String districtName, Region region, String externalId) {
 		District district = new District();
 		district.setUuid(DataHelper.createUuid());
 		district.setName(districtName);
 		district.setRegion(region);
 		district.setEpidCode("DIS");
 		district.setExternalID(externalId);
-		beanTest.getDistrictService().persist(district);
-
 		return district;
 	}
 
@@ -1484,19 +1537,30 @@ public class TestDataCreator {
 	}
 
 	public Community createCommunity(String communityName, District district, String externalId) {
+		Community community = getCommunity(communityName, district, externalId);
+		beanTest.getCommunityService().persist(community);
+		return community;
+	}
 
+	public Community createCommunityCentrally(String communityName, District district, String externalId) {
+		Community community = getCommunity(communityName, district, externalId);
+		community.setCentrallyManaged(true);
+		beanTest.getCommunityService().persist(community);
+		return community;
+
+	}
+
+	@NotNull
+	private Community getCommunity(String communityName, District district, String externalId) {
 		Community community = new Community();
 		community.setUuid(DataHelper.createUuid());
 		community.setName(communityName);
 		community.setDistrict(district);
 		community.setExternalID(externalId);
-		beanTest.getCommunityService().persist(community);
-
 		return community;
 	}
 
 	public CommunityDto createCommunity(String communityName, DistrictReferenceDto district) {
-
 		CommunityDto community = CommunityDto.build();
 		community.setName(communityName);
 		community.setDistrict(district);
@@ -1513,7 +1577,6 @@ public class TestDataCreator {
 	}
 
 	public Facility createFacility(String facilityName, FacilityType type, Region region, District district, Community community, String externalId) {
-
 		Facility facility = new Facility();
 		facility.setUuid(DataHelper.createUuid());
 		facility.setName(facilityName);
@@ -1558,7 +1621,6 @@ public class TestDataCreator {
 	}
 
 	public PointOfEntry createPointOfEntry(String pointOfEntryName, Region region, District district, String externalId) {
-
 		PointOfEntry pointOfEntry = new PointOfEntry();
 		pointOfEntry.setUuid(DataHelper.createUuid());
 		pointOfEntry.setPointOfEntryType(PointOfEntryType.AIRPORT);
@@ -1573,7 +1635,6 @@ public class TestDataCreator {
 	}
 
 	public PointOfEntryDto createPointOfEntry(String pointOfEntryName, RegionReferenceDto region, DistrictReferenceDto district) {
-
 		PointOfEntryDto pointOfEntry = PointOfEntryDto.build();
 		pointOfEntry.setUuid(DataHelper.createUuid());
 		pointOfEntry.setPointOfEntryType(PointOfEntryType.AIRPORT);
@@ -1586,7 +1647,6 @@ public class TestDataCreator {
 	}
 
 	public PopulationDataDto createPopulationData(RegionReferenceDto region, DistrictReferenceDto district, Integer population, Date collectionDate) {
-
 		PopulationDataDto populationData = PopulationDataDto.build(collectionDate);
 		populationData.setRegion(region);
 		populationData.setDistrict(district);
@@ -1596,7 +1656,6 @@ public class TestDataCreator {
 	}
 
 	public void updateDiseaseConfiguration(Disease disease, Boolean active, Boolean primary, Boolean caseBased) {
-
 		DiseaseConfigurationDto config =
 			DiseaseConfigurationFacadeEjbLocal.toDto(beanTest.getDiseaseConfigurationService().getDiseaseConfiguration(disease));
 		config.setActive(active);

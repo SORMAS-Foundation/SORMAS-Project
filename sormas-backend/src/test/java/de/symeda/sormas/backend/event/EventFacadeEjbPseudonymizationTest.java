@@ -25,7 +25,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
@@ -85,7 +85,7 @@ public class EventFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		event.setConnectionNumber("updated");
 		event.setResponsibleUser(null);
-		getEventFacade().saveEvent(event);
+		getEventFacade().save(event);
 
 		Event savedEvent = getEventService().getByUuid(event.getUuid());
 
@@ -99,7 +99,7 @@ public class EventFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		event.setPseudonymized(true);
 		event.setResponsibleUser(null);
-		getEventFacade().saveEvent(event);
+		getEventFacade().save(event);
 
 		Event savedEvent = getEventService().getByUuid(event.getUuid());
 

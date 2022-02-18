@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
+import static de.symeda.sormas.ui.docgeneration.DocGenerationHelper.isDocGenerationAllowed;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -29,6 +31,7 @@ import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
+import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
@@ -36,6 +39,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TextField;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
@@ -55,6 +59,7 @@ import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventGroupCriteria;
 import de.symeda.sormas.api.event.EventIndexDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
@@ -83,6 +88,7 @@ import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.components.popupmenu.PopupMenu;
 
 public class EventsView extends AbstractView {
 
@@ -263,17 +269,36 @@ public class EventsView extends AbstractView {
 			}
 		}
 
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE)) {
+			createButton = ButtonHelper.createIconButton(
+				Captions.eventNewEvent,
+				VaadinIcons.PLUS_CIRCLE,
+				e -> ControllerProvider.getEventController().create((CaseReferenceDto) null),
+				ValoTheme.BUTTON_PRIMARY);
+
+			addHeaderComponent(createButton);
+		}
+
+		final PopupMenu moreButton = new PopupMenu(I18nProperties.getCaption(Captions.moreActions));
+
 		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_EVENT) && isDefaultViewType()) {
 			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
-			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
+			{
+				btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
+				btnEnterBulkEditMode.addStyleName(ValoTheme.BUTTON_PRIMARY);
 
-			addHeaderComponent(btnEnterBulkEditMode);
+				btnEnterBulkEditMode.setWidth(100, Unit.PERCENTAGE);
+				moreButton.addMenuEntry(btnEnterBulkEditMode);
+			}
 
 			Button btnLeaveBulkEditMode =
 				ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
-			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
+			{
+				btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
+				btnLeaveBulkEditMode.setWidth(100, Unit.PERCENTAGE);
 
-			addHeaderComponent(btnLeaveBulkEditMode);
+				moreButton.addMenuEntry(btnLeaveBulkEditMode);
+			}
 
 			btnEnterBulkEditMode.addClickListener(e -> {
 				bulkOperationsDropdown.setVisible(true);
@@ -291,23 +316,18 @@ public class EventsView extends AbstractView {
 			});
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE)) {
-			createButton = ButtonHelper.createIconButton(
-				Captions.eventNewEvent,
-				VaadinIcons.PLUS_CIRCLE,
-				e -> ControllerProvider.getEventController().create((CaseReferenceDto) null),
-				ValoTheme.BUTTON_PRIMARY);
-
-			addHeaderComponent(createButton);
-		}
-
 		if (isDefaultViewType()) {
 			Button searchSpecificEventButton = ButtonHelper.createIconButton(
 				Captions.eventSearchSpecificEvent,
 				VaadinIcons.SEARCH,
 				e -> buildAndOpenSearchSpecificEventWindow(),
 				ValoTheme.BUTTON_PRIMARY);
-			addHeaderComponent(searchSpecificEventButton);
+			searchSpecificEventButton.setWidth(100, Unit.PERCENTAGE);
+			moreButton.addMenuEntry(searchSpecificEventButton);
+		}
+
+		if (moreButton.hasMenuEntries()) {
+			addHeaderComponent(moreButton);
 		}
 	}
 
@@ -560,6 +580,33 @@ public class EventsView extends AbstractView {
 									eventGrid.asMultiSelect().getSelectedItems(),
 									() -> navigateTo(eventCriteria))),
 						FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()));
+
+				if (isDocGenerationAllowed()) {
+					bulkActions.add(
+						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkActionCreatDocuments), VaadinIcons.FILE_TEXT, mi -> {
+							grid.bulkActionHandler(items -> {
+
+								EventGrid eventGrid1 = (EventGrid) this.grid;
+								List<EventReferenceDto> references = eventGrid1.asMultiSelect()
+									.getSelectedItems()
+									.stream()
+									.map(EventIndexDto::toReference)
+									.collect(Collectors.toList());
+								if (references.size() == 0) {
+									new Notification(
+										I18nProperties.getString(Strings.headingNoEventsSelected),
+										I18nProperties.getString(Strings.headingNoEventsSelected),
+										Notification.Type.WARNING_MESSAGE,
+										false).show(Page.getCurrent());
+
+									return;
+								}
+
+								ControllerProvider.getDocGenerationController().showEventDocumentDialog(references);
+							});
+						}));
+				}
+
 				bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, bulkActions);
 
 				bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());

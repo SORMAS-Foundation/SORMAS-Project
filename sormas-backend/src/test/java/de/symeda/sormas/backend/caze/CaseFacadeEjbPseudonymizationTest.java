@@ -32,7 +32,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
@@ -238,11 +238,8 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 	@Test
 	public void testUpdatePseudonymizedCase() {
-
 		CaseDataDto caze = createCase(rdcf1, user1);
-
 		loginWith(observerUser);
-
 		updateCase(caze, observerUser);
 		assertPseudonymizedDataNotUpdated(caze, rdcf1, user1);
 	}
@@ -267,7 +264,7 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		caze.setReportLon(null);
 		caze.setReportLatLonAccuracy(20F);
 
-		getCaseFacade().saveCase(caze);
+		getCaseFacade().save(caze);
 
 		assertPseudonymizedDataNotUpdated(caze, rdcf2, user2);
 	}
@@ -448,7 +445,7 @@ public class CaseFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		caze.setReportLon(23.234);
 		caze.setReportLatLonAccuracy(20F);
 
-		getCaseFacade().saveCase(caze);
+		getCaseFacade().save(caze);
 	}
 
 	private void assertPseudonymizedDataUpdated(CaseDataDto caze) {

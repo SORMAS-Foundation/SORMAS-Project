@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -55,7 +55,6 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.therapy.TherapyDto;
@@ -72,16 +71,16 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 import de.symeda.sormas.api.utils.pseudonymization.Pseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LatitudePseudonymizer;
 import de.symeda.sormas.api.utils.pseudonymization.valuepseudonymizers.LongitudePseudonymizer;
 
-public class CaseDataDto extends PseudonymizableDto implements SormasToSormasShareableDto {
+public class CaseDataDto extends SormasToSormasShareableDto {
 
 	private static final long serialVersionUID = 5007131477733638086L;
-
 	private static final long MILLISECONDS_30_DAYS = 30L * 24L * 60L * 60L * 1000L;
+
+	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 123458;
 
 	public static final String I18N_PREFIX = "CaseData";
 
@@ -104,11 +103,9 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasSha
 	public static final String PLAGUE_TYPE = "plagueType";
 	public static final String DENGUE_FEVER_TYPE = "dengueFeverType";
 	public static final String RABIES_TYPE = "rabiesType";
-
 	public static final String RESPONSIBLE_REGION = "responsibleRegion";
 	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";
 	public static final String RESPONSIBLE_COMMUNITY = "responsibleCommunity";
-
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -197,6 +194,8 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasSha
 
 	public static final String RE_INFECTION = "reInfection";
 	public static final String PREVIOUS_INFECTION_DATE = "previousInfectionDate";
+	public static final String REINFECTION_STATUS = "reinfectionStatus";
+	public static final String REINFECTION_DETAILS = "reinfectionDetails";
 
 	public static final String BLOOD_ORGAN_OR_TISSUE_DONATED = "bloodOrganOrTissueDonated";
 
@@ -408,7 +407,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasSha
 	private String pointOfEntryDetails;
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_ADDITIONAL_DETAILS)
 	@SensitiveData
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String additionalDetails;
 	@HideForCountriesExcept(countries = {
 		COUNTRY_CODE_GERMANY,
@@ -489,10 +488,6 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasSha
 	private Date followUpUntil;
 	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
 	private boolean overwriteFollowUpUntil;
-	@Valid
-	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
-	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
-	private boolean ownershipHandedOver;
 
 	@HideForCountriesExcept(countries = COUNTRY_CODE_SWITZERLAND)
 	private Integer caseIdIsm;
@@ -530,6 +525,14 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasSha
 		Disease.CORONAVIRUS })
 	@HideForCountriesExcept
 	private Date previousInfectionDate;
+	@Diseases({
+		Disease.CORONAVIRUS })
+	@HideForCountriesExcept
+	private ReinfectionStatus reinfectionStatus;
+	@Diseases({
+		Disease.CORONAVIRUS })
+	@HideForCountriesExcept
+	private Map<ReinfectionDetail, Boolean> reinfectionDetails;
 
 	@HideForCountriesExcept
 	private YesNoUnknown bloodOrganOrTissueDonated;
@@ -683,10 +686,12 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasSha
 		return caseOrigin == CaseOrigin.POINT_OF_ENTRY && healthFacility == null;
 	}
 
+	@Override
 	public UserReferenceDto getReportingUser() {
 		return reportingUser;
 	}
 
+	@Override
 	public void setReportingUser(UserReferenceDto reportingUser) {
 		this.reportingUser = reportingUser;
 	}
@@ -1502,17 +1507,6 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasSha
 		this.endOfIsolationReasonDetails = endOfIsolationReasonDetails;
 	}
 
-	@Override
-	@ImportIgnore
-	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
-		return sormasToSormasOriginInfo;
-	}
-
-	@Override
-	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfoDto sormasToSormasOriginInfo) {
-		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
-	}
-
 	public YesNoUnknown getProhibitionToWork() {
 		return prohibitionToWork;
 	}
@@ -1553,21 +1547,30 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasSha
 		this.previousInfectionDate = previousInfectionDate;
 	}
 
+	@ImportIgnore
+	public ReinfectionStatus getReinfectionStatus() {
+		return reinfectionStatus;
+	}
+
+	public void setReinfectionStatus(ReinfectionStatus reinfectionStatus) {
+		this.reinfectionStatus = reinfectionStatus;
+	}
+
+	@ImportIgnore
+	public Map<ReinfectionDetail, Boolean> getReinfectionDetails() {
+		return reinfectionDetails;
+	}
+
+	public void setReinfectionDetails(Map<ReinfectionDetail, Boolean> reinfectionDetails) {
+		this.reinfectionDetails = reinfectionDetails;
+	}
+
 	public YesNoUnknown getBloodOrganOrTissueDonated() {
 		return bloodOrganOrTissueDonated;
 	}
 
 	public void setBloodOrganOrTissueDonated(YesNoUnknown bloodOrganOrTissueDonated) {
 		this.bloodOrganOrTissueDonated = bloodOrganOrTissueDonated;
-	}
-
-	@Override
-	public boolean isOwnershipHandedOver() {
-		return ownershipHandedOver;
-	}
-
-	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
-		this.ownershipHandedOver = ownershipHandedOver;
 	}
 
 	public boolean isNotACaseReasonNegativeTest() {
@@ -1668,5 +1671,10 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasSha
 
 	public void setExternalData(Map<String, String> externalData) {
 		this.externalData = externalData;
+	}
+
+	@Override
+	public String toString() {
+		return this.getUuid() + " - " + this.getExternalID();
 	}
 }

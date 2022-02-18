@@ -30,6 +30,7 @@ import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
+import javax.persistence.Transient;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.auditlog.api.AuditedIgnore;
@@ -77,7 +78,8 @@ public class EventParticipant extends CoreAdo implements SormasToSormasShareable
 	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
 	private VaccinationStatus vaccinationStatus;
 
-	@ManyToOne(cascade = {})
+	@ManyToOne
+	@JoinColumn(nullable = false)
 	public User getReportingUser() {
 		return reportingUser;
 	}
@@ -86,7 +88,7 @@ public class EventParticipant extends CoreAdo implements SormasToSormasShareable
 		this.reportingUser = reportingUser;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne
 	public Event getEvent() {
 		return event;
 	}
@@ -95,7 +97,7 @@ public class EventParticipant extends CoreAdo implements SormasToSormasShareable
 		this.event = event;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne
 	@JoinColumn(nullable = false)
 	public Person getPerson() {
 		return person;
@@ -119,7 +121,7 @@ public class EventParticipant extends CoreAdo implements SormasToSormasShareable
 		return getPerson().toString();
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne
 	@JoinColumn
 	public Case getResultingCase() {
 		return resultingCase;
@@ -138,7 +140,7 @@ public class EventParticipant extends CoreAdo implements SormasToSormasShareable
 		this.samples = samples;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne
 	public Region getRegion() {
 		return region;
 	}
@@ -147,7 +149,7 @@ public class EventParticipant extends CoreAdo implements SormasToSormasShareable
 		this.region = region;
 	}
 
-	@ManyToOne(cascade = {})
+	@ManyToOne
 	public District getDistrict() {
 		return district;
 	}

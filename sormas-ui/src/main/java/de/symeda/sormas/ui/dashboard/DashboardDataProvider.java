@@ -39,9 +39,9 @@ import de.symeda.sormas.api.dashboard.DashboardEventDto;
 import de.symeda.sormas.api.dashboard.DashboardQuarantineDataDto;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.api.outbreak.OutbreakCriteria;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.outbreak.OutbreakCriteria;
 import de.symeda.sormas.api.sample.DashboardTestResultDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 
@@ -125,6 +125,7 @@ public class DashboardDataProvider {
 	}
 
 	private Predicate<DashboardQuarantineDataDto> quarantineData(Date fromDate, Date toDate) {
+
 		return p -> {
 			Date quarantineFrom = p.getQuarantineFrom();
 			Date quarantineTo = p.getQuarantineTo();

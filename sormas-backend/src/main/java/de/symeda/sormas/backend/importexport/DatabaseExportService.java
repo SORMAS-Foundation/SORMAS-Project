@@ -42,32 +42,60 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.importexport.DatabaseTable;
 import de.symeda.sormas.backend.action.Action;
+import de.symeda.sormas.backend.activityascase.ActivityAsCase;
+import de.symeda.sormas.backend.campaign.Campaign;
+import de.symeda.sormas.backend.campaign.data.CampaignFormData;
+import de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinition;
+import de.symeda.sormas.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory;
+import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfo;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.customizableenum.CustomizableEnumValue;
+import de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration;
+import de.symeda.sormas.backend.disease.DiseaseConfiguration;
+import de.symeda.sormas.backend.document.Document;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventGroup;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.exposure.Exposure;
+import de.symeda.sormas.backend.feature.FeatureConfiguration;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.hospitalization.PreviousHospitalization;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
+import de.symeda.sormas.backend.infrastructure.PopulationData;
+import de.symeda.sormas.backend.infrastructure.area.Area;
 import de.symeda.sormas.backend.infrastructure.community.Community;
+import de.symeda.sormas.backend.infrastructure.continent.Continent;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent;
+import de.symeda.sormas.backend.labmessage.LabMessage;
+import de.symeda.sormas.backend.labmessage.TestReport;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.outbreak.Outbreak;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonContactDetail;
+import de.symeda.sormas.backend.report.AggregateReport;
+import de.symeda.sormas.backend.report.WeeklyReport;
+import de.symeda.sormas.backend.report.WeeklyReportEntry;
+import de.symeda.sormas.backend.sample.AdditionalTest;
 import de.symeda.sormas.backend.sample.PathogenTest;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.share.ExternalShareInfo;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareRequestInfo;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.sharerequest.SormasToSormasShareRequest;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.therapy.Prescription;
@@ -92,7 +120,7 @@ public class DatabaseExportService {
 	private static final String COPY_WITH_JOIN_TABLE =
 		"COPY (SELECT * FROM %s AS root_table INNER JOIN %s AS leaf_table ON (root_table.%s = leaf_table.%s)) TO STDOUT WITH (FORMAT CSV, DELIMITER '%s', HEADER)";
 
-	private static final Map<DatabaseTable, DatabaseExportConfiguration> EXPORT_CONFIGS = new LinkedHashMap<>();
+	static final Map<DatabaseTable, DatabaseExportConfiguration> EXPORT_CONFIGS = new LinkedHashMap<>();
 	public static final String COUNT_TABLE_COLUMNS = "SELECT COUNT(column_name) FROM information_schema.columns WHERE table_name=:tableName";
 
 	static {
@@ -101,12 +129,15 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.PREVIOUSHOSPITALIZATIONS, new DatabaseExportConfiguration(PreviousHospitalization.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.EPIDATA, new DatabaseExportConfiguration(EpiData.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.EXPOSURES, new DatabaseExportConfiguration(Exposure.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.ACTIVITIES_AS_CASE, new DatabaseExportConfiguration(ActivityAsCase.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.THERAPIES, new DatabaseExportConfiguration(Therapy.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.PRESCRIPTIONS, new DatabaseExportConfiguration(Prescription.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.TREATMENTS, new DatabaseExportConfiguration(Treatment.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.CLINICAL_COURSES, new DatabaseExportConfiguration(ClinicalCourse.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.HEALTH_CONDITIONS, new DatabaseExportConfiguration(HealthConditions.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.CLINICAL_VISITS, new DatabaseExportConfiguration(ClinicalVisit.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.PORT_HEALTH_INFO, new DatabaseExportConfiguration(PortHealthInfo.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.MATERNAL_HISTORIES, new DatabaseExportConfiguration(MaternalHistory.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.CONTACTS, new DatabaseExportConfiguration(Contact.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.VISITS, new DatabaseExportConfiguration(Visit.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.EVENTS, new DatabaseExportConfiguration(Event.TABLE_NAME));
@@ -117,16 +148,21 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(DatabaseTable.IMMUNIZATIONS, new DatabaseExportConfiguration(Immunization.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.VACCINATIONS, new DatabaseExportConfiguration(Vaccination.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.SAMPLES, new DatabaseExportConfiguration(Sample.TABLE_NAME));
-		EXPORT_CONFIGS.put(DatabaseTable.SAMPLETESTS, new DatabaseExportConfiguration(PathogenTest.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.PATHOGEN_TESTS, new DatabaseExportConfiguration(PathogenTest.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.ADDITIONAL_TESTS, new DatabaseExportConfiguration(AdditionalTest.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.TASKS, new DatabaseExportConfiguration(Task.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.PERSONS, new DatabaseExportConfiguration(Person.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.PERSON_CONTACT_DETAILS, new DatabaseExportConfiguration(PersonContactDetail.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.LOCATIONS, new DatabaseExportConfiguration(Location.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.CONTINENTS, new DatabaseExportConfiguration(Continent.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.SUBCONTINENTS, new DatabaseExportConfiguration(Subcontinent.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.COUNTRIES, new DatabaseExportConfiguration(Country.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.AREAS, new DatabaseExportConfiguration(Area.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.REGIONS, new DatabaseExportConfiguration(Region.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.DISTRICTS, new DatabaseExportConfiguration(District.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.COMMUNITIES, new DatabaseExportConfiguration(Community.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.FACILITIES, new DatabaseExportConfiguration(Facility.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.POINTS_OF_ENTRY, new DatabaseExportConfiguration(PointOfEntry.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.OUTBREAKS, new DatabaseExportConfiguration(Outbreak.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.CASE_SYMPTOMS, new DatabaseExportConfiguration(Symptoms.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.CUSTOMIZABLE_ENUM_VALUES, new DatabaseExportConfiguration(CustomizableEnumValue.TABLE_NAME));
@@ -134,8 +170,29 @@ public class DatabaseExportService {
 		EXPORT_CONFIGS.put(
 			DatabaseTable.CLINICAL_VISIT_SYMPTOMS,
 			new DatabaseExportConfiguration(Symptoms.TABLE_NAME, ClinicalVisit.TABLE_NAME, "id", "symptoms_id"));
+		EXPORT_CONFIGS.put(DatabaseTable.CAMPAIGNS, new DatabaseExportConfiguration(Campaign.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.CAMPAIGN_FORM_META, new DatabaseExportConfiguration(CampaignFormMeta.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.CAMPAIGN_FORM_DATA, new DatabaseExportConfiguration(CampaignFormData.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.CAMPAIGN_DIAGRAM_DEFINITIONS, new DatabaseExportConfiguration(CampaignDiagramDefinition.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.LAB_MESSAGES, new DatabaseExportConfiguration(LabMessage.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.TEST_REPORTS, new DatabaseExportConfiguration(TestReport.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.SORMAS_TO_SORMAS_ORIGIN_INFO, new DatabaseExportConfiguration(SormasToSormasOriginInfo.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.SORMAS_TO_SORMAS_SHARE_INFO, new DatabaseExportConfiguration(SormasToSormasShareInfo.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.SORMAS_TO_SORMAS_SHARE_REQUESTS, new DatabaseExportConfiguration(SormasToSormasShareRequest.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.SHARE_REQUEST_INFO, new DatabaseExportConfiguration(ShareRequestInfo.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.EXTERNAL_SHARE_INFO, new DatabaseExportConfiguration(ExternalShareInfo.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.USERS, new DatabaseExportConfiguration(User.TABLE_NAME));
 		EXPORT_CONFIGS.put(DatabaseTable.USER_ROLES, new DatabaseExportConfiguration(User.TABLE_NAME, User.TABLE_NAME_USERROLES, "id", "user_id"));
+		EXPORT_CONFIGS.put(DatabaseTable.POPULATION_DATA, new DatabaseExportConfiguration(PopulationData.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.SURVEILLANCE_REPORTS, new DatabaseExportConfiguration(SurveillanceReport.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.AGGREGATE_REPORTS, new DatabaseExportConfiguration(AggregateReport.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.WEEKLY_REPORTS, new DatabaseExportConfiguration(WeeklyReport.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.WEEKLY_REPORT_ENTRIES, new DatabaseExportConfiguration(WeeklyReportEntry.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.DOCUMENTS, new DatabaseExportConfiguration(Document.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.EXPORT_CONFIGURATIONS, new DatabaseExportConfiguration(ExportConfiguration.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.FEATURE_CONFIGURATIONS, new DatabaseExportConfiguration(FeatureConfiguration.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.DISEASE_CONFIGURATIONS, new DatabaseExportConfiguration(DiseaseConfiguration.TABLE_NAME));
+		EXPORT_CONFIGS.put(DatabaseTable.DELETION_CONFIGURATIONS, new DatabaseExportConfiguration(DeletionConfiguration.TABLE_NAME));
 	}
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());

@@ -36,7 +36,7 @@ public class PortHealthInfoDtoHelper extends AdoDtoHelper<PortHealthInfo, PortHe
 	}
 
 	@Override
-	protected Call<List<PortHealthInfoDto>> pullAllSince(long since) throws NoConnectionException {
+	protected Call<List<PortHealthInfoDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 
@@ -101,4 +101,9 @@ public class PortHealthInfoDtoHelper extends AdoDtoHelper<PortHealthInfo, PortHe
 		target.setFinalDestination(source.getFinalDestination());
 		target.setDetails(source.getDetails());
 	}
+
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return 0;
+    }
 }

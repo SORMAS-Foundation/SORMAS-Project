@@ -18,19 +18,17 @@
 
 package org.sormas.e2etests.steps.web.application.cases;
 
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.cases.SymptomsTabPage.*;
-import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.DISEASE_COLUMNS;
 
-import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.assertj.core.api.SoftAssertions;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
+import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pojo.web.Symptoms;
 import org.sormas.e2etests.services.SymptomService;
 import org.sormas.e2etests.state.ApiState;
@@ -45,7 +43,6 @@ public class SymptomsTabSteps implements En {
   public SymptomsTabSteps(
       WebDriverHelpers webDriverHelpers,
       SymptomService symptomService,
-      final SoftAssertions softly,
       ApiState apiState,
       @Named("ENVIRONMENT_URL") String environmentUrl) {
     this.webDriverHelpers = webDriverHelpers;
@@ -54,8 +51,8 @@ public class SymptomsTabSteps implements En {
     When(
         "I check the created data is correctly displayed on Symptoms tab page",
         () -> {
-          Symptoms actualSymptoms = collectCasePersonData();
-          Truth.assertThat(actualSymptoms).isEqualTo(symptoms);
+          Symptoms actualSymptoms = collectSymptomsData();
+          ComparisonHelper.compareEqualEntities(actualSymptoms, symptoms);
         });
 
     When(
@@ -63,7 +60,7 @@ public class SymptomsTabSteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               NavBarPage.SAMPLE_BUTTON);
-          String caseLinkPath = "/sormas-ui/#!cases/symptoms/";
+          String caseLinkPath = "/sormas-webdriver/#!cases/symptoms/";
           String uuid = apiState.getCreatedCase().getUuid();
           webDriverHelpers.accessWebSite(environmentUrl + caseLinkPath + uuid);
         });
@@ -102,6 +99,7 @@ public class SymptomsTabSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
 
+    // TODO refactor this to be provide the checkbox and select any option not only yes
     And(
         "I check Yes Option for Soar Throat on Symptoms tab page",
         () -> webDriverHelpers.clickOnWebElementBySelector(SORE_THROAT_YES_OPTION));
@@ -111,19 +109,24 @@ public class SymptomsTabSteps implements En {
         () -> {
           webDriverHelpers.scrollToElement(FIRST_SYMPTOM_COMBOBOX);
           selectFistSymptom(firstSymptom);
+          // TODO refactor this to allow selecting any option from this view
         });
 
-    And("I click on save button", () -> webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON));
-
-    When(
-        "I am checking that the case classification is changed to Suspect Case",
+    Then(
+        "From Symptoms Tab I click on Case tab",
         () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(DISEASE_COLUMNS);
-          softly.assertThat(firstSymptom).isEqualTo(getCaseClassificationColumn());
+          webDriverHelpers.clickOnWebElementBySelector(CASE_TAB);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
+        });
+
+    And(
+        "From Symptoms Tab I click on Clear All button",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CLEAR_ALL_BUTTON);
         });
   }
 
-  public Symptoms collectCasePersonData() {
+  private Symptoms collectSymptomsData() {
 
     return Symptoms.builder()
         .maximumBodyTemperatureInC(
@@ -182,123 +185,119 @@ public class SymptomsTabSteps implements En {
     return LocalDate.parse(dateOfReport, DATE_FORMATTER);
   }
 
-  public void selectMaximumBodyTemperatureInCCombobox(String maximumBodyTemperatureInCCombobox) {
+  private void selectMaximumBodyTemperatureInCCombobox(String maximumBodyTemperatureInCCombobox) {
     webDriverHelpers.selectFromCombobox(
         MAXIMUM_BODY_TEMPERATURE_IN_C_COMBOBOX, maximumBodyTemperatureInCCombobox);
   }
 
-  public void selectSourceOfBodyTemperature(String sourceOfBodyTemperature) {
+  private void selectSourceOfBodyTemperature(String sourceOfBodyTemperature) {
     webDriverHelpers.selectFromCombobox(
         SOURCE_OF_BODY_TEMPERATURE_COMBOBOX, sourceOfBodyTemperature);
   }
 
-  public void selectChillsOrSweats(String chillsOrSweats) {
+  private void selectChillsOrSweats(String chillsOrSweats) {
     webDriverHelpers.clickWebElementByText(CHILLS_OR_SWEATS_OPTIONS, chillsOrSweats);
   }
 
-  public void selectHeadache(String headache) {
+  private void selectHeadache(String headache) {
     webDriverHelpers.clickWebElementByText(HEADACHE_OPTIONS, headache);
   }
 
-  public void selectFeelingIll(String feelingIll) {
+  private void selectFeelingIll(String feelingIll) {
     webDriverHelpers.clickWebElementByText(FEELING_ILL_OPTIONS, feelingIll);
   }
 
-  public void selectMusclePain(String musclePain) {
+  private void selectMusclePain(String musclePain) {
     webDriverHelpers.clickWebElementByText(MUSCLE_PAIN_OPTIONS, musclePain);
   }
 
-  public void selectFever(String fever) {
+  private void selectFever(String fever) {
     webDriverHelpers.clickWebElementByText(FEVER_OPTIONS, fever);
   }
 
-  public void selectShivering(String shivering) {
+  private void selectShivering(String shivering) {
     webDriverHelpers.clickWebElementByText(SHIVERING_OPTIONS, shivering);
   }
 
-  public void selectAcuteRespiratoryDistressSyndrome(String acuteRespiratoryDistressSyndrome) {
+  private void selectAcuteRespiratoryDistressSyndrome(String acuteRespiratoryDistressSyndrome) {
     webDriverHelpers.clickWebElementByText(
         ACUTE_RESPIRATORY_DISTRESS_SYNDROME_OPTIONS, acuteRespiratoryDistressSyndrome);
   }
 
-  public void selectOxygenSaturationLower94(String oxygenSaturationLower94) {
+  private void selectOxygenSaturationLower94(String oxygenSaturationLower94) {
     webDriverHelpers.clickWebElementByText(
         OXYGEN_SATURATION_LOWER_94_OPTIONS, oxygenSaturationLower94);
   }
 
-  public void selectCough(String cough) {
+  private void selectCough(String cough) {
     webDriverHelpers.clickWebElementByText(COUGH_OPTIONS, cough);
   }
 
-  public void selectPneumoniaClinicalOrRadiologic(String pneumoniaClinicalOrRadiologic) {
+  private void selectPneumoniaClinicalOrRadiologic(String pneumoniaClinicalOrRadiologic) {
     webDriverHelpers.clickWebElementByText(
         PNEUMONIA_CLINICAL_OR_RADIOLOGIC_OPTIONS, pneumoniaClinicalOrRadiologic);
   }
 
-  public void selectDifficultyBreathing(String difficultyBreathing) {
+  private void selectDifficultyBreathing(String difficultyBreathing) {
     webDriverHelpers.clickWebElementByText(DIFFICULTY_BREATHING_OPTIONS, difficultyBreathing);
   }
 
-  public void selectRapidBreathing(String rapidBreathing) {
+  private void selectRapidBreathing(String rapidBreathing) {
     webDriverHelpers.clickWebElementByText(RAPID_BREATHING_OPTIONS, rapidBreathing);
   }
 
-  public void selectRespiratoryDiseaseVentilation(String respiratoryDiseaseVentilation) {
+  private void selectRespiratoryDiseaseVentilation(String respiratoryDiseaseVentilation) {
     webDriverHelpers.clickWebElementByText(
         RESPIRATORY_DISEASE_VENTILATION_OPTIONS, respiratoryDiseaseVentilation);
   }
 
-  public void selectRunnyNose(String runnyNose) {
+  private void selectRunnyNose(String runnyNose) {
     webDriverHelpers.clickWebElementByText(RUNNY_NOSE_OPTIONS, runnyNose);
   }
 
-  public void selectSoreThroat(String soreThroat) {
+  private void selectSoreThroat(String soreThroat) {
     webDriverHelpers.clickWebElementByText(SORE_THROAT_OPTIONS, soreThroat);
   }
 
-  public void selectFastHeartRate(String fastHeartRate) {
+  private void selectFastHeartRate(String fastHeartRate) {
     webDriverHelpers.clickWebElementByText(FAST_HEART_RATE_OPTIONS, fastHeartRate);
   }
 
-  public void selectDiarrhea(String diarrhea) {
+  private void selectDiarrhea(String diarrhea) {
     webDriverHelpers.clickWebElementByText(DIARRHEA_OPTIONS, diarrhea);
   }
 
-  public void selectNausea(String nausea) {
+  private void selectNausea(String nausea) {
     webDriverHelpers.clickWebElementByText(NAUSEA_OPTIONS, nausea);
   }
 
-  public void selectLossOfSmell(String lossOfSmell) {
+  private void selectLossOfSmell(String lossOfSmell) {
     webDriverHelpers.clickWebElementByText(LOSS_OF_SMELL_OPTIONS, lossOfSmell);
   }
 
-  public void selectLossOfTaste(String lossOfTaste) {
+  private void selectLossOfTaste(String lossOfTaste) {
     webDriverHelpers.clickWebElementByText(LOSS_OF_TASTE_OPTIONS, lossOfTaste);
   }
 
-  public void selectOtherNonHemorrhagicSymptoms(String otherNonHemorrhagicSymptoms) {
+  private void selectOtherNonHemorrhagicSymptoms(String otherNonHemorrhagicSymptoms) {
     webDriverHelpers.clickWebElementByText(
         OTHER_NON_HEMORRHAGIC_SYMPTOMS_OPTIONS, otherNonHemorrhagicSymptoms);
   }
 
-  public void fillOtherNonHemorrhagicSymptoms(String otherNonHemorrhagicSymptoms) {
+  private void fillOtherNonHemorrhagicSymptoms(String otherNonHemorrhagicSymptoms) {
     webDriverHelpers.fillInWebElement(
         OTHER_NON_HEMORRHAGIC_SYMPTOMS_INPUT, otherNonHemorrhagicSymptoms);
   }
 
-  public void fillSymptomsComments(String symptomsComments) {
+  private void fillSymptomsComments(String symptomsComments) {
     webDriverHelpers.fillInWebElement(SYMPTOMS_COMMENTS_INPUT, symptomsComments);
   }
 
-  public void selectFistSymptom(String fistSymptom) {
+  private void selectFistSymptom(String fistSymptom) {
     webDriverHelpers.selectFromCombobox(FIRST_SYMPTOM_COMBOBOX, fistSymptom);
   }
 
-  public void fillDateOfSymptom(LocalDate dateOfSymptom) {
+  private void fillDateOfSymptom(LocalDate dateOfSymptom) {
     webDriverHelpers.fillInWebElement(DATE_OF_SYMPTOM_INPUT, DATE_FORMATTER.format(dateOfSymptom));
-  }
-
-  public String getCaseClassificationColumn() {
-    return webDriverHelpers.getValueOfListElement(CASE_CLASSIFICATION_COLUMNS, 0);
   }
 }

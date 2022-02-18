@@ -28,7 +28,11 @@ public abstract class AdoServiceWithUserFilter<ADO extends AbstractDomainObject>
 	@SuppressWarnings("rawtypes")
 	public abstract Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ADO> from);
 
-	public List<ADO> getAllAfter(Date since, User user) {
+	public List<ADO> getAllAfter(Date since) {
+		return getAllAfter(since, null, null);
+	}
+
+	public List<ADO> getAllAfter(Date since, Integer batchSize, String lastSynchronizedUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
@@ -36,7 +40,7 @@ public abstract class AdoServiceWithUserFilter<ADO extends AbstractDomainObject>
 
 		Predicate filter = createUserFilter(cb, cq, root);
 		if (since != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, root, since);
+			Predicate dateFilter = createChangeDateFilter(cb, root, since, lastSynchronizedUuid);
 			if (filter != null) {
 				filter = cb.and(filter, dateFilter);
 			} else {
@@ -46,10 +50,10 @@ public abstract class AdoServiceWithUserFilter<ADO extends AbstractDomainObject>
 		if (filter != null) {
 			cq.where(filter);
 		}
-		cq.orderBy(cb.desc(root.get(AbstractDomainObject.CHANGE_DATE)));
+
 		cq.distinct(true);
 
-		return em.createQuery(cq).getResultList();
+		return getBatchedQueryResults(cb, cq, root, batchSize);
 	}
 
 	public List<String> getAllUuids() {

@@ -21,6 +21,7 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.backend.contact.Contact;
 import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.feature.FeatureType;
@@ -31,8 +32,9 @@ import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.person.PersonIndexDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.common.AbstractDeletableAdoService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
@@ -55,14 +57,12 @@ import de.symeda.sormas.backend.vaccination.LastVaccineType;
 
 @Stateless
 @LocalBean
-public class DirectoryImmunizationService extends AbstractCoreAdoService<DirectoryImmunization> {
+public class DirectoryImmunizationService extends AbstractDeletableAdoService<DirectoryImmunization> {
 
 	@EJB
 	private UserService userService;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
-	@EJB
-	private PersonService personService;
 
 	public DirectoryImmunizationService() {
 		super(DirectoryImmunization.class);
@@ -272,7 +272,7 @@ public class DirectoryImmunizationService extends AbstractCoreAdoService<Directo
 		if (Boolean.TRUE.equals(criteria.getOnlyPersonsWithOverdueImmunization())) {
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(from.get(Immunization.IMMUNIZATION_MANAGEMENT_STATUS), ImmunizationManagementStatus.ONGOING));
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(from.get(Immunization.END_DATE), new Date()));
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThan(from.get(Immunization.END_DATE), DateHelper.getStartOfDay(new Date())));
 		}
 		if (criteria.getImmunizationDateType() != null) {
 			Path<Object> path = buildPathForDateFilter(criteria.getImmunizationDateType(), directoryImmunizationQueryContext);
@@ -326,11 +326,14 @@ public class DirectoryImmunizationService extends AbstractCoreAdoService<Directo
 
 	private Predicate createUserFilter(DirectoryImmunizationQueryContext<DirectoryImmunization> qc) {
 		final User currentUser = userService.getCurrentUser();
+		final CriteriaBuilder cb = qc.getCriteriaBuilder();
+
+		Predicate filter;
 
 		if (!featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
-			return DirectoryImmunizationJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
+			filter = DirectoryImmunizationJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
 		} else {
-			return CriteriaBuilderHelper.or(
+			filter = CriteriaBuilderHelper.or(
 				qc.getCriteriaBuilder(),
 				qc.getCriteriaBuilder().equal(qc.getRoot().get(Immunization.REPORTING_USER), currentUser),
 				PersonJurisdictionPredicateValidator
@@ -342,5 +345,11 @@ public class DirectoryImmunizationService extends AbstractCoreAdoService<Directo
 						false)
 					.inJurisdictionOrOwned());
 		}
+
+		if (currentUser.getLimitedDisease() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(qc.getRoot().get(Contact.DISEASE), currentUser.getLimitedDisease()));
+		}
+
+		return filter;
 	}
 }

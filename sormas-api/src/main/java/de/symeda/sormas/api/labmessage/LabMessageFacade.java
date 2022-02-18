@@ -4,10 +4,14 @@ import java.util.Date;
 import java.util.List;
 
 import javax.ejb.Remote;
+import javax.naming.NamingException;
 import javax.validation.Valid;
 
+import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
 @Remote
 public interface LabMessageFacade {
@@ -20,6 +24,8 @@ public interface LabMessageFacade {
 	void deleteLabMessage(String uuid);
 
 	void deleteLabMessages(List<String> uuids);
+
+	void bulkAssignLabMessages(List<String> uuids, UserReferenceDto userRef);
 
 	// Does not return deleted lab messages
 	List<LabMessageDto> getForSample(SampleReferenceDto sample);
@@ -46,11 +52,16 @@ public interface LabMessageFacade {
 	 */
 	LabMessageFetchResult fetchAndSaveExternalLabMessages(Date since);
 
+	String getLabMessagesAdapterVersion() throws NamingException;
+
 	boolean exists(String uuid);
+
+	boolean existsLabMessageForEntity(ReferenceDto entityRef);
 
 	// Also returns deleted lab messages
 	List<LabMessageDto> getByReportId(String reportId);
 
+	// Also considers deleted lab messages
 	boolean existsForwardedLabMessageWith(String reportId);
 
 }

@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -31,8 +31,9 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -46,7 +47,7 @@ import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
+import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent;
@@ -54,11 +55,10 @@ import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentService;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
-import org.apache.commons.collections.CollectionUtils;
 
 @Stateless(name = "ContinentFacade")
 public class ContinentFacadeEjb
-	extends AbstractInfrastructureEjb<Continent, ContinentDto, ContinentIndexDto, ContinentReferenceDto, ContinentService, ContinentCriteria>
+	extends AbstractInfrastructureFacadeEjb<Continent, ContinentDto, ContinentIndexDto, ContinentReferenceDto, ContinentService, ContinentCriteria>
 	implements ContinentFacade {
 
 	@EJB
@@ -71,7 +71,7 @@ public class ContinentFacadeEjb
 
 	@Inject
 	protected ContinentFacadeEjb(ContinentService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
-		super(Continent.class, ContinentDto.class, service, featureConfiguration, userService);
+		super(Continent.class, ContinentDto.class, service, featureConfiguration, userService, Validations.importContinentAlreadyExists);
 	}
 
 	public static ContinentReferenceDto toReferenceDto(Continent entity) {
@@ -165,18 +165,13 @@ public class ContinentFacadeEjb
 	}
 
 	@Override
-	public ContinentDto save(ContinentDto dtoToSave, boolean allowMerge) {
-		return save(dtoToSave, allowMerge, Validations.importContinentAlreadyExists);
-	}
-
-	@Override
 	protected void selectDtoFields(CriteriaQuery<ContinentDto> cq, Root<Continent> root) {
 		// we do not select DTO fields in getAllAfter query
 	}
 
 	@Override
-	protected List<Continent> findDuplicates(ContinentDto dto) {
-		return service.getByDefaultName(dto.getDefaultName(), true);
+	protected List<Continent> findDuplicates(ContinentDto dto, boolean includeArchived) {
+		return service.getByDefaultName(dto.getDefaultName(), includeArchived);
 	}
 
 	@Override
@@ -191,6 +186,7 @@ public class ContinentFacadeEjb
 		dto.setArchived(entity.isArchived());
 		dto.setExternalId(entity.getExternalId());
 		dto.setUuid(entity.getUuid());
+		dto.setCentrallyManaged(entity.isCentrallyManaged());
 
 		return dto;
 	}
@@ -233,6 +229,7 @@ public class ContinentFacadeEjb
 		target.setDefaultName(source.getDefaultName());
 		target.setArchived(source.isArchived());
 		target.setExternalId(source.getExternalId());
+		target.setCentrallyManaged(source.isCentrallyManaged());
 		return target;
 	}
 

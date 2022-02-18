@@ -9,12 +9,12 @@ env:
 
 on:
   push:
-    branches: [ development, master ]
+    branches: [ development, master, hotfix* ]
     paths:
       - 'sormas-app/**'
       - 'sormas-api/**'
   pull_request:
-    branches: [ development ]
+    branches: [ development, hotfix* ]
     paths:
       - 'sormas-app/**'
       - 'sormas-api/**'

@@ -19,9 +19,10 @@
 package org.sormas.e2etests.steps.web.application.events;
 
 import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.*;
+import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.DISEASE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.CreateNewEventPage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_INPUT;
 
-import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -41,16 +42,6 @@ public class CreateNewEventSteps implements En {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
-        "^I create a new event",
-        () -> {
-          String timestamp = String.valueOf(System.currentTimeMillis());
-          webDriverHelpers.fillInWebElement(
-              TITLE_INPUT, "EVENT_AUTOMATION" + timestamp + Faker.instance().name().name());
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(NEW_EVENT_CREATED_MESSAGE);
-        });
-
-    When(
         "^I create a new event with specific data$",
         () -> {
           newEvent = eventService.buildGeneratedEvent();
@@ -66,6 +57,9 @@ public class CreateNewEventSteps implements En {
           fillTitle(newEvent.getTitle());
           selectSourceType(newEvent.getSourceType());
           selectTypeOfPlace(newEvent.getEventLocation());
+          selectResponsibleRegion(newEvent.getRegion());
+          selectResponsibleDistrict(newEvent.getDistrict());
+          selectResponsibleCommunity(newEvent.getCommunity());
           newEvent =
               newEvent.toBuilder()
                   .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
@@ -86,58 +80,70 @@ public class CreateNewEventSteps implements En {
         });
   }
 
-  public Event collectEventUuid() {
+  private Event collectEventUuid() {
     return Event.builder().uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT)).build();
   }
 
-  public void selectEventStatus(String eventStatus) {
+  private void selectEventStatus(String eventStatus) {
     webDriverHelpers.clickWebElementByText(EVENT_STATUS_OPTIONS, eventStatus);
   }
 
-  public void selectRiskLevel(String riskLevel) {
+  private void selectRiskLevel(String riskLevel) {
     webDriverHelpers.selectFromCombobox(RISK_LEVEL_COMBOBOX, riskLevel);
   }
 
-  public void selectEventManagementStatusOption(String eventManagementStatusOption) {
+  private void selectEventManagementStatusOption(String eventManagementStatusOption) {
     webDriverHelpers.clickWebElementByText(
         EVENT_MANAGEMENT_STATUS_OPTIONS, eventManagementStatusOption);
   }
 
-  public void fillStartData(LocalDate date) {
+  private void fillStartData(LocalDate date) {
     webDriverHelpers.fillInWebElement(START_DATA_INPUT, DATE_FORMATTER.format(date));
   }
 
-  public void selectEventInvestigationStatusOptions(String eventInvestigationStatusOption) {
+  private void selectEventInvestigationStatusOptions(String eventInvestigationStatusOption) {
     webDriverHelpers.clickWebElementByText(
         EVENT_INVESTIGATION_STATUS_OPTIONS, eventInvestigationStatusOption);
   }
 
-  public void selectDisease(String disease) {
+  private void selectDisease(String disease) {
     webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, disease);
   }
 
-  public void fillTitle(String title) {
+  private void fillTitle(String title) {
     webDriverHelpers.fillInWebElement(TITLE_INPUT, title);
   }
 
-  public void selectSourceType(String sourceType) {
+  private void selectSourceType(String sourceType) {
     webDriverHelpers.selectFromCombobox(SOURCE_TYPE_COMBOBOX, sourceType);
   }
 
-  public void selectTypeOfPlace(String typeOfPlace) {
+  private void selectTypeOfPlace(String typeOfPlace) {
     webDriverHelpers.selectFromCombobox(TYPE_OF_PLACE_COMBOBOX, typeOfPlace);
   }
 
-  public void selectMeansOfTransport(String meansOfTransport) {
+  private void selectMeansOfTransport(String meansOfTransport) {
     webDriverHelpers.selectFromCombobox(MEANS_OF_TRANSPORT_COMBOBOX, meansOfTransport);
   }
 
-  public void selectSourceInstitutionalPartner(String institutionalPartner) {
+  private void selectSourceInstitutionalPartner(String institutionalPartner) {
     webDriverHelpers.selectFromCombobox(
         SOURCE_INSTITUTIONAL_PARTNER_COMBOBOX, institutionalPartner);
   }
 
-  public void fillDateOfReport(LocalDate date) {
+  private void fillDateOfReport(LocalDate date) {
     webDriverHelpers.fillInWebElement(REPORT_DATE_INPUT, DATE_FORMATTER.format(date));
+  }
+
+  private void selectResponsibleRegion(String selectResponsibleRegion) {
+    webDriverHelpers.selectFromCombobox(EVENT_REGION, selectResponsibleRegion);
+  }
+
+  private void selectResponsibleDistrict(String responsibleDistrict) {
+    webDriverHelpers.selectFromCombobox(EVENT_DISTRICT, responsibleDistrict);
+  }
+
+  private void selectResponsibleCommunity(String responsibleCommunity) {
+    webDriverHelpers.selectFromCombobox(EVENT_COMMUNITY, responsibleCommunity);
   }
 }

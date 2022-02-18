@@ -29,6 +29,7 @@ import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.importexport.ExportConfigurationCriteria;
@@ -104,7 +105,12 @@ public class ExportConfigurationsGrid extends Grid<ExportConfigurationDto> {
 
 		Button btnEdit = ButtonHelper.createIconButtonWithCaption(config.getUuid() + "-edit", null, VaadinIcons.EDIT, e -> {
 			if (config.getUuid() != null) {
-				ControllerProvider.getCustomExportController().openEditExportConfigurationWindow(this, config, availableProperties);
+				ControllerProvider.getCustomExportController()
+					.openEditExportConfigurationWindow(
+						this,
+						config,
+						availableProperties,
+						I18nProperties.getCaption(Captions.exportEditExportConfiguration));
 			}
 		});
 		btnEdit.setEnabled(canEditOrDelete);

@@ -34,11 +34,10 @@ import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
+import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import org.apache.commons.collections.CollectionUtils;
 
@@ -72,7 +71,7 @@ import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "FacilityFacade")
 public class FacilityFacadeEjb
-	extends AbstractInfrastructureEjb<Facility, FacilityDto, FacilityIndexDto, FacilityReferenceDto, FacilityService, FacilityCriteria>
+	extends AbstractInfrastructureFacadeEjb<Facility, FacilityDto, FacilityIndexDto, FacilityReferenceDto, FacilityService, FacilityCriteria>
 	implements FacilityFacade {
 
 	@EJB
@@ -87,7 +86,7 @@ public class FacilityFacadeEjb
 
 	@Inject
 	protected FacilityFacadeEjb(FacilityService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
-		super(Facility.class, FacilityDto.class, service, featureConfiguration, userService);
+		super(Facility.class, FacilityDto.class, service, featureConfiguration, userService, Validations.importFacilityAlreadyExists);
 	}
 
 	@Override
@@ -382,6 +381,7 @@ public class FacilityFacadeEjb
 		dto.setLongitude(entity.getLongitude());
 		dto.setArchived(entity.isArchived());
 		dto.setExternalID(entity.getExternalID());
+		dto.setCentrallyManaged(entity.isCentrallyManaged());
 
 		return dto;
 	}
@@ -544,19 +544,24 @@ public class FacilityFacadeEjb
 	}
 
 	@Override
-	public FacilityDto save(FacilityDto dtoToSave, boolean allowMerge) throws ValidationRuntimeException {
-		validateFacilityDto(dtoToSave);
-		return save(dtoToSave, allowMerge, Validations.importFacilityAlreadyExists);
+	public FacilityDto save(FacilityDto dto, boolean allowMerge) {
+		validate(dto);
+		return super.save(dto, allowMerge);
 	}
 
 	@Override
-	protected List<Facility> findDuplicates(FacilityDto dto) {
+	public FacilityDto saveFromCentral(FacilityDto dto) {
+		return save(dto);
+	}
+
+	@Override
+	protected List<Facility> findDuplicates(FacilityDto dto, boolean includeArchived) {
 		return service.getFacilitiesByNameAndType(
 			dto.getName(),
 			districtService.getByReferenceDto(dto.getDistrict()),
 			communityService.getByReferenceDto(dto.getCommunity()),
 			dto.getType(),
-			true);
+			includeArchived);
 	}
 
 	@Override
@@ -564,7 +569,7 @@ public class FacilityFacadeEjb
 		// facilities are excluded from infra. data locking for now...
 	}
 
-	private void validateFacilityDto(FacilityDto dto) {
+	private void validate(FacilityDto dto) {
 		if (dto.getType() == null
 			&& !FacilityDto.OTHER_FACILITY_UUID.equals(dto.getUuid())
 			&& !FacilityDto.NONE_FACILITY_UUID.equals(dto.getUuid())) {
@@ -608,6 +613,7 @@ public class FacilityFacadeEjb
 		target.setType(source.getType());
 		target.setArchived(source.isArchived());
 		target.setExternalID(source.getExternalID());
+		target.setCentrallyManaged(source.isCentrallyManaged());
 		return target;
 	}
 

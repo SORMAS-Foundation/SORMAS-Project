@@ -22,6 +22,7 @@ import java.util.Date;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.contact.QuarantineType;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -53,6 +54,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	public static final String WITHOUT_RESPONSIBLE_OFFICER = "withoutResponsibleOfficer";
 	public static final String WITH_EXTENDED_QUARANTINE = "withExtendedQuarantine";
 	public static final String WITH_REDUCED_QUARANTINE = "withReducedQuarantine";
+	public static final String ONLY_QUARANTINE_HELP_NEEDED = "onlyQuarantineHelpNeeded";
 	public static final String CREATION_DATE_FROM = "creationDateFrom";
 	public static final String CREATION_DATE_TO = "creationDateTo";
 	public static final String CASE_LIKE = "caseLike";
@@ -65,9 +67,11 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	public static final String BIRTHDATE_YYYY = "birthdateYYYY";
 	public static final String BIRTHDATE_MM = "birthdateMM";
 	public static final String BIRTHDATE_DD = "birthdateDD";
+	public static final String QUARANTINE_TYPE = "quarantineType";
 	public static final String FOLLOW_UP_UNTIL_TO = "followUpUntilTo";
 	public static final String SYMPTOM_JOURNAL_STATUS = "symptomJournalStatus";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
+	public static final String REINFECTION_STATUS = "reinfectionStatus";
 	public static final String FACILITY_TYPE_GROUP = "facilityTypeGroup";
 	public static final String FACILITY_TYPE = "facilityType";
 	public static final String INCLUDE_CASES_FROM_OTHER_JURISDICTIONS = "includeCasesFromOtherJurisdictions";
@@ -108,6 +112,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	private Boolean withoutResponsibleOfficer;
 	private Boolean withExtendedQuarantine;
 	private Boolean withReducedQuarantine;
+	private Boolean onlyQuarantineHelpNeeded;
 	private Boolean deleted = Boolean.FALSE;
 	private String caseLike;
 	private String eventLike;
@@ -120,6 +125,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	private Integer birthdateYYYY;
 	private Integer birthdateMM;
 	private Integer birthdateDD;
+	private QuarantineType quarantineType;
 	private FollowUpStatus followUpStatus;
 	private Date followUpUntilTo;
 	private Date followUpUntilFrom;
@@ -128,6 +134,7 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 	private Integer followUpVisitsInterval;
 	private SymptomJournalStatus symptomJournalStatus;
 	private VaccinationStatus vaccinationStatus;
+	private ReinfectionStatus reinfectionStatus;
 	private Date reportDateTo;
 	private FacilityTypeGroup facilityTypeGroup;
 	private FacilityType facilityType;
@@ -362,6 +369,14 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 		this.withReducedQuarantine = withReducedQuarantine;
 	}
 
+	public Boolean getOnlyQuarantineHelpNeeded() {
+		return onlyQuarantineHelpNeeded;
+	}
+
+	public void setOnlyQuarantineHelpNeeded(Boolean onlyQuarantineHelpNeeded) {
+		this.onlyQuarantineHelpNeeded = onlyQuarantineHelpNeeded;
+	}
+
 	public CaseClassification getCaseClassification() {
 		return caseClassification;
 	}
@@ -552,6 +567,14 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 		this.birthdateDD = birthdateDD;
 	}
 
+	public QuarantineType getQuarantineType() {
+		return quarantineType;
+	}
+
+	public void setQuarantineType(QuarantineType quarantineType) {
+		this.quarantineType = quarantineType;
+	}
+
 	public FollowUpStatus getFollowUpStatus() {
 		return followUpStatus;
 	}
@@ -601,6 +624,14 @@ public class CaseCriteria extends CriteriaWithDateType implements ExternalShareC
 
 	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
 		this.vaccinationStatus = vaccinationStatus;
+	}
+
+	public ReinfectionStatus getReinfectionStatus() {
+		return reinfectionStatus;
+	}
+
+	public void setReinfectionStatus(ReinfectionStatus reinfectionStatus) {
+		this.reinfectionStatus = reinfectionStatus;
 	}
 
 	public Date getReportDateTo() {

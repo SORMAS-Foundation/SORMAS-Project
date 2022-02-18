@@ -27,7 +27,6 @@ import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.ImportIgnore;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.exposure.WorkEnvironment;
 import de.symeda.sormas.api.i18n.Validations;
@@ -36,20 +35,20 @@ import de.symeda.sormas.api.importexport.format.ImportFormat;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.sormastosormas.S2SIgnoreProperty;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
-import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
 import de.symeda.sormas.api.utils.YesNoUnknown;
-import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableDto;
 
-public class EventDto extends PseudonymizableDto implements SormasToSormasShareableDto {
+public class EventDto extends SormasToSormasShareableDto {
 
 	private static final long serialVersionUID = 2430932452606853497L;
+
+	public static final long APPROXIMATE_JSON_SIZE_IN_BYTES = 13356;
 
 	public static final String I18N_PREFIX = "Event";
 
@@ -103,8 +102,6 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasSharea
 	public static final String TRANSREGIONAL_OUTBREAK = "transregionalOutbreak";
 	public static final String DISEASE_TRANSMISSION_MODE = "diseaseTransmissionMode";
 	public static final String SUPERORDINATE_EVENT = "superordinateEvent";
-	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
-	public static final String OWNERSHIP_HANDED_OVER = "ownershipHandedOver";
 	public static final String INFECTION_PATH_CERTAINTY = "infectionPathCertainty";
 	public static final String HUMAN_TRANSMISSION_MODE = "humanTransmissionMode";
 	public static final String PARENTERAL_TRANSMISSION_MODE = "parenteralTransmissionMode";
@@ -216,11 +213,6 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasSharea
 	private YesNoUnknown laboratoryDiagnosticEvidence;
 	@HideForCountriesExcept
 	private Map<LaboratoryDiagnosticEvidenceDetail, Boolean> laboratoryDiagnosticEvidenceDetails;
-
-	@Valid
-	private SormasToSormasOriginInfoDto sormasToSormasOriginInfo;
-	@JsonInclude(JsonInclude.Include.NON_DEFAULT)
-	private boolean ownershipHandedOver;
 
 	@HideForCountriesExcept
 	@S2SIgnoreProperty(configProperty = SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN)
@@ -363,10 +355,12 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasSharea
 		this.reportDateTime = reportDateTime;
 	}
 
+	@Override
 	public UserReferenceDto getReportingUser() {
 		return reportingUser;
 	}
 
+	@Override
 	public void setReportingUser(UserReferenceDto reportingUser) {
 		this.reportingUser = reportingUser;
 	}
@@ -649,26 +643,6 @@ public class EventDto extends PseudonymizableDto implements SormasToSormasSharea
 
 	public void setMedicallyAssociatedTransmissionMode(MedicallyAssociatedTransmissionMode medicallyAssociatedTransmissionMode) {
 		this.medicallyAssociatedTransmissionMode = medicallyAssociatedTransmissionMode;
-	}
-
-	@Override
-	@ImportIgnore
-	public SormasToSormasOriginInfoDto getSormasToSormasOriginInfo() {
-		return sormasToSormasOriginInfo;
-	}
-
-	@Override
-	public void setSormasToSormasOriginInfo(SormasToSormasOriginInfoDto sormasToSormasOriginInfo) {
-		this.sormasToSormasOriginInfo = sormasToSormasOriginInfo;
-	}
-
-	@Override
-	public boolean isOwnershipHandedOver() {
-		return ownershipHandedOver;
-	}
-
-	public void setOwnershipHandedOver(boolean ownershipHandedOver) {
-		this.ownershipHandedOver = ownershipHandedOver;
 	}
 
 	public EventManagementStatus getEventManagementStatus() {

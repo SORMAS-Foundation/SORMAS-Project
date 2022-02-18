@@ -8,10 +8,13 @@ import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 
 import de.symeda.sormas.backend.sormastosormas.data.infra.InfrastructureValidator;
 import de.symeda.sormas.backend.sormastosormas.data.validation.SormasToSormasDtoValidator;
+import de.symeda.sormas.backend.sormastosormas.data.validation.ValidationDirection;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
+
+import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildSampleValidationGroupName;
 
 @Stateless
 @LocalBean
@@ -26,9 +29,9 @@ public class SormasToSormasSampleDtoValidator extends SormasToSormasDtoValidator
 	}
 
 	@Override
-	public ValidationErrors validateIncoming(SormasToSormasSampleDto sharedData) {
+	public ValidationErrors validate(SormasToSormasSampleDto sharedData, ValidationDirection direction) {
 		SampleDto sample = sharedData.getEntity();
-		ValidationErrors validationErrors = new ValidationErrors();
+		ValidationErrors validationErrors = new ValidationErrors(buildSampleValidationGroupName(sample));
 
 		// todo shouldn't this be FacilityType.LABORATORY?
 		infraValidator.validateFacility(sample.getLab(), null, sample.getLabDetails(), Captions.Sample_lab, validationErrors, f -> {
@@ -41,17 +44,8 @@ public class SormasToSormasSampleDtoValidator extends SormasToSormasDtoValidator
 	}
 
 	@Override
-	public ValidationErrors validateIncomingPreview(PreviewNotImplementedDto previewNotImplementedDto) {
+	public ValidationErrors validatePreview(PreviewNotImplementedDto previewNotImplementedDto, ValidationDirection direction) {
+		// todo adjust test in InfraValidationSoundnessTest once preview is available for this entity
 		throw new RuntimeException("Samples preview not yet implemented");
-	}
-
-	@Override
-	public ValidationErrors validateOutgoing(SormasToSormasSampleDto sharedData) {
-		return null;
-	}
-
-	@Override
-	public ValidationErrors validateOutgoingPreview(PreviewNotImplementedDto previewNotImplementedDto) {
-		return null;
 	}
 }

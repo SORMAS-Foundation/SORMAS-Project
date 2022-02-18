@@ -18,6 +18,7 @@ package de.symeda.sormas.backend.sormastosormas.entities.caze;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.inject.Inject;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.person.PersonDto;
@@ -37,7 +38,16 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless
 @LocalBean
-public class CaseShareDataBuilder implements ShareDataBuilder<CaseDataDto, Case, SormasToSormasCaseDto, SormasToSormasCasePreview> {
+public class CaseShareDataBuilder
+	extends ShareDataBuilder<CaseDataDto, Case, SormasToSormasCaseDto, SormasToSormasCasePreview, SormasToSormasCaseDtoValidator> {
+
+	@Inject
+	public CaseShareDataBuilder(SormasToSormasCaseDtoValidator validator) {
+		super(validator);
+	}
+
+	public CaseShareDataBuilder() {
+	}
 
 	@EJB
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
@@ -45,7 +55,7 @@ public class CaseShareDataBuilder implements ShareDataBuilder<CaseDataDto, Case,
 	private ShareDataBuilderHelper dataBuilderHelper;
 
 	@Override
-	public SormasToSormasCaseDto buildShareData(Case caze, ShareRequestInfo requestInfo) {
+	protected SormasToSormasCaseDto doBuildShareData(Case caze, ShareRequestInfo requestInfo) {
 		Pseudonymizer pseudonymizer =
 			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
 
@@ -59,7 +69,7 @@ public class CaseShareDataBuilder implements ShareDataBuilder<CaseDataDto, Case,
 	}
 
 	@Override
-	public SormasToSormasCasePreview buildShareDataPreview(Case caze, ShareRequestInfo requestInfo) {
+	protected SormasToSormasCasePreview doBuildShareDataPreview(Case caze, ShareRequestInfo requestInfo) {
 		Pseudonymizer pseudonymizer =
 			dataBuilderHelper.createPseudonymizer(requestInfo.isPseudonymizedPersonalData(), requestInfo.isPseudonymizedSensitiveData());
 

@@ -157,4 +157,12 @@ public class ContactReferenceDto extends ReferenceDto {
 			return firstName + " " + lastName;
 		}
 	}
+
+	public void setContactName(PersonName contactName) {
+		this.contactName = contactName;
+	}
+
+	public void setCaseName(PersonName caseName) {
+		this.caseName = caseName;
+	}
 }

@@ -20,7 +20,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
+import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureFacadeEjb;
 import org.apache.commons.collections.CollectionUtils;
 import de.symeda.sormas.backend.user.UserService;
 import org.apache.commons.lang3.StringUtils;
@@ -50,7 +50,7 @@ import de.symeda.sormas.backend.util.QueryHelper;
 @Stateless(name = "PointOfEntryFacade")
 public class PointOfEntryFacadeEjb
 	extends
-	AbstractInfrastructureEjb<PointOfEntry, PointOfEntryDto, PointOfEntryDto, PointOfEntryReferenceDto, PointOfEntryService, PointOfEntryCriteria>
+        AbstractInfrastructureFacadeEjb<PointOfEntry, PointOfEntryDto, PointOfEntryDto, PointOfEntryReferenceDto, PointOfEntryService, PointOfEntryCriteria>
 	implements PointOfEntryFacade {
 
 	@EJB
@@ -65,11 +65,10 @@ public class PointOfEntryFacadeEjb
 
 	@Inject
 	protected PointOfEntryFacadeEjb(PointOfEntryService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
-		super(PointOfEntry.class, PointOfEntryDto.class, service, featureConfiguration, userService);
+		super(PointOfEntry.class, PointOfEntryDto.class, service, featureConfiguration, userService, Validations.importPointOfEntryAlreadyExists);
 	}
 
 	public static PointOfEntryReferenceDto toReferenceDto(PointOfEntry entity) {
-
 		if (entity == null) {
 			return null;
 		}
@@ -137,14 +136,19 @@ public class PointOfEntryFacadeEjb
 	}
 
 	@Override
-	public PointOfEntryDto save(PointOfEntryDto dtoToSave, boolean allowMerge) throws ValidationRuntimeException {
-		validate(dtoToSave);
-		return save(dtoToSave, allowMerge, Validations.importPointOfEntryAlreadyExists);
+	public PointOfEntryDto save(PointOfEntryDto dto, boolean allowMerge) {
+		validate(dto);
+		return super.save(dto, allowMerge);
 	}
 
 	@Override
-	protected List<PointOfEntry> findDuplicates(PointOfEntryDto dto) {
-		return service.getByName(dto.getName(), districtService.getByReferenceDto(dto.getDistrict()), true);
+	public PointOfEntryDto saveFromCentral(PointOfEntryDto dto) {
+		return save(dto);
+	}
+
+	@Override
+	protected List<PointOfEntry> findDuplicates(PointOfEntryDto dto, boolean includeArchived) {
+		return service.getByName(dto.getName(), districtService.getByReferenceDto(dto.getDistrict()), includeArchived);
 	}
 
 	@Override
@@ -298,6 +302,7 @@ public class PointOfEntryFacadeEjb
 		target.setDistrict(districtService.getByReferenceDto(source.getDistrict()));
 		target.setArchived(source.isArchived());
 		target.setExternalID(source.getExternalID());
+		target.setCentrallyManaged(source.isCentrallyManaged());
 		return target;
 	}
 
@@ -319,6 +324,7 @@ public class PointOfEntryFacadeEjb
 		dto.setDistrict(DistrictFacadeEjb.toReferenceDto(entity.getDistrict()));
 		dto.setArchived(entity.isArchived());
 		dto.setExternalID(entity.getExternalID());
+		dto.setCentrallyManaged(entity.isCentrallyManaged());
 
 		return dto;
 	}

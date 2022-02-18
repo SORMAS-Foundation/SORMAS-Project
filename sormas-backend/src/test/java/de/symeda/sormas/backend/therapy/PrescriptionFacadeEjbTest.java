@@ -24,7 +24,7 @@ public class PrescriptionFacadeEjbTest extends AbstractBeanTest {
 
 		RDCFEntities rdcf = creator.createRDCFEntities();
 		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR);
-		UserDto admin = creator.createUser(rdcf, UserRole.ADMIN);
+		UserDto admin = getUserFacade().getByUserName("admin");
 		PersonDto casePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(user.toReference(), casePerson.toReference(), rdcf);
 		PrescriptionDto prescription = creator.createPrescription(caze);

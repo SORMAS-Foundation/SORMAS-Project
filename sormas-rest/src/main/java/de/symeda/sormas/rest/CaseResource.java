@@ -19,6 +19,7 @@ package de.symeda.sormas.rest;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
 import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
@@ -62,6 +63,15 @@ public class CaseResource extends EntityDtoResource {
 		return FacadeProvider.getCaseFacade().getAllActiveCasesAfter(new Date(since));
 	}
 
+	@GET
+	@Path("/all/{since}/{size}/{lastSynchronizedUuid}")
+	public List<CaseDataDto> getAllCases(
+		@PathParam("since") long since,
+		@PathParam("size") int size,
+		@PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
+		return FacadeProvider.getCaseFacade().getAllActiveCasesAfter(new Date(since), size, lastSynchronizedUuid);
+	}
+
 	@POST
 	@Path("/query")
 	public List<CaseDataDto> getByUuids(List<String> uuids) {
@@ -77,7 +87,13 @@ public class CaseResource extends EntityDtoResource {
 	@POST
 	@Path("/push")
 	public List<PushResult> postCases(@Valid List<CaseDataDto> dtos) {
-		return savePushedDto(dtos, FacadeProvider.getCaseFacade()::saveCase);
+		return savePushedDto(dtos, FacadeProvider.getCaseFacade()::save);
+	}
+
+	@POST
+	@Path("/push-detailed")
+	public Map<String, Map<PushResult, String>> postCasesDetailed(@Valid List<CaseDataDto> dtos) {
+		return savePushedDetailedDto(dtos, FacadeProvider.getCaseFacade()::save);
 	}
 
 	@GET

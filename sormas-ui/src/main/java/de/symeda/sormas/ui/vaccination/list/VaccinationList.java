@@ -16,42 +16,35 @@
 package de.symeda.sormas.ui.vaccination.list;
 
 import java.util.List;
+import java.util.function.Function;
 
-import com.vaadin.ui.Button;
+import com.vaadin.shared.Registration;
 import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
-import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
-import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
+import de.symeda.sormas.ui.utils.components.sidecomponent.event.EditSideComponentFieldEvent;
+import de.symeda.sormas.ui.utils.components.sidecomponent.event.EditSideComponentFieldEventListener;
 
 public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
 
 	private static final int MAX_DISPLAYED_ENTRIES = 5;
+	private Disease disease;
 
-	private final String personUuid;
-	private final Disease disease;
+	private final Function<Integer, List<VaccinationListEntryDto>> vaccinationListSupplier;
 
-	public VaccinationList(String personUuid, Disease disease) {
+	public VaccinationList(Disease disease, Function<Integer, List<VaccinationListEntryDto>> vaccinationListSupplier) {
 		super(MAX_DISPLAYED_ENTRIES);
-		this.personUuid = personUuid;
+		this.vaccinationListSupplier = vaccinationListSupplier;
 		this.disease = disease;
 	}
 
 	@Override
 	public void reload() {
-		List<VaccinationListEntryDto> list = FacadeProvider.getVaccinationFacade()
-			.getEntriesList(
-				new VaccinationListCriteria.Builder(new PersonReferenceDto(personUuid)).withDisease(disease).build(),
-				0,
-				maxDisplayedEntries * 20);
-
+		List<VaccinationListEntryDto> list = vaccinationListSupplier.apply(maxDisplayedEntries * 20);
 		setEntries(list);
 		if (!list.isEmpty()) {
 			showPage(1);
@@ -68,23 +61,17 @@ public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
 	protected void drawDisplayedEntries() {
 		for (VaccinationListEntryDto entryDto : getDisplayedEntries()) {
 			VaccinationListEntry listEntry = new VaccinationListEntry(entryDto, disease == null);
-			addEditButton(listEntry);
+			listEntry.addEditButton(
+				"edit-vaccination-" + listEntry.getVaccination().getUuid(),
+				e -> fireEvent(new EditSideComponentFieldEvent(listEntry)));
 			listLayout.addComponent(listEntry);
 		}
 	}
 
-	private void addEditButton(VaccinationListEntry listEntry) {
-		listEntry.addEditListener(
-			(Button.ClickListener) event -> ControllerProvider.getVaccinationController()
-				.edit(
-					FacadeProvider.getVaccinationFacade().getByUuid(listEntry.getVaccination().getUuid()),
-					disease,
-					UiFieldAccessCheckers.getDefault(listEntry.getVaccination().isPseudonymized()),
-					true,
-					v -> reload(),
-					() -> {
-						listLayout.removeAllComponents();
-						reload();
-					}));
+	public Registration addSideComponentFieldEditEventListener(EditSideComponentFieldEventListener editSideComponentFieldEventListener) {
+		return addListener(
+			EditSideComponentFieldEvent.class,
+			editSideComponentFieldEventListener,
+			EditSideComponentFieldEventListener.ON_EDIT_SIDE_COMPONENT_FIELD_METHOD);
 	}
 }

@@ -54,7 +54,6 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import de.symeda.sormas.backend.infrastructure.central.CentralInfraSyncFacade;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,12 +64,10 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
 import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
 import de.symeda.sormas.api.externaljournal.UserConfig;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityCriteria;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryType;
-import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DefaultEntityHelper;
@@ -78,15 +75,12 @@ import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.deletionconfiguration.DeletionConfigurationService;
 import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationService;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
-import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryService;
+import de.symeda.sormas.backend.infrastructure.central.CentralInfraSyncFacade;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
 import de.symeda.sormas.backend.infrastructure.country.Country;
@@ -94,6 +88,11 @@ import de.symeda.sormas.backend.infrastructure.country.CountryFacadeEjb.CountryF
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryService;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
@@ -161,9 +160,12 @@ public class StartupShutdownService {
 	private CentralInfraSyncFacade centralInfraSync;
 	@EJB
 	private UpdateQueryTransactionWrapper updateQueryTransactionWrapper;
-
+	@EJB
+	DefaultEntitiesCreator defaultEntitiesCreator;
 	@Inject
 	private Event<UserUpdateEvent> userUpdateEvent;
+	@EJB
+	private DeletionConfigurationService deletionConfigurationService;
 
 	@Inject
 	private Event<PasswordResetEvent> passwordResetEvent;
@@ -220,6 +222,8 @@ public class StartupShutdownService {
 		featureConfigurationService.createMissingFeatureConfigurations();
 		featureConfigurationService.updateFeatureConfigurations();
 
+		deletionConfigurationService.createMissingDeletionConfiguration();
+
 		configFacade.validateAppUrls();
 		configFacade.validateExternalUrls();
 
@@ -236,26 +240,17 @@ public class StartupShutdownService {
 		// Region
 		Region region = null;
 		if (regionService.count() == 0) {
-			region = new Region();
-			region.setUuid(DataHelper.createConstantUuid(DefaultEntityHelper.DefaultInfrastructureUuidSeed.REGION.ordinal()));
-			region.setName(I18nProperties.getCaption(Captions.defaultRegion, "Default Region"));
-			region.setEpidCode("DEF-REG");
-			region.setDistricts(new ArrayList<>());
+			region = defaultEntitiesCreator.createDefaultRegion(false);
 			regionService.ensurePersisted(region);
 		}
 
 		// District
 		District district = null;
 		if (districtService.count() == 0) {
-			district = new District();
-			district.setUuid(DataHelper.createConstantUuid(DefaultEntityHelper.DefaultInfrastructureUuidSeed.DISTRICT.ordinal()));
-			district.setName(I18nProperties.getCaption(Captions.defaultDistrict, "Default District"));
 			if (region == null) {
 				region = regionService.getAll().get(0);
 			}
-			district.setRegion(region);
-			district.setEpidCode("DIS");
-			district.setCommunities(new ArrayList<>());
+			district = defaultEntitiesCreator.createDefaultDistrict(region, false);
 			districtService.ensurePersisted(district);
 			region.getDistricts().add(district);
 		}
@@ -263,13 +258,10 @@ public class StartupShutdownService {
 		// Community
 		Community community = null;
 		if (communityService.count() == 0) {
-			community = new Community();
-			community.setUuid(DataHelper.createConstantUuid(DefaultEntityHelper.DefaultInfrastructureUuidSeed.COMMUNITY.ordinal()));
-			community.setName(I18nProperties.getCaption(Captions.defaultCommunity, "Default Community"));
 			if (district == null) {
 				district = districtService.getAll().get(0);
 			}
-			community.setDistrict(district);
+			community = defaultEntitiesCreator.createDefaultCommunity(district, false);
 			communityService.ensurePersisted(community);
 			district.getCommunities().add(community);
 		}
@@ -278,22 +270,16 @@ public class StartupShutdownService {
 		Facility facility;
 		FacilityCriteria facilityCriteria = new FacilityCriteria();
 		if (facilityFacade.count(facilityCriteria) == 0) {
-			facility = new Facility();
-			facility.setUuid(DataHelper.createUuid());
-			facility.setType(FacilityType.HOSPITAL);
-			facility.setName(I18nProperties.getCaption(Captions.defaultFacility, "Default Health Facility"));
 			if (community == null) {
 				community = communityService.getAll().get(0);
 			}
-			facility.setCommunity(community);
 			if (district == null) {
 				district = districtService.getAll().get(0);
 			}
-			facility.setDistrict(district);
 			if (region == null) {
 				region = regionService.getAll().get(0);
 			}
-			facility.setRegion(region);
+			facility = defaultEntitiesCreator.createDefaultFacility(region, district, community);
 			facilityService.ensurePersisted(facility);
 		}
 
@@ -301,40 +287,29 @@ public class StartupShutdownService {
 		Facility laboratory;
 		facilityCriteria.type(FacilityType.LABORATORY);
 		if (facilityFacade.count(facilityCriteria) == 0) {
-			laboratory = new Facility();
-			laboratory.setUuid(DataHelper.createUuid());
-			laboratory.setName(I18nProperties.getCaption(Captions.defaultLaboratory, "Default Laboratory"));
 			if (community == null) {
 				community = communityService.getAll().get(0);
 			}
-			laboratory.setCommunity(community);
 			if (district == null) {
 				district = districtService.getAll().get(0);
 			}
-			laboratory.setDistrict(district);
 			if (region == null) {
 				region = regionService.getAll().get(0);
 			}
-			laboratory.setRegion(region);
-			laboratory.setType(FacilityType.LABORATORY);
+			laboratory = defaultEntitiesCreator.createDefaultLaboratory(region, district, community);
 			facilityService.ensurePersisted(laboratory);
 		}
 
 		// Point of Entry
 		PointOfEntry pointOfEntry;
 		if (pointOfEntryService.count() == 0) {
-			pointOfEntry = new PointOfEntry();
-			pointOfEntry.setUuid(DataHelper.createUuid());
-			pointOfEntry.setName(I18nProperties.getCaption(Captions.defaultPointOfEntry, "Default Point Of Entry"));
 			if (district == null) {
 				district = districtService.getAll().get(0);
 			}
-			pointOfEntry.setDistrict(district);
 			if (region == null) {
 				region = regionService.getAll().get(0);
 			}
-			pointOfEntry.setRegion(region);
-			pointOfEntry.setPointOfEntryType(PointOfEntryType.AIRPORT);
+			pointOfEntry = defaultEntitiesCreator.createDefaultPointOfEntry(region, district);
 			pointOfEntryService.ensurePersisted(pointOfEntry);
 		}
 	}
@@ -360,8 +335,7 @@ public class StartupShutdownService {
 				return;
 			}
 
-			Region region =
-				regionService.getByUuid(DataHelper.createConstantUuid(DefaultEntityHelper.DefaultInfrastructureUuidSeed.REGION.ordinal()));
+			Region region = regionService.getByUuid(DefaultEntityHelper.getConstantUuidFor(DefaultEntityHelper.DefaultInfrastructureUuidSeed.REGION));
 			District district = region.getDistricts().get(0);
 			Community community = district.getCommunities().get(0);
 			List<Facility> healthFacilities = facilityService.getActiveFacilitiesByCommunityAndType(community, FacilityType.HOSPITAL, false, false);

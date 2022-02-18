@@ -1,7 +1,7 @@
 
 #*******************************************************************************
 # SORMAS® - Surveillance Outbreak Response Management & Analysis System
-# Copyright © 2016-2020 Helmholtz-Zentrum f�r Infektionsforschung GmbH (HZI)
+# Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -52,12 +52,7 @@ fi
 #AS_JAVA_NATIVE='C:\zulu-11'
 #AS_JAVA_NATIVE='/opt/zulu-11'
 
-# Temporal workaround: Do not use newer version than 5.194 for developers to avoid redeployment issue, see https://github.com/hzi-braunschweig/SORMAS-Project/issues/2511
-if [[ ${DEV_SYSTEM} != true ]]; then
-	PAYARA_VERSION=5.2020.2
-else
-	PAYARA_VERSION=5.194
-fi
+PAYARA_VERSION=5.2021.10
 
 if [[ $(expr substr "$(uname -a)" 1 5) = "Linux" ]]; then
 	LINUX=true
@@ -271,10 +266,21 @@ fi
 # Set up the database
 echo "Starting database setup..."
 
+echo "--- Are you connecting to an already existing DB?"
+select LS in "YES" "NO"; do
+  case $LS in
+    YES ) DB_EXISTS=true; break;;
+    NO ) DB_EXISTS=false; break;;
+  esac
+done
+
 while [[ -z "${DB_PW}" ]]; do
 	read -p "--- Enter a password for the new database user '${DB_USER}': " DB_PW
 done
 
+if [[ ${DB_EXISTS} = true ]]; then
+  read -p "Before connecting to the existing DB, please make sure to backup all the data. Press [Enter] to continue or [Ctrl+C] to cancel."
+else
 cat > setup.sql <<-EOF
 CREATE USER $DB_USER WITH PASSWORD '$DB_PW' CREATEDB;
 CREATE DATABASE $DB_NAME WITH OWNER = '$DB_USER' ENCODING = 'UTF8';
@@ -294,31 +300,32 @@ GRANT EXECUTE ON ALL FUNCTIONS IN SCHEMA public TO $DB_USER;
 ALTER TABLE IF EXISTS schema_version OWNER TO $DB_USER;
 EOF
 
-if [[ ${LINUX} = true ]]; then
-	# no host is specified as by default the postgres user has only local access
-	su postgres -c "psql -p ${DB_PORT} < setup.sql"
-else
-	PSQL_DEFAULT="${PROGRAMFILES//\\/\/}/PostgreSQL/10/"
-	echo "--- Enter the name install path of Postgres on your system (default: \"${PSQL_DEFAULT}\":"
-	read -r PSQL_DIR
-	if [[ -z "${PSQL_DIR}" ]]; then
-		PSQL_DIR="${PSQL_DEFAULT}"
-	fi
-	PSQL="${PSQL_DIR}/bin/psql.exe"
-	while [[ -z "${DB_PG_PW}" ]]; do
-		read -r -p "--- Enter the password for the 'postgres' user of your database: " DB_PG_PW
-	done
-	"${PSQL}" --no-password --file=setup.sql "postgresql://postgres:${DB_PG_PW}@${DB_HOST}:${DB_PORT}/postgres"
+  if [[ ${LINUX} = true ]]; then
+    # no host is specified as by default the postgres user has only local access
+    su postgres -c "psql -p ${DB_PORT} < setup.sql"
+  else
+    PSQL_DEFAULT="${PROGRAMFILES//\\/\/}/PostgreSQL/10/"
+    echo "--- Enter the name install path of Postgres on your system (default: \"${PSQL_DEFAULT}\":"
+    read -r PSQL_DIR
+    if [[ -z "${PSQL_DIR}" ]]; then
+      PSQL_DIR="${PSQL_DEFAULT}"
+    fi
+    PSQL="${PSQL_DIR}/bin/psql.exe"
+    while [[ -z "${DB_PG_PW}" ]]; do
+      read -r -p "--- Enter the password for the 'postgres' user of your database: " DB_PG_PW
+    done
+    "${PSQL}" --no-password --file=setup.sql "postgresql://postgres:${DB_PG_PW}@${DB_HOST}:${DB_PORT}/postgres"
+  fi
+
+  rm setup.sql
+
+  echo "---"
+  read -p "Database setup completed. Please check the output for any error. Press [Enter] to continue or [Ctrl+C] to cancel."
 fi
-
-rm setup.sql
-
-echo "---"
-read -p "Database setup completed. Please check the output for any error. Press [Enter] to continue or [Ctrl+C] to cancel."
 
 # Setting ASADMIN_CALL and creating domain
 echo "Creating domain for Payara..."
-"${PAYARA_HOME}/bin/asadmin" create-domain --domaindir "${DOMAINS_HOME}" --portbase "${PORT_BASE}" --nopassword --template ${PAYARA_HOME}/glassfish/common/templates/gf/production-domain.jar "${DOMAIN_NAME}"
+"${PAYARA_HOME}/bin/asadmin" create-domain --domaindir "${DOMAINS_HOME}" --portbase "${PORT_BASE}" --nopassword "${DOMAIN_NAME}"
 ASADMIN="${PAYARA_HOME}/bin/asadmin --port ${PORT_ADMIN}"
 
 if [[ ${LINUX} = true ]]; then
@@ -340,11 +347,14 @@ done
 echo "Configuring domain..."
 
 # General domain settings
-${ASADMIN} delete-jvm-options -Xms2g
-${ASADMIN} delete-jvm-options -Xmx2g
+${ASADMIN} delete-jvm-options '-client'
+${ASADMIN} delete-jvm-options -Xmx512m
 ${ASADMIN} create-jvm-options -Xmx${DOMAIN_XMX}
-${ASADMIN} set configs.config.server-config.admin-service.das-config.autodeploy-enabled=true
-${ASADMIN} set configs.config.server-config.admin-service.das-config.dynamic-reload-enabled=true
+${ASADMIN} create-jvm-options '-XX\:+IgnoreUnrecognizedVMOptions'
+${ASADMIN} create-system-properties --target server-config fish.payara.classloading.delegate=false
+${ASADMIN} get configs.config.server-config.ejb-container.max-pool-size
+${ASADMIN} set configs.config.server-config.ejb-container.max-pool-size=128
+${ASADMIN} set configs.config.server-config.thread-pools.thread-pool.http-thread-pool.max-thread-pool-size=50
 
 # JDBC pool
 ${ASADMIN} create-jdbc-connection-pool --restype javax.sql.ConnectionPoolDataSource --datasourceclassname org.postgresql.ds.PGConnectionPoolDataSource --isconnectvalidatereq true --validationmethod custom-validation --validationclassname org.glassfish.api.jdbc.validation.PostgresConnectionValidation --maxpoolsize ${DB_JDBC_MAXPOOLSIZE} --property "portNumber=${DB_PORT}:databaseName=${DB_NAME}:serverName=${DB_HOST}:user=${DB_USER}:password=${DB_PW}" ${DOMAIN_NAME}DataPool
@@ -389,6 +399,7 @@ read -p "--- Press [Enter] to continue..."
 # Logging
 echo "Configuring logging..."
 ${ASADMIN} create-jvm-options "-Dlogback.configurationFile=\${com.sun.aas.instanceRoot}/config/logback.xml"
+${ASADMIN} create-jvm-options "-DlogbackDisableServletContainerInitializer=true"
 ${ASADMIN} set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.maxHistoryFiles=14
 ${ASADMIN} set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.rotationLimitInBytes=0
 ${ASADMIN} set-log-attributes com.sun.enterprise.server.logging.GFFileHandler.rotationOnDateChange=true

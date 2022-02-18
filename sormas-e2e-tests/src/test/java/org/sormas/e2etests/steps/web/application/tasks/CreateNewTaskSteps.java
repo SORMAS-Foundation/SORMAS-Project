@@ -20,13 +20,13 @@ package org.sormas.e2etests.steps.web.application.tasks;
 
 import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.*;
 
-import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pojo.web.Task;
 import org.sormas.e2etests.services.TaskService;
 
@@ -60,8 +60,9 @@ public class CreateNewTaskSteps implements En {
     When(
         "^I check the created task is correctly displayed on Edit task page",
         () -> {
+          webDriverHelpers.waitForPageLoaded();
           final Task actualTask = collectTaskData();
-          Truth.assertThat(task).isEqualTo(actualTask);
+          ComparisonHelper.compareEqualEntities(task, actualTask);
         });
 
     When(
@@ -84,52 +85,52 @@ public class CreateNewTaskSteps implements En {
     fillCommentsOnTask(task.getCommentsOnTask());
   }
 
-  public void selectTaskType(String taskType) {
+  private void selectTaskType(String taskType) {
     webDriverHelpers.selectFromCombobox(TASK_TYPE_COMBOBOX, taskType);
   }
 
-  public void fillSuggestedStartDate(LocalDate suggestedStartDate) {
+  private void fillSuggestedStartDate(LocalDate suggestedStartDate) {
     webDriverHelpers.clearAndFillInWebElement(
         SUGGESTED_START_DATE_INPUT, DATE_FORMATTER.format(suggestedStartDate));
   }
 
-  public void fillSuggestedStartTime(LocalTime suggestedStartTime) {
+  private void fillSuggestedStartTime(LocalTime suggestedStartTime) {
     webDriverHelpers.selectFromCombobox(
         SUGGESTED_START_TIME_COMBOBOX, TIME_FORMATTER.format(suggestedStartTime));
   }
 
-  public void fillDueDateDate(LocalDate dueDateDate) {
+  private void fillDueDateDate(LocalDate dueDateDate) {
     webDriverHelpers.clearAndFillInWebElement(
         DUE_DATE_DATE_INPUT, DATE_FORMATTER.format(dueDateDate));
   }
 
-  public void fillDueDateTime(LocalTime dueDateTime) {
+  private void fillDueDateTime(LocalTime dueDateTime) {
     webDriverHelpers.selectFromCombobox(DUE_DATE_TIME_COMBOBOX, TIME_FORMATTER.format(dueDateTime));
   }
 
-  public void selectAssignedTo(String assignedTo) {
+  private void selectAssignedTo(String assignedTo) {
     webDriverHelpers.selectFromCombobox(ASSIGNED_TO_COMBOBOX, assignedTo);
   }
 
-  public void selectPriority(String priority) {
+  private void selectPriority(String priority) {
     webDriverHelpers.selectFromCombobox(PRIORITY_COMBOBOX, priority);
   }
 
-  public void fillCommentsOnTask(String commentsOnTask) {
+  private void fillCommentsOnTask(String commentsOnTask) {
     webDriverHelpers.clearAndFillInWebElement(COMMENTS_ON_TASK_TEXTAREA, commentsOnTask);
   }
 
-  public void fillCommentsOnExecution(String commentsOnExecution) {
+  private void fillCommentsOnExecution(String commentsOnExecution) {
     webDriverHelpers.clearAndFillInWebElement(COMMENTS_ON_EXECUTION_TEXTAREA, commentsOnExecution);
   }
 
-  public void selectTaskStatus(String taskStatus) {
+  private void selectTaskStatus(String taskStatus) {
     webDriverHelpers.clickWebElementByText(TASK_STATUS_OPTIONS, taskStatus);
   }
 
-  public Task collectTaskData() {
+  private Task collectTaskData() {
     return Task.builder()
-        .taskContext(getTaskContext())
+        .taskContext(getDisabledTaskContext())
         .taskType(webDriverHelpers.getValueFromWebElement(TASK_TYPE_INPUT))
         .suggestedStartDate(getSuggestedStartDate())
         .suggestedStartTime(getSuggestedStartTime())
@@ -142,50 +143,51 @@ public class CreateNewTaskSteps implements En {
         .build();
   }
 
-  public LocalDate getSuggestedStartDate() {
+  private LocalDate getSuggestedStartDate() {
     return LocalDate.parse(
         webDriverHelpers.getValueFromWebElement(SUGGESTED_START_DATE_INPUT), DATE_FORMATTER);
   }
 
-  public LocalDate getDueDateDate() {
+  private LocalDate getDueDateDate() {
     return LocalDate.parse(
         webDriverHelpers.getValueFromWebElement(DUE_DATE_DATE_INPUT), DATE_FORMATTER);
   }
 
-  public LocalTime getDueDateTime() {
+  private LocalTime getDueDateTime() {
     return LocalTime.parse(
         webDriverHelpers.getValueFromWebElement(DUE_DATE_TIME_INPUT), TIME_FORMATTER);
   }
 
-  public LocalTime getSuggestedStartTime() {
+  private LocalTime getSuggestedStartTime() {
     return LocalTime.parse(
         webDriverHelpers.getValueFromWebElement(SUGGESTED_START_TIME_INPUT), TIME_FORMATTER);
   }
 
-  public String getAssignedToWithoutNoTasks() {
+  private String getAssignedToWithoutNoTasks() {
     return webDriverHelpers
         .getValueFromWebElement(ASSIGNED_TO_INPUT)
         .replaceAll("\\((.*)", "")
         .trim();
   }
 
-  public String getPriority() {
+  private String getPriority() {
     return webDriverHelpers.getValueFromWebElement(PRIORITY_INPUT);
   }
 
-  public String getCommentsOnTask() {
+  private String getCommentsOnTask() {
     return webDriverHelpers.getValueFromWebElement(COMMENTS_ON_TASK_TEXTAREA);
   }
 
-  public String getCommentsOnExecution() {
+  private String getCommentsOnExecution() {
     return webDriverHelpers.getValueFromWebElement(COMMENTS_ON_EXECUTION_TEXTAREA);
   }
 
-  public String getStatus() {
+  private String getStatus() {
     return webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(TASK_STATUS_OPTIONS);
   }
 
-  public String getTaskContext() {
-    return webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SELECTED_TASK_CONTEXT);
+  private String getDisabledTaskContext() {
+    return webDriverHelpers.getCheckedDisabledOptionFromHorizontalOptionGroup(
+        SELECTED_TASK_CONTEXT);
   }
 }

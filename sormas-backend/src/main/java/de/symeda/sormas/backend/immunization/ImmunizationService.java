@@ -54,6 +54,7 @@ import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
@@ -62,7 +63,6 @@ import de.symeda.sormas.backend.immunization.transformers.ImmunizationListEntryD
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonJoins;
 import de.symeda.sormas.backend.person.PersonJurisdictionPredicateValidator;
-import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -83,8 +83,6 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
-	@EJB
-	private PersonService personService;
 
 	public ImmunizationService() {
 		super(Immunization.class);
@@ -147,16 +145,23 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 	@Override
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Immunization> immunization, Timestamp date) {
+		return createChangeDateFilter(cb, immunization, date, null);
+	}
+
+	private Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Immunization> immunization, Timestamp date, String lastSynchronizedUuid) {
+
 		Join<Immunization, Vaccination> vaccinations = immunization.join(Immunization.VACCINATIONS, JoinType.LEFT);
 
-		return new ChangeDateFilterBuilder(cb, date).add(immunization)
+		ChangeDateFilterBuilder changeDateFilterBuilder =
+				lastSynchronizedUuid == null ? new ChangeDateFilterBuilder(cb, date) : new ChangeDateFilterBuilder(cb, date, immunization, lastSynchronizedUuid);
+		return changeDateFilterBuilder.add(immunization)
 			.add(vaccinations)
 			.add(immunization, Immunization.SORMAS_TO_SORMAS_ORIGIN_INFO)
 			.add(immunization, Immunization.SORMAS_TO_SORMAS_SHARES)
 			.build();
 	}
 
-	public List<Immunization> getAllActiveAfter(Date date) {
+	public List<Immunization> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Immunization> cq = cb.createQuery(getElementClass());
@@ -172,17 +177,16 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		}
 
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
+			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
 			if (dateFilter != null) {
 				filter = cb.and(filter, dateFilter);
 			}
 		}
 
 		cq.where(filter);
-		cq.orderBy(cb.desc(from.get(Immunization.CHANGE_DATE)));
 		cq.distinct(true);
 
-		return em.createQuery(cq).getResultList();
+		return getBatchedQueryResults(cb, cq, from, batchSize);
 	}
 
 	public boolean isArchived(String uuid) {
@@ -444,22 +448,30 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 	private Predicate createUserFilter(ImmunizationQueryContext<Immunization> qc) {
 		final User currentUser = userService.getCurrentUser();
+		final CriteriaBuilder cb = qc.getCriteriaBuilder();
 
+		Predicate filter;
 		if (!featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
-			return ImmunizationJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
+			filter = ImmunizationJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
 		} else {
-			return CriteriaBuilderHelper.or(
-				qc.getCriteriaBuilder(),
-				qc.getCriteriaBuilder().equal(qc.getRoot().get(Immunization.REPORTING_USER), currentUser),
+			filter = CriteriaBuilderHelper.or(
+					cb,
+				cb.equal(qc.getRoot().get(Immunization.REPORTING_USER), currentUser),
 				PersonJurisdictionPredicateValidator
 					.of(
 						qc.getQuery(),
-						qc.getCriteriaBuilder(),
+							cb,
 						new PersonJoins<>(((ImmunizationJoins<Immunization>) qc.getJoins()).getPerson()),
 						currentUser,
 						false)
 					.inJurisdictionOrOwned());
 		}
+
+		if (currentUser.getLimitedDisease() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(qc.getRoot().get(Contact.DISEASE), currentUser.getLimitedDisease()));
+		}
+
+		return filter;
 	}
 
 	private Predicate createDateFilter(CriteriaBuilder cb, Root<Immunization> from, ImmunizationSimilarityCriteria criteria) {

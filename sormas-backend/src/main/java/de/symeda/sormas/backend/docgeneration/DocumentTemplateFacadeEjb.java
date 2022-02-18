@@ -37,7 +37,7 @@ import javax.ejb.Stateless;
 
 import org.apache.commons.io.FileUtils;
 import org.apache.commons.io.FilenameUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.EntityDtoAccessHelper;
 import de.symeda.sormas.api.HasUuid;
@@ -394,7 +394,7 @@ public class DocumentTemplateFacadeEjb implements DocumentTemplateFacade {
 				} else if (CaseReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
 					return caseFacade.getCaseDataByUuid(uuid);
 				} else if (ContactReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
-					return contactFacade.getContactByUuid(uuid);
+					return contactFacade.getByUuid(uuid);
 				} else if (UserReferenceDto.class.isAssignableFrom(referenceDtoClass)) {
 					return userFacade.getByUuid(uuid);
 				} else if (RegionReferenceDto.class.isAssignableFrom(referenceDtoClass)) {

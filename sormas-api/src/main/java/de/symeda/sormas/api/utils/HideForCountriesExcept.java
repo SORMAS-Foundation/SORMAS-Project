@@ -1,5 +1,7 @@
 package de.symeda.sormas.api.utils;
 
+import de.symeda.sormas.api.CountryHelper;
+
 import java.lang.annotation.ElementType;
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
@@ -12,5 +14,5 @@ import java.lang.annotation.Target;
 public @interface HideForCountriesExcept {
 
 	String[] countries() default {
-		"de" };
+			CountryHelper.COUNTRY_CODE_GERMANY };
 }

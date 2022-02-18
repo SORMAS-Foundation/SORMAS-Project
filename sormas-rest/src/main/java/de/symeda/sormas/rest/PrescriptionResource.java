@@ -52,6 +52,15 @@ public class PrescriptionResource extends EntityDtoResource {
 		return FacadeProvider.getPrescriptionFacade().getAllActivePrescriptionsAfter(new Date(since));
 	}
 
+	@GET
+	@Path("/all/{since}/{size}/{lastSynchronizedUuid}")
+	public List<PrescriptionDto> getAllPrescriptions(
+		@PathParam("since") long since,
+		@PathParam("size") int size,
+		@PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
+		return FacadeProvider.getPrescriptionFacade().getAllActivePrescriptionsAfter(new Date(since), size, lastSynchronizedUuid);
+	}
+
 	@POST
 	@Path("/push")
 	public List<PushResult> postPrescriptions(@Valid List<PrescriptionDto> dtos) {

@@ -32,9 +32,6 @@ import javax.transaction.Transactional;
 import javax.validation.Valid;
 
 import org.apache.commons.lang3.StringUtils;
-import org.apache.commons.lang3.mutable.Mutable;
-import org.apache.commons.lang3.mutable.MutableBoolean;
-import org.apache.commons.lang3.mutable.MutableObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -48,6 +45,7 @@ import de.symeda.sormas.api.caze.caseimport.CaseImportEntities;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -72,13 +70,15 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.EnumService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
-import de.symeda.sormas.backend.importexport.ImportCellData;
-import de.symeda.sormas.backend.importexport.ImportErrorException;
+import de.symeda.sormas.api.importexport.ImportCellData;
+import de.symeda.sormas.api.importexport.ImportErrorException;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ImportHelper;
+import de.symeda.sormas.api.importexport.ImportRelatedObjectsMapper;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
@@ -87,6 +87,7 @@ import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb.VaccinationFacadeEjbLocal;
 
 @Stateless(name = "CaseImportFacade")
 public class CaseImportFacadeEjb implements CaseImportFacade {
@@ -117,6 +118,8 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
 	private ImportFacadeEjbLocal importFacade;
+	@EJB
+	private VaccinationFacadeEjbLocal vaccinationFacade;
 
 	@Override
 	@Transactional
@@ -197,6 +200,7 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 		PersonDto person = entities.getPerson();
 		List<SampleDto> samples = entities.getSamples();
 		List<PathogenTestDto> pathogenTests = entities.getPathogenTests();
+		List<VaccinationDto> vaccinations = entities.getVaccinations();
 
 		try {
 			// Necessary to make sure that the follow-up information is retained
@@ -214,12 +218,21 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 			// Workaround: Reset the change date to avoid OutdatedEntityExceptions
 			// Should be changed when doing #2265
 			caze.setChangeDate(new Date());
-			caseFacade.saveCase(caze);
+			caseFacade.save(caze);
 			for (SampleDto sample : samples) {
 				sampleFacade.saveSample(sample);
 			}
 			for (PathogenTestDto pathogenTest : pathogenTests) {
 				pathogenTestFacade.savePathogenTest(pathogenTest);
+			}
+
+			for (VaccinationDto vaccination : vaccinations) {
+				vaccinationFacade.createWithImmunization(
+					vaccination,
+					caze.getResponsibleRegion(),
+					caze.getResponsibleDistrict(),
+					caze.getPerson(),
+					caze.getDisease());
 			}
 
 			return ImportLineResultDto.successResult();
@@ -262,74 +275,42 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 
 		final List<SampleDto> samples = entities.getSamples();
 		final List<PathogenTestDto> pathogenTests = entities.getPathogenTests();
+		final List<VaccinationDto> vaccinations = entities.getVaccinations();
 
-		final MutableBoolean currentSampleHasEntries = new MutableBoolean(false);
-		final MutableBoolean currentPathogenTestHasEntries = new MutableBoolean(false);
-		final Mutable<String> firstSampleColumnName = new MutableObject<>(null);
-		final Mutable<String> firstPathogenTestColumnName = new MutableObject<>(null);
+		ImportRelatedObjectsMapper.Builder relatedObjectsMapperBuilder =
+			new ImportRelatedObjectsMapper.Builder()
+				.addMapper(
+					SampleDto.class,
+					samples,
+					() -> SampleDto.build(currentUserRef, new CaseReferenceDto(entities.getCaze().getUuid())),
+					this::insertColumnEntryIntoRelatedObject)
+				.addMapper(PathogenTestDto.class, pathogenTests, () -> {
+					if (samples.isEmpty()) {
+						return null;
+					}
+
+					SampleDto referenceSample = samples.get(samples.size() - 1);
+					return PathogenTestDto.build(new SampleReferenceDto(referenceSample.getUuid()), currentUserRef);
+				}, this::insertColumnEntryIntoRelatedObject);
+
+		if (featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+			relatedObjectsMapperBuilder
+				.addMapper(VaccinationDto.class, vaccinations, () -> VaccinationDto.build(currentUserRef), this::insertColumnEntryIntoRelatedObject);
+		}
+
+		ImportRelatedObjectsMapper relatedMapper = relatedObjectsMapperBuilder.build();
 
 		final ImportLineResultDto<CaseImportEntities> result =
 			insertRowIntoData(values, entityClasses, entityPropertyPaths, ignoreEmptyEntries, (cellData) -> {
 				try {
-					// If the first column of a new sample or pathogen test has been reached, remove the last sample and
-					// pathogen test if they don't have any entries
-					if (String.join(".", cellData.getEntityPropertyPath()).equals(firstSampleColumnName.getValue())
-						|| String.join(".", cellData.getEntityPropertyPath()).equals(firstPathogenTestColumnName.getValue())) {
-						if (samples.size() > 0 && currentSampleHasEntries.isFalse()) {
-							samples.remove(samples.size() - 1);
-							currentSampleHasEntries.setTrue();
-						}
-
-						if (pathogenTests.size() > 0 && currentPathogenTestHasEntries.isFalse()) {
-							pathogenTests.remove(pathogenTests.size() - 1);
-							currentPathogenTestHasEntries.setTrue();
-						}
-					}
 
 					CaseDataDto caze = entities.getCaze();
-					if (DataHelper.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(SampleDto.class))) {
-						// If the current column belongs to a sample, set firstSampleColumnName if it's empty, add a new sample
-						// to the list if the first column of a new sample has been reached and insert the entry of the cell into the sample
-						if (firstSampleColumnName.getValue() == null) {
-							firstSampleColumnName.setValue(String.join(".", cellData.getEntityPropertyPath()));
-						}
-						if (String.join(".", cellData.getEntityPropertyPath()).equals(firstSampleColumnName.getValue())) {
-							currentSampleHasEntries.setFalse();
-							samples.add(SampleDto.build(currentUserRef, new CaseReferenceDto(caze.getUuid())));
-						}
-						if (!StringUtils.isEmpty(cellData.getValue())) {
-							currentSampleHasEntries.setTrue();
-							insertColumnEntryIntoSampleData(
-								samples.get(samples.size() - 1),
-								null,
-								cellData.getValue(),
-								cellData.getEntityPropertyPath());
-						}
 
-					} else if (DataHelper.equal(cellData.getEntityClass(), DataHelper.getHumanClassName(PathogenTestDto.class))) {
-						// If the current column belongs to a pathogen test, set firstPathogenTestColumnName if it's empty, add a new test
-						// to the list if the first column of a new test has been reached and insert the entry of the cell into the test
-						if (firstPathogenTestColumnName.getValue() == null) {
-							firstPathogenTestColumnName.setValue(String.join(".", cellData.getEntityPropertyPath()));
+					if (!relatedMapper.map(cellData)) {
+						if (StringUtils.isNotEmpty(cellData.getValue())) {
+							// If the cell entry is not empty, try to insert it into the current case or its person
+							insertColumnEntryIntoData(caze, entities.getPerson(), cellData.getValue(), cellData.getEntityPropertyPath());
 						}
-						if (!samples.isEmpty()) {
-							SampleDto referenceSample = samples.get(samples.size() - 1);
-							if (String.join(".", cellData.getEntityPropertyPath()).equals(firstPathogenTestColumnName.getValue())) {
-								currentPathogenTestHasEntries.setFalse();
-								pathogenTests.add(PathogenTestDto.build(new SampleReferenceDto(referenceSample.getUuid()), currentUserRef));
-							}
-							if (!StringUtils.isEmpty(cellData.getValue())) {
-								currentPathogenTestHasEntries.setTrue();
-								insertColumnEntryIntoSampleData(
-									null,
-									pathogenTests.get(pathogenTests.size() - 1),
-									cellData.getValue(),
-									cellData.getEntityPropertyPath());
-							}
-						}
-					} else if (StringUtils.isNotEmpty(cellData.getValue())) {
-						// If the cell entry is not empty, try to insert it into the current case or its person
-						insertColumnEntryIntoData(caze, entities.getPerson(), cellData.getValue(), cellData.getEntityPropertyPath());
 					}
 				} catch (ImportErrorException | InvalidColumnException e) {
 					return e;
@@ -337,14 +318,6 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 
 				return null;
 			});
-
-		// Remove the last sample and pathogen test if empty
-		if (samples.size() > 0 && currentSampleHasEntries.isFalse()) {
-			samples.remove(samples.size() - 1);
-		}
-		if (pathogenTests.size() > 0 && currentPathogenTestHasEntries.isFalse()) {
-			pathogenTests.remove(pathogenTests.size() - 1);
-		}
 
 		// Sanitize non-HOME address
 		PersonHelper.sanitizeNonHomeAddress(entities.getPerson());
@@ -566,11 +539,10 @@ public class CaseImportFacadeEjb implements CaseImportFacade {
 	}
 
 	/**
-	 * Inserts the entry of a single cell into the sample or pathogen test.
+	 * Inserts the entry of a single cell into the sample, pathogen test, vaccinations or any other related object
 	 */
-	private void insertColumnEntryIntoSampleData(SampleDto sample, PathogenTestDto test, String entry, String[] entryHeaderPath)
+	private void insertColumnEntryIntoRelatedObject(Object currentElement, String entry, String[] entryHeaderPath)
 		throws InvalidColumnException, ImportErrorException {
-		Object currentElement = sample != null ? sample : test;
 		for (int i = 0; i < entryHeaderPath.length; i++) {
 			String headerPathElementName = entryHeaderPath[i];
 

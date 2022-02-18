@@ -21,7 +21,7 @@ public class SormasToSormasOriginInfoDtoHelper extends AdoDtoHelper<SormasToSorm
 	}
 
 	@Override
-	protected Call<List<SormasToSormasOriginInfoDto>> pullAllSince(long since) throws NoConnectionException {
+	protected Call<List<SormasToSormasOriginInfoDto>> pullAllSince(long since, Integer size, String lastSynchronizedUuid)  throws NoConnectionException {
 		throw new UnsupportedOperationException("Entity is embedded");
 	}
 
@@ -60,4 +60,9 @@ public class SormasToSormasOriginInfoDtoHelper extends AdoDtoHelper<SormasToSorm
 		dto.setSenderPhoneNumber(sormasToSormasOriginInfo.getSenderPhoneNumber());
 		dto.setComment(sormasToSormasOriginInfo.getComment());
 	}
+
+    @Override
+    protected long getApproximateJsonSizeInBytes() {
+        return 0;
+    }
 }

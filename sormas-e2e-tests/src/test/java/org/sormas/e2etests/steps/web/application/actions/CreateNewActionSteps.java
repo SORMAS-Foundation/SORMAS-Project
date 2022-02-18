@@ -57,36 +57,36 @@ public class CreateNewActionSteps implements En {
           selectPriority(action.getPriority());
           selectMeasure(action.getMeasure());
           fillTitle(action.getTitle());
-          fillDescription("Dummy description for automated test");
+          fillDescription(action.getDescription());
           selectActionStatus(action.getActionStatus());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
   }
 
-  public void fillDate(LocalDate date) {
+  private void fillDate(LocalDate date) {
     webDriverHelpers.fillInWebElement(DATE_INPUT, DATE_FORMATTER.format(date));
   }
 
-  public void selectPriority(String priority) {
+  private void selectPriority(String priority) {
     webDriverHelpers.selectFromCombobox(PRIORITY_COMBOBOX, priority);
   }
 
-  public void selectMeasure(String measure) {
+  private void selectMeasure(String measure) {
     webDriverHelpers.selectFromCombobox(MEASURE_COMBOBOX, measure);
   }
 
-  public void fillTitle(String title) {
+  private void fillTitle(String title) {
     webDriverHelpers.fillInWebElement(TITLE_INPUT, title);
   }
 
-  public void fillDescription(String description) {
+  private void fillDescription(String description) {
     WebElement iFrame = baseSteps.getDriver().findElement(DESCRIPTION_IFRAME);
     baseSteps.getDriver().switchTo().frame(iFrame);
     baseSteps.getDriver().findElement(By.cssSelector("body")).sendKeys(description);
     baseSteps.getDriver().switchTo().defaultContent();
   }
 
-  public void selectActionStatus(String option) {
+  private void selectActionStatus(String option) {
     webDriverHelpers.clickWebElementByText(ACTION_STATUS_OPTIONS, option);
   }
 }

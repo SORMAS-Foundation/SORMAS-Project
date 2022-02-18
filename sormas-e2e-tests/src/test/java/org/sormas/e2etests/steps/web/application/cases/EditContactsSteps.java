@@ -35,15 +35,17 @@ import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
+import java.util.List;
 import java.util.Locale;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.assertj.core.api.SoftAssertions;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.pojo.web.Contact;
 import org.sormas.e2etests.services.ContactService;
 import org.sormas.e2etests.state.ApiState;
+import org.testng.asserts.SoftAssert;
 
 public class EditContactsSteps implements En {
 
@@ -59,7 +61,7 @@ public class EditContactsSteps implements En {
       WebDriverHelpers webDriverHelpers,
       ApiState apiState,
       ContactService contactService,
-      SoftAssertions softly,
+      SoftAssert softly,
       @Named("ENVIRONMENT_URL") String environmentUrl) {
     this.webDriverHelpers = webDriverHelpers;
 
@@ -67,7 +69,9 @@ public class EditContactsSteps implements En {
         "I open the Case Contacts tab of the created case via api",
         () -> {
           LAST_CREATED_CASE_CONTACTS_TAB_URL =
-              environmentUrl + "/sormas-ui/#!cases/contacts/" + apiState.getCreatedCase().getUuid();
+              environmentUrl
+                  + "/sormas-webdriver/#!cases/contacts/"
+                  + apiState.getCreatedCase().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_CASE_CONTACTS_TAB_URL);
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NEW_CONTACT_BUTTON);
@@ -85,8 +89,6 @@ public class EditContactsSteps implements En {
           fillLastName(contact.getLastName());
           fillDateOfBirth(contact.getDateOfBirth());
           selectSex(contact.getSex());
-          fillNationalHealthId(contact.getNationalHealthId());
-          fillPassportNumber(contact.getPassportNumber());
           fillPrimaryPhoneNumber(contact.getPrimaryPhoneNumber());
           fillPrimaryEmailAddress(contact.getPrimaryEmailAddress());
           selectReturningTraveler(contact.getReturningTraveler());
@@ -111,52 +113,30 @@ public class EditContactsSteps implements En {
         () -> {
           openContactFromResultsByUUID(contactUUID);
           collectedContact = collectContactData();
-          softly
-              .assertThat(contact.getFirstName())
-              .isEqualToIgnoringCase(collectedContact.getFirstName());
-          softly
-              .assertThat(contact.getLastName())
-              .isEqualToIgnoringCase(collectedContact.getLastName());
-          softly
-              .assertThat(contact.getReturningTraveler())
-              .isEqualToIgnoringCase(collectedContact.getReturningTraveler());
-          softly.assertThat(contact.getReportDate()).isEqualTo(collectedContact.getReportDate());
-          softly
-              .assertThat(contact.getDateOfLastContact())
-              .isEqualTo(collectedContact.getDateOfLastContact());
-          softly
-              .assertThat(contact.getResponsibleRegion())
-              .isEqualTo(collectedContact.getResponsibleRegion());
-          softly
-              .assertThat(contact.getResponsibleDistrict())
-              .isEqualTo(collectedContact.getResponsibleDistrict());
-          softly
-              .assertThat(contact.getResponsibleCommunity())
-              .isEqualTo(collectedContact.getResponsibleCommunity());
-          softly
-              .assertThat(
-                  contact
-                      .getAdditionalInformationOnContactType()
-                      .equalsIgnoreCase(collectedContact.getAdditionalInformationOnContactType()))
-              .isTrue();
-          softly
-              .assertThat(contact.getTypeOfContact())
-              .isEqualToIgnoringCase(collectedContact.getTypeOfContact());
-          softly
-              .assertThat(contact.getContactCategory())
-              .isEqualToIgnoringCase(collectedContact.getContactCategory());
-          softly
-              .assertThat(contact.getRelationshipWithCase())
-              .isEqualTo(collectedContact.getRelationshipWithCase());
-          softly
-              .assertThat(contact.getDescriptionOfHowContactTookPlace())
-              .isEqualTo(collectedContact.getDescriptionOfHowContactTookPlace());
-          softly.assertAll();
+
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              contact,
+              collectedContact,
+              List.of(
+                  "firstName",
+                  "lastName",
+                  "returningTraveler",
+                  "reportDate",
+                  "dateOfLastContact",
+                  "responsibleRegion",
+                  "responsibleDistrict",
+                  "responsibleCommunity",
+                  "additionalInformationOnContactType",
+                  "typeOfContact",
+                  "contactCategory",
+                  "relationshipWithCase",
+                  "descriptionOfHowContactTookPlace"));
         });
 
     Then(
         "I check the linked contact information is correctly displayed",
         () -> {
+          webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(By.xpath("//tr"));
           String contactId = webDriverHelpers.getValueFromTableRowUsingTheHeader("Contact ID", 1);
           String contactDisease =
               (webDriverHelpers.getValueFromTableRowUsingTheHeader("Disease", 1).equals("COVID-19"))
@@ -174,34 +154,39 @@ public class EditContactsSteps implements En {
           String lastName =
               webDriverHelpers.getValueFromTableRowUsingTheHeader("Last name of contact person", 1);
 
-          softly
-              .assertThat(apiState.getCreatedContact().getUuid().substring(0, 6))
-              .isEqualToIgnoringCase(contactId);
-          softly
-              .assertThat(apiState.getCreatedContact().getDisease())
-              .isEqualToIgnoringCase(contactDisease);
-          softly
-              .assertThat(apiState.getCreatedContact().getContactClassification())
-              .isEqualToIgnoringCase(contactClassification);
-          softly
-              .assertThat(apiState.getCreatedContact().getPerson().getFirstName())
-              .isEqualToIgnoringCase(firstName);
-          softly
-              .assertThat(apiState.getCreatedContact().getPerson().getLastName())
-              .isEqualToIgnoringCase(lastName);
+          softly.assertTrue(
+              apiState.getCreatedContact().getUuid().substring(0, 6).equalsIgnoreCase(contactId),
+              "UUID doesn't match");
+          softly.assertTrue(
+              apiState.getCreatedContact().getDisease().equalsIgnoreCase(contactDisease),
+              "Disease doesn't match");
+          softly.assertTrue(
+              apiState
+                  .getCreatedContact()
+                  .getContactClassification()
+                  .equalsIgnoreCase(contactClassification),
+              "Classification doesn't match");
+
+          softly.assertTrue(
+              apiState.getCreatedContact().getPerson().getFirstName().equalsIgnoreCase(firstName),
+              "First name doesn't match");
+
+          softly.assertTrue(
+              apiState.getCreatedContact().getPerson().getLastName().equalsIgnoreCase(lastName),
+              "Last name doesn't match");
           softly.assertAll();
         });
   }
 
-  public void fillFirstName(String firstName) {
+  private void fillFirstName(String firstName) {
     webDriverHelpers.fillInWebElement(FIRST_NAME_OF_CONTACT_PERSON_INPUT, firstName);
   }
 
-  public void fillLastName(String lastName) {
+  private void fillLastName(String lastName) {
     webDriverHelpers.fillInWebElement(LAST_NAME_OF_CONTACT_PERSON_INPUT, lastName);
   }
 
-  public void fillDateOfBirth(LocalDate localDate) {
+  private void fillDateOfBirth(LocalDate localDate) {
     webDriverHelpers.selectFromCombobox(
         DATE_OF_BIRTH_YEAR_COMBOBOX, String.valueOf(localDate.getYear()));
     webDriverHelpers.selectFromCombobox(
@@ -211,68 +196,60 @@ public class EditContactsSteps implements En {
         DATE_OF_BIRTH_DAY_COMBOBOX, String.valueOf(localDate.getDayOfMonth()));
   }
 
-  public void selectSex(String sex) {
+  private void selectSex(String sex) {
     webDriverHelpers.selectFromCombobox(SEX_COMBOBOX, sex);
   }
 
-  public void fillNationalHealthId(String nationalHealthId) {
-    webDriverHelpers.fillInWebElement(NATIONAL_HEALTH_ID_INPUT, nationalHealthId);
-  }
-
-  public void fillPassportNumber(String passportNumber) {
-    webDriverHelpers.fillInWebElement(PASSPORT_NUMBER_INPUT, passportNumber);
-  }
-
-  public void fillPrimaryPhoneNumber(String primaryPhoneNumber) {
+  private void fillPrimaryPhoneNumber(String primaryPhoneNumber) {
     webDriverHelpers.fillInWebElement(PRIMARY_PHONE_NUMBER_INPUT, primaryPhoneNumber);
   }
 
-  public void fillPrimaryEmailAddress(String primaryPhoneNumber) {
+  private void fillPrimaryEmailAddress(String primaryPhoneNumber) {
     webDriverHelpers.fillInWebElement(PRIMARY_EMAIL_ADDRESS_INPUT, primaryPhoneNumber);
   }
 
-  public void selectReturningTraveler(String option) {
+  private void selectReturningTraveler(String option) {
     webDriverHelpers.clickWebElementByText(TYPE_OF_CONTACT_TRAVELER, option);
   }
 
-  public void fillDateOfReport(LocalDate date) {
+  private void fillDateOfReport(LocalDate date) {
     webDriverHelpers.clearAndFillInWebElement(DATE_OF_REPORT_INPUT, formatter.format(date));
   }
 
-  public void fillDateOfLastContact(LocalDate date) {
+  private void fillDateOfLastContact(LocalDate date) {
     webDriverHelpers.fillInWebElement(DATE_OF_LAST_CONTACT_INPUT, formatter.format(date));
   }
 
-  public void selectResponsibleRegion(String selectResponsibleRegion) {
+  private void selectResponsibleRegion(String selectResponsibleRegion) {
     webDriverHelpers.selectFromCombobox(RESPONSIBLE_REGION_COMBOBOX, selectResponsibleRegion);
   }
 
-  public void selectResponsibleDistrict(String responsibleDistrict) {
+  private void selectResponsibleDistrict(String responsibleDistrict) {
     webDriverHelpers.selectFromCombobox(RESPONSIBLE_DISTRICT_COMBOBOX, responsibleDistrict);
   }
 
-  public void selectResponsibleCommunity(String responsibleCommunity) {
+  private void selectResponsibleCommunity(String responsibleCommunity) {
     webDriverHelpers.selectFromCombobox(RESPONSIBLE_COMMUNITY_COMBOBOX, responsibleCommunity);
   }
 
-  public void selectTypeOfContact(String typeOfContact) {
+  private void selectTypeOfContact(String typeOfContact) {
     webDriverHelpers.clickWebElementByText(TYPE_OF_CONTACT_OPTIONS, typeOfContact);
   }
 
-  public void selectContactCategory(String category) {
+  private void selectContactCategory(String category) {
     webDriverHelpers.clickWebElementByText(CONTACT_CATEGORY_OPTIONS, category);
   }
 
-  public void fillAdditionalInformationOnTheTypeOfContact(String description) {
+  private void fillAdditionalInformationOnTheTypeOfContact(String description) {
     webDriverHelpers.fillInWebElement(
         ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT, description);
   }
 
-  public void fillRelationshipWithCase(String relationshipWithCase) {
+  private void fillRelationshipWithCase(String relationshipWithCase) {
     webDriverHelpers.selectFromCombobox(RELATIONSHIP_WITH_CASE_COMBOBOX, relationshipWithCase);
   }
 
-  public void fillDescriptionOfHowContactTookPlace(String descriptionOfHowContactTookPlace) {
+  private void fillDescriptionOfHowContactTookPlace(String descriptionOfHowContactTookPlace) {
     webDriverHelpers.fillInWebElement(
         DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT, descriptionOfHowContactTookPlace);
   }
@@ -283,7 +260,7 @@ public class EditContactsSteps implements En {
     webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
   }
 
-  public Contact collectContactData() {
+  private Contact collectContactData() {
     String collectedDateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE);
     LocalDate parsedDateOfReport = LocalDate.parse(collectedDateOfReport, formatter);
     String collectedLastDateOfContact = webDriverHelpers.getValueFromWebElement(LAST_CONTACT_DATE);
@@ -314,8 +291,7 @@ public class EditContactsSteps implements En {
         .build();
   }
 
-  public Contact getContactInformation() {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+  private Contact getContactInformation() {
     String contactData = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
     String[] contactInfo = contactData.split(" ");
     LocalDate localDate = LocalDate.parse(contactInfo[3].replace(")", ""), formatter);

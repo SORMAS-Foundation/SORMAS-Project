@@ -16,8 +16,8 @@
 package de.symeda.sormas.backend.infrastructure.country;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -37,8 +37,8 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.utils.EmptyValueException;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
 
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -49,13 +49,12 @@ import de.symeda.sormas.api.infrastructure.country.CountryFacade;
 import de.symeda.sormas.api.infrastructure.country.CountryIndexDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
-import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.utils.EmptyValueException;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
+import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.continent.Continent;
 import de.symeda.sormas.backend.infrastructure.continent.ContinentService;
 import de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent;
@@ -64,10 +63,11 @@ import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentService;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
+import org.apache.commons.lang3.StringUtils;
 
 @Stateless(name = "CountryFacade")
 public class CountryFacadeEjb
-	extends AbstractInfrastructureEjb<Country, CountryDto, CountryIndexDto, CountryReferenceDto, CountryService, CountryCriteria>
+	extends AbstractInfrastructureFacadeEjb<Country, CountryDto, CountryIndexDto, CountryReferenceDto, CountryService, CountryCriteria>
 	implements CountryFacade {
 
 	@EJB
@@ -83,7 +83,20 @@ public class CountryFacadeEjb
 
 	@Inject
 	protected CountryFacadeEjb(CountryService service, FeatureConfigurationFacadeEjbLocal featureConfiguration, UserService userService) {
-		super(Country.class, CountryDto.class, service, featureConfiguration, userService);
+		super(Country.class, CountryDto.class, service, featureConfiguration, userService, Validations.importCountryAlreadyExists);
+	}
+
+	@Override
+	protected CountryDto doSave(
+		CountryDto dtoToSave,
+		boolean allowMerge,
+		boolean includeArchived,
+		boolean checkChangeDate,
+		String duplicateErrorMessageProperty) {
+		if (StringUtils.isBlank(dtoToSave.getIsoCode())) {
+			throw new EmptyValueException(I18nProperties.getValidationError(Validations.importCountryEmptyIso));
+		}
+		return super.doSave(dtoToSave, allowMerge, includeArchived, checkChangeDate, duplicateErrorMessageProperty);
 	}
 
 	@Override
@@ -166,46 +179,11 @@ public class CountryFacadeEjb
 	}
 
 	@Override
-	public CountryDto save(CountryDto dtoToSave, boolean allowMerge) throws ValidationRuntimeException {
-		checkInfraDataLocked();
-
-		if (StringUtils.isBlank(dtoToSave.getIsoCode())) {
-			throw new EmptyValueException(I18nProperties.getValidationError(Validations.importCountryEmptyIso));
-		}
-
-		Country country = service.getByUuid(dtoToSave.getUuid());
-
-		if (userService.getCurrentUser() != null) {
-			if (country != null && !userService.hasRight(UserRight.INFRASTRUCTURE_EDIT)) {
-				throw new UnsupportedOperationException(String.format("User %s is not allowed to edit country.", userService.getCurrentUser().getUuid()));
-			}
-
-			if (country == null && !userService.hasRight(UserRight.INFRASTRUCTURE_CREATE)) {
-				throw new UnsupportedOperationException(String.format("User %s is not allowed to create country.", userService.getCurrentUser().getUuid()));
-			}
-		}
-
-		if (country == null) {
-			Optional<Country> byIsoCode = service.getByIsoCode(dtoToSave.getIsoCode(), true);
-			Optional<Country> byUnoCode = service.getByUnoCode(dtoToSave.getUnoCode(), true);
-			if (byIsoCode.isPresent() || byUnoCode.isPresent()) {
-				if (allowMerge) {
-					// FIXME(#6880) This save method looks fairly nonstandard and does not duplicate merging
-					country = byIsoCode.orElseGet(byUnoCode::get);
-					CountryDto dtoToMerge = getByUuid(country.getUuid());
-					dtoToSave = DtoHelper.copyDtoValues(dtoToMerge, dtoToSave, true);
-				} else {
-					throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.importCountryAlreadyExists));
-				}
-			}
-		}
-
-		return persistEntity(dtoToSave, country);
-	}
-
-	@Override
-	protected List<Country> findDuplicates(CountryDto dto) {
-		return Collections.emptyList();
+	protected List<Country> findDuplicates(CountryDto dto, boolean includeArchived) {
+		Optional<Country> byIsoCode = service.getByIsoCode(dto.getIsoCode(), includeArchived);
+		Optional<Country> byUnoCode = service.getByUnoCode(dto.getUnoCode(), includeArchived);
+		List<Optional<Country>> tmp = Arrays.asList(byIsoCode, byUnoCode);
+		return tmp.stream().filter(Optional::isPresent).map(Optional::get).collect(Collectors.toList());
 	}
 
 	public static CountryReferenceDto toReferenceDto(Country entity) {
@@ -243,6 +221,7 @@ public class CountryFacadeEjb
 		dto.setUnoCode(entity.getUnoCode());
 		dto.setUuid(entity.getUuid());
 		dto.setSubcontinent(SubcontinentFacadeEjb.toReferenceDto(entity.getSubcontinent()));
+		dto.setCentrallyManaged(entity.isCentrallyManaged());
 
 		return dto;
 	}
@@ -292,6 +271,7 @@ public class CountryFacadeEjb
 		target.setExternalId(source.getExternalId());
 		target.setIsoCode(source.getIsoCode());
 		target.setUnoCode(source.getUnoCode());
+		target.setCentrallyManaged(source.isCentrallyManaged());
 		final SubcontinentReferenceDto subcontinent = source.getSubcontinent();
 		if (subcontinent != null) {
 			target.setSubcontinent(subcontinentService.getByUuid(subcontinent.getUuid()));
@@ -323,9 +303,9 @@ public class CountryFacadeEjb
 		Root<Country> root = cq.from(Country.class);
 		Join<Country, Subcontinent> subcontinentJoin = root.join(Country.SUBCONTINENT);
 
-		cq.where(cb.and(cb.isTrue(subcontinentJoin.get(Subcontinent.ARCHIVED)), root.get(Country.UUID).in(countryUuids)));
+		cq.where(cb.and(cb.isTrue(subcontinentJoin.get(InfrastructureAdo.ARCHIVED)), root.get(AbstractDomainObject.UUID).in(countryUuids)));
 
-		cq.select(root.get(Country.ID));
+		cq.select(root.get(AbstractDomainObject.ID));
 
 		return QueryHelper.getFirstResult(em, cq) != null;
 	}
@@ -335,15 +315,15 @@ public class CountryFacadeEjb
 		Join<Country, Subcontinent> subcontinent = root.join(Country.SUBCONTINENT, JoinType.LEFT);
 		// Need to be in the same order as in the constructor
 		cq.multiselect(
-			root.get(Country.CREATION_DATE),
+			root.get(AbstractDomainObject.CREATION_DATE),
 			root.get(Country.CHANGE_DATE),
-			root.get(Country.UUID),
-			root.get(Country.ARCHIVED),
+			root.get(AbstractDomainObject.UUID),
+			root.get(InfrastructureAdo.ARCHIVED),
 			root.get(Country.DEFAULT_NAME),
 			root.get(Country.EXTERNAL_ID),
 			root.get(Country.ISO_CODE),
 			root.get(Country.UNO_CODE),
-			subcontinent.get(Subcontinent.UUID),
+			subcontinent.get(AbstractDomainObject.UUID),
 			subcontinent.get(Subcontinent.DEFAULT_NAME),
 			subcontinent.get(Subcontinent.EXTERNAL_ID));
 	}

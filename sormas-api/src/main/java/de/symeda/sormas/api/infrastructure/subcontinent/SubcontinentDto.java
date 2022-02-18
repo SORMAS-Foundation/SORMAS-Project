@@ -2,13 +2,13 @@ package de.symeda.sormas.api.infrastructure.subcontinent;
 
 import javax.validation.constraints.Size;
 
-import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.InfrastructureDto;
 import de.symeda.sormas.api.infrastructure.continent.ContinentReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.FieldConstraints;
 
-public class SubcontinentDto extends EntityDto {
+public class SubcontinentDto extends InfrastructureDto {
 
 	public static final String I18N_PREFIX = "Subcontinent";
 	public static final String DEFAULT_NAME = "defaultName";
@@ -58,5 +58,10 @@ public class SubcontinentDto extends EntityDto {
 
 	public void setContinent(ContinentReferenceDto continent) {
 		this.continent = continent;
+	}
+
+	@Override
+	public String toString() {
+		return getDefaultName();
 	}
 }

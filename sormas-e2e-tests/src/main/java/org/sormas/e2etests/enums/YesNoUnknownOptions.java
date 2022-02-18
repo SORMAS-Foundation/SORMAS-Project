@@ -23,7 +23,7 @@ import lombok.Getter;
 public enum YesNoUnknownOptions {
   YES("YES"),
   NO("NO"),
-  UNKNOW("UNKNOWN");
+  UNKNOWN("UNKNOWN");
 
   private final String option;
 

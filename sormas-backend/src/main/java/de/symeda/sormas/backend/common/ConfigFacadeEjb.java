@@ -15,6 +15,7 @@
 package de.symeda.sormas.backend.common;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -63,6 +64,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String COUNTRY_CENTER_LAT = "country.center.latitude";
 	private static final String COUNTRY_CENTER_LON = "country.center.longitude";
 	private static final String MAP_USE_COUNTRY_CENTER = "map.usecountrycenter";
+	private static final String MAP_TILES_URL = "map.tiles.url";
+	private static final String MAP_TILES_ATTRIBUTION = "map.tiles.attribution";
 	private static final String MAP_ZOOM = "map.zoom";
 
 	public static final String VERSION_PLACEHOLER = "%version";
@@ -108,10 +111,13 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String INTERFACE_PATIENT_DIARY_URL = "interface.patientdiary.url";
 	public static final String INTERFACE_PATIENT_DIARY_PROBANDS_URL = "interface.patientdiary.probandsurl";
 	public static final String INTERFACE_PATIENT_DIARY_AUTH_URL = "interface.patientdiary.authurl";
+	public static final String INTERFACE_PATIENT_DIARY_FRONTEND_AUTH_URL = "interface.patientdiary.frontendAuthurl";
+	public static final String INTERFACE_PATIENT_DIARY_TOKEN_LIFETIME = "interface.patientdiary.tokenLifetime";
 	public static final String INTERFACE_PATIENT_DIARY_EMAIL = "interface.patientdiary.email";
 	public static final String INTERFACE_PATIENT_DIARY_PASSWORD = "interface.patientdiary.password";
 	public static final String INTERFACE_PATIENT_DIARY_DEFAULT_USER_USERNAME = "interface.patientdiary.defaultuser.username";
 	public static final String INTERFACE_PATIENT_DIARY_DEFAULT_USER_PASSWORD = "interface.patientdiary.defaultuser.password";
+	public static final String INTERFACE_PATIENT_DIARY_ACCEPT_PHONE_CONTACT = "interface.patientdiary.acceptPhoneContact";
 
 	public static final String DOCGENERATION_NULL_REPLACEMENT = "docgeneration.nullReplacement";
 	public static final String INTERFACE_DEMIS_JNDINAME = "interface.demis.jndiName";
@@ -132,7 +138,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String CENTRAL_ETCD_CLIENT_NAME = "central.etcd.clientName";
 	private static final String CENTRAL_ETCD_CLIENT_PASSWORD = "central.etcd.clientPassword";
 	private static final String CENTRAL_ETCD_CA_PATH = "central.etcd.caPath";
-	private static final String CENTRAL_LOCATION_SYNC= "central.location.sync";
+	private static final String CENTRAL_LOCATION_SYNC = "central.location.sync";
 
 	public static final String SORMAS2SORMAS_FILES_PATH = "sormas2sormas.path";
 	public static final String SORMAS2SORMAS_ID = "sormas2sormas.id";
@@ -151,6 +157,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String SORMAS2SORMAS_ETCD_KEY_PREFIX = "sormas2sormas.etcd.keyPrefix";
 
 	private static final String EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL = "survnet.url";
+	private static final String EXTERNAL_SURVEILLANCE_TOOL_VERSION_ENDPOINT = "survnet.versionEndpoint";
 
 	private static final String DASHBOARD_MAP_MARKER_LIMIT = "dashboardMapMarkerLimit";
 	private static final String AUDITOR_ATTRIBUTE_LOGGING = "auditor.attribute.logging";
@@ -161,6 +168,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String STEP_SIZE_FOR_CSV_EXPORT = "stepSizeForCsvExport";
 
 	private static final String UI_URL = "ui.url";
+	private static final String SORMAS_STATS_URL = "sormasStats.url";
 
 	private static final String DOCUMENT_UPLOAD_SIZE_LIMIT_MB = "documentUploadSizeLimitMb";
 	public static final int DEFAULT_DOCUMENT_UPLOAD_SIZE_LIMIT_MB = 20;
@@ -286,6 +294,16 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
+	public String getMapTilersUrl() {
+		return getProperty(MAP_TILES_URL, null);
+	}
+
+	@Override
+	public String getMapTilersAttribution() {
+		return getProperty(MAP_TILES_ATTRIBUTION, null);
+	}
+
+	@Override
 	public int getMapZoom() {
 		return getInt(MAP_ZOOM, 1);
 	}
@@ -343,6 +361,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getUiUrl() {
 		return getProperty(UI_URL, null);
+	}
+
+	@Override
+	public String getSormasStatsUrl() {
+		return getProperty(SORMAS_STATS_URL, null);
 	}
 
 	@Override
@@ -492,8 +515,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		config.setUrl(getProperty(INTERFACE_PATIENT_DIARY_URL, null));
 		config.setProbandsUrl(getProperty(INTERFACE_PATIENT_DIARY_PROBANDS_URL, null));
 		config.setAuthUrl(getProperty(INTERFACE_PATIENT_DIARY_AUTH_URL, null));
+		config.setFrontendAuthUrl(getProperty(INTERFACE_PATIENT_DIARY_FRONTEND_AUTH_URL, null));
+		config.setTokenLifetime(Duration.ofSeconds(getLong(INTERFACE_PATIENT_DIARY_TOKEN_LIFETIME, 21600L)));
 		config.setEmail(getProperty(INTERFACE_PATIENT_DIARY_EMAIL, null));
 		config.setPassword(getProperty(INTERFACE_PATIENT_DIARY_PASSWORD, null));
+		config.setAcceptPhoneContact(getBoolean(INTERFACE_PATIENT_DIARY_ACCEPT_PHONE_CONTACT, true));
 
 		UserConfig userConfig = new UserConfig();
 		userConfig.setUsername(getProperty(INTERFACE_PATIENT_DIARY_DEFAULT_USER_USERNAME, null));
@@ -539,6 +565,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
+	public String getExternalSurveillanceToolVersionEndpoint() {
+		return getProperty(EXTERNAL_SURVEILLANCE_TOOL_VERSION_ENDPOINT, "version");
+	}
+
+	@Override
 	public void validateExternalUrls() {
 
 		List<String> urls = Lists.newArrayList(
@@ -546,7 +577,9 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			getSymptomJournalConfig().getAuthUrl(),
 			getPatientDiaryConfig().getUrl(),
 			getPatientDiaryConfig().getProbandsUrl(),
-			getPatientDiaryConfig().getAuthUrl());
+			getPatientDiaryConfig().getAuthUrl(),
+			getPatientDiaryConfig().getFrontendAuthUrl(),
+			getSormasStatsUrl());
 
 		SormasToSormasConfig s2sConfig = getS2SConfig();
 
@@ -662,7 +695,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		return getProperty(CENTRAL_ETCD_CA_PATH, null);
 	}
 
-	public boolean isCentralLocationSync(){
+	public boolean isCentralLocationSync() {
 		return getBoolean(CENTRAL_LOCATION_SYNC, false);
 	}
 

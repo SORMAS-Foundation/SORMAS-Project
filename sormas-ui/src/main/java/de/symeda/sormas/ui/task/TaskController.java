@@ -40,12 +40,9 @@ import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.DeleteListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class TaskController {
@@ -63,15 +60,11 @@ public class TaskController {
 			UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE),
 			createForm.getFieldGroup());
 
-		editView.addCommitListener(new CommitListener() {
-
-			@Override
-			public void onCommit() {
-				if (!createForm.getFieldGroup().isModified()) {
-					TaskDto dto = createForm.getValue();
-					FacadeProvider.getTaskFacade().saveTask(dto);
-					callback.run();
-				}
+		editView.addCommitListener(() -> {
+			if (!createForm.getFieldGroup().isModified()) {
+				TaskDto dto = createForm.getValue();
+				FacadeProvider.getTaskFacade().saveTask(dto);
+				callback.run();
 			}
 		});
 
@@ -91,14 +84,10 @@ public class TaskController {
 			createForm,
 			UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE),
 			createForm.getFieldGroup());
-		createView.addCommitListener(new CommitListener() {
-
-			@Override
-			public void onCommit() {
-				if (!createForm.getFieldGroup().isModified()) {
-					TaskDto dto = createForm.getValue();
-					FacadeProvider.getTaskFacade().saveTask(dto);
-				}
+		createView.addCommitListener(() -> {
+			if (!createForm.getFieldGroup().isModified()) {
+				TaskDto dto = createForm.getValue();
+				FacadeProvider.getTaskFacade().saveTask(dto);
 			}
 		});
 
@@ -117,35 +106,27 @@ public class TaskController {
 
 		Window popupWindow = VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingEditTask));
 
-		editView.addCommitListener(new CommitListener() {
+		editView.addCommitListener(() -> {
+			if (!form.getFieldGroup().isModified()) {
+				TaskDto dto1 = form.getValue();
+				FacadeProvider.getTaskFacade().saveTask(dto1);
 
-			@Override
-			public void onCommit() {
-				if (!form.getFieldGroup().isModified()) {
-					TaskDto dto = form.getValue();
-					FacadeProvider.getTaskFacade().saveTask(dto);
-
-					if (!editedFromTaskGrid && dto.getCaze() != null) {
-						ControllerProvider.getCaseController().navigateToCase(dto.getCaze().getUuid());
-					}
-
-					popupWindow.close();
-					callback.run();
+				if (!editedFromTaskGrid && dto1.getCaze() != null) {
+					ControllerProvider.getCaseController().navigateToCase(dto1.getCaze().getUuid());
 				}
+
+				popupWindow.close();
+				callback.run();
 			}
 		});
 
-		editView.addDiscardListener(() -> popupWindow.close());
+		editView.addDiscardListener(popupWindow::close);
 
-		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
-			editView.addDeleteListener(new DeleteListener() {
-
-				@Override
-				public void onDelete() {
-					FacadeProvider.getTaskFacade().deleteTask(newDto);
-					UI.getCurrent().removeWindow(popupWindow);
-					callback.run();
-				}
+		if (UserProvider.getCurrent().hasUserRight(UserRight.TASK_DELETE)) {
+			editView.addDeleteListener(() -> {
+				FacadeProvider.getTaskFacade().deleteTask(newDto);
+				UI.getCurrent().removeWindow(popupWindow);
+				callback.run();
 			}, I18nProperties.getString(Strings.entityTask));
 		}
 	}
@@ -165,21 +146,17 @@ public class TaskController {
 				Type.WARNING_MESSAGE,
 				false).show(Page.getCurrent());
 		} else {
-			VaadinUiUtil.showDeleteConfirmationWindow(
-				String.format(I18nProperties.getString(Strings.confirmationDeleteTasks), selectedRows.size()),
-				new Runnable() {
-
-					public void run() {
-						for (TaskIndexDto selectedRow : selectedRows) {
-							FacadeProvider.getTaskFacade().deleteTask(FacadeProvider.getTaskFacade().getByUuid(selectedRow.getUuid()));
-						}
-						callback.run();
-						new Notification(
-							I18nProperties.getString(Strings.headingTasksDeleted),
-							I18nProperties.getString(Strings.messageTasksDeleted),
-							Type.HUMANIZED_MESSAGE,
-							false).show(Page.getCurrent());
+			VaadinUiUtil
+				.showDeleteConfirmationWindow(String.format(I18nProperties.getString(Strings.confirmationDeleteTasks), selectedRows.size()), () -> {
+					for (TaskIndexDto selectedRow : selectedRows) {
+						FacadeProvider.getTaskFacade().deleteTask(FacadeProvider.getTaskFacade().getByUuid(selectedRow.getUuid()));
 					}
+					callback.run();
+					new Notification(
+						I18nProperties.getString(Strings.headingTasksDeleted),
+						I18nProperties.getString(Strings.messageTasksDeleted),
+						Type.HUMANIZED_MESSAGE,
+						false).show(Page.getCurrent());
 				});
 		}
 	}

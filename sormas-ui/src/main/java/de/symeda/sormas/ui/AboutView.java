@@ -30,6 +30,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.io.IOUtils;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
@@ -41,6 +43,7 @@ import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinServletRequest;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.ui.AbstractComponent;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -55,11 +58,13 @@ import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.HtmlHelper;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DownloadUtil;
+import de.symeda.sormas.ui.utils.ExportEntityName;
 
 @SuppressWarnings("serial")
 public class AboutView extends VerticalLayout implements View {
@@ -124,10 +129,23 @@ public class AboutView extends VerticalLayout implements View {
 		Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + infoLabelStr, ContentMode.HTML);
 		infoLayout.addComponent(infoLabel);
 
-		Label versionLabel =
-			new Label(I18nProperties.getCaption(Captions.aboutSormasVersion) + ": " + InfoProvider.get().getVersion(), ContentMode.HTML);
+		Label versionLabel = new Label(I18nProperties.getCaption(Captions.aboutVersion) + ": " + InfoProvider.get().getVersion(), ContentMode.HTML);
 		CssStyles.style(versionLabel, CssStyles.VSPACE_3);
 		infoLayout.addComponent(versionLabel);
+
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.LAB_MESSAGES)) {
+			addExternalServiceVersion(
+				Captions.aboutLabMessageAdapter,
+				() -> FacadeProvider.getLabMessageFacade().getLabMessagesAdapterVersion(),
+				infoLayout);
+		}
+
+		if (FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()) {
+			addExternalServiceVersion(
+				Captions.aboutExternalSurveillanceToolGateway,
+				() -> FacadeProvider.getExternalSurveillanceToolFacade().getVersion(),
+				infoLayout);
+		}
 
 		Link whatsNewLink = new Link(
 			I18nProperties.getCaption(Captions.aboutWhatsNew),
@@ -151,6 +169,37 @@ public class AboutView extends VerticalLayout implements View {
 		infoLayout.addComponent(changelogLink);
 
 		return infoLayout;
+	}
+
+	interface ExternalServiceVersionSupplier {
+
+		String get() throws Exception;
+	}
+
+	private void addExternalServiceVersion(String captionTag, ExternalServiceVersionSupplier versionSupplier, VerticalLayout infoLayout) {
+		String version;
+		Label availabilityLabel;
+
+		try {
+			version = versionSupplier.get();
+			availabilityLabel = new Label(VaadinIcons.CHECK.getHtml(), ContentMode.HTML);
+			availabilityLabel.addStyleName(CssStyles.LABEL_POSITIVE);
+		} catch (Exception e) {
+			version = I18nProperties.getCaption(Captions.aboutServiceNotAvailable);
+			availabilityLabel = new Label(VaadinIcons.CLOSE.getHtml(), ContentMode.HTML);
+			availabilityLabel.addStyleName(CssStyles.LABEL_CRITICAL);
+		}
+
+		availabilityLabel.addStyleName(CssStyles.HSPACE_LEFT_4);
+
+		Label caption = new Label(I18nProperties.getCaption(captionTag));
+		HorizontalLayout captionLayout = new HorizontalLayout(caption, availabilityLabel);
+		captionLayout.setSpacing(false);
+		infoLayout.addComponent(captionLayout);
+
+		Label versionLabel = new Label(I18nProperties.getCaption(Captions.aboutVersion) + ": " + version, ContentMode.HTML);
+		CssStyles.style(versionLabel, CssStyles.VSPACE_3);
+		infoLayout.addComponent(versionLabel);
 	}
 
 	private VerticalLayout createDocumentsSection() {
@@ -203,6 +252,14 @@ public class AboutView extends VerticalLayout implements View {
 				ButtonHelper.createButton(Captions.aboutDataDictionary, null, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
 			documentsLayout.addComponent(dataDictionaryButton);
 			DownloadUtil.attachDataDictionaryDownloader(dataDictionaryButton);
+		}
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EXPORT_DATA_PROTECTION_DATA)
+			&& FacadeProvider.getInfoFacade().isGenerateDataProtectionDictionaryAllowed()) {
+			Button dataProtectionButton =
+				ButtonHelper.createButton(Captions.aboutDataProtectionDictionary, null, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
+			documentsLayout.addComponent(dataProtectionButton);
+			attachDataProtectionDictionaryDownloader(dataProtectionButton);
 		}
 
 		// This link is hidden until an updated version of the document is provided
@@ -282,4 +339,11 @@ public class AboutView extends VerticalLayout implements View {
 		return FacadeProvider.getConfigFacade().getCustomFilesPath() + "aboutfiles";
 	}
 
+	public void attachDataProtectionDictionaryDownloader(AbstractComponent target) {
+		new FileDownloader(new StreamResource(() -> new DownloadUtil.DelayedInputStream((out) -> {
+			String documentPath = FacadeProvider.getInfoFacade().generateDataProtectionDictionary();
+			IOUtils.copy(Files.newInputStream(new File(documentPath).toPath()), out);
+		}, (e) -> {
+		}), DownloadUtil.createFileNameWithCurrentDate(ExportEntityName.DATA_PROTECTION_DICTIONARY, ".xlsx"))).extend(target);
+	}
 }
