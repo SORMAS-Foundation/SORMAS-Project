@@ -854,6 +854,7 @@ public interface Strings {
 	String lastWeek = "lastWeek";
 	String lastYear = "lastYear";
 	String listOf = "listOf";
+	String mapOf = "mapOf";
 	String max = "max";
 	String messageActivateAccount = "messageActivateAccount";
 	String messageAdditionalTestDeleted = "messageAdditionalTestDeleted";
