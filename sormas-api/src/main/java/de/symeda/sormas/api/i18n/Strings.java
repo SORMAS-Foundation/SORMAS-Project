@@ -125,6 +125,7 @@ public interface Strings {
 	String confirmationDeletePrescriptions = "confirmationDeletePrescriptions";
 	String confirmationDeleteSamples = "confirmationDeleteSamples";
 	String confirmationDeleteTasks = "confirmationDeleteTasks";
+	String confirmationDeleteTravelEntries = "confirmationDeleteTravelEntries";
 	String confirmationDeleteTreatments = "confirmationDeleteTreatments";
 	String confirmationDeleteVisits = "confirmationDeleteVisits";
 	String confirmationDisableAllLineListingNational = "confirmationDisableAllLineListingNational";
@@ -575,6 +576,7 @@ public interface Strings {
 	String headingNoRowsSelected = "headingNoRowsSelected";
 	String headingNoSamplesSelected = "headingNoSamplesSelected";
 	String headingNoTasksSelected = "headingNoTasksSelected";
+	String headingNoTravelEntrySelected = "headingNoTravelEntrySelected";
 	String headingNoTreatmentsSelected = "headingNoTreatmentsSelected";
 	String headingNoUsersSelected = "headingNoUsersSelected";
 	String headingNoVisitsSelected = "headingNoVisitsSelected";
@@ -644,6 +646,7 @@ public interface Strings {
 	String headingTests = "headingTests";
 	String headingTransferCase = "headingTransferCase";
 	String headingTravelEntryData = "headingTravelEntryData";
+	String headingTravelEntryDeleted = "headingTravelEntryDeleted";
 	String headingTreatments = "headingTreatments";
 	String headingTreatmentsDeleted = "headingTreatmentsDeleted";
 	String headingUnavailableTaskEdition = "headingUnavailableTaskEdition";
@@ -1068,6 +1071,7 @@ public interface Strings {
 	String messageNoRowsSelected = "messageNoRowsSelected";
 	String messageNoSamplesSelected = "messageNoSamplesSelected";
 	String messageNoTasksSelected = "messageNoTasksSelected";
+	String messageNoTravelEntriesSelected = "messageNoTravelEntriesSelected";
 	String messageNoTreatmentsSelected = "messageNoTreatmentsSelected";
 	String messageNoUsersSelected = "messageNoUsersSelected";
 	String messageNoVisitsSelected = "messageNoVisitsSelected";
@@ -1129,6 +1133,7 @@ public interface Strings {
 	String messageTasksDeleted = "messageTasksDeleted";
 	String messageTasksEdited = "messageTasksEdited";
 	String messageTemplateNotAvailable = "messageTemplateNotAvailable";
+	String messageTravelEntriesDeleted = "messageTravelEntriesDeleted";
 	String messageTravelEntryArchived = "messageTravelEntryArchived";
 	String messageTravelEntryDearchived = "messageTravelEntryDearchived";
 	String messageTravelEntryPOEFilledBySystem = "messageTravelEntryPOEFilledBySystem";
