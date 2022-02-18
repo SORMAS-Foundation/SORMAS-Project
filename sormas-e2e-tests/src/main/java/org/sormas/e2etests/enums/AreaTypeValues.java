@@ -51,8 +51,7 @@ public enum AreaTypeValues {
   public static String getAPIValueFor(String option) {
     AreaTypeValues[] areaTypeOptions = AreaTypeValues.values();
     for (AreaTypeValues value : areaTypeOptions) {
-      if (value.getAreaTypeAPIvalue().replaceAll("_", " ").contains(option.toUpperCase()))
-        return value.getAreaTypeAPIvalue();
+      if (value.getAreaTypeAPIvalue().equals(option)) return value.getAreaTypeAPIvalue();
     }
     throw new Exception("Unable to find " + option + " value in AreaType Enum");
   }
@@ -63,6 +62,6 @@ public enum AreaTypeValues {
 
   public static String getRandomAreaAPIType() {
     return String.valueOf(
-        AreaTypeValues.values()[random.nextInt(values().length)].areaTypeAPIvalue);
+            AreaTypeValues.values()[random.nextInt(values().length)].areaTypeAPIvalue);
   }
 }
