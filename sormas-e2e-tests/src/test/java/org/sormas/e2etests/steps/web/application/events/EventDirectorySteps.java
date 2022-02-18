@@ -21,6 +21,7 @@ package org.sormas.e2etests.steps.web.application.events;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_GRID_RESULTS_ROWS;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.*;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.*;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.RESET_FILTERS_BUTTON;
 
@@ -55,6 +56,27 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.fillInWebElement(
               SEARCH_EVENT_BY_FREE_TEXT,
               dataOperations.getPartialUuidFromAssociatedLink(eventUuid));
+        });
+    When(
+        "I navigate to the last created Event page via URL",
+        () -> {
+          String createdEventUUID = CreateNewEventSteps.newEvent.getUuid();
+          String LAST_CREATED_EVENT_PAGE_URL =
+              environmentUrl + "/sormas-webdriver/#!events/data/" + createdEventUUID;
+          webDriverHelpers.accessWebSite(LAST_CREATED_EVENT_PAGE_URL);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 50);
+          TimeUnit.SECONDS.sleep(5);
+        });
+    When(
+        "I navigate to the last created through API Event page via URL",
+        () -> {
+          String createdEventUUID = apiState.getCreatedEvent().getUuid();
+          String LAST_CREATED_EVENT_PAGE_URL =
+              environmentUrl + "/sormas-webdriver/#!events/data/" + createdEventUUID;
+          webDriverHelpers.accessWebSite(LAST_CREATED_EVENT_PAGE_URL);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 50);
         });
 
     When(
@@ -266,15 +288,15 @@ public class EventDirectorySteps implements En {
         "I click Create Case for Event Participant",
         () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_CASE_BUTTON));
 
-      Then(
-              "I check that number of displayed Event results is {int}",
-              (Integer number) ->
-                      assertHelpers.assertWithPoll20Second(
-                              () ->
-                                      Assert.assertEquals(
-                                              webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS),
-                                              number.intValue(),
-                                              "Number of displayed cases is not correct")));
+    Then(
+        "I check that number of displayed Event results is {int}",
+        (Integer number) ->
+            assertHelpers.assertWithPoll20Second(
+                () ->
+                    Assert.assertEquals(
+                        webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS),
+                        number.intValue(),
+                        "Number of displayed cases is not correct")));
 
     Then(
         "I check the number of displayed Event results from All button is {int}",

@@ -34,6 +34,7 @@ public class CaseDirectoryPage {
       By.cssSelector("thead .v-grid-column-default-header-content");
   public static final By CASE_DETAILED_TABLE_ROWS =
       By.cssSelector("div.v-grid-tablewrapper tbody tr");
+  public static final By SAVE_BUTTON_IN_LINK_FORM = By.cssSelector(".popupContent #commit");
   public static final By FIRST_CASE_ID_BUTTON = By.cssSelector(".v-grid-row-has-data a[title]");
   public static final By NAME_UUID_EPID_NUMBER_LIKE_INPUT = By.cssSelector("input#caseLike");
   public static final By PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT =
@@ -93,6 +94,8 @@ public class CaseDirectoryPage {
       By.cssSelector("[id='dateType'] [class='v-filterselect-button']");
   public static final By CASE_DISPLAY_FILTER_COMBOBOX =
       By.cssSelector("[id='relevanceStatus'] [class='v-filterselect-button']");
+  public static final By BULK_ACTIONS = By.id("bulkActions-2");
+  public static final By BULK_ACTIONS_VALUES = By.id("bulkActions-10");
   public static final By CASE_REPORTING_USER_FILTER = By.cssSelector("[id='reportingUserLike']");
   public static final By CASE_YEAR_FILTER =
       By.cssSelector("[id='birthdateYYYY'] [class='v-filterselect-button']");
