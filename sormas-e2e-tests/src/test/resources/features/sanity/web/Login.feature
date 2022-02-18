@@ -15,5 +15,10 @@ Feature: Login with different type of users
       | Point of Entry Supervisor |
       | Surveillance Officer      |
 
+  @issue=SORQA-69 @Locale_DE
+  Scenario: Check German language setting
+    Given I log in with National User
+    Then I check that Einstellungen is present in the left main menu
+
 
 
