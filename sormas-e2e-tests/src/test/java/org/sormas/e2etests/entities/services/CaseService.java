@@ -106,7 +106,7 @@ public class CaseService {
                 faker.number().numberBetween(1900, 2002),
                 faker.number().numberBetween(1, 12),
                 faker.number().numberBetween(1, 27)))
-        .sex(GenderValuesDE.getRandomGenderDE())
+        .sex(GenderValues.getRandomGenderDE())
         .presentConditionOfPerson("Lebendig")
         .dateOfSymptomOnset(LocalDate.now().minusDays(1))
         .primaryPhoneNumber(faker.phoneNumber().phoneNumber())

@@ -23,4 +23,4 @@ Feature: Case view tests
     When I create a new case with specific data for DE version
     Then I check the created data is correctly displayed on Edit case page for DE version
     Then I back to Case Directory using case list button
-    And I check if Case date format is correct
+    And I check if Case date format displayed in Cases tab is correct for specified fields
