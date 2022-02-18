@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.common;
 
+import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.sql.Timestamp;
@@ -59,7 +60,7 @@ public class CoreAdo extends DeletableAdo {
 		this.endOfProcessingDate = endOfProcessingDate;
 	}
 
-	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	@Column(length = CHARACTER_LIMIT_BIG)
 	public String getArchiveUndoneReason() {
 		return archiveUndoneReason;
 	}
