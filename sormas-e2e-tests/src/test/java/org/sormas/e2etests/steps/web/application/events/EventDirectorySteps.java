@@ -18,7 +18,9 @@
 
 package org.sormas.e2etests.steps.web.application.events;
 
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_GRID_RESULTS_ROWS;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_FROM_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_TO_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.*;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.APPLY_FILTERS_BUTTON;
@@ -208,7 +210,7 @@ public class EventDirectorySteps implements En {
         });
 
     When(
-        "I fill in a date range",
+        "I fill in a date range in Date of Event From Epi Week and ...To fields",
         () -> {
           webDriverHelpers.waitForPageLoaded();
           eventService.timeRange = buildTimeRange();
@@ -239,8 +241,8 @@ public class EventDirectorySteps implements En {
                 date.isAfter(eventService.timeRange[0].minusDays(1))
                     && date.isBefore(eventService.timeRange[1].plusDays(1)),
                 "The date(s) of displayed events are out of the requested range");
-            softly.assertAll();
           }
+          softly.assertAll();
         });
 
     When(

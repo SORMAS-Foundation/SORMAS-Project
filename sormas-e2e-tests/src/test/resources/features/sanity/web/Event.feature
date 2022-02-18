@@ -241,7 +241,7 @@ Feature: Create events
     And I click on the Events button from navbar
     Then I click on Show more filters in Events
     And I select Report Date among Event Reference Date options
-    And I fill in a date range
+    And I fill in a date range in Date of Event From Epi Week and ...To fields
     And I apply on the APPLY FILTERS button from Event
     And I check that the dates of displayed Event results are correct
 
