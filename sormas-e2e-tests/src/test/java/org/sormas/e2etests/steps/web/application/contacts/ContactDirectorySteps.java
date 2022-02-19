@@ -95,7 +95,7 @@ public class ContactDirectorySteps implements En {
         });
 
     When(
-        "I search last create contact by UUID case in Contact Directory",
+        "I search last create contact by UUID case in Contact Directory via api",
         () -> {
           String caseUuid = apiState.getCreatedCase().getUuid();
           webDriverHelpers.fillAndSubmitInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, caseUuid);

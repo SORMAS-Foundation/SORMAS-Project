@@ -83,7 +83,7 @@ public class EditContactsSteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(NEW_CONTACT_BUTTON));
 
     When(
-        "I create a new contact from Cases Contacts tab base on Person created by API",
+        "I create a new contact from Cases Contacts tab base on Person created via api",
         () -> {
           createNewContactByApi(apiState);
         });

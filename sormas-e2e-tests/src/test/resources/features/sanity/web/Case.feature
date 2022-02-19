@@ -197,11 +197,11 @@ Feature: Case end to end tests
     Given I log in with National User
     When I open the Case Contacts tab of the created case via api
     Then I click on new contact button from Case Contacts tab
-    And I create a new contact from Cases Contacts tab base on Person created by API
+    And I create a new contact from Cases Contacts tab base on Person created via api
     Then I pick Create a new person box in Pick or create person form
     And I click Save button in Pick or create person form
     Then I click on the Contacts button from navbar
-    And I search last create contact by UUID case in Contact Directory
+    And I search last create contact by UUID case in Contact Directory via api
     Then I check that number of displayed cases results is 1
     Then I click on the Cases button from navbar
     And I search last create case by UUID in Contact Directory
