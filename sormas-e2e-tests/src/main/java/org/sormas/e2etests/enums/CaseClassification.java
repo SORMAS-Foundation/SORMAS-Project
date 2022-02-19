@@ -44,7 +44,7 @@ public enum CaseClassification {
   public static String getUIValueFor(String option) {
     CaseClassification[] classifications = CaseClassification.values();
     for (CaseClassification value : classifications) {
-      if (value.getClassificationAPIvalue().equalsIgnoreCase(option))
+      if (value.getClassificationUIvalue().equalsIgnoreCase(option))
         return value.getClassificationUIvalue();
     }
     throw new Exception("Unable to find " + option + " value in CaseClassification Enum");
@@ -56,6 +56,16 @@ public enum CaseClassification {
     for (CaseClassification value : classifications) {
       if (value.getClassificationAPIvalue().replaceAll("_", " ").contains(option.toUpperCase()))
         return value.getClassificationAPIvalue();
+    }
+    throw new Exception("Unable to find " + option + " value in CaseClassification Enum");
+  }
+
+  @SneakyThrows
+  public static String getUIValueForGivenAPIValue(String option) {
+    CaseClassification[] classifications = CaseClassification.values();
+    for (CaseClassification value : classifications) {
+      if (value.getClassificationAPIvalue().equalsIgnoreCase(option))
+        return value.getClassificationUIvalue();
     }
     throw new Exception("Unable to find " + option + " value in CaseClassification Enum");
   }

@@ -18,14 +18,36 @@
 
 package org.sormas.e2etests.steps.web.application.samples;
 
-import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.*;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.APPLY_FILTER_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.FINAL_LABORATORY_RESULT;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.LABORATORY_SEARCH_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.RESET_FILTER_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_CLASIFICATION_SEARCH_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_DISEASE_SEARCH_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_DISTRICT_SEARCH_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_GRID_RESULTS_ROWS;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_NOT_SHIPPED;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_RECEIVED;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_REFFERED_TO_OTHER_LAB;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_REGION_SEARCH_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_SEARCH_INPUT;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_SHIPPED;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SEARCH_RESULT_SAMPLE;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SPECIMEN_CONDITION_SEARCH_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.TEST_RESULTS_SEARCH_COMBOBOX;
 
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.util.Arrays;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.sormas.e2etests.enums.*;
+import org.sormas.e2etests.enums.CaseClassification;
+import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.LaboratoryValues;
+import org.sormas.e2etests.enums.PathogenTestResults;
+import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.enums.SpecimenConditions;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
@@ -107,7 +129,7 @@ public class SamplesDirectorySteps implements En {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
               SAMPLE_CLASIFICATION_SEARCH_COMBOBOX,
-              CaseClassification.getUIValueFor(caseSpecification));
+              CaseClassification.getUIValueForGivenAPIValue(caseSpecification));
         });
 
     When(
@@ -158,7 +180,7 @@ public class SamplesDirectorySteps implements En {
           String district = apiState.getCreatedCase().getDistrict().getUuid();
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
-              SAMPLE_DISTRICT_SEARCH_COMBOBOX, DistrictsValues.getNameFor(district));
+              SAMPLE_DISTRICT_SEARCH_COMBOBOX, DistrictsValues.getNameByUUID(district));
         });
 
     When(
