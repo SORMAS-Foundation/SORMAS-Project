@@ -25,7 +25,6 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
-import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
@@ -43,14 +42,13 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.user.CurrentUserService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.backend.user.CurrentUser;
-import de.symeda.sormas.backend.user.CurrentUserQualifier;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -63,8 +61,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 	private final Class<ADO> elementClass;
 
 	@Inject
-	@CurrentUserQualifier
-	private Instance<CurrentUser> currentUser;
+	private CurrentUserService currentUserService;
 
 	// protected to be used by implementations
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
@@ -74,18 +71,8 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		this.elementClass = elementClass;
 	}
 
-	protected User getCurrentUser() {
-		return currentUser.get().getUser();
-	}
-
-	/**
-	 * Should only be used for testing scenarios of user rights & jurisdiction!
-	 * 
-	 * @param user
-	 */
-	@Deprecated
-	public void setCurrentUser(User user) {
-		currentUser.get().setUser(user);
+	public User getCurrentUser() {
+		return currentUserService.getCurrentUser();
 	}
 
 	protected Class<ADO> getElementClass() {
