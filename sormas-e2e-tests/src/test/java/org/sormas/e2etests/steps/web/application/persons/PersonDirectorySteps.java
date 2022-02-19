@@ -45,6 +45,7 @@ import org.testng.Assert;
 public class PersonDirectorySteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   protected Person createdPerson;
+  Faker faker = new Faker();
 
   @Inject
   public PersonDirectorySteps(
@@ -162,32 +163,43 @@ public class PersonDirectorySteps implements En {
     Then(
         "I change Year of birth filter by random value for Person",
         () -> {
-          Integer yearOfBirth = faker.number().numberBetween(1900, 2022);
-          webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.selectFromCombobox(BIRTH_YEAR_COMBOBOX, yearOfBirth.toString());
+          webDriverHelpers.selectFromCombobox(
+              BIRTH_YEAR_COMBOBOX,
+              getRandomNumberForBirthDateDifferentThanCreated(
+                      apiState.getLastCreatedPerson().getBirthdateYYYY(), 1900, 2002)
+                  .toString());
         });
 
     Then(
         "I change Month of birth filter  by random value for Person",
         () -> {
-          Integer monthOfBirth = faker.number().numberBetween(1, 12);
-          webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.selectFromCombobox(BIRTH_MONTH_COMBOBOX, monthOfBirth.toString());
+          webDriverHelpers.selectFromCombobox(
+              BIRTH_MONTH_COMBOBOX,
+              getRandomNumberForBirthDateDifferentThanCreated(
+                      apiState.getLastCreatedPerson().getBirthdateMM(), 1, 12)
+                  .toString());
         });
 
     Then(
         "I change Day of birth filter by random value for Person",
         () -> {
-          Integer dayOfBirth = faker.number().numberBetween(1, 29);
-          webDriverHelpers.selectFromCombobox(BIRTH_DAY_COMBOBOX, dayOfBirth.toString());
+          webDriverHelpers.selectFromCombobox(
+              BIRTH_DAY_COMBOBOX,
+              getRandomNumberForBirthDateDifferentThanCreated(
+                      apiState.getLastCreatedPerson().getBirthdateDD(), 1, 27)
+                  .toString());
         });
 
     Then(
         "I change present condition filter to random for Person",
         () -> {
+          String randomPresentCondition = PresentCondition.getRandomPresentCondition();
+          String presentConditionApi = apiState.getLastCreatedPerson().getPresentCondition();
+          while (randomPresentCondition.equals(presentConditionApi)) {
+            randomPresentCondition = PresentCondition.getRandomPresentCondition();
+          }
           webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.selectFromCombobox(
-              PRESENT_CONDITION, PresentCondition.getRandomPresentCondition());
+          webDriverHelpers.selectFromCombobox(PRESENT_CONDITION, randomPresentCondition);
         });
 
     Then(
@@ -246,14 +258,14 @@ public class PersonDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(By.cssSelector("[role='gridcell'] a"));
         });
 
-      When(
-              "I apply on the APPLY FILTERS button",
-              () -> {
-                  webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-                          APPLY_FILTERS_BUTTON, 30);
-                  webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
-                  TimeUnit.SECONDS.sleep(10);
-              });
+    When(
+        "I apply on the APPLY FILTERS button",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              APPLY_FILTERS_BUTTON, 30);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
+          TimeUnit.SECONDS.sleep(10);
+        });
 
     When(
         "I click on the RESET FILTERS button for Person",
@@ -279,12 +291,12 @@ public class PersonDirectorySteps implements En {
                       + " "
                       + apiState.getLastCreatedPerson().getFirstName();
               break;
-              case "phone number":
-                  searchText = apiState.getLastCreatedPerson().getPhone();
-                  break;
-              case "email":
-                  searchText = apiState.getLastCreatedPerson().getEmailAddress();
-                  break;
+            case "phone number":
+              searchText = apiState.getLastCreatedPerson().getPhone();
+              break;
+            case "email":
+              searchText = apiState.getLastCreatedPerson().getEmailAddress();
+              break;
           }
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(APPLY_FILTERS_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(ALL_BUTTON);
@@ -346,5 +358,13 @@ public class PersonDirectorySteps implements En {
           }
           webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, searchText);
         });
+  }
+
+  private Number getRandomNumberForBirthDateDifferentThanCreated(Number created, int min, int max) {
+    Number replacement = created;
+    while (created.equals(replacement)) {
+      replacement = faker.number().numberBetween(min, max);
+    }
+    return replacement;
   }
 }

@@ -76,8 +76,12 @@ public class EventDirectorySteps implements En {
         "I select random Risk level filter among the filter options",
         () -> {
           webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.selectFromCombobox(
-              FILTER_BY_RISK_LEVEL, RiskLevelValues.getRandomRiskLevelCaption());
+          String randomRiskLevel = RiskLevelValues.getRandomRiskLevelCaption();
+          String apiValue = apiState.getCreatedEvent().getRiskLevel();
+          while (randomRiskLevel.equals(apiValue)) {
+            randomRiskLevel = RiskLevelValues.getRandomRiskLevelCaption();
+          }
+          webDriverHelpers.selectFromCombobox(FILTER_BY_RISK_LEVEL, randomRiskLevel);
         });
 
     When(
@@ -92,9 +96,13 @@ public class EventDirectorySteps implements En {
     When(
         "I select random Disease filter among the filter options",
         () -> {
-          String disease = DiseasesValues.getRandomDiseaseCaption();
           webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.selectFromCombobox(FILTER_BY_DISEASE, disease);
+          String randomDisease = DiseasesValues.getRandomDiseaseCaption();
+          String apiValue = apiState.getCreatedEvent().getDisease();
+          while (randomDisease.equals(apiValue)) {
+            randomDisease = DiseasesValues.getRandomDiseaseCaption();
+          }
+          webDriverHelpers.selectFromCombobox(FILTER_BY_DISEASE, randomDisease);
         });
 
     When(
@@ -156,8 +164,12 @@ public class EventDirectorySteps implements En {
         "I select random Source Type among the filter options",
         () -> {
           webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.selectFromCombobox(
-              FILTER_BY_SOURCE_TYPE, SourceTypeValues.getRandomSourceTypeCaption());
+          String randomSourceType = SourceTypeValues.getRandomSourceTypeCaption();
+          String apiValue = apiState.getCreatedEvent().getSrcType();
+          while (randomSourceType.equals(apiValue)) {
+            randomSourceType = SourceTypeValues.getRandomSourceTypeCaption();
+          }
+          webDriverHelpers.selectFromCombobox(FILTER_BY_SOURCE_TYPE, randomSourceType);
         });
 
     When(
@@ -172,10 +184,14 @@ public class EventDirectorySteps implements En {
     When(
         "I select random Type of Place field among the filter options",
         () -> {
-          String typeOfPlace = TypeOfPlace.getRandomTypeOfPlace();
           webDriverHelpers.waitForPageLoaded();
+          String randomTypeOfPlace = TypeOfPlace.getRandomTypeOfPlace();
+          String apiValue = apiState.getCreatedEvent().getTypeOfPlace();
+          while (randomTypeOfPlace.equals(apiValue)) {
+            randomTypeOfPlace = TypeOfPlace.getRandomTypeOfPlace();
+          }
           webDriverHelpers.selectFromCombobox(
-              FILTER_BY_TYPE_OF_PLACE, TypeOfPlace.getValueFor(typeOfPlace));
+              FILTER_BY_TYPE_OF_PLACE, TypeOfPlace.getValueFor(randomTypeOfPlace));
         });
 
     When(
@@ -266,15 +282,15 @@ public class EventDirectorySteps implements En {
         "I click Create Case for Event Participant",
         () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_CASE_BUTTON));
 
-      Then(
-              "I check that number of displayed Event results is {int}",
-              (Integer number) ->
-                      assertHelpers.assertWithPoll20Second(
-                              () ->
-                                      Assert.assertEquals(
-                                              webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS),
-                                              number.intValue(),
-                                              "Number of displayed cases is not correct")));
+    Then(
+        "I check that number of displayed Event results is {int}",
+        (Integer number) ->
+            assertHelpers.assertWithPoll20Second(
+                () ->
+                    Assert.assertEquals(
+                        webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS),
+                        number.intValue(),
+                        "Number of displayed cases is not correct")));
 
     Then(
         "I check the number of displayed Event results from All button is {int}",
