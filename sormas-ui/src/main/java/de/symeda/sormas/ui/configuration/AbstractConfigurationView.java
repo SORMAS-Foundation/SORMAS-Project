@@ -113,7 +113,8 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 	public void refreshMenu(SubMenu menu, String params) {
 		menu.removeAllViews();
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.OUTBREAK_VIEW)
+			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)) {
 			menu.addView(
 				OutbreaksView.VIEW_NAME,
 				I18nProperties.getPrefixCaption("View", OutbreaksView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),

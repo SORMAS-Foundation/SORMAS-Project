@@ -1186,7 +1186,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			null);
 
 		/// CLINICIAN FIELDS
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CLINICIAN_VIEW)) {
 			if (isVisibleAllowed(CaseDataDto.CLINICIAN_NAME)) {
 				FieldHelper.setVisibleWhen(
 					getFieldGroup(),

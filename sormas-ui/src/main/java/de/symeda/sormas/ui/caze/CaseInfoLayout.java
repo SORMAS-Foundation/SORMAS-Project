@@ -122,7 +122,7 @@ public class CaseInfoLayout extends AbstractInfoLayout<CaseDataDto> {
 				leftColumnLayout.addComponent(ageSexLayout);
 			}
 
-			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) {
+			if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CLINICIAN_VIEW)) {
 				addDescLabel(
 					leftColumnLayout,
 					CaseDataDto.CLINICIAN_NAME,
