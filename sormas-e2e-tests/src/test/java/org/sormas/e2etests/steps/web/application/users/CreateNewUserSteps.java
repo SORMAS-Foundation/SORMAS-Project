@@ -27,6 +27,7 @@ import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.*;
 import cucumber.api.java8.En;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import org.openqa.selenium.WebElement;
@@ -55,6 +56,14 @@ public class CreateNewUserSteps implements En {
       SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
     this.baseSteps = baseSteps;
+
+    When(
+        "I select {string} language from Combobox in User settings",
+        (String language) -> {
+          webDriverHelpers.selectFromCombobox(LANGUAGE_COMBOBOX, language);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          TimeUnit.SECONDS.sleep(5);
+        });
 
     When(
         "I create new ([^\"]*) with limited disease to ([^\"]*)",
