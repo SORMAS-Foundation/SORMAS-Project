@@ -75,9 +75,10 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 
 		if (!ViewModelProviders.of(AbstractCaseView.class).has(ViewConfiguration.class)) {
 			// init default view mode
-			ViewConfiguration initViewConfiguration = UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)
-				? new ViewConfiguration(ViewMode.NORMAL)
-				: new ViewConfiguration(ViewMode.SIMPLE);
+			ViewConfiguration initViewConfiguration = UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_COURSE_VIEW)
+				|| UserProvider.getCurrent().hasUserRight(UserRight.THERAPY_VIEW)
+					? new ViewConfiguration(ViewMode.NORMAL)
+					: new ViewConfiguration(ViewMode.SIMPLE);
 			ViewModelProviders.of(AbstractCaseView.class).get(ViewConfiguration.class, initViewConfiguration);
 		}
 

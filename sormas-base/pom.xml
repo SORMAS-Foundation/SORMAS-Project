@@ -444,6 +444,17 @@
 			</dependency>
 
 			<dependency>
+				<groupId>org.apache.xmlgraphics</groupId>
+				<artifactId>fop-events</artifactId>
+				<version>2.7</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.xmlgraphics</groupId>
+				<artifactId>xmlgraphics-commons</artifactId>
+				<version>2.7</version>
+			</dependency>
+
+			<dependency>
 				<groupId>org.bouncycastle</groupId>
 				<artifactId>bcpkix-jdk15on</artifactId>
 				<version>${bouncycastle.version}</version>
@@ -631,12 +642,6 @@
 			</dependency>
 
 			<dependency>
-				<groupId>org.freemarker</groupId>
-				<artifactId>freemarker</artifactId>
-				<version>2.3.31</version>
-			</dependency>
-
-			<dependency>
 				<groupId>org.geotools</groupId>
 				<artifactId>gt-shapefile</artifactId>
 				<version>26.2</version>
@@ -775,6 +780,13 @@
 			</dependency>
 
 			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>postgresql</artifactId>
+				<version>1.16.3</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
 				<groupId>info.novatec</groupId>
 				<artifactId>bean-test</artifactId>
 				<version>0.2.Final</version>
@@ -798,7 +810,7 @@
 			<dependency>
 				<groupId>org.apache.poi</groupId>
 				<artifactId>poi-ooxml</artifactId>
-				<version>3.17</version>
+				<version>5.2.0</version>
 			</dependency>
 
 			<dependency>

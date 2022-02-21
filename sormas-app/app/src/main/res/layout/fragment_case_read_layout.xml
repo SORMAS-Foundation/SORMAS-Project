@@ -757,7 +757,7 @@
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/caseData_clinicianName"
                         app:value="@{data.clinicianName}"
-                        app:userViewRight="@{UserRight.CASE_MANAGEMENT_ACCESS}"
+                        app:userViewRight="@{UserRight.CASE_CLINICIAN_VIEW}"
                         app:goneIfEmpty="@{data.healthFacility}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 
@@ -771,14 +771,14 @@
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/caseData_clinicianPhone"
                         app:value="@{data.clinicianPhone}"
-                        app:userViewRight="@{UserRight.CASE_MANAGEMENT_ACCESS}"
+                        app:userViewRight="@{UserRight.CASE_CLINICIAN_VIEW}"
                         app:goneIfEmpty="@{data.healthFacility}"
                         style="@style/ControlFirstOfTwoColumnsStyle" />
 
                     <de.symeda.sormas.app.component.controls.ControlTextReadField
                         android:id="@+id/caseData_clinicianEmail"
                         app:value="@{data.clinicianEmail}"
-                        app:userViewRight="@{UserRight.CASE_MANAGEMENT_ACCESS}"
+                        app:userViewRight="@{UserRight.CASE_CLINICIAN_VIEW}"
                         app:goneIfEmpty="@{data.healthFacility}"
                         style="@style/ControlSecondOfTwoColumnsStyle" />
 

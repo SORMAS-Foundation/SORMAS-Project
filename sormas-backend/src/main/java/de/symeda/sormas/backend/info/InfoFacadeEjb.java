@@ -46,7 +46,6 @@ import org.apache.poi.ss.util.WorkbookUtil;
 import org.apache.poi.xssf.usermodel.XSSFCell;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
-import org.apache.poi.xssf.usermodel.XSSFTable;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 import de.symeda.sormas.api.EntityDto;
@@ -251,31 +250,23 @@ public class InfoFacadeEjb implements InfoFacade {
 		EnumSet<EntityColumn> entityColumns,
 		List<ColumnData> extraColumns,
 		Map<String, List<XSSFCell>> extraCells) {
+
 		String name = I18nProperties.getCaption(i18nPrefix);
 		String safeName = WorkbookUtil.createSafeSheetName(name);
 		XSSFSheet sheet = workbook.createSheet(safeName);
 
-		// Create
-		XSSFTable table = sheet.createTable();
-		String safeTableName = getSafeTableName(safeName);
-		table.setName(safeTableName);
-		table.setDisplayName(safeTableName);
-
-		XssfHelper.styleTable(table, 1);
-
 		int columnCount = entityColumns.size() + extraColumns.size();
 		int rowNumber = 0;
+
 		// header
 		XSSFRow headerRow = sheet.createRow(rowNumber++);
 		entityColumns.forEach(column -> {
-			table.addColumn();
 			int colIndex = Math.max(headerRow.getLastCellNum(), 0);
 			headerRow.createCell(colIndex).setCellValue(column.toString());
 			sheet.setColumnWidth(colIndex, column.getWidth());
 		});
 
 		extraColumns.forEach(c -> {
-			table.addColumn();
 			short colIndex = headerRow.getLastCellNum();
 			headerRow.createCell(colIndex).setCellValue(c.header);
 			sheet.setColumnWidth(colIndex, c.width);
@@ -310,7 +301,9 @@ public class InfoFacadeEjb implements InfoFacade {
 				Class<?> fieldType = field.getType();
 				if (fieldType.isEnum()) {
 					if (!usedEnums.contains(fieldType)) {
-						usedEnums.add((Class<Enum<?>>) fieldType);
+						@SuppressWarnings("unchecked")
+						Class<Enum<?>> enumType = (Class<Enum<?>>) fieldType;
+						usedEnums.add(enumType);
 					}
 				} else if (FacilityReferenceDto.class.isAssignableFrom(fieldType)) {
 					usesFacilityReference = true;
@@ -328,10 +321,10 @@ public class InfoFacadeEjb implements InfoFacade {
 			}
 		}
 
+		// Configure table
 		AreaReference reference =
 			workbook.getCreationHelper().createAreaReference(new CellReference(0, 0), new CellReference(rowNumber - 1, columnCount - 1));
-		table.setCellReferences(reference);
-		table.getCTTable().addNewAutoFilter();
+		XssfHelper.configureTable(reference, getSafeTableName(safeName), sheet, XssfHelper.TABLE_STYLE_PRIMARY);
 
 		// constant facilities
 		if (usesFacilityReference) {
@@ -347,13 +340,6 @@ public class InfoFacadeEjb implements InfoFacade {
 
 	private int createFacilityTable(XSSFSheet sheet, int startRow, CellStyle defaultCellStyle) {
 
-		// Create
-		XSSFTable table = sheet.createTable();
-		String safeTableName = getSafeTableName(sheet.getSheetName() + DataHelper.getHumanClassName(FacilityReferenceDto.class));
-		table.setName(safeTableName);
-		table.setDisplayName(safeTableName);
-		XssfHelper.styleTable(table, 2);
-
 		int columnCount = EnumColumn.values().length - 1;
 		int rowNumber = startRow;
 
@@ -363,7 +349,6 @@ public class InfoFacadeEjb implements InfoFacade {
 			if (EnumColumn.SHORT.equals(column)) {
 				continue;
 			}
-			table.addColumn();
 			String columnCaption = column.toString();
 			columnCaption = columnCaption.charAt(0) + columnCaption.substring(1).toLowerCase();
 			headerRow.createCell(column.ordinal()).setCellValue(columnCaption);
@@ -392,10 +377,11 @@ public class InfoFacadeEjb implements InfoFacade {
 			cell.setCellValue(DataHelper.equal(caption, desc) ? "" : desc);
 		}
 
+		// Configure table
 		AreaReference reference =
 			new AreaReference(new CellReference(startRow, 0), new CellReference(rowNumber - 1, columnCount - 1), SpreadsheetVersion.EXCEL2007);
-		table.setCellReferences(reference);
-		table.getCTTable().addNewAutoFilter();
+		String safeTableName = getSafeTableName(sheet.getSheetName() + DataHelper.getHumanClassName(FacilityReferenceDto.class));
+		XssfHelper.configureTable(reference, safeTableName, sheet, XssfHelper.TABLE_STYLE_SECONDARY);
 
 		return rowNumber;
 	}
@@ -415,20 +401,12 @@ public class InfoFacadeEjb implements InfoFacade {
 
 	private int createEnumTable(XSSFSheet sheet, int startRow, Class<Enum<?>> enumType) {
 
-		// Create
-		XSSFTable table = sheet.createTable();
-		String safeTableName = getSafeTableName(sheet.getSheetName() + enumType.getSimpleName());
-		table.setName(safeTableName);
-		table.setDisplayName(safeTableName);
-		XssfHelper.styleTable(table, 2);
-
 		int columnCount = EnumColumn.values().length;
 		int rowNumber = startRow;
 
 		// header
 		XSSFRow headerRow = sheet.createRow(rowNumber++);
 		for (EnumColumn column : EnumColumn.values()) {
-			table.addColumn();
 			String columnCaption = column.toString();
 			columnCaption = columnCaption.charAt(0) + columnCaption.substring(1).toLowerCase();
 			headerRow.createCell(column.ordinal()).setCellValue(columnCaption);
@@ -461,10 +439,11 @@ public class InfoFacadeEjb implements InfoFacade {
 			cell.setCellValue(DataHelper.equal(caption, shortCaption) ? "" : shortCaption);
 		}
 
+		// Configure table
 		AreaReference reference =
 			new AreaReference(new CellReference(startRow, 0), new CellReference(rowNumber - 1, columnCount - 1), SpreadsheetVersion.EXCEL2007);
-		table.setCellReferences(reference);
-		table.getCTTable().addNewAutoFilter();
+		String safeTableName = getSafeTableName(sheet.getSheetName() + enumType.getSimpleName());
+		XssfHelper.configureTable(reference, safeTableName, sheet, XssfHelper.TABLE_STYLE_SECONDARY);
 
 		return rowNumber;
 	}
