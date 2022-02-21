@@ -132,5 +132,8 @@ public class CaseDirectoryPage {
   public static final By ENTER_BULK_EDIT_MODE = By.id("actionEnterBulkEditMode");
   public static final By FIRST_CHECKBOX =
       By.xpath("//th[@role='columnheader']//input[@type='checkbox']/../..");
+  public static final By NEW_EVENT_CHECKBOX = By.xpath("//*[contains(text(),'New event')]/..");
+  public static final By FIRST_RESULT_IN_GRID =
+      By.xpath("//div[contains(@class, 'popupContent')]//tr[@role='row']");
   // TODO refactor the other headers based on the last one added
 }

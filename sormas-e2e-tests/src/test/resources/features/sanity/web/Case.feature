@@ -339,6 +339,7 @@ Feature: Case end to end tests
     And I fill Cases from input to 1 days before mocked Cases created on Case directory page
     And I apply last created api Person Id filter on Case directory page
     And I click APPLY BUTTON in Case Directory Page
+    And I click SHOW MORE FILTERS button on Case directory page
     And I click on the More button on Case directory page
     And I click Enter Bulk Edit Mode on Case directory page
     And I click checkbox to choose all Case results
@@ -368,6 +369,7 @@ Feature: Case end to end tests
     And I fill Cases from input to 1 days before mocked Cases created on Case directory page
     And I apply last created api Person Id filter on Case directory page
     And I click APPLY BUTTON in Case Directory Page
+    And I click SHOW MORE FILTERS button on Case directory page
     And I click on the More button on Case directory page
     And I click Enter Bulk Edit Mode on Case directory page
     And I click checkbox to choose all Case results

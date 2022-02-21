@@ -109,10 +109,7 @@ public class CaseDirectorySteps implements En {
 
     And(
         "I click on New Event option in Link to Event Form",
-        () ->
-            webDriverHelpers.clickOnWebElementBySelector(
-                By.xpath(
-                    "/html/body/div[2]/div[3]/div/div/div[3]/div/div/div[1]/div/div[2]/div/div/div[9]/div")));
+        () -> webDriverHelpers.clickOnWebElementBySelector(NEW_EVENT_CHECKBOX));
     And(
         "I fill Event Id filter with last created EventId on Link to Event form",
         () -> {
@@ -123,9 +120,7 @@ public class CaseDirectorySteps implements En {
         });
     And(
         "I click first result in grid on Link to Event form",
-        () ->
-            webDriverHelpers.clickOnWebElementBySelector(
-                By.xpath("//div[contains(@class, 'popupContent')]//tr[@role='row']")));
+        () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_RESULT_IN_GRID));
     When(
         "^I click on SAVE button in Link Event to group form$",
         () -> webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_IN_LINK_FORM));
