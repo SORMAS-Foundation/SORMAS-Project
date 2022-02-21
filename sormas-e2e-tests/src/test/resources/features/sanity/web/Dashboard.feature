@@ -48,3 +48,20 @@ Feature: Dashboard counters
     Then I click on show all diseases
     Then I validate presence of all diseases
 
+  Scenario: Check disease information layout
+    Given I log in with National User
+    When I click on the Dashboard button from navbar and access Surveillance Dashboard
+    Then I validate name of diseases is shown
+    Then I validate total data of diseases is shown
+    Then I validate compared data of diseases is shown
+    Then I validate last report of diseases is shown
+    Then I validate fatalities of diseases is shown
+    Then I validate number of events of diseases is shown
+
+  Scenario: Check disease burden information table
+    Given I log in with National User
+    When I click on the Dashboard button from navbar and access Surveillance Dashboard
+    Then I switch to burden information table
+    Then I validate that all the headers are present in the burden information table
+    Then I validate diseases presence in the data table
+    Then I validate switching back to disease boxes is working

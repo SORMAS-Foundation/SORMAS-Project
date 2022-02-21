@@ -54,4 +54,156 @@ public class SurveillanceDashboardPage {
       By.cssSelector("[class='v-verticallayout v-layout v-vertical v-widget v-has-width']");
   public static final By DISEASE_CATEGORIES =
       By.cssSelector("[class='col-lg-6 col-xs-12 '][location='burden'] >div>div>div>div>div");
+  public static final By AFP_DISEASE_BOX = By.xpath("//div[contains(text(),'AFP')]");
+  public static final By ANTHRAX_DISEASE_BOX = By.xpath("//div[contains(text(),'Anthrax')]");
+  public static final By COVID_19_DISEASE_BOX = By.xpath("//div[contains(text(),'COVID-19')]");
+  public static final By CHOLERA_DISEASE_BOX = By.xpath("//div[contains(text(),'Cholera')]");
+  public static final By CRS_DISEASE_BOX = By.xpath("//div[contains(text(),'CRS')]");
+  public static final By DENGUE_DISEASE_BOX = By.xpath("//div[contains(text(),'Dengue')]");
+  public static final By FIRST_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]");
+  public static final By SECOND_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]");
+  public static final By THIRD_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[3]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]");
+  public static final By FOURTH_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[4]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]");
+  public static final By FIFTH_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[5]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]");
+  public static final By SIXTH_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[6]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]");
+  public static final By TOTAL_DATA_FIRST_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]");
+  public static final By TOTAL_DATA_SECOND_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]");
+  public static final By TOTAL_DATA_THIRD_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[3]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]");
+  public static final By TOTAL_DATA_FOURTH_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[4]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]");
+  public static final By TOTAL_DATA_FIFTH_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[5]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]");
+  public static final By TOTAL_DATA_SIXTH_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[6]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]");
+  public static final By COMPARED_DATA_FIRST_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]");
+  public static final By COMPARED_DATA_SECOND_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]");
+  public static final By COMPARED_DATA_THIRD_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[3]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]");
+  public static final By COMPARED_DATA_FOURTH_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[4]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]");
+  public static final By COMPARED_DATA_FIFTH_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[5]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]");
+  public static final By COMPARED_DATA_SIXTH_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[6]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]");
+  public static final By NUMBER_OF_EVENTS = By.xpath("//div[contains(text(),'Number of events')]");
+  public static final By FATALITIES = By.xpath("//div[contains(text(),'Fatalities')]");
+  public static final By LAST_REPORT = By.xpath("//div[contains(text(),'Last report:')]");
+  public static final By LAST_REPORT_FIRST_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]");
+  public static final By LAST_REPORT_SECOND_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]/div[2]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]");
+  public static final By LAST_REPORT_THIRD_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[3]/div[2]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]");
+  public static final By LAST_REPORT_FOURTH_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[4]/div[2]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]");
+  public static final By LAST_REPORT_FIFTH_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[5]/div[2]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]");
+  public static final By LAST_REPORT_SIXTH_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[6]/div[2]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]");
+  public static final By FATALITIES_FIRST_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]");
+  public static final By FATALITIES_SECOND_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]/div[2]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]");
+  public static final By FATALITIES_THIRD_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[3]/div[2]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]");
+  public static final By FATALITIES_FOURTH_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[4]/div[2]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]");
+  public static final By FATALITIES_FIFTH_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[5]/div[2]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]");
+  public static final By FATALITIES_SIXTH_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[6]/div[2]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]");
+  public static final By NUMBER_OF_EVENTS_FIRST_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]/div[3]/div[1]/div[1]/div[2]/div[1]");
+  public static final By NUMBER_OF_EVENTS_SECOND_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]/div[2]/div[1]/div[3]/div[1]/div[1]/div[2]/div[1]");
+  public static final By NUMBER_OF_EVENTS_THIRD_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[3]/div[2]/div[1]/div[3]/div[1]/div[1]/div[2]/div[1]");
+  public static final By NUMBER_OF_EVENTS_FOURTH_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[4]/div[2]/div[1]/div[3]/div[1]/div[1]/div[2]/div[1]");
+  public static final By NUMBER_OF_EVENTS_FIFTH_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[5]/div[2]/div[1]/div[3]/div[1]/div[1]/div[2]/div[1]");
+  public static final By NUMBER_OF_EVENTS_SIXTH_DISEASE_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[6]/div[2]/div[1]/div[3]/div[1]/div[1]/div[2]/div[1]");
+  public static final By DISEASE_BURDEN_INFORMATION =
+      By.xpath("//div[contains(text(),'Disease Burden Information')]");
+  public static final By BURDEN_TABLE_VIEW_SWITCH = By.xpath("//div[@id='showTableView']");
+  public static final By BURDEN_TILE_VIEW_SWITCH = By.xpath("//div[@id='showTileView']");
+  public static final By DISEASE_BURDEN_BOX_DISEASES = By.xpath("//thead/tr[1]/th[1]/div[1]");
+  public static final By DISEASE_BURDEN_BOX_NEW_CASES =
+      By.xpath("//div[contains(text(),'New cases')]");
+  public static final By DISEASE_BURDEN_BOX_PREVIOUS_CASES =
+      By.xpath("//div[contains(text(),'Previous cases')]");
+  public static final By DISEASE_BURDEN_BOX_DYNAMIC = By.xpath("//div[contains(text(),'Dynamic')]");
+  public static final By DISEASE_BURDEN_BOX_NUMBER_OF_EVENTS =
+      By.xpath("//div[contains(text(),'Number of events')]");
+  public static final By DISEASE_BURDEN_BOX_OUTBREAK_DISTRICTS =
+      By.xpath("//div[contains(text(),'Outbreak districts')]");
+  public static final By DISEASE_BURDEN_BOX_FATALITIES = By.xpath("//thead/tr[1]/th[7]/div[1]");
+  public static final By DISEASE_BURDEN_BOX_CFR = By.xpath("//div[contains(text(),'CFR')]");
+  public static final By DISEASE_BURDEN_BOX_FIRST_DISEASE =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]/div[3]/table[1]/tbody[1]/tr[1]/td[1]");
+  public static final By DISEASE_BURDEN_BOX_SECOND_DISEASE =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]/div[3]/table[1]/tbody[1]/tr[2]/td[1]");
+  public static final By DISEASE_BURDEN_BOX_THIRD_DISEASE =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]/div[3]/table[1]/tbody[1]/tr[3]/td[1]");
+  public static final By DISEASE_BURDEN_BOX_FOURTH_DISEASE =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]/div[3]/table[1]/tbody[1]/tr[4]/td[1]");
+  public static final By DISEASE_BURDEN_BOX_FIFTH_DISEASE =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]/div[3]/table[1]/tbody[1]/tr[5]/td[1]");
+  public static final By DISEASE_BURDEN_BOX_SIXTH_DISEASE =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]/div[3]/table[1]/tbody[1]/tr[6]/td[1]");
+  public static final By DIS = By.xpath("");
 }
