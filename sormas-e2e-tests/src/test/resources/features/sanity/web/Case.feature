@@ -324,5 +324,17 @@ Feature: Case end to end tests
     Then I click on save Contact button
     And I check if Quarantine change comment field was saved correctly
 
+  @issue=SORDEV-9033
+  Scenario: Create case with directly entered home address
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I fill new case form with specific data
+    When I click on Enter Home Address of the Case Person Now in the Create New Case popup
+    And I fill specific address data in Case Person tab
+    Then I click on save case button
+    And I navigate to case person tab
+    And I check if saved Person data is correct
+
 
 
