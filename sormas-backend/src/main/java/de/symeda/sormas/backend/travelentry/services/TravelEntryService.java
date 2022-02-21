@@ -18,9 +18,6 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.backend.event.Event;
-import de.symeda.sormas.backend.event.EventQueryContext;
-import de.symeda.sormas.backend.user.User;
 import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
@@ -30,7 +27,6 @@ import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -45,6 +41,7 @@ import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryJoins;
 import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
 import de.symeda.sormas.backend.travelentry.transformers.TravelEntryIndexDtoResultTransformer;
+import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 
 @Stateless
@@ -274,6 +271,15 @@ public class TravelEntryService extends BaseTravelEntryService {
 			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(TravelEntry.ARCHIVED), true));
 			}
+		}
+
+		if (criteria.getReportDateFrom() != null && criteria.getReportDateTo() != null) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.between(from.get(TravelEntry.REPORT_DATE), criteria.getReportDateFrom(), criteria.getReportDateTo()));
+		} else if (criteria.getReportDateFrom() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(from.get(TravelEntry.REPORT_DATE), criteria.getReportDateFrom()));
+		} else if (criteria.getReportDateTo() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(from.get(TravelEntry.REPORT_DATE), criteria.getReportDateTo()));
 		}
 
 		if (criteria.getDeleted() != null) {

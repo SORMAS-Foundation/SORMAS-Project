@@ -28,7 +28,6 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.configuration.AbstractConfigurationView;
@@ -57,7 +56,7 @@ public class LineListingConfigurationView extends AbstractConfigurationView {
 
 	private void buildView(Disease enteredDisease) {
 
-		if (region != null && UserProvider.getCurrent().hasUserRight(UserRight.LINE_LISTING_CONFIGURE_NATION)) {
+		if (region != null && (UserProvider.getCurrent().hasNationalJurisdictionLevel() || UserProvider.getCurrent().hasNoneJurisdictionLevel())) {
 			Button btnBackToNationView = ButtonHelper.createIconButton(Captions.actionBackToNationOverview, VaadinIcons.ARROW_BACKWARD, e -> {
 				SormasUI.get().getNavigator().navigateTo(LineListingConfigurationView.VIEW_NAME);
 			}, ValoTheme.BUTTON_PRIMARY);
@@ -193,7 +192,7 @@ public class LineListingConfigurationView extends AbstractConfigurationView {
 			if (params.length > 1) {
 				disease = Disease.valueOf(params[1].substring(params[1].indexOf("=") + 1));
 			}
-		} else if (!UserProvider.getCurrent().hasUserRight(UserRight.LINE_LISTING_CONFIGURE_NATION)) {
+		} else if (!(UserProvider.getCurrent().hasNationalJurisdictionLevel() || UserProvider.getCurrent().hasNoneJurisdictionLevel())) {
 			this.region = UserProvider.getCurrent().getUser().getRegion();
 		}
 

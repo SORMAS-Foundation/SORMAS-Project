@@ -119,6 +119,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 	private boolean ignoreMeansOfImmunizationChange = false;
 	private MeansOfImmunization previousMeansOfImmunization;
 	private CheckBox overwriteImmunizationManagementStatus;
+	private ComboBox facilityTypeGroup;
 
 	public ImmunizationDataForm(boolean isPseudonymized, CaseReferenceDto relatedCase) {
 		super(
@@ -191,7 +192,7 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 
 		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegion, responsibleDistrictCombo, responsibleCommunityCombo);
 
-		ComboBox facilityTypeGroup = ComboBoxHelper.createComboBoxV7();
+		facilityTypeGroup = ComboBoxHelper.createComboBoxV7();
 		facilityTypeGroup.setId("typeGroup");
 		facilityTypeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
 		facilityTypeGroup.setWidth(100, Unit.PERCENTAGE);
@@ -424,12 +425,16 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 			}
 		});
 
-		facilityTypeGroup.addValueChangeListener(
-			e -> FieldHelper.updateEnumData(
+		facilityTypeGroup.addValueChangeListener(e -> {
+			if (facilityTypeGroup.getValue() == null) {
+				facilityType.clear();
+			}
+			FieldHelper.updateEnumData(
 				facilityType,
 				facilityTypeGroup.getValue() != null
 					? FacilityType.getTypes((FacilityTypeGroup) facilityTypeGroup.getValue())
-					: Arrays.stream(FacilityType.values()).collect(Collectors.toList())));
+					: Arrays.stream(FacilityType.values()).collect(Collectors.toList()));
+		});
 		facilityType.addValueChangeListener(e -> {
 			FieldHelper.removeItems(facilityCombo);
 			if (facilityType.getValue() != null && responsibleDistrictCombo.getValue() != null) {
@@ -457,7 +462,6 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 
 		facilityCombo.addValueChangeListener(e -> {
 			updateFacilityFields(facilityCombo, facilityDetails);
-			this.getValue().setFacilityType((FacilityType) facilityType.getValue());
 		});
 
 		addValueChangeListener(e -> {
@@ -552,6 +556,12 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 	@Override
 	public void discard() throws SourceException {
 		super.discard();
+		FacilityType facilityTypeValue = getValue().getFacilityType();
+		if (facilityTypeValue == null) {
+			facilityTypeGroup.clear();
+		} else {
+			facilityTypeGroup.setValue(facilityTypeValue.getFacilityTypeGroup());
+		}
 		overwriteImmunizationManagementStatus.setValue(false);
 	}
 }

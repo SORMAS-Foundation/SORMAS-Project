@@ -302,6 +302,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private ComboBox facilityTypeGroup;
 	private ComboBox facilityTypeCombo;
 	private ComboBox facilityCombo;
+	private TextField facilityDetails;
 	private boolean quarantineChangedByFollowUpUntilChange = false;
 	private TextField tfExpectedFollowUpUntilDate;
 	private boolean ignoreDifferentPlaceOfStayJurisdiction = false;
@@ -803,7 +804,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		facilityTypeCombo = addField(CaseDataDto.FACILITY_TYPE);
 		facilityCombo = addInfrastructureField(CaseDataDto.HEALTH_FACILITY);
 		facilityCombo.setImmediate(true);
-		TextField facilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
+		facilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
 		facilityDetails.setVisible(false);
 
 		regionCombo.addValueChangeListener(e -> {
@@ -1186,7 +1187,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			null);
 
 		/// CLINICIAN FIELDS
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CLINICIAN_VIEW)) {
 			if (isVisibleAllowed(CaseDataDto.CLINICIAN_NAME)) {
 				FieldHelper.setVisibleWhen(
 					getFieldGroup(),
@@ -1291,29 +1292,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				externalTokenWarningLabel,
 				(externalToken) -> FacadeProvider.getCaseFacade().doesExternalTokenExist(externalToken, getValue().getUuid()));
 
-			if (getValue().getHealthFacility() != null) {
-				boolean facilityOrHomeReadOnly = facilityOrHome.isReadOnly();
-				boolean facilityTypeGroupReadOnly = facilityTypeGroup.isReadOnly();
-				facilityOrHome.setReadOnly(false);
-				facilityTypeGroup.setReadOnly(false);
-				boolean noneHealthFacility = getValue().getHealthFacility().getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
-
-				FacilityType caseFacilityType = getValue().getFacilityType();
-				if (noneHealthFacility || caseFacilityType == null) {
-					facilityOrHome.setValue(TypeOfPlace.HOME);
-				} else {
-					facilityOrHome.setValue(TypeOfPlace.FACILITY);
-					facilityTypeGroup.setValue(caseFacilityType.getFacilityTypeGroup());
-					if (!facilityTypeCombo.isReadOnly()) {
-						facilityTypeCombo.setValue(caseFacilityType);
-					}
-				}
-
-				facilityOrHome.setReadOnly(facilityOrHomeReadOnly);
-				facilityTypeGroup.setReadOnly(facilityTypeGroupReadOnly);
-			} else {
-				facilityOrHome.setVisible(false);
-			}
+			updateFacilityOrHome();
 
 			// Set health facility/point of entry visibility based on case origin
 			if (getValue().getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY) {
@@ -1419,6 +1398,32 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				reinfectionTree.initCheckboxes();
 			}
 		});
+	}
+
+	private void updateFacilityOrHome() {
+		if (getValue().getHealthFacility() != null) {
+			boolean facilityOrHomeReadOnly = facilityOrHome.isReadOnly();
+			boolean facilityTypeGroupReadOnly = facilityTypeGroup.isReadOnly();
+			facilityOrHome.setReadOnly(false);
+			facilityTypeGroup.setReadOnly(false);
+			boolean noneHealthFacility = getValue().getHealthFacility().getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
+
+			FacilityType caseFacilityType = getValue().getFacilityType();
+			if (noneHealthFacility || caseFacilityType == null) {
+				facilityOrHome.setValue(TypeOfPlace.HOME);
+			} else {
+				facilityOrHome.setValue(TypeOfPlace.FACILITY);
+				facilityTypeGroup.setValue(caseFacilityType.getFacilityTypeGroup());
+				if (!facilityTypeCombo.isReadOnly()) {
+					facilityTypeCombo.setValue(caseFacilityType);
+				}
+			}
+
+			facilityOrHome.setReadOnly(facilityOrHomeReadOnly);
+			facilityTypeGroup.setReadOnly(facilityTypeGroupReadOnly);
+		} else {
+			facilityOrHome.setVisible(false);
+		}
 	}
 
 	private boolean diseaseClassificationExists() {
@@ -1678,6 +1683,17 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		ignoreDifferentPlaceOfStayJurisdiction = true;
 		updateVisibilityDifferentPlaceOfStayJurisdiction(getValue());
 		ignoreDifferentPlaceOfStayJurisdiction = false;
+		FacilityReferenceDto healthFacility = getValue().getHealthFacility();
+		String healthFacilityDetails = getValue().getHealthFacilityDetails();
+		updateFacilityOrHome();
+		boolean readOnlyFacility = facilityCombo.isReadOnly();
+		boolean readOnlyFacilityDetails = facilityDetails.isReadOnly();
+		facilityCombo.setReadOnly(false);
+		facilityDetails.setReadOnly(false);
+		facilityCombo.setValue(healthFacility);
+		facilityDetails.setValue(healthFacilityDetails);
+		facilityCombo.setReadOnly(readOnlyFacility);
+		facilityDetails.setReadOnly(readOnlyFacilityDetails);
 	}
 
 	private void updateVisibilityDifferentPlaceOfStayJurisdiction(CaseDataDto newFieldValue) {
@@ -1714,7 +1730,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					FacadeProvider.getFacilityFacade().getActiveFacilitiesByDistrictAndType(district, facilityType, true, false));
 			} else {
 				FieldHelper.removeItems(facilityCombo);
-
 			}
 		} else {
 			if (TypeOfPlace.HOME.equals(facilityOrHome.getValue())) {
