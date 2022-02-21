@@ -32,18 +32,12 @@ public class InfoProvider {
 	private final String commitHistoryUrl;
 
 	InfoProvider() {
-		try {
-			InputStream stream = InfoProvider.class.getResourceAsStream("/version.txt");
-			String version = DataHelper.convertStreamToString(stream);
-			this.version = version.trim();
-		} catch (IOException e) {
-			throw new RuntimeException(e);
-		}
 
 		try (InputStream fis = InfoProvider.class.getResourceAsStream("/git.properties")) {
 
 			Properties prop = new Properties();
 			prop.load(fis);
+			this.version = prop.getProperty("git.build.version");
 			this.commitShortId = prop.getProperty("git.commit.id.abbrev");
 			this.commitHistoryUrl = prop.getProperty("git.remote.origin.url").replace(".git", "/commits/") + prop.getProperty("git.commit.id.full");
 		} catch (IOException e) {
@@ -68,15 +62,14 @@ public class InfoProvider {
 	}
 
 	/**
-	 * Reads the version from the version.txt where it is written by maven.
-	 * We are doing it this way, because all other version information (manifest, pom) will be removed in the android app by gradle.
+	 * Reads the current version.
 	 */
 	public String getVersion() {
 		return version;
 	}
 
 	/**
-	 * Reads the version from the version.txt where it is written by maven and replaces the last version number with a 0.
+	 * Reads the current version and replaces the last version number with a 0.
 	 */
 	public String getBaseVersion() {
 		return version.substring(0, version.lastIndexOf(".")) + ".0";
