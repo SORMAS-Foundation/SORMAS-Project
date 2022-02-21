@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -32,6 +33,13 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 
 public class UserProvider {
+
+	private static final List configurationUserRoles = Arrays.asList(
+		UserRight.DOCUMENT_TEMPLATE_MANAGEMENT,
+		UserRight.INFRASTRUCTURE_VIEW,
+		UserRight.LINE_LISTING_CONFIGURE,
+		UserRight.OUTBREAK_VIEW,
+		UserRight.POPULATION_MANAGE);
 
 	private UserDto user;
 	private UserReferenceDto userReference;
@@ -69,6 +77,11 @@ public class UserProvider {
 		return Arrays.stream(userRoles).anyMatch(currentUserRoles::contains);
 	}
 
+	public boolean hasConfigurationAccess() {
+		Set<UserRight> currentUserRights = getUserRights();
+		return configurationUserRoles.stream().anyMatch(currentUserRights::contains);
+	}
+
 	public boolean hasUserRight(UserRight userRight) {
 		return getUserRights().contains(userRight);
 	}
@@ -79,6 +92,10 @@ public class UserProvider {
 
 	public boolean hasNationalJurisdictionLevel() {
 		return UserRole.getJurisdictionLevel(getCurrent().getUserRoles()) == JurisdictionLevel.NATION;
+	}
+
+	public boolean hasNoneJurisdictionLevel() {
+		return UserRole.getJurisdictionLevel(getCurrent().getUserRoles()) == JurisdictionLevel.NONE;
 	}
 
 	public boolean hasRegion(RegionReferenceDto regionReference) {

@@ -17,20 +17,21 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.person;
 
+import java.util.Arrays;
 import java.util.List;
 
 import com.vaadin.v7.data.util.BeanItemContainer;
 import com.vaadin.v7.data.util.GeneratedPropertyContainer;
 import com.vaadin.v7.shared.ui.grid.HeightMode;
-import com.vaadin.v7.ui.Grid;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.SimilarPersonDto;
+import de.symeda.sormas.ui.utils.CustomizableGrid;
 
 @SuppressWarnings("serial")
-public class PersonSelectionGrid extends Grid {
+public class PersonSelectionGrid extends CustomizableGrid {
 
 	/**
 	 * Create a grid of persons listing all persons similar to the given criteria.
@@ -49,21 +50,23 @@ public class PersonSelectionGrid extends Grid {
 		setContainerDataSource(generatedContainer);
 
 		setColumns(
-			SimilarPersonDto.FIRST_NAME,
-			SimilarPersonDto.LAST_NAME,
-			SimilarPersonDto.NICKNAME,
-			SimilarPersonDto.AGE_AND_BIRTH_DATE,
-			SimilarPersonDto.SEX,
-			SimilarPersonDto.PRESENT_CONDITION,
-			SimilarPersonDto.PHONE,
-			SimilarPersonDto.DISTRICT_NAME,
-			SimilarPersonDto.COMMUNITY_NAME,
-			SimilarPersonDto.POSTAL_CODE,
-			SimilarPersonDto.CITY,
-			SimilarPersonDto.STREET,
-			SimilarPersonDto.HOUSE_NUMBER,
-			SimilarPersonDto.NATIONAL_HEALTH_ID,
-			SimilarPersonDto.PASSPORT_NUMBER);
+			SimilarPersonDto.class,
+			Arrays.asList(
+				SimilarPersonDto.FIRST_NAME,
+				SimilarPersonDto.LAST_NAME,
+				SimilarPersonDto.NICKNAME,
+				SimilarPersonDto.AGE_AND_BIRTH_DATE,
+				SimilarPersonDto.SEX,
+				SimilarPersonDto.PRESENT_CONDITION,
+				SimilarPersonDto.PHONE,
+				SimilarPersonDto.DISTRICT_NAME,
+				SimilarPersonDto.COMMUNITY_NAME,
+				SimilarPersonDto.POSTAL_CODE,
+				SimilarPersonDto.CITY,
+				SimilarPersonDto.STREET,
+				SimilarPersonDto.HOUSE_NUMBER,
+				SimilarPersonDto.NATIONAL_HEALTH_ID,
+				SimilarPersonDto.PASSPORT_NUMBER));
 
 		for (Column column : getColumns()) {
 			String propertyId = column.getPropertyId().toString();

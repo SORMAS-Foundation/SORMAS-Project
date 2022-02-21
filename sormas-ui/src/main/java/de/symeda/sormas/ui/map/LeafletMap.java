@@ -22,6 +22,10 @@ import java.lang.reflect.Method;
 import java.util.EventObject;
 import java.util.List;
 
+import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import com.vaadin.annotations.JavaScript;
 import com.vaadin.annotations.StyleSheet;
 import com.vaadin.ui.AbstractJavaScriptComponent;
@@ -32,8 +36,6 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.geo.GeoLatLon;
 import elemental.json.Json;
 import elemental.json.JsonArray;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * JS and CSS files are in the VAADIN folder, so we can also access required
@@ -75,6 +77,13 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 		getState().setTileLayerVisible(true);
 		getState().setTileLayerOpacity(1);
 
+		String tilesUrl = FacadeProvider.getConfigFacade().getMapTilersUrl();
+		if(StringUtils.isNoneBlank(tilesUrl)) {
+			callFunction(
+					"setTileLayer",
+					tilesUrl,
+					FacadeProvider.getConfigFacade().getMapTilersAttribution());
+		}
 		addFunction("onClick", new JavaScriptFunction() {
 
 			@Override
@@ -87,7 +96,6 @@ public class LeafletMap extends AbstractJavaScriptComponent {
 		// credit where credit's due
 		String attribution = FacadeProvider.getGeoShapeProvider().loadShapefileAttributions();
 		this.addShapefileAttribution(attribution);
-
 	}
 
 	/**

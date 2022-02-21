@@ -147,8 +147,8 @@ public class ImmunizationController {
 
 			@Override
 			public void discard() {
-				super.discard();
 				immunizationDataForm.discard();
+				super.discard();
 			}
 		};
 

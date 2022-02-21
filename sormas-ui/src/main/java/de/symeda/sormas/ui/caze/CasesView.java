@@ -123,7 +123,8 @@ public class CasesView extends AbstractView {
 	public static final int BULK_EDIT_MODE_WARNING_THRESHOLD = 1000;
 
 	private final boolean caseFollowUpEnabled;
-	private final boolean hasCaseManagementRight;
+	private final boolean hasClinicalCourseRight;
+	private final boolean hasTherapyRight;
 	private final ExportConfigurationDto detailedExportConfiguration;
 
 	private final CaseCriteria criteria;
@@ -153,7 +154,8 @@ public class CasesView extends AbstractView {
 		super(VIEW_NAME);
 
 		caseFollowUpEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP);
-		hasCaseManagementRight = UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS);
+		hasClinicalCourseRight = UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_COURSE_VIEW);
+		hasTherapyRight = UserProvider.getCurrent().hasUserRight(UserRight.THERAPY_VIEW);
 		detailedExportConfiguration = buildDetailedExportConfiguration();
 		viewConfiguration = ViewModelProviders.of(CasesView.class).get(CasesViewConfiguration.class);
 		if (viewConfiguration.getViewType() == null) {
@@ -233,7 +235,8 @@ public class CasesView extends AbstractView {
 				.getCaseExportProperties(
 					CaseDownloadUtil::getPropertyCaption,
 					caseFollowUpEnabled,
-					hasCaseManagementRight,
+					hasClinicalCourseRight,
+					hasTherapyRight,
 					FacadeProvider.getConfigFacade().getCountryLocale())
 				.stream()
 				.map(ExportPropertyMetaInfo::getPropertyId)
@@ -308,7 +311,7 @@ public class CasesView extends AbstractView {
 					Strings.infoDetailedExport);
 			}
 
-			if (hasCaseManagementRight) {
+			if (hasClinicalCourseRight || hasTherapyRight) {
 				StreamResource caseManagementExportStreamResource =
 					DownloadUtil.createCaseManagementExportResource(grid.getCriteria(), this::getSelectedRows, ExportEntityName.CONTACTS);
 				addExportButton(
@@ -372,7 +375,8 @@ public class CasesView extends AbstractView {
 						ImportExportUtils.getCaseExportProperties(
 							CaseDownloadUtil::getPropertyCaption,
 							caseFollowUpEnabled,
-							hasCaseManagementRight,
+							hasClinicalCourseRight,
+							hasTherapyRight,
 							FacadeProvider.getConfigFacade().getCountryLocale()),
 						customExportWindow::close);
 					customExportsLayout.setExportCallback(
