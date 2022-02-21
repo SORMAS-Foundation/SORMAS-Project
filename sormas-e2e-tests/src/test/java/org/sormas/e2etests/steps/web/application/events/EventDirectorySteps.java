@@ -24,8 +24,10 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_TAS
 import static org.sormas.e2etests.pages.application.events.EditEventPage.TITLE_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.APPLY_FILTER;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BULK_ACTIONS_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CREATED_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CREATE_CASE_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.ENTER_BULK_EDIT_MODE_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENTS_RADIO_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_GROUP_ID_IN_GRID;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_STATUS_FILTER_BUTTONS;
@@ -34,12 +36,16 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FI
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTER_BY_RISK_LEVEL;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTER_BY_SOURCE_TYPE;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTER_BY_TYPE_OF_PLACE;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FIRST_CHECKBOX_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FIRST_EVENT_GROUP;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FIRST_EVENT_ID_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.GROUP_EVENTS_EVENT_DIRECTORY;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.GROUP_ID_COLUMN;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.ID_FIELD_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LINKED_EVENT_GROUP_ID;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LINK_EVENT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LINK_EVENT_BUTTON_EDIT_PAGE;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.MORE_BUTTON_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.RESET_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SAVE_BUTTON_IN_LINK_FORM;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SEARCH_EVENT_BY_FREE_TEXT;
@@ -51,9 +57,11 @@ import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.RESET_FILTERS_BUTTON;
 
 import cucumber.api.java8.En;
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Named;
+import org.openqa.selenium.By;
 import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.RiskLevelValues;
@@ -63,10 +71,14 @@ import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.events.EventDirectoryPage;
+import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.pojo.web.EventGroup;
+import org.sormas.e2etests.services.EventGroupService;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.Assert;
 
 public class EventDirectorySteps implements En {
+  private final WebDriverHelpers webDriverHelpers;
 
   @Inject
   public EventDirectorySteps(
@@ -74,7 +86,9 @@ public class EventDirectorySteps implements En {
       ApiState apiState,
       DataOperations dataOperations,
       AssertHelpers assertHelpers,
+      EventGroupService eventGroupService,
       @Named("ENVIRONMENT_URL") String environmentUrl) {
+    this.webDriverHelpers = webDriverHelpers;
 
     When(
         "I fill EVENT ID filter by API",
@@ -86,9 +100,43 @@ public class EventDirectorySteps implements En {
         });
 
     When(
+        "I click checkbox to choose all Event results",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_CHECKBOX_EVENT_DIRECTORY);
+          webDriverHelpers.waitForPageLoaded();
+        });
+    And(
+        "I click on Bulk Actions combobox on Event Directory Page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(BULK_ACTIONS_EVENT_DIRECTORY));
+
+    And(
+        "I click on Group Events from Bulk Actions combobox on Event Directory Page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(GROUP_EVENTS_EVENT_DIRECTORY));
+    When(
+        "I navigate to the last created Event page via URL",
+        () -> {
+          String createdEventUUID = CreateNewEventSteps.newEvent.getUuid();
+          String LAST_CREATED_EVENT_PAGE_URL =
+              environmentUrl + "/sormas-webdriver/#!events/data/" + createdEventUUID;
+          webDriverHelpers.accessWebSite(LAST_CREATED_EVENT_PAGE_URL);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 50);
+          TimeUnit.SECONDS.sleep(5);
+        });
+
+    When(
         "^I click on ([^\"]*) Radiobutton on Event Directory Page$",
         (String buttonName) -> {
           webDriverHelpers.clickWebElementByText(EVENTS_RADIO_BUTTON, buttonName);
+          webDriverHelpers.waitForPageLoaded();
+        });
+    When(
+        "I check that data of linked group is correct",
+        () -> {
+          EventGroup createdGroup = EditEventSteps.groupEvent;
+          EventGroup collectedGroup = collectEventGroup();
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              collectedGroup, createdGroup, List.of("name"));
           webDriverHelpers.waitForPageLoaded();
         });
 
@@ -164,6 +212,13 @@ public class EventDirectorySteps implements En {
           String disease = DiseasesValues.getRandomDiseaseCaption();
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(FILTER_BY_DISEASE, disease);
+        });
+    When(
+        "I filter by last created group in Event Directory Page",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.fillInWebElement(
+              By.id("freeTextEventGroups"), EditEventSteps.groupEvent.getUuid());
         });
 
     When(
@@ -306,6 +361,13 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
           TimeUnit.SECONDS.sleep(10);
         });
+    When(
+        "I hover to Event Groups column of the Event result",
+        () -> {
+          webDriverHelpers.scrollToElement(GROUP_ID_COLUMN);
+          webDriverHelpers.hoverToElement(GROUP_ID_COLUMN);
+          TimeUnit.SECONDS.sleep(10);
+        });
 
     When(
         "I click on the RESET FILTERS button from Event",
@@ -318,9 +380,19 @@ public class EventDirectorySteps implements En {
         });
 
     When(
-        "I click on the created event participant from the list",
+        "I click on the More button on Event directory page",
         () ->
-          webDriverHelpers.clickOnWebElementBySelector(CREATED_PARTICIPANT));
+          webDriverHelpers.clickOnWebElementBySelector(MORE_BUTTON_EVENT_DIRECTORY)
+        );
+    When(
+        "I click Enter Bulk Edit Mode on Event directory page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ENTER_BULK_EDIT_MODE_EVENT_DIRECTORY);
+          webDriverHelpers.waitForPageLoaded();
+        });
+    When(
+        "I click on the created event participant from the list",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CREATED_PARTICIPANT));
 
     When(
         "I click on New Task from event tab",
@@ -354,5 +426,11 @@ public class EventDirectorySteps implements En {
                             webDriverHelpers.getTextFromPresentWebElement(TOTAL_EVENTS_COUNTER)),
                         number.intValue(),
                         "Number of displayed cases is not correct")));
+  }
+
+  private EventGroup collectEventGroup() {
+    return EventGroup.builder()
+        .name(webDriverHelpers.getWebElement(GROUP_ID_COLUMN).getAttribute("title"))
+        .build();
   }
 }

@@ -72,6 +72,13 @@ public class EventDirectoryPage {
   public static final By CREATE_CASE_BUTTON =
       By.xpath("//td//span[contains(@class, 'v-icon-edit')]");
   public static final By TOTAL_EVENTS_COUNTER = By.cssSelector(".badge");
+  public static final By MORE_BUTTON_EVENT_DIRECTORY = By.id("more");
+  public static final By ENTER_BULK_EDIT_MODE_EVENT_DIRECTORY = By.id("actionEnterBulkEditMode");
+  public static final By FIRST_CHECKBOX_EVENT_DIRECTORY =
+      By.xpath("//th[@role='columnheader']//input[@type='checkbox']/../..");
+  public static final By BULK_ACTIONS_EVENT_DIRECTORY = By.id("bulkActions-2");
+  public static final By GROUP_EVENTS_EVENT_DIRECTORY = By.id("bulkActions-7");
+  public static final By GROUP_ID_COLUMN = By.xpath("(//td//a)[2]");
 
   public static By getByEventUuid(String eventUuid) {
     return By.xpath(String.format("//a[@title='%s']", eventUuid));
