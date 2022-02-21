@@ -43,6 +43,16 @@ public class InfoProvider {
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
+
+		try (InputStream fis = InfoProvider.class.getResourceAsStream("/git.properties")) {
+
+			Properties prop = new Properties();
+			prop.load(fis);
+			this.commitShortId = prop.getProperty("git.commit.id.abbrev");
+			this.commitHistoryUrl = prop.getProperty("git.remote.origin.url").replace(".git", "/commits/") + prop.getProperty("git.commit.id.full");
+		} catch (IOException e) {
+			throw new UncheckedIOException(e);
+		}
 	}
 
 	public static synchronized InfoProvider get() {
