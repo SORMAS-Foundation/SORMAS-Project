@@ -235,23 +235,6 @@ Feature: Create events
     And I select Dropped filter from quick filter
     And I click on the RESET FILTERS button from Event
 
-  @issue=SORDEV-5571
-  Scenario: Event group screen using Group Id in grid
-    Given API: I create a new event
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given I log in with National User
-    And I click on the Events button from navbar
-    And I fill EVENT ID filter by API
-    And I apply on the APPLY FILTERS button from Event
-    And I open the first event from events list
-    And I click on Link Event button on Edit Event Page
-    And I click on first Event Group on the list in Link Event form
-    And I click on SAVE button in Link Event to group form
-    And I click on the Events button from navbar
-    And I click on Group Id in Events result on Event Directory Page
-    And I click on Unlink Event button on Event Directory Page
-
   @issue=SORDEV-5570
   Scenario: Testing Event screen Impact
     Given API: I create a new event
