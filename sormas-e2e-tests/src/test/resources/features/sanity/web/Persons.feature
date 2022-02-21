@@ -2,6 +2,8 @@
 
 @env_main
 Feature: Edit Persons
+
+  @env_main
   Scenario: Edit existent person
     Given I log in with National User
     When I click on the Contacts button from navbar
