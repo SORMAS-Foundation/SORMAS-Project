@@ -22,6 +22,7 @@ import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.TimeUnit;
 
+import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -60,11 +61,21 @@ public class PatientDiaryClient {
 	public static final String MOBILE_PHONE_QUERY_PARAM = "Mobile phone";
 
 	private static final String PATIENT_DIARY_KEY = "patientDiary";
-	private static final Cache<String, String> backendAuthTokenCache = CacheBuilder.newBuilder().expireAfterWrite(6, TimeUnit.HOURS).build();
-	private static final Cache<String, String> frontendAuthTokenCache = CacheBuilder.newBuilder().expireAfterWrite(6, TimeUnit.HOURS).build();
+	private Cache<String, String> backendAuthTokenCache;
+	private Cache<String, String> frontendAuthTokenCache;
 
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+
+	@PostConstruct
+	private void init() {
+		backendAuthTokenCache = CacheBuilder.newBuilder()
+			.expireAfterWrite(configFacade.getPatientDiaryConfig().getTokenLifetime().getSeconds(), TimeUnit.SECONDS)
+			.build();
+		frontendAuthTokenCache = CacheBuilder.newBuilder()
+			.expireAfterWrite(configFacade.getPatientDiaryConfig().getTokenLifetime().getSeconds(), TimeUnit.SECONDS)
+			.build();
+	}
 
 	/**
 	 * Attempts to register a new patient in the CLIMEDO patient diary.

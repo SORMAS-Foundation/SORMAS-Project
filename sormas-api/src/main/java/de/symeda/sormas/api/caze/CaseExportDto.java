@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.api.caze;
 
-import de.symeda.sormas.api.utils.HideForCountries;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -62,6 +61,7 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -1640,7 +1640,9 @@ public class CaseExportDto implements Serializable {
 		CaseDataDto.PERSON,
 		PersonDto.EDUCATION_TYPE })
 	@ExportGroup(ExportGroupType.PERSON)
-	@HideForCountries(countries = {CountryHelper.COUNTRY_CODE_GERMANY, CountryHelper.COUNTRY_CODE_FRANCE})
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_GERMANY,
+		CountryHelper.COUNTRY_CODE_FRANCE })
 	public EducationType getEducationType() {
 		return educationType;
 	}
@@ -1902,7 +1904,7 @@ public class CaseExportDto implements Serializable {
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_MANAGEMENT })
 	@ExportProperty(CaseDataDto.HEALTH_CONDITIONS)
-	@ExportGroup(ExportGroupType.CASE_MANAGEMENT)
+	@ExportGroup(ExportGroupType.CLINICAL_COURSE)
 	public HealthConditionsDto getHealthConditions() {
 		return healthConditions;
 	}
@@ -1911,7 +1913,7 @@ public class CaseExportDto implements Serializable {
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_MANAGEMENT })
 	@ExportProperty(NUMBER_OF_PRESCRIPTIONS)
-	@ExportGroup(ExportGroupType.CASE_MANAGEMENT)
+	@ExportGroup(ExportGroupType.THERAPY)
 	public int getNumberOfPrescriptions() {
 		return numberOfPrescriptions;
 	}
@@ -1920,7 +1922,7 @@ public class CaseExportDto implements Serializable {
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_MANAGEMENT })
 	@ExportProperty(NUMBER_OF_TREATMENTS)
-	@ExportGroup(ExportGroupType.CASE_MANAGEMENT)
+	@ExportGroup(ExportGroupType.THERAPY)
 	public int getNumberOfTreatments() {
 		return numberOfTreatments;
 	}
@@ -1929,7 +1931,7 @@ public class CaseExportDto implements Serializable {
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_MANAGEMENT })
 	@ExportProperty(NUMBER_OF_CLINICAL_VISITS)
-	@ExportGroup(ExportGroupType.CASE_MANAGEMENT)
+	@ExportGroup(ExportGroupType.CLINICAL_COURSE)
 	public int getNumberOfClinicalVisits() {
 		return numberOfClinicalVisits;
 	}

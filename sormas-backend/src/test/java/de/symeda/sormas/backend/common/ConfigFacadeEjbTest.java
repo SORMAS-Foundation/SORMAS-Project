@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.common;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.junit.Assert.fail;
@@ -28,6 +29,8 @@ import org.mockito.Mockito;
 import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
+
+import java.time.Duration;
 
 public class ConfigFacadeEjbTest extends AbstractBeanTest {
 
@@ -114,5 +117,29 @@ public class ConfigFacadeEjbTest extends AbstractBeanTest {
 		assertThat(ConfigFacadeEjb.normalizeLocaleString("En"), is("en"));
 		assertThat(ConfigFacadeEjb.normalizeLocaleString("en-CA"), is("en-CA"));
 		assertThat(ConfigFacadeEjb.normalizeLocaleString("en-cA"), is("en-CA"));
+	}
+
+	@Test
+	/*
+	 * If you need to change this test to make it pass, you probably changed the behaviour of the ExternalVisitsResource.
+	 * Please note that other system used alongside with SORMAS are depending on this, so that their developers must be notified of any
+	 * relevant API changes some time before they go into any test and productive system. Please inform the SORMAS core development team at
+	 * https://gitter.im/SORMAS-Project!
+	 */
+	public void testPatientDiaryConfigTokenLifetime() {
+		// property not specified
+		assertThat(getConfigFacade().getPatientDiaryConfig().getTokenLifetime(), equalTo(Duration.ofSeconds(21600L)));
+
+		// property specifies empty value
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_TOKEN_LIFETIME, "");
+		assertThat(getConfigFacade().getPatientDiaryConfig().getTokenLifetime(), equalTo(Duration.ofSeconds(21600L)));
+
+		// property specifies zero
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_TOKEN_LIFETIME, "0");
+		assertThat(getConfigFacade().getPatientDiaryConfig().getTokenLifetime(), equalTo(Duration.ofSeconds(0L)));
+
+		// property specifies value > 0
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_TOKEN_LIFETIME, "666");
+		assertThat(getConfigFacade().getPatientDiaryConfig().getTokenLifetime(), equalTo(Duration.ofSeconds(666L)));
 	}
 }
