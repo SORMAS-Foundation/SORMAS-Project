@@ -381,5 +381,3 @@ Feature: Case end to end tests
     And I navigate to the last created through API Event page via URL
     And I check that number of displayed Event Participants is 1
 
-    
-
