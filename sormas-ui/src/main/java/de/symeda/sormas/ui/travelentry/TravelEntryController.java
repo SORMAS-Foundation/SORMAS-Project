@@ -255,7 +255,7 @@ public class TravelEntryController {
 	public void deleteAllSelectedItems(Collection<TravelEntryIndexDto> selectedRows, Runnable callback) {
 		if (selectedRows.size() == 0) {
 			new Notification(
-				I18nProperties.getString(Strings.headingNoTravelEntrySelected),
+				I18nProperties.getString(Strings.headingNoTravelEntriesSelected),
 				I18nProperties.getString(Strings.messageNoTravelEntriesSelected),
 				Notification.Type.WARNING_MESSAGE,
 				false).show(Page.getCurrent());
@@ -268,7 +268,7 @@ public class TravelEntryController {
 					}
 					callback.run();
 					new Notification(
-						I18nProperties.getString(Strings.headingTravelEntryDeleted),
+						I18nProperties.getString(Strings.headingTravelEntriesDeleted),
 						I18nProperties.getString(Strings.messageTravelEntriesDeleted),
 						Notification.Type.HUMANIZED_MESSAGE,
 						false).show(Page.getCurrent());

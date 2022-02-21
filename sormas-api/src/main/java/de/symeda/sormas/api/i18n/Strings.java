@@ -576,7 +576,7 @@ public interface Strings {
 	String headingNoRowsSelected = "headingNoRowsSelected";
 	String headingNoSamplesSelected = "headingNoSamplesSelected";
 	String headingNoTasksSelected = "headingNoTasksSelected";
-	String headingNoTravelEntrySelected = "headingNoTravelEntrySelected";
+	String headingNoTravelEntriesSelected = "headingNoTravelEntriesSelected";
 	String headingNoTreatmentsSelected = "headingNoTreatmentsSelected";
 	String headingNoUsersSelected = "headingNoUsersSelected";
 	String headingNoVisitsSelected = "headingNoVisitsSelected";
@@ -645,8 +645,8 @@ public interface Strings {
 	String headingTemplateNotAvailable = "headingTemplateNotAvailable";
 	String headingTests = "headingTests";
 	String headingTransferCase = "headingTransferCase";
+	String headingTravelEntriesDeleted = "headingTravelEntriesDeleted";
 	String headingTravelEntryData = "headingTravelEntryData";
-	String headingTravelEntryDeleted = "headingTravelEntryDeleted";
 	String headingTreatments = "headingTreatments";
 	String headingTreatmentsDeleted = "headingTreatmentsDeleted";
 	String headingUnavailableTaskEdition = "headingUnavailableTaskEdition";
