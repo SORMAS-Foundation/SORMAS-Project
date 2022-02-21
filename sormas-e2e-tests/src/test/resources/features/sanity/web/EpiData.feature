@@ -1,7 +1,7 @@
 @UI @Contacts @Epidata
 Feature: Cover Epidemiological data Tab from Contacts
 
-  @Locale_DE
+  @env_main
   Scenario: Cover Epidemiological data Tab from Contacts
     When API: I create a new person
     Then API: I check that POST call body is "OK"

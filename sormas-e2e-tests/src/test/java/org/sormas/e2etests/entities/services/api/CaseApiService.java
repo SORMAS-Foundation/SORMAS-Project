@@ -45,6 +45,7 @@ import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.enums.UserRoles;
 import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 
 public class CaseApiService {
@@ -65,7 +66,7 @@ public class CaseApiService {
         .reportDate(new Date())
         .reportingUser(
             ReportingUser.builder()
-                .uuid(environmentManager.getUserByRole(locale, "Rest AUTOMATION").getUuid())
+                .uuid(environmentManager.getUserByRole(locale, UserRoles.RestUser.getRole()).getUuid())
                 .build())
         .district(
             District.builder().uuid(DistrictsValues.VoreingestellterLandkreis.getUuid()).build())
@@ -110,7 +111,7 @@ public class CaseApiService {
                 .build())
         .surveillanceOfficer(
             SurveillanceOfficer.builder()
-                .uuid(environmentManager.getUserByRole(locale, "Surveillance Officer").getUuid())
+                .uuid(environmentManager.getUserByRole(locale, UserRoles.SurveillanceOfficer.getRole()).getUuid())
                 .build())
         .healthFacilityDetails("Details")
         .caseOrigin("IN_COUNTRY")

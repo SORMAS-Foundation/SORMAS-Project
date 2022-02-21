@@ -1,13 +1,13 @@
 @Sanity  @API
 Feature: Check basic POSTs RestApi endpoints
 
-  @Locale_DE
+  @env_main
   Scenario: Create a new person
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
 
-  @Locale_DE
+  @env_main
   Scenario: Create new case
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -16,7 +16,7 @@ Feature: Check basic POSTs RestApi endpoints
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
 
-  @Locale_DE
+  @env_main
   Scenario: Create a new contact
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -25,7 +25,7 @@ Feature: Check basic POSTs RestApi endpoints
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
 
-  @Locale_DE
+  @env_main
   Scenario: Create a new contact linked to a case
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -37,13 +37,13 @@ Feature: Check basic POSTs RestApi endpoints
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
 
-  @Locale_DE
+  @env_main
   Scenario: Create a new event
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
 
-  @Locale_DE
+  @env_main
   Scenario: Create a new sample
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -55,7 +55,7 @@ Feature: Check basic POSTs RestApi endpoints
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
 
-  @Locale_DE
+  @env_main
   Scenario: Create a new task
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -67,7 +67,7 @@ Feature: Check basic POSTs RestApi endpoints
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
 
-  @Locale_DE
+  @env_main
   Scenario Outline: Create Person and attach <numberOfImmunizations> immunizations
     Given API: I create a new person
     Then API: I check that POST call body is "OK"

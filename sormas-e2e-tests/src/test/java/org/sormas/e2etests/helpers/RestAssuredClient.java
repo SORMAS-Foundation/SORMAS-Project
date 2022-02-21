@@ -35,6 +35,7 @@ import javax.inject.Named;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.entities.pojo.api.Request;
+import org.sormas.e2etests.enums.UserRoles;
 import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.state.ApiState;
 
@@ -73,8 +74,8 @@ public class RestAssuredClient {
             .auth()
             .preemptive()
             .basic(
-                environmentManager.getUserByRole(locale, "Rest AUTOMATION").getUsername(),
-                environmentManager.getUserByRole(locale, "Rest AUTOMATION").getPassword());
+                environmentManager.getUserByRole(locale, UserRoles.RestUser.getRole()).getUsername(),
+                environmentManager.getUserByRole(locale, UserRoles.RestUser.getRole()).getPassword());
 
     return requestSpecification
         .config(

@@ -1,7 +1,7 @@
 @UI @Sanity @Login
 Feature: Login with different type of users
 
-  @Locale_DE
+  @env_main
   Scenario Outline: Login with <user> user
     Given I navigate to SORMAS login page
     Then I log in as a <user>

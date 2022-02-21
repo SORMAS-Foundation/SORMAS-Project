@@ -21,6 +21,7 @@ import org.sormas.e2etests.enums.ContactOutcome;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.enums.UserRoles;
 import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
@@ -139,7 +140,7 @@ public class CaseDetailedTableViewSteps implements En {
           }
           softly.assertEquals(
               detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.REPORTING_USER.toString()),
-              environmentManager.getUserByRole(locale, "Rest AUTOMATION").getUserRole(),
+              environmentManager.getUserByRole(locale, UserRoles.RestUser.getRole()).getUserRole(),
               "Reporting user is not correct");
           softly.assertAll();
         });

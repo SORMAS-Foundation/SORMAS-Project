@@ -100,7 +100,7 @@ public class BaseSteps implements StepLifecycleListener {
   private void setLocale(Scenario scenario) {
     String localeTag =
         scenario.getSourceTagNames().stream()
-            .filter(value -> value.contains("Locale"))
+            .filter(value -> value.startsWith("@env"))
             .findFirst()
             .get();
     int indexOfSubstring = localeTag.indexOf("_");

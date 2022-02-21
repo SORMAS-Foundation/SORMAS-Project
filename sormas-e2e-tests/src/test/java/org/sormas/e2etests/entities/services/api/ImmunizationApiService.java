@@ -30,6 +30,7 @@ import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.enums.UserRoles;
 import org.sormas.e2etests.enums.immunizations.ImmunizationManagementStatusValues;
 import org.sormas.e2etests.enums.immunizations.MeansOfImmunizationValues;
 import org.sormas.e2etests.enums.immunizations.StatusValues;
@@ -59,7 +60,7 @@ public class ImmunizationApiService {
         .startDate(Calendar.getInstance().getTimeInMillis())
         .endDate(Calendar.getInstance().getTimeInMillis())
         .externalId(faker.number().digits(9))
-        .reportingUser(environmentManager.getUserByRole(locale, "National User").getUuid())
+        .reportingUser(environmentManager.getUserByRole(locale, UserRoles.NationalUser.getRole()).getUuid())
         .archived(false)
         .disease(DiseasesValues.getRandomDiseaseName())
         .immunizationStatus(StatusValues.getRandomImmunizationStatus())

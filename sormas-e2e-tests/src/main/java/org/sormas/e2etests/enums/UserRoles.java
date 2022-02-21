@@ -15,23 +15,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.envconfig.dto;
 
-import java.util.List;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.Value;
+package org.sormas.e2etests.enums;
 
-@Value
-@AllArgsConstructor
-@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
-@Builder(toBuilder = true, builderClassName = "builder")
-public class Environment {
+import lombok.Getter;
 
-  String name;
-  String identifier;
-  String url;
-  List<EnvUser> users;
+@Getter
+public enum UserRoles {
+  NationalUser("National User"),
+  ContactSupervisor("Contact Supervisor"),
+  SurveillanceOfficer("Surveillance Officer"),
+  LaboratoryOfficer("Laboratory Officer"),
+  POESupervisor("Point of Entry Supervisor"),
+  AdminUser("Admin User"),
+  RestUser("Rest AUTOMATION");
+
+  private final String role;
+
+  UserRoles(String role) {
+    this.role = role;
+  }
+
+  @Override
+  public String toString() {
+    return this.role;
+  }
 }

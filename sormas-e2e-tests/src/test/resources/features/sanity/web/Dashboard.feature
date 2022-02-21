@@ -1,7 +1,7 @@
 @UI @Sanity @Dashboard @#7472
 Feature: Dashboard counters
 
-  @Locale_DE
+  @env_main
   Scenario: Check disease and new cases counter in Surveillance Dashboard
     Given I log in with National User
     When I click on the Dashboard button from navbar and access Surveillance Dashboard
@@ -18,7 +18,7 @@ Feature: Dashboard counters
     When I select "COVID-19" in TabSheet of Surveillance Dashboard
     Then I check that previous saved Surveillance Dashboard counters for COVID-19 have been increment
 
-  @Locale_DE
+  @env_main
   Scenario: Check contacts counter in Contacts Dashboard
     Given I log in with National User
     When I click on the Dashboard button from navbar and access Contacts Dashboard

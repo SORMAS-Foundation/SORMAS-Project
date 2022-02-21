@@ -31,6 +31,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.entities.pojo.web.EventActionTableEntry;
+import org.sormas.e2etests.enums.UserRoles;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
@@ -90,7 +91,7 @@ public class EventActionsTableSteps implements En {
               "Priority is not correct");
           softly.assertEquals(
               eventActionTableEntry.getActionLastModifiedBy(),
-              "National USER",
+                  UserRoles.NationalUser.getRole(),
               "Last modified by user is not correct");
           softly.assertAll();
         });

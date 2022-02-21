@@ -40,22 +40,22 @@ public class EnvironmentManager {
   }
 
   @SneakyThrows
-  public String getEnvironmentUrlForMarket(String market) {
+  public String getEnvironmentUrlForMarket(String identifier) {
     try {
       return environments.getEnvironments().stream()
-          .filter(env -> env.getLocale().equalsIgnoreCase(market))
+          .filter(env -> env.getIdentifier().equalsIgnoreCase(identifier))
           .findFirst()
           .get()
           .getUrl();
     } catch (NullPointerException e) {
-      throw new Exception(String.format("Unable to get Environment for market: %s", market));
+      throw new Exception(String.format("Unable to get Environment for market: %s", identifier));
     }
   }
 
   @SneakyThrows
-  public EnvUser getUserByRole(String market, String role) {
+  public EnvUser getUserByRole(String identifier, String role) {
     try {
-      List<EnvUser> users = getEnvironment(market).getUsers();
+      List<EnvUser> users = getEnvironment(identifier).getUsers();
       return users.stream()
           .filter(user -> user.getUserRole().equalsIgnoreCase(role))
           .findFirst()
@@ -63,13 +63,13 @@ public class EnvironmentManager {
     } catch (NullPointerException e) {
       throw new Exception(
           String.format(
-              "Unable to get Environment User for market: %s, and role: %s", market, role));
+              "Unable to get Environment User for market: %s, and role: %s", identifier, role));
     }
   }
 
-  private Environment getEnvironment(String market) {
+  private Environment getEnvironment(String identifier) {
     return environments.getEnvironments().stream()
-        .filter(env -> env.getLocale().equalsIgnoreCase(market))
+        .filter(env -> env.getIdentifier().equalsIgnoreCase(identifier))
         .findFirst()
         .get();
   }

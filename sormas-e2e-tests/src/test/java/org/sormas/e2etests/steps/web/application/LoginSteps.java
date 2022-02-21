@@ -24,6 +24,7 @@ import static org.sormas.e2etests.steps.BaseSteps.locale;
 import com.google.inject.Inject;
 import cucumber.api.java8.En;
 import org.openqa.selenium.NoSuchElementException;
+import org.sormas.e2etests.enums.UserRoles;
 import org.sormas.e2etests.envconfig.dto.EnvUser;
 import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
@@ -61,7 +62,7 @@ public class LoginSteps implements En {
     And(
         "I log in with National User",
         () -> {
-          EnvUser user = environmentManager.getUserByRole(locale, "National User");
+          EnvUser user = environmentManager.getUserByRole(locale, UserRoles.NationalUser.getRole());
           webDriverHelpers.accessWebSite(environmentManager.getEnvironmentUrlForMarket(locale));
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(LoginPage.USER_NAME_INPUT);
