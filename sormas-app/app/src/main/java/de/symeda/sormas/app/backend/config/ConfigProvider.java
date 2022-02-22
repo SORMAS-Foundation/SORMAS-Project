@@ -130,6 +130,8 @@ public final class ConfigProvider {
 		this.context = context;
 	}
 
+
+
 	private boolean hasDeviceEncryption() {
 
 		// Device encryption is no longer used, because it's not reliably implemented
@@ -310,6 +312,15 @@ public final class ConfigProvider {
 
 			setRepullNeeded(true);
 		}
+	}
+	public static void setNewPassword(String password) {
+		if (password == null)
+			throw new NullPointerException("password");
+		password = instance.encodeCredential(password, "Password");
+
+		instance.password = password;
+		DatabaseHelper.getConfigDao().createOrUpdate(new Config(KEY_PASSWORD, password));
+
 	}
 
 	public static void setPin(String pin) {
