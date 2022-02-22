@@ -50,6 +50,20 @@ public interface UserFacade {
 
 	String resetPassword(String uuid);
 
+	String updatePassword(String uuid, String password);
+
+	String updateUserPassword(String uuid, String newPassword, String currentPassword);
+
+	List<String> changeUserPassword(String uuid, String password);
+
+	boolean validatePassword(String uuid, String password);
+
+	boolean validatePasswordPattern(String password);
+
+	String checkPasswordStrength(String password);
+
+	String generatePassword();
+
 	List<UserDto> getAllAfter(Date date);
 
 	UserDto getByUserName(String userName);
