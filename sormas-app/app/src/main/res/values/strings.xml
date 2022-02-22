@@ -41,7 +41,6 @@
     <string name="action_strength_password">Password Strength</string>
     <string name="action_cancel">Cancel</string>
     <string name="action_change_PIN">Change PIN</string>
-    <string name="action_change_password">Change Password</string>
     <string name="action_change_settings"><u>Change Settings</u></string>
     <string name="action_clear">Clear</string>
     <string name="action_clear_all">Clear All</string>
