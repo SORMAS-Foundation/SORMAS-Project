@@ -68,6 +68,7 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -275,6 +276,7 @@ public class LabMessageController {
 			showAlreadyProcessedPopup(null, false);
 			return;
 		}
+		boolean personSearchActive = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.PERSON_DUPLICATE_CUSTOM_SEARCH);
 		ControllerProvider.getPersonController()
 			.selectOrCreatePerson(personDto, I18nProperties.getString(Strings.infoSelectOrCreatePersonForLabMessage), selectedPerson -> {
 				if (FacadeProvider.getLabMessageFacade().isProcessed(labMessage.getUuid())) {
@@ -310,7 +312,10 @@ public class LabMessageController {
 
 					pickOrCreateEntry(labMessage, similarCases, similarContacts, similarEventParticipants, selectedPersonDto);
 				}
-			}, false);
+			},
+				false,
+				personSearchActive,
+				personSearchActive ? I18nProperties.getString(Strings.infoSelectOrCreatePersonForLabMessageWithoutMatches) : null);
 	}
 
 	private void pickOrCreateEntry(
@@ -484,7 +489,7 @@ public class LabMessageController {
 		EventParticipantDto eventParticipant = buildEventParticipant(eventDto, person);
 		Window window = VaadinUiUtil.createPopupWindow();
 		final CommitDiscardWrapperComponent<EventParticipantEditForm> createComponent =
-			getEventParticipantEditForm(eventDto, labMessageDto, eventParticipant, window);
+			getEventParticipantEditForm(eventDto, labMessageDto, eventParticipant, window, false);
 		showFormWithLabMessage(labMessageDto, createComponent, window, I18nProperties.getString(Strings.headingCreateNewEventParticipant), false);
 	}
 
@@ -492,8 +497,10 @@ public class LabMessageController {
 		EventDto eventDto,
 		LabMessageDto labMessageDto,
 		EventParticipantDto eventParticipant,
-		Window window) {
-		EventParticipantEditForm createForm = new EventParticipantEditForm(eventDto, false, eventParticipant.getPerson().isPseudonymized(), true);
+		Window window,
+		boolean showPersonSearchButton) {
+		EventParticipantEditForm createForm =
+			new EventParticipantEditForm(eventDto, false, eventParticipant.getPerson().isPseudonymized(), showPersonSearchButton);
 		createForm.setValue(eventParticipant);
 		final CommitDiscardWrapperComponent<EventParticipantEditForm> createComponent = new CommitDiscardWrapperComponent<>(
 			createForm,

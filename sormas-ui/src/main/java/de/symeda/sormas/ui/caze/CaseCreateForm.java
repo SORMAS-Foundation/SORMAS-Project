@@ -127,6 +127,7 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 	private Button searchPersonButton;
 
 	private final boolean showHomeAddressForm;
+	private final boolean showPersonSearchButton;
 
 	// If a case is created form a TravelEntry, the variable convertedTravelEntry provides the
 	// necessary extra data. This variable is expected to be replaced in the implementation of
@@ -134,7 +135,7 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 	private final TravelEntryDto convertedTravelEntry;
 
 	//@formatter:off
-    private static final String HTML_LAYOUT = fluidRowLocs(CaseDataDto.CASE_ORIGIN, "")
+    private static final String HTML_LAYOUT_PART_1 = fluidRowLocs(CaseDataDto.CASE_ORIGIN, "")
         + fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.EPID_NUMBER, CaseDataDto.EXTERNAL_ID)
         + fluidRow(
         fluidColumnLoc(6, 0, CaseDataDto.DISEASE),
@@ -154,9 +155,10 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
         + fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS)
         + fluidRowLocs(DIFFERENT_POINT_OF_ENTRY_JURISDICTION)
         + fluidRowLocs(POINT_OF_ENTRY_REGION, POINT_OF_ENTRY_DISTRICT)
-        + fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS)
-        + fluidRowLocs(6, PersonDto.FIRST_NAME, 4, PersonDto.LAST_NAME, 2, PERSON_SEARCH_LOC)
-        + fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
+        + fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS);
+	private static final String HTML_LAYOUT_PART_2_WITH_PERSON_SEARCH = fluidRowLocs(6, PersonDto.FIRST_NAME, 4, PersonDto.LAST_NAME, 2, PERSON_SEARCH_LOC);
+	private static final String HTML_LAYOUT_PART_2_WITHOUT_PERSON_SEARCH = fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME);
+	private static final String HTML_LAYOUT_PART_3 = fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
         fluidRowLocs(PersonDto.SEX))
         + fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER)
         + fluidRowLocs(PersonDto.PRESENT_CONDITION, SymptomsDto.ONSET_DATE)
@@ -167,14 +169,14 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
     //@formatter:on
 
 	public CaseCreateForm() {
-		this(true, null);
+		this(true, true, null);
 	}
 
 	public CaseCreateForm(TravelEntryDto convertedTravelEntry) {
-		this(false, convertedTravelEntry);
+		this(false, true, convertedTravelEntry);
 	}
 
-	private CaseCreateForm(Boolean showHomeAddressForm, TravelEntryDto convertedTravelEntry) {
+	CaseCreateForm(Boolean showHomeAddressForm, Boolean showPersonSearchButton, TravelEntryDto convertedTravelEntry) {
 		super(
 			CaseDataDto.class,
 			CaseDataDto.I18N_PREFIX,
@@ -183,6 +185,7 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 			UiFieldAccessCheckers.getNoop());
 		this.convertedTravelEntry = convertedTravelEntry;
 		this.showHomeAddressForm = showHomeAddressForm;
+		this.showPersonSearchButton = showPersonSearchButton;
 		addFields();
 		setWidth(720, Unit.PIXELS);
 		hideValidationUntilNextCommit();
@@ -220,8 +223,10 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 		addCustomField(PersonDto.FIRST_NAME, String.class, TextField.class);
 		addCustomField(PersonDto.LAST_NAME, String.class, TextField.class);
 
-		searchPersonButton = createPersonSearchButton(PERSON_SEARCH_LOC);
-		getContent().addComponent(searchPersonButton, PERSON_SEARCH_LOC);
+		if (showPersonSearchButton) {
+			searchPersonButton = createPersonSearchButton(PERSON_SEARCH_LOC);
+			getContent().addComponent(searchPersonButton, PERSON_SEARCH_LOC);
+		}
 
 		TextField nationalHealthIdField = addCustomField(PersonDto.NATIONAL_HEALTH_ID, String.class, TextField.class);
 		TextField passportNumberField = addCustomField(PersonDto.PASSPORT_NUMBER, String.class, TextField.class);
@@ -916,6 +921,12 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 
 	@Override
 	protected String createHtmlLayout() {
-		return HTML_LAYOUT;
+		String layout = HTML_LAYOUT_PART_1;
+		if (showPersonSearchButton) {
+			layout += HTML_LAYOUT_PART_2_WITH_PERSON_SEARCH;
+		} else {
+			layout += HTML_LAYOUT_PART_2_WITHOUT_PERSON_SEARCH;
+		}
+		return layout + HTML_LAYOUT_PART_3;
 	}
 }

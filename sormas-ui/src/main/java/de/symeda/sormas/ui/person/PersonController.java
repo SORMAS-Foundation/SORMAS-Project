@@ -80,13 +80,23 @@ public class PersonController {
 	}
 
 	public void selectOrCreatePerson(final PersonDto person, String infoText, Consumer<PersonReferenceDto> resultConsumer, boolean saveNewPerson) {
+		selectOrCreatePerson(person, infoText, resultConsumer, saveNewPerson, false, null);
+	}
+
+	public void selectOrCreatePerson(
+		final PersonDto person,
+		String infoText,
+		Consumer<PersonReferenceDto> resultConsumer,
+		boolean saveNewPerson,
+		boolean showWithoutMatches,
+		String infoTextWithoutMatches) {
 		// This builds a selection field for all potential similar persons if any.
 		// The user can choose to merge or create a new person in case there is a similar person in the system.
-		PersonSelectionField personSelect = new PersonSelectionField(person, infoText);
+		PersonSelectionField personSelect = new PersonSelectionField(person, infoText, infoTextWithoutMatches);
 		personSelect.setWidth(1024, Unit.PIXELS);
 
 		// check if we have duplicate persons for the given PersonDto
-		if (personSelect.hasMatches()) {
+		if (personSelect.hasMatches() || showWithoutMatches) {
 			// if yes give the user the chance to pick or create a new one.
 			// TODO add user right parameter
 			final CommitDiscardWrapperComponent<PersonSelectionField> component =

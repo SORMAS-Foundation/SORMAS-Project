@@ -77,31 +77,35 @@ public class ContactCreateForm extends PersonDependentEditForm<ContactDto> {
 	private static final String REMOVE_CASE_LOC = "removeCaseLoc";
 
 	//@formatter:off
-	private static final String HTML_LAYOUT =
-			LayoutUtil.loc(PERSON_NAME_LOC) +
-			LayoutUtil.fluidRowLocs(6, PersonDto.FIRST_NAME, 4, PersonDto.LAST_NAME, 2, PERSON_SEARCH_LOC) +
+	private static final String HTML_LAYOUT_PART_1 =
+			LayoutUtil.loc(PERSON_NAME_LOC);
+	private static final String HTML_LAYOUT_PART_2_WITH_PERSON_SEARCH =
+			fluidRowLocs(6, PersonDto.FIRST_NAME, 4, PersonDto.LAST_NAME, 2, PERSON_SEARCH_LOC);
+	private static final String HTML_LAYOUT_PART_2_WITHOUT_PERSON_SEARCH =
+			fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME);
+	private static final String HTML_LAYOUT_PART_3 =
 					LayoutUtil.fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
 							fluidRowLocs(PersonDto.SEX)) +
-					LayoutUtil.fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER) +
-					LayoutUtil.fluidRowLocs(PersonDto.PHONE, PersonDto.EMAIL_ADDRESS) +
-					LayoutUtil.fluidRowLocs(ContactDto.RETURNING_TRAVELER) +
-					LayoutUtil.fluidRowLocs(ContactDto.REPORT_DATE_TIME, ContactDto.DISEASE) +
-					LayoutUtil.fluidRowLocs(ContactDto.DISEASE_DETAILS) +
-					LayoutUtil.fluidRowLocs(6, CASE_INFO_LOC, 3, CHOOSE_CASE_LOC, 3, REMOVE_CASE_LOC) +
-					LayoutUtil.fluidRowLocs(ContactDto.CASE_ID_EXTERNAL_SYSTEM) +
-					LayoutUtil.fluidRowLocs(ContactDto.MULTI_DAY_CONTACT) +
+					fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER) +
+					fluidRowLocs(PersonDto.PHONE, PersonDto.EMAIL_ADDRESS) +
+					fluidRowLocs(ContactDto.RETURNING_TRAVELER) +
+					fluidRowLocs(ContactDto.REPORT_DATE_TIME, ContactDto.DISEASE) +
+					fluidRowLocs(ContactDto.DISEASE_DETAILS) +
+					fluidRowLocs(6, CASE_INFO_LOC, 3, CHOOSE_CASE_LOC, 3, REMOVE_CASE_LOC) +
+					fluidRowLocs(ContactDto.CASE_ID_EXTERNAL_SYSTEM) +
+					fluidRowLocs(ContactDto.MULTI_DAY_CONTACT) +
 					LayoutUtil.fluidRow(
 						LayoutUtil.fluidColumnLocCss(LAYOUT_COL_HIDE_INVSIBLE,6,0, ContactDto.FIRST_CONTACT_DATE),
 						LayoutUtil.fluidColumnLoc(6, 0, ContactDto.LAST_CONTACT_DATE)) +
-					LayoutUtil.fluidRowLocs(ContactDto.CASE_OR_EVENT_INFORMATION) +
-					LayoutUtil.fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT) +
-					LayoutUtil.fluidRowLocs(ContactDto.COMMUNITY) +
-					LayoutUtil.fluidRowLocs(ContactDto.CONTACT_PROXIMITY) +
+					fluidRowLocs(ContactDto.CASE_OR_EVENT_INFORMATION) +
+					fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT) +
+					fluidRowLocs(ContactDto.COMMUNITY) +
+					fluidRowLocs(ContactDto.CONTACT_PROXIMITY) +
 					fluidRowLocs(ContactDto.CONTACT_PROXIMITY_DETAILS) + fluidRowLocs(ContactDto.CONTACT_CATEGORY)
 					+
-					LayoutUtil.fluidRowLocs(ContactDto.RELATION_TO_CASE) +
-					LayoutUtil.fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
-					LayoutUtil.fluidRowLocs(ContactDto.DESCRIPTION);
+					fluidRowLocs(ContactDto.RELATION_TO_CASE) +
+					fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
+					fluidRowLocs(ContactDto.DESCRIPTION);
 	//@formatter:on
 
 	private NullableOptionGroup contactProximity;
@@ -112,16 +116,22 @@ public class ContactCreateForm extends PersonDependentEditForm<ContactDto> {
 	private TextField contactProximityDetails;
 	private ComboBox birthDateDay;
 	private Button searchPersonButton;
+	private final boolean showPersonSearchButton;
 
 	/**
 	 * TODO use disease and case relation information given in ContactDto
 	 */
 	public ContactCreateForm(Disease disease, boolean hasCaseRelation, boolean asSourceContact) {
+		this(disease, hasCaseRelation, asSourceContact, true);
+	}
+
+	public ContactCreateForm(Disease disease, boolean hasCaseRelation, boolean asSourceContact, boolean showPersonSearchButton) {
 		super(ContactDto.class, ContactDto.I18N_PREFIX);
 
 		this.disease = disease;
 		this.hasCaseRelation = hasCaseRelation;
 		this.asSourceContact = asSourceContact;
+		this.showPersonSearchButton = showPersonSearchButton;
 
 		addFields();
 
@@ -142,8 +152,10 @@ public class ContactCreateForm extends PersonDependentEditForm<ContactDto> {
 		TextField firstName = addCustomField(PersonDto.FIRST_NAME, String.class, TextField.class);
 		TextField lastName = addCustomField(PersonDto.LAST_NAME, String.class, TextField.class);
 
-		searchPersonButton = createPersonSearchButton(PERSON_SEARCH_LOC);
-		getContent().addComponent(searchPersonButton, PERSON_SEARCH_LOC);
+		if (showPersonSearchButton) {
+			searchPersonButton = createPersonSearchButton(PERSON_SEARCH_LOC);
+			getContent().addComponent(searchPersonButton, PERSON_SEARCH_LOC);
+		}
 
 		TextField nationalHealthIdField = addCustomField(PersonDto.NATIONAL_HEALTH_ID, String.class, TextField.class);
 		TextField passportNumberField = addCustomField(PersonDto.PASSPORT_NUMBER, String.class, TextField.class);
@@ -465,7 +477,13 @@ public class ContactCreateForm extends PersonDependentEditForm<ContactDto> {
 
 	@Override
 	protected String createHtmlLayout() {
-		return HTML_LAYOUT;
+		String layout = HTML_LAYOUT_PART_1;
+		if (showPersonSearchButton) {
+			layout += HTML_LAYOUT_PART_2_WITH_PERSON_SEARCH;
+		} else {
+			layout += HTML_LAYOUT_PART_2_WITHOUT_PERSON_SEARCH;
+		}
+		return layout + HTML_LAYOUT_PART_3;
 	}
 
 	public void setPerson(PersonDto person) {
