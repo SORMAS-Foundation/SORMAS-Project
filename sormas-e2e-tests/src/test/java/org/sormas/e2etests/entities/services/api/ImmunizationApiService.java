@@ -60,7 +60,8 @@ public class ImmunizationApiService {
         .startDate(Calendar.getInstance().getTimeInMillis())
         .endDate(Calendar.getInstance().getTimeInMillis())
         .externalId(faker.number().digits(9))
-        .reportingUser(environmentManager.getUserByRole(locale, UserRoles.NationalUser.getRole()).getUuid())
+        .reportingUser(
+            environmentManager.getUserByRole(locale, UserRoles.NationalUser.getRole()).getUuid())
         .archived(false)
         .disease(DiseasesValues.getRandomDiseaseName())
         .immunizationStatus(StatusValues.getRandomImmunizationStatus())

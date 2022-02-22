@@ -14,6 +14,3 @@ Feature: Login with different type of users
       | Laboratory Officer        |
       | Point of Entry Supervisor |
       | Surveillance Officer      |
-
-
-

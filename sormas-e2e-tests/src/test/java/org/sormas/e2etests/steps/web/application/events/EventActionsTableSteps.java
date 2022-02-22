@@ -91,7 +91,7 @@ public class EventActionsTableSteps implements En {
               "Priority is not correct");
           softly.assertEquals(
               eventActionTableEntry.getActionLastModifiedBy(),
-                  UserRoles.NationalUser.getRole(),
+              UserRoles.NationalUser.getRole(),
               "Last modified by user is not correct");
           softly.assertAll();
         });

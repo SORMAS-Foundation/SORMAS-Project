@@ -74,8 +74,12 @@ public class RestAssuredClient {
             .auth()
             .preemptive()
             .basic(
-                environmentManager.getUserByRole(locale, UserRoles.RestUser.getRole()).getUsername(),
-                environmentManager.getUserByRole(locale, UserRoles.RestUser.getRole()).getPassword());
+                environmentManager
+                    .getUserByRole(locale, UserRoles.RestUser.getRole())
+                    .getUsername(),
+                environmentManager
+                    .getUserByRole(locale, UserRoles.RestUser.getRole())
+                    .getPassword());
 
     return requestSpecification
         .config(

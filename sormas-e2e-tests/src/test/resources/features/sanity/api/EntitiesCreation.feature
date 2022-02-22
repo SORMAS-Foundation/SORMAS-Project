@@ -31,4 +31,3 @@ Feature: Create person and attach immunizations via API requests
     Then API: I create and link 2 Contacts to each case from previous created cases
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-

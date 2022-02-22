@@ -54,5 +54,3 @@ Feature: Pages loading time
     Given I log in with National User
     And I click on the Dashboard button from navbar and access Surveillance Dashboard
     Then I wait for "Surveillance Dashboard" page to load and calculate elapsed time
-
-

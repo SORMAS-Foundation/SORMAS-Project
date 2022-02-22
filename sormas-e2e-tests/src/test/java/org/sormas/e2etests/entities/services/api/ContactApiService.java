@@ -56,7 +56,10 @@ public class ContactApiService {
         .reportDateTime(new Date())
         .reportingUser(
             ReportingUser.builder()
-                .uuid(environmentManager.getUserByRole(locale, UserRoles.RestUser.getRole()).getUuid())
+                .uuid(
+                    environmentManager
+                        .getUserByRole(locale, UserRoles.RestUser.getRole())
+                        .getUuid())
                 .build())
         .district(
             District.builder()
@@ -90,7 +93,10 @@ public class ContactApiService {
         .reportDateTime(new Date())
         .reportingUser(
             ReportingUser.builder()
-                .uuid(environmentManager.getUserByRole(locale, UserRoles.RestUser.getRole()).getUuid())
+                .uuid(
+                    environmentManager
+                        .getUserByRole(locale, UserRoles.RestUser.getRole())
+                        .getUuid())
                 .build())
         .district(
             District.builder()
