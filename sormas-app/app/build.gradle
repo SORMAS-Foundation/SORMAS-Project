@@ -74,6 +74,7 @@ android {
     }
     buildFeatures {
         dataBinding true
+        viewBinding true
     }
 
     // needed for pre androidx testing. This will not make it's way into the apk
@@ -94,6 +95,12 @@ repositories {
 }
 
 dependencies {
+    implementation 'androidx.constraintlayout:constraintlayout:2.1.3'
+    implementation 'androidx.lifecycle:lifecycle-livedata-ktx:2.4.0'
+    implementation 'androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.0'
+    def lifecycle_version = "2.2.0"
+    def paging_version = "3.0.1"
+
     implementation fileTree(include: ['*.jar'], dir: 'libs')
     implementation platform('com.google.firebase:firebase-bom:32.2.0')
     implementation 'androidx.appcompat:appcompat:1.6.1'
