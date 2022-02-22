@@ -1,7 +1,6 @@
 package de.symeda.sormas.ui.utils;
 
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 
 import com.vaadin.server.Page;
@@ -18,9 +17,6 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.caze.AbstractCaseView;
-import de.symeda.sormas.ui.events.EventDataView;
 
 public class ArchivingController {
 
@@ -208,25 +204,6 @@ public class ArchivingController {
 					}
 					return true;
 				});
-		}
-	}
-
-	public void navigateToView(String viewName, String caseUuid, ViewMode viewMode) {
-		navigateToView(viewName, caseUuid, viewMode, false);
-	}
-
-	public void navigateToView(String viewName, String caseUuid, ViewMode viewMode, boolean openTab) {
-
-		String navigationState = viewName + "/" + caseUuid;
-		if (viewMode == ViewMode.NORMAL) {
-			// pass full view mode as param so it's also used for other views when switching
-			navigationState += "?" + AbstractCaseView.VIEW_MODE_URL_PREFIX + "=" + viewMode;
-		}
-
-		if (openTab) {
-			SormasUI.get().getPage().open(SormasUI.get().getPage().getLocation().getRawPath() + "#!" + navigationState, "_blank", false);
-		} else {
-			SormasUI.get().getNavigator().navigateTo(navigationState);
 		}
 	}
 }
