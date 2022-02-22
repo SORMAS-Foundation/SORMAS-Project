@@ -39,7 +39,6 @@ import de.symeda.sormas.api.report.WeeklyReportDto;
 @Path("/weeklyreports")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
-@RolesAllowed("USER")
 public class WeeklyReportResource extends EntityDtoResource {
 
 	@GET

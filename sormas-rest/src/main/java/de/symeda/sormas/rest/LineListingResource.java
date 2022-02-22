@@ -24,9 +24,6 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @Path("/lineListing")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
-@RolesAllowed({
-	"USER",
-	"REST_USER" })
 public class LineListingResource extends EntityDtoResource {
 
 	@POST

@@ -25,18 +25,18 @@ import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 
-import de.symeda.sormas.backend.deletionconfiguration.CoreEntityDeletionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.task.TaskType;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
+import de.symeda.sormas.backend.deletionconfiguration.CoreEntityDeletionService;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb.DocumentFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
@@ -48,7 +48,7 @@ import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb.SystemEventFaca
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
 
 @Singleton
-@RunAs(UserRole._SYSTEM)
+@RunAs(UserRight._SYSTEM)
 public class CronService {
 
 	public static final int TASK_UPDATE_INTERVAL = 10;

@@ -46,10 +46,8 @@ import java.util.stream.Collectors;
 
 import javax.validation.ValidationException;
 
-import de.symeda.sormas.api.EntityDto;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.function.ThrowingRunnable;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -57,6 +55,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import de.symeda.sormas.api.AuthProvider;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
@@ -66,7 +65,6 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
@@ -268,13 +266,31 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		UserDto user = creator.createUser(rdcf, SURVEILLANCE_SUPERVISOR);
 		String password = getUserFacade().resetPassword(user.getUuid());
 
-		Set<UserRole> validLoginRoles = getUserFacade().getValidLoginRoles(user.getUserName(), password);
-		assertThat(validLoginRoles, containsInAnyOrder(SURVEILLANCE_SUPERVISOR));
+		Set<UserRight> validLoginRoles = getUserFacade().getValidLoginUserRights(user.getUserName(), password);
+		assertThat(
+			validLoginRoles,
+			containsInAnyOrder(
+				UserRight.CASE_CREATE,
+				UserRight.CASE_VIEW,
+				UserRight.CASE_EDIT,
+				UserRight.CASE_TRANSFER,
+				UserRight.CASE_REFER_FROM_POE,
+				UserRight.CASE_INVESTIGATE,
+				UserRight.CASE_CLASSIFY,
+				UserRight.CASE_CHANGE_DISEASE,
+				UserRight.CASE_CHANGE_EPID_NUMBER,
+				UserRight.CASE_EXPORT,
+				UserRight.CASE_SHARE,
+				UserRight.IMMUNIZATION_VIEW,
+				UserRight.IMMUNIZATION_CREATE,
+				UserRight.IMMUNIZATION_EDIT,
+				UserRight.PERSON_VIEW,
+				UserRight.PERSON_EDIT));
 
 		user.setActive(false);
 		getUserFacade().saveUser(user);
 
-		validLoginRoles = getUserFacade().getValidLoginRoles(user.getUserName(), password);
+		validLoginRoles = getUserFacade().getValidLoginUserRights(user.getUserName(), password);
 		assertThat(validLoginRoles, nullValue());
 
 		//Important: release static mock.

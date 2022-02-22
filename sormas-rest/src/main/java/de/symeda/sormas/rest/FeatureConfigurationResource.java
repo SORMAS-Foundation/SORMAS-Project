@@ -18,7 +18,6 @@ import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 @Path("/featureconfigurations")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
-@RolesAllowed("USER")
 public class FeatureConfigurationResource extends EntityDtoResource {
 
 	@GET

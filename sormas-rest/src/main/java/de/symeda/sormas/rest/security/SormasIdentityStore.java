@@ -1,17 +1,14 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
@@ -26,8 +23,10 @@ import javax.security.enterprise.credential.UsernamePasswordCredential;
 import javax.security.enterprise.identitystore.CredentialValidationResult;
 import javax.security.enterprise.identitystore.IdentityStore;
 
+import org.apache.commons.collections.CollectionUtils;
+
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 
 /**
  * Identity store used to obtain a user's groups from the Sormas DB instead of using the ones provided by the keycloak access token.
@@ -40,13 +39,13 @@ public class SormasIdentityStore implements IdentityStore {
 
 	public CredentialValidationResult validate(UsernamePasswordCredential usernamePasswordCredential) {
 
-		Set<UserRole> userRoles = FacadeProvider.getUserFacade()
-			.getValidLoginRoles(usernamePasswordCredential.getCaller(), usernamePasswordCredential.getPasswordAsString());
+		Set<UserRight> userRights = FacadeProvider.getUserFacade()
+			.getValidLoginUserRights(usernamePasswordCredential.getCaller(), usernamePasswordCredential.getPasswordAsString());
 
-		if (userRoles != null && !userRoles.isEmpty()) {
+		if (CollectionUtils.isNotEmpty(userRights) && userRights.contains(UserRight.SORMAS_REST)) {
 			return new CredentialValidationResult(
 				usernamePasswordCredential.getCaller(),
-				userRoles.stream().map(Enum::name).collect(Collectors.toSet()));
+				userRights.stream().map(Enum::name).collect(Collectors.toSet()));
 		}
 
 		return CredentialValidationResult.INVALID_RESULT;

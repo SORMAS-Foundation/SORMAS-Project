@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.rest;
 
+import de.symeda.sormas.api.user.UserRight;
 import java.io.IOException;
 import java.security.KeyStoreException;
 import java.security.NoSuchAlgorithmException;
@@ -48,7 +49,7 @@ import de.symeda.sormas.rest.security.oidc.ClientCredentials;
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @ClientCredentials
-@RolesAllowed(UserRole._SORMAS_TO_SORMAS_CLIENT)
+@RolesAllowed(UserRight._SORMAS_TO_SORMAS_CLIENT)
 public class SormasToSormasResource {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SormasToSormasResource.class);

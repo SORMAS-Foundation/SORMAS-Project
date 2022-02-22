@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.backend.common;
 
+import de.symeda.sormas.api.user.UserRight;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -105,7 +106,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 
 @Singleton(name = "StartupShutdownService")
 @Startup
-@RunAs(UserRole._SYSTEM)
+@RunAs(UserRight._SYSTEM)
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class StartupShutdownService {
 
