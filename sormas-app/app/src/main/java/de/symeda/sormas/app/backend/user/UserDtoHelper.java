@@ -132,4 +132,12 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
 		UserReferenceDto dto = new UserReferenceDto(ado.getUuid());
 		return dto;
 	}
+	public static Call<String> saveNewPassword(String uuid,String newPassword,String currentPassword) throws NoConnectionException {
+		return RetroProvider.getUserFacade().saveNewPassword(uuid,newPassword,currentPassword);
+	}
+	public static Call<String> generatePassword() throws NoConnectionException {
+		return RetroProvider.getUserFacade().generatePassword();
+	}
+
+
 }
