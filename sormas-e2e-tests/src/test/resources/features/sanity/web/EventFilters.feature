@@ -62,7 +62,7 @@ Feature: Filters in Event Directory
     And I fill EVENT ID filter by API
     And I fill Event Group Id filter to one assigned to created event on Event Directory Page
     And I fill Reporting User filter to "ReST User" on Event Directory Page
-    And I click SHOW MORE FILTERS button on Event directory page
+    And I click on Show more filters in Events
     And I apply Region filter to "Voreingestellte Bundesländer" on Event directory page
     And I apply District filter to "Voreingestellter Landkreis" on Event directory page
     And I apply Community filter to "Voreingestellte Gemeinde" on Event directory page
@@ -104,7 +104,7 @@ Feature: Filters in Event Directory
     When I log in with National User
     And I click on the Events button from navbar
     And I fill EVENT ID filter by API
-    And I click SHOW MORE FILTERS button on Event directory page
+    And I click on Show more filters in Events
     And I apply Date type filter to "Report date" on Event directory page
     And I fill Event from input to 2 days before mocked Event created on Event directory page
     And I fill Event to input to 5 days after mocked Event created on Event directory page

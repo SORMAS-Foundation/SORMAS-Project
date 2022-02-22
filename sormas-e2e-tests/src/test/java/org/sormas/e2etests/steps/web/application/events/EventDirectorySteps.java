@@ -26,7 +26,6 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_FROM_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_TO_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHOW_MORE_LESS_FILTERS;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.*;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.APPLY_FILTERS_BUTTON;
@@ -124,9 +123,6 @@ public class EventDirectorySteps implements En {
         });
 
     And(
-        "I click SHOW MORE FILTERS button on Event directory page",
-        () -> webDriverHelpers.clickOnWebElementBySelector(SHOW_MORE_LESS_FILTERS));
-    And(
         "I apply mocked Person Id filter on Event directory page",
         () ->
             webDriverHelpers.fillAndSubmitInWebElement(
@@ -141,9 +137,7 @@ public class EventDirectorySteps implements En {
         });
     And(
         "I filter by mocked EventGroupId on Event directory page",
-        () ->
-          webDriverHelpers.fillAndSubmitInWebElement(EVENT_GROUP, "TestName TestSurname")
-        );
+        () -> webDriverHelpers.fillAndSubmitInWebElement(EVENT_GROUP, "TestName TestSurname"));
     When(
         "I select random Risk level filter among the filter options from API",
         () -> {
@@ -357,8 +351,7 @@ public class EventDirectorySteps implements En {
 
     When(
         "I click on the created event participant from the list",
-        () -> 
-          webDriverHelpers.clickOnWebElementBySelector(CREATED_PARTICIPANT));
+        () -> webDriverHelpers.clickOnWebElementBySelector(CREATED_PARTICIPANT));
 
     When(
         "I click on New Task from event tab",
