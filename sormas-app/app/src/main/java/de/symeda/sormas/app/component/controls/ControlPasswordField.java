@@ -63,6 +63,19 @@ public class ControlPasswordField extends ControlTextEditField {
 			throw new RuntimeException("Unable to inflate layout in " + getClass().getName());
 		}
 	}
+	@Override
+	public void setHint(String hint) {
+		this.hint = hint;
+		input.setHint(hint);
+	}
+
+	@Override
+	protected String getFieldValue() {
+		if (input.getText() == null) {
+			return null;
+		}
+		return input.getText().toString();
+	}
 
 	@Override
 	protected void onFinishInflate() {
