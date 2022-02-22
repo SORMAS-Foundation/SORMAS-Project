@@ -183,7 +183,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 332;
+	public static final int DATABASE_VERSION = 333;
 
 	private static DatabaseHelper instance = null;
 
@@ -2947,8 +2947,21 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				currentVersion = 331;
 				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN healthConditions_id BIGINT REFERENCES healthConditions(id);");
 				getDao(Case.class).executeRaw("UPDATE cases SET healthConditions_id = (SELECT healthConditions_id from clinicalCourse where clinicalCourse.id = cases.clinicalCourse_id);");
-				// ATTENTION: break should only be done after last version
-				break;
+			case 332:
+				currentVersion = 332;
+				getDao(ClinicalCourse.class).executeRaw("ALTER TABLE clinicalCourse RENAME TO tmp_clinicalCourse");
+				getDao(ClinicalCourse.class).executeRaw(
+						"CREATE TABLE clinicalCourse(" + "id integer primary key autoincrement," + "uuid varchar(36) not null,"
+								+ "changeDate timestamp not null," + "creationDate timestamp not null," + "lastOpenedDate timestamp,"
+								+ "localChangeDate timestamp not null," + "modified integer," + "snapshot integer," + "UNIQUE(snapshot, uuid));");
+				getDao(ClinicalCourse.class).executeRaw(
+						"INSERT INTO clinicalCourse(id, uuid, changeDate, creationDate, lastOpenedDate, "
+								+ "localChangeDate, modified, snapshot) "
+								+ "SELECT id, uuid, changeDate, creationDate, lastOpenedDate, localChangeDate, modified, snapshot FROM tmp_clinicalCourse");
+				getDao(ClinicalCourse.class).executeRaw("DROP TABLE tmp_clinicalCourse;");
+
+			// ATTENTION: break should only be done after last version
+			break;
 
 			default:
 				throw new IllegalStateException("onUpgrade() with unknown oldVersion " + oldVersion);
