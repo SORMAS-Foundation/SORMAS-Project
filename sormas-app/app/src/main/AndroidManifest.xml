@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <manifest xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <uses-permission android:name="android.permission.VIBRATE"/>
+    <uses-permission android:name="android.permission.VIBRATE" />
     <uses-permission android:name="android.permission.INTERNET" />
     <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
     <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
@@ -10,9 +10,11 @@
     <uses-permission android:name="android.permission.ACCESS_FINE_LOCATION" />
     <uses-permission android:name="android.permission.REQUEST_INSTALL_PACKAGES" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
+
     <uses-feature android:name="android.hardware.location.gps" />
+
     <uses-permission android:name="android.permission.CAMERA" />
-    <uses-permission android:name="android.permission.FOREGROUND_SERVICE"/>
+    <uses-permission android:name="android.permission.FOREGROUND_SERVICE" />
 
     <application
         android:name=".SormasApplication"
@@ -20,9 +22,16 @@
         android:icon="@mipmap/ic_launcher"
         android:label="@string/app_name"
         android:supportsRtl="true"
-        android:theme="@style/SormasTheme">
+        android:theme="@style/SormasTheme" >
+        <activity
+            android:name=".login.ChangePasswordActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:theme="@style/SormasTheme"
+            android:windowSoftInputMode="stateHidden" />
 
-        <uses-library android:name="android.test.runner"
+        <uses-library
+            android:name="android.test.runner"
             android:required="false" />
 
         <uses-library android:name ="org.apache.http.legacy" android:required ="false"/>
@@ -31,397 +40,375 @@
             android:theme="@style/LoginActivityTheme"
             android:screenOrientation="portrait"
             android:exported="true"
-            android:launchMode="singleTop">
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
+            android:theme="@style/LoginActivityTheme" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
+
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         <activity
             android:name=".settings.SettingsActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
         <activity
             android:name=".login.EnterPinActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:theme="@style/SormasTheme"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="stateHidden" >
         </activity>
-
-
-
-        <activity android:name=".dashboard.DashboardActivity"
+        <activity
+            android:name=".dashboard.DashboardActivity"
+            android:launchMode="singleTop"
+            android:screenOrientation="portrait"
             android:theme="@style/ActivityWithOverflowMenuTheme"
-            android:screenOrientation="portrait"
-            android:launchMode="singleTop"
-            android:windowSoftInputMode="stateHidden">
+            android:windowSoftInputMode="stateHidden" >
         </activity>
-
         <activity
             android:name=".task.list.TaskListActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
-        <activity android:name=".task.edit.TaskEditActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+        <activity
+            android:name=".task.edit.TaskEditActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".task.list.TaskListActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
-        <activity android:name=".task.edit.TaskNewActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+        <activity
+            android:name=".task.edit.TaskNewActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".task.list.TaskListActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
         <activity
             android:name=".sample.list.SampleListActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
-        <activity android:name=".sample.read.SampleReadActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+        <activity
+            android:name=".sample.read.SampleReadActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".sample.list.SampleListActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
-        <activity android:name=".sample.edit.SampleEditActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+        <activity
+            android:name=".sample.edit.SampleEditActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".sample.read.SampleReadActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
-        <activity android:name=".pathogentest.read.PathogenTestReadActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+        <activity
+            android:name=".pathogentest.read.PathogenTestReadActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".sample.read.SampleReadActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
-        <activity android:name=".pathogentest.edit.PathogenTestNewActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+        <activity
+            android:name=".pathogentest.edit.PathogenTestNewActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".sample.read.SampleReadActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
-        <activity android:name=".pathogentest.edit.PathogenTestEditActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+        <activity
+            android:name=".pathogentest.edit.PathogenTestEditActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".pathogentest.read.PathogenTestReadActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
         <activity
             android:name=".caze.list.CaseListActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
         <activity
             android:name=".caze.read.CaseReadActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+            android:launchMode="singleTop"
             android:parentActivityName=".caze.list.CaseListActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
         <activity
             android:name=".caze.edit.CaseNewActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+            android:launchMode="singleTop"
             android:parentActivityName=".caze.list.CaseListActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
         <activity
             android:name=".caze.edit.CaseEditActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+            android:launchMode="singleTop"
             android:parentActivityName=".caze.read.CaseReadActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
         <activity
             android:name=".report.aggregate.AggregateReportsActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
         <activity
             android:name=".contact.edit.ContactNewActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+            android:launchMode="singleTop"
             android:parentActivityName=".caze.edit.CaseEditActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
         <activity
             android:name=".sample.edit.SampleNewActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+            android:launchMode="singleTop"
             android:parentActivityName=".caze.edit.CaseEditActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
         <activity
             android:name=".contact.list.ContactListActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
         <activity
             android:name=".contact.read.ContactReadActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+            android:launchMode="singleTop"
             android:parentActivityName=".contact.list.ContactListActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
         <activity
             android:name=".contact.edit.ContactEditActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+            android:launchMode="singleTop"
             android:parentActivityName=".contact.read.ContactReadActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
         <activity
             android:name=".visit.read.VisitReadActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+            android:launchMode="singleTop"
             android:parentActivityName=".contact.read.ContactReadActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
         <activity
             android:name=".visit.edit.VisitEditActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+            android:launchMode="singleTop"
             android:parentActivityName=".contact.edit.ContactEditActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
         <activity
             android:name=".visit.edit.VisitNewActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+            android:launchMode="singleTop"
             android:parentActivityName=".contact.edit.ContactEditActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
         <activity
             android:name=".event.list.EventListActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
-        <activity android:name=".event.read.EventReadActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+        <activity
+            android:name=".event.read.EventReadActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".event.list.EventListActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
-        <activity android:name=".event.eventparticipant.read.EventParticipantReadActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+        <activity
+            android:name=".event.eventparticipant.read.EventParticipantReadActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".event.read.EventReadActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
-        <activity android:name=".event.edit.EventEditActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+        <activity
+            android:name=".event.edit.EventEditActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".event.read.EventReadActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
-        <activity android:name=".event.eventparticipant.edit.EventParticipantNewActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+        <activity
+            android:name=".event.eventparticipant.edit.EventParticipantNewActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".event.edit.EventEditActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
-        <activity android:name=".event.eventparticipant.edit.EventParticipantEditActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+        <activity
+            android:name=".event.eventparticipant.edit.EventParticipantEditActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".event.edit.EventEditActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
-        <activity android:name=".event.edit.EventNewActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+        <activity
+            android:name=".event.edit.EventNewActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".event.list.EventListActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
         <activity
             android:name=".campaign.list.CampaignFormDataListActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
         <activity
             android:name=".campaign.read.CampaignFormDataReadActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+            android:launchMode="singleTop"
             android:parentActivityName=".campaign.list.CampaignFormDataListActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
         <activity
             android:name=".campaign.edit.CampaignFormDataEditActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+            android:launchMode="singleTop"
             android:parentActivityName=".campaign.read.CampaignFormDataReadActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
         <activity
             android:name=".campaign.edit.CampaignFormDataNewActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+            android:launchMode="singleTop"
             android:parentActivityName=".campaign.list.CampaignFormDataListActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
         <activity
             android:name=".report.ReportActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
-            android:launchMode="singleTop" />
-
-        <activity android:name=".therapy.read.PrescriptionReadActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+            android:launchMode="singleTop"
+            android:theme="@style/ActivityWithOverflowMenuTheme" />
+        <activity
+            android:name=".therapy.read.PrescriptionReadActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".caze.read.CaseReadActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
-        <activity android:name=".therapy.edit.PrescriptionEditActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+        <activity
+            android:name=".therapy.edit.PrescriptionEditActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".caze.edit.CaseEditActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
         <activity
             android:name=".therapy.edit.PrescriptionNewActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+            android:launchMode="singleTop"
             android:parentActivityName=".caze.edit.CaseEditActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
-        <activity android:name=".therapy.read.TreatmentReadActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+        <activity
+            android:name=".therapy.read.TreatmentReadActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".caze.read.CaseReadActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
-        <activity android:name=".therapy.edit.TreatmentEditActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+        <activity
+            android:name=".therapy.edit.TreatmentEditActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".caze.edit.CaseEditActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
-        <activity android:name=".therapy.edit.TreatmentNewActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+        <activity
+            android:name=".therapy.edit.TreatmentNewActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".caze.edit.CaseEditActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
-        <activity android:name=".clinicalcourse.read.ClinicalVisitReadActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+        <activity
+            android:name=".clinicalcourse.read.ClinicalVisitReadActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".caze.read.CaseReadActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
-        <activity android:name=".clinicalcourse.edit.ClinicalVisitEditActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+        <activity
+            android:name=".clinicalcourse.edit.ClinicalVisitEditActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".caze.edit.CaseEditActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
-        <activity android:name=".clinicalcourse.edit.ClinicalVisitNewActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+        <activity
+            android:name=".clinicalcourse.edit.ClinicalVisitNewActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".caze.edit.CaseEditActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
         <activity
             android:name=".immunization.list.ImmunizationListActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
-        <activity android:name=".immunization.read.ImmunizationReadActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+        <activity
+            android:name=".immunization.read.ImmunizationReadActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".immunization.list.ImmunizationListActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
-        <activity android:name=".immunization.edit.ImmunizationEditActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+        <activity
+            android:name=".immunization.edit.ImmunizationEditActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".immunization.read.ImmunizationReadActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
         <activity
             android:name=".immunization.edit.ImmunizationNewActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+            android:launchMode="singleTop"
             android:parentActivityName=".immunization.list.ImmunizationListActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
-        <activity android:name=".immunization.vaccination.VaccinationNewActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+        <activity
+            android:name=".immunization.vaccination.VaccinationNewActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".immunization.edit.ImmunizationEditActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
-        <activity android:name=".immunization.vaccination.VaccinationReadActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+        <activity
+            android:name=".immunization.vaccination.VaccinationReadActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".immunization.edit.ImmunizationEditActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+            android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
-
-        <activity android:name=".immunization.vaccination.VaccinationEditActivity"
-            android:theme="@style/ActivityWithOverflowMenuTheme"
+        <activity
+            android:name=".immunization.vaccination.VaccinationEditActivity"
+            android:launchMode="singleTop"
             android:parentActivityName=".immunization.vaccination.VaccinationReadActivity"
             android:screenOrientation="portrait"
-            android:launchMode="singleTop">
+               android:theme="@style/ActivityWithOverflowMenuTheme" >
         </activity>
+           
 
         <activity
             android:name=".environment.list.EnvironmentListActivity"
@@ -489,75 +476,70 @@
 
         <activity
             android:name=".barcode.BarcodeActivity" />
+          <!-- Only needed for androidTest - found no other way to manifest this -->
+   
 
         <receiver
             android:name=".SormasBootstrap"
             android:enabled="true"
-            android:exported="true">
+            android:exported="true" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
             </intent-filter>
         </receiver>
-
         <!--
              Optionally, register AnalyticsReceiver and AnalyticsService to support background
              dispatching on non-Google Play devices
         -->
-        <!--<receiver-->
-            <!--android:name="com.google.android.gms.analytics.AnalyticsReceiver"-->
-            <!--android:enabled="true">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="com.google.android.gms.analytics.ANALYTICS_DISPATCH" />-->
-            <!--</intent-filter>-->
-        <!--</receiver>-->
-
-        <!--<service-->
-            <!--android:name="com.google.android.gms.analytics.AnalyticsService"-->
-            <!--android:enabled="true"-->
-            <!--android:exported="false" />-->
-
+        <!-- <receiver -->
+        <!-- android:name="com.google.android.gms.analytics.AnalyticsReceiver" -->
+        <!-- android:enabled="true"> -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="com.google.android.gms.analytics.ANALYTICS_DISPATCH" /> -->
+        <!-- </intent-filter> -->
+        <!-- </receiver> -->
+        <!-- <service -->
+        <!-- android:name="com.google.android.gms.analytics.AnalyticsService" -->
+        <!-- android:enabled="true" -->
+        <!-- android:exported="false" /> -->
         <!--
              Optionally, register CampaignTrackingReceiver and CampaignTrackingService to enable
              installation campaign reporting
         -->
-        <!--<receiver-->
-            <!--android:name="com.google.android.gms.analytics.CampaignTrackingReceiver"-->
-            <!--android:exported="true">-->
-            <!--<intent-filter>-->
-                <!--<action android:name="com.android.vending.INSTALL_REFERRER" />-->
-            <!--</intent-filter>-->
-        <!--</receiver>-->
-
+        <!-- <receiver -->
+        <!-- android:name="com.google.android.gms.analytics.CampaignTrackingReceiver" -->
+        <!-- android:exported="true"> -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="com.android.vending.INSTALL_REFERRER" /> -->
+        <!-- </intent-filter> -->
+        <!-- </receiver> -->
         <provider
             android:name="androidx.core.content.FileProvider"
             android:authorities="${applicationId}.fileprovider"
             android:exported="false"
-            android:grantUriPermissions="true">
+            android:grantUriPermissions="true" >
             <meta-data
                 android:name="android.support.FILE_PROVIDER_PATHS"
                 android:resource="@xml/file_paths" />
         </provider>
 
         <service
-            android:enabled="true"
-            android:name=".core.TaskNotificationService" />
-
+            android:name=".core.TaskNotificationService"
+            android:enabled="true" />
         <service
-            android:enabled="true"
-            android:name=".core.FeatureConfigurationService" />
-
-        <!--<service android:name="com.google.android.gms.analytics.CampaignTrackingService" />-->
-        <!--<service-->
-            <!--android:name=".core.TaskNotificationService"-->
-            <!--android:enabled="true" />-->
-
+            android:name=".core.FeatureConfigurationService"
+            android:enabled="true" /> <!-- <service android:name="com.google.android.gms.analytics.CampaignTrackingService" /> -->
+        <!-- <service -->
+        <!-- android:name=".core.TaskNotificationService" -->
+        <!-- android:enabled="true" /> -->
         <receiver
             android:name=".LbdsRecevierComponent"
             android:enabled="true"
-            android:exported="true">
+            android:exported="true" >
             <intent-filter>
-                <action android:name="android.intent.action.BOOT_COMPLETED"/>
+                <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="android.intent.action.SEND" />
+
                 <category android:name="android.intent.category.DEFAULT" />
             </intent-filter>
         </receiver>
