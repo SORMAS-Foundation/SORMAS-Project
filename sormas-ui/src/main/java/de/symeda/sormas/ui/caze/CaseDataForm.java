@@ -1048,7 +1048,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				CaseDataDto.INVESTIGATED_DATE,
 				CaseDataDto.INVESTIGATION_STATUS,
 				Arrays.asList(InvestigationStatus.DONE, InvestigationStatus.DISCARDED),
-				false);
+				true);
 		}
 		setReadOnly(
 			true,
