@@ -2945,10 +2945,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 331:
 				currentVersion = 331;
-				getDao(Case.class).executeRaw(
-					"ALTER TABLE cases ADD COLUMN healthConditions_id BIGINT REFERENCES healthConditions(id);" +
-							"UPDATE cases c SET healthConditions_id = (SELECT cc.healthConditions_id from clinicalCourse cc where cc.id = c.clinicalCourse_id);");
-
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN healthConditions_id BIGINT REFERENCES healthConditions(id);");
+				getDao(Case.class).executeRaw("UPDATE cases c SET healthConditions_id = (SELECT cc.healthConditions_id from clinicalCourse cc where cc.id = c.clinicalCourse_id);");
 				// ATTENTION: break should only be done after last version
 				break;
 
