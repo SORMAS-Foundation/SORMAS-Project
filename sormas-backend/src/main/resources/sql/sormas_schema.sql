@@ -8299,13 +8299,19 @@ ALTER TABLE campaigns ADD COLUMN round varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (409, 'Add round to campaings #88');
 
--- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
 
-
--- 2021-09-27 Add disease variant details #5935
+-- 2021-09-27 Add Area ID to enable filter
 ALTER TABLE campaignformdata ADD COLUMN area_id bigint default 139;
 
 INSERT INTO schema_version (version_number, comment) VALUES (410, 'Add Area to campaignform to enable campaign filter by Area');
 
+
+-- 2021-09-27 Need to increase uuid to accomodate -DUP #63
+ALTER TABLE campaigns ALTER COLUMN uuid TYPE varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (411, 'Increasing uuid size on Campigns table');
+
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
+
 

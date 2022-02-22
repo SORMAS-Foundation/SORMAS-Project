@@ -78,6 +78,7 @@ import de.symeda.sormas.ui.events.EventParticipantDataView;
 import de.symeda.sormas.ui.events.EventsView;
 import de.symeda.sormas.ui.immunization.ImmunizationsView;
 import de.symeda.sormas.ui.labmessage.LabMessagesView;
+import de.symeda.sormas.ui.login.LoginHelper;
 import de.symeda.sormas.ui.person.PersonsView;
 import de.symeda.sormas.ui.reports.ReportsView;
 import de.symeda.sormas.ui.reports.aggregate.AggregateReportsView;
@@ -252,13 +253,24 @@ public class MainScreen extends HorizontalLayout {
 		}
 		
 		
-		menu.addView(AboutView.class, AboutView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuAbout), VaadinIcons.INFO_CIRCLE_O);
+		
 		
 		menu.addView(LanguageView.class, LanguageView.VIEW_NAME, "Language", VaadinIcons.GLOBE_WIRE);
 		
-		menu.addView(LogoutView.class, LogoutView.VIEW_NAME, "Logout", VaadinIcons.POWER_OFF);
+		menu.addView(AboutView.class, AboutView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuAbout), VaadinIcons.INFO_CIRCLE_O);
 		
+		menu.addView(LogoutView.class, LogoutView.VIEW_NAME, I18nProperties.getCaption(Captions.actionLogout) + " (" + UserProvider.getCurrent().getUserName() + ")", VaadinIcons.POWER_OFF);
 		
+		/* logout menu item
+				MenuBar logoutMenu = new MenuBar();
+				logoutMenu.setId(Captions.actionLogout);
+				logoutMenu.addItem(
+						I18nProperties.getCaption(Captions.actionLogout) + " (" + UserProvider.getCurrent().getUserName() + ")",
+						VaadinIcons.POWER_OFF, (Command) selectedItem -> LoginHelper.logout());
+
+				logoutMenu.addStyleNames("user-menu", "logout-menu");
+				//menuPart.addComponent(logoutMenu);
+				*/
 		
 		/* settings menu item
 			//	MenuBar settingsMenu = new MenuBar();

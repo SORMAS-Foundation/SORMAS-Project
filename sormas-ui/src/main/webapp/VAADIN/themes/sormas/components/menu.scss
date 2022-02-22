@@ -39,7 +39,7 @@ $valo-menu-background-color: $s-default-color !default;
       margin: 0;
     }
 	  
-    .valo-menu-item { 
+    .valo-menu-item {
 	  color: inherit;
 	  text-shadow: none;
 	  padding: 8px 16px;
@@ -50,6 +50,12 @@ $valo-menu-background-color: $s-default-color !default;
 		font-size: 28px;
 		min-width: 36px;
 	  }
+	
+	&:hover{
+	background: #6D5D4F!important;
+	    color: #ffffff !important;
+		text-shadow: none !important;	
+	}
 		
 	  &.selected {
 		background: #F28A35!important;
