@@ -54,8 +54,6 @@ public interface UserFacade {
 
 	String updateUserPassword(String uuid, String newPassword, String currentPassword);
 
-	List<String> changeUserPassword(String uuid, String password);
-
 	boolean validatePassword(String uuid, String password);
 
 	boolean validatePasswordPattern(String password);
