@@ -153,7 +153,6 @@ public class CaseBackendTest {
 		mergeCase.getClinicalCourse().setId(null);
 		mergeCase.getPortHealthInfo().setId(null);
 		mergeCase.getTherapy().setId(null);
-		mergeCase.getClinicalCourse().getHealthConditions().setId(null);
 		mergeCase.getHealthConditions().setId(null);
 		mergeCase.getMaternalHistory().setId(null);
 
@@ -254,7 +253,6 @@ public class CaseBackendTest {
 		mergeCase.getClinicalCourse().setId(null);
 		mergeCase.getPortHealthInfo().setId(null);
 		mergeCase.getTherapy().setId(null);
-		mergeCase.getClinicalCourse().getHealthConditions().setId(null);
 		mergeCase.getHealthConditions().setId(null);
 		mergeCase.getMaternalHistory().setId(null);
 		mergeCase.setEpidNumber("ServerEpidNumber");
