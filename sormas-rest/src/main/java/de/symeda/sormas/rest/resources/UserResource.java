@@ -97,4 +97,20 @@ public class UserResource {
 	public List<UserRight> getUserRights(@PathParam("uuid") String uuid) {
 		return FacadeProvider.getUserFacade().getUserRights(uuid);
 	}
+
+	@POST
+	@Path("/passwordStrength")
+	public String saveNewPassword(
+		@QueryParam("uuid") String uuid,
+		@QueryParam("newPassword") String newPassword,
+		@QueryParam("currentPassword") String currentPassword) {
+		return FacadeProvider.getUserFacade().updateUserPassword(uuid, newPassword, currentPassword);
+	}
+
+	@GET
+	@Path("/generatePassword")
+	public String generatePassword() {
+		return FacadeProvider.getUserFacade().generatePassword();
+	}
+
 }
