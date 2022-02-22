@@ -21,6 +21,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Set;
+import static de.symeda.sormas.ui.utils.CssStyles.LABEL_CRITICAL;
+import static de.symeda.sormas.ui.utils.CssStyles.LABEL_POSITIVE;
+import static de.symeda.sormas.ui.utils.CssStyles.LABEL_WARNING;
+
+import java.util.Collection;
+import java.util.Objects;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -54,6 +60,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.BulkOperationHandler;
@@ -228,6 +235,16 @@ public class UserController {
 		}
 	}
 
+	public void makeUpdatePassword(String userUuid, String userEmail, String password) {
+		String newPassword = FacadeProvider.getUserFacade().updatePassword(userUuid, password);
+
+		if (StringUtils.isBlank(userEmail) || AuthProvider.getProvider(FacadeProvider.getConfigFacade()).isDefaultProvider()) {
+			showPasswordResetInternalSuccessPopup(newPassword);
+		} else {
+			showPasswordResetExternalSuccessPopup();
+		}
+	}
+
 	private void showPasswordResetInternalSuccessPopup(String newPassword) {
 		VerticalLayout layout = new VerticalLayout();
 		layout.addComponent(new Label(I18nProperties.getString(Strings.messageCopyPassword)));
@@ -290,6 +307,36 @@ public class UserController {
 		}, ValoTheme.BUTTON_LINK);
 	}
 
+	public Button generatePasswordButton() {
+
+		return ButtonHelper.createIconButton(Captions.userGeneratePassword, VaadinIcons.UNLOCK, new ClickListener() {
+
+			private static final long serialVersionUID = 1L;
+			final UpdatePasswordForm form = new UpdatePasswordForm();
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				String generatedPassword = FacadeProvider.getUserFacade().generatePassword();
+				form.currentPassword.setCaption(generatedPassword);
+				form.confirmPassword.setCaption(generatedPassword);
+			}
+		}, ValoTheme.BUTTON_LINK);
+	}
+
+	public Button createUpdatePasswordButton() {
+
+		return ButtonHelper.createIconButton(Captions.userResetPassword, VaadinIcons.UNLOCK, new ClickListener() {
+
+			private static final long serialVersionUID = 1L;
+
+			@Override
+			public void buttonClick(ClickEvent event) {
+				Window popupWindow = VaadinUiUtil.showPopupWindow(getUpdatePasswordComponent());
+				popupWindow.setCaption(I18nProperties.getString(Strings.headingChangePassword));
+			}
+		}, ValoTheme.BUTTON_LINK);
+	}
+
 	public ConfirmationComponent getResetPasswordConfirmationComponent(
 		String userUuid,
 		String userEmail,
@@ -333,6 +380,61 @@ public class UserController {
 		});
 		component.addDiscardListener(commitOrDiscardCallback::run);
 
+		return component;
+	}
+
+	public CommitDiscardWrapperComponent<UpdatePasswordForm> getUpdatePasswordComponent() {
+		Label passwordStrengthDesc = new Label();
+		UpdatePasswordForm form = new UpdatePasswordForm();
+		UserDto user = FacadeProvider.getUserFacade().getByUuid(UserProvider.getCurrent().getUuid());
+		form.setValue(user);
+		final CommitDiscardWrapperComponent<UpdatePasswordForm> component = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
+		form.newPassword.addTextChangeListener(event -> {
+			passwordStrengthDesc.setValue(FacadeProvider.getUserFacade().checkPasswordStrength(event.getText()));
+			if (passwordStrengthDesc.getValue().contains("Strong")) {
+				passwordStrengthDesc.setStyleName(LABEL_POSITIVE);
+			} else if (passwordStrengthDesc.getValue().contains("Moderate")) {
+				passwordStrengthDesc.setStyleName(LABEL_WARNING);
+			} else {
+				passwordStrengthDesc.setStyleName(LABEL_CRITICAL);
+			}
+		});
+		component.addCommitListener(() -> {
+			if (!form.getFieldGroup().isModified()) {
+				UserDto changedUser = form.getValue();
+				if (!Objects.equals(changedUser.getConfirmPassword(), changedUser.getUpdatePassword())) {
+					form.showNotification(
+						new Notification(
+							I18nProperties.getString(Strings.headingUpdatePasswordFailed),
+							I18nProperties.getString(Strings.messageNewPasswordDoesNotMatchFailed),
+							Notification.Type.WARNING_MESSAGE));
+				} else if (!FacadeProvider.getUserFacade().validatePassword(user.getUuid(), changedUser.getCurrentPassword())) {
+					form.showNotification(
+						new Notification(
+							I18nProperties.getString(Strings.headingUpdatePasswordFailed),
+							I18nProperties.getString(Strings.messagePasswordFailed),
+							Notification.Type.WARNING_MESSAGE));
+				} else if (!FacadeProvider.getUserFacade().validatePasswordPattern(changedUser.getUpdatePassword())) {
+					form.showNotification(
+						new Notification(
+							I18nProperties.getString(Strings.headingUpdatePasswordFailed),
+							I18nProperties.getString(Strings.messageNewPasswordFailed),
+							Notification.Type.WARNING_MESSAGE));
+				} else {
+					FacadeProvider.getUserFacade().updatePassword(user.getUuid(), changedUser.getUpdatePassword());
+					makeUpdatePassword(user.getUuid(), user.getUserEmail(), changedUser.getUpdatePassword());
+				}
+			}
+		});
+		Button generatePasswordButton = ControllerProvider.getUserController().generatePasswordButton();
+		generatePasswordButton.addClickListener((ClickListener) event -> {
+			String generatedPassword = FacadeProvider.getUserFacade().generatePassword();
+			form.newPassword.setValue(generatedPassword);
+			form.confirmPassword.setValue(generatedPassword);
+		});
+		component.getButtonsPanel().addComponent(generatePasswordButton, 0);
+
+		component.addComponent(passwordStrengthDesc, 1);
 		return component;
 	}
 
