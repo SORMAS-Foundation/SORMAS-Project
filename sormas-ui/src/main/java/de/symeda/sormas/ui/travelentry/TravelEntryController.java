@@ -1,8 +1,11 @@
 package de.symeda.sormas.ui.travelentry;
 
+import java.util.Collection;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
+import com.vaadin.server.Page;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
@@ -19,6 +22,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
+import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
 import de.symeda.sormas.api.travelentry.TravelEntryListCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -217,5 +221,29 @@ public class TravelEntryController {
 		titleLayout.addMainRow(mainRowText.toString());
 
 		return titleLayout;
+	}
+
+	public void deleteAllSelectedItems(Collection<TravelEntryIndexDto> selectedRows, Runnable callback) {
+		if (selectedRows.size() == 0) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoTravelEntriesSelected),
+				I18nProperties.getString(Strings.messageNoTravelEntriesSelected),
+				Notification.Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
+		} else {
+			VaadinUiUtil.showDeleteConfirmationWindow(
+				String.format(I18nProperties.getString(Strings.confirmationDeleteTravelEntries), selectedRows.size()),
+				() -> {
+					for (TravelEntryIndexDto selectedRow : selectedRows) {
+						FacadeProvider.getTravelEntryFacade().deleteTravelEntry(selectedRow.getUuid());
+					}
+					callback.run();
+					new Notification(
+						I18nProperties.getString(Strings.headingTravelEntriesDeleted),
+						I18nProperties.getString(Strings.messageTravelEntriesDeleted),
+						Notification.Type.HUMANIZED_MESSAGE,
+						false).show(Page.getCurrent());
+				});
+		}
 	}
 }

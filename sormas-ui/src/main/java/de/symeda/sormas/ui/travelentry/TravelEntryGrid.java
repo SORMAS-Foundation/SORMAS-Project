@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.stream.Collectors;
 
 import com.vaadin.data.provider.DataProvider;
+import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
 
@@ -14,19 +15,33 @@ import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.ViewModelProviders;
+import de.symeda.sormas.ui.campaign.campaigns.CampaignsView;
 import de.symeda.sormas.ui.utils.BooleanRenderer;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.FieldAccessColumnStyleGenerator;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
+import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class TravelEntryGrid extends FilteredGrid<TravelEntryIndexDto, TravelEntryCriteria> {
 
 	public TravelEntryGrid(TravelEntryCriteria criteria) {
 		super(TravelEntryIndexDto.class);
 		setSizeFull();
-		setLazyDataProvider();
+
+		ViewConfiguration viewConfiguration = ViewModelProviders.of(CampaignsView.class).get(ViewConfiguration.class);
+		setInEagerMode(viewConfiguration.isInEagerMode());
+
+		if (isInEagerMode()) {
+			setCriteria(criteria);
+			setEagerDataProvider();
+		} else {
+			setLazyDataProvider();
+			setCriteria(criteria);
+		}
+
 		setCriteria(criteria);
 		initColumns();
 		addItemClickListener(
@@ -80,7 +95,24 @@ public class TravelEntryGrid extends FilteredGrid<TravelEntryIndexDto, TravelEnt
 		setSelectionMode(SelectionMode.NONE);
 	}
 
+
+	public void setEagerDataProvider() {
+		ListDataProvider<TravelEntryIndexDto> dataProvider =
+				DataProvider.fromStream(FacadeProvider.getTravelEntryFacade().getIndexList(getCriteria(), null, null, null).stream());
+		setDataProvider(dataProvider);
+		setSelectionMode(SelectionMode.MULTI);
+	}
+
 	public void reload() {
+		if (getSelectionModel().isUserSelectionAllowed()) {
+			deselectAll();
+		}
+
+		ViewConfiguration viewConfiguration = ViewModelProviders.of(TravelEntriesView.class).get(ViewConfiguration.class);
+		if (viewConfiguration.isInEagerMode()) {
+			setEagerDataProvider();
+		}
+
 		getDataProvider().refreshAll();
 	}
 }

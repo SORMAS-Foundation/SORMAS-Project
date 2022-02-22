@@ -100,6 +100,10 @@ public interface ConfigFacade {
 
 	boolean isMapUseCountryCenter();
 
+	String getMapTilersUrl();
+
+	String getMapTilersAttribution();
+
 	int getMapZoom();
 
 	String getGeocodingServiceUrlTemplate();

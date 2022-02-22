@@ -247,7 +247,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			Arrays.asList(EventDto.EVENT_INVESTIGATION_START_DATE, EventDto.EVENT_INVESTIGATION_END_DATE),
 			EventDto.EVENT_INVESTIGATION_STATUS,
 			Arrays.asList(EventInvestigationStatus.ONGOING, EventInvestigationStatus.DONE, EventInvestigationStatus.DISCARDED),
-			false);
+			true);
 		TextField title = addField(EventDto.EVENT_TITLE, TextField.class);
 		title.addStyleName(CssStyles.SOFT_REQUIRED);
 

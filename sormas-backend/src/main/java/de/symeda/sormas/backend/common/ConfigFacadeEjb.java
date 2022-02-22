@@ -64,6 +64,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String COUNTRY_CENTER_LAT = "country.center.latitude";
 	private static final String COUNTRY_CENTER_LON = "country.center.longitude";
 	private static final String MAP_USE_COUNTRY_CENTER = "map.usecountrycenter";
+	private static final String MAP_TILES_URL = "map.tiles.url";
+	private static final String MAP_TILES_ATTRIBUTION = "map.tiles.attribution";
 	private static final String MAP_ZOOM = "map.zoom";
 
 	public static final String VERSION_PLACEHOLER = "%version";
@@ -289,6 +291,16 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public boolean isMapUseCountryCenter() {
 		return getBoolean(MAP_USE_COUNTRY_CENTER, false);
+	}
+
+	@Override
+	public String getMapTilersUrl() {
+		return getProperty(MAP_TILES_URL, null);
+	}
+
+	@Override
+	public String getMapTilersAttribution() {
+		return getProperty(MAP_TILES_ATTRIBUTION, null);
 	}
 
 	@Override

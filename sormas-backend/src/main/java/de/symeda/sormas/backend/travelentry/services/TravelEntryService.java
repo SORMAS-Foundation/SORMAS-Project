@@ -273,6 +273,15 @@ public class TravelEntryService extends BaseTravelEntryService {
 			}
 		}
 
+		if (criteria.getReportDateFrom() != null && criteria.getReportDateTo() != null) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.between(from.get(TravelEntry.REPORT_DATE), criteria.getReportDateFrom(), criteria.getReportDateTo()));
+		} else if (criteria.getReportDateFrom() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(from.get(TravelEntry.REPORT_DATE), criteria.getReportDateFrom()));
+		} else if (criteria.getReportDateTo() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(from.get(TravelEntry.REPORT_DATE), criteria.getReportDateTo()));
+		}
+
 		if (criteria.getDeleted() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(TravelEntry.DELETED), criteria.getDeleted()));
 		}
