@@ -32,7 +32,7 @@ for ((i = 1; i <= $1; ++i)); do
   echo "Run: $i "
   echo "Started at:"
   date +"%T"
-  ./gradlew startTests -Dcucumber.tags="@PersonsAndImmunizations" -Dheadless=true -Dcourgette.threads=9 -DenvConfig=........./data.json
+  ./gradlew startTests -Dcucumber.tags="@PersonsAndImmunizations" -Dheadless=true -Dcourgette.threads=9 -DenvConfig=
   echo "Finished at:"
   date +"%T"
 done
