@@ -18,13 +18,24 @@
 
 package org.sormas.e2etests.steps.web.application.events;
 
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_COMMUNITY_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DATA_TYPE_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DISTRICT_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_GRID_RESULTS_ROWS;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_REGION_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_FROM_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_TO_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHOW_MORE_LESS_FILTERS;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.*;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.RESET_FILTERS_BUTTON;
 
 import cucumber.api.java8.En;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Named;
@@ -58,11 +69,81 @@ public class EventDirectorySteps implements En {
         });
 
     When(
+        "I fill Event Group Id filter to one assigned to created event on Event Directory Page",
+        () -> {
+          String eventGroupId = EditEventSteps.groupEvent.getUuid();
+          webDriverHelpers.fillInWebElement(
+              EVENT_GROUP, dataOperations.getPartialUuidFromAssociatedLink(eventGroupId));
+        });
+
+    When(
         "I click on the NEW EVENT button",
         () ->
             webDriverHelpers.clickWhileOtherButtonIsDisplayed(
                 EventDirectoryPage.NEW_EVENT_BUTTON, TITLE_INPUT));
+    And(
+        "I apply {string} to combobox on Event Directory Page",
+        (String eventParameter) -> {
+          webDriverHelpers.selectFromCombobox(EVENT_DISPLAY_COMBOBOX, eventParameter);
+          webDriverHelpers.waitForPageLoaded();
+        });
+    And(
+        "I apply Date type filter to {string} on Event directory page",
+        (String dataType) ->
+            webDriverHelpers.selectFromCombobox(CASE_DATA_TYPE_FILTER_COMBOBOX, dataType));
+    And(
+        "I fill Event to input to {int} days after mocked Event created on Event directory page",
+        (Integer number) -> {
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+          webDriverHelpers.fillInWebElement(
+              DATE_TO_COMBOBOX,
+              formatter.format(
+                  LocalDate.ofInstant(
+                          apiState.getCreatedEvent().getReportDateTime().toInstant(),
+                          ZoneId.systemDefault())
+                      .plusDays(number)));
+        });
+    And(
+        "I fill Event from input to {int} days before mocked Event created on Event directory page",
+        (Integer number) -> {
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+          webDriverHelpers.fillInWebElement(
+              DATE_FROM_COMBOBOX,
+              formatter.format(
+                  LocalDate.ofInstant(
+                          apiState.getCreatedEvent().getReportDateTime().toInstant(),
+                          ZoneId.systemDefault())
+                      .minusDays(number)));
+        });
+    And(
+        "I fill Event from input to {int} days after before mocked Event created on Event directory page",
+        (Integer number) -> {
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+          webDriverHelpers.fillInWebElement(
+              DATE_FROM_COMBOBOX, formatter.format(LocalDate.now().plusDays(number)));
+        });
 
+    And(
+        "I click SHOW MORE FILTERS button on Event directory page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SHOW_MORE_LESS_FILTERS));
+    And(
+        "I apply mocked Person Id filter on Event directory page",
+        () ->
+            webDriverHelpers.fillAndSubmitInWebElement(
+                PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT, "TestName TestSurname"));
+    And(
+        "I filter by mocked EventId on Event directory page",
+        () -> {
+          String partialUuid =
+              dataOperations.getPartialUuidFromAssociatedLink(
+                  "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee");
+          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_EVENT_BY_FREE_TEXT, partialUuid);
+        });
+    And(
+        "I filter by mocked EventGroupId on Event directory page",
+        () ->
+          webDriverHelpers.fillAndSubmitInWebElement(EVENT_GROUP, "TestName TestSurname")
+        );
     When(
         "I select random Risk level filter among the filter options from API",
         () -> {
@@ -71,6 +152,32 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.selectFromCombobox(
               FILTER_BY_RISK_LEVEL, RiskLevelValues.getCaptionForName(riskLevel));
         });
+    When(
+        "I fill Reporting User filter to {string} on Event Directory Page",
+        (String reportingUser) -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(FILTER_BY_REPORTING_USER, reportingUser);
+        });
+    And(
+        "I apply Region filter to {string} on Event directory page",
+        (String region) ->
+            webDriverHelpers.selectFromCombobox(CASE_REGION_FILTER_COMBOBOX, region));
+    And(
+        "I apply District filter to {string} on Event directory page",
+        (String district) ->
+            webDriverHelpers.selectFromCombobox(CASE_DISTRICT_FILTER_COMBOBOX, district));
+    And(
+        "I apply Event Management Status filter to {string} on Event directory page",
+        (String managementStatus) ->
+            webDriverHelpers.selectFromCombobox(EVENT_MANAGEMENT_FILTER, managementStatus));
+    And(
+        "I apply Event Investigation Status filter to {string} on Event directory page",
+        (String investigationStatus) ->
+            webDriverHelpers.selectFromCombobox(EVENT_INVESTIGATION_STATUS, investigationStatus));
+    Then(
+        "I apply Community filter to {string} on Event directory page",
+        (String community) ->
+            webDriverHelpers.selectFromCombobox(CASE_COMMUNITY_FILTER_COMBOBOX, community));
 
     When(
         "I select random Risk level filter among the filter options",
@@ -250,9 +357,8 @@ public class EventDirectorySteps implements En {
 
     When(
         "I click on the created event participant from the list",
-        () -> {
-          webDriverHelpers.clickOnWebElementBySelector(CREATED_PARTICIPANT);
-        });
+        () -> 
+          webDriverHelpers.clickOnWebElementBySelector(CREATED_PARTICIPANT));
 
     When(
         "I click on New Task from event tab",
@@ -266,15 +372,15 @@ public class EventDirectorySteps implements En {
         "I click Create Case for Event Participant",
         () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_CASE_BUTTON));
 
-      Then(
-              "I check that number of displayed Event results is {int}",
-              (Integer number) ->
-                      assertHelpers.assertWithPoll20Second(
-                              () ->
-                                      Assert.assertEquals(
-                                              webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS),
-                                              number.intValue(),
-                                              "Number of displayed cases is not correct")));
+    Then(
+        "I check that number of displayed Event results is {int}",
+        (Integer number) ->
+            assertHelpers.assertWithPoll20Second(
+                () ->
+                    Assert.assertEquals(
+                        webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS),
+                        number.intValue(),
+                        "Number of displayed cases is not correct")));
 
     Then(
         "I check the number of displayed Event results from All button is {int}",

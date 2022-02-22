@@ -38,6 +38,14 @@ public class EventDirectoryPage {
   public static final By SEARCH_EVENT_BY_FREE_TEXT = By.id("freeText");
   public static final By FILTER_BY_RISK_LEVEL =
       By.cssSelector("[id='riskLevel'] [class='v-filterselect-button']");
+  public static final By FILTER_BY_REPORTING_USER =
+      By.cssSelector("[id='reportingUserRole'] [class='v-filterselect-button']");
+  public static final By EVENT_MANAGEMENT_FILTER =
+      By.cssSelector("[id='eventManagementStatus'] [class='v-filterselect-button']");
+  public static final By EVENT_INVESTIGATION_STATUS =
+      By.cssSelector("[id='eventInvestigationStatus'] [class='v-filterselect-button']");
+  public static final By EVENT_DISPLAY_COMBOBOX =
+      By.cssSelector("[id='relevanceStatusFilter'] [class='v-filterselect-button']");
   public static final By FILTER_BY_DISEASE =
       By.cssSelector("[id='disease'] [class='v-filterselect-button']");
   public static final By DISTRICT_COMBOBOX =
@@ -53,6 +61,8 @@ public class EventDirectoryPage {
   public static final By EVENT_CLUSTER = By.id("status-Cluster");
   public static final By EVENT_DROPPED = By.id("status-Dropped");
   public static final By CREATED_PARTICIPANT = By.cssSelector("[role='gridcell'] a");
+  public static final By EVENT_PARTICIPANT = By.id("freeTextEventParticipants");
+  public static final By EVENT_GROUP = By.id("freeTextEventGroups");
 
   /*public static By getByEventUuid(String eventUuid) {
     return By.cssSelector("a[title=" + eventUuid + "]");
