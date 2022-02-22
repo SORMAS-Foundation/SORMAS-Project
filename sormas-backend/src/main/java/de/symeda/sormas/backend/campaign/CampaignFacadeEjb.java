@@ -362,6 +362,21 @@ public class CampaignFacadeEjb implements CampaignFacade {
 
 		campaignService.delete(campaignService.getByUuid(campaignUuid));
 	}
+	
+	
+	@Override
+	public void cloneCampaign(String campaignUuid) {
+
+		User user = userService.getCurrentUser();
+		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
+			.contains(UserRight.CAMPAIGN_DELETE)) {
+			throw new UnsupportedOperationException(
+				I18nProperties.getString(Strings.entityUser) + " " + user.getUuid() + " is not allowed to duplicate "
+					+ I18nProperties.getString(Strings.entityCampaigns).toLowerCase() + ".");
+		}
+		
+		campaignService.cloneForm(campaignService.getByUuid(campaignUuid));
+	}
 
 	@Override
 	public void archiveOrDearchiveCampaign(String campaignUuid, boolean archive) {

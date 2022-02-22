@@ -62,7 +62,8 @@ public class CampaignFormDataView extends AbstractCampaignDataView {
 						String.format(I18nProperties.getString(Strings.messageCampaignFormSaved), campaignFormData.getCampaignFormMeta().toString()),
 						TRAY_NOTIFICATION);
 				},
-				null);
+				null,
+				true);
 		editComponent.setMargin(false);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
 		editComponent.setHeightUndefined();

@@ -64,7 +64,7 @@ public class CampaignFormMetaService extends AdoServiceWithUserFilter<CampaignFo
 		//TODO: post campaign implementations
 		cq = cq.where(filter);
 		cq.multiselect(campaignFormMetaJoin.get(CampaignFormMeta.UUID), campaignFormMetaJoin.get(CampaignFormMeta.FORM_NAME));
-		System.out.println("SSSSSSSSSSSSSSSSSSSSSSSSSSdSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"+cq.toString());
+		//System.out.println("SSSSSSSSSSSSSSSSSSSSSSSSSSdSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSSS"+cq.toString());
 		return em.createQuery(cq).getResultList();
 	}
 }

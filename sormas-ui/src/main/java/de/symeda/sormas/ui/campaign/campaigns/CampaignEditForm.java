@@ -81,7 +81,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 		+ fluidRowLocs(CampaignDto.START_DATE, CampaignDto.END_DATE)
 		+ fluidRowLocs(CampaignDto.DESCRIPTION)
 		+ fluidRowLocs(SPACE_LOCX)
-		//+ fluidRowLocs(CampaignDto.CAMPAIGN_TYPES)
+		//+ fluidRowLocs(CampaignDto.CAMPAIGN_TYPES) Discard Changes
 		+ fluidRowLocs(USAGE_INFO)
 		+ fluidRowLocs(CAMPAIGN_TYPE_LOC)
 		
@@ -156,8 +156,6 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 		clusterfield.addItem("NID");
 		clusterfield.addItem("SID");
 		clusterfield.addItem("bOPV");
-		clusterfield.addItem("Campaign 1");
-		
 		
 		
 		//CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_CAPTION_INLINE);
@@ -255,7 +253,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 		
 		
 		parentTab1.addComponent(layout);
-		parentTab1.setCaption("Pre-Campaign");
+		parentTab1.setCaption("Pre-Campaign Phase");
 		tabsheetParent.addTab(parentTab1);
 		
 		
@@ -311,7 +309,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 		
 		
 		parentTab3.addComponent(layoutPost);
-		parentTab3.setCaption("Intra-Campaign");
+		parentTab3.setCaption("Intra-Campaign Phase");
 		tabsheetParent.addTab(parentTab3);
 		
 		//stop
@@ -367,7 +365,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 		
 		
 		parentTab2.addComponent(layoutIntra);
-		parentTab2.setCaption("Post-Campaign");
+		parentTab2.setCaption("Post-Campaign Phase");
 		tabsheetParent.addTab(parentTab2);
 		
 		//stop

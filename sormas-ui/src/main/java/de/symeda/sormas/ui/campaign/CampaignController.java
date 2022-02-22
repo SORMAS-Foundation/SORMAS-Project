@@ -57,7 +57,7 @@ public class CampaignController {
 		CommitDiscardWrapperComponent<CampaignEditForm> campaignComponent;
 		String heading;
 		if (uuid != null) {
-			CampaignDto campaign = getCampaign(uuid);
+			CampaignDto campaign = getCampaign(uuid); 
 			campaignComponent = getCampaignComponent(getCampaign(uuid), () -> {
 				Notification.show(I18nProperties.getString(Strings.messageCampaignSaved), Type.WARNING_MESSAGE);
 				SormasUI.refreshView();
@@ -66,6 +66,14 @@ public class CampaignController {
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
 				campaignComponent.addDeleteListener(() -> {
 					FacadeProvider.getCampaignFacade().deleteCampaign(campaign.getUuid());
+					campaignComponent.discard();
+					SormasUI.refreshView();
+				}, I18nProperties.getString(Strings.entityCampaign));
+			}
+			
+			if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
+				campaignComponent.addCloneListener(() -> {
+					FacadeProvider.getCampaignFacade().cloneCampaign(campaign.getUuid());
 					campaignComponent.discard();
 					SormasUI.refreshView();
 				}, I18nProperties.getString(Strings.entityCampaign));
@@ -102,7 +110,7 @@ public class CampaignController {
 				SormasUI.refreshView();
 				Notification
 					.show(String.format(I18nProperties.getString(Strings.messageCampaignFormSaved), campaignForm.toString()), Type.TRAY_NOTIFICATION);
-			}, window::close);
+			}, window::close, true);
 
 		window.setCaption(String.format(I18nProperties.getString(Strings.headingCreateCampaignDataForm), campaignForm.toString()));
 		window.setContent(component);
@@ -180,6 +188,15 @@ public class CampaignController {
 				UI.getCurrent().getNavigator().navigateTo(CampaignsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityCampaign));
 		}
+		
+		//Clone
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE) && !isCreate) {
+			CampaignDto finalCampaignDto = campaignDto;
+			campaignComponent.addCloneListener(() -> {
+				FacadeProvider.getCampaignFacade().cloneCampaign(finalCampaignDto.getUuid());
+				UI.getCurrent().getNavigator().navigateTo(CampaignsView.VIEW_NAME);
+			}, I18nProperties.getString(Strings.entityCampaign));
+		}
 
 		// Initialize 'Archive' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_ARCHIVE) && !isCreate) {
@@ -213,7 +230,8 @@ public class CampaignController {
 		boolean revertFormOnDiscard,
 		boolean showDeleteButton,
 		Runnable commitCallback,
-		Runnable discardCallback) {
+		Runnable discardCallback,
+		boolean showCloneButton) {
 
 		CampaignFormDataEditForm form = new CampaignFormDataEditForm(campaignFormData == null);
 		if (campaignFormData == null) {
@@ -261,6 +279,15 @@ public class CampaignController {
 
 			component.addDeleteListener(() -> {
 				FacadeProvider.getCampaignFormDataFacade().deleteCampaignFormData(campaignFormDataUuid);
+				UI.getCurrent().getNavigator().navigateTo(CampaignFormDataView.VIEW_NAME);
+			}, I18nProperties.getString(Strings.entityCampaignDataForm));
+		}
+		
+		if (showCloneButton && UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
+			String campaignFormDataUuid = campaignFormData.getUuid();
+
+			component.addCloneListener(() -> {
+				FacadeProvider.getCampaignFormDataFacade().cloneCampaignFormData(campaignFormDataUuid);
 				UI.getCurrent().getNavigator().navigateTo(CampaignFormDataView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityCampaignDataForm));
 		}

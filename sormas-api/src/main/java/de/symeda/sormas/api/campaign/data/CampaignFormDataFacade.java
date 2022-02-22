@@ -41,6 +41,8 @@ public interface CampaignFormDataFacade {
 	CampaignFormDataDto getCampaignFormDataByUuid(String campaignFormDataUuid);
 
 	void deleteCampaignFormData(String campaignFormDataUuid);
+	
+	void cloneCampaignFormData(String campaignFormDataUuid);
 
 	boolean isArchived(String campaignFormDataUuid);
 

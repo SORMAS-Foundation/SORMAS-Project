@@ -85,11 +85,17 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 		void onDelete();
 	}
+	
+	public static interface CloneListener {
+
+		void onClone();
+	}
 
 	private transient List<CommitListener> commitListeners = new ArrayList<>();
 	private transient List<DiscardListener> discardListeners = new ArrayList<>();
 	private transient List<DoneListener> doneListeners = new ArrayList<>();
 	private transient List<DeleteListener> deleteListeners = new ArrayList<>();
+	private transient List<CloneListener> cloneListeners = new ArrayList<>();
 	// only to check if it's set
 	private transient CommitListener primaryCommitListener;
 
@@ -103,6 +109,8 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	private Button discardButton;
 
 	private Button deleteButton;
+	
+	private Button cloneButton;
 
 	private boolean commited = false;
 	private boolean dirty = false;
@@ -393,6 +401,31 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 		return deleteButton;
 	}
+	//I18nProperties.getCaption(Captions.actionDelete)
+	public Button getCloneButton(String entityName) {
+		if (cloneButton == null) {
+			cloneButton = ButtonHelper.createButton("clone", "Duplicate", new ClickListener() {
+
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+					/*VaadinUiUtil.showDeleteConfirmationWindow(
+						String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName),
+						new Runnable() {
+
+							public void run() {
+								
+							}
+						});*/
+					
+					onClone();
+				}
+			}, ValoTheme.BUTTON_PRIMARY, CssStyles.BUTTON_BORDER_NEUTRAL);
+		}
+
+		return cloneButton;
+	}
 
 	@Override
 	public boolean isModified() {
@@ -642,6 +675,13 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		if (!deleteListeners.contains(listener))
 			deleteListeners.add(listener);
 	}
+	
+	public void addCloneListener(CloneListener listener, String entityName) {
+		if (cloneListeners.isEmpty())
+			buttonsPanel.addComponent(getCloneButton(entityName), 0);
+		if (!cloneListeners.contains(listener))
+			cloneListeners.add(listener);
+	}
 
 	public boolean hasDeleteListener() {
 		return !deleteListeners.isEmpty();
@@ -650,6 +690,17 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	private void onDelete() {
 		for (DeleteListener listener : deleteListeners)
 			listener.onDelete();
+	}
+	
+	
+	//impl clone
+	public boolean hasCloneListener() {
+		return !cloneListeners.isEmpty();
+	}
+
+	private void onClone() {
+		for (CloneListener listener : cloneListeners)
+			listener.onClone();
 	}
 
 	@Override

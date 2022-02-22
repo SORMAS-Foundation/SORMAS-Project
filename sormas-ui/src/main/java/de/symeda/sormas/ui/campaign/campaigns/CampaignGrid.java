@@ -67,13 +67,13 @@ public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteri
 
 		final boolean canEditCampaigns = UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_EDIT);
 		final String navigateToCampaignColumnIcon = canEditCampaigns ? VaadinIcons.COPY.getHtml() : VaadinIcons.EYE.getHtml();
-		final Column<CampaignIndexDto, String> navigateToCampaignColumn = addColumn(entry -> navigateToCampaignColumnIcon+"Clone", new HtmlRenderer());
+		final Column<CampaignIndexDto, String> navigateToCampaignColumn = addColumn(entry -> navigateToCampaignColumnIcon+" Clone", new HtmlRenderer());
 		final String navigateToCampaignColumnId = canEditCampaigns ? CLONE_BTN_ID : OPEN_BTN_ID;
 		navigateToCampaignColumn.setId(navigateToCampaignColumnId);
 		navigateToCampaignColumn.setSortable(false);
 		navigateToCampaignColumn.setWidth(20);
 
-		//addItemClickListener(new ShowDetailsListener<>(navigateToCampaignColumnId, e -> ControllerProvider.getCampaignController().navigateToCampaign(e.getUuid()))) New Form
+		//addItemClickListener(new ShowDetailsListener<>(navigateToCampaignColumnId, e -> ControllerProvider.getCampaignController().navigateToCampaign(e.getUuid())))  campaign data and dashboard definitions by clicking inside one o
 		
 		if(canEditCampaigns){
 			addItemClickListener(new ShowDetailsListener<>(CampaignIndexDto.NAME, e -> ControllerProvider.getCampaignController().navigateToCampaign(e.getUuid())));

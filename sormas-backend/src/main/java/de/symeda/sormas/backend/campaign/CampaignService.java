@@ -125,6 +125,17 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 
 		return em.createQuery(cq).getResultList();
 	}
+	
+	public int cloneForm(Campaign uuidx) {
+		String cdc = "insert into campaigns (SELECT CAST(CONCAT(id,'01') AS bigint) as id, CONCAT(uuid,'-DUP') as uuid, changedate, creationdate, CONCAT(name,'-DUP'), description, startdate, enddate, creatinguser_id, deleted, archived, sys_period, dashboardelements, cluster, round FROM campaigns where name='"+uuidx+"')";
+		int dc = cloneFormx(uuidx);
+		return em.createNativeQuery(cdc).executeUpdate();
+	}
+	
+	public int cloneFormx(Campaign uuidx) {
+		String cdv = "insert into campaign_campaignformmeta (SELECT CAST(CONCAT(dc.id,'01') AS bigint) as id, cd.campaign_id, cd.campaignformmeta_id FROM campaigns dc inner join campaign_campaignformmeta cd on (dc.id = cd.campaign_id) where dc.name='"+uuidx+"')";
+		return em.createNativeQuery(cdv).executeUpdate();
+	}
 
 	public Predicate createActiveCampaignsFilter(CriteriaBuilder cb, Root<Campaign> root) {
 		return cb.and(cb.isFalse(root.get(Campaign.ARCHIVED)), cb.isFalse(root.get(Campaign.DELETED)));

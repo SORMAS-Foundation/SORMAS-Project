@@ -206,6 +206,24 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		CampaignFormData campaignFormData = campaignFormDataService.getByUuid(campaignFormDataUuid);
 		campaignFormDataService.delete(campaignFormData);
 	}
+	
+	@Override
+	public void cloneCampaignFormData(String campaignFormDataUuid) {
+		if (!userService.hasRight(UserRight.CAMPAIGN_FORM_DATA_DELETE)) {
+			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + "is not allowed to duplicate Campaign Form Data");
+		}
+
+		CampaignFormData campaignFormData = campaignFormDataService.getByUuid(campaignFormDataUuid);
+		
+		///
+		//campaignFormDataService.delete(campaignFormData);
+		
+		String cdc = "insert into campaigns SELECT  CONCAT(id,'01'), CONCAT(uuid,'-DUP'), changedate, creationdate,name,description,startdate,enddate,creatinguser_id, deleted, archived, sys_period, dashboardelements, cluster, round FROM campaigns where uuid='SKGJZA-4RAWRL-BDQTOK-Y3CPSK5I'";
+		
+		System.out.println("+++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++++ccccccccccccccccccccccccccccc+++++++++++++++++++++++++++++++++++++++++++++++");
+		em.createQuery(cdc).getSingleResult();
+		
+	}
 
 	private CampaignFormDataDto convertToDto(CampaignFormData source) {
 		CampaignFormDataDto dto = toDto(source);
@@ -503,6 +521,8 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 					diagramSeries.getFormId(),
 					true));
 		}
+		
+		System.out.println(resultData.toString()+"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
 		return resultData;
 	}
 
@@ -602,7 +622,9 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 				.append(" LEFT JOIN ")
 				.append(Area.TABLE_NAME)
 				.append(" ON ")
-				.append(Region.AREA)
+				.append(CampaignFormData.TABLE_NAME)
+				.append(".")
+				.append(CampaignFormData.AREA)
 				.append("_id = ")
 				.append(Area.TABLE_NAME)
 				.append(".")
@@ -698,6 +720,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 			//@formatter:off
 			Query seriesDataQuery = em.createNativeQuery(
 					selectBuilder.toString() + " FROM " + CampaignFormData.TABLE_NAME + joinBuilder + whereBuilder + groupByBuilder);
+			System.out.println("--------------------------------------------------------------------------------------------------------------------------------------------"+selectBuilder.toString() + " FROM " + CampaignFormData.TABLE_NAME + joinBuilder + whereBuilder + groupByBuilder);
 			//@formatter:on
 
 			seriesDataQuery.setParameter("campaignFormMetaId", series.getFormId());
@@ -756,6 +779,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		}
 
 		cq.select(cb.count(root));
+		System.out.println(cq.toString()+"xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx");
 		return em.createQuery(cq).getSingleResult();
 	}
 
