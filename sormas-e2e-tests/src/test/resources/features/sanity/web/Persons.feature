@@ -19,7 +19,7 @@ Feature: Edit Persons
     And I check that previous edited person is correctly displayed in Edit Person page
 
     @issue=SORDEV-8469
-  Scenario: Form card navigation in Edit Person Directory
+  Scenario: Test for navigating through Case, Contact and Immunization cards on Edit Person Page
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
@@ -47,6 +47,6 @@ Feature: Edit Persons
     Then I navigate to the last created via api Person page via URL
     And I click on Edit Contact button from Contacts card on Edit Person page
     Then I navigate to the last created via api Person page via URL
-    And I click on Edit Immunization button from Immunization card on Edit Person page
+    And I click on Edit Immunization button for Immunization created through API from Immunization card on Edit Person page
     Then I navigate to the last created via api Person page via URL
 

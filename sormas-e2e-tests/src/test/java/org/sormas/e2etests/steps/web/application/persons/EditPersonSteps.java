@@ -125,30 +125,30 @@ public class EditPersonSteps implements En {
     Then(
         "I click on See Cases for this Person button from Edit Person page",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(SEE_CASES_FOR_PERSON);
+          webDriverHelpers.clickOnWebElementBySelector(SEE_CASES_FOR_PERSON_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
         });
     Then(
         "I click on See CONTACTS for this Person button from Edit Person page",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(SEE_CONTACTS_FOR_PERSON);
+          webDriverHelpers.clickOnWebElementBySelector(SEE_CONTACTS_FOR_PERSON_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
         });
 
     Then(
         "I click on Edit Case button from Cases card on Edit Person page",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(EDIT_CASES);
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_CASES_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
         });
     Then(
         "I click on Edit Contact button from Contacts card on Edit Person page",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(EDIT_CONTACTS);
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_CONTACTS_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
         });
     Then(
-        "I click on Edit Immunization button from Immunization card on Edit Person page",
+        "I click on Edit Immunization button for Immunization created through API from Immunization card on Edit Person page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(
               getByImmunizationUuid(apiState.getCreatedImmunization().getUuid()));
