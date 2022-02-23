@@ -222,6 +222,12 @@ public class EventDirectorySteps implements En {
         });
 
     When(
+        "I click on the first row from event participant",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_PARTICIPANT);
+        });
+
+    When(
         "I am accessing the event tab using the created event via api",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.EVENTS_BUTTON);
