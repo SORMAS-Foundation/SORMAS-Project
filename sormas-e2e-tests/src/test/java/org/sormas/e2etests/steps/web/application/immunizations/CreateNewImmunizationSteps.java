@@ -56,14 +56,14 @@ public class CreateNewImmunizationSteps implements En {
         "I check Overwrite immunization management status option",
         () -> {
           webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.clickOnWebElementBySelector(OVERWRITE_IMMUNIZATION_MANAGEMENT_STATUS);
+          webDriverHelpers.clickOnWebElementBySelector(OVERWRITE_IMMUNIZATION_MANAGEMENT_STATUS_INPUT);
         });
 
     When(
         "I click on discard button from immunization tab",
         () -> {
-          webDriverHelpers.scrollToElement(DISCARD_IMMUNIZATION);
-          webDriverHelpers.clickOnWebElementBySelector(DISCARD_IMMUNIZATION);
+          webDriverHelpers.scrollToElement(DISCARD_IMMUNIZATION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(DISCARD_IMMUNIZATION_BUTTON);
         });
 
     When(
