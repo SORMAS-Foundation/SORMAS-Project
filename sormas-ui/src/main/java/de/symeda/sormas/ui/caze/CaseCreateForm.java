@@ -1,37 +1,31 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.ui.caze;
 
 import static de.symeda.sormas.ui.utils.CssStyles.ERROR_COLOR_PRIMARY;
-import static de.symeda.sormas.ui.utils.CssStyles.FORCE_CAPTION;
 import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.CssStyles.SOFT_REQUIRED;
 import static de.symeda.sormas.ui.utils.CssStyles.VSPACE_3;
 import static de.symeda.sormas.ui.utils.CssStyles.style;
-import static de.symeda.sormas.ui.utils.LayoutUtil.divsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumn;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidColumnLoc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRow;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
-import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locs;
 
-import java.time.Month;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
@@ -40,18 +34,14 @@ import java.util.List;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.google.common.collect.Sets;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
-import com.vaadin.v7.data.validator.EmailValidator;
-import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.TextField;
 
-import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -62,7 +52,6 @@ import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
@@ -71,29 +60,24 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
-import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PresentCondition;
-import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.location.LocationEditForm;
+import de.symeda.sormas.ui.person.PersonCreateForm;
+import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.InfrastructureFieldsHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
-import de.symeda.sormas.ui.utils.PersonDependentEditForm;
-import de.symeda.sormas.ui.utils.PhoneNumberValidator;
 
-public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
+public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 	private static final long serialVersionUID = 1L;
 
@@ -106,11 +90,7 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 	private static final String DIFFERENT_POINT_OF_ENTRY_JURISDICTION = "differentPointOfEntryJurisdiction";
 	private static final String POINT_OF_ENTRY_REGION = "pointOfEntryRegion";
 	private static final String POINT_OF_ENTRY_DISTRICT = "pointOfEntryDistrict";
-	private static final String ENTER_HOME_ADDRESS_NOW = "enterHomeAddressNow";
-	private static final String HOME_ADDRESS_HEADER = "addressHeader";
-	private static final String HOME_ADDRESS_LOC = "homeAddressLoc";
 
-	private ComboBox birthDateDay;
 	private NullableOptionGroup facilityOrHome;
 	private ComboBox facilityTypeGroup;
 	private ComboBox facilityType;
@@ -123,8 +103,7 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 	private ComboBox facilityCombo;
 	private ComboBox pointOfEntryDistrictCombo;
 
-	private LocationEditForm homeAddressForm;
-	private Button searchPersonButton;
+	private PersonCreateForm personCreateForm;
 
 	private final boolean showHomeAddressForm;
 
@@ -155,15 +134,7 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
         + fluidRowLocs(DIFFERENT_POINT_OF_ENTRY_JURISDICTION)
         + fluidRowLocs(POINT_OF_ENTRY_REGION, POINT_OF_ENTRY_DISTRICT)
         + fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS)
-        + fluidRowLocs(6, PersonDto.FIRST_NAME, 4, PersonDto.LAST_NAME, 2, PERSON_SEARCH_LOC)
-        + fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
-        fluidRowLocs(PersonDto.SEX))
-        + fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER)
-        + fluidRowLocs(PersonDto.PRESENT_CONDITION, SymptomsDto.ONSET_DATE)
-        + fluidRowLocs(PersonDto.PHONE, PersonDto.EMAIL_ADDRESS)
-        + fluidRowLocs(ENTER_HOME_ADDRESS_NOW)
-        + loc(HOME_ADDRESS_HEADER)
-        + divsCss(VSPACE_3, fluidRowLocs(HOME_ADDRESS_LOC));
+		+ fluidRowLocs(CaseDataDto.PERSON);
     //@formatter:on
 
 	public CaseCreateForm() {
@@ -217,88 +188,11 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 		NullableOptionGroup plagueType = addField(CaseDataDto.PLAGUE_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.DENGUE_FEVER_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.RABIES_TYPE, NullableOptionGroup.class);
-		addCustomField(PersonDto.FIRST_NAME, String.class, TextField.class);
-		addCustomField(PersonDto.LAST_NAME, String.class, TextField.class);
 
-		searchPersonButton = createPersonSearchButton(PERSON_SEARCH_LOC);
-		getContent().addComponent(searchPersonButton, PERSON_SEARCH_LOC);
-
-		TextField nationalHealthIdField = addCustomField(PersonDto.NATIONAL_HEALTH_ID, String.class, TextField.class);
-		TextField passportNumberField = addCustomField(PersonDto.PASSPORT_NUMBER, String.class, TextField.class);
-		if (CountryHelper.isCountry(FacadeProvider.getConfigFacade().getCountryLocale(), CountryHelper.COUNTRY_CODE_GERMANY)) {
-			nationalHealthIdField.setVisible(false);
-		}
-		if (CountryHelper.isInCountries(
-			FacadeProvider.getConfigFacade().getCountryLocale(),
-			CountryHelper.COUNTRY_CODE_GERMANY,
-			CountryHelper.COUNTRY_CODE_FRANCE)) {
-			passportNumberField.setVisible(false);
-		}
-
-		birthDateDay = addCustomField(PersonDto.BIRTH_DATE_DD, Integer.class, ComboBox.class);
-		// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
-		birthDateDay.setNullSelectionAllowed(true);
-		birthDateDay.addStyleName(FORCE_CAPTION);
-		birthDateDay.setInputPrompt(I18nProperties.getString(Strings.day));
-		ComboBox birthDateMonth = addCustomField(PersonDto.BIRTH_DATE_MM, Integer.class, ComboBox.class);
-		// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
-		birthDateMonth.setNullSelectionAllowed(true);
-		birthDateMonth.addItems(DateHelper.getMonthsInYear());
-		birthDateMonth.setPageLength(12);
-		birthDateMonth.addStyleName(FORCE_CAPTION);
-		birthDateMonth.setInputPrompt(I18nProperties.getString(Strings.month));
-		setItemCaptionsForMonths(birthDateMonth);
-		ComboBox birthDateYear = addCustomField(PersonDto.BIRTH_DATE_YYYY, Integer.class, ComboBox.class);
-		birthDateYear.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.BIRTH_DATE));
-		// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
-		birthDateYear.setNullSelectionAllowed(true);
-		birthDateYear.addItems(DateHelper.getYearsToNow());
-		birthDateYear.setItemCaptionMode(ItemCaptionMode.ID_TOSTRING);
-		birthDateYear.setInputPrompt(I18nProperties.getString(Strings.year));
-		birthDateDay.addValidator(
-			e -> ControllerProvider.getPersonController()
-				.validateBirthDate((Integer) birthDateYear.getValue(), (Integer) birthDateMonth.getValue(), (Integer) e));
-		birthDateMonth.addValidator(
-			e -> ControllerProvider.getPersonController()
-				.validateBirthDate((Integer) birthDateYear.getValue(), (Integer) e, (Integer) birthDateDay.getValue()));
-		birthDateYear.addValidator(
-			e -> ControllerProvider.getPersonController()
-				.validateBirthDate((Integer) e, (Integer) birthDateMonth.getValue(), (Integer) birthDateDay.getValue()));
-
-		// Update the list of days according to the selected month and year
-		birthDateYear.addValueChangeListener(e -> {
-			updateListOfDays((Integer) e.getProperty().getValue(), (Integer) birthDateMonth.getValue());
-			birthDateMonth.markAsDirty();
-			birthDateDay.markAsDirty();
-		});
-		birthDateMonth.addValueChangeListener(e -> {
-			updateListOfDays((Integer) birthDateYear.getValue(), (Integer) e.getProperty().getValue());
-			birthDateYear.markAsDirty();
-			birthDateDay.markAsDirty();
-		});
-		birthDateDay.addValueChangeListener(e -> {
-			birthDateYear.markAsDirty();
-			birthDateMonth.markAsDirty();
-		});
-
-		ComboBox sex = addCustomField(PersonDto.SEX, Sex.class, ComboBox.class);
-		sex.setCaption(I18nProperties.getCaption(Captions.Person_sex));
-		ComboBox presentCondition = addCustomField(PersonDto.PRESENT_CONDITION, PresentCondition.class, ComboBox.class);
-		presentCondition.setCaption(I18nProperties.getCaption(Captions.Person_presentCondition));
-
-		addCustomField(
-			SymptomsDto.ONSET_DATE,
-			Date.class,
-			DateField.class,
-			I18nProperties.getPrefixCaption(SymptomsDto.I18N_PREFIX, SymptomsDto.ONSET_DATE));
-
-		TextField phone = addCustomField(PersonDto.PHONE, String.class, TextField.class);
-		phone.setCaption(I18nProperties.getCaption(Captions.Person_phone));
-		TextField email = addCustomField(PersonDto.EMAIL_ADDRESS, String.class, TextField.class);
-		email.setCaption(I18nProperties.getCaption(Captions.Person_emailAddress));
-
-		phone.addValidator(new PhoneNumberValidator(I18nProperties.getValidationError(Validations.validPhoneNumber, phone.getCaption())));
-		email.addValidator(new EmailValidator(I18nProperties.getValidationError(Validations.validEmailAddress, email.getCaption())));
+		personCreateForm = new PersonCreateForm(showHomeAddressForm, true, true);
+		personCreateForm.setWidth(100, Unit.PERCENTAGE);
+		// personCreateForm.setValue(new PersonDto());
+		getContent().addComponent(personCreateForm, CaseDataDto.PERSON);
 
 		differentPlaceOfStayJurisdiction = addCustomField(DIFFERENT_PLACE_OF_STAY_JURISDICTION, Boolean.class, CheckBox.class);
 		differentPlaceOfStayJurisdiction.addStyleName(VSPACE_3);
@@ -335,10 +229,6 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 		InfrastructureFieldsHelper.initInfrastructureFields(pointOfEntryRegionCombo, pointOfEntryDistrictCombo, null);
 
 		pointOfEntryDistrictCombo.addValueChangeListener(e -> updatePOEs());
-
-		if (showHomeAddressForm) {
-			addHomeAddressForm();
-		}
 
 		FieldHelper.setVisibleWhen(
 			differentPlaceOfStayJurisdiction,
@@ -542,16 +432,7 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 		// Set initial visibilities & accesses
 		initializeVisibilitiesAndAllowedVisibilities();
 
-		setRequired(
-			true,
-			CaseDataDto.REPORT_DATE,
-			PersonDto.FIRST_NAME,
-			PersonDto.LAST_NAME,
-			CaseDataDto.DISEASE,
-			PersonDto.SEX,
-			FACILITY_OR_HOME_LOC,
-			FACILITY_TYPE_GROUP_LOC,
-			CaseDataDto.FACILITY_TYPE);
+		setRequired(true, CaseDataDto.REPORT_DATE, CaseDataDto.DISEASE, FACILITY_OR_HOME_LOC, FACILITY_TYPE_GROUP_LOC, CaseDataDto.FACILITY_TYPE);
 		FieldHelper.addSoftRequiredStyle(plagueType, communityCombo, facilityDetails);
 
 		FieldHelper
@@ -679,16 +560,6 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 		}
 	}
 
-	private void updateListOfDays(Integer selectedYear, Integer selectedMonth) {
-
-		Integer currentlySelected = (Integer) birthDateDay.getValue();
-		birthDateDay.removeAllItems();
-		birthDateDay.addItems(DateHelper.getDaysInMonth(selectedMonth, selectedYear));
-		if (birthDateDay.containsId(currentlySelected)) {
-			birthDateDay.setValue(currentlySelected);
-		}
-	}
-
 	private void updateFacilityFields(ComboBox cbFacility, TextField tfFacilityDetails) {
 
 		if (cbFacility.getValue() != null) {
@@ -733,185 +604,36 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 		}
 	}
 
-	private void setItemCaptionsForMonths(AbstractSelect months) {
-
-		months.setItemCaption(1, I18nProperties.getEnumCaption(Month.JANUARY));
-		months.setItemCaption(2, I18nProperties.getEnumCaption(Month.FEBRUARY));
-		months.setItemCaption(3, I18nProperties.getEnumCaption(Month.MARCH));
-		months.setItemCaption(4, I18nProperties.getEnumCaption(Month.APRIL));
-		months.setItemCaption(5, I18nProperties.getEnumCaption(Month.MAY));
-		months.setItemCaption(6, I18nProperties.getEnumCaption(Month.JUNE));
-		months.setItemCaption(7, I18nProperties.getEnumCaption(Month.JULY));
-		months.setItemCaption(8, I18nProperties.getEnumCaption(Month.AUGUST));
-		months.setItemCaption(9, I18nProperties.getEnumCaption(Month.SEPTEMBER));
-		months.setItemCaption(10, I18nProperties.getEnumCaption(Month.OCTOBER));
-		months.setItemCaption(11, I18nProperties.getEnumCaption(Month.NOVEMBER));
-		months.setItemCaption(12, I18nProperties.getEnumCaption(Month.DECEMBER));
-	}
-
-	public String getPersonFirstName() {
-		return (String) getField(PersonDto.FIRST_NAME).getValue();
-	}
-
-	public String getPersonLastName() {
-		return (String) getField(PersonDto.LAST_NAME).getValue();
-	}
-
-	public String getNationalHealthId() {
-		return (String) getField(PersonDto.NATIONAL_HEALTH_ID).getValue();
-	}
-
-	public String getPassportNumber() {
-		return (String) getField(PersonDto.PASSPORT_NUMBER).getValue();
-	}
-
-	public Integer getBirthdateDD() {
-		return (Integer) getField(PersonDto.BIRTH_DATE_DD).getValue();
-	}
-
-	public Integer getBirthdateMM() {
-		return (Integer) getField(PersonDto.BIRTH_DATE_MM).getValue();
-	}
-
-	public Integer getBirthdateYYYY() {
-		return (Integer) getField(PersonDto.BIRTH_DATE_YYYY).getValue();
-	}
-
-	public Sex getSex() {
-		return (Sex) getField(PersonDto.SEX).getValue();
-	}
-
-	public PresentCondition getPresentCondition() {
-		return (PresentCondition) getField(PersonDto.PRESENT_CONDITION).getValue();
-	}
-
 	public Date getOnsetDate() {
-		return (Date) getField(SymptomsDto.ONSET_DATE).getValue();
-	}
-
-	public String getPhone() {
-		return (String) getField(PersonDto.PHONE).getValue();
-	}
-
-	public String getEmailAddress() {
-		return (String) getField(PersonDto.EMAIL_ADDRESS).getValue();
-	}
-
-	public void setPerson(PersonDto person) {
-
-		if (person != null) {
-			((TextField) getField(PersonDto.FIRST_NAME)).setValue(person.getFirstName());
-			((TextField) getField(PersonDto.LAST_NAME)).setValue(person.getLastName());
-			((ComboBox) getField(PersonDto.BIRTH_DATE_YYYY)).setValue(person.getBirthdateYYYY());
-			((ComboBox) getField(PersonDto.BIRTH_DATE_MM)).setValue(person.getBirthdateMM());
-			((ComboBox) getField(PersonDto.BIRTH_DATE_DD)).setValue(person.getBirthdateDD());
-			((ComboBox) getField(PersonDto.SEX)).setValue(person.getSex());
-			((ComboBox) getField(PersonDto.PRESENT_CONDITION)).setValue(person.getPresentCondition());
-			((TextField) getField(PersonDto.PHONE)).setValue(person.getPhone());
-			((TextField) getField(PersonDto.EMAIL_ADDRESS)).setValue(person.getEmailAddress());
-			((TextField) getField(PersonDto.PASSPORT_NUMBER)).setValue(person.getPassportNumber());
-			((TextField) getField(PersonDto.NATIONAL_HEALTH_ID)).setValue(person.getNationalHealthId());
-			if (showHomeAddressForm) {
-				homeAddressForm.setValue(person.getAddress());
-			}
-		} else {
-			getField(PersonDto.FIRST_NAME).clear();
-			getField(PersonDto.LAST_NAME).clear();
-			getField(PersonDto.BIRTH_DATE_DD).clear();
-			getField(PersonDto.BIRTH_DATE_MM).clear();
-			getField(PersonDto.BIRTH_DATE_YYYY).clear();
-			getField(PersonDto.SEX).clear();
-			getField(PersonDto.PRESENT_CONDITION).clear();
-			getField(PersonDto.PHONE).clear();
-			getField(PersonDto.EMAIL_ADDRESS).clear();
-			getField(PersonDto.PASSPORT_NUMBER).clear();
-			getField(PersonDto.NATIONAL_HEALTH_ID).clear();
-			if (showHomeAddressForm) {
-				homeAddressForm.clear();
-			}
-		}
-	}
-
-	protected void enablePersonFields(Boolean enable) {
-		getField(PersonDto.FIRST_NAME).setEnabled(enable);
-		getField(PersonDto.LAST_NAME).setEnabled(enable);
-		getField(PersonDto.BIRTH_DATE_DD).setEnabled(enable);
-		getField(PersonDto.BIRTH_DATE_MM).setEnabled(enable);
-		getField(PersonDto.BIRTH_DATE_YYYY).setEnabled(enable);
-		getField(PersonDto.SEX).setEnabled(enable);
-		getField(PersonDto.PRESENT_CONDITION).setEnabled(enable);
-		getField(PersonDto.PHONE).setEnabled(enable);
-		getField(PersonDto.EMAIL_ADDRESS).setEnabled(enable);
-		getField(PersonDto.PASSPORT_NUMBER).setEnabled(enable);
-		getField(PersonDto.NATIONAL_HEALTH_ID).setEnabled(enable);
-		if (showHomeAddressForm) {
-			homeAddressForm.setEnabled(enable);
-		}
+		return personCreateForm.getOnsetDate();
 	}
 
 	public void setSymptoms(SymptomsDto symptoms) {
-
-		if (symptoms != null) {
-			((DateField) getField(SymptomsDto.ONSET_DATE)).setValue(symptoms.getOnsetDate());
-		} else {
-			getField(SymptomsDto.ONSET_DATE).clear();
-		}
+		personCreateForm.setSymptoms(symptoms);
 	}
 
 	public void setPersonalDetailsReadOnlyIfNotEmpty(boolean readOnly) {
-
-		getField(PersonDto.FIRST_NAME).setEnabled(!readOnly);
-		getField(PersonDto.LAST_NAME).setEnabled(!readOnly);
-		searchPersonButton.setEnabled(!readOnly);
-		if (getField(PersonDto.SEX).getValue() != null) {
-			getField(PersonDto.SEX).setEnabled(!readOnly);
-		}
-		if (getField(PersonDto.BIRTH_DATE_YYYY).getValue() != null) {
-			getField(PersonDto.BIRTH_DATE_YYYY).setEnabled(!readOnly);
-		}
-		if (getField(PersonDto.BIRTH_DATE_MM).getValue() != null) {
-			getField(PersonDto.BIRTH_DATE_MM).setEnabled(!readOnly);
-		}
-		if (getField(PersonDto.BIRTH_DATE_DD).getValue() != null) {
-			getField(PersonDto.BIRTH_DATE_DD).setEnabled(!readOnly);
-		}
+		personCreateForm.setPersonalDetailsReadOnlyIfNotEmpty(readOnly);
 	}
 
 	public void setDiseaseReadOnly(boolean readOnly) {
 		getField(CaseDataDto.DISEASE).setEnabled(!readOnly);
 	}
 
-	private void addHomeAddressForm() {
-		CheckBox enterHomeAddressNow = new CheckBox(I18nProperties.getCaption(Captions.caseDataEnterHomeAddressNow));
-		enterHomeAddressNow.addStyleName(VSPACE_3);
-		getContent().addComponent(enterHomeAddressNow, ENTER_HOME_ADDRESS_NOW);
-
-		Label addressHeader = new Label(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESS));
-		addressHeader.addStyleName(H3);
-		getContent().addComponent(addressHeader, HOME_ADDRESS_HEADER);
-		addressHeader.setVisible(false);
-
-		homeAddressForm = new LocationEditForm(
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()),
-			UiFieldAccessCheckers.getNoop());
-		homeAddressForm.setValue(new LocationDto());
-		homeAddressForm.setCaption(null);
-		homeAddressForm.setWidthFull();
-
-		getContent().addComponent(homeAddressForm, HOME_ADDRESS_LOC);
-		homeAddressForm.setVisible(false);
-
-		enterHomeAddressNow.addValueChangeListener(e -> {
-			boolean isChecked = (boolean) e.getProperty().getValue();
-			addressHeader.setVisible(isChecked);
-			homeAddressForm.setVisible(isChecked);
-			homeAddressForm.clear();
-			homeAddressForm.setFacilityFieldsVisible(isChecked, true);
-		});
+	public PersonCreateForm getPersonCreateForm() {
+		return personCreateForm;
 	}
 
 	public LocationEditForm getHomeAddressForm() {
-		return homeAddressForm;
+		return personCreateForm.getHomeAddressForm();
+	}
+
+	public PersonDto getSearchedPerson() {
+		return personCreateForm.getSearchedPerson();
+	}
+
+	public void setPerson(PersonDto person) {
+		personCreateForm.setPerson(person);
 	}
 
 	@Override
