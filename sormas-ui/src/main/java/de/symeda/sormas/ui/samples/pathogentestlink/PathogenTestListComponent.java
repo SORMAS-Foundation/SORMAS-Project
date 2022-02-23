@@ -31,11 +31,12 @@ import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
+import de.symeda.sormas.ui.utils.components.sidecomponent.event.sidecomponent.SideComponentCreateEvent;
 
 @SuppressWarnings("serial")
 public class PathogenTestListComponent extends SideComponent {
 
-	private PathogenTestList pathogenTestList;
+	private final PathogenTestList pathogenTestList;
 
 	public PathogenTestListComponent(
 		SampleReferenceDto sampleRef,
@@ -43,13 +44,10 @@ public class PathogenTestListComponent extends SideComponent {
 		Supplier<Boolean> createOrEditAllowedCallback) {
 		super(I18nProperties.getString(Strings.headingTests));
 
-		addCreateButton(I18nProperties.getCaption(Captions.pathogenTestNewTest), UserRight.PATHOGEN_TEST_CREATE, e -> {
-			if (createOrEditAllowedCallback.get()) {
-				ControllerProvider.getPathogenTestController().create(sampleRef, 0, pathogenTestList::reload, onSavedPathogenTest);
-			} else {
-				Notification.show(null, I18nProperties.getString(Strings.messageFormHasErrorsPathogenTest), Type.ERROR_MESSAGE);
-			}
-		});
+		addCreateButton(
+			I18nProperties.getCaption(Captions.pathogenTestNewTest),
+			UserRight.PATHOGEN_TEST_CREATE,
+			e -> fireEvent(new SideComponentCreateEvent(this)));
 
 		pathogenTestList = new PathogenTestList(sampleRef);
 		pathogenTestList.addSideComponentFieldEditEventListener(e -> {
@@ -63,5 +61,9 @@ public class PathogenTestListComponent extends SideComponent {
 		});
 		addComponent(pathogenTestList);
 		pathogenTestList.reload();
+	}
+
+	public void reload() {
+		this.pathogenTestList.reload();
 	}
 }

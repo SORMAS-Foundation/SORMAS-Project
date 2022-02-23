@@ -20,6 +20,7 @@ import java.util.function.Supplier;
 
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.Disease;
@@ -32,6 +33,8 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -162,7 +165,13 @@ public class SampleDataView extends AbstractSampleView {
 		// why? if(sampleDto.getSamplePurpose() !=null && sampleDto.getSamplePurpose().equals(SamplePurpose.EXTERNAL)) {
 		Supplier<Boolean> createOrEditAllowedCallback = () -> editComponent.getWrappedComponent().getFieldGroup().isValid();
 		PathogenTestListComponent pathogenTestList = new PathogenTestListComponent(getSampleRef(), onSavedPathogenTest, createOrEditAllowedCallback);
-		pathogenTestList.addStyleName(CssStyles.SIDE_COMPONENT);
+		pathogenTestList.addSideComponentCreateEventListener(e -> {
+			if (createOrEditAllowedCallback.get()) {
+				ControllerProvider.getPathogenTestController().create(getSampleRef(), 0, pathogenTestList::reload, onSavedPathogenTest);
+			} else {
+				Notification.show(null, I18nProperties.getString(Strings.messageFormHasErrorsPathogenTest), Notification.Type.ERROR_MESSAGE);
+			}
+		});
 		layout.addComponent(pathogenTestList, PATHOGEN_TESTS_LOC);
 
 		if (UserProvider.getCurrent() != null

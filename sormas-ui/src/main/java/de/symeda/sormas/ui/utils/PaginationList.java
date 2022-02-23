@@ -221,6 +221,6 @@ public abstract class PaginationList<T> extends VerticalLayout {
 		return addListener(
 			SideComponentFieldEditEvent.class,
 			sideComponentFieldEditEventListener,
-			SideComponentFieldEditEventListener.ON_EDIT_SIDE_COMPONENT_FIELD_METHOD);
+			SideComponentFieldEditEventListener.ON_SIDE_COMPONENT_FIELD_EDIT_METHOD);
 	}
 }

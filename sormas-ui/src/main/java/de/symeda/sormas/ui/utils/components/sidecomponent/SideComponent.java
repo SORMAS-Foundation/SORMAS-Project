@@ -4,6 +4,7 @@ import java.util.function.Consumer;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Sizeable;
+import com.vaadin.shared.Registration;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -15,6 +16,8 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.components.sidecomponent.event.sidecomponent.SideComponentCreateEvent;
+import de.symeda.sormas.ui.utils.components.sidecomponent.event.sidecomponent.SideComponentCreateEventListener;
 
 public class SideComponent extends VerticalLayout {
 
@@ -50,5 +53,12 @@ public class SideComponent extends VerticalLayout {
 			createButton.addClickListener(clickListener::accept);
 			addCreateButton(createButton);
 		}
+	}
+
+	public Registration addSideComponentCreateEventListener(SideComponentCreateEventListener sideComponentCreateEventListener) {
+		return addListener(
+			SideComponentCreateEvent.class,
+			sideComponentCreateEventListener,
+			SideComponentCreateEventListener.ON_SIDE_COMPONENT_CREATE_METHOD);
 	}
 }

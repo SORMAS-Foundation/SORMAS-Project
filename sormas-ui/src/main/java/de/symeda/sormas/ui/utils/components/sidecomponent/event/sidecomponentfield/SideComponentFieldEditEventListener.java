@@ -8,8 +8,8 @@ import com.vaadin.util.ReflectTools;
 @FunctionalInterface
 public interface SideComponentFieldEditEventListener extends SerializableEventListener {
 
-	Method ON_EDIT_SIDE_COMPONENT_FIELD_METHOD =
-		ReflectTools.findMethod(SideComponentFieldEditEventListener.class, "onEditSideComponentField", SideComponentFieldEditEvent.class);
+	Method ON_SIDE_COMPONENT_FIELD_EDIT_METHOD =
+		ReflectTools.findMethod(SideComponentFieldEditEventListener.class, "onEdit", SideComponentFieldEditEvent.class);
 
-	void onEditSideComponentField(SideComponentFieldEditEvent event);
+	void onEdit(SideComponentFieldEditEvent event);
 }
