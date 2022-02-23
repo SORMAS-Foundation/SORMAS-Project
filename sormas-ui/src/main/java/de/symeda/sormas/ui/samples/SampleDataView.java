@@ -51,6 +51,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 
 public class SampleDataView extends AbstractSampleView {
 
@@ -175,8 +176,7 @@ public class SampleDataView extends AbstractSampleView {
 				Notification.show(null, I18nProperties.getString(Strings.messageFormHasErrorsPathogenTest), Notification.Type.ERROR_MESSAGE);
 			}
 		});
-		pathogenTestList.addStyleName(CssStyles.SIDE_COMPONENT);
-		layout.addComponent(pathogenTestList, PATHOGEN_TESTS_LOC);
+		layout.addComponent(new SideComponentLayout(pathogenTestList), PATHOGEN_TESTS_LOC);
 
 		if (UserProvider.getCurrent() != null
 			&& UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)
