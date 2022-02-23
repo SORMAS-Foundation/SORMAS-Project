@@ -25,7 +25,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
 import de.symeda.sormas.ui.utils.PaginationList;
-import de.symeda.sormas.ui.utils.components.sidecomponent.event.SideComponentFieldEditEvent;
+import de.symeda.sormas.ui.utils.components.sidecomponent.event.sidecomponentfield.SideComponentFieldEditEvent;
 
 public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
 

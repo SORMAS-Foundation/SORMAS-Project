@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.utils.components.sidecomponent.event;
+package de.symeda.sormas.ui.utils.components.sidecomponent.event.sidecomponentfield;
 
 import com.vaadin.ui.Component;
 

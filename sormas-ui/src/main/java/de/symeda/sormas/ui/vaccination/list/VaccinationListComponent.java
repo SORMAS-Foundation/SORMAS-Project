@@ -36,7 +36,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
-import de.symeda.sormas.ui.utils.components.sidecomponent.event.SideComponentFieldEditEventListener;
+import de.symeda.sormas.ui.utils.components.sidecomponent.event.sidecomponentfield.SideComponentFieldEditEventListener;
 
 public class VaccinationListComponent extends SideComponent {
 

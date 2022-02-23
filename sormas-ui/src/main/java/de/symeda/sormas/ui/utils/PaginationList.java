@@ -27,8 +27,8 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
-import de.symeda.sormas.ui.utils.components.sidecomponent.event.SideComponentFieldEditEvent;
-import de.symeda.sormas.ui.utils.components.sidecomponent.event.SideComponentFieldEditEventListener;
+import de.symeda.sormas.ui.utils.components.sidecomponent.event.sidecomponentfield.SideComponentFieldEditEvent;
+import de.symeda.sormas.ui.utils.components.sidecomponent.event.sidecomponentfield.SideComponentFieldEditEventListener;
 
 public abstract class PaginationList<T> extends VerticalLayout {
 
