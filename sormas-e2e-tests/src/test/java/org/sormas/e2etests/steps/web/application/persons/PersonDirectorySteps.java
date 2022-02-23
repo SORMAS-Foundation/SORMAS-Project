@@ -246,14 +246,14 @@ public class PersonDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(By.cssSelector("[role='gridcell'] a"));
         });
 
-      When(
-              "I apply on the APPLY FILTERS button",
-              () -> {
-                  webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-                          APPLY_FILTERS_BUTTON, 30);
-                  webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
-                  TimeUnit.SECONDS.sleep(10);
-              });
+    When(
+        "I apply on the APPLY FILTERS button",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              APPLY_FILTERS_BUTTON, 30);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
+          TimeUnit.SECONDS.sleep(10);
+        });
 
     When(
         "I click on the RESET FILTERS button for Person",
@@ -279,12 +279,12 @@ public class PersonDirectorySteps implements En {
                       + " "
                       + apiState.getLastCreatedPerson().getFirstName();
               break;
-              case "phone number":
-                  searchText = apiState.getLastCreatedPerson().getPhone();
-                  break;
-              case "email":
-                  searchText = apiState.getLastCreatedPerson().getEmailAddress();
-                  break;
+            case "phone number":
+              searchText = apiState.getLastCreatedPerson().getPhone();
+              break;
+            case "email":
+              searchText = apiState.getLastCreatedPerson().getEmailAddress();
+              break;
           }
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(APPLY_FILTERS_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(ALL_BUTTON);

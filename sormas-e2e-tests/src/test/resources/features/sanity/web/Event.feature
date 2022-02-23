@@ -270,7 +270,7 @@ Feature: Create events
     And I hover to Event Groups column of the Event result
     And I click on the More button on Event directory page
     And I click Enter Bulk Edit Mode on Event directory page
-    And I click checkbox to choose all Event results
+    And I click checkbox to choose all Event results on Event Directory Page
     And I click on Bulk Actions combobox on Event Directory Page
     And I click on Group Events from Bulk Actions combobox on Event Directory Page
     And I create a new event group
@@ -278,7 +278,7 @@ Feature: Create events
     And I filter by last created group in Event Directory Page
     And I apply on the APPLY FILTERS button from Event
     And I hover to Event Groups column of the Event result
-    And I check that data of linked group is correct
+    And I check that name appearing in hover is equal to name of linked Event group
     And I check the number of displayed Event results from All button is 1
 
 

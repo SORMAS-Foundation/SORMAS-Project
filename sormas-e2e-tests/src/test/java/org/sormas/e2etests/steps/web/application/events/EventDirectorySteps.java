@@ -30,6 +30,7 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CR
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.ENTER_BULK_EDIT_MODE_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENTS_RADIO_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_GROUP_ID_IN_GRID;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_GROUP_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_STATUS_FILTER_BUTTONS;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTERED_EVENT_LINK_EVENT_FORM;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTER_BY_DISEASE;
@@ -61,7 +62,6 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Named;
-import org.openqa.selenium.By;
 import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.RiskLevelValues;
@@ -100,7 +100,7 @@ public class EventDirectorySteps implements En {
         });
 
     When(
-        "I click checkbox to choose all Event results",
+        "I click checkbox to choose all Event results on Event Directory Page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(FIRST_CHECKBOX_EVENT_DIRECTORY);
           webDriverHelpers.waitForPageLoaded();
@@ -121,7 +121,6 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.accessWebSite(LAST_CREATED_EVENT_PAGE_URL);
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 50);
-          TimeUnit.SECONDS.sleep(5);
         });
 
     When(
@@ -131,10 +130,13 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.waitForPageLoaded();
         });
     When(
-        "I check that data of linked group is correct",
+        "I check that name appearing in hover is equal to name of linked Event group",
         () -> {
           EventGroup createdGroup = EditEventSteps.groupEvent;
-          EventGroup collectedGroup = collectEventGroup();
+          EventGroup collectedGroup =
+              EventGroup.builder()
+                  .name(webDriverHelpers.getWebElement(GROUP_ID_COLUMN).getAttribute("title"))
+                  .build();
           ComparisonHelper.compareEqualFieldsOfEntities(
               collectedGroup, createdGroup, List.of("name"));
           webDriverHelpers.waitForPageLoaded();
@@ -217,8 +219,7 @@ public class EventDirectorySteps implements En {
         "I filter by last created group in Event Directory Page",
         () -> {
           webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.fillInWebElement(
-              By.id("freeTextEventGroups"), EditEventSteps.groupEvent.getUuid());
+          webDriverHelpers.fillInWebElement(EVENT_GROUP_INPUT, EditEventSteps.groupEvent.getUuid());
         });
 
     When(
@@ -381,9 +382,7 @@ public class EventDirectorySteps implements En {
 
     When(
         "I click on the More button on Event directory page",
-        () ->
-          webDriverHelpers.clickOnWebElementBySelector(MORE_BUTTON_EVENT_DIRECTORY)
-        );
+        () -> webDriverHelpers.clickOnWebElementBySelector(MORE_BUTTON_EVENT_DIRECTORY));
     When(
         "I click Enter Bulk Edit Mode on Event directory page",
         () -> {
@@ -426,11 +425,5 @@ public class EventDirectorySteps implements En {
                             webDriverHelpers.getTextFromPresentWebElement(TOTAL_EVENTS_COUNTER)),
                         number.intValue(),
                         "Number of displayed cases is not correct")));
-  }
-
-  private EventGroup collectEventGroup() {
-    return EventGroup.builder()
-        .name(webDriverHelpers.getWebElement(GROUP_ID_COLUMN).getAttribute("title"))
-        .build();
   }
 }

@@ -79,6 +79,7 @@ public class EventDirectoryPage {
   public static final By BULK_ACTIONS_EVENT_DIRECTORY = By.id("bulkActions-2");
   public static final By GROUP_EVENTS_EVENT_DIRECTORY = By.id("bulkActions-7");
   public static final By GROUP_ID_COLUMN = By.xpath("(//td//a)[2]");
+  public static final By EVENT_GROUP_INPUT = By.id("freeTextEventGroups");
 
   public static By getByEventUuid(String eventUuid) {
     return By.xpath(String.format("//a[@title='%s']", eventUuid));
