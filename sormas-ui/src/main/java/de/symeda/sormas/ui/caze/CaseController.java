@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.caze;
 
-import de.symeda.sormas.ui.utils.CssStyles;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
@@ -84,8 +83,10 @@ import de.symeda.sormas.api.hospitalization.HospitalizationDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
@@ -130,6 +131,7 @@ import de.symeda.sormas.ui.therapy.TherapyView;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
@@ -1151,35 +1153,60 @@ public class CaseController {
 			UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
 			hospitalizationForm.getFieldGroup());
 
-		editView.addCommitListener(() -> {
+		final JurisdictionValues jurisdictionValues = new JurisdictionValues();
+
+		editView.setPreCommitListener(successCallback -> {
 			final CaseDataDto cazeDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
 			final YesNoUnknown initialAdmittedToHealthFacility = cazeDto.getHospitalization().getAdmittedToHealthFacility();
-			cazeDto.setHospitalization(hospitalizationForm.getValue());
-			final CaseDataDto caseDataDto = saveCase(cazeDto);
-			final YesNoUnknown admittedToHealthFacility = caseDataDto.getHospitalization().getAdmittedToHealthFacility();
+			final YesNoUnknown admittedToHealthFacility =
+				(YesNoUnknown) ((NullableOptionGroup) hospitalizationForm.getField(HospitalizationDto.ADMITTED_TO_HEALTH_FACILITY))
+					.getNullableValue();
+
 			if (YesNoUnknown.YES == admittedToHealthFacility
 				&& initialAdmittedToHealthFacility != admittedToHealthFacility
 				&& cazeDto.getFacilityType() != FacilityType.HOSPITAL) {
-				PlaceOfStayEditForm placeOfStayEditForm = new PlaceOfStayEditForm(caseDataDto);
-				placeOfStayEditForm.setValue(caseDataDto);
+
+				PlaceOfStayEditForm placeOfStayEditForm = new PlaceOfStayEditForm(cazeDto);
+				placeOfStayEditForm.setValue(cazeDto);
 				final CommitDiscardWrapperComponent<PlaceOfStayEditForm> wrapperComponent = new CommitDiscardWrapperComponent<>(
 					placeOfStayEditForm,
 					UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT),
 					placeOfStayEditForm.getFieldGroup());
 				wrapperComponent.addCommitListener(() -> {
-					final CaseDataDto cazeDtoInner = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
 					final CaseDataDto dto = placeOfStayEditForm.getValue();
-					cazeDtoInner.setRegion(dto.getRegion());
-					cazeDtoInner.setDistrict(dto.getDistrict());
-					cazeDtoInner.setCommunity(dto.getCommunity());
-					cazeDtoInner.setFacilityType(FacilityType.HOSPITAL);
-					cazeDtoInner.setHealthFacility(dto.getHealthFacility());
-					cazeDtoInner.setHealthFacilityDetails(dto.getHealthFacilityDetails());
-					FacadeProvider.getCaseFacade().save(cazeDtoInner);
-					ControllerProvider.getCaseController().navigateToView(HospitalizationView.VIEW_NAME, caze.getUuid(), null);
+					jurisdictionValues.region = dto.getRegion();
+					jurisdictionValues.district = dto.getDistrict();
+					jurisdictionValues.community = dto.getCommunity();
+					jurisdictionValues.facilityType = FacilityType.HOSPITAL;
+					jurisdictionValues.facility = dto.getHealthFacility();
+					jurisdictionValues.facilityDetails = dto.getHealthFacilityDetails();
+					jurisdictionValues.valuesUpdated = true;
 				});
-				VaadinUiUtil.showModalPopupWindow(wrapperComponent, I18nProperties.getString(Strings.headingPlaceOfStayInHospital));
+
+				VaadinUiUtil
+					.showModalPopupWindow(wrapperComponent, I18nProperties.getString(Strings.headingPlaceOfStayInHospital), preCommitSuccessful -> {
+						if (preCommitSuccessful) {
+							successCallback.run();
+						}
+					});
+			} else {
+				successCallback.run();
 			}
+		});
+
+		editView.addCommitListener(() -> {
+			final CaseDataDto cazeDto = findCase(caseUuid);
+
+			if (jurisdictionValues.valuesUpdated) {
+				cazeDto.setRegion(jurisdictionValues.region);
+				cazeDto.setDistrict(jurisdictionValues.district);
+				cazeDto.setCommunity(jurisdictionValues.community);
+				cazeDto.setFacilityType(jurisdictionValues.facilityType);
+				cazeDto.setHealthFacility(jurisdictionValues.facility);
+				cazeDto.setHealthFacilityDetails(jurisdictionValues.facilityDetails);
+			}
+			cazeDto.setHospitalization(hospitalizationForm.getValue());
+			saveCase(cazeDto);
 		});
 
 		return editView;
@@ -1760,14 +1787,12 @@ public class CaseController {
 			notShareableListComponent.setWidthFull();
 			notShareableListComponent.setEnabled(false);
 			Label notSharableLabel = new Label(
-					String.format(I18nProperties.getString(Strings.errorExternalSurveillanceToolCasesNotSharable), notSharableUuids.size()),
-					ContentMode.HTML);
+				String.format(I18nProperties.getString(Strings.errorExternalSurveillanceToolCasesNotSharable), notSharableUuids.size()),
+				ContentMode.HTML);
 			notSharableLabel.addStyleName(CssStyles.LABEL_WHITE_SPACE_NORMAL);
 			VaadinUiUtil.showConfirmationPopup(
 				I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
-				new VerticalLayout(
-						notSharableLabel,
-						notShareableListComponent),
+				new VerticalLayout(notSharableLabel, notShareableListComponent),
 				String.format(
 					I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_excludeAndSend),
 					uuidsWithoutNotSharable.size(),
@@ -1783,6 +1808,17 @@ public class CaseController {
 		} else {
 			ExternalSurveillanceServiceGateway.sendCasesToExternalSurveillanceTool(selectedUuids, reloadCallback, true);
 		}
+	}
+
+	private static class JurisdictionValues {
+
+		protected boolean valuesUpdated;
+		protected RegionReferenceDto region;
+		protected DistrictReferenceDto district;
+		protected CommunityReferenceDto community;
+		protected FacilityType facilityType;
+		protected FacilityReferenceDto facility;
+		protected String facilityDetails;
 	}
 
 }
