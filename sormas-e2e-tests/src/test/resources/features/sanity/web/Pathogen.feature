@@ -161,6 +161,7 @@ Feature: Pathogen Functionalities
       And I complete all fields from Pathogen test result popup for IgM test type with positive verified test result
       Then I confirm the Create case from contact with positive test result
       Then I create a new case with specific data for positive pathogen test result
+      Then I save a new case
       And I click on the Sample button from navbar
       And I search for Sample using Sample UUID from the created Sample
       When I open created Sample
@@ -187,6 +188,7 @@ Feature: Pathogen Functionalities
     And I complete all fields from Pathogen test result popup for IgM test type with positive verified test result
     Then I confirm the Create case from event participant with positive test result
     Then I create a new case with specific data for positive pathogen test result
+    Then I save a new case
     And I click on the Sample button from navbar
     And I search for Sample using Sample UUID from the created Sample
     When I open created Sample

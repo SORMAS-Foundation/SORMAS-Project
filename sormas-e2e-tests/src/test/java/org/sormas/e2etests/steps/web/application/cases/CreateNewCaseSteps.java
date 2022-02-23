@@ -51,6 +51,11 @@ public class CreateNewCaseSteps implements En {
           selectResponsibleDistrict(caze.getResponsibleDistrict());
           selectResponsibleCommunity(caze.getResponsibleCommunity());
           selectPlaceOfStay(caze.getPlaceOfStay());
+        });
+
+    When(
+        "I save a new case",
+        () -> {
           webDriverHelpers.scrollToElement(CONTACT_CASE_SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_CASE_SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
