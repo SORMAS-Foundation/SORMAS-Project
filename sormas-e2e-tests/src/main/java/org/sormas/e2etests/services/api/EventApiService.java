@@ -24,6 +24,7 @@ import java.util.UUID;
 import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.EventManagementStatusValues;
 import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.enums.RiskLevelValues;
 import org.sormas.e2etests.enums.SourceTypeValues;
@@ -53,7 +54,7 @@ public class EventApiService {
         .reportDateTime(new Date())
         .riskLevel(RiskLevelValues.getRandomRiskLevelName())
         .typeOfPlace(TypeOfPlace.getRandomTypeOfPlace())
-        .eventManagementStatus("ONGOING")
+        .eventManagementStatus(EventManagementStatusValues.ONGOING.getValue())
         .eventLocation(
             EventLocation.builder()
                 .uuid(UUID.randomUUID().toString())

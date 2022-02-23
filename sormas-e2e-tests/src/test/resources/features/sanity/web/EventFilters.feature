@@ -44,7 +44,7 @@ Feature: Filters in Event Directory
     And I click on the RESET FILTERS button from Event
 
   @issue=SORQA-77
-  Scenario: Filters in Event Directory
+  Scenario: Filters for Region, District, Community, Reporting user and Event statuses on Event Directory Page
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200

@@ -72,7 +72,7 @@ public class EventDirectorySteps implements En {
         () -> {
           String eventGroupId = EditEventSteps.groupEvent.getUuid();
           webDriverHelpers.fillInWebElement(
-              EVENT_GROUP, dataOperations.getPartialUuidFromAssociatedLink(eventGroupId));
+              EVENT_GROUP_INPUT, dataOperations.getPartialUuidFromAssociatedLink(eventGroupId));
         });
 
     When(
@@ -137,7 +137,7 @@ public class EventDirectorySteps implements En {
         });
     And(
         "I filter by mocked EventGroupId on Event directory page",
-        () -> webDriverHelpers.fillAndSubmitInWebElement(EVENT_GROUP, "TestName TestSurname"));
+        () -> webDriverHelpers.fillAndSubmitInWebElement(EVENT_GROUP_INPUT, "TestName TestSurname"));
     When(
         "I select random Risk level filter among the filter options from API",
         () -> {
