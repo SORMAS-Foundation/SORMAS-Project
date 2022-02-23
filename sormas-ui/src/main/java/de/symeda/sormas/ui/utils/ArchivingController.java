@@ -30,11 +30,7 @@ public class ArchivingController {
 		Runnable callback) {
 		VerticalLayout verticalLayout = new VerticalLayout();
 
-		Label contentLabel = new Label(
-			String.format(
-				I18nProperties.getString(archiveConfirmationMessage),
-				I18nProperties.getString(entity).toLowerCase(),
-				I18nProperties.getString(entity).toLowerCase()));
+		Label contentLabel = new Label(I18nProperties.getString(archiveConfirmationMessage));
 		contentLabel.setWidth(100, Sizeable.Unit.PERCENTAGE);
 		verticalLayout.addComponent(contentLabel);
 
@@ -42,6 +38,7 @@ public class ArchivingController {
 		endOfProcessingDate.setValue(DateHelper8.toLocalDate(entityFacade.calculateEndOfProcessingDate(coreEntityDto.getUuid())));
 		endOfProcessingDate.setCaption(I18nProperties.getCaption(Captions.endOfProcessingDate));
 		verticalLayout.addComponent(endOfProcessingDate);
+		verticalLayout.setMargin(false);
 
 		VaadinUiUtil.showConfirmationPopup(
 			I18nProperties.getString(popupHeading),
@@ -78,6 +75,7 @@ public class ArchivingController {
 				I18nProperties.getString(entity).toLowerCase()));
 		contentLabel.setWidth(100, Sizeable.Unit.PERCENTAGE);
 		verticalLayout.addComponent(contentLabel);
+		verticalLayout.setMargin(false);
 
 		TextArea dearchiveReason = new TextArea();
 		dearchiveReason.setCaption(I18nProperties.getCaption(Captions.dearchiveReason));
@@ -180,6 +178,7 @@ public class ArchivingController {
 			dearchiveReason.setRows(2);
 			dearchiveReason.setRequiredIndicatorVisible(true);
 			verticalLayout.addComponent(dearchiveReason);
+			verticalLayout.setMargin(false);
 
 			VaadinUiUtil.showConfirmationPopup(
 				I18nProperties.getString(headingConfirmationDeachiving),

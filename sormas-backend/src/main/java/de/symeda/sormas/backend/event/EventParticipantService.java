@@ -39,10 +39,10 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -51,6 +51,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ChangeDateBuilder;
+import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
@@ -219,6 +220,14 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		}
 		if (Boolean.TRUE.equals(criteria.getNoResultingCase())) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(from.get(EventParticipant.RESULTING_CASE)));
+		}
+
+		if (criteria.getRelevanceStatus() != null) {
+			if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(from.get(Event.ARCHIVED), false), cb.isNull(from.get(Event.ARCHIVED))));
+			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Event.ARCHIVED), true));
+			}
 		}
 
 		filter = CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, from));

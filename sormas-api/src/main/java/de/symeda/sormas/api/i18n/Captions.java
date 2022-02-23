@@ -1135,7 +1135,10 @@ public interface Captions {
 	String EventParticipant_sex = "EventParticipant.sex";
 	String EventParticipant_uuid = "EventParticipant.uuid";
 	String EventParticipant_vaccinationStatus = "EventParticipant.vaccinationStatus";
+	String eventParticipantActiveEventParticipants = "eventParticipantActiveEventParticipants";
 	String eventParticipantAddPerson = "eventParticipantAddPerson";
+	String eventParticipantAllEventParticipants = "eventParticipantAllEventParticipants";
+	String eventParticipantArchivedEventParticipants = "eventParticipantArchivedEventParticipants";
 	String eventParticipantContactCountOnlyWithSourceCaseInEvent = "eventParticipantContactCountOnlyWithSourceCaseInEvent";
 	String eventParticipantCreateNew = "eventParticipantCreateNew";
 	String EventParticipantExport_addressCommunity = "EventParticipantExport.addressCommunity";
