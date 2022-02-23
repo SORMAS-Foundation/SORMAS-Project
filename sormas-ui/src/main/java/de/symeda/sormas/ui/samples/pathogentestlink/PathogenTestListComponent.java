@@ -35,7 +35,7 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 @SuppressWarnings("serial")
 public class PathogenTestListComponent extends SideComponent {
 
-	private PathogenTestList list;
+	private PathogenTestList pathogenTestList;
 
 	public PathogenTestListComponent(
 		SampleReferenceDto sampleRef,
@@ -45,14 +45,23 @@ public class PathogenTestListComponent extends SideComponent {
 
 		addCreateButton(I18nProperties.getCaption(Captions.pathogenTestNewTest), UserRight.PATHOGEN_TEST_CREATE, e -> {
 			if (createOrEditAllowedCallback.get()) {
-				ControllerProvider.getPathogenTestController().create(sampleRef, 0, list::reload, onSavedPathogenTest);
+				ControllerProvider.getPathogenTestController().create(sampleRef, 0, pathogenTestList::reload, onSavedPathogenTest);
 			} else {
 				Notification.show(null, I18nProperties.getString(Strings.messageFormHasErrorsPathogenTest), Type.ERROR_MESSAGE);
 			}
 		});
 
-		list = new PathogenTestList(sampleRef, onSavedPathogenTest, createOrEditAllowedCallback);
-		addComponent(list);
-		list.reload();
+		pathogenTestList = new PathogenTestList(sampleRef);
+		pathogenTestList.addSideComponentFieldEditEventListener(e -> {
+			PathogenTestListEntry listEntry = (PathogenTestListEntry) e.getComponent();
+			if (createOrEditAllowedCallback.get()) {
+				ControllerProvider.getPathogenTestController()
+					.edit(listEntry.getPathogenTest().getUuid(), pathogenTestList::reload, onSavedPathogenTest);
+			} else {
+				Notification.show(null, I18nProperties.getString(Strings.messageFormHasErrorsPathogenTest), Type.ERROR_MESSAGE);
+			}
+		});
+		addComponent(pathogenTestList);
+		pathogenTestList.reload();
 	}
 }
