@@ -53,6 +53,7 @@ import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -96,6 +97,7 @@ public class PathogenTestController {
 			if (!createForm.getFieldGroup().isModified()) {
 				savePathogenTest(createForm.getValue(), onSavedPathogenTest, false);
 				callback.run();
+				SormasUI.refreshView();
 			}
 		});
 		return editView;

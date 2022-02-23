@@ -165,23 +165,23 @@ public class SampleDataView extends AbstractSampleView {
 		// why? if(sampleDto.getSamplePurpose() !=null && sampleDto.getSamplePurpose().equals(SamplePurpose.EXTERNAL)) {
 		Supplier<Boolean> createOrEditAllowedCallback = () -> editComponent.getWrappedComponent().getFieldGroup().isValid();
 		SampleReferenceDto sampleReferenceDto = getSampleRef();
-		PathogenTestListComponent pathogenTestList = new PathogenTestListComponent(sampleReferenceDto);
-		pathogenTestList.addSideComponentCreateEventListener(e -> {
+		PathogenTestListComponent pathogenTestListComponent = new PathogenTestListComponent(sampleReferenceDto);
+		pathogenTestListComponent.addSideComponentCreateEventListener(e -> showNavigationConfirmPopupIfDirty(() -> {
 			if (createOrEditAllowedCallback.get()) {
-				ControllerProvider.getPathogenTestController().create(sampleReferenceDto, 0, pathogenTestList::reload, onSavedPathogenTest);
+				ControllerProvider.getPathogenTestController().create(sampleReferenceDto, 0, pathogenTestListComponent::reload, onSavedPathogenTest);
 			} else {
 				Notification.show(null, I18nProperties.getString(Strings.messageFormHasErrorsPathogenTest), Notification.Type.ERROR_MESSAGE);
 			}
-		});
-		pathogenTestList.addSideComponentEditEventListener(e -> {
+		}));
+		pathogenTestListComponent.addSideComponentEditEventListener(e -> {
 			String uuid = e.getUuid();
 			if (createOrEditAllowedCallback.get()) {
-				ControllerProvider.getPathogenTestController().edit(uuid, pathogenTestList::reload, onSavedPathogenTest);
+				ControllerProvider.getPathogenTestController().edit(uuid, pathogenTestListComponent::reload, onSavedPathogenTest);
 			} else {
 				Notification.show(null, I18nProperties.getString(Strings.messageFormHasErrorsPathogenTest), Notification.Type.ERROR_MESSAGE);
 			}
 		});
-		layout.addComponent(new SideComponentLayout(pathogenTestList), PATHOGEN_TESTS_LOC);
+		layout.addComponent(new SideComponentLayout(pathogenTestListComponent), PATHOGEN_TESTS_LOC);
 
 		if (UserProvider.getCurrent() != null
 			&& UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)
