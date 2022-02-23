@@ -17,30 +17,20 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.samples.pathogentestlink;
 
-import java.util.function.BiConsumer;
-import java.util.function.Supplier;
-
-import com.vaadin.ui.Notification;
-import com.vaadin.ui.Notification.Type;
-
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
+import de.symeda.sormas.ui.utils.components.sidecomponent.event.sidecomponent.SideComponentEditEvent;
 
 @SuppressWarnings("serial")
 public class PathogenTestListComponent extends SideComponent {
 
 	private final PathogenTestList pathogenTestList;
 
-	public PathogenTestListComponent(
-		SampleReferenceDto sampleRef,
-		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest,
-		Supplier<Boolean> createOrEditAllowedCallback) {
+	public PathogenTestListComponent(SampleReferenceDto sampleRef) {
 		super(I18nProperties.getString(Strings.headingTests));
 
 		addCreateButton(I18nProperties.getCaption(Captions.pathogenTestNewTest), UserRight.PATHOGEN_TEST_CREATE);
@@ -48,12 +38,7 @@ public class PathogenTestListComponent extends SideComponent {
 		pathogenTestList = new PathogenTestList(sampleRef);
 		pathogenTestList.addSideComponentFieldEditEventListener(e -> {
 			PathogenTestListEntry listEntry = (PathogenTestListEntry) e.getComponent();
-			if (createOrEditAllowedCallback.get()) {
-				ControllerProvider.getPathogenTestController()
-					.edit(listEntry.getPathogenTest().getUuid(), pathogenTestList::reload, onSavedPathogenTest);
-			} else {
-				Notification.show(null, I18nProperties.getString(Strings.messageFormHasErrorsPathogenTest), Type.ERROR_MESSAGE);
-			}
+			fireEvent(new SideComponentEditEvent(this, listEntry.getPathogenTest().getUuid()));
 		});
 		addComponent(pathogenTestList);
 		pathogenTestList.reload();

@@ -160,18 +160,23 @@ public class SampleDataView extends AbstractSampleView {
 		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
 		layout.addComponent(editComponent, EDIT_LOC);
 
-		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest = (pathogenTestDto, callback) -> {
-			callback.run();
-		};
+		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest = (pathogenTestDto, callback) -> callback.run();
 
 		// why? if(sampleDto.getSamplePurpose() !=null && sampleDto.getSamplePurpose().equals(SamplePurpose.EXTERNAL)) {
 		Supplier<Boolean> createOrEditAllowedCallback = () -> editComponent.getWrappedComponent().getFieldGroup().isValid();
 		SampleReferenceDto sampleReferenceDto = getSampleRef();
-		PathogenTestListComponent pathogenTestList =
-			new PathogenTestListComponent(sampleReferenceDto, onSavedPathogenTest, createOrEditAllowedCallback);
+		PathogenTestListComponent pathogenTestList = new PathogenTestListComponent(sampleReferenceDto);
 		pathogenTestList.addSideComponentCreateEventListener(e -> {
 			if (createOrEditAllowedCallback.get()) {
 				ControllerProvider.getPathogenTestController().create(sampleReferenceDto, 0, pathogenTestList::reload, onSavedPathogenTest);
+			} else {
+				Notification.show(null, I18nProperties.getString(Strings.messageFormHasErrorsPathogenTest), Notification.Type.ERROR_MESSAGE);
+			}
+		});
+		pathogenTestList.addSideComponentEditEventListener(e -> {
+			String uuid = e.getUuid();
+			if (createOrEditAllowedCallback.get()) {
+				ControllerProvider.getPathogenTestController().edit(uuid, pathogenTestList::reload, onSavedPathogenTest);
 			} else {
 				Notification.show(null, I18nProperties.getString(Strings.messageFormHasErrorsPathogenTest), Notification.Type.ERROR_MESSAGE);
 			}
