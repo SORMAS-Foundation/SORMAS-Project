@@ -55,6 +55,17 @@ public class SideComponent extends VerticalLayout {
 		}
 	}
 
+	protected void addCreateButton(String caption, UserRight userRight) {
+		UserProvider currentUser = UserProvider.getCurrent();
+		if (currentUser != null && currentUser.hasUserRight(userRight)) {
+			Button createButton = ButtonHelper.createButton(caption);
+			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
+			createButton.addClickListener(e -> fireEvent(new SideComponentCreateEvent(this)));
+			addCreateButton(createButton);
+		}
+	}
+
 	public Registration addSideComponentCreateEventListener(SideComponentCreateEventListener sideComponentCreateEventListener) {
 		return addListener(
 			SideComponentCreateEvent.class,

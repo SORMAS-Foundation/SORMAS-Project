@@ -31,7 +31,6 @@ import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
-import de.symeda.sormas.ui.utils.components.sidecomponent.event.sidecomponent.SideComponentCreateEvent;
 
 @SuppressWarnings("serial")
 public class PathogenTestListComponent extends SideComponent {
@@ -44,10 +43,7 @@ public class PathogenTestListComponent extends SideComponent {
 		Supplier<Boolean> createOrEditAllowedCallback) {
 		super(I18nProperties.getString(Strings.headingTests));
 
-		addCreateButton(
-			I18nProperties.getCaption(Captions.pathogenTestNewTest),
-			UserRight.PATHOGEN_TEST_CREATE,
-			e -> fireEvent(new SideComponentCreateEvent(this)));
+		addCreateButton(I18nProperties.getCaption(Captions.pathogenTestNewTest), UserRight.PATHOGEN_TEST_CREATE);
 
 		pathogenTestList = new PathogenTestList(sampleRef);
 		pathogenTestList.addSideComponentFieldEditEventListener(e -> {
