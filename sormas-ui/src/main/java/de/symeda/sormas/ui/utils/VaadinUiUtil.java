@@ -127,17 +127,25 @@ public final class VaadinUiUtil {
 			window.setWidth(width, Unit.PERCENTAGE);
 		}
 
-
 		UI.getCurrent().addWindow(window);
 		return window;
 	}
 
 	public static Window showModalPopupWindow(CommitDiscardWrapperComponent<?> content, String caption) {
+		return showModalPopupWindow(content, caption, null);
+	}
+
+	public static Window showModalPopupWindow(CommitDiscardWrapperComponent<?> content, String caption, Consumer<Boolean> callback) {
 		final Window popupWindow = VaadinUiUtil.showPopupWindow(content);
 		popupWindow.setCaption(caption);
 		content.setMargin(true);
 
 		content.addDoneListener(popupWindow::close);
+
+		if (callback != null) {
+			content.addCommitListener(() -> callback.accept(true));
+			content.addDiscardListener(() -> callback.accept(false));
+		}
 
 		return popupWindow;
 	}
