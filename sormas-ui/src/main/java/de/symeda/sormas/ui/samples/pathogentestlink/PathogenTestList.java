@@ -29,7 +29,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
-import de.symeda.sormas.ui.utils.components.sidecomponent.event.EditSideComponentFieldEvent;
+import de.symeda.sormas.ui.utils.components.sidecomponent.event.SideComponentFieldEditEvent;
 
 @SuppressWarnings("serial")
 public class PathogenTestList extends PaginationList<PathogenTestDto> {
@@ -66,7 +66,7 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 			PathogenTestListEntry listEntry = new PathogenTestListEntry(pathogenTest);
 			if (UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_EDIT)) {
 				String pathogenTestUuid = pathogenTest.getUuid();
-				listEntry.addEditButton("edit-test-" + pathogenTestUuid, e -> fireEvent(new EditSideComponentFieldEvent(listEntry)));
+				listEntry.addEditButton("edit-test-" + pathogenTestUuid, e -> fireEvent(new SideComponentFieldEditEvent(listEntry)));
 			}
 			listLayout.addComponent(listEntry);
 		}
