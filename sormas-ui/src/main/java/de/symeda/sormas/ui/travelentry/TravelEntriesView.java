@@ -37,7 +37,6 @@ import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 import de.symeda.sormas.ui.utils.components.expandablebutton.ExpandableButton;
-import de.symeda.sormas.ui.utils.components.popupmenu.PopupMenu;
 
 public class TravelEntriesView extends AbstractView {
 
@@ -95,27 +94,18 @@ public class TravelEntriesView extends AbstractView {
 			}
 		}
 
-		final PopupMenu moreButton = new PopupMenu(I18nProperties.getCaption(Captions.moreActions));
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_DELETE)
 				&& UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
-			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
-			{
-				btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
-				btnEnterBulkEditMode.addStyleName(ValoTheme.BUTTON_PRIMARY);
 
-				btnEnterBulkEditMode.setWidth(100, Unit.PERCENTAGE);
-				moreButton.addMenuEntry(btnEnterBulkEditMode);
-			}
+			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
+			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
+			addHeaderComponent(btnEnterBulkEditMode);
 
 			Button btnLeaveBulkEditMode =
 					ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
-			{
-				btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
-				btnLeaveBulkEditMode.setWidth(100, Unit.PERCENTAGE);
-
-				moreButton.addMenuEntry(btnLeaveBulkEditMode);
-			}
+			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
+			addHeaderComponent(btnLeaveBulkEditMode);
 
 			btnEnterBulkEditMode.addClickListener(e -> {
 				bulkOperationsDropdown.setVisible(true);
@@ -131,10 +121,6 @@ public class TravelEntriesView extends AbstractView {
 				btnEnterBulkEditMode.setVisible(true);
 				navigateTo(criteria);
 			});
-		}
-
-		if (moreButton.hasMenuEntries()) {
-			addHeaderComponent(moreButton);
 		}
 	}
 
