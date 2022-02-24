@@ -255,7 +255,7 @@ Feature: Contacts end to end tests
     Then I click on the Epidemiological Data button
     And I fill all the data in Exposure for Epidemiological data tab in Contacts
     And I click on save button from Epidemiological Data
-    Then I click on the Contact button
+    Then I click on the Contact button tab in Contacts
     And I click on CONFIRMED CONTACT radio button Contact Person tab
     Then I click SAVE button on Edit Contact Page
     And I click Create Case from Contact button

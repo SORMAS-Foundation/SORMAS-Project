@@ -212,7 +212,7 @@ public class ContactDirectorySteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
     When(
-        "I click on the Contact button",
+        "I click on the Contact button tab in Contacts",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_DATA_TAB);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
