@@ -3798,11 +3798,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		service.updateExternalData(externalData);
 	}
 
-	@Override
-	protected void delete(Case entity) {
-		service.delete(entity);
-	}
-
 	@LocalBean
 	@Stateless
 	public static class CaseFacadeEjbLocal extends CaseFacadeEjb {

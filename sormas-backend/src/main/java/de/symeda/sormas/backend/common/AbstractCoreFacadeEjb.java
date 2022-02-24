@@ -145,7 +145,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 
 		List<ADO> toDeleteEntities = QueryHelper.getResultList(em, cq, null, null);
 
-		toDeleteEntities.forEach(this::delete);
+		toDeleteEntities.forEach(ado -> service.delete(ado));
 	}
 
 	public void executePermanentDeletion() {
@@ -166,10 +166,6 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		Date referenceDate = (Date) deletionData[0];
 		Date deletiondate = DateHelper.addDays(referenceDate, deletionConfiguration.getDeletionPeriod());
 		return new AutomaticDeletionInfoDto(deletiondate, (Date) deletionData[1], deletionConfiguration.getDeletionPeriod());
-	}
-
-	protected void delete(ADO entity) {
-		service.delete(entity);
 	}
 
 	protected String getDeleteReferenceField(DeletionReference deletionReference) {

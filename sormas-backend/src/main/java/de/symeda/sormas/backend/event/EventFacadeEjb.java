@@ -1304,8 +1304,4 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		}
 	}
 
-	@Override
-	protected void delete(Event entity) {
-		service.delete(entity);
-	}
 }

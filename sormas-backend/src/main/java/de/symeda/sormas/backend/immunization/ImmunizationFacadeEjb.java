@@ -595,11 +595,6 @@ public class ImmunizationFacadeEjb
 		service.ensurePersisted(newImmunization);
 	}
 
-	@Override
-	protected void delete(Immunization entity) {
-		service.delete(entity);
-	}
-
 	@LocalBean
 	@Stateless
 	public static class ImmunizationFacadeEjbLocal extends ImmunizationFacadeEjb {

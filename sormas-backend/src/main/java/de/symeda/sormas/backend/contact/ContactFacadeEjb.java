@@ -2071,11 +2071,6 @@ public class ContactFacadeEjb extends AbstractCoreFacadeEjb<Contact, ContactDto,
 		return CoreEntityType.CONTACT;
 	}
 
-	@Override
-	protected void delete(Contact entity) {
-		service.delete(entity);
-	}
-
 	private float calculateCompleteness(Contact contact) {
 
 		float completeness = 0f;

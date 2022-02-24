@@ -1073,9 +1073,4 @@ public class EventParticipantFacadeEjb
 	protected CoreEntityType getCoreEntityType() {
 		return CoreEntityType.EVENT_PARTICIPANT;
 	}
-
-	@Override
-	protected void delete(EventParticipant entity) {
-		service.delete(entity);
-	}
 }

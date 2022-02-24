@@ -338,11 +338,6 @@ public class TravelEntryFacadeEjb
 		return super.getDeleteReferenceField(deletionReference);
 	}
 
-	@Override
-	protected void delete(TravelEntry entity) {
-		service.delete(entity);
-	}
-
 	@LocalBean
 	@Stateless
 	public static class TravelEntryFacadeEjbLocal extends TravelEntryFacadeEjb {
