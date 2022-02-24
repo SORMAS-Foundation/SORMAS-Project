@@ -10,9 +10,9 @@ import java.time.format.TextStyle;
 import java.util.Locale;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
+import org.sormas.e2etests.entities.pojo.web.Case;
+import org.sormas.e2etests.entities.services.CaseService;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.web.Case;
-import org.sormas.e2etests.services.CaseService;
 import org.testng.asserts.SoftAssert;
 
 public class CaseLineListingSteps implements En {

@@ -1,19 +1,20 @@
 package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.HospitalizationTabPage.*;
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
-import javax.inject.Named;
 import lombok.SneakyThrows;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Hospitalization;
+import org.sormas.e2etests.entities.services.HospitalizationService;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
-import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.pojo.web.Hospitalization;
-import org.sormas.e2etests.services.HospitalizationService;
 import org.sormas.e2etests.state.ApiState;
 
 public class HospitalizationTabSteps implements En {
@@ -26,7 +27,7 @@ public class HospitalizationTabSteps implements En {
       WebDriverHelpers webDriverHelpers,
       HospitalizationService hospitalizationService,
       ApiState apiState,
-      @Named("ENVIRONMENT_URL") String environmentUrl) {
+      EnvironmentManager environmentManager) {
 
     this.webDriverHelpers = webDriverHelpers;
 
@@ -37,7 +38,10 @@ public class HospitalizationTabSteps implements En {
               NavBarPage.SAMPLE_BUTTON);
           String caseHospitalizationPath = "/sormas-webdriver/#!cases/hospitalization/";
           String uuid = apiState.getCreatedCase().getUuid();
-          webDriverHelpers.accessWebSite(environmentUrl + caseHospitalizationPath + uuid);
+          webDriverHelpers.accessWebSite(
+              environmentManager.getEnvironmentUrlForMarket(locale)
+                  + caseHospitalizationPath
+                  + uuid);
         });
 
     When(
