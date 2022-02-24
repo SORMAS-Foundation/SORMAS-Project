@@ -29,7 +29,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
-import de.symeda.sormas.ui.utils.components.sidecomponent.event.sidecomponentfield.SideComponentFieldEditEvent;
+import de.symeda.sormas.ui.utils.components.sidecomponent.event.SideComponentFieldEditEvent;
 
 @SuppressWarnings("serial")
 public class PathogenTestList extends PaginationList<PathogenTestDto> {

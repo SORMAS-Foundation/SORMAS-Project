@@ -23,7 +23,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
-import de.symeda.sormas.ui.utils.components.sidecomponent.event.sidecomponent.SideComponentEditEvent;
+import de.symeda.sormas.ui.utils.components.sidecomponent.event.SideComponentEditEvent;
 
 @SuppressWarnings("serial")
 public class PathogenTestListComponent extends SideComponent {

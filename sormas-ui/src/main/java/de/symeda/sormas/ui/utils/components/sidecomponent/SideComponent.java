@@ -16,10 +16,10 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.components.sidecomponent.event.sidecomponent.SideComponentCreateEvent;
-import de.symeda.sormas.ui.utils.components.sidecomponent.event.sidecomponent.SideComponentCreateEventListener;
-import de.symeda.sormas.ui.utils.components.sidecomponent.event.sidecomponent.SideComponentEditEvent;
-import de.symeda.sormas.ui.utils.components.sidecomponent.event.sidecomponent.SideComponentEditEventListener;
+import de.symeda.sormas.ui.utils.components.sidecomponent.event.SideComponentCreateEvent;
+import de.symeda.sormas.ui.utils.components.sidecomponent.event.SideComponentCreateEventListener;
+import de.symeda.sormas.ui.utils.components.sidecomponent.event.SideComponentEditEvent;
+import de.symeda.sormas.ui.utils.components.sidecomponent.event.SideComponentEditEventListener;
 
 public class SideComponent extends VerticalLayout {
 

@@ -1,4 +1,4 @@
-package de.symeda.sormas.ui.utils.components.sidecomponent.event.sidecomponentfield;
+package de.symeda.sormas.ui.utils.components.sidecomponent.event;
 
 import java.lang.reflect.Method;
 
