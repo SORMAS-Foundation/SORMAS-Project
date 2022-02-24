@@ -126,4 +126,5 @@ public class CaseDirectoryPage {
   public static final By DATE_FROM_COMBOBOX = By.cssSelector("#dateFrom input");
   public static final By DATE_TO_COMBOBOX = By.cssSelector("#dateTo input");
   // TODO refactor the other headers based on the last one added
+  public static final By CASE_EPIDEMIOLOGICAL_DATA_TAB = By.cssSelector("#tab-cases-epidata");
 }

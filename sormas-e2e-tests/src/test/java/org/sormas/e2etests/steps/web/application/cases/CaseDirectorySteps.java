@@ -49,6 +49,12 @@ public class CaseDirectorySteps implements En {
       Faker faker) {
 
     When(
+        "I click on the Epidemiological Data button in Case form",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CASE_EPIDEMIOLOGICAL_DATA_TAB);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+    When(
         "^I click on the NEW CASE button$",
         () ->
             webDriverHelpers.clickWhileOtherButtonIsDisplayed(
