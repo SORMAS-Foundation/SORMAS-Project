@@ -142,6 +142,7 @@ public class PathogenTestController {
 			if (!form.getFieldGroup().isModified()) {
 				savePathogenTest(form.getValue(), onSavedPathogenTest, false);
 				doneCallback.run();
+				SormasUI.refreshView();
 			}
 		});
 

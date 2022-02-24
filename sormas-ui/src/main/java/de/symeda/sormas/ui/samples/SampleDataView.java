@@ -173,14 +173,14 @@ public class SampleDataView extends AbstractSampleView {
 				Notification.show(null, I18nProperties.getString(Strings.messageFormHasErrorsPathogenTest), Notification.Type.ERROR_MESSAGE);
 			}
 		}));
-		pathogenTestListComponent.addSideComponentEditEventListener(e -> {
+		pathogenTestListComponent.addSideComponentEditEventListener(e -> showNavigationConfirmPopupIfDirty(() -> {
 			String uuid = e.getUuid();
 			if (createOrEditAllowedCallback.get()) {
 				ControllerProvider.getPathogenTestController().edit(uuid, pathogenTestListComponent::reload, onSavedPathogenTest);
 			} else {
 				Notification.show(null, I18nProperties.getString(Strings.messageFormHasErrorsPathogenTest), Notification.Type.ERROR_MESSAGE);
 			}
-		});
+		}));
 		layout.addComponent(new SideComponentLayout(pathogenTestListComponent), PATHOGEN_TESTS_LOC);
 
 		if (UserProvider.getCurrent() != null
