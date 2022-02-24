@@ -13,6 +13,7 @@ import java.util.function.Consumer;
 import com.vaadin.ui.HorizontalLayout;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasShareableDto;
+import org.apache.commons.lang3.StringUtils;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;
@@ -239,8 +240,11 @@ public class ExternalJournalUtil {
 
 	private static void openPatientDiaryPage(String personUuid) {
 		String url = FacadeProvider.getConfigFacade().getPatientDiaryConfig().getUrl();
+		url += "/data?q=" + personUuid + "&queryKey=sicFieldIdentifier";
 		String authToken = externalJournalFacade.getPatientDiaryAuthToken(true);
-		url += "/data?q=" + personUuid + "&queryKey=sicFieldIdentifier" + "&token=" + authToken;
+		if (StringUtils.isNotEmpty(authToken)) {
+			url += "&token=" + authToken;
+		}
 		UI.getCurrent().getPage().open(url, "_blank");
 	}
 
