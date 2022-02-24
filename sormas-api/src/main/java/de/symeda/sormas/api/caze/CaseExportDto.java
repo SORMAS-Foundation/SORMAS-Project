@@ -28,7 +28,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
@@ -1904,7 +1903,7 @@ public class CaseExportDto implements Serializable {
 	@Order(122)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_MANAGEMENT })
-	@ExportProperty(ClinicalCourseDto.HEALTH_CONDITIONS)
+	@ExportProperty(CaseDataDto.HEALTH_CONDITIONS)
 	@ExportGroup(ExportGroupType.CLINICAL_COURSE)
 	public HealthConditionsDto getHealthConditions() {
 		return healthConditions;

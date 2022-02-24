@@ -659,7 +659,7 @@ public class CaseController {
 
 					dto.getSymptoms().setOnsetDate(createForm.getOnsetDate());
 					dto.getSymptoms().setUuid(DataHelper.createUuid());
-					dto.getClinicalCourse().getHealthConditions().setUuid(DataHelper.createUuid());
+					dto.getHealthConditions().setUuid(DataHelper.createUuid());
 					dto.getEpiData().setUuid(DataHelper.createUuid());
 					dto.getEpiData().getExposures().forEach(exposure -> {
 						exposure.setUuid(DataHelper.createUuid());
@@ -1320,6 +1320,9 @@ public class CaseController {
 				saveCase(cazeDto);
 			}
 		});
+
+		view.getCommitButton().setVisible(false);
+		view.getDiscardButton().setVisible(false);
 
 		return view;
 	}
