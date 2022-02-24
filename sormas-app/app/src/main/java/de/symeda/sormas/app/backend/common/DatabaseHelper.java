@@ -2953,7 +2953,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(ClinicalCourse.class).executeRaw(
 						"CREATE TABLE clinicalCourse(" + "id integer primary key autoincrement," + "uuid varchar(36) not null,"
 								+ "changeDate timestamp not null," + "creationDate timestamp not null," + "lastOpenedDate timestamp,"
-								+ "localChangeDate timestamp not null," + "modified integer," + "snapshot integer," + "UNIQUE(snapshot, uuid));");
+								+ "localChangeDate timestamp not null," + "modified SMALLINT DEFAULT 0," + "snapshot SMALLINT DEFAULT 0," + "UNIQUE(snapshot, uuid));");
 				getDao(ClinicalCourse.class).executeRaw(
 						"INSERT INTO clinicalCourse(id, uuid, changeDate, creationDate, lastOpenedDate, "
 								+ "localChangeDate, modified, snapshot) "
