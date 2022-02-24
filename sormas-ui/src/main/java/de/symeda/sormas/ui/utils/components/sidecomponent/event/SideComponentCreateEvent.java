@@ -2,9 +2,9 @@ package de.symeda.sormas.ui.utils.components.sidecomponent.event;
 
 import com.vaadin.ui.Component;
 
-public class EditSideComponentFieldEvent extends Component.Event {
+public class SideComponentCreateEvent extends Component.Event {
 
-	public EditSideComponentFieldEvent(Component source) {
+	public SideComponentCreateEvent(Component source) {
 		super(source);
 	}
 }
