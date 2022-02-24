@@ -857,6 +857,7 @@ public interface Strings {
 	String lastWeek = "lastWeek";
 	String lastYear = "lastYear";
 	String listOf = "listOf";
+	String mapOf = "mapOf";
 	String max = "max";
 	String messageActivateAccount = "messageActivateAccount";
 	String messageAdditionalTestDeleted = "messageAdditionalTestDeleted";
@@ -1187,10 +1188,6 @@ public interface Strings {
 	String notificationLabResultArrivedContact = "notificationLabResultArrivedContact";
 	String notificationLabResultArrivedEventParticipant = "notificationLabResultArrivedEventParticipant";
 	String notificationLabResultArrivedEventParticipantNoDisease = "notificationLabResultArrivedEventParticipantNoDisease";
-	String notificationLabResultSpecified = "notificationLabResultSpecified";
-	String notificationLabResultSpecifiedContact = "notificationLabResultSpecifiedContact";
-	String notificationLabResultSpecifiedEventParticipant = "notificationLabResultSpecifiedEventParticipant";
-	String notificationLabResultSpecifiedEventParticipantNoDisease = "notificationLabResultSpecifiedEventParticipantNoDisease";
 	String notificationLabSampleShipped = "notificationLabSampleShipped";
 	String notificationLabSampleShippedShort = "notificationLabSampleShippedShort";
 	String notificationLabSampleShippedShortForContact = "notificationLabSampleShippedShortForContact";

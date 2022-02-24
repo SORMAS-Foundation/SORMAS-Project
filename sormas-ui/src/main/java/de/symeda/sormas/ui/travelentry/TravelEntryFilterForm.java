@@ -3,12 +3,16 @@ package de.symeda.sormas.ui.travelentry;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.Date;
+import java.util.stream.Stream;
 
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.v7.ui.CheckBox;
+import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -17,6 +21,7 @@ import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.utils.AbstractFilterForm;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.EpiWeekAndDateFilterComponent;
@@ -27,8 +32,13 @@ public class TravelEntryFilterForm extends AbstractFilterForm<TravelEntryCriteri
 	private static final String CHECKBOX_STYLE = CssStyles.CHECKBOX_FILTER_INLINE + " " + CssStyles.VSPACE_3;
 	private static final String WEEK_AND_DATE_FILTER = "weekAndDateFilter";
 
+	private static final String MORE_FILTERS_HTML_LAYOUT = loc(WEEK_AND_DATE_FILTER);
+
 	protected TravelEntryFilterForm() {
-		super(TravelEntryCriteria.class, TravelEntryDto.I18N_PREFIX);
+		super(
+			TravelEntryCriteria.class,
+			TravelEntryDto.I18N_PREFIX,
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()));
 	}
 
 	@Override
@@ -43,7 +53,7 @@ public class TravelEntryFilterForm extends AbstractFilterForm<TravelEntryCriteri
 
 	@Override
 	protected String createMoreFiltersHtmlLayout() {
-		return loc(WEEK_AND_DATE_FILTER);
+		return MORE_FILTERS_HTML_LAYOUT;
 	}
 
 	@Override
@@ -154,5 +164,14 @@ public class TravelEntryFilterForm extends AbstractFilterForm<TravelEntryCriteri
 			weekAndDateFilter.getDateFromFilter().setValue(dateFrom);
 			weekAndDateFilter.getDateToFilter().setValue(dateTo);
 		}
+	}
+
+	@Override
+	protected Stream<Field> streamFieldsForEmptyCheck(CustomLayout layout) {
+		final HorizontalLayout dateFilterLayout = (HorizontalLayout) getMoreFiltersContainer().getComponent(WEEK_AND_DATE_FILTER);
+		final EpiWeekAndDateFilterComponent<DateFilterOption> weekAndDateFilter;
+		weekAndDateFilter = (EpiWeekAndDateFilterComponent<DateFilterOption>) dateFilterLayout.getComponent(0);
+
+		return super.streamFieldsForEmptyCheck(layout).filter(f -> f != weekAndDateFilter.getDateFilterOptionFilter());
 	}
 }
