@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -32,12 +33,14 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfigurationService;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -48,6 +51,8 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 
 	@Inject
 	private DeletionConfigurationService deletionConfigurationService;
+	@EJB
+	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	protected AbstractCoreFacadeEjb() {
 	}
@@ -141,6 +146,14 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		List<ADO> toDeleteEntities = QueryHelper.getResultList(em, cq, null, null);
 
 		toDeleteEntities.forEach(this::delete);
+	}
+
+	public void executePermanentDeletion() {
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.DELETE_PERMANENT)) {
+			service.executePermanentDeletion();
+		} else {
+			throw new UnsupportedOperationException("Permanent deletion is not activated!");
+		}
 	}
 
 	@Override

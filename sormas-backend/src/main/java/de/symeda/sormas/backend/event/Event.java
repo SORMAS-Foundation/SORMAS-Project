@@ -749,7 +749,11 @@ public class Event extends CoreAdo implements SormasToSormasShareable, HasExtern
 		this.medicallyAssociatedTransmissionMode = medicallyAssociatedTransmissionMode;
 	}
 
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = {
+			CascadeType.PERSIST,
+			CascadeType.MERGE,
+			CascadeType.DETACH,
+			CascadeType.REFRESH })
 	@AuditedIgnore
 	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;

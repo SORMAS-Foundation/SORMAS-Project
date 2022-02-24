@@ -64,7 +64,6 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDetailedReferenceDto;
 import de.symeda.sormas.api.event.EventDto;

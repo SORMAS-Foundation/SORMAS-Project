@@ -289,8 +289,8 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 	}
 
 	@Override
-	public void delete(ADO deleteme) {
-		em.remove(em.contains(deleteme) ? deleteme : em.merge(deleteme)); // todo: investigate why the entity might be detached (example: AdditionalTest)
+	public void deletePermanent(ADO ado) {
+		em.remove(em.contains(ado) ? ado : em.merge(ado)); // todo: investigate why the entity might be detached (example: AdditionalTest)
 		em.flush();
 	}
 

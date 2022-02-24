@@ -93,7 +93,7 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 	public void deleteUserRoleConfig(UserRoleConfigDto dto) {
 
 		UserRoleConfig entity = userRoleConfigService.getByUuid(dto.getUuid());
-		userRoleConfigService.delete(entity);
+		userRoleConfigService.deletePermanent(entity);
 		resetUserRoleRightsCache();
 	}
 

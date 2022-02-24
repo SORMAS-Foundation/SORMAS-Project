@@ -10,7 +10,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.Captions;

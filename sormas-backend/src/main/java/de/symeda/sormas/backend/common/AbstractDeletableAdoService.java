@@ -13,12 +13,15 @@ public abstract class AbstractDeletableAdoService<ADO extends DeletableAdo> exte
 		super(elementClass);
 	}
 
-	@Override
-	public void delete(ADO deleteme) {
+	public void delete(ADO ado) {
 
-		deleteme.setDeleted(true);
-		em.persist(deleteme);
+		ado.setDeleted(true);
+		em.persist(ado);
 		em.flush();
+	}
+
+	public void executePermanentDeletion() {
+		getAll((cb, root) -> cb.isTrue(root.get(DeletableAdo.DELETED))).forEach(ado -> deletePermanent(ado));
 	}
 
 	protected <C> Predicate changeDateFilter(CriteriaBuilder cb, Timestamp date, From<?, C> path, String... joinFields) {
