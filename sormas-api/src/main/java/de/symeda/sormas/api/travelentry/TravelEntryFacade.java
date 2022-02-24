@@ -6,6 +6,7 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
@@ -15,8 +16,6 @@ public interface TravelEntryFacade extends CoreFacade<TravelEntryDto, TravelEntr
 	void validate(TravelEntryDto travelEntryDto);
 
 	boolean isDeleted(String eventUuid);
-
-	void archiveOrDearchiveTravelEntry(String travelEntryUuid, boolean archive);
 
 	Boolean isTravelEntryEditAllowed(String travelEntryUuid);
 

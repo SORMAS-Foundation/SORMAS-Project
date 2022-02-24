@@ -83,6 +83,7 @@ import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
@@ -210,16 +211,22 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Contact> from, Timestamp date, String lastSynchronizedUuid) {
-
 		ChangeDateFilterBuilder changeDateFilterBuilder = new ChangeDateFilterBuilder(cb, date, from, lastSynchronizedUuid);
-		Join<Object, EpiData> epiData = from.join(Contact.EPI_DATA, JoinType.LEFT);
-		Join<Object, HealthConditions> healthCondition = from.join(Contact.HEALTH_CONDITIONS, JoinType.LEFT);
+		return addChangeDates(changeDateFilterBuilder, from, false).build();
+	}
 
-		changeDateFilterBuilder.add(from);
-		epiDataService.addChangeDateFilters(changeDateFilterBuilder, epiData);
-		changeDateFilterBuilder.add(healthCondition).add(from, Contact.SORMAS_TO_SORMAS_ORIGIN_INFO).add(from, Contact.SORMAS_TO_SORMAS_SHARES);
+	@Override
+	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, From<?, Contact> contactFrom, boolean includeExtendedChangeDateFilters) {
+		Join<Object, HealthConditions> healthCondition = contactFrom.join(Contact.HEALTH_CONDITIONS, JoinType.LEFT);
+		Join<Object, EpiData> epiData = contactFrom.join(Contact.EPI_DATA, JoinType.LEFT);
 
-		return changeDateFilterBuilder.build();
+		builder = super.addChangeDates(builder, contactFrom, includeExtendedChangeDateFilters).add(healthCondition)
+			.add(contactFrom, Contact.SORMAS_TO_SORMAS_ORIGIN_INFO)
+			.add(contactFrom, Contact.SORMAS_TO_SORMAS_SHARES);
+
+		builder = epiDataService.addChangeDates(builder, epiData);
+
+		return builder;
 	}
 
 	public List<String> getAllActiveUuids(User user) {

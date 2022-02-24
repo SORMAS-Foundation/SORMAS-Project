@@ -57,6 +57,7 @@ public interface Strings {
 	String confirmationArchiveCases = "confirmationArchiveCases";
 	String confirmationArchiveCommunities = "confirmationArchiveCommunities";
 	String confirmationArchiveCommunity = "confirmationArchiveCommunity";
+	String confirmationArchiveContact = "confirmationArchiveContact";
 	String confirmationArchiveContinent = "confirmationArchiveContinent";
 	String confirmationArchiveContinents = "confirmationArchiveContinents";
 	String confirmationArchiveCountries = "confirmationArchiveCountries";
@@ -65,6 +66,7 @@ public interface Strings {
 	String confirmationArchiveDistricts = "confirmationArchiveDistricts";
 	String confirmationArchiveEvent = "confirmationArchiveEvent";
 	String confirmationArchiveEventGroup = "confirmationArchiveEventGroup";
+	String confirmationArchiveEventParticipant = "confirmationArchiveEventParticipant";
 	String confirmationArchiveEvents = "confirmationArchiveEvents";
 	String confirmationArchiveFacilities = "confirmationArchiveFacilities";
 	String confirmationArchiveFacility = "confirmationArchiveFacility";
@@ -91,6 +93,7 @@ public interface Strings {
 	String confirmationDearchiveCases = "confirmationDearchiveCases";
 	String confirmationDearchiveCommunities = "confirmationDearchiveCommunities";
 	String confirmationDearchiveCommunity = "confirmationDearchiveCommunity";
+	String confirmationDearchiveContact = "confirmationDearchiveContact";
 	String confirmationDearchiveContinent = "confirmationDearchiveContinent";
 	String confirmationDearchiveContinents = "confirmationDearchiveContinents";
 	String confirmationDearchiveCountries = "confirmationDearchiveCountries";
@@ -99,6 +102,7 @@ public interface Strings {
 	String confirmationDearchiveDistricts = "confirmationDearchiveDistricts";
 	String confirmationDearchiveEvent = "confirmationDearchiveEvent";
 	String confirmationDearchiveEventGroup = "confirmationDearchiveEventGroup";
+	String confirmationDearchiveEventParticipant = "confirmationDearchiveEventParticipant";
 	String confirmationDearchiveEvents = "confirmationDearchiveEvents";
 	String confirmationDearchiveFacilities = "confirmationDearchiveFacilities";
 	String confirmationDearchiveFacility = "confirmationDearchiveFacility";
@@ -341,8 +345,10 @@ public interface Strings {
 	String headingAnimalContacts = "headingAnimalContacts";
 	String headingArchiveCampaign = "headingArchiveCampaign";
 	String headingArchiveCase = "headingArchiveCase";
+	String headingArchiveContact = "headingArchiveContact";
 	String headingArchiveEvent = "headingArchiveEvent";
 	String headingArchiveEventGroup = "headingArchiveEventGroup";
+	String headingArchiveEventParticipant = "headingArchiveEventParticipant";
 	String headingArchiveImmunization = "headingArchiveImmunization";
 	String headingArchiveTravelEntry = "headingArchiveTravelEntry";
 	String headingArchivingNotPossible = "headingArchivingNotPossible";
@@ -437,8 +443,10 @@ public interface Strings {
 	String headingDataImport = "headingDataImport";
 	String headingDearchiveCampaign = "headingDearchiveCampaign";
 	String headingDearchiveCase = "headingDearchiveCase";
+	String headingDearchiveContact = "headingDearchiveContact";
 	String headingDearchiveEvent = "headingDearchiveEvent";
 	String headingDearchiveEventGroup = "headingDearchiveEventGroup";
+	String headingDearchiveEventParticipant = "headingDearchiveEventParticipant";
 	String headingDearchiveImmunization = "headingDearchiveImmunization";
 	String headingDearchiveTravelEntry = "headingDearchiveTravelEntry";
 	String headingDearchivingNotPossible = "headingDearchivingNotPossible";
@@ -676,6 +684,7 @@ public interface Strings {
 	String infoActivityAsCaseInvestigation = "infoActivityAsCaseInvestigation";
 	String infoAddTestsToSample = "infoAddTestsToSample";
 	String infoArchivedCases = "infoArchivedCases";
+	String infoArchivedEventParticipants = "infoArchivedEventParticipants";
 	String infoArchivedEvents = "infoArchivedEvents";
 	String infoArchivedTravelEntries = "infoArchivedTravelEntries";
 	String infoAssigneeMissingEmail = "infoAssigneeMissingEmail";
@@ -870,6 +879,7 @@ public interface Strings {
 	String messageAllContactsLinkedToEvent = "messageAllContactsLinkedToEvent";
 	String messageAlreadyEventParticipant = "messageAlreadyEventParticipant";
 	String messageAnimalContactsHint = "messageAnimalContactsHint";
+	String messageArchiveUndoneReasonMandatory = "messageArchiveUndoneReasonMandatory";
 	String messageAreaArchived = "messageAreaArchived";
 	String messageAreaArchivingNotPossible = "messageAreaArchivingNotPossible";
 	String messageAreaDearchived = "messageAreaDearchived";
@@ -923,9 +933,11 @@ public interface Strings {
 	String messageCommunityDearchivingNotPossible = "messageCommunityDearchivingNotPossible";
 	String messageCompletenessValuesUpdated = "messageCompletenessValuesUpdated";
 	String messageConfirmCaseAfterPathogenTest = "messageConfirmCaseAfterPathogenTest";
+	String messageContactArchived = "messageContactArchived";
 	String messageContactCaseChanged = "messageContactCaseChanged";
 	String messageContactCaseRemoved = "messageContactCaseRemoved";
 	String messageContactCreated = "messageContactCreated";
+	String messageContactDearchived = "messageContactDearchived";
 	String messageContactDuplicateDeleted = "messageContactDuplicateDeleted";
 	String messageContactExternalTokenWarning = "messageContactExternalTokenWarning";
 	String messageContactSaved = "messageContactSaved";
@@ -987,7 +999,9 @@ public interface Strings {
 	String messageEventLinkedAsSubordinate = "messageEventLinkedAsSubordinate";
 	String messageEventLinkedAsSuperordinate = "messageEventLinkedAsSuperordinate";
 	String messageEventLinkedToGroup = "messageEventLinkedToGroup";
+	String messageEventParticipantArchived = "messageEventParticipantArchived";
 	String messageEventParticipantCreated = "messageEventParticipantCreated";
+	String messageEventParticipantDearchived = "messageEventParticipantDearchived";
 	String messageEventParticipantResponsibleJurisdictionUpdated = "messageEventParticipantResponsibleJurisdictionUpdated";
 	String messageEventParticipantSaved = "messageEventParticipantSaved";
 	String messageEventParticipantsDeleted = "messageEventParticipantsDeleted";

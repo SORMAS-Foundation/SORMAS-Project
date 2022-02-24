@@ -333,8 +333,6 @@ import de.symeda.sormas.utils.CaseJoins;
 public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, CaseIndexDto, CaseReferenceDto, CaseService, CaseCriteria>
 	implements CaseFacade {
 
-	private static final int ARCHIVE_BATCH_SIZE = 1000;
-
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
@@ -3398,27 +3396,17 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
 		cq.where(cb.equal(from.get(Case.ARCHIVED), false), cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp, true)));
-		cq.select(from.get(Case.UUID));
+		cq.select(from.get(Case.UUID)).distinct(true);
 		List<String> caseUuids = em.createQuery(cq).getResultList();
 
-		IterableHelper.executeBatched(caseUuids, ARCHIVE_BATCH_SIZE, batchedCaseUuids -> service.updateArchived(batchedCaseUuids, true));
+		if (!caseUuids.isEmpty()) {
+			archive(caseUuids);
+		}
+
 		logger.debug(
 			"archiveAllArchivableCases() finished. caseCount = {}, daysAfterCaseGetsArchived = {}, {}ms",
 			caseUuids.size(),
 			daysAfterCaseGetsArchived,
-			DateHelper.durationMillies(startTime));
-	}
-
-	@Override
-	public void updateArchived(List<String> caseUuids, boolean archived) {
-
-		long startTime = DateHelper.startTime();
-
-		IterableHelper.executeBatched(caseUuids, ARCHIVE_BATCH_SIZE, batchedCaseUuids -> service.updateArchived(batchedCaseUuids, archived));
-		logger.debug(
-			"updateArchived() finished. caseCount = {}, archived = {}, {}ms",
-			caseUuids.size(),
-			archived,
 			DateHelper.durationMillies(startTime));
 	}
 

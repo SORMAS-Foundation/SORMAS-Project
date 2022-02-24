@@ -24,6 +24,11 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.themes.ValoTheme;
+import de.symeda.sormas.ui.immunization.ImmunizationDataView;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -592,6 +597,40 @@ public class ContactController {
 				FacadeProvider.getContactFacade().deleteContact(contact.getUuid());
 				UI.getCurrent().getNavigator().navigateTo(ContactsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityContact));
+		}
+
+		// Initialize 'Archive' button
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_ARCHIVE)) {
+			boolean archived = FacadeProvider.getContactFacade().isArchived(contact.getUuid());
+			Button archiveButton = ButtonHelper.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {
+				editComponent.commit();
+
+				if (archived) {
+					ControllerProvider.getArchiveController()
+						.dearchiveEntity(
+							contact,
+							FacadeProvider.getContactFacade(),
+							Strings.headingDearchiveContact,
+							Strings.confirmationDearchiveContact,
+							Strings.entityContact,
+							Strings.messageContactDearchived,
+							() -> navigateToView(ContactDataView.VIEW_NAME, contact.getUuid(), false));
+				} else {
+					ControllerProvider.getArchiveController()
+						.archiveEntity(
+							contact,
+							FacadeProvider.getContactFacade(),
+							Strings.headingArchiveContact,
+							Strings.confirmationArchiveContact,
+							Strings.entityContact,
+							Strings.messageContactArchived,
+							() -> navigateToView(ContactDataView.VIEW_NAME, contact.getUuid(), false));
+				}
+
+			}, ValoTheme.BUTTON_LINK);
+
+			editComponent.getButtonsPanel().addComponentAsFirst(archiveButton);
+			editComponent.getButtonsPanel().setComponentAlignment(archiveButton, Alignment.BOTTOM_LEFT);
 		}
 
 		return editComponent;
