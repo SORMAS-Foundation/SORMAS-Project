@@ -987,8 +987,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			.add(hospitalization, Hospitalization.PREVIOUS_HOSPITALIZATIONS)
 			.add(caseFrom, Case.THERAPY)
 			.add(clinicalCourse)
-			.add(clinicalCourse, ClinicalCourse.HEALTH_CONDITIONS)
-				.add(caseFrom, Case.HEALTH_CONDITIONS) //from Barna
+			.add(caseFrom, Case.HEALTH_CONDITIONS)
 			.add(caseFrom, Case.MATERNAL_HISTORY)
 			.add(caseFrom, Case.PORT_HEALTH_INFO)
 			.add(caseFrom, Case.SORMAS_TO_SORMAS_ORIGIN_INFO)
