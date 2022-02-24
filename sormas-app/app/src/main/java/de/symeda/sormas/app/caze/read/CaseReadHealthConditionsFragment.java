@@ -39,6 +39,6 @@ public class CaseReadHealthConditionsFragment extends BaseReadHealthConditionsFr
 
 	@Override
 	protected void prepareFragmentData(Bundle savedInstanceState) {
-		record = getActivityRootData().getClinicalCourse().getHealthConditions();
+		record = getActivityRootData().getHealthConditions();
 	}
 }

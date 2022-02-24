@@ -214,7 +214,7 @@ public class ImmunizationFacadeEjb
 
 		List<VaccinationDto> vaccinationDtos = new ArrayList<>();
 		for (Vaccination vaccination : entity.getVaccinations()) {
-			VaccinationDto vaccinationDto = VaccinationFacadeEjbLocal.toDto(vaccination);
+			VaccinationDto vaccinationDto = vaccinationFacade.toDto(vaccination);
 			vaccinationDtos.add(vaccinationDto);
 		}
 		dto.setVaccinations(vaccinationDtos);

@@ -123,6 +123,7 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	public static final String CLINICAL_COURSE = "clinicalCourse";
 	public static final String MATERNAL_HISTORY = "maternalHistory";
 	public static final String PORT_HEALTH_INFO = "portHealthInfo";
+	public static final String HEALTH_CONDITIONS = "healthConditions";
 	public static final String PREGNANT = "pregnant";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
 	public static final String SMALLPOX_VACCINATION_SCAR = "smallpoxVaccinationScar";
@@ -320,6 +321,10 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String healthFacilityDetails;
+
+	@Valid
+	private HealthConditionsDto healthConditions;
+
 	private YesNoUnknown pregnant;
 	@Diseases({
 		Disease.AFP,
@@ -558,7 +563,7 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	private Map<String, String> externalData;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
-		return build(person, disease, null);
+		return build(person, disease, HealthConditionsDto.build());
 	}
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease, HealthConditionsDto healthConditions) {
@@ -569,13 +574,8 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 		caze.setEpiData(EpiDataDto.build());
 		caze.setSymptoms(SymptomsDto.build());
 		caze.setTherapy(TherapyDto.build());
-
-		if (healthConditions == null) {
-			caze.setClinicalCourse(ClinicalCourseDto.build());
-		} else {
-			caze.setClinicalCourse(ClinicalCourseDto.build(healthConditions));
-		}
-
+		caze.setHealthConditions(healthConditions);
+		caze.setClinicalCourse(ClinicalCourseDto.build());
 		caze.setMaternalHistory(MaternalHistoryDto.build());
 		caze.setPortHealthInfo(PortHealthInfoDto.build());
 		caze.setDisease(disease);
@@ -1656,6 +1656,14 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 
 	public void setExternalData(Map<String, String> externalData) {
 		this.externalData = externalData;
+	}
+
+	public HealthConditionsDto getHealthConditions() {
+		return healthConditions;
+	}
+
+	public void setHealthConditions(HealthConditionsDto healthConditions) {
+		this.healthConditions = healthConditions;
 	}
 
 	@Override

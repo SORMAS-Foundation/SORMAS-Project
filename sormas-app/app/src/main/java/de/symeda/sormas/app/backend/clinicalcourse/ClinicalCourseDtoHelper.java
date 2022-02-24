@@ -21,13 +21,10 @@ import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.app.backend.common.AdoDtoHelper;
-import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
 import retrofit2.Call;
 
 public class ClinicalCourseDtoHelper extends AdoDtoHelper<ClinicalCourse, ClinicalCourseDto> {
-
-	private HealthConditionsDtoHelper healthConditionsDtoHelper = new HealthConditionsDtoHelper();
 
 	@Override
 	protected Class<ClinicalCourse> getAdoClass() {
@@ -56,17 +53,10 @@ public class ClinicalCourseDtoHelper extends AdoDtoHelper<ClinicalCourse, Clinic
 
 	@Override
 	public void fillInnerFromDto(ClinicalCourse target, ClinicalCourseDto source) {
-		target.setHealthConditions(healthConditionsDtoHelper.fillOrCreateFromDto(target.getHealthConditions(), source.getHealthConditions()));
 	}
 
 	@Override
 	public void fillInnerFromAdo(ClinicalCourseDto target, ClinicalCourse source) {
-		if (source.getHealthConditions() != null) {
-			HealthConditions healthConditions = DatabaseHelper.getHealthConditionsDao().queryForId(source.getHealthConditions().getId());
-			target.setHealthConditions(healthConditionsDtoHelper.adoToDto(healthConditions));
-		} else {
-			target.setHealthConditions(null);
-		}
 	}
 
 	@Override

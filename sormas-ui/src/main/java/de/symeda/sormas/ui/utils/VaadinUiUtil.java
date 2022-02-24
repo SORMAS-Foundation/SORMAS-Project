@@ -133,11 +133,20 @@ public final class VaadinUiUtil {
 	}
 
 	public static Window showModalPopupWindow(CommitDiscardWrapperComponent<?> content, String caption) {
+		return showModalPopupWindow(content, caption, null);
+	}
+
+	public static Window showModalPopupWindow(CommitDiscardWrapperComponent<?> content, String caption, Consumer<Boolean> callback) {
 		final Window popupWindow = VaadinUiUtil.showPopupWindow(content);
 		popupWindow.setCaption(caption);
 		content.setMargin(true);
 
 		content.addDoneListener(popupWindow::close);
+
+		if (callback != null) {
+			content.addCommitListener(() -> callback.accept(true));
+			content.addDiscardListener(() -> callback.accept(false));
+		}
 
 		return popupWindow;
 	}
