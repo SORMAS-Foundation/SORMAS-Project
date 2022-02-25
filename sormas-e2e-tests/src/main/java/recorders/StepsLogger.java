@@ -86,15 +86,15 @@ public class StepsLogger implements StepLifecycleListener {
             screenShot);
   }
 
-  @Attachment("Browser console log")
+  @Attachment(value = "Browser console log", type = "text/plain")
   private void attachConsoleLog() {
     log.info("Attaching console logs");
-    List<String> consoleLogs = consoleAllLogs(driver);
-    StringBuilder consoleLog = new StringBuilder("CONSOLE LOG: ");
+//    List<String> consoleLogs = consoleAllLogs(driver);
+//    StringBuilder consoleLog = new StringBuilder("CONSOLE LOG: ");
 
-    if (consoleLogs.isEmpty()) {
-      consoleLog.append(" NO CONSOLE LOGS DETECTED!");
-    } else {
+//    if (consoleLogs.isEmpty()) {
+//      consoleLog.append(" NO CONSOLE LOGS DETECTED!");
+//    } else {
 //      for (Object log : consoleLogs) {
 //        consoleLog.append(log);
 //      }
@@ -111,7 +111,7 @@ public class StepsLogger implements StepLifecycleListener {
 //              "text/json",
 //              "text",
 //              consoleLog.toString().getBytes());
-    }
+   // }
   }
 
   public List<String> consoleAllLogs(RemoteWebDriver webDriver) {
