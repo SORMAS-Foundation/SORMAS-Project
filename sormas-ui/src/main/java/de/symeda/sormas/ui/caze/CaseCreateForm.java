@@ -123,6 +123,7 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 	private ComboBox facilityCombo;
 	private ComboBox pointOfEntryDistrictCombo;
 
+	private CheckBox enterHomeAddressNow;
 	private LocationEditForm homeAddressForm;
 	private Button searchPersonButton;
 
@@ -799,6 +800,16 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 
 	public void setPerson(PersonDto person) {
 
+		if (showHomeAddressForm) {
+			PersonDto searchedPerson = getSearchedPerson();
+			enterHomeAddressNow.setEnabled(searchedPerson != null ? false : true);
+			if (searchedPerson == null) {
+				homeAddressForm.clear();
+				homeAddressForm.setFacilityFieldsVisible(false, true);
+				homeAddressForm.setVisible(false);
+			}
+		}
+
 		if (person != null) {
 			((TextField) getField(PersonDto.FIRST_NAME)).setValue(person.getFirstName());
 			((TextField) getField(PersonDto.LAST_NAME)).setValue(person.getLastName());
@@ -882,7 +893,7 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 	}
 
 	private void addHomeAddressForm() {
-		CheckBox enterHomeAddressNow = new CheckBox(I18nProperties.getCaption(Captions.caseDataEnterHomeAddressNow));
+		enterHomeAddressNow = new CheckBox(I18nProperties.getCaption(Captions.caseDataEnterHomeAddressNow));
 		enterHomeAddressNow.addStyleName(VSPACE_3);
 		getContent().addComponent(enterHomeAddressNow, ENTER_HOME_ADDRESS_NOW);
 
