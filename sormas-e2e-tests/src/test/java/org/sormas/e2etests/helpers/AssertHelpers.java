@@ -50,7 +50,6 @@ public class AssertHelpers {
     } catch (ConditionTimeoutException e) {
       log.error(PROCESS_ID_STRING + e.getMessage());
       log.error(PROCESS_ID_STRING + Arrays.toString(e.getStackTrace()));
-      // takeScreenshot(driver);
       fail(e.getCause().getLocalizedMessage());
     }
   }
@@ -58,15 +57,5 @@ public class AssertHelpers {
   public void assertWithPoll20Second(ThrowingRunnable throwingRunnable) {
     assertWithPoll(throwingRunnable, 20);
   }
-
-  @SneakyThrows
-  static void takeScreenshot(RemoteWebDriver remoteWebDriver) {
-    File srcFile = remoteWebDriver.getScreenshotAs(OutputType.FILE);
-    String projectDir = System.getProperty("user.dir");
-    File destFileName =
-        new File(
-            projectDir + File.separator + "screenshots/" + System.currentTimeMillis() + ".jpg");
-    log.error("{} screenshot with name: {}", PROCESS_ID_STRING, destFileName.getName());
-    FileUtils.copyFile(srcFile, destFileName);
-  }
+  
 }
