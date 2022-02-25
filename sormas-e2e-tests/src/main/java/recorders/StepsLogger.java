@@ -89,21 +89,20 @@ public class StepsLogger implements StepLifecycleListener {
   @Attachment(value = "Browser console log", type = "text/plain")
   private void attachConsoleLog() {
     log.info("Attaching console logs");
-//    List<String> consoleLogs = consoleAllLogs(driver);
-//    StringBuilder consoleLog = new StringBuilder("CONSOLE LOG: ");
+    List<String> consoleLogs = consoleAllLogs(driver);
+    StringBuilder consoleLog = new StringBuilder("CONSOLE LOG: ");
 
-//    if (consoleLogs.isEmpty()) {
-//      consoleLog.append(" NO CONSOLE LOGS DETECTED!");
-//    } else {
-//      for (Object log : consoleLogs) {
-//        consoleLog.append(log);
-//      }
+    if (consoleLogs.isEmpty()) {
+      consoleLog.append(" NO CONSOLE LOGS DETECTED!");
+    } else {
+      for (Object log : consoleLogs) {
+        consoleLog.append(log);
+      }
       log.info("Appending logs to Allure report as attachment");
-      String testMessage = "Hope to work";
-      Allure.getLifecycle().addAttachment("String attachment",
+      Allure.getLifecycle().addAttachment("Execution logs",
               "text/plain",
               "txt",
-              testMessage.getBytes());
+              consoleLog.toString().getBytes());
 //      Allure.getLifecycle()
 //          .addAttachment(
 //              "Console log at :"
@@ -111,7 +110,7 @@ public class StepsLogger implements StepLifecycleListener {
 //              "text/json",
 //              "text",
 //              consoleLog.toString().getBytes());
-   // }
+    }
   }
 
   public List<String> consoleAllLogs(RemoteWebDriver webDriver) {
