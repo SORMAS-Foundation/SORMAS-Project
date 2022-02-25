@@ -49,8 +49,6 @@ public interface EventFacade extends CoreFacade<EventDto, EventIndexDto, EventRe
 
 	List<String> getAllActiveUuids();
 
-	void deleteEvent(String eventUuid) throws ExternalSurveillanceToolException;
-
 	List<String> deleteEvents(List<String> eventUuids);
 
 	Page<EventIndexDto> getIndexPage(@NotNull EventCriteria eventCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);

@@ -784,7 +784,7 @@ public class EventController {
 			editView.addDeleteListener(() -> {
 				if (!existEventParticipantsLinkedToEvent(event)) {
 					try {
-						FacadeProvider.getEventFacade().deleteEvent(event.getUuid());
+						FacadeProvider.getEventFacade().delete(event.getUuid());
 					} catch (ExternalSurveillanceToolException e) {
 						Notification.show(
 							String.format(
@@ -959,7 +959,7 @@ public class EventController {
 							nonDeletableEventsWithParticipants.append(selectedRow.getUuid(), 0, 6).append(", ");
 						} else {
 							try {
-								FacadeProvider.getEventFacade().deleteEvent(eventDto.getUuid());
+								FacadeProvider.getEventFacade().delete(eventDto.getUuid());
 							} catch (ExternalSurveillanceToolException e) {
 								countNotDeletedEventsFromExternalTool = countNotDeletedEventsFromExternalTool + 1;
 								nonDeletableEventsFromExternalTool.append(selectedRow.getUuid(), 0, 6).append(", ");

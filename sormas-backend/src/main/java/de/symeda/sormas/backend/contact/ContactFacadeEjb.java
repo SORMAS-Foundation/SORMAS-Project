@@ -474,7 +474,7 @@ public class ContactFacadeEjb extends AbstractCoreFacadeEjb<Contact, ContactDto,
 	}
 
 	@Override
-	public void deleteContact(String contactUuid) {
+	public void delete(String contactUuid) {
 
 		if (!userService.hasRight(UserRight.CONTACT_DELETE)) {
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete contacts.");
@@ -1891,7 +1891,7 @@ public class ContactFacadeEjb extends AbstractCoreFacadeEjb<Contact, ContactDto,
 		contact.setDuplicateOf(duplicateOfContact);
 		service.ensurePersisted(contact);
 
-		deleteContact(uuid);
+		this.delete(uuid);
 	}
 
 	@Override

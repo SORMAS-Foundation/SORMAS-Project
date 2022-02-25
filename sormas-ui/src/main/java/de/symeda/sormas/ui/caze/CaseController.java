@@ -1105,7 +1105,7 @@ public class CaseController {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_DELETE)) {
 			editView.addDeleteListener(() -> {
 				try {
-					FacadeProvider.getCaseFacade().deleteCase(caze.getUuid());
+					FacadeProvider.getCaseFacade().delete(caze.getUuid());
 					UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
 				} catch (ExternalSurveillanceToolException e) {
 					Notification.show(
@@ -1548,7 +1548,7 @@ public class CaseController {
 					StringBuilder nonDeletableCases = new StringBuilder();
 					for (CaseIndexDto selectedRow : selectedRows) {
 						try {
-							FacadeProvider.getCaseFacade().deleteCase(selectedRow.getUuid());
+							FacadeProvider.getCaseFacade().delete(selectedRow.getUuid());
 						} catch (ExternalSurveillanceToolException e) {
 							countNotDeletedCases++;
 							nonDeletableCases.append(selectedRow.getUuid(), 0, 6).append(", ");

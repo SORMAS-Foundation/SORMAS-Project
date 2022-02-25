@@ -53,8 +53,6 @@ public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, C
 
 	List<MapContactDto> getContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
 
-	void deleteContact(String contactUuid);
-
 	List<String> deleteContacts(List<String> contactUuids);
 
 	FollowUpPeriodDto calculateFollowUpUntilDate(ContactDto contactDto, boolean ignoreOverwrite);

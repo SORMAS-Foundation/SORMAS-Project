@@ -182,7 +182,7 @@ public class ImmunizationController {
 		// Initialize 'Delete' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_DELETE)) {
 			editComponent.addDeleteListener(() -> {
-				FacadeProvider.getImmunizationFacade().deleteImmunization(immunizationDto.getUuid());
+				FacadeProvider.getImmunizationFacade().delete(immunizationDto.getUuid());
 				UI.getCurrent().getNavigator().navigateTo(ImmunizationsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityImmunization));
 		}

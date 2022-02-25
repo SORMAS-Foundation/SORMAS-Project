@@ -923,7 +923,7 @@ public class LabMessageController {
 			if (sample.getAssociatedCase() != null) {
 				return ButtonHelper.createButton(Captions.labMessage_deleteNewlyCreatedCase, e -> {
 					try {
-						FacadeProvider.getCaseFacade().deleteCase(sample.getAssociatedCase().getUuid());
+						FacadeProvider.getCaseFacade().delete(sample.getAssociatedCase().getUuid());
 					} catch (ExternalSurveillanceToolException survToolException) {
 						// should not happen because the new case was not shared
 						throw new RuntimeException(survToolException);
@@ -932,12 +932,12 @@ public class LabMessageController {
 			} else if (sample.getAssociatedContact() != null) {
 				return ButtonHelper.createButton(
 					Captions.labMessage_deleteNewlyCreatedContact,
-					e -> FacadeProvider.getContactFacade().deleteContact(sample.getAssociatedContact().getUuid()),
+					e -> FacadeProvider.getContactFacade().delete(sample.getAssociatedContact().getUuid()),
 					ValoTheme.BUTTON_PRIMARY);
 			} else if (sample.getAssociatedEventParticipant() != null) {
 				return ButtonHelper.createButton(
 					Captions.labMessage_deleteNewlyCreatedEventParticipant,
-					e -> FacadeProvider.getEventParticipantFacade().deleteEventParticipant(sample.getAssociatedEventParticipant()),
+					e -> FacadeProvider.getEventParticipantFacade().delete(sample.getAssociatedEventParticipant()),
 					ValoTheme.BUTTON_PRIMARY);
 			}
 		}

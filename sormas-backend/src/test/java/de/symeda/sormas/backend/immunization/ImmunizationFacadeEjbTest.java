@@ -119,7 +119,7 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(immunizationUuid, getImmunizationFacade().getByUuid(immunizationUuid).getUuid());
 		assertEquals(1, getImmunizationFacade().count(new ImmunizationCriteria()));
 
-		getImmunizationFacade().deleteImmunization(immunizationUuid);
+		getImmunizationFacade().delete(immunizationUuid);
 
 		assertEquals(0, getImmunizationFacade().count(new ImmunizationCriteria()));
 		assertTrue(getImmunizationFacade().exists(immunizationUuid));
