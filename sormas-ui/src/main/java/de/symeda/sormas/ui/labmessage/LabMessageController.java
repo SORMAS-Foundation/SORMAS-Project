@@ -937,7 +937,7 @@ public class LabMessageController {
 			} else if (sample.getAssociatedEventParticipant() != null) {
 				return ButtonHelper.createButton(
 					Captions.labMessage_deleteNewlyCreatedEventParticipant,
-					e -> FacadeProvider.getEventParticipantFacade().delete(sample.getAssociatedEventParticipant()),
+					e -> FacadeProvider.getEventParticipantFacade().delete(sample.getAssociatedEventParticipant().getUuid()),
 					ValoTheme.BUTTON_PRIMARY);
 			}
 		}
