@@ -40,20 +40,8 @@ public abstract class PersonDependentEditForm<DTO> extends AbstractEditForm<DTO>
 		super(type, propertyI18nPrefix);
 	}
 
-	protected PersonDependentEditForm(Class<DTO> type, String propertyI18nPrefix, boolean addFields) {
-		super(type, propertyI18nPrefix, addFields);
-	}
-
 	protected PersonDependentEditForm(Class<DTO> type, String propertyI18nPrefix, FieldVisibilityCheckers fieldVisibilityCheckers) {
 		super(type, propertyI18nPrefix, fieldVisibilityCheckers);
-	}
-
-	protected PersonDependentEditForm(
-		Class<DTO> type,
-		String propertyI18nPrefix,
-		boolean addFields,
-		FieldVisibilityCheckers fieldVisibilityCheckers) {
-		super(type, propertyI18nPrefix, addFields, fieldVisibilityCheckers);
 	}
 
 	protected PersonDependentEditForm(
