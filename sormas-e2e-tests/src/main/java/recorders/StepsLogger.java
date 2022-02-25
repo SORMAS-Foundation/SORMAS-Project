@@ -65,7 +65,6 @@ public class StepsLogger implements StepLifecycleListener {
   @Override
   public void afterStepUpdate(final StepResult result) {
     if (isScreenshotEnabled && driver != null) {
-      log.info("Attaching screenshot and console logs");
       takeScreenshotAfter();
       attachConsoleLog();
     }
@@ -89,26 +88,30 @@ public class StepsLogger implements StepLifecycleListener {
 
   @Attachment("Browser console log")
   private void attachConsoleLog() {
+    log.info("Attaching console logs");
     List<String> consoleLogs = consoleAllLogs(driver);
     StringBuilder consoleLog = new StringBuilder("CONSOLE LOG: ");
 
     if (consoleLogs.isEmpty()) {
       consoleLog.append(" NO CONSOLE LOGS DETECTED!");
     } else {
-      for (Object log : consoleLogs) {
-        consoleLog.append(log);
-      }
+//      for (Object log : consoleLogs) {
+//        consoleLog.append(log);
+//      }
       log.info("Appending logs to Allure report as attachment");
-      Allure.getLifecycle()
-          .addAttachment(
-              "Console log at :"
-                  + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MMM-yy_hh:mm:ss")),
-              "text/json",
-              "text",
-              consoleLog.toString().getBytes());
+      String testMessage = "Hope to work";
+      Allure.getLifecycle().addAttachment("String attachment",
+              "text/plain",
+              "txt",
+              testMessage.getBytes());
+//      Allure.getLifecycle()
+//          .addAttachment(
+//              "Console log at :"
+//                  + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MMM-yy_hh:mm:ss")),
+//              "text/json",
+//              "text",
+//              consoleLog.toString().getBytes());
     }
-    log.info("Console logs are: " + consoleLogs.toString());
-    log.info("Console logs bytes are: " + consoleLogs.toString().getBytes());
   }
 
   public List<String> consoleAllLogs(RemoteWebDriver webDriver) {
