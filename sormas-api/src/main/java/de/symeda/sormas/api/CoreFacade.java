@@ -31,7 +31,7 @@ public interface CoreFacade<DTO extends EntityDto, INDEX_DTO extends Serializabl
 
     void dearchive(String uuid);
 
-    void delete(String uuid) throws ExternalSurveillanceToolException;
+    void delete(String uuid);
 
     boolean isArchived(String uuid);
 
