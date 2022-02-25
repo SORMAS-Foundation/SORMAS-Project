@@ -92,9 +92,12 @@ public class StepsLogger implements StepLifecycleListener {
     List<String> consoleLogs = consoleAllLogs(driver);
     StringBuilder consoleLog = new StringBuilder("CONSOLE LOG: ");
 
+    log.info("Checking if console logs is empty");
     if (consoleLogs.isEmpty()) {
       consoleLog.append(" NO CONSOLE LOGS DETECTED!");
-    } else {
+    }
+    else {
+      log.info("Apending logs to object");
       for (Object log : consoleLogs) {
         consoleLog.append(log);
       }
@@ -128,6 +131,7 @@ public class StepsLogger implements StepLifecycleListener {
                   + "\n");
           allLogEntries.add(entry);
         });
+    log.info("Found {} available console logs!", consoleLogs.size());
     return consoleLogs;
   }
 }
