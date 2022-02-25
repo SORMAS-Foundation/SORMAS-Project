@@ -890,7 +890,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
 		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
 
-		getCaseFacade().deleteCase(caze.getUuid());
+		getCaseFacade().delete(caze.getUuid());
 
 		// Deleted flag should be set for case, contact, sample and pathogen test; Task and additional test should be deleted
 		assertTrue(getCaseFacade().getDeletedUuidsSince(since).contains(caze.getUuid()));
@@ -1258,7 +1258,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals("COU-REG-DIS-" + year + "-005", fourthCaze.getEpidNumber());
 
 		// Make sure that deleted cases are ignored when searching for the highest existing epid nummber
-		getCaseFacade().deleteCase(fourthCaze.getUuid());
+		getCaseFacade().delete(fourthCaze.getUuid());
 
 		CaseDataDto fifthCaze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
 

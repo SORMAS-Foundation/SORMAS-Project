@@ -345,7 +345,7 @@ public class CampaignFacadeEjb
 	}
 
 	@Override
-	public void deleteCampaign(String campaignUuid) {
+	public void delete(String campaignUuid) {
 
 		User user = userService.getCurrentUser();
 		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))

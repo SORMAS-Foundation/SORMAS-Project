@@ -244,7 +244,8 @@ public enum FeatureType {
 		true,
 		new FeatureType[] {
 			TASK_MANAGEMENT },
-		null);
+		null),
+	DELETE_PERMANENT(true, false, null, null);
 
 	/**
 	 * Server feature means that the feature only needs to be configured once per server since they define the way the system

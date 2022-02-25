@@ -313,7 +313,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		if (!featureType.isServerFeature() && Boolean.FALSE.equals(configuration.isEnabled())) {
 			FeatureConfiguration existingConfiguration = service.getByUuid(configuration.getUuid());
 			if (existingConfiguration != null) {
-				service.delete(existingConfiguration);
+				service.deletePermanent(existingConfiguration);
 			}
 
 			return;
@@ -355,7 +355,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		}
 
 		List<FeatureConfiguration> resultList = em.createQuery(cq).getResultList();
-		resultList.forEach(result -> service.delete(result));
+		resultList.forEach(result -> service.deletePermanent(result));
 	}
 
 	@Override
@@ -368,7 +368,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 
 		cq.where(cb.lessThan(root.get(FeatureConfiguration.END_DATE), date));
 		List<FeatureConfiguration> resultList = em.createQuery(cq).getResultList();
-		resultList.forEach(result -> service.delete(result));
+		resultList.forEach(result -> service.deletePermanent(result));
 	}
 
 	@Override

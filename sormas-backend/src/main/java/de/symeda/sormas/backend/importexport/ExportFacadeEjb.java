@@ -199,7 +199,7 @@ public class ExportFacadeEjb implements ExportFacade {
 	public void deleteExportConfiguration(String exportConfigurationUuid) {
 
 		ExportConfiguration exportConfiguration = exportConfigurationService.getByUuid(exportConfigurationUuid);
-		exportConfigurationService.delete(exportConfiguration);
+		exportConfigurationService.deletePermanent(exportConfiguration);
 	}
 
 	public ExportConfiguration fromExportConfigurationDto(@NotNull ExportConfigurationDto source, boolean checkChangeDate) {

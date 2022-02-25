@@ -509,13 +509,13 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		// Delete all tasks associated with this event
 		List<Task> tasks = taskService.findBy(new TaskCriteria().event(new EventReferenceDto(event.getUuid())), true);
 		for (Task task : tasks) {
-			taskService.delete(task);
+			taskService.deletePermanent(task);
 		}
 
 		// Delete all event actions associated with this event
 		List<Action> actions = actionService.getAllByEvent(event);
 		for (Action action : actions) {
-			actionService.delete(action);
+			actionService.deletePermanent(action);
 		}
 
 		// Mark the event as deleted

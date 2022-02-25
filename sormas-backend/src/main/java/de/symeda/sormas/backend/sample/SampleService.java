@@ -923,7 +923,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 
 		// Delete all additional tests of this sample
 		for (AdditionalTest additionalTest : sample.getAdditionalTests()) {
-			additionalTestService.delete(additionalTest);
+			additionalTestService.deletePermanent(additionalTest);
 		}
 
 		// Remove the reference from another sample to this sample if existing
