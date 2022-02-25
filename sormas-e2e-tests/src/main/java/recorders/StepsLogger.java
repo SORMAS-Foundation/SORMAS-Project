@@ -97,17 +97,17 @@ public class StepsLogger implements StepLifecycleListener {
     List<String> consoleLogs = consoleAllLogs(driver);
     StringBuilder consoleLog = new StringBuilder("CONSOLE LOG: ");
 
-    log.info("Checking if console logs is empty");
-    if (consoleLogs.isEmpty()) {
-      consoleLog.append(" NO CONSOLE LOGS DETECTED!");
-      log.warn("There are no logs to display");
-    } else {
-      log.info("Appending logs to object");
-      for (Object log : consoleLogs) {
-        consoleLog.append(log);
-      }
+//    log.info("Checking if console logs is empty");
+//    if (consoleLogs.isEmpty()) {
+//      consoleLog.append(" NO CONSOLE LOGS DETECTED!");
+//      log.warn("There are no logs to display");
+//    } else {
+//      log.info("Appending logs to object");
+//      for (Object log : consoleLogs) {
+//        consoleLog.append(log);
+//      }
       log.info("Appending logs to Allure report as attachment");
-      
+
       Allure.getLifecycle()
           .addAttachment("Execution logs", "text/plain", "txt", new FileInputStream("logs/file.log"));
 
@@ -122,7 +122,7 @@ public class StepsLogger implements StepLifecycleListener {
       //              "text/json",
       //              "text",
       //              consoleLog.toString().getBytes());
-    }
+    //}
   }
 
   public List<String> consoleAllLogs(RemoteWebDriver webDriver) {
