@@ -70,14 +70,14 @@ public class StepsLogger implements StepLifecycleListener {
   public void afterStepUpdate(final StepResult result) {
     if (isScreenshotEnabled && driver != null) {
       takeScreenshotAfter();
-      attachConsoleLog();
+      if(result.getStatus().value().equalsIgnoreCase("failed")){
+        attachConsoleLog();
+      }
     }
     stopwatch.stop();
     isScreenshotEnabled = true;
     log.info(
         " {} Finishing step: " + result.getName() + " and took: " + stopwatch, PROCESS_ID_STRING);
-    
-    log.info("Step status is: " + result.getStatus().value());
   }
 
   @Attachment(value = "After step screenshot", type = "image/png")
