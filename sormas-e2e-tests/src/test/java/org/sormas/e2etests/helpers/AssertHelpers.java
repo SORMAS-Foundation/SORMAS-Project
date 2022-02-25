@@ -23,17 +23,13 @@ import static org.awaitility.Awaitility.await;
 import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
 import static recorders.StepsLogger.PROCESS_ID_STRING;
 
-import java.io.File;
 import java.time.Duration;
 import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.apache.commons.io.FileUtils;
 import org.awaitility.core.ConditionTimeoutException;
 import org.awaitility.core.ThrowingRunnable;
-import org.openqa.selenium.OutputType;
-import org.openqa.selenium.remote.RemoteWebDriver;
 
 @Slf4j
 public class AssertHelpers {
@@ -57,5 +53,4 @@ public class AssertHelpers {
   public void assertWithPoll20Second(ThrowingRunnable throwingRunnable) {
     assertWithPoll(throwingRunnable, 20);
   }
-  
 }

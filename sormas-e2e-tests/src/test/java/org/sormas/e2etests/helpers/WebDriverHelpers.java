@@ -73,6 +73,7 @@ public class WebDriverHelpers {
   }
 
   public void waitForPageLoaded() {
+      log.info("Waiting for page to load");
     assertHelpers.assertWithPoll20Second(
         () ->
             Assert.assertEquals(
@@ -94,6 +95,7 @@ public class WebDriverHelpers {
   }
 
   public void waitUntilIdentifiedElementIsVisibleAndClickable(final Object selector, int seconds) {
+      log.info("Waiting for element [{}] to be visible and clickable", selector);
     if (selector instanceof By) {
       assertHelpers.assertWithPoll(
           () -> {
@@ -127,6 +129,7 @@ public class WebDriverHelpers {
   }
 
   public void waitUntilIdentifiedElementDisappear(final Object selector, int seconds) {
+      log.info("Waiting for element [{}] to disappear", selector);
     if (selector instanceof By) {
       assertHelpers.assertWithPoll(
           () -> {
@@ -168,6 +171,7 @@ public class WebDriverHelpers {
   }
 
   public void fillInWebElement(By selector, String text) {
+      log.info("Filling element [{{}] with text [{}]", selector, text);
     try {
       await()
           .pollInterval(ONE_HUNDRED_MILLISECONDS)
@@ -198,7 +202,6 @@ public class WebDriverHelpers {
 
     } catch (ConditionTimeoutException ignored) {
       log.error("Unable to fill on element identified by locator: {} and text {}", selector, text);
-      // takeScreenshot(baseSteps.getDriver());
       throw new TimeoutException(
           "Unable to fill on element identified by locator: " + selector + " and text : " + text);
     }
@@ -234,7 +237,6 @@ public class WebDriverHelpers {
 
     } catch (ConditionTimeoutException ignored) {
       log.error("Unable to fill on element identified by locator: {} and text {}", selector, text);
-      // takeScreenshot(baseSteps.getDriver());
       throw new TimeoutException(
           "Unable to fill on element identified by locator: " + selector + " and text : " + text);
     }
@@ -332,7 +334,6 @@ public class WebDriverHelpers {
 
     } catch (ConditionTimeoutException ignored) {
       log.error("Unable to click on element identified by locator: {}", selector);
-      // takeScreenshot(baseSteps.getDriver());
       throw new TimeoutException(
           String.format("Unable to click on element identified by locator: %s", selector));
     }
@@ -380,6 +381,7 @@ public class WebDriverHelpers {
   }
 
   public void scrollToElement(final Object selector) {
+      log.info("Scrolling to element [{}]", selector);
     JavascriptExecutor javascriptExecutor = baseSteps.getDriver();
     try {
       if (selector instanceof WebElement) {
@@ -405,7 +407,6 @@ public class WebDriverHelpers {
           });
     } catch (ConditionTimeoutException ignored) {
       log.error("Unable to fill on element identified by locator: {}", selector);
-      // takeScreenshot(baseSteps.getDriver());
       throw new TimeoutException("Unable to fill on element identified by locator: " + selector);
     }
   }

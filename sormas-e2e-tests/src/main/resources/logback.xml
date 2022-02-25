@@ -101,9 +101,4 @@
         <appender-ref ref="LOGS_HTML"/>
         <appender-ref ref="ROLLING_FILE"/>
     </root>
-    <root level="DEBUG">
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="LOGS_HTML"/>
-        <appender-ref ref="ROLLING_FILE"/>
-    </root>
 </configuration>

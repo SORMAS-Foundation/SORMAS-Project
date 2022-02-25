@@ -23,22 +23,16 @@ import io.qameta.allure.Allure;
 import io.qameta.allure.Attachment;
 import io.qameta.allure.listener.StepLifecycleListener;
 import io.qameta.allure.model.StepResult;
-
 import java.io.FileInputStream;
 import java.lang.management.ManagementFactory;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Objects;
-
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.OutputType;
-import org.openqa.selenium.logging.LogEntries;
 import org.openqa.selenium.logging.LogEntry;
-import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 @Slf4j
@@ -70,7 +64,7 @@ public class StepsLogger implements StepLifecycleListener {
   public void afterStepUpdate(final StepResult result) {
     if (isScreenshotEnabled && driver != null) {
       takeScreenshotAfter();
-      if(result.getStatus().value().equalsIgnoreCase("failed")){
+      if (result.getStatus().value().equalsIgnoreCase("failed")) {
         attachConsoleLog();
       }
     }
@@ -97,7 +91,6 @@ public class StepsLogger implements StepLifecycleListener {
   private void attachConsoleLog() {
     log.info("Appending logs to Allure report as attachment");
     Allure.getLifecycle()
-          .addAttachment("Execution logs", "text/plain", "txt", new FileInputStream("logs/file.log"));
+        .addAttachment("Execution logs", "text/plain", "txt", new FileInputStream("logs/file.log"));
   }
-
 }
