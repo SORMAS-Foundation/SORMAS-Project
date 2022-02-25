@@ -21,7 +21,6 @@ package org.sormas.e2etests.helpers;
 import static junit.framework.TestCase.fail;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
-import static org.sormas.e2etests.steps.BaseSteps.driver;
 import static recorders.StepsLogger.PROCESS_ID_STRING;
 
 import java.io.File;
@@ -51,7 +50,7 @@ public class AssertHelpers {
     } catch (ConditionTimeoutException e) {
       log.error(PROCESS_ID_STRING + e.getMessage());
       log.error(PROCESS_ID_STRING + Arrays.toString(e.getStackTrace()));
-      //takeScreenshot(driver);
+      // takeScreenshot(driver);
       fail(e.getCause().getLocalizedMessage());
     }
   }

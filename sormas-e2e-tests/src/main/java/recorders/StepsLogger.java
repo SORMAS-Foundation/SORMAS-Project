@@ -98,6 +98,7 @@ public class StepsLogger implements StepLifecycleListener {
       for (Object log : consoleLogs) {
         consoleLog.append(log);
       }
+      log.info("Appending logs to Allure report as attachment");
       Allure.getLifecycle()
           .addAttachment(
               "Console log at :"
@@ -106,6 +107,8 @@ public class StepsLogger implements StepLifecycleListener {
               "text",
               consoleLog.toString().getBytes());
     }
+    log.info("Console logs are: " + consoleLogs.toString());
+    log.info("Console logs bytes are: " + consoleLogs.toString().getBytes());
   }
 
   public List<String> consoleAllLogs(RemoteWebDriver webDriver) {

@@ -19,7 +19,6 @@ import static com.google.common.truth.Truth.assertWithMessage;
 import static java.time.Duration.ofSeconds;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
-import static org.sormas.e2etests.helpers.AssertHelpers.takeScreenshot;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -199,7 +198,7 @@ public class WebDriverHelpers {
 
     } catch (ConditionTimeoutException ignored) {
       log.error("Unable to fill on element identified by locator: {} and text {}", selector, text);
-      //takeScreenshot(baseSteps.getDriver());
+      // takeScreenshot(baseSteps.getDriver());
       throw new TimeoutException(
           "Unable to fill on element identified by locator: " + selector + " and text : " + text);
     }
@@ -235,7 +234,7 @@ public class WebDriverHelpers {
 
     } catch (ConditionTimeoutException ignored) {
       log.error("Unable to fill on element identified by locator: {} and text {}", selector, text);
-      //takeScreenshot(baseSteps.getDriver());
+      // takeScreenshot(baseSteps.getDriver());
       throw new TimeoutException(
           "Unable to fill on element identified by locator: " + selector + " and text : " + text);
     }
@@ -333,7 +332,7 @@ public class WebDriverHelpers {
 
     } catch (ConditionTimeoutException ignored) {
       log.error("Unable to click on element identified by locator: {}", selector);
-      //takeScreenshot(baseSteps.getDriver());
+      // takeScreenshot(baseSteps.getDriver());
       throw new TimeoutException(
           String.format("Unable to click on element identified by locator: %s", selector));
     }
@@ -406,7 +405,7 @@ public class WebDriverHelpers {
           });
     } catch (ConditionTimeoutException ignored) {
       log.error("Unable to fill on element identified by locator: {}", selector);
-      //takeScreenshot(baseSteps.getDriver());
+      // takeScreenshot(baseSteps.getDriver());
       throw new TimeoutException("Unable to fill on element identified by locator: " + selector);
     }
   }
