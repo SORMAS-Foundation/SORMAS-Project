@@ -190,11 +190,6 @@ public class CampaignFacadeEjb
 		return target;
 	}
 
-	@Override
-	protected void delete(Campaign entity) {
-		service.delete(entity);
-	}
-
 	public void validate(CampaignReferenceDto campaignReferenceDto) {
 		validate(getByUuid(campaignReferenceDto.getUuid()));
 	}
