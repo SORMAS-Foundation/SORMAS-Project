@@ -67,11 +67,10 @@ public abstract class PersonDependentEditForm<DTO> extends AbstractEditForm<DTO>
 					SimilarPersonDto pickedPerson = personSearchField.getValue();
 					if (pickedPerson != null) {
 						// add consumer
-						PersonDto personByUuid = FacadeProvider.getPersonFacade().getPersonByUuid(pickedPerson.getUuid());
-						setPerson(personByUuid);
+						searchedPerson = FacadeProvider.getPersonFacade().getPersonByUuid(pickedPerson.getUuid());
+						setPerson(searchedPerson);
 						enablePersonFields(false);
 						clickEvent.getButton().setIcon(VaadinIcons.CLOSE);
-						searchedPerson = personByUuid;
 					}
 				});
 
@@ -81,10 +80,10 @@ public abstract class PersonDependentEditForm<DTO> extends AbstractEditForm<DTO>
 
 				VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingSelectPerson));
 			} else {
-				setPerson(null);
+				searchedPerson = null;
+				setPerson(searchedPerson);
 				enablePersonFields(true);
 				clickEvent.getButton().setIcon(VaadinIcons.SEARCH);
-				searchedPerson = null;
 			}
 		}, CssStyles.FORCE_CAPTION);
 	}
