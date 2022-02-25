@@ -65,6 +65,7 @@ public class StepsLogger implements StepLifecycleListener {
   @Override
   public void afterStepUpdate(final StepResult result) {
     if (isScreenshotEnabled && driver != null) {
+      log.info("Attaching screenshot and console logs");
       takeScreenshotAfter();
       attachConsoleLog();
     }

@@ -51,7 +51,7 @@ public class AssertHelpers {
     } catch (ConditionTimeoutException e) {
       log.error(PROCESS_ID_STRING + e.getMessage());
       log.error(PROCESS_ID_STRING + Arrays.toString(e.getStackTrace()));
-      takeScreenshot(driver);
+      //takeScreenshot(driver);
       fail(e.getCause().getLocalizedMessage());
     }
   }
