@@ -76,6 +76,8 @@ public class StepsLogger implements StepLifecycleListener {
     isScreenshotEnabled = true;
     log.info(
         " {} Finishing step: " + result.getName() + " and took: " + stopwatch, PROCESS_ID_STRING);
+    
+    log.info("Step status is: " + result.getStatus().value());
   }
 
   @Attachment(value = "After step screenshot", type = "image/png")
@@ -93,54 +95,9 @@ public class StepsLogger implements StepLifecycleListener {
   @SneakyThrows
   @Attachment(value = "Browser console log", type = "text/plain")
   private void attachConsoleLog() {
-    log.info("Attaching console logs");
-    List<String> consoleLogs = consoleAllLogs(driver);
-    StringBuilder consoleLog = new StringBuilder("CONSOLE LOG: ");
-
-//    log.info("Checking if console logs is empty");
-//    if (consoleLogs.isEmpty()) {
-//      consoleLog.append(" NO CONSOLE LOGS DETECTED!");
-//      log.warn("There are no logs to display");
-//    } else {
-//      log.info("Appending logs to object");
-//      for (Object log : consoleLogs) {
-//        consoleLog.append(log);
-//      }
-      log.info("Appending logs to Allure report as attachment");
-
-      Allure.getLifecycle()
+    log.info("Appending logs to Allure report as attachment");
+    Allure.getLifecycle()
           .addAttachment("Execution logs", "text/plain", "txt", new FileInputStream("logs/file.log"));
-
-//      Allure.getLifecycle()
-//              .addAttachment("Execution logs", "text/plain", "txt", consoleLog.toString().getBytes());
-
-      //      Allure.getLifecycle()
-      //          .addAttachment(
-      //              "Console log at :"
-      //                  +
-      // LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MMM-yy_hh:mm:ss")),
-      //              "text/json",
-      //              "text",
-      //              consoleLog.toString().getBytes());
-    //}
   }
 
-  public List<String> consoleAllLogs(RemoteWebDriver webDriver) {
-    LogEntries logEntries = Objects.requireNonNull(webDriver).manage().logs().get(LogType.BROWSER);
-    List<String> consoleLogs = new ArrayList<>();
-
-    logEntries.forEach(
-        entry -> {
-          consoleLogs.add(
-              new Date(entry.getTimestamp())
-                  + " "
-                  + entry.getLevel()
-                  + " "
-                  + entry.getMessage()
-                  + "\n");
-          allLogEntries.add(entry);
-        });
-    log.info("Found {} available console logs!", consoleLogs.size());
-    return consoleLogs;
-  }
 }
