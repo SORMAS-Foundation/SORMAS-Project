@@ -28,7 +28,10 @@ import customreport.reportbuilder.CustomReportBuilder;
 import io.qameta.allure.listener.StepLifecycleListener;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
+import java.io.BufferedReader;
+import java.io.InputStreamReader;
 import java.time.Duration;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -74,6 +77,7 @@ public class BaseSteps implements StepLifecycleListener {
     RestAssured.registerParser("text/html", Parser.JSON);
   }
 
+  @SneakyThrows
   @After(value = "@UI")
   public void afterScenario(Scenario scenario) {
     if (isNonApiScenario(scenario)) {

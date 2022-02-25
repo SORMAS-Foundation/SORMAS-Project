@@ -23,6 +23,8 @@ import io.qameta.allure.Allure;
 import io.qameta.allure.Attachment;
 import io.qameta.allure.listener.StepLifecycleListener;
 import io.qameta.allure.model.StepResult;
+
+import java.io.FileInputStream;
 import java.lang.management.ManagementFactory;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -30,6 +32,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Objects;
+
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.OutputType;
 import org.openqa.selenium.logging.LogEntries;
@@ -86,6 +90,7 @@ public class StepsLogger implements StepLifecycleListener {
             screenShot);
   }
 
+  @SneakyThrows
   @Attachment(value = "Browser console log", type = "text/plain")
   private void attachConsoleLog() {
     log.info("Attaching console logs");
@@ -95,24 +100,28 @@ public class StepsLogger implements StepLifecycleListener {
     log.info("Checking if console logs is empty");
     if (consoleLogs.isEmpty()) {
       consoleLog.append(" NO CONSOLE LOGS DETECTED!");
-    }
-    else {
-      log.info("Apending logs to object");
+      log.warn("There are no logs to display");
+    } else {
+      log.info("Appending logs to object");
       for (Object log : consoleLogs) {
         consoleLog.append(log);
       }
       log.info("Appending logs to Allure report as attachment");
-      Allure.getLifecycle().addAttachment("Execution logs",
-              "text/plain",
-              "txt",
-              consoleLog.toString().getBytes());
+      
+      Allure.getLifecycle()
+          .addAttachment("Execution logs", "text/plain", "txt", new FileInputStream("logs/file.log"));
+
 //      Allure.getLifecycle()
-//          .addAttachment(
-//              "Console log at :"
-//                  + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MMM-yy_hh:mm:ss")),
-//              "text/json",
-//              "text",
-//              consoleLog.toString().getBytes());
+//              .addAttachment("Execution logs", "text/plain", "txt", consoleLog.toString().getBytes());
+
+      //      Allure.getLifecycle()
+      //          .addAttachment(
+      //              "Console log at :"
+      //                  +
+      // LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MMM-yy_hh:mm:ss")),
+      //              "text/json",
+      //              "text",
+      //              consoleLog.toString().getBytes());
     }
   }
 
