@@ -45,7 +45,6 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -76,6 +75,7 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
@@ -214,7 +214,7 @@ public class ImmunizationFacadeEjb
 
 		List<VaccinationDto> vaccinationDtos = new ArrayList<>();
 		for (Vaccination vaccination : entity.getVaccinations()) {
-			VaccinationDto vaccinationDto = VaccinationFacadeEjbLocal.toDto(vaccination);
+			VaccinationDto vaccinationDto = vaccinationFacade.toDto(vaccination);
 			vaccinationDtos.add(vaccinationDto);
 		}
 		dto.setVaccinations(vaccinationDtos);

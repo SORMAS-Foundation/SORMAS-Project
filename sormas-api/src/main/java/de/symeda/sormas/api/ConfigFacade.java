@@ -92,6 +92,8 @@ public interface ConfigFacade {
 
 	int getDaysAfterEventGetsArchived();
 
+	int getDaysAfterEventParticipantGetsArchived();
+
 	int getDaysAfterSystemEventGetsDeleted();
 
 	int getDaysAfterTravelEntryGetsArchived();

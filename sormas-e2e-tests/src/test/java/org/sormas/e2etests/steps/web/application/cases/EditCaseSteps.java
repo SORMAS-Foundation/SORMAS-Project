@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.*;
 import static org.sormas.e2etests.pages.application.cases.SymptomsTabPage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.FOLLOW_UP_UNTIL_DATE;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
 import java.nio.file.Files;
@@ -33,17 +34,17 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
-import javax.inject.Named;
 import lombok.SneakyThrows;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Case;
+import org.sormas.e2etests.entities.pojo.web.QuarantineOrder;
+import org.sormas.e2etests.entities.services.CaseDocumentService;
+import org.sormas.e2etests.entities.services.CaseService;
 import org.sormas.e2etests.enums.CaseOutcome;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.cases.EditCasePage;
-import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.pojo.web.Case;
-import org.sormas.e2etests.pojo.web.QuarantineOrder;
-import org.sormas.e2etests.services.CaseDocumentService;
-import org.sormas.e2etests.services.CaseService;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.asserts.SoftAssert;
 
@@ -67,7 +68,7 @@ public class EditCaseSteps implements En {
       CaseDocumentService caseDocumentService,
       SoftAssert softly,
       ApiState apiState,
-      @Named("ENVIRONMENT_URL") String environmentUrl) {
+      EnvironmentManager environmentManager) {
     this.webDriverHelpers = webDriverHelpers;
 
     And(
@@ -534,7 +535,8 @@ public class EditCaseSteps implements En {
               NavBarPage.SAMPLE_BUTTON);
           String caseLinkPath = "/sormas-ui/#!cases/data/";
           String uuid = aCase.getUuid();
-          webDriverHelpers.accessWebSite(environmentUrl + caseLinkPath + uuid);
+          webDriverHelpers.accessWebSite(
+              environmentManager.getEnvironmentUrlForMarket(locale) + caseLinkPath + uuid);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(REPORT_DATE_INPUT);
         });
 
@@ -543,7 +545,8 @@ public class EditCaseSteps implements En {
         () -> {
           String caseLinkPath = "/sormas-ui/#!cases/data/";
           String uuid = apiState.getCreatedCase().getUuid();
-          webDriverHelpers.accessWebSite(environmentUrl + caseLinkPath + uuid);
+          webDriverHelpers.accessWebSite(
+              environmentManager.getEnvironmentUrlForMarket(locale) + caseLinkPath + uuid);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
         });
 

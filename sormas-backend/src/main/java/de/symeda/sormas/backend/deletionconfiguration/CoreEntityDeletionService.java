@@ -49,7 +49,7 @@ public class CoreEntityDeletionService {
 		coreEntityFacades.forEach(coreEntityType -> {
 			DeletionConfiguration coreEntityTypeConfig = deletionConfigurationService.getCoreEntityTypeConfig(coreEntityType.coreEntityType);
 
-			if (coreEntityTypeConfig.deletionReference != null && coreEntityTypeConfig.deletionPeriod != null) {
+			if (coreEntityTypeConfig.getDeletionReference() != null && coreEntityTypeConfig.deletionPeriod != null) {
 				coreEntityType.entityFacade.executeAutomaticDeletion(coreEntityTypeConfig);
 			}
 		});

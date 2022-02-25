@@ -19,12 +19,16 @@ package de.symeda.sormas.ui.utils;
 
 import java.util.List;
 
+import com.vaadin.shared.Registration;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
+
+import de.symeda.sormas.ui.utils.components.sidecomponent.event.SideComponentFieldEditEvent;
+import de.symeda.sormas.ui.utils.components.sidecomponent.event.SideComponentFieldEditEventListener;
 
 public abstract class PaginationList<T> extends VerticalLayout {
 
@@ -211,5 +215,12 @@ public abstract class PaginationList<T> extends VerticalLayout {
 
 	public boolean isEmpty() {
 		return entries.isEmpty();
+	}
+
+	public Registration addSideComponentFieldEditEventListener(SideComponentFieldEditEventListener sideComponentFieldEditEventListener) {
+		return addListener(
+			SideComponentFieldEditEvent.class,
+			sideComponentFieldEditEventListener,
+			SideComponentFieldEditEventListener.ON_SIDE_COMPONENT_FIELD_EDIT_METHOD);
 	}
 }

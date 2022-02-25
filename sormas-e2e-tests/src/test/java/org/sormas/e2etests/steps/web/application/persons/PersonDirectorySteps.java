@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,22 +21,22 @@ package org.sormas.e2etests.steps.web.application.persons;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.*;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.*;
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
-import javax.inject.Named;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.PresentCondition;
 import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.web.Person;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
 import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
@@ -44,16 +44,15 @@ import org.testng.Assert;
 
 public class PersonDirectorySteps implements En {
   private final WebDriverHelpers webDriverHelpers;
-  protected Person createdPerson;
 
   @Inject
   public PersonDirectorySteps(
       WebDriverHelpers webDriverHelpers,
-      @Named("ENVIRONMENT_URL") String environmentUrl,
       ApiState apiState,
+      AssertHelpers assertHelpers,
       DataOperations dataOperations,
-      Faker faker,
-      AssertHelpers assertHelpers) {
+      EnvironmentManager environmentManager,
+      Faker faker) {
     this.webDriverHelpers = webDriverHelpers;
 
     // TODO refactor all BDD methods naming to be more explicit regarding where data comes from
@@ -211,7 +210,9 @@ public class PersonDirectorySteps implements En {
         () -> {
           String createdPersonUUID = EditContactPersonSteps.fullyDetailedPerson.getUuid();
           String LAST_CREATED_PERSON_PAGE_URL =
-              environmentUrl + "/sormas-webdriver/#!persons/data/" + createdPersonUUID;
+              environmentManager.getEnvironmentUrlForMarket(locale)
+                  + "/sormas-webdriver/#!persons/data/"
+                  + createdPersonUUID;
           webDriverHelpers.accessWebSite(LAST_CREATED_PERSON_PAGE_URL);
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 50);
@@ -246,14 +247,14 @@ public class PersonDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(By.cssSelector("[role='gridcell'] a"));
         });
 
-      When(
-              "I apply on the APPLY FILTERS button",
-              () -> {
-                  webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-                          APPLY_FILTERS_BUTTON, 30);
-                  webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
-                  TimeUnit.SECONDS.sleep(10);
-              });
+    When(
+        "I apply on the APPLY FILTERS button",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              APPLY_FILTERS_BUTTON, 30);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
+          TimeUnit.SECONDS.sleep(10);
+        });
 
     When(
         "I click on the RESET FILTERS button for Person",
@@ -279,12 +280,12 @@ public class PersonDirectorySteps implements En {
                       + " "
                       + apiState.getLastCreatedPerson().getFirstName();
               break;
-              case "phone number":
-                  searchText = apiState.getLastCreatedPerson().getPhone();
-                  break;
-              case "email":
-                  searchText = apiState.getLastCreatedPerson().getEmailAddress();
-                  break;
+            case "phone number":
+              searchText = apiState.getLastCreatedPerson().getPhone();
+              break;
+            case "email":
+              searchText = apiState.getLastCreatedPerson().getEmailAddress();
+              break;
           }
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(APPLY_FILTERS_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(ALL_BUTTON);
