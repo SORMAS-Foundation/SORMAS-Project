@@ -130,10 +130,11 @@ public class CaseDirectoryPage {
   public static final By DATE_TO_COMBOBOX = By.cssSelector("#dateTo input");
   public static final By MORE_BUTTON = By.id("more");
   public static final By ENTER_BULK_EDIT_MODE = By.id("actionEnterBulkEditMode");
-  public static final By FIRST_CHECKBOX =
+  public static final By ALL_RESULTS_CHECKBOX =
       By.xpath("//th[@role='columnheader']//input[@type='checkbox']/../..");
   public static final By NEW_EVENT_CHECKBOX = By.xpath("//*[contains(text(),'New event')]/..");
   public static final By FIRST_RESULT_IN_GRID =
       By.xpath("//div[contains(@class, 'popupContent')]//tr[@role='row']");
+  public static final By SEARCH_BUTTON = By.id("search");
   // TODO refactor the other headers based on the last one added
 }

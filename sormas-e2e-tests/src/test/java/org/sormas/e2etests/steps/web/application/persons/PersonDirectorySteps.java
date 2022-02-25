@@ -247,12 +247,12 @@ public class PersonDirectorySteps implements En {
         });
 
     When(
-        "I apply on the APPLY FILTERS button",
+        "I click on the APPLY FILTERS button",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               APPLY_FILTERS_BUTTON, 30);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
-          TimeUnit.SECONDS.sleep(10);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
 
     When(

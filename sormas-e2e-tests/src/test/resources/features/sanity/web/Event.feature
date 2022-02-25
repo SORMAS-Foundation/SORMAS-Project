@@ -233,7 +233,7 @@ Feature: Create events
     And I select Screening filter from quick filter
     And I select Cluster filter from quick filter
     And I select Dropped filter from quick filter
-    And I click on the RESET FILTERS button
+    And I click on the RESET FILTERS button from Event
 
   @issue=SORDEV-5570
   Scenario: Testing Event screen Impact

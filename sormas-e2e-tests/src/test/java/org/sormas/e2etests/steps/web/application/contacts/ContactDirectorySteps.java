@@ -137,9 +137,9 @@ public class ContactDirectorySteps implements En {
           webDriverHelpers.waitForPageLoaded();
         });
     When(
-        "I click checkbox to choose all Contact results",
+        "I click checkbox to choose all Contact results on Contact Directory Page",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(FIRST_CHECKBOX);
+          webDriverHelpers.clickOnWebElementBySelector(ALL_RESULTS_CHECKBOX);
           webDriverHelpers.waitForPageLoaded();
         });
     And(

@@ -96,7 +96,7 @@ public class CaseDirectorySteps implements En {
     When(
         "I click checkbox to choose all Case results",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(FIRST_CHECKBOX);
+          webDriverHelpers.clickOnWebElementBySelector(ALL_RESULTS_CHECKBOX);
           webDriverHelpers.waitForPageLoaded();
         });
     And(
@@ -115,8 +115,7 @@ public class CaseDirectorySteps implements En {
         () -> {
           String eventUuid = apiState.getCreatedEvent().getUuid();
           webDriverHelpers.fillInWebElement(
-              By.id("search"), dataOperations.getPartialUuidFromAssociatedLink(eventUuid));
-          TimeUnit.SECONDS.sleep(5);
+              SEARCH_BUTTON, dataOperations.getPartialUuidFromAssociatedLink(eventUuid));
         });
     And(
         "I click first result in grid on Link to Event form",
@@ -312,7 +311,7 @@ public class CaseDirectorySteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(
               CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
-          TimeUnit.SECONDS.sleep(5); // needed for table refresh
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
 
     Then(

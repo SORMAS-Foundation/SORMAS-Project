@@ -66,7 +66,6 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.accessWebSite(LAST_CREATED_EVENT_PAGE_URL);
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 50);
-          TimeUnit.SECONDS.sleep(5);
         });
     When(
         "I navigate to the last created through API Event page via URL",
