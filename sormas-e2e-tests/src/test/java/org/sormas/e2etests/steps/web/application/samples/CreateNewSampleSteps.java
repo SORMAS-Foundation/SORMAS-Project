@@ -471,6 +471,10 @@ public class CreateNewSampleSteps implements En {
         RESULT_VERIFIED_BY_LAB_SUPERVISOR_EDIT_OPTIONS);
   }
 
+  public void selectLaboratoryNamePopup(String laboratoryName) {
+    webDriverHelpers.clearAndFillInWebElement(LABORATORY_NAME_POPUP_INPUT, laboratoryName);
+  }
+
   private Sample collectPathogenTestResultsData() {
     return Sample.builder()
         .sampleTestResults(getPathogenPopupTestResult())
