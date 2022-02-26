@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.entities.services;
 
+import static org.sormas.e2etests.enums.YesNoUnknownOptions.NO;
 import static org.sormas.e2etests.enums.YesNoUnknownOptions.YES;
 
 import com.google.inject.Inject;
@@ -32,7 +33,7 @@ public class SymptomService {
 
   public Symptoms buildEditGeneratedSymptoms() {
     return Symptoms.builder()
-        .maximumBodyTemperatureInC("35.2")
+        .maximumBodyTemperatureInC("35,2")
         .sourceOfBodyTemperature("rectal")
         .chillsOrSweats(YES.toString())
         .headache(YES.toString())
@@ -57,6 +58,37 @@ public class SymptomService {
         .otherNonHemorrhagicSymptoms(YES.toString())
         .symptomsComments(UUID.randomUUID().toString())
         .firstSymptom("Diarrhea")
+        .dateOfSymptom(LocalDate.now().minusDays(2))
+        .build();
+  }
+
+  public Symptoms buildEditGeneratedSymptomsWithNoOptions() {
+    return Symptoms.builder()
+        .maximumBodyTemperatureInC("35,2")
+        .sourceOfBodyTemperature("rectal")
+        .chillsOrSweats(NO.toString())
+        .headache(NO.toString())
+        .feelingIll(NO.toString())
+        .musclePain(NO.toString())
+        .fever(NO.toString())
+        .shivering(NO.toString())
+        .acuteRespiratoryDistressSyndrome(NO.toString())
+        .oxygenSaturationLower94(NO.toString())
+        .cough(NO.toString())
+        .pneumoniaClinicalOrRadiologic(NO.toString())
+        .difficultyBreathing(NO.toString())
+        .rapidBreathing(NO.toString())
+        .respiratoryDiseaseVentilation(NO.toString())
+        .runnyNose(NO.toString())
+        .soreThroat(NO.toString())
+        .fastHeartRate(NO.toString())
+        .diarrhea(NO.toString())
+        .nausea(NO.toString())
+        .lossOfSmell(NO.toString())
+        .lossOfTaste(NO.toString())
+        .otherNonHemorrhagicSymptoms(YES.toString())
+        .symptomsComments(UUID.randomUUID().toString())
+        .firstSymptom("Other clinical symptoms")
         .dateOfSymptom(LocalDate.now().minusDays(2))
         .build();
   }

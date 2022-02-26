@@ -212,6 +212,14 @@ public class ContactDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(EPIDEMIOLOGICAL_DATA_TAB);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
+
+    When(
+        "I click on the Case button tab in Cases",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CASE_DATA_TAB);
+          TimeUnit.SECONDS.sleep(5);
+        });
+
     And(
         "I click on All button in Contact Directory Page",
         () -> {

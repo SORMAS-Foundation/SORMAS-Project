@@ -329,3 +329,55 @@ Feature: Case end to end tests
     And I fill Quarantine change comment field
     Then I click on save Contact button
     And I check if Quarantine change comment field was saved correctly
+
+  @issue=SORDEV-6612 @env_main
+  Scenario: Manually triggered calculation of case classification
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    Then I click on Info button on Case page
+    When I am accessing the Symptoms tab using of created case via api
+    And I change all symptoms fields and save
+    And I am accessing the Symptoms tab using of created case via api
+    And I check the created data is correctly displayed on Symptoms tab page
+    And I click on the Case button tab in Cases
+    And I check that Case Classification has "Suspect case" value
+    Then I click on save case button
+    Then I navigate to symptoms tab
+    Then I change Other symptoms to "YES" option
+    And From Symptoms Tab I click on Clear All button
+    And I change all symptoms fields to NO option excluded Other symptoms field and save
+    And I am accessing the Symptoms tab using of created case via api
+    And I check the created data is correctly displayed on Symptoms tab page
+    And I click on the Case button tab in Cases
+    And I check that Case Classification has "Not yet classified" value
+    Then I click on save case button
+    When I am accessing the Symptoms tab using of created case via api
+    And From Symptoms Tab I click on Clear All button
+    And I change all symptoms fields and save
+    When I am accessing the Symptoms tab using of created case via api
+    And I check the created data is correctly displayed on Symptoms tab page
+    And I click on the Case button tab in Cases
+    And I change Epidemiological confirmation Combobox to "Yes" option
+    Then I click on save case button
+    And I check that Case Classification has "Probable case" value
+    Then I click on save case button
+    When I am accessing the Symptoms tab using of created case via api
+    And From Symptoms Tab I click on Clear All button
+    And I change all symptoms fields and save
+    And I am accessing the Symptoms tab using of created case via api
+    And I check the created data is correctly displayed on Symptoms tab page
+    And I click on the Case button tab in Cases
+    And I check that Case Classification has "Probable case" value
+    Then I click on save case button
+    And I change the Case Classification field for "NOT_CLASSIFIED" value
+    And I click on save case button
+    And From Case page I click on Calculate Case Classification button
+    And I click on save case button
+    And I check that Case Classification has "Probable case" value
