@@ -16,21 +16,19 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.services;
+package org.sormas.e2etests.entities.services;
 
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalDate;
 import java.util.UUID;
+import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.GenderValues;
-import org.sormas.e2etests.enums.GenderValuesDE;
-import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.helpers.strings.ASCIIHelper;
-import org.sormas.e2etests.pojo.web.Case;
 
 public class CaseService {
   private final Faker faker;
