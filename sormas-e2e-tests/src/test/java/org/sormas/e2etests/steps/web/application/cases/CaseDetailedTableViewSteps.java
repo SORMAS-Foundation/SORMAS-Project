@@ -140,7 +140,7 @@ public class CaseDetailedTableViewSteps implements En {
           }
           softly.assertEquals(
               detailedCaseDTableRow.get(CaseDetailedTableViewHeaders.REPORTING_USER.toString()),
-              TestDataUser.REST_AUTOMATION.getUserRole(),
+              environmentManager.getUserByRole(locale, UserRoles.RestUser.getRole()).getUserRole(),
               "Reporting user is not correct");
           softly.assertAll();
         });
