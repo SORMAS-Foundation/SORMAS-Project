@@ -35,6 +35,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import javax.inject.Named;
 import lombok.SneakyThrows;
+import org.sormas.e2etests.enums.CaseClassification;
 import org.sormas.e2etests.enums.CaseOutcome;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
@@ -88,6 +89,31 @@ public class EditCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL);
           TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+    When(
+        "I change Epidemiological confirmation Combobox to {string} option",
+        (String option) -> {
+          webDriverHelpers.selectFromCombobox(EPIDEMIOLOGICAL_CONFIRMATION_COMBOBOX, option);
+        });
+
+    When(
+        "I check that Case Classification has {string} value",
+        (String caseClassificationValue) -> {
+          String caseClassificationComboboxValue =
+              (webDriverHelpers.getValueFromCombobox(CASE_CLASSIFICATION_FILTER_COMBOBOX));
+          softly.assertEquals(
+              caseClassificationValue,
+              caseClassificationComboboxValue,
+              "The case classification field has unexpected value ");
+          softly.assertAll();
+        });
+
+    When(
+        "I change the Case Classification field for {string} value",
+        (String caseClassificationValue) -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_CLASSIFICATION_FILTER_COMBOBOX,
+              CaseClassification.getUIValueFor(caseClassificationValue));
         });
 
     And(

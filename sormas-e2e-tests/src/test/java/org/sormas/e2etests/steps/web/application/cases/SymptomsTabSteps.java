@@ -56,6 +56,12 @@ public class SymptomsTabSteps implements En {
         });
 
     When(
+        "I change Other symptoms to {string} option",
+        (String option) -> {
+          selectOtherNonHemorrhagicSymptoms(option);
+        });
+
+    When(
         "I am accessing the Symptoms tab using of created case via api",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
@@ -69,6 +75,40 @@ public class SymptomsTabSteps implements En {
         "I change all symptoms fields and save",
         () -> {
           symptoms = symptomService.buildEditGeneratedSymptoms();
+          selectMaximumBodyTemperatureInCCombobox(symptoms.getMaximumBodyTemperatureInC());
+          selectSourceOfBodyTemperature(symptoms.getSourceOfBodyTemperature());
+          selectChillsOrSweats(symptoms.getChillsOrSweats());
+          selectHeadache(symptoms.getHeadache());
+          selectFeelingIll(symptoms.getFeelingIll());
+          selectMusclePain(symptoms.getMusclePain());
+          selectFever(symptoms.getFever());
+          selectShivering(symptoms.getShivering());
+          selectAcuteRespiratoryDistressSyndrome(symptoms.getAcuteRespiratoryDistressSyndrome());
+          selectOxygenSaturationLower94(symptoms.getOxygenSaturationLower94());
+          selectCough(symptoms.getCough());
+          selectPneumoniaClinicalOrRadiologic(symptoms.getPneumoniaClinicalOrRadiologic());
+          selectDifficultyBreathing(symptoms.getDifficultyBreathing());
+          selectRapidBreathing(symptoms.getRapidBreathing());
+          selectRespiratoryDiseaseVentilation(symptoms.getRespiratoryDiseaseVentilation());
+          selectRunnyNose(symptoms.getRunnyNose());
+          selectSoreThroat(symptoms.getSoreThroat());
+          selectFastHeartRate(symptoms.getFastHeartRate());
+          selectDiarrhea(symptoms.getDiarrhea());
+          selectNausea(symptoms.getNausea());
+          selectLossOfSmell(symptoms.getLossOfSmell());
+          selectLossOfTaste(symptoms.getLossOfTaste());
+          selectOtherNonHemorrhagicSymptoms(symptoms.getOtherNonHemorrhagicSymptoms());
+          fillOtherNonHemorrhagicSymptoms(symptoms.getSymptomsComments());
+          fillSymptomsComments(symptoms.getSymptomsComments());
+          selectFistSymptom(symptoms.getFirstSymptom());
+          fillDateOfSymptom(symptoms.getDateOfSymptom());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
+
+    When(
+        "I change all symptoms fields to NO option excluded Other symptoms field and save",
+        () -> {
+          symptoms = symptomService.buildEditGeneratedSymptomsWithNoOptions();
           selectMaximumBodyTemperatureInCCombobox(symptoms.getMaximumBodyTemperatureInC());
           selectSourceOfBodyTemperature(symptoms.getSourceOfBodyTemperature());
           selectChillsOrSweats(symptoms.getChillsOrSweats());

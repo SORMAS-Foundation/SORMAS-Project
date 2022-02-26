@@ -36,6 +36,7 @@ import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
 
 public class CaseDirectorySteps implements En {
   Faker faker = new Faker();
@@ -45,6 +46,7 @@ public class CaseDirectorySteps implements En {
       WebDriverHelpers webDriverHelpers,
       DataOperations dataOperations,
       ApiState apiState,
+      SoftAssert softly,
       AssertHelpers assertHelpers,
       Faker faker) {
 
@@ -81,6 +83,14 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               By.xpath(String.format(RESULTS_GRID_HEADER, "Sex")), 20);
           webDriverHelpers.waitUntilANumberOfElementsAreVisibleAndClickable(GRID_HEADERS, 41);
+        });
+
+    When(
+        "I click on Info button on Case page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CASE_INFO_BUTTON);
+          TimeUnit.SECONDS.sleep(5);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_CLOSE_WINDOW_BUTTON);
         });
 
     When(
