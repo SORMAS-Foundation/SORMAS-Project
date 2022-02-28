@@ -27,12 +27,9 @@ import java.io.FileInputStream;
 import java.lang.management.ManagementFactory;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.OutputType;
-import org.openqa.selenium.logging.LogEntry;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 @Slf4j
@@ -41,7 +38,6 @@ public class StepsLogger implements StepLifecycleListener {
   private static final String PROCESS_ID =
       String.valueOf(ManagementFactory.getRuntimeMXBean().getPid());
   public static final String PROCESS_ID_STRING = String.format("[PROCESS_ID:%s]", PROCESS_ID);
-  public final List<LogEntry> allLogEntries = new ArrayList<>();
   private static RemoteWebDriver driver;
   private static boolean isScreenshotEnabled = true;
 
@@ -87,10 +83,9 @@ public class StepsLogger implements StepLifecycleListener {
   }
 
   @SneakyThrows
-  @Attachment(value = "Browser console log", type = "text/plain")
+  @Attachment(value = "Browser console log", type = "text/json")
   private void attachConsoleLog() {
-    log.info("Appending logs to Allure report as attachment");
     Allure.getLifecycle()
-        .addAttachment("Execution logs", "text/plain", "txt", new FileInputStream("logs/file.log"));
+        .addAttachment("Execution logs", "text/json", "txt", new FileInputStream("logs/file.log"));
   }
 }

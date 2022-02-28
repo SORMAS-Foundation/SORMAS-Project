@@ -1,7 +1,7 @@
 @UI @Sanity @Case @Classification
 Feature: Case Classification functionality
 
-  @env_main
+  @env_main @mock @ignore
   Scenario: Case Classification change from Not Yet Classified to Suspect Case by confirming Sore Throat
     Given API: I create a new person
     Then API: I check that POST call body is "OK"

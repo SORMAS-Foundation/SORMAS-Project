@@ -73,7 +73,7 @@ public class WebDriverHelpers {
   }
 
   public void waitForPageLoaded() {
-      log.info("Waiting for page to load");
+    log.info("Waiting for page to load");
     assertHelpers.assertWithPoll20Second(
         () ->
             Assert.assertEquals(
@@ -95,7 +95,7 @@ public class WebDriverHelpers {
   }
 
   public void waitUntilIdentifiedElementIsVisibleAndClickable(final Object selector, int seconds) {
-      log.info("Waiting for element [{}] to be visible and clickable", selector);
+    log.info("Waiting for element [{}] to be visible and clickable", selector);
     if (selector instanceof By) {
       assertHelpers.assertWithPoll(
           () -> {
@@ -129,7 +129,7 @@ public class WebDriverHelpers {
   }
 
   public void waitUntilIdentifiedElementDisappear(final Object selector, int seconds) {
-      log.info("Waiting for element [{}] to disappear", selector);
+    log.info("Waiting for element [{}] to disappear", selector);
     if (selector instanceof By) {
       assertHelpers.assertWithPoll(
           () -> {
@@ -171,7 +171,7 @@ public class WebDriverHelpers {
   }
 
   public void fillInWebElement(By selector, String text) {
-      log.info("Filling element [{{}] with text [{}]", selector, text);
+    log.info("Filling element [{{}] with text [{}]", selector, text);
     try {
       await()
           .pollInterval(ONE_HUNDRED_MILLISECONDS)
@@ -381,7 +381,7 @@ public class WebDriverHelpers {
   }
 
   public void scrollToElement(final Object selector) {
-      log.info("Scrolling to element [{}]", selector);
+    log.info("Scrolling to element [{}]", selector);
     JavascriptExecutor javascriptExecutor = baseSteps.getDriver();
     try {
       if (selector instanceof WebElement) {
