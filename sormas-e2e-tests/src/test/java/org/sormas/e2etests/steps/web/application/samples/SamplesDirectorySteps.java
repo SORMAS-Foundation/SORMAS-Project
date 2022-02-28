@@ -18,8 +18,6 @@
 
 package org.sormas.e2etests.steps.web.application.samples;
 
-import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.*;
-import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.APPLY_FILTER_BUTTON;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.FINAL_LABORATORY_RESULT;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.LABORATORY_SEARCH_COMBOBOX;
@@ -37,14 +35,12 @@ import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SEARCH_RESULT_SAMPLE;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SPECIMEN_CONDITION_SEARCH_COMBOBOX;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.TEST_RESULTS_SEARCH_COMBOBOX;
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.util.Arrays;
 import javax.inject.Inject;
-import org.sormas.e2etests.enums.*;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
-import javax.inject.Named;
 import org.sormas.e2etests.enums.CaseClassification;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.DistrictsValues;
@@ -52,6 +48,7 @@ import org.sormas.e2etests.enums.LaboratoryValues;
 import org.sormas.e2etests.enums.PathogenTestResults;
 import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.enums.SpecimenConditions;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
