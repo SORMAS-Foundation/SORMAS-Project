@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -28,10 +28,10 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
 import javax.inject.Inject;
+import org.sormas.e2etests.entities.pojo.web.Case;
+import org.sormas.e2etests.entities.services.CaseService;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.cases.EditCasePage;
-import org.sormas.e2etests.pojo.web.Case;
-import org.sormas.e2etests.services.CaseService;
 
 public class CreateNewCaseSteps implements En {
 
@@ -41,6 +41,25 @@ public class CreateNewCaseSteps implements En {
   @Inject
   public CreateNewCaseSteps(WebDriverHelpers webDriverHelpers, CaseService caseService) {
     this.webDriverHelpers = webDriverHelpers;
+
+    When(
+        "I create a new case with specific data for positive pathogen test result",
+        () -> {
+          caze = caseService.buildEditGeneratedCaseForPositivePathogenTestResult();
+          fillDateOfReport(caze.getDateOfReport());
+          selectResponsibleRegion(caze.getResponsibleRegion());
+          selectResponsibleDistrict(caze.getResponsibleDistrict());
+          selectResponsibleCommunity(caze.getResponsibleCommunity());
+          selectPlaceOfStay(caze.getPlaceOfStay());
+        });
+
+    When(
+        "I save a new case",
+        () -> {
+          webDriverHelpers.scrollToElement(CONTACT_CASE_SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_CASE_SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+        });
 
     When(
         "^I create a new case with specific data$",

@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ import org.openqa.selenium.By;
 public class EditEventPage {
   public static final By EVENT_PARTICIPANTS_TAB =
       By.cssSelector("#tab-events-eventparticipants span");
+  public static final By FIRST_EVENT_PARTICIPANT = By.xpath("//table/tbody/tr[1]/td[1]//a");
   public static final By EVENT_ACTIONS_TAB = By.cssSelector("#tab-events-eventactions span");
   public static final By UUID_INPUT = By.id("uuid");
   public static final By TITLE_INPUT = By.cssSelector("#eventTitle");

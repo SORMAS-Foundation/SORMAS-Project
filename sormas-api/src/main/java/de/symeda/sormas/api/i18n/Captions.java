@@ -880,6 +880,7 @@ public interface Captions {
 	String dashboardWeekBefore = "dashboardWeekBefore";
 	String dashboardYesterday = "dashboardYesterday";
 	String date = "date";
+	String dearchiveReason = "dearchiveReason";
 	String defaultCommunity = "defaultCommunity";
 	String defaultDistrict = "defaultDistrict";
 	String defaultFacility = "defaultFacility";
@@ -979,6 +980,7 @@ public interface Captions {
 	String DocumentTemplate_uploadWorkflowTemplate = "DocumentTemplate.uploadWorkflowTemplate";
 	String documentUploadDocument = "documentUploadDocument";
 	String edit = "edit";
+	String endOfProcessingDate = "endOfProcessingDate";
 	String EpiData = "EpiData";
 	String EpiData_activitiesAsCase = "EpiData.activitiesAsCase";
 	String EpiData_activityAsCaseDetailsKnown = "EpiData.activityAsCaseDetailsKnown";
@@ -1133,7 +1135,10 @@ public interface Captions {
 	String EventParticipant_sex = "EventParticipant.sex";
 	String EventParticipant_uuid = "EventParticipant.uuid";
 	String EventParticipant_vaccinationStatus = "EventParticipant.vaccinationStatus";
+	String eventParticipantActiveEventParticipants = "eventParticipantActiveEventParticipants";
 	String eventParticipantAddPerson = "eventParticipantAddPerson";
+	String eventParticipantAllEventParticipants = "eventParticipantAllEventParticipants";
+	String eventParticipantArchivedEventParticipants = "eventParticipantArchivedEventParticipants";
 	String eventParticipantContactCountOnlyWithSourceCaseInEvent = "eventParticipantContactCountOnlyWithSourceCaseInEvent";
 	String eventParticipantCreateNew = "eventParticipantCreateNew";
 	String EventParticipantExport_addressCommunity = "EventParticipantExport.addressCommunity";

@@ -95,7 +95,7 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 					Captions.labMessageProcess,
 					e -> ControllerProvider.getLabMessageController().processLabMessage(indexDto.getUuid()),
 					ValoTheme.BUTTON_PRIMARY)
-				: null).setId(COLUMN_PROCESS);
+				: null).setId(COLUMN_PROCESS).setMinimumWidth(100);
 
 		addComponentColumn(this::buildDownloadButton).setId(COLUMN_DOWNLOAD);
 

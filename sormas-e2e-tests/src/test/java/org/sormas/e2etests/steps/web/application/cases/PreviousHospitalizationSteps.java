@@ -8,10 +8,10 @@ import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.PreviousHospitalization;
+import org.sormas.e2etests.entities.services.PreviousHospitalizationService;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.pojo.web.PreviousHospitalization;
-import org.sormas.e2etests.services.PreviousHospitalizationService;
 
 public class PreviousHospitalizationSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
