@@ -625,7 +625,10 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		if (limit != null) {
 			query.setMaxResults(limit);
 		}
-		return query.getResultList().stream().map(this::toSimilarPersonDto).collect(Collectors.toList());
+
+		List<Person> persons = query.getResultList();
+		List<Long> personsInJurisdiction = getInJurisdictionIDs(persons);
+		return persons.stream().filter(p -> personsInJurisdiction.contains(p.getId())).map(this::toSimilarPersonDto).collect(Collectors.toList());
 	}
 
 	private SimilarPersonDto toSimilarPersonDto(Person entity) {

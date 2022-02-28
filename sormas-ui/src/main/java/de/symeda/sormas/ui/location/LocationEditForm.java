@@ -558,6 +558,21 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		setFacilityContactPersonFieldsVisible(facilityType.getValue() != null, true);
 	}
 
+	@Override
+	public void discard() throws SourceException {
+		super.discard();
+		LocationDto locationDto = getValue();
+		if (locationDto != null) {
+			FacilityType facilityType = locationDto.getFacilityType();
+			if (facilityType != null) {
+				facilityTypeGroup.setValue(facilityType.getFacilityTypeGroup());
+			} else {
+				facilityTypeGroup.setValue(null);
+			}
+			facility.setValue(locationDto.getFacility());
+		}
+	}
+
 	private void updateRegionCombo(ComboBox region, ComboBox country) {
 		InfrastructureFieldsHelper.updateRegionBasedOnCountry(country, region, (isServerCountry) -> {
 			if (districtRequiredOnDefaultCountry) {
