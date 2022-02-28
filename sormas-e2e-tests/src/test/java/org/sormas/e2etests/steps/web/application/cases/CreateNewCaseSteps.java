@@ -73,7 +73,7 @@ public class CreateNewCaseSteps implements En {
         "I create a new case with specific data for positive pathogen test result",
         () -> {
           caze = caseService.buildEditGeneratedCaseForPositivePathogenTestResult();
-          fillDateOfReport(caze.getDateOfReport());
+          fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
           selectResponsibleRegion(caze.getResponsibleRegion());
           selectResponsibleDistrict(caze.getResponsibleDistrict());
           selectResponsibleCommunity(caze.getResponsibleCommunity());
