@@ -195,7 +195,7 @@ Feature: Create events
     And I fill all fields for a new case created for event participant
     And I click on save case button
 
-    @issue=SORDEV-5915 @env_main
+    @issue=SORDEV-5915 @env_main @ignore
   Scenario: Check all filters are work properly in Event directory
     Given API: I create a new event
     Then API: I check that POST call body is "OK"

@@ -1,7 +1,7 @@
 @UI @Sanity @CaseView
 Feature: Case view tests
 
-  @env_main
+  @env_main @ignore
   Scenario: Create a new Case and check details in Detailed view table
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
