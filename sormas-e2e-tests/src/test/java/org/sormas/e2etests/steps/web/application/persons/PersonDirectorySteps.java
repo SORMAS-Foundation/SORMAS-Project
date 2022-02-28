@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ package org.sormas.e2etests.steps.web.application.persons;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.*;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.*;
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.github.javafaker.Faker;
 import com.google.common.truth.Truth;
@@ -55,7 +56,6 @@ public class PersonDirectorySteps implements En {
       AssertHelpers assertHelpers,
       DataOperations dataOperations,
       Faker faker,
-      AssertHelpers assertHelpers,
       EnvironmentManager environmentManager) {
     this.webDriverHelpers = webDriverHelpers;
     this.assertHelpers = assertHelpers;
