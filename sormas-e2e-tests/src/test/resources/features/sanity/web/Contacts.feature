@@ -247,7 +247,7 @@ Feature: Contacts end to end tests
     And I fill the specific data of visit with Set cleared to Unknown option to all symptoms
     Then I save the Visit data
 
-  @issue=SORDEV-7452
+  @issue=SORDEV-7452 @env_main
   Scenario: Bulk mode for linking/adding contacts to new Event
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -270,7 +270,7 @@ Feature: Contacts end to end tests
     And I navigate to the last created Event page via URL
     And I check that number of displayed Event Participants is 1
 
-  @issue=SORDEV-7452
+  @issue=SORDEV-7452 @env_main
   Scenario: Bulk mode for linking/adding contacts to existing Event
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
