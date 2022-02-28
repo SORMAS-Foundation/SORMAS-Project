@@ -261,7 +261,7 @@ Feature: Contacts end to end tests
     And I click APPLY BUTTON in Contact Directory Page
     And I click on the More button on Contact directory page
     And I click Enter Bulk Edit Mode on Contact directory page
-    And I click checkbox to choose all Contact results
+    And I click checkbox to choose all Contact results on Contact Directory Page
     And I click on Bulk Actions combobox on Contact Directory Page
     And I click on Link to Event from Bulk Actions combobox on Contact Directory Page
     And I click on New Event option in Link to Event Form
@@ -287,7 +287,7 @@ Feature: Contacts end to end tests
     And I click APPLY BUTTON in Contact Directory Page
     And I click on the More button on Contact directory page
     And I click Enter Bulk Edit Mode on Contact directory page
-    And I click checkbox to choose all Contact results
+    And I click checkbox to choose all Contact results on Contact Directory Page
     And I click on Bulk Actions combobox on Contact Directory Page
     And I click on Link to Event from Bulk Actions combobox on Contact Directory Page
     And I fill Event Id filter with last created EventId on Link to Event form
