@@ -196,7 +196,7 @@ public class SampleController {
 		// validate pathogen test create component before saving the sample
 		sampleComponent.addFieldGroups(pathogenTestForm.getFieldGroup());
 		CommitDiscardWrapperComponent.CommitListener savePathogenTest = () -> {
-			ControllerProvider.getPathogenTestController().savePathogenTest(pathogenTestForm.getValue(), null, true);
+			ControllerProvider.getPathogenTestController().savePathogenTest(pathogenTestForm.getValue(), null, true, true);
 			if (callback != null) {
 				callback.run();
 			}

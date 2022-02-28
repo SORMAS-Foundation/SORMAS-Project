@@ -24,6 +24,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumSet;
@@ -31,11 +32,14 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import org.apache.commons.lang3.reflect.TypeUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.SpreadsheetVersion;
 import org.apache.poi.ss.usermodel.CellCopyPolicy;
@@ -305,6 +309,10 @@ public class InfoFacadeEjb implements InfoFacade {
 						Class<Enum<?>> enumType = (Class<Enum<?>>) fieldType;
 						usedEnums.add(enumType);
 					}
+				} else if (Map.class.isAssignableFrom(fieldType)) {
+					getEnumGenericsOf(field, Map.class).filter(e -> !usedEnums.contains(e)).collect(Collectors.toCollection(() -> usedEnums));
+				} else if (Collection.class.isAssignableFrom(fieldType)) {
+					getEnumGenericsOf(field, Collection.class).filter(e -> !usedEnums.contains(e)).collect(Collectors.toCollection(() -> usedEnums));
 				} else if (FacilityReferenceDto.class.isAssignableFrom(fieldType)) {
 					usesFacilityReference = true;
 				}
@@ -335,6 +343,21 @@ public class InfoFacadeEjb implements InfoFacade {
 		for (Class<Enum<?>> usedEnum : usedEnums) {
 			rowNumber = createEnumTable(sheet, rowNumber + 1, usedEnum);
 		}
+
+	}
+
+	private Stream<Class<Enum<?>>> getEnumGenericsOf(Field field, Class<?> toClass) {
+		return TypeUtils.getTypeArguments(field.getGenericType(), toClass)
+			.values()
+			.stream()
+			.distinct()
+			.map(cls -> (Class<?>) cls)
+			.filter(Class::isEnum)
+			.map(cls -> {
+				@SuppressWarnings("unchecked")
+				Class<Enum<?>> enumType = (Class<Enum<?>>) cls;
+				return enumType;
+			});
 
 	}
 

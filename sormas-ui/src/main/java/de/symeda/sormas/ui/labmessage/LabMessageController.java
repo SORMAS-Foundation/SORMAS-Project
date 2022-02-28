@@ -1236,7 +1236,7 @@ public class LabMessageController {
 			}, (savedPathogenTest, callback) -> {
 				chain.next(true);
 				window.close();
-			});
+			}, true);
 
 		pathogenTestCreateComponent.addDiscardListener(() -> {
 			if (FacadeProvider.getLabMessageFacade().isProcessed(labMessage.getUuid())) {

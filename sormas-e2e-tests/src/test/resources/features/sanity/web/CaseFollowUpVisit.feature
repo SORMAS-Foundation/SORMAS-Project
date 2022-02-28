@@ -1,6 +1,7 @@
 @UI @Sanity @Case @Visit
 Feature: Follow-up new visit functionality
 
+  @env_main
   Scenario: Create a new visit from case follow-up
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -17,7 +18,7 @@ Feature: Follow-up new visit functionality
     And I click on edit Visit button
     Then I validate all fields from Visit
 
-  @issue=SORDEV-5528
+  @issue=SORDEV-5528 @env_main
   Scenario: Fill the therapy tab
     When API: I create a new person
     Then API: I check that POST call body is "OK"
