@@ -640,6 +640,7 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 		CaseDataDto caseData = CaseDataDto.build(person.toReference(), travelEntry.getDisease());
 
 		caseData.setCaseOrigin(CaseOrigin.POINT_OF_ENTRY);
+		caseData.setDiseaseVariant(travelEntry.getDiseaseVariant());
 		caseData.setResponsibleRegion(travelEntry.getResponsibleRegion());
 		caseData.setResponsibleDistrict(travelEntry.getResponsibleDistrict());
 		caseData.setResponsibleCommunity(travelEntry.getResponsibleCommunity());
