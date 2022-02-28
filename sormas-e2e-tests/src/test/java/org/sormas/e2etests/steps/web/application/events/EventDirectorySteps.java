@@ -61,20 +61,24 @@ public class EventDirectorySteps implements En {
     When(
         "I navigate to the last created Event page via URL",
         () -> {
+          String eventLinkPath = "/sormas-ui/#!events/data/";
           String createdEventUUID = CreateNewEventSteps.newEvent.getUuid();
-          String LAST_CREATED_EVENT_PAGE_URL =
-              environmentUrl + "/sormas-webdriver/#!events/data/" + createdEventUUID;
-          webDriverHelpers.accessWebSite(LAST_CREATED_EVENT_PAGE_URL);
+          webDriverHelpers.accessWebSite(
+              environmentManager.getEnvironmentUrlForMarket(locale)
+                  + eventLinkPath
+                  + createdEventUUID);
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 50);
         });
     When(
         "I navigate to the last created through API Event page via URL",
         () -> {
+          String eventLinkPath = "/sormas-ui/#!events/data/";
           String createdEventUUID = apiState.getCreatedEvent().getUuid();
-          String LAST_CREATED_EVENT_PAGE_URL =
-              environmentUrl + "/sormas-webdriver/#!events/data/" + createdEventUUID;
-          webDriverHelpers.accessWebSite(LAST_CREATED_EVENT_PAGE_URL);
+          webDriverHelpers.accessWebSite(
+              environmentManager.getEnvironmentUrlForMarket(locale)
+                  + eventLinkPath
+                  + createdEventUUID);
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 50);
         });
