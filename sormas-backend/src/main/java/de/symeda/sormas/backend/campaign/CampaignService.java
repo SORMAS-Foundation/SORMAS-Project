@@ -16,6 +16,7 @@ import de.symeda.sormas.api.campaign.CampaignCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 
 @Stateless
@@ -48,7 +49,8 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 				cb.between(from.get(Campaign.START_DATE), campaignCriteria.getStartDateAfter(), campaignCriteria.getStartDateBefore()));
 		}
 		if (campaignCriteria.getEndDateAfter() != null || campaignCriteria.getEndDateBefore() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.between(from.get(Campaign.END_DATE), campaignCriteria.getEndDateAfter(), campaignCriteria.getEndDateAfter()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.between(from.get(Campaign.END_DATE), campaignCriteria.getEndDateAfter(), campaignCriteria.getEndDateAfter()));
 		}
 		if (campaignCriteria.getFreeText() != null) {
 			String[] textFilters = campaignCriteria.getFreeText().split("\\s+");
@@ -58,14 +60,15 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 				}
 
 				Predicate likeFilters = cb.or(
-						CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Campaign.NAME), textFilter),
-						CriteriaBuilderHelper.ilike(cb, from.get(Campaign.UUID), textFilter));
+					CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Campaign.NAME), textFilter),
+					CriteriaBuilderHelper.ilike(cb, from.get(Campaign.UUID), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
 		if (campaignCriteria.getRelevanceStatus() != null) {
 			if (campaignCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(from.get(Campaign.ARCHIVED), false), cb.isNull(from.get(Campaign.ARCHIVED))));
+				filter = CriteriaBuilderHelper
+					.and(cb, filter, cb.or(cb.equal(from.get(Campaign.ARCHIVED), false), cb.isNull(from.get(Campaign.ARCHIVED))));
 			} else if (campaignCriteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Campaign.ARCHIVED), true));
 			}

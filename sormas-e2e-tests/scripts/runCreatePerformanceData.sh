@@ -1,7 +1,7 @@
 #!/bin/sh
 #
 # SORMAS® - Surveillance Outbreak Response Management & Analysis System
-# Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+# Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
 #
 # This program is free software: you can redistribute it and/or modify
 # it under the terms of the GNU General Public License as published by
@@ -32,7 +32,7 @@ for ((i = 1; i <= $1; ++i)); do
   echo "Run: $i "
   echo "Started at:"
   date +"%T"
-  ./gradlew startTests -Dcucumber.tags="@PersonsAndImmunizations" -Dheadless=true -Dcourgette.threads=9
+  ./gradlew startTests -Dcucumber.tags="@PersonsAndImmunizations" -Dheadless=true -Dcourgette.threads=9 -DenvConfig=
   echo "Finished at:"
   date +"%T"
 done
