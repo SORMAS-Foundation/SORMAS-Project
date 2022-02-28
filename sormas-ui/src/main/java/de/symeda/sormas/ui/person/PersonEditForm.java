@@ -64,7 +64,6 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.CauseOfDeath;
-import de.symeda.sormas.api.person.DeathPlaceType;
 import de.symeda.sormas.api.person.EducationType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonContext;
@@ -845,7 +844,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private void fillDeathAndBurialFields(AbstractSelect deathPlaceType, TextField deathPlaceDesc, TextField burialPlaceDesc) {
 
 		if (deathPlaceType.isVisible() && deathPlaceType.getValue() == null) {
-			deathPlaceType.setValue(DeathPlaceType.OTHER);
 			if (deathPlaceDesc.isVisible() && StringUtils.isBlank(deathPlaceDesc.getValue())) {
 				deathPlaceDesc.setValue(getValue().getAddress().toString());
 			}
