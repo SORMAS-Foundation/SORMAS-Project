@@ -43,8 +43,7 @@ public class TravelEntryController {
 	}
 
 	public void create() {
-		CommitDiscardWrapperComponent<TravelEntryCreateForm> travelEntryCreateComponent =
-			getTravelEntryCreateComponent(null, null);
+		CommitDiscardWrapperComponent<TravelEntryCreateForm> travelEntryCreateComponent = getTravelEntryCreateComponent(null, null);
 		VaadinUiUtil.showModalPopupWindow(travelEntryCreateComponent, I18nProperties.getString(Strings.headingCreateNewTravelEntry));
 	}
 
@@ -54,7 +53,9 @@ public class TravelEntryController {
 		VaadinUiUtil.showModalPopupWindow(travelEntryCreateComponent, I18nProperties.getString(Strings.headingCreateNewTravelEntry));
 	}
 
-	private CommitDiscardWrapperComponent<TravelEntryCreateForm> getTravelEntryCreateComponent(CaseReferenceDto caseReferenceDto, PersonReferenceDto personReferenceDto) {
+	private CommitDiscardWrapperComponent<TravelEntryCreateForm> getTravelEntryCreateComponent(
+		CaseReferenceDto caseReferenceDto,
+		PersonReferenceDto personReferenceDto) {
 
 		TravelEntryCreateForm createForm;
 		TravelEntryDto travelEntry = TravelEntryDto.build(null);
