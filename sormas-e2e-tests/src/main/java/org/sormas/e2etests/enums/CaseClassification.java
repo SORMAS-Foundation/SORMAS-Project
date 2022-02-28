@@ -60,6 +60,16 @@ public enum CaseClassification {
     throw new Exception("Unable to find " + option + " value in CaseClassification Enum");
   }
 
+  @SneakyThrows
+  public static String getUIValueForGivenAPIValue(String option) {
+    CaseClassification[] classifications = CaseClassification.values();
+    for (CaseClassification value : classifications) {
+      if (value.getClassificationAPIvalue().equalsIgnoreCase(option))
+        return value.getClassificationUIvalue();
+    }
+    throw new Exception("Unable to find " + option + " value in CaseClassification Enum");
+  }
+
   public static String getRandomUIClassification() {
     Random random = new Random();
     return String.valueOf(

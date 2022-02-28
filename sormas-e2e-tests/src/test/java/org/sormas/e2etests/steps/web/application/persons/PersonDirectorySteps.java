@@ -134,7 +134,7 @@ public class PersonDirectorySteps implements En {
           String districtName = apiState.getLastCreatedPerson().getAddress().getDistrict();
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
-              DISTRICTS_COMBOBOX, DistrictsValues.getValueFor(districtName));
+              DISTRICTS_COMBOBOX, DistrictsValues.getNameByUUID(districtName));
         });
 
     Then(
@@ -186,7 +186,7 @@ public class PersonDirectorySteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
-              PRESENT_CONDITION, PresentCondition.getRandomPresentCondition());
+              PRESENT_CONDITION, PresentCondition.getRandomUIPresentCondition());
         });
 
     Then(
