@@ -134,4 +134,20 @@ public class SampleService {
         .testResultsComment("Comment on Edit Pathogen requests or received " + currentTimeMillis)
         .build();
   }
+
+  public Sample buildPathogenTestResultTypeVerified(String testType) {
+    long currentTimeMillis = System.currentTimeMillis();
+    return Sample.builder()
+        .reportDate(LocalDate.now())
+        .typeOfTest(testType)
+        .testedDisease("COVID-19")
+        .dateOfResult(LocalDate.now())
+        .timeOfResult(LocalTime.of(15, 15))
+        .laboratory("Other facility")
+        .laboratoryName("Test laboratory")
+        .sampleTestResults("Positive")
+        .resultVerifiedByLabSupervisor("YES")
+        .testResultsComment("Comment on Edit Pathogen requests or received " + currentTimeMillis)
+        .build();
+  }
 }

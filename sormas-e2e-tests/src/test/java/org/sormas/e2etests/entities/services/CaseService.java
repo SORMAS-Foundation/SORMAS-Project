@@ -42,6 +42,17 @@ public class CaseService {
     this.faker = faker;
   }
 
+  public Case buildEditGeneratedCaseForPositivePathogenTestResult() {
+    return Case.builder()
+        .dateOfReport(LocalDate.now().minusDays(1))
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
+        .placeOfStay("HOME")
+        .placeDescription(faker.harryPotter().location())
+        .build();
+  }
+
   public Case buildGeneratedCase() {
     firstName = faker.name().firstName();
     lastName = faker.name().lastName();
