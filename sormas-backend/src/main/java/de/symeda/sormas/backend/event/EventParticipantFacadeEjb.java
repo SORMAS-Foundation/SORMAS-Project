@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.backend.event;
 
+import de.symeda.sormas.api.user.NotificationType;
+import de.symeda.sormas.backend.common.NotificationService;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -57,7 +59,6 @@ import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -78,7 +79,6 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -89,13 +89,13 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.common.messaging.MessageContents;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
-import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -157,7 +157,7 @@ public class EventParticipantFacadeEjb
 	@EJB
 	private DistrictService districtService;
 	@EJB
-	private MessagingService messagingService;
+	private NotificationService notificationService;
 	@EJB
 	private SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal sormasToSormasOriginInfoFacade;
 	@EJB
@@ -324,7 +324,8 @@ public class EventParticipantFacadeEjb
 
 	private void notifyEventResponsibleUsersOfCommonEventParticipant(EventParticipant eventParticipant, Event event) {
 		try {
-			messagingService.sendMessages(() -> {
+
+			notificationService.sendNotifications(NotificationType.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS, MessageSubject.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS, () -> {
 
 				final Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
 				final Map<String, Optional<User>> responsibleUserByEventUuid =
@@ -340,20 +341,21 @@ public class EventParticipantFacadeEjb
 				final Map<User, String> mapToReturn = new HashMap<>();
 				for (Map.Entry<String, Optional<User>> entry : responsibleUserByEventUuid.entrySet()) {
 					entry.getValue().filter(user -> StringUtils.isNotEmpty(user.getUserEmail())).ifPresent(user -> {
-						mapToReturn.put(
-							user,
-							String.format(
+						String message = String.format(
 								I18nProperties.getString(MessageContents.CONTENT_EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS),
 								DataHelper.getShortUuid(eventParticipant.getPerson().getUuid()),
 								DataHelper.getShortUuid(eventParticipant.getUuid()),
 								DataHelper.getShortUuid(event.getUuid()),
 								User.buildCaptionForNotification(event.getResponsibleUser()),
 								User.buildCaptionForNotification(userService.getCurrentUser()),
-								buildEventListContentForNotification(responsibleUserByEventUuid)));
+								buildEventListContentForNotification(responsibleUserByEventUuid));
+						mapToReturn.put(
+							user,
+								message);
 					});
 				}
 				return mapToReturn;
-			}, MessageSubject.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS, MessageType.EMAIL, MessageType.SMS);
+			});
 		} catch (NotificationDeliveryFailedException e) {
 			logger.error(
 				String.format(

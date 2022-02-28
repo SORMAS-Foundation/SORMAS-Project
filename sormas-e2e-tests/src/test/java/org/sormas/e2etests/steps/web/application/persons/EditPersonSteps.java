@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,6 +24,7 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPa
 import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.SEX_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.*;
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -33,12 +34,12 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
-import javax.inject.Named;
 import org.openqa.selenium.ElementClickInterceptedException;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Person;
+import org.sormas.e2etests.entities.services.PersonService;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.pojo.web.Person;
-import org.sormas.e2etests.services.PersonService;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
 import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
@@ -55,7 +56,7 @@ public class EditPersonSteps implements En {
       WebDriverHelpers webDriverHelpers,
       PersonService personService,
       BaseSteps baseSteps,
-      @Named("ENVIRONMENT_URL") String environmentUrl) {
+      EnvironmentManager environmentManager) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -147,7 +148,9 @@ public class EditPersonSteps implements En {
         () -> {
           final String personUuid = EditEventSteps.person.getUuid();
           webDriverHelpers.accessWebSite(
-              environmentUrl + "/sormas-webdriver/#!persons/data/" + personUuid);
+              environmentManager.getEnvironmentUrlForMarket(locale)
+                  + "/sormas-webdriver/#!persons/data/"
+                  + personUuid);
         });
 
     When(

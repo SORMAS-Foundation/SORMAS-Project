@@ -17,7 +17,14 @@
  *******************************************************************************/
 package de.symeda.sormas.api.utils;
 
+import static org.hamcrest.CoreMatchers.containsString;
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.equalTo;
+import static org.hamcrest.Matchers.hasLength;
+import static org.hamcrest.Matchers.startsWith;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertTrue;
 import static org.junit.Assert.fail;
 import static org.mockito.Mockito.spy;
 
@@ -74,5 +81,37 @@ public class InfoProviderTest {
 			fail();
 		} catch (IllegalArgumentException e) {
 		}
+	}
+
+	@Test
+	public void testGetLastCommitShortId() {
+
+		InfoProvider cut = InfoProvider.get();
+		assertThat(cut.getLastCommitShortId(), hasLength(7));
+	}
+
+	@Test
+	public void testGetLastCommitHistoryUrl() {
+
+		InfoProvider cut = InfoProvider.get();
+		assertThat(cut.getLastCommitHistoryUrl(), startsWith("https://"));
+		assertThat(cut.getLastCommitHistoryUrl(), containsString(cut.getLastCommitShortId()));
+	}
+
+	@Test
+	public void testIsSnapshotVersion() {
+
+		InfoProvider cut = InfoProvider.get();
+		assertThat(cut.isSnapshotVersion(), equalTo(cut.getVersion().endsWith("SNAPSHOT")));
+	}
+
+	@Test
+	public void testIsSnapshot() {
+
+		InfoProvider cut = InfoProvider.get();
+		assertTrue(cut.isSnapshot("1.69.0-SNAPSHOT"));
+		assertTrue(cut.isSnapshot("1.69.1-SNAPSHOT"));
+		assertFalse(cut.isSnapshot("1.69.0"));
+		assertFalse(cut.isSnapshot("1.69.1"));
 	}
 }

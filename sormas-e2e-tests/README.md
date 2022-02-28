@@ -77,8 +77,14 @@ LOG_RESTASSURED=false
 
 * Change REMOTE_DRIVER value to false to run the tests from your local machine (optional HEADLESS to false to enable UI execution, and LOG_RESTASSURED to true to enable json logging)
 
-* To change testing environment, open: resources/configuration/properties/environment/test-performance.properties
-And update ENVIRONMENT_URL value (can be a local dev environments as well)
+* Pass Environment data json file as argument in order to provide all available environments and users. This can be set in IDE VM options or directly in CLI.
+
+Argument = envConfig
+
+Value = ./path/envData.json
+
+![config](./images/configFIle.JPG)
+
 ## Test case design
 
 A design pattern is implemented based on a behavior-driven development style.
@@ -115,7 +121,7 @@ This file a build configuration script defines a project and its tasks.
 
 ````gradle
 
-gradlew clean startTests -Dcucumber.tags="@Login" -Denvironment=performance
+gradlew clean startTests -Dcucumber.tags="@Login" -Dheadless=true -Dcourgette.threads=9 -DenvConfig=C:/Users/MyUser/Desktop/envData.json
 
 ````
 

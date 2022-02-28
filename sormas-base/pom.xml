@@ -5,7 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.69.0-SNAPSHOT</version>
+	<version>1.68.1</version>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -1224,6 +1224,34 @@
 						</execution>
 					</executions>
 					<!-- Usage (on sormas-base/pom.xml): "mvn org.owasp:dependency-check-maven:check" -->
+				</plugin>
+				<plugin>
+					<groupId>io.github.git-commit-id</groupId>
+					<artifactId>git-commit-id-maven-plugin</artifactId>
+					<version>5.0.0</version>
+					<executions>
+						<execution>
+							<id>get-the-git-infos</id>
+							<goals>
+								<goal>revision</goal>
+							</goals>
+							<phase>initialize</phase>
+						</execution>
+					</executions>
+					<configuration>
+						<dotGitDirectory>${project.basedir}/../.git</dotGitDirectory>
+						<format>properties</format>
+						<generateGitPropertiesFile>true</generateGitPropertiesFile>
+						<generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+						<includeOnlyProperties>
+							<includeOnlyProperty>^git.build.time$</includeOnlyProperty>
+							<includeOnlyProperty>^git.build.version$</includeOnlyProperty>
+							<includeOnlyProperty>^git.commit.id.abbrev$</includeOnlyProperty>
+							<includeOnlyProperty>^git.commit.id.full$</includeOnlyProperty>
+							<includeOnlyProperty>^git.remote.origin.url$</includeOnlyProperty>
+						</includeOnlyProperties>
+						<commitIdGenerationMode>full</commitIdGenerationMode>
+					</configuration>
 				</plugin>
 				<!-- *** Plugins for generate-reports END *** -->
 
