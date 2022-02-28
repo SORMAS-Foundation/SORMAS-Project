@@ -43,6 +43,25 @@ public class CreateNewCaseSteps implements En {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
+        "I create a new case with specific data for positive pathogen test result",
+        () -> {
+          caze = caseService.buildEditGeneratedCaseForPositivePathogenTestResult();
+          fillDateOfReport(caze.getDateOfReport());
+          selectResponsibleRegion(caze.getResponsibleRegion());
+          selectResponsibleDistrict(caze.getResponsibleDistrict());
+          selectResponsibleCommunity(caze.getResponsibleCommunity());
+          selectPlaceOfStay(caze.getPlaceOfStay());
+        });
+
+    When(
+        "I save a new case",
+        () -> {
+          webDriverHelpers.scrollToElement(CONTACT_CASE_SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_CASE_SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+        });
+
+    When(
         "^I create a new case with specific data$",
         () -> {
           caze = caseService.buildGeneratedCase();
