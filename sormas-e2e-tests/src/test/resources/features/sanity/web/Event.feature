@@ -262,7 +262,7 @@ Feature: Create events
     And I click on the Navigate to event directory filtered on this event group
     And I check the number of displayed Event results from All button is 1
 
-  @issue=SORDEV-5572
+  @issue=SORDEV-5572 @env_main
   Scenario: Testing Event group adding for new event
     Given API: I create a new event
     Then API: I check that POST call body is "OK"

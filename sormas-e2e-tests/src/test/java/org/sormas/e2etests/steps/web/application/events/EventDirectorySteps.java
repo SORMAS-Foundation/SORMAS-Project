@@ -20,6 +20,7 @@ package org.sormas.e2etests.steps.web.application.events;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_GRID_RESULTS_ROWS;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_PARTICIPANTS_TAB;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_EVENT_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.TITLE_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_INPUT;
@@ -62,8 +63,10 @@ import cucumber.api.java8.En;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
-import javax.inject.Named;
 import org.sormas.e2etests.common.DataOperations;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.EventGroup;
+import org.sormas.e2etests.entities.services.EventGroupService;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.RiskLevelValues;
 import org.sormas.e2etests.enums.SourceTypeValues;
@@ -73,9 +76,6 @@ import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.events.EventDirectoryPage;
-import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.pojo.web.EventGroup;
-import org.sormas.e2etests.services.EventGroupService;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.Assert;
 
@@ -114,10 +114,12 @@ public class EventDirectorySteps implements En {
     When(
         "I navigate to the last created Event page via URL",
         () -> {
+          String eventLinkPath = "/sormas-ui/#!events/data/";
           String createdEventUUID = CreateNewEventSteps.newEvent.getUuid();
-          String LAST_CREATED_EVENT_PAGE_URL =
-              environmentUrl + "/sormas-webdriver/#!events/data/" + createdEventUUID;
-          webDriverHelpers.accessWebSite(LAST_CREATED_EVENT_PAGE_URL);
+          webDriverHelpers.accessWebSite(
+              environmentManager.getEnvironmentUrlForMarket(locale)
+                  + eventLinkPath
+                  + createdEventUUID);
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 50);
         });
