@@ -21,8 +21,11 @@ package org.sormas.e2etests.entities.services.api;
 import com.google.inject.Inject;
 import java.util.Date;
 import java.util.UUID;
+import org.sormas.e2etests.entities.pojo.api.Community;
+import org.sormas.e2etests.entities.pojo.api.District;
 import org.sormas.e2etests.entities.pojo.api.Event;
 import org.sormas.e2etests.entities.pojo.api.EventLocation;
+import org.sormas.e2etests.entities.pojo.api.Region;
 import org.sormas.e2etests.entities.pojo.api.ReportingUser;
 import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DiseasesValues;
@@ -32,12 +35,6 @@ import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.enums.RiskLevelValues;
 import org.sormas.e2etests.enums.SourceTypeValues;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
-import org.sormas.e2etests.pojo.api.Community;
-import org.sormas.e2etests.pojo.api.District;
-import org.sormas.e2etests.pojo.api.Event;
-import org.sormas.e2etests.pojo.api.EventLocation;
-import org.sormas.e2etests.pojo.api.Region;
-import org.sormas.e2etests.pojo.api.ReportingUser;
 
 public class EventApiService {
 

@@ -4,11 +4,10 @@ import lombok.Getter;
 
 @Getter
 public enum EventManagementStatusValues {
-    ONGOING("ONGOING");
-    private final String value;
+  ONGOING("ONGOING");
+  private final String value;
 
-    EventManagementStatusValues(String value) {
-        this.value = value;
-    }
-
+  EventManagementStatusValues(String value) {
+    this.value = value;
+  }
 }
