@@ -276,7 +276,6 @@ public class LabMessageController {
 			showAlreadyProcessedPopup(null, false);
 			return;
 		}
-		boolean personSearchActive = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.PERSON_DUPLICATE_CUSTOM_SEARCH);
 		ControllerProvider.getPersonController()
 			.selectOrCreatePerson(personDto, I18nProperties.getString(Strings.infoSelectOrCreatePersonForLabMessage), selectedPerson -> {
 				if (FacadeProvider.getLabMessageFacade().isProcessed(labMessage.getUuid())) {
@@ -314,8 +313,9 @@ public class LabMessageController {
 				}
 			},
 				false,
-				personSearchActive,
-				personSearchActive ? I18nProperties.getString(Strings.infoSelectOrCreatePersonForLabMessageWithoutMatches) : null);
+				FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.PERSON_DUPLICATE_CUSTOM_SEARCH)
+					? I18nProperties.getString(Strings.infoSelectOrCreatePersonForLabMessageWithoutMatches)
+					: null);
 	}
 
 	private void pickOrCreateEntry(

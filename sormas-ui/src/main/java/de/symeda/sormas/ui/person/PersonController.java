@@ -20,6 +20,8 @@ package de.symeda.sormas.ui.person;
 import java.util.Date;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
@@ -80,24 +82,36 @@ public class PersonController {
 	}
 
 	public void selectOrCreatePerson(final PersonDto person, String infoText, Consumer<PersonReferenceDto> resultConsumer, boolean saveNewPerson) {
-		selectOrCreatePerson(person, infoText, resultConsumer, saveNewPerson, false, null);
+		selectOrCreatePerson(person, infoText, resultConsumer, saveNewPerson, null);
 	}
 
+	/**
+	 * Provides a PersonSelectionField to be able to decide to pick an existing Person from the system
+	 * or to create a new one with the given information.
+	 * 
+	 * @param person
+	 *            Dto wich contains the information about the person who should be created.
+	 * @param infoText
+	 *            Information that is shown to the user.
+	 * @param resultConsumer
+	 *            Is the operation that is executed after this mehtod.
+	 * @param saveNewPerson
+	 *            Indicates if the new person should be saved.
+	 * @param infoTextWithoutMatches
+	 *            Information that should be shown to the user if the window is still shown
+	 *            if there are no matches found by the system.
+	 */
 	public void selectOrCreatePerson(
 		final PersonDto person,
 		String infoText,
 		Consumer<PersonReferenceDto> resultConsumer,
 		boolean saveNewPerson,
-		boolean showWithoutMatches,
 		String infoTextWithoutMatches) {
-		// This builds a selection field for all potential similar persons if any.
-		// The user can choose to merge or create a new person in case there is a similar person in the system.
+
 		PersonSelectionField personSelect = new PersonSelectionField(person, infoText, infoTextWithoutMatches);
 		personSelect.setWidth(1024, Unit.PIXELS);
 
-		// check if we have duplicate persons for the given PersonDto
-		if (personSelect.hasMatches() || showWithoutMatches) {
-			// if yes give the user the chance to pick or create a new one.
+		if (StringUtils.isNotBlank(infoTextWithoutMatches) || personSelect.hasMatches()) {
 			// TODO add user right parameter
 			final CommitDiscardWrapperComponent<PersonSelectionField> component =
 				new CommitDiscardWrapperComponent<PersonSelectionField>(personSelect);

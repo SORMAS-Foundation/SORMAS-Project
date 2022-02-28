@@ -69,17 +69,18 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 	 *            The person for which similar persons are searched and displayed.
 	 * @param infoText
 	 *            Information displayed to the user.
+	 * @param infoTextWithoutMatches
+	 *            Information displayed to the user if the field is shown without matches.
 	 */
 	public PersonSelectionField(PersonDto referencePerson, String infoText, String infoTextWithoutMatches) {
 		this.referencePerson = referencePerson;
 
 		initializeGrid();
 
-		this.hasMatches = this.hasMatches();
 		if (infoTextWithoutMatches == null) {
 			this.infoText = infoText;
 		} else {
-			this.infoText = hasMatches ? infoText : infoTextWithoutMatches;
+			this.infoText = this.hasMatches() ? infoText : infoTextWithoutMatches;
 		}
 	}
 

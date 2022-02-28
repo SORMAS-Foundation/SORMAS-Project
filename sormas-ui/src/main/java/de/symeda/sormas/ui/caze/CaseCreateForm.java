@@ -135,7 +135,7 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 	private final TravelEntryDto convertedTravelEntry;
 
 	//@formatter:off
-    private static final String HTML_LAYOUT_PART_1 = fluidRowLocs(CaseDataDto.CASE_ORIGIN, "")
+    private static final String HTML_LAYOUT = fluidRowLocs(CaseDataDto.CASE_ORIGIN, "")
         + fluidRowLocs(CaseDataDto.REPORT_DATE, CaseDataDto.EPID_NUMBER, CaseDataDto.EXTERNAL_ID)
         + fluidRow(
         fluidColumnLoc(6, 0, CaseDataDto.DISEASE),
@@ -155,17 +155,18 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
         + fluidRowLocs(CaseDataDto.HEALTH_FACILITY, CaseDataDto.HEALTH_FACILITY_DETAILS)
         + fluidRowLocs(DIFFERENT_POINT_OF_ENTRY_JURISDICTION)
         + fluidRowLocs(POINT_OF_ENTRY_REGION, POINT_OF_ENTRY_DISTRICT)
-        + fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS);
-	private static final String HTML_LAYOUT_PART_2_WITH_PERSON_SEARCH = fluidRowLocs(6, PersonDto.FIRST_NAME, 4, PersonDto.LAST_NAME, 2, PERSON_SEARCH_LOC);
-	private static final String HTML_LAYOUT_PART_2_WITHOUT_PERSON_SEARCH = fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME);
-	private static final String HTML_LAYOUT_PART_3 = fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
-        fluidRowLocs(PersonDto.SEX))
-        + fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER)
+        + fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS)
+		+ "%s"
+		+ fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD), fluidRowLocs(PersonDto.SEX))
+		+ fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER)
         + fluidRowLocs(PersonDto.PRESENT_CONDITION, SymptomsDto.ONSET_DATE)
         + fluidRowLocs(PersonDto.PHONE, PersonDto.EMAIL_ADDRESS)
         + fluidRowLocs(ENTER_HOME_ADDRESS_NOW)
         + loc(HOME_ADDRESS_HEADER)
         + divsCss(VSPACE_3, fluidRowLocs(HOME_ADDRESS_LOC));
+    
+	private static final String NAME_ROW_WITH_PERSON_SEARCH = fluidRowLocs(6, PersonDto.FIRST_NAME, 4, PersonDto.LAST_NAME, 2, PERSON_SEARCH_LOC);
+	private static final String NAME_ROW_WITHOUT_PERSON_SEARCH = fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME);
     //@formatter:on
 
 	public CaseCreateForm() {
@@ -921,12 +922,6 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 
 	@Override
 	protected String createHtmlLayout() {
-		String layout = HTML_LAYOUT_PART_1;
-		if (showPersonSearchButton) {
-			layout += HTML_LAYOUT_PART_2_WITH_PERSON_SEARCH;
-		} else {
-			layout += HTML_LAYOUT_PART_2_WITHOUT_PERSON_SEARCH;
-		}
-		return layout + HTML_LAYOUT_PART_3;
+		return String.format(HTML_LAYOUT, showPersonSearchButton ? NAME_ROW_WITH_PERSON_SEARCH : NAME_ROW_WITHOUT_PERSON_SEARCH);
 	}
 }

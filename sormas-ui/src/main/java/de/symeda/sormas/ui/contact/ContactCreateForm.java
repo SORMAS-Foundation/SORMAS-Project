@@ -77,35 +77,36 @@ public class ContactCreateForm extends PersonDependentEditForm<ContactDto> {
 	private static final String REMOVE_CASE_LOC = "removeCaseLoc";
 
 	//@formatter:off
-	private static final String HTML_LAYOUT_PART_1 =
-			LayoutUtil.loc(PERSON_NAME_LOC);
-	private static final String HTML_LAYOUT_PART_2_WITH_PERSON_SEARCH =
+	private static final String HTML_LAYOUT =
+			LayoutUtil.loc(PERSON_NAME_LOC) +
+			"%s" +
+			LayoutUtil.fluidRow(
+					fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD), 
+					fluidRowLocs(PersonDto.SEX)) +
+			fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER) +
+			fluidRowLocs(PersonDto.PHONE, PersonDto.EMAIL_ADDRESS) +
+			fluidRowLocs(ContactDto.RETURNING_TRAVELER) +
+			fluidRowLocs(ContactDto.REPORT_DATE_TIME, ContactDto.DISEASE) +
+			fluidRowLocs(ContactDto.DISEASE_DETAILS) +
+			fluidRowLocs(6, CASE_INFO_LOC, 3, CHOOSE_CASE_LOC, 3, REMOVE_CASE_LOC) +
+			fluidRowLocs(ContactDto.CASE_ID_EXTERNAL_SYSTEM) +
+			fluidRowLocs(ContactDto.MULTI_DAY_CONTACT) +
+			LayoutUtil.fluidRow(
+					LayoutUtil.fluidColumnLocCss(LAYOUT_COL_HIDE_INVSIBLE,6,0, ContactDto.FIRST_CONTACT_DATE), 
+					LayoutUtil.fluidColumnLoc(6, 0, ContactDto.LAST_CONTACT_DATE)) +
+			fluidRowLocs(ContactDto.CASE_OR_EVENT_INFORMATION) +
+			fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT) +
+			fluidRowLocs(ContactDto.COMMUNITY) +
+			fluidRowLocs(ContactDto.CONTACT_PROXIMITY) +
+			fluidRowLocs(ContactDto.CONTACT_PROXIMITY_DETAILS) + fluidRowLocs(ContactDto.CONTACT_CATEGORY) +
+			fluidRowLocs(ContactDto.RELATION_TO_CASE) +
+			fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
+			fluidRowLocs(ContactDto.DESCRIPTION);
+
+	private static final String NAME_ROW_WITH_PERSON_SEARCH =
 			fluidRowLocs(6, PersonDto.FIRST_NAME, 4, PersonDto.LAST_NAME, 2, PERSON_SEARCH_LOC);
-	private static final String HTML_LAYOUT_PART_2_WITHOUT_PERSON_SEARCH =
+	private static final String NAME_ROW_WITHOUT_PERSON_SEARCH =
 			fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME);
-	private static final String HTML_LAYOUT_PART_3 =
-					LayoutUtil.fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
-							fluidRowLocs(PersonDto.SEX)) +
-					fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER) +
-					fluidRowLocs(PersonDto.PHONE, PersonDto.EMAIL_ADDRESS) +
-					fluidRowLocs(ContactDto.RETURNING_TRAVELER) +
-					fluidRowLocs(ContactDto.REPORT_DATE_TIME, ContactDto.DISEASE) +
-					fluidRowLocs(ContactDto.DISEASE_DETAILS) +
-					fluidRowLocs(6, CASE_INFO_LOC, 3, CHOOSE_CASE_LOC, 3, REMOVE_CASE_LOC) +
-					fluidRowLocs(ContactDto.CASE_ID_EXTERNAL_SYSTEM) +
-					fluidRowLocs(ContactDto.MULTI_DAY_CONTACT) +
-					LayoutUtil.fluidRow(
-						LayoutUtil.fluidColumnLocCss(LAYOUT_COL_HIDE_INVSIBLE,6,0, ContactDto.FIRST_CONTACT_DATE),
-						LayoutUtil.fluidColumnLoc(6, 0, ContactDto.LAST_CONTACT_DATE)) +
-					fluidRowLocs(ContactDto.CASE_OR_EVENT_INFORMATION) +
-					fluidRowLocs(ContactDto.REGION, ContactDto.DISTRICT) +
-					fluidRowLocs(ContactDto.COMMUNITY) +
-					fluidRowLocs(ContactDto.CONTACT_PROXIMITY) +
-					fluidRowLocs(ContactDto.CONTACT_PROXIMITY_DETAILS) + fluidRowLocs(ContactDto.CONTACT_CATEGORY)
-					+
-					fluidRowLocs(ContactDto.RELATION_TO_CASE) +
-					fluidRowLocs(ContactDto.RELATION_DESCRIPTION) +
-					fluidRowLocs(ContactDto.DESCRIPTION);
 	//@formatter:on
 
 	private NullableOptionGroup contactProximity;
@@ -477,13 +478,7 @@ public class ContactCreateForm extends PersonDependentEditForm<ContactDto> {
 
 	@Override
 	protected String createHtmlLayout() {
-		String layout = HTML_LAYOUT_PART_1;
-		if (showPersonSearchButton) {
-			layout += HTML_LAYOUT_PART_2_WITH_PERSON_SEARCH;
-		} else {
-			layout += HTML_LAYOUT_PART_2_WITHOUT_PERSON_SEARCH;
-		}
-		return layout + HTML_LAYOUT_PART_3;
+		return String.format(HTML_LAYOUT, showPersonSearchButton ? NAME_ROW_WITH_PERSON_SEARCH : NAME_ROW_WITHOUT_PERSON_SEARCH);
 	}
 
 	public void setPerson(PersonDto person) {
