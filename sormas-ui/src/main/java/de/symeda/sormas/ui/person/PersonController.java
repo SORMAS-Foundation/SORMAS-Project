@@ -20,6 +20,8 @@ package de.symeda.sormas.ui.person;
 import java.util.Date;
 import java.util.function.Consumer;
 
+import org.apache.commons.lang3.StringUtils;
+
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
@@ -48,7 +50,6 @@ import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseDataView;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
-import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
@@ -80,14 +81,36 @@ public class PersonController {
 	}
 
 	public void selectOrCreatePerson(final PersonDto person, String infoText, Consumer<PersonReferenceDto> resultConsumer, boolean saveNewPerson) {
-		// This builds a selection field for all potential similar persons if any.
-		// The user can choose to merge or create a new person in case there is a similar person in the system.
-		PersonSelectionField personSelect = new PersonSelectionField(person, infoText);
+		selectOrCreatePerson(person, infoText, resultConsumer, saveNewPerson, null);
+	}
+
+	/**
+	 * Provides a PersonSelectionField to be able to decide to pick an existing Person from the system
+	 * or to create a new one with the given information.
+	 * 
+	 * @param person
+	 *            Dto wich contains the information about the person who should be created.
+	 * @param infoText
+	 *            Information that is shown to the user.
+	 * @param resultConsumer
+	 *            Is the operation that is executed after this mehtod.
+	 * @param saveNewPerson
+	 *            Indicates if the new person should be saved.
+	 * @param infoTextWithoutMatches
+	 *            Information that should be shown to the user if the window is still shown
+	 *            if there are no matches found by the system.
+	 */
+	public void selectOrCreatePerson(
+		final PersonDto person,
+		String infoText,
+		Consumer<PersonReferenceDto> resultConsumer,
+		boolean saveNewPerson,
+		String infoTextWithoutMatches) {
+
+		PersonSelectionField personSelect = new PersonSelectionField(person, infoText, infoTextWithoutMatches);
 		personSelect.setWidth(1024, Unit.PIXELS);
 
-		// check if we have duplicate persons for the given PersonDto
-		if (personSelect.hasMatches()) {
-			// if yes give the user the chance to pick or create a new one.
+		if (StringUtils.isNotBlank(infoTextWithoutMatches) || personSelect.hasMatches()) {
 			// TODO add user right parameter
 			final CommitDiscardWrapperComponent<PersonSelectionField> component =
 				new CommitDiscardWrapperComponent<PersonSelectionField>(personSelect);
@@ -159,19 +182,13 @@ public class PersonController {
 		PersonEditForm editForm = new PersonEditForm(personContext, disease, diseaseDetails, viewMode, personDto.isPseudonymized());
 		editForm.setValue(personDto);
 
-		final CommitDiscardWrapperComponent<PersonEditForm> editView = new CommitDiscardWrapperComponent<PersonEditForm>(
-			editForm,
-			UserProvider.getCurrent().hasUserRight(editUserRight),
-			editForm.getFieldGroup());
+		final CommitDiscardWrapperComponent<PersonEditForm> editView =
+			new CommitDiscardWrapperComponent<>(editForm, UserProvider.getCurrent().hasUserRight(editUserRight), editForm.getFieldGroup());
 
-		editView.addCommitListener(new CommitListener() {
-
-			@Override
-			public void onCommit() {
-				if (!editForm.getFieldGroup().isModified()) {
-					PersonDto dto = editForm.getValue();
-					savePerson(dto);
-				}
+		editView.addCommitListener(() -> {
+			if (!editForm.getFieldGroup().isModified()) {
+				PersonDto dto = editForm.getValue();
+				savePerson(dto);
 			}
 		});
 

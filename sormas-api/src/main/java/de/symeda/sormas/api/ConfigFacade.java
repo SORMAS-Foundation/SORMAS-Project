@@ -92,6 +92,8 @@ public interface ConfigFacade {
 
 	int getDaysAfterEventGetsArchived();
 
+	int getDaysAfterEventParticipantGetsArchived();
+
 	int getDaysAfterSystemEventGetsDeleted();
 
 	int getDaysAfterTravelEntryGetsArchived();
@@ -99,6 +101,10 @@ public interface ConfigFacade {
 	GeoLatLon getCountryCenter();
 
 	boolean isMapUseCountryCenter();
+
+	String getMapTilersUrl();
+
+	String getMapTilersAttribution();
 
 	int getMapZoom();
 

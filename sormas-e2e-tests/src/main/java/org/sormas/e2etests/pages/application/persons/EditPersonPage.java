@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -103,6 +103,10 @@ public class EditPersonPage {
           "//*[contains(text(),'The case person was added as an event participant to the selected event.')]");
   public static final By SEE_EVENTS_FOR_PERSON =
       By.cssSelector("div#See\\ events\\ for\\ this\\ person");
+  public static final By INVALID_DATA_ERROR =
+      By.cssSelector(".v-Notification.error.v-Notification-error");
+  public static final By ERROR_INDICATOR =
+      By.cssSelector(".v-errorindicator.v-errorindicator-info");
   public static final By SEE_CASES_FOR_PERSON_BUTTON = By.id("See cases for this person");
   public static final By SEE_CONTACTS_FOR_PERSON_BUTTON = By.id("See contacts for this person");
   public static final By EDIT_CASES_BUTTON = By.id("edit-case-0");

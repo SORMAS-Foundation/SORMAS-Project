@@ -31,6 +31,7 @@ import static org.junit.Assert.assertTrue;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -295,7 +296,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		caseDataDto.setFacilityType(rdcf.facility.getType());
 		caseDataDto.setHealthFacility(new FacilityReferenceDto(rdcf.facility.getUuid(), null, null));
 		caseDataDto.setReportingUser(user.toReference());
-		CaseDataDto caseConvertedFromContact = getCaseFacade().saveCase(caseDataDto);
+		CaseDataDto caseConvertedFromContact = getCaseFacade().save(caseDataDto);
 
 		getCaseFacade().setSampleAssociations(contact.toReference(), caseConvertedFromContact.toReference());
 
@@ -328,7 +329,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ad", "Min", UserRole.ADMIN);
+		UserDto admin = getUserFacade().getByUserName("admin");
 		String adminUuid = admin.getUuid();
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
@@ -507,7 +508,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, getSampleTestFacade().getAllActivePathogenTestsAfter(null).size());
 		assertEquals(1, getSampleTestFacade().getAllActiveUuids().size());
 
-		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), true);
+		getCaseFacade().archive(caze.getUuid(), null);
 
 		// getAllActiveSamples/getAllActiveSampleTests and getAllUuids should return length 0
 		assertEquals(0, getSampleFacade().getAllActiveSamplesAfter(null).size());
@@ -515,7 +516,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(0, getSampleTestFacade().getAllActivePathogenTestsAfter(null).size());
 		assertEquals(0, getSampleTestFacade().getAllActiveUuids().size());
 
-		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), false);
+		getCaseFacade().dearchive(Collections.singletonList(caze.getUuid()), null);
 
 		// getAllActiveSamples/getAllActiveSampleTests and getAllUuids should return length 1
 		assertEquals(1, getSampleFacade().getAllActiveSamplesAfter(null).size());

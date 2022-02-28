@@ -34,10 +34,10 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.outbreak.OutbreakCriteria;
-import de.symeda.sormas.api.outbreak.OutbreakDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.outbreak.OutbreakCriteria;
+import de.symeda.sormas.api.outbreak.OutbreakDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -49,7 +49,7 @@ import de.symeda.sormas.ui.utils.LayoutUtil;
 @SuppressWarnings("serial")
 public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 
-	private static final String REGION = Captions.region;
+	private static final String REGION = Captions.Region;
 
 	private UserDto user;
 
@@ -61,7 +61,7 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 		user = UserProvider.getCurrent().getUser();
 
 		addColumn(REGION, RegionReferenceDto.class).setMaximumWidth(200);
-		getColumn(REGION).setHeaderCaption(I18nProperties.getCaption(Captions.region));
+		getColumn(REGION).setHeaderCaption(I18nProperties.getCaption(Captions.Region));
 
 		for (Disease disease : FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true)) {
 			addColumn(disease, OutbreakRegionConfiguration.class).setMaximumWidth(200)
@@ -81,9 +81,10 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 					public String convertToPresentation(OutbreakRegionConfiguration value, Class<? extends String> targetType, Locale locale)
 						throws ConversionException {
 
-						boolean styleAsButton = UserProvider.getCurrent().hasUserRight(UserRight.OUTBREAK_CONFIGURE_ALL)
-							|| (UserProvider.getCurrent().hasUserRight(UserRight.OUTBREAK_CONFIGURE_RESTRICTED)
-								&& DataHelper.equal(UserProvider.getCurrent().getUser().getRegion(), value.getRegion()));
+						boolean styleAsButton =
+							(UserProvider.getCurrent().hasNoneJurisdictionLevel() || UserProvider.getCurrent().hasNationalJurisdictionLevel())
+								|| UserProvider.getCurrent().hasUserRight(UserRight.OUTBREAK_EDIT)
+									&& DataHelper.equal(UserProvider.getCurrent().getUser().getRegion(), value.getRegion());
 						boolean moreThanHalfOfDistricts = value.getAffectedDistricts().size() >= value.getTotalDistricts() / 2.0f;
 
 						String styles;
@@ -220,18 +221,16 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 		// Open the outbreak configuration window for the clicked row when
 		// a) the user is allowed to configure all existing outbreaks or
 		// b) the user is allowed to configure outbreaks in his assigned region and has clicked the respective row
-		if (UserProvider.getCurrent().hasUserRight(UserRight.OUTBREAK_CONFIGURE_ALL)) {
+		if (UserProvider.getCurrent().hasNoneJurisdictionLevel() || UserProvider.getCurrent().hasNationalJurisdictionLevel()) {
 			ControllerProvider.getOutbreakController()
 				.openOutbreakConfigurationWindow(
 					(Disease) event.getPropertyId(),
 					(OutbreakRegionConfiguration) clickedItem.getItemProperty((Disease) event.getPropertyId()).getValue());
-		} else if (UserProvider.getCurrent().hasUserRight(UserRight.OUTBREAK_CONFIGURE_RESTRICTED)) {
-			if (user.getRegion().equals(clickedItem.getItemProperty(REGION).getValue())) {
-				ControllerProvider.getOutbreakController()
-					.openOutbreakConfigurationWindow(
-						(Disease) event.getPropertyId(),
-						(OutbreakRegionConfiguration) clickedItem.getItemProperty((Disease) event.getPropertyId()).getValue());
-			}
+		} else if (clickedItem.getItemProperty(REGION).getValue().equals(user.getRegion())) {
+			ControllerProvider.getOutbreakController()
+				.openOutbreakConfigurationWindow(
+					(Disease) event.getPropertyId(),
+					(OutbreakRegionConfiguration) clickedItem.getItemProperty((Disease) event.getPropertyId()).getValue());
 		} else {
 			return;
 		}

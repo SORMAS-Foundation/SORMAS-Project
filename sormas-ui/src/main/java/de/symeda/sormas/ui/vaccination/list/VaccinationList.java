@@ -18,7 +18,6 @@ package de.symeda.sormas.ui.vaccination.list;
 import java.util.List;
 import java.util.function.Function;
 
-import com.vaadin.shared.Registration;
 import com.vaadin.ui.Label;
 
 import de.symeda.sormas.api.Disease;
@@ -26,8 +25,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
 import de.symeda.sormas.ui.utils.PaginationList;
-import de.symeda.sormas.ui.utils.components.sidecomponent.event.EditSideComponentFieldEvent;
-import de.symeda.sormas.ui.utils.components.sidecomponent.event.EditSideComponentFieldEventListener;
+import de.symeda.sormas.ui.utils.components.sidecomponent.event.SideComponentFieldEditEvent;
 
 public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
 
@@ -63,15 +61,8 @@ public class VaccinationList extends PaginationList<VaccinationListEntryDto> {
 			VaccinationListEntry listEntry = new VaccinationListEntry(entryDto, disease == null);
 			listEntry.addEditButton(
 				"edit-vaccination-" + listEntry.getVaccination().getUuid(),
-				e -> fireEvent(new EditSideComponentFieldEvent(listEntry)));
+				e -> fireEvent(new SideComponentFieldEditEvent(listEntry)));
 			listLayout.addComponent(listEntry);
 		}
-	}
-
-	public Registration addSideComponentFieldEditEventListener(EditSideComponentFieldEventListener editSideComponentFieldEventListener) {
-		return addListener(
-			EditSideComponentFieldEvent.class,
-			editSideComponentFieldEventListener,
-			EditSideComponentFieldEventListener.ON_EDIT_SIDE_COMPONENT_FIELD_METHOD);
 	}
 }

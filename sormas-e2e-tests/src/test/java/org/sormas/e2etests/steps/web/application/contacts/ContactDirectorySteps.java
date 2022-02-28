@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,9 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.GRID_HEADERS;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.RESULTS_GRID_HEADER;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.FIRST_NAME_OF_CONTACT_PERSON_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -32,20 +34,20 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
-import javax.inject.Named;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.common.DataOperations;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.EpidemiologicalData;
+import org.sormas.e2etests.entities.pojo.web.epidemiologicalData.Exposure;
+import org.sormas.e2etests.entities.services.ContactService;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.YesNoUnknownOptions;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.ExposureDetailsRole;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfActivityExposure;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.pojo.web.EpidemiologicalData;
-import org.sormas.e2etests.pojo.web.epidemiologicalData.Exposure;
-import org.sormas.e2etests.services.ContactService;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.Assert;
 
@@ -64,14 +66,14 @@ public class ContactDirectorySteps implements En {
       AssertHelpers assertHelpers,
       ContactService contactService,
       DataOperations dataOperations,
-      @Named("ENVIRONMENT_URL") String environmentUrl) {
+      EnvironmentManager environmentManager) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
         "^I navigate to the last created contact via the url$",
         () -> {
           String LAST_CREATED_CONTACT_URL =
-              environmentUrl
+              environmentManager.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!contacts/data/"
                   + apiState.getCreatedContact().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_CONTACT_URL);
@@ -83,6 +85,15 @@ public class ContactDirectorySteps implements En {
         () ->
             webDriverHelpers.clickWhileOtherButtonIsDisplayed(
                 NEW_CONTACT_BUTTON, FIRST_NAME_OF_CONTACT_PERSON_INPUT));
+
+    When(
+        "I click on save Contact button",
+        () -> {
+          webDriverHelpers.scrollToElement(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
 
     When(
         "I click on the DETAILED radiobutton from Contact directory",

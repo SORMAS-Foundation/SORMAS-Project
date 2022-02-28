@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
+import static java.util.Objects.nonNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -61,11 +63,14 @@ import de.symeda.sormas.ui.location.AccessibleTextField;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.person.PersonEditForm;
 
-import static java.util.Objects.nonNull;
-
 public class CommitDiscardWrapperComponent<C extends Component> extends VerticalLayout implements DirtyStateComponent, Buffered {
 
 	private static final long serialVersionUID = 1L;
+
+	public static interface PreCommitListener {
+
+		void onPreCommit(Runnable successCallback);
+	}
 
 	public static interface CommitListener {
 
@@ -87,6 +92,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		void onDelete();
 	}
 
+	private transient PreCommitListener preCommitListener;
 	private transient List<CommitListener> commitListeners = new ArrayList<>();
 	private transient List<DiscardListener> discardListeners = new ArrayList<>();
 	private transient List<DoneListener> doneListeners = new ArrayList<>();
@@ -434,7 +440,17 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	}
 
 	@Override
-	public void commit() throws InvalidValueException, SourceException, CommitRuntimeException {
+	public void commit() {
+
+		if (preCommitListener != null) {
+			preCommitListener.onPreCommit(this::doCommit);
+		} else {
+			doCommit();
+		}
+
+	}
+
+	private void doCommit() throws InvalidValueException, SourceException, CommitRuntimeException {
 		if (fieldGroups != null) {
 			if (fieldGroups.size() > 1) {
 				List<InvalidValueException> invalidValueExceptions =
@@ -620,6 +636,10 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		}
 	}
 
+	public void setPreCommitListener(PreCommitListener listener) {
+		this.preCommitListener = listener;
+	}
+
 	public void addCommitListener(CommitListener listener) {
 		if (!commitListeners.contains(listener))
 			commitListeners.add(listener);
@@ -641,12 +661,13 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	private void onCommit() {
 
-		for (CommitListener listener : commitListeners)
+		for (CommitListener listener : commitListeners) {
 			try {
 				listener.onCommit();
 			} catch (CannotProceedException e) {
 				break;
 			}
+		}
 	}
 
 	/**

@@ -39,7 +39,5 @@ public class UserRightsGenerator extends AbstractBeanTest {
 		String documentPath = getUserRightsFacade().generateUserRightsDocument(false);
 
 		Files.copy(Paths.get(documentPath), output.toPath(), StandardCopyOption.REPLACE_EXISTING);
-
-//		Desktop.getDesktop().open(new File(filePath));
 	}
 }

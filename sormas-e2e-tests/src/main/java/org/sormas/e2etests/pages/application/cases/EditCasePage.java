@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -27,6 +27,7 @@ public class EditCasePage {
   public static final By SYMPTOMS_TAB = By.cssSelector("[id='tab-cases-symptoms']");
   public static final By THERAPY_TAB = By.cssSelector("[id='tab-cases-therapy']");
   public static final By HOSPITALIZATION_TAB = By.cssSelector("[id='tab-cases-hospitalization']");
+  public static final By BACK_TO_CASES_LIST_BUTTON = By.id("tab-cases");
   public static final By REGION_INPUT = By.cssSelector("#responsibleRegion input");
   public static final By DISTRICT_INPUT = By.cssSelector("#responsibleDistrict input");
   public static final By COMMUNITY_INPUT = By.cssSelector("#responsibleCommunity input");
@@ -91,7 +92,16 @@ public class EditCasePage {
       By.cssSelector("#quarantineHomePossible label");
   public static final By QUARANTINE_COMBOBOX = By.cssSelector("#quarantine div");
   public static final By QUARANTINE_DATE_FROM = By.cssSelector("#quarantineFrom");
+  public static final By QUARANTINE_DATE_FROM_INPUT = By.cssSelector("#quarantineFrom input");
   public static final By QUARANTINE_DATE_TO = By.cssSelector("#quarantineTo");
+  public static final By QUARANTINE_DATE_TO_INPUT = By.cssSelector("#quarantineTo input");
+  public static final By QUARANTINE_CHANGE_COMMENT = By.cssSelector("#quarantineChangeComment");
+  public static final By QUARANTINE_POPUP_MESSAGE =
+      By.xpath("//div[@class='v-label v-widget v-has-width']");
+  public static final By QUARANTINE_POPUP_SAVE_BUTTON =
+      By.cssSelector(".popupContent #actionConfirm");
+  public static final By QUARANTINE_POPUP_DISCARD_BUTTON =
+      By.cssSelector(".popupContent #actionCancel");
   public static final By QUARANTINE_ORDERED_VERBALLY_CHECKBOX_LABEL =
       By.xpath("//*[@id='quarantineOrderedVerbally']/label");
   public static final By QUARANTINE_ORDERED_VERBALLY_CHECKBOX_INPUT =

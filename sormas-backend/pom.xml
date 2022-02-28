@@ -94,11 +94,6 @@
 			<artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
 		</dependency>
 
-		<dependency>
-			<groupId>org.freemarker</groupId>
-			<artifactId>freemarker</artifactId>
-		</dependency>
-
 		<!-- Testing -->
 
 		<dependency>
@@ -113,7 +108,7 @@
 
 		<dependency>
 			<groupId>com.vladmihalcea</groupId>
-			<artifactId>hibernate-types-52</artifactId>
+			<artifactId>hibernate-types-55</artifactId>
 		</dependency>
 
 		<dependency>
@@ -231,6 +226,16 @@
 		<dependency>
 			<groupId>com.google.http-client</groupId>
 			<artifactId>google-http-client-gson</artifactId>
+		</dependency>
+        <dependency>
+            <groupId>javax</groupId>
+            <artifactId>javaee-web-api</artifactId>
+            <scope>test</scope>
+        </dependency>
+		<dependency>
+			<groupId>org.testcontainers</groupId>
+			<artifactId>postgresql</artifactId>
+			<scope>test</scope>
 		</dependency>
 
     </dependencies>

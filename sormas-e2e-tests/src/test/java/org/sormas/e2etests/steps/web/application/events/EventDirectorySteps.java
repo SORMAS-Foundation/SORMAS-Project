@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,14 +23,15 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.*;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.RESET_FILTERS_BUTTON;
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
-import javax.inject.Named;
 import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.enums.*;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
@@ -46,7 +47,7 @@ public class EventDirectorySteps implements En {
       ApiState apiState,
       DataOperations dataOperations,
       AssertHelpers assertHelpers,
-      @Named("ENVIRONMENT_URL") String environmentUrl) {
+      EnvironmentManager environmentManager) {
 
     When(
         "I fill EVENT ID filter by API",
@@ -92,9 +93,9 @@ public class EventDirectorySteps implements En {
     When(
         "I select random Disease filter among the filter options",
         () -> {
+          String disease = DiseasesValues.getRandomDiseaseCaption();
           webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.selectFromCombobox(
-              FILTER_BY_DISEASE, DiseasesValues.getRandomDiseaseCaption());
+          webDriverHelpers.selectFromCombobox(FILTER_BY_DISEASE, disease);
         });
 
     When(
@@ -168,6 +169,7 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.selectFromCombobox(
               FILTER_BY_TYPE_OF_PLACE, TypeOfPlace.getValueFor(sourceTypeOfPlace));
         });
+
     When(
         "I select random Type of Place field among the filter options",
         () -> {
@@ -196,7 +198,7 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(RESET_FILTER);
           final String eventUuid = CreateNewEventSteps.newEvent.getUuid();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              SEARCH_EVENT_BY_FREE_TEXT_INPUT, 15);
+              SEARCH_EVENT_BY_FREE_TEXT_INPUT, 20);
           webDriverHelpers.fillAndSubmitInWebElement(SEARCH_EVENT_BY_FREE_TEXT_INPUT, eventUuid);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
         });
@@ -220,12 +222,19 @@ public class EventDirectorySteps implements En {
         });
 
     When(
+        "I click on the first row from event participant",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_PARTICIPANT);
+        });
+
+    When(
         "I am accessing the event tab using the created event via api",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.EVENTS_BUTTON);
           final String eventUuid = apiState.getCreatedEvent().getUuid();
           final String eventLinkPath = "/sormas-webdriver/#!events/data/";
-          webDriverHelpers.accessWebSite(environmentUrl + eventLinkPath + eventUuid);
+          webDriverHelpers.accessWebSite(
+              environmentManager.getEnvironmentUrlForMarket(locale) + eventLinkPath + eventUuid);
         });
 
     When(
@@ -260,9 +269,11 @@ public class EventDirectorySteps implements En {
     When(
         "I open the first event from events list",
         () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_ID_BUTTON));
+
     And(
         "I click Create Case for Event Participant",
         () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_CASE_BUTTON));
+
     Then(
         "I check that number of displayed Event results is {int}",
         (Integer number) ->
@@ -270,6 +281,17 @@ public class EventDirectorySteps implements En {
                 () ->
                     Assert.assertEquals(
                         webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS),
+                        number.intValue(),
+                        "Number of displayed cases is not correct")));
+
+    Then(
+        "I check the number of displayed Event results from All button is {int}",
+        (Integer number) ->
+            assertHelpers.assertWithPoll20Second(
+                () ->
+                    Assert.assertEquals(
+                        Integer.parseInt(
+                            webDriverHelpers.getTextFromPresentWebElement(TOTAL_EVENTS_COUNTER)),
                         number.intValue(),
                         "Number of displayed cases is not correct")));
   }

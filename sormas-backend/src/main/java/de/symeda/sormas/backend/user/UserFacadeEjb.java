@@ -1,20 +1,17 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.backend.user;
 
 import java.util.ArrayList;
@@ -46,6 +43,9 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 
+import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import org.apache.commons.beanutils.BeanUtils;
 
 import de.symeda.sormas.api.HasUuid;
@@ -184,38 +184,30 @@ public class UserFacadeEjb implements UserFacade {
 		target.setLanguage(source.getLanguage());
 		target.setHasConsentedToGdpr(source.isHasConsentedToGdpr());
 
-		source.getUserRoles().size();
-		target.setUserRoles(new HashSet<UserRole>(source.getUserRoles()));
+		target.setUserRoles(new HashSet<>(source.getUserRoles()));
 		return target;
 	}
 
 	public static UserReferenceDto toReferenceDto(User entity) {
-
 		if (entity == null) {
 			return null;
 		}
-
-		UserReferenceDto dto = new UserReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName(), entity.getUserRoles());
-		return dto;
+		return new UserReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName(), entity.getUserRoles());
 	}
 
 	public static UserReferenceDto toReferenceDto(UserReference entity) {
-
 		if (entity == null) {
 			return null;
 		}
-
-		UserReferenceDto dto = new UserReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName(), entity.getUserRoles());
-		return dto;
+		return new UserReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName(), entity.getUserRoles());
 	}
 
 	private List<String> toUuidList(HasUuid hasUuid) {
-
 		/*
 		 * Supports conversion of a null object into a list with one "null" value in it.
 		 * Uncertain if that use case exists, but wasn't suppose to be broken when replacing the Dto to Entity lookup.
 		 */
-		return Arrays.asList(hasUuid == null ? null : hasUuid.getUuid());
+		return Collections.singletonList(hasUuid == null ? null : hasUuid.getUuid());
 	}
 
 	@Override
@@ -223,7 +215,7 @@ public class UserFacadeEjb implements UserFacade {
 
 		return userService.getReferenceList(toUuidList(regionRef), null, false, true, true, assignableRoles)
 			.stream()
-			.map(f -> toReferenceDto(f))
+			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
 	}
 
@@ -234,7 +226,8 @@ public class UserFacadeEjb implements UserFacade {
 			.filter(r -> userRoleConfigFacade.getEffectiveUserRights(r).contains(userRight))
 			.collect(Collectors.toList());
 
-		return userService.getReferenceList(region == null ? null : Arrays.asList(region.getUuid()), null, null, false, true, true, userRoles)
+		return userService
+			.getReferenceList(region == null ? null : Collections.singletonList(region.getUuid()), null, null, false, true, true, userRoles)
 			.stream()
 			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
@@ -273,7 +266,7 @@ public class UserFacadeEjb implements UserFacade {
 			break;
 		case REGION:
 			superiorUsersList = userService.getReferenceList(
-				Arrays.asList(user.getRegion().getUuid()),
+				Collections.singletonList(user.getRegion().getUuid()),
 				null,
 				null,
 				false,
@@ -298,12 +291,12 @@ public class UserFacadeEjb implements UserFacade {
 
 			if (community == null) {
 				superiorUsersList =
-					userService.getReferenceList(null, Arrays.asList(district.getUuid()), null, false, false, true, superordinateRoles);
+					userService.getReferenceList(null, Collections.singletonList(district.getUuid()), null, false, false, true, superordinateRoles);
 			} else if (district != null) {
 				superiorUsersList = userService.getReferenceList(
 					null,
-					Arrays.asList(district.getUuid()),
-					Arrays.asList(community.getUuid()),
+					Collections.singletonList(district.getUuid()),
+					Collections.singletonList(community.getUuid()),
 					false,
 					false,
 					true,
@@ -313,7 +306,7 @@ public class UserFacadeEjb implements UserFacade {
 			break;
 		}
 
-		return superiorUsersList.stream().map(f -> toReferenceDto(f)).collect(Collectors.toList());
+		return superiorUsersList.stream().map(UserFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -321,7 +314,7 @@ public class UserFacadeEjb implements UserFacade {
 
 		return userService.getReferenceList(null, toUuidList(districtRef), includeSupervisors, true, true, userRoles)
 			.stream()
-			.map(f -> toReferenceDto(f))
+			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
 	}
 
@@ -346,7 +339,7 @@ public class UserFacadeEjb implements UserFacade {
 
 		return userService.getReferenceList(null, null, false, true, !includeInactive)
 			.stream()
-			.map(c -> toReferenceDto(c))
+			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
 	}
 
@@ -391,7 +384,7 @@ public class UserFacadeEjb implements UserFacade {
 	public List<UserDto> getUsersByAssociatedOfficer(UserReferenceDto associatedOfficerRef, UserRole... userRoles) {
 
 		User associatedOfficer = userService.getByReferenceDto(associatedOfficerRef);
-		return userService.getAllByAssociatedOfficer(associatedOfficer, userRoles).stream().map(f -> toDto(f)).collect(Collectors.toList());
+		return userService.getAllByAssociatedOfficer(associatedOfficer, userRoles).stream().map(UserFacadeEjb::toDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -407,7 +400,7 @@ public class UserFacadeEjb implements UserFacade {
 			caseJurisdictionSubquery.select(caseRoot)
 				.where(
 					cb.and(
-						cb.equal(caseRoot.get(Case.UUID), caseReferenceDto.getUuid()),
+						cb.equal(caseRoot.get(AbstractDomainObject.UUID), caseReferenceDto.getUuid()),
 						cb.isTrue(caseJurisdictionPredicateValidator.inJurisdictionOrOwned())));
 			return caseJurisdictionSubquery;
 		});
@@ -425,7 +418,7 @@ public class UserFacadeEjb implements UserFacade {
 			contactJurisdictionSubquery.select(contactRoot)
 				.where(
 					cb.and(
-						cb.equal(contactRoot.get(Contact.UUID), contactReferenceDto.getUuid()),
+						cb.equal(contactRoot.get(AbstractDomainObject.UUID), contactReferenceDto.getUuid()),
 						cb.isTrue(contactJurisdictionPredicateValidator.inJurisdictionOrOwned())));
 			return contactJurisdictionSubquery;
 		});
@@ -444,7 +437,7 @@ public class UserFacadeEjb implements UserFacade {
 			eventJurisdictionSubquery.select(eventRoot)
 				.where(
 					cb.and(
-						cb.equal(eventRoot.get(de.symeda.sormas.backend.event.Event.UUID), eventReferenceDto.getUuid()),
+						cb.equal(eventRoot.get(AbstractDomainObject.UUID), eventReferenceDto.getUuid()),
 						cb.isTrue(eventJurisdictionPredicateValidator.inJurisdictionOrOwned())));
 			return eventJurisdictionSubquery;
 		});
@@ -463,7 +456,7 @@ public class UserFacadeEjb implements UserFacade {
 			travelEntrySubquery.select(travelEntryRoot)
 				.where(
 					cb.and(
-						cb.equal(travelEntryRoot.get(TravelEntry.UUID), travelEntryReferenceDto.getUuid()),
+						cb.equal(travelEntryRoot.get(AbstractDomainObject.UUID), travelEntryReferenceDto.getUuid()),
 						cb.isTrue(travelEntryJurisdictionPredicateValidator.inJurisdictionOrOwned())));
 			return travelEntrySubquery;
 		});
@@ -480,9 +473,9 @@ public class UserFacadeEjb implements UserFacade {
 		cq.where(CriteriaBuilderHelper.and(cb, cb.isTrue(root.get(User.ACTIVE)), cb.exists(subqueryBuilder.buildSubquery(cb, cq, root))));
 
 		cq.distinct(true);
-		cq.orderBy(cb.asc(root.get(User.ID)));
+		cq.orderBy(cb.asc(root.get(AbstractDomainObject.ID)));
 		List<User> resultList = em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
-		return resultList.stream().map(c -> toReferenceDto(c)).collect(Collectors.toList());
+		return resultList.stream().map(UserFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	public interface JurisdictionOverEntitySubqueryBuilder<ADO extends AbstractDomainObject> {
@@ -499,12 +492,12 @@ public class UserFacadeEjb implements UserFacade {
 
 	@Override
 	public List<UserDto> getAllAfter(Date date) {
-		return userService.getAllAfter(date, null).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return userService.getAllAfter(date).stream().map(UserFacadeEjb::toDto).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<UserDto> getByUuids(List<String> uuids) {
-		return userService.getByUuids(uuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
+		return userService.getByUuids(uuids).stream().map(UserFacadeEjb::toDto).collect(Collectors.toList());
 	}
 
 	@Override
@@ -547,6 +540,10 @@ public class UserFacadeEjb implements UserFacade {
 			throw new ValidationException(e);
 		}
 
+		if (!isLoginUnique(oldUser == null ? null : oldUser.getUuid(), dto.getUserName())) {
+			throw new ValidationException(I18nProperties.getValidationError(Validations.userNameNotUnique));
+		}
+
 		userService.ensurePersisted(user);
 
 		if (oldUser == null) {
@@ -585,12 +582,12 @@ public class UserFacadeEjb implements UserFacade {
 			cq.where(filter);
 		}
 
-		if (sortProperties != null && sortProperties.size() > 0) {
-			List<Order> order = new ArrayList<Order>(sortProperties.size());
+		if (sortProperties != null && !sortProperties.isEmpty()) {
+			List<Order> order = new ArrayList<>(sortProperties.size());
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
-				case UserDto.UUID:
+				case EntityDto.UUID:
 				case UserDto.ACTIVE:
 				case UserDto.USER_NAME:
 				case UserDto.USER_EMAIL:
@@ -617,7 +614,7 @@ public class UserFacadeEjb implements UserFacade {
 			}
 			cq.orderBy(order);
 		} else {
-			cq.orderBy(cb.desc(user.get(User.CHANGE_DATE)));
+			cq.orderBy(cb.desc(user.get(AbstractDomainObject.CHANGE_DATE)));
 		}
 
 		cq.select(user);
@@ -671,7 +668,7 @@ public class UserFacadeEjb implements UserFacade {
 		target.setHasConsentedToGdpr(source.isHasConsentedToGdpr());
 
 		final Set<UserRole> userRoles = source.getUserRoles();
-		target.setUserRoles(new HashSet<UserRole>(userRoles));
+		target.setUserRoles(new HashSet<>(userRoles));
 		target.updateJurisdictionLevel();
 
 		return target;
@@ -705,7 +702,7 @@ public class UserFacadeEjb implements UserFacade {
 		User user = userService.getByUserName(userName);
 		if (user != null && user.isActive()) {
 			if (DataHelper.equal(user.getPassword(), PasswordHelper.encodePassword(password, user.getSeed()))) {
-				return new HashSet<UserRole>(user.getUserRoles());
+				return new HashSet<>(user.getUserRoles());
 			}
 		}
 		return null;
@@ -718,7 +715,7 @@ public class UserFacadeEjb implements UserFacade {
 		Root<Case> caseRoot = caseQuery.from(Case.class);
 		Join<Case, User> surveillanceOfficerJoin = caseRoot.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT);
 
-		caseQuery.where(cb.equal(surveillanceOfficerJoin.get(User.UUID), userUuid));
+		caseQuery.where(cb.equal(surveillanceOfficerJoin.get(AbstractDomainObject.UUID), userUuid));
 		List<Case> cases = em.createQuery(caseQuery).getResultList();
 		cases.forEach(c -> {
 			c.setSurveillanceOfficer(null);
@@ -731,7 +728,7 @@ public class UserFacadeEjb implements UserFacade {
 		Root<Contact> contactRoot = contactQuery.from(Contact.class);
 		Join<Contact, User> contactOfficerJoin = contactRoot.join(Contact.CONTACT_OFFICER, JoinType.LEFT);
 
-		contactQuery.where(cb.equal(contactOfficerJoin.get(User.UUID), userUuid));
+		contactQuery.where(cb.equal(contactOfficerJoin.get(AbstractDomainObject.UUID), userUuid));
 		List<Contact> contacts = em.createQuery(contactQuery).getResultList();
 		contacts.forEach(c -> {
 			c.setContactOfficer(null);

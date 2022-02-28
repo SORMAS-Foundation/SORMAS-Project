@@ -42,11 +42,9 @@ import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import javax.inject.Inject;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -58,14 +56,13 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDetailedReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -93,10 +90,10 @@ import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.deletionconfiguration.AbstractCoreEntityFacade;
 import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
@@ -128,17 +125,13 @@ import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.utils.EventJoins;
 
 @Stateless(name = "EventFacade")
-public class EventFacadeEjb extends AbstractCoreEntityFacade<Event> implements EventFacade {
+public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, EventIndexDto, EventReferenceDto, EventService, EventCriteria>
+	implements EventFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	private EntityManager em;
-
 	@EJB
 	private UserService userService;
-	@EJB
-	private EventService eventService;
 	@EJB
 	private EventGroupService eventGroupService;
 	@EJB
@@ -165,7 +158,34 @@ public class EventFacadeEjb extends AbstractCoreEntityFacade<Event> implements E
 	private ManagedScheduledExecutorService executorService;
 
 	public EventFacadeEjb() {
-		super(Event.class);
+	}
+
+	@Inject
+	public EventFacadeEjb(EventService service, UserService userService) {
+		super(Event.class, EventDto.class, service, userService);
+	}
+
+	public static EventReferenceDto toReferenceDto(Event entity) {
+
+		if (entity == null) {
+			return null;
+		}
+
+		return new EventReferenceDto(entity.getUuid(), entity.toString());
+	}
+
+	public static EventReferenceDto toDetailedReferenceDto(Event entity) {
+
+		if (entity == null) {
+			return null;
+		}
+
+		return new EventDetailedReferenceDto(
+			entity.getUuid(),
+			entity.toString(),
+			entity.getEventStatus(),
+			entity.getEventTitle(),
+			entity.getReportDateTime());
 	}
 
 	@Override
@@ -176,33 +196,7 @@ public class EventFacadeEjb extends AbstractCoreEntityFacade<Event> implements E
 			return Collections.emptyList();
 		}
 
-		return eventService.getAllActiveUuids();
-	}
-
-	@Override
-	public List<EventDto> getAllActiveEventsAfter(Date date) {
-		return getAllActiveEventsAfter(date, null, null);
-	}
-
-	@Override
-	public List<EventDto> getAllActiveEventsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
-
-		User user = userService.getCurrentUser();
-		if (user == null) {
-			return Collections.emptyList();
-		}
-
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return eventService.getAllActiveEventsAfter(date, batchSize, lastSynchronizedUuid)
-			.stream()
-			.map(e -> convertToDto(e, pseudonymizer))
-			.collect(Collectors.toList());
-	}
-
-	@Override
-	public List<EventDto> getByUuids(List<String> uuids) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return eventService.getByUuids(uuids).stream().map(e -> convertToDto(e, pseudonymizer)).collect(Collectors.toList());
+		return service.getAllActiveUuids();
 	}
 
 	@Override
@@ -213,55 +207,55 @@ public class EventFacadeEjb extends AbstractCoreEntityFacade<Event> implements E
 			return Collections.emptyList();
 		}
 
-		return eventService.getDeletedUuidsSince(since);
+		return service.getDeletedUuidsSince(since);
 	}
 
 	public Map<Disease, Long> getEventCountByDisease(EventCriteria eventCriteria) {
 
-		return eventService.getEventCountByDisease(eventCriteria);
+		return service.getEventCountByDisease(eventCriteria);
 	}
 
 	@Override
 	public EventDto getEventByUuid(String uuid, boolean detailedReferences) {
 		return (detailedReferences)
-			? convertToDetailedReferenceDto(eventService.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight))
-			: convertToDto(eventService.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
+			? convertToDetailedReferenceDto(service.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight))
+			: convertToDto(service.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
 	}
 
 	@Override
 	public EventReferenceDto getReferenceByUuid(String uuid) {
-		return toReferenceDto(eventService.getByUuid(uuid));
+		return toReferenceDto(service.getByUuid(uuid));
 	}
 
 	@Override
 	public EventReferenceDto getReferenceByEventParticipant(String uuid) {
-		return toReferenceDto(eventService.getEventReferenceByEventParticipant(uuid));
+		return toReferenceDto(service.getEventReferenceByEventParticipant(uuid));
 	}
 
 	@Override
-	public EventDto saveEvent(@Valid @NotNull EventDto dto) {
-		return saveEvent(dto, true, true);
+	public EventDto save(@Valid @NotNull EventDto dto) {
+		return save(dto, true, true);
 	}
 
-	public EventDto saveEvent(@NotNull EventDto dto, boolean checkChangeDate, boolean internal) {
+	public EventDto save(@NotNull EventDto dto, boolean checkChangeDate, boolean internal) {
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		Event existingEvent = dto.getUuid() != null ? eventService.getByUuid(dto.getUuid()) : null;
+		Event existingEvent = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 
-		if (internal && existingEvent != null && !eventService.isEventEditAllowed(existingEvent)) {
+		if (internal && existingEvent != null && !service.isEventEditAllowed(existingEvent)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEventNotEditable));
 		}
 
 		EventDto existingDto = toDto(existingEvent);
 
-		restorePseudonymizedDto(dto, existingEvent, existingDto, pseudonymizer);
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		restorePseudonymizedDto(dto, existingDto, existingEvent, pseudonymizer);
 
 		if (dto.getReportDateTime() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validReportDateTime));
 		}
 
-		Event event = fromDto(dto, checkChangeDate);
-		eventService.ensurePersisted(event);
+		Event event = fillOrBuildEntity(dto, existingEvent, checkChangeDate);
+		service.ensurePersisted(event);
 
 		onEventChange(toDto(event), internal);
 
@@ -286,7 +280,7 @@ public class EventFacadeEjb extends AbstractCoreEntityFacade<Event> implements E
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete events.");
 		}
 
-		Event event = eventService.getByUuid(eventUuid);
+		Event event = service.getByUuid(eventUuid);
 		deleteEvent(event);
 	}
 
@@ -297,7 +291,7 @@ public class EventFacadeEjb extends AbstractCoreEntityFacade<Event> implements E
 			externalSurveillanceToolFacade.deleteEvents(Collections.singletonList(toDto(event)));
 		}
 
-		eventService.delete(event);
+		service.delete(event);
 	}
 
 	public List<String> deleteEvents(List<String> eventUuids) {
@@ -305,7 +299,7 @@ public class EventFacadeEjb extends AbstractCoreEntityFacade<Event> implements E
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete events.");
 		}
 		List<String> deletedEventUuids = new ArrayList<>();
-		List<Event> eventsToBeDeleted = eventService.getByUuids(eventUuids);
+		List<Event> eventsToBeDeleted = service.getByUuids(eventUuids);
 		if (eventsToBeDeleted != null) {
 			eventsToBeDeleted.forEach(eventToBeDeleted -> {
 				if (!eventToBeDeleted.isDeleted()) {
@@ -332,10 +326,10 @@ public class EventFacadeEjb extends AbstractCoreEntityFacade<Event> implements E
 
 		if (eventCriteria != null) {
 			if (eventCriteria.getUserFilterIncluded()) {
-				filter = eventService.createUserFilter(cb, cq, event);
+				filter = service.createUserFilter(cb, cq, event);
 			}
 
-			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, new EventQueryContext(cb, cq, event));
+			Predicate criteriaFilter = service.buildCriteriaFilter(eventCriteria, new EventQueryContext(cb, cq, event));
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -406,7 +400,7 @@ public class EventFacadeEjb extends AbstractCoreEntityFacade<Event> implements E
 			responsibleUser.get(User.UUID),
 			responsibleUser.get(User.FIRST_NAME),
 			responsibleUser.get(User.LAST_NAME),
-			JurisdictionHelper.booleanSelector(cb, eventService.inJurisdictionOrOwned(eventQueryContext)),
+			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(eventQueryContext)),
 			event.get(Event.CHANGE_DATE),
 			event.get(Event.EVENT_IDENTIFICATION_SOURCE));
 
@@ -416,10 +410,10 @@ public class EventFacadeEjb extends AbstractCoreEntityFacade<Event> implements E
 			if (eventCriteria.getUserFilterIncluded()) {
 				EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
 				eventUserFilterCriteria.includeUserCaseAndEventParticipantFilter(true);
-				filter = eventService.createUserFilter(cb, cq, event, eventUserFilterCriteria);
+				filter = service.createUserFilter(cb, cq, event, eventUserFilterCriteria);
 			}
 
-			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, eventQueryContext);
+			Predicate criteriaFilter = service.buildCriteriaFilter(eventCriteria, eventQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -637,6 +631,11 @@ public class EventFacadeEjb extends AbstractCoreEntityFacade<Event> implements E
 	}
 
 	@Override
+	protected void selectDtoFields(CriteriaQuery<EventDto> cq, Root<Event> root) {
+
+	}
+
+	@Override
 	public Page<EventIndexDto> getIndexPage(EventCriteria eventCriteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
 		List<EventIndexDto> eventIndexList = getIndexList(eventCriteria, offset, size, sortProperties);
 		long totalElementCount = count(eventCriteria);
@@ -710,16 +709,16 @@ public class EventFacadeEjb extends AbstractCoreEntityFacade<Event> implements E
 			responsibleUser.get(User.UUID),
 			responsibleUser.get(User.FIRST_NAME),
 			responsibleUser.get(User.LAST_NAME),
-			JurisdictionHelper.booleanSelector(cb, eventService.inJurisdictionOrOwned(eventQueryContext)),
+			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(eventQueryContext)),
 			event.get(Event.EVENT_MANAGEMENT_STATUS),
 			event.get(Event.EVENT_IDENTIFICATION_SOURCE));
 
 		cq.distinct(true);
 
-		Predicate filter = eventService.createUserFilter(cb, cq, event);
+		Predicate filter = service.createUserFilter(cb, cq, event);
 
 		if (eventCriteria != null) {
-			Predicate criteriaFilter = eventService.buildCriteriaFilter(eventCriteria, eventQueryContext);
+			Predicate criteriaFilter = service.buildCriteriaFilter(eventCriteria, eventQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -849,21 +848,6 @@ public class EventFacadeEjb extends AbstractCoreEntityFacade<Event> implements E
 	}
 
 	@Override
-	public boolean isArchived(String eventUuid) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Event> from = cq.from(Event.class);
-
-		// Workaround for probable bug in Eclipse Link/Postgre that throws a NoResultException when trying to
-		// query for a true Boolean result
-		cq.where(cb.and(cb.equal(from.get(Event.ARCHIVED), true), cb.equal(from.get(AbstractDomainObject.UUID), eventUuid)));
-		cq.select(cb.count(from));
-		long count = em.createQuery(cq).getSingleResult();
-		return count > 0;
-	}
-
-	@Override
 	public boolean isDeleted(String eventUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -877,14 +861,6 @@ public class EventFacadeEjb extends AbstractCoreEntityFacade<Event> implements E
 	}
 
 	@Override
-	public void archiveOrDearchiveEvent(String eventUuid, boolean archive) {
-
-		Event event = eventService.getByUuid(eventUuid);
-		event.setArchived(archive);
-		eventService.ensurePersisted(event);
-	}
-
-	@Override
 	public List<String> getArchivedUuidsSince(Date since) {
 
 		User user = userService.getCurrentUser();
@@ -893,14 +869,14 @@ public class EventFacadeEjb extends AbstractCoreEntityFacade<Event> implements E
 			return Collections.emptyList();
 		}
 
-		return eventService.getArchivedUuidsSince(since);
+		return service.getArchivedUuidsSince(since);
 	}
 
 	@Override
 	public Set<String> getAllSubordinateEventUuids(String eventUuid) {
 
 		Set<String> uuids = new HashSet<>();
-		Event superordinateEvent = eventService.getByUuid(eventUuid);
+		Event superordinateEvent = service.getByUuid(eventUuid);
 		addAllSubordinateEventsToSet(superordinateEvent, uuids);
 
 		return uuids;
@@ -916,7 +892,7 @@ public class EventFacadeEjb extends AbstractCoreEntityFacade<Event> implements E
 	public Set<String> getAllSuperordinateEventUuids(String eventUuid) {
 
 		Set<String> uuids = new HashSet<>();
-		Event event = eventService.getByUuid(eventUuid);
+		Event event = service.getByUuid(eventUuid);
 		addSuperordinateEventToSet(event, uuids);
 
 		return uuids;
@@ -1008,7 +984,7 @@ public class EventFacadeEjb extends AbstractCoreEntityFacade<Event> implements E
 		}
 	}
 
-	public static EventDto toDto(Event source) {
+	public EventDto toDto(Event source) {
 
 		if (source == null) {
 			return null;
@@ -1085,12 +1061,9 @@ public class EventFacadeEjb extends AbstractCoreEntityFacade<Event> implements E
 		return target;
 	}
 
-	public EventDto convertToDto(Event source, Pseudonymizer pseudonymizer) {
-		EventDto eventDto = toDto(source);
-
-		pseudonymizeDto(source, eventDto, pseudonymizer);
-
-		return eventDto;
+	@Override
+	public EventReferenceDto toRefDto(Event event) {
+		return toReferenceDto(event);
 	}
 
 	public EventDto convertToDetailedReferenceDto(Event source, Pseudonymizer pseudonymizer) {
@@ -1101,9 +1074,9 @@ public class EventFacadeEjb extends AbstractCoreEntityFacade<Event> implements E
 		return eventDto;
 	}
 
-	private void pseudonymizeDto(Event event, EventDto dto, Pseudonymizer pseudonymizer) {
+	protected void pseudonymizeDto(Event event, EventDto dto, Pseudonymizer pseudonymizer) {
 		if (dto != null) {
-			boolean inJurisdiction = eventService.inJurisdictionOrOwned(event);
+			boolean inJurisdiction = service.inJurisdictionOrOwned(event);
 
 			pseudonymizer.pseudonymizeDto(EventDto.class, dto, inJurisdiction, (e) -> {
 				pseudonymizer.pseudonymizeUser(event.getReportingUser(), userService.getCurrentUser(), dto::setReportingUser);
@@ -1111,39 +1084,16 @@ public class EventFacadeEjb extends AbstractCoreEntityFacade<Event> implements E
 		}
 	}
 
-	private void restorePseudonymizedDto(EventDto dto, Event existingEvent, EventDto existingDto, Pseudonymizer pseudonymizer) {
+	protected void restorePseudonymizedDto(EventDto dto, EventDto existingDto, Event event, Pseudonymizer pseudonymizer) {
 		if (existingDto != null) {
-			boolean inJurisdiction = eventService.inJurisdictionOrOwned(existingEvent);
+			boolean inJurisdiction = service.inJurisdictionOrOwned(event);
 			pseudonymizer.restorePseudonymizedValues(EventDto.class, dto, existingDto, inJurisdiction);
-			pseudonymizer.restoreUser(existingEvent.getReportingUser(), userService.getCurrentUser(), dto, dto::setReportingUser);
+			pseudonymizer.restoreUser(event.getReportingUser(), userService.getCurrentUser(), dto, dto::setReportingUser);
 		}
 	}
 
-	public static EventReferenceDto toReferenceDto(Event entity) {
-
-		if (entity == null) {
-			return null;
-		}
-
-		return new EventReferenceDto(entity.getUuid(), entity.toString());
-	}
-
-	public static EventReferenceDto toDetailedReferenceDto(Event entity) {
-
-		if (entity == null) {
-			return null;
-		}
-
-		return new EventDetailedReferenceDto(
-			entity.getUuid(),
-			entity.toString(),
-			entity.getEventStatus(),
-			entity.getEventTitle(),
-			entity.getReportDateTime());
-	}
-
-	public Event fromDto(@NotNull EventDto source, boolean checkChangeDate) {
-		Event target = DtoHelper.fillOrBuildEntity(source, eventService.getByUuid(source.getUuid()), Event::new, checkChangeDate);
+	public Event fillOrBuildEntity(@NotNull EventDto source, Event target, boolean checkChangeDate) {
+		target = DtoHelper.fillOrBuildEntity(source, target, Event::new, checkChangeDate);
 
 		target.setEventStatus(source.getEventStatus());
 		target.setRiskLevel(source.getRiskLevel());
@@ -1187,7 +1137,7 @@ public class EventFacadeEjb extends AbstractCoreEntityFacade<Event> implements E
 		target.setTypeOfPlaceText(source.getTypeOfPlaceText());
 		target.setTransregionalOutbreak(source.getTransregionalOutbreak());
 		target.setDiseaseTransmissionMode(source.getDiseaseTransmissionMode());
-		target.setSuperordinateEvent(eventService.getByReferenceDto(source.getSuperordinateEvent()));
+		target.setSuperordinateEvent(service.getByReferenceDto(source.getSuperordinateEvent()));
 		target.setEventManagementStatus(source.getEventManagementStatus());
 
 		target.setReportLat(source.getReportLat());
@@ -1237,31 +1187,18 @@ public class EventFacadeEjb extends AbstractCoreEntityFacade<Event> implements E
 		Root<Event> from = cq.from(Event.class);
 
 		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
-		cq.where(cb.equal(from.get(Event.ARCHIVED), false), cb.not(eventService.createChangeDateFilter(cb, from, notChangedTimestamp)));
-		cq.select(from.get(Event.UUID));
-		List<String> uuids = em.createQuery(cq).getResultList();
+		cq.where(cb.equal(from.get(Event.ARCHIVED), false), cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
+		cq.select(from.get(Event.UUID)).distinct(true);
+		List<String> eventUuids = em.createQuery(cq).getResultList();
 
-		if (!uuids.isEmpty()) {
-
-			CriteriaUpdate<Event> cu = cb.createCriteriaUpdate(Event.class);
-			Root<Event> root = cu.from(Event.class);
-
-			cu.set(root.get(Event.ARCHIVED), true);
-
-			cu.where(root.get(Event.UUID).in(uuids));
-
-			em.createQuery(cu).executeUpdate();
+		if (!eventUuids.isEmpty()) {
+			archive(eventUuids);
 		}
 	}
 
 	@Override
-	public boolean exists(String uuid) {
-		return eventService.exists(uuid);
-	}
-
-	@Override
 	public boolean doesExternalTokenExist(String externalToken, String eventUuid) {
-		return eventService.exists(
+		return service.exists(
 			(cb, eventRoot, cq) -> CriteriaBuilderHelper.and(
 				cb,
 				cb.equal(eventRoot.get(Event.EXTERNAL_TOKEN), externalToken),
@@ -1271,7 +1208,7 @@ public class EventFacadeEjb extends AbstractCoreEntityFacade<Event> implements E
 
 	@Override
 	public String getUuidByCaseUuidOrPersonUuid(String searchTerm) {
-		return eventService.getUuidByCaseUuidOrPersonUuid(searchTerm);
+		return service.getUuidByCaseUuidOrPersonUuid(searchTerm);
 	}
 
 	@Override
@@ -1294,7 +1231,7 @@ public class EventFacadeEjb extends AbstractCoreEntityFacade<Event> implements E
 
 	@Override
 	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
-		eventService.updateExternalData(externalData);
+		service.updateExternalData(externalData);
 	}
 
 	@Override
@@ -1313,8 +1250,8 @@ public class EventFacadeEjb extends AbstractCoreEntityFacade<Event> implements E
 
 			Predicate filters = CriteriaBuilderHelper.and(
 				cb,
-				eventService.createUserFilter(cb, cq, from),
-				eventService.createActiveEventsFilter(cb, from),
+				service.createUserFilter(cb, cq, from),
+				service.createActiveEventsFilter(cb, from),
 				eventJoins.getSuperordinateEvent().get(Event.UUID).in(batchedUuids));
 
 			cq.where(filters);
@@ -1328,32 +1265,39 @@ public class EventFacadeEjb extends AbstractCoreEntityFacade<Event> implements E
 
 	@Override
 	public boolean hasRegionAndDistrict(String eventUuid) {
-		return eventService.hasRegionAndDistrict(eventUuid);
+		return service.hasRegionAndDistrict(eventUuid);
 	}
 
 	@Override
 	public boolean hasAnyEventParticipantWithoutJurisdiction(String eventUuid) {
-		return eventService.hasAnyEventParticipantWithoutJurisdiction(eventUuid);
+		return service.hasAnyEventParticipantWithoutJurisdiction(eventUuid);
+	}
+
+	public Boolean isEventEditAllowed(String eventUuid) {
+		Event event = service.getByUuid(eventUuid);
+		return service.isEventEditAllowed(event);
 	}
 
 	@Override
-	public AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid) {
-		return getAutomaticDeletionInfo(uuid, CoreEntityType.EVENT);
+	protected CoreEntityType getCoreEntityType() {
+		return CoreEntityType.EVENT;
 	}
 
 	@LocalBean
 	@Stateless
 	public static class EventFacadeEjbLocal extends EventFacadeEjb {
 
-	}
+		public EventFacadeEjbLocal() {
+		}
 
-	public Boolean isEventEditAllowed(String eventUuid) {
-		Event event = eventService.getByUuid(eventUuid);
-		return eventService.isEventEditAllowed(event);
+		@Inject
+		public EventFacadeEjbLocal(EventService service, UserService userService) {
+			super(service, userService);
+		}
 	}
 
 	@Override
 	protected void delete(Event entity) {
-		eventService.delete(entity);
+		service.delete(entity);
 	}
 }

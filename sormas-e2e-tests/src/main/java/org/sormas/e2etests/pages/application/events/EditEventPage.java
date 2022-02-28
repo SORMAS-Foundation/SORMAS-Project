@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ import org.openqa.selenium.By;
 public class EditEventPage {
   public static final By EVENT_PARTICIPANTS_TAB =
       By.cssSelector("#tab-events-eventparticipants span");
+  public static final By FIRST_EVENT_PARTICIPANT = By.xpath("//table/tbody/tr[1]/td[1]//a");
   public static final By EVENT_ACTIONS_TAB = By.cssSelector("#tab-events-eventactions span");
   public static final By UUID_INPUT = By.id("uuid");
   public static final By TITLE_INPUT = By.cssSelector("#eventTitle");
@@ -30,13 +31,8 @@ public class EditEventPage {
   public static final By SAVE_BUTTON_FOR_POPUP_WINDOWS = By.cssSelector(".popupContent #commit");
   public static final By EVENT_STATUS_OPTIONS =
       By.cssSelector("#eventStatus .v-select-option label");
-  public static final By SELECTED_EVENT_STATUS = By.cssSelector("#eventStatus input:checked");
   public static final By RISK_LEVEL_INPUT = By.cssSelector(" #riskLevel input");
-  public static final By SELECTED_EVENT_MANAGEMENT_STATUS =
-      By.cssSelector("#eventManagementStatus input:checked");
   public static final By START_DATA_INPUT = By.cssSelector(" #startDate input");
-  public static final By SELECTED_EVENT_INVESTIGATION_STATUS =
-      By.cssSelector("#eventInvestigationStatus input:checked");
   public static final By DISEASE_INPUT = By.cssSelector("#disease input");
   public static final By SOURCE_TYPE_INPUT = By.cssSelector(" #srcType input");
   public static final By TYPE_OF_PLACE_INPUT = By.cssSelector("#typeOfPlace input");
@@ -56,6 +52,8 @@ public class EditEventPage {
   public static final By LINK_EVENT_GROUP_BUTTON = By.cssSelector("div#Link\\ event\\ group");
   public static final By NEW_EVENT_GROUP_RADIOBUTTON =
       By.xpath("//*[contains(text(),'New event group')]/..");
+  public static final By SELECT_EVENT_GROUP_RADIOBUTTON =
+      By.xpath("//*[contains(text(),'Select event group')]/..");
   public static final By GROUP_EVENT_NAME_POPUP_INPUT = By.cssSelector(".popupContent #name");
   public static final By GROUP_EVENT_UUID =
       By.xpath("//*[contains(text(),'Group id')]/../following-sibling::input[1]");
@@ -69,6 +67,11 @@ public class EditEventPage {
       By.cssSelector(".popupContent [id='Create']");
   public static final By CANCEL_EVENT_HANDOUT_BUTTON =
       By.cssSelector(".popupContent [id='Cancel']");
+  public static final By UNLINK_EVENT_BUTTON = By.id("unlink-event-1");
+  public static final By EDIT_EVENT_GROUP_BUTTON = By.id("add-event-0");
+  public static final By NAVIGATE_TO_EVENT_DIRECTORY_EVENT_GROUP_BUTTON = By.id("list-events-0");
+  public static final By SAVE_BUTTON_FOR_EDIT_EVENT_GROUP = By.id("commit");
+  public static final By FIRST_GROUP_ID = By.xpath("//table/tbody/tr[1]/td[2]");
   public static final By TOTAL_ACTIONS_COUNTER = By.cssSelector(".badge");
 
   public static By getGroupEventName(String groupEventName) {

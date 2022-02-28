@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.backend.user;
 
-import java.awt.*;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -89,31 +88,36 @@ public class UserRightsFacadeEjb implements UserRightsFacade {
 		String safeName = WorkbookUtil.createSafeSheetName(I18nProperties.getCaption(Captions.userRights));
 		XSSFSheet sheet = workbook.createSheet(safeName);
 
+		// Define colors
+		final XSSFColor green = XssfHelper.createColor(0, 153, 0);
+		final XSSFColor red = XssfHelper.createColor(255, 0, 0);
+		final XSSFColor black = XssfHelper.createColor(0, 0, 0);
+
 		// Initialize cell styles
 		// Authorized style
 		XSSFCellStyle authorizedStyle = workbook.createCellStyle();
 		authorizedStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-		authorizedStyle.setFillForegroundColor(new XSSFColor(new Color(0, 153, 0)));
+		authorizedStyle.setFillForegroundColor(green);
 		authorizedStyle.setBorderBottom(BorderStyle.THIN);
 		authorizedStyle.setBorderLeft(BorderStyle.THIN);
 		authorizedStyle.setBorderTop(BorderStyle.THIN);
 		authorizedStyle.setBorderRight(BorderStyle.THIN);
-		authorizedStyle.setBorderColor(BorderSide.BOTTOM, new XSSFColor(Color.BLACK));
-		authorizedStyle.setBorderColor(BorderSide.LEFT, new XSSFColor(Color.BLACK));
-		authorizedStyle.setBorderColor(BorderSide.TOP, new XSSFColor(Color.BLACK));
-		authorizedStyle.setBorderColor(BorderSide.RIGHT, new XSSFColor(Color.BLACK));
+		authorizedStyle.setBorderColor(BorderSide.BOTTOM, black);
+		authorizedStyle.setBorderColor(BorderSide.LEFT, black);
+		authorizedStyle.setBorderColor(BorderSide.TOP, black);
+		authorizedStyle.setBorderColor(BorderSide.RIGHT, black);
 		// Unauthorized style
 		XSSFCellStyle unauthorizedStyle = workbook.createCellStyle();
 		unauthorizedStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-		unauthorizedStyle.setFillForegroundColor(new XSSFColor(Color.RED));
+		unauthorizedStyle.setFillForegroundColor(red);
 		unauthorizedStyle.setBorderBottom(BorderStyle.THIN);
 		unauthorizedStyle.setBorderLeft(BorderStyle.THIN);
 		unauthorizedStyle.setBorderTop(BorderStyle.THIN);
 		unauthorizedStyle.setBorderRight(BorderStyle.THIN);
-		unauthorizedStyle.setBorderColor(BorderSide.BOTTOM, new XSSFColor(Color.BLACK));
-		unauthorizedStyle.setBorderColor(BorderSide.LEFT, new XSSFColor(Color.BLACK));
-		unauthorizedStyle.setBorderColor(BorderSide.TOP, new XSSFColor(Color.BLACK));
-		unauthorizedStyle.setBorderColor(BorderSide.RIGHT, new XSSFColor(Color.BLACK));
+		unauthorizedStyle.setBorderColor(BorderSide.BOTTOM, black);
+		unauthorizedStyle.setBorderColor(BorderSide.LEFT, black);
+		unauthorizedStyle.setBorderColor(BorderSide.TOP, black);
+		unauthorizedStyle.setBorderColor(BorderSide.RIGHT, black);
 		// Bold style
 		XSSFFont boldFont = workbook.createFont();
 		boldFont.setBold(true);

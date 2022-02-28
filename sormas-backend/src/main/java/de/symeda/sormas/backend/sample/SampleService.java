@@ -78,9 +78,9 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.common.AbstractDeletableAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJoins;
@@ -106,7 +106,7 @@ import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless
 @LocalBean
-public class SampleService extends AbstractCoreAdoService<Sample> {
+public class SampleService extends AbstractDeletableAdoService<Sample> {
 
 	@EJB
 	private UserService userService;
@@ -603,7 +603,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 			});
 			return results.stream()
 				.filter(e -> e[0] != null)
-				.collect(Collectors.toMap(e -> PathogenTestResultType.valueOf((String) e[0]), e -> ((BigInteger) e[1]).longValue()));
+				.collect(Collectors.toMap(e -> PathogenTestResultType.valueOf((String) e[0]), e -> ((BigInteger) e[1]).longValue(), Long::sum));
 		}
 	}
 
@@ -1047,7 +1047,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 
 	/**
 	 * Creates a default filter that should be used as the basis of queries that do not use {@link SampleCriteria}.
-	 * This essentially removes {@link CoreAdo#isDeleted()} samples from the queries.
+	 * This essentially removes {@link DeletableAdo#isDeleted()} samples from the queries.
 	 */
 	public Predicate createDefaultFilter(CriteriaBuilder cb, Root<Sample> root) {
 		return cb.isFalse(root.get(Sample.DELETED));

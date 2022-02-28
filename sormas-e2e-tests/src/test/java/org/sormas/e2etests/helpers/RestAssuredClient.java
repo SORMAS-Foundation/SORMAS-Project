@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -17,9 +17,9 @@
  */
 package org.sormas.e2etests.helpers;
 
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static recorders.StepsLogger.setIsScreenshotEnabled;
 
-import com.google.inject.Provider;
 import io.qameta.allure.restassured.AllureRestAssured;
 import io.restassured.RestAssured;
 import io.restassured.config.EncoderConfig;
@@ -34,31 +34,32 @@ import javax.inject.Inject;
 import javax.inject.Named;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.sormas.e2etests.pojo.api.Request;
+import org.sormas.e2etests.entities.pojo.api.Request;
+import org.sormas.e2etests.enums.UserRoles;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.state.ApiState;
 
 @Slf4j
 public class RestAssuredClient {
-  private final Provider<RequestSpecification> requestSpecification;
-  private final String environmentUrl;
+  private RequestSpecification requestSpecification;
   private final ApiState apiState;
+  private final EnvironmentManager environmentManager;
   private final boolean logRestAssuredInfo;
 
   @Inject
   public RestAssuredClient(
-      Provider<RequestSpecification> requestSpecification,
-      @Named("ENVIRONMENT_URL") String environmentUrl,
+      EnvironmentManager environmentManager,
       @Named("LOG_RESTASSURED") boolean logRestAssuredInfo,
       ApiState apiState) {
-    this.requestSpecification = requestSpecification;
-    this.environmentUrl = environmentUrl;
     this.logRestAssuredInfo = logRestAssuredInfo;
     this.apiState = apiState;
+    this.environmentManager = environmentManager;
   }
 
   private RequestSpecification request() {
     RestAssured.enableLoggingOfRequestAndResponseIfValidationFails();
-    RestAssured.baseURI = environmentUrl + "/sormas-rest";
+    final String restEndpoint = "/sormas-rest";
+    RestAssured.baseURI = environmentManager.getEnvironmentUrlForMarket(locale) + restEndpoint;
     Filter filters[];
     if (logRestAssuredInfo) {
       filters =
@@ -68,8 +69,19 @@ public class RestAssuredClient {
     } else {
       filters = new Filter[] {new AllureRestAssured()};
     }
+    requestSpecification =
+        RestAssured.given()
+            .auth()
+            .preemptive()
+            .basic(
+                environmentManager
+                    .getUserByRole(locale, UserRoles.RestUser.getRole())
+                    .getUsername(),
+                environmentManager
+                    .getUserByRole(locale, UserRoles.RestUser.getRole())
+                    .getPassword());
+
     return requestSpecification
-        .get()
         .config(
             RestAssured.config()
                 .encoderConfig(
@@ -77,7 +89,7 @@ public class RestAssuredClient {
                         .appendDefaultContentCharsetToContentTypeIfUndefined(false)))
         .contentType(ContentType.JSON)
         .accept(ContentType.JSON)
-        .filters(Arrays.asList(filters));
+        .filters(Arrays.asList(filters).get(0));
   }
 
   @SneakyThrows

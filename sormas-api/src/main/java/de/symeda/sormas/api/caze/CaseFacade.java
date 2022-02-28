@@ -31,11 +31,11 @@ import javax.validation.constraints.NotNull;
 import com.fasterxml.jackson.databind.JsonNode;
 
 import de.symeda.sormas.api.CaseMeasure;
+import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
@@ -53,7 +53,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 @Remote
-public interface CaseFacade {
+public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseReferenceDto, CaseCriteria> {
 
 	List<CaseDataDto> getAllActiveCasesAfter(Date date);
 
@@ -62,11 +62,7 @@ public interface CaseFacade {
 	 */
 	List<CaseDataDto> getAllActiveCasesAfter(Date date, boolean includeExtendedChangeDateFilters);
 
-	long count(CaseCriteria caseCriteria);
-
 	long count(CaseCriteria caseCriteria, boolean ignoreUserFilter);
-
-	List<CaseIndexDto> getIndexList(CaseCriteria caseCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	List<CaseSelectionDto> getCaseSelectionList(CaseCriteria caseCriteria);
 
@@ -95,9 +91,7 @@ public interface CaseFacade {
 
 	CaseDataDto getCaseDataByUuid(String uuid);
 
-	CaseDataDto saveCase(@Valid CaseDataDto dto) throws ValidationRuntimeException;
-
-	CaseDataDto saveCase(@Valid CaseDataDto dto, Boolean systemSave) throws ValidationRuntimeException;
+	CaseDataDto save(@Valid @NotNull CaseDataDto dto, Boolean systemSave) throws ValidationRuntimeException;
 
 	void setSampleAssociations(ContactReferenceDto sourceContact, CaseReferenceDto cazeRef);
 
@@ -107,15 +101,9 @@ public interface CaseFacade {
 
 	void validate(CaseDataDto dto) throws ValidationRuntimeException;
 
-	CaseReferenceDto getReferenceByUuid(String uuid);
-
 	List<String> getAllActiveUuids();
 
 	List<CaseDataDto> getAllActiveCasesAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
-
-	List<CaseDataDto> getByUuids(List<String> uuids);
-
-	CaseDataDto getByUuid(String uuid);
 
 	String getUuidByUuidEpidNumberOrExternalId(String searchTerm, CaseCriteria caseCriteria);
 
@@ -151,11 +139,7 @@ public interface CaseFacade {
 
 	Date getOldestCaseOutcomeDate();
 
-	boolean isArchived(String caseUuid);
-
 	boolean isDeleted(String caseUuid);
-
-	void archiveOrDearchiveCase(String caseUuid, boolean archive);
 
 	List<String> getArchivedUuidsSince(Date since);
 
@@ -179,21 +163,11 @@ public interface CaseFacade {
 
 	void archiveAllArchivableCases(int daysAfterCaseGetsArchived);
 
-	/**
-	 * @param caseUuids
-	 *            Cases identified by {@code uuid} to be archived or not.
-	 * @param archived
-	 *            {@code true} archives the Case, {@code false} unarchives it.
-	 */
-	void updateArchived(List<String> caseUuids, boolean archived);
-
 	List<CaseReferenceDto> getRandomCaseReferences(CaseCriteria criteria, int count, Random randomGenerator);
 
 	FollowUpPeriodDto calculateFollowUpUntilDate(CaseDataDto caseDto, boolean ignoreOverwrite);
 
 	boolean isCaseEditAllowed(String caseUuid);
-
-	boolean exists(String uuid);
 
 	boolean hasPositiveLabResult(String caseUuid);
 
@@ -247,6 +221,4 @@ public interface CaseFacade {
 	PreviousCaseDto getMostRecentPreviousCase(PersonReferenceDto person, Disease disease, Date startDate);
 
 	Map<ReinfectionDetail, Boolean> cleanUpReinfectionDetails(Map<ReinfectionDetail, Boolean> reinfectionDetails);
-
-	AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid);
 }

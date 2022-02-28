@@ -361,13 +361,15 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 	}
 
 	@Override
-	public List<Person> getAllAfter(Date date, User user) {
-		return getAllAfter(date, user, null, null);
+	public List<Person> getAllAfter(Date date) {
+		return getAllAfter(date, null, null);
 	}
 
 	@Override
 	// todo refactor this to use the create user filter form persons
-	public List<Person> getAllAfter(Date date, User user, Integer batchSize, String lastSynchronizedUuid) {
+	public List<Person> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+
+		User user = getCurrentUser();
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 
@@ -625,7 +627,10 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		if (limit != null) {
 			query.setMaxResults(limit);
 		}
-		return query.getResultList().stream().map(this::toSimilarPersonDto).collect(Collectors.toList());
+
+		List<Person> persons = query.getResultList();
+		List<Long> personsInJurisdiction = getInJurisdictionIDs(persons);
+		return persons.stream().filter(p -> personsInJurisdiction.contains(p.getId())).map(this::toSimilarPersonDto).collect(Collectors.toList());
 	}
 
 	private SimilarPersonDto toSimilarPersonDto(Person entity) {

@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -44,6 +44,5 @@ public class CreateNewTaskPage {
   public static final By TASK_STATUS_OPTIONS =
       By.cssSelector(".v-window #taskStatus .v-radiobutton label");
   public static final By SAVE_BUTTON = By.cssSelector(".v-window #commit");
-  public static final By SELECTED_TASK_CONTEXT =
-      By.cssSelector(".v-window #taskContext input:checked");
+  public static final By SELECTED_TASK_CONTEXT = By.cssSelector(".v-window [id='taskContext']");
 }

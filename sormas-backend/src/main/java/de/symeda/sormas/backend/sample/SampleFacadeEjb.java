@@ -14,11 +14,11 @@
  */
 package de.symeda.sormas.backend.sample;
 
+import de.symeda.sormas.backend.event.EventFacadeEjb;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
@@ -37,7 +37,6 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.event.EventFacadeEjb;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -54,7 +53,6 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
-import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -66,6 +64,7 @@ import de.symeda.sormas.api.sample.SampleListEntryDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
+import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.AccessDeniedException;
@@ -81,16 +80,15 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.NotificationService;
 import de.symeda.sormas.backend.common.messaging.MessageContents;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
-import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
-import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
@@ -160,7 +158,9 @@ public class SampleFacadeEjb implements SampleFacade {
 	@EJB
 	private EventParticipantFacadeEjbLocal eventParticipantFacade;
 	@EJB
-	private MessagingService messagingService;
+	private EventFacadeEjb.EventFacadeEjbLocal eventFacade;
+	@EJB
+	private NotificationService notificationService;
 	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 	@EJB
@@ -947,50 +947,55 @@ public class SampleFacadeEjb implements SampleFacade {
 			&& (existingSample == null || !existingSample.isShipped())
 			&& !StringUtils.equals(newSample.getLab().getUuid(), FacilityDto.OTHER_FACILITY_UUID)) {
 			try {
-
-				messagingService.sendMessages(() -> {
-					final String messageContent;
-					if (newSample.getAssociatedCase() != null) {
-						messageContent = String.format(
-							I18nProperties.getString(MessageContents.CONTENT_LAB_SAMPLE_SHIPPED_SHORT),
-							DataHelper.getShortUuid(newSample.getAssociatedCase().getUuid()));
-					} else if (newSample.getAssociatedContact() != null) {
-						messageContent = String.format(
-							I18nProperties.getString(MessageContents.CONTENT_LAB_SAMPLE_SHIPPED_SHORT_FOR_CONTACT),
-							DataHelper.getShortUuid(newSample.getAssociatedContact().getUuid()));
-					} else if (newSample.getAssociatedEventParticipant() != null) {
-						messageContent = String.format(
-							I18nProperties.getString(MessageContents.CONTENT_LAB_SAMPLE_SHIPPED_SHORT_FOR_EVENT_PARTICIPANT),
-							DataHelper.getShortUuid(newSample.getAssociatedEventParticipant().getUuid()));
-					} else {
-						messageContent = null;
-					}
-					final Map<User, String> mapToReturn = new HashMap<>();
-					userService.getLabUsersOfLab(newSample.getLab()).forEach(user -> mapToReturn.put(user, messageContent));
-					return mapToReturn;
-				}, MessageSubject.LAB_SAMPLE_SHIPPED, MessageType.EMAIL, MessageType.SMS);
-
+				final String messageContent = getSampleShippedNotificationMessage(newSample);
+				notificationService.sendNotifications(
+					NotificationType.LAB_SAMPLE_SHIPPED,
+					MessageSubject.LAB_SAMPLE_SHIPPED,
+					() -> userService.getLabUsersOfLab(newSample.getLab())
+						.stream()
+						.collect(Collectors.toMap(Function.identity(), (e) -> messageContent)));
 			} catch (NotificationDeliveryFailedException e) {
-				logger
-					.error(String.format("EmailDeliveryFailedException when trying to notify supervisors about " + "the shipment of a lab sample."));
+				logger.error("EmailDeliveryFailedException when trying to notify supervisors about " + "the shipment of a lab sample.");
 			}
 		}
 	}
 
+	private String getSampleShippedNotificationMessage(Sample newSample) {
+		final String messageContent;
+
+		if (newSample.getAssociatedCase() != null) {
+			messageContent = String.format(
+				I18nProperties.getString(MessageContents.CONTENT_LAB_SAMPLE_SHIPPED_SHORT),
+				DataHelper.getShortUuid(newSample.getAssociatedCase().getUuid()));
+		} else if (newSample.getAssociatedContact() != null) {
+			messageContent = String.format(
+				I18nProperties.getString(MessageContents.CONTENT_LAB_SAMPLE_SHIPPED_SHORT_FOR_CONTACT),
+				DataHelper.getShortUuid(newSample.getAssociatedContact().getUuid()));
+		} else if (newSample.getAssociatedEventParticipant() != null) {
+			messageContent = String.format(
+				I18nProperties.getString(MessageContents.CONTENT_LAB_SAMPLE_SHIPPED_SHORT_FOR_EVENT_PARTICIPANT),
+				DataHelper.getShortUuid(newSample.getAssociatedEventParticipant().getUuid()));
+		} else {
+			messageContent = null;
+		}
+
+		return messageContent;
+	}
+
 	private void handleAssotiatedObjectChanges(Sample newSample, boolean syncShares) {
 		if (newSample.getAssociatedCase() != null) {
-			caseFacade.onCaseChanged(CaseFacadeEjb.toDto(newSample.getAssociatedCase()), newSample.getAssociatedCase(), syncShares);
+			caseFacade.onCaseChanged(caseFacade.toDto(newSample.getAssociatedCase()), newSample.getAssociatedCase(), syncShares);
 		}
 
 		if (newSample.getAssociatedContact() != null) {
-			contactFacade.onContactChanged(ContactFacadeEjb.toDto(newSample.getAssociatedContact()), syncShares);
+			contactFacade.onContactChanged(contactFacade.toDto(newSample.getAssociatedContact()), syncShares);
 		}
 
 		EventParticipant associatedEventParticipant = newSample.getAssociatedEventParticipant();
 		if (associatedEventParticipant != null) {
 			eventParticipantFacade.onEventParticipantChanged(
-				EventFacadeEjb.toDto(associatedEventParticipant.getEvent()),
-				EventParticipantFacadeEjb.toDto(associatedEventParticipant),
+				eventFacade.toDto(associatedEventParticipant.getEvent()),
+				eventParticipantFacade.toDto(associatedEventParticipant),
 				associatedEventParticipant,
 				syncShares);
 		}

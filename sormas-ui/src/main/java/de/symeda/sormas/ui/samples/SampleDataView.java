@@ -20,6 +20,7 @@ import java.util.function.Supplier;
 
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.Disease;
@@ -32,8 +33,11 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -47,6 +51,7 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 
 public class SampleDataView extends AbstractSampleView {
 
@@ -107,7 +112,7 @@ public class SampleDataView extends AbstractSampleView {
 		}
 		final ContactReferenceDto associatedContact = sampleDto.getAssociatedContact();
 		if (associatedContact != null) {
-			final ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(associatedContact.getUuid());
+			final ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(associatedContact.getUuid());
 
 			disease = contactDto.getDisease();
 
@@ -155,21 +160,34 @@ public class SampleDataView extends AbstractSampleView {
 		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
 		layout.addComponent(editComponent, EDIT_LOC);
 
-		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest = (pathogenTestDto, callback) -> {
-			callback.run();
-		};
+		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest = (pathogenTestDto, callback) -> callback.run();
 
 		// why? if(sampleDto.getSamplePurpose() !=null && sampleDto.getSamplePurpose().equals(SamplePurpose.EXTERNAL)) {
 		Supplier<Boolean> createOrEditAllowedCallback = () -> editComponent.getWrappedComponent().getFieldGroup().isValid();
-		PathogenTestListComponent pathogenTestList = new PathogenTestListComponent(getSampleRef(), onSavedPathogenTest, createOrEditAllowedCallback);
-		pathogenTestList.addStyleName(CssStyles.SIDE_COMPONENT);
-		layout.addComponent(pathogenTestList, PATHOGEN_TESTS_LOC);
+		SampleReferenceDto sampleReferenceDto = getSampleRef();
+		PathogenTestListComponent pathogenTestListComponent = new PathogenTestListComponent(sampleReferenceDto);
+		pathogenTestListComponent.addSideComponentCreateEventListener(e -> showNavigationConfirmPopupIfDirty(() -> {
+			if (createOrEditAllowedCallback.get()) {
+				ControllerProvider.getPathogenTestController().create(sampleReferenceDto, 0, pathogenTestListComponent::reload, onSavedPathogenTest);
+			} else {
+				Notification.show(null, I18nProperties.getString(Strings.messageFormHasErrorsPathogenTest), Notification.Type.ERROR_MESSAGE);
+			}
+		}));
+		pathogenTestListComponent.addSideComponentEditEventListener(e -> showNavigationConfirmPopupIfDirty(() -> {
+			String uuid = e.getUuid();
+			if (createOrEditAllowedCallback.get()) {
+				ControllerProvider.getPathogenTestController().edit(uuid, pathogenTestListComponent::reload, onSavedPathogenTest);
+			} else {
+				Notification.show(null, I18nProperties.getString(Strings.messageFormHasErrorsPathogenTest), Notification.Type.ERROR_MESSAGE);
+			}
+		}));
+		layout.addComponent(new SideComponentLayout(pathogenTestListComponent), PATHOGEN_TESTS_LOC);
 
 		if (UserProvider.getCurrent() != null
 			&& UserProvider.getCurrent().hasUserRight(UserRight.ADDITIONAL_TEST_VIEW)
 			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.ADDITIONAL_TESTS)) {
 
-			AdditionalTestListComponent additionalTestList = new AdditionalTestListComponent(getSampleRef().getUuid());
+			AdditionalTestListComponent additionalTestList = new AdditionalTestListComponent(sampleReferenceDto.getUuid());
 			additionalTestList.addStyleName(CssStyles.SIDE_COMPONENT);
 			layout.addComponent(additionalTestList, ADDITIONAL_TESTS_LOC);
 		}

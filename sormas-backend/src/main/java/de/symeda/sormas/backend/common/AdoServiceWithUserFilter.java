@@ -28,11 +28,11 @@ public abstract class AdoServiceWithUserFilter<ADO extends AbstractDomainObject>
 	@SuppressWarnings("rawtypes")
 	public abstract Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, ADO> from);
 
-	public List<ADO> getAllAfter(Date since, User user) {
-		return getAllAfter(since, user, null, null);
+	public List<ADO> getAllAfter(Date since) {
+		return getAllAfter(since, null, null);
 	}
 
-	public List<ADO> getAllAfter(Date since, User user, Integer batchSize, String lastSynchronizedUuid) {
+	public List<ADO> getAllAfter(Date since, Integer batchSize, String lastSynchronizedUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
