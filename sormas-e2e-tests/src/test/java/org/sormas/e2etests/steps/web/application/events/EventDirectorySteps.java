@@ -20,6 +20,7 @@ package org.sormas.e2etests.steps.web.application.events;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_GRID_RESULTS_ROWS;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_PARTICIPANTS_TAB;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_EVENT_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.TITLE_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_INPUT;
@@ -327,8 +328,7 @@ public class EventDirectorySteps implements En {
 
     When(
         "I click on the created event participant from the list",
-        () ->
-          webDriverHelpers.clickOnWebElementBySelector(CREATED_PARTICIPANT));
+        () -> webDriverHelpers.clickOnWebElementBySelector(CREATED_PARTICIPANT));
 
     When(
         "I click on New Task from event tab",
