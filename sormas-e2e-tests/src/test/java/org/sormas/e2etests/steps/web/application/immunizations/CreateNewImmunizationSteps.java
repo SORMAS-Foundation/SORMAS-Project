@@ -61,13 +61,6 @@ public class CreateNewImmunizationSteps implements En {
         });
 
     When(
-        "I click on discard button from immunization tab",
-        () -> {
-          webDriverHelpers.scrollToElement(DISCARD_IMMUNIZATION_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(DISCARD_IMMUNIZATION_BUTTON);
-        });
-
-    When(
         "I check if Overwrite immunization management status is unchecked by Management Status",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(MANAGEMENT_STATUS);
@@ -79,28 +72,10 @@ public class CreateNewImmunizationSteps implements En {
         });
 
     When(
-        "I check Overwrite immunization management status option",
-        () -> {
-          webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.clickOnWebElementBySelector(OVERWRITE_IMMUNIZATION_MANAGEMENT_STATUS_INPUT);
-        });
-
-    When(
         "I click on discard button from immunization tab",
         () -> {
           webDriverHelpers.scrollToElement(DISCARD_IMMUNIZATION_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DISCARD_IMMUNIZATION_BUTTON);
-        });
-
-    When(
-        "I check if Overwrite immunization management status is unchecked by Management Status",
-        () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(MANAGEMENT_STATUS);
-          webDriverHelpers.scrollToElement(MANAGEMENT_STATUS);
-          softly.assertFalse(
-              webDriverHelpers.isElementEnabled(MANAGEMENT_STATUS),
-              "Expected management status is not correct");
-          softly.assertAll();
         });
   }
 

@@ -440,6 +440,10 @@ public class CreateNewSampleSteps implements En {
     return webDriverHelpers.getTextFromWebElement(SAMPLE_TEST_RESULT_BUTTON);
   }
 
+  private void selectLaboratoryNamePopup(String laboratoryName) {
+    webDriverHelpers.clearAndFillInWebElement(LABORATORY_NAME_POPUP_INPUT, laboratoryName);
+  }
+
   private LocalDate getReportDate() {
     return LocalDate.parse(
         webDriverHelpers.getValueFromWebElement(DATE_TEST_REPORT), DATE_FORMATTER);
