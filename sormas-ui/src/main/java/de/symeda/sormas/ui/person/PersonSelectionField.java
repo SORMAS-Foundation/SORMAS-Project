@@ -77,10 +77,11 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 
 		initializeGrid();
 
+		this.hasMatches = FacadeProvider.getPersonFacade().checkMatchingNameInDatabase(UserProvider.getCurrent().getUserReference(), defaultCriteria);
 		if (infoTextWithoutMatches == null) {
 			this.infoText = infoText;
 		} else {
-			this.infoText = this.hasMatches() ? infoText : infoTextWithoutMatches;
+			this.infoText = hasMatches ? infoText : infoTextWithoutMatches;
 		}
 	}
 
@@ -341,7 +342,7 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 	}
 
 	public boolean hasMatches() {
-		return FacadeProvider.getPersonFacade().checkMatchingNameInDatabase(UserProvider.getCurrent().getUserReference(), defaultCriteria);
+		return hasMatches;
 	}
 
 	/**
