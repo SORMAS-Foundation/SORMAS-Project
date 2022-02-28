@@ -1,20 +1,17 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.backend.user;
 
 import java.util.ArrayList;
@@ -46,6 +43,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import org.apache.commons.beanutils.BeanUtils;
@@ -186,7 +184,6 @@ public class UserFacadeEjb implements UserFacade {
 		target.setLanguage(source.getLanguage());
 		target.setHasConsentedToGdpr(source.isHasConsentedToGdpr());
 
-		source.getUserRoles().size();
 		target.setUserRoles(new HashSet<>(source.getUserRoles()));
 		return target;
 	}
@@ -206,7 +203,6 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	private List<String> toUuidList(HasUuid hasUuid) {
-
 		/*
 		 * Supports conversion of a null object into a list with one "null" value in it.
 		 * Uncertain if that use case exists, but wasn't suppose to be broken when replacing the Dto to Entity lookup.
@@ -404,7 +400,7 @@ public class UserFacadeEjb implements UserFacade {
 			caseJurisdictionSubquery.select(caseRoot)
 				.where(
 					cb.and(
-						cb.equal(caseRoot.get(Case.UUID), caseReferenceDto.getUuid()),
+						cb.equal(caseRoot.get(AbstractDomainObject.UUID), caseReferenceDto.getUuid()),
 						cb.isTrue(caseJurisdictionPredicateValidator.inJurisdictionOrOwned())));
 			return caseJurisdictionSubquery;
 		});
@@ -422,7 +418,7 @@ public class UserFacadeEjb implements UserFacade {
 			contactJurisdictionSubquery.select(contactRoot)
 				.where(
 					cb.and(
-						cb.equal(contactRoot.get(Contact.UUID), contactReferenceDto.getUuid()),
+						cb.equal(contactRoot.get(AbstractDomainObject.UUID), contactReferenceDto.getUuid()),
 						cb.isTrue(contactJurisdictionPredicateValidator.inJurisdictionOrOwned())));
 			return contactJurisdictionSubquery;
 		});
@@ -441,7 +437,7 @@ public class UserFacadeEjb implements UserFacade {
 			eventJurisdictionSubquery.select(eventRoot)
 				.where(
 					cb.and(
-						cb.equal(eventRoot.get(de.symeda.sormas.backend.event.Event.UUID), eventReferenceDto.getUuid()),
+						cb.equal(eventRoot.get(AbstractDomainObject.UUID), eventReferenceDto.getUuid()),
 						cb.isTrue(eventJurisdictionPredicateValidator.inJurisdictionOrOwned())));
 			return eventJurisdictionSubquery;
 		});
@@ -460,7 +456,7 @@ public class UserFacadeEjb implements UserFacade {
 			travelEntrySubquery.select(travelEntryRoot)
 				.where(
 					cb.and(
-						cb.equal(travelEntryRoot.get(TravelEntry.UUID), travelEntryReferenceDto.getUuid()),
+						cb.equal(travelEntryRoot.get(AbstractDomainObject.UUID), travelEntryReferenceDto.getUuid()),
 						cb.isTrue(travelEntryJurisdictionPredicateValidator.inJurisdictionOrOwned())));
 			return travelEntrySubquery;
 		});
@@ -477,7 +473,7 @@ public class UserFacadeEjb implements UserFacade {
 		cq.where(CriteriaBuilderHelper.and(cb, cb.isTrue(root.get(User.ACTIVE)), cb.exists(subqueryBuilder.buildSubquery(cb, cq, root))));
 
 		cq.distinct(true);
-		cq.orderBy(cb.asc(root.get(User.ID)));
+		cq.orderBy(cb.asc(root.get(AbstractDomainObject.ID)));
 		List<User> resultList = em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
 		return resultList.stream().map(UserFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
@@ -591,7 +587,7 @@ public class UserFacadeEjb implements UserFacade {
 			for (SortProperty sortProperty : sortProperties) {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
-				case UserDto.UUID:
+				case EntityDto.UUID:
 				case UserDto.ACTIVE:
 				case UserDto.USER_NAME:
 				case UserDto.USER_EMAIL:
@@ -618,7 +614,7 @@ public class UserFacadeEjb implements UserFacade {
 			}
 			cq.orderBy(order);
 		} else {
-			cq.orderBy(cb.desc(user.get(User.CHANGE_DATE)));
+			cq.orderBy(cb.desc(user.get(AbstractDomainObject.CHANGE_DATE)));
 		}
 
 		cq.select(user);
@@ -719,7 +715,7 @@ public class UserFacadeEjb implements UserFacade {
 		Root<Case> caseRoot = caseQuery.from(Case.class);
 		Join<Case, User> surveillanceOfficerJoin = caseRoot.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT);
 
-		caseQuery.where(cb.equal(surveillanceOfficerJoin.get(User.UUID), userUuid));
+		caseQuery.where(cb.equal(surveillanceOfficerJoin.get(AbstractDomainObject.UUID), userUuid));
 		List<Case> cases = em.createQuery(caseQuery).getResultList();
 		cases.forEach(c -> {
 			c.setSurveillanceOfficer(null);
@@ -732,7 +728,7 @@ public class UserFacadeEjb implements UserFacade {
 		Root<Contact> contactRoot = contactQuery.from(Contact.class);
 		Join<Contact, User> contactOfficerJoin = contactRoot.join(Contact.CONTACT_OFFICER, JoinType.LEFT);
 
-		contactQuery.where(cb.equal(contactOfficerJoin.get(User.UUID), userUuid));
+		contactQuery.where(cb.equal(contactOfficerJoin.get(AbstractDomainObject.UUID), userUuid));
 		List<Contact> contacts = em.createQuery(contactQuery).getResultList();
 		contacts.forEach(c -> {
 			c.setContactOfficer(null);

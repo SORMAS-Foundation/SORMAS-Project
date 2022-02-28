@@ -1,6 +1,7 @@
 @UI @Sanity @Case @Hospitalization
 Feature: Case hospitalization tab e2e test cases
 
+  @env_main
   Scenario: Edit all fields from Hospitalization tab
     Given API: I create a new person
     Then API: I check that POST call body is "OK"

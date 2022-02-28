@@ -42,6 +42,7 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
+import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import org.hibernate.annotations.Type;
 
 import de.symeda.auditlog.api.Audited;
@@ -149,6 +150,9 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	public static final String CLINICAL_COURSE = "clinicalCourse";
 	public static final String MATERNAL_HISTORY = "maternalHistory";
 	public static final String PORT_HEALTH_INFO = "portHealthInfo";
+
+	public static final String HEALTH_CONDITIONS = "healthConditions";
+
 	public static final String PREGNANT = "pregnant";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
 	public static final String EPID_NUMBER = "epidNumber";
@@ -297,6 +301,8 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	private String notifyingClinicDetails;
 
 	private Symptoms symptoms;
+
+	private HealthConditions healthConditions;
 
 	private YesNoUnknown pregnant;
 
@@ -870,6 +876,16 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 
 	public void setConvertedContact(List<Contact> convertedContact) {
 		this.convertedContact = convertedContact;
+	}
+
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@AuditedIgnore
+	public HealthConditions getHealthConditions() {
+		return healthConditions;
+	}
+
+	public void setHealthConditions(HealthConditions healthConditions) {
+		this.healthConditions = healthConditions;
 	}
 
 	@Enumerated(EnumType.STRING)

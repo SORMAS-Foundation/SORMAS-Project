@@ -36,7 +36,7 @@ import java.util.Map;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
@@ -173,15 +173,15 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(6, getTaskFacade().getAllActiveTasksAfter(null).size());
 		assertEquals(6, getTaskFacade().getAllActiveUuids().size());
 
-		getCaseFacade().archive(caze.getUuid());
-		getEventFacade().archive(event.getUuid());
+		getCaseFacade().archive(caze.getUuid(), null);
+		getEventFacade().archive(event.getUuid(), null);
 
 		// getAllActiveTasks and getAllUuids should return length 1
 		assertEquals(1, getTaskFacade().getAllActiveTasksAfter(null).size());
 		assertEquals(1, getTaskFacade().getAllActiveUuids().size());
 
-		getCaseFacade().dearchive(caze.getUuid());
-		getEventFacade().dearchive(event.getUuid());
+		getCaseFacade().dearchive(Collections.singletonList(caze.getUuid()), null);
+		getEventFacade().dearchive(Collections.singletonList(event.getUuid()), null);
 
 		// getAllActiveTasks and getAllUuids should return length 5 + 1 (contact investigation)
 		assertEquals(6, getTaskFacade().getAllActiveTasksAfter(null).size());

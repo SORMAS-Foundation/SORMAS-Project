@@ -165,11 +165,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 			date = clinicalCourseDate;
 		}
 
-		Date healthConditionsDate = getLatestChangeDateSubJoinReverse(
-			ClinicalCourse.TABLE_NAME,
-			Case.CLINICAL_COURSE,
-			HealthConditions.TABLE_NAME,
-			ClinicalCourse.HEALTH_CONDITIONS);
+		Date healthConditionsDate = getLatestChangeDateJoin(HealthConditions.TABLE_NAME, Case.HEALTH_CONDITIONS);
 		if (healthConditionsDate != null && healthConditionsDate.after(date)) {
 			date = healthConditionsDate;
 		}
@@ -258,6 +254,9 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
 		// Port Health Info
 		caze.setPortHealthInfo(DatabaseHelper.getPortHealthInfoDao().build());
+		
+		// health conditions
+		caze.setHealthConditions(DatabaseHelper.getHealthConditionsDao().build());
 
 		// Location
 		User currentUser = ConfigProvider.getUser();

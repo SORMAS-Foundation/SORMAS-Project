@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -49,16 +49,17 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.UN
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.RESET_FILTERS_BUTTON;
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
-import javax.inject.Named;
 import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.RiskLevelValues;
 import org.sormas.e2etests.enums.SourceTypeValues;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
@@ -74,7 +75,7 @@ public class EventDirectorySteps implements En {
       ApiState apiState,
       DataOperations dataOperations,
       AssertHelpers assertHelpers,
-      @Named("ENVIRONMENT_URL") String environmentUrl) {
+      EnvironmentManager environmentManager) {
 
     When(
         "I fill EVENT ID filter by API",
@@ -290,12 +291,19 @@ public class EventDirectorySteps implements En {
         });
 
     When(
+        "I click on the first row from event participant",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_PARTICIPANT);
+        });
+
+    When(
         "I am accessing the event tab using the created event via api",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.EVENTS_BUTTON);
           final String eventUuid = apiState.getCreatedEvent().getUuid();
           final String eventLinkPath = "/sormas-webdriver/#!events/data/";
-          webDriverHelpers.accessWebSite(environmentUrl + eventLinkPath + eventUuid);
+          webDriverHelpers.accessWebSite(
+              environmentManager.getEnvironmentUrlForMarket(locale) + eventLinkPath + eventUuid);
         });
 
     When(
