@@ -126,7 +126,10 @@ public class EventDirectorySteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(LINKED_EVENT_GROUP_ID));
     When(
         "^I click on Group Id in Events result on Event Directory Page$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(EVENT_GROUP_ID_IN_GRID));
+        () ->{
+            webDriverHelpers.scrollToElement(EVENT_GROUP_ID_IN_GRID);
+            webDriverHelpers.clickOnWebElementBySelector(EVENT_GROUP_ID_IN_GRID);
+        });
 
     When(
         "I click on the NEW EVENT button",
