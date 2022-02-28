@@ -1,6 +1,4 @@
 @UI @Sanity @Persons
-
-@env_main
 Feature: Edit Persons
 
   @env_main
