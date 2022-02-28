@@ -367,6 +367,11 @@ public class WebDriverHelpers {
     }
   }
 
+  public boolean isElementEnabled(By selector) {
+    scrollToElement(selector);
+    return baseSteps.getDriver().findElement(selector).isEnabled();
+  }
+
   public void clickOnWebElementWhichMayNotBePresent(final By byObject, final int index) {
     try {
       log.info("Clicking on element: {}", byObject);

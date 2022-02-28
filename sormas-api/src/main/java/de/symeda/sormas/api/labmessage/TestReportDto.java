@@ -39,7 +39,6 @@ public class TestReportDto extends EntityDto {
 	private String testLabCity;
 
 	private PathogenTestType testType;
-	private PCRTestSpecification pcrTestSpecification;
 	private Date testDateTime;
 	private PathogenTestResultType testResult;
 	private Boolean testResultVerified;
@@ -105,14 +104,6 @@ public class TestReportDto extends EntityDto {
 
 	public void setTestType(PathogenTestType testType) {
 		this.testType = testType;
-	}
-
-	public PCRTestSpecification getPcrTestSpecification() {
-		return pcrTestSpecification;
-	}
-
-	public void setPcrTestSpecification(PCRTestSpecification pcrTestSpecification) {
-		this.pcrTestSpecification = pcrTestSpecification;
 	}
 
 	public Date getTestDateTime() {

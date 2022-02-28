@@ -23,19 +23,26 @@ import lombok.Getter;
 
 @Getter
 public enum GenderValues {
-  MALE("Male"),
-  FEMALE("Female"),
-  OTHER("Other"),
-  UNKNOWN("Unknown");
+  MALE("Male", "M\u00E4nnlich"),
+  FEMALE("Female", "Weiblich"),
+  OTHER("Other", "Divers"),
+  UNKNOWN("Unknown", "Unbekannt");
 
   private final String gender;
+  private final String genderDE;
 
-  GenderValues(String humanGender) {
+  GenderValues(String humanGender, String humanGenderDE) {
     gender = humanGender;
+    genderDE = humanGenderDE;
   }
 
   public static String getRandomGender() {
     Random random = new Random();
     return String.valueOf(GenderValues.values()[random.nextInt(values().length)].gender);
+  }
+
+  public static String getRandomGenderDE() {
+    Random random = new Random();
+    return String.valueOf(GenderValues.values()[random.nextInt(values().length)].genderDE);
   }
 }
