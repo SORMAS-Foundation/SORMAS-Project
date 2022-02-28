@@ -68,4 +68,6 @@ public class EventService {
         .sourceType("Mathematical model")
         .build();
   }
+
+  public LocalDate[] timeRange;
 }

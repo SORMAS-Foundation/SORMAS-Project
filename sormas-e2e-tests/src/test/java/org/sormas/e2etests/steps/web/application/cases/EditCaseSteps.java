@@ -103,6 +103,10 @@ public class EditCaseSteps implements En {
         "I navigate to Hospitalization tab in Cases",
         () -> webDriverHelpers.clickOnWebElementBySelector(HOSPITALIZATION_TAB));
 
+    And(
+        "I navigate to case person tab",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CASE_PERSON_TAB));
+
     When(
         "I check the created data is correctly displayed on Edit case page",
         () -> {

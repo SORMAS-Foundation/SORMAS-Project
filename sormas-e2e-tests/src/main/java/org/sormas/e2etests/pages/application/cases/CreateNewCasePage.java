@@ -57,4 +57,6 @@ public class CreateNewCasePage {
   public static final By PRIMARY_EMAIL_ADDRESS_INPUT = By.cssSelector(".v-window #emailAddress");
   public static final By CONTACT_CASE_SAVE_BUTTON =
       By.xpath("//div[contains(@class, 'popupContent')]//div[@id='commit']");
+  public static final By ENTER_HOME_ADDRESS_CHECKBOX =
+      By.cssSelector("[location='enterHomeAddressNow'] span.v-checkbox");
 }
