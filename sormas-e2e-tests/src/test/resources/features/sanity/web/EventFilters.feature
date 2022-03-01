@@ -96,7 +96,7 @@ Feature: Filters in Event Directory
     And I apply on the APPLY FILTERS button from Event
     And I check the number of displayed Event results from All button is 0
 
-  @issue=SORQA-77 @env_main
+  @issue=SORQA-77 @env_main @ignore
   Scenario: Date filters and aggregation buttons in Event Directory
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
