@@ -193,10 +193,10 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 
 	private void addLabelIfVisible(HorizontalLayout layout, String text, String i18nPrefix, String captionKey, Class<?> clazz) {
 		if (fieldVisibilityCheckers.isVisible(clazz, captionKey)) {
-			Label lblFirstName = new Label(text);
-			lblFirstName.setCaption(I18nProperties.getPrefixCaption(i18nPrefix, captionKey));
-			lblFirstName.setWidthUndefined();
-			layout.addComponent(lblFirstName);
+			Label label = new Label(text);
+			label.setCaption(I18nProperties.getPrefixCaption(i18nPrefix, captionKey));
+			label.setWidthUndefined();
+			layout.addComponent(label);
 		}
 	}
 
