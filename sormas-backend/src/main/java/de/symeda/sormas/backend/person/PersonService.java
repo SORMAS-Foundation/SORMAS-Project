@@ -273,7 +273,6 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		final Supplier<Predicate> travelEntryFilter = () -> CriteriaBuilderHelper.and(
 			cb,
 			travelEntryService.createUserFilter(new TravelEntryQueryContext(cb, cq,  joins.getTravelEntry())),
-//			travelEntryService.createUserFilter(cb, cq, joins.getTravelEntry()),
 			travelEntryService.createDefaultFilter(cb, joins.getTravelEntry()));
 
 		// 2. Define the Joins on associations where needed
