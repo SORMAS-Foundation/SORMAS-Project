@@ -167,7 +167,9 @@ public class TravelEntryController {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_ARCHIVE)) {
 			boolean archived = FacadeProvider.getTravelEntryFacade().isArchived(travelEntryUuid);
 			Button archiveTravelEntryButton = ButtonHelper.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {
-				editComponent.commit();
+				if (editComponent.isModified()) {
+					editComponent.commit();
+				}
 
 				if (archived) {
 					ControllerProvider.getArchiveController()

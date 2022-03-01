@@ -607,7 +607,9 @@ public class ContactController {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_ARCHIVE)) {
 			boolean archived = FacadeProvider.getContactFacade().isArchived(contact.getUuid());
 			Button archiveButton = ButtonHelper.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {
-				editComponent.commit();
+				if (editComponent.isModified()) {
+					editComponent.commit();
+				}
 
 				if (archived) {
 					ControllerProvider.getArchiveController()
