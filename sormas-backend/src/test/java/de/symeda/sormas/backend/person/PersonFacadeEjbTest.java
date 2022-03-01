@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -33,6 +34,10 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
+import de.symeda.sormas.api.immunization.ImmunizationStatus;
+import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.JournalPersonDto;
@@ -63,6 +68,46 @@ import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 
 public class PersonFacadeEjbTest extends AbstractBeanTest {
+
+	// todo - update this test case as CoreEntityDeletionService permanently deletes other core entities
+	@Test
+	public void testPermanentDelete() {
+		RDCF rdcf = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
+		final UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
+		user.setRegion(new RegionReferenceDto(rdcf.region.getUuid()));
+		user.setLimitedDisease(Disease.EVD);
+		getUserFacade().saveUser(user);
+		loginWith(user);
+
+		final PersonDto person = creator.createPerson("James", "Smith", Sex.MALE, 1920, 1, 1);
+
+		ImmunizationDto immunization = creator.createImmunization(
+			Disease.CORONAVIRUS,
+			person.toReference(),
+			user.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf);
+
+		TravelEntryDto travelEntry =
+			creator.createTravelEntry(person.toReference(), user.toReference(), Disease.CORONAVIRUS, rdcf.region, rdcf.district, rdcf.pointOfEntry);
+
+		Assert.assertEquals(1, getPersonFacade().count(new PersonCriteria()));
+
+		getImmunizationFacade().delete(immunization.getUuid());
+		getCoreEntityDeletionService().executePermanentDeletion();
+
+		Assert.assertEquals(1, getPersonFacade().count(new PersonCriteria()));
+		Assert.assertTrue(getPersonFacade().exists(person.getUuid()));
+
+		getTravelEntryFacade().delete(travelEntry.getUuid());
+
+		getCoreEntityDeletionService().executePermanentDeletion();
+
+		Assert.assertEquals(0, getPersonFacade().count(new PersonCriteria()));
+		Assert.assertFalse(getPersonFacade().exists(person.getUuid()));
+	}
 
 	/**
 	 * Test all {@link PersonAssociation} variants if they work. Also serves to review the generated SQL.
