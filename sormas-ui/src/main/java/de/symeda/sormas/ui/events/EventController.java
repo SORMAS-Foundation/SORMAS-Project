@@ -17,9 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.events;
 
-import com.vaadin.ui.TextArea;
-import com.vaadin.ui.VerticalLayout;
-import de.symeda.sormas.ui.utils.CssStyles;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -44,7 +41,9 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.TextArea;
 import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -86,6 +85,7 @@ import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
+import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -807,7 +807,29 @@ public class EventController {
 			boolean archived = FacadeProvider.getEventFacade().isArchived(eventUuid);
 			Button archiveEventButton = ButtonHelper.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {
 				editView.commit();
-				archiveOrDearchiveEvent(eventUuid, !archived);
+
+				if (archived) {
+					ControllerProvider.getArchiveController()
+						.dearchiveEntity(
+							event,
+							FacadeProvider.getEventFacade(),
+							Strings.headingDearchiveEvent,
+							Strings.confirmationDearchiveEvent,
+							Strings.entityEvent,
+							Strings.messageEventDearchived,
+							() -> navigateToData(event.getUuid()));
+				} else {
+					ControllerProvider.getArchiveController()
+						.archiveEntity(
+							event,
+							FacadeProvider.getEventFacade(),
+							Strings.headingArchiveEvent,
+							Strings.confirmationArchiveEvent,
+							Strings.entityEvent,
+							Strings.messageEventArchived,
+							() -> navigateToData(event.getUuid()));
+				}
+
 			}, ValoTheme.BUTTON_LINK);
 
 			editView.getButtonsPanel().addComponentAsFirst(archiveEventButton);
@@ -888,53 +910,6 @@ public class EventController {
 		event.setDisease(disease);
 
 		return event;
-	}
-
-	private void archiveOrDearchiveEvent(String eventUuid, boolean archive) {
-
-		if (archive) {
-			Label contentLabel = new Label(
-				String.format(
-					I18nProperties.getString(Strings.confirmationArchiveEvent),
-					I18nProperties.getString(Strings.entityEvent).toLowerCase(),
-					I18nProperties.getString(Strings.entityEvent).toLowerCase()));
-			VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getString(Strings.headingArchiveEvent),
-				contentLabel,
-				I18nProperties.getString(Strings.yes),
-				I18nProperties.getString(Strings.no),
-				640,
-				e -> {
-					if (e.booleanValue() == true) {
-						FacadeProvider.getEventFacade().archive(eventUuid);
-						Notification.show(
-							String.format(I18nProperties.getString(Strings.messageEventArchived), I18nProperties.getString(Strings.entityEvent)),
-							Type.ASSISTIVE_NOTIFICATION);
-						navigateToData(eventUuid);
-					}
-				});
-		} else {
-			Label contentLabel = new Label(
-				String.format(
-					I18nProperties.getString(Strings.confirmationDearchiveEvent),
-					I18nProperties.getString(Strings.entityEvent).toLowerCase(),
-					I18nProperties.getString(Strings.entityEvent).toLowerCase()));
-			VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getString(Strings.headingDearchiveEvent),
-				contentLabel,
-				I18nProperties.getString(Strings.yes),
-				I18nProperties.getString(Strings.no),
-				640,
-				e -> {
-					if (e.booleanValue()) {
-						FacadeProvider.getEventFacade().dearchive(eventUuid);
-						Notification.show(
-							String.format(I18nProperties.getString(Strings.messageEventDearchived), I18nProperties.getString(Strings.entityEvent)),
-							Type.ASSISTIVE_NOTIFICATION);
-						navigateToData(eventUuid);
-					}
-				});
-		}
 	}
 
 	public void deleteAllSelectedItems(Collection<EventIndexDto> selectedRows, Runnable callback) {
@@ -1023,65 +998,34 @@ public class EventController {
 	}
 
 	public void archiveAllSelectedItems(Collection<EventIndexDto> selectedRows, Runnable callback) {
+		List<String> eventUuids = selectedRows.stream().map(EventIndexDto::getUuid).collect(Collectors.toList());
 
-		if (selectedRows.size() == 0) {
-			new Notification(
-				I18nProperties.getString(Strings.headingNoEventsSelected),
-				I18nProperties.getString(Strings.messageNoEventsSelected),
-				Type.WARNING_MESSAGE,
-				false).show(Page.getCurrent());
-		} else {
-			VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getString(Strings.headingConfirmArchiving),
-				new Label(String.format(I18nProperties.getString(Strings.confirmationArchiveEvents), selectedRows.size())),
-				I18nProperties.getString(Strings.yes),
-				I18nProperties.getString(Strings.no),
-				null,
-				e -> {
-					if (e.booleanValue() == true) {
-						for (EventIndexDto selectedRow : selectedRows) {
-							FacadeProvider.getEventFacade().archive(selectedRow.getUuid());
-						}
-						callback.run();
-						new Notification(
-							I18nProperties.getString(Strings.headingEventsArchived),
-							I18nProperties.getString(Strings.messageEventsArchived),
-							Type.HUMANIZED_MESSAGE,
-							false).show(Page.getCurrent());
-					}
-				});
-		}
+		ControllerProvider.getArchiveController()
+			.archiveSelectedItems(
+				eventUuids,
+				FacadeProvider.getEventFacade(),
+				Strings.headingNoEventsSelected,
+				Strings.confirmationArchiveEvents,
+				Strings.headingEventsArchived,
+				Strings.messageEventArchived,
+				callback);
 	}
 
 	public void dearchiveAllSelectedItems(Collection<EventIndexDto> selectedRows, Runnable callback) {
+		List<String> eventUuids = selectedRows.stream().map(EventIndexDto::getUuid).collect(Collectors.toList());
 
-		if (selectedRows.size() == 0) {
-			new Notification(
-				I18nProperties.getString(Strings.headingNoEventsSelected),
-				I18nProperties.getString(Strings.messageNoEventsSelected),
-				Type.WARNING_MESSAGE,
-				false).show(Page.getCurrent());
-		} else {
-			VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getString(Strings.headingConfirmDearchiving),
-				new Label(String.format(I18nProperties.getString(Strings.confirmationDearchiveEvents), selectedRows.size())),
-				I18nProperties.getString(Strings.yes),
-				I18nProperties.getString(Strings.no),
-				null,
-				e -> {
-					if (e.booleanValue() == true) {
-						for (EventIndexDto selectedRow : selectedRows) {
-							FacadeProvider.getEventFacade().dearchive(selectedRow.getUuid());
-						}
-						callback.run();
-						new Notification(
-							I18nProperties.getString(Strings.headingEventsDearchived),
-							I18nProperties.getString(Strings.messageEventsDearchived),
-							Type.HUMANIZED_MESSAGE,
-							false).show(Page.getCurrent());
-					}
-				});
-		}
+		ControllerProvider.getArchiveController()
+			.dearchiveSelectedItems(
+				eventUuids,
+				FacadeProvider.getEventFacade(),
+				Strings.headingNoEventsSelected,
+				Strings.messageNoEventsSelected,
+				Strings.confirmationDearchiveEvents,
+				Strings.entityEvent,
+				Strings.headingConfirmDearchiving,
+				Strings.headingEventsDearchived,
+				Strings.messageEventsDearchived,
+				callback);
 	}
 
 	public TitleLayout getEventViewTitleLayout(String uuid) {
@@ -1126,28 +1070,29 @@ public class EventController {
 		List<String> ownershipHandedOverUuids = FacadeProvider.getEventFacade().getEventUuidsWithOwnershipHandedOver(selectedUuids);
 		if (CollectionUtils.isNotEmpty(ownershipHandedOverUuids)) {
 			List<String> uuidsWithoutNotSharable =
-					selectedUuids.stream().filter(uuid -> !ownershipHandedOverUuids.contains(uuid)).collect(Collectors.toList());
+				selectedUuids.stream().filter(uuid -> !ownershipHandedOverUuids.contains(uuid)).collect(Collectors.toList());
 
 			TextArea notShareableListComponent = new TextArea("", new ArrayList<>(ownershipHandedOverUuids).toString());
 			notShareableListComponent.setWidthFull();
 			notShareableListComponent.setEnabled(false);
 			Label notSharableLabel = new Label(
-					String.format(I18nProperties.getString(Strings.errorExternalSurveillanceToolEventNotOwned), ownershipHandedOverUuids.size()),
-					ContentMode.HTML);
+				String.format(I18nProperties.getString(Strings.errorExternalSurveillanceToolEventNotOwned), ownershipHandedOverUuids.size()),
+				ContentMode.HTML);
 			notSharableLabel.addStyleName(CssStyles.LABEL_WHITE_SPACE_NORMAL);
 			VaadinUiUtil.showConfirmationPopup(
-					I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
-					new VerticalLayout(
-							notSharableLabel,
-							notShareableListComponent),
-					String.format(I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_excludeAndSend), uuidsWithoutNotSharable.size(), selectedUuids.size()),
-					I18nProperties.getCaption(Captions.actionCancel),
-					800,
-					(confirmed) -> {
-						if (confirmed) {
-							ExternalSurveillanceServiceGateway.sendEventsToExternalSurveillanceTool(selectedUuids, callback, false);
-						}
-					});
+				I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_send),
+				new VerticalLayout(notSharableLabel, notShareableListComponent),
+				String.format(
+					I18nProperties.getCaption(Captions.ExternalSurveillanceToolGateway_excludeAndSend),
+					uuidsWithoutNotSharable.size(),
+					selectedUuids.size()),
+				I18nProperties.getCaption(Captions.actionCancel),
+				800,
+				(confirmed) -> {
+					if (confirmed) {
+						ExternalSurveillanceServiceGateway.sendEventsToExternalSurveillanceTool(selectedUuids, callback, false);
+					}
+				});
 		} else {
 			ExternalSurveillanceServiceGateway.sendEventsToExternalSurveillanceTool(selectedUuids, callback, true);
 		}

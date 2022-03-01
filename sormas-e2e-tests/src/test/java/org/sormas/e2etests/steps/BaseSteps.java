@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -39,6 +39,7 @@ import recorders.StepsLogger;
 public class BaseSteps implements StepLifecycleListener {
 
   public static RemoteWebDriver driver;
+  public static String locale;
   private final DriverManager driverManager;
 
   @Inject
@@ -48,6 +49,11 @@ public class BaseSteps implements StepLifecycleListener {
 
   public RemoteWebDriver getDriver() {
     return driver;
+  }
+
+  @Before(order = 0)
+  public void setRunningLocale(Scenario scenario) {
+    setLocale(scenario);
   }
 
   @Before(value = "@UI")
@@ -89,5 +95,15 @@ public class BaseSteps implements StepLifecycleListener {
 
   private static boolean isNonApiScenario(Scenario scenario) {
     return !scenario.getSourceTagNames().contains("@API");
+  }
+
+  private void setLocale(Scenario scenario) {
+    String localeTag =
+        scenario.getSourceTagNames().stream()
+            .filter(value -> value.startsWith("@env"))
+            .findFirst()
+            .get();
+    int indexOfSubstring = localeTag.indexOf("_");
+    locale = localeTag.substring(indexOfSubstring + 1);
   }
 }

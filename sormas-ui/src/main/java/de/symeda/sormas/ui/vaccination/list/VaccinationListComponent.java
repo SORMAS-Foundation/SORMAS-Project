@@ -36,7 +36,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
-import de.symeda.sormas.ui.utils.components.sidecomponent.event.EditSideComponentFieldEventListener;
+import de.symeda.sormas.ui.utils.components.sidecomponent.event.SideComponentFieldEditEventListener;
 
 public class VaccinationListComponent extends SideComponent {
 
@@ -139,7 +139,7 @@ public class VaccinationListComponent extends SideComponent {
 						v -> refreshCallback.run())));
 	}
 
-	private EditSideComponentFieldEventListener editSideComponentFieldEventListener(VaccinationList vaccinationList) {
+	private SideComponentFieldEditEventListener editSideComponentFieldEventListener(VaccinationList vaccinationList) {
 		return e -> view.showNavigationConfirmPopupIfDirty(() -> {
 			VaccinationListEntry listEntry = (VaccinationListEntry) e.getComponent();
 			ControllerProvider.getVaccinationController()

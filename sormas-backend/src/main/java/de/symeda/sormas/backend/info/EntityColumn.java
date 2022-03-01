@@ -1,19 +1,16 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.backend.info;
@@ -33,8 +30,10 @@ import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 import java.util.function.Function;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -108,11 +107,20 @@ public enum EntityColumn {
 			return Boolean.TRUE + ", " + Boolean.FALSE;
 		} else if (Collection.class.isAssignableFrom(fieldType)) {
 			return TypeUtils.getTypeArguments((ParameterizedType) fieldData.getField().getGenericType())
-					.values()
-					.stream()
-					.findFirst()
-					.map(type -> String.format(I18nProperties.getString(Strings.listOf), DataHelper.getHumanClassName((Class<?>) type)))
-					.orElseGet(fieldType::getSimpleName);
+				.values()
+				.stream()
+				.findFirst()
+				.map(type -> String.format(I18nProperties.getString(Strings.listOf), DataHelper.getHumanClassName((Class<?>) type)))
+				.orElseGet(fieldType::getSimpleName);
+		} else if (Map.class.isAssignableFrom(fieldType)) {
+			Type[] generics = TypeUtils.getTypeArguments((ParameterizedType) fieldData.getField().getGenericType()).values().toArray(new Type[0]);
+			if (generics.length != 2) {
+				throw new IllegalStateException("Could not clearly determine key and value generics.");
+			}
+			return String.format(
+				I18nProperties.getString(Strings.mapOf),
+				DataHelper.getHumanClassName((Class<?>) generics[0]),
+				DataHelper.getHumanClassName((Class<?>) generics[1]));
 		}
 
 		return fieldType.getSimpleName();

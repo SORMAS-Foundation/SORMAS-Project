@@ -570,6 +570,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 				facilityTypeGroup.setValue(null);
 			}
 			facility.setValue(locationDto.getFacility());
+			facility.setComponentError(null);
 		}
 	}
 

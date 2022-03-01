@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,17 +20,18 @@ package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.cases.SymptomsTabPage.*;
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
-import javax.inject.Named;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Symptoms;
+import org.sormas.e2etests.entities.services.SymptomService;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
-import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.pojo.web.Symptoms;
-import org.sormas.e2etests.services.SymptomService;
 import org.sormas.e2etests.state.ApiState;
 
 public class SymptomsTabSteps implements En {
@@ -44,7 +45,7 @@ public class SymptomsTabSteps implements En {
       WebDriverHelpers webDriverHelpers,
       SymptomService symptomService,
       ApiState apiState,
-      @Named("ENVIRONMENT_URL") String environmentUrl) {
+      EnvironmentManager environmentManager) {
     this.webDriverHelpers = webDriverHelpers;
     String firstSymptom = "Sore throat/pharyngitis";
 
@@ -62,7 +63,8 @@ public class SymptomsTabSteps implements En {
               NavBarPage.SAMPLE_BUTTON);
           String caseLinkPath = "/sormas-webdriver/#!cases/symptoms/";
           String uuid = apiState.getCreatedCase().getUuid();
-          webDriverHelpers.accessWebSite(environmentUrl + caseLinkPath + uuid);
+          webDriverHelpers.accessWebSite(
+              environmentManager.getEnvironmentUrlForMarket(locale) + caseLinkPath + uuid);
         });
 
     When(

@@ -1,7 +1,7 @@
 @UI @Sanity @Case @Symptoms
 Feature: Case symptoms tab e2e test cases
 
-  @issue=SORDEV-5521
+  @issue=SORDEV-5521 @env_main @ignore
   Scenario: Fill the symptoms tab
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -36,7 +36,7 @@ Feature: Case symptoms tab e2e test cases
     And I save data in Hospitalization
     Then I check if error in Hospitalization data is available
 
-  @issue=SORDEV-8350
+  @issue=SORDEV-8350 @env_main @ignore
   Scenario: Extend fever validation
     When API: I create a new person
     Then API: I check that POST call body is "OK"

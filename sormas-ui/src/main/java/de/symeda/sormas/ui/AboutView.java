@@ -133,6 +133,19 @@ public class AboutView extends VerticalLayout implements View {
 		CssStyles.style(versionLabel, CssStyles.VSPACE_3);
 		infoLayout.addComponent(versionLabel);
 
+		if (InfoProvider.get().isSnapshotVersion()) {
+			Link commitLink = new Link(
+				String.format(
+					"%s (%s)",
+					versionLabel.getValue(),
+					InfoProvider.get()
+						.getLastCommitShortId()),
+				new ExternalResource(InfoProvider.get().getLastCommitHistoryUrl()));
+			commitLink.setTargetName("_blank");
+			CssStyles.style(commitLink, CssStyles.VSPACE_3);
+			infoLayout.replaceComponent(versionLabel, commitLink);
+		}
+
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.LAB_MESSAGES)) {
 			addExternalServiceVersion(
 				Captions.aboutLabMessageAdapter,

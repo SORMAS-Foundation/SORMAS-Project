@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,7 +24,6 @@ import static org.sormas.e2etests.pages.application.configuration.DocumentTempla
 import cucumber.api.java8.En;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
-import javax.inject.Named;
 import lombok.SneakyThrows;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.testng.asserts.SoftAssert;
@@ -37,10 +36,7 @@ public class UploadDocumentTemplatesSteps implements En {
 
   @SneakyThrows
   @Inject
-  public UploadDocumentTemplatesSteps(
-      WebDriverHelpers webDriverHelpers,
-      SoftAssert softly,
-      @Named("ENVIRONMENT_URL") String environmentUrl) {
+  public UploadDocumentTemplatesSteps(WebDriverHelpers webDriverHelpers, SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
