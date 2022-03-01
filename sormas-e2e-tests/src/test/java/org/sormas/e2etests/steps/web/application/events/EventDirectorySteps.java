@@ -22,6 +22,9 @@ import cucumber.api.java8.En;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.common.DataOperations;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.EventGroup;
+import org.sormas.e2etests.entities.services.EventGroupService;
 import org.sormas.e2etests.entities.services.EventService;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.EventReferenceDateOptions;
@@ -64,27 +67,43 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_TAS
 import static org.sormas.e2etests.pages.application.events.EditEventPage.TITLE_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.APPLY_FILTER;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BULK_ACTIONS_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CREATED_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CREATE_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.DATE_TYPE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.ENTER_BULK_EDIT_MODE_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENTS_COLUMN_HEADERS;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENTS_RADIO_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENTS_TABLE_DATA;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENTS_TABLE_ROW;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_DISPLAY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_GROUP_ID_IN_GRID;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_GROUP_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_INVESTIGATION_STATUS;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_MANAGEMENT_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_STATUS_FILTER_BUTTONS;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTERED_EVENT_LINK_EVENT_FORM;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTER_BY_DISEASE;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTER_BY_REPORTING_USER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTER_BY_RISK_LEVEL;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTER_BY_SOURCE_TYPE;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTER_BY_TYPE_OF_PLACE;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FIRST_CHECKBOX_EVENT_DIRECTORY;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FIRST_EVENT_GROUP;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FIRST_EVENT_ID_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.GROUP_EVENTS_EVENT_DIRECTORY;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.GROUP_ID_COLUMN;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.ID_FIELD_FILTER;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LINKED_EVENT_GROUP_ID;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LINK_EVENT_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LINK_EVENT_BUTTON_EDIT_PAGE;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.MORE_BUTTON_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.RESET_FILTER;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SAVE_BUTTON_IN_LINK_FORM;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SEARCH_EVENT_BY_FREE_TEXT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SEARCH_EVENT_BY_FREE_TEXT_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.TOTAL_EVENTS_COUNTER;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.UNLINK_EVENT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.RESET_FILTERS_BUTTON;
@@ -101,6 +120,7 @@ public class EventDirectorySteps implements En {
       ApiState apiState,
       DataOperations dataOperations,
       AssertHelpers assertHelpers,
+      EventGroupService eventGroupService,
       EventService eventService,
       SoftAssert softly,
       EnvironmentManager environmentManager) {
@@ -146,6 +166,129 @@ public class EventDirectorySteps implements En {
           String eventGroupId = EditEventSteps.groupEvent.getUuid();
           webDriverHelpers.fillInWebElement(
               EVENT_GROUP_INPUT, dataOperations.getPartialUuidFromAssociatedLink(eventGroupId));
+        });
+
+    When(
+        "I click checkbox to choose all Event results on Event Directory Page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_CHECKBOX_EVENT_DIRECTORY);
+          webDriverHelpers.waitForPageLoaded();
+        });
+    And(
+        "I click on Bulk Actions combobox on Event Directory Page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(BULK_ACTIONS_EVENT_DIRECTORY));
+
+    And(
+        "I click on Group Events from Bulk Actions combobox on Event Directory Page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(GROUP_EVENTS_EVENT_DIRECTORY));
+    When(
+        "I navigate to the last created Event page via URL",
+        () -> {
+          String eventLinkPath = "/sormas-ui/#!events/data/";
+          String createdEventUUID = CreateNewEventSteps.newEvent.getUuid();
+          webDriverHelpers.accessWebSite(
+              environmentManager.getEnvironmentUrlForMarket(locale)
+                  + eventLinkPath
+                  + createdEventUUID);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 50);
+        });
+
+    When(
+        "^I click on ([^\"]*) Radiobutton on Event Directory Page$",
+        (String buttonName) -> {
+          webDriverHelpers.clickWebElementByText(EVENTS_RADIO_BUTTON, buttonName);
+          webDriverHelpers.waitForPageLoaded();
+        });
+    When(
+        "I check that name appearing in hover is equal to name of linked Event group",
+        () -> {
+          EventGroup createdGroup = EditEventSteps.groupEvent;
+          EventGroup collectedGroup =
+              EventGroup.builder()
+                  .name(webDriverHelpers.getWebElement(GROUP_ID_COLUMN).getAttribute("title"))
+                  .build();
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              collectedGroup, createdGroup, List.of("name"));
+          webDriverHelpers.waitForPageLoaded();
+        });
+
+    When(
+        "^I click on Link Event button on Event Directory Page$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON));
+    When(
+        "^I click on Link Event button on Edit Event Page$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON_EDIT_PAGE));
+
+    When(
+        "^I click on Unlink Event button on Event Directory Page$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(UNLINK_EVENT_BUTTON));
+
+    When(
+        "^I fill Id filter with Id of last created event in Link Event to group form$",
+        () ->
+            webDriverHelpers.fillInWebElement(
+                ID_FIELD_FILTER, apiState.getCreatedEvent().getUuid()));
+    When(
+        "^I click on filtered Event in Link Event to group form$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(FILTERED_EVENT_LINK_EVENT_FORM));
+    When(
+        "^I click on first Event Group on the list in Link Event form$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_GROUP));
+
+    When(
+        "^I click on SAVE button in Link Event to group form$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_IN_LINK_FORM));
+
+    When(
+        "^I click on Linked Group Id on Edit Event Page$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(LINKED_EVENT_GROUP_ID));
+    When(
+        "^I click on Group Id in Events result on Event Directory Page$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(EVENT_GROUP_ID_IN_GRID));
+
+    When(
+        "^I click on ([^\"]*) Radiobutton on Event Directory Page$",
+        (String buttonName) -> {
+          webDriverHelpers.clickWebElementByText(EVENTS_RADIO_BUTTON, buttonName);
+          webDriverHelpers.waitForPageLoaded();
+        });
+
+    When(
+        "^I click on Link Event button on Event Directory Page$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON));
+    When(
+        "^I click on Link Event button on Edit Event Page$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON_EDIT_PAGE));
+
+    When(
+        "^I click on Unlink Event button on Event Directory Page$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(UNLINK_EVENT_BUTTON));
+
+    When(
+        "^I fill Id filter with Id of last created event in Link Event to group form$",
+        () ->
+            webDriverHelpers.fillInWebElement(
+                ID_FIELD_FILTER, apiState.getCreatedEvent().getUuid()));
+    When(
+        "^I click on filtered Event in Link Event to group form$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(FILTERED_EVENT_LINK_EVENT_FORM));
+    When(
+        "^I click on first Event Group on the list in Link Event form$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_GROUP));
+
+    When(
+        "^I click on SAVE button in Link Event to group form$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_IN_LINK_FORM));
+
+    When(
+        "^I click on Linked Group Id on Edit Event Page$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(LINKED_EVENT_GROUP_ID));
+    When(
+        "^I click on Group Id in Events result on Event Directory Page$",
+        () ->{
+            webDriverHelpers.scrollToElement(EVENT_GROUP_ID_IN_GRID);
+            webDriverHelpers.clickOnWebElementBySelector(EVENT_GROUP_ID_IN_GRID);
         });
 
     When(
@@ -270,6 +413,12 @@ public class EventDirectorySteps implements En {
           String disease = DiseasesValues.getRandomDiseaseCaption();
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(FILTER_BY_DISEASE, disease);
+        });
+    When(
+        "I filter by last created group in Event Directory Page",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.fillInWebElement(EVENT_GROUP_INPUT, EditEventSteps.groupEvent.getUuid());
         });
 
     When(
@@ -463,6 +612,13 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
           TimeUnit.SECONDS.sleep(10);
         });
+    When(
+        "I hover to Event Groups column of the Event result",
+        () -> {
+          webDriverHelpers.scrollToElement(GROUP_ID_COLUMN);
+          webDriverHelpers.hoverToElement(GROUP_ID_COLUMN);
+          TimeUnit.SECONDS.sleep(10);
+        });
 
     When(
         "I click on the RESET FILTERS button from Event",
@@ -474,6 +630,15 @@ public class EventDirectorySteps implements En {
           TimeUnit.SECONDS.sleep(10);
         });
 
+    When(
+        "I click on the More button on Event directory page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(MORE_BUTTON_EVENT_DIRECTORY));
+    When(
+        "I click Enter Bulk Edit Mode on Event directory page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ENTER_BULK_EDIT_MODE_EVENT_DIRECTORY);
+          webDriverHelpers.waitForPageLoaded();
+        });
     When(
         "I click on the created event participant from the list",
         () -> webDriverHelpers.clickOnWebElementBySelector(CREATED_PARTICIPANT));
