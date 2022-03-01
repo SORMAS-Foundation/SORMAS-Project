@@ -250,10 +250,10 @@ public class PersonDirectorySteps implements En {
     When(
         "I navigate to the last created via api Person page via URL",
         () -> {
-          String createdPersonUUID = apiState.getLastCreatedPerson().getUuid();
-          String LAST_CREATED_PERSON_PAGE_URL =
-              environmentUrl + "/sormas-webdriver/#!persons/data/" + createdPersonUUID;
-          webDriverHelpers.accessWebSite(LAST_CREATED_PERSON_PAGE_URL);
+            String personLinkPath = "/sormas-ui/#!persons/data/";
+            String uuid = apiState.getLastCreatedPerson().getUuid();
+            webDriverHelpers.accessWebSite(
+                    environmentManager.getEnvironmentUrlForMarket(locale) + personLinkPath + uuid);
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 50);
         });
