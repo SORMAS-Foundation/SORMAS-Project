@@ -51,7 +51,7 @@ public class BaseTravelEntryService extends AbstractCoreAdoService<TravelEntry> 
 		return cb.isFalse(root.get(TravelEntry.DELETED));
 	}
 
-	protected Predicate createUserFilter(TravelEntryQueryContext qc) {
+	public Predicate createUserFilter(TravelEntryQueryContext qc) {
 		final User currentUser = userService.getCurrentUser();
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();
 		Predicate filter = inJurisdictionOrOwned(qc);

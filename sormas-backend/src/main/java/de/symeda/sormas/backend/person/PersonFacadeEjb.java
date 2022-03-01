@@ -51,8 +51,6 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.travelentry.TravelEntry;
-import de.symeda.sormas.backend.travelentry.TravelEntryJoins;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.SerializationUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -1467,23 +1465,6 @@ public class PersonFacadeEjb implements PersonFacade {
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
-		final User currentUser = userService.getCurrentUser();
-		if(criteria != null &&
-			PersonAssociation.TRAVEL_ENTRY.equals(criteria.getPersonAssociation())
-			&& currentUser.getLimitedDisease() != null){
-
-			final Predicate travelEntryPredicate = travelEntryLimitedDiseaseFilter(personQueryContext, currentUser.getLimitedDisease());
-			filter = CriteriaBuilderHelper.and(cb, filter, travelEntryPredicate);
-		}
-
-		return filter;
-	}
-
-	private Predicate travelEntryLimitedDiseaseFilter(PersonQueryContext personQueryContext, Disease limitedDisease){
-		PersonJoins<Person> joins = (PersonJoins<Person>) personQueryContext.getJoins();
-		final Join<Person, TravelEntry> personTravelEntryJoin = joins.getTravelEntry();
-		final CriteriaBuilder cb = personQueryContext.getCriteriaBuilder();
-		Predicate filter = CriteriaBuilderHelper.and(cb, cb.equal(personTravelEntryJoin.get(Contact.DISEASE), limitedDisease));
 		return filter;
 	}
 
