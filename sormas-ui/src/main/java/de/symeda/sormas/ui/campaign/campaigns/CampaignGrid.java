@@ -67,11 +67,11 @@ public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteri
 
 		final boolean canEditCampaigns = UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_EDIT);
 		final String navigateToCampaignColumnIcon = canEditCampaigns ? VaadinIcons.COPY.getHtml() : VaadinIcons.EYE.getHtml();
-		final Column<CampaignIndexDto, String> navigateToCampaignColumn = addColumn(entry -> navigateToCampaignColumnIcon+" Clone", new HtmlRenderer());
+		//final Column<CampaignIndexDto, String> navigateToCampaignColumn = addColumn(entry -> navigateToCampaignColumnIcon+" Clone", new HtmlRenderer());
 		final String navigateToCampaignColumnId = canEditCampaigns ? CLONE_BTN_ID : OPEN_BTN_ID;
-		navigateToCampaignColumn.setId(navigateToCampaignColumnId);
-		navigateToCampaignColumn.setSortable(false);
-		navigateToCampaignColumn.setWidth(20);
+		//navigateToCampaignColumn.setId(navigateToCampaignColumnId);
+		//navigateToCampaignColumn.setSortable(false);
+		//navigateToCampaignColumn.setWidth(20);
 
 		//addItemClickListener(new ShowDetailsListener<>(navigateToCampaignColumnId, e -> ControllerProvider.getCampaignController().navigateToCampaign(e.getUuid())))  campaign data and dashboard definitions by clicking inside one o
 		
@@ -83,7 +83,7 @@ public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteri
 			}
 
 		//setColumns(, CampaignIndexDto.NAME, CampaignIndexDto.START_DATE, CampaignIndexDto.END_DATE);
-		setColumns(CampaignIndexDto.NAME, CampaignIndexDto.START_DATE, CampaignIndexDto.END_DATE, navigateToCampaignColumnId);
+		setColumns(CampaignIndexDto.NAME, CampaignIndexDto.START_DATE, CampaignIndexDto.END_DATE);
 		Language userLanguage = I18nProperties.getUserLanguage();
 		((Column<CampaignIndexDto, Date>) getColumn(CampaignIndexDto.START_DATE))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateFormat(userLanguage)));
@@ -93,7 +93,7 @@ public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteri
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(CampaignIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
 		}
-		getColumn(navigateToCampaignColumnId).setWidth(100).setStyleGenerator(item -> CssStyles.GRID_CELL_LINK);
+		//getColumn(navigateToCampaignColumnId).setWidth(100).setStyleGenerator(item -> CssStyles.GRID_CELL_LINK);
 	}
 
 	public void setLazyDataProvider() {
