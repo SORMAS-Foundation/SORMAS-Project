@@ -1,7 +1,7 @@
 @UI @Sanity @Persons
 Feature: Edit Persons
 
-  @env_main
+  @env_main @ignore
   Scenario: Edit existent person
     Given I log in with National User
     When I click on the Contacts button from navbar
@@ -86,7 +86,7 @@ Feature: Edit Persons
     And I apply on the APPLY FILTERS button
     And I click on the RESET FILTERS button for Person
 
-@issue=SORDEV-8468 @env_main
+@issue=SORDEV-8468 @env_main @ignore
   Scenario: Edit existent person and provoke errors in the Edit Person page
     Given I log in with National User
     When I click on the Persons button from navbar

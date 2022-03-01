@@ -1,6 +1,7 @@
 package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_CASES_LIST_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static recorders.StepsLogger.PROCESS_ID_STRING;
 
@@ -26,6 +27,7 @@ import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
+import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
 @Slf4j
@@ -33,6 +35,7 @@ public class CaseDetailedTableViewSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   private static BaseSteps baseSteps;
+  static final String DATE_FORMAT_DE = "dd.MM.yyyy";
 
   @Inject
   public CaseDetailedTableViewSteps(
@@ -144,6 +147,41 @@ public class CaseDetailedTableViewSteps implements En {
               "Reporting user is not correct");
           softly.assertAll();
         });
+
+    When(
+        "I back to Case Directory using case list button",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(BACK_TO_CASES_LIST_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(BACK_TO_CASES_LIST_BUTTON);
+        });
+
+    When(
+        "I check if Case date format displayed in Cases tab is correct for specified fields",
+        () -> {
+          List<Map<String, String>> tableRowsData = getTableRowsData();
+          Map<String, String> detailedCaseDTableRow = tableRowsData.get(0);
+          softly.assertTrue(
+              checkDateFormatDE(detailedCaseDTableRow, "NACHVERFOLGUNG BIS"),
+              "Date format is invalid in NACHVERFOLGUNG BIS field");
+          softly.assertTrue(
+              checkDateFormatDE(detailedCaseDTableRow, "MELDEDATUM"),
+              "Date format is invalid in MELDEDATUM field");
+          softly.assertAll();
+        });
+  }
+
+  private boolean checkDateFormatDE(Map<String, String> map, String row) {
+    DateFormat dateFormat = new SimpleDateFormat(DATE_FORMAT_DE);
+    dateFormat.setLenient(false);
+    try {
+      Assert.assertFalse(map.isEmpty(), String.format("The element: %s was empty or null", map));
+      dateFormat.parse(map.get(row));
+      return true;
+    } catch (ParseException e) {
+      e.printStackTrace();
+      log.error(PROCESS_ID_STRING + e.getMessage());
+      return false;
+    }
   }
 
   private List<Map<String, String>> getTableRowsData() {
