@@ -19,6 +19,8 @@
 package org.sormas.e2etests.steps.web.application.events;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_GRID_RESULTS_ROWS;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_FROM_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_TO_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.*;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.APPLY_FILTERS_BUTTON;
@@ -26,10 +28,22 @@ import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
+import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.common.DataOperations;
+import org.sormas.e2etests.entities.services.EventService;
 import org.sormas.e2etests.enums.*;
+import org.sormas.e2etests.enums.EventReferenceDateOptions;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
 import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.AssertHelpers;
@@ -37,17 +51,26 @@ import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.events.EventDirectoryPage;
 import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
 
 public class EventDirectorySteps implements En {
+  private final WebDriverHelpers webDriverHelpers;
+  private final BaseSteps baseSteps;
 
   @Inject
   public EventDirectorySteps(
       WebDriverHelpers webDriverHelpers,
+      BaseSteps baseSteps,
       ApiState apiState,
       DataOperations dataOperations,
       AssertHelpers assertHelpers,
+      EventService eventService,
+      SoftAssert softly,
       EnvironmentManager environmentManager) {
+    this.webDriverHelpers = webDriverHelpers;
+    this.baseSteps = baseSteps;
 
     When(
         "I fill EVENT ID filter by API",
@@ -180,6 +203,50 @@ public class EventDirectorySteps implements En {
         });
 
     When(
+        "I select Report Date among Event Reference Date options",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(
+              DATE_TYPE_COMBOBOX, EventReferenceDateOptions.REPORT_DATE.toString());
+        });
+
+    When(
+        "I fill in a date range in Date of Event From Epi Week and ...To fields",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          eventService.timeRange = buildTimeRange();
+          webDriverHelpers.fillInWebElement(
+              DATE_FROM_COMBOBOX,
+              eventService
+                  .timeRange[0]
+                  .format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+                  .toString());
+          webDriverHelpers.fillInWebElement(
+              DATE_TO_COMBOBOX,
+              eventService
+                  .timeRange[1]
+                  .format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+                  .toString());
+        });
+
+    When(
+        "I check that the dates of displayed Event results are correct",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          List<Map<String, String>> tableRowsData = getTableRowsData();
+          for (int i = 0; i < tableRowsData.size(); i++) {
+            String dateCell =
+                tableRowsData.get(i).get(EventsTableColumnsHeaders.REPORT_DATE_HEADER.toString());
+            LocalDate date = getLocalDateFromColumns(dateCell.substring(0, dateCell.indexOf(" ")));
+            softly.assertTrue(
+                date.isAfter(eventService.timeRange[0].minusDays(1))
+                    && date.isBefore(eventService.timeRange[1].plusDays(1)),
+                "The date(s) of displayed events are out of the requested range");
+          }
+          softly.assertAll();
+        });
+
+    When(
         "^I check if it appears under ([^\"]*) filter in event directory",
         (String eventStatus) -> {
           final String eventUuid = CreateNewEventSteps.newEvent.getUuid();
@@ -219,6 +286,12 @@ public class EventDirectorySteps implements En {
           final String personUuid = EditEventSteps.person.getUuid();
           webDriverHelpers.clickOnWebElementBySelector(EVENT_PARTICIPANTS_TAB);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(personUuid));
+        });
+
+    When(
+        "I click on the first row from event participant",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_PARTICIPANT);
         });
 
     When(
@@ -288,5 +361,71 @@ public class EventDirectorySteps implements En {
                             webDriverHelpers.getTextFromPresentWebElement(TOTAL_EVENTS_COUNTER)),
                         number.intValue(),
                         "Number of displayed cases is not correct")));
+  }
+
+  private List<Map<String, String>> getTableRowsData() {
+    Map<String, Integer> headers = extractColumnHeadersHashMap();
+    List<WebElement> tableRows = getTableRows();
+    List<HashMap<Integer, String>> tableDataList = new ArrayList<>();
+    tableRows.forEach(
+        table -> {
+          HashMap<Integer, String> indexWithData = new HashMap<>();
+          AtomicInteger atomicInt = new AtomicInteger();
+          List<WebElement> tableData = table.findElements(EVENTS_TABLE_DATA);
+          tableData.forEach(
+              dataText -> {
+                webDriverHelpers.scrollToElementUntilIsVisible(dataText);
+                indexWithData.put(atomicInt.getAndIncrement(), dataText.getText());
+              });
+          tableDataList.add(indexWithData);
+        });
+    List<Map<String, String>> tableObjects = new ArrayList<>();
+    tableDataList.forEach(
+        row -> {
+          ConcurrentHashMap<String, String> objects = new ConcurrentHashMap<>();
+          headers.forEach((headerText, index) -> objects.put(headerText, row.get(index)));
+          tableObjects.add(objects);
+        });
+    return tableObjects;
+  }
+
+  private List<WebElement> getTableRows() {
+    webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(EVENTS_COLUMN_HEADERS);
+    return baseSteps.getDriver().findElements(EVENTS_TABLE_ROW);
+  }
+
+  private Map<String, Integer> extractColumnHeadersHashMap() {
+    AtomicInteger atomicInt = new AtomicInteger();
+    HashMap<String, Integer> headerHashmap = new HashMap<>();
+    webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(EVENTS_COLUMN_HEADERS);
+    webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(EVENTS_COLUMN_HEADERS);
+    webDriverHelpers.scrollToElementUntilIsVisible(EVENTS_COLUMN_HEADERS);
+    baseSteps
+        .getDriver()
+        .findElements(EVENTS_COLUMN_HEADERS)
+        .forEach(
+            webElement -> {
+              webDriverHelpers.scrollToElementUntilIsVisible(webElement);
+              headerHashmap.put(webElement.getText(), atomicInt.getAndIncrement());
+            });
+    return headerHashmap;
+  }
+
+  private LocalDate getLocalDateFromColumns(String date) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+    try {
+      return LocalDate.parse(date, formatter);
+    } catch (Exception e) {
+      throw new WebDriverException(
+          String.format(
+              "Unable to parse date: %s due to caught exception: %s", date, e.getMessage()));
+    }
+  }
+
+  private LocalDate[] buildTimeRange() {
+    LocalDate[] timeRange = new LocalDate[2];
+    timeRange[0] = LocalDate.now().minusMonths(1);
+    timeRange[1] = LocalDate.now();
+    return timeRange;
   }
 }

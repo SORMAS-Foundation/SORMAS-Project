@@ -45,6 +45,7 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.common.CoreAdo;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -1166,9 +1167,15 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		}
 		if (contactCriteria.getRelevanceStatus() != null) {
 			if (contactCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED))));
+				filter = CriteriaBuilderHelper.and(
+					cb,
+					filter,
+					cb.and(
+						cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED))),
+						cb.or(cb.equal(from.get(Contact.ARCHIVED), false), cb.isNull(from.get(Contact.ARCHIVED)))));
 			} else if (contactCriteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(caze.get(Case.ARCHIVED), true));
+				filter =
+					CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(caze.get(Case.ARCHIVED), true), cb.equal(from.get(Contact.ARCHIVED), true)));
 			}
 		}
 		if (contactCriteria.getDeleted() != null) {

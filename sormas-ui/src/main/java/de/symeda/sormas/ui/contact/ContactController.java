@@ -377,8 +377,12 @@ public class ContactController {
 		boolean createdFromLabMesssage) {
 
 		final PersonDto casePerson = caze != null ? FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()) : null;
-		ContactCreateForm createForm =
-			new ContactCreateForm(caze != null ? caze.getDisease() : null, caze != null && !asSourceContact, asSourceContact);
+		ContactCreateForm createForm;
+		if (createdFromLabMesssage) {
+			createForm = new ContactCreateForm(caze != null ? caze.getDisease() : null, caze != null && !asSourceContact, asSourceContact, false);
+		} else {
+			createForm = new ContactCreateForm(caze != null ? caze.getDisease() : null, caze != null && !asSourceContact, asSourceContact);
+		}
 		createForm.setValue(createNewContact(caze, asSourceContact));
 		if (casePerson != null && asSourceContact) {
 			createForm.setPerson(casePerson);

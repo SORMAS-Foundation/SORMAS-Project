@@ -557,11 +557,14 @@ public class CaseController {
 			|| (convertedEventParticipant == null && convertedTravelEntry == null));
 		assert (unrelatedDisease == null || (convertedEventParticipant == null && convertedTravelEntry == null));
 
-		CaseCreateForm createForm = convertedContact == null
-			&& convertedEventParticipant == null
-			&& convertedTravelEntry == null
-			&& unrelatedDisease == null
-			&& !createdFromLabMessage ? new CaseCreateForm() : new CaseCreateForm(convertedTravelEntry);
+		CaseCreateForm createForm;
+		if (createdFromLabMessage) {
+			createForm = new CaseCreateForm(true, false, null);
+		} else {
+			createForm = convertedContact == null && convertedEventParticipant == null && convertedTravelEntry == null && unrelatedDisease == null
+				? new CaseCreateForm()
+				: new CaseCreateForm(convertedTravelEntry);
+		}
 
 		CaseDataDto caze;
 		PersonDto person;
