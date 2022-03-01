@@ -122,7 +122,7 @@ Feature: Case end to end tests
     And I open the Case Contacts tab of the created case via api
     And I verify that created contact from Case Contacts tab is correctly displayed
 
-  @env_main
+  @env_main @ignore
   Scenario: Edit all fields from Symptoms tab
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -137,7 +137,7 @@ Feature: Case end to end tests
     When I am accessing the Symptoms tab using of created case via api
     And I check the created data is correctly displayed on Symptoms tab page
 
-@issue=SORDEV-5496 @env_main
+@issue=SORDEV-5496 @env_main @ignore
   Scenario: Generate case document
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -209,7 +209,7 @@ Feature: Case end to end tests
     And I click on save button to Save Person data in Case Person Tab
     Then I check if saved Person data is correct
 
-  @issue=SORDEV-5529 @env_main
+  @issue=SORDEV-5529 @env_main @ignore
   Scenario: Fill the clinical course tab
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -422,3 +422,73 @@ Feature: Case end to end tests
     And From Case page I click on Calculate Case Classification button
     And I click on save case button
     And I check that Case Classification has "Confirmed case" value
+
+  @issue=SORDEV-9033 @env_main
+  Scenario: Create case with directly entered home address
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I fill new case form with specific data
+    When I click on Enter Home Address of the Case Person Now in the Create New Case popup
+    And I fill specific address data in Case Person tab
+    Then I click on save case button
+    And I navigate to case person tab
+    And I check if saved Person data is correct
+
+  @issue=SORDEV-7452 @env_main
+  Scenario: Bulk mode for linking/adding cases to new Event
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    When API: I create 2 new cases
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I apply Date type filter to "Case report date" on Case directory page
+    And I fill Cases from input to 1 days before mocked Cases created on Case directory page
+    And I apply last created api Person Id filter on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I click on the More button on Case directory page
+    And I click Enter Bulk Edit Mode on Case directory page
+    And I click checkbox to choose all Case results
+    And I click on Bulk Actions combobox on Case Directory Page
+    And I click on Link to Event from Bulk Actions combobox on Case Directory Page
+    And I click on New Event option in Link to Event Form
+    And I click on SAVE button in Link Event to group form
+    And I create a new event with status CLUSTER
+    And I navigate to the last created Event page via URL
+    And I check that number of displayed Event Participants is 1
+
+  @issue=SORDEV-7452 @env_main
+  Scenario: Bulk mode for linking/adding case to existing Event
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    When API: I create 2 new cases
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I apply Date type filter to "Case report date" on Case directory page
+    And I fill Cases from input to 1 days before mocked Cases created on Case directory page
+    And I apply last created api Person Id filter on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I click on the More button on Case directory page
+    And I click Enter Bulk Edit Mode on Case directory page
+    And I click checkbox to choose all Case results
+    And I click on Bulk Actions combobox on Case Directory Page
+    And I click on Link to Event from Bulk Actions combobox on Case Directory Page
+    And I fill Event Id filter with last created EventId on Link to Event form
+    And I click first result in grid on Link to Event form
+    And I click on SAVE button in Link Event to group form
+    And I navigate to the last created through API Event page via URL
+    And I check that number of displayed Event Participants is 1
+

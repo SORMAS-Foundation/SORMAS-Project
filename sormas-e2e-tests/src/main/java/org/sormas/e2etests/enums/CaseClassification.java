@@ -61,6 +61,16 @@ public enum CaseClassification {
   }
 
   @SneakyThrows
+  public static String getUIValueForGivenAPIValue(String option) {
+    CaseClassification[] classifications = CaseClassification.values();
+    for (CaseClassification value : classifications) {
+      if (value.getClassificationAPIvalue().equalsIgnoreCase(option))
+        return value.getClassificationUIvalue();
+    }
+    throw new Exception("Unable to find " + option + " value in CaseClassification Enum");
+  }
+
+  @SneakyThrows
   public static String getCaptionValueFor(String option) {
     CaseClassification[] classifications = CaseClassification.values();
     for (CaseClassification value : classifications) {

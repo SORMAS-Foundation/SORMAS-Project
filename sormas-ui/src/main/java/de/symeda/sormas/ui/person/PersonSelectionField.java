@@ -56,6 +56,11 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 	private RadioButtonGroup<String> rbCreatePerson;
 	protected PersonSelectionFilterForm filterForm;
 	private PersonDto referencePerson;
+	private boolean hasMatches;
+
+	public PersonSelectionField(PersonDto referencePerson, String infoText) {
+		this(referencePerson, infoText, null);
+	}
 
 	/**
 	 * Generate a selection field which contains a grid containing all similar persons to the `referencePerson`.
@@ -64,12 +69,22 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 	 *            The person for which similar persons are searched and displayed.
 	 * @param infoText
 	 *            Information displayed to the user.
+	 * @param infoTextWithoutMatches
+	 *            Information displayed to the user if the field is shown without matches.
 	 */
-	public PersonSelectionField(PersonDto referencePerson, String infoText) {
+	public PersonSelectionField(PersonDto referencePerson, String infoText, String infoTextWithoutMatches) {
 		this.referencePerson = referencePerson;
-		this.infoText = infoText;
 
 		initializeGrid();
+
+		this.hasMatches = referencePerson == null
+			? false
+			: FacadeProvider.getPersonFacade().checkMatchingNameInDatabase(UserProvider.getCurrent().getUserReference(), defaultCriteria);
+		if (infoTextWithoutMatches == null) {
+			this.infoText = infoText;
+		} else {
+			this.infoText = hasMatches ? infoText : infoTextWithoutMatches;
+		}
 	}
 
 	protected void addInfoComponent() {
@@ -178,7 +193,9 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 
 	private void addSelectPersonRadioGroup() {
 		List<String> selectPersonOption = new ArrayList<>();
-		selectPersonOption.add(SELECT_PERSON);
+		if (hasMatches) {
+			selectPersonOption.add(SELECT_PERSON);
+		}
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.PERSON_DUPLICATE_CUSTOM_SEARCH)) {
 			selectPersonOption.add(SEARCH_AND_SELECT_PERSON);
 		}
@@ -214,7 +231,6 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 
 	protected void addFilterForm() {
 		filterForm = new PersonSelectionFilterForm();
-		filterForm.setVisible(false);
 
 		final PersonSimilarityCriteria searchCriteria = new PersonSimilarityCriteria();
 		if (referencePerson != null) {
@@ -266,6 +282,7 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 				rbSelectPerson.setValue(null);
 				personGrid.deselectAll();
 				personGrid.setEnabled(false);
+				personGrid.setHeightByRows(1);
 				if (selectionChangeCallback != null) {
 					selectionChangeCallback.accept(true);
 				}
@@ -291,7 +308,11 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 		mainLayout.addComponent(personGrid);
 		addCreatePersonRadioGroup();
 
-		rbSelectPerson.setValue(SELECT_PERSON);
+		if (hasMatches) {
+			rbSelectPerson.setValue(SELECT_PERSON);
+		} else {
+			rbCreatePerson.setValue(CREATE_PERSON);
+		}
 
 		return mainLayout;
 	}
@@ -323,7 +344,7 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 	}
 
 	public boolean hasMatches() {
-		return FacadeProvider.getPersonFacade().checkMatchingNameInDatabase(UserProvider.getCurrent().getUserReference(), defaultCriteria);
+		return hasMatches;
 	}
 
 	/**

@@ -41,6 +41,8 @@ public class CreateNewSamplePage {
       By.cssSelector("[id='lab'] [class='v-filterselect-button']");
   public static final By LABORATORY_INPUT = By.cssSelector("[id='lab'] input");
   public static final By LABORATORY_NAME_INPUT = By.cssSelector("[id='labDetails']");
+  public static final By LABORATORY_NAME_POPUP_INPUT =
+      By.cssSelector(".popupContent [id='labDetails']");
   public static final By RECEIVED_OPTION_BUTTON = By.cssSelector("[id='received'] label");
   public static final By REQUEST_PATHOGEN_OPTION_BUTTON =
       By.cssSelector("[id='pathogenTestingRequested'] label");
