@@ -70,13 +70,33 @@ public class EventDirectoryPage {
   public static final By EVENT_PARTICIPANT_INPUT = By.id("freeTextEventParticipants");
   public static final By EVENT_GROUP_INPUT = By.id("freeTextEventGroups");
 
+  public static final By EVENTS_RADIO_BUTTON = By.cssSelector(".v-radiobutton");
+  public static final By LINK_EVENT_BUTTON = By.id("Link event");
+  public static final By LINK_EVENT_BUTTON_EDIT_PAGE = By.id("Link event group");
+  public static final By UNLINK_EVENT_BUTTON = By.id("unlink-event-0");
+  public static final By ID_FIELD_FILTER = By.id("search");
+  public static final By LINKED_EVENT_GROUP_ID =
+      By.xpath("//div[@location = 'event-groups']//div[contains(@class, 'v-slot')]//a");
+  public static final By SAVE_BUTTON_IN_LINK_FORM = By.cssSelector(".popupContent #commit");
+  public static final By FILTERED_EVENT_LINK_EVENT_FORM = By.xpath("//tr[@role='row']");
+  public static final By FIRST_EVENT_GROUP = By.xpath("//tr[@role='row']");
   /*public static By getByEventUuid(String eventUuid) {
     return By.cssSelector("a[title=" + eventUuid + "]");
   }*/
+
+  public static final By EVENT_GROUP_ID_IN_GRID = By.xpath("//tr[@role='row']//td[15]/a");
   public static final By FIRST_EVENT_ID_BUTTON = By.cssSelector(".v-grid-row-has-data a[title]");
   public static final By CREATE_CASE_BUTTON =
       By.xpath("//td//span[contains(@class, 'v-icon-edit')]");
   public static final By TOTAL_EVENTS_COUNTER = By.cssSelector(".badge");
+  public static final By MORE_BUTTON_EVENT_DIRECTORY = By.id("more");
+  public static final By ENTER_BULK_EDIT_MODE_EVENT_DIRECTORY = By.id("actionEnterBulkEditMode");
+  public static final By FIRST_CHECKBOX_EVENT_DIRECTORY =
+      By.xpath("//th[@role='columnheader']//input[@type='checkbox']/../..");
+  public static final By BULK_ACTIONS_EVENT_DIRECTORY = By.id("bulkActions-2");
+  public static final By GROUP_EVENTS_EVENT_DIRECTORY = By.id("bulkActions-7");
+  public static final By GROUP_ID_COLUMN = By.xpath("(//td//a)[2]");
+  public static final By EVENT_GROUP_INPUT = By.id("freeTextEventGroups");
 
   public static By getByEventUuid(String eventUuid) {
     return By.xpath(String.format("//a[@title='%s']", eventUuid));

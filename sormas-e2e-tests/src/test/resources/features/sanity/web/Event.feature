@@ -271,3 +271,32 @@ Feature: Create events
     And I click on Edit event button for the first event in Events section
     And I click on the Navigate to event directory filtered on this event group
     And I check the number of displayed Event results from All button is 1
+
+  @issue=SORDEV-5572 @env_main
+  Scenario: Testing Event group adding for new event
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    Then I open the last created event via api
+    And I click on link event group
+    And I create a new event group
+    And I click on the Events button from navbar
+    And I fill EVENT ID filter by API
+    And I apply on the APPLY FILTERS button from Event
+    And I hover to Event Groups column of the Event result
+    And I click on the More button on Event directory page
+    And I click Enter Bulk Edit Mode on Event directory page
+    And I click checkbox to choose all Event results on Event Directory Page
+    And I click on Bulk Actions combobox on Event Directory Page
+    And I click on Group Events from Bulk Actions combobox on Event Directory Page
+    And I create a new event group
+    And I hover to Event Groups column of the Event result
+    And I filter by last created group in Event Directory Page
+    And I apply on the APPLY FILTERS button from Event
+    And I hover to Event Groups column of the Event result
+    And I check that name appearing in hover is equal to name of linked Event group
+    And I check the number of displayed Event results from All button is 1
+
+
