@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -53,6 +53,12 @@ public class EventDirectoryPage {
   public static final By EVENT_CLUSTER = By.id("status-Cluster");
   public static final By EVENT_DROPPED = By.id("status-Dropped");
   public static final By CREATED_PARTICIPANT = By.cssSelector("[role='gridcell'] a");
+  public static final By DATE_TYPE_COMBOBOX =
+      By.cssSelector("[id='dateType'] [class='v-filterselect-button']");
+  public static final By EVENTS_COLUMN_HEADERS =
+      By.cssSelector("thead" + " .v-grid-column-default-header-content");
+  public static final By EVENTS_TABLE_ROW = By.cssSelector("div.v-grid-tablewrapper tbody tr");
+  public static final By EVENTS_TABLE_DATA = By.tagName("td");
 
   /*public static By getByEventUuid(String eventUuid) {
     return By.cssSelector("a[title=" + eventUuid + "]");

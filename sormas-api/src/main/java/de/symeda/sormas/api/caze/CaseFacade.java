@@ -36,7 +36,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
@@ -163,14 +162,6 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 	CaseDataDto cloneCase(CaseDataDto existingCaseDto);
 
 	void archiveAllArchivableCases(int daysAfterCaseGetsArchived);
-
-	/**
-	 * @param caseUuids
-	 *            Cases identified by {@code uuid} to be archived or not.
-	 * @param archived
-	 *            {@code true} archives the Case, {@code false} unarchives it.
-	 */
-	void updateArchived(List<String> caseUuids, boolean archived);
 
 	List<CaseReferenceDto> getRandomCaseReferences(CaseCriteria criteria, int count, Random randomGenerator);
 

@@ -16,6 +16,7 @@
 package de.symeda.sormas.backend.common;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -41,6 +42,7 @@ import de.symeda.sormas.backend.deletionconfiguration.DeletionConfigurationServi
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
+import org.hibernate.mapping.Collection;
 
 public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, SRV extends AbstractCoreAdoService<ADO>, CRITERIA extends BaseCriteria>
 	extends AbstractBaseEjb<ADO, DTO, INDEX_DTO, REF_DTO, SRV, CRITERIA>
@@ -101,23 +103,6 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		return service.exists(uuid);
 	}
 
-	@Override
-	public void archive(String uuid) {
-		ADO ado = service.getByUuid(uuid);
-		if (ado != null) {
-			ado.setArchived(true);
-			service.ensurePersisted(ado);
-		}
-	}
-
-	public void dearchive(String uuid) {
-		ADO ado = service.getByUuid(uuid);
-		if (ado != null) {
-			ado.setArchived(false);
-			service.ensurePersisted(ado);
-		}
-	}
-
 	public boolean isArchived(String uuid) {
 		return service.isArchived(uuid);
 	}
@@ -161,12 +146,12 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 
 	protected String getDeleteReferenceField(DeletionReference deletionReference) {
 		switch (deletionReference) {
-			case CREATION:
-				return AbstractDomainObject.CREATION_DATE;
-			case END:
-				return AbstractDomainObject.CHANGE_DATE;
-			default:
-				throw new IllegalArgumentException("deletion reference " + deletionReference + " not supported in " + getClass().getSimpleName());
+		case CREATION:
+			return AbstractDomainObject.CREATION_DATE;
+		case END:
+			return AbstractDomainObject.CHANGE_DATE;
+		default:
+			throw new IllegalArgumentException("deletion reference " + deletionReference + " not supported in " + getClass().getSimpleName());
 		}
 	}
 
@@ -193,4 +178,20 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	protected abstract void restorePseudonymizedDto(DTO dto, DTO existingDto, ADO entity, Pseudonymizer pseudonymizer);
 
 	public abstract void validate(DTO dto) throws ValidationRuntimeException;
+
+	public void archive(String entityUuid, Date endOfProcessingDate) {
+		service.archive(entityUuid, endOfProcessingDate);
+	}
+
+	public void archive(List<String> entityUuids) {
+		service.archive(entityUuids);
+	}
+
+	public void dearchive(List<String> entityUuids, String dearchiveReason) {
+		service.dearchive(entityUuids, dearchiveReason);
+	}
+
+	public Date calculateEndOfProcessingDate(String entityUuid) {
+		return service.calculateEndOfProcessingDate(Collections.singletonList(entityUuid)).get(entityUuid);
+	}
 }

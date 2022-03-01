@@ -56,6 +56,7 @@ import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
+import de.symeda.sormas.backend.clinicalcourse.HealthConditionsMapper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
@@ -91,6 +92,8 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	private ContactService contactService;
 	@EJB
 	private EventParticipantService eventParticipantService;
+	@EJB
+	private HealthConditionsMapper healthConditionsMapper;
 
 	public VaccinationDto save(@Valid VaccinationDto dto) {
 
@@ -226,7 +229,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	public List<VaccinationDto> getAllVaccinations(String personUuid, Disease disease) {
 
 		List<Immunization> immunizations = immunizationService.getByPersonAndDisease(personUuid, disease, false);
-		return immunizations.stream().flatMap(i -> i.getVaccinations().stream()).map(VaccinationFacadeEjb::toDto).collect(Collectors.toList());
+		return immunizations.stream().flatMap(i -> i.getVaccinations().stream()).map(v -> toDto(v)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -449,7 +452,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		target = DtoHelper.fillOrBuildEntity(source, target, Vaccination::new, checkChangeDate);
 
 		target.setImmunization(immunizationService.getByReferenceDto(source.getImmunization()));
-		target.setHealthConditions(clinicalCourseFacade.fromHealthConditionsDto(source.getHealthConditions(), checkChangeDate));
+		target.setHealthConditions(healthConditionsMapper.fromDto(source.getHealthConditions(), checkChangeDate));
 		target.setReportDate(source.getReportDate());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setVaccinationDate(source.getVaccinationDate());
@@ -470,7 +473,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		return target;
 	}
 
-	public static VaccinationDto toDto(Vaccination entity) {
+	public VaccinationDto toDto(Vaccination entity) {
 		if (entity == null) {
 			return null;
 		}
@@ -478,7 +481,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		DtoHelper.fillDto(dto, entity);
 
 		dto.setImmunization(ImmunizationFacadeEjb.toReferenceDto(entity.getImmunization()));
-		dto.setHealthConditions(ClinicalCourseFacadeEjb.toHealthConditionsDto(entity.getHealthConditions()));
+		dto.setHealthConditions(healthConditionsMapper.toDto(entity.getHealthConditions()));
 		dto.setReportDate(entity.getReportDate());
 		dto.setReportingUser(UserFacadeEjb.toReferenceDto(entity.getReportingUser()));
 		dto.setVaccinationDate(entity.getVaccinationDate());

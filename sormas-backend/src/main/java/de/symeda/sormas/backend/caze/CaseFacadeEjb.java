@@ -53,6 +53,7 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.inject.Inject;
+import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -68,6 +69,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.clinicalcourse.HealthConditionsMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -331,8 +333,6 @@ import de.symeda.sormas.utils.CaseJoins;
 public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, CaseIndexDto, CaseReferenceDto, CaseService, CaseCriteria>
 	implements CaseFacade {
 
-	private static final int ARCHIVE_BATCH_SIZE = 1000;
-
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@EJB
@@ -449,6 +449,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	private SormasToSormasCaseFacadeEjbLocal sormasToSormasCaseFacade;
 	@EJB
 	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
+	@EJB
+	private HealthConditionsMapper healthConditionsMapper;
+
 	@Resource
 	private ManagedScheduledExecutorService executorService;
 
@@ -863,7 +866,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 						.stream()
 						.collect(Collectors.toMap(e -> (Long) e[0], e -> ((Long) e[1]).intValue()));
 				}
-				if (ExportHelper.shouldExportFields(exportConfiguration, ClinicalCourseDto.HEALTH_CONDITIONS)) {
+				if (ExportHelper.shouldExportFields(exportConfiguration, CaseDataDto.HEALTH_CONDITIONS)) {
 					List<HealthConditions> healthConditionsList = null;
 					CriteriaQuery<HealthConditions> healthConditionsCq = cb.createQuery(HealthConditions.class);
 					Root<HealthConditions> healthConditionsRoot = healthConditionsCq.from(HealthConditions.class);
@@ -1030,7 +1033,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				}
 				if (healthConditions != null) {
 					Optional.ofNullable(healthConditions.get(exportDto.getHealthConditionsId()))
-						.ifPresent(healthCondition -> exportDto.setHealthConditions(ClinicalCourseFacadeEjb.toHealthConditionsDto(healthCondition)));
+						.ifPresent(healthCondition -> exportDto.setHealthConditions(healthConditionsMapper.toDto(healthCondition)));
 				}
 				if (firstPreviousHospitalizations != null) {
 					Optional.ofNullable(firstPreviousHospitalizations.get(exportDto.getHospitalizationId()))
@@ -2338,7 +2341,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 						exp -> inJurisdiction,
 						(exp, expInJurisdiction) -> pseudonymizer.pseudonymizeDto(LocationDto.class, exp.getLocation(), expInJurisdiction, null)));
 
-				pseudonymizer.pseudonymizeDto(HealthConditionsDto.class, c.getClinicalCourse().getHealthConditions(), inJurisdiction, null);
+				pseudonymizer.pseudonymizeDto(HealthConditionsDto.class, c.getHealthConditions(), inJurisdiction, null);
 
 				pseudonymizer.pseudonymizeDtoCollection(
 					PreviousHospitalizationDto.class,
@@ -2381,8 +2384,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 			pseudonymizer.restorePseudonymizedValues(
 				HealthConditionsDto.class,
-				dto.getClinicalCourse().getHealthConditions(),
-				existingCaseDto.getClinicalCourse().getHealthConditions(),
+				dto.getHealthConditions(),
+				existingCaseDto.getHealthConditions(),
 				inJurisdiction);
 
 			dto.getHospitalization()
@@ -2453,6 +2456,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		if (source.getClinicalCourse() != null) {
 			target.setClinicalCourse(ClinicalCourseFacadeEjb.toDto(source.getClinicalCourse()));
 		}
+		target.setHealthConditions(healthConditionsMapper.toDto(source.getHealthConditions()));
 		if (source.getMaternalHistory() != null) {
 			target.setMaternalHistory(MaternalHistoryFacadeEjb.toDto(source.getMaternalHistory()));
 		}
@@ -2634,6 +2638,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			source.setTherapy(TherapyDto.build());
 		}
 		target.setTherapy(therapyFacade.fromDto(source.getTherapy(), checkChangeDate));
+		target.setHealthConditions(healthConditionsMapper.fromDto(source.getHealthConditions(), checkChangeDate));
 		if (source.getClinicalCourse() == null) {
 			source.setClinicalCourse(ClinicalCourseDto.build());
 		}
@@ -3391,27 +3396,17 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
 		cq.where(cb.equal(from.get(Case.ARCHIVED), false), cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp, true)));
-		cq.select(from.get(Case.UUID));
+		cq.select(from.get(Case.UUID)).distinct(true);
 		List<String> caseUuids = em.createQuery(cq).getResultList();
 
-		IterableHelper.executeBatched(caseUuids, ARCHIVE_BATCH_SIZE, batchedCaseUuids -> service.updateArchived(batchedCaseUuids, true));
+		if (!caseUuids.isEmpty()) {
+			archive(caseUuids);
+		}
+
 		logger.debug(
 			"archiveAllArchivableCases() finished. caseCount = {}, daysAfterCaseGetsArchived = {}, {}ms",
 			caseUuids.size(),
 			daysAfterCaseGetsArchived,
-			DateHelper.durationMillies(startTime));
-	}
-
-	@Override
-	public void updateArchived(List<String> caseUuids, boolean archived) {
-
-		long startTime = DateHelper.startTime();
-
-		IterableHelper.executeBatched(caseUuids, ARCHIVE_BATCH_SIZE, batchedCaseUuids -> service.updateArchived(batchedCaseUuids, archived));
-		logger.debug(
-			"updateArchived() finished. caseCount = {}, archived = {}, {}ms",
-			caseUuids.size(),
-			archived,
 			DateHelper.durationMillies(startTime));
 	}
 

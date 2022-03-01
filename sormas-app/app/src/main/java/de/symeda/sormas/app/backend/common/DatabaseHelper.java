@@ -15,6 +15,21 @@
 
 package de.symeda.sormas.app.backend.common;
 
+import android.content.Context;
+import android.database.Cursor;
+import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
+import android.util.Log;
+
+import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.dao.GenericRawResults;
+import com.j256.ormlite.field.DataType;
+import com.j256.ormlite.support.ConnectionSource;
+import com.j256.ormlite.table.TableUtils;
+
+import org.apache.commons.lang3.StringUtils;
+
 import java.lang.reflect.Array;
 import java.math.BigInteger;
 import java.sql.SQLException;
@@ -29,21 +44,6 @@ import java.util.Objects;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
-
-import org.apache.commons.lang3.StringUtils;
-
-import com.j256.ormlite.android.apptools.OrmLiteSqliteOpenHelper;
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.dao.GenericRawResults;
-import com.j256.ormlite.field.DataType;
-import com.j256.ormlite.support.ConnectionSource;
-import com.j256.ormlite.table.TableUtils;
-
-import android.content.Context;
-import android.database.Cursor;
-import android.database.sqlite.SQLiteDatabase;
-import android.text.TextUtils;
-import android.util.Log;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.VaccinationStatus;
@@ -183,7 +183,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 331;
+	public static final int DATABASE_VERSION = 333;
 
 	private static DatabaseHelper instance = null;
 
@@ -2943,8 +2943,25 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(EventParticipant.class).executeRaw(
 					"UPDATE eventParticipants SET reportingUser_id = (SELECT reportingUser_id FROM events WHERE events.id = eventParticipants.event_id) WHERE reportingUser_id IS NULL;");
 
-				// ATTENTION: break should only be done after last version
-				break;
+			case 331:
+				currentVersion = 331;
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN healthConditions_id BIGINT REFERENCES healthConditions(id);");
+				getDao(Case.class).executeRaw("UPDATE cases SET healthConditions_id = (SELECT healthConditions_id from clinicalCourse where clinicalCourse.id = cases.clinicalCourse_id);");
+			case 332:
+				currentVersion = 332;
+				getDao(ClinicalCourse.class).executeRaw("ALTER TABLE clinicalCourse RENAME TO tmp_clinicalCourse");
+				getDao(ClinicalCourse.class).executeRaw(
+						"CREATE TABLE clinicalCourse(" + "id integer primary key autoincrement," + "uuid varchar(36) not null,"
+								+ "changeDate timestamp not null," + "creationDate timestamp not null," + "lastOpenedDate timestamp,"
+								+ "localChangeDate timestamp not null," + "modified SMALLINT DEFAULT 0," + "snapshot SMALLINT DEFAULT 0," + "UNIQUE(snapshot, uuid));");
+				getDao(ClinicalCourse.class).executeRaw(
+						"INSERT INTO clinicalCourse(id, uuid, changeDate, creationDate, lastOpenedDate, "
+								+ "localChangeDate, modified, snapshot) "
+								+ "SELECT id, uuid, changeDate, creationDate, lastOpenedDate, localChangeDate, modified, snapshot FROM tmp_clinicalCourse");
+				getDao(ClinicalCourse.class).executeRaw("DROP TABLE tmp_clinicalCourse;");
+
+			// ATTENTION: break should only be done after last version
+			break;
 
 			default:
 				throw new IllegalStateException("onUpgrade() with unknown oldVersion " + oldVersion);

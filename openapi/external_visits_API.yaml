@@ -42,10 +42,10 @@ info:
     \ in SORMAS</b><br>In the domain folder, there is a sormas.properties. it holds\
     \ the following values relevant for an external journal:<br>``interface.patientdiary.authurl``:\
     \ used to fetch an authentication token (see 1. below).<br>``interface.patientdiary.frontendAuthurl``:\
-    \ URL used to retrieve tokens for frontend requests. If not specified, the authurl\
-    \ is used instead.<br>``interface.patientdiary.tokenLifetime``: Lifetime of tokens\
-    \ fetched via the authurl or the frontendAuthurl. To be specified in seconds.\
-    \ Can be set to 0 for no token caching. Defaults to 21600 (6 hrs.).<br>``interface.patientdiary.probandsurl``:\
+    \ URL used to retrieve tokens for frontend requests. If not specified, no tokens\
+    \ will be fetched for such.<br>``interface.patientdiary.tokenLifetime``: Lifetime\
+    \ of tokens fetched via the authurl or the frontendAuthurl. To be specified in\
+    \ seconds. Can be set to 0 for no token caching. Defaults to 21600 (6 hrs.).<br>``interface.patientdiary.probandsurl``:\
     \ used to register new persons in the external journal (see 2. below).<br>``interface.patientdiary.url``:\
     \ used to open a person in the external journal (see 6. below).<br>``interface.patientdiary.email``:\
     \ used to authenticate at the external journal (see 1. below).<br>``interface.patientdiary.password``:\
@@ -66,22 +66,22 @@ info:
     \ requests. Its lifetime can be configured via the ``interface.patientdiary.tokenLifetime``\
     \ property.<br>One special scenario is fetching a token for frontend calls (see\
     \ 6.): When the interface.patientdiary.frontendAuthurl is configured, it is used\
-    \ instead of the interface.patientdiary.authurl here.<br><br><li><b>Registration\
-    \ of a new person in the external journal</b></li><br>This process involves several\
-    \ steps that are triggered via the REGISTER button a privileged user can see in\
-    \ the top right corner when having opened a case or a contact.<br>To be able to\
-    \ see this button, the user must have at least one of the following user roles:\
-    \ national user, contact supervisor, contact officer, community officer,surveillance\
-    \ officer, surveillance supervisor, or admin supervisor.<br><br>First comes a\
-    \ SORMAS-internal validation of contact details. The person to be registered needs\
-    \ to have at least an email address (or a phone number if that is accepted for\
-    \ registration, see ``interface.patientdiary.acceptPhoneContact``) to pass this\
-    \ validation.Also, when there are several email addresses or phone numbers, one\
-    \ of them has to be marked primary contact detail, so that it is clear which contact\
-    \ detail shall be used.<br><br>Then comes an external validation of the contact\
-    \ details. For this, SORMAS fetches an authentication token as in 1. Then it sends\
-    \ a GET request to the following URL for each contact detail to be used in  the\
-    \ external journal:<br><tt>GET [interface.patientdiary.probandsurl]/probands?q=[URL-encoded-query-parameter-and-value]'</tt>,\
+    \ instead of the interface.patientdiary.authurl here. If it is not configured,\
+    \ no token will be used.<br><br><li><b>Registration of a new person in the external\
+    \ journal</b></li><br>This process involves several steps that are triggered via\
+    \ the REGISTER button a privileged user can see in the top right corner when having\
+    \ opened a case or a contact.<br>To be able to see this button, the user must\
+    \ have at least one of the following user roles: national user, contact supervisor,\
+    \ contact officer, community officer,surveillance officer, surveillance supervisor,\
+    \ or admin supervisor.<br><br>First comes a SORMAS-internal validation of contact\
+    \ details. The person to be registered needs to have at least an email address\
+    \ (or a phone number if that is accepted for registration, see ``interface.patientdiary.acceptPhoneContact``)\
+    \ to pass this validation.Also, when there are several email addresses or phone\
+    \ numbers, one of them has to be marked primary contact detail, so that it is\
+    \ clear which contact detail shall be used.<br><br>Then comes an external validation\
+    \ of the contact details. For this, SORMAS fetches an authentication token as\
+    \ in 1. Then it sends a GET request to the following URL for each contact detail\
+    \ to be used in  the external journal:<br><tt>GET [interface.patientdiary.probandsurl]/probands?q=[URL-encoded-query-parameter-and-value]'</tt>,\
     \ with a header like <tt>'x-access-token: [token]'</tt><br>The [URL-encoded-query-parameter-and-value]\
     \ consists of a parameter-value-pair. The parameter is either 'Email' or 'Mobile\
     \ phone'. The value holds the contact detail to be validated.<br>An unencoded\
@@ -167,10 +167,11 @@ info:
     \ but the options to open the person in the external journal and to cancel external\
     \ follow up. This button can be found when having opened a contact (or a case\
     \ if the case follow up feature is enabled in SORMAS) in the top right corner.\
-    \ If the user chooses to open the person in the external journal, SORMAS fetches\
-    \ an authentication token as described in 1 (using the interface.patientdiary.frontendAuthurl\
-    \ if configured), and opens a new browser tab with the following URL:<br><tt>[interface.patientdiary.url]/data?q=[personUuid]&queryKey=sicFieldIdentifier&token=[token]</tt><br>SORMAS\
-    \ expects the external journal to present a view of the person there.<br><br><li><b>Deletion\
+    \ If the user chooses to open the person in the external journal, SORMAS opens\
+    \ a new browser tab with the following URL:<br><tt>[interface.patientdiary.url]/data?q=[personUuid]&queryKey=sicFieldIdentifier</tt><br>SORMAS\
+    \ expects the external journal to present a view of the person there.<br>If the\
+    \ interface.patientdiary.frontendAuthurl is configured, SORMAS fetches an authentication\
+    \ token as described in 1, and appends it to the URL:<br><tt>[interface.patientdiary.url]/data?q=[personUuid]&queryKey=sicFieldIdentifier&token=[token]</tt><br><br><li><b>Deletion\
     \ of a person from an external journal</b></li><br>As described above, the journal\
     \ button can offer the option to cancel external follow up. If a user choses this\
     \ option, SORMAS fetches an authentication token as described in 1., and uses\

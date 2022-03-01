@@ -18,7 +18,6 @@ package de.symeda.sormas.ui.docgeneration;
 import static java.util.Objects.isNull;
 import static java.util.Objects.nonNull;
 
-import de.symeda.sormas.api.vaccination.VaccinationReferenceDto;
 import java.io.InputStream;
 import java.util.Collections;
 import java.util.List;
@@ -51,9 +50,12 @@ import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
+import de.symeda.sormas.api.vaccination.VaccinationReferenceDto;
 import de.symeda.sormas.ui.document.DocumentListComponent;
 
 public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
+
+	private static final long serialVersionUID = 8188715887512127569L;
 
 	private final DocumentWorkflow workflow;
 	private final DocumentStreamSupplier documentStreamSupplier;
@@ -164,7 +166,8 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 			PathogenTestReferenceDto pathogenTestReference =
 				pathogenTestSelector != null && pathogenTestSelector.getValue() != null ? pathogenTestSelector.getValue().toReference() : null;
 
-			VaccinationReferenceDto vaccinationReference = vaccinationSelector != null && vaccinationSelector.getValue() != null ? vaccinationSelector.getValue().toReference() : null;
+			VaccinationReferenceDto vaccinationReference =
+				vaccinationSelector != null && vaccinationSelector.getValue() != null ? vaccinationSelector.getValue().toReference() : null;
 
 			try {
 				InputStream stream = documentStreamSupplier.getStream(
@@ -202,10 +205,18 @@ public class QuarantineOrderLayout extends AbstractDocgenerationLayout {
 
 	@Override
 	protected void performTemplateUpdates() {
-		if (documentVariables != null
-			&& (documentVariables.isUsedEntity(RootEntityType.ROOT_SAMPLE.getEntityName())
-				|| documentVariables.isUsedEntity(RootEntityType.ROOT_PATHOGEN_TEST.getEntityName()))) {
+		if (documentVariables == null) {
+			hideAdditionalParameters();
+			return;
+		}
+		boolean showSampleSelector = documentVariables.isUsedEntity(RootEntityType.ROOT_SAMPLE.getEntityName());
+		boolean showPathogenTestSelector = documentVariables.isUsedEntity(RootEntityType.ROOT_PATHOGEN_TEST.getEntityName());
+		boolean showVaccinationSelector = documentVariables.isUsedEntity(RootEntityType.ROOT_VACCINATION.getEntityName());
+		if (showSampleSelector || showPathogenTestSelector || showVaccinationSelector) {
 			showAdditionalParameters();
+			sampleSelector.setVisible(showSampleSelector);
+			pathogenTestSelector.setVisible(showPathogenTestSelector);
+			vaccinationSelector.setVisible(showVaccinationSelector);
 		} else {
 			hideAdditionalParameters();
 		}

@@ -73,7 +73,8 @@ public class MergeContactsView extends AbstractView {
 		gridLayout.setStyleName("crud-main-layout");
 		addComponent(gridLayout);
 
-		Button btnOpenGuide = ButtonHelper.createIconButton(Captions.contactOpenMergeGuide, VaadinIcons.QUESTION, e -> buildAndOpenMergeInstructions());
+		Button btnOpenGuide =
+			ButtonHelper.createIconButton(Captions.contactOpenMergeGuide, VaadinIcons.QUESTION, e -> buildAndOpenMergeInstructions());
 		addHeaderComponent(btnOpenGuide);
 
 		Button btnCalculateCompleteness =
@@ -106,11 +107,8 @@ public class MergeContactsView extends AbstractView {
 			e -> {
 				if (e.booleanValue() == true) {
 					grid.calculateCompletenessValues();
-					new Notification(
-						I18nProperties.getString(Strings.headingContactsArchived),
-						I18nProperties.getString(Strings.messageCompletenessValuesUpdated),
-						Type.HUMANIZED_MESSAGE,
-						false).show(Page.getCurrent());
+					new Notification("", I18nProperties.getString(Strings.messageCompletenessValuesUpdated), Type.HUMANIZED_MESSAGE, false)
+						.show(Page.getCurrent());
 				}
 			});
 	}
