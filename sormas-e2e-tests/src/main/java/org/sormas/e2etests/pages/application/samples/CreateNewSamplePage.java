@@ -78,4 +78,14 @@ public class CreateNewSamplePage {
   public static final By PATHOGEN_LABORATORY_INPUT =
       By.cssSelector(
           "[location='lab'] [class='v-filterselect v-widget v-required v-filterselect-required v-has-width'] input");
+  public static final By REQUEST_PATHOGEN_OPTION_BUTTON =
+      By.cssSelector("[id='pathogenTestingRequested'] label");
+  public static final By ANTIGEN_DETECTION_TEST_OPTION_BUTTON =
+      By.xpath("//*[@id=\"requestedPathogenTests\"]/span[2]");
+  public static final By ISOLATION_TEST_OPTION_BUTTON =
+      By.xpath("//*[@id=\"requestedPathogenTests\"]/span[6]");
+  public static final By PCR_RTP_PCR_TEST_OPTION_BUTTON =
+      By.xpath("//*[@id=\"requestedPathogenTests\"]/span[15]/label");
+  public static final By FINAL_LABORATORY_RESULT_COMBOBOX =
+      By.cssSelector("[id='pathogenTestResult'] [class='v-filterselect-button']");
 }

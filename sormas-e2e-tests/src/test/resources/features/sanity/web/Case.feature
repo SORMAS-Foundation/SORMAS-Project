@@ -399,3 +399,96 @@ Feature: Case end to end tests
     And I navigate to the last created through API Event page via URL
     And I check that number of displayed Event Participants is 1
 
+  @issue=SORDEV-6612 @env_main
+  Scenario: Manually triggered calculation of case classification
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    Then I click on Info button on Case Edit page
+    When I am accessing the Symptoms tab using of created case via api
+    And I change all symptoms fields and save
+    And I am accessing the Symptoms tab using of created case via api
+    And I check the created data is correctly displayed on Symptoms tab page
+    And From Symptoms Tab I click on Case tab
+    And I check that Case Classification has "Suspect case" value
+    Then I click on save case button
+    Then I navigate to symptoms tab
+    Then I change Other symptoms to "YES" option
+    And From Symptoms Tab I click on Clear All button
+    And I change all symptoms fields to NO option excluded Other symptoms field and save
+    And I am accessing the Symptoms tab using of created case via api
+    And I check the created data is correctly displayed on Symptoms tab page
+    And  From Symptoms Tab I click on Case tab
+    And I check that Case Classification has "Not yet classified" value
+    Then I click on save case button
+    When I am accessing the Symptoms tab using of created case via api
+    And From Symptoms Tab I click on Clear All button
+    And I change all symptoms fields and save
+    When I am accessing the Symptoms tab using of created case via api
+    And I check the created data is correctly displayed on Symptoms tab page
+    And From Symptoms Tab I click on Case tab
+    And I change Epidemiological confirmation Combobox to "Yes" option
+    Then I click on save case button
+    And I check that Case Classification has "Probable case" value
+    Then I click on save case button
+    When I am accessing the Symptoms tab using of created case via api
+    And From Symptoms Tab I click on Clear All button
+    And I change all symptoms fields and save
+    When I am accessing the Symptoms tab using of created case via api
+    And I check the created data is correctly displayed on Symptoms tab page
+    And From Symptoms Tab I click on Case tab
+    Then I click on save case button
+    And I collect the case person UUID displayed on Edit case page
+    And I click on New Sample
+    When I collect the sample UUID displayed on create new sample page
+    And I create a new Sample with for COVID alternative purpose
+    And I click on edit Sample
+    And I click on the new pathogen test from the Edit Sample page
+    And I fill all fields from Pathogen test for COVID-19 disease result popup and save
+    Then I check that the created Pathogen is correctly displayed
+    And I save the created sample
+    And From Symptoms Tab I click on Case tab
+    Then I click on save case button
+    And I check that Case Classification has "Confirmed case" value
+    When I am accessing the Symptoms tab using of created case via api
+    And From Symptoms Tab I click on Clear All button
+    And I change all symptoms fields to NO option field and save
+    When I am accessing the Symptoms tab using of created case via api
+    And I check the created data is correctly displayed on Symptoms for No option in tab page
+    And From Symptoms Tab I click on Case tab
+    Then I click on save case button
+    And I collect the case person UUID displayed on Edit case page
+    And From Symptoms Tab I click on Case tab
+    Then I click on save case button
+    And I check that Case Classification has "Confirmed case with no symptoms" value
+    When I am accessing the Symptoms tab using of created case via api
+    And From Symptoms Tab I click on Clear All button
+    And I change all symptoms fields to UNKNOWN option field and save
+    When I am accessing the Symptoms tab using of created case via api
+    And I check the created data is correctly displayed on Symptoms for No option in tab page
+    And From Symptoms Tab I click on Case tab
+    Then I click on save case button
+    And I collect the case person UUID displayed on Edit case page
+    And From Symptoms Tab I click on Case tab
+    Then I click on save case button
+    And I check that Case Classification has "Confirmed case with unknown symptoms" value
+    When I am accessing the Symptoms tab using of created case via api
+    And From Symptoms Tab I click on Clear All button
+    And I change all symptoms fields and save
+    And I am accessing the Symptoms tab using of created case via api
+    And I check the created data is correctly displayed on Symptoms tab page
+    And From Symptoms Tab I click on Case tab
+    And I check that Case Classification has "Confirmed case" value
+    Then I click on save case button
+    And I change the Case Classification field for "NOT_CLASSIFIED" value
+    And I click on save case button
+    And From Case page I click on Calculate Case Classification button
+    And I click on save case button
+    And I check that Case Classification has "Confirmed case" value
+

@@ -80,6 +80,21 @@ public class SampleService {
         .build();
   }
 
+  public Sample buildGeneratedSampleTestResultForCovid() {
+    long currentTimeMillis = System.currentTimeMillis();
+    return Sample.builder()
+        .sampleTestResults("Positive")
+        .reportDate(LocalDate.now().minusDays(10))
+        .typeOfTest("PCR / RT-PCR")
+        .testedDisease("COVID-19")
+        .dateOfResult(LocalDate.now().minusDays(10))
+        .timeOfResult(LocalTime.of(11, 30))
+        .laboratory("Other facility")
+        .resultVerifiedByLabSupervisor("YES")
+        .testResultsComment(currentTimeMillis + "Comment on new Pathogen requests or received")
+        .build();
+  }
+
   public Sample buildEditSample() {
     long currentTimeMillis = System.currentTimeMillis();
     return Sample.builder()

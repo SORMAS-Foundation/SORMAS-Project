@@ -32,6 +32,7 @@ import org.openqa.selenium.By;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Sample;
 import org.sormas.e2etests.entities.services.SampleService;
+import org.sormas.e2etests.enums.PathogenTestResults;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.testng.asserts.SoftAssert;
 
@@ -84,6 +85,45 @@ public class CreateNewSampleSteps implements En {
           selectReasonForSample(sample.getReasonForSample());
           fillSampleID(sample.getSampleID());
           fillCommentsOnSample(sample.getCommentsOnSample());
+        });
+
+    When(
+        "^I create a new Sample with for COVID alternative purpose$",
+        () -> {
+          sample = sampleService.buildGeneratedSample();
+          selectPurposeOfSample(sample.getPurposeOfTheSample(), SAMPLE_PURPOSE_OPTIONS);
+          fillDateOfCollection(sample.getDateOfCollection());
+          fillTimeOfCollection(sample.getTimeOfCollection());
+          selectSampleType(sample.getSampleType());
+          selectReasonForSample(sample.getReasonForSample());
+          fillSampleID(sample.getSampleID());
+          selectLaboratory(sample.getLaboratory());
+          selectLaboratoryName(sample.getLaboratoryName());
+          webDriverHelpers.clickOnWebElementBySelector(REQUEST_PATHOGEN_OPTION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ANTIGEN_DETECTION_TEST_OPTION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ISOLATION_TEST_OPTION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(PCR_RTP_PCR_TEST_OPTION_BUTTON);
+          webDriverHelpers.selectFromCombobox(
+              FINAL_LABORATORY_RESULT_COMBOBOX, PathogenTestResults.POSITIVE.getPathogenResults());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    When(
+        "I fill all fields from Pathogen test for COVID-19 disease result popup and save",
+        () -> {
+          sampleTestResult = sampleService.buildGeneratedSampleTestResultForCovid();
+          fillReportDate(sampleTestResult.getReportDate());
+          selectTypeOfTest(sampleTestResult.getTypeOfTest());
+          selectTestedDisease(sampleTestResult.getTestedDisease());
+          selectPathogenLaboratory(sampleTestResult.getLaboratory());
+          selectTestResult(sampleTestResult.getSampleTestResults());
+          fillDateOfResult(sampleTestResult.getDateOfResult());
+          fillTimeOfResult(sampleTestResult.getTimeOfResult());
+          selectResultVerifiedByLabSupervisor(
+              sampleTestResult.getResultVerifiedByLabSupervisor(),
+              RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
+          fillTestResultsComment(sampleTestResult.getTestResultsComment());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
         });
 
     When(
