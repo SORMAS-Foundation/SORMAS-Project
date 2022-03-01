@@ -18,16 +18,6 @@
 
 package org.sormas.e2etests.steps.web.application.events;
 
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_GRID_RESULTS_ROWS;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_FROM_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_TO_COMBOBOX;
-import static org.sormas.e2etests.pages.application.events.EditEventPage.*;
-import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.*;
-import static org.sormas.e2etests.pages.application.persons.EditPersonPage.UUID_INPUT;
-import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.APPLY_FILTERS_BUTTON;
-import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.RESET_FILTERS_BUTTON;
-import static org.sormas.e2etests.steps.BaseSteps.locale;
-
 import cucumber.api.java8.En;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
