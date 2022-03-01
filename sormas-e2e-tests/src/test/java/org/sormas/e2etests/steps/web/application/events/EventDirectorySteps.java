@@ -115,6 +115,30 @@ public class EventDirectorySteps implements En {
               SEARCH_EVENT_BY_FREE_TEXT,
               dataOperations.getPartialUuidFromAssociatedLink(eventUuid));
         });
+    When(
+        "I navigate to the last created Event page via URL",
+        () -> {
+          String eventLinkPath = "/sormas-ui/#!events/data/";
+          String createdEventUUID = CreateNewEventSteps.newEvent.getUuid();
+          webDriverHelpers.accessWebSite(
+              environmentManager.getEnvironmentUrlForMarket(locale)
+                  + eventLinkPath
+                  + createdEventUUID);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 50);
+        });
+    When(
+        "I navigate to the last created through API Event page via URL",
+        () -> {
+          String eventLinkPath = "/sormas-ui/#!events/data/";
+          String createdEventUUID = apiState.getCreatedEvent().getUuid();
+          webDriverHelpers.accessWebSite(
+              environmentManager.getEnvironmentUrlForMarket(locale)
+                  + eventLinkPath
+                  + createdEventUUID);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 50);
+        });
 
     When(
         "I fill Event Group Id filter to one assigned to created event on Event Directory Page",

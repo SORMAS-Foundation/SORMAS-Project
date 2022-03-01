@@ -44,7 +44,7 @@ public class EventApiService {
   public Event buildGeneratedEvent() {
     return Event.builder()
         .uuid(UUID.randomUUID().toString())
-        .disease(DiseasesValues.getRandomDiseaseName())
+        .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
         .reportingUser(ReportingUser.builder().uuid("QLW4AN-TGWLRA-3UQVEM-WCDFCIVM").build())
         .eventStatus("SIGNAL")
         .srcType(SourceTypeValues.getRandomSourceTypeName())
