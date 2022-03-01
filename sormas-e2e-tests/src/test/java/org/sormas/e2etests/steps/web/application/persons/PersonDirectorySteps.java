@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,12 +24,14 @@ import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.github.javafaker.Faker;
+import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.common.DataOperations;
+import org.sormas.e2etests.entities.pojo.web.Person;
 import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.PresentCondition;
@@ -44,15 +46,16 @@ import org.testng.Assert;
 
 public class PersonDirectorySteps implements En {
   private final WebDriverHelpers webDriverHelpers;
+  protected Person createdPerson;
 
   @Inject
   public PersonDirectorySteps(
       WebDriverHelpers webDriverHelpers,
       ApiState apiState,
-      AssertHelpers assertHelpers,
       DataOperations dataOperations,
-      EnvironmentManager environmentManager,
-      Faker faker) {
+      Faker faker,
+      AssertHelpers assertHelpers,
+      EnvironmentManager environmentManager) {
     this.webDriverHelpers = webDriverHelpers;
 
     // TODO refactor all BDD methods naming to be more explicit regarding where data comes from
@@ -75,6 +78,33 @@ public class PersonDirectorySteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(120);
           webDriverHelpers.isElementVisibleWithTimeout(UUID_INPUT, 20);
         });
+
+    Then(
+        "I check the result for UID for second person in grid PERSON ID column",
+        () -> {
+          webDriverHelpers.waitUntilAListOfElementsHasText(
+              CASE_GRID_RESULTS_ROWS, apiState.getLastCreatedPerson().getUuid());
+          assertHelpers.assertWithPoll20Second(
+              () ->
+                  Truth.assertWithMessage(
+                          apiState.getLastCreatedPerson().getUuid()
+                              + " value is not displayed in grid Disease column")
+                      .that(apiState.getLastCreatedPerson().getUuid())
+                      .isEqualTo(
+                          String.valueOf(
+                              webDriverHelpers.getTextFromPresentWebElement(
+                                  CASE_PERSON_ID_COLUMN_HEADERS))));
+        });
+
+    Then(
+        "I check that number of displayed Persons results is {int}",
+        (Integer number) ->
+            assertHelpers.assertWithPoll20Second(
+                () ->
+                    Assert.assertEquals(
+                        webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS),
+                        number.intValue(),
+                        "Number of displayed cases is not correct")));
 
     Then(
         "I choose random value for Year of birth filter in Persons for the last created person by API",
@@ -134,7 +164,7 @@ public class PersonDirectorySteps implements En {
           String districtName = apiState.getLastCreatedPerson().getAddress().getDistrict();
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
-              DISTRICTS_COMBOBOX, DistrictsValues.getValueFor(districtName));
+              DISTRICTS_COMBOBOX, DistrictsValues.getNameByUUID(districtName));
         });
 
     Then(
@@ -186,7 +216,7 @@ public class PersonDirectorySteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
-              PRESENT_CONDITION, PresentCondition.getRandomPresentCondition());
+              PRESENT_CONDITION, PresentCondition.getRandomUIPresentCondition());
         });
 
     Then(
@@ -214,6 +244,16 @@ public class PersonDirectorySteps implements En {
                   + "/sormas-webdriver/#!persons/data/"
                   + createdPersonUUID;
           webDriverHelpers.accessWebSite(LAST_CREATED_PERSON_PAGE_URL);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 50);
+        });
+    When(
+        "I navigate to the last created via api Person page via URL",
+        () -> {
+          String personLinkPath = "/sormas-ui/#!persons/data/";
+          String uuid = apiState.getLastCreatedPerson().getUuid();
+          webDriverHelpers.accessWebSite(
+              environmentManager.getEnvironmentUrlForMarket(locale) + personLinkPath + uuid);
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 50);
         });
@@ -248,6 +288,14 @@ public class PersonDirectorySteps implements En {
         });
 
     When(
+        "I click on the APPLY FILTERS button",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              APPLY_FILTERS_BUTTON, 30);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+        });
+    When(
         "I apply on the APPLY FILTERS button",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
@@ -262,7 +310,6 @@ public class PersonDirectorySteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               RESET_FILTERS_BUTTON, 30);
           webDriverHelpers.clickOnWebElementBySelector(RESET_FILTERS_BUTTON);
-          TimeUnit.SECONDS.sleep(10);
         });
 
     Then(

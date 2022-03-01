@@ -141,3 +141,55 @@ Feature: Pathogen Functionalities
     Then I check that the created Pathogen is correctly displayed
     And I check that if Other field is correctly displayed
     And I delete the Pathogen test
+
+  @issue=SORDEV-8058 @env_main
+  Scenario: Unify pathogen test saving logic between cases and contacts
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    When I click on the Contacts button from navbar
+    Then I open the last created contact
+    And I click on New Sample
+    When I collect the sample UUID displayed on create new sample page
+    And I create a new Sample with specific data and save
+    And I click on edit Sample
+    Then I click on the new pathogen test from the Edit Sample page
+    And I complete all fields from Pathogen test result popup for IgM test type with positive verified test result
+    Then I confirm the Create case from contact with positive test result
+    Then I create a new case with specific data for positive pathogen test result
+    Then I save a new case
+    And I click on the Sample button from navbar
+    And I search for Sample using Sample UUID from the created Sample
+    When I open created Sample
+    Then I check if Pathogen test result in Samples is displayed correctly and save
+
+  @issue=SORDEV-8058 @env_main
+  Scenario: Unify pathogen test saving logic between cases and event participants
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    When I am accessing the event tab using the created event via api
+    Then I add a participant to the event
+    Then I check if participant appears in the event participants list
+    And I click on the first row from event participant
+    And I click on New Sample
+    When I collect the sample UUID displayed on create new sample page
+    And I create a new Sample with specific data and save
+    And I click on edit Sample
+    Then I click on the new pathogen test from the Edit Sample page
+    And I complete all fields from Pathogen test result popup for IgM test type with positive verified test result
+    Then I confirm the Create case from event participant with positive test result
+    Then I create a new case with specific data for positive pathogen test result
+    Then I save a new case
+    And I click on the Sample button from navbar
+    And I search for Sample using Sample UUID from the created Sample
+    When I open created Sample
+    Then I check if Pathogen test result in Samples is displayed correctly and save

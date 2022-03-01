@@ -195,7 +195,7 @@ Feature: Create events
     And I fill all fields for a new case created for event participant
     And I click on save case button
 
-    @issue=SORDEV-5915 @env_main
+    @issue=SORDEV-5915 @env_main @ignore
   Scenario: Check all filters are work properly in Event directory
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -241,7 +241,17 @@ Feature: Create events
     And I select Screening filter from quick filter
     And I select Cluster filter from quick filter
     And I select Dropped filter from quick filter
-    And I click on the RESET FILTERS button
+    And I click on the RESET FILTERS button from Event
+
+  @issue=SORDEV-9426 @env_main
+  Scenario: Filter for the report date of events
+    Given I log in with National User
+    And I click on the Events button from navbar
+    Then I click on Show more filters in Events
+    And I select Report Date among Event Reference Date options
+    And I fill in a date range in Date of Event From Epi Week and ...To fields
+    And I apply on the APPLY FILTERS button from Event
+    And I check that the dates of displayed Event results are correct
 
   @issue=SORDEV-5570 @env_main
   Scenario: Testing Event screen Impact
