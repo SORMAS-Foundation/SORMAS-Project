@@ -253,6 +253,54 @@ Feature: Create events
     And I apply on the APPLY FILTERS button from Event
     And I check that the dates of displayed Event results are correct
 
+  @issue=SORDEV-5571 @env_main
+  Scenario: Event group screen from Event Directory Page
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    And I click on the Events button from navbar
+    And I click on GROUPS Radiobutton on Event Directory Page
+    And I open the first event from events list
+    And I click on Link Event button on Event Directory Page
+    And I fill Id filter with Id of last created event in Link Event to group form
+    And I click on filtered Event in Link Event to group form
+    And I click on SAVE button in Link Event to group form
+    And I click on Unlink Event button on Event Directory Page
+
+  @issue=SORDEV-5571 @env_main
+  Scenario: Event group screen using Group Id on Edit Event Page
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    And I click on the Events button from navbar
+    And I fill EVENT ID filter by API
+    And I apply on the APPLY FILTERS button from Event
+    And I open the first event from events list
+    And I click on Link Event button on Edit Event Page
+    And I click on first Event Group on the list in Link Event form
+    And I click on SAVE button in Link Event to group form
+    And I click on Linked Group Id on Edit Event Page
+    And I click on Unlink Event button on Event Directory Page
+
+  @issue=SORDEV-5571 @env_main
+  Scenario: Event group screen using Group Id in grid
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    And I click on the Events button from navbar
+    And I fill EVENT ID filter by API
+    And I apply on the APPLY FILTERS button from Event
+    And I open the first event from events list
+    And I click on Link Event button on Edit Event Page
+    And I click on first Event Group on the list in Link Event form
+    And I click on SAVE button in Link Event to group form
+    And I click on the Events button from navbar
+    And I click on Group Id in Events result on Event Directory Page
+    And I click on Unlink Event button on Event Directory Page
+
   @issue=SORDEV-5570 @env_main
   Scenario: Testing Event screen Impact
     Given API: I create a new event
