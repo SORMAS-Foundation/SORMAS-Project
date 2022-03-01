@@ -114,7 +114,7 @@ public class EditCaseSteps implements En {
         (String caseClassificationValue) -> {
           webDriverHelpers.selectFromCombobox(
               CASE_CLASSIFICATION_FILTER_COMBOBOX,
-              CaseClassification.getUIValueFor(caseClassificationValue));
+              CaseClassification.getCaptionValueFor(caseClassificationValue));
         });
 
     And(

@@ -22,6 +22,7 @@ import org.openqa.selenium.By;
 
 public class SymptomsTabPage {
   public static final By CLEAR_ALL_BUTTON = new By.ById("actionClearAll");
+  public static final By SET_CLEAR_TO_NO_BUTTON = new By.ById("symptomsSetClearedToNo");
   public static final By MAXIMUM_BODY_TEMPERATURE_IN_C_COMBOBOX =
       By.cssSelector("#temperature div");
   public static final By SOURCE_OF_BODY_TEMPERATURE_COMBOBOX =
