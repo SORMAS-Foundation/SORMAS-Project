@@ -204,6 +204,14 @@ public class CaseDirectorySteps implements En {
         });
 
     When(
+        "I click on Info button on Case page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CASE_INFO_BUTTON);
+          TimeUnit.SECONDS.sleep(5);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_CLOSE_WINDOW_BUTTON);
+        });
+
+    When(
         "I filter by CaseID on Case directory page",
         () -> {
           String partialUuid =

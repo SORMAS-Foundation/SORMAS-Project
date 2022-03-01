@@ -491,4 +491,3 @@ Feature: Case end to end tests
     And I click on SAVE button in Link Event to group form
     And I navigate to the last created through API Event page via URL
     And I check that number of displayed Event Participants is 1
-

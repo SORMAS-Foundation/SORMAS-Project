@@ -156,9 +156,9 @@ public class SymptomsTabSteps implements En {
         });
 
     When(
-        "I change all symptoms fields to NO option field and save",
+        "I change all symptoms fields to UNKNOWN option field and save",
         () -> {
-          symptoms = symptomService.buildEditGeneratedSymptomsWithNoOptions();
+          symptoms = symptomService.buildEditGeneratedSymptomsWithUnknownOptions();
           selectMaximumBodyTemperatureInCCombobox(symptoms.getMaximumBodyTemperatureInC());
           selectSourceOfBodyTemperature(symptoms.getSourceOfBodyTemperature());
           selectChillsOrSweats(symptoms.getChillsOrSweats());
@@ -187,9 +187,9 @@ public class SymptomsTabSteps implements En {
         });
 
     When(
-        "I change all symptoms fields to UNKNOWN option field and save",
+        "I change all symptoms fields to NO option excluded Other symptoms field and save",
         () -> {
-          symptoms = symptomService.buildEditGeneratedSymptomsWithUnknownOptions();
+          symptoms = symptomService.buildEditGeneratedSymptomsWithNoOptions();
           selectMaximumBodyTemperatureInCCombobox(symptoms.getMaximumBodyTemperatureInC());
           selectSourceOfBodyTemperature(symptoms.getSourceOfBodyTemperature());
           selectChillsOrSweats(symptoms.getChillsOrSweats());
@@ -213,7 +213,10 @@ public class SymptomsTabSteps implements En {
           selectLossOfSmell(symptoms.getLossOfSmell());
           selectLossOfTaste(symptoms.getLossOfTaste());
           selectOtherNonHemorrhagicSymptoms(symptoms.getOtherNonHemorrhagicSymptoms());
+          fillOtherNonHemorrhagicSymptoms(symptoms.getSymptomsComments());
           fillSymptomsComments(symptoms.getSymptomsComments());
+          selectFistSymptom(symptoms.getFirstSymptom());
+          fillDateOfSymptom(symptoms.getDateOfSymptom());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
 
