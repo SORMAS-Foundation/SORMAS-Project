@@ -190,7 +190,9 @@ public class ImmunizationController {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_ARCHIVE)) {
 			boolean archived = FacadeProvider.getImmunizationFacade().isArchived(immunizationDto.getUuid());
 			Button archiveButton = ButtonHelper.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {
-				editComponent.commit();
+				if (editComponent.isModified()) {
+					editComponent.commit();
+				}
 
 				if (archived) {
 					ControllerProvider.getArchiveController()

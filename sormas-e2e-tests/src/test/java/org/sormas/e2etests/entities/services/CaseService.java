@@ -83,6 +83,36 @@ public class CaseService {
         .build();
   }
 
+  public Case buildGeneratedCaseDE() {
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+
+    return Case.builder()
+        .firstName(firstName)
+        .lastName(lastName)
+        .caseOrigin("IM LAND")
+        .dateOfReport(LocalDate.now().minusDays(1))
+        .externalId(UUID.randomUUID().toString())
+        .disease("COVID-19")
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
+        .placeOfStay("ZUHAUSE")
+        .placeDescription(faker.harryPotter().location())
+        .dateOfBirth(
+            LocalDate.of(
+                faker.number().numberBetween(1900, 2002),
+                faker.number().numberBetween(1, 12),
+                faker.number().numberBetween(1, 27)))
+        .sex(GenderValues.getRandomGenderDE())
+        .presentConditionOfPerson("Lebendig")
+        .dateOfSymptomOnset(LocalDate.now().minusDays(1))
+        .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
+        .primaryEmailAddress(
+            ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
+        .build();
+  }
+
   public Case buildEditGeneratedCase() {
     return Case.builder()
         .dateOfReport(LocalDate.now().minusDays(3))

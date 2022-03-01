@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,34 +15,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-
 package org.sormas.e2etests.enums;
 
-import java.util.Random;
 import lombok.Getter;
 
 @Getter
-public enum GenderValues {
-  MALE("Male", "M\u00E4nnlich"),
-  FEMALE("Female", "Weiblich"),
-  OTHER("Other", "Divers"),
-  UNKNOWN("Unknown", "Unbekannt");
+public enum EventReferenceDateOptions {
+  EVENT_DATE("Event date"),
+  REPORT_DATE("Report date");
 
-  private final String gender;
-  private final String genderDE;
+  private final String option;
 
-  GenderValues(String humanGender, String humanGenderDE) {
-    gender = humanGender;
-    genderDE = humanGenderDE;
+  EventReferenceDateOptions(String option) {
+    this.option = option;
   }
 
-  public static String getRandomGender() {
-    Random random = new Random();
-    return String.valueOf(GenderValues.values()[random.nextInt(values().length)].gender);
-  }
-
-  public static String getRandomGenderDE() {
-    Random random = new Random();
-    return String.valueOf(GenderValues.values()[random.nextInt(values().length)].genderDE);
+  @Override
+  public String toString() {
+    return this.option;
   }
 }

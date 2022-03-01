@@ -60,10 +60,17 @@ import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
+import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebElement;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.common.DataOperations;
+import org.sormas.e2etests.entities.services.EventService;
+import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.enums.EventReferenceDateOptions;
+import org.sormas.e2etests.enums.RiskLevelValues;
+import org.sormas.e2etests.enums.SourceTypeValues;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.EventGroup;
 import org.sormas.e2etests.entities.services.EventGroupService;
@@ -77,18 +84,80 @@ import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.events.EventDirectoryPage;
 import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
+
+import javax.inject.Inject;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_COMMUNITY_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DATA_TYPE_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DISTRICT_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_GRID_RESULTS_ROWS;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_REGION_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_FROM_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_TO_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_PARTICIPANTS_TAB;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_EVENT_PARTICIPANT;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_TASK_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.TITLE_INPUT;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.APPLY_FILTER;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CREATED_PARTICIPANT;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CREATE_CASE_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.DATE_TYPE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENTS_COLUMN_HEADERS;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENTS_TABLE_DATA;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENTS_TABLE_ROW;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_DISPLAY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_GROUP_INPUT;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_INVESTIGATION_STATUS;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_MANAGEMENT_FILTER;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_STATUS_FILTER_BUTTONS;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTER_BY_DISEASE;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTER_BY_REPORTING_USER;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTER_BY_RISK_LEVEL;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTER_BY_SOURCE_TYPE;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTER_BY_TYPE_OF_PLACE;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FIRST_EVENT_ID_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.RESET_FILTER;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SEARCH_EVENT_BY_FREE_TEXT;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SEARCH_EVENT_BY_FREE_TEXT_INPUT;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.TOTAL_EVENTS_COUNTER;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
+import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.APPLY_FILTERS_BUTTON;
+import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.RESET_FILTERS_BUTTON;
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 public class EventDirectorySteps implements En {
+  private final WebDriverHelpers webDriverHelpers;
+  private final BaseSteps baseSteps;
 
   @Inject
   public EventDirectorySteps(
       WebDriverHelpers webDriverHelpers,
+      BaseSteps baseSteps,
       ApiState apiState,
       DataOperations dataOperations,
       AssertHelpers assertHelpers,
-      EnvironmentManager environmentManager,
-      EventGroupService eventGroupService) {
+      EventGroupService eventGroupService,
+      EventService eventService,
+      SoftAssert softly,
+      EnvironmentManager environmentManager) {
+    this.webDriverHelpers = webDriverHelpers;
+    this.baseSteps = baseSteps;
+
     When(
         "I fill EVENT ID filter by API",
         () -> {
@@ -96,6 +165,38 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.fillInWebElement(
               SEARCH_EVENT_BY_FREE_TEXT,
               dataOperations.getPartialUuidFromAssociatedLink(eventUuid));
+        });
+    When(
+        "I navigate to the last created Event page via URL",
+        () -> {
+          String eventLinkPath = "/sormas-ui/#!events/data/";
+          String createdEventUUID = CreateNewEventSteps.newEvent.getUuid();
+          webDriverHelpers.accessWebSite(
+              environmentManager.getEnvironmentUrlForMarket(locale)
+                  + eventLinkPath
+                  + createdEventUUID);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 50);
+        });
+    When(
+        "I navigate to the last created through API Event page via URL",
+        () -> {
+          String eventLinkPath = "/sormas-ui/#!events/data/";
+          String createdEventUUID = apiState.getCreatedEvent().getUuid();
+          webDriverHelpers.accessWebSite(
+              environmentManager.getEnvironmentUrlForMarket(locale)
+                  + eventLinkPath
+                  + createdEventUUID);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 50);
+        });
+
+    When(
+        "I fill Event Group Id filter to one assigned to created event on Event Directory Page",
+        () -> {
+          String eventGroupId = EditEventSteps.groupEvent.getUuid();
+          webDriverHelpers.fillInWebElement(
+              EVENT_GROUP_INPUT, dataOperations.getPartialUuidFromAssociatedLink(eventGroupId));
         });
 
     When(
@@ -182,7 +283,65 @@ public class EventDirectorySteps implements En {
         () ->
             webDriverHelpers.clickWhileOtherButtonIsDisplayed(
                 EventDirectoryPage.NEW_EVENT_BUTTON, TITLE_INPUT));
+    And(
+        "I apply {string} to combobox on Event Directory Page",
+        (String eventParameter) -> {
+          webDriverHelpers.selectFromCombobox(EVENT_DISPLAY_COMBOBOX, eventParameter);
+          webDriverHelpers.waitForPageLoaded();
+        });
+    And(
+        "I apply Date type filter to {string} on Event directory page",
+        (String dataType) ->
+            webDriverHelpers.selectFromCombobox(CASE_DATA_TYPE_FILTER_COMBOBOX, dataType));
+    And(
+        "I fill Event to input to {int} days after mocked Event created on Event directory page",
+        (Integer number) -> {
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+          webDriverHelpers.fillInWebElement(
+              DATE_TO_COMBOBOX,
+              formatter.format(
+                  LocalDate.ofInstant(
+                          apiState.getCreatedEvent().getReportDateTime().toInstant(),
+                          ZoneId.systemDefault())
+                      .plusDays(number)));
+        });
+    And(
+        "I fill Event from input to {int} days before mocked Event created on Event directory page",
+        (Integer number) -> {
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+          webDriverHelpers.fillInWebElement(
+              DATE_FROM_COMBOBOX,
+              formatter.format(
+                  LocalDate.ofInstant(
+                          apiState.getCreatedEvent().getReportDateTime().toInstant(),
+                          ZoneId.systemDefault())
+                      .minusDays(number)));
+        });
+    And(
+        "I fill Event from input to {int} days after before mocked Event created on Event directory page",
+        (Integer number) -> {
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+          webDriverHelpers.fillInWebElement(
+              DATE_FROM_COMBOBOX, formatter.format(LocalDate.now().plusDays(number)));
+        });
 
+    And(
+        "I apply mocked Person Id filter on Event directory page",
+        () ->
+            webDriverHelpers.fillAndSubmitInWebElement(
+                PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT, "TestName TestSurname"));
+    And(
+        "I filter by mocked EventId on Event directory page",
+        () -> {
+          String partialUuid =
+              dataOperations.getPartialUuidFromAssociatedLink(
+                  "aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee");
+          webDriverHelpers.fillAndSubmitInWebElement(SEARCH_EVENT_BY_FREE_TEXT, partialUuid);
+        });
+    And(
+        "I filter by mocked EventGroupId on Event directory page",
+        () ->
+            webDriverHelpers.fillAndSubmitInWebElement(EVENT_GROUP_INPUT, "TestName TestSurname"));
     When(
         "I select random Risk level filter among the filter options from API",
         () -> {
@@ -191,6 +350,32 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.selectFromCombobox(
               FILTER_BY_RISK_LEVEL, RiskLevelValues.getCaptionForName(riskLevel));
         });
+    When(
+        "I fill Reporting User filter to {string} on Event Directory Page",
+        (String reportingUser) -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(FILTER_BY_REPORTING_USER, reportingUser);
+        });
+    And(
+        "I apply Region filter to {string} on Event directory page",
+        (String region) ->
+            webDriverHelpers.selectFromCombobox(CASE_REGION_FILTER_COMBOBOX, region));
+    And(
+        "I apply District filter to {string} on Event directory page",
+        (String district) ->
+            webDriverHelpers.selectFromCombobox(CASE_DISTRICT_FILTER_COMBOBOX, district));
+    And(
+        "I apply Event Management Status filter to {string} on Event directory page",
+        (String managementStatus) ->
+            webDriverHelpers.selectFromCombobox(EVENT_MANAGEMENT_FILTER, managementStatus));
+    And(
+        "I apply Event Investigation Status filter to {string} on Event directory page",
+        (String investigationStatus) ->
+            webDriverHelpers.selectFromCombobox(EVENT_INVESTIGATION_STATUS, investigationStatus));
+    Then(
+        "I apply Community filter to {string} on Event directory page",
+        (String community) ->
+            webDriverHelpers.selectFromCombobox(CASE_COMMUNITY_FILTER_COMBOBOX, community));
 
     When(
         "I select random Risk level filter among the filter options",
@@ -302,6 +487,50 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
               FILTER_BY_TYPE_OF_PLACE, TypeOfPlace.getValueFor(typeOfPlace));
+        });
+
+    When(
+        "I select Report Date among Event Reference Date options",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(
+              DATE_TYPE_COMBOBOX, EventReferenceDateOptions.REPORT_DATE.toString());
+        });
+
+    When(
+        "I fill in a date range in Date of Event From Epi Week and ...To fields",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          eventService.timeRange = buildTimeRange();
+          webDriverHelpers.fillInWebElement(
+              DATE_FROM_COMBOBOX,
+              eventService
+                  .timeRange[0]
+                  .format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+                  .toString());
+          webDriverHelpers.fillInWebElement(
+              DATE_TO_COMBOBOX,
+              eventService
+                  .timeRange[1]
+                  .format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+                  .toString());
+        });
+
+    When(
+        "I check that the dates of displayed Event results are correct",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          List<Map<String, String>> tableRowsData = getTableRowsData();
+          for (int i = 0; i < tableRowsData.size(); i++) {
+            String dateCell =
+                tableRowsData.get(i).get(EventsTableColumnsHeaders.REPORT_DATE_HEADER.toString());
+            LocalDate date = getLocalDateFromColumns(dateCell.substring(0, dateCell.indexOf(" ")));
+            softly.assertTrue(
+                date.isAfter(eventService.timeRange[0].minusDays(1))
+                    && date.isBefore(eventService.timeRange[1].plusDays(1)),
+                "The date(s) of displayed events are out of the requested range");
+          }
+          softly.assertAll();
         });
 
     When(
@@ -433,5 +662,71 @@ public class EventDirectorySteps implements En {
                             webDriverHelpers.getTextFromPresentWebElement(TOTAL_EVENTS_COUNTER)),
                         number.intValue(),
                         "Number of displayed cases is not correct")));
+  }
+
+  private List<Map<String, String>> getTableRowsData() {
+    Map<String, Integer> headers = extractColumnHeadersHashMap();
+    List<WebElement> tableRows = getTableRows();
+    List<HashMap<Integer, String>> tableDataList = new ArrayList<>();
+    tableRows.forEach(
+        table -> {
+          HashMap<Integer, String> indexWithData = new HashMap<>();
+          AtomicInteger atomicInt = new AtomicInteger();
+          List<WebElement> tableData = table.findElements(EVENTS_TABLE_DATA);
+          tableData.forEach(
+              dataText -> {
+                webDriverHelpers.scrollToElementUntilIsVisible(dataText);
+                indexWithData.put(atomicInt.getAndIncrement(), dataText.getText());
+              });
+          tableDataList.add(indexWithData);
+        });
+    List<Map<String, String>> tableObjects = new ArrayList<>();
+    tableDataList.forEach(
+        row -> {
+          ConcurrentHashMap<String, String> objects = new ConcurrentHashMap<>();
+          headers.forEach((headerText, index) -> objects.put(headerText, row.get(index)));
+          tableObjects.add(objects);
+        });
+    return tableObjects;
+  }
+
+  private List<WebElement> getTableRows() {
+    webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(EVENTS_COLUMN_HEADERS);
+    return baseSteps.getDriver().findElements(EVENTS_TABLE_ROW);
+  }
+
+  private Map<String, Integer> extractColumnHeadersHashMap() {
+    AtomicInteger atomicInt = new AtomicInteger();
+    HashMap<String, Integer> headerHashmap = new HashMap<>();
+    webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(EVENTS_COLUMN_HEADERS);
+    webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(EVENTS_COLUMN_HEADERS);
+    webDriverHelpers.scrollToElementUntilIsVisible(EVENTS_COLUMN_HEADERS);
+    baseSteps
+        .getDriver()
+        .findElements(EVENTS_COLUMN_HEADERS)
+        .forEach(
+            webElement -> {
+              webDriverHelpers.scrollToElementUntilIsVisible(webElement);
+              headerHashmap.put(webElement.getText(), atomicInt.getAndIncrement());
+            });
+    return headerHashmap;
+  }
+
+  private LocalDate getLocalDateFromColumns(String date) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+    try {
+      return LocalDate.parse(date, formatter);
+    } catch (Exception e) {
+      throw new WebDriverException(
+          String.format(
+              "Unable to parse date: %s due to caught exception: %s", date, e.getMessage()));
+    }
+  }
+
+  private LocalDate[] buildTimeRange() {
+    LocalDate[] timeRange = new LocalDate[2];
+    timeRange[0] = LocalDate.now().minusMonths(1);
+    timeRange[1] = LocalDate.now();
+    return timeRange;
   }
 }
