@@ -247,3 +247,51 @@ Feature: Contacts end to end tests
     And I fill the specific data of visit with Set cleared to Unknown option to all symptoms
     Then I save the Visit data
 
+  @issue=SORDEV-7452 @env_main
+  Scenario: Bulk mode for linking/adding contacts to new Event
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    When API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Contacts button from navbar
+    And I apply Id of last api created Contact on Contact Directory Page
+    And I click APPLY BUTTON in Contact Directory Page
+    And I click on the More button on Contact directory page
+    And I click Enter Bulk Edit Mode on Contact directory page
+    And I click checkbox to choose all Contact results on Contact Directory Page
+    And I click on Bulk Actions combobox on Contact Directory Page
+    And I click on Link to Event from Bulk Actions combobox on Contact Directory Page
+    And I click on New Event option in Link to Event Form
+    And I click on SAVE button in Link Event to group form
+    And I create a new event with status CLUSTER
+    And I navigate to the last created Event page via URL
+    And I check that number of displayed Event Participants is 1
+
+  @issue=SORDEV-7452 @env_main
+  Scenario: Bulk mode for linking/adding contacts to existing Event
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    When API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Contacts button from navbar
+    And I apply Id of last api created Contact on Contact Directory Page
+    And I click APPLY BUTTON in Contact Directory Page
+    And I click on the More button on Contact directory page
+    And I click Enter Bulk Edit Mode on Contact directory page
+    And I click checkbox to choose all Contact results on Contact Directory Page
+    And I click on Bulk Actions combobox on Contact Directory Page
+    And I click on Link to Event from Bulk Actions combobox on Contact Directory Page
+    And I fill Event Id filter with last created EventId on Link to Event form
+    And I click first result in grid on Link to Event form
+    And I click on SAVE button in Link Event to group form
+    And I navigate to the last created through API Event page via URL
+    And I check that number of displayed Event Participants is 1

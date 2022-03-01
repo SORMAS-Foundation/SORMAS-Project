@@ -207,6 +207,12 @@ public class CreateNewCaseSteps implements En {
           fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
           fillPlaceDescription(caze.getPlaceDescription());
         });
+
+    When(
+        "^I click on Enter Home Address of the Case Person Now in the Create New Case popup$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ENTER_HOME_ADDRESS_CHECKBOX);
+        });
   }
 
   private void selectCaseOrigin(String caseOrigin) {

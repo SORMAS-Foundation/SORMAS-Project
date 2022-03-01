@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -15,19 +15,23 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.entities.pojo.api;
+package org.sormas.e2etests.enums;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import lombok.*;
+import lombok.Getter;
 
-@Value
-@AllArgsConstructor
-@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
-@Builder(toBuilder = true, builderClassName = "builder")
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class EventLocation {
-  String uuid;
-  Region region;
-  District district;
-  Community community;
+@Getter
+public enum EventReferenceDateOptions {
+  EVENT_DATE("Event date"),
+  REPORT_DATE("Report date");
+
+  private final String option;
+
+  EventReferenceDateOptions(String option) {
+    this.option = option;
+  }
+
+  @Override
+  public String toString() {
+    return this.option;
+  }
 }

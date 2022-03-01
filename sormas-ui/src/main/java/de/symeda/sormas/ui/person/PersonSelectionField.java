@@ -77,7 +77,9 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 
 		initializeGrid();
 
-		this.hasMatches = FacadeProvider.getPersonFacade().checkMatchingNameInDatabase(UserProvider.getCurrent().getUserReference(), defaultCriteria);
+		this.hasMatches = referencePerson == null
+			? false
+			: FacadeProvider.getPersonFacade().checkMatchingNameInDatabase(UserProvider.getCurrent().getUserReference(), defaultCriteria);
 		if (infoTextWithoutMatches == null) {
 			this.infoText = infoText;
 		} else {
