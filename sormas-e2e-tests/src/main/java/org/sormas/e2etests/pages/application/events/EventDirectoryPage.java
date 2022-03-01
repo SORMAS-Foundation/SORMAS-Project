@@ -62,7 +62,7 @@ public class EventDirectoryPage {
   public static final By EVENT_DROPPED = By.id("status-Dropped");
   public static final By CREATED_PARTICIPANT = By.cssSelector("[role='gridcell'] a");
   public static final By EVENT_PARTICIPANT_INPUT = By.id("freeTextEventParticipants");
-  public static final By EVENT_GROUP_INPUT= By.id("freeTextEventGroups");
+  public static final By EVENT_GROUP_INPUT = By.id("freeTextEventGroups");
 
   /*public static By getByEventUuid(String eventUuid) {
     return By.cssSelector("a[title=" + eventUuid + "]");

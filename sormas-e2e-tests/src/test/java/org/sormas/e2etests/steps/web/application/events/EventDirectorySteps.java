@@ -94,7 +94,7 @@ public class EventDirectorySteps implements En {
     And(
         "I fill Event to input to {int} days after mocked Event created on Event directory page",
         (Integer number) -> {
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
           webDriverHelpers.fillInWebElement(
               DATE_TO_COMBOBOX,
               formatter.format(
@@ -106,7 +106,7 @@ public class EventDirectorySteps implements En {
     And(
         "I fill Event from input to {int} days before mocked Event created on Event directory page",
         (Integer number) -> {
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
           webDriverHelpers.fillInWebElement(
               DATE_FROM_COMBOBOX,
               formatter.format(
@@ -118,7 +118,7 @@ public class EventDirectorySteps implements En {
     And(
         "I fill Event from input to {int} days after before mocked Event created on Event directory page",
         (Integer number) -> {
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
           webDriverHelpers.fillInWebElement(
               DATE_FROM_COMBOBOX, formatter.format(LocalDate.now().plusDays(number)));
         });
@@ -138,7 +138,8 @@ public class EventDirectorySteps implements En {
         });
     And(
         "I filter by mocked EventGroupId on Event directory page",
-        () -> webDriverHelpers.fillAndSubmitInWebElement(EVENT_GROUP_INPUT, "TestName TestSurname"));
+        () ->
+            webDriverHelpers.fillAndSubmitInWebElement(EVENT_GROUP_INPUT, "TestName TestSurname"));
     When(
         "I select random Risk level filter among the filter options from API",
         () -> {
