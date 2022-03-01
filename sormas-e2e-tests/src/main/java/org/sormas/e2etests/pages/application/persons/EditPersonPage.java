@@ -111,6 +111,7 @@ public class EditPersonPage {
   public static final By SEE_CONTACTS_FOR_PERSON_BUTTON = By.id("See contacts for this person");
   public static final By EDIT_CASES_BUTTON = By.id("edit-case-0");
   public static final By EDIT_CONTACTS_BUTTON = By.id("edit-contact-0");
+  public static final By CONFIRM_NAVIGATION_BUTTON = By.cssSelector(".popupContent #actionConfirm");
 
   public static By getByPersonUuid(String personUuid) {
     return By.cssSelector("a[title='" + personUuid + "']");
