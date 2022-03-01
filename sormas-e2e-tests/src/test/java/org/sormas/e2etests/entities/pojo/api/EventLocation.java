@@ -27,4 +27,7 @@ import lombok.*;
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class EventLocation {
   String uuid;
+  Region region;
+  District district;
+  Community community;
 }

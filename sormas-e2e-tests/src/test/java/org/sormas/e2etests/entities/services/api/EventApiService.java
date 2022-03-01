@@ -21,10 +21,17 @@ package org.sormas.e2etests.entities.services.api;
 import com.google.inject.Inject;
 import java.util.Date;
 import java.util.UUID;
+import org.sormas.e2etests.entities.pojo.api.Community;
+import org.sormas.e2etests.entities.pojo.api.District;
 import org.sormas.e2etests.entities.pojo.api.Event;
 import org.sormas.e2etests.entities.pojo.api.EventLocation;
+import org.sormas.e2etests.entities.pojo.api.Region;
 import org.sormas.e2etests.entities.pojo.api.ReportingUser;
+import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.EventManagementStatusValues;
+import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.enums.RiskLevelValues;
 import org.sormas.e2etests.enums.SourceTypeValues;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
@@ -45,9 +52,25 @@ public class EventApiService {
         .eventTitle(String.valueOf(System.currentTimeMillis()))
         .startDate(new Date())
         .reportDateTime(new Date())
-        .eventLocation(EventLocation.builder().uuid(UUID.randomUUID().toString()).build())
         .riskLevel(RiskLevelValues.getRandomRiskLevelName())
         .typeOfPlace(TypeOfPlace.getRandomTypeOfPlace())
+        .eventManagementStatus(EventManagementStatusValues.ONGOING.getValue())
+        .eventLocation(
+            EventLocation.builder()
+                .uuid(UUID.randomUUID().toString())
+                .community(
+                    Community.builder()
+                        .uuid(CommunityValues.VoreingestellteGemeinde.getUuid())
+                        .build())
+                .region(
+                    Region.builder()
+                        .uuid(RegionsValues.VoreingestellteBundeslander.getUuid())
+                        .build())
+                .district(
+                    District.builder()
+                        .uuid(DistrictsValues.VoreingestellterLandkreis.getUuid())
+                        .build())
+                .build())
         .build();
   }
 }
