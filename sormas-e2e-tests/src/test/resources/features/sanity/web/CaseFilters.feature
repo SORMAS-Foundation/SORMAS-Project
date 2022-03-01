@@ -1,7 +1,7 @@
 @UI @Sanity @Case @Filters
 Feature: Case filter functionality
 
-  @env_main
+  @env_main @ignore
   Scenario: Check Cases on Sample page work as expected
     Given API: I create 10 new cases
     Then API: I check that POST call body is "OK"
@@ -240,7 +240,7 @@ Feature: Case filter functionality
     And I check that number of displayed cases results is 0
     And I fill Cases from input to 1 days before mocked Case created on Case directory page
 
-  @issue=SORQA-30 @env_main
+  @issue=SORQA-30 @env_main @ignore
   Scenario: Check complex filters regarding responsibilities, vaccination, reinfection adn quarantine
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
