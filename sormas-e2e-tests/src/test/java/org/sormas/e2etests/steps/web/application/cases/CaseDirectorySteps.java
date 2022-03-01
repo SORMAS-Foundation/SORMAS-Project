@@ -78,7 +78,6 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NEW_
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NEW_EVENT_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.RESULTS_GRID_HEADER;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SAVE_BUTTON_IN_LINK_FORM;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SEARCH_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHOW_MORE_LESS_FILTERS;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.TOTAL_CASES_COUNTER;
@@ -189,9 +188,6 @@ public class CaseDirectorySteps implements En {
     And(
         "I click first result in grid on Link to Event form",
         () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_RESULT_IN_GRID));
-    When(
-        "^I click on SAVE button in Link Event to group form$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_IN_LINK_FORM));
 
     When(
         "I filter by CaseID on Case directory page",
