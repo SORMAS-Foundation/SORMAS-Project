@@ -74,11 +74,11 @@
     <appender name="ROLLING_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
         <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
             <fileNamePattern>log-%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>0</maxHistory>
+            <maxHistory>60</maxHistory>
             <totalSizeCap>30GB</totalSizeCap>
         </rollingPolicy>
         <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-            <maxFileSize>500MB</maxFileSize>
+            <maxFileSize>100MB</maxFileSize>
         </triggeringPolicy>
         <encoder>
             <pattern>%d{HH:mm:ss} [%thread] %-5level - %msg%n</pattern>
@@ -87,16 +87,6 @@
     </appender>
 
     <root level="INFO">
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="LOGS_HTML"/>
-        <appender-ref ref="ROLLING_FILE"/>
-    </root>
-    <root level="ERROR">
-        <appender-ref ref="STDOUT"/>
-        <appender-ref ref="LOGS_HTML"/>
-        <appender-ref ref="ROLLING_FILE"/>
-    </root>
-    <root level="WARN">
         <appender-ref ref="STDOUT"/>
         <appender-ref ref="LOGS_HTML"/>
         <appender-ref ref="ROLLING_FILE"/>
