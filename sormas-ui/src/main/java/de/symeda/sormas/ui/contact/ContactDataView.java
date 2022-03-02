@@ -219,7 +219,8 @@ public class ContactDataView extends AbstractContactView {
 				new SampleCriteria().contact(getContactRef()).sampleAssociationType(SampleAssociationType.CONTACT),
 				e -> showNavigationConfirmPopupIfDirty(
 					() -> ControllerProvider.getSampleController().create(getContactRef(), contactDto.getDisease(), () -> {
-						FacadeProvider.getContactFacade().save(contactDto);
+						final ContactDto contactByUuid = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
+						FacadeProvider.getContactFacade().save(contactByUuid);
 						SormasUI.refreshView();
 					})));
 
