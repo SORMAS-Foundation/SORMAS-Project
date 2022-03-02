@@ -18,9 +18,24 @@
 
 package org.sormas.e2etests.steps.web.application.persons;
 
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
-import static org.sormas.e2etests.pages.application.persons.EditPersonPage.*;
-import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.*;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_GRID_RESULTS_ROWS;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.getByPersonUuid;
+import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.ALL_BUTTON;
+import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.APPLY_FILTERS_BUTTON;
+import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.BIRTH_DAY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.BIRTH_MONTH_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.BIRTH_YEAR_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.CASE_PERSON_ID_COLUMN_HEADERS;
+import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.COMMUNITY_PERSON_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.DISTRICTS_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.MULTIPLE_OPTIONS_SEARCH_INPUT;
+import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.PERSON_RESULTS_UUID_LOCATOR;
+import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.PRESENT_CONDITION;
+import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.PRESENT_CONDITION_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.REGIONS_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.RESET_FILTERS_BUTTON;
+import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.SEARCH_PERSON_BY_FREE_TEXT;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.github.javafaker.Faker;
@@ -228,7 +243,8 @@ public class PersonDirectorySteps implements En {
             randomPresentCondition = PresentCondition.getRandomPresentCondition();
           }
           webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.selectFromCombobox(PRESENT_CONDITION, randomPresentCondition);
+          webDriverHelpers.selectFromCombobox(
+              PRESENT_CONDITION, PresentCondition.getValueFor(randomPresentCondition));
         });
 
     Then(
