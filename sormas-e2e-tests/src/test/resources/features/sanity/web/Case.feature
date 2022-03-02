@@ -399,3 +399,39 @@ Feature: Case end to end tests
     And I navigate to the last created through API Event page via URL
     And I check that number of displayed Event Participants is 1
 
+  @issue=SORDEV-8048 @env_de
+  Scenario: Test Default value for disease if only one is used by the server
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data for DE version
+    Then I check the created data is correctly displayed on Edit case page for DE version
+    Then I back to Case Directory using case list button
+    And I click on Case Line Listing button
+    Then I create a new case in line listing feature popup for DE version
+    And I save the new line listing case
+    Then I click on the Cases button from navbar
+    And I check that case created from Line Listing for DE version is saved and displayed in results grid
+    Then I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form for DE version
+    Then I click SAVE a new contact
+    Then I check the created data for DE version is correctly displayed on Edit Contact page
+    Then I click on the Contacts button from navbar
+    Then I click on Line Listing button
+    And I create a new Contact with specific data for DE version through Line Listing
+    And I save the new contact using line listing feature
+    Then I click on the Contacts button from navbar
+    And I check that contact created from Line Listing is saved and displayed in results grid
+    Then I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    When I create a new event with specific data for DE version
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    Then I check the created data for DE version is correctly displayed in event edit page
+    Then I click on the Sample button from navbar
+    When I open created Sample
+    Then I click on the new pathogen test from the Edit Sample page for DE version
+    And I complete all fields from Pathogen test result popup for IgM test type for DE version and save
+    Then I check that the created Pathogen is correctly displayed for DE version
