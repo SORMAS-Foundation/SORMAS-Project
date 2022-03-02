@@ -163,7 +163,8 @@ public class EventDataView extends AbstractEventView {
 		boolean eventGroupsFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_GROUPS);
 		if (eventGroupsFeatureEnabled) {
 			EventReferenceDto eventReference = event.toReference();
-			EventGroupListComponent eventGroupsList = new EventGroupListComponent(eventReference, e -> {
+			EventGroupListComponent eventGroupsList = new EventGroupListComponent(eventReference);
+			eventGroupsList.addSideComponentCreateEventListener(e -> {
 				EventDto eventByUuid = FacadeProvider.getEventFacade().getEventByUuid(eventReference.getUuid(), false);
 				UserProvider user = UserProvider.getCurrent();
 				if (!user.hasNationalJurisdictionLevel() && !user.hasRegion(eventByUuid.getEventLocation().getRegion())) {
@@ -204,8 +205,7 @@ public class EventDataView extends AbstractEventView {
 					}
 				}
 			});
-			eventGroupsList.addStyleName(CssStyles.SIDE_COMPONENT);
-			layout.addComponent(eventGroupsList, EVENT_GROUPS_LOC);
+			layout.addComponent(new SideComponentLayout(eventGroupsList), EVENT_GROUPS_LOC);
 		}
 
 		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isSharingEventsEnabledForUser();
