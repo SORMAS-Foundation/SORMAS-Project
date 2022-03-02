@@ -914,6 +914,7 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 		homeAddressForm.setValue(new LocationDto());
 		homeAddressForm.setCaption(null);
 		homeAddressForm.setWidthFull();
+		homeAddressForm.setDisableFacilityAddressCheck(true);
 
 		getContent().addComponent(homeAddressForm, HOME_ADDRESS_LOC);
 		homeAddressForm.setVisible(false);
