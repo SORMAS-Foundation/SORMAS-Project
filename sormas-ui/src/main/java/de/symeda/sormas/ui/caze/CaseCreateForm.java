@@ -43,6 +43,7 @@ import com.google.common.collect.Sets;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
@@ -110,6 +111,7 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 	private static final String HOME_ADDRESS_HEADER = "addressHeader";
 	private static final String HOME_ADDRESS_LOC = "homeAddressLoc";
 
+	private TextField diseaseVariantDetailsField;
 	private ComboBox birthDateDay;
 	private NullableOptionGroup facilityOrHome;
 	private ComboBox facilityTypeGroup;
@@ -123,10 +125,12 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 	private ComboBox facilityCombo;
 	private ComboBox pointOfEntryDistrictCombo;
 
+	private CheckBox enterHomeAddressNow;
 	private LocationEditForm homeAddressForm;
 	private Button searchPersonButton;
 
 	private final boolean showHomeAddressForm;
+	private final boolean showPersonSearchButton;
 
 	// If a case is created form a TravelEntry, the variable convertedTravelEntry provides the
 	// necessary extra data. This variable is expected to be replaced in the implementation of
@@ -155,26 +159,28 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
         + fluidRowLocs(DIFFERENT_POINT_OF_ENTRY_JURISDICTION)
         + fluidRowLocs(POINT_OF_ENTRY_REGION, POINT_OF_ENTRY_DISTRICT)
         + fluidRowLocs(CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS)
-        + fluidRowLocs(6, PersonDto.FIRST_NAME, 4, PersonDto.LAST_NAME, 2, PERSON_SEARCH_LOC)
-        + fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD),
-        fluidRowLocs(PersonDto.SEX))
-        + fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER)
+		+ "%s"
+		+ fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD), fluidRowLocs(PersonDto.SEX))
+		+ fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER)
         + fluidRowLocs(PersonDto.PRESENT_CONDITION, SymptomsDto.ONSET_DATE)
         + fluidRowLocs(PersonDto.PHONE, PersonDto.EMAIL_ADDRESS)
         + fluidRowLocs(ENTER_HOME_ADDRESS_NOW)
         + loc(HOME_ADDRESS_HEADER)
         + divsCss(VSPACE_3, fluidRowLocs(HOME_ADDRESS_LOC));
+    
+	private static final String NAME_ROW_WITH_PERSON_SEARCH = fluidRowLocs(6, PersonDto.FIRST_NAME, 4, PersonDto.LAST_NAME, 2, PERSON_SEARCH_LOC);
+	private static final String NAME_ROW_WITHOUT_PERSON_SEARCH = fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME);
     //@formatter:on
 
 	public CaseCreateForm() {
-		this(true, null);
+		this(true, true, null);
 	}
 
 	public CaseCreateForm(TravelEntryDto convertedTravelEntry) {
-		this(false, convertedTravelEntry);
+		this(false, true, convertedTravelEntry);
 	}
 
-	private CaseCreateForm(Boolean showHomeAddressForm, TravelEntryDto convertedTravelEntry) {
+	CaseCreateForm(Boolean showHomeAddressForm, Boolean showPersonSearchButton, TravelEntryDto convertedTravelEntry) {
 		super(
 			CaseDataDto.class,
 			CaseDataDto.I18N_PREFIX,
@@ -183,6 +189,7 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 			UiFieldAccessCheckers.getNoop());
 		this.convertedTravelEntry = convertedTravelEntry;
 		this.showHomeAddressForm = showHomeAddressForm;
+		this.showPersonSearchButton = showPersonSearchButton;
 		addFields();
 		setWidth(720, Unit.PIXELS);
 		hideValidationUntilNextCommit();
@@ -209,7 +216,7 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 		addField(CaseDataDto.REPORT_DATE, DateField.class);
 		ComboBox diseaseField = addDiseaseField(CaseDataDto.DISEASE, false, true);
 		ComboBox diseaseVariantField = addField(CaseDataDto.DISEASE_VARIANT, ComboBox.class);
-		TextField diseaseVariantDetailsField = addField(CaseDataDto.DISEASE_VARIANT_DETAILS, TextField.class);
+		diseaseVariantDetailsField = addField(CaseDataDto.DISEASE_VARIANT_DETAILS, TextField.class);
 		diseaseVariantDetailsField.setVisible(false);
 		diseaseVariantField.setNullSelectionAllowed(true);
 		diseaseVariantField.setVisible(false);
@@ -220,8 +227,10 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 		addCustomField(PersonDto.FIRST_NAME, String.class, TextField.class);
 		addCustomField(PersonDto.LAST_NAME, String.class, TextField.class);
 
-		searchPersonButton = createPersonSearchButton(PERSON_SEARCH_LOC);
-		getContent().addComponent(searchPersonButton, PERSON_SEARCH_LOC);
+		if (showPersonSearchButton) {
+			searchPersonButton = createPersonSearchButton(PERSON_SEARCH_LOC);
+			getContent().addComponent(searchPersonButton, PERSON_SEARCH_LOC);
+		}
 
 		TextField nationalHealthIdField = addCustomField(PersonDto.NATIONAL_HEALTH_ID, String.class, TextField.class);
 		TextField passportNumberField = addCustomField(PersonDto.PASSPORT_NUMBER, String.class, TextField.class);
@@ -799,6 +808,16 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 
 	public void setPerson(PersonDto person) {
 
+		if (showHomeAddressForm) {
+			PersonDto searchedPerson = getSearchedPerson();
+			enterHomeAddressNow.setEnabled(searchedPerson != null ? false : true);
+			if (searchedPerson == null) {
+				homeAddressForm.clear();
+				homeAddressForm.setFacilityFieldsVisible(false, true);
+				homeAddressForm.setVisible(false);
+			}
+		}
+
 		if (person != null) {
 			((TextField) getField(PersonDto.FIRST_NAME)).setValue(person.getFirstName());
 			((TextField) getField(PersonDto.LAST_NAME)).setValue(person.getLastName());
@@ -882,7 +901,7 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 	}
 
 	private void addHomeAddressForm() {
-		CheckBox enterHomeAddressNow = new CheckBox(I18nProperties.getCaption(Captions.caseDataEnterHomeAddressNow));
+		enterHomeAddressNow = new CheckBox(I18nProperties.getCaption(Captions.caseDataEnterHomeAddressNow));
 		enterHomeAddressNow.addStyleName(VSPACE_3);
 		getContent().addComponent(enterHomeAddressNow, ENTER_HOME_ADDRESS_NOW);
 
@@ -916,6 +935,14 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 
 	@Override
 	protected String createHtmlLayout() {
-		return HTML_LAYOUT;
+		return String.format(HTML_LAYOUT, showPersonSearchButton ? NAME_ROW_WITH_PERSON_SEARCH : NAME_ROW_WITHOUT_PERSON_SEARCH);
+	}
+
+	@Override
+	public void setValue(CaseDataDto caseDataDto) throws com.vaadin.v7.data.Property.ReadOnlyException, Converter.ConversionException {
+		super.setValue(caseDataDto);
+		if (convertedTravelEntry != null) {
+			diseaseVariantDetailsField.setValue(convertedTravelEntry.getDiseaseVariantDetails());
+		}
 	}
 }

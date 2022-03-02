@@ -1,11 +1,13 @@
 package de.symeda.sormas.ui.travelentry;
 
+import java.util.Collection;
+
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
+import com.vaadin.server.Page;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
@@ -20,6 +22,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
+import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
 import de.symeda.sormas.api.travelentry.TravelEntryListCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -43,8 +46,7 @@ public class TravelEntryController {
 	}
 
 	public void create() {
-		CommitDiscardWrapperComponent<TravelEntryCreateForm> travelEntryCreateComponent =
-			getTravelEntryCreateComponent(null, null);
+		CommitDiscardWrapperComponent<TravelEntryCreateForm> travelEntryCreateComponent = getTravelEntryCreateComponent(null, null);
 		VaadinUiUtil.showModalPopupWindow(travelEntryCreateComponent, I18nProperties.getString(Strings.headingCreateNewTravelEntry));
 	}
 
@@ -54,7 +56,9 @@ public class TravelEntryController {
 		VaadinUiUtil.showModalPopupWindow(travelEntryCreateComponent, I18nProperties.getString(Strings.headingCreateNewTravelEntry));
 	}
 
-	private CommitDiscardWrapperComponent<TravelEntryCreateForm> getTravelEntryCreateComponent(CaseReferenceDto caseReferenceDto, PersonReferenceDto personReferenceDto) {
+	private CommitDiscardWrapperComponent<TravelEntryCreateForm> getTravelEntryCreateComponent(
+		CaseReferenceDto caseReferenceDto,
+		PersonReferenceDto personReferenceDto) {
 
 		TravelEntryCreateForm createForm;
 		TravelEntryDto travelEntry = TravelEntryDto.build(null);
@@ -163,8 +167,31 @@ public class TravelEntryController {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_ARCHIVE)) {
 			boolean archived = FacadeProvider.getTravelEntryFacade().isArchived(travelEntryUuid);
 			Button archiveTravelEntryButton = ButtonHelper.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {
-				editComponent.commit();
-				archiveOrDearchiveTraveEntry(travelEntryUuid, !archived);
+				if (editComponent.isModified()) {
+					editComponent.commit();
+				}
+
+				if (archived) {
+					ControllerProvider.getArchiveController()
+						.dearchiveEntity(
+							travelEntry,
+							FacadeProvider.getTravelEntryFacade(),
+							Strings.headingDearchiveTravelEntry,
+							Strings.confirmationDearchiveTravelEntry,
+							Strings.entityTravel,
+							Strings.messageTravelEntryDearchived,
+							() -> navigateToTravelEntry(travelEntry.getUuid()));
+				} else {
+					ControllerProvider.getArchiveController()
+						.archiveEntity(
+							travelEntry,
+							FacadeProvider.getTravelEntryFacade(),
+							Strings.headingArchiveTravelEntry,
+							Strings.confirmationArchiveTravelEntry,
+							Strings.entityTravel,
+							Strings.messageTravelEntryArchived,
+							() -> navigateToTravelEntry(travelEntry.getUuid()));
+				}
 			}, ValoTheme.BUTTON_LINK);
 
 			editComponent.getButtonsPanel().addComponentAsFirst(archiveTravelEntryButton);
@@ -198,52 +225,26 @@ public class TravelEntryController {
 		return titleLayout;
 	}
 
-	private void archiveOrDearchiveTraveEntry(String travelEntryUuid, boolean archive) {
-
-		if (archive) {
-			Label contentLabel = new Label(
-				String.format(
-					I18nProperties.getString(Strings.confirmationArchiveTravelEntry),
-					I18nProperties.getString(Strings.entityTravel).toLowerCase(),
-					I18nProperties.getString(Strings.entityTravel).toLowerCase()));
-			VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getString(Strings.headingArchiveTravelEntry),
-				contentLabel,
-				I18nProperties.getString(Strings.yes),
-				I18nProperties.getString(Strings.no),
-				640,
-				e -> {
-					if (e) {
-						FacadeProvider.getTravelEntryFacade().archiveOrDearchiveTravelEntry(travelEntryUuid, true);
-						Notification.show(
-							String
-								.format(I18nProperties.getString(Strings.messageTravelEntryArchived), I18nProperties.getString(Strings.entityTravel)),
-							Notification.Type.ASSISTIVE_NOTIFICATION);
-						navigateToTravelEntry(travelEntryUuid);
-					}
-				});
+	public void deleteAllSelectedItems(Collection<TravelEntryIndexDto> selectedRows, Runnable callback) {
+		if (selectedRows.size() == 0) {
+			new Notification(
+				I18nProperties.getString(Strings.headingNoTravelEntriesSelected),
+				I18nProperties.getString(Strings.messageNoTravelEntriesSelected),
+				Notification.Type.WARNING_MESSAGE,
+				false).show(Page.getCurrent());
 		} else {
-			Label contentLabel = new Label(
-				String.format(
-					I18nProperties.getString(Strings.confirmationDearchiveTravelEntry),
-					I18nProperties.getString(Strings.entityTravel).toLowerCase(),
-					I18nProperties.getString(Strings.entityTravel).toLowerCase()));
-			VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getString(Strings.headingDearchiveTravelEntry),
-				contentLabel,
-				I18nProperties.getString(Strings.yes),
-				I18nProperties.getString(Strings.no),
-				640,
-				e -> {
-					if (e) {
-						FacadeProvider.getTravelEntryFacade().archiveOrDearchiveTravelEntry(travelEntryUuid, false);
-						Notification.show(
-							String.format(
-								I18nProperties.getString(Strings.messageTravelEntryDearchived),
-								I18nProperties.getString(Strings.entityTravel)),
-							Notification.Type.ASSISTIVE_NOTIFICATION);
-						navigateToTravelEntry(travelEntryUuid);
+			VaadinUiUtil.showDeleteConfirmationWindow(
+				String.format(I18nProperties.getString(Strings.confirmationDeleteTravelEntries), selectedRows.size()),
+				() -> {
+					for (TravelEntryIndexDto selectedRow : selectedRows) {
+						FacadeProvider.getTravelEntryFacade().deleteTravelEntry(selectedRow.getUuid());
 					}
+					callback.run();
+					new Notification(
+						I18nProperties.getString(Strings.headingTravelEntriesDeleted),
+						I18nProperties.getString(Strings.messageTravelEntriesDeleted),
+						Notification.Type.HUMANIZED_MESSAGE,
+						false).show(Page.getCurrent());
 				});
 		}
 	}

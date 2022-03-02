@@ -231,21 +231,22 @@ public class PatientDiaryClient {
 	 * Retrieves a token used for authenticating in the patient diary. The token will be cached.
 	 * 
 	 * @param frontendRequest
-	 *            if true && a interface.patientdiary.frontendAuthurl is configured, this url is used to fetch the token.
-	 *            Otherwise, the interface.patientdiary.authurl is used.
-	 * @return the authentication token
+	 * @return A frontend token when frontendRequest and the interface.patientdiary.frontendAuthurl is configured in the server
+	 *         configuration (sormas.properties).
+	 *         null when frontendRequest and interface.patientdiary.frontendAuthurl is NOT configured.
+	 *         A backend token when NOT frontendRequest.
 	 */
 	public String getPatientDiaryAuthToken(boolean frontendRequest) {
 		try {
 			if (frontendRequest && StringUtils.isNotBlank(configFacade.getPatientDiaryConfig().getFrontendAuthUrl())) {
 				return frontendAuthTokenCache.get(PATIENT_DIARY_KEY, this::getPatientDiaryFrontendAuthTokenInternal);
-			} else {
+			} else if (!frontendRequest) {
 				return backendAuthTokenCache.get(PATIENT_DIARY_KEY, this::getPatientDiaryAuthTokenInternal);
 			}
 		} catch (ExecutionException e) {
 			logger.error(e.getMessage());
-			return null;
 		}
+		return null;
 	}
 
 	private String getPatientDiaryFrontendAuthTokenInternal() {

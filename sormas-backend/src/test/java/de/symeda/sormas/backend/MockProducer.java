@@ -21,6 +21,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.reset;
 import static org.mockito.Mockito.spy;
 import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.withSettings;
 
 import java.io.File;
 import java.lang.reflect.Field;
@@ -55,8 +56,8 @@ public class MockProducer {
 
 	private static final String TMP_PATH = "target/tmp";
 
-	private static SessionContext sessionContext = mock(SessionContext.class);
-	private static Principal principal = mock(Principal.class);
+	private static SessionContext sessionContext = mock(SessionContext.class, withSettings().lenient());
+	private static Principal principal = mock(Principal.class, withSettings().lenient());
 	private static Topic topic = mock(Topic.class);
 	private static ConnectionFactory connectionFactory = mock(ConnectionFactory.class);
 	private static TimerService timerService = mock(TimerService.class);

@@ -281,7 +281,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					CssStyles.CHECKBOX_FILTER_INLINE));
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_COURSE_VIEW)
+			|| UserProvider.getCurrent().hasUserRight(UserRight.THERAPY_VIEW)) {
 			addField(
 				moreFiltersContainer,
 				CheckBox.class,

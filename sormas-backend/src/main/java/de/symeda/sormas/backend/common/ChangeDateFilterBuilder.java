@@ -27,7 +27,7 @@ import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.api.EntityDto;
 
-public class ChangeDateFilterBuilder {
+public class ChangeDateFilterBuilder implements ChangeDateBuilder<ChangeDateFilterBuilder> {
 
 	private final CriteriaBuilder cb;
 	private final Stream.Builder<Predicate> filters;

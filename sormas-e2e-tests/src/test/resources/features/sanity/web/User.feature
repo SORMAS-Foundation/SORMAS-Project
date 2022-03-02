@@ -1,7 +1,7 @@
 @UI @Sanity @Users
 Feature: Create user
 
-  @User
+  @env_main
   Scenario Outline: Create a new user
     Given I log in as a Admin User
     And I click on the Users from navbar
@@ -20,7 +20,7 @@ Feature: Create user
       | Sormas to Sormas Client |
       | National Clinician      |
 
-  @EditUser
+  @env_main
   Scenario Outline: Edit user
     Given I log in as a Admin User
     And I click on the Users from navbar
