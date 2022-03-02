@@ -21,18 +21,20 @@ package org.sormas.e2etests.helpers;
 import static junit.framework.TestCase.fail;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
-import static recorders.StepsLogger.PROCESS_ID_STRING;
 
 import java.time.Duration;
-import java.util.Arrays;
 import java.util.concurrent.TimeUnit;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
+// import lombok.extern.slf4j.Slf4j;
 import org.awaitility.core.ConditionTimeoutException;
 import org.awaitility.core.ThrowingRunnable;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
-@Slf4j
+// @Slf4j
 public class AssertHelpers {
+
+  private static final Logger log = LoggerFactory.getLogger(AssertHelpers.class);
 
   @SneakyThrows
   public void assertWithPoll(ThrowingRunnable throwingRunnable, int seconds) {
@@ -44,8 +46,7 @@ public class AssertHelpers {
           .timeout(Duration.ofSeconds(seconds))
           .untilAsserted(throwingRunnable);
     } catch (ConditionTimeoutException e) {
-      log.error(PROCESS_ID_STRING + e.getMessage());
-      log.error(PROCESS_ID_STRING + Arrays.toString(e.getStackTrace()));
+      log.error("Test has failed due to: {}", e.getCause());
       fail(e.getCause().getLocalizedMessage());
     }
   }

@@ -60,36 +60,23 @@
             <charset>utf-8</charset>
             <pattern>%boldMagenta(%d{yyyy-MM-dd' 'HH:mm:ss,SSS}) %highlight(%level)-> %msg%n</pattern>
         </encoder>
+        <filter class="ch.qos.logback.classic.filter.ThresholdFilter">
+            <level>INFO</level>
+        </filter>
     </appender>
 
-    <appender name="LOGS_HTML" class="ch.qos.logback.core.FileAppender">
-        <file>logs/log.html</file>
-        <encoder class="ch.qos.logback.core.encoder.LayoutWrappingEncoder">
-            <layout class="ch.qos.logback.classic.html.HTMLLayout">
-                <pattern>%thread%level%logger%msg</pattern>
-            </layout>
-        </encoder>
-    </appender>
-
-    <appender name="ROLLING_FILE" class="ch.qos.logback.core.rolling.RollingFileAppender">
-        <rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
-            <fileNamePattern>log-%d{yyyy-MM-dd}.log</fileNamePattern>
-            <maxHistory>60</maxHistory>
-            <totalSizeCap>30GB</totalSizeCap>
-        </rollingPolicy>
-        <triggeringPolicy class="ch.qos.logback.core.rolling.SizeBasedTriggeringPolicy">
-            <maxFileSize>100MB</maxFileSize>
-        </triggeringPolicy>
-        <encoder>
-            <pattern>%d{HH:mm:ss} [%thread] %-5level - %msg%n</pattern>
-        </encoder>
+    <appender name="file" class="ch.qos.logback.core.FileAppender">
         <file>logs/file.log</file>
+        <append>true</append>
+        <immediateFlush>true</immediateFlush>
+        <encoder>
+            <pattern>%d{HH:mm:ss.SSS} %-5level [%logger{36}] - %msg%n</pattern>
+        </encoder>
     </appender>
 
-    <root level="INFO">
+    <root level="info">
         <appender-ref ref="STDOUT"/>
-        <appender-ref ref="LOGS_HTML"/>
-        <appender-ref ref="ROLLING_FILE"/>
+        <appender-ref ref="file"/>
     </root>
 
 </configuration>

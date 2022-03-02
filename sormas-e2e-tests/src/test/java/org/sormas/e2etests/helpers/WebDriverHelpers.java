@@ -28,7 +28,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
-import lombok.extern.slf4j.Slf4j;
+// import lombok.extern.slf4j.Slf4j;
 import org.awaitility.core.ConditionTimeoutException;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -40,12 +40,16 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.sormas.e2etests.common.TimerLite;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.Assert;
 
-@Slf4j
+// @Slf4j
 public class WebDriverHelpers {
+
+  private static final Logger log = LoggerFactory.getLogger(WebDriverHelpers.class);
 
   public static final By SELECTED_RADIO_BUTTON =
       By.xpath("ancestor::div[contains(@role,'group')]//input[@checked]/following-sibling::label");
