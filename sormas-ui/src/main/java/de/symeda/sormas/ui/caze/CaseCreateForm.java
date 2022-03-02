@@ -815,6 +815,8 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 				homeAddressForm.clear();
 				homeAddressForm.setFacilityFieldsVisible(false, true);
 				homeAddressForm.setVisible(false);
+			} else {
+				enterHomeAddressNow.setValue(false);
 			}
 		}
 
