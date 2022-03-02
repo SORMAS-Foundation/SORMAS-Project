@@ -18,16 +18,98 @@
 
 package org.sormas.e2etests.steps.web.application.contacts;
 
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.*;
-import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.*;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALL_RESULTS_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ENTER_BULK_EDIT_MODE;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MORE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHOW_MORE_LESS_FILTERS;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ADDITIONAL_INFORMATION_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CITY_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.COMMUNITY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTACT_TO_BODY_FLUIDS_OPTONS;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTINENT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.COUNTRY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.DISTRICT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.DONE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.END_OF_EXPOSURE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EXPOSURE_DESCRIPTION_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EXPOSURE_DETAILS_KNOWN_OPTIONS;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EXPOSURE_DETAILS_NEW_ENTRY_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.EXPOSURE_DETAILS_ROLE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.HANDLING_SAMPLES_OPTIONS;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.HOUSE_NUMBER_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.INDOORS_OPTIONS;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.LONG_FACE_TO_FACE_CONTACT_OPTIONS;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.NEW_CONTACT_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.OPEN_SAVED_EXPOSURE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.OTHER_PROTECTIVE_MEASURES_OPTIONS;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.OUTDOORS_OPTIONS;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.PERCUTANEOUS_OPTIONS;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.POSTAL_CODE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.RESIDING_OR_TRAVELING_DETAILS_KNOWN_OPTIONS;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.RESIDING_OR_WORKING_DETAILS_KNOWN_OPTIONS;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.RISK_AREA_OPTIONS;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.SHORT_DISTANCE_OPTIONS;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.START_OF_EXPOSURE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.STREET_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.SUBCONTINENT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.TYPE_OF_ACTIVITY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.TYPE_OF_PLACE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.WEARING_MASK_OPTIONS;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.WEARING_PPE_OPTIONS;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.ACTIVE_CONTACT_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.ALLBUTTON_CONTACT;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.APPLY_FILTERS_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.BULK_ACTIONS_CONTACT_VALUES;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_FROM_OTHER_INSTANCES_CHECKBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_ONLY_HIGH_PRIOROTY_CHECKBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_WITH_EXTENDED_QUARANTINE_CHECKBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_WITH_HELP_NEEDED_IN_QUARANTINE_ORDERED_CHECKBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_WITH_NO_QUARANTINE_ORDERED_CHECKBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_WITH_QUARANTINE_ORDERED_BY_OFFICIAL_DOCUMENT_CHECKBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_WITH_QUARANTINE_ORDERED_VERBALLY_CHECKBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_WITH_REDUCED_QUARANTINE_CHECKBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_CASE_CLASSIFICATION_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_CLASSIFICATION_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DIRECTORY_DETAILED_RADIOBUTTON;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DISEASE_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_FOLLOW_UP_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_RESULTS_UUID_LOCATOR;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONVERTED_TO_CASE_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.DROPPED_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.EPIDEMIOLOGICAL_DATA_TAB;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.FIRST_CONTACT_ID_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.GRID_HEADERS;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.LINE_LISTING;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.MULTIPLE_OPTIONS_SEARCH_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.NEW_ENTRY_EPIDEMIOLOGICAL_DATA;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.RESULTS_GRID_HEADER;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.TOTAL_CONTACTS_COUNTER;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.FIRST_NAME_OF_CONTACT_PERSON_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.AREA_TYPE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.CONTACT_PERSON_EMAIL_ADRESS;
+import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.CONTACT_PERSON_FIRST_NAME;
+import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.CONTACT_PERSON_LAST_NAME;
+import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.CONTACT_PERSON_PHONE_NUMBER;
+import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.EXPOSURE_REGION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.FACILITY_CATEGORY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.FACILITY_DETAILS_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.FACILITY_NAME_AND_DESCRIPTION;
+import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.FACILITY_TYPE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.GPS_ACCURACY_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.GPS_LATITUDE_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.GPS_LONGITUDE_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_ACTIVITY_DETAILS;
+import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_GATHERING_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_GATHERING_DETAILS;
+import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_PLACE_DETAILS;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
+import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
@@ -44,6 +126,7 @@ import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.YesNoUnknownOptions;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.ExposureDetailsRole;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfActivityExposure;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfGathering;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
 import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.AssertHelpers;
@@ -52,6 +135,7 @@ import org.sormas.e2etests.state.ApiState;
 import org.testng.Assert;
 
 public class ContactDirectorySteps implements En {
+  Faker faker = new Faker();
 
   protected WebDriverHelpers webDriverHelpers;
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
@@ -66,6 +150,7 @@ public class ContactDirectorySteps implements En {
       AssertHelpers assertHelpers,
       ContactService contactService,
       DataOperations dataOperations,
+      Faker faker,
       EnvironmentManager environmentManager) {
     this.webDriverHelpers = webDriverHelpers;
 
@@ -114,6 +199,7 @@ public class ContactDirectorySteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(uuidLocator);
         });
+
     When(
         "I apply Id of last api created Contact on Contact Directory Page",
         () -> {
@@ -123,25 +209,144 @@ public class ContactDirectorySteps implements En {
           webDriverHelpers.fillAndSubmitInWebElement(
               CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, contactUuid);
         });
+
     When(
         "I click on the More button on Contact directory page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(MORE_BUTTON);
         });
+
     And(
         "I click on Link to Event from Bulk Actions combobox on Contact Directory Page",
         () -> webDriverHelpers.clickOnWebElementBySelector(BULK_ACTIONS_CONTACT_VALUES));
+
     When(
         "I click Enter Bulk Edit Mode on Contact directory page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ENTER_BULK_EDIT_MODE);
           webDriverHelpers.waitForPageLoaded();
         });
+
     When(
         "I click checkbox to choose all Contact results on Contact Directory Page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ALL_RESULTS_CHECKBOX);
           webDriverHelpers.waitForPageLoaded();
+        });
+
+    When(
+        "I click on New Entry in Exposure Details Known",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NEW_ENTRY_EPIDEMIOLOGICAL_DATA);
+        });
+
+    When(
+        "I select all options in Type of activity from Combobox in Exposure for Epidemiological data tab in Contacts",
+        () -> {
+          selectAllActivityTypes();
+        });
+
+    When(
+        "I select all Type of gathering from Combobox in Exposure for Epidemiological data tab in Contacts",
+        () -> {
+          selectAllGatheringType();
+        });
+
+    When(
+        "I check all Type of place from Combobox in Exposure for Epidemiological data tab in Contacts",
+        () -> {
+          selectAllTypeOfPlace();
+        });
+
+    When(
+        "I click on edit Exposure vision button",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(OPEN_SAVED_EXPOSURE_BUTTON);
+        });
+
+    When(
+        "I select ([^\"]*) option in Type of activity from Combobox in Exposure form",
+        (String typeOfactivity) -> {
+          webDriverHelpers.selectFromCombobox(TYPE_OF_ACTIVITY_COMBOBOX, typeOfactivity);
+        });
+
+    When(
+        "I fill Location form for Type of place by chosen {string} options in Exposure for Epidemiological data",
+        (String searchCriteria) -> {
+          exposureData = contactService.buildGeneratedExposureDataContactForRandomInputs();
+          switch (searchCriteria) {
+            case "HOME":
+              webDriverHelpers.selectFromCombobox(
+                  TYPE_OF_PLACE_COMBOBOX, TypeOfPlace.getValueFor(searchCriteria));
+              fillLocation(exposureData);
+              break;
+            case "OTHER":
+              webDriverHelpers.selectFromCombobox(
+                  TYPE_OF_PLACE_COMBOBOX, TypeOfPlace.getValueFor(searchCriteria));
+              fillLocation(exposureData);
+              webDriverHelpers.fillInWebElement(
+                  TYPE_OF_PLACE_DETAILS, exposureData.getTypeOfPlaceDetails());
+              break;
+            case "FACILITY":
+              webDriverHelpers.selectFromCombobox(
+                  TYPE_OF_PLACE_COMBOBOX, TypeOfPlace.getValueFor(searchCriteria));
+              fillLocation(exposureData);
+              webDriverHelpers.selectFromCombobox(
+                  FACILITY_CATEGORY_COMBOBOX, exposureData.getFacilityCategory());
+              webDriverHelpers.selectFromCombobox(
+                  FACILITY_TYPE_COMBOBOX, exposureData.getFacilityType());
+              webDriverHelpers.selectFromCombobox(
+                  FACILITY_DETAILS_COMBOBOX, exposureData.getFacility());
+              webDriverHelpers.fillInWebElement(
+                  FACILITY_NAME_AND_DESCRIPTION, exposureData.getFacilityDetails());
+              webDriverHelpers.fillInWebElement(
+                  CONTACT_PERSON_FIRST_NAME, exposureData.getContactPersonFirstName());
+              webDriverHelpers.fillInWebElement(
+                  CONTACT_PERSON_LAST_NAME, exposureData.getContactPersonLastName());
+              webDriverHelpers.fillInWebElement(
+                  CONTACT_PERSON_PHONE_NUMBER, exposureData.getContactPersonPhone());
+              webDriverHelpers.fillInWebElement(
+                  CONTACT_PERSON_EMAIL_ADRESS, exposureData.getContactPersonEmail());
+              break;
+          }
+          webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
+        });
+
+    When(
+        "I select a Type of activity ([^\"]*) option in Exposure for Epidemiological data tab in Contacts",
+        (String option) -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(TYPE_OF_ACTIVITY_COMBOBOX, option);
+        });
+
+    When(
+        "I select a type of gathering ([^\"]*) from Combobox in Exposure for Epidemiological data tab in Contacts",
+        (String option) -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(TYPE_OF_GATHERING_COMBOBOX, option);
+        });
+
+    When(
+        "I fill a type of gathering details in Exposure for Epidemiological data tab in Contacts",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.fillInWebElement(TYPE_OF_GATHERING_DETAILS, faker.chuckNorris().fact());
+        });
+
+    When(
+        "I fill a Type of activity details field in Exposure for Epidemiological data tab in Contacts",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.fillInWebElement(TYPE_OF_ACTIVITY_DETAILS, faker.book().title());
+        });
+
+    When(
+        "I click on the Epidemiological Data navbar field",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EPIDEMIOLOGICAL_DATA_TAB);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
     And(
         "I click on Bulk Actions combobox on Contact Directory Page",
@@ -348,6 +553,26 @@ public class ContactDirectorySteps implements En {
     webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
   }
 
+  private void fillLocation(Exposure exposureData) {
+    webDriverHelpers.waitForPageLoaded();
+    webDriverHelpers.selectFromCombobox(CONTINENT_COMBOBOX, exposureData.getContinent());
+    webDriverHelpers.selectFromCombobox(SUBCONTINENT_COMBOBOX, exposureData.getSubcontinent());
+    webDriverHelpers.selectFromCombobox(COUNTRY_COMBOBOX, exposureData.getCountry());
+    webDriverHelpers.selectFromCombobox(EXPOSURE_REGION_COMBOBOX, exposureData.getExposureRegion());
+    webDriverHelpers.selectFromCombobox(DISTRICT_COMBOBOX, exposureData.getDistrict());
+    webDriverHelpers.selectFromCombobox(COMMUNITY_COMBOBOX, exposureData.getCommunity());
+    webDriverHelpers.fillInWebElement(STREET_INPUT, exposureData.getStreet());
+    webDriverHelpers.fillInWebElement(HOUSE_NUMBER_INPUT, exposureData.getHouseNumber());
+    webDriverHelpers.fillInWebElement(
+        ADDITIONAL_INFORMATION_INPUT, exposureData.getAdditionalInformation());
+    webDriverHelpers.fillInWebElement(POSTAL_CODE_INPUT, exposureData.getPostalCode());
+    webDriverHelpers.fillInWebElement(CITY_INPUT, exposureData.getCity());
+    webDriverHelpers.selectFromCombobox(AREA_TYPE_COMBOBOX, exposureData.getAreaType());
+    webDriverHelpers.fillInWebElement(GPS_LATITUDE_INPUT, exposureData.getLatitude());
+    webDriverHelpers.fillInWebElement(GPS_LONGITUDE_INPUT, exposureData.getLongitude());
+    webDriverHelpers.fillInWebElement(GPS_ACCURACY_INPUT, exposureData.getLatLonAccuracy());
+  }
+
   private void fillExposure(Exposure exposureData) {
     webDriverHelpers.waitForPageLoaded();
     webDriverHelpers.fillInWebElement(
@@ -459,5 +684,29 @@ public class ContactDirectorySteps implements En {
                 webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
                     RESIDING_OR_TRAVELING_DETAILS_KNOWN_OPTIONS)))
         .build();
+  }
+
+  private void selectAllActivityTypes() {
+    for (TypeOfActivityExposure value : TypeOfActivityExposure.values())
+      if (value != TypeOfActivityExposure.valueOf("GATHERING")
+          && value != TypeOfActivityExposure.valueOf("OTHER")
+          && value != TypeOfActivityExposure.valueOf("BURIAL")) {
+        webDriverHelpers.selectFromCombobox(TYPE_OF_ACTIVITY_COMBOBOX, value.getActivity());
+      }
+  }
+
+  private void selectAllGatheringType() {
+    for (TypeOfGathering value : TypeOfGathering.values()) {
+      if (value != TypeOfGathering.valueOf("OTHER")) {
+        webDriverHelpers.selectFromCombobox(TYPE_OF_GATHERING_COMBOBOX, value.toString());
+      }
+    }
+  }
+
+  private void selectAllTypeOfPlace() {
+    for (TypeOfPlace value : TypeOfPlace.values()) {
+      webDriverHelpers.selectFromCombobox(
+          TYPE_OF_PLACE_COMBOBOX, TypeOfPlace.getValueFor(value.toString()));
+    }
   }
 }
