@@ -210,7 +210,6 @@ public class EventDirectorySteps implements En {
     When(
         "^I click on Unlink Event button on Event Directory Page$",
         () -> webDriverHelpers.clickOnWebElementBySelector(UNLINK_EVENT_BUTTON));
-
     When(
         "^I fill Id filter with Id of last created event in Link Event to group form$",
         () ->
@@ -232,50 +231,9 @@ public class EventDirectorySteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(LINKED_EVENT_GROUP_ID));
     When(
         "^I click on Group Id in Events result on Event Directory Page$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(EVENT_GROUP_ID_IN_GRID));
-
-    When(
-        "^I click on ([^\"]*) Radiobutton on Event Directory Page$",
-        (String buttonName) -> {
-          webDriverHelpers.clickWebElementByText(EVENTS_RADIO_BUTTON, buttonName);
-          webDriverHelpers.waitForPageLoaded();
-        });
-
-    When(
-        "^I click on Link Event button on Event Directory Page$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON));
-    When(
-        "^I click on Link Event button on Edit Event Page$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON_EDIT_PAGE));
-
-    When(
-        "^I click on Unlink Event button on Event Directory Page$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(UNLINK_EVENT_BUTTON));
-
-    When(
-        "^I fill Id filter with Id of last created event in Link Event to group form$",
-        () ->
-            webDriverHelpers.fillInWebElement(
-                ID_FIELD_FILTER, apiState.getCreatedEvent().getUuid()));
-    When(
-        "^I click on filtered Event in Link Event to group form$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(FILTERED_EVENT_LINK_EVENT_FORM));
-    When(
-        "^I click on first Event Group on the list in Link Event form$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_GROUP));
-
-    When(
-        "^I click on SAVE button in Link Event to group form$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_IN_LINK_FORM));
-
-    When(
-        "^I click on Linked Group Id on Edit Event Page$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(LINKED_EVENT_GROUP_ID));
-    When(
-        "^I click on Group Id in Events result on Event Directory Page$",
-        () ->{
-            webDriverHelpers.scrollToElement(EVENT_GROUP_ID_IN_GRID);
-            webDriverHelpers.clickOnWebElementBySelector(EVENT_GROUP_ID_IN_GRID);
+        () -> {
+          webDriverHelpers.scrollToElement(EVENT_GROUP_ID_IN_GRID);
+          webDriverHelpers.clickOnWebElementBySelector(EVENT_GROUP_ID_IN_GRID);
         });
 
     When(
