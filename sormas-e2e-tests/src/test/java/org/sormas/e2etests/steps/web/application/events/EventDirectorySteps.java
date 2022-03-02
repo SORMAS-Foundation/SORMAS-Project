@@ -339,12 +339,13 @@ public class EventDirectorySteps implements En {
         "I select random Risk level filter among the filter options",
         () -> {
           webDriverHelpers.waitForPageLoaded();
-          String randomRiskLevel = RiskLevelValues.getRandomRiskLevelCaption();
+          String randomRiskLevel = RiskLevelValues.getRandomRiskLevelName();
           String apiValue = apiState.getCreatedEvent().getRiskLevel();
           while (randomRiskLevel.equals(apiValue)) {
-            randomRiskLevel = RiskLevelValues.getRandomRiskLevelCaption();
+            randomRiskLevel = RiskLevelValues.getRandomRiskLevelName();
           }
-          webDriverHelpers.selectFromCombobox(FILTER_BY_RISK_LEVEL, randomRiskLevel);
+          webDriverHelpers.selectFromCombobox(
+              FILTER_BY_RISK_LEVEL, RiskLevelValues.getCaptionForName(randomRiskLevel));
         });
 
     When(
@@ -360,12 +361,13 @@ public class EventDirectorySteps implements En {
         "I select random Disease filter among the filter options",
         () -> {
           webDriverHelpers.waitForPageLoaded();
-          String randomDisease = DiseasesValues.getRandomDiseaseCaption();
+          String randomDisease = DiseasesValues.getRandomDiseaseName();
           String apiValue = apiState.getCreatedEvent().getDisease();
           while (randomDisease.equals(apiValue)) {
-            randomDisease = DiseasesValues.getRandomDiseaseCaption();
+            randomDisease = DiseasesValues.getRandomDiseaseName();
           }
-          webDriverHelpers.selectFromCombobox(FILTER_BY_DISEASE, randomDisease);
+          webDriverHelpers.selectFromCombobox(
+              FILTER_BY_DISEASE, DiseasesValues.getCaptionForName(randomDisease));
         });
     When(
         "I filter by last created group in Event Directory Page",
@@ -433,12 +435,13 @@ public class EventDirectorySteps implements En {
         "I select random Source Type among the filter options",
         () -> {
           webDriverHelpers.waitForPageLoaded();
-          String randomSourceType = SourceTypeValues.getRandomSourceTypeCaption();
+          String randomSourceType = SourceTypeValues.getRandomSourceTypeName();
           String apiValue = apiState.getCreatedEvent().getSrcType();
           while (randomSourceType.equals(apiValue)) {
-            randomSourceType = SourceTypeValues.getRandomSourceTypeCaption();
+            randomSourceType = SourceTypeValues.getRandomSourceTypeName();
           }
-          webDriverHelpers.selectFromCombobox(FILTER_BY_SOURCE_TYPE, randomSourceType);
+          webDriverHelpers.selectFromCombobox(
+              FILTER_BY_SOURCE_TYPE, SourceTypeValues.getCaptionForName(randomSourceType));
         });
 
     When(
