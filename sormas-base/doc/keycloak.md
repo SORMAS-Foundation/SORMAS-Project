@@ -44,12 +44,7 @@ The SORMAS Realm relies on 4 clients:
 
 #### Roles
 
-The role management is handled by SORMAS however as a pre-validation Keycloak is also configured with a few roles which
-are required for certain API access:
-* **USER** - required by default for any API access
-* **REST_USER** - required for most API endpoints (main purpose is for the SurvNet converter)
-* **REST_EXTERNAL_VISITS_USER** - required by Symptom Journals which are connected to SORMAS
-* **SORMAS_TO_SORMAS_CLIENT** - required by other SORMAS instance to access the current SORMAS instance
+The role management is handled solely by SORMAS starting with 1.70 
 
 #### Email
 
