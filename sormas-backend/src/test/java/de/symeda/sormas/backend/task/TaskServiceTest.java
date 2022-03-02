@@ -4,7 +4,6 @@ import static de.symeda.sormas.api.user.UserRole.CONTACT_OFFICER;
 import static de.symeda.sormas.api.user.UserRole.CONTACT_SUPERVISOR;
 import static junit.framework.TestCase.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.anyObject;
 import static org.mockito.ArgumentMatchers.eq;
 
 import java.util.Collections;
@@ -20,10 +19,10 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 
@@ -93,7 +92,7 @@ public class TaskServiceTest extends AbstractBeanTest {
 		Case caze = new Case();
 		contact.setCaze(caze);
 
-		Mockito.when(userService.getAllByRegionAndUserRoles(any(Region.class), anyObject())).thenReturn(Collections.emptyList());
+		Mockito.when(userService.getAllByRegionAndUserRoles(any(Region.class), any())).thenReturn(Collections.emptyList());
 
 		taskService.getTaskAssignee(contact);
 	}

@@ -68,6 +68,7 @@ import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -79,6 +80,7 @@ import de.symeda.sormas.api.labmessage.LabMessageStatus;
 import de.symeda.sormas.api.labmessage.SimilarEntriesDto;
 import de.symeda.sormas.api.labmessage.TestReportDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestReferenceDto;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -289,28 +291,44 @@ public class LabMessageController {
 						selectedPersonDto = FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid());
 					}
 
-					CaseCriteria caseCriteria = new CaseCriteria();
-					caseCriteria.person(selectedPersonDto.toReference());
-					caseCriteria.disease(labMessage.getTestedDisease());
-					CaseSimilarityCriteria caseSimilarityCriteria = new CaseSimilarityCriteria();
-					caseSimilarityCriteria.caseCriteria(caseCriteria);
-					caseSimilarityCriteria.personUuid(selectedPerson.getUuid());
-					List<CaseSelectionDto> similarCases = FacadeProvider.getCaseFacade().getSimilarCases(caseSimilarityCriteria);
-
-					ContactSimilarityCriteria contactSimilarityCriteria = new ContactSimilarityCriteria();
-					contactSimilarityCriteria.setPerson(selectedPerson);
-					contactSimilarityCriteria.setDisease(labMessage.getTestedDisease());
-					List<SimilarContactDto> similarContacts = FacadeProvider.getContactFacade().getMatchingContacts(contactSimilarityCriteria);
-
-					EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
-					eventParticipantCriteria.setPerson(selectedPerson);
-					eventParticipantCriteria.setDisease(labMessage.getTestedDisease());
-					List<SimilarEventParticipantDto> similarEventParticipants =
-						FacadeProvider.getEventParticipantFacade().getMatchingEventParticipants(eventParticipantCriteria);
+					List<CaseSelectionDto> similarCases = getSimilarCases(selectedPerson, labMessage);
+					List<SimilarContactDto> similarContacts = getSimilarContacts(labMessage, selectedPerson);
+					List<SimilarEventParticipantDto> similarEventParticipants = getSimilarEventParticipants(labMessage, selectedPerson);
 
 					pickOrCreateEntry(labMessage, similarCases, similarContacts, similarEventParticipants, selectedPersonDto);
 				}
-			}, false);
+			},
+				false,
+				FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.PERSON_DUPLICATE_CUSTOM_SEARCH)
+					? I18nProperties.getString(Strings.infoSelectOrCreatePersonForLabMessageWithoutMatches)
+					: null);
+	}
+
+	private List<SimilarEventParticipantDto> getSimilarEventParticipants(LabMessageDto labMessage, PersonReferenceDto selectedPerson) {
+		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
+		eventParticipantCriteria.setPerson(selectedPerson);
+		eventParticipantCriteria.setDisease(labMessage.getTestedDisease());
+		List<SimilarEventParticipantDto> similarEventParticipants =
+			FacadeProvider.getEventParticipantFacade().getMatchingEventParticipants(eventParticipantCriteria);
+		return similarEventParticipants;
+	}
+
+	private List<SimilarContactDto> getSimilarContacts(LabMessageDto labMessage, PersonReferenceDto selectedPerson) {
+		ContactSimilarityCriteria contactSimilarityCriteria = new ContactSimilarityCriteria();
+		contactSimilarityCriteria.setPerson(selectedPerson);
+		contactSimilarityCriteria.setDisease(labMessage.getTestedDisease());
+		List<SimilarContactDto> similarContacts = FacadeProvider.getContactFacade().getMatchingContacts(contactSimilarityCriteria);
+		return similarContacts;
+	}
+
+	private List<CaseSelectionDto> getSimilarCases(PersonReferenceDto selectedPerson, LabMessageDto labMessage) {
+		CaseCriteria caseCriteria = new CaseCriteria();
+		caseCriteria.person(selectedPerson);
+		caseCriteria.disease(labMessage.getTestedDisease());
+		CaseSimilarityCriteria caseSimilarityCriteria = new CaseSimilarityCriteria();
+		caseSimilarityCriteria.caseCriteria(caseCriteria);
+		caseSimilarityCriteria.personUuid(selectedPerson.getUuid());
+		return FacadeProvider.getCaseFacade().getSimilarCases(caseSimilarityCriteria);
 	}
 
 	private void pickOrCreateEntry(
@@ -484,7 +502,7 @@ public class LabMessageController {
 		EventParticipantDto eventParticipant = buildEventParticipant(eventDto, person);
 		Window window = VaadinUiUtil.createPopupWindow();
 		final CommitDiscardWrapperComponent<EventParticipantEditForm> createComponent =
-			getEventParticipantEditForm(eventDto, labMessageDto, eventParticipant, window);
+			getEventParticipantEditForm(eventDto, labMessageDto, eventParticipant, window, false);
 		showFormWithLabMessage(labMessageDto, createComponent, window, I18nProperties.getString(Strings.headingCreateNewEventParticipant), false);
 	}
 
@@ -492,8 +510,10 @@ public class LabMessageController {
 		EventDto eventDto,
 		LabMessageDto labMessageDto,
 		EventParticipantDto eventParticipant,
-		Window window) {
-		EventParticipantEditForm createForm = new EventParticipantEditForm(eventDto, false, eventParticipant.getPerson().isPseudonymized(), true);
+		Window window,
+		boolean showPersonSearchButton) {
+		EventParticipantEditForm createForm =
+			new EventParticipantEditForm(eventDto, false, eventParticipant.getPerson().isPseudonymized(), showPersonSearchButton);
 		createForm.setValue(eventParticipant);
 		final CommitDiscardWrapperComponent<EventParticipantEditForm> createComponent = new CommitDiscardWrapperComponent<>(
 			createForm,
@@ -1236,7 +1256,7 @@ public class LabMessageController {
 			}, (savedPathogenTest, callback) -> {
 				chain.next(true);
 				window.close();
-			});
+			}, true);
 
 		pathogenTestCreateComponent.addDiscardListener(() -> {
 			if (FacadeProvider.getLabMessageFacade().isProcessed(labMessage.getUuid())) {

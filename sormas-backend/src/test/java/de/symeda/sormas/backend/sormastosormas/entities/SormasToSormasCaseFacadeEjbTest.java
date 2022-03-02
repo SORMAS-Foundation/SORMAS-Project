@@ -283,7 +283,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		ExposureDto exposure = ExposureDto.build(ExposureType.ANIMAL_CONTACT);
 		exposure.setAnimalContactType(AnimalContactType.TOUCH);
 		caze.getEpiData().getExposures().add(exposure);
-		caze.getClinicalCourse().getHealthConditions().setAsplenia(YesNoUnknown.YES);
+		caze.getHealthConditions().setAsplenia(YesNoUnknown.YES);
 		caze.getMaternalHistory().setChildrenNumber(2);
 
 		SormasToSormasDto shareData = new SormasToSormasDto();
@@ -303,7 +303,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		assertThat(savedCase.getHospitalization().getAdmittedToHealthFacility(), is(YesNoUnknown.YES));
 		assertThat(savedCase.getSymptoms().getAgitation(), is(SymptomState.YES));
 		assertThat(savedCase.getEpiData().getExposures().get(0).getAnimalContactType(), is(AnimalContactType.TOUCH));
-		assertThat(savedCase.getClinicalCourse().getHealthConditions().getAsplenia(), is(YesNoUnknown.YES));
+		assertThat(savedCase.getHealthConditions().getAsplenia(), is(YesNoUnknown.YES));
 		assertThat(savedCase.getMaternalHistory().getChildrenNumber(), is(2));
 
 		assertThat(savedCase.getSormasToSormasOriginInfo().getOrganizationId(), is(DEFAULT_SERVER_ID));
@@ -330,7 +330,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		ExposureDto exposure = ExposureDto.build(ExposureType.ANIMAL_CONTACT);
 		exposure.setAnimalContactType(AnimalContactType.TOUCH);
 		caze.getEpiData().getExposures().add(exposure);
-		caze.getClinicalCourse().getHealthConditions().setAsplenia(YesNoUnknown.YES);
+		caze.getHealthConditions().setAsplenia(YesNoUnknown.YES);
 		caze.getMaternalHistory().setChildrenNumber(2);
 
 		SormasToSormasDto shareData = new SormasToSormasDto();
@@ -350,7 +350,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		assertThat(savedCase.getHospitalization().getAdmittedToHealthFacility(), is(YesNoUnknown.YES));
 		assertThat(savedCase.getSymptoms().getAgitation(), is(SymptomState.YES));
 		assertThat(savedCase.getEpiData().getExposures().get(0).getAnimalContactType(), is(AnimalContactType.TOUCH));
-		assertThat(savedCase.getClinicalCourse().getHealthConditions().getAsplenia(), is(YesNoUnknown.YES));
+		assertThat(savedCase.getHealthConditions().getAsplenia(), is(YesNoUnknown.YES));
 		assertThat(savedCase.getMaternalHistory().getChildrenNumber(), is(2));
 
 		assertThat(savedCase.getSormasToSormasOriginInfo().getOrganizationId(), is(DEFAULT_SERVER_ID));

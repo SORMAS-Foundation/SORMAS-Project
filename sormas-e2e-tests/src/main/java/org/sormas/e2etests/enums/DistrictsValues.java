@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,7 +33,7 @@ public enum DistrictsValues {
   }
 
   @SneakyThrows
-  public static String getValueFor(String option) {
+  public static String getNameByUUID(String option) {
     DistrictsValues[] districtValuesOptions = DistrictsValues.values();
     for (DistrictsValues value : districtValuesOptions) {
       if (value.uuid.equalsIgnoreCase(option)) return value.name;
@@ -42,11 +42,11 @@ public enum DistrictsValues {
   }
 
   @SneakyThrows
-  public static String getNameFor(String option) {
+  public static String getValueFor(String option) {
     DistrictsValues[] districtsValues = DistrictsValues.values();
     for (DistrictsValues value : districtsValues) {
-      if (value.uuid.equalsIgnoreCase(option)) return value.name;
+      if (value.getName().equalsIgnoreCase(option)) return value.getName();
     }
-    throw new Exception("Unable to find " + option + " value in DistrictsValues Enum");
+    throw new Exception("Unable to find " + option + " value in District Enum");
   }
 }

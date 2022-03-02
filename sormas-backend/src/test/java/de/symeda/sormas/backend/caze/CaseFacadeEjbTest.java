@@ -1081,7 +1081,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(null).size());
 		assertEquals(1, getCaseFacade().getAllActiveUuids().size());
 
-		getCaseFacade().archive(caze.getUuid());
+		getCaseFacade().archive(caze.getUuid(), null);
 
 		// getAllActiveCases and getAllUuids should return length 0
 		assertEquals(0, getCaseFacade().getAllActiveCasesAfter(null).size());
@@ -1090,7 +1090,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		// getArchivedUuidsSince should return length 1
 		assertEquals(1, getCaseFacade().getArchivedUuidsSince(testStartDate).size());
 
-		getCaseFacade().dearchive(caze.getUuid());
+		getCaseFacade().dearchive(Collections.singletonList(caze.getUuid()), null);
 
 		// getAllActiveCases and getAllUuids should return length 1
 		assertEquals(1, getCaseFacade().getAllActiveCasesAfter(null).size());
@@ -1609,7 +1609,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		// One archived case
 		CaseDataDto case1 = creator.createCase(user, person, rdcf);
 		CaseFacadeEjbLocal cut = getBean(CaseFacadeEjbLocal.class);
-		cut.archive(case1.getUuid());
+		cut.archive(case1.getUuid(), null);
 
 		// One other case
 		CaseDataDto case2 = creator.createCase(user, person, rdcf);

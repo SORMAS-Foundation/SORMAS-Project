@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,7 +23,60 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPa
 import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.CONTACT_PERSON_LAST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.SEX_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
-import static org.sormas.e2etests.pages.application.persons.EditPersonPage.*;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.ADDITIONAL_INFORMATION_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.AREA_TYPE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.AREA_TYPE_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.BIRTH_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.CITY_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.COMMUNITY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.COMMUNITY_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.CONFIRM_NAVIGATION_BUTTON;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DATE_OF_BIRTH_DAY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DATE_OF_BIRTH_MONTH_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DATE_OF_BIRTH_YEAR_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DISTRICT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DISTRICT_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EDIT_CASES_BUTTON;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EDIT_CONTACTS_BUTTON;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EMAIL_FIELD;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.ERROR_INDICATOR;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EXTERNAL_ID_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.EXTERNAL_TOKEN_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.FACILITY_CATEGORY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.FACILITY_CATEGORY_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.FACILITY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.FACILITY_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.FACILITY_NAME_AND_DESCRIPTION_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.FACILITY_TYPE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.FACILITY_TYPE_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.FIRST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.HOUSE_NUMBER_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.INVALID_DATA_ERROR;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.LAST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.NAMES_OF_GUARDIANS_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PERSON_CONTACT_DETAILS_CONTACT_INFORMATION_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PERSON_CONTACT_DETAILS_TYPE_OF_DETAILS_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PHONE_FIELD;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.POSTAL_CODE_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PRESENT_CONDITION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PRESENT_CONDITION_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.REGION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.REGION_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SALUTATION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SALUTATION_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SEE_CASES_FOR_PERSON_BUTTON;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SEE_CONTACTS_FOR_PERSON_BUTTON;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SEE_EVENTS_FOR_PERSON;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SEX_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.STAFF_OF_ARMED_FORCES_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.STAFF_OF_ARMED_FORCES_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.STREET_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.TYPE_OF_OCCUPATION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.TYPE_OF_OCCUPATION_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.USER_INFORMATION;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.getByImmunizationUuid;
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -33,12 +86,13 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
-import javax.inject.Named;
 import org.openqa.selenium.ElementClickInterceptedException;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Person;
+import org.sormas.e2etests.entities.services.PersonService;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.pojo.web.Person;
-import org.sormas.e2etests.services.PersonService;
+import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
 import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
@@ -55,7 +109,8 @@ public class EditPersonSteps implements En {
       WebDriverHelpers webDriverHelpers,
       PersonService personService,
       BaseSteps baseSteps,
-      @Named("ENVIRONMENT_URL") String environmentUrl) {
+      ApiState apiState,
+      EnvironmentManager environmentManager) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -124,6 +179,44 @@ public class EditPersonSteps implements En {
           fillBirthName(newGeneratedPerson.getBirthName());
           fillNamesOfGuardians(newGeneratedPerson.getNameOfGuardians());
         });
+    Then(
+        "I click on See Cases for this Person button from Edit Person page",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+          webDriverHelpers.clickOnWebElementBySelector(SEE_CASES_FOR_PERSON_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+        });
+    Then(
+        "I click on See CONTACTS for this Person button from Edit Person page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SEE_CONTACTS_FOR_PERSON_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+        });
+
+    Then(
+        "I click on Edit Case button from Cases card on Edit Person page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_CASES_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+        });
+    Then(
+        "I click on Edit Contact button from Contacts card on Edit Person page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_CONTACTS_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+        });
+    Then(
+        "I click on Edit Immunization button for Immunization created through API from Immunization card on Edit Person page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              getByImmunizationUuid(apiState.getCreatedImmunization().getUuid()));
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+        });
 
     Then(
         "I click on save button from Edit Person page",
@@ -147,7 +240,9 @@ public class EditPersonSteps implements En {
         () -> {
           final String personUuid = EditEventSteps.person.getUuid();
           webDriverHelpers.accessWebSite(
-              environmentUrl + "/sormas-webdriver/#!persons/data/" + personUuid);
+              environmentManager.getEnvironmentUrlForMarket(locale)
+                  + "/sormas-webdriver/#!persons/data/"
+                  + personUuid);
         });
 
     When(

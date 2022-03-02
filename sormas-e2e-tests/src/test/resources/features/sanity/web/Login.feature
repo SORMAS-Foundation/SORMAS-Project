@@ -1,7 +1,7 @@
 @UI @Sanity @Login
 Feature: Login with different type of users
 
-#  @issue=5402
+  @env_main
   Scenario Outline: Login with <user> user
     Given I navigate to SORMAS login page
     Then I log in as a <user>
@@ -14,6 +14,3 @@ Feature: Login with different type of users
       | Laboratory Officer        |
       | Point of Entry Supervisor |
       | Surveillance Officer      |
-
-
-

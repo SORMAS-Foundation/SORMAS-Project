@@ -131,6 +131,7 @@ import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilit
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.surveillancereport.CaseReinfectionCheckBoxTree;
+import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.location.AccessibleTextField;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -250,6 +251,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.QUARANTINE_REASON_BEFORE_ISOLATION, CaseDataDto.QUARANTINE_REASON_BEFORE_ISOLATION_DETAILS) +
 					fluidRowLocs(CaseDataDto.END_OF_ISOLATION_REASON, CaseDataDto.END_OF_ISOLATION_REASON_DETAILS) +
 					fluidRowLocs(CaseDataDto.REPORT_LAT, CaseDataDto.REPORT_LON, CaseDataDto.REPORT_LAT_LON_ACCURACY) +
+					fluidRowLocs(CaseDataDto.HEALTH_CONDITIONS) +
 					loc(MEDICAL_INFORMATION_LOC) +
 					fluidRowLocs(CaseDataDto.BLOOD_ORGAN_OR_TISSUE_DONATED) +
 					fluidRowLocs(CaseDataDto.PREGNANT, CaseDataDto.POSTPARTUM) + fluidRowLocs(CaseDataDto.TRIMESTER, "") +
@@ -269,8 +271,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					fluidRowLocs(CaseDataDto.FOLLOW_UP_STATUS_CHANGE_DATE, CaseDataDto.FOLLOW_UP_STATUS_CHANGE_USER) +
 					fluidRowLocs(CaseDataDto.FOLLOW_UP_UNTIL, EXPECTED_FOLLOW_UP_UNTIL_DATE_LOC, CaseDataDto.OVERWRITE_FOLLOW_UP_UNTIL) +
 					fluidRowLocs(CaseDataDto.FOLLOW_UP_COMMENT);
-
-	private static final String PAPER_FORM_DATES_AND_COMMENTS_HTML_LAYOUT =
+	
+	private static final String PAPER_FORM_DATES_AND_HEALTH_CONDITIONS_HTML_LAYOUT =
 			fluidRowLocs(6, CaseDataDto.SURVEILLANCE_OFFICER) +
 					loc(PAPER_FORM_DATES_LOC) +
 					fluidRowLocs(CaseDataDto.DISTRICT_LEVEL_DATE, CaseDataDto.REGION_LEVEL_DATE, CaseDataDto.NATIONAL_LEVEL_DATE) +
@@ -302,6 +304,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 	private ComboBox facilityTypeGroup;
 	private ComboBox facilityTypeCombo;
 	private ComboBox facilityCombo;
+	private TextField facilityDetails;
 	private boolean quarantineChangedByFollowUpUntilChange = false;
 	private TextField tfExpectedFollowUpUntilDate;
 	private boolean ignoreDifferentPlaceOfStayJurisdiction = false;
@@ -803,7 +806,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		facilityTypeCombo = addField(CaseDataDto.FACILITY_TYPE);
 		facilityCombo = addInfrastructureField(CaseDataDto.HEALTH_FACILITY);
 		facilityCombo.setImmediate(true);
-		TextField facilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
+		facilityDetails = addField(CaseDataDto.HEALTH_FACILITY_DETAILS, TextField.class);
 		facilityDetails.setVisible(false);
 
 		regionCombo.addValueChangeListener(e -> {
@@ -1045,7 +1048,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				CaseDataDto.INVESTIGATED_DATE,
 				CaseDataDto.INVESTIGATION_STATUS,
 				Arrays.asList(InvestigationStatus.DONE, InvestigationStatus.DISCARDED),
-				false);
+				true);
 		}
 		setReadOnly(
 			true,
@@ -1186,7 +1189,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			null);
 
 		/// CLINICIAN FIELDS
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CLINICIAN_VIEW)) {
 			if (isVisibleAllowed(CaseDataDto.CLINICIAN_NAME)) {
 				FieldHelper.setVisibleWhen(
 					getFieldGroup(),
@@ -1233,6 +1236,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 		List<String> medicalInformationFields =
 			Arrays.asList(CaseDataDto.PREGNANT, CaseDataDto.VACCINATION_STATUS, CaseDataDto.SMALLPOX_VACCINATION_RECEIVED);
+
+		addField(CaseDataDto.HEALTH_CONDITIONS, HealthConditionsForm.class).setCaption(null);
 
 		for (String medicalInformationField : medicalInformationFields) {
 			if (getFieldGroup().getField(medicalInformationField).isVisible()) {
@@ -1291,29 +1296,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				externalTokenWarningLabel,
 				(externalToken) -> FacadeProvider.getCaseFacade().doesExternalTokenExist(externalToken, getValue().getUuid()));
 
-			if (getValue().getHealthFacility() != null) {
-				boolean facilityOrHomeReadOnly = facilityOrHome.isReadOnly();
-				boolean facilityTypeGroupReadOnly = facilityTypeGroup.isReadOnly();
-				facilityOrHome.setReadOnly(false);
-				facilityTypeGroup.setReadOnly(false);
-				boolean noneHealthFacility = getValue().getHealthFacility().getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
-
-				FacilityType caseFacilityType = getValue().getFacilityType();
-				if (noneHealthFacility || caseFacilityType == null) {
-					facilityOrHome.setValue(TypeOfPlace.HOME);
-				} else {
-					facilityOrHome.setValue(TypeOfPlace.FACILITY);
-					facilityTypeGroup.setValue(caseFacilityType.getFacilityTypeGroup());
-					if (!facilityTypeCombo.isReadOnly()) {
-						facilityTypeCombo.setValue(caseFacilityType);
-					}
-				}
-
-				facilityOrHome.setReadOnly(facilityOrHomeReadOnly);
-				facilityTypeGroup.setReadOnly(facilityTypeGroupReadOnly);
-			} else {
-				facilityOrHome.setVisible(false);
-			}
+			updateFacilityOrHome();
 
 			// Set health facility/point of entry visibility based on case origin
 			if (getValue().getCaseOrigin() == CaseOrigin.POINT_OF_ENTRY) {
@@ -1419,6 +1402,32 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				reinfectionTree.initCheckboxes();
 			}
 		});
+	}
+
+	private void updateFacilityOrHome() {
+		if (getValue().getHealthFacility() != null) {
+			boolean facilityOrHomeReadOnly = facilityOrHome.isReadOnly();
+			boolean facilityTypeGroupReadOnly = facilityTypeGroup.isReadOnly();
+			facilityOrHome.setReadOnly(false);
+			facilityTypeGroup.setReadOnly(false);
+			boolean noneHealthFacility = getValue().getHealthFacility().getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
+
+			FacilityType caseFacilityType = getValue().getFacilityType();
+			if (noneHealthFacility || caseFacilityType == null) {
+				facilityOrHome.setValue(TypeOfPlace.HOME);
+			} else {
+				facilityOrHome.setValue(TypeOfPlace.FACILITY);
+				facilityTypeGroup.setValue(caseFacilityType.getFacilityTypeGroup());
+				if (!facilityTypeCombo.isReadOnly()) {
+					facilityTypeCombo.setValue(caseFacilityType);
+				}
+			}
+
+			facilityOrHome.setReadOnly(facilityOrHomeReadOnly);
+			facilityTypeGroup.setReadOnly(facilityTypeGroupReadOnly);
+		} else {
+			facilityOrHome.setVisible(false);
+		}
 	}
 
 	private boolean diseaseClassificationExists() {
@@ -1678,6 +1687,17 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		ignoreDifferentPlaceOfStayJurisdiction = true;
 		updateVisibilityDifferentPlaceOfStayJurisdiction(getValue());
 		ignoreDifferentPlaceOfStayJurisdiction = false;
+		FacilityReferenceDto healthFacility = getValue().getHealthFacility();
+		String healthFacilityDetails = getValue().getHealthFacilityDetails();
+		updateFacilityOrHome();
+		boolean readOnlyFacility = facilityCombo.isReadOnly();
+		boolean readOnlyFacilityDetails = facilityDetails.isReadOnly();
+		facilityCombo.setReadOnly(false);
+		facilityDetails.setReadOnly(false);
+		facilityCombo.setValue(healthFacility);
+		facilityDetails.setValue(healthFacilityDetails);
+		facilityCombo.setReadOnly(readOnlyFacility);
+		facilityDetails.setReadOnly(readOnlyFacilityDetails);
 	}
 
 	private void updateVisibilityDifferentPlaceOfStayJurisdiction(CaseDataDto newFieldValue) {
@@ -1714,7 +1734,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					FacadeProvider.getFacilityFacade().getActiveFacilitiesByDistrictAndType(district, facilityType, true, false));
 			} else {
 				FieldHelper.removeItems(facilityCombo);
-
 			}
 		} else {
 			if (TypeOfPlace.HOME.equals(facilityOrHome.getValue())) {
@@ -1732,7 +1751,9 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 	@Override
 	protected String createHtmlLayout() {
-		return MAIN_HTML_LAYOUT + (caseFollowUpEnabled ? FOLLOWUP_LAYOUT : "") + PAPER_FORM_DATES_AND_COMMENTS_HTML_LAYOUT;
+		return MAIN_HTML_LAYOUT
+			+ (caseFollowUpEnabled ? FOLLOWUP_LAYOUT : "")
+			+ PAPER_FORM_DATES_AND_HEALTH_CONDITIONS_HTML_LAYOUT;
 	}
 
 	private void setEpidNumberError(TextField epidField, Button assignNewEpidNumberButton, Label epidNumberWarningLabel, String fieldValue) {
