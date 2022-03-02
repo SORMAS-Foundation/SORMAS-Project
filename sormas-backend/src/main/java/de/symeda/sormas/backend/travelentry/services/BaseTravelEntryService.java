@@ -36,7 +36,7 @@ public class BaseTravelEntryService extends AbstractCoreAdoService<TravelEntry> 
 
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, TravelEntry> travelEntryPath) {
-		return inJurisdictionOrOwned(new TravelEntryQueryContext(cb, cq, travelEntryPath));
+		return createUserFilter(new TravelEntryQueryContext(cb, cq, travelEntryPath));
 	}
 
 	public Predicate inJurisdictionOrOwned(TravelEntryQueryContext qc, User user) {
@@ -51,7 +51,7 @@ public class BaseTravelEntryService extends AbstractCoreAdoService<TravelEntry> 
 		return cb.isFalse(root.get(TravelEntry.DELETED));
 	}
 
-	public Predicate createUserFilter(TravelEntryQueryContext qc) {
+	protected Predicate createUserFilter(TravelEntryQueryContext qc) {
 		final User currentUser = userService.getCurrentUser();
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();
 		Predicate filter = inJurisdictionOrOwned(qc);

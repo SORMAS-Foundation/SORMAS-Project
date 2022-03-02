@@ -54,7 +54,6 @@ import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -272,7 +271,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			: () -> null;
 		final Supplier<Predicate> travelEntryFilter = () -> CriteriaBuilderHelper.and(
 			cb,
-			travelEntryService.createUserFilter(new TravelEntryQueryContext(cb, cq,  joins.getTravelEntry())),
+			travelEntryService.createUserFilter(cb, cq, joins.getTravelEntry()),
 			travelEntryService.createDefaultFilter(cb, joins.getTravelEntry()));
 
 		// 2. Define the Joins on associations where needed
