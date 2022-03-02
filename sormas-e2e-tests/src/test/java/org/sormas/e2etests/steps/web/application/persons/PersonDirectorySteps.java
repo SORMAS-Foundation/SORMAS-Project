@@ -205,7 +205,7 @@ public class PersonDirectorySteps implements En {
         });
 
     Then(
-        "I change Year of birth filter by random value for Person",
+        "I change Year of birth filter for random value that is different from value created via api in Person directory",
         () -> {
           webDriverHelpers.selectFromCombobox(
               BIRTH_YEAR_COMBOBOX,
@@ -215,7 +215,7 @@ public class PersonDirectorySteps implements En {
         });
 
     Then(
-        "I change Month of birth filter  by random value for Person",
+        "I change Month of birth filter for random value that is different from value created via api in Person directory",
         () -> {
           webDriverHelpers.selectFromCombobox(
               BIRTH_MONTH_COMBOBOX,
@@ -225,7 +225,7 @@ public class PersonDirectorySteps implements En {
         });
 
     Then(
-        "I change Day of birth filter by random value for Person",
+        "I change Day of birth filter for random value that is different from value created via api in Person directory",
         () -> {
           webDriverHelpers.selectFromCombobox(
               BIRTH_DAY_COMBOBOX,

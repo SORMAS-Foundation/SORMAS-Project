@@ -40,19 +40,19 @@ Feature: Edit Persons
     And I choose random value of Community in Persons for the last created person by API
     Then I apply on the APPLY FILTERS button
     And I check that number of displayed Person results is 1
-    And I change Year of birth filter by random value for Person
+    And I change Year of birth filter for random value that is different from value created via api in Person directory
     Then I apply on the APPLY FILTERS button
     And I check that number of displayed Person results is 0
     Then I choose random value for Year of birth filter in Persons for the last created person by API
     Then I apply on the APPLY FILTERS button
     And I check that number of displayed Person results is 1
-    And I change Month of birth filter  by random value for Person
+    And I change Month of birth filter for random value that is different from value created via api in Person directory
     Then I apply on the APPLY FILTERS button
     And I check that number of displayed Person results is 0
     And I choose random value for Month of birth filter in Persons for the last created person by API
     Then I apply on the APPLY FILTERS button
     And I check that number of displayed Person results is 1
-    And I change Day of birth filter by random value for Person
+    And I change Day of birth filter for random value that is different from value created via api in Person directory
     Then I apply on the APPLY FILTERS button
     And I check that number of displayed Person results is 0
     And I choose random value for Day of birth filter in Persons for the last created person by API
