@@ -44,7 +44,7 @@ The SORMAS Realm relies on 4 clients:
 
 #### Roles
 
-The role management is handled solely by SORMAS starting with 1.70 
+The role management is handled solely by SORMAS starting with 1.70.
 
 #### Email
 
