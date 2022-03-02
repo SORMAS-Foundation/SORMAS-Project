@@ -97,7 +97,7 @@ public class EditCaseSteps implements En {
         "I click on Info button on Case Edit page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CASE_INFO_BUTTON);
-          TimeUnit.SECONDS.sleep(5);
+          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(CASE_CLOSE_WINDOW_BUTTON);
         });
 
