@@ -164,7 +164,7 @@ public class EventDataView extends AbstractEventView {
 		if (eventGroupsFeatureEnabled) {
 			EventReferenceDto eventReference = event.toReference();
 			EventGroupListComponent eventGroupsList = new EventGroupListComponent(eventReference);
-			eventGroupsList.addSideComponentCreateEventListener(e -> {
+			eventGroupsList.addSideComponentCreateEventListener(e -> showNavigationConfirmPopupIfDirty(() -> {
 				EventDto eventByUuid = FacadeProvider.getEventFacade().getEventByUuid(eventReference.getUuid(), false);
 				UserProvider user = UserProvider.getCurrent();
 				if (!user.hasNationalJurisdictionLevel() && !user.hasRegion(eventByUuid.getEventLocation().getRegion())) {
@@ -204,7 +204,7 @@ public class EventDataView extends AbstractEventView {
 							false).show(Page.getCurrent());
 					}
 				}
-			});
+			}));
 			layout.addComponent(new SideComponentLayout(eventGroupsList), EVENT_GROUPS_LOC);
 		}
 
