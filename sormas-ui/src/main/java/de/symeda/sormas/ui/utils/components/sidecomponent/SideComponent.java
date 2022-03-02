@@ -1,5 +1,6 @@
 package de.symeda.sormas.ui.utils.components.sidecomponent;
 
+import java.util.Arrays;
 import java.util.function.Consumer;
 
 import com.vaadin.icons.VaadinIcons;
@@ -83,13 +84,6 @@ public class SideComponent extends VerticalLayout {
 
 	private boolean userHasRight(UserRight... userRights) {
 		UserProvider currentUser = UserProvider.getCurrent();
-		if (currentUser != null) {
-			boolean hasRight = false;
-			for (UserRight userRight : userRights) {
-				hasRight = hasRight || currentUser.hasUserRight(userRight);
-			}
-			return hasRight;
-		}
-		return false;
+		return Arrays.stream(userRights).anyMatch(currentUser::hasUserRight);
 	}
 }
