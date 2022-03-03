@@ -30,6 +30,7 @@ import org.sormas.e2etests.envconfig.dto.EnvUser;
 import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.LoginPage;
+import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage;
 import org.sormas.e2etests.steps.BaseSteps;
 
@@ -108,6 +109,13 @@ public class LoginSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOGOUT_BUTTON, 50);
+        });
+
+    When(
+        "I check that German word for Configuration is present in the left main menu",
+        () -> {
+          webDriverHelpers.checkWebElementContainsText(
+              NavBarPage.CONFIGURATION_BUTTON, "Einstellungen");
         });
   }
 }

@@ -1,7 +1,7 @@
 @UI @Sanity @Case @Filters
 Feature: Case filter functionality
 
-  @env_main
+  @env_main @ignore
   Scenario: Check Cases on Sample page work as expected
     Given API: I create 10 new cases
     Then API: I check that POST call body is "OK"
@@ -260,10 +260,6 @@ Feature: Case filter functionality
     And I apply Reinfection filter to "Confirmed reinfection" on Case directory page
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 1
-    And I apply Surveillance Officer filter "Bas BEN - Surveillance Officer, Contact Officer" on Case directory page
-    And I click APPLY BUTTON in Case Directory Page
-    And I check that number of displayed cases results is 0
-    And I apply Surveillance Officer filter "Surveillance OFFICER - Surveillance Officer" on Case directory page
     And I apply Reporting User filter "Surveillance OFFICER" on Case directory page
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0

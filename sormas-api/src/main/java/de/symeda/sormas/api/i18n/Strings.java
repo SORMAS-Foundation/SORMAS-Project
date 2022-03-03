@@ -831,6 +831,7 @@ public interface Strings {
 	String infoSelectOrCreatePersonForImmunization = "infoSelectOrCreatePersonForImmunization";
 	String infoSelectOrCreatePersonForImport = "infoSelectOrCreatePersonForImport";
 	String infoSelectOrCreatePersonForLabMessage = "infoSelectOrCreatePersonForLabMessage";
+	String infoSelectOrCreatePersonForLabMessageWithoutMatches = "infoSelectOrCreatePersonForLabMessageWithoutMatches";
 	String infoSimilarImmunization = "infoSimilarImmunization";
 	String infoSkipOrOverrideDuplicateCampaignFormDataImport = "infoSkipOrOverrideDuplicateCampaignFormDataImport";
 	String infoSpecificCaseSearch = "infoSpecificCaseSearch";

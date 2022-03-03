@@ -377,8 +377,12 @@ public class ContactController {
 		boolean createdFromLabMesssage) {
 
 		final PersonDto casePerson = caze != null ? FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()) : null;
-		ContactCreateForm createForm =
-			new ContactCreateForm(caze != null ? caze.getDisease() : null, caze != null && !asSourceContact, asSourceContact);
+		ContactCreateForm createForm;
+		if (createdFromLabMesssage) {
+			createForm = new ContactCreateForm(caze != null ? caze.getDisease() : null, caze != null && !asSourceContact, asSourceContact, false);
+		} else {
+			createForm = new ContactCreateForm(caze != null ? caze.getDisease() : null, caze != null && !asSourceContact, asSourceContact);
+		}
 		createForm.setValue(createNewContact(caze, asSourceContact));
 		if (casePerson != null && asSourceContact) {
 			createForm.setPerson(casePerson);
@@ -603,7 +607,9 @@ public class ContactController {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_ARCHIVE)) {
 			boolean archived = FacadeProvider.getContactFacade().isArchived(contact.getUuid());
 			Button archiveButton = ButtonHelper.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {
-				editComponent.commit();
+				if (editComponent.isModified()) {
+					editComponent.commit();
+				}
 
 				if (archived) {
 					ControllerProvider.getArchiveController()

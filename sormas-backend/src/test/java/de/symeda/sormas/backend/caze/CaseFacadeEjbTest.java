@@ -136,6 +136,7 @@ import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.therapy.PrescriptionDto;
 import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.therapy.TreatmentDto;
+import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -1304,7 +1305,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		otherPerson.setBirthWeight(2);
 		getPersonFacade().savePerson(otherPerson);
 		PersonReferenceDto otherPersonReference = new PersonReferenceDto(otherPerson.getUuid());
-		RDCF otherRdcf = creator.createRDCF();
+		RDCF otherRdcf = creator.createRDCF("Reg2", "Dis2", "Comm2", "Fac2", "Poe2");
 		CaseDataDto otherCase = creator.createCase(
 			otherUserReference,
 			otherPersonReference,
@@ -1359,6 +1360,15 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		getEventParticipantFacade().saveEventParticipant(otherCaseEventParticipant);
 
 		creator.createSurveillanceReport(otherUserReference, otherCaseReference);
+		TravelEntryDto travelEntry = creator.createTravelEntry(
+			otherPersonReference,
+			otherUserReference,
+			otherCase.getDisease(),
+			otherRdcf.region,
+			otherRdcf.district,
+			otherRdcf.pointOfEntry);
+		travelEntry.setResultingCase(otherCaseReference);
+		travelEntry = getTravelEntryFacade().save(travelEntry);
 
 		DocumentDto document = creator.createDocument(
 			leadUserReference,
@@ -1481,6 +1491,10 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		final List<ActivityAsCaseDto> activitiesAsCase = epiData.getActivitiesAsCase();
 		assertEquals(1, activitiesAsCase.size());
 		assertEquals(ActivityAsCaseType.GATHERING, activitiesAsCase.get(0).getActivityAsCaseType());
+
+		// Travel entry
+		travelEntry = getTravelEntryFacade().getByUuid(travelEntry.getUuid());
+		assertEquals(mergedCase.toReference(), travelEntry.getResultingCase());
 	}
 
 	@Test

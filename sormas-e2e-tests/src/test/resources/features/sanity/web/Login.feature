@@ -14,3 +14,8 @@ Feature: Login with different type of users
       | Laboratory Officer        |
       | Point of Entry Supervisor |
       | Surveillance Officer      |
+
+  @issue=SORQA-69 @env_de
+  Scenario: Check German language setting
+    Given I log in with National User
+    Then I check that German word for Configuration is present in the left main menu

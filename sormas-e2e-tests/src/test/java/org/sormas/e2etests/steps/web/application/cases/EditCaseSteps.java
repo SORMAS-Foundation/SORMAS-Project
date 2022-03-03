@@ -60,6 +60,7 @@ public class EditCaseSteps implements En {
   private static Case specificCaseData;
   private static LocalDate dateFollowUp;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
+  public static final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
   public static final String userDirPath = System.getProperty("user.dir");
 
   @SneakyThrows
@@ -105,10 +106,36 @@ public class EditCaseSteps implements En {
         "I navigate to Hospitalization tab in Cases",
         () -> webDriverHelpers.clickOnWebElementBySelector(HOSPITALIZATION_TAB));
 
+    And(
+        "I navigate to case person tab",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CASE_PERSON_TAB));
+
     When(
         "I check the created data is correctly displayed on Edit case page",
         () -> {
           aCase = collectCasePersonData();
+          createdCase = CreateNewCaseSteps.caze;
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              aCase,
+              createdCase,
+              List.of(
+                  "dateOfReport",
+                  "disease",
+                  "externalId",
+                  "responsibleRegion",
+                  "responsibleDistrict",
+                  "responsibleCommunity",
+                  "placeOfStay",
+                  "placeDescription",
+                  "firstName",
+                  "lastName",
+                  "dateOfBirth"));
+        });
+
+    When(
+        "I check the created data is correctly displayed on Edit case page for DE version",
+        () -> {
+          aCase = collectCasePersonDataDE();
           createdCase = CreateNewCaseSteps.caze;
           ComparisonHelper.compareEqualFieldsOfEntities(
               aCase,
@@ -670,6 +697,25 @@ public class EditCaseSteps implements En {
         .build();
   }
 
+  private Case collectCasePersonDataDE() {
+    Case userInfo = getUserInformationDE();
+
+    return Case.builder()
+        .dateOfReport(getDateOfReportDE())
+        .firstName(userInfo.getFirstName())
+        .lastName(userInfo.getLastName())
+        .dateOfBirth(userInfo.getDateOfBirth())
+        .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+        .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
+        .responsibleRegion(webDriverHelpers.getValueFromWebElement(REGION_INPUT))
+        .responsibleDistrict(webDriverHelpers.getValueFromWebElement(DISTRICT_INPUT))
+        .responsibleCommunity(webDriverHelpers.getValueFromWebElement(COMMUNITY_INPUT))
+        .placeOfStay(webDriverHelpers.getTextFromWebElement(PLACE_OF_STAY_SELECTED_VALUE))
+        .placeDescription(webDriverHelpers.getValueFromWebElement(PLACE_DESCRIPTION_INPUT))
+        .build();
+  }
+
   private Case collectCaseData() {
     return Case.builder()
         .dateOfReport(getDateOfReport())
@@ -753,6 +799,11 @@ public class EditCaseSteps implements En {
     return LocalDate.parse(dateOfReport, DATE_FORMATTER);
   }
 
+  private LocalDate getDateOfReportDE() {
+    String dateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE_INPUT);
+    return LocalDate.parse(dateOfReport, DATE_FORMATTER_DE);
+  }
+
   private LocalDate getDateReceivedAtDistrictLevel() {
     String dateOfReport =
         webDriverHelpers.getValueFromWebElement(DATE_RECEIVED_AT_DISTRICT_LEVEL_INPUT);
@@ -775,6 +826,17 @@ public class EditCaseSteps implements En {
     String userInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
     String[] userInfos = userInfo.split(" ");
     LocalDate localDate = LocalDate.parse(userInfos[3].replace(")", ""), DATE_FORMATTER);
+    return Case.builder()
+        .firstName(userInfos[0])
+        .lastName(userInfos[1])
+        .dateOfBirth(localDate)
+        .build();
+  }
+
+  private Case getUserInformationDE() {
+    String userInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
+    String[] userInfos = userInfo.split(" ");
+    LocalDate localDate = LocalDate.parse(userInfos[3].replace(")", ""), DATE_FORMATTER_DE);
     return Case.builder()
         .firstName(userInfos[0])
         .lastName(userInfos[1])
