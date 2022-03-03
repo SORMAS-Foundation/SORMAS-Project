@@ -244,19 +244,30 @@ public class ContactDirectorySteps implements En {
     When(
         "I select all options in Type of activity from Combobox in Exposure for Epidemiological data tab in Contacts",
         () -> {
-          selectAllActivityTypes();
+          String[] ListOfTypeOfActivityExposure =
+              TypeOfActivityExposure.ListOfTypeOfActivityExposure;
+          for (String value : ListOfTypeOfActivityExposure) {
+            webDriverHelpers.selectFromCombobox(TYPE_OF_ACTIVITY_COMBOBOX, value);
+          }
         });
 
     When(
         "I select all Type of gathering from Combobox in Exposure for Epidemiological data tab in Contacts",
         () -> {
-          selectAllGatheringType();
+          for (TypeOfGathering value : TypeOfGathering.values()) {
+            if (value != TypeOfGathering.valueOf("OTHER")) {
+              webDriverHelpers.selectFromCombobox(TYPE_OF_GATHERING_COMBOBOX, value.toString());
+            }
+          }
         });
 
     When(
         "I check all Type of place from Combobox in Exposure for Epidemiological data tab in Contacts",
         () -> {
-          selectAllTypeOfPlace();
+          for (TypeOfPlace value : TypeOfPlace.values()) {
+            webDriverHelpers.selectFromCombobox(
+                TYPE_OF_PLACE_COMBOBOX, TypeOfPlace.getValueFor(value.toString()));
+          }
         });
 
     When(
@@ -311,9 +322,13 @@ public class ContactDirectorySteps implements En {
                   CONTACT_PERSON_EMAIL_ADRESS, exposureData.getContactPersonEmail());
               break;
           }
-          webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
         });
 
+    When(
+        "I click on save button in Exposure for Epidemiological data tab in Contacts",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
+        });
     When(
         "I select a Type of activity ([^\"]*) option in Exposure for Epidemiological data tab in Contacts",
         (String option) -> {
@@ -684,29 +699,5 @@ public class ContactDirectorySteps implements En {
                 webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
                     RESIDING_OR_TRAVELING_DETAILS_KNOWN_OPTIONS)))
         .build();
-  }
-
-  private void selectAllActivityTypes() {
-    for (TypeOfActivityExposure value : TypeOfActivityExposure.values())
-      if (value != TypeOfActivityExposure.valueOf("GATHERING")
-          && value != TypeOfActivityExposure.valueOf("OTHER")
-          && value != TypeOfActivityExposure.valueOf("BURIAL")) {
-        webDriverHelpers.selectFromCombobox(TYPE_OF_ACTIVITY_COMBOBOX, value.getActivity());
-      }
-  }
-
-  private void selectAllGatheringType() {
-    for (TypeOfGathering value : TypeOfGathering.values()) {
-      if (value != TypeOfGathering.valueOf("OTHER")) {
-        webDriverHelpers.selectFromCombobox(TYPE_OF_GATHERING_COMBOBOX, value.toString());
-      }
-    }
-  }
-
-  private void selectAllTypeOfPlace() {
-    for (TypeOfPlace value : TypeOfPlace.values()) {
-      webDriverHelpers.selectFromCombobox(
-          TYPE_OF_PLACE_COMBOBOX, TypeOfPlace.getValueFor(value.toString()));
-    }
   }
 }
