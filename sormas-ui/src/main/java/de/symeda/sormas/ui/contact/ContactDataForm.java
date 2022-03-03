@@ -482,7 +482,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			} else {
 				FieldHelper.updateItems(
 					contactOfficerField,
-					districtDto != null ? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, UserRole.CONTACT_OFFICER) : null);
+					districtDto != null ? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, getSelectedDisease(), UserRole.CONTACT_OFFICER) : null);
 			}
 		});
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
@@ -597,7 +597,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					getValue().getDistrict() != null ? getValue().getDistrict() : caseDto != null ? caseDto.getDistrict() : null;
 				if (referenceDistrict != null) {
 					contactOfficerField
-						.addItems(FacadeProvider.getUserFacade().getUserRefsByDistrict(referenceDistrict, false, UserRole.CONTACT_OFFICER));
+						.addItems(FacadeProvider.getUserFacade().getUserRefsByDistrict(referenceDistrict, false, getSelectedDisease(), UserRole.CONTACT_OFFICER));
 				}
 
 				getContent().removeComponent(TO_CASE_BTN_LOC);
