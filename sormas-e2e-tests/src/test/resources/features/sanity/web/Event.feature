@@ -347,4 +347,50 @@ Feature: Create events
     And I check that name appearing in hover is equal to name of linked Event group
     And I check the number of displayed Event results from All button is 1
 
+  @issue=SORDEV-5569 @env_main
+  Scenario: Event groups view
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    When I am accessing the event tab using the created event via api
+    And I click on link event group
+    And I create a new event group
+    When I am accessing the event tab using the created event via api
+    Then I am checking event group name and id is correctly displayed
+    And I click on the Events button from navbar
+    And I click on radio button Groups in Event directory
+    Then I search last created groups Event by "GROUP_ID" option filter in Event Group Directory
+    Then I search last created Event by "TITLE" option filter in Event Group Directory
+    And I chose Region option in Event Group Directory
+    And I chose District option in Event Group Directory
+    And I chose Community option in Event Group Directory
+    And I apply on the APPLY FILTERS button from Event
+    And I check that number of displayed Event results is 1
+    And I chose Region "Berlin" option in Event Group Directory
+    And I apply on the APPLY FILTERS button from Event
+    And I check that number of displayed Event results is 0
+    And I chose Region "Region1" option in Event Group Directory
+    And I chose District "District11" option in Event Group Directory
+    And I apply on the APPLY FILTERS button from Event
+    And I check that number of displayed Event results is 0
+    And I chose Region option in Event Group Directory
+    And I chose District option in Event Group Directory
+    And I chose Community "Community1" option in Event Group Directory
+    And I apply on the APPLY FILTERS button from Event
+    And I check that number of displayed Event results is 0
+    And I chose Community option in Event Group Directory
+    And I apply on the APPLY FILTERS button from Event
+    And I chose "Active groups" option from Relevnce Status filter in Event Group Directory
+    And I check that number of displayed Event results is 1
+    And I chose "Archived groups" option from Relevnce Status filter in Event Group Directory
+    And I check that number of displayed Event results is 0
+    And I chose "All groups" option from Relevnce Status filter in Event Group Directory
+    And I check that number of displayed Event results is 1
+    And I chose "Active groups" option from Relevnce Status filter in Event Group Directory
+    And I click on the RESET FILTERS button from Event
+    And I sort all rows by Group ID in Event Group Directory
+    And I sort all rows by Group NAME in Event Group Directory
+    And I click on a Export button in Event Group Directory
+
 

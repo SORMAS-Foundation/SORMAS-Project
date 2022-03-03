@@ -18,9 +18,8 @@
 
 package org.sormas.e2etests.entities.services.api;
 
+import com.github.javafaker.Faker;
 import com.google.inject.Inject;
-import java.util.Date;
-import java.util.UUID;
 import org.sormas.e2etests.entities.pojo.api.Community;
 import org.sormas.e2etests.entities.pojo.api.District;
 import org.sormas.e2etests.entities.pojo.api.Event;
@@ -36,10 +35,16 @@ import org.sormas.e2etests.enums.RiskLevelValues;
 import org.sormas.e2etests.enums.SourceTypeValues;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
 
+import java.util.Date;
+import java.util.UUID;
+
 public class EventApiService {
+  private final Faker faker;
 
   @Inject
-  public EventApiService() {}
+  public EventApiService(Faker faker) {
+    this.faker = faker;
+  }
 
   public Event buildGeneratedEvent() {
     return Event.builder()
@@ -50,6 +55,7 @@ public class EventApiService {
         .srcType(SourceTypeValues.getRandomSourceTypeName())
         .eventInvestigationStatus("PENDING")
         .eventTitle(String.valueOf(System.currentTimeMillis()))
+        .eventDesc(faker.chuckNorris().fact())
         .startDate(new Date())
         .reportDateTime(new Date())
         .riskLevel(RiskLevelValues.getRandomRiskLevelName())
