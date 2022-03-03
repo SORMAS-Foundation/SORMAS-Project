@@ -747,8 +747,7 @@ public class LabMessageController {
 		});
 		caseCreateComponent.addDiscardListener(window::close);
 		caseCreateComponent.getWrappedComponent().setValue(caseDto);
-		boolean isValidUuid = FacadeProvider.getPersonFacade().isValidPersonUuid(person.getUuid());
-		if (isValidUuid) {
+		if (FacadeProvider.getPersonFacade().isValidPersonUuid(person.getUuid())) {
 			caseCreateComponent.getWrappedComponent().setSearchedPerson(person);
 		}
 		caseCreateComponent.getWrappedComponent().setPerson(person);
