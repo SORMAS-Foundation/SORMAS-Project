@@ -34,6 +34,7 @@ public class CaseDirectoryPage {
       By.cssSelector("thead .v-grid-column-default-header-content");
   public static final By CASE_DETAILED_TABLE_ROWS =
       By.cssSelector("div.v-grid-tablewrapper tbody tr");
+  public static final By SAVE_BUTTON_IN_LINK_FORM = By.cssSelector(".popupContent #commit");
   public static final By FIRST_CASE_ID_BUTTON = By.cssSelector(".v-grid-row-has-data a[title]");
   public static final By NAME_UUID_EPID_NUMBER_LIKE_INPUT = By.cssSelector("input#caseLike");
   public static final By PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT =
@@ -93,6 +94,8 @@ public class CaseDirectoryPage {
       By.cssSelector("[id='dateType'] [class='v-filterselect-button']");
   public static final By CASE_DISPLAY_FILTER_COMBOBOX =
       By.cssSelector("[id='relevanceStatus'] [class='v-filterselect-button']");
+  public static final By BULK_ACTIONS = By.id("bulkActions-2");
+  public static final By BULK_ACTIONS_VALUES = By.id("bulkActions-10");
   public static final By CASE_REPORTING_USER_FILTER = By.cssSelector("[id='reportingUserLike']");
   public static final By CASE_YEAR_FILTER =
       By.cssSelector("[id='birthdateYYYY'] [class='v-filterselect-button']");
@@ -125,5 +128,13 @@ public class CaseDirectoryPage {
   public static final By INVESTIGATION_DISCARDED_BUTTON = By.id("Investigation discarded");
   public static final By DATE_FROM_COMBOBOX = By.cssSelector("#dateFrom input");
   public static final By DATE_TO_COMBOBOX = By.cssSelector("#dateTo input");
+  public static final By MORE_BUTTON = By.id("more");
+  public static final By ENTER_BULK_EDIT_MODE = By.id("actionEnterBulkEditMode");
+  public static final By ALL_RESULTS_CHECKBOX =
+      By.xpath("//th[@role='columnheader']//input[@type='checkbox']/../..");
+  public static final By NEW_EVENT_CHECKBOX = By.xpath("//*[contains(text(),'New event')]/..");
+  public static final By FIRST_RESULT_IN_GRID =
+      By.xpath("//div[contains(@class, 'popupContent')]//tr[@role='row']");
+  public static final By SEARCH_BUTTON = By.id("search");
   // TODO refactor the other headers based on the last one added
 }

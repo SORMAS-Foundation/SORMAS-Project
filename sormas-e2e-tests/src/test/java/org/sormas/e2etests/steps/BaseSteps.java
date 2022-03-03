@@ -29,6 +29,7 @@ import io.qameta.allure.listener.StepLifecycleListener;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
 import java.time.Duration;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
@@ -64,8 +65,7 @@ public class BaseSteps implements StepLifecycleListener {
       WebDriver.Options options = driver.manage();
       options.timeouts().setScriptTimeout(Duration.ofMinutes(2));
       options.timeouts().pageLoadTimeout(Duration.ofMinutes(2));
-      log.info("Browser's resolution: " + driver.manage().window().getSize().toString());
-      log.info("Starting test: " + scenario.getName());
+      log.info("Starting test: {}", scenario.getName());
     }
   }
 
@@ -74,12 +74,13 @@ public class BaseSteps implements StepLifecycleListener {
     RestAssured.registerParser("text/html", Parser.JSON);
   }
 
+  @SneakyThrows
   @After(value = "@UI")
   public void afterScenario(Scenario scenario) {
     if (isNonApiScenario(scenario)) {
       driverManager.releaseRemoteWebDriver(scenario.getName());
     }
-    log.info("Finished test: " + scenario.getName());
+    log.info("Finished test: {}", scenario.getName());
   }
 
   @After(value = "@PublishCustomReport")
