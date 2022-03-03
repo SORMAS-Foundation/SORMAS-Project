@@ -97,8 +97,6 @@ public class EventDirectoryPage {
   public static final By BULK_ACTIONS_EVENT_DIRECTORY = By.id("bulkActions-2");
   public static final By GROUP_EVENTS_EVENT_DIRECTORY = By.id("bulkActions-7");
   public static final By GROUP_ID_COLUMN = By.xpath("(//td//a)[2]");
-  public static final By EVENT_GROUPS_RADIOBUTTON =
-      By.cssSelector("div#eventsViewSwitcher span:nth-child(3)");
   public static final By EVENT_REGION_COMBOBOX_INPUT = By.cssSelector("#region div");
   public static final By EVENT_DISTRICT_COMBOBOX_INPUT = By.cssSelector("#district div");
   public static final By EVENT_COMMUNITY_COMBOBOX_INPUT = By.cssSelector("#community div");
