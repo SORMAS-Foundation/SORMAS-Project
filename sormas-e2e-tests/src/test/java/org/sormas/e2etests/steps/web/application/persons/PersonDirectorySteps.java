@@ -37,6 +37,7 @@ import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.RESET_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.SEARCH_PERSON_BY_FREE_TEXT;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
+import static org.sormas.e2etests.steps.web.application.cases.FollowUpStep.faker;
 
 import com.github.javafaker.Faker;
 import com.google.common.truth.Truth;
@@ -62,7 +63,6 @@ import org.testng.Assert;
 public class PersonDirectorySteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   protected Person createdPerson;
-  Faker faker = new Faker();
 
   @Inject
   public PersonDirectorySteps(
