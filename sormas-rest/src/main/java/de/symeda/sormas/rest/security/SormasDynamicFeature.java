@@ -15,32 +15,25 @@
 
 package de.symeda.sormas.rest.security;
 
-import java.io.IOException;
-
-import javax.servlet.FilterChain;
-import javax.servlet.ServletException;
-import javax.servlet.annotation.WebFilter;
-import javax.servlet.http.HttpFilter;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.ws.rs.container.DynamicFeature;
+import javax.ws.rs.container.ResourceInfo;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.FeatureContext;
+import javax.ws.rs.ext.Provider;
 
-import org.apache.http.HttpStatus;
+@Provider
+public class SormasDynamicFeature implements DynamicFeature {
 
-import de.symeda.sormas.api.user.UserRight;
+	@Context
+	private HttpServletRequest request;
 
-@WebFilter(urlPatterns = "/*")
-public class UserRightFilter extends HttpFilter {
-
-	private static final long serialVersionUID = -4276940956422602241L;
+	@Context
+	private HttpServletResponse response;
 
 	@Override
-	public void doFilter(HttpServletRequest servletRequest, HttpServletResponse servletResponse, FilterChain filterChain)
-		throws IOException, ServletException {
-		if (servletRequest.isUserInRole(UserRight.SORMAS_REST.name())) {
-			filterChain.doFilter(servletRequest, servletResponse);
-		} else {
-			servletResponse.setStatus(HttpStatus.SC_FORBIDDEN);
-		}
+	public void configure(ResourceInfo resourceInfo, FeatureContext context) {
+		context.register(new SormasRestUserRightFilter(request, response));
 	}
-
 }

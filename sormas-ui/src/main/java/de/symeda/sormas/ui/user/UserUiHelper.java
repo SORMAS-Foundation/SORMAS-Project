@@ -32,7 +32,7 @@ public class UserUiHelper {
 		Set<UserRole> allRoles = UserRole.getAssignableRoles(UserProvider.getCurrent().getUserRoles());
 
 		if (!FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND)) {
-			allRoles.remove(UserRole.BAG_USER);
+//			allRoles.remove(UserRole.BAG_USER);
 		}
 
 		Set<UserRole> enabledUserRoles = FacadeProvider.getUserRoleConfigFacade().getEnabledUserRoles();

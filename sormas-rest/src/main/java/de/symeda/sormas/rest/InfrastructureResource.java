@@ -1,6 +1,5 @@
 package de.symeda.sormas.rest;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
