@@ -29,6 +29,10 @@ public class ContactsLineListingPage {
       By.cssSelector("[id='lineListingSharedInfoField'] [id='district'] div");
   public static final By LINE_LISTING_DATE_REPORT_INPUT =
       By.cssSelector("[id='dateOfReport'] input");
+  public static final By LINE_LISTING_FIRST_DATE_OF_REPORT_INPUT =
+      By.xpath("(//div[@id='dateOfReport']//input)[1]");
+  public static final By LINE_LISTING_SECOND_DATE_OF_REPORT_INPUT =
+      By.xpath("(//div[@id='dateOfReport']//input)[2]");
   public static final By LINE_LISTING_SECOND_DATE_REPORT_INPUT =
       By.cssSelector("[id='lineListingContactLineField_1'] [id='dateOfReport'] input");
   public static final By LINE_LISTING_DATE_LAST_CONTACT_INPUT =
