@@ -313,7 +313,7 @@ public class UserFacadeEjb implements UserFacade {
 
 	@Override
 	public List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto districtRef, boolean includeSupervisors, UserRole... userRoles) {
-
+//TODO
 		return userService.getReferenceList(null, toUuidList(districtRef), includeSupervisors, true, true, userRoles)
 			.stream()
 			.map(UserFacadeEjb::toReferenceDto)
@@ -321,10 +321,10 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	public List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districtRefs, boolean includeSupervisors, CaseDataDto caseDataDto, UserRole... userRoles) {
+	public List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districtRefs, boolean includeSupervisors, Disease limitedDisease, UserRole... userRoles) {
 		return userService
 			.getReferenceList(null, districtRefs.stream().map(DistrictReferenceDto::getUuid).collect(Collectors.toList()), null,
-				includeSupervisors,true,true, caseDataDto.getDisease(), Arrays.asList(userRoles))
+				includeSupervisors,true,true, limitedDisease, Arrays.asList(userRoles))
 			.stream()
 			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());

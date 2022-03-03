@@ -25,6 +25,7 @@ import javax.ejb.Remote;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
@@ -73,7 +74,7 @@ public interface UserFacade {
 	 */
 	List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto district, boolean includeSupervisors, UserRole... userRoles);
 
-	List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districts, boolean includeSupervisors, CaseDataDto caseDataDto, UserRole... userRoles);
+	List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districts, boolean includeSupervisors, Disease limitedDisease, UserRole... userRoles);
 
 	List<UserReferenceDto> getAllUserRefs(boolean includeInactive);
 

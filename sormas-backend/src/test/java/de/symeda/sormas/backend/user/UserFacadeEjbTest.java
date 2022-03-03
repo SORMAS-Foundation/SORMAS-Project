@@ -375,16 +375,13 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 	public void testGetUserRefsByDistrictsWithLimitedDiseaseUsers(){
 
 		RDCF rdcf = creator.createRDCF();
-		UserDto userDto = creator.createUser(rdcf, NATIONAL_USER);
-		CaseDataDto caseDataDto = creator.createCase(userDto.toReference(), creator.createPerson().toReference(), Disease.CORONAVIRUS,
-			CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(),	rdcf, null);
 
 		UserDto generalSurveillanceOfficer = creator.createUser(rdcf, "General ", "SURVEILLANCE_OFFICER", SURVEILLANCE_OFFICER);
 		UserDto limitedSurveillanceOfficer = creator.createUser(rdcf, "Limited Dengue", "SURVEILLANCE_OFFICER", Disease.DENGUE, SURVEILLANCE_OFFICER);
 
 
 		List<UserReferenceDto> userReferenceDtos = getUserFacade()
-			.getUserRefsByDistricts(Arrays.asList(rdcf.district), false, caseDataDto,  SURVEILLANCE_OFFICER);
+			.getUserRefsByDistricts(Arrays.asList(rdcf.district), false, Disease.CORONAVIRUS,  SURVEILLANCE_OFFICER);
 
 		assertNotNull(userReferenceDtos);
 		assertTrue(userReferenceDtos.contains(generalSurveillanceOfficer));

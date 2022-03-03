@@ -782,7 +782,7 @@ public final class FieldHelper {
 			Stream.of(caze.getResponsibleDistrict(), caze.getDistrict()).filter(Objects::nonNull).collect(Collectors.toList());
 		FieldHelper.updateItems(
 			officerField,
-			officerDistricts.size() > 0 ? FacadeProvider.getUserFacade().getUserRefsByDistricts(officerDistricts, false, caze, role) : null);
+			officerDistricts.size() > 0 ? FacadeProvider.getUserFacade().getUserRefsByDistricts(officerDistricts, false, caze.getDisease(), role) : null);
 
 	}
 }
