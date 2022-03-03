@@ -45,11 +45,9 @@ dependencies {
 	implementation("com.google.inject:guice:$guiceVersion")
 	implementation("io.cucumber:cucumber-guice:$cucumberVersion")
 
-//	implementation("ch.qos.logback:logback-classic:$logBackVersion")
-//	implementation("ch.qos.logback:logback-core:$logBackVersion")
+	implementation("ch.qos.logback:logback-classic:$logBackVersion")
+	implementation("ch.qos.logback:logback-core:$logBackVersion")
 
-	implementation 'ch.qos.logback:logback-core:1.2.3'
-	implementation 'ch.qos.logback:logback-classic:1.2.3'
 	implementation 'org.slf4j:slf4j-api:1.7.30'
 
 	implementation("com.github.javafaker:javafaker:$javaFakerVersion") { exclude module: "org.yaml" }
@@ -89,13 +87,11 @@ task createReportFolderIfNotExist() {
 	if (!folder.exists()) {
 		folder.mkdirs()
 	}
+	println "Removing old logs file"
+	delete("logs/file.log")
 }
 
-task startTests {
-	doLast {
-		println "Starting the test cases"
-	}
-}
+task startTests {}
 
 task copyToGeneratedReport(type: Copy) {
 	dependsOn "createReportFolderIfNotExist"

@@ -28,7 +28,7 @@ import java.util.function.Predicate;
 import java.util.stream.Collectors;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
-// import lombok.extern.slf4j.Slf4j;
+import lombok.extern.slf4j.Slf4j;
 import org.awaitility.core.ConditionTimeoutException;
 import org.openqa.selenium.By;
 import org.openqa.selenium.JavascriptExecutor;
@@ -40,16 +40,12 @@ import org.openqa.selenium.TimeoutException;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.openqa.selenium.interactions.Actions;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.sormas.e2etests.common.TimerLite;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.Assert;
 
-// @Slf4j
+@Slf4j
 public class WebDriverHelpers {
-
-  private static final Logger log = LoggerFactory.getLogger(WebDriverHelpers.class);
 
   public static final By SELECTED_RADIO_BUTTON =
       By.xpath("ancestor::div[contains(@role,'group')]//input[@checked]/following-sibling::label");
@@ -377,7 +373,7 @@ public class WebDriverHelpers {
       baseSteps.getDriver().findElements(byObject).get(index).click();
     } catch (Exception exception) {
       log.warn(
-          "Unable tp click on element:  {}, at index {}, due to: {}",
+          "Unable to click on element:  {}, at index {}, due to: {}",
           byObject,
           index,
           exception.getMessage());
@@ -400,18 +396,17 @@ public class WebDriverHelpers {
   }
 
   public void hoverToElement(By selector) {
-    WebElement menuOption = baseSteps.getDriver().findElement(selector);
+    WebElement element = baseSteps.getDriver().findElement(selector);
     Actions actions = new Actions(baseSteps.getDriver());
     try {
       assertHelpers.assertWithPoll20Second(
           () -> {
             scrollToElement(selector);
-            actions.moveToElement(menuOption).perform();
+            actions.moveToElement(element).perform();
             waitUntilIdentifiedElementIsVisibleAndClickable(selector);
           });
     } catch (ConditionTimeoutException ignored) {
-      log.error("Unable to fill on element identified by locator: {}", selector);
-      throw new TimeoutException("Unable to fill on element identified by locator: " + selector);
+      throw new TimeoutException("Unable to hover on element identified by locator: " + selector);
     }
   }
 
@@ -584,8 +579,10 @@ public class WebDriverHelpers {
     try {
       return baseSteps.getDriver().findElements(byObject).size();
     } catch (Exception e) {
-      log.warn("Exception caught while getting the number of elements for locator: {}", byObject);
-      log.warn("Exception: {}", e.getMessage());
+      log.warn(
+          "Exception caught while getting the number of elements for locator: {} : {}",
+          byObject,
+          e.getMessage());
       throw new WebDriverException(String.format("No elements found for element: %s", byObject));
     }
   }

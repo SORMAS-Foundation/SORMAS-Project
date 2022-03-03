@@ -18,7 +18,6 @@
 
 package recorders;
 
-import com.google.common.base.Stopwatch;
 import io.qameta.allure.Allure;
 import io.qameta.allure.Attachment;
 import io.qameta.allure.listener.StepLifecycleListener;
@@ -34,10 +33,9 @@ import org.openqa.selenium.remote.RemoteWebDriver;
 
 @Slf4j
 public class StepsLogger implements StepLifecycleListener {
-  private final Stopwatch stopwatch = Stopwatch.createUnstarted();
   private static final String PROCESS_ID =
       String.valueOf(ManagementFactory.getRuntimeMXBean().getPid());
-  public static final String PROCESS_ID_STRING = String.format("[PROCESS_ID:%s]", PROCESS_ID);
+  public static final String PROCESS_ID_STRING = String.format("[PROCESS_ID:%s] ->", PROCESS_ID);
   private static RemoteWebDriver driver;
   private static boolean isScreenshotEnabled = true;
 
@@ -51,23 +49,19 @@ public class StepsLogger implements StepLifecycleListener {
 
   @Override
   public void afterStepStart(final StepResult result) {
-    stopwatch.reset();
-    stopwatch.start();
-    log.info(PROCESS_ID_STRING + " Starting step: " + result.getName());
+    log.info("{} -> Starting step -> {}", PROCESS_ID_STRING, result.getName());
   }
 
   @Override
   public void afterStepUpdate(final StepResult result) {
     if (isScreenshotEnabled && driver != null) {
       takeScreenshotAfter();
-      if (result.getStatus().value().equalsIgnoreCase("failed")) {
+      if (!result.getStatus().value().contains("pass")) {
         attachConsoleLog();
       }
     }
-    stopwatch.stop();
     isScreenshotEnabled = true;
-    log.info(
-        " {} Finishing step: " + result.getName() + " and took: " + stopwatch, PROCESS_ID_STRING);
+    log.info("{} -> Finished step -> {}", PROCESS_ID_STRING, result.getName());
   }
 
   @Attachment(value = "After step screenshot", type = "image/png")
@@ -85,7 +79,12 @@ public class StepsLogger implements StepLifecycleListener {
   @SneakyThrows
   @Attachment(value = "Browser console log", type = "text/json")
   private void attachConsoleLog() {
-    Allure.getLifecycle()
-        .addAttachment("Execution logs", "text/json", "txt", new FileInputStream("logs/file.log"));
+    try {
+      Allure.getLifecycle()
+          .addAttachment(
+              "Execution logs", "text/json", "txt", new FileInputStream("logs/file.log"));
+    } catch (Exception any) {
+      log.error("Failed to attach logs to Allure report due to: {}", any.getCause());
+    }
   }
 }

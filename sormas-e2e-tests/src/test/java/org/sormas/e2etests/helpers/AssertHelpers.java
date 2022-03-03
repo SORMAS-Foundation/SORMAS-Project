@@ -25,16 +25,12 @@ import static org.awaitility.pollinterval.FibonacciPollInterval.fibonacci;
 import java.time.Duration;
 import java.util.concurrent.TimeUnit;
 import lombok.SneakyThrows;
-// import lombok.extern.slf4j.Slf4j;
+import lombok.extern.slf4j.Slf4j;
 import org.awaitility.core.ConditionTimeoutException;
 import org.awaitility.core.ThrowingRunnable;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
-// @Slf4j
+@Slf4j
 public class AssertHelpers {
-
-  private static final Logger log = LoggerFactory.getLogger(AssertHelpers.class);
 
   @SneakyThrows
   public void assertWithPoll(ThrowingRunnable throwingRunnable, int seconds) {

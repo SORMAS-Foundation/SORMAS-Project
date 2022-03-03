@@ -30,18 +30,14 @@ import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
 import java.time.Duration;
 import lombok.SneakyThrows;
-// import lombok.extern.slf4j.Slf4j;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.sormas.e2etests.webdriver.DriverManager;
 import recorders.StepsLogger;
 
-// @Slf4j
+@Slf4j
 public class BaseSteps implements StepLifecycleListener {
-
-  private static final Logger log = LoggerFactory.getLogger(BaseSteps.class);
 
   public static RemoteWebDriver driver;
   public static String locale;
@@ -63,16 +59,13 @@ public class BaseSteps implements StepLifecycleListener {
 
   @Before(value = "@UI")
   public void beforeScenario(Scenario scenario) {
-    log.warn("Warn message check");
-    log.error("Error message check");
     if (isNonApiScenario(scenario)) {
       driver = driverManager.borrowRemoteWebDriver(scenario.getName());
       StepsLogger.setRemoteWebDriver(driver);
       WebDriver.Options options = driver.manage();
       options.timeouts().setScriptTimeout(Duration.ofMinutes(2));
       options.timeouts().pageLoadTimeout(Duration.ofMinutes(2));
-      log.info("Browser's resolution: " + driver.manage().window().getSize().toString());
-      log.info("Starting test: " + scenario.getName());
+      log.info("Starting test: {}", scenario.getName());
     }
   }
 
@@ -87,7 +80,7 @@ public class BaseSteps implements StepLifecycleListener {
     if (isNonApiScenario(scenario)) {
       driverManager.releaseRemoteWebDriver(scenario.getName());
     }
-    log.info("Finished test: " + scenario.getName());
+    log.info("Finished test: {}", scenario.getName());
   }
 
   @After(value = "@PublishCustomReport")
