@@ -419,7 +419,11 @@ public class UserFacadeEjb implements UserFacade {
 				.where(
 					cb.and(
 						cb.equal(contactRoot.get(AbstractDomainObject.UUID), contactReferenceDto.getUuid()),
-						cb.isTrue(contactJurisdictionPredicateValidator.inJurisdictionOrOwned())));
+						cb.isTrue(contactJurisdictionPredicateValidator.inJurisdictionOrOwned()),
+						cb.or(
+							cb.isNull(userRoot.get(User.LIMITED_DISEASE)),
+							cb.equal(userRoot.get(User.LIMITED_DISEASE), contactRoot.get(Contact.DISEASE)))
+					));
 			return contactJurisdictionSubquery;
 		});
 	}
@@ -438,7 +442,11 @@ public class UserFacadeEjb implements UserFacade {
 				.where(
 					cb.and(
 						cb.equal(eventRoot.get(AbstractDomainObject.UUID), eventReferenceDto.getUuid()),
-						cb.isTrue(eventJurisdictionPredicateValidator.inJurisdictionOrOwned())));
+						cb.isTrue(eventJurisdictionPredicateValidator.inJurisdictionOrOwned()),
+						cb.or(
+							cb.isNull(userRoot.get(User.LIMITED_DISEASE)),
+							cb.equal(userRoot.get(User.LIMITED_DISEASE), eventRoot.get(de.symeda.sormas.backend.event.Event.DISEASE)))
+					));
 			return eventJurisdictionSubquery;
 		});
 	}
@@ -457,7 +465,11 @@ public class UserFacadeEjb implements UserFacade {
 				.where(
 					cb.and(
 						cb.equal(travelEntryRoot.get(AbstractDomainObject.UUID), travelEntryReferenceDto.getUuid()),
-						cb.isTrue(travelEntryJurisdictionPredicateValidator.inJurisdictionOrOwned())));
+						cb.isTrue(travelEntryJurisdictionPredicateValidator.inJurisdictionOrOwned()),
+						cb.or(
+							cb.isNull(userRoot.get(User.LIMITED_DISEASE)),
+							cb.equal(userRoot.get(User.LIMITED_DISEASE), travelEntryRoot.get(TravelEntry.DISEASE)))
+					));
 			return travelEntrySubquery;
 		});
 	}

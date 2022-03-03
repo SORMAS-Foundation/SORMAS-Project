@@ -495,4 +495,23 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			subordinateEventUuids.toArray(new String[] {}),
 			Matchers.arrayContainingInAnyOrder(subordinateEvent_1_1.getUuid(), subordinateEvent_1_2.getUuid(), subordinateEvent_2_1.getUuid()));
 	}
+
+	@Test
+	public void testGetEventUsersWithoutUsesLimitedToOthersDiseses(){
+		RDCF rdcf = creator.createRDCF();
+		useNationalUserLogin();
+		UserDto userDto = creator.createUser(rdcf, UserRole.NATIONAL_USER);
+		EventDto event = creator.createEvent(userDto.toReference(), Disease.CORONAVIRUS);
+
+		UserDto limitedCovidNationalUser = creator.createUser(rdcf,"Limited Disease Covid","National User"
+			, Disease.CORONAVIRUS,UserRole.NATIONAL_USER);
+		UserDto limitedDengueNationalUser = creator.createUser(rdcf,"Limited Disease Dengue","National User"
+			, Disease.DENGUE,UserRole.NATIONAL_USER);
+
+		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUsersHavingEventInJurisdiction(event.toReference());
+		Assert.assertNotNull(userReferenceDtos);
+		Assert.assertTrue(userReferenceDtos.contains(userDto));
+		Assert.assertTrue(userReferenceDtos.contains(limitedCovidNationalUser));
+		Assert.assertFalse(userReferenceDtos.contains(limitedDengueNationalUser));
+	}
 }
