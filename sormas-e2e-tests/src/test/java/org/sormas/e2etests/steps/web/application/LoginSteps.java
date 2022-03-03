@@ -23,6 +23,7 @@ import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.google.inject.Inject;
 import cucumber.api.java8.En;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.NoSuchElementException;
 import org.sormas.e2etests.enums.UserRoles;
 import org.sormas.e2etests.envconfig.dto.EnvUser;
@@ -33,6 +34,7 @@ import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage;
 import org.sormas.e2etests.steps.BaseSteps;
 
+@Slf4j
 public class LoginSteps implements En {
 
   @Inject
@@ -70,8 +72,11 @@ public class LoginSteps implements En {
           int attempts = 1;
           LOOP:
           while (attempts <= 3) {
+            log.info("Filling username");
             webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, user.getUsername());
+            log.info("Filling password");
             webDriverHelpers.fillInWebElement(LoginPage.USER_PASSWORD_INPUT, user.getPassword());
+            log.info("Click on Login button");
             webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
             webDriverHelpers.waitForPageLoaded();
             boolean wasUserLoggedIn;
@@ -96,8 +101,11 @@ public class LoginSteps implements En {
           webDriverHelpers.accessWebSite(environmentManager.getEnvironmentUrlForMarket(locale));
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(LoginPage.USER_NAME_INPUT);
           EnvUser user = environmentManager.getUserByRole(locale, userRole);
+          log.info("Filling username");
           webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, user.getUsername());
+          log.info("Filling password");
           webDriverHelpers.fillInWebElement(LoginPage.USER_PASSWORD_INPUT, user.getPassword());
+          log.info("Clicking on login button");
           webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOGOUT_BUTTON, 50);
