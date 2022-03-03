@@ -174,17 +174,30 @@ public class TestDataCreator {
 		return createUser(regionUuid, districtUuid, null, facilityUuid, firstName, lastName, roles);
 	}
 
-	public UserDto createUser(String regionUuid, String districtUuid, String communityUuid, String facilityUuid, String firstName,
-		String lastName, UserRole... roles) {
-		return createUser(regionUuid, districtUuid, communityUuid, facilityUuid, firstName,lastName,  null, roles);
+	public UserDto createUser(
+		String regionUuid,
+		String districtUuid,
+		String communityUuid,
+		String facilityUuid,
+		String firstName,
+		String lastName,
+		UserRole... roles) {
+		return createUser(regionUuid, districtUuid, communityUuid, facilityUuid, firstName, lastName, null, roles);
 	}
 
 	public UserDto createUser(RDCF rdcf, String firstName, String lastName, Disease limitedDisease, UserRole... roles) {
 		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), null, rdcf.facility.getUuid(), firstName, lastName, limitedDisease, roles);
 	}
 
-	private UserDto createUser(String regionUuid, String districtUuid, String communityUuid, String facilityUuid, String firstName,
-		String lastName, Disease limitedDisease, UserRole... roles) {
+	private UserDto createUser(
+		String regionUuid,
+		String districtUuid,
+		String communityUuid,
+		String facilityUuid,
+		String firstName,
+		String lastName,
+		Disease limitedDisease,
+		UserRole... roles) {
 
 		UserDto user1 = UserDto.build();
 		user1.setFirstName(firstName);
