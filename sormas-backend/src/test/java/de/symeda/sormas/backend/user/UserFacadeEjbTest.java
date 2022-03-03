@@ -220,7 +220,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 			containsInAnyOrder(userD1, userC2));
 		assertThat(
 			getUserFacade()
-				.getUserRefsByDistricts(Arrays.asList(district1_1, district2), false, SURVEILLANCE_OFFICER, CONTACT_OFFICER, COMMUNITY_INFORMANT),
+				.getUserRefsByDistricts(Arrays.asList(district1_1, district2), false, null, SURVEILLANCE_OFFICER, CONTACT_OFFICER, COMMUNITY_INFORMANT),
 			containsInAnyOrder(userD3, userC1, userC3));
 
 		assertThat(getUserFacade().getUserRefsByDistrict(district1_1, true, CASE_OFFICER), containsInAnyOrder(userD1, userS1, userS2, userS3));

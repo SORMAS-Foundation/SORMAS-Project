@@ -43,7 +43,9 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import org.apache.commons.beanutils.BeanUtils;
@@ -319,16 +321,11 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	public List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districtRefs, boolean includeSupervisors, UserRole... userRoles) {
-
+	public List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districtRefs, boolean includeSupervisors, CaseDataDto caseDataDto, UserRole... userRoles) {
+		//TODO FIXME here
 		return userService
-			.getReferenceList(
-				null,
-				districtRefs.stream().map(DistrictReferenceDto::getUuid).collect(Collectors.toList()),
-				includeSupervisors,
-				true,
-				true,
-				userRoles)
+			.getReferenceList(null, districtRefs.stream().map(DistrictReferenceDto::getUuid).collect(Collectors.toList()), null,
+				includeSupervisors,true,true, Arrays.asList(userRoles))
 			.stream()
 			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
@@ -397,11 +394,21 @@ public class UserFacadeEjb implements UserFacade {
 			final CaseJurisdictionPredicateValidator caseJurisdictionPredicateValidator =
 				CaseJurisdictionPredicateValidator.of(new CaseQueryContext(cb, cq, caseRoot), userRoot);
 
+			//TODO
 			caseJurisdictionSubquery.select(caseRoot)
 				.where(
 					cb.and(
 						cb.equal(caseRoot.get(AbstractDomainObject.UUID), caseReferenceDto.getUuid()),
-						cb.isTrue(caseJurisdictionPredicateValidator.inJurisdictionOrOwned())));
+						//TODO
+//						cb.equal(userRoot.get(User.LIMITED_DISEASE), Disease.DENGUE),
+//						cb.isNull(userRoot.get(User.LIMITED_DISEASE))
+						cb.isTrue(caseJurisdictionPredicateValidator.inJurisdictionOrOwned()),
+//					),
+//					cb.and(
+						cb.or(
+							cb.isNull(userRoot.get(User.LIMITED_DISEASE)),
+							cb.equal(userRoot.get(User.LIMITED_DISEASE), caseRoot.get(Case.DISEASE)))
+					));
 			return caseJurisdictionSubquery;
 		});
 	}

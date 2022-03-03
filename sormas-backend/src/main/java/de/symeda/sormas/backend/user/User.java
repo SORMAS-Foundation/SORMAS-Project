@@ -86,6 +86,7 @@ public class User extends AbstractDomainObject {
 	public static final String LANGUAGE = "language";
 	public static final String HAS_CONSENTED_TO_GDPR = "hasConsentedToGdpr";
 	public static final String JURISDICTION_LEVEL = "jurisdictionLevel";
+	public static final String LIMITED_DISEASE = "limitedDisease";
 
 	private String userName;
 	private String password;
