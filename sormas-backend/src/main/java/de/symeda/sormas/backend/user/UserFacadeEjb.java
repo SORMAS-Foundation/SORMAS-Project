@@ -322,10 +322,9 @@ public class UserFacadeEjb implements UserFacade {
 
 	@Override
 	public List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districtRefs, boolean includeSupervisors, CaseDataDto caseDataDto, UserRole... userRoles) {
-		//TODO FIXME here
 		return userService
 			.getReferenceList(null, districtRefs.stream().map(DistrictReferenceDto::getUuid).collect(Collectors.toList()), null,
-				includeSupervisors,true,true, Arrays.asList(userRoles))
+				includeSupervisors,true,true, caseDataDto.getDisease(), Arrays.asList(userRoles))
 			.stream()
 			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
@@ -394,17 +393,11 @@ public class UserFacadeEjb implements UserFacade {
 			final CaseJurisdictionPredicateValidator caseJurisdictionPredicateValidator =
 				CaseJurisdictionPredicateValidator.of(new CaseQueryContext(cb, cq, caseRoot), userRoot);
 
-			//TODO
 			caseJurisdictionSubquery.select(caseRoot)
 				.where(
 					cb.and(
 						cb.equal(caseRoot.get(AbstractDomainObject.UUID), caseReferenceDto.getUuid()),
-						//TODO
-//						cb.equal(userRoot.get(User.LIMITED_DISEASE), Disease.DENGUE),
-//						cb.isNull(userRoot.get(User.LIMITED_DISEASE))
 						cb.isTrue(caseJurisdictionPredicateValidator.inJurisdictionOrOwned()),
-//					),
-//					cb.and(
 						cb.or(
 							cb.isNull(userRoot.get(User.LIMITED_DISEASE)),
 							cb.equal(userRoot.get(User.LIMITED_DISEASE), caseRoot.get(Case.DISEASE)))

@@ -27,18 +27,16 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertThrows;
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.*;
 import static org.mockito.ArgumentMatchers.any;
+import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -46,7 +44,11 @@ import java.util.stream.Collectors;
 
 import javax.validation.ValidationException;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
+import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.InvestigationStatus;
 import org.junit.Before;
 import org.junit.Test;
 import org.junit.function.ThrowingRunnable;
@@ -367,5 +369,26 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		assertThrows("User name is not unique!", ValidationException.class, () -> creator.createUser(rdcf, "Hans", "Peter", SURVEILLANCE_OFFICER));
 		assertThrows("User name is not unique!", ValidationException.class, () -> creator.createUser(rdcf, "hans", "peter", SURVEILLANCE_OFFICER));
 		assertThrows("User name is not unique!", ValidationException.class, () -> creator.createUser(rdcf, "HANS", "PETER", SURVEILLANCE_OFFICER));
+	}
+
+	@Test
+	public void testGetUserRefsByDistrictsWithLimitedDiseaseUsers(){
+
+		RDCF rdcf = creator.createRDCF();
+		UserDto userDto = creator.createUser(rdcf, NATIONAL_USER);
+		CaseDataDto caseDataDto = creator.createCase(userDto.toReference(), creator.createPerson().toReference(), Disease.CORONAVIRUS,
+			CaseClassification.PROBABLE, InvestigationStatus.PENDING, new Date(),	rdcf, null);
+
+		UserDto generalSurveillanceOfficer = creator.createUser(rdcf, "General ", "SURVEILLANCE_OFFICER", SURVEILLANCE_OFFICER);
+		UserDto limitedSurveillanceOfficer = creator.createUser(rdcf, "Limited Dengue", "SURVEILLANCE_OFFICER", Disease.DENGUE, SURVEILLANCE_OFFICER);
+
+
+		List<UserReferenceDto> userReferenceDtos = getUserFacade()
+			.getUserRefsByDistricts(Arrays.asList(rdcf.district), false, caseDataDto,  SURVEILLANCE_OFFICER);
+
+		assertNotNull(userReferenceDtos);
+		assertTrue(userReferenceDtos.contains(generalSurveillanceOfficer));
+		assertFalse(userReferenceDtos.contains(limitedSurveillanceOfficer));
+
 	}
 }
