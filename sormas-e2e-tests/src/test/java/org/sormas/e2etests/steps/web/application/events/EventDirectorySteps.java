@@ -18,41 +18,6 @@
 
 package org.sormas.e2etests.steps.web.application.events;
 
-import cucumber.api.java8.En;
-import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebElement;
-import org.sormas.e2etests.common.DataOperations;
-import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.entities.pojo.web.EventGroup;
-import org.sormas.e2etests.entities.services.EventGroupService;
-import org.sormas.e2etests.entities.services.EventService;
-import org.sormas.e2etests.enums.DiseasesValues;
-import org.sormas.e2etests.enums.EventReferenceDateOptions;
-import org.sormas.e2etests.enums.RiskLevelValues;
-import org.sormas.e2etests.enums.SourceTypeValues;
-import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
-import org.sormas.e2etests.helpers.AssertHelpers;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pages.application.NavBarPage;
-import org.sormas.e2etests.pages.application.events.EventDirectoryPage;
-import org.sormas.e2etests.state.ApiState;
-import org.sormas.e2etests.steps.BaseSteps;
-import org.testng.Assert;
-import org.testng.asserts.SoftAssert;
-
-import javax.inject.Inject;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_COMMUNITY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DATA_TYPE_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DISTRICT_FILTER_COMBOBOX;
@@ -109,6 +74,40 @@ import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.RESET_FILTERS_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
+import cucumber.api.java8.En;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.inject.Inject;
+import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebElement;
+import org.sormas.e2etests.common.DataOperations;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.EventGroup;
+import org.sormas.e2etests.entities.services.EventGroupService;
+import org.sormas.e2etests.entities.services.EventService;
+import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.enums.EventReferenceDateOptions;
+import org.sormas.e2etests.enums.RiskLevelValues;
+import org.sormas.e2etests.enums.SourceTypeValues;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.helpers.AssertHelpers;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.NavBarPage;
+import org.sormas.e2etests.pages.application.events.EventDirectoryPage;
+import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.BaseSteps;
+import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
+
 public class EventDirectorySteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   private final BaseSteps baseSteps;
@@ -135,18 +134,7 @@ public class EventDirectorySteps implements En {
               SEARCH_EVENT_BY_FREE_TEXT,
               dataOperations.getPartialUuidFromAssociatedLink(eventUuid));
         });
-    When(
-        "I navigate to the last created Event page via URL",
-        () -> {
-          String eventLinkPath = "/sormas-ui/#!events/data/";
-          String createdEventUUID = CreateNewEventSteps.newEvent.getUuid();
-          webDriverHelpers.accessWebSite(
-              environmentManager.getEnvironmentUrlForMarket(locale)
-                  + eventLinkPath
-                  + createdEventUUID);
-          webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 50);
-        });
+
     When(
         "I navigate to the last created through API Event page via URL",
         () -> {
@@ -195,12 +183,6 @@ public class EventDirectorySteps implements En {
         });
 
     When(
-        "^I click on ([^\"]*) Radiobutton on Event Directory Page$",
-        (String buttonName) -> {
-          webDriverHelpers.clickWebElementByText(EVENTS_RADIO_BUTTON, buttonName);
-          webDriverHelpers.waitForPageLoaded();
-        });
-    When(
         "I check that name appearing in hover is equal to name of linked Event group",
         () -> {
           EventGroup createdGroup = EditEventSteps.groupEvent;
@@ -214,40 +196,6 @@ public class EventDirectorySteps implements En {
         });
 
     When(
-        "^I click on Link Event button on Event Directory Page$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON));
-    When(
-        "^I click on Link Event button on Edit Event Page$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON_EDIT_PAGE));
-
-    When(
-        "^I click on Unlink Event button on Event Directory Page$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(UNLINK_EVENT_BUTTON));
-
-    When(
-        "^I fill Id filter with Id of last created event in Link Event to group form$",
-        () ->
-            webDriverHelpers.fillInWebElement(
-                ID_FIELD_FILTER, apiState.getCreatedEvent().getUuid()));
-    When(
-        "^I click on filtered Event in Link Event to group form$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(FILTERED_EVENT_LINK_EVENT_FORM));
-    When(
-        "^I click on first Event Group on the list in Link Event form$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_GROUP));
-
-    When(
-        "^I click on SAVE button in Link Event to group form$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_IN_LINK_FORM));
-
-    When(
-        "^I click on Linked Group Id on Edit Event Page$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(LINKED_EVENT_GROUP_ID));
-    When(
-        "^I click on Group Id in Events result on Event Directory Page$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(EVENT_GROUP_ID_IN_GRID));
-
-    When(
         "^I click on ([^\"]*) Radiobutton on Event Directory Page$",
         (String buttonName) -> {
           webDriverHelpers.clickWebElementByText(EVENTS_RADIO_BUTTON, buttonName);
@@ -286,9 +234,9 @@ public class EventDirectorySteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(LINKED_EVENT_GROUP_ID));
     When(
         "^I click on Group Id in Events result on Event Directory Page$",
-        () ->{
-            webDriverHelpers.scrollToElement(EVENT_GROUP_ID_IN_GRID);
-            webDriverHelpers.clickOnWebElementBySelector(EVENT_GROUP_ID_IN_GRID);
+        () -> {
+          webDriverHelpers.scrollToElement(EVENT_GROUP_ID_IN_GRID);
+          webDriverHelpers.clickOnWebElementBySelector(EVENT_GROUP_ID_IN_GRID);
         });
 
     When(

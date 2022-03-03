@@ -111,7 +111,7 @@ public class EditCaseSteps implements En {
         "I check that Case Classification has {string} value",
         (String caseClassificationValue) -> {
           String caseClassificationComboboxValue =
-              (webDriverHelpers.getValueFromCombobox(CASE_CLASSIFICATION_FILTER_COMBOBOX));
+              (webDriverHelpers.getValueFromCombobox(CASE_CLASSIFICATION_COMBOBOX));
           softly.assertEquals(
               caseClassificationValue,
               caseClassificationComboboxValue,

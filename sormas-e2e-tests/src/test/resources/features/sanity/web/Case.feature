@@ -412,7 +412,7 @@ Feature: Case end to end tests
     And I open the last created Case via API
     Then I click on Info button on Case Edit page
     When I am accessing the Symptoms tab using of created case via api
-    And I change all symptoms fields and save
+    And I change all symptoms fields to "YES" option field and save
     And I am accessing the Symptoms tab using of created case via api
     And I check the created data is correctly displayed on Symptoms tab page
     And From Symptoms Tab I click on Case tab
@@ -421,7 +421,7 @@ Feature: Case end to end tests
     Then I navigate to symptoms tab
     Then I change Other symptoms to "YES" option
     And From Symptoms Tab I click on Clear All button
-    And I change all symptoms fields to NO option excluded Other symptoms field and save
+    And I change all symptoms fields to "NO_AND_OTHER_SYMPTOMS_TO_YES" option field and save
     And I am accessing the Symptoms tab using of created case via api
     And I check the created data is correctly displayed on Symptoms tab page
     And  From Symptoms Tab I click on Case tab
@@ -429,7 +429,7 @@ Feature: Case end to end tests
     Then I click on save case button
     When I am accessing the Symptoms tab using of created case via api
     And From Symptoms Tab I click on Clear All button
-    And I change all symptoms fields and save
+    And I change all symptoms fields to "YES" option field and save
     When I am accessing the Symptoms tab using of created case via api
     And I check the created data is correctly displayed on Symptoms tab page
     And From Symptoms Tab I click on Case tab
@@ -439,7 +439,7 @@ Feature: Case end to end tests
     Then I click on save case button
     When I am accessing the Symptoms tab using of created case via api
     And From Symptoms Tab I click on Clear All button
-    And I change all symptoms fields and save
+    And I change all symptoms fields to "YES" option field and save
     When I am accessing the Symptoms tab using of created case via api
     And I check the created data is correctly displayed on Symptoms tab page
     And From Symptoms Tab I click on Case tab
@@ -458,22 +458,22 @@ Feature: Case end to end tests
     And I check that Case Classification has "Confirmed case" value
     When I am accessing the Symptoms tab using of created case via api
     And From Symptoms Tab I click on Clear All button
-    And I change all symptoms fields to NO option field and save
+    And I change all symptoms fields to "NO" option field and save
     When I am accessing the Symptoms tab using of created case via api
-    And I check the created data is correctly displayed on Symptoms for No option in tab page
+    And I check the created data that describes Clinical signs and Symptoms are correctly displayed for No or UNKNOWN option in Symptoms tab page
+    Then I click on save case button in Symptoms tab
     And From Symptoms Tab I click on Case tab
-    Then I click on save case button
     And I collect the case person UUID displayed on Edit case page
     And From Symptoms Tab I click on Case tab
-    Then I click on save case button
+    Then I click on save case button in Symptoms tab
     And I check that Case Classification has "Confirmed case with no symptoms" value
     When I am accessing the Symptoms tab using of created case via api
     And From Symptoms Tab I click on Clear All button
-    And I change all symptoms fields to UNKNOWN option field and save
+    And I change all symptoms fields to "UNKNOWN" option field and save
     When I am accessing the Symptoms tab using of created case via api
-    And I check the created data is correctly displayed on Symptoms for No option in tab page
+  And I check the created data that describes Clinical signs and Symptoms are correctly displayed for No or UNKNOWN option in Symptoms tab page
     And From Symptoms Tab I click on Case tab
-    Then I click on save case button
+    Then I click on save case button in Symptoms tab
     And I collect the case person UUID displayed on Edit case page
     And From Symptoms Tab I click on Case tab
     Then I click on save case button
