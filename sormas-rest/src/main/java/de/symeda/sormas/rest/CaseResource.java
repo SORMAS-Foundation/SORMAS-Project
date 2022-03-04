@@ -39,6 +39,8 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseFollowUpCriteria;
+import de.symeda.sormas.api.caze.CaseFollowUpDto;
 import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CasePersonDto;
@@ -151,6 +153,16 @@ public class CaseResource extends EntityDtoResource {
 		@QueryParam("size") int size) {
 		return FacadeProvider.getCaseFacade()
 			.getIndexDetailedPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
+	}
+
+	@POST
+	@Path("/caseFollowUpIndexList")
+	public Page<CaseFollowUpDto> getCaseFollowUpIndexedList(
+		@RequestBody CriteriaWithSorting<CaseFollowUpCriteria> criteriaWithSorting,
+		@QueryParam("offset") int offset,
+		@QueryParam("size") int size) {
+		return FacadeProvider.getCaseFacade()
+			.getCaseFollowUpIndexedList(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
 
 	@GET

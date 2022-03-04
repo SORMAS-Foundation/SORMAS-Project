@@ -92,6 +92,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseExportType;
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.caze.CaseFollowUpCriteria;
 import de.symeda.sormas.api.caze.CaseFollowUpDto;
 import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
@@ -123,7 +124,6 @@ import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.epidata.EpiDataDto;
 import de.symeda.sormas.api.epidata.EpiDataHelper;
@@ -328,7 +328,7 @@ import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless(name = "CaseFacade")
 public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, CaseIndexDto, CaseReferenceDto, CaseService, CaseCriteria>
-		implements CaseFacade {
+	implements CaseFacade {
 
 	private static final int ARCHIVE_BATCH_SIZE = 1000;
 
@@ -2365,7 +2365,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 	}
 
-	public void restorePseudonymizedDto(CaseDataDto dto, CaseDataDto existingCaseDto, Case caze , Pseudonymizer pseudonymizer) {
+	public void restorePseudonymizedDto(CaseDataDto dto, CaseDataDto existingCaseDto, Case caze, Pseudonymizer pseudonymizer) {
 		if (existingCaseDto != null) {
 			boolean inJurisdiction = service.inJurisdictionOrOwned(caze);
 
@@ -3448,6 +3448,18 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return sampleService.exists((cb, root, cq) -> cb.and(casePredicate, testPositivityPredicate));
 	}
 
+	public Page<CaseFollowUpDto> getCaseFollowUpIndexedList(
+		CaseFollowUpCriteria criteria,
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties) {
+		List<CaseFollowUpDto> caseFollowUpIndexList =
+			getCaseFollowUpList(criteria, criteria.getReferenceDate(), criteria.getInterval(), offset, size, sortProperties);
+		long totalElementCount = count(criteria);
+		return new Page<>(caseFollowUpIndexList, offset, size, totalElementCount);
+
+	}
+
 	@Override
 	public List<CaseFollowUpDto> getCaseFollowUpList(
 		CaseCriteria caseCriteria,
@@ -3479,8 +3491,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			caze.get(Case.DISEASE),
 			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(caseQueryContext)));
 
-		Predicate filter = CriteriaBuilderHelper
-			.and(cb, service.createUserFilter(cb, cq, caze), service.createCriteriaFilter(caseCriteria, caseQueryContext));
+		Predicate filter =
+			CriteriaBuilderHelper.and(cb, service.createUserFilter(cb, cq, caze), service.createCriteriaFilter(caseCriteria, caseQueryContext));
 
 		if (filter != null) {
 			cq.where(filter);
@@ -3806,7 +3818,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	public List<CaseDataDto> getByPersonUuids(List<String> personUuids) {
-		return service.getByPersonUuids(personUuids).stream().map(c->toDto(c)).collect(Collectors.toList());
+		return service.getByPersonUuids(personUuids).stream().map(c -> toDto(c)).collect(Collectors.toList());
 	}
 
 	@Override
