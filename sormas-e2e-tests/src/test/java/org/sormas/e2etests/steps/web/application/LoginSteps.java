@@ -24,7 +24,6 @@ import static org.sormas.e2etests.steps.BaseSteps.locale;
 import com.google.inject.Inject;
 import cucumber.api.java8.En;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.NoSuchElementException;
 import org.sormas.e2etests.enums.UserRoles;
 import org.sormas.e2etests.envconfig.dto.EnvUser;
 import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
@@ -69,30 +68,15 @@ public class LoginSteps implements En {
           webDriverHelpers.accessWebSite(environmentManager.getEnvironmentUrlForMarket(locale));
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(LoginPage.USER_NAME_INPUT);
-          int attempts = 1;
-          LOOP:
-          while (attempts <= 3) {
-            log.info("Filling username");
-            webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, user.getUsername());
-            log.info("Filling password");
-            webDriverHelpers.fillInWebElement(LoginPage.USER_PASSWORD_INPUT, user.getPassword());
-            log.info("Click on Login button");
-            webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
-            webDriverHelpers.waitForPageLoaded();
-            boolean wasUserLoggedIn;
-            try {
-              wasUserLoggedIn =
-                  webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
-                      SurveillanceDashboardPage.LOGOUT_BUTTON);
-            } catch (NoSuchElementException e) {
-              wasUserLoggedIn = false;
-            }
-            if (wasUserLoggedIn) {
-              break LOOP;
-            } else {
-              attempts++;
-            }
-          }
+          log.info("Filling username");
+          webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, user.getUsername());
+          log.info("Filling password");
+          webDriverHelpers.fillInWebElement(LoginPage.USER_PASSWORD_INPUT, user.getPassword());
+          log.info("Click on Login button");
+          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.LOGOUT_BUTTON);
         });
 
     Given(
