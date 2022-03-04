@@ -250,6 +250,10 @@ public class KeycloakService {
         setLanguage(userRepresentation, user.getLanguage());
     }
 
+    /**
+     * Creates a {@link UserRepresentation} from the SORMAS user and send the request to create the user to Keycloak.
+     * @return keycloak user identifier, which is extracted from the location of the response `https://keycloak-url/auth/admin/realms/realm-name/users/user-identifier
+     */
     private String createUser(Keycloak keycloak, User user) {
         UserRepresentation userRepresentation = createUserRepresentation(user, user.getPassword());
         Response response = keycloak.realm(REALM_NAME).users().create(userRepresentation);
