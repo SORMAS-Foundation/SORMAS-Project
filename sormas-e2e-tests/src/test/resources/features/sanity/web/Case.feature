@@ -146,7 +146,8 @@ Feature: Case end to end tests
     When I create a case document from template
     Then I verify that the case document is downloaded and correctly named
 
-  @issue=SORDEV-5527 @env_main
+  #please address (also rename it, it's duplicated)
+  @issue=SORDEV-5527 @env_main @ignore
   Scenario: Fill the therapy tab
     When API: I create a new person
     Then API: I check that POST call body is "OK"
