@@ -200,6 +200,17 @@ public class CaseDirectorySteps implements En {
               CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
           TimeUnit.SECONDS.sleep(3); // needed for table refresh
         });
+    When(
+        "I filter by CaseID of last created UI Case on Case directory page",
+        () -> {
+          String partialUuid =
+              dataOperations.getPartialUuidFromAssociatedLink(EditCaseSteps.aCase.getUuid());
+          webDriverHelpers.fillAndSubmitInWebElement(
+              CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, partialUuid);
+          webDriverHelpers.clickOnWebElementBySelector(
+              CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
+          TimeUnit.SECONDS.sleep(3); // needed for table refresh
+        });
 
     When(
         "^I open the last created Case via API",
@@ -321,6 +332,12 @@ public class CaseDirectorySteps implements En {
                 apiState.getLastCreatedPerson().getFirstName()
                     + " "
                     + apiState.getLastCreatedPerson().getLastName()));
+    And(
+        "I apply Person Id filter to one attached to last created UI Case on Case directory page",
+        () ->
+            webDriverHelpers.fillAndSubmitInWebElement(
+                PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT,
+                EditCaseSteps.aCase.getFirstName() + " " + EditCaseSteps.aCase.getLastName()));
 
     And(
         "I apply mocked Person Id filter on Case directory page",
@@ -358,6 +375,16 @@ public class CaseDirectorySteps implements En {
                 CASE_PRESENT_CONDITION_COMBOBOX,
                 PresentCondition.getValueFor(
                     apiState.getLastCreatedPerson().getPresentCondition())));
+    And(
+        "I apply Present Condition filter on Case directory page to condition of person attached to created Case",
+        () ->
+            webDriverHelpers.selectFromCombobox(
+                CASE_PRESENT_CONDITION_COMBOBOX,
+                CreateNewCaseSteps.caze.getPresentConditionOfPerson()));
+    And(
+        "I apply Present Condition filter to {string} on Case directory page",
+        (String presentCondition) ->
+            webDriverHelpers.selectFromCombobox(CASE_PRESENT_CONDITION_COMBOBOX, presentCondition));
 
     And(
         "I apply Present Condition filter on Case directory page to different than actual",
@@ -543,6 +570,51 @@ public class CaseDirectorySteps implements En {
         () ->
             webDriverHelpers.selectFromCombobox(
                 CASE_YEAR_FILTER, apiState.getLastCreatedPerson().getBirthdateYYYY().toString()));
+    And(
+        "I apply Year filter of Person attached to last created UI Case on Case directory page",
+        () -> {
+          String year = Integer.toString(CreateNewCaseSteps.caze.getDateOfBirth().getYear());
+          webDriverHelpers.selectFromCombobox(CASE_YEAR_FILTER, year);
+        });
+    And(
+        "I apply Month filter of Person attached to last created UI Case on Case directory page",
+        () -> {
+          String month = Integer.toString(CreateNewCaseSteps.caze.getDateOfBirth().getMonthValue());
+          webDriverHelpers.selectFromCombobox(CASE_MONTH_FILTER, month);
+        });
+    And(
+        "I apply Day filter of Person attached to last created UI Case on Case directory page",
+        () -> {
+          String day = Integer.toString(CreateNewCaseSteps.caze.getDateOfBirth().getDayOfMonth());
+          webDriverHelpers.selectFromCombobox(CASE_DAY_FILTER, day);
+        });
+    And(
+        "I apply Year filter other than Person attached has to last created UI Case on Case directory page",
+        () -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_YEAR_FILTER,
+              getRandomNumberForBirthDateDifferentThanCreated(
+                      CreateNewCaseSteps.caze.getDateOfBirth().getYear(), 1900, 2002)
+                  .toString());
+        });
+    And(
+        "I apply Month filter other than Person attached has to last created UI Case on Case directory page",
+        () -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_MONTH_FILTER,
+              getRandomNumberForBirthDateDifferentThanCreated(
+                      CreateNewCaseSteps.caze.getDateOfBirth().getMonthValue(), 1, 12)
+                  .toString());
+        });
+    And(
+        "I apply Day filter other than Person attached has to last created UI Case on Case directory page",
+        () -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_DAY_FILTER,
+              getRandomNumberForBirthDateDifferentThanCreated(
+                      CreateNewCaseSteps.caze.getDateOfBirth().getDayOfMonth(), 1, 28)
+                  .toString());
+        });
     And(
         "I apply {string} to combobox on Case Directory Page",
         (String caseParameter) ->
