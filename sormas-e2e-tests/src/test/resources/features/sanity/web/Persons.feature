@@ -107,8 +107,8 @@ Feature: Edit Persons
     And I click the Done button in Person Contact Details popup
     Then I check that an invalid data error message appears
 
-
-    @issue=SORDEV-8469 @env_main
+     #please address
+    @issue=SORDEV-8469 @env_main @ignore
   Scenario: Test for navigating through Case, Contact and Immunization cards on Edit Person Page
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
