@@ -1,6 +1,7 @@
 @UI @Sanity @Case
 Feature: Case end to end tests
 
+  @env_main
   Scenario: Check a new case data
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -9,6 +10,7 @@ Feature: Case end to end tests
     Then I check the created data is correctly displayed on Edit case page
     And I check the created data is correctly displayed on Edit case person page
 
+  @env_main
   Scenario: Check that double clicking NEW CASE button does not cause a redundant action
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -19,6 +21,7 @@ Feature: Case end to end tests
     Then I check the created data is correctly displayed on Edit case page
     And I check the created data is correctly displayed on Edit case person page
 
+  @env_main
   Scenario: Edit, save and check all fields of a new case
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -29,7 +32,7 @@ Feature: Case end to end tests
     And I open last edited case by link
     And I check the edited data is correctly displayed on Edit case page
 
-  @issue=SORDEV-7868
+  @issue=SORDEV-7868 @env_main
   Scenario: Fill the case tab
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -90,6 +93,7 @@ Feature: Case end to end tests
     And I click on save button from Edit Case page with current hospitalization
     Then I check if the specific data is correctly displayed
 
+  @env_main
   Scenario: Delete created case
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -103,6 +107,7 @@ Feature: Case end to end tests
     And I delete the case
     Then I check that number of displayed cases results is 0
 
+  @env_main
   Scenario: Edit all fields from Case Contacts tab
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -117,6 +122,7 @@ Feature: Case end to end tests
     And I open the Case Contacts tab of the created case via api
     And I verify that created contact from Case Contacts tab is correctly displayed
 
+  @env_main @ignore
   Scenario: Edit all fields from Symptoms tab
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -131,7 +137,7 @@ Feature: Case end to end tests
     When I am accessing the Symptoms tab using of created case via api
     And I check the created data is correctly displayed on Symptoms tab page
 
-@issue=SORDEV-5496 @Mock
+@issue=SORDEV-5496 @env_main @ignore
   Scenario: Generate case document
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -140,7 +146,7 @@ Feature: Case end to end tests
     When I create a case document from template
     Then I verify that the case document is downloaded and correctly named
 
-  @issue=SORDEV-5527
+  @issue=SORDEV-5527 @env_main
   Scenario: Fill the therapy tab
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -186,7 +192,7 @@ Feature: Case end to end tests
     Then I click on the popup Save button
     Then I check if created data is correctly displayed in Treatment section
 
-    @issue=SORDEV-5518 @DE
+    @issue=SORDEV-5518 @env_main
   Scenario: Fill the case person tab
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -203,7 +209,7 @@ Feature: Case end to end tests
     And I click on save button to Save Person data in Case Person Tab
     Then I check if saved Person data is correct
 
-  @issue=SORDEV-5529
+  @issue=SORDEV-5529 @env_main @ignore
   Scenario: Fill the clinical course tab
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -263,3 +269,133 @@ Feature: Case end to end tests
     And I set Cardiovascular disease including hypertension radio button to UNKNOWN
     Then I click Save button on Clinical Course Tab
     And I check if Case saved popup appeared and close it
+
+  @issue=SORDEV-8412 @env_main
+  Scenario: Change of Isolation/Quarantine should be documented
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    Then I set place for Quarantine as Home
+    And I set Start date of Quarantine 2 days ago
+    And I set End date of Quarantine to 5 days
+    Then I click on save case button
+    And I set End date of Quarantine to 4 days
+    And I check if Reduce quarantine popup is displayed
+    Then I click on yes quarantine popup button
+    Then I click on save case button
+    And I set End date of Quarantine to 6 days
+    And I check if Extend quarantine popup is displayed
+    Then I discard changes in quarantine popup
+    And I check if Quarantine End date stayed reduce to 4 days
+    And I set the quarantine end to a date 1 day after the Follow-up until date
+    Then I click on yes quarantine popup button
+    Then I click on yes Extend follow up period popup button
+    Then I click on save case button
+    And I check if Quarantine Follow up until date was extended to 1 day
+    And I fill Quarantine change comment field
+    Then I click on save case button
+    And I check if Quarantine change comment field was saved correctly
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I click on the Contacts button from navbar
+    Then I open the last created contact
+    Then I set place for Quarantine as Home
+    And I set Start date of Quarantine 2 days ago
+    And I set End date of Quarantine to 5 days
+    Then I click on save Contact button
+    And I set End date of Quarantine to 4 days
+    And I check if Reduce quarantine popup is displayed
+    Then I click on yes quarantine popup button
+    Then I click on save Contact button
+    And I set End date of Quarantine to 6 days
+    And I check if Extend quarantine popup is displayed
+    Then I discard changes in quarantine popup
+    And I check if Quarantine End date stayed reduce to 4 days
+    And I set the quarantine end to a date 1 day after the Follow-up until date
+    Then I click on yes quarantine popup button
+    Then I click on yes Extend follow up period popup button
+    Then I click on save Contact button
+    And I check if Quarantine Follow up until date was extended to 1 day
+    And I fill Quarantine change comment field
+    Then I click on save Contact button
+    And I check if Quarantine change comment field was saved correctly
+
+  @issue=SORDEV-9033 @env_main
+  Scenario: Create case with directly entered home address
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I fill new case form with specific data
+    When I click on Enter Home Address of the Case Person Now in the Create New Case popup
+    And I fill specific address data in Case Person tab
+    Then I click on save case button
+    And I navigate to case person tab
+    And I check if saved Person data is correct
+
+  @issue=SORDEV-7452 @env_main
+  Scenario: Bulk mode for linking/adding cases to new Event
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    When API: I create 2 new cases
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I apply Date type filter to "Case report date" on Case directory page
+    And I fill Cases from input to 1 days before mocked Cases created on Case directory page
+    And I apply last created api Person Id filter on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I click on the More button on Case directory page
+    And I click Enter Bulk Edit Mode on Case directory page
+    And I click checkbox to choose all Case results
+    And I click on Bulk Actions combobox on Case Directory Page
+    And I click on Link to Event from Bulk Actions combobox on Case Directory Page
+    And I click on New Event option in Link to Event Form
+    And I click on SAVE button in Link Event to group form
+    And I create a new event with status CLUSTER
+    And I navigate to the last created Event page via URL
+    And I check that number of displayed Event Participants is 1
+
+  @issue=SORDEV-7452 @env_main
+  Scenario: Bulk mode for linking/adding case to existing Event
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    When API: I create 2 new cases
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I apply Date type filter to "Case report date" on Case directory page
+    And I fill Cases from input to 1 days before mocked Cases created on Case directory page
+    And I apply last created api Person Id filter on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I click on the More button on Case directory page
+    And I click Enter Bulk Edit Mode on Case directory page
+    And I click checkbox to choose all Case results
+    And I click on Bulk Actions combobox on Case Directory Page
+    And I click on Link to Event from Bulk Actions combobox on Case Directory Page
+    And I fill Event Id filter with last created EventId on Link to Event form
+    And I click first result in grid on Link to Event form
+    And I click on SAVE button in Link Event to group form
+    And I navigate to the last created through API Event page via URL
+    And I check that number of displayed Event Participants is 1
+

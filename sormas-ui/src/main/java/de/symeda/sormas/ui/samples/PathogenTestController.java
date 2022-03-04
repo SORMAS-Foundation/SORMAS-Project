@@ -53,6 +53,7 @@ import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -97,6 +98,7 @@ public class PathogenTestController {
 			if (!createForm.getFieldGroup().isModified()) {
 				savePathogenTest(createForm.getValue(), onSavedPathogenTest, false, suppressNavigateToCase);
 				callback.run();
+				SormasUI.refreshView();
 			}
 		});
 		return editView;
@@ -141,6 +143,7 @@ public class PathogenTestController {
 			if (!form.getFieldGroup().isModified()) {
 				savePathogenTest(form.getValue(), onSavedPathogenTest, false, false);
 				doneCallback.run();
+				SormasUI.refreshView();
 			}
 		});
 
@@ -170,7 +173,7 @@ public class PathogenTestController {
 					CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(existingCaseDto.getUuid());
 					caseDataByUuid.setDiseaseVariant(diseaseVariant);
 					caseDataByUuid.setDiseaseVariantDetails(diseaseVariantDetails);
-					FacadeProvider.getCaseFacade().saveCase(caseDataByUuid);
+					FacadeProvider.getCaseFacade().save(caseDataByUuid);
 				}
 				if (callback != null) {
 					callback.accept(yes);
@@ -190,11 +193,9 @@ public class PathogenTestController {
 		final EventParticipantReferenceDto associatedEventParticipant = sample.getAssociatedEventParticipant();
 		if (associatedCase != null) {
 			handleAssociatedCase(dto, onSavedPathogenTest, associatedCase, suppressSampleResultUpdatePopup, suppressNavigateToCase);
-		}
-		if (associatedContact != null) {
+		} else if (associatedContact != null) {
 			handleAssociatedContact(dto, onSavedPathogenTest, associatedContact, suppressSampleResultUpdatePopup);
-		}
-		if (associatedEventParticipant != null) {
+		} else if (associatedEventParticipant != null) {
 			handleAssociatedEventParticipant(dto, onSavedPathogenTest, associatedEventParticipant, suppressSampleResultUpdatePopup);
 		}
 		Notification.show(I18nProperties.getString(Strings.messagePathogenTestSavedShort), TRAY_NOTIFICATION);
@@ -271,7 +272,7 @@ public class PathogenTestController {
 		// a.2) If contact is not converted (or there already is a resulting case), ask user whether to update the sample pathogen test result
 		// b) Tested disease != contact disease: Ask user to create a new case for the tested disease
 
-		final ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(associatedContact.getUuid());
+		final ContactDto contact = FacadeProvider.getContactFacade().getByUuid(associatedContact.getUuid());
 		final boolean equalDisease = dto.getTestedDisease() == contact.getDisease();
 
 		Runnable callback = () -> {
@@ -357,7 +358,11 @@ public class PathogenTestController {
 		}
 	}
 
-	private void checkForDiseaseVariantUpdate(PathogenTestDto test, CaseDataDto caze, boolean suppressNavigateToCase, Consumer<CaseDataDto> callback) {
+	private void checkForDiseaseVariantUpdate(
+		PathogenTestDto test,
+		CaseDataDto caze,
+		boolean suppressNavigateToCase,
+		Consumer<CaseDataDto> callback) {
 		if (test.getTestedDiseaseVariant() != null && !DataHelper.equal(test.getTestedDiseaseVariant(), caze.getDiseaseVariant())) {
 			showCaseUpdateWithNewDiseaseVariantDialog(caze, test.getTestedDiseaseVariant(), test.getTestedDiseaseVariantDetails(), yes -> {
 				if (yes && !suppressNavigateToCase) {
@@ -472,7 +477,7 @@ public class PathogenTestController {
 					clonedCase.setDiseaseVariantDetails(diseaseVariantDetails);
 					clonedCase.setEpidNumber(null);
 					clonedCase.setReportDate(new Date());
-					FacadeProvider.getCaseFacade().saveCase(clonedCase);
+					FacadeProvider.getCaseFacade().save(clonedCase);
 					ControllerProvider.getCaseController().navigateToCase(clonedCase.getUuid());
 				}
 			});
@@ -498,7 +503,7 @@ public class PathogenTestController {
 				if (confirmed) {
 					CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(caze.getUuid());
 					caseDataByUuid.setCaseClassification(CaseClassification.CONFIRMED);
-					FacadeProvider.getCaseFacade().saveCase(caseDataByUuid);
+					FacadeProvider.getCaseFacade().save(caseDataByUuid);
 					ControllerProvider.getCaseController().navigateToCase(caseDataByUuid.getUuid());
 				}
 			});

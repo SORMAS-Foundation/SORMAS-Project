@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,16 +18,37 @@
 
 package org.sormas.e2etests.steps.web.application.samples;
 
-import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.*;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.APPLY_FILTER_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.FINAL_LABORATORY_RESULT;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.LABORATORY_SEARCH_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.RESET_FILTER_BUTTON;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_CLASIFICATION_SEARCH_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_DISEASE_SEARCH_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_DISTRICT_SEARCH_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_GRID_RESULTS_ROWS;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_NOT_SHIPPED;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_RECEIVED;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_REFFERED_TO_OTHER_LAB;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_REGION_SEARCH_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_SEARCH_INPUT;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_SHIPPED;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SEARCH_RESULT_SAMPLE;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SPECIMEN_CONDITION_SEARCH_COMBOBOX;
+import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.TEST_RESULTS_SEARCH_COMBOBOX;
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.util.Arrays;
 import javax.inject.Inject;
-import javax.inject.Named;
+import org.sormas.e2etests.enums.CaseClassification;
+import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.LaboratoryValues;
 import org.sormas.e2etests.enums.PathogenTestResults;
+import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.enums.SpecimenConditions;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
@@ -39,9 +60,151 @@ public class SamplesDirectorySteps implements En {
   @Inject
   public SamplesDirectorySteps(
       WebDriverHelpers webDriverHelpers,
-      @Named("ENVIRONMENT_URL") String environmentUrl,
+      EnvironmentManager environmentManager,
       ApiState apiState,
       AssertHelpers assertHelpers) {
+
+    When(
+        "I click a apply button on Sample",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER_BUTTON);
+        });
+
+    When(
+        "I click a Reset button on Sample",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(RESET_FILTER_BUTTON);
+        });
+
+    When(
+        "fill a Full name of person from API",
+        () -> {
+          webDriverHelpers.fillAndSubmitInWebElement(
+              SAMPLE_SEARCH_INPUT,
+              apiState.getLastCreatedPerson().getFirstName()
+                  + " "
+                  + apiState.getLastCreatedPerson().getLastName());
+        });
+
+    When(
+        "I select Test result filter among the filter options from API",
+        () -> {
+          String testResult = apiState.getCreatedSample().getPathogenTestResult();
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(
+              TEST_RESULTS_SEARCH_COMBOBOX,
+              testResult.substring(0, 1).toUpperCase() + testResult.substring(1).toLowerCase());
+        });
+
+    When(
+        "I select random Test result filter among the filter options",
+        () -> {
+          String testResult = PathogenTestResults.geRandomResultName();
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(TEST_RESULTS_SEARCH_COMBOBOX, testResult);
+        });
+
+    When(
+        "I select Specimen condition filter among the filter options from API",
+        () -> {
+          String specimenCondition = apiState.getCreatedSample().getSpecimenCondition();
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(
+              SPECIMEN_CONDITION_SEARCH_COMBOBOX, SpecimenConditions.getForName(specimenCondition));
+        });
+
+    When(
+        "I select {string} Specimen condition option among the filter options",
+        (String specimenCondition) -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(
+              SPECIMEN_CONDITION_SEARCH_COMBOBOX, specimenCondition);
+        });
+
+    When(
+        "I select Case clasification filter among the filter options from API",
+        () -> {
+          String caseSpecification = apiState.getCreatedCase().getCaseClassification();
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(
+              SAMPLE_CLASIFICATION_SEARCH_COMBOBOX,
+              CaseClassification.getUIValueForGivenAPIValue(caseSpecification));
+        });
+
+    When(
+        "I select random Case clasification filter among the filter options",
+        () -> {
+          String caseSpecification = CaseClassification.getRandomUIClassification();
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(
+              SAMPLE_CLASIFICATION_SEARCH_COMBOBOX, caseSpecification);
+        });
+
+    When(
+        "I select Disease filter among the filter options from API",
+        () -> {
+          String disease = apiState.getCreatedCase().getDisease();
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(
+              SAMPLE_DISEASE_SEARCH_COMBOBOX, DiseasesValues.getCaptionForName(disease));
+        });
+
+    When(
+        "I select random Disease filter among the filter options in Sample directory",
+        () -> {
+          String disease = DiseasesValues.getRandomDiseaseCaption();
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(SAMPLE_DISEASE_SEARCH_COMBOBOX, disease);
+        });
+
+    When(
+        "I select Region filter among the filter options from API",
+        () -> {
+          String region = apiState.getCreatedCase().getRegion().getUuid();
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(
+              SAMPLE_REGION_SEARCH_COMBOBOX, RegionsValues.getValueFor(region));
+        });
+
+    When(
+        "I change Region filter to {string} option in Sample directory",
+        (String region) -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(SAMPLE_REGION_SEARCH_COMBOBOX, region);
+        });
+
+    When(
+        "I select District filter among the filter options from API",
+        () -> {
+          String district = apiState.getCreatedCase().getDistrict().getUuid();
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(
+              SAMPLE_DISTRICT_SEARCH_COMBOBOX, DistrictsValues.getNameByUUID(district));
+        });
+
+    When(
+        "I change District filter to {string} option in Sample directory",
+        (String district) -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(SAMPLE_DISTRICT_SEARCH_COMBOBOX, district);
+        });
+
+    When(
+        "I select Laboratory filter among the filter options from API",
+        () -> {
+          String laboratory = apiState.getCreatedSample().getLab().getCaption();
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(LABORATORY_SEARCH_COMBOBOX, laboratory);
+        });
+
+    When(
+        "I change Labolatory filter to {string} option in Sample directory",
+        (String laboratory) -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(LABORATORY_SEARCH_COMBOBOX, laboratory);
+        });
 
     When(
         "^I search last created Sample by Case ID$",
@@ -69,7 +232,7 @@ public class SamplesDirectorySteps implements En {
         "I am accessing the created sample via api",
         () -> {
           String CREATED_SAMPLE_VIA_API_URL =
-              environmentUrl
+              environmentManager.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!samples/data/"
                   + apiState.getCreatedSample().getUuid();
           webDriverHelpers.accessWebSite(CREATED_SAMPLE_VIA_API_URL);
@@ -96,6 +259,25 @@ public class SamplesDirectorySteps implements En {
               apiState.getCreatedSamples().size(),
               webDriverHelpers.getNumberOfElements(SAMPLE_GRID_RESULTS_ROWS),
               "Number of created samples is wrong");
+        });
+
+    Then(
+        "I select {string} filter from quick filter",
+        (String searchCriteria) -> {
+          switch (searchCriteria) {
+            case "Not shipped":
+              webDriverHelpers.clickOnWebElementBySelector(SAMPLE_NOT_SHIPPED);
+              break;
+            case "Shipped":
+              webDriverHelpers.clickOnWebElementBySelector(SAMPLE_SHIPPED);
+              break;
+            case "Received":
+              webDriverHelpers.clickOnWebElementBySelector(SAMPLE_RECEIVED);
+              break;
+            case "Referred to other lab":
+              webDriverHelpers.clickOnWebElementBySelector(SAMPLE_REFFERED_TO_OTHER_LAB);
+              break;
+          }
         });
 
     Then(

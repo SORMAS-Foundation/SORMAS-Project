@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,25 +18,30 @@
 
 package org.sormas.e2etests.steps.web.application;
 
-import static org.sormas.e2etests.enums.TestDataUser.*;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.LOGOUT_BUTTON;
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.google.inject.Inject;
 import cucumber.api.java8.En;
-import javax.inject.Named;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.NoSuchElementException;
+import org.sormas.e2etests.enums.UserRoles;
+import org.sormas.e2etests.envconfig.dto.EnvUser;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.LoginPage;
+import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage;
 import org.sormas.e2etests.steps.BaseSteps;
 
+@Slf4j
 public class LoginSteps implements En {
 
   @Inject
   public LoginSteps(
       WebDriverHelpers webDriverHelpers,
       BaseSteps baseSteps,
-      @Named("ENVIRONMENT_URL") String environmentUrl) {
+      EnvironmentManager environmentManager) {
 
     Given(
         "^I am logged in with name ([^\"]*)$",
@@ -48,7 +53,10 @@ public class LoginSteps implements En {
         });
 
     Given(
-        "^I navigate to SORMAS login page$", () -> webDriverHelpers.accessWebSite(environmentUrl));
+        "^I navigate to SORMAS login page$",
+        () -> {
+          webDriverHelpers.accessWebSite(environmentManager.getEnvironmentUrlForMarket(locale));
+        });
 
     Given(
         "I click on the Log In button",
@@ -57,16 +65,18 @@ public class LoginSteps implements En {
     And(
         "I log in with National User",
         () -> {
-          webDriverHelpers.accessWebSite(environmentUrl);
+          EnvUser user = environmentManager.getUserByRole(locale, UserRoles.NationalUser.getRole());
+          webDriverHelpers.accessWebSite(environmentManager.getEnvironmentUrlForMarket(locale));
           webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(LoginPage.USER_NAME_INPUT);
           int attempts = 1;
-
           LOOP:
           while (attempts <= 3) {
-            webDriverHelpers.fillInWebElement(
-                LoginPage.USER_NAME_INPUT, NATIONAL_USER.getUsername());
-            webDriverHelpers.fillInWebElement(
-                LoginPage.USER_PASSWORD_INPUT, NATIONAL_USER.getPassword());
+            log.info("Filling username");
+            webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, user.getUsername());
+            log.info("Filling password");
+            webDriverHelpers.fillInWebElement(LoginPage.USER_PASSWORD_INPUT, user.getPassword());
+            log.info("Click on Login button");
             webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
             webDriverHelpers.waitForPageLoaded();
             boolean wasUserLoggedIn;
@@ -88,15 +98,24 @@ public class LoginSteps implements En {
     Given(
         "^I log in as a ([^\"]*)$",
         (String userRole) -> {
-          webDriverHelpers.accessWebSite(environmentUrl);
+          webDriverHelpers.accessWebSite(environmentManager.getEnvironmentUrlForMarket(locale));
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(LoginPage.USER_NAME_INPUT);
-          webDriverHelpers.fillInWebElement(
-              LoginPage.USER_NAME_INPUT, gertUserByRole(userRole).getUsername());
-          webDriverHelpers.fillInWebElement(
-              LoginPage.USER_PASSWORD_INPUT, gertUserByRole(userRole).getPassword());
+          EnvUser user = environmentManager.getUserByRole(locale, userRole);
+          log.info("Filling username");
+          webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, user.getUsername());
+          log.info("Filling password");
+          webDriverHelpers.fillInWebElement(LoginPage.USER_PASSWORD_INPUT, user.getPassword());
+          log.info("Clicking on login button");
           webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
           webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOGOUT_BUTTON, 30);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOGOUT_BUTTON, 50);
+        });
+
+    When(
+        "I check that German word for Configuration is present in the left main menu",
+        () -> {
+          webDriverHelpers.checkWebElementContainsText(
+              NavBarPage.CONFIGURATION_BUTTON, "Einstellungen");
         });
   }
 }

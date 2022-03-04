@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,6 +18,7 @@
 package org.sormas.e2etests.enums;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 @Getter
 public enum RegionsValues {
@@ -29,5 +30,14 @@ public enum RegionsValues {
   RegionsValues(String name, String uuid) {
     this.name = name;
     this.uuid = uuid;
+  }
+
+  @SneakyThrows
+  public static String getValueFor(String option) {
+    RegionsValues[] regionValuesOptions = RegionsValues.values();
+    for (RegionsValues value : regionValuesOptions) {
+      if (value.uuid.equalsIgnoreCase(option)) return value.name;
+    }
+    throw new Exception("Unable to find " + option + " value in Region Enum");
   }
 }

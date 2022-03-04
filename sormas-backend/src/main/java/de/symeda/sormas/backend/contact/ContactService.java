@@ -45,6 +45,7 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.common.CoreAdo;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -81,12 +82,12 @@ import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
-import de.symeda.sormas.backend.clinicalcourse.HealthConditionsService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
-import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.contact.transformers.ContactListEntryDtoResultTransformer;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.epidata.EpiData;
@@ -133,8 +134,6 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	@EJB
 	private EpiDataService epiDataService;
 	@EJB
-	private HealthConditionsService healthConditionsService;
-	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
 	private ExposureService exposureService;
@@ -173,7 +172,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<Contact> getAllActiveContactsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+	public List<Contact> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Contact> cq = cb.createQuery(getElementClass());
@@ -213,16 +212,22 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Contact> from, Timestamp date, String lastSynchronizedUuid) {
-
 		ChangeDateFilterBuilder changeDateFilterBuilder = new ChangeDateFilterBuilder(cb, date, from, lastSynchronizedUuid);
-		Join<Object, EpiData> epiData = from.join(Contact.EPI_DATA, JoinType.LEFT);
-		Join<Object, HealthConditions> healthCondition = from.join(Contact.HEALTH_CONDITIONS, JoinType.LEFT);
+		return addChangeDates(changeDateFilterBuilder, from, false).build();
+	}
 
-		changeDateFilterBuilder.add(from);
-		epiDataService.addChangeDateFilters(changeDateFilterBuilder, epiData);
-		changeDateFilterBuilder.add(healthCondition).add(from, Contact.SORMAS_TO_SORMAS_ORIGIN_INFO).add(from, Contact.SORMAS_TO_SORMAS_SHARES);
+	@Override
+	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, From<?, Contact> contactFrom, boolean includeExtendedChangeDateFilters) {
+		Join<Object, HealthConditions> healthCondition = contactFrom.join(Contact.HEALTH_CONDITIONS, JoinType.LEFT);
+		Join<Object, EpiData> epiData = contactFrom.join(Contact.EPI_DATA, JoinType.LEFT);
 
-		return changeDateFilterBuilder.build();
+		builder = super.addChangeDates(builder, contactFrom, includeExtendedChangeDateFilters).add(healthCondition)
+			.add(contactFrom, Contact.SORMAS_TO_SORMAS_ORIGIN_INFO)
+			.add(contactFrom, Contact.SORMAS_TO_SORMAS_SHARES);
+
+		builder = epiDataService.addChangeDates(builder, epiData);
+
+		return builder;
 	}
 
 	public List<String> getAllActiveUuids(User user) {
@@ -987,6 +992,13 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		default:
 		}
 
+		if (currentUser.getLimitedDisease() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.or(cb.equal(contactPath.get(Contact.DISEASE), currentUser.getLimitedDisease()), cb.isNull(contactPath.get(Contact.DISEASE))));
+		}
+
 		return filter;
 	}
 
@@ -1155,9 +1167,15 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		}
 		if (contactCriteria.getRelevanceStatus() != null) {
 			if (contactCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED))));
+				filter = CriteriaBuilderHelper.and(
+					cb,
+					filter,
+					cb.and(
+						cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED))),
+						cb.or(cb.equal(from.get(Contact.ARCHIVED), false), cb.isNull(from.get(Contact.ARCHIVED)))));
 			} else if (contactCriteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(caze.get(Case.ARCHIVED), true));
+				filter =
+					CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(caze.get(Case.ARCHIVED), true), cb.equal(from.get(Contact.ARCHIVED), true)));
 			}
 		}
 		if (contactCriteria.getDeleted() != null) {
@@ -1338,7 +1356,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 	/**
 	 * Creates a filter that excludes all contacts that are either
-	 * {@link CoreAdo#isDeleted()} or associated with cases that are
+	 * {@link DeletableAdo#isDeleted()} or associated with cases that are
 	 * {@link Case#isArchived()}.
 	 */
 	public Predicate createActiveContactsFilter(CriteriaBuilder cb, Root<Contact> root) {
@@ -1357,7 +1375,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	/**
 	 * Creates a default filter that should be used as the basis of queries that do
 	 * not use {@link ContactCriteria}. This essentially removes
-	 * {@link CoreAdo#isDeleted()} contacts from the queries.
+	 * {@link DeletableAdo#isDeleted()} contacts from the queries.
 	 */
 	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, Contact> root) {
 		return cb.isFalse(root.get(Contact.DELETED));

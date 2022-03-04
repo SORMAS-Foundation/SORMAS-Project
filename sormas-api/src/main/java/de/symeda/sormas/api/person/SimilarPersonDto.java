@@ -1,5 +1,8 @@
 package de.symeda.sormas.api.person;
 
+import de.symeda.sormas.api.CountryHelper;
+import de.symeda.sormas.api.utils.HideForCountries;
+
 import java.io.Serializable;
 import java.util.Arrays;
 import java.util.List;
@@ -30,6 +33,7 @@ public class SimilarPersonDto implements Serializable {
 	private String uuid;
 	private String firstName;
 	private String lastName;
+	@HideForCountries
 	private String nickname;
 	private String ageAndBirthDate;
 	private Sex sex;
@@ -41,7 +45,9 @@ public class SimilarPersonDto implements Serializable {
 	private String city;
 	private String street;
 	private String houseNumber;
+	@HideForCountries
 	private String nationalHealthId;
+	@HideForCountries(countries = {CountryHelper.COUNTRY_CODE_GERMANY, CountryHelper.COUNTRY_CODE_FRANCE})
 	private String passportNumber;
 
 	public String getUuid() {

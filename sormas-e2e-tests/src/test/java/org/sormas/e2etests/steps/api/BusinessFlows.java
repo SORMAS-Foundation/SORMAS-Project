@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -24,17 +24,17 @@ import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 import javax.inject.Inject;
+import org.sormas.e2etests.entities.pojo.api.Case;
+import org.sormas.e2etests.entities.pojo.api.Lab;
+import org.sormas.e2etests.entities.pojo.api.Person;
+import org.sormas.e2etests.entities.pojo.api.Sample;
+import org.sormas.e2etests.entities.services.api.CaseApiService;
+import org.sormas.e2etests.entities.services.api.PersonApiService;
+import org.sormas.e2etests.entities.services.api.SampleApiService;
 import org.sormas.e2etests.enums.*;
 import org.sormas.e2etests.helpers.api.CaseHelper;
 import org.sormas.e2etests.helpers.api.PersonsHelper;
 import org.sormas.e2etests.helpers.api.SampleHelper;
-import org.sormas.e2etests.pojo.api.Case;
-import org.sormas.e2etests.pojo.api.Lab;
-import org.sormas.e2etests.pojo.api.Person;
-import org.sormas.e2etests.pojo.api.Sample;
-import org.sormas.e2etests.services.api.CaseApiService;
-import org.sormas.e2etests.services.api.PersonApiService;
-import org.sormas.e2etests.services.api.SampleApiService;
 import org.sormas.e2etests.state.ApiState;
 
 public class BusinessFlows implements En {

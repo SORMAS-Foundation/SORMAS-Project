@@ -283,7 +283,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		ExposureDto exposure = ExposureDto.build(ExposureType.ANIMAL_CONTACT);
 		exposure.setAnimalContactType(AnimalContactType.TOUCH);
 		caze.getEpiData().getExposures().add(exposure);
-		caze.getClinicalCourse().getHealthConditions().setAsplenia(YesNoUnknown.YES);
+		caze.getHealthConditions().setAsplenia(YesNoUnknown.YES);
 		caze.getMaternalHistory().setChildrenNumber(2);
 
 		SormasToSormasDto shareData = new SormasToSormasDto();
@@ -303,7 +303,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		assertThat(savedCase.getHospitalization().getAdmittedToHealthFacility(), is(YesNoUnknown.YES));
 		assertThat(savedCase.getSymptoms().getAgitation(), is(SymptomState.YES));
 		assertThat(savedCase.getEpiData().getExposures().get(0).getAnimalContactType(), is(AnimalContactType.TOUCH));
-		assertThat(savedCase.getClinicalCourse().getHealthConditions().getAsplenia(), is(YesNoUnknown.YES));
+		assertThat(savedCase.getHealthConditions().getAsplenia(), is(YesNoUnknown.YES));
 		assertThat(savedCase.getMaternalHistory().getChildrenNumber(), is(2));
 
 		assertThat(savedCase.getSormasToSormasOriginInfo().getOrganizationId(), is(DEFAULT_SERVER_ID));
@@ -330,7 +330,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		ExposureDto exposure = ExposureDto.build(ExposureType.ANIMAL_CONTACT);
 		exposure.setAnimalContactType(AnimalContactType.TOUCH);
 		caze.getEpiData().getExposures().add(exposure);
-		caze.getClinicalCourse().getHealthConditions().setAsplenia(YesNoUnknown.YES);
+		caze.getHealthConditions().setAsplenia(YesNoUnknown.YES);
 		caze.getMaternalHistory().setChildrenNumber(2);
 
 		SormasToSormasDto shareData = new SormasToSormasDto();
@@ -350,7 +350,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		assertThat(savedCase.getHospitalization().getAdmittedToHealthFacility(), is(YesNoUnknown.YES));
 		assertThat(savedCase.getSymptoms().getAgitation(), is(SymptomState.YES));
 		assertThat(savedCase.getEpiData().getExposures().get(0).getAnimalContactType(), is(AnimalContactType.TOUCH));
-		assertThat(savedCase.getClinicalCourse().getHealthConditions().getAsplenia(), is(YesNoUnknown.YES));
+		assertThat(savedCase.getHealthConditions().getAsplenia(), is(YesNoUnknown.YES));
 		assertThat(savedCase.getMaternalHistory().getChildrenNumber(), is(2));
 
 		assertThat(savedCase.getSormasToSormasOriginInfo().getOrganizationId(), is(DEFAULT_SERVER_ID));
@@ -445,7 +445,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		getSormasToSormasCaseFacade().saveSharedEntities(encryptedData);
 
 		CaseDataDto savedCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
-		ContactDto savedContact = getContactFacade().getContactByUuid(contact.getUuid());
+		ContactDto savedContact = getContactFacade().getByUuid(contact.getUuid());
 
 		assertThat(savedContact, is(notNullValue()));
 		assertThat(savedContact.getRegion(), is(rdcf.region));
@@ -623,7 +623,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 		assertThat(sharedCase.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(false));
 
 		// contact ownership should be lost
-		sharedContact = getContactFacade().getContactByUuid(sharedContact.getUuid());
+		sharedContact = getContactFacade().getByUuid(sharedContact.getUuid());
 		assertThat(sharedContact.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(false));
 
 		// sample ownership should be lost
@@ -706,10 +706,10 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 			getSormasToSormasShareInfoFacade().getIndexList(new SormasToSormasShareInfoCriteria().contact(sharedContact.toReference()), 0, 100);
 		assertThat(contactShares.get(0).isOwnershipHandedOver(), is(false));
 
-		ContactDto returnedNewContact = getContactFacade().getContactByUuid(newContact.getUuid());
+		ContactDto returnedNewContact = getContactFacade().getByUuid(newContact.getUuid());
 		assertThat(returnedNewContact.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(true));
 
-		ContactDto returnedNewContact2 = getContactFacade().getContactByUuid(newContact.getUuid());
+		ContactDto returnedNewContact2 = getContactFacade().getByUuid(newContact.getUuid());
 		assertThat(returnedNewContact2.getSormasToSormasOriginInfo().isOwnershipHandedOver(), is(true));
 
 		List<SormasToSormasShareInfoDto> sampleShares =

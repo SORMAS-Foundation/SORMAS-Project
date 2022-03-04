@@ -84,7 +84,7 @@ public class CustomizableEnumFacadeEjb implements CustomizableEnumFacade {
 	@Lock(LockType.READ)
 	@Override
 	public List<CustomizableEnumValueDto> getAllAfter(Date date) {
-		return service.getAllAfter(date, null).stream().map(this::toDto).collect(Collectors.toList());
+		return service.getAllAfter(date).stream().map(this::toDto).collect(Collectors.toList());
 	}
 
 	@Lock(LockType.READ)

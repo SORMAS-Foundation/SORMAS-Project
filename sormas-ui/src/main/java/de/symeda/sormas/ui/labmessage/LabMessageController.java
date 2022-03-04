@@ -368,7 +368,7 @@ public class LabMessageController {
 						pickOrCreateSample(caseDto, labMessageDto, samples);
 					}
 				} else if (similarEntriesDto.getContact() != null) {
-					ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(similarEntriesDto.getContact().getUuid());
+					ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(similarEntriesDto.getContact().getUuid());
 					ContactReferenceDto contactRef = contactDto.toReference();
 
 					List<SampleDto> samples =
@@ -484,7 +484,7 @@ public class LabMessageController {
 		editView.addCommitListener(() -> {
 			if (!eventCreateForm.getFieldGroup().isModified()) {
 				EventDto dto = eventCreateForm.getValue();
-				FacadeProvider.getEventFacade().saveEvent(dto);
+				FacadeProvider.getEventFacade().save(dto);
 				Notification.show(I18nProperties.getString(Strings.messageEventCreated), Notification.Type.WARNING_MESSAGE);
 
 				createEventParticipant(dto, labMessageDto, person);

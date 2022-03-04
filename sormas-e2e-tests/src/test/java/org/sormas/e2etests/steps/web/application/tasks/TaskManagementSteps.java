@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -37,8 +37,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
+import org.sormas.e2etests.entities.pojo.web.Task;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.web.Task;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
@@ -75,6 +75,7 @@ public class TaskManagementSteps implements En {
           do {
             webDriverHelpers.scrollInTable(10);
           } while (!webDriverHelpers.isElementVisibleWithTimeout(lastTaskEditButton, 2));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.clickOnWebElementBySelector(lastTaskEditButton);
           webDriverHelpers.isElementVisibleWithTimeout(TASK_POPUP, 5);
         });
@@ -91,6 +92,7 @@ public class TaskManagementSteps implements En {
     When(
         "^I am checking if the associated linked event appears in task management and click on it$",
         () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           String eventUuid = apiState.getCreatedEvent().getUuid();
           webDriverHelpers.fillAndSubmitInWebElement(GENERAL_SEARCH_INPUT, eventUuid);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(15);
@@ -163,7 +165,7 @@ public class TaskManagementSteps implements En {
     When(
         "^I am checking if all the fields are correctly displayed in the Task Management table$",
         () -> {
-          org.sormas.e2etests.pojo.api.Task expectedTask = apiState.getCreatedTask();
+          org.sormas.e2etests.entities.pojo.api.Task expectedTask = apiState.getCreatedTask();
           Task actualTask = taskTableRows.get(1);
           softly.assertTrue(
               apiState
@@ -228,6 +230,7 @@ public class TaskManagementSteps implements En {
     When(
         "^I collect the task column objects$",
         () -> {
+          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           List<Map<String, String>> tableRowsData = getTableRowsData();
           taskTableRows = new ArrayList<>();
@@ -308,7 +311,7 @@ public class TaskManagementSteps implements En {
   }
 
   private LocalDateTime getLocalDateTimeFromColumns(String date) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy h:mm a");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy h:m a");
     try {
       return LocalDateTime.parse(date.trim(), formatter);
     } catch (Exception e) {

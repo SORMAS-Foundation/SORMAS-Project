@@ -70,12 +70,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 	@Override
 	public List<AggregateReportDto> getAllAggregateReportsAfter(Date date) {
 
-		User user = userService.getCurrentUser();
-		if (user == null) {
-			return Collections.emptyList();
-		}
-
-		return service.getAllAfter(date, user).stream().map(r -> toDto(r)).collect(Collectors.toList());
+		return service.getAllAfter(date).stream().map(r -> toDto(r)).collect(Collectors.toList());
 	}
 
 	@Override

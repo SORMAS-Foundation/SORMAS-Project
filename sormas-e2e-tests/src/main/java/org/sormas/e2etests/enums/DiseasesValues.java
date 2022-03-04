@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -71,7 +71,7 @@ public enum DiseasesValues {
     for (DiseasesValues value : diseasesOptions) {
       if (value.getDiseaseName().equalsIgnoreCase(option)) return value.getDiseaseCaption();
     }
-    throw new Exception("Unable to find " + option + " value in SourceTypeValues Enum");
+    throw new Exception("Unable to find " + option + " value in DiseasesValues Enum");
   }
 
   /** Returns values used for API tests */

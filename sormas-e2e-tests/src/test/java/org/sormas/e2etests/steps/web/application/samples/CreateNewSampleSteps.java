@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,12 +26,14 @@ import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Sample;
+import org.sormas.e2etests.entities.services.SampleService;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.pojo.web.Sample;
-import org.sormas.e2etests.services.SampleService;
+import org.testng.asserts.SoftAssert;
 
 public class CreateNewSampleSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
@@ -44,7 +46,10 @@ public class CreateNewSampleSteps implements En {
 
   @Inject
   public CreateNewSampleSteps(
-      WebDriverHelpers webDriverHelpers, SampleService sampleService, Faker faker) {
+      WebDriverHelpers webDriverHelpers,
+      SampleService sampleService,
+      Faker faker,
+      SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
     this.faker = faker;
 
@@ -127,6 +132,35 @@ public class CreateNewSampleSteps implements En {
         });
 
     When(
+        "I check if Pathogen test result in Samples is displayed correctly and save",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_PATHOGEN_TEST_BUTTON);
+          final Sample actualSampleTestResult = collectPathogenTestResultsData();
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              sampleTestResult,
+              actualSampleTestResult,
+              List.of(
+                  "laboratory",
+                  "sampleTestResults",
+                  "reportDate",
+                  "typeOfTest",
+                  "testedDisease",
+                  "dateOfResult",
+                  "timeOfResult",
+                  "resultVerifiedByLabSupervisor",
+                  "testResultsComment"));
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    When(
+        "I complete all fields from Pathogen test result popup for IgM test type with positive verified test result$",
+        () -> {
+          simplePathogenBuilderVerifiedResult("IgG serum antibody");
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    When(
         "^I complete all fields from Pathogen test result popup for IgG test type and save$",
         () -> {
           simplePathogenBuilderResult("IgG serum antibody");
@@ -178,6 +212,32 @@ public class CreateNewSampleSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(EDIT_TEST_RESULTS_BUTTON);
           final Sample actualSampleTestResult = collectPathogenTestResultsData();
           ComparisonHelper.compareEqualEntities(sampleTestResult, actualSampleTestResult);
+        });
+
+    When(
+        "I confirm the Create case from contact with positive test result",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONFIRM_BUTTON);
+          String displayedText =
+              webDriverHelpers.getTextFromWebElement(CREATE_CASE_POSITIVE_TEST_RESULT_LABEL);
+          String expectedText = "Create case from contact with positive test result?";
+          softly.assertEquals(displayedText, expectedText);
+          softly.assertAll();
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
+        });
+
+    When(
+        "I confirm the Create case from event participant with positive test result",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONFIRM_BUTTON);
+          String displayedText =
+              webDriverHelpers.getTextFromWebElement(CREATE_CASE_POSITIVE_TEST_RESULT_LABEL);
+          String expectedText = "Create case from event participant with positive test result?";
+          softly.assertEquals(displayedText, expectedText);
+          softly.assertAll();
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
         });
   }
 
@@ -380,6 +440,10 @@ public class CreateNewSampleSteps implements En {
     return webDriverHelpers.getTextFromWebElement(SAMPLE_TEST_RESULT_BUTTON);
   }
 
+  private void selectLaboratoryNamePopup(String laboratoryName) {
+    webDriverHelpers.clearAndFillInWebElement(LABORATORY_NAME_POPUP_INPUT, laboratoryName);
+  }
+
   private LocalDate getReportDate() {
     return LocalDate.parse(
         webDriverHelpers.getValueFromWebElement(DATE_TEST_REPORT), DATE_FORMATTER);
@@ -432,6 +496,24 @@ public class CreateNewSampleSteps implements En {
     selectTypeOfTest(sampleTestResult.getTypeOfTest());
     selectTestedDisease(sampleTestResult.getTestedDisease());
     selectPathogenLaboratory(sampleTestResult.getLaboratory());
+    selectTestResult(sampleTestResult.getSampleTestResults());
+    fillDateOfResult(sampleTestResult.getDateOfResult());
+    fillTimeOfResult(sampleTestResult.getTimeOfResult());
+    selectResultVerifiedByLabSupervisor(
+        sampleTestResult.getResultVerifiedByLabSupervisor(),
+        RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
+    fillTestResultsComment(sampleTestResult.getTestResultsComment());
+    return sampleTestResult;
+  }
+
+  private Sample simplePathogenBuilderVerifiedResult(String testType) {
+    SampleService sampleService = new SampleService(faker);
+    sampleTestResult = sampleService.buildPathogenTestResultTypeVerified(testType);
+    fillReportDate(sampleTestResult.getReportDate());
+    selectTypeOfTest(sampleTestResult.getTypeOfTest());
+    selectTestedDisease(sampleTestResult.getTestedDisease());
+    selectPathogenLaboratory(sampleTestResult.getLaboratory());
+    selectLaboratoryNamePopup(sampleTestResult.getLaboratoryName());
     selectTestResult(sampleTestResult.getSampleTestResults());
     fillDateOfResult(sampleTestResult.getDateOfResult());
     fillTimeOfResult(sampleTestResult.getTimeOfResult());

@@ -313,52 +313,39 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		EventDto inactiveEvent = creator.createEvent(user.toReference());
 		creator.createEventParticipant(inactiveEvent.toReference(), person7, user.toReference());
 
-		getCaseFacade().archiveOrDearchiveCase(inactiveCase.getUuid(), true);
-		getEventFacade().archiveOrDearchiveEvent(inactiveEvent.getUuid(), true);
+		getCaseFacade().archive(inactiveCase.getUuid(), null);
+		getEventFacade().archive(inactiveEvent.getUuid(), null);
 
 		// Only persons that have active case, contact or event participant associations should be retrieved
-		List<String> relevantNameUuids = getPersonFacade().getSimilarPersonDtos(user.toReference(), new PersonSimilarityCriteria())
-			.stream()
-			.map(dto -> dto.getUuid())
-			.collect(Collectors.toList());
+		List<String> relevantNameUuids =
+			getPersonFacade().getSimilarPersonDtos(new PersonSimilarityCriteria()).stream().map(dto -> dto.getUuid()).collect(Collectors.toList());
 		assertThat(relevantNameUuids, hasSize(6));
 		assertThat(
 			relevantNameUuids,
 			containsInAnyOrder(person1.getUuid(), person2.getUuid(), person3.getUuid(), person5.getUuid(), person6.getUuid(), person7.getUuid()));
 
 		creator.createCase(user.toReference(), person4.toReference(), rdcf);
-		getCaseFacade().archiveOrDearchiveCase(inactiveCase.getUuid(), false);
-		getEventFacade().archiveOrDearchiveEvent(inactiveEvent.getUuid(), false);
+		getCaseFacade().dearchive(Collections.singletonList(inactiveCase.getUuid()), null);
+		getEventFacade().dearchive(Collections.singletonList(inactiveEvent.getUuid()), null);
 
 		PersonSimilarityCriteria criteria = new PersonSimilarityCriteria().sex(Sex.MALE).birthdateYYYY(1980).birthdateMM(1).birthdateDD(1);
-		List<String> matchingUuids = getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria)
-			.stream()
-			.map(person -> person.getUuid())
-			.collect(Collectors.toList());
+		List<String> matchingUuids =
+			getPersonFacade().getSimilarPersonDtos(criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
 		assertThat(matchingUuids, hasSize(2));
 		assertThat(matchingUuids, containsInAnyOrder(person1.getUuid(), person7.getUuid()));
 
 		criteria.birthdateMM(null).birthdateDD(null);
-		matchingUuids = getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria)
-			.stream()
-			.map(person -> person.getUuid())
-			.collect(Collectors.toList());
+		matchingUuids = getPersonFacade().getSimilarPersonDtos(criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
 		assertThat(matchingUuids, hasSize(3));
 		assertThat(matchingUuids, containsInAnyOrder(person1.getUuid(), person3.getUuid(), person7.getUuid()));
 
 		criteria.sex(Sex.FEMALE).birthdateYYYY(1984);
-		matchingUuids = getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria)
-			.stream()
-			.map(person -> person.getUuid())
-			.collect(Collectors.toList());
+		matchingUuids = getPersonFacade().getSimilarPersonDtos(criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
 		assertThat(matchingUuids, hasSize(3));
 		assertThat(matchingUuids, containsInAnyOrder(person4.getUuid(), person5.getUuid(), person6.getUuid()));
 
 		criteria.sex(null);
-		matchingUuids = getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria)
-			.stream()
-			.map(person -> person.getUuid())
-			.collect(Collectors.toList());
+		matchingUuids = getPersonFacade().getSimilarPersonDtos(criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
 		assertThat(matchingUuids, hasSize(4));
 		assertThat(matchingUuids, containsInAnyOrder(person4.getUuid(), person5.getUuid(), person6.getUuid(), person7.getUuid()));
 
@@ -377,36 +364,24 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		criteria.sex(Sex.MALE).birthdateYYYY(1980);
 		criteria.passportNumber(passportNr);
-		matchingUuids = getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria)
-			.stream()
-			.map(person -> person.getUuid())
-			.collect(Collectors.toList());
+		matchingUuids = getPersonFacade().getSimilarPersonDtos(criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
 		assertThat(matchingUuids, hasSize(6));
 		assertThat(
 			matchingUuids,
 			containsInAnyOrder(person1.getUuid(), person3.getUuid(), person7.getUuid(), person8.getUuid(), person9.getUuid(), person10.getUuid()));
 
 		criteria.nationalHealthId(healthId).passportNumber(null);
-		matchingUuids = getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria)
-			.stream()
-			.map(person -> person.getUuid())
-			.collect(Collectors.toList());
+		matchingUuids = getPersonFacade().getSimilarPersonDtos(criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
 		assertThat(matchingUuids, hasSize(4));
 		assertThat(matchingUuids, containsInAnyOrder(person1.getUuid(), person3.getUuid(), person7.getUuid(), person8.getUuid()));
 
 		criteria.nationalHealthId(otherHealthId);
-		matchingUuids = getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria)
-			.stream()
-			.map(person -> person.getUuid())
-			.collect(Collectors.toList());
+		matchingUuids = getPersonFacade().getSimilarPersonDtos(criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
 		assertThat(matchingUuids, hasSize(4));
 		assertThat(matchingUuids, containsInAnyOrder(person1.getUuid(), person3.getUuid(), person7.getUuid(), person9.getUuid()));
 
 		criteria.passportNumber(otherPassportNr);
-		matchingUuids = getPersonFacade().getSimilarPersonDtos(user.toReference(), criteria)
-			.stream()
-			.map(person -> person.getUuid())
-			.collect(Collectors.toList());
+		matchingUuids = getPersonFacade().getSimilarPersonDtos(criteria).stream().map(person -> person.getUuid()).collect(Collectors.toList());
 		assertThat(matchingUuids, hasSize(5));
 		assertThat(matchingUuids, containsInAnyOrder(person1.getUuid(), person3.getUuid(), person7.getUuid(), person9.getUuid(), person11.getUuid()));
 	}
@@ -451,9 +426,9 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		contact12.setFollowUpUntil(DateHelper.subtractDays(now, 8));
 		contact2.setFollowUpUntil(now);
 
-		getContactFacade().saveContact(contact11);
-		getContactFacade().saveContact(contact12);
-		getContactFacade().saveContact(contact2);
+		getContactFacade().save(contact11);
+		getContactFacade().save(contact12);
+		getContactFacade().save(contact2);
 
 		List<PersonFollowUpEndDto> followUpEndDtos = getPersonFacade().getLatestFollowUpEndDates(null, false);
 
@@ -502,8 +477,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		contact2.setFollowUpUntil(DateHelper.subtractDays(now, 8));
 
 		getPersonFacade().savePerson(person);
-		getContactFacade().saveContact(contact1);
-		getContactFacade().saveContact(contact2);
+		getContactFacade().save(contact1);
+		getContactFacade().save(contact2);
 
 		JournalPersonDto exportPerson = getPersonFacade().getPersonForJournal(person.getUuid());
 		assertEquals(person.getFirstName(), exportPerson.getFirstName());
@@ -541,9 +516,9 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		case12.setFollowUpUntil(DateHelper.subtractDays(now, 8));
 		case2.setFollowUpUntil(now);
 
-		getCaseFacade().saveCase(case11);
-		getCaseFacade().saveCase(case12);
-		getCaseFacade().saveCase(case2);
+		getCaseFacade().save(case11);
+		getCaseFacade().save(case12);
+		getCaseFacade().save(case2);
 
 		List<PersonFollowUpEndDto> followUpEndDtos = getPersonFacade().getLatestFollowUpEndDates(null, false);
 
@@ -606,15 +581,15 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		case5.setFollowUpStatus(FollowUpStatus.CANCELED);
 		contact4.setFollowUpUntil(now);
 
-		getContactFacade().saveContact(contact1);
-		getContactFacade().saveContact(contact2);
-		getContactFacade().saveContact(contact3);
-		getContactFacade().saveContact(contact4);
-		getCaseFacade().saveCase(case1);
-		getCaseFacade().saveCase(case2);
-		getCaseFacade().saveCase(case3);
-		getCaseFacade().saveCase(case4);
-		getCaseFacade().saveCase(case5);
+		getContactFacade().save(contact1);
+		getContactFacade().save(contact2);
+		getContactFacade().save(contact3);
+		getContactFacade().save(contact4);
+		getCaseFacade().save(case1);
+		getCaseFacade().save(case2);
+		getCaseFacade().save(case3);
+		getCaseFacade().save(case4);
+		getCaseFacade().save(case5);
 
 		List<PersonFollowUpEndDto> followUpEndDtos = getPersonFacade().getLatestFollowUpEndDates(null, false);
 
@@ -643,7 +618,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person1 = creator.createPerson();
 		person1 = getPersonFacade().savePerson(person1);
 		final ContactDto contact1 = creator.createContact(natUser.toReference(), person1.toReference());
-		getContactFacade().saveContact(contact1);
+		getContactFacade().save(contact1);
 
 		List<PersonDto> personsAfterT1 = getPersonFacade().getPersonsAfter(t1);
 		assertEquals(1, personsAfterT1.size());
@@ -654,7 +629,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person2 = creator.createPerson();
 		person2 = getPersonFacade().savePerson(person2);
 		final ContactDto contact2 = creator.createContact(natUser.toReference(), person2.toReference());
-		getContactFacade().saveContact(contact2);
+		getContactFacade().save(contact2);
 
 		List<PersonDto> personsAfterT2 = getPersonFacade().getPersonsAfter(t2);
 		assertEquals(1, personsAfterT2.size());
@@ -733,7 +708,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		for (FollowUpStatus status : FollowUpStatus.values()) {
 			contact1.setFollowUpStatus(status);
-			getContactFacade().saveContact(contact1);
+			getContactFacade().save(contact1);
 
 			if (FollowUpStatus.COMPLETED.equals(status) || FollowUpStatus.NO_FOLLOW_UP.equals(status)) {
 				// In this case the status is automatically updated to FOLLOW_UP, because the end of the follow up period has not yet been reached.
@@ -805,15 +780,15 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	private void updateFollowUpStatus(ContactDto contact, FollowUpStatus status) {
-		contact = getContactFacade().getContactByUuid(contact.getUuid());
+		contact = getContactFacade().getByUuid(contact.getUuid());
 		contact.setFollowUpStatus(status);
-		getContactFacade().saveContact(contact);
+		getContactFacade().save(contact);
 	}
 
 	private void updateFollowUpStatus(CaseDataDto caze, FollowUpStatus status) {
 		caze = getCaseFacade().getCaseDataByUuid(caze.getUuid());
 		caze.setFollowUpStatus(status);
-		getCaseFacade().saveCase(caze);
+		getCaseFacade().save(caze);
 	}
 
 	@Test
@@ -924,5 +899,36 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			creator.createEventParticipant(creator.createEvent(userRef).toReference(), eventParticipantPerson, userRef);
 
 		assertThat(getPersonFacade().getByContext(PersonContext.EVENT_PARTICIPANT, eventParticipant.getUuid()), equalTo(eventParticipantPerson));
+	}
+
+	@Test
+	public void testUserWithLimitedDiseaseSeeOnlyLimitedTravelEntry(){
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility", "PointOfEntry");
+		PersonCriteria criteria = new PersonCriteria();
+		criteria.setPersonAssociation(PersonAssociation.TRAVEL_ENTRY);
+
+		UserDto natUser = useNationalUserLogin();
+		// CORONAVIRUS Travel Entry
+		PersonDto personWithCorona = creator.createPerson("Person Coronavirus","Test");
+		creator.createTravelEntry(personWithCorona.toReference(), natUser.toReference(), Disease.CORONAVIRUS, rdcf.region, rdcf.district, rdcf.pointOfEntry);
+
+		// DENGUE Travel Entry
+		PersonDto personWithDengue = creator.createPerson("Person Dengue","Test");
+		creator.createTravelEntry(personWithDengue.toReference(), natUser.toReference(), Disease.DENGUE, rdcf.region, rdcf.district, rdcf.pointOfEntry);
+
+		//National User with no restrictions can see all the travel entries
+		List<PersonIndexDto> personIndexDtos = getPersonFacade().getIndexList(criteria, 0, 100, null);
+		assertEquals(2 , personIndexDtos.size());
+		List<String> firstNames = personIndexDtos.stream().map(p -> p.getFirstName()).collect(Collectors.toList());
+		assertTrue(firstNames.contains(personWithCorona.getFirstName()));
+		assertTrue(firstNames.contains(personWithDengue.getFirstName()));
+
+		//login with a user wiht limieted disease restrictions
+		final UserDto user = creator.createUser(rdcf, "Limieted Disease", "National User", Disease.DENGUE, UserRole.NATIONAL_USER);
+		loginWith(user);
+
+		personIndexDtos = getPersonFacade().getIndexList(criteria, 0, 100, null);
+		assertEquals(1 , personIndexDtos.size());
+		assertEquals(personWithDengue.getFirstName(), personIndexDtos.get(0).getFirstName());
 	}
 }

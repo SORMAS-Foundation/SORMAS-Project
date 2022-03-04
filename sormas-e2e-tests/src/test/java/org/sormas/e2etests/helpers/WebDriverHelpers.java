@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -19,7 +19,6 @@ import static com.google.common.truth.Truth.assertWithMessage;
 import static java.time.Duration.ofSeconds;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
-import static org.sormas.e2etests.helpers.AssertHelpers.takeScreenshot;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -50,6 +49,10 @@ public class WebDriverHelpers {
 
   public static final By SELECTED_RADIO_BUTTON =
       By.xpath("ancestor::div[contains(@role,'group')]//input[@checked]/following-sibling::label");
+  public static final By SELECTED_RADIO_DISABLED_AND_CHECKED_BUTTON =
+      By.xpath(
+          "//div[contains(@class,'v-select-optiongroup')]//input[@checked and @disabled]/following-sibling::label");
+
   public static final int FLUENT_WAIT_TIMEOUT_SECONDS = 20;
   public static final By CHECKBOX_TEXT_LABEL = By.xpath("ancestor::span//label");
   public static final By TABLE_SCROLLER =
@@ -70,6 +73,7 @@ public class WebDriverHelpers {
   }
 
   public void waitForPageLoaded() {
+    log.info("Waiting for page to load");
     assertHelpers.assertWithPoll20Second(
         () ->
             Assert.assertEquals(
@@ -91,6 +95,7 @@ public class WebDriverHelpers {
   }
 
   public void waitUntilIdentifiedElementIsVisibleAndClickable(final Object selector, int seconds) {
+    log.info("Waiting for element [{}] to be visible and clickable", selector);
     if (selector instanceof By) {
       assertHelpers.assertWithPoll(
           () -> {
@@ -124,6 +129,7 @@ public class WebDriverHelpers {
   }
 
   public void waitUntilIdentifiedElementDisappear(final Object selector, int seconds) {
+    log.info("Waiting for element [{}] to disappear", selector);
     if (selector instanceof By) {
       assertHelpers.assertWithPoll(
           () -> {
@@ -165,6 +171,7 @@ public class WebDriverHelpers {
   }
 
   public void fillInWebElement(By selector, String text) {
+    log.info("Filling element [{{}] with text [{}]", selector, text);
     try {
       await()
           .pollInterval(ONE_HUNDRED_MILLISECONDS)
@@ -195,7 +202,6 @@ public class WebDriverHelpers {
 
     } catch (ConditionTimeoutException ignored) {
       log.error("Unable to fill on element identified by locator: {} and text {}", selector, text);
-      takeScreenshot(baseSteps.getDriver());
       throw new TimeoutException(
           "Unable to fill on element identified by locator: " + selector + " and text : " + text);
     }
@@ -231,7 +237,6 @@ public class WebDriverHelpers {
 
     } catch (ConditionTimeoutException ignored) {
       log.error("Unable to fill on element identified by locator: {} and text {}", selector, text);
-      takeScreenshot(baseSteps.getDriver());
       throw new TimeoutException(
           "Unable to fill on element identified by locator: " + selector + " and text : " + text);
     }
@@ -329,7 +334,6 @@ public class WebDriverHelpers {
 
     } catch (ConditionTimeoutException ignored) {
       log.error("Unable to click on element identified by locator: {}", selector);
-      takeScreenshot(baseSteps.getDriver());
       throw new TimeoutException(
           String.format("Unable to click on element identified by locator: %s", selector));
     }
@@ -363,13 +367,18 @@ public class WebDriverHelpers {
     }
   }
 
+  public boolean isElementEnabled(By selector) {
+    scrollToElement(selector);
+    return baseSteps.getDriver().findElement(selector).isEnabled();
+  }
+
   public void clickOnWebElementWhichMayNotBePresent(final By byObject, final int index) {
     try {
       log.info("Clicking on element: {}", byObject);
       baseSteps.getDriver().findElements(byObject).get(index).click();
     } catch (Exception exception) {
       log.warn(
-          "Unable tp click on element:  {}, at index {}, due to: {}",
+          "Unable to click on element:  {}, at index {}, due to: {}",
           byObject,
           index,
           exception.getMessage());
@@ -377,6 +386,7 @@ public class WebDriverHelpers {
   }
 
   public void scrollToElement(final Object selector) {
+    log.info("Scrolling to element [{}]", selector);
     JavascriptExecutor javascriptExecutor = baseSteps.getDriver();
     try {
       if (selector instanceof WebElement) {
@@ -391,19 +401,17 @@ public class WebDriverHelpers {
   }
 
   public void hoverToElement(By selector) {
-    WebElement menuOption = baseSteps.getDriver().findElement(selector);
+    WebElement element = baseSteps.getDriver().findElement(selector);
     Actions actions = new Actions(baseSteps.getDriver());
     try {
       assertHelpers.assertWithPoll20Second(
           () -> {
             scrollToElement(selector);
-            actions.moveToElement(menuOption).perform();
+            actions.moveToElement(element).perform();
             waitUntilIdentifiedElementIsVisibleAndClickable(selector);
           });
     } catch (ConditionTimeoutException ignored) {
-      log.error("Unable to fill on element identified by locator: {}", selector);
-      takeScreenshot(baseSteps.getDriver());
-      throw new TimeoutException("Unable to fill on element identified by locator: " + selector);
+      throw new TimeoutException("Unable to hover on element identified by locator: " + selector);
     }
   }
 
@@ -576,8 +584,10 @@ public class WebDriverHelpers {
     try {
       return baseSteps.getDriver().findElements(byObject).size();
     } catch (Exception e) {
-      log.warn("Exception caught while getting the number of elements for locator: {}", byObject);
-      log.warn("Exception: {}", e.getMessage());
+      log.warn(
+          "Exception caught while getting the number of elements for locator: {} : {}",
+          byObject,
+          e.getMessage());
       throw new WebDriverException(String.format("No elements found for element: %s", byObject));
     }
   }
@@ -674,6 +684,16 @@ public class WebDriverHelpers {
     waitUntilIdentifiedElementIsPresent(options);
     scrollToElement(options);
     return baseSteps.getDriver().findElement(options).findElement(SELECTED_RADIO_BUTTON).getText();
+  }
+
+  public String getCheckedDisabledOptionFromHorizontalOptionGroup(By options) {
+    waitUntilIdentifiedElementIsPresent(options);
+    scrollToElement(options);
+    return baseSteps
+        .getDriver()
+        .findElement(options)
+        .findElement(SELECTED_RADIO_DISABLED_AND_CHECKED_BUTTON)
+        .getText();
   }
 
   public void clearWebElement(By selector) {

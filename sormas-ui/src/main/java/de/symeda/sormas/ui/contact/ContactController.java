@@ -24,6 +24,11 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.themes.ValoTheme;
+import de.symeda.sormas.ui.immunization.ImmunizationDataView;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -151,7 +156,7 @@ public class ContactController {
 
 						selectOrCreateContact(newContact, FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()), uuid -> {
 							if (uuid == null) {
-								FacadeProvider.getContactFacade().saveContact(newContact);
+								FacadeProvider.getContactFacade().save(newContact);
 								Notification.show(I18nProperties.getString(Strings.messageContactCreated), Type.ASSISTIVE_NOTIFICATION);
 							}
 						});
@@ -205,7 +210,7 @@ public class ContactController {
 
 			selectOrCreateContact(newContact, contactLineDto.getPerson(), uuid -> {
 				if (uuid == null) {
-					FacadeProvider.getContactFacade().saveContact(newContact);
+					FacadeProvider.getContactFacade().save(newContact);
 					Notification.show(I18nProperties.getString(Strings.messageContactCreated), Type.ASSISTIVE_NOTIFICATION);
 				}
 			});
@@ -393,17 +398,17 @@ public class ContactController {
 				if (asSourceContact && caze != null) {
 					CaseDataDto caseDto = FacadeProvider.getCaseFacade().getByUuid(caze.getUuid());
 					caseDto.getEpiData().setContactWithSourceCaseKnown(YesNoUnknown.YES);
-					FacadeProvider.getCaseFacade().saveCase(caseDto);
+					FacadeProvider.getCaseFacade().save(caseDto);
 				}
 				if (asSourceContact && alternativeCallback != null && casePerson != null) {
 					selectOrCreateContact(dto, casePerson, selectedContactUuid -> {
 						if (selectedContactUuid != null) {
-							ContactDto selectedContact = FacadeProvider.getContactFacade().getContactByUuid(selectedContactUuid);
+							ContactDto selectedContact = FacadeProvider.getContactFacade().getByUuid(selectedContactUuid);
 							selectedContact.setResultingCase(caze.toReference());
 							selectedContact.setResultingCaseUser(UserProvider.getCurrent().getUserReference());
 							selectedContact.setContactStatus(ContactStatus.CONVERTED);
 							selectedContact.setContactClassification(ContactClassification.CONFIRMED);
-							FacadeProvider.getContactFacade().saveContact(selectedContact);
+							FacadeProvider.getContactFacade().save(selectedContact);
 
 							// Avoid asking the user to discard unsaved changes
 							createComponent.discard();
@@ -553,7 +558,7 @@ public class ContactController {
 	}
 
 	private void createNewContact(ContactDto contact, Consumer<String> resultConsumer) {
-		final ContactDto savedContact = FacadeProvider.getContactFacade().saveContact(contact);
+		final ContactDto savedContact = FacadeProvider.getContactFacade().save(contact);
 		Notification.show(I18nProperties.getString(Strings.messageContactCreated), Type.WARNING_MESSAGE);
 		resultConsumer.accept(savedContact.getUuid());
 	}
@@ -564,7 +569,7 @@ public class ContactController {
 		boolean isPsuedonymized) {
 
 		//editForm.setWidth(editForm.getWidth() * 8/12, Unit.PIXELS);
-		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);
+		ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactUuid);
 		AutomaticDeletionInfoDto automaticDeletionInfoDto = FacadeProvider.getContactFacade().getAutomaticDeletionInfo(contactUuid);
 
 		ContactDataForm editForm = new ContactDataForm(contact.getDisease(), viewMode, isPsuedonymized);
@@ -584,7 +589,7 @@ public class ContactController {
 
 				fillPersonAddressIfEmpty(dto, () -> FacadeProvider.getPersonFacade().getPersonByUuid(dto.getPerson().getUuid()));
 
-				FacadeProvider.getContactFacade().saveContact(dto);
+				FacadeProvider.getContactFacade().save(dto);
 
 				Notification.show(I18nProperties.getString(Strings.messageContactSaved), Type.WARNING_MESSAGE);
 				SormasUI.refreshView();
@@ -596,6 +601,42 @@ public class ContactController {
 				FacadeProvider.getContactFacade().deleteContact(contact.getUuid());
 				UI.getCurrent().getNavigator().navigateTo(ContactsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityContact));
+		}
+
+		// Initialize 'Archive' button
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_ARCHIVE)) {
+			boolean archived = FacadeProvider.getContactFacade().isArchived(contact.getUuid());
+			Button archiveButton = ButtonHelper.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {
+				if (editComponent.isModified()) {
+					editComponent.commit();
+				}
+
+				if (archived) {
+					ControllerProvider.getArchiveController()
+						.dearchiveEntity(
+							contact,
+							FacadeProvider.getContactFacade(),
+							Strings.headingDearchiveContact,
+							Strings.confirmationDearchiveContact,
+							Strings.entityContact,
+							Strings.messageContactDearchived,
+							() -> navigateToView(ContactDataView.VIEW_NAME, contact.getUuid(), false));
+				} else {
+					ControllerProvider.getArchiveController()
+						.archiveEntity(
+							contact,
+							FacadeProvider.getContactFacade(),
+							Strings.headingArchiveContact,
+							Strings.confirmationArchiveContact,
+							Strings.entityContact,
+							Strings.messageContactArchived,
+							() -> navigateToView(ContactDataView.VIEW_NAME, contact.getUuid(), false));
+				}
+
+			}, ValoTheme.BUTTON_LINK);
+
+			editComponent.getButtonsPanel().addComponentAsFirst(archiveButton);
+			editComponent.getButtonsPanel().setComponentAlignment(archiveButton, Alignment.BOTTOM_LEFT);
 		}
 
 		return editComponent;
@@ -637,7 +678,7 @@ public class ContactController {
 		editView.addCommitListener(() -> {
 			ContactBulkEditData updatedBulkEditData = form.getValue();
 			for (ContactIndexDto indexDto : selectedContacts) {
-				ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(indexDto.getUuid());
+				ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(indexDto.getUuid());
 				if (form.getClassificationCheckBox().getValue() == true) {
 					contactDto.setContactClassification(updatedBulkEditData.getContactClassification());
 				}
@@ -646,7 +687,7 @@ public class ContactController {
 					contactDto.setContactOfficer(updatedBulkEditData.getContactOfficer());
 				}
 
-				FacadeProvider.getContactFacade().saveContact(contactDto);
+				FacadeProvider.getContactFacade().save(contactDto);
 			}
 			popupWindow.close();
 			if (caseUuid == null) {
@@ -707,11 +748,11 @@ public class ContactController {
 						for (ContactIndexDto contact : selectedRows) {
 							if (!FollowUpStatus.NO_FOLLOW_UP.equals(contact.getFollowUpStatus())
 								&& !FollowUpStatus.CANCELED.equals(contact.getFollowUpStatus())) {
-								ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
+								ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(contact.getUuid());
 								contactDto.setFollowUpStatus(FollowUpStatus.CANCELED);
 								contactDto.addToFollowUpComment(
 									String.format(I18nProperties.getString(Strings.infoCanceledBy), UserProvider.getCurrent().getUserName()));
-								FacadeProvider.getContactFacade().saveContact(contactDto);
+								FacadeProvider.getContactFacade().save(contactDto);
 							}
 						}
 						callback.run();
@@ -743,11 +784,11 @@ public class ContactController {
 					if (confirmed) {
 						for (ContactIndexDto contact : selectedRows) {
 							if (contact.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP) {
-								ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contact.getUuid());
+								ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(contact.getUuid());
 								contactDto.setFollowUpStatus(FollowUpStatus.LOST);
 								contactDto.addToFollowUpComment(
 									String.format(I18nProperties.getString(Strings.infoLostToFollowUpBy), UserProvider.getCurrent().getUserName()));
-								FacadeProvider.getContactFacade().saveContact(contactDto);
+								FacadeProvider.getContactFacade().save(contactDto);
 							}
 						}
 						callback.run();
@@ -782,7 +823,7 @@ public class ContactController {
 
 	public CommitDiscardWrapperComponent<EpiDataForm> getEpiDataComponent(final String contactUuid) {
 
-		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);
+		ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactUuid);
 		EpiDataForm epiDataForm = new EpiDataForm(contact.getDisease(), ContactDto.class, contact.getEpiData().isPseudonymized(), null);
 		epiDataForm.setValue(contact.getEpiData());
 
@@ -792,9 +833,9 @@ public class ContactController {
 			epiDataForm.getFieldGroup());
 
 		editView.addCommitListener(() -> {
-			ContactDto contactDto = FacadeProvider.getContactFacade().getContactByUuid(contactUuid);
+			ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(contactUuid);
 			contactDto.setEpiData(epiDataForm.getValue());
-			FacadeProvider.getContactFacade().saveContact(contactDto);
+			FacadeProvider.getContactFacade().save(contactDto);
 			Notification.show(I18nProperties.getString(Strings.messageContactSaved), Type.WARNING_MESSAGE);
 			SormasUI.refreshView();
 		});

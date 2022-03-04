@@ -14,8 +14,14 @@
  */
 package de.symeda.sormas.ui.events;
 
+import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import com.vaadin.server.Page;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
@@ -26,11 +32,15 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventGroupCriteria;
+import de.symeda.sormas.api.event.EventGroupReferenceDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
@@ -131,8 +141,7 @@ public class EventDataView extends AbstractEventView {
 		DocumentListComponent documentList = null;
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)) {
 			// TODO: user rights?
-			documentList =
-				new DocumentListComponent(DocumentRelatedEntityType.EVENT, getEventRef(), UserRight.EVENT_EDIT, event.isPseudonymized());
+			documentList = new DocumentListComponent(DocumentRelatedEntityType.EVENT, getEventRef(), UserRight.EVENT_EDIT, event.isPseudonymized());
 			layout.addComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
@@ -153,9 +162,50 @@ public class EventDataView extends AbstractEventView {
 
 		boolean eventGroupsFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_GROUPS);
 		if (eventGroupsFeatureEnabled) {
-			EventGroupListComponent eventGroupsList = new EventGroupListComponent(event.toReference());
-			eventGroupsList.addStyleName(CssStyles.SIDE_COMPONENT);
-			layout.addComponent(eventGroupsList, EVENT_GROUPS_LOC);
+			EventReferenceDto eventReference = event.toReference();
+			EventGroupListComponent eventGroupsList = new EventGroupListComponent(eventReference);
+			eventGroupsList.addSideComponentCreateEventListener(e -> showNavigationConfirmPopupIfDirty(() -> {
+				EventDto eventByUuid = FacadeProvider.getEventFacade().getEventByUuid(eventReference.getUuid(), false);
+				UserProvider user = UserProvider.getCurrent();
+				if (!user.hasNationalJurisdictionLevel() && !user.hasRegion(eventByUuid.getEventLocation().getRegion())) {
+					new Notification(
+						I18nProperties.getString(Strings.headingEventGroupLinkEventIssue),
+						I18nProperties.getString(Strings.errorEventFromAnotherJurisdiction),
+						Notification.Type.ERROR_MESSAGE,
+						false).show(Page.getCurrent());
+					return;
+				}
+
+				EventGroupCriteria eventGroupCriteria = new EventGroupCriteria();
+				Set<String> eventGroupUuids = FacadeProvider.getEventGroupFacade()
+					.getCommonEventGroupsByEvents(Collections.singletonList(eventByUuid.toReference()))
+					.stream()
+					.map(EventGroupReferenceDto::getUuid)
+					.collect(Collectors.toSet());
+				eventGroupCriteria.setExcludedUuids(eventGroupUuids);
+				if (user.hasUserRight(UserRight.EVENTGROUP_CREATE) && user.hasUserRight(UserRight.EVENTGROUP_LINK)) {
+					long events = FacadeProvider.getEventGroupFacade().count(eventGroupCriteria);
+					if (events > 0) {
+						ControllerProvider.getEventGroupController().selectOrCreate(eventReference);
+					} else {
+						ControllerProvider.getEventGroupController().create(eventReference);
+					}
+				} else if (user.hasUserRight(UserRight.EVENTGROUP_CREATE)) {
+					ControllerProvider.getEventGroupController().create(eventReference);
+				} else {
+					long events = FacadeProvider.getEventGroupFacade().count(eventGroupCriteria);
+					if (events > 0) {
+						ControllerProvider.getEventGroupController().select(eventReference);
+					} else {
+						new Notification(
+							I18nProperties.getString(Strings.headingEventGroupLinkEventIssue),
+							I18nProperties.getString(Strings.errorNotRequiredRights),
+							Notification.Type.ERROR_MESSAGE,
+							false).show(Page.getCurrent());
+					}
+				}
+			}));
+			layout.addComponent(new SideComponentLayout(eventGroupsList), EVENT_GROUPS_LOC);
 		}
 
 		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isSharingEventsEnabledForUser();

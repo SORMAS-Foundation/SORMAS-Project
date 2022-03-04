@@ -1,7 +1,7 @@
 @UI @Sanity @Users
 Feature: Create user
 
-  @User
+  @env_main
   Scenario Outline: Create a new user
     Given I log in as a Admin User
     And I click on the Users from navbar
@@ -20,7 +20,7 @@ Feature: Create user
       | Sormas to Sormas Client |
       | National Clinician      |
 
-  @EditUser
+  @env_main
   Scenario Outline: Edit user
     Given I log in as a Admin User
     And I click on the Users from navbar
@@ -35,3 +35,15 @@ Feature: Create user
       | rights            |
       | National User     |
       | POE National User |
+
+    @issue=SORDEV-9366 @env_main
+    Scenario: Users with limited disease
+      Given I log in as a Admin User
+      And I click on the Users from navbar
+      And I click on the NEW USER button
+      And I create new National User with limited disease to Cholera
+      Then I click on logout button from navbar
+      And As a new created user with limited disease view I log in
+      Then I click on the Cases button from navbar
+      And I check if user have limited disease view to Cholera only
+

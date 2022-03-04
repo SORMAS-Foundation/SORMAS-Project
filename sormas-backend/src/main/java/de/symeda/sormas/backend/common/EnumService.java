@@ -29,7 +29,6 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.user.UserService;
 
 @Singleton(name = "EnumService")
-@RunAs(UserRole._SYSTEM)
 public class EnumService {
 
 	private final Map<Class<Enum>, Map<Language, EnumCaption>> enumCaptions = new HashMap<>();

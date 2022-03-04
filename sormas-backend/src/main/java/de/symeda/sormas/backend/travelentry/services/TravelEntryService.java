@@ -18,9 +18,6 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.backend.event.Event;
-import de.symeda.sormas.backend.event.EventQueryContext;
-import de.symeda.sormas.backend.user.User;
 import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
@@ -30,7 +27,6 @@ import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
 import de.symeda.sormas.api.travelentry.TravelEntryReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -45,6 +41,7 @@ import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryJoins;
 import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
 import de.symeda.sormas.backend.travelentry.transformers.TravelEntryIndexDtoResultTransformer;
+import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 
 @Stateless
@@ -174,33 +171,6 @@ public class TravelEntryService extends BaseTravelEntryService {
 		return cb.and(cb.isFalse(root.get(TravelEntry.ARCHIVED)), cb.isFalse(root.get(TravelEntry.DELETED)));
 	}
 
-	public List<TravelEntry> getAllActiveAfter(Date date) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<TravelEntry> cq = cb.createQuery(getElementClass());
-		Root<TravelEntry> from = cq.from(getElementClass());
-
-		Predicate filter = createDefaultFilter(cb, from);
-
-		if (getCurrentUser() != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from);
-			if (userFilter != null) {
-				filter = cb.and(filter, userFilter);
-			}
-		}
-
-		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, from, DateHelper.toTimestampUpper(date));
-			if (dateFilter != null) {
-				filter = cb.and(filter, dateFilter);
-			}
-		}
-		cq.where(filter);
-		cq.orderBy(cb.desc(from.get(TravelEntry.CHANGE_DATE)));
-		cq.distinct(true);
-
-		return em.createQuery(cq).getResultList();
-	}
-
 	public List<TravelEntry> getAllByResultingCase(Case caze) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -243,17 +213,6 @@ public class TravelEntryService extends BaseTravelEntryService {
 		Root<TravelEntry> from = cq.from(TravelEntry.class);
 
 		cq.where(cb.and(cb.isTrue(from.get(TravelEntry.DELETED)), cb.equal(from.get(AbstractDomainObject.UUID), travelEntryUuid)));
-		cq.select(cb.count(from));
-		long count = em.createQuery(cq).getSingleResult();
-		return count > 0;
-	}
-
-	public boolean isArchived(String travelEntryUuid) {
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<TravelEntry> from = cq.from(TravelEntry.class);
-
-		cq.where(cb.and(cb.equal(from.get(TravelEntry.ARCHIVED), true), cb.equal(from.get(AbstractDomainObject.UUID), travelEntryUuid)));
 		cq.select(cb.count(from));
 		long count = em.createQuery(cq).getSingleResult();
 		return count > 0;
@@ -312,6 +271,15 @@ public class TravelEntryService extends BaseTravelEntryService {
 			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
 				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(TravelEntry.ARCHIVED), true));
 			}
+		}
+
+		if (criteria.getReportDateFrom() != null && criteria.getReportDateTo() != null) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.between(from.get(TravelEntry.REPORT_DATE), criteria.getReportDateFrom(), criteria.getReportDateTo()));
+		} else if (criteria.getReportDateFrom() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.greaterThanOrEqualTo(from.get(TravelEntry.REPORT_DATE), criteria.getReportDateFrom()));
+		} else if (criteria.getReportDateTo() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.lessThanOrEqualTo(from.get(TravelEntry.REPORT_DATE), criteria.getReportDateTo()));
 		}
 
 		if (criteria.getDeleted() != null) {
