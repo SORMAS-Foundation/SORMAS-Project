@@ -51,8 +51,6 @@ public interface OutbreakFacade {
 
 	OutbreakDto saveOutbreak(@Valid OutbreakDto outbreakDto);
 
-	OutbreakDto saveOutbreakByCurrentUser(@Valid OutbreakDto outbreakDto);
-
 	void deleteOutbreak(OutbreakDto outbreakDto);
 
 	/**

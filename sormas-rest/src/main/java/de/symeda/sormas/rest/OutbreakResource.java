@@ -83,8 +83,8 @@ public class OutbreakResource extends EntityDtoResource {
 
 	@POST
 	@Path("/push")
-	public List<PushResult> postPersons(@Valid List<OutbreakDto> dtos) {
-		return savePushedDto(dtos, FacadeProvider.getOutbreakFacade()::saveOutbreakByCurrentUser);
+	public List<PushResult> postOutbreak(@Valid List<OutbreakDto> dtos) {
+		return savePushedDto(dtos, FacadeProvider.getOutbreakFacade()::saveOutbreak);
 	}
 
 }
