@@ -18,23 +18,6 @@
 
 package org.sormas.e2etests.steps.web.application.cases;
 
-import cucumber.api.java8.En;
-import org.openqa.selenium.By;
-import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.entities.pojo.web.Contact;
-import org.sormas.e2etests.entities.services.ContactService;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.state.ApiState;
-import org.testng.asserts.SoftAssert;
-
-import javax.inject.Inject;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.TextStyle;
-import java.util.List;
-import java.util.Locale;
-
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.CONTACT_RESULTS_UUID_LOCATOR;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.NEW_CONTACT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RELATIONSHIP_WITH_CASE_COMBOBOX;
@@ -68,6 +51,22 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.TYP
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.USER_INFORMATION;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
+
+import cucumber.api.java8.En;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.List;
+import java.util.Locale;
+import javax.inject.Inject;
+import org.openqa.selenium.By;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Contact;
+import org.sormas.e2etests.entities.services.ContactService;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.state.ApiState;
+import org.testng.asserts.SoftAssert;
 
 public class EditContactsSteps implements En {
 

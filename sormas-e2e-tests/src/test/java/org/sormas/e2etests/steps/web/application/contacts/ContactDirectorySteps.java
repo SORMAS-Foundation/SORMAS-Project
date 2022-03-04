@@ -18,30 +18,6 @@
 
 package org.sormas.e2etests.steps.web.application.contacts;
 
-import cucumber.api.java8.En;
-import org.openqa.selenium.By;
-import org.sormas.e2etests.common.DataOperations;
-import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.entities.pojo.web.EpidemiologicalData;
-import org.sormas.e2etests.entities.pojo.web.epidemiologicalData.Exposure;
-import org.sormas.e2etests.entities.services.ContactService;
-import org.sormas.e2etests.enums.DiseasesValues;
-import org.sormas.e2etests.enums.YesNoUnknownOptions;
-import org.sormas.e2etests.enums.cases.epidemiologicalData.ExposureDetailsRole;
-import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfActivityExposure;
-import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
-import org.sormas.e2etests.helpers.AssertHelpers;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.state.ApiState;
-import org.testng.Assert;
-
-import javax.inject.Inject;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALL_RESULTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ENTER_BULK_EDIT_MODE;
@@ -107,6 +83,29 @@ import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPag
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
+
+import cucumber.api.java8.En;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
+import org.openqa.selenium.By;
+import org.sormas.e2etests.common.DataOperations;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.EpidemiologicalData;
+import org.sormas.e2etests.entities.pojo.web.epidemiologicalData.Exposure;
+import org.sormas.e2etests.entities.services.ContactService;
+import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.enums.YesNoUnknownOptions;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.ExposureDetailsRole;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfActivityExposure;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.helpers.AssertHelpers;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.state.ApiState;
+import org.testng.Assert;
 
 public class ContactDirectorySteps implements En {
 
@@ -322,7 +321,6 @@ public class ContactDirectorySteps implements En {
         () -> {
           String caseUuid = apiState.getCreatedCase().getUuid();
           webDriverHelpers.fillAndSubmitInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, caseUuid);
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
         });
 

@@ -50,7 +50,6 @@ public class NavBarSteps implements En {
     When(
         "^I click on the Cases button from navbar$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.CASES_BUTTON);
           startTime = ZonedDateTime.now().toInstant().toEpochMilli();
@@ -60,7 +59,6 @@ public class NavBarSteps implements En {
     When(
         "^I click on the Contacts button from navbar$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.CONTACTS_BUTTON);
           startTime = ZonedDateTime.now().toInstant().toEpochMilli();
         });
