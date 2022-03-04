@@ -90,7 +90,7 @@ public class BulkContactDataForm extends AbstractEditForm<ContactBulkEditData> {
 				Arrays.asList(true),
 				null);
 			List<UserReferenceDto> assignableContactOfficers =
-				FacadeProvider.getUserFacade().getUserRefsByDistrict(singleSelectedDistrict, false, UserRole.CONTACT_OFFICER);
+				FacadeProvider.getUserFacade().getUserRefsByDistrict(singleSelectedDistrict, false, null, UserRole.CONTACT_OFFICER);
 			FieldHelper.updateItems(contactOfficer, assignableContactOfficers);
 
 			contactOfficerCheckBox.addValueChangeListener(e -> {

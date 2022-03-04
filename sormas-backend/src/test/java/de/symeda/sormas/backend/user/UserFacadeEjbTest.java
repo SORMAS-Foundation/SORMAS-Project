@@ -92,13 +92,13 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetUsersByRegionAndRoles() {
 		// 0. Call with no users and without region does not fail
-		assertThat(getUserFacade().getUsersByRegionAndRoles(null, SURVEILLANCE_OFFICER), is(empty()));
+		assertThat(getUserFacade().getUsersByRegionAndRoles(null, null, SURVEILLANCE_OFFICER), is(empty()));
 
 		// 1. Get yourself back in user list
 		RegionReferenceDto region = creator.createRDCF().region;
 		UserDto user = creator.createUser(region.getUuid(), null, null, null, "Surv", "Off", SURVEILLANCE_OFFICER);
 		loginWith(user);
-		assertThat(getUserFacade().getUsersByRegionAndRoles(region, SURVEILLANCE_OFFICER), contains(user.toReference()));
+		assertThat(getUserFacade().getUsersByRegionAndRoles(region, null, SURVEILLANCE_OFFICER), contains(user.toReference()));
 	}
 
 	@Test
@@ -211,21 +211,21 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		UserDto userS4 = creator.createUser(region2.getUuid(), null, facility1.getUuid(), "Tommy", "Ramone", POE_SUPERVISOR);
 
 		// Tests
-		assertThat(getUserFacade().getUsersByRegionAndRoles(region1, COMMUNITY_OFFICER, SURVEILLANCE_OFFICER), containsInAnyOrder(userD2, userC2));
+		assertThat(getUserFacade().getUsersByRegionAndRoles(region1, null, COMMUNITY_OFFICER, SURVEILLANCE_OFFICER), containsInAnyOrder(userD2, userC2));
 		assertThat(
 			getUserFacade()
 				.getUsersByRegionsAndRoles(Arrays.asList(region1, region2), COMMUNITY_INFORMANT, CASE_OFFICER, CONTACT_OFFICER, STATE_OBSERVER),
 			containsInAnyOrder(userR2, userD1, userD3, userC1, userC3));
 
 		assertThat(
-			getUserFacade().getUserRefsByDistrict(district1_1, false, STATE_OBSERVER, CASE_OFFICER, COMMUNITY_OFFICER, POE_INFORMANT),
+			getUserFacade().getUserRefsByDistrict(district1_1, false, null, STATE_OBSERVER, CASE_OFFICER, COMMUNITY_OFFICER, POE_INFORMANT),
 			containsInAnyOrder(userD1, userC2));
 		assertThat(
 			getUserFacade()
 				.getUserRefsByDistricts(Arrays.asList(district1_1, district2), false, null, SURVEILLANCE_OFFICER, CONTACT_OFFICER, COMMUNITY_INFORMANT),
 			containsInAnyOrder(userD3, userC1, userC3));
 
-		assertThat(getUserFacade().getUserRefsByDistrict(district1_1, true, CASE_OFFICER), containsInAnyOrder(userD1, userS1, userS2, userS3));
+		assertThat(getUserFacade().getUserRefsByDistrict(district1_1, true, null, CASE_OFFICER), containsInAnyOrder(userD1, userS1, userS2, userS3));
 
 		assertThat(getUserFacade().getUsersWithSuperiorJurisdiction(getUserFacade().getByUuid(userN1.getUuid())), anyOf(empty()));
 		assertThat(
@@ -382,6 +382,24 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 
 		List<UserReferenceDto> userReferenceDtos = getUserFacade()
 			.getUserRefsByDistricts(Arrays.asList(rdcf.district), false, Disease.CORONAVIRUS,  SURVEILLANCE_OFFICER);
+
+		assertNotNull(userReferenceDtos);
+		assertTrue(userReferenceDtos.contains(generalSurveillanceOfficer));
+		assertFalse(userReferenceDtos.contains(limitedSurveillanceOfficer));
+
+	}
+
+	@Test
+	public void testGetUserRefsByDistrictsWithLimitedDiseaseUsersSingleDistrict(){
+
+		RDCF rdcf = creator.createRDCF();
+
+		UserDto generalSurveillanceOfficer = creator.createUser(rdcf, "General ", "SURVEILLANCE_OFFICER", SURVEILLANCE_OFFICER);
+		UserDto limitedSurveillanceOfficer = creator.createUser(rdcf, "Limited Dengue", "SURVEILLANCE_OFFICER", Disease.DENGUE, SURVEILLANCE_OFFICER);
+
+
+		List<UserReferenceDto> userReferenceDtos = getUserFacade()
+			.getUserRefsByDistrict(rdcf.district, false, Disease.CORONAVIRUS,  SURVEILLANCE_OFFICER);
 
 		assertNotNull(userReferenceDtos);
 		assertTrue(userReferenceDtos.contains(generalSurveillanceOfficer));

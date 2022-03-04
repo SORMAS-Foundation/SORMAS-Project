@@ -130,7 +130,7 @@ public class CaseContactsView extends AbstractCaseView {
 			regionFilter.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
 				if (region != null) {
-					officerFilter.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, UserRole.CONTACT_OFFICER));
+					officerFilter.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, criteria.getDisease(), UserRole.CONTACT_OFFICER));
 				} else {
 					officerFilter.removeAllItems();
 				}
@@ -173,7 +173,7 @@ public class CaseContactsView extends AbstractCaseView {
 		officerFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER_UUID));
 		officerFilter.addValueChangeListener(e -> criteria.setContactOfficer((UserReferenceDto) e.getProperty().getValue()));
 		if (user.getRegion() != null) {
-			officerFilter.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), UserRole.CONTACT_OFFICER));
+			officerFilter.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), criteria.getDisease(), UserRole.CONTACT_OFFICER));
 		}
 		topLayout.addComponent(officerFilter);
 

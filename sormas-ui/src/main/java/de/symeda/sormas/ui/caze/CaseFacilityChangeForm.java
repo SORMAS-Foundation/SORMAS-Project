@@ -124,7 +124,7 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 			}
 
 			List<UserReferenceDto> assignableSurveillanceOfficers =
-				FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, UserRole.SURVEILLANCE_OFFICER);
+				FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, null, UserRole.SURVEILLANCE_OFFICER);
 			FieldHelper.updateItems(officer, assignableSurveillanceOfficers);
 			if (assignableSurveillanceOfficers.size() == 1) {
 				officer.setValue(assignableSurveillanceOfficers.get(0));

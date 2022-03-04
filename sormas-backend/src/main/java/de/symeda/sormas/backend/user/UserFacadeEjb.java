@@ -45,7 +45,6 @@ import javax.validation.ValidationException;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import org.apache.commons.beanutils.BeanUtils;
@@ -213,9 +212,10 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	public List<UserReferenceDto> getUsersByRegionAndRoles(RegionReferenceDto regionRef, UserRole... assignableRoles) {
+	public List<UserReferenceDto> getUsersByRegionAndRoles(RegionReferenceDto regionRef, Disease limitedDisease, UserRole... assignableRoles) {
 
-		return userService.getReferenceList(toUuidList(regionRef), null, false, true, true, assignableRoles)
+		return userService.getReferenceList(toUuidList(regionRef), null, null, false, true,
+				true, limitedDisease, Arrays.asList(assignableRoles))
 			.stream()
 			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
@@ -312,9 +312,16 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	public List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto districtRef, boolean includeSupervisors, UserRole... userRoles) {
-//TODO
-		return userService.getReferenceList(null, toUuidList(districtRef), includeSupervisors, true, true, userRoles)
+	public List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto districtRef, boolean includeSupervisors,  Disease limitedDisease, UserRole... userRoles) {
+		List<UserReferenceDto> l = userService.getReferenceList(null, toUuidList(districtRef), null,  includeSupervisors,
+				true, true, limitedDisease, Arrays.asList(userRoles))
+			.stream()
+			.map(UserFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
+
+
+		return userService.getReferenceList(null, toUuidList(districtRef), null,  includeSupervisors,
+				true, true, limitedDisease, Arrays.asList(userRoles))
 			.stream()
 			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());

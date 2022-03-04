@@ -428,9 +428,9 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 
 		ComboBox officerField = getField(ContactCriteria.CONTACT_OFFICER);
 		if (user.getRegion() != null) {
-			officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), UserRole.CONTACT_OFFICER));
+			officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), newValue.getDisease(), UserRole.CONTACT_OFFICER));
 		} else if (region != null) {
-			officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, UserRole.CONTACT_OFFICER));
+			officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, newValue.getDisease(), UserRole.CONTACT_OFFICER));
 		} else {
 			officerField.removeAllItems();
 		}
@@ -572,7 +572,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 	private void populateSurveillanceOfficersForDistrict(DistrictReferenceDto districtReferenceDto) {
 		if (districtReferenceDto != null) {
 			List<UserReferenceDto> items =
-				FacadeProvider.getUserFacade().getUserRefsByDistrict(districtReferenceDto, false, UserRole.CONTACT_OFFICER);
+				FacadeProvider.getUserFacade().getUserRefsByDistrict(districtReferenceDto, false, null, UserRole.CONTACT_OFFICER);
 			populateSurveillanceOfficers(items);
 		} else {
 			final ComboBox regionField = getField(ContactCriteria.REGION);
@@ -589,6 +589,6 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 	}
 
 	private List<UserReferenceDto> fetchSurveillanceOfficersByRegion(RegionReferenceDto regionReferenceDto) {
-		return FacadeProvider.getUserFacade().getUsersByRegionAndRoles(regionReferenceDto, UserRole.CONTACT_OFFICER);
+		return FacadeProvider.getUserFacade().getUsersByRegionAndRoles(regionReferenceDto, null, UserRole.CONTACT_OFFICER);
 	}
 }

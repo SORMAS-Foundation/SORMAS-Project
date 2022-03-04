@@ -52,7 +52,7 @@ public interface UserFacade {
 
 	UserDto getByUserName(String userName);
 
-	List<UserReferenceDto> getUsersByRegionAndRoles(RegionReferenceDto regionRef, UserRole... assignableRoles);
+	List<UserReferenceDto> getUsersByRegionAndRoles(RegionReferenceDto regionRef, Disease limitedDisease, UserRole... assignableRoles);
 
 	List<UserReferenceDto> getUsersByRegionsAndRoles(List<RegionReferenceDto> regionRefs, UserRole... assignableRoles);
 
@@ -72,7 +72,7 @@ public interface UserFacade {
 	 *            roles of the users by district
 	 * @return
 	 */
-	List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto district, boolean includeSupervisors, UserRole... userRoles);
+	List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto district, boolean includeSupervisors,  Disease limitedDisease, UserRole... userRoles);
 
 	List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districts, boolean includeSupervisors, Disease limitedDisease, UserRole... userRoles);
 

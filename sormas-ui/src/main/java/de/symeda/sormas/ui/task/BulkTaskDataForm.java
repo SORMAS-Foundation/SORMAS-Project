@@ -134,7 +134,7 @@ public class BulkTaskDataForm extends AbstractEditForm<TaskBulkEditData> {
 		UserDto userDto = UserProvider.getCurrent().getUser();
 
 		if (district != null) {
-			users.addAll(FacadeProvider.getUserFacade().getUserRefsByDistrict(district, true));
+			users.addAll(FacadeProvider.getUserFacade().getUserRefsByDistrict(district,  true,null));
 		} else {
 			users.addAll(FacadeProvider.getUserFacade().getAllUserRefs(false));
 		}

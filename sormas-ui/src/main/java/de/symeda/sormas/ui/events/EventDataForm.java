@@ -556,7 +556,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			RegionReferenceDto region = (RegionReferenceDto) regionField.getValue();
 			if (region != null) {
 				responsibleUserSurveillanceSupervisors =
-					FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, UserRole.SURVEILLANCE_SUPERVISOR);
+					FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, getValue().getDisease(), UserRole.SURVEILLANCE_SUPERVISOR);
 			} else {
 				responsibleUserSurveillanceSupervisors.clear();
 			}
@@ -566,7 +566,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			DistrictReferenceDto district = (DistrictReferenceDto) districtField.getValue();
 			if (district != null) {
 				List<UserReferenceDto> currentDistrictSurveillanceOfficers =
-					FacadeProvider.getUserFacade().getUserRefsByDistrict(district, false, UserRole.SURVEILLANCE_OFFICER);
+					FacadeProvider.getUserFacade().getUserRefsByDistrict(district, false, getValue().getDisease(), UserRole.SURVEILLANCE_OFFICER);
 
 				List<UserReferenceDto> responsibleUsers = new ArrayList<>();
 				responsibleUsers.addAll(currentDistrictSurveillanceOfficers);

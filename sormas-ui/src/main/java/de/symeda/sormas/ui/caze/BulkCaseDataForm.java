@@ -207,7 +207,7 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 				Arrays.asList(true),
 				null);
 			List<UserReferenceDto> assignableSurveillanceOfficers =
-				FacadeProvider.getUserFacade().getUserRefsByDistrict(singleSelectedDistrict, false, UserRole.SURVEILLANCE_OFFICER);
+				FacadeProvider.getUserFacade().getUserRefsByDistrict(singleSelectedDistrict, false, null, UserRole.SURVEILLANCE_OFFICER);
 			FieldHelper.updateItems(surveillanceOfficer, assignableSurveillanceOfficers);
 
 			surveillanceOfficerCheckBox.addValueChangeListener(e -> {
