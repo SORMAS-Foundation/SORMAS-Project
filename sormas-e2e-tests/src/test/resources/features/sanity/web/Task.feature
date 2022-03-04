@@ -1,7 +1,8 @@
 @UI @Sanity @Task
 Feature: Tasks functionalities
 
-  @env_main
+  #please address
+  @env_main @ignore
   Scenario: Create and check a new task data
     Given I log in with National User
     And I click on the Tasks button from navbar
@@ -29,7 +30,8 @@ Feature: Tasks functionalities
     When I click on first edit Task
     Then I check the created task is correctly displayed on Edit task page
 
-  @env_main
+    #please address
+  @env_main @ignore
   Scenario: Check all fields from the created Task in the Task Management table
     Given API: I create a new person
     Then API: I check that POST call body is "OK"

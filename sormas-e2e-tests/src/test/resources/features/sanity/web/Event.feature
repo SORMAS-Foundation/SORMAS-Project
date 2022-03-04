@@ -45,7 +45,8 @@ Feature: Create events
     And I click on the searched event
     Then I check the created data is correctly displayed in event edit page
 
-  @env_main
+    #please address
+  @env_main @ignore
   Scenario: Add a participant to an event
     Given I log in with National User
     And I click on the Events button from navbar
@@ -60,8 +61,9 @@ Feature: Create events
     And I navigate via URL to last Person created from edit Event page
     Then I check if event is available at person information
 
-  @issue=SORDEV-5475 @env_main
-  Scenario: Add a participant to an event
+    #please address
+  @issue=SORDEV-5475 @env_main @ignore
+  Scenario: Verify error messages while adding a participant to an event
     Given I log in with National User
     And I click on the Events button from navbar
     And I click on the NEW EVENT button
@@ -129,7 +131,8 @@ Feature: Create events
     Then I open the last created event via api
     And I check that number of actions in Edit Event Tab is 1
 
-  @env_main
+      #please address
+  @env_main @ignore
   Scenario: Add a New action for an Event and verify the Action in EventActions table
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -320,7 +323,8 @@ Feature: Create events
     And I click on the Navigate to event directory filtered on this event group
     And I check the number of displayed Event results from All button is 1
 
-  @issue=SORDEV-5572 @env_main
+    #please address
+  @issue=SORDEV-5572 @env_main @ignore
   Scenario: Testing Event group adding for new event
     Given API: I create a new event
     Then API: I check that POST call body is "OK"

@@ -20,7 +20,8 @@ Feature: Edit Persons
     Then I click on save button from Edit Person page
     And I check that previous edited person is correctly displayed in Edit Person page
 
-  @issue=SORDEV-8466 @env_main
+    #please address
+  @issue=SORDEV-8466 @env_main @ignore
   Scenario: Check Filters on Person page work as expected
     Given API: I create a new person
     Then API: I check that POST call body is "OK"

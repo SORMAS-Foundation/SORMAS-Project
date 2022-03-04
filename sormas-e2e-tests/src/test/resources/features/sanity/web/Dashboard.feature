@@ -1,7 +1,8 @@
 @UI @Sanity @Dashboard @#7472
 Feature: Dashboard counters
 
-  @env_main
+  #please address
+  @env_main @ignore
   Scenario: Check disease and new cases counter in Surveillance Dashboard
     Given I log in with National User
     When I click on the Dashboard button from navbar and access Surveillance Dashboard
