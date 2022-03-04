@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.entities.pojo.web.QuarantineOrder;
@@ -48,6 +49,7 @@ import org.sormas.e2etests.pages.application.cases.EditCasePage;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.asserts.SoftAssert;
 
+@Slf4j
 public class EditCaseSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;

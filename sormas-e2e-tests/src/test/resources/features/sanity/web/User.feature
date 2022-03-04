@@ -36,7 +36,7 @@ Feature: Create user
       | National User     |
       | POE National User |
 
-    @issue=SORDEV-9366
+    @issue=SORDEV-9366 @env_main
     Scenario: Users with limited disease
       Given I log in as a Admin User
       And I click on the Users from navbar
