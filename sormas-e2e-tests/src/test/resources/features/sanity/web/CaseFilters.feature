@@ -1,7 +1,7 @@
 @UI @Sanity @Case @Filters
 Feature: Case filter functionality
 
-  @env_main @ignore
+  @env_main
   Scenario: Check Cases on Sample page work as expected
     Given API: I create 10 new cases
     Then API: I check that POST call body is "OK"
@@ -277,3 +277,42 @@ Feature: Case filter functionality
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
     And I apply Reinfection filter to "Confirmed reinfection" on Case directory page
+
+  @issue=SORQA-83 @env_de
+  Scenario: German Case Directory filters
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data for DE version
+    Then I check the created data is correctly displayed on Edit case page for DE version
+    Then I back to Case Directory using case list button
+    And I apply Person Id filter to one attached to last created UI Case on Case directory page
+    And I filter by CaseID of last created UI Case on Case directory page
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I apply Present Condition filter to "Lebendig" on Case directory page
+    And I apply Year filter of Person attached to last created UI Case on Case directory page
+    And I apply Month filter of Person attached to last created UI Case on Case directory page
+    And I apply Day filter of Person attached to last created UI Case on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 1
+    And I apply mocked Person Id filter on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+    And I apply Person Id filter to one attached to last created UI Case on Case directory page
+    And I apply Year filter other than Person attached has to last created UI Case on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+    And I apply Year filter of Person attached to last created UI Case on Case directory page
+    And I apply Month filter other than Person attached has to last created UI Case on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+    And I apply Month filter of Person attached to last created UI Case on Case directory page
+    And I apply Day filter other than Person attached has to last created UI Case on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+    And I apply Day filter of Person attached to last created UI Case on Case directory page
+    And I apply Present Condition filter to "Verstorben" on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+
+    
