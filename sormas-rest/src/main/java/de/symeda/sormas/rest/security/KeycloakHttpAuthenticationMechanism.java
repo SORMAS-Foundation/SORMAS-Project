@@ -20,6 +20,7 @@ package de.symeda.sormas.rest.security;
 
 import org.apache.commons.lang3.StringUtils;
 import org.keycloak.KeycloakSecurityContext;
+import org.keycloak.adapters.spi.KeycloakAccount;
 
 import javax.enterprise.inject.Typed;
 import javax.enterprise.inject.spi.CDI;
@@ -54,6 +55,10 @@ public class KeycloakHttpAuthenticationMechanism implements HttpAuthenticationMe
 		Credential credential = new CallerOnlyCredential(keycloakContext.getToken().getPreferredUsername());
 		IdentityStoreHandler identityStoreHandler = CDI.current().select(IdentityStoreHandler.class, new Annotation[0]).get();
 		CredentialValidationResult result = identityStoreHandler.validate(credential);
+		if (result.getStatus() == CredentialValidationResult.Status.VALID) {
+			KeycloakAccount keycloakAccount = (KeycloakAccount) request.getAttribute(KeycloakAccount.class.getName());
+			keycloakAccount.getRoles().addAll(result.getCallerGroups());
+		}
 		return httpMessageContext.notifyContainerAboutLogin(result);
 	}
 
