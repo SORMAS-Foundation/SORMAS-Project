@@ -18,6 +18,29 @@
 
 package org.sormas.e2etests.steps.web.application.cases;
 
+import com.github.javafaker.Faker;
+import com.google.common.truth.Truth;
+import cucumber.api.java8.En;
+import org.openqa.selenium.By;
+import org.sormas.e2etests.common.DataOperations;
+import org.sormas.e2etests.enums.CaseOrigin;
+import org.sormas.e2etests.enums.CaseOutcome;
+import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.FacilityCategory;
+import org.sormas.e2etests.enums.FollowUpStatus;
+import org.sormas.e2etests.enums.PresentCondition;
+import org.sormas.e2etests.helpers.AssertHelpers;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.state.ApiState;
+import org.testng.Assert;
+
+import javax.inject.Inject;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.concurrent.TimeUnit;
+
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALLBUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALL_RESULTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS;
@@ -82,28 +105,8 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SEAR
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHOW_MORE_LESS_FILTERS;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.TOTAL_CASES_COUNTER;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
-
-import com.github.javafaker.Faker;
-import com.google.common.truth.Truth;
-import cucumber.api.java8.En;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.concurrent.TimeUnit;
-import javax.inject.Inject;
-import org.openqa.selenium.By;
-import org.sormas.e2etests.common.DataOperations;
-import org.sormas.e2etests.enums.CaseOrigin;
-import org.sormas.e2etests.enums.CaseOutcome;
-import org.sormas.e2etests.enums.DiseasesValues;
-import org.sormas.e2etests.enums.DistrictsValues;
-import org.sormas.e2etests.enums.FacilityCategory;
-import org.sormas.e2etests.enums.FollowUpStatus;
-import org.sormas.e2etests.enums.PresentCondition;
-import org.sormas.e2etests.helpers.AssertHelpers;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.state.ApiState;
-import org.testng.Assert;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CREATE_NEW_PERSON_RADIO_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_POPUP_SAVE_BUTTON;
 
 public class CaseDirectorySteps implements En {
   Faker faker = new Faker();
@@ -135,6 +138,30 @@ public class CaseDirectorySteps implements En {
         });
 
     When(
+        "I search last create case by UUID in Contact Directory via api",
+        () -> {
+          String caseUUID = apiState.getCreatedCase().getUuid();
+          webDriverHelpers.fillAndSubmitInWebElement(NAME_UUID_EPID_NUMBER_LIKE_INPUT, caseUUID);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+        });
+
+    When(
+        "I click Save button in Pick or create person form",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
+        });
+
+    When(
+        "I pick Create a new person box in Pick or create person form",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_RADIO_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
+        });
+
+    When(
         "^Search for Case using Case UUID from the created Task",
         () -> {
           webDriverHelpers.fillAndSubmitInWebElement(
@@ -142,6 +169,7 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
+
     When(
         "I click on the DETAILED button from Case directory",
         () -> {

@@ -18,27 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.cases;
 
-import static org.sormas.e2etests.pages.application.cases.EditContactsPage.*;
-import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RELATIONSHIP_WITH_CASE_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_COMMUNITY_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_DISTRICT_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_REGION_COMBOBOX;
-import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.*;
-import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
-import static org.sormas.e2etests.pages.application.contacts.EditContactPage.ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT;
-import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CONTACT_CATEGORY_OPTIONS;
-import static org.sormas.e2etests.pages.application.contacts.EditContactPage.DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT;
-import static org.sormas.e2etests.pages.application.contacts.EditContactPage.LAST_CONTACT_DATE;
-import static org.sormas.e2etests.pages.application.contacts.EditContactPage.TYPE_OF_CONTACT_OPTIONS;
-import static org.sormas.e2etests.steps.BaseSteps.locale;
-
 import cucumber.api.java8.En;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.TextStyle;
-import java.util.List;
-import java.util.Locale;
-import javax.inject.Inject;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Contact;
@@ -47,6 +27,47 @@ import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.asserts.SoftAssert;
+
+import javax.inject.Inject;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.List;
+import java.util.Locale;
+
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.CONTACT_RESULTS_UUID_LOCATOR;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.NEW_CONTACT_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RELATIONSHIP_WITH_CASE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RELATIONSHIP_WITH_CASE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_COMMUNITY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_COMMUNITY_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_DISTRICT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_DISTRICT_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_REGION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_REGION_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.DATE_OF_BIRTH_DAY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.DATE_OF_BIRTH_MONTH_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.DATE_OF_BIRTH_YEAR_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.DATE_OF_LAST_CONTACT_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.DATE_OF_REPORT_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.FIRST_NAME_OF_CONTACT_PERSON_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.LAST_NAME_OF_CONTACT_PERSON_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.PRIMARY_EMAIL_ADDRESS_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.PRIMARY_PHONE_NUMBER_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SEX_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.TYPE_OF_CONTACT_TRAVELER;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CONTACT_CATEGORY_OPTIONS;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CONTACT_CREATED_POPUP;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.LAST_CONTACT_DATE;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.REPORT_DATE;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.RETURNING_TRAVELER_OPTIONS;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.TYPE_OF_CONTACT_OPTIONS;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.USER_INFORMATION;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 public class EditContactsSteps implements En {
 
@@ -66,6 +87,11 @@ public class EditContactsSteps implements En {
       EnvironmentManager environmentManager) {
     this.webDriverHelpers = webDriverHelpers;
 
+    When(
+        "I create a new contact from Cases Contacts tab base on Person created via api",
+        () -> {
+          createNewContactByApi(apiState);
+        });
     When(
         "I open the Case Contacts tab of the created case via api",
         () -> {
@@ -290,6 +316,16 @@ public class EditContactsSteps implements En {
             webDriverHelpers.getValueFromWebElement(DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT))
         .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
         .build();
+  }
+
+  private void createNewContactByApi(ApiState apiState) {
+    fillFirstName(apiState.getLastCreatedPerson().getFirstName());
+    fillLastName(apiState.getLastCreatedPerson().getLastName());
+    String sex = apiState.getLastCreatedPerson().getSex();
+    selectSex(sex.substring(0, 1).toUpperCase() + sex.substring(1).toLowerCase());
+    fillPrimaryPhoneNumber(apiState.getLastCreatedPerson().getPhone());
+    fillPrimaryEmailAddress(apiState.getLastCreatedPerson().getEmailAddress());
+    webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
   }
 
   private Contact getContactInformation() {
