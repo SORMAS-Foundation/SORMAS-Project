@@ -77,6 +77,32 @@ public class EditCaseSteps implements En {
       EnvironmentManager environmentManager) {
     this.webDriverHelpers = webDriverHelpers;
 
+    When(
+        "I fill the specific Date of outcome",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              DATE_OF_OUTCOME_INPUT, DATE_FORMATTER.format(LocalDate.now().minusDays(1)));
+        });
+
+    //    When(
+    //        "I check if Date of outcome for specified case is correct",
+    //        () -> {
+    //          String dateOfOutcome = webDriverHelpers.getValueFromWebElement(DATE_OF_OUTCOME);
+    //          softly.assertEquals(
+    //              LocalDate.parse(dateOfOutcome, DATE_FORMATTER),
+    //              DATE_FORMATTER.format(LocalDate.now().minusDays(1)),
+    //              "Date of outcome is invalid");
+    //          softly.assertAll();
+    //        });
+
+    When(
+        "I select ([^\"]*) as Outcome Of Case Status",
+        (String caseStatus) -> {
+          webDriverHelpers.clickWebElementByText(
+              OUTCOME_OF_CASE_OPTIONS, CaseOutcome.getValueFor(caseStatus).toUpperCase());
+          TimeUnit.SECONDS.sleep(1);
+        });
+
     And(
         "I click on save button from Edit Case page",
         () -> {
