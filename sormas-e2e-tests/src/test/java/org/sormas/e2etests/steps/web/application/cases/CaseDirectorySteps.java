@@ -375,7 +375,6 @@ public class CaseDirectorySteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(
               CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
-          TimeUnit.SECONDS.sleep(2); // wait for filter
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
         });
 
@@ -521,7 +520,7 @@ public class CaseDirectorySteps implements En {
     And(
         "I fill Cases to input to {int} days after mocked Case created on Case directory page",
         (Integer number) -> {
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
           webDriverHelpers.fillInWebElement(
               DATE_TO_COMBOBOX,
               formatter.format(
