@@ -512,6 +512,11 @@ public class CreateNewCaseSteps implements En {
     webDriverHelpers.fillInWebElement(PRIMARY_PHONE_NUMBER_INPUT, primaryPhoneNumber);
   }
 
+  private void fillDateOfSymptomOnsetDE(LocalDate date) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    webDriverHelpers.fillInWebElement(DATE_OF_SYMPTOM_ONSET_INPUT, formatter.format(date));
+  }
+
   private void fillPrimaryEmailAddress(String primaryPhoneNumber) {
     webDriverHelpers.fillInWebElement(PRIMARY_EMAIL_ADDRESS_INPUT, primaryPhoneNumber);
   }
