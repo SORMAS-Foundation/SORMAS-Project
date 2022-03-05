@@ -48,6 +48,14 @@ public class EditCasePersonSteps implements En {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
+        "I set death date for person ([^\"]*) month ago",
+        (String dateOfDeath) -> {
+          LocalDate date = LocalDate.now().minusMonths(Long.parseLong(dateOfDeath));
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+          webDriverHelpers.fillInWebElement(DATE_OF_DEATH_INPUT, formatter.format(date));
+        });
+
+    When(
         "I check the created data is correctly displayed on Edit case person page",
         () -> {
           collectedCase = collectCasePersonData();

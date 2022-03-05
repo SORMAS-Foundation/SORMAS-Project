@@ -139,4 +139,5 @@ public class CaseDirectoryPage {
       By.xpath("//div[contains(@class, 'popupContent')]//tr[@role='row']");
   public static final By SEARCH_BUTTON = By.id("search");
   // TODO refactor the other headers based on the last one added
+  public static final By SECOND_CASE_ID_BUTTON = By.xpath("//table//tr[2]//a");
 }
