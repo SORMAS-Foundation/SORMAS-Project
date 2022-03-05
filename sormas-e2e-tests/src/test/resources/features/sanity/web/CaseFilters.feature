@@ -314,4 +314,113 @@ Feature: Case filter functionality
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
 
+  @issue=SORQA-83 @env_de
+  Scenario: Check Case basic filters on Case directory page for DE version
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data for DE version
+    Then I check the created data is correctly displayed on Edit case page for DE version
+    Then I back to Case Directory using case list button
+    And I filter by CaseID of last created UI Case on Case directory page
+    And I apply Case origin "Im Land" on Case directory page
+    And I apply Disease filter "COVID-19" on Case directory page
+    And I apply Outcome of case filter "Verstorben" on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+
+  @issue=SORQA-83 @env_de
+  Scenario: Check checkboxes filters on Case directory page for DE specific
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data for DE version
+    Then I check the created data is correctly displayed on Edit case page for DE version
+    Then I back to Case Directory using case list button
+    And I filter by CaseID of last created UI Case on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 1
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I click "Nur Fälle ohne Geo-Koordinaten" checkbox on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 1
+    And I click "Nur Fälle ohne Geo-Koordinaten" checkbox on Case directory page
+    And I click "Nur Fälle ohne verantwortlichen Beauftragten" checkbox on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+    And I click "Nur Fälle ohne verantwortlichen Beauftragten" checkbox on Case directory page
+    And I click "Nur Fälle mit verlängerter Isolation" checkbox on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+    And I click "Nur Fälle mit verlängerter Isolation" checkbox on Case directory page
+    And I click "Nur Fälle mit verkürzter Isolation" checkbox on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+    And I click "Nur Fälle mit verkürzter Isolation" checkbox on Case directory page
+    And I click "Maßnahmen zur Gewährleistung der Versorgung" checkbox on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+    And I click "Maßnahmen zur Gewährleistung der Versorgung" checkbox on Case directory page
+    And I click "Nur Fälle mit Ereignissen" checkbox on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+    And I click "Nur Fälle mit Ereignissen" checkbox on Case directory page
+    And I click "Nur Fälle von anderen Instanzen" checkbox on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+    And I click "Nur Fälle von anderen Instanzen" checkbox on Case directory page
+    And I click "Nur Fälle mit Reinfektion" checkbox on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+    And I click "Nur Fälle mit Reinfektion" checkbox on Case directory page
+    And I click "Nur Fälle mit erfüllter Referenzdefinition" checkbox on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+    And I click "Nur Fälle mit erfüllter Referenzdefinition" checkbox on Case directory page
+    And I click "Nur Einreisefälle ohne zugewiesene Einrichtung" checkbox on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+    And I click "Nur Einreisefälle ohne zugewiesene Einrichtung" checkbox on Case directory page
+
+  @issue=SORQA-82 @env_de
+  Scenario: Check aggregation buttons on Case directory page for DE specific
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data for DE version
+    Then I check the created data is correctly displayed on Edit case page for DE version
+    Then I back to Case Directory using case list button
+    And I filter by CaseID of last created UI Case on Case directory page
+    And I check that number of displayed cases results is 1
+    And I click All button in Case Directory Page
+    And I check that number of displayed cases results is 1
+    And I click on Investigation pending button on Case Directory Page
+    And I check that number of displayed cases results is 1
+    And I click on Investigation done button on Case Directory Page
+    And I check that number of displayed cases results is 0
+    And I click on Investigation discarded button on Case Directory Page
+    And I check that number of displayed cases results is 0
+    And I click All button in Case Directory Page
+    And I apply "Archived cases" to combobox on Case Directory Page
+    And I check that number of displayed cases results is 0
+
+  @issue=SORQA-83 @env_de
+  Scenario: Check Case report date filters on Case directory page for De specific
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data for DE version
+    Then I check the created data is correctly displayed on Edit case page for DE version
+    Then I back to Case Directory using case list button
+    And I filter by CaseID of last created UI Case on Case directory page
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I apply Date type filter to "Fallmeldedatum" on Case directory page
+    And I fill Cases from input to 1 days before UI Case created on Case directory page
+    And I fill Cases to input to 5 days after UI Case created on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 1
+    And I fill Cases from input to 3 days after before UI Case created on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+    And I fill Cases from input to 1 days before UI Case created on Case directory page
+
     
