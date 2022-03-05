@@ -521,7 +521,7 @@ public class CaseDirectorySteps implements En {
     And(
         "I fill Cases to input to {int} days after mocked Case created on Case directory page",
         (Integer number) -> {
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
           webDriverHelpers.fillInWebElement(
               DATE_TO_COMBOBOX,
               formatter.format(
