@@ -93,7 +93,6 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.common.DataOperations;
-import org.sormas.e2etests.enums.CaseOrigin;
 import org.sormas.e2etests.enums.CaseOutcome;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.DistrictsValues;
@@ -354,8 +353,7 @@ public class CaseDirectorySteps implements En {
     Then(
         "I apply Outcome of case filter {string} on Case directory page",
         (String outcomeFilterOption) ->
-            webDriverHelpers.selectFromCombobox(
-                CASE_OUTCOME_FILTER_COMBOBOX, CaseOutcome.getValueFor(outcomeFilterOption)));
+            webDriverHelpers.selectFromCombobox(CASE_OUTCOME_FILTER_COMBOBOX, outcomeFilterOption));
     And(
         "I apply Case classification filter {string} on Case directory page",
         (String caseClassification) ->
@@ -407,8 +405,7 @@ public class CaseDirectorySteps implements En {
     Then(
         "I apply Case origin {string} on Case directory page",
         (String caseOrigin) ->
-            webDriverHelpers.selectFromCombobox(
-                CASE_ORIGIN_FILTER_COMBOBOX, CaseOrigin.getValueFor(caseOrigin)));
+            webDriverHelpers.selectFromCombobox(CASE_ORIGIN_FILTER_COMBOBOX, caseOrigin));
     Then(
         "I apply Community {string} on Case directory page",
         (String community) ->
@@ -457,6 +454,14 @@ public class CaseDirectorySteps implements En {
                       .minusDays(number)));
         });
     And(
+        "I fill Cases from input to {int} days before UI Case created on Case directory page",
+        (Integer number) -> {
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+          webDriverHelpers.fillInWebElement(
+              DATE_FROM_COMBOBOX,
+              formatter.format(CreateNewCaseSteps.caze.getDateOfReport().minusDays(number)));
+        });
+    And(
         "I fill Cases from input to {int} days before mocked Cases created on Case directory page",
         (Integer number) -> {
           DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
@@ -474,6 +479,14 @@ public class CaseDirectorySteps implements En {
           DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
           webDriverHelpers.fillInWebElement(
               DATE_FROM_COMBOBOX, formatter.format(LocalDate.now().plusDays(number)));
+        });
+    And(
+        "I fill Cases from input to {int} days after before UI Case created on Case directory page",
+        (Integer number) -> {
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+          webDriverHelpers.fillInWebElement(
+              DATE_FROM_COMBOBOX,
+              formatter.format(CreateNewCaseSteps.caze.getDateOfReport().plusDays(number)));
         });
     And(
         "I click All button in Case Directory Page",
@@ -505,39 +518,49 @@ public class CaseDirectorySteps implements En {
         (String checkboxDescription) -> {
           switch (checkboxDescription) {
             case ("Only cases without geo coordinates"):
+            case ("Nur Fälle ohne Geo-Koordinaten"):
               webDriverHelpers.clickOnWebElementBySelector(CASES_WITHOUT_GEO_COORDINATES_CHECKBOX);
               break;
             case ("Only cases without responsible officer"):
+            case ("Nur Fälle ohne verantwortlichen Beauftragten"):
               webDriverHelpers.clickOnWebElementBySelector(
                   CASES_WITHOUT_RESPONSIBLE_OFFICER_CHECKBOX);
               break;
             case ("Only cases with extended quarantine"):
+            case ("Nur Fälle mit verlängerter Isolation"):
               webDriverHelpers.clickOnWebElementBySelector(CASES_WITH_EXTENDED_QUARANTINE_CHECKBOX);
               break;
             case ("Only cases with reduced quarantine"):
+            case ("Nur Fälle mit verkürzter Isolation"):
               webDriverHelpers.clickOnWebElementBySelector(CASES_WITH_REDUCED_QUARANTINE_CHECKBOX);
               break;
             case ("Help needed in quarantine"):
+            case ("Maßnahmen zur Gewährleistung der Versorgung"):
               webDriverHelpers.clickOnWebElementBySelector(
                   CASES_HELP_NEEDED_IN_QUARANTINE_CHECKBOX);
               break;
             case ("Only cases with events"):
+            case ("Nur Fälle mit Ereignissen"):
               webDriverHelpers.clickOnWebElementBySelector(CASES_WITH_EVENTS_CHECKBOX);
               break;
             case ("Only cases from other instances"):
+            case ("Nur Fälle von anderen Instanzen"):
               webDriverHelpers.clickOnWebElementBySelector(CASES_FROM_OTHER_INSTANCES_CHECKBOX);
               break;
             case ("Only cases with reinfection"):
+            case ("Nur Fälle mit Reinfektion"):
               webDriverHelpers.clickOnWebElementBySelector(CASES_WITH_REINFECTION_CHECKBOX);
               break;
             case ("Include cases from other jurisdictions"):
               webDriverHelpers.clickOnWebElementBySelector(CASES_FROM_OTHER_JURISDICTIONS_CHECKBOX);
               break;
             case ("Only cases with fulfilled reference definition"):
+            case ("Nur Fälle mit erfüllter Referenzdefinition"):
               webDriverHelpers.clickOnWebElementBySelector(
                   CASES_WITH_FULFILLED_REFERENCE_DEFINITION_CHECKBOX);
               break;
             case ("Only port health cases without a facility"):
+            case ("Nur Einreisefälle ohne zugewiesene Einrichtung"):
               webDriverHelpers.clickOnWebElementBySelector(CASES_WITHOUT_FACILITY_CHECKBOX);
               break;
           }
@@ -554,6 +577,14 @@ public class CaseDirectorySteps implements En {
                           apiState.getCreatedCase().getReportDate().toInstant(),
                           ZoneId.systemDefault())
                       .plusDays(number)));
+        });
+    And(
+        "I fill Cases to input to {int} days after UI Case created on Case directory page",
+        (Integer number) -> {
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+          webDriverHelpers.fillInWebElement(
+              DATE_TO_COMBOBOX,
+              formatter.format(CreateNewCaseSteps.caze.getDateOfReport().plusDays(number)));
         });
     And(
         "I apply Year filter different than Person has on Case directory page",

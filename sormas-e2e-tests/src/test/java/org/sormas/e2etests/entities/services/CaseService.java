@@ -110,6 +110,7 @@ public class CaseService {
         .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
         .primaryEmailAddress(
             ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
+        .outcomeOfCase("VERSTORBEN")
         .build();
   }
 
