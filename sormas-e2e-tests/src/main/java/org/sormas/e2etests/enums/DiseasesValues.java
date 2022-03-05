@@ -39,7 +39,6 @@ public enum DiseasesValues {
   MONKEYPOX("MONKEYPOX", "Monkeypox"),
   UNSPECIFIED_VHF("UNSPECIFIED_VHF", "Unspecified VHF"),
   POLIO("POLIO", "Poliomyelitis"),
-  OTHER("OTHER", "Other Epidemic Disease"),
   YELLOW_FEVER("YELLOW_FEVER", "Yellow Fever");
 
   private final String diseaseName;
