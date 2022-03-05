@@ -311,7 +311,8 @@ public class TaskManagementSteps implements En {
   }
 
   private LocalDateTime getLocalDateTimeFromColumns(String date) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy h:m a");
+    DateTimeFormatter formatter =
+        DateTimeFormatter.ofPattern("M/d/yyyy h:m a").localizedBy(Locale.GERMAN);
     try {
       return LocalDateTime.parse(date.trim(), formatter);
     } catch (Exception e) {
