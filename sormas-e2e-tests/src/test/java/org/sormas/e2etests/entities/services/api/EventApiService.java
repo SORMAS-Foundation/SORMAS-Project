@@ -52,8 +52,8 @@ public class EventApiService {
         .eventTitle(String.valueOf(System.currentTimeMillis()))
         .startDate(new Date())
         .reportDateTime(new Date())
-        .riskLevel(RiskLevelValues.getRandomRiskLevelName())
-        .typeOfPlace(TypeOfPlace.getRandomTypeOfPlace())
+            .riskLevel("LOW")
+            .typeOfPlace("HOME")
         .eventManagementStatus(EventManagementStatusValues.ONGOING.getValue())
         .eventLocation(
             EventLocation.builder()
