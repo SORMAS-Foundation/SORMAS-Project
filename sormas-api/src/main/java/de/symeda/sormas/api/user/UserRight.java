@@ -1525,6 +1525,12 @@ public enum UserRight {
 			NATIONAL_USER,
 			SURVEILLANCE_SUPERVISOR,
 			ADMIN_SUPERVISOR
+	),
+	DEV_MODE(
+			ADMIN
+	),
+	FILTERED_GRID_BULK_ACTION(
+			ADMIN
 	);
 	//@formatter:on
 

@@ -35,6 +35,7 @@ import de.symeda.sormas.api.utils.ValidationException;
 /**
  * These are also used as user groups in the server realm
  */
+@Deprecated
 public enum UserRole
 	implements
 	StatisticsGroupingKey {

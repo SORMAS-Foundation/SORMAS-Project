@@ -298,8 +298,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CheckBox.class,
 			FieldConfiguration.withCaptionAndStyle(
 				CaseCriteria.WITHOUT_RESPONSIBLE_OFFICER,
-				I18nProperties.getCaption(Captions.caseFilterWithoutResponsibleOfficer),
-				I18nProperties.getDescription(Descriptions.descCaseFilterWithoutResponsibleOfficer),
+				I18nProperties.getCaption(Captions.caseFilterWithoutResponsibleUser),
+				I18nProperties.getDescription(Descriptions.descCaseFilterWithoutResponsibleUser),
 				CssStyles.CHECKBOX_FILTER_INLINE));
 
 		addField(

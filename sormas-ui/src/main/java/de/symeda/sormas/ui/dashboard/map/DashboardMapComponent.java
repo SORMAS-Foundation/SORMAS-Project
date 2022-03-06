@@ -59,16 +59,16 @@ import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.dashboard.DashboardEventDto;
 import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.geo.GeoLatLon;
+import de.symeda.sormas.api.geo.GeoShapeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
-import de.symeda.sormas.api.geo.GeoLatLon;
-import de.symeda.sormas.api.geo.GeoShapeProvider;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -159,16 +159,11 @@ public class DashboardMapComponent extends VerticalLayout {
 				mapCenter = FacadeProvider.getConfigFacade().getCountryCenter();
 				map.setCenter(mapCenter);
 			} else {
-				if (UserProvider.getCurrent().hasAnyUserRole(UserRole.NATIONAL_USER, UserRole.NATIONAL_CLINICIAN, UserRole.NATIONAL_OBSERVER)) {
-					mapCenter = geoShapeProvider.getCenterOfAllRegions();
-
+				UserDto user = UserProvider.getCurrent().getUser();
+				if (user.getRegion() != null) {
+					mapCenter = geoShapeProvider.getCenterOfRegion(user.getRegion());
 				} else {
-					UserDto user = UserProvider.getCurrent().getUser();
-					if (user.getRegion() != null) {
-						mapCenter = geoShapeProvider.getCenterOfRegion(user.getRegion());
-					} else {
-						mapCenter = geoShapeProvider.getCenterOfAllRegions();
-					}
+					mapCenter = geoShapeProvider.getCenterOfAllRegions();
 				}
 
 				GeoLatLon center = Optional.ofNullable(mapCenter).orElseGet(FacadeProvider.getConfigFacade()::getCountryCenter);
