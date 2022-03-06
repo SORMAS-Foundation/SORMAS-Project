@@ -170,13 +170,13 @@ Feature: Create events
     When I am accessing the event tab using the created event via api
     Then I am checking event group name and id is correctly displayed
 
-  @issue=SORDEV-5496 @env_main
+  @issue=SORDEV-5496 @env_main @mycheck
   Scenario: Generate event document
     Given I log in with National User
     And I click on the Events button from navbar
     And I open the first event from events list
     And I click on the Create button from Event Document Templates
-    When I create an event document from template
+    When I create and download an event document from template
     And I verify that the event document is downloaded and correctly named
 
   @issue=SORDEV-5491 @env_main

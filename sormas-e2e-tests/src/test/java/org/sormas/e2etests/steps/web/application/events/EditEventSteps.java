@@ -85,6 +85,7 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Event;
@@ -412,12 +413,13 @@ public class EditEventSteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(EditEventPage.CREATE_DOCUMENT_BUTTON));
 
     When(
-        "I create an event document from template",
+        "I create and download an event document from template",
         () -> {
           aEventHandout = eventDocumentService.buildEventHandout();
           aEventHandout = aEventHandout.toBuilder().build();
           selectEventHandoutTemplate(aEventHandout.getDocumentTemplate());
           webDriverHelpers.clickOnWebElementBySelector(EditEventPage.CREATE_EVENT_HANDOUT_BUTTON);
+            TimeUnit.SECONDS.sleep(5); //needed to download the document first
           webDriverHelpers.clickOnWebElementBySelector(EditEventPage.CANCEL_EVENT_HANDOUT_BUTTON);
         });
     And(
@@ -455,11 +457,10 @@ public class EditEventSteps implements En {
                       + uuid.substring(0, 6)
                       + "-"
                       + aEventHandout.getDocumentTemplate());
-          softly.assertTrue(
+          Assert.assertTrue(
               Files.exists(path),
               "The document with expected name was not downloaded. Searched after path: "
                   + path.toAbsolutePath());
-          softly.assertAll();
         });
   }
 
