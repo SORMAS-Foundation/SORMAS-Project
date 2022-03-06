@@ -35,12 +35,13 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.report.WeeklyReportCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.user.User;
@@ -125,7 +126,7 @@ public class WeeklyReportService extends AdoServiceWithUserFilter<WeeklyReport> 
 		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
 		if (currentUser == null
 			|| (jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
-			|| currentUser.hasAnyUserRole(UserRole.REST_USER)) {
+			|| currentUser.hasAnyUserRight(UserRight.SORMAS_REST)) {
 			return null;
 		}
 
@@ -141,7 +142,7 @@ public class WeeklyReportService extends AdoServiceWithUserFilter<WeeklyReport> 
 		}
 
 		// Officers see all reports from their assigned informants
-		if (currentUser.hasAnyUserRole(UserRole.SURVEILLANCE_OFFICER)) {
+		if (JurisdictionLevel.DISTRICT.equals(currentUser.getJurisdictionLevel()) && currentUser.hasAnyUserRight(UserRight.WEEKLYREPORT_CREATE)) {
 			filter = cb.or(filter, cb.equal(informant.get(User.ASSOCIATED_OFFICER), currentUser));
 		}
 
@@ -176,7 +177,7 @@ public class WeeklyReportService extends AdoServiceWithUserFilter<WeeklyReport> 
 		}
 
 		// Officers see all reports from their assigned informants
-		if (user.hasAnyUserRole(UserRole.SURVEILLANCE_OFFICER)) {
+		if (JurisdictionLevel.DISTRICT.equals(user.getJurisdictionLevel()) && user.hasAnyUserRight(UserRight.WEEKLYREPORT_CREATE)) {
 			constraints = constraints.or(u -> user.equals(u.getAssociatedOfficer()));
 		}
 
@@ -191,7 +192,8 @@ public class WeeklyReportService extends AdoServiceWithUserFilter<WeeklyReport> 
 
 		Optional.ofNullable(orderProperty).map(from::get).map(p -> asc ? cb.asc(p) : cb.desc(p)).ifPresent(cq::orderBy);
 
-		CriteriaBuilderHelper.and(cb, Optional.ofNullable(createUserFilter(cb, cq, from)), buildCriteriaFilter(criteria, cb, from)).ifPresent(cq::where);
+		CriteriaBuilderHelper.and(cb, Optional.ofNullable(createUserFilter(cb, cq, from)), buildCriteriaFilter(criteria, cb, from))
+			.ifPresent(cq::where);
 
 		return em.createQuery(cq).getResultList();
 	}
@@ -202,7 +204,8 @@ public class WeeklyReportService extends AdoServiceWithUserFilter<WeeklyReport> 
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<WeeklyReport> from = cq.from(WeeklyReport.class);
 
-		CriteriaBuilderHelper.and(cb, Optional.ofNullable(createUserFilter(cb, cq, from)), buildCriteriaFilter(criteria, cb, from)).ifPresent(cq::where);
+		CriteriaBuilderHelper.and(cb, Optional.ofNullable(createUserFilter(cb, cq, from)), buildCriteriaFilter(criteria, cb, from))
+			.ifPresent(cq::where);
 
 		cq.select(cb.count(from));
 

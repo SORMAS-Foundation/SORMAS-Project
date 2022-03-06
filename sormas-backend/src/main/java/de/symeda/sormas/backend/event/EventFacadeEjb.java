@@ -1263,6 +1263,16 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		return subordinateEventUuids;
 	}
 
+	private User getRandomDistrictEventResponsible(District district) {
+
+		return userService.getRandomUser(district, UserRight.EVENT_RESPONSIBLE);
+	}
+
+	private User getRandomRegionEventResponsible(Region region) {
+
+		return userService.getRandomUser(region, UserRight.EVENT_RESPONSIBLE);
+	}
+
 	@Override
 	public boolean hasRegionAndDistrict(String eventUuid) {
 		return service.hasRegionAndDistrict(eventUuid);

@@ -35,6 +35,7 @@ import de.symeda.sormas.api.utils.ValidationException;
 /**
  * These are also used as user groups in the server realm
  */
+@Deprecated
 public enum UserRole
 	implements
 	StatisticsGroupingKey {
@@ -209,7 +210,7 @@ public enum UserRole
 	POE_NATIONAL_USER(false, false, false, true, JurisdictionLevel.NATION, Collections.emptyList(), Collections.emptyList()),
 	IMPORT_USER(false, false, false, false, JurisdictionLevel.NONE, Collections.emptyList(), Collections.emptyList()),
 	REST_EXTERNAL_VISITS_USER(false, false, false, false, JurisdictionLevel.NATION, Collections.emptyList(), Collections.emptyList()),
-	REST_USER(false, false, false, false, JurisdictionLevel.NONE, Collections.emptyList(), Collections.emptyList()),
+	REST_USER(false, false, false, false, JurisdictionLevel.NATION, Collections.emptyList(), Collections.emptyList()),
 	SORMAS_TO_SORMAS_CLIENT(false, false, false, false, JurisdictionLevel.NATION, Collections.emptyList(), Collections.emptyList()),
 	BAG_USER(false, false, false, false, JurisdictionLevel.NONE, Collections.emptyList(), Collections.emptyList());
 
@@ -282,14 +283,17 @@ public enum UserRole
 		return I18nProperties.getEnumCaptionShort(this);
 	}
 
+	@Deprecated
 	public boolean isSupervisor() {
 		return supervisor;
 	}
 
+	@Deprecated
 	public boolean hasAssociatedOfficer() {
 		return hasAssociatedOfficer;
 	}
 
+	@Deprecated
 	public boolean isPortHealthUser() {
 		return portHealthUser;
 	}
@@ -427,6 +431,7 @@ public enum UserRole
 		return laboratoryJurisdictionPresent ? JurisdictionLevel.LABORATORY : JurisdictionLevel.NONE;
 	}
 
+	@Deprecated
 	public static boolean isSupervisor(Collection<UserRole> roles) {
 
 		for (UserRole role : roles) {
@@ -437,6 +442,8 @@ public enum UserRole
 		return false;
 	}
 
+	//TODO: #2804
+	@Deprecated
 	public static boolean hasAssociatedOfficer(Collection<UserRole> roles) {
 
 		for (UserRole role : roles) {
@@ -447,6 +454,8 @@ public enum UserRole
 		return false;
 	}
 
+	//TODO: #2804
+	@Deprecated
 	public static boolean hasOptionalHealthFacility(Collection<UserRole> roles) {
 
 		for (UserRole role : roles) {
@@ -457,6 +466,8 @@ public enum UserRole
 		return false;
 	}
 
+	@Deprecated
+	//TODO: #2804
 	public static boolean isPortHealthUser(Collection<UserRole> roles) {
 
 		for (UserRole role : roles) {
@@ -467,6 +478,8 @@ public enum UserRole
 		return false;
 	}
 
+	//TODO: #2804
+	@Deprecated
 	public static boolean isLabUser(Collection<UserRole> roles) {
 		return roles.contains(UserRole.LAB_USER) || roles.contains(UserRole.EXTERNAL_LAB_USER);
 	}

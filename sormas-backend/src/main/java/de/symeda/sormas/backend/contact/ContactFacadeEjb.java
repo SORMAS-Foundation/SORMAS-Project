@@ -62,7 +62,6 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.clinicalcourse.HealthConditionsMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -138,6 +137,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.clinicalcourse.HealthConditionsMapper;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
@@ -2107,6 +2107,16 @@ public class ContactFacadeEjb
 		}
 
 		return completeness;
+	}
+
+	private User getRandomDistrictContactResponsible(District district) {
+
+		return userService.getRandomUser(district, UserRight.CONTACT_RESPONSIBLE);
+	}
+
+	public User getRandomRegionContactResponsible(Region region) {
+
+		return userService.getRandomUser(region, UserRight.CONTACT_RESPONSIBLE);
 	}
 
 	@LocalBean

@@ -40,7 +40,6 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
@@ -99,7 +98,7 @@ public class VisitController {
 			}
 		});
 
-		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.ACTION_DELETE)) {
 			editView.addDeleteListener(() -> {
 				FacadeProvider.getVisitFacade().deleteVisit(visitRef.getUuid());
 				UI.getCurrent().removeWindow(window);

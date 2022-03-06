@@ -120,6 +120,7 @@ import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -183,7 +184,6 @@ import de.symeda.sormas.api.therapy.TreatmentCriteria;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
@@ -226,7 +226,6 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.contact.VisitSummaryExportDetails;
-import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.document.Document;
 import de.symeda.sormas.backend.document.DocumentService;
@@ -1823,7 +1822,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		District survOffDistrict = newCase.getSurveillanceOfficer() != null ? newCase.getSurveillanceOfficer().getDistrict() : null;
 		if (survOffDistrict == null
 			|| (!survOffDistrict.equals(newCase.getResponsibleDistrict()) && !survOffDistrict.equals(newCase.getDistrict()))) {
-			setResponsibleSurveillanceOfficer(newCase);
+			setCaseResponsible(newCase);
 		}
 
 		updateInvestigationByStatus(existingCase, newCase);
@@ -2031,28 +2030,28 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 	}
 
-	public void setResponsibleSurveillanceOfficer(Case caze) {
+	public void setCaseResponsible(Case caze) {
 		if (featureConfigurationFacade.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.AUTOMATIC_RESPONSIBILITY_ASSIGNMENT)) {
 			District reportingUserDistrict = caze.getReportingUser().getDistrict();
 
-			if (caze.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_OFFICER)
+			if (caze.getReportingUser().getUserRights().contains(UserRight.CASE_RESPONSIBLE)
 				&& (reportingUserDistrict.equals(caze.getResponsibleDistrict()) || reportingUserDistrict.equals(caze.getDistrict()))) {
 				caze.setSurveillanceOfficer(caze.getReportingUser());
 			} else {
-				List<User> informants = caze.getHealthFacility() != null && FacilityType.HOSPITAL.equals(caze.getHealthFacility().getType())
-					? userService.getInformantsOfFacility(caze.getHealthFacility())
+				List<User> hospitalUsers = caze.getHealthFacility() != null && FacilityType.HOSPITAL.equals(caze.getHealthFacility().getType())
+					? userService.getUsersOfHospital(caze.getHealthFacility())
 					: new ArrayList<>();
 				Random rand = new Random();
-				if (!informants.isEmpty()) {
-					caze.setSurveillanceOfficer(informants.get(rand.nextInt(informants.size())).getAssociatedOfficer());
+				if (!hospitalUsers.isEmpty()) {
+					caze.setSurveillanceOfficer(hospitalUsers.get(rand.nextInt(hospitalUsers.size())).getAssociatedOfficer());
 				} else {
 					User survOff = null;
 					if (caze.getResponsibleDistrict() != null) {
-						survOff = getRandomSurveillanceOfficer(caze.getResponsibleDistrict());
+						survOff = getRandomDistrictCaseResponsible(caze.getResponsibleDistrict());
 					}
 
 					if (survOff == null && caze.getDistrict() != null) {
-						survOff = getRandomSurveillanceOfficer(caze.getDistrict());
+						survOff = getRandomDistrictCaseResponsible(caze.getDistrict());
 					}
 
 					caze.setSurveillanceOfficer(survOff);
@@ -2939,28 +2938,26 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			// 1) The surveillance officer that is responsible for the case
 			assignee = caze.getSurveillanceOfficer();
 		} else {
-			// 2) A random surveillance officer from the case responsible district
-			assignee = getRandomSurveillanceOfficer(caze.getResponsibleDistrict());
+			// 2) A random user with UserRight.CASE_RESPONSIBLE from the case responsible district
+			assignee = getRandomDistrictCaseResponsible(caze.getResponsibleDistrict());
 		}
 
 		if (assignee == null && caze.getDistrict() != null) {
 			// 3) A random surveillance officer from the case district
-			assignee = getRandomSurveillanceOfficer(caze.getDistrict());
+			assignee = getRandomDistrictCaseResponsible(caze.getDistrict());
 		}
 
 		if (assignee == null) {
-			if (caze.getReportingUser() != null
-				&& (caze.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)
-					|| caze.getReportingUser().getUserRoles().contains(UserRole.ADMIN_SUPERVISOR))) {
+			if (caze.getReportingUser() != null && (caze.getReportingUser().getUserRights().contains(UserRight.TASK_ASSIGN))) {
 				// 4) If the case was created by a surveillance supervisor, assign them
 				assignee = caze.getReportingUser();
 			} else {
 				// 5) Assign a random surveillance supervisor from the case responsible region
-				assignee = getRandomRegionUser(caze.getResponsibleRegion());
+				assignee = getRandomRegionCaseResponsible(caze.getResponsibleRegion());
 			}
 			if (assignee == null && caze.getRegion() != null) {
 				// 6) Assign a random surveillance supervisor from the case region
-				assignee = getRandomRegionUser(caze.getRegion());
+				assignee = getRandomRegionCaseResponsible(caze.getRegion());
 			}
 		}
 
@@ -2970,14 +2967,14 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 	}
 
-	private User getRandomSurveillanceOfficer(District district) {
+	private User getRandomDistrictCaseResponsible(District district) {
 
-		return userService.getRandomUser(district, UserRole.SURVEILLANCE_OFFICER);
+		return userService.getRandomUser(district, UserRight.CASE_RESPONSIBLE);
 	}
 
-	private User getRandomRegionUser(Region region) {
+	private User getRandomRegionCaseResponsible(Region region) {
 
-		return userService.getRandomUser(region, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.ADMIN_SUPERVISOR);
+		return userService.getRandomUser(region, UserRight.CASE_RESPONSIBLE);
 	}
 
 	@Override

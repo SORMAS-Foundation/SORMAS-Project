@@ -643,5 +643,25 @@
 	<security-role>
 		<role-name>EXTERNAL_VISITS</role-name>
 	</security-role>
-	
+
+	<security-role>
+		<role-name>CASE_RESPONSIBLE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>CONTACT_RESPONSIBLE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EVENT_RESPONSIBLE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>DEV_MODE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>FILTERED_GRID_BULK_ACTION</role-name>
+	</security-role>
+
 </web-app>

@@ -14,12 +14,13 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
-import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.User;
 
@@ -40,11 +41,12 @@ public class AggregateReportService extends AdoServiceWithUserFilter<AggregateRe
 		Predicate filter = null;
 
 		if (criteria.getRegion() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.join(AggregateReport.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(from.join(AggregateReport.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
 		}
 		if (criteria.getDistrict() != null) {
-			filter =
-					CriteriaBuilderHelper.and(cb, filter, cb.equal(from.join(AggregateReport.DISTRICT, JoinType.LEFT).get(District.UUID), criteria.getDistrict().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(from.join(AggregateReport.DISTRICT, JoinType.LEFT).get(District.UUID), criteria.getDistrict().getUuid()));
 		}
 		if (criteria.getHealthFacility() != null) {
 			filter = CriteriaBuilderHelper.and(
@@ -91,7 +93,7 @@ public class AggregateReportService extends AdoServiceWithUserFilter<AggregateRe
 
 		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
 		if ((jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
-			|| currentUser.hasAnyUserRole(UserRole.REST_USER)) {
+			|| currentUser.hasAnyUserRight(UserRight.SORMAS_REST)) {
 			return null;
 		}
 

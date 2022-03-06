@@ -120,7 +120,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		List<SortProperty> sortProperties = null;
 
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf.region.getUuid(), null, null, null, "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user =
+			creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), null, null, "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		loginWith(user);
 
 		// 1a. Test for all available PersonAssociations
@@ -946,23 +947,30 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testUserWithLimitedDiseaseSeeOnlyLimitedTravelEntry(){
+	public void testUserWithLimitedDiseaseSeeOnlyLimitedTravelEntry() {
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility", "PointOfEntry");
 		PersonCriteria criteria = new PersonCriteria();
 		criteria.setPersonAssociation(PersonAssociation.TRAVEL_ENTRY);
 
 		UserDto natUser = useNationalUserLogin();
 		// CORONAVIRUS Travel Entry
-		PersonDto personWithCorona = creator.createPerson("Person Coronavirus","Test");
-		creator.createTravelEntry(personWithCorona.toReference(), natUser.toReference(), Disease.CORONAVIRUS, rdcf.region, rdcf.district, rdcf.pointOfEntry);
+		PersonDto personWithCorona = creator.createPerson("Person Coronavirus", "Test");
+		creator.createTravelEntry(
+			personWithCorona.toReference(),
+			natUser.toReference(),
+			Disease.CORONAVIRUS,
+			rdcf.region,
+			rdcf.district,
+			rdcf.pointOfEntry);
 
 		// DENGUE Travel Entry
-		PersonDto personWithDengue = creator.createPerson("Person Dengue","Test");
-		creator.createTravelEntry(personWithDengue.toReference(), natUser.toReference(), Disease.DENGUE, rdcf.region, rdcf.district, rdcf.pointOfEntry);
+		PersonDto personWithDengue = creator.createPerson("Person Dengue", "Test");
+		creator
+			.createTravelEntry(personWithDengue.toReference(), natUser.toReference(), Disease.DENGUE, rdcf.region, rdcf.district, rdcf.pointOfEntry);
 
 		//National User with no restrictions can see all the travel entries
 		List<PersonIndexDto> personIndexDtos = getPersonFacade().getIndexList(criteria, 0, 100, null);
-		assertEquals(2 , personIndexDtos.size());
+		assertEquals(2, personIndexDtos.size());
 		List<String> firstNames = personIndexDtos.stream().map(p -> p.getFirstName()).collect(Collectors.toList());
 		assertTrue(firstNames.contains(personWithCorona.getFirstName()));
 		assertTrue(firstNames.contains(personWithDengue.getFirstName()));
@@ -972,7 +980,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		loginWith(user);
 
 		personIndexDtos = getPersonFacade().getIndexList(criteria, 0, 100, null);
-		assertEquals(1 , personIndexDtos.size());
+		assertEquals(1, personIndexDtos.size());
 		assertEquals(personWithDengue.getFirstName(), personIndexDtos.get(0).getFirstName());
 	}
 }

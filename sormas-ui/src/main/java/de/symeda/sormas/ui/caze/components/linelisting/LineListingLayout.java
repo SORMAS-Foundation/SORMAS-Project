@@ -37,7 +37,6 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
@@ -146,7 +145,7 @@ public class LineListingLayout extends VerticalLayout {
 		addComponent(lineComponent);
 
 		UserProvider currentUserProvider = UserProvider.getCurrent();
-		if (currentUserProvider != null && UserRole.isSupervisor(currentUserProvider.getUserRoles())) {
+		if (currentUserProvider != null && currentUserProvider.hasRegionalJurisdictionLevel()) {
 			RegionReferenceDto userRegion = currentUserProvider.getUser().getRegion();
 			region.setValue(userRegion);
 			region.setVisible(false);

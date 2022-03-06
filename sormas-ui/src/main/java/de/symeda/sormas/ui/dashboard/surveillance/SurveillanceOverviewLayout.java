@@ -28,7 +28,6 @@ import com.vaadin.v7.ui.CheckBox;
 
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
 import de.symeda.sormas.ui.dashboard.surveillance.components.disease.DiseaseOverviewComponent;
@@ -73,7 +72,7 @@ public class SurveillanceOverviewLayout extends CustomLayout {
 		diseaseOverviewComponent = new DiseaseOverviewComponent();
 		addComponent(diseaseOverviewComponent, BURDEN_LOC);
 
-		if (UserRole.isSupervisor(UserProvider.getCurrent().getUser().getUserRoles()))
+		if (UserProvider.getCurrent().hasRegionalJurisdictionLevel())
 			diseaseOverviewComponent.getShowTableViewButton().click();
 	}
 

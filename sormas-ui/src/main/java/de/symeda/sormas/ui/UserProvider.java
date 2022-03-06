@@ -91,10 +91,17 @@ public class UserProvider {
 	}
 
 	public boolean hasNationalJurisdictionLevel() {
+		//TODO: #4461
 		return UserRole.getJurisdictionLevel(getCurrent().getUserRoles()) == JurisdictionLevel.NATION;
 	}
 
+	public boolean hasRegionalJurisdictionLevel() {
+		//TODO: #4461
+		return UserRole.getJurisdictionLevel(getCurrent().getUserRoles()) == JurisdictionLevel.REGION;
+	}
+
 	public boolean hasNoneJurisdictionLevel() {
+		//TODO: #4461
 		return UserRole.getJurisdictionLevel(getCurrent().getUserRoles()) == JurisdictionLevel.NONE;
 	}
 
@@ -109,6 +116,16 @@ public class UserProvider {
 			userReference = getUser().toReference();
 		}
 		return userReference;
+	}
+
+	public boolean hasLaboratoryOrExternalLaboratoryJurisdictionLevel() {
+		JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(getCurrent().getUserRoles());
+		return (jurisdictionLevel == JurisdictionLevel.LABORATORY) || (jurisdictionLevel == jurisdictionLevel.EXTERNAL_LABORATORY);
+	}
+
+	public boolean hasExternalLaboratoryJurisdictionLevel() {
+		JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(getCurrent().getUserRoles());
+		return jurisdictionLevel == jurisdictionLevel.EXTERNAL_LABORATORY;
 	}
 
 	public String getUuid() {
