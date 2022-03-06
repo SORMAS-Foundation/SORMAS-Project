@@ -21,6 +21,7 @@ import java.util.stream.Collectors;
 import com.vaadin.data.provider.DataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.DateRenderer;
+import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
@@ -46,26 +47,29 @@ public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, Cam
 		addDefaultColumns();
 	}
 
+	//Apply filter
 	protected void addDefaultColumns() {
 		addEditColumn(e -> {
 			ControllerProvider.getCampaignController().navigateToFormDataView(e.getUuid());
 		});
 
 		setColumns(
-			EDIT_BTN_ID,
+		//	EDIT_BTN_ID,
 			CampaignFormDataIndexDto.CAMPAIGN,
 			CampaignFormDataIndexDto.FORM,
+			CampaignFormDataIndexDto.AREA,
 			CampaignFormDataIndexDto.REGION,
 			CampaignFormDataIndexDto.DISTRICT,
 			CampaignFormDataIndexDto.COMMUNITY,
 			CampaignFormDataIndexDto.FORM_DATE);
-		getColumn(EDIT_BTN_ID).setWidth(40).setStyleGenerator(item -> CssStyles.GRID_CELL_LINK);
+		//getColumn(EDIT_BTN_ID).setWidth(40).setStyleGenerator(item -> CssStyles.GRID_CELL_LINK);
 
 		((Column<CampaignFormDataIndexDto, Date>) getColumn(CampaignFormDataIndexDto.FORM_DATE))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateFormat(I18nProperties.getUserLanguage())));
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(CampaignFormDataIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
+			
 		}
 	}
 
@@ -91,11 +95,16 @@ public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, Cam
 	}
 
 	public void addCustomColumn(String property, String caption) {
+		if(!property.toString().contains("readonly")){
+			System.out.println(caption+" --+++-- "+property);
 		Column<CampaignFormDataIndexDto, Object> newColumn =
 			addColumn(e -> e.getFormValues().stream().filter(v -> v.getId().equals(property)).findFirst().orElse(null));
 		newColumn.setSortable(false);
 		newColumn.setCaption(caption);
 		newColumn.setId(property);
+		newColumn.setWidth(240.0);
+		
+		}
 	}
 
 }

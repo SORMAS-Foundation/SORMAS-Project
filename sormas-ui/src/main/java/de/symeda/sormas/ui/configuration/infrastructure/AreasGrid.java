@@ -24,6 +24,8 @@ public class AreasGrid extends FilteredGrid<AreaDto, AreaCriteria> {
 	public AreasGrid(AreaCriteria criteria) {
 		super(AreaDto.class);
 		setSizeFull();
+		
+		
 
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(AreasView.class).get(ViewConfiguration.class);
 		setInEagerMode(viewConfiguration.isInEagerMode());

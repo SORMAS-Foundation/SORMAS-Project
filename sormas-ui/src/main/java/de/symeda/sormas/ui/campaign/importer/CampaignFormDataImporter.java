@@ -76,7 +76,7 @@ public class CampaignFormDataImporter extends DataImporter {
 		this.campaignFormMetaUuid = campaignFormMetaUuid;
 		this.campaignReferenceDto = campaignReferenceDto;
 
-		this.userFacade = FacadeProvider.getUserFacade();
+		this.userFacade = FacadeProvider.getUserFacade(); 
 	}
 
 	@Override
@@ -114,7 +114,7 @@ public class CampaignFormDataImporter extends DataImporter {
 						.community(campaignFormData.getCommunity())
 						.formDate(campaignFormData.getFormDate()));
 
-			if (existingData != null) {
+		/*	if (existingData != null) {
 				final CampaignFormDataImportLock lock = new CampaignFormDataImportLock();
 				synchronized (lock) {
 
@@ -138,9 +138,9 @@ public class CampaignFormDataImporter extends DataImporter {
 						FacadeProvider.getCampaignFormDataFacade().overwriteCampaignFormData(existingData, campaignFormData);
 					}
 				}
-			} else {
+			} else {*/
 				FacadeProvider.getCampaignFormDataFacade().saveCampaignFormData(campaignFormData);
-			}
+		//	}
 		} catch (ImportErrorException | InvalidColumnException | ValidationRuntimeException e) {
 			writeImportError(values, e.getLocalizedMessage());
 			return ImportLineResult.ERROR;

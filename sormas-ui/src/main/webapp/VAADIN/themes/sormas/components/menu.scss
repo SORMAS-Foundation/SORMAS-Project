@@ -97,6 +97,7 @@ $valo-menu-background-color: $s-default-color !default;
     
     .valo-menu-logo {
       margin-top: 1px;
+display: none;
     }
     
     .valo-menu-title {
@@ -108,6 +109,21 @@ $valo-menu-background-color: $s-default-color !default;
       color: valo-font-color(#fff, 0.9);
     }
   }
+
+.view-headerxxx[width-range~="0-800px"] {
+	
+	width: inherit !important;
+	//background-color: black !important;
+	// !important;
+}
+
+.view-headerxxxx[width-range~="801px-"] {
+	
+	width: 100% !important;
+	//background-color: black !important;
+	// !important;
+}
+
     
   // Move logout and settings buttons to the bottom of the menu on large screens
   .v-ui[width-range~="801px-"] .valo-menu-part {

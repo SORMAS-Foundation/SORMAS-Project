@@ -32,11 +32,13 @@ public class CampaignFormMeta extends AbstractDomainObject {
 	public static final String TABLE_NAME = "campaignformmeta";
 
 	public static final String FORM_ID = "formId";
-	public static final String FORM_NAME = "formName";
+	public static final String FORM_TYPE = "formType";
+	public static final String FORM_NAME = "formName"; 
 	public static final String CAMPAIGN_FORM_ELEMENTS = "campaignFormElements";
 	public static final String CAMPAIGN_FORM_TRANSLATIONS = "campaignFormTranslations";
 
 	private String formId;
+	private String formType;
 	private String formName;
 	private String languageCode;
 	private String campaignFormElements;
@@ -51,6 +53,15 @@ public class CampaignFormMeta extends AbstractDomainObject {
 
 	public void setFormId(String formId) {
 		this.formId = formId;
+	}
+	
+	@Column
+	public String getFormType() {
+		return formType;
+	}
+
+	public void setFormType(String formType) {
+		this.formType = formType;
 	}
 
 	@Column
@@ -169,5 +180,6 @@ public class CampaignFormMeta extends AbstractDomainObject {
 	public String toString() {
 		return formName;
 	}
+	
 
 }

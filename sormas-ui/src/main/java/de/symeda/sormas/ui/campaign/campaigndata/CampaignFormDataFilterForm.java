@@ -49,7 +49,7 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 	private ComboBox regionFilter;
 	private ComboBox districtFilter;
 	private ComboBox communityFilter;
-
+ 
 	protected CampaignFormDataFilterForm() {
 
 		super(CampaignFormDataCriteria.class, CampaignFormDataDto.I18N_PREFIX);
@@ -95,11 +95,10 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 			regionFilter = addField(
 					FieldConfiguration.withCaptionAndPixelSized(CampaignFormDataCriteria.REGION, I18nProperties.getCaption(Captions.Campaign_region), 200));
 				regionFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllRegions));
-				regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
+				//regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
 		districtFilter = addField(
-			FieldConfiguration
-				.withCaptionAndPixelSized(CampaignFormDataCriteria.DISTRICT, I18nProperties.getCaption(Captions.Campaign_district), 200));
+			FieldConfiguration.withCaptionAndPixelSized(CampaignFormDataCriteria.DISTRICT, I18nProperties.getCaption(Captions.Campaign_district), 200));
 		districtFilter.setInputPrompt(I18nProperties.getString(Strings.promptAllDistricts));
 
 		communityFilter = addField(
@@ -112,10 +111,15 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 		final RegionReferenceDto userRegion = user.getRegion();
 		final DistrictReferenceDto userDistrict = user.getDistrict();
 		final CommunityReferenceDto userCommunity = user.getCommunity();
-		if (userRegion != null) {
-			regionFilter.setEnabled(false);
-			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(userRegion.getUuid()));
-			if (userDistrict != null) {
+		
+		
+		if (userArea != null) {
+			areaFilter.setEnabled(false);
+			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByArea(userArea.getUuid()));
+			if (userRegion != null) {
+				regionFilter.setEnabled(false);
+				districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(userRegion.getUuid()));
+				if (userDistrict != null) {
 				districtFilter.setEnabled(false);
 				communityFilter.addItems(FacadeProvider.getCommunityFacade().getAllActiveByDistrict(userDistrict.getUuid()));
 				if (userCommunity != null) {
@@ -123,6 +127,7 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 				}
 			}
 		}
+	}
 	}
 
 	@Override
@@ -139,12 +144,25 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 		field.addStyleName(CssStyles.CAPTION_ON_TOP);
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void applyDependenciesOnFieldChange(String propertyId, Property.ValueChangeEvent event) {
 		super.applyDependenciesOnFieldChange(propertyId, event);
 
 		switch (propertyId) {
+		case CampaignFormDataDto.AREA:
+			System.out.println("saaaaaaaaaaaaaaaassssssssssssssssssssssssssssssss");
+			AreaReferenceDto area = (AreaReferenceDto) event.getProperty().getValue();
+			if (area != null) {
+				regionFilter.removeAllItems();
+				regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByArea(area.getUuid()));
+			} else {
+				regionFilter.removeAllItems();
+				regionFilter.clear();
+			}
+			break;
 		case CampaignFormDataDto.REGION:
+			System.out.println("ssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
 			RegionReferenceDto region = (RegionReferenceDto) event.getProperty().getValue();
 			if (region != null) {
 				districtFilter.removeAllItems();
@@ -180,6 +198,7 @@ public class CampaignFormDataFilterForm extends AbstractFilterForm<CampaignFormD
 	}
 
 	public void setFormMetaChangedCallback(Consumer<CampaignFormMetaReferenceDto> formMetaChangedCallback) {
+		System.out.println("sGGGGGGGGGGGGGGGGGGGGGGGGGGGGGsssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
 		this.formMetaChangedCallback = formMetaChangedCallback;
 
 		if (cbCampaignForm != null) {

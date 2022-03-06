@@ -35,6 +35,7 @@ public abstract class ReferenceDto implements Serializable, HasUuid, Comparable<
 	@Pattern(regexp = UUID_REGEX, message = Validations.uuidPatternNotMatching)
 	private String uuid;
 	private String caption;
+	private String formtype;
 
 	public ReferenceDto() {
 
@@ -45,9 +46,20 @@ public abstract class ReferenceDto implements Serializable, HasUuid, Comparable<
 	}
 
 	public ReferenceDto(String uuid, String caption) {
+		System.out.println("ddddddddddddddddddddddddddddddddddddd>_____vvvvvv____xxx_______xx__ddddddddddddddddddddddddddddddddddddddddddddddddddd");
 		this.uuid = uuid;
 		this.caption = caption;
 	}
+	
+	public ReferenceDto(String uuid, String caption, String type) {
+		
+		System.out.println(caption+" ddddddddd5555555555555555555555555555555555555555555dddddddddddddddddddddddddddd "+type);
+		this.uuid = uuid;
+		this.caption = caption;
+		this.formtype = type;
+	}
+	
+	
 
 	@Override
 	public String getUuid() {
@@ -64,6 +76,16 @@ public abstract class ReferenceDto implements Serializable, HasUuid, Comparable<
 
 	public void setCaption(String caption) {
 		this.caption = caption;
+	}
+	
+	
+
+	public String getFormType() {
+		return formtype;
+	}
+
+	public void setFormType(String formtype) {
+		this.formtype = formtype;
 	}
 
 	@Override

@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -31,6 +32,7 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -38,6 +40,12 @@ import de.symeda.sormas.backend.util.QueryHelper;
 @Stateless(name = "AreaFacade")
 public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaService> implements AreaFacade {
 
+	@EJB
+	private RegionService regionService;
+	
+	@EJB
+	private AreaService areaService;
+	
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 
@@ -216,4 +224,6 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaService> 
 			super(service, featureConfiguration);
 		}
 	}
+
+	
 }

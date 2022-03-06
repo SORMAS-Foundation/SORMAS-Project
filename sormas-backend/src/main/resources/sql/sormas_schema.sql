@@ -4317,7 +4317,7 @@ ALTER TABLE campaigns_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (213, 'Add campaigns #1984');
 
--- 2020-06-04 Change text field lengths #580´
+-- 2020-06-04 Change text field lengths #580Â´
 ALTER TABLE campaigns ALTER COLUMN description TYPE varchar(4096);
 ALTER TABLE campaigns_history ALTER COLUMN description TYPE varchar(4096);
 
@@ -5963,7 +5963,7 @@ ALTER TABLE person_history ADD COLUMN armedforcesrelationtype varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (283, 'Add column armedforcesrelationtype #3418');
 
--- 2020-11-27 SurvNet Adaptations - Create new field “nosocomial outbreak” to cases #3416
+-- 2020-11-27 SurvNet Adaptations - Create new field â€œnosocomial outbreakâ€ to cases #3416
 ALTER TABLE cases
     ADD COLUMN nosocomialOutbreak boolean default false,
     ADD COLUMN infectionSetting varchar(255);
@@ -5972,16 +5972,16 @@ ALTER TABLE cases_history
     ADD COLUMN nosocomialoutbreak boolean default false,
     ADD COLUMN infectionsetting varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (284, 'SurvNet Adaptations - Create new field “nosocomial outbreak” to cases #3416');
+INSERT INTO schema_version (version_number, comment) VALUES (284, 'SurvNet Adaptations - Create new field â€œnosocomial outbreakâ€ to cases #3416');
 
--- 2020-12-03 SurvNet Adaptations - Create new field “name of guardians” for persons #3413
+-- 2020-12-03 SurvNet Adaptations - Create new field â€œname of guardiansâ€ for persons #3413
 ALTER TABLE person
     ADD COLUMN namesofotherguardians varchar(512);
 
 ALTER TABLE person_history
     ADD COLUMN namesofotherguardians varchar(512);
 
-INSERT INTO schema_version (version_number, comment) VALUES (285, 'SurvNet Adaptations - Create new field “name of guardians” for persons #3413');
+INSERT INTO schema_version (version_number, comment) VALUES (285, 'SurvNet Adaptations - Create new field â€œname of guardiansâ€ for persons #3413');
 
 -- 2020-12-08 SurvNet Adaptations - Add multi day contat to contact history #3408
 
@@ -5990,7 +5990,7 @@ ALTER TABLE contact_history ADD column firstcontactdate timestamp;
 
 INSERT INTO schema_version (version_number, comment) VALUES (286, 'Add date of first contact for contact history #3408');
 
--- 2020-11-25 SurvNet Adaptations - Create new field “Prohibition to work” for case and contact #3409
+-- 2020-11-25 SurvNet Adaptations - Create new field â€œProhibition to workâ€ for case and contact #3409
 ALTER TABLE cases
     ADD COLUMN prohibitiontowork varchar(255),
     ADD COLUMN prohibitiontoworkfrom timestamp,
@@ -6011,7 +6011,7 @@ ALTER TABLE contact_history
     ADD COLUMN prohibitiontoworkfrom timestamp,
     ADD COLUMN prohibitiontoworkuntil timestamp;
 
-INSERT INTO schema_version (version_number, comment) VALUES (287, 'Create new field “Prohibition to work” for case and contact #3409');
+INSERT INTO schema_version (version_number, comment) VALUES (287, 'Create new field â€œProhibition to workâ€ for case and contact #3409');
 
 -- 2020-11-27 Add institutional partner option to events source type #3207
 ALTER TABLE events ADD COLUMN srcInstitutionalPartnerType varchar(255);
@@ -6091,7 +6091,7 @@ CREATE INDEX IF NOT EXISTS idx_contacts_visits_contact_id ON contacts_visits USI
 
 INSERT INTO schema_version (version_number, comment) VALUES (292, 'Create contacts-visits index #3673');
 
--- SurvNet Adaptations - Create new field “Salutation” for persons #3411
+-- SurvNet Adaptations - Create new field â€œSalutationâ€ for persons #3411
 ALTER TABLE person
     ADD COLUMN salutation varchar(255),
     ADD COLUMN othersalutation text;
@@ -6100,7 +6100,7 @@ ALTER TABLE person_history
     ADD COLUMN salutation varchar(255),
     ADD COLUMN othersalutation text;
 
-INSERT INTO schema_version (version_number, comment) VALUES (293, 'SurvNet Adaptations - Create new field “Salutation” for persons #3411');
+INSERT INTO schema_version (version_number, comment) VALUES (293, 'SurvNet Adaptations - Create new field â€œSalutationâ€ for persons #3411');
 
 -- 2020-12-11 - Add patient exposition role to exposures #3407
 ALTER TABLE exposures ADD COLUMN patientexpositionrole varchar(255);
@@ -6108,7 +6108,7 @@ ALTER TABLE exposures_history ADD COLUMN patientexpositionrole varchar(255);
 
 INSERT INTO schema_version (version_number, comment) VALUES (294, 'Add patient exposition role to exposures #3407');
 
--- 2020-12-09 SurvNet Adaptations - Create new fields “Country of birth” and “nationality” for persons #3412
+-- 2020-12-09 SurvNet Adaptations - Create new fields â€œCountry of birthâ€ and â€œnationalityâ€ for persons #3412
 ALTER TABLE person
     ADD COLUMN birthname varchar(512),
     ADD COLUMN birthcountry_id bigint,
@@ -6123,7 +6123,7 @@ ALTER TABLE person_history
     ADD CONSTRAINT fk_person_birthcountry_id FOREIGN KEY (birthcountry_id) REFERENCES country (id),
     ADD CONSTRAINT fk_person_citizenship_id FOREIGN KEY (citizenship_id) REFERENCES country (id);
 
-INSERT INTO schema_version (version_number, comment) VALUES (295, 'SurvNet Adaptations - Create new fields “Country of birth” and “nationality” for persons #3412');
+INSERT INTO schema_version (version_number, comment) VALUES (295, 'SurvNet Adaptations - Create new fields â€œCountry of birthâ€ and â€œnationalityâ€ for persons #3412');
 
 -- 2020-12-14 Change namesOfOtherGuardians to namesOfGuardians #3413
 ALTER TABLE person RENAME COLUMN namesofotherguardians TO namesofguardians;
@@ -6455,11 +6455,11 @@ ALTER TABLE ONLY documents ADD CONSTRAINT documents_uuid_key UNIQUE (uuid);
 
 INSERT INTO schema_version (version_number, comment) VALUES (322, 'Add UNIQUE contraint to documents uuid field #3661');
 
--- 2020-02-08 SurvNet Adaptations - Create new field “Blood donation in the last 6 months” for cases #3414
+-- 2020-02-08 SurvNet Adaptations - Create new field â€œBlood donation in the last 6 monthsâ€ for cases #3414
 ALTER TABLE cases ADD COLUMN bloodorganortissuedonated varchar(255);
 ALTER TABLE cases_history ADD COLUMN bloodorganortissuedonated varchar(255);
 
-INSERT INTO schema_version (version_number, comment) VALUES (323, '2020-02-08 SurvNet Adaptations - Create new field “Blood donation in the last 6 months” for cases #3414');
+INSERT INTO schema_version (version_number, comment) VALUES (323, '2020-02-08 SurvNet Adaptations - Create new field â€œBlood donation in the last 6 monthsâ€ for cases #3414');
 
 -- 2021-02-05 Case identification source #3420
 ALTER TABLE cases ADD COLUMN caseidentificationsource character varying(255);
@@ -6467,7 +6467,7 @@ ALTER TABLE cases_history ADD COLUMN caseidentificationsource character varying(
 
 INSERT INTO schema_version (version_number, comment) VALUES (324, 'Case identification source #3420');
 
--- 2021-02-10 SurvNet Adaptations - Create new field “Suspicious case” to cases
+-- 2021-02-10 SurvNet Adaptations - Create new field â€œSuspicious caseâ€ to cases
 
 ALTER TABLE cases ADD COLUMN notACaseReasonNegativeTest boolean default false;
 ALTER TABLE cases_history ADD COLUMN notACaseReasonNegativeTest boolean default false;
@@ -6484,9 +6484,9 @@ ALTER TABLE cases_history ADD COLUMN notACaseReasonOther boolean default false;
 ALTER TABLE cases ADD COLUMN notACaseReasonDetails text;
 ALTER TABLE cases_history ADD COLUMN notACaseReasonDetails text;
 
-INSERT INTO schema_version (version_number, comment) VALUES (325, 'SurvNet Adaptations - Create new field “Suspicious case” to cases #3419');
+INSERT INTO schema_version (version_number, comment) VALUES (325, 'SurvNet Adaptations - Create new field â€œSuspicious caseâ€ to cases #3419');
 
--- 2020-02-09 #3831 SurvNet Adaptations - Create new field “Reinfection” for cases
+-- 2020-02-09 #3831 SurvNet Adaptations - Create new field â€œReinfectionâ€ for cases
 ALTER TABLE cases
     ADD COLUMN reinfection varchar(255),
     ADD COLUMN previousinfectiondate timestamp;
@@ -6495,7 +6495,7 @@ ALTER TABLE cases_history
     ADD COLUMN reinfection varchar(255),
     ADD COLUMN previousinfectiondate timestamp;
 
-INSERT INTO schema_version (version_number, comment) VALUES (326, 'SurvNet Adaptations - Create new field “Reinfection” for cases #3831');
+INSERT INTO schema_version (version_number, comment) VALUES (326, 'SurvNet Adaptations - Create new field â€œReinfectionâ€ for cases #3831');
 
 -- 2021-02-10 - Make user roles deactivateable #3716
 ALTER TABLE userrolesconfig ADD COLUMN enabled boolean NOT NULL default true;
@@ -8301,16 +8301,55 @@ INSERT INTO schema_version (version_number, comment) VALUES (409, 'Add round to 
 
 
 -- 2021-09-27 Add Area ID to enable filter
-ALTER TABLE campaignformdata ADD COLUMN area_id bigint default 139;
+ALTER TABLE campaignformdata ADD COLUMN area_id bigint;
 
 INSERT INTO schema_version (version_number, comment) VALUES (410, 'Add Area to campaignform to enable campaign filter by Area');
 
 
 -- 2021-09-27 Need to increase uuid to accomodate -DUP #63
+ALTER TABLE campaigns_history ALTER COLUMN uuid TYPE varchar(255);
 ALTER TABLE campaigns ALTER COLUMN uuid TYPE varchar(255);
 
+CREATE TABLE campaign_types(id bigint PRIMARY KEY NOT NULL,type character varying UNIQUE);
+<<<<<<< HEAD
+INSERT INTO campaign_types(id, type) VALUES('1'::bigint, 'pre-campaign'::character varying),('2'::bigint, 'intra-campaign'::character varying),('3'::bigint, 'post-campaign'::character varying);
+=======
+>>>>>>> f459606ee9 (fix for #106, #93 #84 #63 #36 #1 #116 #108)
+=======
+I>>>>>>> f459606ee9 (fix for #106, #93 #84 #63 #36 #1 #116 #108)
+
+ALTER TABLE campaignformmeta ADD COLUMN formtype character varying;
+ALTER TABLE campaignformmeta ADD CONSTRAINT fk_campaignformtype FOREIGN KEY(formtype) REFERENCES campaign_types(type);
 INSERT INTO schema_version (version_number, comment) VALUES (411, 'Increasing uuid size on Campigns table');
 
+
+
+
+UPDATE campaignformdata set area_id = (select region.area_id from region where campaignformdata.region_id = region.id);
+
+INSERT INTO schema_version (version_number, comment) VALUES (412, 'patch campaignformadata_Area');
+
+
+-- Refacatoring area id to neccessary tables
+
+ALTER TABLE location ADD COLUMN area_id bigint;
+ALTER TABLE location ADD CONSTRAINT area_ref_fk FOREIGN KEY (area_id) REFERENCES areas (id);
+
+ALTER TABLE users ADD COLUMN area_id ;
+ALTER TABLE users ADD CONSTRAINT area_ref_fk FOREIGN KEY (area_id) REFERENCES areas (id);
+
+
+ALTER TABLE location_history ADD COLUMN area_id bigint;
+ALTER TABLE location_history ADD CONSTRAINT area_ref_fk FOREIGN KEY (area_id) REFERENCES areas (id);
+
+ALTER TABLE users_history ADD COLUMN area_id bigint;
+ALTER TABLE users_history ADD CONSTRAINT area_ref_fk FOREIGN KEY (area_id) REFERENCES areas (id);
+
+ALTER TABLE campaignformmeta_history ADD COLUMN formtype character varying;
+ALTER TABLE campaignformmeta_history ADD CONSTRAINT fk_campaignformtype FOREIGN KEY(formtype) REFERENCES campaign_types(type);
+
+
+INSERT INTO schema_version (version_number, comment) VALUES (413, 'adding area_id to requried tables');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
 

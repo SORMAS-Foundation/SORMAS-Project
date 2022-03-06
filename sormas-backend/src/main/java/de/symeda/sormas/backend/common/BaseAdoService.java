@@ -27,6 +27,7 @@ import javax.enterprise.inject.Instance;
 import javax.inject.Inject;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
+import javax.persistence.MappedSuperclass;
 import javax.persistence.NoResultException;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
@@ -41,8 +42,13 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.annotations.TypeDef;
+import org.hibernate.annotations.TypeDefs;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import com.vladmihalcea.hibernate.type.util.SQLExtractor;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -52,9 +58,14 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
+
+@TypeDefs({
+	@TypeDef(name = "json", typeClass = JsonBinaryType.class),
+	@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class) })
+@MappedSuperclass
 public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoService<ADO> {
 
-	// protected to be used by implementations
+	// protected to be used by implementations 
 	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private final Class<ADO> elementClass;
@@ -139,6 +150,24 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 
 		return em.createQuery(cq).getResultList();
 	}
+	
+	
+	
+	@Override
+	public List<ADO> getByRound(String round) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
+		Root<ADO> from = cq.from(getElementClass());
+		cq.where(cb.equal(from.get("formType"), round));
+		cq.orderBy(cb.desc(from.get(AbstractDomainObject.CHANGE_DATE)));
+		
+		System.out.println("DEBUGGER 5678ijhyuio"+SQLExtractor.from(em.createQuery(cq)));
+
+		return em.createQuery(cq).getResultList();
+		
+	}
+	
+	
 
 	public List<ADO> getAll(BiFunction<CriteriaBuilder, Root<ADO>, Predicate> filterBuilder) {
 
@@ -234,7 +263,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
 		Root<ADO> from = cq.from(getElementClass());
 		cq.where(cb.equal(from.get(AbstractDomainObject.UUID), uuidParam));
-
+System.out.println("sssdeeeeegtyuhgyuyteeeeeeewwwwwwwwwwwwwwwwwwwwwww"+cq);
 		TypedQuery<ADO> q = em.createQuery(cq).setParameter(uuidParam, uuid);
 
 		return q.getResultList().stream().findFirst().orElse(null);

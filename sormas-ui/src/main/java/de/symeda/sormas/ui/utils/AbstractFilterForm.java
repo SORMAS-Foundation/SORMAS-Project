@@ -48,7 +48,9 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 	}
 
 	protected AbstractFilterForm(Class<T> type, String propertyI18nPrefix, FieldVisibilityCheckers fieldVisibilityCheckers) {
+		
 		this(type, propertyI18nPrefix, fieldVisibilityCheckers, Captions.actionApplyFilters, Captions.actionResetFilters);
+		System.out.println("£££££££££££££££££££££££££££££££££££££££££££££££££££££££ssssssssssssdddddddddddddddddddddddddddddsssssssssssssssss");
 	}
 
 	protected AbstractFilterForm(

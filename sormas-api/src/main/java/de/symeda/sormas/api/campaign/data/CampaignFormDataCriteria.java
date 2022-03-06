@@ -55,7 +55,7 @@ public class CampaignFormDataCriteria extends BaseCriteria implements Serializab
 	}
 
 	public void setCampaign(CampaignReferenceDto campaign) {
-		this.campaign = campaign;
+		this.campaign = campaign; 
 	}
 
 	public CampaignFormDataCriteria campaign(CampaignReferenceDto campaign) {

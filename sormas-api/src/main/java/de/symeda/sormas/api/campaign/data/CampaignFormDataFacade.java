@@ -42,7 +42,7 @@ public interface CampaignFormDataFacade {
 
 	void deleteCampaignFormData(String campaignFormDataUuid);
 	
-	void cloneCampaignFormData(String campaignFormDataUuid);
+	//void cloneCampaignFormData(String campaignFormDataUuid);
 
 	boolean isArchived(String campaignFormDataUuid);
 

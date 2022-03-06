@@ -27,6 +27,7 @@ import com.vaadin.navigator.View;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.Resource;
+import com.vaadin.server.Responsive;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
@@ -62,11 +63,13 @@ public abstract class AbstractView extends VerticalLayout implements View {
 		setSpacing(false);
 
 		viewHeader = new HorizontalLayout();
-		viewHeader.setWidth(100, Unit.PERCENTAGE);
+		//viewHeader.setWidth(100, Unit.PERCENTAGE);
+		viewHeader.addStyleName("view-headerxxx");
+		viewHeader.addStyleName("view-headerxxxx");
 		viewHeader.setHeightUndefined();
 		viewHeader.setMargin(new MarginInfo(false, true));
 		viewHeader.setSpacing(true);
-		CssStyles.style(viewHeader, "view-header");
+		
 
 		viewTitleLayout = new VerticalLayout();
 		{

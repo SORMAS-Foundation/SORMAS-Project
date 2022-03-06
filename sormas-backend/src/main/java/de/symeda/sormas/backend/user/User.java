@@ -46,6 +46,7 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.infrastructure.area.Area;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
@@ -71,6 +72,7 @@ public class User extends AbstractDomainObject {
 	public static final String USER_EMAIL = "userEmail";
 	public static final String PHONE = "phone";
 	public static final String ADDRESS = "address";
+	public static final String AREA = "area";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -96,6 +98,7 @@ public class User extends AbstractDomainObject {
 
 	private Set<UserRole> userRoles;
 
+	private Area area;
 	private Region region;
 	private District district;
 	// community of community informant
@@ -200,6 +203,15 @@ public class User extends AbstractDomainObject {
 		this.address = address;
 	}
 
+	@ManyToOne(cascade = {})
+	public Area getArea() {
+		return area;
+	}
+
+	public void setArea(Area area) {
+		this.area = area;
+	}
+	
 	@ManyToOne(cascade = {})
 	public Region getRegion() {
 		return region;

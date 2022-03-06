@@ -167,6 +167,24 @@ public class InfrastructureFieldsHelper {
 	 *            function called that accepts a boolean.
 	 *            It is called with true if the server country or no country is selected in the country combo
 	 */
+	public static void updateAreaBasedOnCountry(ComboBox countryCombo, ComboBox areaCombo, Consumer<Boolean> extraConfig) {
+		CountryReferenceDto serverCountryDto = FacadeProvider.getCountryFacade().getServerCountry();
+		CountryReferenceDto countryDto = (CountryReferenceDto) countryCombo.getValue();
+		boolean isNoCountryOrServerCountry = serverCountryDto == null
+			? countryDto == null
+			: countryDto == null || serverCountryDto.getIsoCode().equalsIgnoreCase(countryDto.getIsoCode());
+
+		if (isNoCountryOrServerCountry) {
+			FieldHelper.updateItems(areaCombo, FacadeProvider.getAreaFacade().getAllActiveAsReference());
+		} else {
+			FieldHelper.updateItems(areaCombo, FacadeProvider.getAreaFacade().getAllActiveAsReference()); //(countryDto.getUuid()
+		}
+
+		if (extraConfig != null) {
+			extraConfig.accept(isNoCountryOrServerCountry);
+		}
+	}
+	/*
 	public static void updateRegionBasedOnCountry(ComboBox countryCombo, ComboBox regionCombo, Consumer<Boolean> extraConfig) {
 		CountryReferenceDto serverCountryDto = FacadeProvider.getCountryFacade().getServerCountry();
 		CountryReferenceDto countryDto = (CountryReferenceDto) countryCombo.getValue();
@@ -184,7 +202,7 @@ public class InfrastructureFieldsHelper {
 			extraConfig.accept(isNoCountryOrServerCountry);
 		}
 	}
-
+*/
 	private static boolean isFacilityDetailsRequired(ComboBox facilityCombo) {
 		return facilityCombo.getValue() != null
 			&& ((FacilityReferenceDto) facilityCombo.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);

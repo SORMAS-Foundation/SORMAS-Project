@@ -70,7 +70,7 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 @SuppressWarnings("serial")
 public class LogoutView extends VerticalLayout implements View {
 
-	public static final String VIEW_NAME = "dashboardx";
+	public static final String VIEW_NAME = "dashboard_logout";
 
 	public LogoutView() {
 

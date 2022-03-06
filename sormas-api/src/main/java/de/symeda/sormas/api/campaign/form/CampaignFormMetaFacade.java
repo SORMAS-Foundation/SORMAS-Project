@@ -25,6 +25,8 @@ public interface CampaignFormMetaFacade {
 		throws IOException;
 
 	List<CampaignFormMetaReferenceDto> getAllCampaignFormMetasAsReferences();
+	
+	List<CampaignFormMetaReferenceDto> getAllCampaignFormMetasAsReferencesByRound(String round);
 
 	CampaignFormMetaDto getCampaignFormMetaByUuid(String campaignFormUuid);
 

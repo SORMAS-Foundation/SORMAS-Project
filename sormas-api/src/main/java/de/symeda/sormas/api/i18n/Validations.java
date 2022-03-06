@@ -204,6 +204,7 @@ public interface Validations {
 	String validPhoneNumber = "validPhoneNumber";
 	String validPointOfEntry = "validPointOfEntry";
 	String validRegion = "validRegion";
+	String validArea = "validArea";
 	String validReportDateTime = "validReportDateTime";
 	String validReportingUser = "validReportingUser";
 	String validResponsibleDistrict = "validResponsibleDistrict";

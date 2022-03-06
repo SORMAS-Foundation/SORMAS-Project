@@ -217,6 +217,7 @@ public final class CssStyles {
 	public static final String GRID_CELL_UNCOOPERATIVE_EXTERNAL = "follow-up-uncooperative-external";
 	public static final String GRID_CELL_NOT_PERFORMED_EXTERNAL = "follow-up-not-performed-external";
 	public static final String GRID_CELL_LINK = "link";
+	public static final String GRID_CELL_WRAPPER = "wrapper-cells";
 
 	public static final String GRID_CELL_ODD = "odd";
 

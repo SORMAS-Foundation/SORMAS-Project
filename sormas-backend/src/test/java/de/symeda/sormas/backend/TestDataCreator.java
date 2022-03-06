@@ -1304,7 +1304,7 @@ public class TestDataCreator {
 		CampaignFormMetaReferenceDto campaignFormMetaReferenceDto = new CampaignFormMetaReferenceDto(campaignForm.getUuid());
 
 		CampaignFormDataDto campaignFormData =
-			CampaignFormDataDto.build(campaignReferenceDto, campaignFormMetaReferenceDto, rdcf.region, rdcf.district, rdcf.community);
+			CampaignFormDataDto.build(campaignReferenceDto, campaignFormMetaReferenceDto, rdcf.area, rdcf.region, rdcf.district, rdcf.community);
 
 		try {
 			ObjectMapper mapper = new ObjectMapper();
@@ -1345,6 +1345,7 @@ public class TestDataCreator {
 		}
 
 		return new RDCF(
+			//new AreaReferenceDto(area.getUuid(), area.getName(), area.getExternalID()),
 			new RegionReferenceDto(region.getUuid(), region.getName(), region.getExternalID()),
 			new DistrictReferenceDto(district.getUuid(), district.getName(), district.getExternalID()),
 			new CommunityReferenceDto(community.getUuid(), community.getName(), community.getExternalID()),
@@ -1706,7 +1707,7 @@ public class TestDataCreator {
 	}
 
 	public static class RDCF {
-		//public AreaReferenceDto area;
+		public AreaReferenceDto area;
 		public RegionReferenceDto region;
 		public DistrictReferenceDto district;
 		public CommunityReferenceDto community;
@@ -1718,6 +1719,7 @@ public class TestDataCreator {
 		}
 */
 		public RDCF(
+			//	AreaReferenceDto area,
 			RegionReferenceDto region,
 			DistrictReferenceDto district,
 			CommunityReferenceDto community,

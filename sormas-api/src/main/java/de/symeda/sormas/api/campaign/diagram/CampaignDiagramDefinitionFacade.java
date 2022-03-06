@@ -11,6 +11,8 @@ public interface CampaignDiagramDefinitionFacade {
 	CampaignDiagramDefinitionDto save(@Valid CampaignDiagramDefinitionDto campaignDiagramDefinitionDto);
 
 	List<CampaignDiagramDefinitionDto> getAll();
+	
+	//List<CampaignDiagramDefinitionDto> getByRound();
 
 	List<CampaignDiagramDefinitionDto> getByUuids(List<String> uuids);
 

@@ -68,6 +68,7 @@ public abstract class AbstractEditableGrid<T> extends CustomLayout implements Vi
 		grid.setItems(new ArrayList<>(savedElements));
 		reorderGrid();
 		grid.setSelectionMode(Grid.SelectionMode.NONE);
+		grid.setId("formidx");
 		setSizeFull();
 
 		final GridRowDragger<T> gridRowDragger = new GridRowDragger<>(grid);

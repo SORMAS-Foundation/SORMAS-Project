@@ -2,6 +2,8 @@ package de.symeda.sormas.backend.campaign;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -127,15 +129,47 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 	}
 	
 	public int cloneForm(Campaign uuidx) {
-		String cdc = "insert into campaigns (SELECT CAST(CONCAT(id,'01') AS bigint) as id, CONCAT(uuid,'-DUP') as uuid, changedate, creationdate, CONCAT(name,'-DUP'), description, startdate, enddate, creatinguser_id, deleted, archived, sys_period, dashboardelements, cluster, round FROM campaigns where name='"+uuidx+"')";
-		int dc = cloneFormx(uuidx);
+		
+		Random r = new Random();
+		int low = 10;
+		int high = 600;
+		int result = r.nextInt(high-low) + low;
+		
+		Random rx = new Random();
+		int lowx = 10;
+		int highx = 100;
+		int resultx = rx.nextInt(highx-lowx) + lowx;
+		
+		
+		
+		String cdv = "";
+		
+		//String cdc = "insert into campaigns (SELECT CAST(CONCAT('-1',id,'"+result+"') AS bigint) as id, CONCAT(uuid,'-DUP') as uuid, changedate, creationdate, CONCAT(name,'-DUP'), description, startdate, enddate, creatinguser_id, deleted, archived, sys_period, dashboardelements, cluster, round FROM campaigns where name='"+uuidx+"')";
+		try{ 
+			int cds = cloneFormx1(uuidx, result, resultx);
+		}finally{
+			cdv = "insert into campaign_campaignformmeta (SELECT CAST(CONCAT('"+resultx+"',dc.id,'"+result+"') AS bigint) as id, cd.campaignformmeta_id, cd.sys_period FROM campaigns dc inner join campaign_campaignformmeta cd on (dc.id = cd.campaign_id) where dc.name='"+uuidx+"' and deleted = false)";
+			
+			System.out.println(cdv+"+++++++++++++++++rrrrrrrrrrrrrrrrrrr++++++++++++++++++++++++++++++++++ccccccccccccccccccccccccccccc+++++++++++++++++++++++++++++++++++++++++++++++");
+			
+		}
+		return em.createNativeQuery(cdv).executeUpdate();
+	}
+	
+	public int cloneFormx1(Campaign uuidx, int unixd, int uuiss) {
+		
+		UUID uuisd = UUID.randomUUID();
+		
+		String cdc = "insert into campaigns (SELECT CAST(CONCAT('"+uuiss+"',id,'"+unixd+"') AS bigint) as id, '"+uuisd.toString().toUpperCase()+"' as uuid, changedate, creationdate, CONCAT(name,'-DUP'), description, startdate, enddate, creatinguser_id, deleted, archived, sys_period, dashboardelements, cluster, round FROM campaigns where name='"+uuidx+"' and deleted = false)";
+		System.out.println(cdc+"++++++++++++++++++tttttttttttttttttt+++++++ccccccccccccccccccccccccccccc+++++++++++++++++++++++++++++++++++++++++++++++");
+		
 		return em.createNativeQuery(cdc).executeUpdate();
 	}
 	
-	public int cloneFormx(Campaign uuidx) {
-		String cdv = "insert into campaign_campaignformmeta (SELECT CAST(CONCAT(dc.id,'01') AS bigint) as id, cd.campaign_id, cd.campaignformmeta_id FROM campaigns dc inner join campaign_campaignformmeta cd on (dc.id = cd.campaign_id) where dc.name='"+uuidx+"')";
+	/*public int cloneFormx(Campaign uuidx, int unix) {
+		String cdv = "insert into campaign_campaignformmeta (SELECT CAST(CONCAT('-1',dc.id,'"+unix+"') AS bigint) as id, cd.campaignformmeta_id, cd.sys_period FROM campaigns dc inner join campaign_campaignformmeta cd on (dc.id = cd.campaign_id) where dc.name='"+uuidx+"')";
 		return em.createNativeQuery(cdv).executeUpdate();
-	}
+	}*/
 
 	public Predicate createActiveCampaignsFilter(CriteriaBuilder cb, Root<Campaign> root) {
 		return cb.and(cb.isFalse(root.get(Campaign.ARCHIVED)), cb.isFalse(root.get(Campaign.DELETED)));

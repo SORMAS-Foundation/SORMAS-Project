@@ -4,10 +4,15 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import com.vaadin.data.Binder;
+import com.vaadin.server.Page;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Grid;
+import com.vaadin.ui.Notification;
+import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
@@ -24,7 +29,8 @@ public class CampaignFormsGridComponent extends AbstractEditableGrid<CampaignFor
 			List<CampaignFormMetaReferenceDto> allCampaignFormMetas) {
 
 		super(savedCampaignFormMetas, allCampaignFormMetas);
-		setWidth(60, Unit.PERCENTAGE);
+
+		setWidth(100, Unit.PERCENTAGE);
 	}
 
 	@Override
@@ -32,15 +38,61 @@ public class CampaignFormsGridComponent extends AbstractEditableGrid<CampaignFor
 		return event -> {
 			final ArrayList<CampaignFormMetaReferenceDto> gridItems = getItems();
 			gridItems.add(new CampaignFormMetaReferenceDto(null, " --Please select--"));
+
 			grid.setItems(gridItems);
 			
+			grid.getEditor().cancel();
+
 			grid.getEditor().editRow(gridItems.size() - 1);
 
 		};
 	}
 
+	public void ListnerCampaignFilter(com.vaadin.v7.data.Property.ValueChangeEvent event) {
+		final ArrayList<CampaignFormMetaReferenceDto> gridItemss = getItems();
+		System.out.println(gridItemss);
+		
+		
+		final ArrayList<CampaignFormMetaReferenceDto> gridItems;
+
+		// gridItems.add(new CampaignFormMetaReferenceDto(null, " --Please select--"));
+		
+		//Notification.show("----" + event.getProperty().getValue());
+
+		if (event.getProperty().getValue().equals("Pre-Campaign")) {
+			gridItems = gridItemss;
+			gridItems.removeIf(n -> (n.getCaption().contains("a")));
+			grid.setItems(gridItems);
+			
+		} else if (event.getProperty().getValue() == "Intra-Campaign") {
+			gridItems = gridItemss;
+			gridItems.removeIf(n -> (n.getCaption().contains("a")));
+			grid.setItems(gridItems);
+			
+		} else if (event.getProperty().getValue() == "Post-Campaign") {
+			gridItems = gridItemss;
+			gridItems.removeIf(n -> (n.getCaption().contains("Re")));
+			grid.setItems(gridItems);
+			
+		}
+
+		// grid.getDataProvider().refreshAll();
+
+		// grid.getEditor().editRow(gridItems.size() - 1);
+
+		
+		// grid.removeAllColumns();
+		
+
+
+		// Page.getCurrent().getJavaScript().execute("alert(gridItems.toString())");
+
+	}
+
 	@Override
 	protected Binder<CampaignFormMetaReferenceDto> addColumnsBinder(List<CampaignFormMetaReferenceDto> allElements) {
+		
+		//todo check if we can remove elements that are null
 		final Binder<CampaignFormMetaReferenceDto> binder = new Binder<>();
 
 		// This is a bit hacky: The grid is used here to "select" the whole item instead
@@ -54,6 +106,7 @@ public class CampaignFormsGridComponent extends AbstractEditableGrid<CampaignFor
 						campaignFormMetaReferenceDto -> campaignFormMetaReferenceDto != null
 								&& campaignFormMetaReferenceDto.getUuid() != null,
 						I18nProperties.getValidationError(Validations.campaignDashboardDataFormValueNull))
+				
 				.withValidator(campaignFormMetaReferenceDto -> {
 					ArrayList<CampaignFormMetaReferenceDto> items = getItems();
 					return !items.contains(campaignFormMetaReferenceDto);
@@ -70,8 +123,16 @@ public class CampaignFormsGridComponent extends AbstractEditableGrid<CampaignFor
 
 		Grid.Column<CampaignFormMetaReferenceDto, String> formColumn = grid.addColumn(ReferenceDto::getCaption)
 				.setCaption(I18nProperties.getString(Strings.entityCampaignDataForm));
-
+		formColumn.setId("formtb");
 		formColumn.setEditorBinding(formBind);
+
+		/*
+		 * Grid.Column<CampaignFormMetaReferenceDto, String> formColumnx =
+		 * grid.addColumn(ReferenceDto::getUuid)
+		 * .setCaption(I18nProperties.getString(Strings.entityCampaignDataForm));
+		 * formColumnx.setId("formtbv"); formColumnx.setEditorBinding(formBind);
+		 */
+
 		return binder;
 	}
 

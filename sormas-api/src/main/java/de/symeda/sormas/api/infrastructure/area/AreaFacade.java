@@ -7,6 +7,7 @@ import javax.ejb.Remote;
 
 import de.symeda.sormas.api.infrastructure.GeoLocationFacade;
 
+
 @Remote
 public interface AreaFacade extends GeoLocationFacade<AreaDto, AreaDto, AreaReferenceDto, AreaCriteria> {
 
@@ -15,4 +16,6 @@ public interface AreaFacade extends GeoLocationFacade<AreaDto, AreaDto, AreaRefe
 	boolean isUsedInOtherInfrastructureData(Collection<String> areaUuids);
 
 	List<AreaReferenceDto> getByName(String name, boolean includeArchived);
+	
+	
 }

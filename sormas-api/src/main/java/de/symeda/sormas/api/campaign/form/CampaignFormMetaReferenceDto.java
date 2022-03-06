@@ -30,9 +30,15 @@ public class CampaignFormMetaReferenceDto extends ReferenceDto {
 	public CampaignFormMetaReferenceDto(String uuid) {
 		setUuid(uuid);
 	}
-
+	
 	public CampaignFormMetaReferenceDto(String uuid, String caption) {
 		setUuid(uuid);
 		setCaption(caption);
+	}
+
+	public CampaignFormMetaReferenceDto(String uuid, String caption, String type) {
+		setUuid(uuid);
+		setCaption(caption);
+		setFormType(type);
 	}
 }

@@ -41,6 +41,7 @@ import de.symeda.sormas.backend.campaign.form.CampaignFormMeta;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.infrastructure.area.Area;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -57,6 +58,7 @@ public class CampaignFormDataService extends AdoServiceWithUserFilter<CampaignFo
 	public Predicate createCriteriaFilter(CampaignFormDataCriteria criteria, CriteriaBuilder cb, Root<CampaignFormData> root) {
 		Join<CampaignFormData, Campaign> campaignJoin = root.join(CampaignFormData.CAMPAIGN, JoinType.LEFT);
 		Join<CampaignFormData, CampaignFormMeta> campaignFormJoin = root.join(CampaignFormData.CAMPAIGN_FORM_META, JoinType.LEFT);
+		Join<CampaignFormData, Area> areaJoin = root.join(CampaignFormData.AREA, JoinType.LEFT);
 		Join<CampaignFormData, Region> regionJoin = root.join(CampaignFormData.REGION, JoinType.LEFT);
 		Join<CampaignFormData, District> districtJoin = root.join(CampaignFormData.DISTRICT, JoinType.LEFT);
 		Join<CampaignFormData, Community> communityJoin = root.join(CampaignFormData.COMMUNITY, JoinType.LEFT);
@@ -69,6 +71,9 @@ public class CampaignFormDataService extends AdoServiceWithUserFilter<CampaignFo
 		}
 		if (criteria.getCampaignFormMeta() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(campaignFormJoin.get(CampaignFormMeta.UUID), criteria.getCampaignFormMeta().getUuid()));
+		}
+		if (criteria.getArea() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(areaJoin.get(Area.UUID), criteria.getArea().getUuid()));
 		}
 		if (criteria.getRegion() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(regionJoin.get(Region.UUID), criteria.getRegion().getUuid()));
@@ -102,6 +107,12 @@ public class CampaignFormDataService extends AdoServiceWithUserFilter<CampaignFo
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (jurisdictionLevel != JurisdictionLevel.NATION) {
 			switch (jurisdictionLevel) {
+			case AREA:
+				final Area area = currentUser.getArea();
+				if (area != null) {
+					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(campaignPath.get(CampaignFormData.AREA).get(Area.ID), area.getId()));
+				}
+				break;
 			case REGION:
 				final Region region = currentUser.getRegion();
 				if (region != null) {

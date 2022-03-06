@@ -137,6 +137,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		Date endDate,
 		Date evolutionDate,
 		String eventTitle,
+		String areaName,
 		String regionUuid,
 		String regionName,
 		String districtUuid,
@@ -181,7 +182,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		this.endDate = endDate;
 		this.evolutionDate = evolutionDate;
 		this.eventTitle = eventTitle;
-		this.eventLocation = new EventIndexLocation(regionName, districtName, communityName, city, street, houseNumber, additionalInformation);
+		this.eventLocation = new EventIndexLocation(areaName,regionName, districtName, communityName, city, street, houseNumber, additionalInformation);
 		this.srcType = srcType;
 		this.srcFirstName = srcFirstName;
 		this.srcLastName = srcLastName;
@@ -538,6 +539,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 	public static class EventIndexLocation implements Serializable {
 
+		private String areaName;
 		private String regionName;
 		private String districtName;
 		private String communityName;
@@ -547,6 +549,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 		private String additionalInformation;
 
 		public EventIndexLocation(
+			String areaName,
 			String regionName,
 			String districtName,
 			String communityName,
@@ -562,6 +565,8 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 			this.houseNumber = houseNumber;
 			this.additionalInformation = additionalInformation;
 		}
+		
+		
 
 		public String getRegion() {
 			return regionName;
@@ -581,7 +586,7 @@ public class EventIndexDto extends PseudonymizableIndexDto implements Serializab
 
 		@Override
 		public String toString() {
-			return LocationReferenceDto.buildCaption(regionName, districtName, communityName, city, street, houseNumber, additionalInformation);
+			return LocationReferenceDto.buildCaption(areaName, regionName, districtName, communityName, city, street, houseNumber, additionalInformation);
 		}
 	}
 }

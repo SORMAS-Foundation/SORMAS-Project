@@ -51,7 +51,7 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 		String campaign,
 		String form,
 		Object formValues,
-		//String area,
+		String area,
 		String region,
 		String district,
 		String community,
@@ -61,7 +61,7 @@ public class CampaignFormDataIndexDto implements Serializable, Cloneable {
 		this.campaign = campaign;
 		this.form = form;
 		this.formValues = (List<CampaignFormDataEntry>) formValues;
-		//this.region = area;
+		this.area = area;
 		this.region = region;
 		this.district = district;
 		this.community = community;

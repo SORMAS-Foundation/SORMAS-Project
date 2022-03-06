@@ -225,6 +225,10 @@ public class FacadeProvider {
 	public static RegionFacade getRegionFacade() {
 		return get().lookupEjbRemote(RegionFacade.class);
 	}
+	
+	public static AreaFacade getAreatFacade() {
+		return get().lookupEjbRemote(AreaFacade.class);
+	}
 
 	public static DistrictFacade getDistrictFacade() {
 		return get().lookupEjbRemote(DistrictFacade.class);

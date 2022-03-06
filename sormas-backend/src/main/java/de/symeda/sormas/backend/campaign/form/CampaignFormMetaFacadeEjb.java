@@ -53,6 +53,9 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 	public CampaignFormMeta fromDto(@NotNull CampaignFormMetaDto source, boolean checkChangeDate) {
 		CampaignFormMeta target = DtoHelper.fillOrBuildEntity(source, service.getByUuid(source.getUuid()),
 				CampaignFormMeta::new, checkChangeDate);
+		
+System.out.println("dssssssssssssssefaasdgasdgasdgasdfasdfasdfasfeasfdasdfs " +service.getByUuid(source.getUuid()));
+
 
 		target.setFormId(source.getFormId());
 		target.setFormName(source.getFormName());
@@ -112,6 +115,12 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 	@Override
 	public List<CampaignFormMetaReferenceDto> getAllCampaignFormMetasAsReferences() {
 		return service.getAll().stream().map(CampaignFormMetaFacadeEjb::toReferenceDto)
+				.sorted(Comparator.comparing(ReferenceDto::toString)).collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<CampaignFormMetaReferenceDto> getAllCampaignFormMetasAsReferencesByRound(String round) {
+		return service.getByRound(round).stream().map(CampaignFormMetaFacadeEjb::toReferenceDto)
 				.sorted(Comparator.comparing(ReferenceDto::toString)).collect(Collectors.toList());
 	}
 
@@ -337,8 +346,8 @@ public class CampaignFormMetaFacadeEjb implements CampaignFormMetaFacade {
 		if (entity == null) {
 			return null;
 		}
-
-		return new CampaignFormMetaReferenceDto(entity.getUuid(), entity.toString());
+		
+		return new CampaignFormMetaReferenceDto(entity.getUuid(), entity.toString(), entity.getFormType());
 	}
 
 	@LocalBean

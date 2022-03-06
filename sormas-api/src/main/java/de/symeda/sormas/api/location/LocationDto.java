@@ -24,6 +24,7 @@ import javax.validation.constraints.Size;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.area.AreaType;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.continent.ContinentReferenceDto;
@@ -57,6 +58,7 @@ public class LocationDto extends PseudonymizableDto {
 	public static final String SUB_CONTINENT = "subcontinent";
 	public static final String COUNTRY = "country";
 	public static final String REGION = "region";
+	public static final String AREA = "area";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
 	public static final String LATITUDE = "latitude";
@@ -80,6 +82,9 @@ public class LocationDto extends PseudonymizableDto {
 	private SubcontinentReferenceDto subcontinent;
 	private CountryReferenceDto country;
 	private RegionReferenceDto region;
+	private AreaReferenceDto area;
+	
+
 	private DistrictReferenceDto district;
 	@PersonalData
 	@SensitiveData
@@ -162,13 +167,7 @@ public class LocationDto extends PseudonymizableDto {
 		this.city = city;
 	}
 
-	public AreaType getAreaType() {
-		return areaType;
-	}
-
-	public void setAreaType(AreaType areaType) {
-		this.areaType = areaType;
-	}
+	
 
 	public ContinentReferenceDto getContinent() {
 		return continent;
@@ -201,6 +200,23 @@ public class LocationDto extends PseudonymizableDto {
 	public void setRegion(RegionReferenceDto region) {
 		this.region = region;
 	}
+	
+	public AreaType getAreaType() { 
+		return areaType;
+	}
+
+	public void setAreaType(AreaType areaType) {
+		this.areaType = areaType;
+	}
+	
+	public AreaReferenceDto getArea() {
+		return area;
+	}
+
+	public void setArea(AreaReferenceDto area) {
+		this.area = area;
+	}
+	
 
 	public DistrictReferenceDto getDistrict() {
 		return district;
@@ -350,6 +366,7 @@ public class LocationDto extends PseudonymizableDto {
 	public String toString() {
 
 		return LocationReferenceDto.buildCaption(
+				area != null ? area.getCaption() : null,
 			region != null ? region.getCaption() : null,
 			district != null ? district.getCaption() : null,
 			community != null ? community.getCaption() : null,
@@ -363,7 +380,8 @@ public class LocationDto extends PseudonymizableDto {
 
 		return new LocationReferenceDto(
 			getUuid(),
-			region != null ? region.getCaption() : null,
+			area != null ? area.getCaption() : null,
+			region != null ? region.getCaption() : null,			
 			district != null ? district.getCaption() : null,
 			community != null ? community.getCaption() : null,
 			city,

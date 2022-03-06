@@ -60,7 +60,7 @@ public class CampaignController {
 			CampaignDto campaign = getCampaign(uuid); 
 			campaignComponent = getCampaignComponent(getCampaign(uuid), () -> {
 				Notification.show(I18nProperties.getString(Strings.messageCampaignSaved), Type.WARNING_MESSAGE);
-				SormasUI.refreshView();
+				SormasUI.refreshView(); 
 			});
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
@@ -103,14 +103,15 @@ public class CampaignController {
 
 	public void createCampaignDataForm(CampaignReferenceDto campaign, CampaignFormMetaReferenceDto campaignForm) {
 		Window window = VaadinUiUtil.createPopupWindow();
+		System.out.println("ddddddddddddddd");
 
 		CommitDiscardWrapperComponent<CampaignFormDataEditForm> component =
 			getCampaignFormDataComponent(null, campaign, campaignForm, false, false, () -> {
 				window.close();
-				SormasUI.refreshView();
+				SormasUI.refreshView(); //Strings.messageCampaignFormSaved
 				Notification
 					.show(String.format(I18nProperties.getString(Strings.messageCampaignFormSaved), campaignForm.toString()), Type.TRAY_NOTIFICATION);
-			}, window::close, true);
+			}, window::close);
 
 		window.setCaption(String.format(I18nProperties.getString(Strings.headingCreateCampaignDataForm), campaignForm.toString()));
 		window.setContent(component);
@@ -159,10 +160,11 @@ public class CampaignController {
 	}
 
 	public CommitDiscardWrapperComponent<CampaignEditForm> getCampaignComponent(CampaignDto campaignDto, Runnable callback) {
-
+		
 		CampaignEditForm campaignEditForm = new CampaignEditForm(campaignDto);
 		boolean isCreate = false;
 		if (campaignDto == null) {
+			System.out.println("11111ssssssssssssssssssssssssssssss");
 			isCreate = true;
 			campaignDto = CampaignDto.build();
 			campaignDto.setCreatingUser(UserProvider.getCurrent().getUserReference());
@@ -170,15 +172,19 @@ public class CampaignController {
 		campaignEditForm.setValue(campaignDto);
 
 		final CommitDiscardWrapperComponent<CampaignEditForm> campaignComponent = new CommitDiscardWrapperComponent<CampaignEditForm>(
+				
 			campaignEditForm,
 			UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_EDIT),
 			campaignEditForm.getFieldGroup()) {
+			
 
 			@Override
 			public void discard() {
+				System.out.println("2222222222222ssssssssssssssssssssssssssssss");
 				super.discard();
 				campaignEditForm.discard();
 			}
+			
 		};
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE) && !isCreate) {
@@ -222,6 +228,71 @@ public class CampaignController {
 
 		return campaignComponent;
 	}
+	
+	public CommitDiscardWrapperComponent<CampaignFormDataEditForm> getCampaignFormDataComponent(
+			CampaignFormDataDto campaignFormData,
+			CampaignReferenceDto campaign,
+			CampaignFormMetaReferenceDto campaignForm,
+			boolean revertFormOnDiscard,
+			boolean showDeleteButton,
+			Runnable commitCallback,
+			Runnable discardCallback) {
+
+			CampaignFormDataEditForm form = new CampaignFormDataEditForm(campaignFormData == null);
+			if (campaignFormData == null) {
+
+				final UserDto currentUser = UserProvider.getCurrent().getUser();
+				campaignFormData =
+					CampaignFormDataDto.build(campaign, campaignForm, currentUser.getArea(), currentUser.getRegion(), currentUser.getDistrict(), currentUser.getCommunity());
+				campaignFormData.setCreatingUser(UserProvider.getCurrent().getUserReference());
+			}
+			form.setValue(campaignFormData);
+
+			final CommitDiscardWrapperComponent<CampaignFormDataEditForm> component = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
+
+			component.addCommitListener(() -> {
+				if (!form.getFieldGroup().isModified()) {
+					try {
+						form.validate();
+					} catch (InvalidValueException e) {
+						Notification.show(I18nProperties.getValidationError(Validations.errorsInForm), Type.ERROR_MESSAGE);
+						return;
+					}
+
+					CampaignFormDataDto formData = form.getValue();
+					FacadeProvider.getCampaignFormDataFacade().saveCampaignFormData(formData);
+					if (commitCallback != null) {
+						commitCallback.run();
+						UI.getCurrent().getNavigator().navigateTo(CampaignDataView.VIEW_NAME + "/?" + CAMPAIGN + "=" + campaign.getUuid());
+					}
+				}
+			});
+
+			component.addDiscardListener(
+				() -> UI.getCurrent().getNavigator().navigateTo(CampaignDataView.VIEW_NAME + "/?" + CAMPAIGN + "=" + campaign.getUuid()));
+
+			if (revertFormOnDiscard) {
+				component.addDiscardListener(form::resetFormValues);
+			}
+
+			if (discardCallback != null) {
+				component.addDiscardListener(discardCallback::run);
+			}
+
+			if (showDeleteButton && UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
+				String campaignFormDataUuid = campaignFormData.getUuid();
+
+				component.addDeleteListener(() -> {
+					FacadeProvider.getCampaignFormDataFacade().deleteCampaignFormData(campaignFormDataUuid);
+					UI.getCurrent().getNavigator().navigateTo(CampaignFormDataView.VIEW_NAME);
+				}, I18nProperties.getString(Strings.entityCampaignDataForm));
+			}
+			
+		
+
+			return component;
+		}
+	
 
 	public CommitDiscardWrapperComponent<CampaignFormDataEditForm> getCampaignFormDataComponent(
 		CampaignFormDataDto campaignFormData,
@@ -238,7 +309,7 @@ public class CampaignController {
 
 			final UserDto currentUser = UserProvider.getCurrent().getUser();
 			campaignFormData =
-				CampaignFormDataDto.build(campaign, campaignForm, currentUser.getRegion(), currentUser.getDistrict(), currentUser.getCommunity());
+				CampaignFormDataDto.build(campaign, campaignForm, currentUser.getArea(), currentUser.getRegion(),  currentUser.getDistrict(), currentUser.getCommunity());
 			campaignFormData.setCreatingUser(UserProvider.getCurrent().getUserReference());
 		}
 		form.setValue(campaignFormData);
@@ -282,7 +353,8 @@ public class CampaignController {
 				UI.getCurrent().getNavigator().navigateTo(CampaignFormDataView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityCampaignDataForm));
 		}
-		
+		/*
+		 * TODO duplicate form
 		if (showCloneButton && UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
 			String campaignFormDataUuid = campaignFormData.getUuid();
 
@@ -290,7 +362,7 @@ public class CampaignController {
 				FacadeProvider.getCampaignFormDataFacade().cloneCampaignFormData(campaignFormDataUuid);
 				UI.getCurrent().getNavigator().navigateTo(CampaignFormDataView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityCampaignDataForm));
-		}
+		}*/
 
 		return component;
 	}

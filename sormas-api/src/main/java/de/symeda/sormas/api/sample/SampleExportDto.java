@@ -528,6 +528,7 @@ public class SampleExportDto implements Serializable {
 	@Order(40)
 	public String getPersonAddressCaption() {
 		return LocationReferenceDto.buildCaption(
+				personAddress.area,
 			personAddress.region,
 			personAddress.district,
 			personAddress.community,
@@ -888,6 +889,7 @@ public class SampleExportDto implements Serializable {
 		private static final long serialVersionUID = 466724930802680895L;
 
 		private final String region;
+		private final String area;
 		private final String district;
 		@PersonalData
 		@SensitiveData
@@ -906,21 +908,41 @@ public class SampleExportDto implements Serializable {
 		private String additionalInformation;
 
 		public SampleExportPersonAddress(
-			String region,
-			String district,
-			String community,
-			String city,
-			String street,
-			String houseNumber,
-			String additionalInformation) {
-			this.region = region;
-			this.district = district;
-			this.community = community;
-			this.city = city;
-			this.street = street;
-			this.houseNumber = houseNumber;
-			this.additionalInformation = additionalInformation;
-		}
+				String region,
+				String district,
+				String community,
+				String city,
+				String street,
+				String houseNumber,
+				String additionalInformation) {
+				this.region = region;
+				this.area = "";
+				this.district = district;
+				this.community = community;
+				this.city = city;
+				this.street = street;
+				this.houseNumber = houseNumber;
+				this.additionalInformation = additionalInformation;
+			}
+		
+		public SampleExportPersonAddress(
+				String area,
+				String region,
+				String district,
+				String community,
+				String city,
+				String street,
+				String houseNumber,
+				String additionalInformation) {
+				this.area = area;
+				this.region = region;
+				this.district = district;
+				this.community = community;
+				this.city = city;
+				this.street = street;
+				this.houseNumber = houseNumber;
+				this.additionalInformation = additionalInformation;
+			}
 	}
 
 	public static class SampleExportPathogenTest implements Serializable {

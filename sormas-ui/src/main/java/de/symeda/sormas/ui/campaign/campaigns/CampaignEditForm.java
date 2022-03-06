@@ -29,15 +29,17 @@ import java.util.stream.Collectors;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UserProvider;
 import org.apache.commons.collections.CollectionUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.ThemeResource;
+import com.vaadin.server.Page;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
+import com.vaadin.shared.ui.ValueChangeMode;
 import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Embedded;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -46,15 +48,17 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
-import com.vaadin.v7.ui.TextField;
+import com.vaadin.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
+import de.symeda.sormas.ui.utils.AbstractEditableGrid;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
@@ -68,10 +72,14 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 	private static final String USAGE_INFO = "usageInfo";
 	private static final String ROUND_COMPONETS = "roundComponet";
 	private static final String CAMPAIGN_TYPE_LOC = "typeLocation";
+	private static final String CAMPAIGN_TYPE_SEARCH = "typeLocationSearch";
 	private static final String CAMPAIGN_DATA_LOC = "campaignDataLoc";
 	private static final String CAMPAIGN_DASHBOARD_LOC = "campaignDashboardLoc";
 	private static final String SPACE_LOC = "spaceLoc";
 	private static final String SPACE_LOCX = "spaceLocx";
+	private static final String PRE_CAMPAIGN = "pre-campaign";
+	private static final String INTRA_CAMPAIGN = "intra-campaign";
+	private static final String POST_CAMPAIGN = "post-campaign";
 	
 	private OptionGroup clusterfieldx;
 
@@ -81,10 +89,10 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 		+ fluidRowLocs(CampaignDto.START_DATE, CampaignDto.END_DATE)
 		+ fluidRowLocs(CampaignDto.DESCRIPTION)
 		+ fluidRowLocs(SPACE_LOCX)
-		//+ fluidRowLocs(CampaignDto.CAMPAIGN_TYPES) Discard Changes
+		+fluidRowLocs(CampaignDto.CAMPAIGN_TYPES)
 		+ fluidRowLocs(USAGE_INFO)
 		+ fluidRowLocs(CAMPAIGN_TYPE_LOC)
-		
+		+ fluidRowLocs(CAMPAIGN_TYPE_SEARCH)
 		+ fluidRowLocs(ROUND_COMPONETS)
 		+ fluidRowLocs(CAMPAIGN_DATA_LOC)
 		+ fluidRowLocs(CAMPAIGN_DASHBOARD_LOC)
@@ -93,8 +101,10 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 	private final VerticalLayout statusChangeLayout;
 	private Boolean isCreateForm = null;
 	private CampaignDto campaignDto;
-
+	
+	
 	private CampaignFormsGridComponent campaignFormsGridComponent;
+	
 	private CampaignDashboardElementsGridComponent campaignDashboardGridComponent;
 
 	public CampaignEditForm(CampaignDto campaignDto) {
@@ -115,6 +125,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 		addFields();
 	}
 
+	@SuppressWarnings("deprecation")
 	@Override
 	protected void addFields() {
 
@@ -126,7 +137,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 		campaignBasicHeadingLabel.addStyleName(H3);
 		getContent().addComponent(campaignBasicHeadingLabel, CAMPAIGN_BASIC_HEADING_LOC);
 
-		addField(CampaignDto.UUID, TextField.class);
+		addField(CampaignDto.UUID);
 		addField(CampaignDto.CREATING_USER);
 
 		DateField startDate = addField(CampaignDto.START_DATE, DateField.class);
@@ -154,8 +165,9 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 		//add textfied for cluster
 		ComboBox clusterfield = addField(CampaignDto.ROUND, ComboBox.class);
 		clusterfield.addItem("NID");
-		clusterfield.addItem("SID");
-		clusterfield.addItem("bOPV");
+		clusterfield.addItem("SNID");
+		clusterfield.addItem("Case Respond");
+		clusterfield.addItem("Mopping-Up");
 		
 		
 		//CssStyles.style(field, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_CAPTION_INLINE);
@@ -207,7 +219,6 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 		layoutParent.setWidthFull();
 		
 		
-		//start of a child campaign
 		TabSheet tabsheetParent = new TabSheet();
 		layoutParent.addComponent(tabsheetParent);
 		
@@ -225,7 +236,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 		
 		campaignFormsGridComponent = new CampaignFormsGridComponent(
 				this.campaignDto == null ? Collections.EMPTY_LIST : new ArrayList<>(campaignDto.getCampaignFormMetas()),
-				FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences());
+				FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferencesByRound(PRE_CAMPAIGN));
 			getContent().addComponent(campaignFormsGridComponent, CAMPAIGN_DATA_LOC);
 		tab1.addComponent(campaignFormsGridComponent);
 		tab1.setCaption("Pre Campaign Forms");
@@ -257,12 +268,6 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 		tabsheetParent.addTab(parentTab1);
 		
 		
-		
-		//stop
-		
-		
-
-		
 
 		//start of a child campaign
 		
@@ -281,10 +286,10 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 		
 		campaignFormsGridComponent = new CampaignFormsGridComponent(
 				this.campaignDto == null ? Collections.EMPTY_LIST : new ArrayList<>(campaignDto.getCampaignFormMetas()),
-				FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences());
+				FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferencesByRound(INTRA_CAMPAIGN));
 			getContent().addComponent(campaignFormsGridComponent, CAMPAIGN_DATA_LOC);
 			tab1Post.addComponent(campaignFormsGridComponent);
-			tab1Post.setCaption("Intra Campaign-Round Forms");
+			tab1Post.setCaption("Intra Campaign Forms");
 			tabsheetPost.addTab(tab1Post);
 		
 
@@ -298,7 +303,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 			campaignDashboardElementsxx);
 		getContent().addComponent(campaignDashboardGridComponent, CAMPAIGN_DASHBOARD_LOC);
 		tab2Post.addComponent(campaignDashboardGridComponent);
-		tab2Post.setCaption("Intra Campaign-Round Dashboard");
+		tab2Post.setCaption("Intra Campaign Dashboard");
 		tabsheetPost.addTab(tab2Post);
 
 
@@ -314,11 +319,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 		
 		//stop
 		
-		
-		
-		
-		
-		
+
 
 		//start of a child campaign
 		
@@ -340,7 +341,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 				FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences());
 			getContent().addComponent(campaignFormsGridComponent, CAMPAIGN_DATA_LOC);
 			tab1Intra.addComponent(campaignFormsGridComponent);
-			tab1Intra.setCaption("Post Campaign-Round Forms");
+			tab1Intra.setCaption("Post Campaign Forms");
 		tabsheetIntra.addTab(tab1Intra);
 		
 
@@ -354,7 +355,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 			campaignDashboardElementsx);
 		getContent().addComponent(campaignDashboardGridComponent, CAMPAIGN_DASHBOARD_LOC);
 		tab2Intra.addComponent(campaignDashboardGridComponent);
-		tab2Intra.setCaption("Post Campaign-Round Dashboard");
+		tab2Intra.setCaption("Post Campaign Dashboard");
 		tabsheetIntra.addTab(tab2Intra);
 
 
@@ -381,6 +382,86 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 		
 		
 		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		/*
+	
+		clusterfieldx = new OptionGroup(); 
+		clusterfieldx = addField(CampaignDto.CAMPAIGN_TYPES, OptionGroup.class);
+		CssStyles.style(clusterfieldx, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
+		clusterfieldx.addItem("Pre-Campaign");
+		clusterfieldx.addItem("Intra-Campaign");
+		clusterfieldx.addItem("Post-Campaign");
+		clusterfieldx.setDescription("Campaign Switch");
+		clusterfieldx.setEnabled(true);
+		
+		clusterfieldx.addValueChangeListener(new ValueChangeListener() {
+			
+			@Override
+			public void valueChange(com.vaadin.v7.data.Property.ValueChangeEvent event) {
+				// TODO Auto-generated method stub
+				//Notification.show("DDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDDd"+ event.getProperty().getValue());
+				//System.out.println("dddddddddddddddddddddddddlkjhguijhghj " + clusterfieldx.getCaption());
+				
+				
+				Page.getCurrent().getJavaScript().execute("documentGetElementById('formidx').display = 'none'; alert();");
+				//	//"$('#formidx').find('td:contains('Void')').parent('tr').hide();\n"
+				//'alert();'
+				//);
+				
+				campaignFormsGridComponent.ListnerCampaignFilter(event);
+				
+				
+				
+				//campaignFormsGridComponent.addItemClickListener
+				
+				
+				
+				//final ArrayList<CampaignFormMetaReferenceDto> gridItems = wired.getItems();
+				
+				//System.out.println("ddddddddddddddddddddddddddddddddddddddddddddddddddlkjhguijhghj " + gridItems);
+				
+				//gridItems.add(new CampaignFormMetaReferenceDto(null, " --Please select--"));
+				
+			}
+			});
+		
+		
+		
+		//getContent().addComponent(clusterfieldx, CAMPAIGN_TYPE_SEARCH);
+		
+		
+		
+		campaignFormsGridComponent = new CampaignFormsGridComponent(
+			this.campaignDto == null ? Collections.EMPTY_LIST : new ArrayList<>(campaignDto.getCampaignFormMetas()),
+			FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferencesByRound("intra-campaign")
+			);
+		System.out.println("+++++++++++++++++++++++++++++++++  ");	
+		
+		
+		getContent().addComponent(campaignFormsGridComponent, CAMPAIGN_DATA_LOC);
+
+		
+		
+		final List<CampaignDashboardElement> campaignDashboardElements = FacadeProvider.getCampaignFacade().getCampaignDashboardElements(null);
+		campaignDashboardGridComponent = new CampaignDashboardElementsGridComponent(
+			this.campaignDto == null
+				? Collections.EMPTY_LIST
+				: FacadeProvider.getCampaignFacade().getCampaignDashboardElements(campaignDto.getUuid()),
+			campaignDashboardElements);
+		getContent().addComponent(campaignDashboardGridComponent, CAMPAIGN_DASHBOARD_LOC);
+
+		
+		*/
+		
+		
 		final Label spacer = new Label();
 		getContent().addComponent(spacer, SPACE_LOC);
 	}
@@ -395,9 +476,17 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 
 	@Override
 	public void setValue(CampaignDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
+		
+	//	newFieldValue.getCampaignFormMetas().removeIf(n -> (n.getCaption().contains("ICM")));
+		
+		
+		System.out.println("+++++++");
+		
+		
 		super.setValue(newFieldValue);
-		campaignFormsGridComponent
-			.setSavedItems(newFieldValue.getCampaignFormMetas() != null ? new ArrayList<>(newFieldValue.getCampaignFormMetas()) : new ArrayList<>());
+		campaignFormsGridComponent.setSavedItems(
+				newFieldValue.getCampaignFormMetas() != null ? new ArrayList<>(newFieldValue.getCampaignFormMetas()) : new ArrayList<>()
+						);
 
 		if (CollectionUtils.isNotEmpty(newFieldValue.getCampaignDashboardElements())) {
 			campaignDashboardGridComponent.setSavedItems(

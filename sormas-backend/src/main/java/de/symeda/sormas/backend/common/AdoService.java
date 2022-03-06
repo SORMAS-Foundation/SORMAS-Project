@@ -25,6 +25,8 @@ import javax.validation.constraints.NotNull;
 public interface AdoService<ADO extends AbstractDomainObject> {
 
 	List<ADO> getAll();
+	
+	List<ADO> getByRound(String round);
 
 	ADO getById(long id);
 

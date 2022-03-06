@@ -6,6 +6,7 @@ public enum JurisdictionLevel {
 
 	NONE,
 	NATION,
+	AREA,
 	REGION,
 	DISTRICT,
 	COMMUNITY,

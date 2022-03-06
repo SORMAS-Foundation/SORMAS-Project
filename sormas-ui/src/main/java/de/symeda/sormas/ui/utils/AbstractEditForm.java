@@ -224,6 +224,7 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 	}
 
 	protected ComboBox addInfrastructureField(String fieldId) {
+		//System.out.println("=========================== "+fieldId);
 		ComboBox field = addField(fieldId, ComboBox.class);
 		// Make sure that the ComboBox still contains a pre-selected inactive infrastructure entity
 		field.addValueChangeListener(e -> {

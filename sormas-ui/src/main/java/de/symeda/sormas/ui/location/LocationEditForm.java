@@ -62,6 +62,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonAddressType;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.continent.ContinentCriteria;
 import de.symeda.sormas.api.infrastructure.continent.ContinentReferenceDto;
@@ -94,22 +95,19 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	private static final String GEO_BUTTONS_LOC = "geoButtons";
 
 	private static final String HTML_LAYOUT =
-		//XXX #1620 are the divs needed?
-		divs(
-			fluidRowLocs(LocationDto.ADDRESS_TYPE, LocationDto.ADDRESS_TYPE_DETAILS, ""),
-			fluidRowLocs(LocationDto.CONTINENT, LocationDto.SUB_CONTINENT, ""),
-			fluidRowLocs(LocationDto.COUNTRY, "", ""),
-			fluidRowLocs(LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY),
-			fluidRowLocs(FACILITY_TYPE_GROUP_LOC, LocationDto.FACILITY_TYPE),
-			fluidRowLocs(LocationDto.FACILITY, LocationDto.FACILITY_DETAILS),
-			fluidRowLocs(LocationDto.STREET, LocationDto.HOUSE_NUMBER, LocationDto.ADDITIONAL_INFORMATION),
-			fluidRowLocs(LocationDto.POSTAL_CODE, LocationDto.CITY, LocationDto.AREA_TYPE),
-			fluidRowLocs(LocationDto.CONTACT_PERSON_FIRST_NAME, LocationDto.CONTACT_PERSON_LAST_NAME),
-			fluidRowLocs(LocationDto.CONTACT_PERSON_PHONE, LocationDto.CONTACT_PERSON_EMAIL),
-			fluidRow(fluidColumnLoc(4, 0, LocationDto.DETAILS),
-							fluidColumnLoc(2, 0, GEO_BUTTONS_LOC),
-							fluidColumnLoc(2, 0, LocationDto.LATITUDE),
-							fluidColumnLoc(2, 0, LocationDto.LONGITUDE),
+			// XXX #1620 are the divs needed?
+			divs(fluidRowLocs(LocationDto.ADDRESS_TYPE, LocationDto.ADDRESS_TYPE_DETAILS, ""),
+					fluidRowLocs(LocationDto.CONTINENT, LocationDto.SUB_CONTINENT, ""),
+					fluidRowLocs(LocationDto.COUNTRY, LocationDto.AREA, ""),
+					fluidRowLocs( LocationDto.REGION, LocationDto.DISTRICT, LocationDto.COMMUNITY),
+					fluidRowLocs(FACILITY_TYPE_GROUP_LOC, LocationDto.FACILITY_TYPE),
+					fluidRowLocs(LocationDto.FACILITY, LocationDto.FACILITY_DETAILS),
+					fluidRowLocs(LocationDto.STREET, LocationDto.HOUSE_NUMBER, LocationDto.ADDITIONAL_INFORMATION),
+					fluidRowLocs(LocationDto.POSTAL_CODE, LocationDto.CITY, LocationDto.AREA_TYPE),
+					fluidRowLocs(LocationDto.CONTACT_PERSON_FIRST_NAME, LocationDto.CONTACT_PERSON_LAST_NAME),
+					fluidRowLocs(LocationDto.CONTACT_PERSON_PHONE, LocationDto.CONTACT_PERSON_EMAIL),
+					fluidRow(fluidColumnLoc(4, 0, LocationDto.DETAILS), fluidColumnLoc(2, 0, GEO_BUTTONS_LOC),
+							fluidColumnLoc(2, 0, LocationDto.LATITUDE), fluidColumnLoc(2, 0, LocationDto.LONGITUDE),
 							fluidColumnLoc(2, 0, LocationDto.LAT_LON_ACCURACY)));
 
 	private MapPopupView leafletMapPopup;
@@ -125,14 +123,17 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	private TextField contactPersonPhone;
 	private TextField contactPersonEmail;
 
-	private boolean districtRequiredOnDefaultCountry;
+//	private boolean districtRequiredOnDefaultCountry;
+	private boolean regionRequiredOnDefaultCountry;
 	private boolean skipCountryValueChange;
 	private boolean skipFacilityTypeUpdate;
 
-	public LocationEditForm(FieldVisibilityCheckers fieldVisibilityCheckers, UiFieldAccessCheckers fieldAccessCheckers) {
+	public LocationEditForm(FieldVisibilityCheckers fieldVisibilityCheckers,
+			UiFieldAccessCheckers fieldAccessCheckers) {
 		super(LocationDto.class, LocationDto.I18N_PREFIX, true, fieldVisibilityCheckers, fieldAccessCheckers);
 
-		if (FacadeProvider.getGeocodingFacade().isEnabled() && isEditableAllowed(LocationDto.LATITUDE) && isEditableAllowed(LocationDto.LONGITUDE)) {
+		if (FacadeProvider.getGeocodingFacade().isEnabled() && isEditableAllowed(LocationDto.LATITUDE)
+				&& isEditableAllowed(LocationDto.LONGITUDE)) {
 			getContent().addComponent(createGeoButton(), GEO_BUTTONS_LOC);
 		}
 	}
@@ -168,7 +169,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 		addressType = addField(LocationDto.ADDRESS_TYPE, ComboBox.class);
 		addressType.setVisible(false);
-		final PersonAddressType[] personAddressTypeValues = PersonAddressType.getValues(FacadeProvider.getConfigFacade().getCountryCode());
+		final PersonAddressType[] personAddressTypeValues = PersonAddressType
+				.getValues(FacadeProvider.getConfigFacade().getCountryCode());
 		if (!isConfiguredServer("ch")) {
 			addressType.removeAllItems();
 			addressType.setItemCaptionMode(AbstractSelect.ItemCaptionMode.ID);
@@ -176,19 +178,15 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		}
 		TextField addressTypeDetails = addField(LocationDto.ADDRESS_TYPE_DETAILS, TextField.class);
 		addressTypeDetails.setVisible(false);
-		FieldHelper.setVisibleWhen(
-			getFieldGroup(),
-			LocationDto.ADDRESS_TYPE_DETAILS,
-			addressType,
-			Arrays.stream(personAddressTypeValues).filter(pat -> !pat.equals(PersonAddressType.HOME)).collect(Collectors.toList()),
-			true);
-		FieldHelper.setRequiredWhen(
-			getFieldGroup(),
-			addressType,
-			Arrays.asList(LocationDto.ADDRESS_TYPE_DETAILS),
-			Arrays.asList(PersonAddressType.OTHER_ADDRESS));
+		FieldHelper.setVisibleWhen(getFieldGroup(), LocationDto.ADDRESS_TYPE_DETAILS, addressType,
+				Arrays.stream(personAddressTypeValues).filter(pat -> !pat.equals(PersonAddressType.HOME))
+						.collect(Collectors.toList()),
+				true);
+		FieldHelper.setRequiredWhen(getFieldGroup(), addressType, Arrays.asList(LocationDto.ADDRESS_TYPE_DETAILS),
+				Arrays.asList(PersonAddressType.OTHER_ADDRESS));
 
-		facilityTypeGroup = ComboBoxHelper.createComboBoxV7();;
+		facilityTypeGroup = ComboBoxHelper.createComboBoxV7();
+		;
 		facilityTypeGroup.setId("typeGroup");
 		facilityTypeGroup.setCaption(I18nProperties.getCaption(Captions.Facility_typeGroup));
 		facilityTypeGroup.setWidth(100, Unit.PERCENTAGE);
@@ -228,11 +226,11 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		contactPersonFirstName = addField(LocationDto.CONTACT_PERSON_FIRST_NAME, TextField.class);
 		contactPersonLastName = addField(LocationDto.CONTACT_PERSON_LAST_NAME, TextField.class);
 		contactPersonPhone = addField(LocationDto.CONTACT_PERSON_PHONE, TextField.class);
-		contactPersonPhone
-			.addValidator(new PhoneNumberValidator(I18nProperties.getValidationError(Validations.validPhoneNumber, contactPersonPhone.getCaption())));
+		contactPersonPhone.addValidator(new PhoneNumberValidator(
+				I18nProperties.getValidationError(Validations.validPhoneNumber, contactPersonPhone.getCaption())));
 		contactPersonEmail = addField(LocationDto.CONTACT_PERSON_EMAIL, TextField.class);
-		contactPersonEmail
-			.addValidator(new EmailValidator(I18nProperties.getValidationError(Validations.validEmailAddress, contactPersonEmail.getCaption())));
+		contactPersonEmail.addValidator(new EmailValidator(
+				I18nProperties.getValidationError(Validations.validEmailAddress, contactPersonEmail.getCaption())));
 
 		final AccessibleTextField tfLatitude = addField(LocationDto.LATITUDE, AccessibleTextField.class);
 		final AccessibleTextField tfLongitude = addField(LocationDto.LONGITUDE, AccessibleTextField.class);
@@ -246,6 +244,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		subcontinent = addInfrastructureField(LocationDto.SUB_CONTINENT);
 		ComboBox country = addInfrastructureField(LocationDto.COUNTRY);
 		ComboBox region = addInfrastructureField(LocationDto.REGION);
+		ComboBox area = addInfrastructureField(LocationDto.AREA);
 		ComboBox district = addInfrastructureField(LocationDto.DISTRICT);
 		ComboBox community = addInfrastructureField(LocationDto.COMMUNITY);
 
@@ -256,32 +255,33 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		initializeAccessAndAllowedAccesses();
 
 		if (!isEditableAllowed(LocationDto.COMMUNITY)) {
-			setEnabled(false, LocationDto.COUNTRY, LocationDto.REGION, LocationDto.DISTRICT);
+			setEnabled(false, LocationDto.COUNTRY, LocationDto.AREA, LocationDto.REGION, LocationDto.DISTRICT);
 		}
 
 		ValueChangeListener continentValueListener = e -> {
 			if (continent.isVisible()) {
 				ContinentReferenceDto continentReferenceDto = (ContinentReferenceDto) e.getProperty().getValue();
 				if (subcontinent.getValue() == null) {
-					FieldHelper.updateItems(
-						country,
-						continentReferenceDto != null
-							? FacadeProvider.getCountryFacade().getAllActiveByContinent(continentReferenceDto.getUuid())
-							: FacadeProvider.getCountryFacade().getAllActiveAsReference());
+					FieldHelper.updateItems(country,
+							continentReferenceDto != null
+									? FacadeProvider.getCountryFacade()
+											.getAllActiveByContinent(continentReferenceDto.getUuid())
+									: FacadeProvider.getCountryFacade().getAllActiveAsReference());
 					country.setValue(null);
 				}
 				subcontinent.setValue(null);
-				FieldHelper.updateItems(
-					subcontinent,
-					continentReferenceDto != null
-						? FacadeProvider.getSubcontinentFacade().getAllActiveByContinent(continentReferenceDto.getUuid())
-						: FacadeProvider.getSubcontinentFacade().getAllActiveAsReference());
+				FieldHelper.updateItems(subcontinent,
+						continentReferenceDto != null
+								? FacadeProvider.getSubcontinentFacade()
+										.getAllActiveByContinent(continentReferenceDto.getUuid())
+								: FacadeProvider.getSubcontinentFacade().getAllActiveAsReference());
 			}
 		};
 
 		ValueChangeListener subContinentValueListener = e -> {
 			if (subcontinent.isVisible()) {
-				SubcontinentReferenceDto subcontinentReferenceDto = (SubcontinentReferenceDto) e.getProperty().getValue();
+				SubcontinentReferenceDto subcontinentReferenceDto = (SubcontinentReferenceDto) e.getProperty()
+						.getValue();
 
 				if (subcontinentReferenceDto != null) {
 					continent.removeValueChangeListener(continentValueListener);
@@ -292,13 +292,11 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 				country.setValue(null);
 
 				ContinentReferenceDto continentValue = (ContinentReferenceDto) continent.getValue();
-				FieldHelper.updateItems(
-					country,
-					subcontinentReferenceDto != null
-						? FacadeProvider.getCountryFacade().getAllActiveBySubcontinent(subcontinentReferenceDto.getUuid())
-						: continentValue == null
-							? FacadeProvider.getCountryFacade().getAllActiveAsReference()
-							: FacadeProvider.getCountryFacade().getAllActiveByContinent(continentValue.getUuid()));
+				FieldHelper.updateItems(country, subcontinentReferenceDto != null
+						? FacadeProvider.getCountryFacade()
+								.getAllActiveBySubcontinent(subcontinentReferenceDto.getUuid())
+						: continentValue == null ? FacadeProvider.getCountryFacade().getAllActiveAsReference()
+								: FacadeProvider.getCountryFacade().getAllActiveByContinent(continentValue.getUuid()));
 			}
 		};
 
@@ -309,13 +307,16 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			if (!skipCountryValueChange) {
 				CountryReferenceDto countryDto = (CountryReferenceDto) e.getProperty().getValue();
 				if (countryDto != null) {
-					final ContinentReferenceDto countryContinent = FacadeProvider.getContinentFacade().getByCountry(countryDto);
-					final SubcontinentReferenceDto countrySubcontinent = FacadeProvider.getSubcontinentFacade().getByCountry(countryDto);
+					final ContinentReferenceDto countryContinent = FacadeProvider.getContinentFacade()
+							.getByCountry(countryDto);
+					final SubcontinentReferenceDto countrySubcontinent = FacadeProvider.getSubcontinentFacade()
+							.getByCountry(countryDto);
 					if (countryContinent != null) {
 						continent.removeValueChangeListener(continentValueListener);
 						if (continent.isVisible()) {
 							skipCountryValueChange = true;
-							FieldHelper.updateItems(country, FacadeProvider.getCountryFacade().getAllActiveByContinent(countryContinent.getUuid()));
+							FieldHelper.updateItems(country, FacadeProvider.getCountryFacade()
+									.getAllActiveByContinent(countryContinent.getUuid()));
 							skipCountryValueChange = false;
 						}
 						continent.setValue(countryContinent);
@@ -326,12 +327,11 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 						if (subcontinent.isVisible()) {
 							skipCountryValueChange = true;
 							if (countryContinent != null) {
-								FieldHelper.updateItems(
-									subcontinent,
-									FacadeProvider.getSubcontinentFacade().getAllActiveByContinent(countryContinent.getUuid()));
+								FieldHelper.updateItems(subcontinent, FacadeProvider.getSubcontinentFacade()
+										.getAllActiveByContinent(countryContinent.getUuid()));
 							}
-							FieldHelper
-								.updateItems(country, FacadeProvider.getCountryFacade().getAllActiveBySubcontinent(countrySubcontinent.getUuid()));
+							FieldHelper.updateItems(country, FacadeProvider.getCountryFacade()
+									.getAllActiveBySubcontinent(countrySubcontinent.getUuid()));
 							skipCountryValueChange = false;
 						}
 						subcontinent.setValue(countrySubcontinent);
@@ -340,17 +340,31 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 				}
 			}
 		});
+		// iyanu implementing db checker to pull area based on the region
+		area.addValueChangeListener(e -> {
+			AreaReferenceDto areaDto = (AreaReferenceDto) e.getProperty().getValue();
+
+			System.out.println(
+					"dvvecvuwecbuwecuewvcuveuvcyuwevcuyewvcuywevcuywevcuwevucveucvweuvcuyewvcuevucyveucvevcuyve");
+			FieldHelper.updateItems(region,
+					areaDto != null ? FacadeProvider.getRegionFacade().getAllActiveByArea(areaDto.getUuid()) : null);
+		});
 
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
-			FieldHelper
-				.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
+			FieldHelper.updateItems(district,
+					regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid())
+							: null);
 		});
+		
+		
+
 		district.addValueChangeListener(e -> {
 			DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
-			FieldHelper.updateItems(
-				community,
-				districtDto != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid()) : null);
+			FieldHelper.updateItems(community,
+					districtDto != null
+							? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(districtDto.getUuid())
+							: null);
 			if (districtDto == null) {
 				FieldHelper.removeItems(facility);
 				// Add a visual indictator reminding the user to select a district
@@ -369,35 +383,29 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			} else if (facilityType.getValue() != null) {
 				facility.setComponentError(null);
 				facility.markAsDirty();
-				FieldHelper.updateItems(
-					facility,
-					FacadeProvider.getFacilityFacade()
-						.getActiveFacilitiesByDistrictAndType(districtDto, (FacilityType) facilityType.getValue(), true, false));
+				FieldHelper.updateItems(facility,
+						FacadeProvider.getFacilityFacade().getActiveFacilitiesByDistrictAndType(districtDto,
+								(FacilityType) facilityType.getValue(), true, false));
 			}
 		});
 		community.addValueChangeListener(e -> {
 			CommunityReferenceDto communityDto = (CommunityReferenceDto) e.getProperty().getValue();
 			if (facilityType.getValue() != null) {
-				FieldHelper.updateItems(
-					facility,
-					communityDto != null
-						? FacadeProvider.getFacilityFacade()
-							.getActiveFacilitiesByCommunityAndType(communityDto, (FacilityType) facilityType.getValue(), true, true)
-						: district.getValue() != null
-							? FacadeProvider.getFacilityFacade()
-								.getActiveFacilitiesByDistrictAndType(
-									(DistrictReferenceDto) district.getValue(),
-									(FacilityType) facilityType.getValue(),
-									true,
-									false)
-							: null);
+				FieldHelper.updateItems(facility, communityDto != null
+						? FacadeProvider.getFacilityFacade().getActiveFacilitiesByCommunityAndType(communityDto,
+								(FacilityType) facilityType.getValue(), true, true)
+						: district.getValue() != null ? FacadeProvider.getFacilityFacade()
+								.getActiveFacilitiesByDistrictAndType((DistrictReferenceDto) district.getValue(),
+										(FacilityType) facilityType.getValue(), true, false)
+								: null);
 			}
 		});
 		skipFacilityTypeUpdate = false;
 		facilityTypeGroup.addValueChangeListener(e -> {
 			if (!skipFacilityTypeUpdate) {
 				FieldHelper.removeItems(facility);
-				FieldHelper.updateEnumData(facilityType, FacilityType.getTypes((FacilityTypeGroup) facilityTypeGroup.getValue()));
+				FieldHelper.updateEnumData(facilityType,
+						FacilityType.getTypes((FacilityTypeGroup) facilityTypeGroup.getValue()));
 				facilityType.setRequired(facilityTypeGroup.getValue() != null);
 			}
 		});
@@ -410,23 +418,15 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			}
 			if (facilityType.getValue() != null && district.getValue() != null) {
 				if (community.getValue() != null) {
-					FieldHelper.updateItems(
-						facility,
-						FacadeProvider.getFacilityFacade()
-							.getActiveFacilitiesByCommunityAndType(
-								(CommunityReferenceDto) community.getValue(),
-								(FacilityType) facilityType.getValue(),
-								true,
-								false));
+					FieldHelper.updateItems(facility,
+							FacadeProvider.getFacilityFacade().getActiveFacilitiesByCommunityAndType(
+									(CommunityReferenceDto) community.getValue(),
+									(FacilityType) facilityType.getValue(), true, false));
 				} else {
-					FieldHelper.updateItems(
-						facility,
-						FacadeProvider.getFacilityFacade()
-							.getActiveFacilitiesByDistrictAndType(
-								(DistrictReferenceDto) district.getValue(),
-								(FacilityType) facilityType.getValue(),
-								true,
-								false));
+					FieldHelper.updateItems(facility,
+							FacadeProvider.getFacilityFacade().getActiveFacilitiesByDistrictAndType(
+									(DistrictReferenceDto) district.getValue(), (FacilityType) facilityType.getValue(),
+									true, false));
 				}
 			} else if (facilityType.getValue() != null && district.getValue() == null) {
 				// Add a visual indictator reminding the user to select a district
@@ -470,54 +470,63 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			}
 
 			// Fill in the address fields based on the selected facility
-			// We don't want the location form to automatically change even if the facility's address is updated later
+			// We don't want the location form to automatically change even if the
+			// facility's address is updated later
 			// on, so we only trigger it upon a manual change of the facility field
-			// We use isAttached() to avoid the fuss when initializing the form, it may seems a bit hacky, but it is
-			// necessary because isModified() will still return true for a short duration even if we keep the very same
-			// value because of this field dependencies to other fields and the way updateEnumValues works
+			// We use isAttached() to avoid the fuss when initializing the form, it may
+			// seems a bit hacky, but it is
+			// necessary because isModified() will still return true for a short duration
+			// even if we keep the very same
+			// value because of this field dependencies to other fields and the way
+			// updateEnumValues works
 			if (facility.isAttached()) {
 				if (facility.getValue() != null) {
-					FacilityDto facilityDto =
-						FacadeProvider.getFacilityFacade().getByUuid(((FacilityReferenceDto) getField(LocationDto.FACILITY).getValue()).getUuid());
+					FacilityDto facilityDto = FacadeProvider.getFacilityFacade()
+							.getByUuid(((FacilityReferenceDto) getField(LocationDto.FACILITY).getValue()).getUuid());
 
 					// Only if the facility's address is set
 					if (StringUtils.isNotEmpty(facilityDto.getCity())
-						|| StringUtils.isNotEmpty(facilityDto.getPostalCode())
-						|| StringUtils.isNotEmpty(facilityDto.getStreet())
-						|| StringUtils.isNotEmpty(facilityDto.getHouseNumber())
-						|| StringUtils.isNotEmpty(facilityDto.getAdditionalInformation())
-						|| facilityDto.getAreaType() != null
-						|| facilityDto.getLatitude() != null
-						|| facilityDto.getLongitude() != null
-						|| (StringUtils.isNotEmpty(facilityDto.getContactPersonFirstName())
-							&& StringUtils.isNotEmpty(facilityDto.getContactPersonLastName()))) {
+							|| StringUtils.isNotEmpty(facilityDto.getPostalCode())
+							|| StringUtils.isNotEmpty(facilityDto.getStreet())
+							|| StringUtils.isNotEmpty(facilityDto.getHouseNumber())
+							|| StringUtils.isNotEmpty(facilityDto.getAdditionalInformation())
+							|| facilityDto.getAreaType() != null || facilityDto.getLatitude() != null
+							|| facilityDto.getLongitude() != null
+							|| (StringUtils.isNotEmpty(facilityDto.getContactPersonFirstName())
+									&& StringUtils.isNotEmpty(facilityDto.getContactPersonLastName()))) {
 
-						// Show a confirmation popup if the location's address is already set and different from the facility one
-						if ((StringUtils.isNotEmpty(cityField.getValue()) && !cityField.getValue().equals(facilityDto.getCity()))
-							|| (StringUtils.isNotEmpty(postalCodeField.getValue()) && !postalCodeField.getValue().equals(facilityDto.getPostalCode()))
-							|| (StringUtils.isNotEmpty(streetField.getValue()) && !streetField.getValue().equals(facilityDto.getStreet()))
-							|| (StringUtils.isNotEmpty(houseNumberField.getValue())
-								&& !houseNumberField.getValue().equals(facilityDto.getHouseNumber()))
-							|| (StringUtils.isNotEmpty(additionalInformationField.getValue())
-								&& !additionalInformationField.getValue().equals(facilityDto.getAdditionalInformation()))
-							|| (areaType.getValue() != null && areaType.getValue() != facilityDto.getAreaType())
-							|| (StringUtils.isNotEmpty(contactPersonFirstName.getValue()) && StringUtils.isNotEmpty(contactPersonLastName.getValue()))
-							|| (tfLatitude.getConvertedValue() != null
-								&& Double.compare((Double) tfLatitude.getConvertedValue(), facilityDto.getLatitude()) != 0)
-							|| (tfLongitude.getConvertedValue() != null
-								&& Double.compare((Double) tfLongitude.getConvertedValue(), facilityDto.getLongitude()) != 0)) {
+						// Show a confirmation popup if the location's address is already set and
+						// different from the facility one
+						if ((StringUtils.isNotEmpty(cityField.getValue())
+								&& !cityField.getValue().equals(facilityDto.getCity()))
+								|| (StringUtils.isNotEmpty(postalCodeField.getValue())
+										&& !postalCodeField.getValue().equals(facilityDto.getPostalCode()))
+								|| (StringUtils.isNotEmpty(streetField.getValue())
+										&& !streetField.getValue().equals(facilityDto.getStreet()))
+								|| (StringUtils.isNotEmpty(houseNumberField.getValue())
+										&& !houseNumberField.getValue().equals(facilityDto.getHouseNumber()))
+								|| (StringUtils.isNotEmpty(additionalInformationField.getValue())
+										&& !additionalInformationField.getValue()
+												.equals(facilityDto.getAdditionalInformation()))
+								|| (areaType.getValue() != null && areaType.getValue() != facilityDto.getAreaType())
+								|| (StringUtils.isNotEmpty(contactPersonFirstName.getValue())
+										&& StringUtils.isNotEmpty(contactPersonLastName.getValue()))
+								|| (tfLatitude.getConvertedValue() != null
+										&& Double.compare((Double) tfLatitude.getConvertedValue(),
+												facilityDto.getLatitude()) != 0)
+								|| (tfLongitude.getConvertedValue() != null
+										&& Double.compare((Double) tfLongitude.getConvertedValue(),
+												facilityDto.getLongitude()) != 0)) {
 
-							VaadinUiUtil.showConfirmationPopup(
-								I18nProperties.getString(Strings.headingLocation),
-								new Label(I18nProperties.getString(Strings.confirmationLocationFacilityAddressOverride)),
-								I18nProperties.getString(Strings.yes),
-								I18nProperties.getString(Strings.no),
-								640,
-								confirmationEvent -> {
-									if (confirmationEvent) {
-										overrideLocationDetailsWithFacilityOnes(facilityDto);
-									}
-								});
+							VaadinUiUtil.showConfirmationPopup(I18nProperties.getString(Strings.headingLocation),
+									new Label(I18nProperties
+											.getString(Strings.confirmationLocationFacilityAddressOverride)),
+									I18nProperties.getString(Strings.yes), I18nProperties.getString(Strings.no), 640,
+									confirmationEvent -> {
+										if (confirmationEvent) {
+											overrideLocationDetailsWithFacilityOnes(facilityDto);
+										}
+									});
 						} else {
 							overrideLocationDetailsWithFacilityOnes(facilityDto);
 						}
@@ -532,7 +541,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		} else {
 			continent.addItems(continents);
 		}
-		final List<SubcontinentReferenceDto> subcontinents = FacadeProvider.getSubcontinentFacade().getAllActiveAsReference();
+		final List<SubcontinentReferenceDto> subcontinents = FacadeProvider.getSubcontinentFacade()
+				.getAllActiveAsReference();
 		if (subcontinents.isEmpty()) {
 			subcontinent.setVisible(false);
 			subcontinent.clear();
@@ -540,27 +550,38 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 			subcontinent.addItems(subcontinents);
 		}
 		country.addItems(FacadeProvider.getCountryFacade().getAllActiveAsReference());
-		updateRegionCombo(region, country);
+		updateAreaCombo(area, country);
+		
 		country.addValueChangeListener(e -> {
-			updateRegionCombo(region, country);
-			region.setValue(null);
+			updateAreaCombo(area, country);
+			area.setValue(null);
 		});
 
-		Stream.of(LocationDto.LATITUDE, LocationDto.LONGITUDE)
-			.<Field<?>> map(this::getField)
-			.forEach(f -> f.addValueChangeListener(e -> this.updateLeafletMapContent()));
+		Stream.of(LocationDto.LATITUDE, LocationDto.LONGITUDE).<Field<?>>map(this::getField)
+				.forEach(f -> f.addValueChangeListener(e -> this.updateLeafletMapContent()));
 
-		// Set initial visiblity of facility-contactperson-details (should only be visible if at least a facilityType has been selected)
+		// Set initial visiblity of facility-contactperson-details (should only be DEBUG SQL running for criterial
+		// visible if at least a facilityType has been selected)
 		setFacilityContactPersonFieldsVisible(facilityType.getValue() != null, true);
 	}
 
-	private void updateRegionCombo(ComboBox region, ComboBox country) {
+	private void updateAreaCombo(ComboBox area, ComboBox country) {
+		InfrastructureFieldsHelper.updateAreaBasedOnCountry(country, area, (isServerCountry) -> {
+			if (regionRequiredOnDefaultCountry) {
+				setFieldsRequirement(isServerCountry, LocationDto.AREA, LocationDto.REGION);
+			}
+		});
+	}
+	
+	/*
+	 * private void updateRegionCombo(ComboBox region, ComboBox country) {
 		InfrastructureFieldsHelper.updateRegionBasedOnCountry(country, region, (isServerCountry) -> {
 			if (districtRequiredOnDefaultCountry) {
 				setFieldsRequirement(isServerCountry, LocationDto.REGION, LocationDto.DISTRICT);
 			}
 		});
 	}
+	 * */
 
 	private void overrideLocationDetailsWithFacilityOnes(FacilityDto facilityDto) {
 		((TextField) getField(LocationDto.CITY)).setValue(facilityDto.getCity());
@@ -577,11 +598,8 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		((AccessibleTextField) getField(LocationDto.LONGITUDE)).setConvertedValue(facilityDto.getLongitude());
 	}
 
-	private void setOldFacilityValuesIfPossible(
-		FacilityTypeGroup oldGroup,
-		FacilityType oldType,
-		FacilityReferenceDto oldFacility,
-		String oldDetails) {
+	private void setOldFacilityValuesIfPossible(FacilityTypeGroup oldGroup, FacilityType oldType,
+			FacilityReferenceDto oldFacility, String oldDetails) {
 		facilityTypeGroup.setValue(oldGroup);
 		facilityType.setValue(oldType);
 		facility.setValue(oldFacility);
@@ -593,14 +611,15 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 		geoButtonLayout.setMargin(false);
 		geoButtonLayout.setSpacing(false);
 
-		Button geocodeButton = ButtonHelper.createIconButtonWithCaption("geocodeButton", null, VaadinIcons.MAP_MARKER, e -> {
-			triggerGeocoding();
-			e.getButton().removeStyleName(CssStyles.GEOCODE_BUTTON_HIGHLIGHT);
-		}, ValoTheme.BUTTON_ICON_ONLY, ValoTheme.BUTTON_BORDERLESS, ValoTheme.BUTTON_LARGE);
+		Button geocodeButton = ButtonHelper.createIconButtonWithCaption("geocodeButton", null, VaadinIcons.MAP_MARKER,
+				e -> {
+					triggerGeocoding();
+					e.getButton().removeStyleName(CssStyles.GEOCODE_BUTTON_HIGHLIGHT);
+				}, ValoTheme.BUTTON_ICON_ONLY, ValoTheme.BUTTON_BORDERLESS, ValoTheme.BUTTON_LARGE);
 
-		Field[] locationGeoFields = Stream.of(LocationDto.STREET, LocationDto.POSTAL_CODE, LocationDto.CITY, LocationDto.HOUSE_NUMBER)
-			.map(field -> (Field) getField(field))
-			.toArray(Field[]::new);
+		Field[] locationGeoFields = Stream
+				.of(LocationDto.STREET, LocationDto.POSTAL_CODE, LocationDto.CITY, LocationDto.HOUSE_NUMBER)
+				.map(field -> (Field) getField(field)).toArray(Field[]::new);
 
 		// Highlight geocode-button when the address changes
 		Stream.of(locationGeoFields).forEach(field -> field.addValueChangeListener(e -> {
@@ -673,7 +692,7 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	}
 
 	public void setDistrictRequiredOnDefaultCountry(boolean required) {
-		this.districtRequiredOnDefaultCountry = required;
+		this.regionRequiredOnDefaultCountry = required;
 	}
 
 	@Override
@@ -734,13 +753,15 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	}
 
 	public void setContinentFieldsVisibility() {
-		if (FacadeProvider.getContinentFacade().count(new ContinentCriteria().relevanceStatus(EntityRelevanceStatus.ACTIVE)) == 0) {
+		if (FacadeProvider.getContinentFacade()
+				.count(new ContinentCriteria().relevanceStatus(EntityRelevanceStatus.ACTIVE)) == 0) {
 			continent.setVisible(false);
 			continent.clear();
 		} else {
 			continent.setVisible(true);
 		}
-		if (FacadeProvider.getSubcontinentFacade().count(new SubcontinentCriteria().relevanceStatus(EntityRelevanceStatus.ACTIVE)) == 0) {
+		if (FacadeProvider.getSubcontinentFacade()
+				.count(new SubcontinentCriteria().relevanceStatus(EntityRelevanceStatus.ACTIVE)) == 0) {
 			subcontinent.setVisible(false);
 			subcontinent.clear();
 		} else {
@@ -749,16 +770,16 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 	}
 
 	private boolean areFacilityDetailsRequired() {
-		return facility.getValue() != null && ((FacilityReferenceDto) facility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
+		return facility.getValue() != null
+				&& ((FacilityReferenceDto) facility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
 	}
 
 	private static class MapPopupView extends PopupView {
 
 		private static final long serialVersionUID = 6119339732442336000L;
 
-		//eye-icon styled as button
-		private static final String MINNIMIZED_HTML =
-			"<div tabindex=\"0\" role=\"button\" class=\"v-button v-widget icon-only v-button-icon-only borderless v-button-borderless large v-button-large\"><span class=\"v-button-wrap\">"
+		// eye-icon styled as button
+		private static final String MINNIMIZED_HTML = "<div tabindex=\"0\" role=\"button\" class=\"v-button v-widget icon-only v-button-icon-only borderless v-button-borderless large v-button-large\"><span class=\"v-button-wrap\">"
 				+ VaadinIcons.EYE.getHtml() + "<span class=\"v-button-caption\"></span></span></div>";
 
 		private GeoLatLon coordinates = null;

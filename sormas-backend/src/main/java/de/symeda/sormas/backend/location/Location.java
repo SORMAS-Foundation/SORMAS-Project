@@ -38,6 +38,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.location.LocationReferenceDto;
 import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.infrastructure.area.Area;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.continent.Continent;
 import de.symeda.sormas.backend.infrastructure.country.Country;
@@ -62,6 +63,7 @@ public class Location extends AbstractDomainObject {
 	public static final String SUB_CONTINENT = "subcontinent";
 	public static final String COUNTRY = "country";
 	public static final String REGION = "region";
+	public static final String AREA = "area";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
 	public static final String LATITUDE = "latitude";
@@ -88,6 +90,7 @@ public class Location extends AbstractDomainObject {
 	private Continent continent;
 	private Subcontinent subcontinent;
 	private Country country;
+	private Area area;
 	private Region region;
 	private District district;
 	private Community community;
@@ -174,6 +177,15 @@ public class Location extends AbstractDomainObject {
 
 	public void setRegion(Region region) {
 		this.region = region;
+	}
+	
+	@ManyToOne()
+	public Area getArea() {
+		return area;
+	}
+
+	public void setArea(Area area) {
+		this.area = area;
 	}
 
 	@ManyToOne()
@@ -362,7 +374,8 @@ public class Location extends AbstractDomainObject {
 	@Override
 	public String toString() {
 		return LocationReferenceDto.buildCaption(
-			region != null ? region.getName() : null,
+			area != null ? area.getName() : null,
+					region != null ? region.getName() : null,
 			district != null ? district.getName() : null,
 			community != null ? community.getName() : null,
 			city,

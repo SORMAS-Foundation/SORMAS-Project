@@ -36,6 +36,7 @@ import com.vaadin.ui.Panel;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
@@ -90,7 +91,10 @@ public class CampaignDataView extends AbstractCampaignView {
 		criteria.setCampaign(campaignSelector.getValue());
 		addHeaderComponent(campaignSelector);
 		grid = new CampaignDataGrid(criteria);
-
+		//grid.setStyleName(ValoTheme.LAYOUT_HORIZONTAL_WRAPPING);
+		
+		
+		//grid.addThemeVariants(GridVariant.LUMO_WRAP_CELL_CONTENT);
 		VerticalLayout mainLayout = new VerticalLayout();
 		HorizontalLayout filtersLayout = new HorizontalLayout();
 
@@ -263,6 +267,7 @@ public class CampaignDataView extends AbstractCampaignView {
 
 	public CampaignFormDataFilterForm createFilterBar() {
 		final UserDto user = UserProvider.getCurrent().getUser();
+		criteria.setArea(user.getArea());
 		criteria.setRegion(user.getRegion());
 		criteria.setDistrict(user.getDistrict());
 		criteria.setCommunity(user.getCommunity());
@@ -276,20 +281,27 @@ public class CampaignDataView extends AbstractCampaignView {
 			ViewModelProviders.of(CampaignDataView.class).remove(CampaignFormDataCriteria.class);
 			navigateTo(null, true);
 		});
+		
+		//apply button action
 		filterForm.addApplyHandler(e -> {
 			criteria.setCampaign(campaignSelector.getValue());
+			System.out.println("sssssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyysssssssssssssssssssss"+campaignSelector.getValue());
 			grid.reload();
 		});
 		campaignSelector.addValueChangeListener(e -> {
 			criteria.setCampaign(campaignSelector.getValue());
 			grid.reload();
 		});
+		
 		filterForm.setFormMetaChangedCallback(createFormMetaChangedCallback());
 
 		return filterForm;
 	}
 
 	private Consumer<CampaignFormMetaReferenceDto> createFormMetaChangedCallback() {
+		
+		
+		System.out.println("sswwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwsssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyysssssssssssssssssssss");
 		return formMetaReference -> {
 			grid.removeAllColumns();
 			grid.addDefaultColumns();

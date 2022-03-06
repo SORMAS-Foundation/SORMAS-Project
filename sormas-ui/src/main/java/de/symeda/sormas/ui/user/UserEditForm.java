@@ -39,6 +39,7 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
@@ -74,11 +75,10 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
                     loc(ADDRESS_HEADING_LOC) +
                     fluidRowLocs(UserDto.ADDRESS) +
-
 					loc(USER_DATA_HEADING_LOC) +
                     fluidRowLocs(UserDto.ACTIVE) +
                     fluidRowLocs(UserDto.USER_NAME, UserDto.USER_ROLES) +
-                    fluidRowLocs(UserDto.REGION, UserDto.DISTRICT, UserDto.COMMUNITY) +
+                    fluidRowLocs(UserDto.AREA, UserDto.REGION, UserDto.DISTRICT, UserDto.COMMUNITY) +
                     fluidRowLocs(UserDto.HEALTH_FACILITY, UserDto.POINT_OF_ENTRY, UserDto.ASSOCIATED_OFFICER, UserDto.LABORATORY) +
                     fluidRowLocs(UserDto.LIMITED_DISEASE, "", "");
     //@formatter:off
@@ -95,7 +95,8 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         }
     }
 
-    @Override
+    @SuppressWarnings("deprecation")
+	@Override
     protected void addFields() {
 
         Label personDataHeadingLabel = new Label(I18nProperties.getString(Strings.headingPersonData));
@@ -136,10 +137,19 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
         userRoles.setMultiSelect(true);
 
-        ComboBox region = addInfrastructureField(UserDto.REGION);
-        ComboBox community = addInfrastructureField(UserDto.COMMUNITY);
-
+        ComboBox area = addInfrastructureField(UserDto.AREA);
         ComboBox district = addInfrastructureField(UserDto.DISTRICT);
+        ComboBox community = addInfrastructureField(UserDto.COMMUNITY);
+        ComboBox region = addInfrastructureField(UserDto.REGION);
+        
+        area.addValueChangeListener(e -> {
+            FieldHelper.removeItems(district);
+            AreaReferenceDto areaDto = (AreaReferenceDto) e.getProperty().getValue();
+            FieldHelper
+                    .updateItems(region, areaDto != null ? FacadeProvider.getRegionFacade().getAllActiveByArea(areaDto.getUuid()) : null);
+        });
+        
+       
         region.addValueChangeListener(e -> {
             FieldHelper.removeItems(community);
             RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
@@ -174,7 +184,9 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         ComboBox laboratory = addInfrastructureField(UserDto.LABORATORY);
         laboratory.addItems(FacadeProvider.getFacilityFacade().getAllActiveLaboratories(false));
 
-        region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
+        //region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
+        System.out.println("ddddddddddddddddddddddddddddddddssssssssssssssssssssefasdfas "+FacadeProvider.getAreaFacade().getAllActiveAsReference());
+        area.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
 
         setRequired(true, UserDto.FIRST_NAME, UserDto.LAST_NAME, UserDto.USER_NAME, UserDto.USER_ROLES);
         addValidators(UserDto.USER_NAME, new UserNameValidator());
@@ -203,6 +215,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 		final boolean useCommunity = jurisdictionLevel == JurisdictionLevel.COMMUNITY;
 		final boolean useDistrict = hasAssociatedOfficer || jurisdictionLevel == JurisdictionLevel.DISTRICT	|| useCommunity || useHealthFacility || usePointOfEntry;;
 		final boolean useRegion = jurisdictionLevel == JurisdictionLevel.REGION || useDistrict;
+		//final boolean useArea = jurisdictionLevel == JurisdictionLevel.AREA || useRegion;
 
 		final ComboBox associatedOfficer = (ComboBox) getFieldGroup().getField(UserDto.ASSOCIATED_OFFICER);
 		associatedOfficer.setVisible(hasAssociatedOfficer);
@@ -252,6 +265,13 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 		if (!useRegion) {
 			region.clear();
 		}
+		/*
+		final ComboBox area = (ComboBox) getFieldGroup().getField(UserDto.AREA);
+		area.setVisible(useArea);
+		setRequired(useArea, UserDto.AREA);
+		if (!useArea) {
+			area.clear();
+		}*/
 	}
 
     private void suggestUserName() {

@@ -54,8 +54,9 @@ public class UserDto extends EntityDto {
 	public static final String PHONE = "phone";
 	public static final String ADDRESS = "address";
 	public static final String USER_ROLES = "userRoles";
-	public static final String AREA = "area";
+	
 	public static final String REGION = "region";
+	public static final String AREA = "area";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
 	public static final String HEALTH_FACILITY = "healthFacility";
