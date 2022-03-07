@@ -171,7 +171,7 @@ Feature: Create events
     Then I am checking event group name and id is correctly displayed
 
   @issue=SORDEV-5496 @env_main @check
-  Scenario: Generate event document
+  Scenario: Generate and download Event document
     Given I log in with National User
     And I click on the Events button from navbar
     And I open the first event from events list

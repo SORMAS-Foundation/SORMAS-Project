@@ -137,13 +137,13 @@ Feature: Case end to end tests
     When I am accessing the Symptoms tab using of created case via api
     And I check the created data is correctly displayed on Symptoms tab page
 
-@issue=SORDEV-5496 @env_main @ignore
-  Scenario: Generate case document
+@issue=SORDEV-5496 @env_main @check
+  Scenario: Generate and download Case document
     Given I log in with National User
     And I click on the Cases button from navbar
     And I open last created case
     And I click on the Create button from Case Document Templates
-    When I create a case document from template
+    When I create and download a case document from template
     Then I verify that the case document is downloaded and correctly named
 
   #please address (also rename it, it's duplicated)

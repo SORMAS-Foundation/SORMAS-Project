@@ -85,7 +85,6 @@ import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Event;
@@ -419,7 +418,6 @@ public class EditEventSteps implements En {
           aEventHandout = aEventHandout.toBuilder().build();
           selectEventHandoutTemplate(aEventHandout.getDocumentTemplate());
           webDriverHelpers.clickOnWebElementBySelector(EditEventPage.CREATE_EVENT_HANDOUT_BUTTON);
-//            TimeUnit.SECONDS.sleep(5); //needed to download the document first
           webDriverHelpers.clickOnWebElementBySelector(EditEventPage.CANCEL_EVENT_HANDOUT_BUTTON);
         });
     And(
@@ -457,13 +455,12 @@ public class EditEventSteps implements En {
                       + uuid.substring(0, 6)
                       + "-"
                       + aEventHandout.getDocumentTemplate());
-            assertHelpers.assertWithPoll20Second(
-                    () ->
-                            Assert.assertTrue(
-                            Files.exists(path),
-                            "Event document was not downloaded. Searched after path: "
-                                    + path.toAbsolutePath()));
-
+          assertHelpers.assertWithPoll20Second(
+              () ->
+                  Assert.assertTrue(
+                      Files.exists(path),
+                      "Event document was not downloaded. Searched after path: "
+                          + path.toAbsolutePath()));
         });
   }
 
