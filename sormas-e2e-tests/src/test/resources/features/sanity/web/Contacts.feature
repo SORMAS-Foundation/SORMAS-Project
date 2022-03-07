@@ -2,7 +2,7 @@
 Feature: Contacts end to end tests
 
   #please address
-  @env_main @ignore
+  @env_main @ignore @check
   Scenario: Create simple contact
     Given I log in with National User
     And I click on the Contacts button from navbar
@@ -14,7 +14,7 @@ Feature: Contacts end to end tests
     And I check the created data is correctly displayed on Edit Contact Person page
 
     #please address
-  @env_main @ignore
+  @env_main @ignore @check
   Scenario: Delete created contact
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -29,7 +29,7 @@ Feature: Contacts end to end tests
     And I check that number of displayed contact results is 0
 
     #please address
-  @env_main @ignore
+  @env_main @ignore @check
   Scenario: Edit a created contact
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -56,7 +56,7 @@ Feature: Contacts end to end tests
     And I open the last created UI Contact
     Then I check the created data is correctly displayed on Edit Contact page
 
-  @env_main @ignore
+  @env_main @ignore @check
   Scenario: Source case selected for contact
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -80,7 +80,7 @@ Feature: Contacts end to end tests
     When I open the Case Contacts tab of the created case via api
     Then I check the linked contact information is correctly displayed
 
-  @env_main @ignore
+  @env_main @ignore @check
   Scenario: Change the source case contact and then delete
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -155,7 +155,7 @@ Feature: Contacts end to end tests
     And I open Follow up Visits tab from contact directory
     Then I am validating the From and To dates displayed
 
-  @issue=SORDEV-5490 @env_main @ignore
+  @issue=SORDEV-5490 @env_main @ignore @check
   Scenario: Create a contact and create a case for contact person
     Given I log in with National User
     When I click on the Contacts button from navbar
@@ -178,7 +178,7 @@ Feature: Contacts end to end tests
     Then I verify that the contact document is downloaded and correctly named
 
     #please address
-    @issue=SORDEV-5470 @env_main @ignore
+    @issue=SORDEV-5470 @env_main @ignore @check
   Scenario: Create complex contact
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -224,7 +224,7 @@ Feature: Contacts end to end tests
     Then I am checking all Exposure data is saved and displayed in Contacts
     And I am checking if options in checkbox for Contact are displayed correctly
 
-  @issue=SORDEV-5670 @env_main @ignore
+  @issue=SORDEV-5670 @env_main @ignore @check
   Scenario: Fill the follow-up tab
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -252,7 +252,7 @@ Feature: Contacts end to end tests
     Then I save the Visit data
 
     #please address
-  @issue=SORDEV-7452 @env_main @ignore
+  @issue=SORDEV-7452 @env_main @ignore @check
   Scenario: Bulk mode for linking/adding contacts to new Event
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -276,7 +276,7 @@ Feature: Contacts end to end tests
     And I check that number of displayed Event Participants is 1
 
     #please address
-  @issue=SORDEV-7452 @env_main @ignore
+  @issue=SORDEV-7452 @env_main @ignore @check
   Scenario: Bulk mode for linking/adding contacts to existing Event
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
