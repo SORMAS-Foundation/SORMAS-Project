@@ -41,4 +41,6 @@ public class Event {
   String uuid;
   Date startDate;
   Boolean multiDayEvent;
+  String responsibleUser;
+  String eventManagementStatus;
 }

@@ -45,7 +45,8 @@ Feature: Create events
     And I click on the searched event
     Then I check the created data is correctly displayed in event edit page
 
-  @env_main
+    #please address
+  @env_main @ignore
   Scenario: Add a participant to an event
     Given I log in with National User
     And I click on the Events button from navbar
@@ -60,8 +61,9 @@ Feature: Create events
     And I navigate via URL to last Person created from edit Event page
     Then I check if event is available at person information
 
-  @issue=SORDEV-5475 @env_main
-  Scenario: Add a participant to an event
+    #please address
+  @issue=SORDEV-5475 @env_main @ignore
+  Scenario: Verify error messages while adding a participant to an event
     Given I log in with National User
     And I click on the Events button from navbar
     And I click on the NEW EVENT button
@@ -85,7 +87,8 @@ Feature: Create events
     And I navigate via URL to last Person created from edit Event page
     Then I check if event is available at person information
 
-  @env_main
+    #please address
+  @env_main @ignore
   Scenario: Create and edit a new event
     Given I log in with National User
     And I click on the Events button from navbar
@@ -129,7 +132,8 @@ Feature: Create events
     Then I open the last created event via api
     And I check that number of actions in Edit Event Tab is 1
 
-  @env_main
+      #please address
+  @env_main @ignore
   Scenario: Add a New action for an Event and verify the Action in EventActions table
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -144,7 +148,8 @@ Feature: Create events
     And I collect the event actions from table view
     And I am checking if all the fields are correctly displayed in the Event directory Actions table
 
-  @issue=SORDEV-5476 @env_main
+    #please address
+  @issue=SORDEV-5476 @env_main @ignore
   Scenario: Add a Task from event and verify the fields
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -241,7 +246,7 @@ Feature: Create events
     And I select Screening filter from quick filter
     And I select Cluster filter from quick filter
     And I select Dropped filter from quick filter
-    And I click on the RESET FILTERS button
+    And I click on the RESET FILTERS button from Event
 
   @issue=SORDEV-9426 @env_main
   Scenario: Filter for the report date of events
@@ -253,7 +258,57 @@ Feature: Create events
     And I apply on the APPLY FILTERS button from Event
     And I check that the dates of displayed Event results are correct
 
-  @issue=SORDEV-5570 @env_main
+    #please address
+  @issue=SORDEV-5571 @env_main @ignore
+  Scenario: Event group screen from Event Directory Page
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    And I click on the Events button from navbar
+    And I click on GROUPS Radiobutton on Event Directory Page
+    And I open the first event from events list
+    And I click on Link Event button on Event Directory Page
+    And I fill Id filter with Id of last created event in Link Event to group form
+    And I click on filtered Event in Link Event to group form
+    And I click on SAVE button in Link Event to group form
+    And I click on Unlink Event button on Event Directory Page
+
+  @issue=SORDEV-5571 @env_main
+  Scenario: Event group screen using Group Id on Edit Event Page
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    And I click on the Events button from navbar
+    And I fill EVENT ID filter by API
+    And I apply on the APPLY FILTERS button from Event
+    And I open the first event from events list
+    And I click on Link Event button on Edit Event Page
+    And I click on first Event Group on the list in Link Event form
+    And I click on SAVE button in Link Event to group form
+    And I click on Linked Group Id on Edit Event Page
+    And I click on Unlink Event button on Event Directory Page
+
+  @issue=SORDEV-5571 @env_main
+  Scenario: Event group screen using Group Id in grid
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    And I click on the Events button from navbar
+    And I fill EVENT ID filter by API
+    And I apply on the APPLY FILTERS button from Event
+    And I open the first event from events list
+    And I click on Link Event button on Edit Event Page
+    And I click on first Event Group on the list in Link Event form
+    And I click on SAVE button in Link Event to group form
+    And I click on the Events button from navbar
+    And I click on Group Id in Events result on Event Directory Page
+    And I click on Unlink Event button on Event Directory Page
+
+    #please address
+  @issue=SORDEV-5570 @env_main @ignore
   Scenario: Testing Event screen Impact
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -271,3 +326,33 @@ Feature: Create events
     And I click on Edit event button for the first event in Events section
     And I click on the Navigate to event directory filtered on this event group
     And I check the number of displayed Event results from All button is 1
+
+    #please address
+  @issue=SORDEV-5572 @env_main @ignore
+  Scenario: Testing Event group adding for new event
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    Then I open the last created event via api
+    And I click on link event group
+    And I create a new event group
+    And I click on the Events button from navbar
+    And I fill EVENT ID filter by API
+    And I apply on the APPLY FILTERS button from Event
+    And I hover to Event Groups column of the Event result
+    And I click on the More button on Event directory page
+    And I click Enter Bulk Edit Mode on Event directory page
+    And I click checkbox to choose all Event results on Event Directory Page
+    And I click on Bulk Actions combobox on Event Directory Page
+    And I click on Group Events from Bulk Actions combobox on Event Directory Page
+    And I create a new event group
+    And I hover to Event Groups column of the Event result
+    And I filter by last created group in Event Directory Page
+    And I apply on the APPLY FILTERS button from Event
+    And I hover to Event Groups column of the Event result
+    And I check that name appearing in hover is equal to name of linked Event group
+    And I check the number of displayed Event results from All button is 1
+
+

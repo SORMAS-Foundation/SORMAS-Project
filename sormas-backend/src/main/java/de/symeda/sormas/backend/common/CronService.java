@@ -194,7 +194,7 @@ public class CronService {
 		coreEntityDeletionService.executeAutomaticDeletion();
 	}
 
-	@Schedule(hour = "2", persistent = false)
+	@Schedule(hour = "2", minute = "10", persistent = false)
 	public void permanentDeleteEntities() {
 		coreEntityDeletionService.executePermanentDeletion();
 	}
