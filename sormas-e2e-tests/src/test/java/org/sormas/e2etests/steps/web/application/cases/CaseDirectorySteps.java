@@ -42,6 +42,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DIRECTORY_DETAILED_RADIOBUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DISEASE_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DISEASE_VARIANT_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DISPLAY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DISTRICT_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_FACILITY_CATEGORY_FILTER_COMBOBOX;
@@ -346,6 +347,11 @@ public class CaseDirectorySteps implements En {
         (String diseaseFilterOption) ->
             webDriverHelpers.selectFromCombobox(
                 CASE_DISEASE_FILTER_COMBOBOX, DiseasesValues.getCaptionFor(diseaseFilterOption)));
+    Then(
+        "I apply Disease Variant filter {string} on Case directory page",
+        (String diseaseFilterOption) ->
+            webDriverHelpers.selectFromCombobox(
+                CASE_DISEASE_VARIANT_FILTER_COMBOBOX, diseaseFilterOption));
     And(
         "I click SHOW MORE FILTERS button on Case directory page",
         () -> webDriverHelpers.clickOnWebElementBySelector(SHOW_MORE_LESS_FILTERS));
@@ -518,49 +524,49 @@ public class CaseDirectorySteps implements En {
         (String checkboxDescription) -> {
           switch (checkboxDescription) {
             case ("Only cases without geo coordinates"):
-            case ("Nur Fälle ohne Geo-Koordinaten"):
+            case ("Nur F\u00E4lle ohne Geo-Koordinaten"):
               webDriverHelpers.clickOnWebElementBySelector(CASES_WITHOUT_GEO_COORDINATES_CHECKBOX);
               break;
             case ("Only cases without responsible officer"):
-            case ("Nur Fälle ohne verantwortlichen Beauftragten"):
+            case ("Nur F\u00E4lle ohne verantwortlichen Beauftragten"):
               webDriverHelpers.clickOnWebElementBySelector(
                   CASES_WITHOUT_RESPONSIBLE_OFFICER_CHECKBOX);
               break;
             case ("Only cases with extended quarantine"):
-            case ("Nur Fälle mit verlängerter Isolation"):
+            case ("Nur F\u00E4lle mit verl\u00E4ngerter Isolation"):
               webDriverHelpers.clickOnWebElementBySelector(CASES_WITH_EXTENDED_QUARANTINE_CHECKBOX);
               break;
             case ("Only cases with reduced quarantine"):
-            case ("Nur Fälle mit verkürzter Isolation"):
+            case ("Nur F\u00E4lle mit verk\u00FCrzter Isolation"):
               webDriverHelpers.clickOnWebElementBySelector(CASES_WITH_REDUCED_QUARANTINE_CHECKBOX);
               break;
             case ("Help needed in quarantine"):
-            case ("Maßnahmen zur Gewährleistung der Versorgung"):
+            case ("Ma\u00DFnahmen zur Gew\u00E4hrleistung der Versorgung"):
               webDriverHelpers.clickOnWebElementBySelector(
                   CASES_HELP_NEEDED_IN_QUARANTINE_CHECKBOX);
               break;
             case ("Only cases with events"):
-            case ("Nur Fälle mit Ereignissen"):
+            case ("Nur F\u00E4lle mit Ereignissen"):
               webDriverHelpers.clickOnWebElementBySelector(CASES_WITH_EVENTS_CHECKBOX);
               break;
             case ("Only cases from other instances"):
-            case ("Nur Fälle von anderen Instanzen"):
+            case ("Nur F\u00E4lle von anderen Instanzen"):
               webDriverHelpers.clickOnWebElementBySelector(CASES_FROM_OTHER_INSTANCES_CHECKBOX);
               break;
             case ("Only cases with reinfection"):
-            case ("Nur Fälle mit Reinfektion"):
+            case ("Nur F\u00E4lle mit Reinfektion"):
               webDriverHelpers.clickOnWebElementBySelector(CASES_WITH_REINFECTION_CHECKBOX);
               break;
             case ("Include cases from other jurisdictions"):
               webDriverHelpers.clickOnWebElementBySelector(CASES_FROM_OTHER_JURISDICTIONS_CHECKBOX);
               break;
             case ("Only cases with fulfilled reference definition"):
-            case ("Nur Fälle mit erfüllter Referenzdefinition"):
+            case ("Nur F\u00E4lle mit erf\u00FCllter Referenzdefinition"):
               webDriverHelpers.clickOnWebElementBySelector(
                   CASES_WITH_FULFILLED_REFERENCE_DEFINITION_CHECKBOX);
               break;
             case ("Only port health cases without a facility"):
-            case ("Nur Einreisefälle ohne zugewiesene Einrichtung"):
+            case ("Nur Einreisef\u00E4lle ohne zugewiesene Einrichtung"):
               webDriverHelpers.clickOnWebElementBySelector(CASES_WITHOUT_FACILITY_CHECKBOX);
               break;
           }
