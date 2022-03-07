@@ -145,26 +145,26 @@ public class EditContactsSteps implements En {
                   String.format(
                       CONTACT_RESULTS_UUID_LOCATOR, apiState.getCreatedContact().getUuid())));
           log.info("Collecting contact ID");
-          String contactId = webDriverHelpers.getValueFromTableRowUsingTheHeader("Contact ID", 1);
+          String contactId = webDriverHelpers.getValueFromTableRowUsingTheHeader("Contact ID", 0);
           log.info("Collecting contact disease");
           String contactDisease =
-              (webDriverHelpers.getValueFromTableRowUsingTheHeader("Disease", 1).equals("COVID-19"))
+              (webDriverHelpers.getValueFromTableRowUsingTheHeader("Disease", 0).equals("COVID-19"))
                   ? "CORONAVIRUS"
                   : "Not expected string!";
           log.info("Collecting contact classification");
           String contactClassification =
               (webDriverHelpers
-                      .getValueFromTableRowUsingTheHeader("Contact classification", 1)
+                      .getValueFromTableRowUsingTheHeader("Contact classification", 0)
                       .equals("Unconfirmed contact"))
                   ? "UNCONFIRMED"
                   : "Not expected string!";
           log.info("Collecting contact first name");
           String firstName =
               webDriverHelpers.getValueFromTableRowUsingTheHeader(
-                  "First name of contact person", 1);
+                  "First name of contact person", 0);
           log.info("Collecting contact last name");
           String lastName =
-              webDriverHelpers.getValueFromTableRowUsingTheHeader("Last name of contact person", 1);
+              webDriverHelpers.getValueFromTableRowUsingTheHeader("Last name of contact person", 0);
 
           softly.assertTrue(
               apiState.getCreatedContact().getUuid().substring(0, 6).equalsIgnoreCase(contactId),

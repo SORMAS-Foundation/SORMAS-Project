@@ -18,7 +18,6 @@ package org.sormas.e2etests.helpers;
 import static com.google.common.truth.Truth.assertWithMessage;
 import static java.time.Duration.ofSeconds;
 import static org.awaitility.Awaitility.await;
-import static org.awaitility.Awaitility.setDefaultConditionEvaluationListener;
 import static org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
 
 import java.time.Instant;
@@ -729,18 +728,18 @@ public class WebDriverHelpers {
   // style.substring(style.length() - 17) matches the width value for the selector. it will be used
   // to match the header and the rows by the length.
   public String getValueFromTableRowUsingTheHeader(String headerValue, int rowIndex) {
-      By header = By.xpath("//div[contains(text(), '" + headerValue + "')]/ancestor::th");
-      log.info("Waiting for element: [ {} ] to be present", header);
-      waitUntilIdentifiedElementIsPresent(header);
-      scrollToElement(header);
-      log.info("Collecting style attribute from element [ {} ]", header);
-      String style = getAttributeFromWebElement(header, "style");
-      By selector = By.cssSelector("[style*='" + style.substring(style.length() - 17) + "']");
-      log.info("Created selector [ {} ]", selector);
-      log.info("Waiting for element to be present [ {} ]", selector);
-      waitUntilIdentifiedElementIsPresent(selector);
-      log.info("Returning text from element [ {} ]", selector);
-      return baseSteps.getDriver().findElements(selector).get(rowIndex).getText();
+    By header = By.xpath("//div[contains(text(), '" + headerValue + "')]/ancestor::th");
+    log.info("Waiting for element: [ {} ] to be present", header);
+    waitUntilIdentifiedElementIsPresent(header);
+    scrollToElement(header);
+    log.info("Collecting style attribute from element [ {} ]", header);
+    String style = getAttributeFromWebElement(header, "style");
+    By selector = By.cssSelector("td[style*='" + style.substring(style.length() - 17) + "']");
+    log.info("Created selector [ {} ]", selector);
+    log.info("Waiting for element to be present [ {} ]", selector);
+    waitUntilIdentifiedElementIsPresent(selector);
+    log.info("Returning text from element [ {} ]", selector);
+    return baseSteps.getDriver().findElements(selector).get(rowIndex).getText();
   }
 
   public boolean isElementDisplayedIn20SecondsOrThrowException(Object selector) {
