@@ -49,6 +49,7 @@ public class CreateNewCaseSteps implements En {
           selectCaseOrigin(caze.getCaseOrigin());
           fillExternalId(caze.getExternalId());
           fillDisease(caze.getDisease());
+          fillDiseaseVariant(caze.getDiseaseVariant());
           selectResponsibleRegion(caze.getResponsibleRegion());
           selectResponsibleDistrict(caze.getResponsibleDistrict());
           selectResponsibleCommunity(caze.getResponsibleCommunity());
@@ -233,6 +234,10 @@ public class CreateNewCaseSteps implements En {
 
   private void fillDisease(String disease) {
     webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, disease);
+  }
+
+  private void fillDiseaseVariant(String diseaseVariant) {
+    webDriverHelpers.selectFromCombobox(DISEASE_VARIANT_COMBOBOX, diseaseVariant);
   }
 
   private void selectResponsibleRegion(String selectResponsibleRegion) {
