@@ -8,7 +8,7 @@ Feature: Contacts end to end tests
     And I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     And I fill a new contact form
-    And I click SAVE a new contact
+    And I click on SAVE new contact button
     Then I check the created data is correctly displayed on Edit Contact page
     Then I open Contact Person tab
     And I check the created data is correctly displayed on Edit Contact Person page
@@ -50,7 +50,7 @@ Feature: Contacts end to end tests
     And I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     And I fill a new contact form
-    And I click SAVE a new contact
+    And I click on SAVE new contact button
     And I click on the Tasks button from navbar
     Then I search created task by Contact first and last name
     And I open the last created UI Contact
@@ -161,14 +161,14 @@ Feature: Contacts end to end tests
     When I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     And I fill a new contact form
-    And I click SAVE a new contact
+    And I click on SAVE new contact button
     And I click on CONFIRMED CONTACT radio button Contact Person tab
     Then I click SAVE button on Edit Contact Page
     And I click Create Case from Contact button
     And I create a new case for contact with specific data
     And I check case created from created contact is correctly displayed on Edit Case page
 
-  @issue=SORDEV-5496 @env_main @check
+  @issue=SORDEV-5496 @env_main
   Scenario: Generate and download Contact document
     Given I log in with National User
     And I click on the Contacts button from navbar
@@ -193,7 +193,7 @@ Feature: Contacts end to end tests
     And I click CHOOSE CASE button
     And I search for the last case uuid in the CHOOSE SOURCE Contact window
     And I open the first found result in the CHOOSE SOURCE Contact window
-    And I click SAVE a new contact
+    And I click on SAVE new contact button
     Then I check the linked case information is correctly displayed
     And I check the created data for complex contact is correctly displayed on Edit Contact page
     Then I open Contact Person tab

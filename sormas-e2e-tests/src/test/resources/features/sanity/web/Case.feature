@@ -137,7 +137,7 @@ Feature: Case end to end tests
     When I am accessing the Symptoms tab using of created case via api
     And I check the created data is correctly displayed on Symptoms tab page
 
-@issue=SORDEV-5496 @env_main @check
+@issue=SORDEV-5496 @env_main
   Scenario: Generate and download Case document
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -146,8 +146,7 @@ Feature: Case end to end tests
     When I create and download a case document from template
     Then I verify that the case document is downloaded and correctly named
 
-  #please address (also rename it, it's duplicated)
-  @issue=SORDEV-5527 @env_main @ignore
+  @issue=SORDEV-5527 @env_main
   Scenario: Fill the therapy tab
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -164,7 +163,7 @@ Feature: Case end to end tests
     And I choose Antiviral option as a Type of drug
     And I choose Other option as a Type of drug
     And I choose Other option as a Prescription type
-    Then I click on the popup Save button
+    Then I click on Save button from New Prescription popup
     Then I check if created data is correctly displayed in Perscription section
     And I choose Oral rehydration salts option as a Prescription type
     And I choose Blood transfusion option as a Prescription type
@@ -173,15 +172,15 @@ Feature: Case end to end tests
     And I choose Oxygen therapy option as a Prescription type
     And I choose Invasive mechanical ventilation option as a Prescription type
     And I choose Vasopressors/Inotropes option as a Prescription type
-    Then I click on the popup Save button
+    Then I click on Save button from New Prescription popup
     Then I check if created data is correctly displayed in Perscription section
-    And I click on the popup Save button
+    And I click on Save button from New Prescription popup
     Then I create and fill Treatment with specific data for drug intake
     And I choose Antimicrobial option as a Type of drug
     And I choose Antiviral option as a Type of drug
     And I choose Other option as a Type of drug
     And I choose Other option as a Treatment type
-    Then I click on the popup Save button
+    Then I click on Save button from New Treatment popup
     Then I check if created data is correctly displayed in Treatment section
     And I choose Oral rehydration salts option as a Treatment type
     And I choose Blood transfusion option as a Treatment type
@@ -190,7 +189,7 @@ Feature: Case end to end tests
     And I choose Oxygen therapy option as a Treatment type
     And I choose Invasive mechanical ventilation option as a Treatment type
     And I choose Vasopressors/Inotropes option as a Treatment type
-    Then I click on the popup Save button
+    Then I click on Save button from New Treatment popup
     Then I check if created data is correctly displayed in Treatment section
 
     @issue=SORDEV-5518 @env_main
