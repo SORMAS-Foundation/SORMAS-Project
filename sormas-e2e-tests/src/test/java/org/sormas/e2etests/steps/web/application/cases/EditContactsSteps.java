@@ -137,6 +137,10 @@ public class EditContactsSteps implements En {
     Then(
         "I check the linked contact information is correctly displayed",
         () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              By.cssSelector(
+                  String.format(
+                      CONTACT_RESULTS_UUID_LOCATOR, apiState.getCreatedContact().getUuid())));
           webDriverHelpers.waitUntilAListOfElementsIsPresent(By.xpath("//tr[@role='row']"), 1);
           String contactId = webDriverHelpers.getValueFromTableRowUsingTheHeader("Contact ID", 1);
           String contactDisease =
