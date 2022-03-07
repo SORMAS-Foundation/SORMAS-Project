@@ -1,7 +1,8 @@
 @UI @Sanity @Contacts
 Feature: Contacts end to end tests
 
-  @env_main
+  #please address
+  @env_main @ignore
   Scenario: Create simple contact
     Given I log in with National User
     And I click on the Contacts button from navbar
@@ -12,7 +13,8 @@ Feature: Contacts end to end tests
     Then I open Contact Person tab
     And I check the created data is correctly displayed on Edit Contact Person page
 
-  @env_main
+    #please address
+  @env_main @ignore
   Scenario: Delete created contact
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -26,7 +28,8 @@ Feature: Contacts end to end tests
     Then I delete the contact
     And I check that number of displayed contact results is 0
 
-  @env_main
+    #please address
+  @env_main @ignore
   Scenario: Edit a created contact
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -165,7 +168,8 @@ Feature: Contacts end to end tests
     And I create a new case for contact with specific data
     And I check case created from created contact is correctly displayed on Edit Case page
 
-  @issue=SORDEV-5496 @env_main
+    #please address
+  @issue=SORDEV-5496 @env_main @ignore
   Scenario: Generate contact document
     Given I log in with National User
     And I click on the Contacts button from navbar
@@ -174,7 +178,8 @@ Feature: Contacts end to end tests
     When I create a contact document from template
     Then I verify that the contact document is downloaded and correctly named
 
-    @issue=SORDEV-5470 @env_main
+    #please address
+    @issue=SORDEV-5470 @env_main @ignore
   Scenario: Create complex contact
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -247,7 +252,8 @@ Feature: Contacts end to end tests
     And I fill the specific data of visit with Set cleared to Unknown option to all symptoms
     Then I save the Visit data
 
-  @issue=SORDEV-7452 @env_main
+    #please address
+  @issue=SORDEV-7452 @env_main @ignore
   Scenario: Bulk mode for linking/adding contacts to new Event
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -270,7 +276,8 @@ Feature: Contacts end to end tests
     And I navigate to the last created Event page via URL
     And I check that number of displayed Event Participants is 1
 
-  @issue=SORDEV-7452 @env_main
+    #please address
+  @issue=SORDEV-7452 @env_main @ignore
   Scenario: Bulk mode for linking/adding contacts to existing Event
     Given API: I create a new event
     Then API: I check that POST call body is "OK"

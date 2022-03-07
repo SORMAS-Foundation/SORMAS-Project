@@ -194,8 +194,7 @@ public class CaseDirectorySteps implements En {
         () -> {
           String partialUuid =
               dataOperations.getPartialUuidFromAssociatedLink(apiState.getCreatedCase().getUuid());
-          webDriverHelpers.fillAndSubmitInWebElement(
-              CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, partialUuid);
+          webDriverHelpers.fillInWebElement(CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, partialUuid);
           webDriverHelpers.clickOnWebElementBySelector(
               CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
           TimeUnit.SECONDS.sleep(3); // needed for table refresh
