@@ -839,6 +839,7 @@ public class EventParticipantFacadeEjb
 	public boolean exists(String personUuid, String eventUuid) {
 		return service.exists(
 			(cb, root, cq) -> cb.and(
+				cb.isFalse(root.get(EventParticipant.DELETED)),
 				cb.equal(root.get(EventParticipant.PERSON).get(AbstractDomainObject.UUID), personUuid),
 				cb.equal(root.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID), eventUuid)));
 	}
