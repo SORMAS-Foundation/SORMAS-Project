@@ -144,8 +144,17 @@ public class CronService {
 	@Schedule(hour = "1", minute = "15", second = "0", persistent = false)
 	public void archiveCases() {
 
-		int daysAfterCaseGetsArchived = featureConfigurationFacade
+		final int daysAfterCaseGetsArchived = featureConfigurationFacade
 			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CASE, FeatureTypeProperty.DAYS_FOR_AUTOMATIC_ARCHIVING, Integer.class);
+		final int daysAfterContactsGetsArchived = featureConfigurationFacade
+			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CONTACT, FeatureTypeProperty.DAYS_FOR_AUTOMATIC_ARCHIVING, Integer.class);
+		if (daysAfterCaseGetsArchived < daysAfterContactsGetsArchived) {
+			logger.warn(
+					FeatureTypeProperty.DAYS_FOR_AUTOMATIC_ARCHIVING + " for " + CoreEntityType.CONTACT + " [{}] should be <= than the one for "
+							+ CoreEntityType.CASE + " [{}]",
+					daysAfterContactsGetsArchived,
+					daysAfterCaseGetsArchived);
+		}
 		if (daysAfterCaseGetsArchived >= 1) {
 			caseFacade.archiveAllArchivableCases(daysAfterCaseGetsArchived);
 		}
@@ -154,8 +163,20 @@ public class CronService {
 	@Schedule(hour = "1", minute = "20", second = "0", persistent = false)
 	public void archiveEvents() {
 
-		int daysAfterEventsGetsArchived = featureConfigurationFacade
-				.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.EVENT, FeatureTypeProperty.DAYS_FOR_AUTOMATIC_ARCHIVING, Integer.class);
+		final int daysAfterEventsGetsArchived = featureConfigurationFacade
+			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.EVENT, FeatureTypeProperty.DAYS_FOR_AUTOMATIC_ARCHIVING, Integer.class);
+		final int daysAfterEventParticipantsGetsArchived = featureConfigurationFacade.getProperty(
+			FeatureType.AUTOMATIC_ARCHIVING,
+			CoreEntityType.EVENT_PARTICIPANT,
+			FeatureTypeProperty.DAYS_FOR_AUTOMATIC_ARCHIVING,
+			Integer.class);
+		if (daysAfterEventsGetsArchived < daysAfterEventParticipantsGetsArchived) {
+			logger.warn(
+				FeatureTypeProperty.DAYS_FOR_AUTOMATIC_ARCHIVING + " for " + CoreEntityType.EVENT_PARTICIPANT + " [{}] should be <= than the one for "
+					+ CoreEntityType.EVENT + " [{}]",
+				daysAfterEventParticipantsGetsArchived,
+				daysAfterEventsGetsArchived);
+		}
 		if (daysAfterEventsGetsArchived >= 1) {
 			eventFacade.archiveAllArchivableEvents(daysAfterEventsGetsArchived);
 		}
