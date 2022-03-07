@@ -139,8 +139,9 @@ public class CaseDataView extends AbstractCaseView {
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SAMPLES_LAB)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)
 			&& !caze.checkIsUnreferredPortHealthCase()) {
-			SampleListComponent sampleList = new SampleListComponent(
-				new SampleCriteria().caze(getCaseRef()).sampleAssociationType(SampleAssociationType.CASE),
+			SampleListComponent sampleList =
+				new SampleListComponent(new SampleCriteria().caze(getCaseRef()).sampleAssociationType(SampleAssociationType.CASE));
+			sampleList.addSideComponentCreateEventListener(
 				e -> showNavigationConfirmPopupIfDirty(() -> ControllerProvider.getSampleController().create(getCaseRef(), caze.getDisease(), () -> {
 					final CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
 					FacadeProvider.getCaseFacade().save(caseDataByUuid);
