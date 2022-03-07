@@ -39,6 +39,8 @@ import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
 import javax.inject.Inject;
+
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Contact;
@@ -48,6 +50,7 @@ import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.asserts.SoftAssert;
 
+@Slf4j
 public class EditContactsSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
@@ -137,25 +140,30 @@ public class EditContactsSteps implements En {
     Then(
         "I check the linked contact information is correctly displayed",
         () -> {
+            log.info("Waiting for contact UUID to be displayed");
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               By.cssSelector(
                   String.format(
                       CONTACT_RESULTS_UUID_LOCATOR, apiState.getCreatedContact().getUuid())));
-          webDriverHelpers.waitUntilAListOfElementsIsPresent(By.xpath("//tr[@role='row']"), 1);
+          log.info("Collecting contact ID");
           String contactId = webDriverHelpers.getValueFromTableRowUsingTheHeader("Contact ID", 1);
+            log.info("Collecting contact disease");
           String contactDisease =
               (webDriverHelpers.getValueFromTableRowUsingTheHeader("Disease", 1).equals("COVID-19"))
                   ? "CORONAVIRUS"
                   : "Not expected string!";
+            log.info("Collecting contact classification");
           String contactClassification =
               (webDriverHelpers
                       .getValueFromTableRowUsingTheHeader("Contact classification", 1)
                       .equals("Unconfirmed contact"))
                   ? "UNCONFIRMED"
                   : "Not expected string!";
+            log.info("Collecting contact first name");
           String firstName =
               webDriverHelpers.getValueFromTableRowUsingTheHeader(
                   "First name of contact person", 1);
+            log.info("Collecting contact last name");
           String lastName =
               webDriverHelpers.getValueFromTableRowUsingTheHeader("Last name of contact person", 1);
 
