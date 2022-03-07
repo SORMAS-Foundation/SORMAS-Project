@@ -434,4 +434,3 @@ Feature: Case end to end tests
     When I open created Sample
     Then I click on the new pathogen test from the Edit Sample page for DE version
     And I complete all fields from Pathogen test result popup for IgM test type for DE version and save
-    Then I check that the created Pathogen is correctly displayed for DE version
