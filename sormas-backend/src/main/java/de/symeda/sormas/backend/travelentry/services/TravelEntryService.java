@@ -21,6 +21,7 @@ import javax.persistence.criteria.Root;
 import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
@@ -31,6 +32,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.location.Location;
@@ -50,6 +52,8 @@ public class TravelEntryService extends BaseTravelEntryService {
 
 	@EJB
 	private TaskService taskService;
+	@EJB
+	private DocumentService documentService;
 
 	public List<TravelEntryIndexDto> getIndexList(TravelEntryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -188,8 +192,7 @@ public class TravelEntryService extends BaseTravelEntryService {
 	}
 
 	@Override
-	public void delete(TravelEntry travelEntry) {
-
+	public void deletePermanent(TravelEntry travelEntry) {
 		// Delete all tasks associated with this travel entry
 		List<Task> tasks = taskService.findBy(
 			new TaskCriteria().travelEntry(
@@ -200,11 +203,13 @@ public class TravelEntryService extends BaseTravelEntryService {
 					travelEntry.getPerson().getLastName())),
 			true);
 		for (Task task : tasks) {
-			taskService.delete(task);
+			taskService.deletePermanent(task);
 		}
 
-		// Mark the travel entry as deleted
-		super.delete(travelEntry);
+		documentService.getRelatedToEntity(DocumentRelatedEntityType.TRAVEL_ENTRY, travelEntry.getUuid())
+			.forEach(document -> documentService.markAsDeleted(document));
+
+		super.deletePermanent(travelEntry);
 	}
 
 	public boolean isDeleted(String travelEntryUuid) {
