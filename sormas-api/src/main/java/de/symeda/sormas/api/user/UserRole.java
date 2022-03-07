@@ -63,7 +63,12 @@ public enum UserRole
 	REST_EXTERNAL_VISITS_USER(false, false, false, false, JurisdictionLevel.NATION),
 	REST_USER(false, false, false, false, JurisdictionLevel.NONE),
 	SORMAS_TO_SORMAS_CLIENT(false, false, false, false, JurisdictionLevel.NATION),
-	BAG_USER(false, false, false, false, JurisdictionLevel.NONE);
+	BAG_USER(false, false, false, false, JurisdictionLevel.NONE),
+	AREA_SURVEILLANCE_SUPERVISOR(true, false, false, false, JurisdictionLevel.AREA),
+	AREA_STATE_OBSERVER(false, false, false, false, JurisdictionLevel.AREA),
+	AREA_ADMIN_SUPERVISOR(true, false, false, false, JurisdictionLevel.AREA);
+	
+	
 
 	/*
 	 * Hint for SonarQube issues:
@@ -96,6 +101,11 @@ public enum UserRole
 	public static final String _REST_USER = REST_USER.name();
 	public static final String _SORMAS_TO_SORMAS_CLIENT = "SORMAS_TO_SORMAS_CLIENT";
 	public static final String _BAG_USER = "BAG_USER";
+	
+	public static final String _AREA_SURVEILLANCE_SUPERVISOR = AREA_SURVEILLANCE_SUPERVISOR.name();
+	public static final String _AREA_STATE_OBSERVER = AREA_STATE_OBSERVER.name();
+	public static final String _AREA_ADMIN_SUPERVISOR = AREA_ADMIN_SUPERVISOR.name();
+	
 
 	private Set<UserRight> defaultUserRights = null;
 
@@ -167,6 +177,7 @@ public enum UserRole
 			break;
 		case NATIONAL_USER:
 			collection.add(SURVEILLANCE_SUPERVISOR);
+			collection.add(AREA_SURVEILLANCE_SUPERVISOR);
 			collection.add(CASE_SUPERVISOR);
 			collection.add(CONTACT_SUPERVISOR);
 			collection.add(CASE_OFFICER);
@@ -175,6 +186,7 @@ public enum UserRole
 			collection.add(LAB_USER);
 			collection.add(NATIONAL_OBSERVER);
 			collection.add(STATE_OBSERVER);
+			collection.add(AREA_STATE_OBSERVER);
 			collection.add(DISTRICT_OBSERVER);
 			collection.add(NATIONAL_CLINICIAN);
 			collection.add(POE_INFORMANT);
@@ -193,6 +205,11 @@ public enum UserRole
 			collection.add(SURVEILLANCE_OFFICER);
 			collection.add(HOSPITAL_INFORMANT);
 			collection.add(COMMUNITY_INFORMANT);
+			break;
+		case AREA_SURVEILLANCE_SUPERVISOR:
+			collection.add(AREA_SURVEILLANCE_SUPERVISOR);
+			collection.add(AREA_STATE_OBSERVER);
+			collection.add(AREA_ADMIN_SUPERVISOR);
 			break;
 		case CASE_SUPERVISOR:
 			collection.add(CASE_OFFICER);

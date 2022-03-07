@@ -263,7 +263,8 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
 		Root<ADO> from = cq.from(getElementClass());
 		cq.where(cb.equal(from.get(AbstractDomainObject.UUID), uuidParam));
-System.out.println("sssdeeeeegtyuhgyuyteeeeeeewwwwwwwwwwwwwwwwwwwwwww"+cq);
+		
+System.out.println("sssdeeeeegtyuhgyuyteeeeeSQL.>eewwwwwwwwwwwwwwwwwwwwwww"+SQLExtractor.from(em.createQuery(cq)));
 		TypedQuery<ADO> q = em.createQuery(cq).setParameter(uuidParam, uuid);
 
 		return q.getResultList().stream().findFirst().orElse(null);

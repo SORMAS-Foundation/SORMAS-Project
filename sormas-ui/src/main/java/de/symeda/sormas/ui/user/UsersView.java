@@ -47,6 +47,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserCriteria;
@@ -92,6 +93,7 @@ public class UsersView extends AbstractView {
 	// Filters
 	private ComboBox activeFilter;
 	private ComboBox userRolesFilter;
+	private ComboBox areaFilter;
 	private ComboBox regionFilter;
 	private ComboBox districtFilter;
 	private TextField searchField;
@@ -222,14 +224,35 @@ public class UsersView extends AbstractView {
 		filterLayout.addComponent(userRolesFilter);
 
 		UserDto user = UserProvider.getCurrent().getUser();
+		
+		areaFilter = ComboBoxHelper.createComboBoxV7();
+		areaFilter.setId(CaseDataDto.AREA);
+
+		if (user.getArea() == null) {
+			areaFilter.setWidth(140, Unit.PIXELS);
+			areaFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.AREA));
+			areaFilter.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
+			areaFilter.addValueChangeListener(e -> {
+				AreaReferenceDto area = (AreaReferenceDto) e.getProperty().getValue();
+
+				if (!DataHelper.equal(area, criteria.getArea())) {
+					criteria.region(null);
+				}
+
+				criteria.area(area);
+				navigateTo(criteria);
+			});
+			filterLayout.addComponent(areaFilter);
+		}
+
 
 		regionFilter = ComboBoxHelper.createComboBoxV7();
 		regionFilter.setId(CaseDataDto.REGION);
 
 		if (user.getRegion() == null) {
 			regionFilter.setWidth(140, Unit.PIXELS);
-			regionFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.REGION));
-			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
+			regionFilter.setInputPrompt("Province");
+			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByArea(areaFilter.getId()));
 			regionFilter.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
 
@@ -242,7 +265,9 @@ public class UsersView extends AbstractView {
 			});
 			filterLayout.addComponent(regionFilter);
 		}
-
+		
+		
+		
 		districtFilter = ComboBoxHelper.createComboBoxV7();
 		districtFilter.setId(CaseDataDto.DISTRICT);
 		districtFilter.setWidth(140, Unit.PIXELS);
@@ -327,18 +352,22 @@ public class UsersView extends AbstractView {
 
 		activeFilter.setValue(criteria.getActive() == null ? null : criteria.getActive() ? ACTIVE_FILTER : INACTIVE_FILTER);
 		userRolesFilter.setValue(criteria.getUserRole());
-		regionFilter.setValue(criteria.getRegion());
-
-		if (user.getRegion() != null && user.getDistrict() == null) {
-			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
-			districtFilter.setEnabled(true);
+		areaFilter.setValue(criteria.getArea());
+//work here TODO TONIGHT
+		if (user.getArea() != null && user.getRegion() == null){
+			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByArea(user.getArea().getUuid()));
+			regionFilter.setEnabled(true);
+		} else if (criteria.getArea() != null) {
+			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByArea(criteria.getArea().getUuid()));
+			regionFilter.setEnabled(true);
 		} else if (criteria.getRegion() != null) {
 			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(criteria.getRegion().getUuid()));
 			districtFilter.setEnabled(true);
 		} else {
+			regionFilter.setEnabled(false);
 			districtFilter.setEnabled(false);
 		}
-
+		regionFilter.setValue(criteria.getRegion());
 		districtFilter.setValue(criteria.getDistrict());
 		searchField.setValue(criteria.getFreeText());
 

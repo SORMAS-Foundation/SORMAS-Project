@@ -22,7 +22,13 @@
 	  <role-name>ADMIN_SUPERVISOR</role-name>
 	</security-role>
 	<security-role>
+	  <role-name>AREA_ADMIN_SUPERVISOR</role-name>
+	</security-role>
+	<security-role>
 	  <role-name>SURVEILLANCE_SUPERVISOR</role-name>
+	</security-role>
+	<security-role>
+	  <role-name>AREA_SURVEILLANCE_SUPERVISOR</role-name>
 	</security-role>
 	<security-role>
 	  <role-name>CASE_SUPERVISOR</role-name>
@@ -47,6 +53,9 @@
 	</security-role>
 	<security-role>
 	  <role-name>STATE_OBSERVER</role-name>
+	</security-role>
+	<security-role>
+	  <role-name>AREA_STATE_OBSERVER</role-name>
 	</security-role>
 	<security-role>
 	  <role-name>DISTRICT_OBSERVER</role-name>

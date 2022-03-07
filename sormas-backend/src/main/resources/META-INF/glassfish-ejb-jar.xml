@@ -10,6 +10,10 @@
         <role-name>SURVEILLANCE_SUPERVISOR</role-name>
         <group-name>SURVEILLANCE_SUPERVISOR</group-name>
     </security-role-mapping>
+     <security-role-mapping>
+        <role-name>AREA_SURVEILLANCE_SUPERVISOR</role-name>
+        <group-name>AREA_SURVEILLANCE_SUPERVISOR</group-name>
+    </security-role-mapping>
     <security-role-mapping>
         <role-name>SURVEILLANCE_OFFICER</role-name>
         <group-name>SURVEILLANCE_OFFICER</group-name>

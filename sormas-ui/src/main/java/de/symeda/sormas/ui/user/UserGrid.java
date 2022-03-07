@@ -27,6 +27,7 @@ import com.vaadin.shared.data.sort.SortDirection;
 import com.vaadin.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.campaign.CampaignIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
@@ -38,6 +39,7 @@ import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.CollectionValueProvider;
 import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.UuidRenderer;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 import elemental.json.JsonValue;
@@ -59,11 +61,29 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 			setLazyDataProvider();
 			setCriteria(getCriteria());
 		}
+		
+		
 
-		addEditColumn(e -> ControllerProvider.getUserController().edit(e));
+		//addEditColumn(e -> ControllerProvider.getUserController().edit(e));
+		
+		addItemClickListener(new ShowDetailsListener<>(UserDto.UUID, e -> ControllerProvider.getUserController().edit(e)));
+		addItemClickListener(new ShowDetailsListener<>(UserDto.ACTIVE, e -> ControllerProvider.getUserController().edit(e)));
+		addItemClickListener(new ShowDetailsListener<>(UserDto.USER_ROLES, e -> ControllerProvider.getUserController().edit(e)));
+		addItemClickListener(new ShowDetailsListener<>(UserDto.USER_NAME, e -> ControllerProvider.getUserController().edit(e)));
+		addItemClickListener(new ShowDetailsListener<>(UserDto.NAME, e -> ControllerProvider.getUserController().edit(e)));
+		addItemClickListener(new ShowDetailsListener<>(UserDto.USER_EMAIL, e -> ControllerProvider.getUserController().edit(e)));
+		addItemClickListener(new ShowDetailsListener<>(UserDto.ADDRESS, e -> ControllerProvider.getUserController().edit(e)));
+		addItemClickListener(new ShowDetailsListener<>(UserDto.AREA, e -> ControllerProvider.getUserController().edit(e)));
+		addItemClickListener(new ShowDetailsListener<>(UserDto.REGION, e -> ControllerProvider.getUserController().edit(e)));
+		addItemClickListener(new ShowDetailsListener<>(UserDto.DISTRICT, e -> ControllerProvider.getUserController().edit(e)));
+		addItemClickListener(new ShowDetailsListener<>(UserDto.HEALTH_FACILITY, e -> ControllerProvider.getUserController().edit(e)));
+		
+		
+		//addItemClickListener(new ShowDetailsListener<>(EDIT_BTN_ID, e -> handler.accept(e)));   //addEditColumn
+		
 
 		setColumns(
-			EDIT_BTN_ID,
+		//	EDIT_BTN_ID,
 			UserDto.UUID,
 			UserDto.ACTIVE,
 			UserDto.USER_ROLES,
@@ -71,6 +91,8 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 			UserDto.NAME,
 			UserDto.USER_EMAIL,
 			UserDto.ADDRESS,
+			UserDto.AREA,
+			UserDto.REGION,
 			UserDto.DISTRICT,
 			UserDto.HEALTH_FACILITY);
 

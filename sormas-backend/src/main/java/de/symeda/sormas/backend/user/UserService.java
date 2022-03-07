@@ -251,7 +251,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		// WHERE OR
 		if (includeSupervisors) {
 			Predicate supervisorFilter = rolesJoin.in(
-					Arrays.asList(UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.ADMIN_SUPERVISOR));
+					Arrays.asList(UserRole.CASE_SUPERVISOR, UserRole.CONTACT_SUPERVISOR, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.AREA_SURVEILLANCE_SUPERVISOR, UserRole.ADMIN_SUPERVISOR));
 			filter = CriteriaBuilderHelper.or(cb, filter, supervisorFilter);
 		}
 

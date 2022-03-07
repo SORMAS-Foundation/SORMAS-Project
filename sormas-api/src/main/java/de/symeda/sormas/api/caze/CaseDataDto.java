@@ -103,6 +103,7 @@ public class CaseDataDto extends PseudonymizableDto implements SormasToSormasEnt
 	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";
 	public static final String RESPONSIBLE_COMMUNITY = "responsibleCommunity";
 
+	public static final String AREA = "area";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";

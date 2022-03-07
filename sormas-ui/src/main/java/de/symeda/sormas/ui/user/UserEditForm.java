@@ -143,7 +143,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         ComboBox region = addInfrastructureField(UserDto.REGION);
         
         area.addValueChangeListener(e -> {
-            FieldHelper.removeItems(district);
+            FieldHelper.removeItems(region);
             AreaReferenceDto areaDto = (AreaReferenceDto) e.getProperty().getValue();
             FieldHelper
                     .updateItems(region, areaDto != null ? FacadeProvider.getRegionFacade().getAllActiveByArea(areaDto.getUuid()) : null);
@@ -151,7 +151,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         
        
         region.addValueChangeListener(e -> {
-            FieldHelper.removeItems(community);
+            FieldHelper.removeItems(district);
             RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();
             FieldHelper
                     .updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
@@ -215,7 +215,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 		final boolean useCommunity = jurisdictionLevel == JurisdictionLevel.COMMUNITY;
 		final boolean useDistrict = hasAssociatedOfficer || jurisdictionLevel == JurisdictionLevel.DISTRICT	|| useCommunity || useHealthFacility || usePointOfEntry;;
 		final boolean useRegion = jurisdictionLevel == JurisdictionLevel.REGION || useDistrict;
-		//final boolean useArea = jurisdictionLevel == JurisdictionLevel.AREA || useRegion;
+		final boolean useArea = jurisdictionLevel == JurisdictionLevel.AREA || useRegion;
 
 		final ComboBox associatedOfficer = (ComboBox) getFieldGroup().getField(UserDto.ASSOCIATED_OFFICER);
 		associatedOfficer.setVisible(hasAssociatedOfficer);
@@ -265,13 +265,13 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 		if (!useRegion) {
 			region.clear();
 		}
-		/*
+		
 		final ComboBox area = (ComboBox) getFieldGroup().getField(UserDto.AREA);
 		area.setVisible(useArea);
 		setRequired(useArea, UserDto.AREA);
 		if (!useArea) {
 			area.clear();
-		}*/
+		}
 	}
 
     private void suggestUserName() {

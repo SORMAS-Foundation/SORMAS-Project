@@ -9,7 +9,9 @@
         <role-name>USER</role-name>
         <group-name>ADMIN</group-name>
         <group-name>ADMIN_SUPERVISOR</group-name>
+        <group-name>AREA_ADMIN_SUPERVISOR</group-name>
         <group-name>SURVEILLANCE_SUPERVISOR</group-name>
+        <group-name>AREA_SURVEILLANCE_SUPERVISOR</group-name>
         <group-name>SURVEILLANCE_OFFICER</group-name>
         <group-name>CASE_SUPERVISOR</group-name>
         <group-name>CASE_OFFICER</group-name>
@@ -37,9 +39,17 @@
         <role-name>ADMIN_SUPERVISOR</role-name>
         <group-name>ADMIN_SUPERVISOR</group-name>
     </security-role-mapping>
+     <security-role-mapping>
+        <role-name>AREA_ADMIN_SUPERVISOR</role-name>
+        <group-name>AREA_ADMIN_SUPERVISOR</group-name>
+    </security-role-mapping>
     <security-role-mapping>
         <role-name>SURVEILLANCE_SUPERVISOR</role-name>
         <group-name>SURVEILLANCE_SUPERVISOR</group-name>
+    </security-role-mapping>
+    <security-role-mapping>
+        <role-name>AREA_SURVEILLANCE_SUPERVISOR</role-name>
+        <group-name>AREA_SURVEILLANCE_SUPERVISOR</group-name>
     </security-role-mapping>
     <security-role-mapping>
         <role-name>CASE_SUPERVISOR</role-name>
