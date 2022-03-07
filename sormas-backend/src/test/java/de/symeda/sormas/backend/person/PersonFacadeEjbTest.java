@@ -75,7 +75,6 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
 		final UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
 		user.setRegion(new RegionReferenceDto(rdcf.region.getUuid()));
-		user.setLimitedDisease(Disease.EVD);
 		getUserFacade().saveUser(user);
 		loginWith(user);
 
