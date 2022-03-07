@@ -272,11 +272,11 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		assertEquals(1, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 
-		getCaseFacade().deleteCase(caze.getUuid());
+		getCaseFacade().delete(caze.getUuid());
 
 		assertEquals(1, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 
-		getCaseFacade().deleteCase(caze2.getUuid());
+		getCaseFacade().delete(caze2.getUuid());
 
 		assertEquals(0, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 
@@ -284,7 +284,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		assertEquals(1, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 
-		getContactFacade().deleteContact(contact.getUuid());
+		getContactFacade().delete(contact.getUuid());
 
 		assertEquals(0, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 	}

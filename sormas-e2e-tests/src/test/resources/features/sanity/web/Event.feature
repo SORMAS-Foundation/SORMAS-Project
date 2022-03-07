@@ -45,8 +45,7 @@ Feature: Create events
     And I click on the searched event
     Then I check the created data is correctly displayed in event edit page
 
-    #please address
-  @env_main @ignore
+  @env_main
   Scenario: Add a participant to an event
     Given I log in with National User
     And I click on the Events button from navbar
@@ -61,8 +60,7 @@ Feature: Create events
     And I navigate via URL to last Person created from edit Event page
     Then I check if event is available at person information
 
-    #please address
-  @issue=SORDEV-5475 @env_main @ignore
+  @issue=SORDEV-5475 @env_main
   Scenario: Verify error messages while adding a participant to an event
     Given I log in with National User
     And I click on the Events button from navbar
@@ -87,8 +85,7 @@ Feature: Create events
     And I navigate via URL to last Person created from edit Event page
     Then I check if event is available at person information
 
-    #please address
-  @env_main @ignore
+  @env_main
   Scenario: Create and edit a new event
     Given I log in with National User
     And I click on the Events button from navbar
@@ -132,7 +129,6 @@ Feature: Create events
     Then I open the last created event via api
     And I check that number of actions in Edit Event Tab is 1
 
-      #please address
   @env_main @ignore
   Scenario: Add a New action for an Event and verify the Action in EventActions table
     Given API: I create a new event
@@ -148,8 +144,7 @@ Feature: Create events
     And I collect the event actions from table view
     And I am checking if all the fields are correctly displayed in the Event directory Actions table
 
-    #please address
-  @issue=SORDEV-5476 @env_main @ignore
+  @issue=SORDEV-5476 @env_main
   Scenario: Add a Task from event and verify the fields
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -176,12 +171,12 @@ Feature: Create events
     Then I am checking event group name and id is correctly displayed
 
   @issue=SORDEV-5496 @env_main
-  Scenario: Generate event document
+  Scenario: Generate and download Event document
     Given I log in with National User
     And I click on the Events button from navbar
     And I open the first event from events list
     And I click on the Create button from Event Document Templates
-    When I create an event document from template
+    When I create and download an event document from template
     And I verify that the event document is downloaded and correctly named
 
   @issue=SORDEV-5491 @env_main
@@ -200,7 +195,7 @@ Feature: Create events
     And I fill all fields for a new case created for event participant
     And I click on save case button
 
-    @issue=SORDEV-5915 @env_main @ignore
+    @issue=SORDEV-5915 @env_main
   Scenario: Check all filters are work properly in Event directory
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -258,8 +253,7 @@ Feature: Create events
     And I apply on the APPLY FILTERS button from Event
     And I check that the dates of displayed Event results are correct
 
-    #please address
-  @issue=SORDEV-5571 @env_main @ignore
+  @issue=SORDEV-5571 @env_main
   Scenario: Event group screen from Event Directory Page
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -307,8 +301,7 @@ Feature: Create events
     And I click on Group Id in Events result on Event Directory Page
     And I click on Unlink Event button on Event Directory Page
 
-    #please address
-  @issue=SORDEV-5570 @env_main @ignore
+  @issue=SORDEV-5570 @env_main
   Scenario: Testing Event screen Impact
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -327,8 +320,7 @@ Feature: Create events
     And I click on the Navigate to event directory filtered on this event group
     And I check the number of displayed Event results from All button is 1
 
-    #please address
-  @issue=SORDEV-5572 @env_main @ignore
+  @issue=SORDEV-5572 @env_main
   Scenario: Testing Event group adding for new event
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -354,5 +346,3 @@ Feature: Create events
     And I hover to Event Groups column of the Event result
     And I check that name appearing in hover is equal to name of linked Event group
     And I check the number of displayed Event results from All button is 1
-
-

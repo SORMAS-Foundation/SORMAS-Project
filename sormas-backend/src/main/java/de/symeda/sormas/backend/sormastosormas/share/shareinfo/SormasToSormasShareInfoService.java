@@ -203,6 +203,18 @@ public class SormasToSormasShareInfoService extends AdoServiceWithUserFilter<Sor
 
 		return q.getResultList().stream().findFirst().orElse(null);
 	}
+	
+	public List<SormasToSormasShareInfo> getByAssociatedEntity(String associatedObjectField, String associatedObjectUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<SormasToSormasShareInfo> cq = cb.createQuery(SormasToSormasShareInfo.class);
+		Root<SormasToSormasShareInfo> from = cq.from(SormasToSormasShareInfo.class);
+
+		cq.where(cb.equal(from.join(associatedObjectField, JoinType.LEFT).get(AbstractDomainObject.UUID), associatedObjectUuid));
+
+		TypedQuery<SormasToSormasShareInfo> q = em.createQuery(cq);
+
+		return q.getResultList();
+	}
 
 	public List<String> getCaseUuidsWithPendingOwnershipHandOver(List<Case> cases) {
 		return getUuidsWithPendingOwnershipHandOver(SormasToSormasShareInfo.CAZE, cases);

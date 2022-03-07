@@ -158,7 +158,7 @@ public class TravelEntryController {
 		// Initialize 'Delete' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_DELETE)) {
 			editComponent.addDeleteListener(() -> {
-				FacadeProvider.getTravelEntryFacade().deleteTravelEntry(travelEntry.getUuid());
+				FacadeProvider.getTravelEntryFacade().delete(travelEntry.getUuid());
 				UI.getCurrent().getNavigator().navigateTo(TravelEntriesView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityTravel));
 		}
@@ -237,7 +237,7 @@ public class TravelEntryController {
 				String.format(I18nProperties.getString(Strings.confirmationDeleteTravelEntries), selectedRows.size()),
 				() -> {
 					for (TravelEntryIndexDto selectedRow : selectedRows) {
-						FacadeProvider.getTravelEntryFacade().deleteTravelEntry(selectedRow.getUuid());
+						FacadeProvider.getTravelEntryFacade().delete(selectedRow.getUuid());
 					}
 					callback.run();
 					new Notification(

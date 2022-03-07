@@ -598,7 +598,7 @@ public class ContactController {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)) {
 			editComponent.addDeleteListener(() -> {
-				FacadeProvider.getContactFacade().deleteContact(contact.getUuid());
+				FacadeProvider.getContactFacade().delete(contact.getUuid());
 				UI.getCurrent().getNavigator().navigateTo(ContactsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityContact));
 		}
@@ -715,7 +715,7 @@ public class ContactController {
 
 					public void run() {
 						for (ContactIndexDto selectedRow : selectedRows) {
-							FacadeProvider.getContactFacade().deleteContact(selectedRow.getUuid());
+							FacadeProvider.getContactFacade().delete(selectedRow.getUuid());
 						}
 						callback.run();
 						new Notification(
@@ -847,7 +847,7 @@ public class ContactController {
 		VaadinUiUtil.showDeleteConfirmationWindow(
 			String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), I18nProperties.getString(Strings.entityContact)),
 			() -> {
-				FacadeProvider.getContactFacade().deleteContact(contact.getUuid());
+				FacadeProvider.getContactFacade().delete(contact.getUuid());
 				callback.run();
 			});
 	}
