@@ -301,10 +301,6 @@ public class PersonDirectorySteps implements En {
         "I check if Cause of death is ([^\"]*)",
         (String causeOfDeath) -> {
           String deathCause = webDriverHelpers.getValueFromCombobox(CASE_OF_DEATH_COMBOBOX);
-
-          System.out.println("---------------------> " + causeOfDeath);
-          System.out.println("---------------------> " + deathCause);
-
           softly.assertEquals(deathCause, causeOfDeath, "Cause of death is not equal");
           softly.assertAll();
         });

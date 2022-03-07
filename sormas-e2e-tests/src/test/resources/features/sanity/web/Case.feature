@@ -400,7 +400,7 @@ Feature: Case end to end tests
     And I check that number of displayed Event Participants is 1
 
   @issue=SORDEV-6843 @env_main
-  Scenario: Refine the update mechanism between case outcome and person death date
+  Scenario: Refine the update mechanism between case outcome and case filters
     Given I log in with National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
@@ -433,7 +433,6 @@ Feature: Case end to end tests
     Then I select first created case for person from Cases list
     And I select Recovered as Outcome Of Case Status
     Then I confirm changes in selected Case
-
     And I back to the cases list
     Then I reset filter from Case Directory
     Then I select second created case for person from Cases list
@@ -443,7 +442,6 @@ Feature: Case end to end tests
     Then I reset filter from Case Directory
     Then I filter with second Case ID
     And I check if created user is on filtered list with Deceased status
-
     Then I reset filter from Case Directory
     Then I select first created case for person from Cases list
     And I select No outcome yet as Outcome Of Case Status
@@ -454,7 +452,6 @@ Feature: Case end to end tests
     And I select No outcome yet as Outcome Of Case Status
     Then I confirm changes in selected Case
     And I back to the cases list
-
     Then I click on the Persons button from navbar
     And I filter Persons by created person name
     And I click on first person in person directory
@@ -473,7 +470,19 @@ Feature: Case end to end tests
     Then I filter by Dead user condition
     And I check if created user is on filtered list with No Outcome Yet status
 
-
+  @issue=SORDEV-6843 @env_main
+  Scenario: Refine the update mechanism between case outcome and person death date
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I fill new case with for one person with specified date
+    Then I click on save case button
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    Then I fill second new case with for one person with specified date
+    And I click on save case button and confirm Pick person in Case
+    Then I click on the Cases button from navbar
+    And I filter Cases by created person name
     Then I select second created case for person from Cases list
     And I select Deceased as Outcome Of Case Status
     Then I fill the specific Date of outcome
@@ -483,7 +492,53 @@ Feature: Case end to end tests
     And I click on first person in person directory
     And I check if Date of dead for specified case is correct
     And I check if Cause of death is Epidemic disease
+    Then I set death date for person 1 month ago
+    And I click on save button from Edit Person page
+    Then I click on the Cases button from navbar
+    And I filter Cases by created person name
+    Then I filter by Dead user condition
+    Then I select second created case for person from Cases list
+    And I check if date of outcome is updated for 1 month ago
+    Then I fill the specific Date of outcome
+    Then I confirm changes in selected Case
+    Then I click on the Persons button from navbar
+    And I filter Persons by created person name
+    And I click on first person in person directory
+    And I check if Date of dead for specified case is correct
 
-
-
-
+  @issue=SORDEV-6843 @env_main
+  Scenario: Refine the update mechanism between case outcome and person other cause date
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I fill new case with for one person with specified date
+    Then I click on save case button
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    Then I fill second new case with for one person with specified date
+    And I click on save case button and confirm Pick person in Case
+    Then I click on the Cases button from navbar
+    And I filter Cases by created person name
+    Then I select second created case for person from Cases list
+    And I select Deceased as Outcome Of Case Status
+    Then I fill the specific Date of outcome
+    Then I confirm changes in selected Case
+    Then I click on the Persons button from navbar
+    And I filter Persons by created person name
+    And I click on first person in person directory
+    And I check if Date of dead for specified case is correct
+    And I change Cause of death to Other cause
+    Then I set death date for person 1 month ago
+    And I click on save button from Edit Person page
+    Then I click on the Cases button from navbar
+    And I filter Cases by created person name
+    Then I filter by Dead user condition
+    Then I select second created case for person from Cases list
+    And I check if date of outcome is updated for 1 month ago
+    Then I fill the specific Date of outcome
+    Then I confirm changes in selected Case
+    Then I click on the Persons button from navbar
+    And I filter Persons by created person name
+    And I click on first person in person directory
+    And I check if Cause of death is Other cause
+    And I check if Date of dead for specified case is correct

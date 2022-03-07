@@ -84,17 +84,6 @@ public class EditCaseSteps implements En {
               DATE_OF_OUTCOME_INPUT, DATE_FORMATTER.format(LocalDate.now().minusDays(1)));
         });
 
-    //    When(
-    //        "I check if Date of outcome for specified case is correct",
-    //        () -> {
-    //          String dateOfOutcome = webDriverHelpers.getValueFromWebElement(DATE_OF_OUTCOME);
-    //          softly.assertEquals(
-    //              LocalDate.parse(dateOfOutcome, DATE_FORMATTER),
-    //              DATE_FORMATTER.format(LocalDate.now().minusDays(1)),
-    //              "Date of outcome is invalid");
-    //          softly.assertAll();
-    //        });
-
     When(
         "I select ([^\"]*) as Outcome Of Case Status",
         (String caseStatus) -> {
