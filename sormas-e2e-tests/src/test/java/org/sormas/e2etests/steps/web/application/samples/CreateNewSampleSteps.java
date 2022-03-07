@@ -330,7 +330,7 @@ public class CreateNewSampleSteps implements En {
   }
 
   private void fillReportDate(LocalDate dateOfCollection, Locale locale) {
-      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d.M.yyyy");
     if (locale.equals(Locale.GERMAN))
       webDriverHelpers.clearAndFillInWebElement(
           DATE_TEST_REPORT, formatter.format(dateOfCollection));
@@ -348,7 +348,7 @@ public class CreateNewSampleSteps implements En {
   }
 
   private void fillDateOfResult(LocalDate dateOfCollection, Locale locale) {
-      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d/M/yyyy");
+      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d.M.yyyy");
     if (locale.equals(Locale.GERMAN))
       webDriverHelpers.clearAndFillInWebElement(
           DATE_OF_RESULT, formatter.format(dateOfCollection));
