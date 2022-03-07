@@ -239,25 +239,25 @@ public class ContactDirectorySteps implements En {
         "I click on All button in Contact Directory Page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ALLBUTTON_CONTACT);
-          TimeUnit.SECONDS.sleep(8); // needed for table refresh
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
         });
     And(
         "I click on Converted to case pending button on Contact Directory Page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CONVERTED_TO_CASE_BUTTON);
-          TimeUnit.SECONDS.sleep(8); // needed for table refresh
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
         });
     And(
         "I click on Active contact button in Contact Directory Page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ACTIVE_CONTACT_BUTTON);
-          TimeUnit.SECONDS.sleep(8); // needed for table refresh
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
         });
     And(
         "I click on Dropped button on Contact Directory Page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(DROPPED_BUTTON);
-          TimeUnit.SECONDS.sleep(8); // needed for table refresh
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
         });
 
     When(

@@ -545,16 +545,17 @@ public class EditCaseSteps implements En {
               Paths.get(
                   userDirPath
                       + "/downloads/"
-                      + uuid.substring(0, 6)
+                      + uuid.substring(0, 6).toUpperCase()
                       + "-"
                       + aQuarantineOrder.getDocumentTemplate());
-          assertHelpers.assertWithPoll20Second(
+          assertHelpers.assertWithPoll(
               () ->
                   Assert.assertTrue(
                       Files.exists(path),
                       String.format(
                           "Case document was not downloaded. Searching path was: %s",
-                          path.toAbsolutePath())));
+                          path.toAbsolutePath())),
+              120);
         });
 
     When(
