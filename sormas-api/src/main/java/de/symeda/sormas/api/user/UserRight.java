@@ -1618,6 +1618,7 @@ public enum UserRight {
 	public static final String _CONTACT_CREATE = "CONTACT_CREATE";
 	public static final String _CONTACT_IMPORT = "CONTACT_IMPORT";
 	public static final String _CONTACT_VIEW = "CONTACT_VIEW";
+	public static final String _CONTACT_ARCHIVE = "CONTACT_ARCHIVE";
 	public static final String _CONTACT_ASSIGN = "CONTACT_ASSIGN";
 	public static final String _CONTACT_EDIT = "CONTACT_EDIT";
 	public static final String _CONTACT_DELETE = "CONTACT_DELETE";
@@ -1647,10 +1648,12 @@ public enum UserRight {
 	public static final String _EVENT_EXPORT = "EVENT_EXPORT";
 	public static final String _EVENT_ARCHIVE = "EVENT_ARCHIVE";
 	public static final String _EVENT_DELETE = "EVENT_DELETE";
+	public static final String _EVENTPARTICIPANT_ARCHIVE = "EVENTPARTICIPANT_ARCHIVE";
 	public static final String _EVENTPARTICIPANT_CREATE = "EVENTPARTICIPANT_CREATE";
 	public static final String _EVENTPARTICIPANT_EDIT = "EVENTPARTICIPANT_EDIT";
 	public static final String _EVENTPARTICIPANT_DELETE = "EVENTPARTICIPANT_DELETE";
 	public static final String _EVENTPARTICIPANT_IMPORT = "EVENTPARTICIPANT_IMPORT";
+	public static final String _EVENTPARTICIPANT_VIEW = "EVENTPARTICIPANT_VIEW";
 	public static final String _EVENTGROUP_CREATE = "EVENTGROUP_CREATE";
 	public static final String _EVENTGROUP_EDIT = "EVENTGROUP_EDIT";
 	public static final String _EVENTGROUP_LINK = "EVENTGROUP_LINK";
@@ -1661,9 +1664,6 @@ public enum UserRight {
 	public static final String _USER_CREATE = "USER_CREATE";
 	public static final String _USER_EDIT = "USER_EDIT";
 	public static final String _USER_VIEW = "USER_VIEW";
-	public static final String _CONFIGURATION_ACCESS = "CONFIGURATION_ACCESS";
-	public static final String _OUTBREAK_CONFIGURE_ALL = "OUTBREAK_CONFIGURE_ALL";
-	public static final String _OUTBREAK_CONFIGURE_RESTRICTED = "OUTBREAK_CONFIGURE_RESTRICTED";
 	public static final String _SEND_MANUAL_EXTERNAL_MESSAGES = "SEND_MANUAL_EXTERNAL_MESSAGES";
 	public static final String _STATISTICS_ACCESS = "STATISTICS_ACCESS";
 	public static final String _STATISTICS_EXPORT = "STATISTICS_EXPORT";
@@ -1678,12 +1678,11 @@ public enum UserRight {
 	public static final String _INFRASTRUCTURE_EXPORT = "INFRASTRUCTURE_EXPORT";
 	public static final String _INFRASTRUCTURE_IMPORT = "INFRASTRUCTURE_IMPORT";
 	public static final String _INFRASTRUCTURE_ARCHIVE = "INFRASTRUCTURE_ARCHIVE";
-	public static final String _USER_RIGHTS_MANAGE = "USER_RIGHTS_MANAGE";
-	public static final String _DASHBOARD_SURVEILLANCE_ACCESS = "DASHBOARD_SURVEILLANCE_ACCESS";
-	public static final String _DASHBOARD_CONTACT_ACCESS = "DASHBOARD_CONTACT_ACCESS";
+	public static final String _DASHBOARD_SURVEILLANCE_VIEW = "DASHBOARD_SURVEILLANCE_VIEW";
+	public static final String _DASHBOARD_CONTACT_VIEW = "DASHBOARD_CONTACT_VIEW";
 	public static final String _DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS = "DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS";
-	public static final String _DASHBOARD_CAMPAIGNS_ACCESS = "DASHBOARD_CAMPAIGNS_ACCESS";
-	public static final String _CASE_MANAGEMENT_ACCESS = "CASE_MANAGEMENT_ACCESS";
+	public static final String _DASHBOARD_CAMPAIGNS_VIEW = "DASHBOARD_CAMPAIGNS_VIEW";
+	public static final String _CASE_CLINICIAN_VIEW = "CASE_CLINICIAN_VIEW";
 	public static final String _THERAPY_VIEW = "THERAPY_VIEW";
 	public static final String _PRESCRIPTION_CREATE = "PRESCRIPTION_CREATE";
 	public static final String _PRESCRIPTION_EDIT = "PRESCRIPTION_EDIT";
@@ -1702,7 +1701,6 @@ public enum UserRight {
 	public static final String _DOCUMENT_TEMPLATE_MANAGEMENT = "DOCUMENT_TEMPLATE_MANAGEMENT";
 	public static final String _QUARANTINE_ORDER_CREATE = "QUARANTINE_ORDER_CREATE";
 	public static final String _LINE_LISTING_CONFIGURE = "LINE_LISTING_CONFIGURE";
-	public static final String _LINE_LISTING_CONFIGURE_NATION = "LINE_LISTING_CONFIGURE_NATION";
 	public static final String _AGGREGATE_REPORT_VIEW = "AGGREGATE_REPORT_VIEW";
 	public static final String _AGGREGATE_REPORT_EXPORT = "AGGREGATE_REPORT_EXPORT";
 	public static final String _AGGREGATE_REPORT_EDIT = "AGGREGATE_REPORT_EDIT";
@@ -1730,6 +1728,8 @@ public enum UserRight {
 	public static final String _TRAVEL_ENTRY_DELETE = "TRAVEL_ENTRY_DELETE";
 	public static final String _TRAVEL_ENTRY_ARCHIVE = "TRAVEL_ENTRY_ARCHIVE";
 	public static final String _EXPORT_DATA_PROTECTION_DATA = "EXPORT_DATA_PROTECTION_DATA";
+	public static final String _OUTBREAK_VIEW = "OUTBREAK_VIEW";
+	public static final String _OUTBREAK_EDIT = "OUTBREAK_EDIT";
 	public static final String _SORMAS_REST = "SORMAS_REST";
 	public static final String _SORMAS_UI = "SORMAS_UI";
 	public static final String _SORMAS_TO_SORMAS_CLIENT = "SORMAS_TO_SORMAS_CLIENT";

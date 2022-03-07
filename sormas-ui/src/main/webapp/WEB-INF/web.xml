@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <web-app id="sormas-ui-app"
  	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
- 	xmlns="http://xmlns.jcp.org/xml/ns/javaee" 
- 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd" 
+ 	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+ 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
  	version="3.1">
- 	
+
 	<display-name>SORMAS Web Interface</display-name>
 	<context-param>
 		<description>Vaadin Production Mode</description>
@@ -181,6 +181,10 @@
 	</security-role>
 
 	<security-role>
+		<role-name>CONTACT_ARCHIVE</role-name>
+	</security-role>
+
+	<security-role>
 		<role-name>CONTACT_ASSIGN</role-name>
 	</security-role>
 
@@ -297,6 +301,10 @@
 	</security-role>
 
 	<security-role>
+		<role-name>EVENTPARTICIPANT_ARCHIVE</role-name>
+	</security-role>
+
+	<security-role>
 		<role-name>EVENTPARTICIPANT_CREATE</role-name>
 	</security-role>
 
@@ -310,6 +318,10 @@
 
 	<security-role>
 		<role-name>EVENTPARTICIPANT_IMPORT</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EVENTPARTICIPANT_VIEW</role-name>
 	</security-role>
 
 	<security-role>
@@ -350,18 +362,6 @@
 
 	<security-role>
 		<role-name>USER_VIEW</role-name>
-	</security-role>
-
-	<security-role>
-		<role-name>CONFIGURATION_ACCESS</role-name>
-	</security-role>
-
-	<security-role>
-		<role-name>OUTBREAK_CONFIGURE_ALL</role-name>
-	</security-role>
-
-	<security-role>
-		<role-name>OUTBREAK_CONFIGURE_RESTRICTED</role-name>
 	</security-role>
 
 	<security-role>
@@ -421,15 +421,11 @@
 	</security-role>
 
 	<security-role>
-		<role-name>USER_RIGHTS_MANAGE</role-name>
+		<role-name>DASHBOARD_SURVEILLANCE_VIEW</role-name>
 	</security-role>
 
 	<security-role>
-		<role-name>DASHBOARD_SURVEILLANCE_ACCESS</role-name>
-	</security-role>
-
-	<security-role>
-		<role-name>DASHBOARD_CONTACT_ACCESS</role-name>
+		<role-name>DASHBOARD_CONTACT_VIEW</role-name>
 	</security-role>
 
 	<security-role>
@@ -437,11 +433,11 @@
 	</security-role>
 
 	<security-role>
-		<role-name>DASHBOARD_CAMPAIGNS_ACCESS</role-name>
+		<role-name>DASHBOARD_CAMPAIGNS_VIEW</role-name>
 	</security-role>
 
 	<security-role>
-		<role-name>CASE_MANAGEMENT_ACCESS</role-name>
+		<role-name>CASE_CLINICIAN_VIEW</role-name>
 	</security-role>
 
 	<security-role>
@@ -514,10 +510,6 @@
 
 	<security-role>
 		<role-name>LINE_LISTING_CONFIGURE</role-name>
-	</security-role>
-
-	<security-role>
-		<role-name>LINE_LISTING_CONFIGURE_NATION</role-name>
 	</security-role>
 
 	<security-role>
@@ -629,6 +621,14 @@
 	</security-role>
 
 	<security-role>
+		<role-name>OUTBREAK_VIEW</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>OUTBREAK_EDIT</role-name>
+	</security-role>
+
+	<security-role>
 		<role-name>SORMAS_REST</role-name>
 	</security-role>
 
@@ -643,4 +643,5 @@
 	<security-role>
 		<role-name>EXTERNAL_VISITS</role-name>
 	</security-role>
+	
 </web-app>

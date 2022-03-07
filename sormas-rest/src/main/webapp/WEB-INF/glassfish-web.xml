@@ -215,6 +215,11 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>CONTACT_ARCHIVE</role-name>
+        <group-name>CONTACT_ARCHIVE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>CONTACT_ASSIGN</role-name>
         <group-name>CONTACT_ASSIGN</group-name>
     </security-role-mapping>
@@ -360,6 +365,11 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>EVENTPARTICIPANT_ARCHIVE</role-name>
+        <group-name>EVENTPARTICIPANT_ARCHIVE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>EVENTPARTICIPANT_CREATE</role-name>
         <group-name>EVENTPARTICIPANT_CREATE</group-name>
     </security-role-mapping>
@@ -377,6 +387,11 @@
     <security-role-mapping>
         <role-name>EVENTPARTICIPANT_IMPORT</role-name>
         <group-name>EVENTPARTICIPANT_IMPORT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EVENTPARTICIPANT_VIEW</role-name>
+        <group-name>EVENTPARTICIPANT_VIEW</group-name>
     </security-role-mapping>
 
     <security-role-mapping>
@@ -427,21 +442,6 @@
     <security-role-mapping>
         <role-name>USER_VIEW</role-name>
         <group-name>USER_VIEW</group-name>
-    </security-role-mapping>
-
-    <security-role-mapping>
-        <role-name>CONFIGURATION_ACCESS</role-name>
-        <group-name>CONFIGURATION_ACCESS</group-name>
-    </security-role-mapping>
-
-    <security-role-mapping>
-        <role-name>OUTBREAK_CONFIGURE_ALL</role-name>
-        <group-name>OUTBREAK_CONFIGURE_ALL</group-name>
-    </security-role-mapping>
-
-    <security-role-mapping>
-        <role-name>OUTBREAK_CONFIGURE_RESTRICTED</role-name>
-        <group-name>OUTBREAK_CONFIGURE_RESTRICTED</group-name>
     </security-role-mapping>
 
     <security-role-mapping>
@@ -515,18 +515,13 @@
     </security-role-mapping>
 
     <security-role-mapping>
-        <role-name>USER_RIGHTS_MANAGE</role-name>
-        <group-name>USER_RIGHTS_MANAGE</group-name>
+        <role-name>DASHBOARD_SURVEILLANCE_VIEW</role-name>
+        <group-name>DASHBOARD_SURVEILLANCE_VIEW</group-name>
     </security-role-mapping>
 
     <security-role-mapping>
-        <role-name>DASHBOARD_SURVEILLANCE_ACCESS</role-name>
-        <group-name>DASHBOARD_SURVEILLANCE_ACCESS</group-name>
-    </security-role-mapping>
-
-    <security-role-mapping>
-        <role-name>DASHBOARD_CONTACT_ACCESS</role-name>
-        <group-name>DASHBOARD_CONTACT_ACCESS</group-name>
+        <role-name>DASHBOARD_CONTACT_VIEW</role-name>
+        <group-name>DASHBOARD_CONTACT_VIEW</group-name>
     </security-role-mapping>
 
     <security-role-mapping>
@@ -535,13 +530,13 @@
     </security-role-mapping>
 
     <security-role-mapping>
-        <role-name>DASHBOARD_CAMPAIGNS_ACCESS</role-name>
-        <group-name>DASHBOARD_CAMPAIGNS_ACCESS</group-name>
+        <role-name>DASHBOARD_CAMPAIGNS_VIEW</role-name>
+        <group-name>DASHBOARD_CAMPAIGNS_VIEW</group-name>
     </security-role-mapping>
 
     <security-role-mapping>
-        <role-name>CASE_MANAGEMENT_ACCESS</role-name>
-        <group-name>CASE_MANAGEMENT_ACCESS</group-name>
+        <role-name>CASE_CLINICIAN_VIEW</role-name>
+        <group-name>CASE_CLINICIAN_VIEW</group-name>
     </security-role-mapping>
 
     <security-role-mapping>
@@ -632,11 +627,6 @@
     <security-role-mapping>
         <role-name>LINE_LISTING_CONFIGURE</role-name>
         <group-name>LINE_LISTING_CONFIGURE</group-name>
-    </security-role-mapping>
-
-    <security-role-mapping>
-        <role-name>LINE_LISTING_CONFIGURE_NATION</role-name>
-        <group-name>LINE_LISTING_CONFIGURE_NATION</group-name>
     </security-role-mapping>
 
     <security-role-mapping>
@@ -772,6 +762,16 @@
     <security-role-mapping>
         <role-name>EXPORT_DATA_PROTECTION_DATA</role-name>
         <group-name>EXPORT_DATA_PROTECTION_DATA</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>OUTBREAK_VIEW</role-name>
+        <group-name>OUTBREAK_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>OUTBREAK_EDIT</role-name>
+        <group-name>OUTBREAK_EDIT</group-name>
     </security-role-mapping>
 
     <security-role-mapping>

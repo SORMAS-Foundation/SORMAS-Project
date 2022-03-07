@@ -176,6 +176,10 @@
 	</security-role>
 
 	<security-role>
+		<role-name>CONTACT_ARCHIVE</role-name>
+	</security-role>
+
+	<security-role>
 		<role-name>CONTACT_ASSIGN</role-name>
 	</security-role>
 
@@ -292,6 +296,10 @@
 	</security-role>
 
 	<security-role>
+		<role-name>EVENTPARTICIPANT_ARCHIVE</role-name>
+	</security-role>
+
+	<security-role>
 		<role-name>EVENTPARTICIPANT_CREATE</role-name>
 	</security-role>
 
@@ -305,6 +313,10 @@
 
 	<security-role>
 		<role-name>EVENTPARTICIPANT_IMPORT</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EVENTPARTICIPANT_VIEW</role-name>
 	</security-role>
 
 	<security-role>
@@ -345,18 +357,6 @@
 
 	<security-role>
 		<role-name>USER_VIEW</role-name>
-	</security-role>
-
-	<security-role>
-		<role-name>CONFIGURATION_ACCESS</role-name>
-	</security-role>
-
-	<security-role>
-		<role-name>OUTBREAK_CONFIGURE_ALL</role-name>
-	</security-role>
-
-	<security-role>
-		<role-name>OUTBREAK_CONFIGURE_RESTRICTED</role-name>
 	</security-role>
 
 	<security-role>
@@ -416,15 +416,11 @@
 	</security-role>
 
 	<security-role>
-		<role-name>USER_RIGHTS_MANAGE</role-name>
+		<role-name>DASHBOARD_SURVEILLANCE_VIEW</role-name>
 	</security-role>
 
 	<security-role>
-		<role-name>DASHBOARD_SURVEILLANCE_ACCESS</role-name>
-	</security-role>
-
-	<security-role>
-		<role-name>DASHBOARD_CONTACT_ACCESS</role-name>
+		<role-name>DASHBOARD_CONTACT_VIEW</role-name>
 	</security-role>
 
 	<security-role>
@@ -432,11 +428,11 @@
 	</security-role>
 
 	<security-role>
-		<role-name>DASHBOARD_CAMPAIGNS_ACCESS</role-name>
+		<role-name>DASHBOARD_CAMPAIGNS_VIEW</role-name>
 	</security-role>
 
 	<security-role>
-		<role-name>CASE_MANAGEMENT_ACCESS</role-name>
+		<role-name>CASE_CLINICIAN_VIEW</role-name>
 	</security-role>
 
 	<security-role>
@@ -509,10 +505,6 @@
 
 	<security-role>
 		<role-name>LINE_LISTING_CONFIGURE</role-name>
-	</security-role>
-
-	<security-role>
-		<role-name>LINE_LISTING_CONFIGURE_NATION</role-name>
 	</security-role>
 
 	<security-role>
@@ -621,6 +613,14 @@
 
 	<security-role>
 		<role-name>EXPORT_DATA_PROTECTION_DATA</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>OUTBREAK_VIEW</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>OUTBREAK_EDIT</role-name>
 	</security-role>
 
 	<security-role>
