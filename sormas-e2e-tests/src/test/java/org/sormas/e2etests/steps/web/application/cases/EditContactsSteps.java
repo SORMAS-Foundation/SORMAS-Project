@@ -137,7 +137,7 @@ public class EditContactsSteps implements En {
     Then(
         "I check the linked contact information is correctly displayed",
         () -> {
-          webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(By.xpath("//tr"));
+          webDriverHelpers.waitUntilAListOfElementsIsPresent(By.xpath("//tr[@role='row']"), 1);
           String contactId = webDriverHelpers.getValueFromTableRowUsingTheHeader("Contact ID", 1);
           String contactDisease =
               (webDriverHelpers.getValueFromTableRowUsingTheHeader("Disease", 1).equals("COVID-19"))
@@ -167,11 +167,9 @@ public class EditContactsSteps implements En {
                   .getContactClassification()
                   .equalsIgnoreCase(contactClassification),
               "Classification doesn't match");
-
           softly.assertTrue(
               apiState.getCreatedContact().getPerson().getFirstName().equalsIgnoreCase(firstName),
               "First name doesn't match");
-
           softly.assertTrue(
               apiState.getCreatedContact().getPerson().getLastName().equalsIgnoreCase(lastName),
               "Last name doesn't match");

@@ -238,7 +238,7 @@ public class ContactDirectorySteps implements En {
     And(
         "I click on All button in Contact Directory Page",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(ALLBUTTON_CONTACT);
+          webDriverHelpers.clickOnWebElementBySelector(ALL_BUTTON_CONTACT);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
         });
     And(
@@ -312,9 +312,24 @@ public class ContactDirectorySteps implements En {
         });
 
     When(
-        "I open the last created contact",
+        "I search after last created contact via API by UUID and open",
         () -> {
           searchAfterContactByMultipleOptions(apiState.getCreatedContact().getUuid());
+          openContactFromResultsByUUID(apiState.getCreatedContact().getUuid());
+        });
+
+    When(
+        "I search after last created contact via API by name and uuid then open",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(APPLY_FILTERS_BUTTON);
+          webDriverHelpers.fillInWebElement(
+              MULTIPLE_OPTIONS_SEARCH_INPUT, apiState.getCreatedContact().getUuid());
+          webDriverHelpers.fillInWebElement(
+              PERSON_LIKE_SEARCH_INPUT,
+              apiState.getCreatedContact().getPerson().getFirstName()
+                  + " "
+                  + apiState.getCreatedContact().getPerson().getLastName());
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
           openContactFromResultsByUUID(apiState.getCreatedContact().getUuid());
         });
 
