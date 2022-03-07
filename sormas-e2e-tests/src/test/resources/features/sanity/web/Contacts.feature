@@ -24,7 +24,6 @@ Feature: Contacts end to end tests
     And API: I check that POST call status code is 200
     Given I log in with National User
     When I click on the Contacts button from navbar
-    #Then I search after last created contact via API by UUID and open
     Then I search after last created contact via API by name and uuid then open
     Then I delete the contact
     And I check that number of displayed contact results is 0
@@ -57,7 +56,7 @@ Feature: Contacts end to end tests
     And I open the last created UI Contact
     Then I check the created data is correctly displayed on Edit Contact page
 
-  @env_main @ignore @check
+  @env_main @ignore @check1
   Scenario: Source case selected for contact
     Given API: I create a new person
     Then API: I check that POST call body is "OK"

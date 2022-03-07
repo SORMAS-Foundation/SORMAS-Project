@@ -39,7 +39,6 @@ import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
 import javax.inject.Inject;
-
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
@@ -140,30 +139,30 @@ public class EditContactsSteps implements En {
     Then(
         "I check the linked contact information is correctly displayed",
         () -> {
-            log.info("Waiting for contact UUID to be displayed");
+          log.info("Waiting for contact UUID to be displayed");
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               By.cssSelector(
                   String.format(
                       CONTACT_RESULTS_UUID_LOCATOR, apiState.getCreatedContact().getUuid())));
           log.info("Collecting contact ID");
           String contactId = webDriverHelpers.getValueFromTableRowUsingTheHeader("Contact ID", 1);
-            log.info("Collecting contact disease");
+          log.info("Collecting contact disease");
           String contactDisease =
               (webDriverHelpers.getValueFromTableRowUsingTheHeader("Disease", 1).equals("COVID-19"))
                   ? "CORONAVIRUS"
                   : "Not expected string!";
-            log.info("Collecting contact classification");
+          log.info("Collecting contact classification");
           String contactClassification =
               (webDriverHelpers
                       .getValueFromTableRowUsingTheHeader("Contact classification", 1)
                       .equals("Unconfirmed contact"))
                   ? "UNCONFIRMED"
                   : "Not expected string!";
-            log.info("Collecting contact first name");
+          log.info("Collecting contact first name");
           String firstName =
               webDriverHelpers.getValueFromTableRowUsingTheHeader(
                   "First name of contact person", 1);
-            log.info("Collecting contact last name");
+          log.info("Collecting contact last name");
           String lastName =
               webDriverHelpers.getValueFromTableRowUsingTheHeader("Last name of contact person", 1);
 

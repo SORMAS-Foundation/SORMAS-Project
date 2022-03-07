@@ -340,7 +340,7 @@ public class ContactDirectorySteps implements En {
     Then(
         "I check that number of displayed contact results is (\\d+)",
         (Integer number) -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_CONTACT_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(TOTAL_CONTACTS_COUNTER);
           assertHelpers.assertWithPoll20Second(
               () ->
                   Assert.assertEquals(
