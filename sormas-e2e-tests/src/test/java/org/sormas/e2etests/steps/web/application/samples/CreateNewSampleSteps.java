@@ -578,13 +578,11 @@ public class CreateNewSampleSteps implements En {
   private Sample buildPathogenTestDE(String testType) {
     SampleService sampleService = new SampleService(faker);
     sampleTestResult = sampleService.buildPathogenTestUnverifiedDE(testType);
-    fillReportDate(sampleTestResult.getReportDate(), Locale.GERMAN);
     selectTypeOfTest(sampleTestResult.getTypeOfTest());
     selectTestedDisease(sampleTestResult.getTestedDisease());
     selectPathogenLaboratory(sampleTestResult.getLaboratory());
     selectLaboratoryNamePopup(sampleTestResult.getLaboratoryName());
     selectTestResult(sampleTestResult.getSampleTestResults());
-    fillDateOfResult(sampleTestResult.getDateOfResult(), Locale.GERMAN);
     fillTimeOfResult(sampleTestResult.getTimeOfResult());
     selectResultVerifiedByLabSupervisor(
         sampleTestResult.getResultVerifiedByLabSupervisor(),
