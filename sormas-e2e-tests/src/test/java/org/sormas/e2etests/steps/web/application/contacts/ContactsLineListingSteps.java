@@ -53,8 +53,8 @@ public class ContactsLineListingSteps implements En {
           selectDisease(contactsLineListing.getDisease());
           selectRegion(contactsLineListing.getRegion());
           selectDistrict(contactsLineListing.getDistrict());
-          fillDateOfReport(contactsLineListing.getDateOfReport(), Locale.ENGLISH);
-          fillDateOfLastContact(contactsLineListing.getDateOfLastContact(), Locale.ENGLISH);
+          fillDateOfReport(contactsLineListing.getDateOfReport(), Locale.GERMAN);
+          fillDateOfLastContact(contactsLineListing.getDateOfLastContact(), Locale.GERMAN);
           selectTypeOfContact(contactsLineListing.getTypeOfContact());
           selectRelationshipWithCase(contactsLineListing.getRelationshipWithCase());
           fillFirstName(contactsLineListing.getFirstName());
@@ -138,18 +138,20 @@ public class ContactsLineListingSteps implements En {
   }
 
   private void fillDateOfReport(LocalDate dateOfReport, Locale locale) {
+      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     if (locale.equals(Locale.GERMAN))
       webDriverHelpers.clearAndFillInWebElement(
-          LINE_LISTING_DATE_REPORT_INPUT, DATE_FORMATTER_DE.format(dateOfReport));
+          LINE_LISTING_DATE_REPORT_INPUT, formatter.format(dateOfReport));
     else
       webDriverHelpers.clearAndFillInWebElement(
           LINE_LISTING_DATE_REPORT_INPUT, DATE_FORMATTER.format(dateOfReport));
   }
 
   private void fillDateOfLastContact(LocalDate dateOfLastContact, Locale locale) {
+      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
     if (locale.equals(Locale.GERMAN))
       webDriverHelpers.clearAndFillInWebElement(
-          LINE_LISTING_DATE_LAST_CONTACT_INPUT, DATE_FORMATTER_DE.format(dateOfLastContact));
+          LINE_LISTING_DATE_LAST_CONTACT_INPUT, formatter.format(dateOfLastContact));
     else
       webDriverHelpers.clearAndFillInWebElement(
           LINE_LISTING_DATE_LAST_CONTACT_INPUT, DATE_FORMATTER.format(dateOfLastContact));
