@@ -394,7 +394,7 @@ Feature: Case filter functionality
     And I check that number of displayed cases results is 0
     And I click "Nur Einreisefälle ohne zugewiesene Einrichtung" checkbox on Case directory page
 
-  @issue=SORQA-83 @env_de
+  @issue=SORQA-83 @env_de @ignore
   Scenario: Check Case report date filters on Case directory page for De specific
     Given I log in with National User
     And I click on the Cases button from navbar
