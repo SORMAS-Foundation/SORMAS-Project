@@ -228,7 +228,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person = creator.createPerson();
 
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, user.toReference());
-		getEventParticipantFacade().deleteEventParticipant(eventParticipant.toReference());
+		getEventParticipantFacade().delete(eventParticipant.toReference().getUuid());
 
 		boolean exist = getEventParticipantFacade().exists(person.getUuid(), event.getUuid());
 		Assert.assertFalse(exist);
