@@ -32,6 +32,7 @@ import org.sormas.e2etests.entities.services.CaseService;
 import org.sormas.e2etests.enums.CaseClassification;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
 
 public class EditCasePersonSteps implements En {
 
@@ -44,7 +45,8 @@ public class EditCasePersonSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
 
   @Inject
-  public EditCasePersonSteps(final WebDriverHelpers webDriverHelpers, CaseService caseService) {
+  public EditCasePersonSteps(
+      final WebDriverHelpers webDriverHelpers, CaseService caseService, SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -53,6 +55,21 @@ public class EditCasePersonSteps implements En {
           LocalDate date = LocalDate.now().minusMonths(Long.parseLong(dateOfDeath));
           DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
           webDriverHelpers.fillInWebElement(DATE_OF_DEATH_INPUT, formatter.format(date));
+        });
+
+    When(
+        "I change Cause of death to ([^\"]*)",
+        (String causeOfDeath) ->
+            webDriverHelpers.selectFromCombobox(CASE_OF_DEATH_COMBOBOX, causeOfDeath));
+
+    When(
+        "I check if date of outcome is updated for ([^\"]*) month ago",
+        (String dateOfDeath) -> {
+          String date = webDriverHelpers.getValueFromWebElement(DATE_OF_OUTCOME_INPUT);
+          LocalDate deathDate = LocalDate.now().minusMonths(Long.parseLong(dateOfDeath));
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+          softly.assertEquals(formatter.format(deathDate), date, "Date is not equal");
+          softly.assertAll();
         });
 
     When(
