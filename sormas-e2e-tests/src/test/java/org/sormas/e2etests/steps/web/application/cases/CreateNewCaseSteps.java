@@ -151,10 +151,9 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           String checkPopupTitle =
               webDriverHelpers.getTextFromWebElement(PICK_OR_CREATE_PERSON_TITLE);
-          //          softly.assertEquals(
-          //              checkPopupTitle, expectedTitle, "Wrong popup title for Pick or create
-          // person");
-          //          softly.assertAll();
+          softly.assertEquals(
+              checkPopupTitle, expectedTitle, "Wrong popup title for Pick or create person");
+          softly.assertAll();
           webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
         });
 
