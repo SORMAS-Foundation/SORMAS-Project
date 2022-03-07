@@ -25,7 +25,7 @@ Feature: Sample Functionalities
     And I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     And I fill a new contact form
-    And I click on the popup Save button
+    And I click on SAVE new contact button
     And I collect the contact person UUID displayed on Edit contact page
     And I click on New Sample
     When I collect the sample UUID displayed on create new sample page
@@ -44,7 +44,7 @@ Feature: Sample Functionalities
     And I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     And I fill a new contact form
-    And I click on the popup Save button
+    And I click on SAVE new contact button
     And I collect the contact person UUID displayed on Edit contact page
     And I click on New Sample
     When I collect the sample UUID displayed on create new sample page
