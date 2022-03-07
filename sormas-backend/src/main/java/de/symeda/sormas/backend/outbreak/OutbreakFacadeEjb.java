@@ -142,7 +142,8 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 
 	@Override
 	public OutbreakDto saveOutbreak(@Valid OutbreakDto outbreakDto) {
-
+		final User currentUser = userService.getCurrentUser();
+		outbreakDto.setReportingUser(currentUser.toReference());
 		Outbreak outbreak = fromDto(outbreakDto, true);
 		outbreakService.ensurePersisted(outbreak);
 		return toDto(outbreak);
