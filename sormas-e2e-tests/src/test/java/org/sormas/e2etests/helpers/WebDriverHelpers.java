@@ -791,17 +791,16 @@ public class WebDriverHelpers {
     boolean isSpinnerDisplayed;
 
     try {
-      assertHelpers.assertWithPoll(
+      assertHelpers.assertWithPollWithoutFail(
           () ->
               Assert.assertTrue(
                   baseSteps.getDriver().findElement(loadingSpinner).isDisplayed(),
                   "Loading spinner isn't displayed"),
-          3);
+          5);
       isSpinnerDisplayed = true;
-    } catch (Throwable ignored) {
+    } catch (ConditionTimeoutException ignored) {
       isSpinnerDisplayed = false;
     }
-
     try {
       if (isSpinnerDisplayed)
         assertHelpers.assertWithPoll(
