@@ -476,7 +476,7 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	public void deleteContact(String contactUuid) {
+	public void delete(String contactUuid) {
 
 		if (!userService.hasRight(UserRight.CONTACT_DELETE)) {
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete contacts.");
@@ -1893,7 +1893,7 @@ public class ContactFacadeEjb
 		contact.setDuplicateOf(duplicateOfContact);
 		service.ensurePersisted(contact);
 
-		deleteContact(uuid);
+		this.delete(uuid);
 	}
 
 	@Override
@@ -2071,11 +2071,6 @@ public class ContactFacadeEjb
 	@Override
 	protected CoreEntityType getCoreEntityType() {
 		return CoreEntityType.CONTACT;
-	}
-
-	@Override
-	protected void delete(Contact entity) {
-		service.delete(entity);
 	}
 
 	private float calculateCompleteness(Contact contact) {

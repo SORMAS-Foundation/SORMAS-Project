@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.event;
 
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.backend.common.NotificationService;
 import java.time.Duration;
@@ -386,13 +387,13 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
-	public void deleteEventParticipant(EventParticipantReferenceDto eventParticipantRef) {
+	public void delete(String uuid) throws ExternalSurveillanceToolException {
 
 		if (!userService.hasRight(UserRight.EVENTPARTICIPANT_DELETE)) {
 			throw new UnsupportedOperationException("Your user is not allowed to delete event participants");
 		}
 
-		EventParticipant eventParticipant = service.getByReferenceDto(eventParticipantRef);
+		EventParticipant eventParticipant = service.getByUuid(uuid);
 		service.delete(eventParticipant);
 	}
 
@@ -1072,10 +1073,5 @@ public class EventParticipantFacadeEjb
 	@Override
 	protected CoreEntityType getCoreEntityType() {
 		return CoreEntityType.EVENT_PARTICIPANT;
-	}
-
-	@Override
-	protected void delete(EventParticipant entity) {
-		service.delete(entity);
 	}
 }

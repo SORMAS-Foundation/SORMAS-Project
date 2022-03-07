@@ -275,7 +275,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Override
-	public void deleteEvent(String eventUuid) throws ExternalSurveillanceToolException {
+	public void delete(String eventUuid) throws ExternalSurveillanceToolException {
 		if (!userService.hasRight(UserRight.EVENT_DELETE)) {
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete events.");
 		}
@@ -1296,8 +1296,4 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		}
 	}
 
-	@Override
-	protected void delete(Event entity) {
-		service.delete(entity);
-	}
 }

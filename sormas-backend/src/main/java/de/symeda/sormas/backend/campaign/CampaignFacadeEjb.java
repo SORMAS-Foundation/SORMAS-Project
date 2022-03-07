@@ -189,11 +189,6 @@ public class CampaignFacadeEjb
 		return target;
 	}
 
-	@Override
-	protected void delete(Campaign entity) {
-		service.delete(entity);
-	}
-
 	public void validate(CampaignReferenceDto campaignReferenceDto) {
 		validate(getByUuid(campaignReferenceDto.getUuid()));
 	}
@@ -344,7 +339,7 @@ public class CampaignFacadeEjb
 	}
 
 	@Override
-	public void deleteCampaign(String campaignUuid) {
+	public void delete(String campaignUuid) {
 
 		User user = userService.getCurrentUser();
 		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))

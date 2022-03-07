@@ -47,14 +47,22 @@ public class CoreEntityDeletionService {
 
 	public void executeAutomaticDeletion() {
 
-		coreEntityFacades.forEach(coreEntityType -> {
-			DeletionConfiguration coreEntityTypeConfig = deletionConfigurationService.getCoreEntityTypeConfig(coreEntityType.coreEntityType);
+		coreEntityFacades.forEach(entityTypeFacadePair -> {
+			DeletionConfiguration coreEntityTypeConfig = deletionConfigurationService.getCoreEntityTypeConfig(entityTypeFacadePair.coreEntityType);
 
 			if (coreEntityTypeConfig.getDeletionReference() != null && coreEntityTypeConfig.deletionPeriod != null) {
-				coreEntityType.entityFacade.executeAutomaticDeletion(coreEntityTypeConfig);
+				entityTypeFacadePair.entityFacade.executeAutomaticDeletion(coreEntityTypeConfig);
 			}
 		});
+	}
 
+	public void executePermanentDeletion() {
+		coreEntityFacades.forEach(entityTypeFacadePair -> {
+			if (entityTypeFacadePair.coreEntityType == CoreEntityType.IMMUNIZATION
+				|| entityTypeFacadePair.coreEntityType == CoreEntityType.TRAVEL_ENTRY) {
+				entityTypeFacadePair.entityFacade.executePermanentDeletion();
+			}
+		});
 	}
 
 	private static final class EntityTypeFacadePair {

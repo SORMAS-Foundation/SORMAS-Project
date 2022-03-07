@@ -144,7 +144,7 @@ public class ActionFacadeEjb implements ActionFacade {
 		}
 
 		Action action = actionService.getByUuid(actionDto.getUuid());
-		actionService.delete(action);
+		actionService.deletePermanent(action);
 	}
 
 	@Override

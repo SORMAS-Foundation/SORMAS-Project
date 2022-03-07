@@ -5,6 +5,7 @@ import org.openqa.selenium.By;
 public class TherapyPage {
 
   public static final By THERAPY_POPUP_SAVE_BUTTON = By.cssSelector(".popupContent #commit");
+  public static final By TREATMENT_POPUP_SAVE_BUTTON = By.cssSelector(".popupContent #commit");
   public static final By THERAPY_POPUP_DISCARD_BUTTON = By.cssSelector(".popupContent #discard");
   public static final By ROUTE_SPECIFICATION = By.cssSelector(".popupContent #routeDetails");
   public static final By TYPE_OF_DRUG_HORIZONTAL_CHECKBOX =

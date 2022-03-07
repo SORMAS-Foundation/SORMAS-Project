@@ -101,7 +101,7 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-	public void deleteTravelEntry(String travelEntryUuid) {
+	public void delete(String travelEntryUuid) {
 		if (!userService.hasRight(UserRight.TRAVEL_ENTRY_DELETE)) {
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete travel entries");
 		}
@@ -341,11 +341,6 @@ public class TravelEntryFacadeEjb
 			return TravelEntry.REPORT_DATE;
 		}
 		return super.getDeleteReferenceField(deletionReference);
-	}
-
-	@Override
-	protected void delete(TravelEntry entity) {
-		service.delete(entity);
 	}
 
 	@LocalBean

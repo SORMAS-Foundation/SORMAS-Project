@@ -214,8 +214,13 @@ public class CronService {
 		centralInfraSyncFacade.syncAll();
 	}
 
-	@Schedule(hour = "1", minute =  "55", persistent = false)
-	public void deleteExpiredEntities(){
+	@Schedule(hour = "1", minute = "55", persistent = false)
+	public void deleteExpiredEntities() {
 		coreEntityDeletionService.executeAutomaticDeletion();
+	}
+
+	@Schedule(hour = "2", minute = "10", persistent = false)
+	public void permanentDeleteEntities() {
+		coreEntityDeletionService.executePermanentDeletion();
 	}
 }

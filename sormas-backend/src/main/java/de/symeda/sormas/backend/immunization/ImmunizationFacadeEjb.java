@@ -253,7 +253,7 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
-	public void deleteImmunization(String uuid) {
+	public void delete(String uuid) {
 		if (!userService.hasRight(UserRight.IMMUNIZATION_DELETE)) {
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete immunizations");
 		}
@@ -593,11 +593,6 @@ public class ImmunizationFacadeEjb
 
 		vaccinationFacade.copyExistingVaccinationsToNewImmunization(immunizationDto, newImmunization);
 		service.ensurePersisted(newImmunization);
-	}
-
-	@Override
-	protected void delete(Immunization entity) {
-		service.delete(entity);
 	}
 
 	@LocalBean

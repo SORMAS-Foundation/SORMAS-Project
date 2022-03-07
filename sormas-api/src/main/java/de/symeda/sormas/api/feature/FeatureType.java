@@ -253,7 +253,8 @@ public enum FeatureType {
 		true,
 		new FeatureType[] {
 			TASK_MANAGEMENT },
-			null, null),
+		null, null),
+	DELETE_PERMANENT(true, false, null, null, null),
 	AUTOMATIC_ARCHIVING(true, true, null, Arrays.asList(CASE, CONTACT, EVENT, EVENT_PARTICIPANT, IMMUNIZATION, TRAVEL_ENTRY),
 			ImmutableMap.of(FeatureTypeProperty.DAYS_FOR_AUTOMATIC_ARCHIVING, 90));
 
