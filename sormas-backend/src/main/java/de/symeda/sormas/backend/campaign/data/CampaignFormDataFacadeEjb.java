@@ -204,7 +204,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		}
 
 		CampaignFormData campaignFormData = campaignFormDataService.getByUuid(campaignFormDataUuid);
-		campaignFormDataService.delete(campaignFormData);
+		campaignFormDataService.deletePermanent(campaignFormData);
 	}
 
 	private CampaignFormDataDto convertToDto(CampaignFormData source) {

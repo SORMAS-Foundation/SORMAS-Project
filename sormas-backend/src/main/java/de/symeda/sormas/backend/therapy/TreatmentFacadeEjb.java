@@ -119,7 +119,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 		}
 
 		Treatment treatment = service.getByUuid(treatmentUuid);
-		service.delete(treatment);
+		service.deletePermanent(treatment);
 	}
 
 	@Override
