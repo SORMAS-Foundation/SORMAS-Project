@@ -53,8 +53,8 @@ public class ContactsLineListingSteps implements En {
           selectDisease(contactsLineListing.getDisease());
           selectRegion(contactsLineListing.getRegion());
           selectDistrict(contactsLineListing.getDistrict());
-          fillDateOfReport(contactsLineListing.getDateOfReport(), Locale.GERMAN);
-          fillDateOfLastContact(contactsLineListing.getDateOfLastContact(), Locale.GERMAN);
+          fillDateOfReport(contactsLineListing.getDateOfReport(), Locale.ENGLISH);
+          fillDateOfLastContact(contactsLineListing.getDateOfLastContact(), Locale.ENGLISH);
           selectTypeOfContact(contactsLineListing.getTypeOfContact());
           selectRelationshipWithCase(contactsLineListing.getRelationshipWithCase());
           fillFirstName(contactsLineListing.getFirstName());
