@@ -267,25 +267,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		String password = getUserFacade().resetPassword(user.getUuid());
 
 		Set<UserRight> validLoginRoles = getUserFacade().getValidLoginUserRights(user.getUserName(), password);
-		assertThat(
-			validLoginRoles,
-			containsInAnyOrder(
-				UserRight.CASE_CREATE,
-				UserRight.CASE_VIEW,
-				UserRight.CASE_EDIT,
-				UserRight.CASE_TRANSFER,
-				UserRight.CASE_REFER_FROM_POE,
-				UserRight.CASE_INVESTIGATE,
-				UserRight.CASE_CLASSIFY,
-				UserRight.CASE_CHANGE_DISEASE,
-				UserRight.CASE_CHANGE_EPID_NUMBER,
-				UserRight.CASE_EXPORT,
-				UserRight.CASE_SHARE,
-				UserRight.IMMUNIZATION_VIEW,
-				UserRight.IMMUNIZATION_CREATE,
-				UserRight.IMMUNIZATION_EDIT,
-				UserRight.PERSON_VIEW,
-				UserRight.PERSON_EDIT));
+		assertThat(validLoginRoles, containsInAnyOrder(getUserRoleConfigFacade().getEffectiveUserRights(SURVEILLANCE_SUPERVISOR).toArray(new UserRight[]{})));
 
 		user.setActive(false);
 		getUserFacade().saveUser(user);
