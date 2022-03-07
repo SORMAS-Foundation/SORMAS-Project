@@ -806,7 +806,9 @@ public class EventController {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_ARCHIVE)) {
 			boolean archived = FacadeProvider.getEventFacade().isArchived(eventUuid);
 			Button archiveEventButton = ButtonHelper.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {
-				editView.commit();
+				if (editView.isModified()) {
+					editView.commit();
+				}
 
 				if (archived) {
 					ControllerProvider.getArchiveController()

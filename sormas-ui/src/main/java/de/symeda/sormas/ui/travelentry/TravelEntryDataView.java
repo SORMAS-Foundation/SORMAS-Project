@@ -79,7 +79,7 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 		if (resultingCase == null) {
 			Button createCaseButton = ButtonHelper.createButton(
 				Captions.travelEntryCreateCase,
-				e -> ControllerProvider.getCaseController().createFromTravelEntry(travelEntryDto),
+				e -> showNavigationConfirmPopupIfDirty(() -> ControllerProvider.getCaseController().createFromTravelEntry(travelEntryDto)),
 				ValoTheme.BUTTON_PRIMARY,
 				CssStyles.VSPACE_2);
 			layout.addComponent(createCaseButton, CASE_LOC);

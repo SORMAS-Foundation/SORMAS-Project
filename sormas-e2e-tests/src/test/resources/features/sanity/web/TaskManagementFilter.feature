@@ -1,7 +1,7 @@
 @UI @Sanity @TaskManagementFilter
 Feature: Tasks filtering functionalities
 
-  @issue=SORDEV-5688 @env_main @ignore
+  @issue=SORDEV-5688 @env_main
   Scenario Outline: Check the filter of tasks context
     Given I log in with National User
     And I click on the Tasks button from navbar
@@ -17,7 +17,7 @@ Feature: Tasks filtering functionalities
       | Event       |
       | General     |
 
-  @issue=SORDEV-5688 @env_main @ignore
+  @issue=SORDEV-5688 @env_main
   Scenario Outline: Check the filter of tasks status
     Given I log in with National User
     And I click on the Tasks button from navbar

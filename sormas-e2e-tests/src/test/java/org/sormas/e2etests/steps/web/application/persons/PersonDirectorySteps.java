@@ -247,6 +247,16 @@ public class PersonDirectorySteps implements En {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 50);
         });
+    When(
+        "I navigate to the last created via api Person page via URL",
+        () -> {
+          String personLinkPath = "/sormas-ui/#!persons/data/";
+          String uuid = apiState.getLastCreatedPerson().getUuid();
+          webDriverHelpers.accessWebSite(
+              environmentManager.getEnvironmentUrlForMarket(locale) + personLinkPath + uuid);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 50);
+        });
 
     When(
         "I search for specific person in person directory",
@@ -277,6 +287,14 @@ public class PersonDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(By.cssSelector("[role='gridcell'] a"));
         });
 
+    When(
+        "I click on the APPLY FILTERS button",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              APPLY_FILTERS_BUTTON, 30);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+        });
     When(
         "I apply on the APPLY FILTERS button",
         () -> {
