@@ -25,11 +25,12 @@ import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 
-import de.symeda.sormas.backend.deletionconfiguration.CoreEntityDeletionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRole;
@@ -37,6 +38,7 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
+import de.symeda.sormas.backend.deletionconfiguration.CoreEntityDeletionService;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb.DocumentFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
@@ -142,7 +144,8 @@ public class CronService {
 	@Schedule(hour = "1", minute = "15", second = "0", persistent = false)
 	public void archiveCases() {
 
-		int daysAfterCaseGetsArchived = configFacade.getDaysAfterCaseGetsArchived();
+		int daysAfterCaseGetsArchived = featureConfigurationFacade
+			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CASE, FeatureTypeProperty.DAYS_FOR_AUTOMATIC_ARCHIVING, Integer.class);
 		if (daysAfterCaseGetsArchived >= 1) {
 			caseFacade.archiveAllArchivableCases(daysAfterCaseGetsArchived);
 		}
@@ -151,7 +154,8 @@ public class CronService {
 	@Schedule(hour = "1", minute = "20", second = "0", persistent = false)
 	public void archiveEvents() {
 
-		int daysAfterEventsGetsArchived = configFacade.getDaysAfterEventGetsArchived();
+		int daysAfterEventsGetsArchived = featureConfigurationFacade
+				.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.EVENT, FeatureTypeProperty.DAYS_FOR_AUTOMATIC_ARCHIVING, Integer.class);
 		if (daysAfterEventsGetsArchived >= 1) {
 			eventFacade.archiveAllArchivableEvents(daysAfterEventsGetsArchived);
 		}

@@ -19,6 +19,9 @@ import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -189,7 +192,12 @@ public class TravelEntriesView extends AbstractView {
 
 		// Show active/archived/all dropdown
 		if (Objects.nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_VIEW)) {
-			int daysAfterTravelEntryGetsArchived = FacadeProvider.getConfigFacade().getDaysAfterTravelEntryGetsArchived();
+			int daysAfterTravelEntryGetsArchived = FacadeProvider.getFeatureConfigurationFacade()
+				.getProperty(
+					FeatureType.AUTOMATIC_ARCHIVING,
+					CoreEntityType.TRAVEL_ENTRY,
+					FeatureTypeProperty.DAYS_FOR_AUTOMATIC_ARCHIVING,
+					Integer.class);
 			if (daysAfterTravelEntryGetsArchived > 0) {
 				relevanceStatusInfoLabel = new Label(
 					VaadinIcons.INFO_CIRCLE.getHtml() + " "

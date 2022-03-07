@@ -61,8 +61,10 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportType;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -627,7 +629,12 @@ public class CasesView extends AbstractView {
 		{
 			// Show active/archived/all dropdown
 			if (Objects.nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
-				int daysAfterCaseGetsArchived = FacadeProvider.getConfigFacade().getDaysAfterCaseGetsArchived();
+				int daysAfterCaseGetsArchived = FacadeProvider.getFeatureConfigurationFacade()
+					.getProperty(
+						FeatureType.AUTOMATIC_ARCHIVING,
+						CoreEntityType.CASE,
+						FeatureTypeProperty.DAYS_FOR_AUTOMATIC_ARCHIVING,
+						Integer.class);
 				if (daysAfterCaseGetsArchived > 0) {
 					relevanceStatusInfoLabel = new Label(
 						VaadinIcons.INFO_CIRCLE.getHtml() + " "

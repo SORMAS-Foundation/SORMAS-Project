@@ -450,16 +450,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
-	public int getDaysAfterCaseGetsArchived() {
-		return getInt(DAYS_AFTER_CASE_GETS_ARCHIVED, 90);
-	}
-
-	@Override
-	public int getDaysAfterEventGetsArchived() {
-		return getInt(DAYS_AFTER_EVENT_GETS_ARCHIVED, 90);
-	}
-
-	@Override
 	public int getDaysAfterEventParticipantGetsArchived() {
 		return getInt(DAYS_AFTER_EVENT_PARTICIPANT_GETS_ARCHIVED, 90);
 	}
@@ -467,11 +457,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public int getDaysAfterSystemEventGetsDeleted() {
 		return getInt(DAYS_AFTER_SYSTEM_EVENT_GETS_DELETED, 90);
-	}
-
-	@Override
-	public int getDaysAfterTravelEntryGetsArchived() {
-		return getInt(DAYS_AFTER_TRAVEL_ENTRY_GETS_ARCHIVED, 90);
 	}
 
 	@Override

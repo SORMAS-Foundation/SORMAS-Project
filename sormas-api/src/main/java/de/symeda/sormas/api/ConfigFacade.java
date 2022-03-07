@@ -88,15 +88,9 @@ public interface ConfigFacade {
 
 	int getInfrastructureSyncThreshold();
 
-	int getDaysAfterCaseGetsArchived();
-
-	int getDaysAfterEventGetsArchived();
-
 	int getDaysAfterEventParticipantGetsArchived();
 
 	int getDaysAfterSystemEventGetsDeleted();
-
-	int getDaysAfterTravelEntryGetsArchived();
 
 	GeoLatLon getCountryCenter();
 

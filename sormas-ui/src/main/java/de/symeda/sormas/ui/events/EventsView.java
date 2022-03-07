@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.hibernate.event.spi.RefreshEvent;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -54,6 +53,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.action.ActionStatus;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.event.EventActionExportDto;
 import de.symeda.sormas.api.event.EventActionIndexDto;
 import de.symeda.sormas.api.event.EventCriteria;
@@ -63,6 +63,7 @@ import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -499,7 +500,12 @@ public class EventsView extends AbstractView {
 					});
 					actionButtonsLayout.addComponent(groupRelevanceStatusFilter);
 				} else {
-					int daysAfterEventGetsArchived = FacadeProvider.getConfigFacade().getDaysAfterEventGetsArchived();
+					int daysAfterEventGetsArchived = FacadeProvider.getFeatureConfigurationFacade()
+						.getProperty(
+							FeatureType.AUTOMATIC_ARCHIVING,
+							CoreEntityType.EVENT,
+							FeatureTypeProperty.DAYS_FOR_AUTOMATIC_ARCHIVING,
+							Integer.class);
 					if (daysAfterEventGetsArchived > 0) {
 						relevanceStatusInfoLabel = new Label(
 							VaadinIcons.INFO_CIRCLE.getHtml() + " "

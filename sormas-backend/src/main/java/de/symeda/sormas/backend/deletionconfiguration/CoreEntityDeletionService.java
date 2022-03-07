@@ -8,6 +8,7 @@ import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 import javax.inject.Inject;
 
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;

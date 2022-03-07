@@ -14,13 +14,22 @@
  */
 package de.symeda.sormas.api.feature;
 
+import static de.symeda.sormas.api.common.CoreEntityType.CASE;
+import static de.symeda.sormas.api.common.CoreEntityType.CONTACT;
+import static de.symeda.sormas.api.common.CoreEntityType.EVENT;
+import static de.symeda.sormas.api.common.CoreEntityType.EVENT_PARTICIPANT;
+import static de.symeda.sormas.api.common.CoreEntityType.IMMUNIZATION;
+import static de.symeda.sormas.api.common.CoreEntityType.TRAVEL_ENTRY;
+
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import com.google.common.collect.ImmutableMap;
 
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 
 /**
@@ -29,222 +38,224 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 public enum FeatureType {
 
 	// FEATURE MODULES
-	AGGREGATE_REPORTING(true, true, null, null),
-	CAMPAIGNS(true, false, null, null),
-	CASE_SURVEILANCE(true, true, null, ImmutableMap.of(FeatureTypeProperty.AUTOMATIC_RESPONSIBILITY_ASSIGNMENT, Boolean.TRUE)),
-	CLINICAL_MANAGEMENT(true, true, null, null),
+	AGGREGATE_REPORTING(true, true, null, null, null),
+	CAMPAIGNS(true, false, null, null, null),
+	CASE_SURVEILANCE(true, true, null, null, ImmutableMap.of(FeatureTypeProperty.AUTOMATIC_RESPONSIBILITY_ASSIGNMENT, Boolean.TRUE)),
+	CLINICAL_MANAGEMENT(true, true, null, null, null),
 	CONTACT_TRACING(true,
 		true,
 		new FeatureType[] {
 			CASE_SURVEILANCE },
-		ImmutableMap.of(
+			null, ImmutableMap.of(
 			FeatureTypeProperty.AUTOMATIC_RESPONSIBILITY_ASSIGNMENT,
 			Boolean.TRUE,
 			FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE,
 			Boolean.FALSE)),
-	EVENT_SURVEILLANCE(true, true, null, null),
+	EVENT_SURVEILLANCE(true, true, null, null, null),
 	SAMPLES_LAB(true,
 		true,
 		new FeatureType[] {
 			CASE_SURVEILANCE,
 			EVENT_SURVEILLANCE },
-		null),
+			null, null),
 	ADDITIONAL_TESTS(true,
 		false,
 		new FeatureType[] {
 			SAMPLES_LAB },
-		null),
-	TASK_MANAGEMENT(true, true, null, ImmutableMap.of(FeatureTypeProperty.ALLOW_FREE_EDITING, Boolean.FALSE)),
-	WEEKLY_REPORTING(true, true, null, null),
-	IMMUNIZATION_MANAGEMENT(true, true, null, ImmutableMap.of(FeatureTypeProperty.REDUCED, Boolean.FALSE)),
-	TRAVEL_ENTRIES(true, false, null, null),
+			null, null),
+	TASK_MANAGEMENT(true, true, null, null, ImmutableMap.of(FeatureTypeProperty.ALLOW_FREE_EDITING, Boolean.FALSE)),
+	WEEKLY_REPORTING(true, true, null, null, null),
+	IMMUNIZATION_MANAGEMENT(true, true, null, null, ImmutableMap.of(FeatureTypeProperty.REDUCED, Boolean.FALSE)),
+	TRAVEL_ENTRIES(true, false, null, null, null),
 
-	DASHBOARD(true, true, null, null),
+	DASHBOARD(true, true, null, null, null),
 
 	// FEATURE EXTENSIONS
 	ASSIGN_TASKS_TO_HIGHER_LEVEL(true,
 		true,
 		new FeatureType[] {
 			TASK_MANAGEMENT },
-		null),
+			null, null),
 	CASE_FOLLOWUP(true,
 		false,
 		new FeatureType[] {
 			CASE_SURVEILANCE },
-		ImmutableMap.of(FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE, Boolean.FALSE)),
+			null, ImmutableMap.of(FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE, Boolean.FALSE)),
 	DOCUMENTS(true,
 		false,
 		new FeatureType[] {
 			CASE_SURVEILANCE,
 			EVENT_SURVEILLANCE },
-		null),
+			null, null),
 	DOCUMENTS_MULTI_UPLOAD(true,
 		true,
 		new FeatureType[] {
 			DOCUMENTS },
-		null),
+			null, null),
 	EVENT_GROUPS(true,
 		true,
 		new FeatureType[] {
 			EVENT_SURVEILLANCE },
-		null),
+			null, null),
 	EVENT_HIERARCHIES(true,
 		true,
 		new FeatureType[] {
 			EVENT_SURVEILLANCE },
-		null),
+			null, null),
 	LAB_MESSAGES(true,
 		false,
 		new FeatureType[] {
 			SAMPLES_LAB },
-		null),
+			null, null),
 	MANUAL_EXTERNAL_MESSAGES(true,
 		true,
 		new FeatureType[] {
 			CASE_SURVEILANCE },
-		null),
+			null, null),
 	NATIONAL_CASE_SHARING(true,
 		false,
 		new FeatureType[] {
 			CASE_SURVEILANCE },
-		null),
+			null, null),
 	SURVEILLANCE_REPORTS(true,
 		false,
 		new FeatureType[] {
 			CASE_SURVEILANCE },
-		null),
+			null, null),
 	SORMAS_TO_SORMAS_ACCEPT_REJECT(true,
 		false,
 		new FeatureType[] {
 			CASE_SURVEILANCE,
 			CONTACT_TRACING,
 			EVENT_SURVEILLANCE },
-		null),
+			null, null),
 	SORMAS_TO_SORMAS_SHARE_CASES_WITH_CONTACTS_AND_SAMPLES(true,
 		true,
 		new FeatureType[] {
 			CASE_SURVEILANCE,
 			CONTACT_TRACING,
 			SAMPLES_LAB },
-		null),
+			null, null),
 	SORMAS_TO_SORMAS_SHARE_EVENTS(true,
 		false,
 		new FeatureType[] {
 			EVENT_SURVEILLANCE },
-		null),
+			null, null),
 	SORMAS_TO_SORMAS_SHARE_LAB_MESSAGES(true,
 		false,
 		new FeatureType[] {
 			LAB_MESSAGES },
-		null),
+			null, null),
 	IMMUNIZATION_STATUS_AUTOMATION(true,
 		true,
 		new FeatureType[] {
 			IMMUNIZATION_MANAGEMENT },
-		null),
-	PERSON_DUPLICATE_CUSTOM_SEARCH(true, false, null, null),
-	EDIT_INFRASTRUCTURE_DATA(true, true, null, null),
+			null, null),
+	PERSON_DUPLICATE_CUSTOM_SEARCH(true, false, null, null, null),
+	EDIT_INFRASTRUCTURE_DATA(true, true, null, null, null),
 
 	// SHOW/HIDE VIEW TAB FEATURES
 	VIEW_TAB_CASES_HOSPITALIZATION(true,
 		true,
 		new FeatureType[] {
 			CASE_SURVEILANCE },
-		null),
+			null, null),
 	VIEW_TAB_CASES_SYMPTOMS(true,
 		true,
 		new FeatureType[] {
 			CASE_SURVEILANCE },
-		null),
+			null, null),
 	VIEW_TAB_CASES_EPIDEMIOLOGICAL_DATA(true,
 		true,
 		new FeatureType[] {
 			CASE_SURVEILANCE },
-		null),
+			null, null),
 	VIEW_TAB_CASES_THERAPY(true,
 		true,
 		new FeatureType[] {
 			CASE_SURVEILANCE },
-		null),
+			null, null),
 	VIEW_TAB_CASES_FOLLOW_UP(true,
 		true,
 		new FeatureType[] {
 			CASE_SURVEILANCE },
-		null),
+			null, null),
 	VIEW_TAB_CASES_CLINICAL_COURSE(true,
 		true,
 		new FeatureType[] {
 			CASE_SURVEILANCE },
-		null),
+			null, null),
 	VIEW_TAB_CONTACTS_EPIDEMIOLOGICAL_DATA(true,
 		true,
 		new FeatureType[] {
 			CONTACT_TRACING },
-		null),
+			null, null),
 	VIEW_TAB_CONTACTS_FOLLOW_UP_VISITS(true,
 		true,
 		new FeatureType[] {
 			CONTACT_TRACING },
-		null),
+			null, null),
 
 	// ADDITIONAL FEATURES
-	GDPR_CONSENT_POPUP(true, false, null, null),
-	INFRASTRUCTURE_TYPE_AREA(true, false, null, null),
-	OUTBREAKS(true, true, null, null),
+	GDPR_CONSENT_POPUP(true, false, null, null, null),
+	INFRASTRUCTURE_TYPE_AREA(true, false, null, null, null),
+	OUTBREAKS(true, true, null, null, null),
 	PERSON_MANAGEMENT(true,
 		true,
 		new FeatureType[] {
 			CASE_SURVEILANCE,
 			EVENT_SURVEILLANCE },
-		null),
+			null, null),
 
 	// REGION- AND DISEASE-BASED FEATURES
-	LINE_LISTING(false, false, null, null),
+	LINE_LISTING(false, false, null, null, null),
 
 	// NOTIFICATION CONFIGURATIONS
 	EVENT_GROUPS_MODIFICATION_NOTIFICATIONS(true,
 		false,
 		new FeatureType[] {
 			EVENT_GROUPS },
-		null),
+			null, null),
 	EVENT_PARTICIPANT_CASE_CONFIRMED_NOTIFICATIONS(true,
 		true,
 		new FeatureType[] {
 			EVENT_SURVEILLANCE },
-		null),
+			null, null),
 	EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS_NOTIFICATIONS(true,
 		true,
 		new FeatureType[] {
 			EVENT_SURVEILLANCE },
-		null),
+			null, null),
 	TASK_NOTIFICATIONS(true,
 		true,
 		new FeatureType[] {
 			TASK_MANAGEMENT },
-		null),
-	OTHER_NOTIFICATIONS(true, true, null, null),
+			null, null),
+	OTHER_NOTIFICATIONS(true, true, null, null, null),
 
 	// TASK GENERATION FEATURES
 	TASK_GENERATION_CASE_SURVEILLANCE(true,
 		true,
 		new FeatureType[] {
 			TASK_MANAGEMENT },
-		null),
+			null, null),
 	TASK_GENERATION_CONTACT_TRACING(true,
 		true,
 		new FeatureType[] {
 			TASK_MANAGEMENT },
-		null),
+			null, null),
 	TASK_GENERATION_EVENT_SURVEILLANCE(true,
 		true,
 		new FeatureType[] {
 			TASK_MANAGEMENT },
-		null),
+			null, null),
 	TASK_GENERATION_GENERAL(true,
 		true,
 		new FeatureType[] {
 			TASK_MANAGEMENT },
-		null);
+			null, null),
+	AUTOMATIC_ARCHIVING(true, true, null, Arrays.asList(CASE, CONTACT, EVENT, EVENT_PARTICIPANT, IMMUNIZATION, TRAVEL_ENTRY),
+			ImmutableMap.of(FeatureTypeProperty.DAYS_FOR_AUTOMATIC_ARCHIVING, 90));
 
 	/**
 	 * Server feature means that the feature only needs to be configured once per server since they define the way the system
@@ -258,16 +269,19 @@ public enum FeatureType {
 	private final boolean enabledDefault;
 
 	private final FeatureType[] dependentFeatures;
+	private final List<CoreEntityType> entityTypes;
 	private final Map<FeatureTypeProperty, Object> supportedPropertyDefaults;
 
 	FeatureType(
 		boolean serverFeature,
 		boolean enabledDefault,
 		FeatureType[] dependentFeatures,
+		List<CoreEntityType> entityTypes,
 		Map<FeatureTypeProperty, Object> supportedPropertyDefaults) {
 		this.serverFeature = serverFeature;
 		this.enabledDefault = enabledDefault;
 		this.dependentFeatures = dependentFeatures;
+		this.entityTypes = entityTypes;
 		this.supportedPropertyDefaults = supportedPropertyDefaults;
 	}
 
@@ -309,5 +323,9 @@ public enum FeatureType {
 
 	public Set<FeatureTypeProperty> getSupportedProperties() {
 		return supportedPropertyDefaults.keySet();
+	}
+
+	public List<CoreEntityType> getEntityTypes() {
+		return entityTypes;
 	}
 }
