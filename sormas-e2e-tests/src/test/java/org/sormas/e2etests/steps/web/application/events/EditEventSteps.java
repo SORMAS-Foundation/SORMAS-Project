@@ -419,7 +419,7 @@ public class EditEventSteps implements En {
           aEventHandout = aEventHandout.toBuilder().build();
           selectEventHandoutTemplate(aEventHandout.getDocumentTemplate());
           webDriverHelpers.clickOnWebElementBySelector(EditEventPage.CREATE_EVENT_HANDOUT_BUTTON);
-            TimeUnit.SECONDS.sleep(5); //needed to download the document first
+//            TimeUnit.SECONDS.sleep(5); //needed to download the document first
           webDriverHelpers.clickOnWebElementBySelector(EditEventPage.CANCEL_EVENT_HANDOUT_BUTTON);
         });
     And(
@@ -457,10 +457,13 @@ public class EditEventSteps implements En {
                       + uuid.substring(0, 6)
                       + "-"
                       + aEventHandout.getDocumentTemplate());
-          Assert.assertTrue(
-              Files.exists(path),
-              "The document with expected name was not downloaded. Searched after path: "
-                  + path.toAbsolutePath());
+            assertHelpers.assertWithPoll20Second(
+                    () ->
+                            Assert.assertTrue(
+                            Files.exists(path),
+                            "Event document was not downloaded. Searched after path: "
+                                    + path.toAbsolutePath()));
+
         });
   }
 
