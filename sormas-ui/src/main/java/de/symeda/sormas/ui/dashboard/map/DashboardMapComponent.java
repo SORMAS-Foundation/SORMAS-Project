@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.map;
 
+import static java.util.Objects.nonNull;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -71,7 +73,6 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -515,10 +516,7 @@ public class DashboardMapComponent extends VerticalLayout {
 					refreshMap(true);
 				});
 				layersLayout.addComponent(showEventsCheckBox);
-
-				if (UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_USER)
-					|| UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_CLINICIAN)
-					|| UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_OBSERVER)) {
+				if (nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasNationalJurisdictionLevel()) {
 					OptionGroup regionMapVisualizationSelect = new OptionGroup();
 					regionMapVisualizationSelect.setWidth(100, Unit.PERCENTAGE);
 					regionMapVisualizationSelect.addItems((Object[]) CaseMeasure.values());

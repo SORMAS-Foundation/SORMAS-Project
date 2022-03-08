@@ -116,6 +116,11 @@ public class UserProvider {
 		return (jurisdictionLevel == JurisdictionLevel.LABORATORY) || (jurisdictionLevel == jurisdictionLevel.EXTERNAL_LABORATORY);
 	}
 
+	public boolean hasExternalLaboratoryJurisdictionLevel() {
+		JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(getCurrent().getUserRoles());
+		return jurisdictionLevel == jurisdictionLevel.EXTERNAL_LABORATORY;
+	}
+
 	public String getUuid() {
 		return getUser().getUuid();
 	}
