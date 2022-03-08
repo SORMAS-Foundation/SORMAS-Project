@@ -104,7 +104,7 @@ chmod +x $(date +%F)/server-setup.sh
 * Open Git Bash and navigate to the setup sub-directory
 
 ### Auditing
-You can configure the audit logger of SORMAS by providing a Logback [configuration file](https://logback.qos.ch/manual/configuration.html) and setting the `audit.logger.config` property accordingly. An example is provided in `sormas-base/setup/audit-logback.xml`.
+You can configure the audit logger of SORMAS by providing a Logback [configuration file](https://logback.qos.ch/manual/configuration.html) and setting the `audit.logger.config` property accordingly. An example is provided in `sormas-base/setup/audit-logback.xml`.  Not specifying a value for the property will effectively disable the audit log.
 
 ### Post-Installation Configuration
 
