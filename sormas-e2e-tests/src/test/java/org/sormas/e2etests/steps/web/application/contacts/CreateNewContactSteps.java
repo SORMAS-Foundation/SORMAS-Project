@@ -93,7 +93,7 @@ public class CreateNewContactSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON);
         });
     When(
-        "^I click SAVE a new contact$",
+        "^I click on SAVE new contact button$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitForPageLoaded();

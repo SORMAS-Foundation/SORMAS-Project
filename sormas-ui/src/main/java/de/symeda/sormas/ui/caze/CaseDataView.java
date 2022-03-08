@@ -142,7 +142,8 @@ public class CaseDataView extends AbstractCaseView {
 			SampleListComponent sampleList = new SampleListComponent(
 				new SampleCriteria().caze(getCaseRef()).sampleAssociationType(SampleAssociationType.CASE),
 				e -> showNavigationConfirmPopupIfDirty(() -> ControllerProvider.getSampleController().create(getCaseRef(), caze.getDisease(), () -> {
-					FacadeProvider.getCaseFacade().save(caze);
+					final CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
+					FacadeProvider.getCaseFacade().save(caseDataByUuid);
 					SormasUI.refreshView();
 				})));
 

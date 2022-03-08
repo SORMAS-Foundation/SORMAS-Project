@@ -18,6 +18,8 @@
 
 package org.sormas.e2etests.entities.services.api;
 
+import static org.sormas.e2etests.steps.BaseSteps.locale;
+
 import com.google.inject.Inject;
 import java.util.Date;
 import java.util.UUID;
@@ -32,28 +34,37 @@ import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.EventManagementStatusValues;
 import org.sormas.e2etests.enums.RegionsValues;
-import org.sormas.e2etests.enums.RiskLevelValues;
 import org.sormas.e2etests.enums.SourceTypeValues;
-import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
+import org.sormas.e2etests.enums.UserRoles;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 
 public class EventApiService {
+  EnvironmentManager environmentManager;
 
   @Inject
-  public EventApiService() {}
+  public EventApiService(EnvironmentManager environmentManager) {
+    this.environmentManager = environmentManager;
+  }
 
   public Event buildGeneratedEvent() {
     return Event.builder()
         .uuid(UUID.randomUUID().toString())
         .disease(DiseasesValues.CORONAVIRUS.getDiseaseName())
-        .reportingUser(ReportingUser.builder().uuid("QLW4AN-TGWLRA-3UQVEM-WCDFCIVM").build())
+        .reportingUser(
+            ReportingUser.builder()
+                .uuid(
+                    environmentManager
+                        .getUserByRole(locale, UserRoles.RestUser.getRole())
+                        .getUuid())
+                .build())
         .eventStatus("SIGNAL")
         .srcType(SourceTypeValues.getRandomSourceTypeName())
         .eventInvestigationStatus("PENDING")
         .eventTitle(String.valueOf(System.currentTimeMillis()))
         .startDate(new Date())
         .reportDateTime(new Date())
-        .riskLevel(RiskLevelValues.getRandomRiskLevelName())
-        .typeOfPlace(TypeOfPlace.getRandomTypeOfPlace())
+        .riskLevel("LOW")
+        .typeOfPlace("HOME")
         .eventManagementStatus(EventManagementStatusValues.ONGOING.getValue())
         .eventLocation(
             EventLocation.builder()

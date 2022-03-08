@@ -61,7 +61,7 @@ Feature: Create events
     Then I check if event is available at person information
 
   @issue=SORDEV-5475 @env_main
-  Scenario: Add a participant to an event
+  Scenario: Verify error messages while adding a participant to an event
     Given I log in with National User
     And I click on the Events button from navbar
     And I click on the NEW EVENT button
@@ -129,7 +129,7 @@ Feature: Create events
     Then I open the last created event via api
     And I check that number of actions in Edit Event Tab is 1
 
-  @env_main
+  @env_main @ignore
   Scenario: Add a New action for an Event and verify the Action in EventActions table
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -171,12 +171,12 @@ Feature: Create events
     Then I am checking event group name and id is correctly displayed
 
   @issue=SORDEV-5496 @env_main
-  Scenario: Generate event document
+  Scenario: Generate and download Event document
     Given I log in with National User
     And I click on the Events button from navbar
     And I open the first event from events list
     And I click on the Create button from Event Document Templates
-    When I create an event document from template
+    When I create and download an event document from template
     And I verify that the event document is downloaded and correctly named
 
   @issue=SORDEV-5491 @env_main
@@ -194,6 +194,54 @@ Feature: Create events
     Then I click Create Case for Event Participant
     And I fill all fields for a new case created for event participant
     And I click on save case button
+
+    @issue=SORDEV-5915 @env_main
+  Scenario: Check all filters are work properly in Event directory
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    When I log in with National User
+    And I click on the Events button from navbar
+    Then I select random Risk level filter among the filter options from API
+    And I fill EVENT ID filter by API
+    And I apply on the APPLY FILTERS button from Event
+    And I check that number of displayed Event results is 1
+    Then I select random Risk level filter among the filter options
+    And I apply on the APPLY FILTERS button from Event
+    And I check that number of displayed Event results is 0
+    And I click on the RESET FILTERS button from Event
+    Then I select random Disease filter among the filter options from API
+    And I fill EVENT ID filter by API
+    And I apply on the APPLY FILTERS button from Event
+    And I check that number of displayed Event results is 1
+    Then I select random Disease filter among the filter options
+    And I apply on the APPLY FILTERS button from Event
+    And I check that number of displayed Event results is 0
+    And I click on the RESET FILTERS button from Event
+    Then I click on Show more filters in Events
+    Then I select Source Type among the filter options from API
+    And I fill EVENT ID filter by API
+    And I apply on the APPLY FILTERS button from Event
+    And I check that number of displayed Event results is 1
+    Then I select random Source Type among the filter options
+    And I apply on the APPLY FILTERS button from Event
+    And I check that number of displayed Event results is 0
+    And I click on the RESET FILTERS button from Event
+    Then I click on Show more filters in Events
+    Then I select Type of Place field among the filter options from API
+    And I fill EVENT ID filter by API
+    And I apply on the APPLY FILTERS button from Event
+    And I check that number of displayed Event results is 1
+    Then I select random Type of Place field among the filter options
+    And I apply on the APPLY FILTERS button from Event
+    And I check that number of displayed Event results is 0
+    And I click on the RESET FILTERS button from Event
+    Then I select Signal filter from quick filter
+    And I select Event filter from quick filter
+    And I select Screening filter from quick filter
+    And I select Cluster filter from quick filter
+    And I select Dropped filter from quick filter
+    And I click on the RESET FILTERS button from Event
 
   @issue=SORDEV-9426 @env_main
   Scenario: Filter for the report date of events
@@ -298,5 +346,3 @@ Feature: Create events
     And I hover to Event Groups column of the Event result
     And I check that name appearing in hover is equal to name of linked Event group
     And I check the number of displayed Event results from All button is 1
-
-

@@ -178,8 +178,7 @@ public class EventParticipantsController {
 				String.format(I18nProperties.getString(Strings.confirmationDeleteEventParticipants), selectedRows.size()),
 				() -> {
 					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getEventParticipantFacade()
-							.deleteEventParticipant(new EventParticipantReferenceDto(((EventParticipantIndexDto) selectedRow).getUuid()));
+						FacadeProvider.getEventParticipantFacade().delete(((EventParticipantIndexDto) selectedRow).getUuid());
 					}
 					callback.run();
 					new Notification(
@@ -198,7 +197,7 @@ public class EventParticipantsController {
 				EventParticipantReferenceDto eventParticipantRef =
 					FacadeProvider.getEventParticipantFacade().getReferenceByEventAndPerson(eventUuid, personUuid);
 				if (eventParticipantRef != null) {
-					FacadeProvider.getEventParticipantFacade().deleteEventParticipant(eventParticipantRef);
+					FacadeProvider.getEventParticipantFacade().delete(eventParticipantRef.getUuid());
 					callback.run();
 				} else {
 					Notification.show(I18nProperties.getString(Strings.errorOccurred), Type.ERROR_MESSAGE);
@@ -224,7 +223,7 @@ public class EventParticipantsController {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
 			editComponent.addDeleteListener(() -> {
-				FacadeProvider.getEventParticipantFacade().deleteEventParticipant(eventParticipant.toReference());
+				FacadeProvider.getEventParticipantFacade().delete(eventParticipant.getUuid());
 				ControllerProvider.getEventController().navigateToParticipants(eventParticipant.getEvent().getUuid());
 			}, I18nProperties.getString(Strings.entityEventParticipant));
 		}

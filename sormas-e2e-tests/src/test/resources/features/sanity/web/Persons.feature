@@ -7,7 +7,7 @@ Feature: Edit Persons
     When I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     Then I fill a new contact form
-    And I click SAVE a new contact
+    And I click on SAVE new contact button
     And I open Contact Person tab
     Then I complete all default empty fields from Contact Person tab
     When I click on new entry button from Contact Information section
@@ -20,7 +20,8 @@ Feature: Edit Persons
     Then I click on save button from Edit Person page
     And I check that previous edited person is correctly displayed in Edit Person page
 
-  @issue=SORDEV-8466 @env_main
+    #please address
+  @issue=SORDEV-8466 @env_main @ignore
   Scenario: Check Filters on Person page work as expected
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -106,8 +107,8 @@ Feature: Edit Persons
     And I click the Done button in Person Contact Details popup
     Then I check that an invalid data error message appears
 
-
-    @issue=SORDEV-8469 @env_main
+     #please address
+    @issue=SORDEV-8469 @env_main @ignore
   Scenario: Test for navigating through Case, Contact and Immunization cards on Edit Person Page
     Given API: I create a new person
     Then API: I check that POST call body is "OK"

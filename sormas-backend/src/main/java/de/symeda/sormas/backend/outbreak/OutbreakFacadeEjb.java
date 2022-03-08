@@ -142,7 +142,8 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 
 	@Override
 	public OutbreakDto saveOutbreak(@Valid OutbreakDto outbreakDto) {
-
+		final User currentUser = userService.getCurrentUser();
+		outbreakDto.setReportingUser(currentUser.toReference());
 		Outbreak outbreak = fromDto(outbreakDto, true);
 		outbreakService.ensurePersisted(outbreak);
 		return toDto(outbreak);
@@ -152,7 +153,7 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 	public void deleteOutbreak(OutbreakDto outbreakDto) {
 
 		Outbreak outbreak = outbreakService.getByUuid(outbreakDto.getUuid());
-		outbreakService.delete(outbreak);
+		outbreakService.deletePermanent(outbreak);
 	}
 
 	public Outbreak fromDto(OutbreakDto source, boolean checkChangeDate) {
