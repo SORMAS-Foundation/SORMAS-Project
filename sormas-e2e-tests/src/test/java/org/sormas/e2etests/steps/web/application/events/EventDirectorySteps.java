@@ -564,7 +564,7 @@ public class EventDirectorySteps implements En {
     When(
         "I select random Type of Place field among the filter options",
         () -> {
-          String typeOfPlace = TypeOfPlace.getRandomTypeOfPlace();
+          String typeOfPlace = TypeOfPlace.getRandomUITypeOfPlace();
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
               FILTER_BY_TYPE_OF_PLACE, TypeOfPlace.getValueFor(typeOfPlace));

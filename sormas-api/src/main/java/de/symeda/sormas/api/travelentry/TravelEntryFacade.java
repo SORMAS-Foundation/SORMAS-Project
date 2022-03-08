@@ -21,8 +21,6 @@ public interface TravelEntryFacade extends CoreFacade<TravelEntryDto, TravelEntr
 
 	long count(TravelEntryCriteria criteria, boolean ignoreUserFilter);
 
-	void deleteTravelEntry(String travelEntryUuid);
-
 	List<DeaContentEntry> getDeaContentOfLastTravelEntry();
 
 	List<TravelEntryListEntryDto> getEntriesList(TravelEntryListCriteria criteria, Integer first, Integer max);

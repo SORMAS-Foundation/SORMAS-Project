@@ -1,6 +1,7 @@
 @UI @Sanity @Users
 Feature: Create user
 
+  #please address - verify sormas to client/rest user scenarios
   @env_main
   Scenario Outline: Create a new user
     Given I log in as a Admin User
@@ -36,7 +37,7 @@ Feature: Create user
       | National User     |
       | POE National User |
 
-    @issue=SORDEV-9366
+    @issue=SORDEV-9366 @env_main
     Scenario: Users with limited disease
       Given I log in as a Admin User
       And I click on the Users from navbar

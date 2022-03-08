@@ -18,32 +18,24 @@
 
 package recorders;
 
-import com.google.common.base.Stopwatch;
 import io.qameta.allure.Allure;
 import io.qameta.allure.Attachment;
 import io.qameta.allure.listener.StepLifecycleListener;
 import io.qameta.allure.model.StepResult;
+import java.io.FileInputStream;
 import java.lang.management.ManagementFactory;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.OutputType;
-import org.openqa.selenium.logging.LogEntries;
-import org.openqa.selenium.logging.LogEntry;
-import org.openqa.selenium.logging.LogType;
 import org.openqa.selenium.remote.RemoteWebDriver;
 
 @Slf4j
 public class StepsLogger implements StepLifecycleListener {
-  private final Stopwatch stopwatch = Stopwatch.createUnstarted();
   private static final String PROCESS_ID =
       String.valueOf(ManagementFactory.getRuntimeMXBean().getPid());
-  public static final String PROCESS_ID_STRING = String.format("[PROCESS_ID:%s]", PROCESS_ID);
-  public final List<LogEntry> allLogEntries = new ArrayList<>();
+  public static final String PROCESS_ID_STRING = String.format("[PROCESS_ID:%s] ->", PROCESS_ID);
   private static RemoteWebDriver driver;
   private static boolean isScreenshotEnabled = true;
 
@@ -57,21 +49,19 @@ public class StepsLogger implements StepLifecycleListener {
 
   @Override
   public void afterStepStart(final StepResult result) {
-    stopwatch.reset();
-    stopwatch.start();
-    log.info(PROCESS_ID_STRING + " Starting step: " + result.getName());
+    log.info("{} -> Starting step -> {}", PROCESS_ID_STRING, result.getName());
   }
 
   @Override
   public void afterStepUpdate(final StepResult result) {
     if (isScreenshotEnabled && driver != null) {
       takeScreenshotAfter();
-      attachConsoleLog();
+      if (!result.getStatus().value().contains("pass")) {
+        attachConsoleLog();
+      }
     }
-    stopwatch.stop();
     isScreenshotEnabled = true;
-    log.info(
-        " {} Finishing step: " + result.getName() + " and took: " + stopwatch, PROCESS_ID_STRING);
+    log.info("{} -> Finished step -> {}", PROCESS_ID_STRING, result.getName());
   }
 
   @Attachment(value = "After step screenshot", type = "image/png")
@@ -86,42 +76,15 @@ public class StepsLogger implements StepLifecycleListener {
             screenShot);
   }
 
-  @Attachment("Browser console log")
+  @SneakyThrows
+  @Attachment(value = "Browser console log", type = "text/json")
   private void attachConsoleLog() {
-    List<String> consoleLogs = consoleAllLogs(driver);
-    StringBuilder consoleLog = new StringBuilder("CONSOLE LOG: ");
-
-    if (consoleLogs.isEmpty()) {
-      consoleLog.append(" NO CONSOLE LOGS DETECTED!");
-    } else {
-      for (Object log : consoleLogs) {
-        consoleLog.append(log);
-      }
+    try {
       Allure.getLifecycle()
           .addAttachment(
-              "Console log at :"
-                  + LocalDateTime.now().format(DateTimeFormatter.ofPattern("dd-MMM-yy_hh:mm:ss")),
-              "text/json",
-              "text",
-              consoleLog.toString().getBytes());
+              "Execution logs", "text/json", "txt", new FileInputStream("logs/file.log"));
+    } catch (Exception any) {
+      log.error("Failed to attach logs to Allure report due to: {}", any.getCause());
     }
-  }
-
-  public List<String> consoleAllLogs(RemoteWebDriver webDriver) {
-    LogEntries logEntries = Objects.requireNonNull(webDriver).manage().logs().get(LogType.BROWSER);
-    List<String> consoleLogs = new ArrayList<>();
-
-    logEntries.forEach(
-        entry -> {
-          consoleLogs.add(
-              new Date(entry.getTimestamp())
-                  + " "
-                  + entry.getLevel()
-                  + " "
-                  + entry.getMessage()
-                  + "\n");
-          allLogEntries.add(entry);
-        });
-    return consoleLogs;
   }
 }

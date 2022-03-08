@@ -413,7 +413,7 @@ public class EditEventSteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(EditEventPage.CREATE_DOCUMENT_BUTTON));
 
     When(
-        "I create an event document from template",
+        "I create and download an event document from template",
         () -> {
           aEventHandout = eventDocumentService.buildEventHandout();
           aEventHandout = aEventHandout.toBuilder().build();
@@ -469,14 +469,16 @@ public class EditEventSteps implements En {
               Paths.get(
                   userDirPath
                       + "/downloads/"
-                      + uuid.substring(0, 6)
+                      + uuid.substring(0, 6).toUpperCase()
                       + "-"
                       + aEventHandout.getDocumentTemplate());
-          softly.assertTrue(
-              Files.exists(path),
-              "The document with expected name was not downloaded. Searched after path: "
-                  + path.toAbsolutePath());
-          softly.assertAll();
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertTrue(
+                      Files.exists(path),
+                      "Event document was not downloaded. Searched after path: "
+                          + path.toAbsolutePath()),
+              120);
         });
   }
 

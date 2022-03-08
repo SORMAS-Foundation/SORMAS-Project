@@ -28,6 +28,8 @@ public interface CoreFacade<DTO extends EntityDto, INDEX_DTO extends Serializabl
 
     boolean isArchived(String uuid);
 
+    void delete(String uuid);
+
     boolean exists(String uuid);
 
     List<DTO> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
