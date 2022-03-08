@@ -208,12 +208,12 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 
 	private void createCasesForPersonWithCondition(PresentCondition presentCondition, UserReferenceDto userReferenceDto,
 		TestDataCreator.RDCFEntities rdcf, int nrOfCases){
-		PersonDto buriedPerson = creator.createPerson("James Smith", presentCondition.name(), p -> {
+		PersonDto personDto = creator.createPerson("James Smith", presentCondition.name(), p -> {
 			p.setPresentCondition(presentCondition);
 		});
 
 		for(int i=0 ; i<nrOfCases; i++){
-			creator.createCase(userReferenceDto, buriedPerson.toReference(), Disease.CORONAVIRUS, CaseClassification.NOT_CLASSIFIED,
+			creator.createCase(userReferenceDto, personDto.toReference(), Disease.CORONAVIRUS, CaseClassification.NOT_CLASSIFIED,
 				InvestigationStatus.PENDING, new Date(), rdcf);
 		}
 	}
