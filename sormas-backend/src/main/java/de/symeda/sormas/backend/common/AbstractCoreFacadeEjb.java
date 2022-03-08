@@ -139,9 +139,9 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		toDeleteEntities.forEach(ado -> service.delete(ado));
 	}
 
-	public void executePermanentDeletion() {
+	public void executePermanentDeletion(int batchSize) {
 		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.DELETE_PERMANENT)) {
-			service.executePermanentDeletion();
+			service.executePermanentDeletion(batchSize);
 		} else {
 			throw new UnsupportedOperationException("Permanent deletion is not activated!");
 		}
