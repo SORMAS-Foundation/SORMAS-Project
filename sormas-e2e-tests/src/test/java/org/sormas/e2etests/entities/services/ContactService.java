@@ -74,11 +74,13 @@ public class ContactService {
         .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
         .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
         .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
-        .additionalInformationOnContactType("Automated test dummy description")
+        .additionalInformationOnContactType(
+            "Automated test dummy description " + System.currentTimeMillis())
         .typeOfContact("Touched fluid of source case")
         .contactCategory("Low risk contact")
         .relationshipWithCase("Work in the same environment")
-        .descriptionOfHowContactTookPlace("Automated test dummy description")
+        .descriptionOfHowContactTookPlace(
+            "Automated test dummy description " + System.currentTimeMillis())
         .build();
   }
 

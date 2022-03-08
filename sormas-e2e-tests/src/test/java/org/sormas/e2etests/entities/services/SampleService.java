@@ -43,7 +43,7 @@ public class SampleService {
         .reasonForSample("Presence of symptoms")
         .sampleID(faker.number().randomNumber(7, false))
         .laboratory("Other facility")
-        .laboratoryName(faker.crypto() + " Laboratory New")
+        .laboratoryName("Laboratory New - " + System.currentTimeMillis())
         .received("Received")
         .receivedDate(LocalDate.now().minusDays(5))
         .specimenCondition("Adequate")

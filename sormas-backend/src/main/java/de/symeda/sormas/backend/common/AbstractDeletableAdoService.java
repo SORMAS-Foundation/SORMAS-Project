@@ -7,18 +7,26 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 
+import de.symeda.sormas.backend.util.IterableHelper;
+
 public abstract class AbstractDeletableAdoService<ADO extends DeletableAdo> extends AdoServiceWithUserFilter<ADO> {
 
 	protected AbstractDeletableAdoService(Class<ADO> elementClass) {
 		super(elementClass);
 	}
 
-	@Override
-	public void delete(ADO deleteme) {
+	public void delete(ADO ado) {
 
-		deleteme.setDeleted(true);
-		em.persist(deleteme);
+		ado.setDeleted(true);
+		em.persist(ado);
 		em.flush();
+	}
+
+	public void executePermanentDeletion(int batchSize) {
+		IterableHelper.executeBatched(
+				getAllUuids((cb, root) -> cb.isTrue(root.get(DeletableAdo.DELETED))),
+				batchSize,
+				batchedUuids -> deletePermanent(batchedUuids));
 	}
 
 	protected <C> Predicate changeDateFilter(CriteriaBuilder cb, Timestamp date, From<?, C> path, String... joinFields) {
