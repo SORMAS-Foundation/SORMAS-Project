@@ -57,6 +57,15 @@ public class EditCasePersonSteps implements En {
         });
 
     When(
+        "I set death date for person ([^\"]*) days ago",
+        (String dateOfDeath) -> {
+          LocalDate date = LocalDate.now().minusDays(Long.parseLong(dateOfDeath));
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+          webDriverHelpers.clearWebElement(DATE_OF_DEATH_INPUT);
+          webDriverHelpers.fillInWebElement(DATE_OF_DEATH_INPUT, formatter.format(date));
+        });
+
+    When(
         "I change Cause of death to ([^\"]*)",
         (String causeOfDeath) ->
             webDriverHelpers.selectFromCombobox(CASE_OF_DEATH_COMBOBOX, causeOfDeath));
@@ -66,6 +75,16 @@ public class EditCasePersonSteps implements En {
         (String dateOfDeath) -> {
           String date = webDriverHelpers.getValueFromWebElement(DATE_OF_OUTCOME_INPUT);
           LocalDate deathDate = LocalDate.now().minusMonths(Long.parseLong(dateOfDeath));
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+          softly.assertEquals(formatter.format(deathDate), date, "Date is not equal");
+          softly.assertAll();
+        });
+
+    When(
+        "I check if date of outcome is updated for ([^\"]*) days ago",
+        (String dateOfDeath) -> {
+          String date = webDriverHelpers.getValueFromWebElement(DATE_OF_OUTCOME_INPUT);
+          LocalDate deathDate = LocalDate.now().minusDays(Long.parseLong(dateOfDeath));
           DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
           softly.assertEquals(formatter.format(deathDate), date, "Date is not equal");
           softly.assertAll();

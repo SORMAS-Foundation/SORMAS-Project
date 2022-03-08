@@ -528,13 +528,13 @@ Feature: Case end to end tests
     And I click on first person in person directory
     And I check if Date of dead for specified case is correct
     And I change Cause of death to Other cause
-    Then I set death date for person 1 month ago
+    Then I set death date for person 20 days ago
     And I click on save button from Edit Person page
     Then I click on the Cases button from navbar
     And I filter Cases by created person name
     Then I filter by Dead user condition
     Then I select second created case for person from Cases list
-    And I check if date of outcome is updated for 1 month ago
+    And I check if date of outcome is updated for 20 days ago
     Then I fill the specific Date of outcome
     Then I confirm changes in selected Case
     Then I click on the Persons button from navbar
