@@ -44,8 +44,9 @@ public class EventApiService {
   private final Faker faker;
 
   @Inject
-  public EventApiService(EnvironmentManager environmentManager) {
+  public EventApiService(EnvironmentManager environmentManager, Faker faker) {
     this.environmentManager = environmentManager;
+    this.faker = faker;
   }
   public EventApiService(Faker faker) {
     this.faker = faker;
