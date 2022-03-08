@@ -78,7 +78,7 @@ public class EditCaseSteps implements En {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
-        "I fill the specific Date of outcome",
+        "I fill the Date of outcome to yesterday",
         () -> {
           webDriverHelpers.fillInWebElement(
               DATE_OF_OUTCOME_INPUT, DATE_FORMATTER.format(LocalDate.now().minusDays(1)));

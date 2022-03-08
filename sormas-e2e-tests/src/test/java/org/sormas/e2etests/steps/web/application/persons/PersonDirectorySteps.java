@@ -293,7 +293,7 @@ public class PersonDirectorySteps implements En {
         () -> {
           String date = webDriverHelpers.getValueFromWebElement(DATE_OF_DEATH_INPUT);
           LocalDate deadDate = LocalDate.now().minusDays(1);
-          softly.assertEquals(DATE_FORMATTER.format(deadDate), date);
+          softly.assertEquals(DATE_FORMATTER.format(deadDate), date, "Death date is not equal");
           softly.assertAll();
         });
 
@@ -309,7 +309,6 @@ public class PersonDirectorySteps implements En {
         "I click on first person in person directory",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(By.cssSelector("[role='gridcell'] a"));
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(EXTERNAL_TOKEN_INPUT);
         });
 
