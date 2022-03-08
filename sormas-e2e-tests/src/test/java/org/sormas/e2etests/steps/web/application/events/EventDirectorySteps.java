@@ -196,6 +196,16 @@ public class EventDirectorySteps implements En {
         });
 
     When(
+        "^I click on Link Event button on Event Directory Page$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON));
+    When(
+        "^I click on Link Event button on Edit Event Page$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON_EDIT_PAGE));
+
+    When(
+        "^I click on Unlink Event button on Event Directory Page$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(UNLINK_EVENT_BUTTON));
+    When(
         "^I click on ([^\"]*) Radiobutton on Event Directory Page$",
         (String buttonName) -> {
           webDriverHelpers.clickWebElementByText(EVENTS_RADIO_BUTTON, buttonName);
@@ -444,7 +454,7 @@ public class EventDirectorySteps implements En {
     When(
         "I select random Type of Place field among the filter options",
         () -> {
-          String typeOfPlace = TypeOfPlace.getRandomTypeOfPlace();
+          String typeOfPlace = TypeOfPlace.getRandomUITypeOfPlace();
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
               FILTER_BY_TYPE_OF_PLACE, TypeOfPlace.getValueFor(typeOfPlace));

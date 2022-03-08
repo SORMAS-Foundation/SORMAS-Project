@@ -53,7 +53,6 @@ import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.inject.Inject;
-import javax.persistence.Tuple;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -69,7 +68,6 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.clinicalcourse.HealthConditionsMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -212,6 +210,7 @@ import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitFacadeEjb;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitFacadeEjb.ClinicalVisitFacadeEjbLocal;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
+import de.symeda.sormas.backend.clinicalcourse.HealthConditionsMapper;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
@@ -310,6 +309,8 @@ import de.symeda.sormas.backend.therapy.Treatment;
 import de.symeda.sormas.backend.therapy.TreatmentFacadeEjb;
 import de.symeda.sormas.backend.therapy.TreatmentFacadeEjb.TreatmentFacadeEjbLocal;
 import de.symeda.sormas.backend.therapy.TreatmentService;
+import de.symeda.sormas.backend.travelentry.TravelEntry;
+import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserReference;
@@ -451,6 +452,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
 	@EJB
 	private HealthConditionsMapper healthConditionsMapper;
+	@EJB
+	private TravelEntryService travelEntryService;
 
 	@Resource
 	private ManagedScheduledExecutorService executorService;
@@ -2240,7 +2243,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	public void deleteCase(String caseUuid) throws ExternalSurveillanceToolException {
+	public void delete(String caseUuid) throws ExternalSurveillanceToolException {
 
 		if (!userService.hasRight(UserRight.CASE_DELETE)) {
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete cases.");
@@ -2291,7 +2294,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		caze.setDuplicateOf(duplicateOfCase);
 		service.ensurePersisted(caze);
 
-		deleteCase(caseUuid);
+		delete(caseUuid);
 	}
 
 	@Override
@@ -3349,6 +3352,13 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			leadEpiData.setActivityAsCaseDetailsKnown(YesNoUnknown.YES);
 			epiDataService.ensurePersisted(leadEpiData);
 		}
+
+		// Travel entries reference
+		List<TravelEntry> travelEntries = travelEntryService.getAllByResultingCase(otherCase);
+		travelEntries.forEach(t -> {
+			t.setResultingCase(leadCase);
+			travelEntryService.ensurePersisted(t);
+		});
 	}
 
 	private void copyDtoValues(CaseDataDto leadCaseData, CaseDataDto otherCaseData, boolean cloning) {
@@ -3791,11 +3801,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@Override
 	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		service.updateExternalData(externalData);
-	}
-
-	@Override
-	protected void delete(Case entity) {
-		service.delete(entity);
 	}
 
 	@LocalBean

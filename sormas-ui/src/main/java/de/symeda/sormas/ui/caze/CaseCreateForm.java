@@ -43,6 +43,7 @@ import com.google.common.collect.Sets;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
@@ -110,6 +111,7 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 	private static final String HOME_ADDRESS_HEADER = "addressHeader";
 	private static final String HOME_ADDRESS_LOC = "homeAddressLoc";
 
+	private TextField diseaseVariantDetailsField;
 	private ComboBox birthDateDay;
 	private NullableOptionGroup facilityOrHome;
 	private ComboBox facilityTypeGroup;
@@ -214,7 +216,7 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 		addField(CaseDataDto.REPORT_DATE, DateField.class);
 		ComboBox diseaseField = addDiseaseField(CaseDataDto.DISEASE, false, true);
 		ComboBox diseaseVariantField = addField(CaseDataDto.DISEASE_VARIANT, ComboBox.class);
-		TextField diseaseVariantDetailsField = addField(CaseDataDto.DISEASE_VARIANT_DETAILS, TextField.class);
+		diseaseVariantDetailsField = addField(CaseDataDto.DISEASE_VARIANT_DETAILS, TextField.class);
 		diseaseVariantDetailsField.setVisible(false);
 		diseaseVariantField.setNullSelectionAllowed(true);
 		diseaseVariantField.setVisible(false);
@@ -813,6 +815,8 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 				homeAddressForm.clear();
 				homeAddressForm.setFacilityFieldsVisible(false, true);
 				homeAddressForm.setVisible(false);
+			} else {
+				enterHomeAddressNow.setValue(false);
 			}
 		}
 
@@ -914,6 +918,7 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 		homeAddressForm.setValue(new LocationDto());
 		homeAddressForm.setCaption(null);
 		homeAddressForm.setWidthFull();
+		homeAddressForm.setDisableFacilityAddressCheck(true);
 
 		getContent().addComponent(homeAddressForm, HOME_ADDRESS_LOC);
 		homeAddressForm.setVisible(false);
@@ -934,5 +939,13 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 	@Override
 	protected String createHtmlLayout() {
 		return String.format(HTML_LAYOUT, showPersonSearchButton ? NAME_ROW_WITH_PERSON_SEARCH : NAME_ROW_WITHOUT_PERSON_SEARCH);
+	}
+
+	@Override
+	public void setValue(CaseDataDto caseDataDto) throws com.vaadin.v7.data.Property.ReadOnlyException, Converter.ConversionException {
+		super.setValue(caseDataDto);
+		if (convertedTravelEntry != null) {
+			diseaseVariantDetailsField.setValue(convertedTravelEntry.getDiseaseVariantDetails());
+		}
 	}
 }

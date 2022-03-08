@@ -95,4 +95,8 @@ public abstract class PersonDependentEditForm<DTO> extends AbstractEditForm<DTO>
 	public PersonDto getSearchedPerson() {
 		return searchedPerson;
 	}
+
+	public void setSearchedPerson(PersonDto searchedPerson) {
+		this.searchedPerson = searchedPerson;
+	}
 }

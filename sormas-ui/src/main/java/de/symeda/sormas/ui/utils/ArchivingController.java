@@ -37,6 +37,8 @@ public class ArchivingController {
 		DateField endOfProcessingDate = new DateField();
 		endOfProcessingDate.setValue(DateHelper8.toLocalDate(entityFacade.calculateEndOfProcessingDate(coreEntityDto.getUuid())));
 		endOfProcessingDate.setCaption(I18nProperties.getCaption(Captions.endOfProcessingDate));
+		endOfProcessingDate.setDateFormat(DateFormatHelper.getDateFormatPattern());
+
 		verticalLayout.addComponent(endOfProcessingDate);
 		verticalLayout.setMargin(false);
 

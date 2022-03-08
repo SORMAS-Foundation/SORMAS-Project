@@ -194,8 +194,7 @@ public class CaseDirectorySteps implements En {
         () -> {
           String partialUuid =
               dataOperations.getPartialUuidFromAssociatedLink(apiState.getCreatedCase().getUuid());
-          webDriverHelpers.fillAndSubmitInWebElement(
-              CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, partialUuid);
+          webDriverHelpers.fillInWebElement(CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, partialUuid);
           webDriverHelpers.clickOnWebElementBySelector(
               CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
           TimeUnit.SECONDS.sleep(3); // needed for table refresh
@@ -207,10 +206,9 @@ public class CaseDirectorySteps implements En {
           String caseUUID = apiState.getCreatedCase().getUuid();
           webDriverHelpers.fillAndSubmitInWebElement(NAME_UUID_EPID_NUMBER_LIKE_INPUT, caseUUID);
           By caseLocator = By.cssSelector(String.format(CASE_RESULTS_UUID_LOCATOR, caseUUID));
-          TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(caseLocator);
           webDriverHelpers.clickOnWebElementBySelector(caseLocator);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
         });
 
     Then(

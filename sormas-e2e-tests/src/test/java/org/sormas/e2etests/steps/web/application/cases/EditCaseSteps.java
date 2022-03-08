@@ -35,6 +35,7 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.entities.pojo.web.QuarantineOrder;
@@ -43,12 +44,15 @@ import org.sormas.e2etests.entities.services.CaseService;
 import org.sormas.e2etests.enums.CaseClassification;
 import org.sormas.e2etests.enums.CaseOutcome;
 import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.cases.EditCasePage;
 import org.sormas.e2etests.state.ApiState;
+import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
+@Slf4j
 public class EditCaseSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
@@ -69,6 +73,7 @@ public class EditCaseSteps implements En {
       CaseService caseService,
       CaseDocumentService caseDocumentService,
       SoftAssert softly,
+      AssertHelpers assertHelpers,
       ApiState apiState,
       EnvironmentManager environmentManager) {
     this.webDriverHelpers = webDriverHelpers;
@@ -556,7 +561,7 @@ public class EditCaseSteps implements En {
         });
 
     When(
-        "I create a case document from template",
+        "I create and download a case document from template",
         () -> {
           aQuarantineOrder = caseDocumentService.buildQuarantineOrder();
           aQuarantineOrder = aQuarantineOrder.toBuilder().build();
@@ -575,15 +580,17 @@ public class EditCaseSteps implements En {
               Paths.get(
                   userDirPath
                       + "/downloads/"
-                      + uuid.substring(0, 6)
+                      + uuid.substring(0, 6).toUpperCase()
                       + "-"
                       + aQuarantineOrder.getDocumentTemplate());
-          softly.assertTrue(
-              Files.exists(path),
-              String.format(
-                  "The document with expected name was not downloaded. Searching path was: %s",
-                  path.toAbsolutePath()));
-          softly.assertAll();
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertTrue(
+                      Files.exists(path),
+                      String.format(
+                          "Case document was not downloaded. Searching path was: %s",
+                          path.toAbsolutePath())),
+              120);
         });
 
     When(
