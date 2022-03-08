@@ -78,15 +78,16 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.VAC
 import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.CONTACT_PERSON_TAB;
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.GENERAL_SEARCH_INPUT;
 
-
 import cucumber.api.java8.En;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Contact;
 import org.sormas.e2etests.entities.pojo.web.QuarantineOrder;
 import org.sormas.e2etests.entities.services.ContactDocumentService;
 import org.sormas.e2etests.entities.services.ContactService;
+import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
+import org.testng.Assert;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.asserts.SoftAssert;
 
@@ -116,6 +117,7 @@ public class EditContactSteps implements En {
       WebDriverHelpers webDriverHelpers,
       ContactService contactService,
       SoftAssert softly,
+      AssertHelpers assertHelpers,
       ContactDocumentService contactDocumentService) {
     this.webDriverHelpers = webDriverHelpers;
 
@@ -254,7 +256,7 @@ public class EditContactSteps implements En {
         });
 
     When(
-        "I create a contact document from template",
+        "I create and download a contact document from template",
         () -> {
           aQuarantineOrder = contactDocumentService.buildQuarantineOrder();
           aQuarantineOrder = aQuarantineOrder.toBuilder().build();
@@ -274,14 +276,16 @@ public class EditContactSteps implements En {
               Paths.get(
                   userDirPath
                       + "/downloads/"
-                      + uuid.substring(0, 6)
+                      + uuid.substring(0, 6).toUpperCase()
                       + "-"
                       + aQuarantineOrder.getDocumentTemplate());
-          softly.assertTrue(
-              Files.exists(path),
-              "The document with expected name was not downloaded. Path used for check: "
-                  + path.toAbsolutePath());
-          softly.assertAll();
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertTrue(
+                      Files.exists(path),
+                      "Contact document was not downloaded. Path used for check: "
+                          + path.toAbsolutePath()),
+              120);
         });
     When(
         "^I click on ([^\"]*) radio button Contact Person tab$",

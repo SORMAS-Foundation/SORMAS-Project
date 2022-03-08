@@ -411,16 +411,16 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 				cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.GENERAL),
 				cb.and(
 					cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CASE),
-					cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED)))),
+					cb.and(cb.notEqual(caze.get(Case.ARCHIVED), true), cb.notEqual(caze.get(Case.DELETED), true))),
 				cb.and(
 					cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT),
-					cb.or(cb.equal(contactCaze.get(Case.ARCHIVED), false), cb.isNull(contactCaze.get(Case.ARCHIVED)))),
+					cb.and(cb.notEqual(contactCaze.get(Case.ARCHIVED), true), cb.notEqual(contactCaze.get(Case.DELETED), true))),
 				cb.and(
 					cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT),
-					cb.or(cb.equal(event.get(Event.ARCHIVED), false), cb.isNull(event.get(Event.ARCHIVED)))),
+					cb.and(cb.notEqual(event.get(Event.ARCHIVED), true), cb.notEqual(event.get(Event.DELETED), true))),
 				cb.and(
 					cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.TRAVEL_ENTRY),
-					cb.or(cb.equal(travelEntry.get(TravelEntry.ARCHIVED), false), cb.isNull(travelEntry.get(TravelEntry.ARCHIVED))))));
+					cb.and(cb.notEqual(travelEntry.get(TravelEntry.ARCHIVED), true), cb.notEqual(travelEntry.get(TravelEntry.DELETED), true)))));
 	}
 
 	public Task buildTask(User creatorUser) {

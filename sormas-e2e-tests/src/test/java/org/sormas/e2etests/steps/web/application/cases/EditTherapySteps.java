@@ -32,12 +32,15 @@ public class EditTherapySteps implements En {
 
     When(
         "I am accessing the Therapy tab of created case",
-        () -> webDriverHelpers.clickOnWebElementBySelector(THERAPY_TAB));
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(THERAPY_TAB);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NEW_PRESCRIPTION_BUTTON);
+        });
 
     When(
         "I create and fill Prescriptions with specific data for drug intake",
         () -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
           webDriverHelpers.clickOnWebElementBySelector(NEW_PRESCRIPTION_BUTTON);
           therapyData = therapyService.buildPrescriptionDrugIntake();
           selectPrescriptionType(therapyData.getPrescriptionType());
@@ -131,8 +134,12 @@ public class EditTherapySteps implements En {
         });
 
     When(
-        "I click on the popup Save button",
+        "I click on Save button from New Prescription popup",
         () -> webDriverHelpers.clickOnWebElementBySelector(THERAPY_POPUP_SAVE_BUTTON));
+
+    When(
+        "I click on Save button from New Treatment popup",
+        () -> webDriverHelpers.clickOnWebElementBySelector(TREATMENT_POPUP_SAVE_BUTTON));
   }
 
   private void selectPrescriptionType(String prescriptionType) {

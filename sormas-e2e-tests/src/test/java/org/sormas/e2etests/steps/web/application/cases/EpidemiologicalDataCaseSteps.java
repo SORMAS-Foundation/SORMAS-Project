@@ -232,7 +232,7 @@ public class EpidemiologicalDataCaseSteps implements En {
     webDriverHelpers.clickWebElementByText(
         HANDLING_SAMPLES_OPTIONS, exposureData.getHandlingSamples().toString());
     webDriverHelpers.selectFromCombobox(
-        TYPE_OF_PLACE_COMBOBOX, exposureData.getTypeOfPlace().getPlace());
+        TYPE_OF_PLACE_COMBOBOX, exposureData.getTypeOfPlace().getUiValue());
     webDriverHelpers.selectFromCombobox(CONTINENT_COMBOBOX, exposureData.getContinent());
     webDriverHelpers.selectFromCombobox(SUBCONTINENT_COMBOBOX, exposureData.getSubcontinent());
     webDriverHelpers.selectFromCombobox(COUNTRY_COMBOBOX, exposureData.getCountry());

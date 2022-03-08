@@ -292,7 +292,7 @@ public class VisitFacadeEjb implements VisitFacade {
 		}
 
 		Visit visit = visitService.getByUuid(visitUuid);
-		visitService.delete(visit);
+		visitService.deletePermanent(visit);
 	}
 
 	@Override
