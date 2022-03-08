@@ -79,17 +79,18 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		cbCampaign.addItems(FacadeProvider.getCampaignFacade().getAllActiveCampaignsAsReference());
 
 		ComboBox cbRegion = addInfrastructureField(CampaignFormDataDto.REGION);
+		ComboBox cbArea = addInfrastructureField(CampaignFormDataDto.AREA);
 		ComboBox cbDistrict = addInfrastructureField(CampaignFormDataDto.DISTRICT);
 		ComboBox cbCommunity = addInfrastructureField(CampaignFormDataDto.COMMUNITY);
 		
 		//addField(CampaignFormDataDto.FORM_TYPE);
 		
-		
+		/*
 		ComboBox clusterfieldx = addField(CampaignFormDataDto.FORM_TYPE, ComboBox.class);
 		clusterfieldx.addItem("Pre-Campaign");
 		clusterfieldx.addItem("Intra-Campign");
 		clusterfieldx.addItem("Post-Campaign");
-		
+		*/
 		
 
 		addField(CampaignFormDataDto.FORM_DATE, DateField.class);
@@ -99,19 +100,22 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 			CampaignFormDataDto.CAMPAIGN,
 			CampaignFormDataDto.FORM_DATE,
 			CampaignFormDataDto.REGION,
+			CampaignFormDataDto.AREA,
 			CampaignFormDataDto.DISTRICT,
 			CampaignFormDataDto.COMMUNITY);
 			//CampaignFormDataDto.FORM_TYPE);
 
-		addInfrastructureListeners(cbRegion, cbDistrict, cbCommunity);
-		cbRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
+		addInfrastructureListenerx(cbArea, cbRegion, cbDistrict, cbCommunity);
+		cbArea.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
 
 		final UserDto currentUser = UserProvider.getCurrent().getUser();
-		final RegionReferenceDto currentUserRegion = currentUser.getRegion();
+		final AreaReferenceDto currentUserArea = currentUser.getArea();
+		//final RegionReferenceDto currentUserRegion = currentUser.getRegion();
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
-			ComboBox cbArea = addCustomField(CampaignFormDataEditForm.AREA, AreaReferenceDto.class, ComboBox.class);
+	/*	if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.INFRASTRUCTURE_TYPE_AREA)) {
+			cbArea = addCustomField(CampaignFormDataEditForm.AREA, AreaReferenceDto.class, ComboBox.class);
 			cbArea.setCaption(I18nProperties.getCaption(Captions.CampaignFormData_area));
+			
 			setRequired(true, CampaignFormDataEditForm.AREA);
 			cbArea.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
 			cbArea.addValueChangeListener(e -> {
@@ -140,10 +144,14 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 					cbArea.setEnabled(false);
 				}
 			}
-		}
+		}*/
 
-		if (currentUserRegion != null) {
-			cbRegion.setValue(currentUserRegion);
+		if (currentUserArea != null) {
+			cbArea.setValue(currentUserArea);
+			cbArea.setEnabled(false);
+		}
+		if (currentUser.getRegion() != null) {
+			cbRegion.setValue(currentUser.getRegion());
 			cbRegion.setEnabled(false);
 		}
 		if (currentUser.getDistrict() != null) {
@@ -156,12 +164,33 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		}
 	}
 
+	@SuppressWarnings("deprecation")
 	private void addInfrastructureListeners(ComboBox cbRegion, ComboBox cbDistrict, ComboBox cbCommunity) {
 		cbRegion.addValueChangeListener(e -> {
 			RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
 			FieldHelper.updateItems(cbDistrict, region != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()) : null);
 		});
 
+		cbDistrict.addValueChangeListener(e -> {
+			DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
+			FieldHelper
+				.updateItems(cbCommunity, district != null ? FacadeProvider.getCommunityFacade().getAllActiveByDistrict(district.getUuid()) : null);
+		});
+	}
+	
+	@SuppressWarnings("deprecation")
+	private void addInfrastructureListenerx(ComboBox cbArea, ComboBox cbRegion, ComboBox cbDistrict, ComboBox cbCommunity) {
+		cbArea.addValueChangeListener(e -> {
+			AreaReferenceDto area = (AreaReferenceDto) e.getProperty().getValue();
+			FieldHelper.updateItems(cbRegion, area != null ? FacadeProvider.getRegionFacade().getAllActiveByArea(area.getUuid()) : null);
+		});
+
+		cbRegion.addValueChangeListener(e -> {
+			RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
+			FieldHelper
+				.updateItems(cbDistrict, region != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(region.getUuid()) : null);
+		});
+		
 		cbDistrict.addValueChangeListener(e -> {
 			DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
 			FieldHelper

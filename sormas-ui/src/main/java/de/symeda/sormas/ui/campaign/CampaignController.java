@@ -38,6 +38,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.campaign.campaigndata.CampaignDataView;
@@ -111,7 +112,12 @@ public class CampaignController {
 				SormasUI.refreshView(); //Strings.messageCampaignFormSaved
 				Notification
 					.show(String.format(I18nProperties.getString(Strings.messageCampaignFormSaved), campaignForm.toString()), Type.TRAY_NOTIFICATION);
-			}, window::close);
+			}, window::close, () -> {
+				SormasUI.refreshView(); //Strings.messageCampaignFormSaved
+				Notification
+					.show(String.format(I18nProperties.getString(Strings.messageCampaignFormSavedandContinue), campaignForm.toString()), Type.TRAY_NOTIFICATION);
+				
+			},true);
 
 		window.setCaption(String.format(I18nProperties.getString(Strings.headingCreateCampaignDataForm), campaignForm.toString()));
 		window.setContent(component);
@@ -237,6 +243,8 @@ public class CampaignController {
 			boolean showDeleteButton,
 			Runnable commitCallback,
 			Runnable discardCallback) {
+		
+		
 
 			CampaignFormDataEditForm form = new CampaignFormDataEditForm(campaignFormData == null);
 			if (campaignFormData == null) {
@@ -302,6 +310,7 @@ public class CampaignController {
 		boolean showDeleteButton,
 		Runnable commitCallback,
 		Runnable discardCallback,
+		Runnable saveandcontdCallback,
 		boolean showCloneButton) {
 
 		CampaignFormDataEditForm form = new CampaignFormDataEditForm(campaignFormData == null);
@@ -312,11 +321,36 @@ public class CampaignController {
 				CampaignFormDataDto.build(campaign, campaignForm, currentUser.getArea(), currentUser.getRegion(),  currentUser.getDistrict(), currentUser.getCommunity());
 			campaignFormData.setCreatingUser(UserProvider.getCurrent().getUserReference());
 		}
+		final UserDto currentUsex = UserProvider.getCurrent().getUser();
 		form.setValue(campaignFormData);
 
 		final CommitDiscardWrapperComponent<CampaignFormDataEditForm> component = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
 
 		component.addCommitListener(() -> {
+			if (!form.getFieldGroup().isModified()) {
+				
+				try {
+					form.validate();
+				} catch (InvalidValueException e) {
+					Notification.show(I18nProperties.getValidationError(Validations.errorsInForm), Type.ERROR_MESSAGE);
+					return;
+				}
+				
+				
+				CampaignFormDataDto formData = form.getValue();
+				FacadeProvider.getCampaignFormDataFacade().saveCampaignFormData(formData);
+				if (commitCallback != null) {
+					commitCallback.run();
+					UI.getCurrent().getNavigator().navigateTo(CampaignDataView.VIEW_NAME + "/?" + CAMPAIGN + "=" + campaign.getUuid());
+				}
+			}
+		});
+		
+		
+		
+		 // TODO duplicate form
+		component.addCommitandContListener(() -> {
+			
 			if (!form.getFieldGroup().isModified()) {
 				try {
 					form.validate();
@@ -327,12 +361,26 @@ public class CampaignController {
 
 				CampaignFormDataDto formData = form.getValue();
 				FacadeProvider.getCampaignFormDataFacade().saveCampaignFormData(formData);
-				if (commitCallback != null) {
-					commitCallback.run();
-					UI.getCurrent().getNavigator().navigateTo(CampaignDataView.VIEW_NAME + "/?" + CAMPAIGN + "=" + campaign.getUuid());
+				if (saveandcontdCallback != null) {
+					saveandcontdCallback.run();
+					form.resetFormValues();
+					
+					discardCallback.run();
+					ControllerProvider.getCampaignController().createCampaignDataForm(campaign, campaignForm);
+					
+					
+					
+					//UI.getCurrent().getNavigator().navigateTo(CampaignDataView.VIEW_NAME + "/?" + CAMPAIGN + "=" + campaign.getUuid());
 				}
 			}
-		});
+			
+		},  I18nProperties.getString(Strings.entityCampaignDataForm));
+
+		
+		
+		
+		
+		
 
 		component.addDiscardListener(
 			() -> UI.getCurrent().getNavigator().navigateTo(CampaignDataView.VIEW_NAME + "/?" + CAMPAIGN + "=" + campaign.getUuid()));
@@ -353,16 +401,9 @@ public class CampaignController {
 				UI.getCurrent().getNavigator().navigateTo(CampaignFormDataView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityCampaignDataForm));
 		}
-		/*
-		 * TODO duplicate form
-		if (showCloneButton && UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
-			String campaignFormDataUuid = campaignFormData.getUuid();
-
-			component.addCloneListener(() -> {
-				FacadeProvider.getCampaignFormDataFacade().cloneCampaignFormData(campaignFormDataUuid);
-				UI.getCurrent().getNavigator().navigateTo(CampaignFormDataView.VIEW_NAME);
-			}, I18nProperties.getString(Strings.entityCampaignDataForm));
-		}*/
+		
+		
+		
 
 		return component;
 	}

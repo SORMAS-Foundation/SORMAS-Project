@@ -37,7 +37,7 @@ public class ExpressionProcessor {
 	private final CampaignFormBuilder campaignFormBuilder;
 	private final ExpressionParser expressionParser = new SpelExpressionParser();
 
-	public ExpressionProcessor(CampaignFormBuilder campaignFormBuilder) {
+	public ExpressionProcessor(CampaignFormBuilder campaignFormBuilder) { //1.0.11
 		this.campaignFormBuilder = campaignFormBuilder;
 		checkExpression();
 	}

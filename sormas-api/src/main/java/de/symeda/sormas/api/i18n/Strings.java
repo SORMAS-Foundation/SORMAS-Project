@@ -840,6 +840,7 @@ public interface Strings {
 	String messageCampaignDearchived = "messageCampaignDearchived";
 	String messageCampaignDeleted = "messageCampaignDeleted";
 	String messageCampaignFormSaved = "messageCampaignFormSaved";
+	String messageCampaignFormSavedandContinue = "messageCampaignFormSavednContinue";
 	String messageCampaignSaved = "messageCampaignSaved";
 	String messageCaseArchived = "messageCaseArchived";
 	String messageCaseCreated = "messageCaseCreated";

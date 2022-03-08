@@ -89,7 +89,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 		+ fluidRowLocs(CampaignDto.START_DATE, CampaignDto.END_DATE)
 		+ fluidRowLocs(CampaignDto.DESCRIPTION)
 		+ fluidRowLocs(SPACE_LOCX)
-		+fluidRowLocs(CampaignDto.CAMPAIGN_TYPES)
+		+ fluidRowLocs(CampaignDto.CAMPAIGN_TYPES)
 		+ fluidRowLocs(USAGE_INFO)
 		+ fluidRowLocs(CAMPAIGN_TYPE_LOC)
 		+ fluidRowLocs(CAMPAIGN_TYPE_SEARCH)

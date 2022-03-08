@@ -116,24 +116,26 @@ public class AboutView extends VerticalLayout implements View {
 
 		Label aboutLabel = new Label(I18nProperties.getCaption(Captions.about), ContentMode.HTML);
 		aboutLabel.addStyleName(CssStyles.H1);
+		//setComponentAlignment(aboutLabel, Alignment.MIDDLE_CENTER);
 		infoLayout.addComponent(aboutLabel);
 
 		ConfigFacade configFacade = FacadeProvider.getConfigFacade();
 		String infoLabelStr = configFacade.isCustomBranding()
 			? String.format(I18nProperties.getCaption(Captions.aboutBrandedSormasVersion), configFacade.getCustomBrandingName())
-			: "SORMAS";
-		Label infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml() + " " + infoLabelStr, ContentMode.HTML);
+			: "";
+		Label infoLabel = new Label(I18nProperties.getCaption(Captions.aboutApmisVersion) + ": " + InfoProvider.InfoProvider_apmis(), ContentMode.HTML);
+	//	setComponentAlignment(infoLayout, Alignment.MIDDLE_CENTER);
 		infoLayout.addComponent(infoLabel);
 
-		Label versionLabel =
-			new Label(I18nProperties.getCaption(Captions.aboutSormasVersion) + ": " + InfoProvider.get().getVersion(), ContentMode.HTML);
+		//Label versionLabel =
+			//new Label(I18nProperties.getCaption(Captions.aboutSormasVersion) + ": " + InfoProvider.get().getVersion(), ContentMode.HTML);
 		//CssStyles.style(versionLabel, CssStyles.VSPACE_3);
-		infoLayout.addComponent(versionLabel);
+	//	infoLayout.addComponent(versionLabel);
 		
-		Label versionApmisLabel =
-				new Label(I18nProperties.getCaption(Captions.aboutApmisVersion) + ": " + InfoProvider.InfoProvider_apmis(), ContentMode.HTML);
-			CssStyles.style(versionApmisLabel, CssStyles.VSPACE_3);
-			infoLayout.addComponent(versionApmisLabel);
+	//	Label versionApmisLabel =
+	//			new Label(I18nProperties.getCaption(Captions.aboutApmisVersion) + ": " + InfoProvider.InfoProvider_apmis(), ContentMode.HTML);
+	//		CssStyles.style(versionApmisLabel, CssStyles.VSPACE_3);
+	//		infoLayout.addComponent(versionApmisLabel);
 /*
 		Link whatsNewLink = new Link(
 			I18nProperties.getCaption(Captions.aboutWhatsNew),

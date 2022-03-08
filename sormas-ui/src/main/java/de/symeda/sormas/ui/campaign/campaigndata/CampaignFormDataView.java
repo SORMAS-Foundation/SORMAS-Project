@@ -63,6 +63,7 @@ public class CampaignFormDataView extends AbstractCampaignDataView {
 						TRAY_NOTIFICATION);
 				},
 				null,
+				null,
 				true);
 		editComponent.setMargin(false);
 		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);

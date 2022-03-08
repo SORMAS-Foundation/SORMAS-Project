@@ -70,6 +70,11 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 		void onCommit() throws CannotProceedException;
 	}
+	
+	public static interface CommitandContListener {
+
+		void onCommitandCont() throws CannotProceedException;
+	}
 
 	public static interface DiscardListener {
 
@@ -90,14 +95,22 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 		void onClone();
 	}
+	
+	public static interface SaveAndContinueListener {
+
+		void onSaveAndContinue();
+	}
 
 	private transient List<CommitListener> commitListeners = new ArrayList<>();
+	private transient List<CommitandContListener> commitandContListeners = new ArrayList<>();
 	private transient List<DiscardListener> discardListeners = new ArrayList<>();
 	private transient List<DoneListener> doneListeners = new ArrayList<>();
 	private transient List<DeleteListener> deleteListeners = new ArrayList<>();
 	private transient List<CloneListener> cloneListeners = new ArrayList<>();
+	private transient List<SaveAndContinueListener> saveAndContinueListeners = new ArrayList<>();
 	// only to check if it's set
 	private transient CommitListener primaryCommitListener;
+	private transient CommitandContListener primaryCommitandContListener;
 
 	private Panel contentPanel;
 
@@ -106,13 +119,19 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	private HorizontalLayout buttonsPanel;
 	private Button commitButton;
+	private Button commitandContButton;
+	
 	private Button discardButton;
 
 	private Button deleteButton;
 	
 	private Button cloneButton;
+	
+	private Button saveAndContinueButton;
 
 	private boolean commited = false;
+	private boolean commitedandCont = false;
+	
 	private boolean dirty = false;
 
 	private boolean shortcutsEnabled = false;
@@ -121,7 +140,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	protected CommitDiscardWrapperComponent() {
 
 	}
-
+	
 	public CommitDiscardWrapperComponent(C component, FieldGroup... fieldGroups) {
 		this(component, null, fieldGroups);
 	}
@@ -167,6 +186,11 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		buttonsPanel.addComponent(commitButton);
 		buttonsPanel.setComponentAlignment(commitButton, Alignment.BOTTOM_RIGHT);
 		buttonsPanel.setExpandRatio(commitButton, 0);
+		
+		/*Button commitandContButton = getCommitandContButton();
+		buttonsPanel.addComponent(commitandContButton);
+		buttonsPanel.setComponentAlignment(commitandContButton, Alignment.BOTTOM_RIGHT);
+		buttonsPanel.setExpandRatio(commitandContButton, 0);*/
 
 		addComponent(buttonsPanel);
 		setComponentAlignment(buttonsPanel, Alignment.BOTTOM_RIGHT);
@@ -323,6 +347,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	protected void registerActions(Notifier notifier) {
 		actions.add(new ClickShortcut(notifier, commitButton, KeyCode.ENTER));
+		actions.add(new ClickShortcut(notifier, commitandContButton, KeyCode.ENTER));
 		actions.add(new ClickShortcut(notifier, discardButton, KeyCode.ESCAPE));
 	}
 
@@ -355,7 +380,8 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 		return commitButton;
 	}
-
+	
+	
 	/**
 	 * Durch das Aufrufen dieser Methode wird ein Button zum Verwerfen erzeugt aber nicht eingefügt.
 	 * Das passiert in setWrappedComponent().
@@ -410,15 +436,6 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 				@Override
 				public void buttonClick(ClickEvent event) {
-					/*VaadinUiUtil.showDeleteConfirmationWindow(
-						String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName),
-						new Runnable() {
-
-							public void run() {
-								
-							}
-						});*/
-					
 					onClone();
 				}
 			}, ValoTheme.BUTTON_PRIMARY, CssStyles.BUTTON_BORDER_NEUTRAL);
@@ -426,6 +443,52 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 		return cloneButton;
 	}
+	
+	
+	public Button getCommitandContButton(String entityName) {
+		if (commitandContButton == null) {
+			commitandContButton = ButtonHelper.createButton("commitandCont", "Save and Add New", new ClickListener() {
+
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				public void buttonClick(ClickEvent event) {
+					commitAndHandleandCont();
+				}
+			}, ValoTheme.BUTTON_PRIMARY);
+		}
+
+		return commitandContButton;
+	}
+
+	
+	
+	
+	//I18nProperties.getCaption(Captions.actionDelete)
+		public Button getSaveAndContinueButton(String entityName) {
+			if (saveAndContinueButton == null) {
+				saveAndContinueButton = ButtonHelper.createButton("sandnew", "Save and New", new ClickListener() {
+
+					private static final long serialVersionUID = 1L;
+
+					@Override
+					public void buttonClick(ClickEvent event) {
+						/*VaadinUiUtil.showDeleteConfirmationWindow(
+							String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), entityName),
+							new Runnable() {
+
+								public void run() {
+									
+								}
+							});*/
+						
+						onSaveAndContinue();
+					}
+				}, ValoTheme.BUTTON_PRIMARY, CssStyles.BUTTON_BORDER_NEUTRAL);
+			}
+
+			return saveAndContinueButton;
+		}
 
 	@Override
 	public boolean isModified() {
@@ -443,6 +506,10 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	public boolean isCommited() {
 		return commited;
+	}
+	
+	public boolean isCommitedandCont() {
+		return commitedandCont;
 	}
 
 	@Override
@@ -482,9 +549,53 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 		onCommit();
 		commited = true;
+		commitedandCont = true;
 		onDone();
 	}
 
+	
+//	@Override
+	public void commitandCont() throws InvalidValueException, SourceException, CommitRuntimeException {
+
+		if (fieldGroups != null) {
+			if (fieldGroups.length > 1) {
+				// validate all fields first, so commit will likely work for all fieldGroups
+				// this is basically only needed when we have multiple field groups
+				// FIXME this leads to problem #537 for AbstractEditForm with hideValidationUntilNextCommit 
+				// can hopefully be fixed easier with Vaadin 8 architecture change
+				getFieldsStream().forEach(field -> {
+					if (!field.isInvalidCommitted()) {
+						field.validate();
+					}
+				});
+			}
+
+			try {
+				for (FieldGroup fieldGroup : fieldGroups) {
+					fieldGroup.commit();
+				}
+			} catch (CommitException e) {
+				if (e.getCause() instanceof InvalidValueException)
+					throw (InvalidValueException) e.getCause();
+				else if (e.getCause() instanceof SourceException)
+					throw (SourceException) e.getCause();
+				else
+					throw new CommitRuntimeException(e);
+			}
+		} else if (wrappedComponent instanceof Buffered) {
+			((Buffered) wrappedComponent).commit();
+		} else {
+			// NOOP
+		}
+		dirty = false;
+
+		onCommitandCont();
+		commitedandCont = true;
+		
+		onDone();
+	}
+	
+	
 	private String findHtmlMessage(InvalidValueException exception) {
 		if (!(exception.getMessage() == null || exception.getMessage().isEmpty()))
 			return exception.getHtmlMessage();
@@ -512,6 +623,60 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		try {
 			commit();
 		} catch (InvalidValueException ex) {
+			StringBuilder htmlMsg = new StringBuilder();
+			String message = ex.getMessage();
+			if (message != null && !message.isEmpty()) {
+				htmlMsg.append(ex.getHtmlMessage());
+			} else {
+
+				InvalidValueException[] causes = ex.getCauses();
+				if (causes != null) {
+
+					InvalidValueException firstCause = null;
+					boolean multipleCausesFound = false;
+					for (int i = 0; i < causes.length; i++) {
+						if (!causes[i].isInvisible()) {
+							if (firstCause == null) {
+								firstCause = causes[i];
+							} else {
+								multipleCausesFound = true;
+								break;
+							}
+						}
+					}
+					if (multipleCausesFound) {
+						htmlMsg.append("<ul>");
+						// Alle nochmal
+						for (int i = 0; i < causes.length; i++) {
+							if (!causes[i].isInvisible()) {
+								htmlMsg.append("<li style=\"color: #FFF;\">").append(findHtmlMessage(causes[i])).append("</li>");
+							}
+						}
+						htmlMsg.append("</ul>");
+					} else if (firstCause != null) {
+						htmlMsg.append(findHtmlMessage(firstCause));
+						String additionalInfo = findHtmlMessageDetails(firstCause);
+						if (nonNull(additionalInfo) && !additionalInfo.isEmpty()) {
+							htmlMsg.append(" : ");
+							htmlMsg.append(findHtmlMessageDetails(firstCause));
+						}
+					}
+
+				}
+			}
+
+			new Notification(I18nProperties.getString(Strings.messageCheckInputData), htmlMsg.toString(), Type.ERROR_MESSAGE, true)
+				.show(Page.getCurrent());
+		}
+	}
+	
+	public void commitAndHandleandCont() {
+		try {System.out.println("DEBUGEqqqqqqqqqqqqqqqqqqqqqqqqeRRRR");
+			//commit();
+			commitandCont();
+			System.out.println("DEBUGEwwwwwwwwwwwwwwwwwwwwwwwwwwwwRRRR");
+		} catch (InvalidValueException ex) {
+			System.out.println("DEBUGEjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjjRRRR");
 			StringBuilder htmlMsg = new StringBuilder();
 			String message = ex.getMessage();
 			if (message != null && !message.isEmpty()) {
@@ -610,7 +775,12 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		if (!commitListeners.contains(listener))
 			commitListeners.add(listener);
 	}
-
+	/*
+	public void addCommitandContListener(CommitandContListener listener) {
+		if (!commitandContListeners.contains(listener))
+			commitandContListeners.add(listener);
+	}
+*/
 	public void setPrimaryCommitListener(CommitListener listener) {
 		if (primaryCommitListener != null)
 			throw new UnsupportedOperationException("primary listener already set");
@@ -618,7 +788,33 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 			commitListeners.add(0, listener);
 		primaryCommitListener = null;
 	}
+	/*
+	public void setPrimaryCommitandContListener(CommitandContListener listener) {
+		if (primaryCommitandContListener != null)
+			throw new UnsupportedOperationException("primary and Cont listener already set");
+		if (!commitandContListeners.contains(listener))
+			commitandContListeners.add(0, listener);
+		primaryCommitandContListener = null;
+	}
+*/
+	public void removeCommitandContListener(CommitandContListener listener) {
+		commitandContListeners.remove(listener);
+		if (primaryCommitandContListener != null && primaryCommitandContListener.equals(listener))
+			primaryCommitandContListener = null;
+	}
 
+	private void onCommitandCont() {
+
+		for (CommitandContListener listener : commitandContListeners)
+			try {
+				listener.onCommitandCont();
+			} catch (CannotProceedException e) {
+				break;
+			}
+	}
+	
+	
+	
 	public void removeCommitListener(CommitListener listener) {
 		commitListeners.remove(listener);
 		if (primaryCommitListener != null && primaryCommitListener.equals(listener))
@@ -682,7 +878,20 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		if (!cloneListeners.contains(listener))
 			cloneListeners.add(listener);
 	}
-
+	
+	public void addCommitandContListener(CommitandContListener listener, String entityName) {
+		if (commitandContListeners.isEmpty())
+			buttonsPanel.addComponent(getCommitandContButton(entityName), 0);
+		if (!commitandContListeners.contains(listener))
+			commitandContListeners.add(listener);
+	}
+	
+	public void addSaveAndContinueListener(SaveAndContinueListener listener, String entityName) {
+		if (saveAndContinueListeners.isEmpty())
+			buttonsPanel.addComponent(getSaveAndContinueButton(entityName), 0);
+		if (!saveAndContinueListeners.contains(listener))
+			saveAndContinueListeners.add(listener);
+	}
 	public boolean hasDeleteListener() {
 		return !deleteListeners.isEmpty();
 	}
@@ -693,16 +902,28 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	}
 	
 	
+	//imp save and continue clone
+	public boolean hasSaveAndContinueListener() {
+		return !saveAndContinueListeners.isEmpty();
+	}
+
+	private void onSaveAndContinue() {
+		for (SaveAndContinueListener listener : saveAndContinueListeners)
+			listener.onSaveAndContinue();
+	}
+
+	
+	
 	//impl clone
 	public boolean hasCloneListener() {
 		return !cloneListeners.isEmpty();
 	}
-
+	
+	
 	private void onClone() {
 		for (CloneListener listener : cloneListeners)
 			listener.onClone();
 	}
-
 	@Override
 	public void setReadOnly(boolean readOnly) {
 		try {
