@@ -38,6 +38,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
@@ -116,6 +117,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private ComboBox cbPlaceOfBirthFacility;
 	private PersonContext personContext;
 	private boolean isPseudonymized;
+	private LocationEditForm addressForm;
 
 	//@formatter:off
     private static final String HTML_LAYOUT =
@@ -295,7 +297,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		DateField burialDate = addField(PersonDto.BURIAL_DATE, DateField.class);
 		TextField burialPlaceDesc = addField(PersonDto.BURIAL_PLACE_DESCRIPTION, TextField.class);
 		ComboBox burialConductor = addField(PersonDto.BURIAL_CONDUCTOR, ComboBox.class);
-		addField(PersonDto.ADDRESS, LocationEditForm.class).setCaption(null);
+		addressForm = addField(PersonDto.ADDRESS, LocationEditForm.class);
+		addressForm.setCaption(null);
 		addField(PersonDto.ADDRESSES, LocationsField.class).setCaption(null);
 
 		PersonContactDetailsField personContactDetailsField = new PersonContactDetailsField(getValue(), fieldVisibilityCheckers, fieldAccessCheckers);
@@ -508,6 +511,15 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			I18nProperties.getPrefixDescription(PersonDto.I18N_PREFIX, PersonDto.ADDITIONAL_DETAILS, "") + "\n"
 				+ I18nProperties.getDescription(Descriptions.descGdpr));
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
+	}
+
+	@Override
+	public void setValue(PersonDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
+		super.setValue(newFieldValue);
+
+		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
+		// this hopefully resets everything to its correct value
+		addressForm.discard();
 	}
 
 	private void addListenersToInfrastructureFields(
