@@ -676,6 +676,19 @@ public class EditCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(CASE_APPLY_FILTERS_BUTTON);
         });
+
+    When(
+        "I navigate to epidemiological data tab in Edit case page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EPIDEMIOLOGICAL_DATA_TAB);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I click on the New Travel Entry button from Edit case page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(NEW_TRAVEL_ENTRY_BUTTON_DE);
+        });
   }
 
   private Case collectCasePersonUuid() {

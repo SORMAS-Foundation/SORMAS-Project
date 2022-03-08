@@ -173,6 +173,13 @@ public class NavBarSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.LOGOUT_BUTTON);
         });
 
+    When(
+        "^I click on the Entries button from navbar$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.ENTRIES_BUTTON);
+        });
+
     Then(
         "I wait for {string} page to load and calculate elapsed time",
         (String page) -> {
