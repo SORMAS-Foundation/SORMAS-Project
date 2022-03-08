@@ -196,7 +196,7 @@ public class TravelEntriesView extends AbstractView {
 				.getProperty(
 					FeatureType.AUTOMATIC_ARCHIVING,
 					CoreEntityType.TRAVEL_ENTRY,
-					FeatureTypeProperty.DAYS_FOR_AUTOMATIC_ARCHIVING,
+					FeatureTypeProperty.THRESHOLD_IN_DAYS,
 					Integer.class);
 			if (daysAfterTravelEntryGetsArchived > 0) {
 				relevanceStatusInfoLabel = new Label(

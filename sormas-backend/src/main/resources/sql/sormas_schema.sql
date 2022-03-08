@@ -10053,8 +10053,6 @@ INSERT INTO schema_version (version_number, comment) VALUES (445, 'CoreAdo: Intr
 ALTER TABLE featureconfiguration ADD COLUMN entitytype character varying(255);
 ALTER TABLE featureconfiguration_history ADD COLUMN entitytype character varying(255);
 
-CREATE TRIGGER
-
 INSERT INTO schema_version (version_number, comment) VALUES (446, 'Configuration for automatic archiving #7775');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

@@ -21,7 +21,7 @@ public enum FeatureTypeProperty {
 	AUTOMATIC_RESPONSIBILITY_ASSIGNMENT(Boolean.class),
 	ALLOW_FREE_FOLLOW_UP_OVERWRITE(Boolean.class),
 	ALLOW_FREE_EDITING(Boolean.class),
-	DAYS_FOR_AUTOMATIC_ARCHIVING(Integer.class);
+	THRESHOLD_IN_DAYS(Integer.class);
 
 	private final Class<?> returnType;
 

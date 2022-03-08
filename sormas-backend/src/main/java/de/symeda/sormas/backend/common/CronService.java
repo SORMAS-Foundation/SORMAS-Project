@@ -145,15 +145,15 @@ public class CronService {
 	public void archiveCases() {
 
 		final int daysAfterCaseGetsArchived = featureConfigurationFacade
-			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CASE, FeatureTypeProperty.DAYS_FOR_AUTOMATIC_ARCHIVING, Integer.class);
+			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CASE, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
 		final int daysAfterContactsGetsArchived = featureConfigurationFacade
-			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CONTACT, FeatureTypeProperty.DAYS_FOR_AUTOMATIC_ARCHIVING, Integer.class);
+			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CONTACT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
 		if (daysAfterCaseGetsArchived < daysAfterContactsGetsArchived) {
 			logger.warn(
-					FeatureTypeProperty.DAYS_FOR_AUTOMATIC_ARCHIVING + " for " + CoreEntityType.CONTACT + " [{}] should be <= than the one for "
-							+ CoreEntityType.CASE + " [{}]",
-					daysAfterContactsGetsArchived,
-					daysAfterCaseGetsArchived);
+				FeatureTypeProperty.THRESHOLD_IN_DAYS + " for " + CoreEntityType.CONTACT + " [{}] should be <= the one for " + CoreEntityType.CASE
+					+ " [{}]",
+				daysAfterContactsGetsArchived,
+				daysAfterCaseGetsArchived);
 		}
 		if (daysAfterCaseGetsArchived >= 1) {
 			caseFacade.archiveAllArchivableCases(daysAfterCaseGetsArchived);
@@ -164,15 +164,12 @@ public class CronService {
 	public void archiveEvents() {
 
 		final int daysAfterEventsGetsArchived = featureConfigurationFacade
-			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.EVENT, FeatureTypeProperty.DAYS_FOR_AUTOMATIC_ARCHIVING, Integer.class);
-		final int daysAfterEventParticipantsGetsArchived = featureConfigurationFacade.getProperty(
-			FeatureType.AUTOMATIC_ARCHIVING,
-			CoreEntityType.EVENT_PARTICIPANT,
-			FeatureTypeProperty.DAYS_FOR_AUTOMATIC_ARCHIVING,
-			Integer.class);
+			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.EVENT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
+		final int daysAfterEventParticipantsGetsArchived = featureConfigurationFacade
+			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.EVENT_PARTICIPANT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
 		if (daysAfterEventsGetsArchived < daysAfterEventParticipantsGetsArchived) {
 			logger.warn(
-				FeatureTypeProperty.DAYS_FOR_AUTOMATIC_ARCHIVING + " for " + CoreEntityType.EVENT_PARTICIPANT + " [{}] should be <= than the one for "
+				FeatureTypeProperty.THRESHOLD_IN_DAYS + " for " + CoreEntityType.EVENT_PARTICIPANT + " [{}] should be <= the one for "
 					+ CoreEntityType.EVENT + " [{}]",
 				daysAfterEventParticipantsGetsArchived,
 				daysAfterEventsGetsArchived);

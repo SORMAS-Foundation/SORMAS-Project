@@ -388,6 +388,10 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 	@Override
 	public boolean isFeatureEnabled(FeatureType featureType, CoreEntityType entityType) {
 
+		if (entityType == null) {
+			throw new IllegalArgumentException("Entity type must be specified!");
+		}
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<FeatureConfiguration> root = cq.from(FeatureConfiguration.class);

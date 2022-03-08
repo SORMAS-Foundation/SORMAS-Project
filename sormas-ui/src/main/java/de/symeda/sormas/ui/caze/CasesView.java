@@ -633,7 +633,7 @@ public class CasesView extends AbstractView {
 					.getProperty(
 						FeatureType.AUTOMATIC_ARCHIVING,
 						CoreEntityType.CASE,
-						FeatureTypeProperty.DAYS_FOR_AUTOMATIC_ARCHIVING,
+						FeatureTypeProperty.THRESHOLD_IN_DAYS,
 						Integer.class);
 				if (daysAfterCaseGetsArchived > 0) {
 					relevanceStatusInfoLabel = new Label(

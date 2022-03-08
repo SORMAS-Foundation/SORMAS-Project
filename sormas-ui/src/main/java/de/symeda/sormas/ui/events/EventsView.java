@@ -504,7 +504,7 @@ public class EventsView extends AbstractView {
 						.getProperty(
 							FeatureType.AUTOMATIC_ARCHIVING,
 							CoreEntityType.EVENT,
-							FeatureTypeProperty.DAYS_FOR_AUTOMATIC_ARCHIVING,
+							FeatureTypeProperty.THRESHOLD_IN_DAYS,
 							Integer.class);
 					if (daysAfterEventGetsArchived > 0) {
 						relevanceStatusInfoLabel = new Label(

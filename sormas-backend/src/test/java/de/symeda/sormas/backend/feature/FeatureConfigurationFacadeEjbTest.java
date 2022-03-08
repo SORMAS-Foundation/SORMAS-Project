@@ -59,19 +59,19 @@ public class FeatureConfigurationFacadeEjbTest extends AbstractBeanTest {
 		featureConfigurationService.createMissingFeatureConfigurations();
 
 		Integer defaultDaysForCaseArchiving = getFeatureConfigurationFacade()
-			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CASE, FeatureTypeProperty.DAYS_FOR_AUTOMATIC_ARCHIVING, Integer.class);
+			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CASE, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
 		Assert.assertEquals(90, (int) defaultDaysForCaseArchiving);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testGetPropertyWithWrongPropertyType() {
 		getFeatureConfigurationFacade()
-			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CASE, FeatureTypeProperty.DAYS_FOR_AUTOMATIC_ARCHIVING, Boolean.class);
+			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CASE, FeatureTypeProperty.THRESHOLD_IN_DAYS, Boolean.class);
 	}
 
 	@Test(expected = IllegalArgumentException.class)
 	public void testGetPropertyWhenFeatureTypeDoesNotContainIt() {
 		getFeatureConfigurationFacade()
-			.getProperty(FeatureType.CASE_SURVEILANCE, CoreEntityType.CASE, FeatureTypeProperty.DAYS_FOR_AUTOMATIC_ARCHIVING, Boolean.class);
+			.getProperty(FeatureType.CASE_SURVEILANCE, CoreEntityType.CASE, FeatureTypeProperty.THRESHOLD_IN_DAYS, Boolean.class);
 	}
 }

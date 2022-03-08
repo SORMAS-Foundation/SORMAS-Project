@@ -153,6 +153,9 @@ public enum FeatureType {
 			null, null),
 	PERSON_DUPLICATE_CUSTOM_SEARCH(true, false, null, null, null),
 	EDIT_INFRASTRUCTURE_DATA(true, true, null, null, null),
+	DELETE_PERMANENT(true, false, null, null, null),
+	AUTOMATIC_ARCHIVING(true, true, null, Arrays.asList(CASE, CONTACT, EVENT, EVENT_PARTICIPANT, IMMUNIZATION, TRAVEL_ENTRY),
+			ImmutableMap.of(FeatureTypeProperty.THRESHOLD_IN_DAYS, 90)),
 
 	// SHOW/HIDE VIEW TAB FEATURES
 	VIEW_TAB_CASES_HOSPITALIZATION(true,
@@ -253,10 +256,7 @@ public enum FeatureType {
 		true,
 		new FeatureType[] {
 			TASK_MANAGEMENT },
-		null, null),
-	DELETE_PERMANENT(true, false, null, null, null),
-	AUTOMATIC_ARCHIVING(true, true, null, Arrays.asList(CASE, CONTACT, EVENT, EVENT_PARTICIPANT, IMMUNIZATION, TRAVEL_ENTRY),
-			ImmutableMap.of(FeatureTypeProperty.DAYS_FOR_AUTOMATIC_ARCHIVING, 90));
+		null, null);
 
 	/**
 	 * Server feature means that the feature only needs to be configured once per server since they define the way the system
