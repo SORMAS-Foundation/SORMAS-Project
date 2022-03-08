@@ -24,6 +24,7 @@ import com.vaadin.ui.renderers.DateRenderer;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.campaign.CampaignIndexDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -32,6 +33,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.ShowDetailsListener;
 
 public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, CampaignFormDataCriteria> {
 
@@ -49,9 +51,17 @@ public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, Cam
 
 	//Apply filter
 	protected void addDefaultColumns() {
-		addEditColumn(e -> {
-			ControllerProvider.getCampaignController().navigateToFormDataView(e.getUuid());
-		});
+		//addEditColumn(e -> {
+		//	ControllerProvider.getCampaignController().navigateToFormDataView(e.getUuid());
+		//});
+		
+		addItemClickListener(new ShowDetailsListener<>(CampaignFormDataIndexDto.CAMPAIGN, e -> ControllerProvider.getCampaignController().navigateToFormDataView(e.getUuid())));
+		addItemClickListener(new ShowDetailsListener<>(CampaignFormDataIndexDto.FORM, e -> ControllerProvider.getCampaignController().navigateToFormDataView(e.getUuid())));
+		addItemClickListener(new ShowDetailsListener<>(CampaignFormDataIndexDto.AREA, e -> ControllerProvider.getCampaignController().navigateToFormDataView(e.getUuid())));
+		addItemClickListener(new ShowDetailsListener<>(CampaignFormDataIndexDto.REGION, e -> ControllerProvider.getCampaignController().navigateToFormDataView(e.getUuid())));
+		addItemClickListener(new ShowDetailsListener<>(CampaignFormDataIndexDto.DISTRICT, e -> ControllerProvider.getCampaignController().navigateToFormDataView(e.getUuid())));
+		addItemClickListener(new ShowDetailsListener<>(CampaignFormDataIndexDto.COMMUNITY, e -> ControllerProvider.getCampaignController().navigateToFormDataView(e.getUuid())));
+		addItemClickListener(new ShowDetailsListener<>(CampaignFormDataIndexDto.FORM_DATE, e -> ControllerProvider.getCampaignController().navigateToFormDataView(e.getUuid())));
 
 		setColumns(
 		//	EDIT_BTN_ID,
