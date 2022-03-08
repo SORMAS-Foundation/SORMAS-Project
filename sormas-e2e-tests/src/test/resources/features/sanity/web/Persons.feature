@@ -7,7 +7,7 @@ Feature: Edit Persons
     When I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     Then I fill a new contact form
-    And I click SAVE a new contact
+    And I click on SAVE new contact button
     And I open Contact Person tab
     Then I complete all default empty fields from Contact Person tab
     When I click on new entry button from Contact Information section

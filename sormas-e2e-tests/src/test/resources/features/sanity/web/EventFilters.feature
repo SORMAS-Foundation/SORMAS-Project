@@ -1,7 +1,6 @@
 @UI @Sanity @Event @UI
-Feature: Filters in Event Directory
+Feature: Event Directory filters check
 
-  #please address
   @issue=SORDEV-5915 @env_main @ignore
   Scenario: Check all filters are working properly in Event directory
     Given API: I create a new event
