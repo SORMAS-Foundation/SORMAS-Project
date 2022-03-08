@@ -41,7 +41,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -119,7 +118,6 @@ import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
-import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -184,8 +182,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	private TravelEntryService travelEntryService;
 	@EJB
 	private ImmunizationService immunizationService;
-	@EJB
-	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 	@EJB
 	private DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
 	@EJB
@@ -1284,7 +1280,12 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		ensurePersisted(caze);
 	}
 
-	public boolean isCaseEditAllowed(Case caze) {
+	@Override
+	public boolean isEditAllowed(Case caze, boolean withArchive) {
+
+		if (!super.isEditAllowed(caze, withArchive)) {
+			return false;
+		}
 
 		if (caze.getSormasToSormasOriginInfo() != null && !caze.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
 			return false;

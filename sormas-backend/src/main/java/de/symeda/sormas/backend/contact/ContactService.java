@@ -45,7 +45,6 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.common.CoreAdo;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -96,7 +95,6 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.exposure.ExposureService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
-import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -145,8 +143,6 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	private ExternalJournalService externalJournalService;
 	@EJB
 	private UserService userService;
-	@EJB
-	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	public ContactService() {
 		super(Contact.class);
@@ -1423,7 +1419,12 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return ContactJurisdictionPredicateValidator.of(contactQueryContext, user).inJurisdictionOrOwned();
 	}
 
-	public boolean isContactEditAllowed(Contact contact) {
+	public boolean isContactEditAllowed(Contact contact, boolean withArchive) {
+
+		if (!super.isEditAllowed(contact, withArchive)) {
+			return false;
+		}
+
 		if (contact.getSormasToSormasOriginInfo() != null && !contact.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
 			return false;
 		}

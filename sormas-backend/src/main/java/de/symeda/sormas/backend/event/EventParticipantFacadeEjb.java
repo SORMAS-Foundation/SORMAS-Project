@@ -82,6 +82,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -90,11 +91,11 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
+import de.symeda.sormas.backend.common.NotificationService;
 import de.symeda.sormas.backend.common.messaging.MessageContents;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
@@ -136,7 +137,7 @@ import de.symeda.sormas.utils.EventParticipantJoins;
 @Stateless(name = "EventParticipantFacade")
 public class EventParticipantFacadeEjb
 	extends
-        AbstractCoreFacadeEjb<EventParticipant, EventParticipantDto, EventParticipantIndexDto, EventParticipantReferenceDto, EventParticipantService, EventParticipantCriteria>
+	AbstractCoreFacadeEjb<EventParticipant, EventParticipantDto, EventParticipantIndexDto, EventParticipantReferenceDto, EventParticipantService, EventParticipantCriteria>
 	implements EventParticipantFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -273,7 +274,7 @@ public class EventParticipantFacadeEjb
 	public EventParticipantDto saveEventParticipant(@Valid EventParticipantDto dto, boolean checkChangeDate, boolean internal) {
 		EventParticipant existingParticipant = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 
-		if (internal && existingParticipant != null && !service.isEventParticipantEditAllowed(existingParticipant)) {
+		if (internal && existingParticipant != null && !service.isEventParticipantEditAllowed(existingParticipant, true)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEventParticipantNotEditable));
 		}
 
@@ -858,10 +859,10 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
-	public boolean isEventParticipantEditAllowed(String uuid) {
+	public boolean isEventParticipantEditAllowed(String uuid, boolean withArchive) {
 		EventParticipant eventParticipant = service.getByUuid(uuid);
 
-		return service.isEventParticipantEditAllowed(eventParticipant);
+		return service.isEventParticipantEditAllowed(eventParticipant, withArchive);
 	}
 
 	@Override

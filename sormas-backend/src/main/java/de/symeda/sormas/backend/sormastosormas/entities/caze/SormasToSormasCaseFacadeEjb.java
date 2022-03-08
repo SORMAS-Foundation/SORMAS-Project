@@ -110,7 +110,7 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 	protected void validateEntitiesBeforeShare(List<Case> entities, boolean handOverOwnership) throws SormasToSormasException {
 		List<ValidationErrors> validationErrors = new ArrayList<>();
 		for (Case caze : entities) {
-			if (!caseService.isCaseEditAllowed(caze)) {
+			if (!caseService.isEditAllowed(caze, true)) {
 				validationErrors.add(
 					new ValidationErrors(
 						buildCaseValidationGroupName(caze),

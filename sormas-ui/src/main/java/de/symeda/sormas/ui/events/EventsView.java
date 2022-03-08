@@ -27,7 +27,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import org.hibernate.event.spi.RefreshEvent;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -545,7 +544,7 @@ public class EventsView extends AbstractView {
 				if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_ARCHIVE)) {
 					bulkActions.add(
 						new MenuBarHelper.MenuBarItem(
-							I18nProperties.getCaption(Captions.actionArchive),
+							I18nProperties.getCaption(Captions.actionArchiveInfrastructure),
 							VaadinIcons.ARCHIVE,
 							mi -> grid.bulkActionHandler(
 								items -> ControllerProvider.getEventController().archiveAllSelectedItems(items, () -> navigateTo(eventCriteria, true)),
@@ -553,7 +552,7 @@ public class EventsView extends AbstractView {
 							EntityRelevanceStatus.ACTIVE.equals(eventCriteria.getRelevanceStatus())));
 					bulkActions.add(
 						new MenuBarHelper.MenuBarItem(
-							I18nProperties.getCaption(Captions.actionDearchive),
+							I18nProperties.getCaption(Captions.actionDearchiveInfrastructure),
 							VaadinIcons.ARCHIVE,
 							mi -> grid.bulkActionHandler(
 								items -> ControllerProvider.getEventController()

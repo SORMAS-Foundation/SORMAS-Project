@@ -57,12 +57,12 @@ public abstract class AbstractTravelEntryView extends AbstractDetailView<TravelE
 		return getReference();
 	}
 
-	protected Boolean isTravelEntryEditAllowed() {
-		return FacadeProvider.getTravelEntryFacade().isTravelEntryEditAllowed(getReference().getUuid());
+	protected Boolean isTravelEntryEditAllowed(boolean withArchive) {
+		return FacadeProvider.getTravelEntryFacade().isTravelEntryEditAllowed(getReference().getUuid(), withArchive);
 	}
 
 	public void setTravelEntryEditPermission(Component component) {
-		Boolean isTravelEntryEditAllowed = isTravelEntryEditAllowed();
+		boolean isTravelEntryEditAllowed = isTravelEntryEditAllowed(true);
 
 		if (!isTravelEntryEditAllowed) {
 			component.setEnabled(false);

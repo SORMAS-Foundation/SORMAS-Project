@@ -101,7 +101,7 @@ public class SormasToSormasContactFacadeEjb extends AbstractSormasToSormasInterf
 	protected void validateEntitiesBeforeShare(List<Contact> entities, boolean handOverOwnership) throws SormasToSormasException {
 		List<ValidationErrors> validationErrors = new ArrayList<>();
 		for (Contact contact : entities) {
-			if (!contactService.isContactEditAllowed(contact)) {
+			if (!contactService.isContactEditAllowed(contact, true)) {
 				validationErrors.add(
 					new ValidationErrors(
 						buildContactValidationGroupName(contact),

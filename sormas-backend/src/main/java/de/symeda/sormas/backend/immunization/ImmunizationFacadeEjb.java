@@ -75,7 +75,6 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
@@ -110,7 +109,8 @@ import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb.VaccinationFaca
 
 @Stateless(name = "ImmunizationFacade")
 public class ImmunizationFacadeEjb
-	extends AbstractCoreFacadeEjb<Immunization, ImmunizationDto, ImmunizationIndexDto, ImmunizationReferenceDto, ImmunizationService, ImmunizationCriteria>
+	extends
+	AbstractCoreFacadeEjb<Immunization, ImmunizationDto, ImmunizationIndexDto, ImmunizationReferenceDto, ImmunizationService, ImmunizationCriteria>
 	implements ImmunizationFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(ImmunizationFacadeEjb.class);
@@ -264,10 +264,10 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
-	public boolean isImmunizationEditAllowed(String uuid) {
+	public boolean isImmunizationEditAllowed(String uuid, boolean withArchive) {
 		Immunization immunization = service.getByUuid(uuid);
 
-		return service.isImmunizationEditAllowed(immunization);
+		return service.isImmunizationEditAllowed(immunization, withArchive);
 	}
 
 	@Override
@@ -293,7 +293,7 @@ public class ImmunizationFacadeEjb
 	public ImmunizationDto save(@Valid @NotNull ImmunizationDto dto, boolean checkChangeDate, boolean internal) {
 		Immunization existingImmunization = service.getByUuid(dto.getUuid());
 
-		if (internal && existingImmunization != null && !service.isImmunizationEditAllowed(existingImmunization)) {
+		if (internal && existingImmunization != null && !service.isImmunizationEditAllowed(existingImmunization, true)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorImmunizationNotEditable));
 		}
 

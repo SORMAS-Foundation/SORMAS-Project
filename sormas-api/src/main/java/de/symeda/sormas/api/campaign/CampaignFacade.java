@@ -19,4 +19,6 @@ public interface CampaignFacade extends CoreFacade<CampaignDto, CampaignIndexDto
 	List<String> getAllActiveUuids();
 
 	void validate(CampaignReferenceDto campaignReferenceDto);
+
+	boolean isCampaignEditAllowed(String caseUuid, boolean withArchive);
 }

@@ -252,6 +252,7 @@ public interface Strings {
 	String epiWeek = "epiWeek";
 	String errorAccessDenied = "errorAccessDenied";
 	String errorCampaignDiagramTotalsCalculationError = "errorCampaignDiagramTotalsCalculationError";
+	String errorCampaignNotEditable = "errorCampaignNotEditable";
 	String errorCaseDuplicateDeletion = "errorCaseDuplicateDeletion";
 	String errorCaseMerging = "errorCaseMerging";
 	String errorCaseNotEditable = "errorCaseNotEditable";
@@ -264,6 +265,7 @@ public interface Strings {
 	String errorDeletingDocumentTemplate = "errorDeletingDocumentTemplate";
 	String errorDocumentGeneration = "errorDocumentGeneration";
 	String errorDocumentGenerationMultipleDiseasses = "errorDocumentGenerationMultipleDiseasses";
+	String errorEntityNotEditable = "errorEntityNotEditable";
 	String errorEntityOutdated = "errorEntityOutdated";
 	String errorEventFromAnotherJurisdiction = "errorEventFromAnotherJurisdiction";
 	String errorEventNotEditable = "errorEventNotEditable";
@@ -910,6 +912,7 @@ public interface Strings {
 	String messageCasesArchived = "messageCasesArchived";
 	String messageCaseSaved = "messageCaseSaved";
 	String messageCaseSavedClassificationChanged = "messageCaseSavedClassificationChanged";
+	String messageCasesBulkEdited = "messageCasesBulkEdited";
 	String messageCasesDearchived = "messageCasesDearchived";
 	String messageCasesDeleted = "messageCasesDeleted";
 	String messageCasesEdited = "messageCasesEdited";
@@ -942,6 +945,7 @@ public interface Strings {
 	String messageContactDuplicateDeleted = "messageContactDuplicateDeleted";
 	String messageContactExternalTokenWarning = "messageContactExternalTokenWarning";
 	String messageContactSaved = "messageContactSaved";
+	String messageContactsBulkEdited = "messageContactsBulkEdited";
 	String messageContactsDeleted = "messageContactsDeleted";
 	String messageContactsEdited = "messageContactsEdited";
 	String messageContactsMerged = "messageContactsMerged";
@@ -1011,6 +1015,7 @@ public interface Strings {
 	String messageEventParticipationUnlinked = "messageEventParticipationUnlinked";
 	String messageEventsArchived = "messageEventsArchived";
 	String messageEventSaved = "messageEventSaved";
+	String messageEventsBulkEdited = "messageEventsBulkEdited";
 	String messageEventsDearchived = "messageEventsDearchived";
 	String messageEventsDeleted = "messageEventsDeleted";
 	String messageEventsEdited = "messageEventsEdited";

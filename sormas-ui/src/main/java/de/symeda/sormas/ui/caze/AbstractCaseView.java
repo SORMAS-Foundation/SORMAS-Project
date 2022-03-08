@@ -268,7 +268,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 	}
 
 	public CaseReferenceDto getCaseRef() {
-		return getReference();
+		return (CaseReferenceDto) getReference();
 	}
 
 	public boolean isHasOutbreak() {
@@ -286,12 +286,12 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 
 	public void setCaseEditPermission(Component component) {
 
-		if (!isCaseEditAllowed()) {
+		if (!isCaseEditAllowed(true)) {
 			component.setEnabled(false);
 		}
 	}
 
-	protected boolean isCaseEditAllowed() {
-		return FacadeProvider.getCaseFacade().isCaseEditAllowed(getReference().getUuid());
+	protected boolean isCaseEditAllowed(boolean withArchive) {
+		return FacadeProvider.getCaseFacade().isCaseEditAllowed(getReference().getUuid(), withArchive);
 	}
 }

@@ -62,7 +62,6 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.clinicalcourse.HealthConditionsMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,6 +71,7 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.contact.ContactBulkEditData;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -138,8 +138,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
-import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.backend.clinicalcourse.HealthConditionsMapper;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
@@ -321,7 +320,7 @@ public class ContactFacadeEjb
 	public ContactDto save(ContactDto dto, boolean handleChanges, boolean handleCaseChanges, boolean checkChangeDate, boolean internal) {
 		final Contact existingContact = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 
-		if (internal && existingContact != null && !service.isContactEditAllowed(existingContact)) {
+		if (internal && existingContact != null && !service.isContactEditAllowed(existingContact, true)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorContactNotEditable));
 		}
 
@@ -1818,10 +1817,10 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	public boolean isContactEditAllowed(String contactUuid) {
+	public boolean isContactEditAllowed(String contactUuid, boolean withArchive) {
 		Contact contact = service.getByUuid(contactUuid);
 
-		return service.isContactEditAllowed(contact);
+		return service.isContactEditAllowed(contact, withArchive);
 	}
 
 	@Override
@@ -2068,6 +2067,35 @@ public class ContactFacadeEjb
 	@Override
 	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		service.updateExternalData(externalData);
+	}
+
+	@Override
+	public int saveBulkContacts(
+		List<String> contactUuidlist,
+		ContactBulkEditData updatedContactBulkEditData,
+		boolean classificationChange,
+		boolean contactOfficerChange)
+		throws ValidationRuntimeException {
+
+		int changedContacts = 0;
+		for (String contactUuid : contactUuidlist) {
+			Contact contact = service.getByUuid(contactUuid);
+
+			if (service.isContactEditAllowed(contact, true)) {
+				ContactDto existingContactDto = toDto(contact);
+				if (classificationChange) {
+					existingContactDto.setContactClassification(updatedContactBulkEditData.getContactClassification());
+				}
+				// Setting the contact officer is only allowed if all selected contacts are in the same district
+				if (contactOfficerChange) {
+					existingContactDto.setContactOfficer(updatedContactBulkEditData.getContactOfficer());
+				}
+
+				save(existingContactDto);
+				changedContacts++;
+			}
+		}
+		return changedContacts;
 	}
 
 	@Override

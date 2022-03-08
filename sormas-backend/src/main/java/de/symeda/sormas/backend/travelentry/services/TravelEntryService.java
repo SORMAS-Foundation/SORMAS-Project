@@ -187,7 +187,12 @@ public class TravelEntryService extends BaseTravelEntryService {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public boolean isTravelEntryEditAllowed(TravelEntry travelEntry) {
+	public boolean isTravelEntryEditAllowed(TravelEntry travelEntry, boolean withArchive) {
+
+		if (!super.isEditAllowed(travelEntry, withArchive)) {
+			return false;
+		}
+
 		return userService.hasRight(UserRight.TRAVEL_ENTRY_EDIT) && inJurisdictionOrOwned(travelEntry);
 	}
 

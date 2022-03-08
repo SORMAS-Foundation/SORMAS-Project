@@ -35,7 +35,7 @@ public interface ImmunizationFacade extends CoreFacade<ImmunizationDto, Immuniza
 
 	List<String> deleteImmunizations(List<String> immunizationUuids);
 
-	boolean isImmunizationEditAllowed(String uuid);
+	boolean isImmunizationEditAllowed(String uuid, boolean withArchive);
 
 	List<ImmunizationDto> getSimilarImmunizations(ImmunizationSimilarityCriteria criteria);
 

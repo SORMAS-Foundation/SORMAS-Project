@@ -8,12 +8,14 @@ import com.vaadin.ui.Notification;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.utils.AbstractDetailView;
+import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
@@ -71,6 +73,19 @@ public class CampaignView extends AbstractDetailView<CampaignReferenceDto> {
 		container.addComponent(editComponent);
 
 		getViewTitleLabel().setValue(campaignDto.getName());
+
+		if (isCampaignEditAllowed(false)) {
+			if (FacadeProvider.getCampaignFacade().isArchived(campaignDto.getUuid())
+				&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.EDIT_ARCHIVED_ENTITIES)) {
+				editComponent.setEditable(false, ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+			}
+		} else {
+			editComponent.setEditable(false, "");
+		}
+	}
+
+	protected boolean isCampaignEditAllowed(boolean withArchive) {
+		return FacadeProvider.getCampaignFacade().isCampaignEditAllowed(getReference().getUuid(), withArchive);
 	}
 
 	@Override

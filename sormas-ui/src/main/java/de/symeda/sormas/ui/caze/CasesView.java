@@ -682,12 +682,12 @@ public class CasesView extends AbstractView {
 									items -> ControllerProvider.getCaseController().sendSmsToAllSelectedItems(items, () -> navigateTo(criteria)));
 							}, hasBulkOperationsRight));
 					}
-					menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE, mi -> {
+					menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchiveInfrastructure), VaadinIcons.ARCHIVE, mi -> {
 						grid.bulkActionHandler(
 							items -> ControllerProvider.getCaseController().archiveAllSelectedItems(items, () -> navigateTo(criteria, true)),
 							true);
 					}, hasBulkOperationsRight && EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())));
-					menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchive), VaadinIcons.ARCHIVE, mi -> {
+					menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchiveInfrastructure), VaadinIcons.ARCHIVE, mi -> {
 						grid.bulkActionHandler(
 							items -> ControllerProvider.getCaseController().dearchiveAllSelectedItems(items, () -> navigateTo(criteria, true)),
 							true);

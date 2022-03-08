@@ -100,7 +100,7 @@ public class SormasToSormasEventFacadeEjb extends AbstractSormasToSormasInterfac
 	protected void validateEntitiesBeforeShare(List<Event> entities, boolean handOverOwnership) throws SormasToSormasException {
 		List<ValidationErrors> validationErrors = new ArrayList<>();
 		for (Event event : entities) {
-			if (!eventService.isEventEditAllowed(event)) {
+			if (!eventService.isEventEditAllowed(event, true)) {
 				validationErrors.add(
 					new ValidationErrors(
 						buildEventValidationGroupName(event),

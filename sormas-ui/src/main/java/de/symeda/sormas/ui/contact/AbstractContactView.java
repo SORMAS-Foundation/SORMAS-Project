@@ -139,13 +139,12 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 	}
 
 	public void setContactEditPermission(Component component) {
-		boolean isContactEditAllowed = isContactEditAllowed();
-		if (!isContactEditAllowed) {
+		if (!isContactEditAllowed(true)) {
 			getComponent(getComponentIndex(component)).setEnabled(false);
 		}
 	}
 
-	protected boolean isContactEditAllowed() {
-		return FacadeProvider.getContactFacade().isContactEditAllowed(getContactRef().getUuid());
+	protected boolean isContactEditAllowed(boolean withArchive) {
+		return FacadeProvider.getContactFacade().isContactEditAllowed(getContactRef().getUuid(), withArchive);
 	}
 }

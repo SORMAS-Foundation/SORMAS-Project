@@ -144,6 +144,7 @@ public enum FeatureType {
 		null),
 	PERSON_DUPLICATE_CUSTOM_SEARCH(true, false, null, null),
 	EDIT_INFRASTRUCTURE_DATA(true, true, null, null),
+	EDIT_ARCHIVED_ENTITIES(true, true, null, null),
 
 	// SHOW/HIDE VIEW TAB FEATURES
 	VIEW_TAB_CASES_HOSPITALIZATION(true,

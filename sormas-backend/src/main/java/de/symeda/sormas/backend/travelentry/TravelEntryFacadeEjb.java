@@ -95,9 +95,9 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-	public Boolean isTravelEntryEditAllowed(String travelEntryUuid) {
+	public Boolean isTravelEntryEditAllowed(String travelEntryUuid, boolean withArchive) {
 		TravelEntry travelEntry = service.getByUuid(travelEntryUuid);
-		return service.isTravelEntryEditAllowed(travelEntry);
+		return service.isTravelEntryEditAllowed(travelEntry, withArchive);
 	}
 
 	@Override
@@ -281,10 +281,10 @@ public class TravelEntryFacadeEjb
 			return null;
 		}
 		return new TravelEntryReferenceDto(
-				entity.getUuid(),
-				entity.getExternalId(),
-				entity.getPerson().getFirstName(),
-				entity.getPerson().getLastName());
+			entity.getUuid(),
+			entity.getExternalId(),
+			entity.getPerson().getFirstName(),
+			entity.getPerson().getLastName());
 	}
 
 	@Override

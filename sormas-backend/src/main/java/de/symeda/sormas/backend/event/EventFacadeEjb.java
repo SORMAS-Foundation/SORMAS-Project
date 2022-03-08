@@ -241,7 +241,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 		Event existingEvent = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 
-		if (internal && existingEvent != null && !service.isEventEditAllowed(existingEvent)) {
+		if (internal && existingEvent != null && !service.isEventEditAllowed(existingEvent, true)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEventNotEditable));
 		}
 
@@ -1273,9 +1273,43 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		return service.hasAnyEventParticipantWithoutJurisdiction(eventUuid);
 	}
 
-	public Boolean isEventEditAllowed(String eventUuid) {
+	@Override
+	public int saveBulkEvents(
+		List<String> eventUuidList,
+		EventDto updatedTempEvent,
+		boolean eventStatusChange,
+		boolean eventInvestigationStatusChange,
+		boolean eventManagementStatusChange) {
+
+		int changedEvents = 0;
+		for (String evetUuid : eventUuidList) {
+			Event event = service.getByUuid(evetUuid);
+
+			if (service.isEventEditAllowed(event, true)) {
+				EventDto eventDto = toDto(event);
+				if (eventStatusChange) {
+					eventDto.setEventStatus(updatedTempEvent.getEventStatus());
+				}
+
+				if (eventInvestigationStatusChange) {
+					eventDto.setEventInvestigationStatus(updatedTempEvent.getEventInvestigationStatus());
+				}
+
+				if (eventManagementStatusChange) {
+					eventDto.setEventManagementStatus(updatedTempEvent.getEventManagementStatus());
+				}
+
+				save(eventDto);
+				changedEvents++;
+			}
+		}
+
+		return changedEvents;
+	}
+
+	public Boolean isEventEditAllowed(String eventUuid, boolean withArchive) {
 		Event event = service.getByUuid(eventUuid);
-		return service.isEventEditAllowed(event);
+		return service.isEventEditAllowed(event, withArchive);
 	}
 
 	@Override

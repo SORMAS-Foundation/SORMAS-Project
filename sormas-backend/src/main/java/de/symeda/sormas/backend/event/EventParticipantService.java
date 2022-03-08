@@ -434,7 +434,12 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 			.add(eventParticipantFrom, EventParticipant.SORMAS_TO_SORMAS_SHARES);
 	}
 
-	public boolean isEventParticipantEditAllowed(EventParticipant eventParticipant) {
+	public boolean isEventParticipantEditAllowed(EventParticipant eventParticipant, boolean withArchive) {
+
+		if (!super.isEditAllowed(eventParticipant, withArchive)) {
+			return false;
+		}
+
 		if (eventParticipant.getSormasToSormasOriginInfo() != null && !eventParticipant.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
 			return false;
 		}

@@ -14,7 +14,6 @@
  */
 package de.symeda.sormas.ui.caze;
 
-import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -44,10 +43,11 @@ import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponentLayout;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
+import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.SidePanelLayout;
 import de.symeda.sormas.ui.utils.ViewMode;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 import de.symeda.sormas.ui.vaccination.list.VaccinationListComponent;
@@ -60,6 +60,7 @@ public class CaseDataView extends AbstractCaseView {
 
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/data";
 	public static final String CASE_LOC = "case";
+	public static final String CASE_SIDE_PANEL_LOC = "caseSidePanel";
 	public static final String TASKS_LOC = "tasks";
 	public static final String SAMPLES_LOC = "samples";
 	public static final String EVENTS_LOC = "events";
@@ -83,49 +84,33 @@ public class CaseDataView extends AbstractCaseView {
 
 		CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
 
-		String htmlLayout = LayoutUtil.fluidRow(
-			LayoutUtil.fluidColumnLoc(8, 0, 12, 0, CASE_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EVENTS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, IMMUNIZATION_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, VACCINATIONS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SORMAS_TO_SORMAS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SMS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, ExternalSurveillanceServiceGateway.EXTERANEL_SURVEILLANCE_TOOL_GATEWAY_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SURVEILLANCE_REPORTS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, DOCUMENTS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, QuarantineOrderDocumentsComponent.QUARANTINE_LOC));
-
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
 		container.setMargin(true);
 		setSubComponent(container);
-		CustomLayout layout = new CustomLayout();
-		layout.addStyleName(CssStyles.ROOT_COMPONENT);
-		layout.setTemplateContents(htmlLayout);
-		layout.setWidth(100, Unit.PERCENTAGE);
-		layout.setHeightUndefined();
-		container.addComponent(layout);
 
-		//		if (getViewMode() == ViewMode.SIMPLE) {
-		//			editComponent = ControllerProvider.getCaseController().getCaseCombinedEditComponent(getCaseRef().getUuid(),
-		//					ViewMode.SIMPLE);
-		//		} else {
 		editComponent = ControllerProvider.getCaseController().getCaseDataEditComponent(getCaseRef().getUuid(), ViewMode.NORMAL);
-		//		}
 
-		// setSubComponent(editComponent);
-		editComponent.setMargin(false);
-		editComponent.setWidth(100, Unit.PERCENTAGE);
-		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
-		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
-		layout.addComponent(editComponent, CASE_LOC);
+		SidePanelLayout layout = new SidePanelLayout(
+			editComponent,
+			TASKS_LOC,
+			SAMPLES_LOC,
+			EVENTS_LOC,
+			IMMUNIZATION_LOC,
+			VACCINATIONS_LOC,
+			SORMAS_TO_SORMAS_LOC,
+			SMS_LOC,
+			ExternalSurveillanceServiceGateway.EXTERANEL_SURVEILLANCE_TOOL_GATEWAY_LOC,
+			SURVEILLANCE_REPORTS_LOC,
+			DOCUMENTS_LOC,
+			QuarantineOrderDocumentsComponent.QUARANTINE_LOC);
+
+		container.addComponent(layout);
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)) {
 			TaskListComponent taskList = new TaskListComponent(TaskContext.CASE, getCaseRef(), caze.getDisease());
 			taskList.addStyleName(CssStyles.SIDE_COMPONENT);
-			layout.addComponent(taskList, TASKS_LOC);
+			layout.addSidePanelComponent(taskList, TASKS_LOC);
 		}
 
 		final boolean externalMessagesEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.MANUAL_EXTERNAL_MESSAGES);
@@ -133,7 +118,7 @@ public class CaseDataView extends AbstractCaseView {
 		if (isSmsServiceSetUp && externalMessagesEnabled && UserProvider.getCurrent().hasUserRight(UserRight.SEND_MANUAL_EXTERNAL_MESSAGES)) {
 			SmsListComponent smsList = new SmsListComponent(getCaseRef(), caze.getPerson());
 			smsList.addStyleName(CssStyles.SIDE_COMPONENT);
-			layout.addComponent(smsList, SMS_LOC);
+			layout.addSidePanelComponent(smsList, SMS_LOC);
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SAMPLES_LAB)
@@ -149,7 +134,7 @@ public class CaseDataView extends AbstractCaseView {
 
 			SampleListComponentLayout sampleListComponentLayout =
 				new SampleListComponentLayout(sampleList, I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesCase));
-			layout.addComponent(sampleListComponentLayout, SAMPLES_LOC);
+			layout.addSidePanelComponent(sampleListComponentLayout, SAMPLES_LOC);
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)) {
@@ -160,7 +145,7 @@ public class CaseDataView extends AbstractCaseView {
 			EventListComponent eventList = new EventListComponent(getCaseRef());
 			eventList.addStyleName(CssStyles.SIDE_COMPONENT);
 			eventLayout.addComponent(eventList);
-			layout.addComponent(eventLayout, EVENTS_LOC);
+			layout.addSidePanelComponent(eventLayout, EVENTS_LOC);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_VIEW)
@@ -169,10 +154,10 @@ public class CaseDataView extends AbstractCaseView {
 				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
 				final ImmunizationListCriteria immunizationListCriteria =
 					new ImmunizationListCriteria.Builder(caze.getPerson()).wihDisease(caze.getDisease()).build();
-				layout.addComponent(new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria)), IMMUNIZATION_LOC);
+				layout.addSidePanelComponent(new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria)), IMMUNIZATION_LOC);
 			} else {
 				VaccinationListCriteria criteria = new VaccinationListCriteria.Builder(caze.getPerson()).withDisease(caze.getDisease()).build();
-				layout.addComponent(
+				layout.addSidePanelComponent(
 					new SideComponentLayout(
 						new VaccinationListComponent(getCaseRef(), criteria, caze.getResponsibleRegion(), caze.getResponsibleDistrict(), this)),
 					VACCINATIONS_LOC);
@@ -189,7 +174,7 @@ public class CaseDataView extends AbstractCaseView {
 			sormasToSormasListComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
 			sormasToSormasLocLayout.addComponent(sormasToSormasListComponent);
 
-			layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
+			layout.addSidePanelComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
 		}
 
 		ExternalSurveillanceServiceGateway.addComponentToLayout(layout, editComponent, caze);
@@ -202,16 +187,23 @@ public class CaseDataView extends AbstractCaseView {
 			surveillanceReportListLocLayout.setSpacing(false);
 			surveillanceReportListLocLayout.addComponent(surveillanceReportList);
 
-			layout.addComponent(surveillanceReportListLocLayout, SURVEILLANCE_REPORTS_LOC);
+			layout.addSidePanelComponent(surveillanceReportListLocLayout, SURVEILLANCE_REPORTS_LOC);
 		}
 		DocumentListComponent documentList = null;
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)) {
 			documentList = new DocumentListComponent(DocumentRelatedEntityType.CASE, getCaseRef(), UserRight.CASE_EDIT, caze.isPseudonymized());
-			layout.addComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
+			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
-		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, caze, documentList);
+		QuarantineOrderDocumentsComponent.addComponentToLayout(layout.getSidePanelComponent(), caze, documentList);
 
-		setCaseEditPermission(container);
+		if (isCaseEditAllowed(false)) {
+			if (FacadeProvider.getCaseFacade().isArchived(caze.getUuid())
+				&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.EDIT_ARCHIVED_ENTITIES)) {
+				layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+			}
+		} else {
+			layout.disable();
+		}
 	}
 }

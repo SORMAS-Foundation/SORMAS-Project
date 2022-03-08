@@ -28,6 +28,8 @@ import java.util.stream.Stream;
 
 import javax.naming.CannotProceedException;
 
+import org.apache.commons.lang3.ArrayUtils;
+
 import com.vaadin.event.Action.Notifier;
 import com.vaadin.event.ShortcutAction.KeyCode;
 import com.vaadin.server.Page;
@@ -825,5 +827,16 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	public void setDirty(boolean dirty) {
 		this.dirty = dirty;
+	}
+
+	public void setEditable(boolean editable, String... buttonsExcepted) {
+		wrappedComponent.setEnabled(editable);
+
+		for (int i = 0; i < buttonsPanel.getComponentCount(); i++) {
+			Component button = buttonsPanel.getComponent(i);
+			if (!ArrayUtils.contains(buttonsExcepted, button.getId())) {
+				button.setEnabled(editable);
+			}
+		}
 	}
 }

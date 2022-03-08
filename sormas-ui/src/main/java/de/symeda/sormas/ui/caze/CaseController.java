@@ -131,6 +131,7 @@ import de.symeda.sormas.ui.therapy.TherapyView;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
@@ -1004,7 +1005,7 @@ public class CaseController {
 					});
 
 			} else {
-				bulkEdit(
+				int changedCases = bulkEdit(
 					selectedCases,
 					updatedBulkEditData,
 					diseaseChange,
@@ -1016,14 +1017,21 @@ public class CaseController {
 
 				popupWindow.close();
 				navigateToIndex();
-				Notification.show(I18nProperties.getString(Strings.messageCasesEdited), Type.HUMANIZED_MESSAGE);
+
+				if (changedCases == selectedCases.size()) {
+					Notification.show(I18nProperties.getString(Strings.messageCasesEdited), Type.HUMANIZED_MESSAGE);
+				} else {
+					Notification.show(
+						String.format(I18nProperties.getString(Strings.messageCasesBulkEdited), selectedCases.size(), changedCases),
+						Type.HUMANIZED_MESSAGE);
+				}
 			}
 		});
 
 		editView.addDiscardListener(() -> popupWindow.close());
 	}
 
-	private void bulkEdit(
+	private int bulkEdit(
 		Collection<? extends CaseIndexDto> selectedCases,
 		CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,
@@ -1033,7 +1041,7 @@ public class CaseController {
 		boolean surveillanceOfficerChange,
 		CaseFacade caseFacade) {
 
-		caseFacade.saveBulkCase(
+		return caseFacade.saveBulkCase(
 			selectedCases.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList()),
 			updatedCaseBulkEditData,
 			diseaseChange,
@@ -1123,38 +1131,13 @@ public class CaseController {
 
 		// Initialize 'Archive' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_ARCHIVE)) {
-			boolean archived = FacadeProvider.getCaseFacade().isArchived(caze.getUuid());
-			Button archiveCaseButton = ButtonHelper.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {
-				if (editView.isModified()) {
-					editView.commit();
-				}
-
-				if (archived) {
-					ControllerProvider.getArchiveController()
-						.dearchiveEntity(
-							caze,
-							FacadeProvider.getCaseFacade(),
-							Strings.headingDearchiveCase,
-							Strings.confirmationDearchiveCase,
-							Strings.entityCase,
-							Strings.messageCaseDearchived,
-							() -> navigateToView(CaseDataView.VIEW_NAME, caze.getUuid(), null));
-				} else {
-					ControllerProvider.getArchiveController()
-						.archiveEntity(
-							caze,
-							FacadeProvider.getCaseFacade(),
-							Strings.headingArchiveCase,
-							Strings.confirmationArchiveCase,
-							Strings.entityCase,
-							Strings.messageCaseArchived,
-							() -> navigateToView(CaseDataView.VIEW_NAME, caze.getUuid(), null));
-				}
-
-			}, ValoTheme.BUTTON_LINK);
-
-			editView.getButtonsPanel().addComponentAsFirst(archiveCaseButton);
-			editView.getButtonsPanel().setComponentAlignment(archiveCaseButton, Alignment.BOTTOM_LEFT);
+			ControllerProvider.getArchiveController()
+				.addArchivingButton(
+					caze,
+					FacadeProvider.getCaseFacade(),
+					CoreEntityArchiveMessages.CASE,
+					editView,
+					() -> navigateToView(CaseDataView.VIEW_NAME, caze.getUuid(), null));
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_REFER_FROM_POE) && caze.checkIsUnreferredPortHealthCase()) {

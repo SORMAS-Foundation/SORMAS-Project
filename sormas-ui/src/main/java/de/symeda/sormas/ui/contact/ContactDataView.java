@@ -16,7 +16,6 @@ package de.symeda.sormas.ui.contact;
 
 import com.vaadin.server.Page;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
@@ -52,11 +51,12 @@ import de.symeda.sormas.ui.samples.sampleLink.SampleListComponent;
 import de.symeda.sormas.ui.samples.sampleLink.SampleListComponentLayout;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
+import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.SidePanelLayout;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
@@ -90,44 +90,35 @@ public class ContactDataView extends AbstractContactView {
 
 		setHeightUndefined();
 
-		String htmlLayout = LayoutUtil.fluidRow(
-			LayoutUtil.fluidColumnLoc(8, 0, 12, 0, EDIT_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASE_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, CASE_BUTTONS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EVENTS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SAMPLES_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, IMMUNIZATION_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, VACCINATIONS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SORMAS_TO_SORMAS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, DOCUMENTS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, QuarantineOrderDocumentsComponent.QUARANTINE_LOC));
+		ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
+
+		editComponent = ControllerProvider.getContactController()
+			.getContactDataEditComponent(getContactRef().getUuid(), ViewMode.NORMAL, contactDto.isPseudonymized());
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
 		container.setMargin(true);
 		setSubComponent(container);
-		CustomLayout layout = new CustomLayout();
-		layout.addStyleName(CssStyles.ROOT_COMPONENT);
-		layout.setTemplateContents(htmlLayout);
-		layout.setWidth(100, Unit.PERCENTAGE);
-		layout.setHeightUndefined();
+
+		SidePanelLayout layout = new SidePanelLayout(
+			editComponent,
+			CASE_LOC,
+			CASE_BUTTONS_LOC,
+			EVENTS_LOC,
+			TASKS_LOC,
+			SAMPLES_LOC,
+			IMMUNIZATION_LOC,
+			VACCINATIONS_LOC,
+			SORMAS_TO_SORMAS_LOC,
+			DOCUMENTS_LOC,
+			QuarantineOrderDocumentsComponent.QUARANTINE_LOC);
+
 		container.addComponent(layout);
-
-		ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
-
-		editComponent = ControllerProvider.getContactController()
-			.getContactDataEditComponent(getContactRef().getUuid(), ViewMode.NORMAL, contactDto.isPseudonymized());
-		editComponent.setMargin(false);
-		editComponent.setWidth(100, Unit.PERCENTAGE);
-		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
-		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
-		layout.addComponent(editComponent, EDIT_LOC);
 
 		CaseDataDto caseDto = null;
 		if (contactDto.getCaze() != null) {
 			caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(contactDto.getCaze().getUuid());
-			layout.addComponent(createCaseInfoLayout(caseDto), CASE_LOC);
+			layout.addSidePanelComponent(createCaseInfoLayout(caseDto), CASE_LOC);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_REASSIGN_CASE)) {
@@ -205,13 +196,13 @@ public class ContactDataView extends AbstractContactView {
 				}
 			});
 
-			layout.addComponent(buttonsLayout, CASE_BUTTONS_LOC);
+			layout.addSidePanelComponent(buttonsLayout, CASE_BUTTONS_LOC);
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)) {
 			TaskListComponent taskList = new TaskListComponent(TaskContext.CONTACT, getContactRef(), contactDto.getDisease());
 			taskList.addStyleName(CssStyles.SIDE_COMPONENT);
-			layout.addComponent(taskList, TASKS_LOC);
+			layout.addSidePanelComponent(taskList, TASKS_LOC);
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
@@ -226,7 +217,7 @@ public class ContactDataView extends AbstractContactView {
 
 			SampleListComponentLayout sampleListComponentLayout =
 				new SampleListComponentLayout(sampleList, I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesContact));
-			layout.addComponent(sampleListComponentLayout, SAMPLES_LOC);
+			layout.addSidePanelComponent(sampleListComponentLayout, SAMPLES_LOC);
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
@@ -239,7 +230,7 @@ public class ContactDataView extends AbstractContactView {
 			eventList.addStyleName(CssStyles.SIDE_COMPONENT);
 			eventsLayout.addComponent(eventList);
 
-			layout.addComponent(eventsLayout, EVENTS_LOC);
+			layout.addSidePanelComponent(eventsLayout, EVENTS_LOC);
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.IMMUNIZATION_MANAGEMENT)
@@ -248,11 +239,11 @@ public class ContactDataView extends AbstractContactView {
 				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
 				final ImmunizationListCriteria immunizationListCriteria =
 					new ImmunizationListCriteria.Builder(contactDto.getPerson()).wihDisease(contactDto.getDisease()).build();
-				layout.addComponent(new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria)), IMMUNIZATION_LOC);
+				layout.addSidePanelComponent(new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria)), IMMUNIZATION_LOC);
 			} else {
 				VaccinationListCriteria criteria =
 					new VaccinationListCriteria.Builder(contactDto.getPerson()).withDisease(contactDto.getDisease()).build();
-				layout.addComponent(
+				layout.addSidePanelComponent(
 					new SideComponentLayout(
 						new VaccinationListComponent(
 							getContactRef(),
@@ -274,19 +265,27 @@ public class ContactDataView extends AbstractContactView {
 			sormasToSormasListComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
 			sormasToSormasLocLayout.addComponent(sormasToSormasListComponent);
 
-			layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
+			layout.addSidePanelComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
 		}
 
 		DocumentListComponent documentList = null;
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)) {
 			documentList =
 				new DocumentListComponent(DocumentRelatedEntityType.CONTACT, getContactRef(), UserRight.CONTACT_EDIT, contactDto.isPseudonymized());
-			layout.addComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
+			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
-		QuarantineOrderDocumentsComponent.addComponentToLayout(layout, contactDto, documentList);
+		QuarantineOrderDocumentsComponent.addComponentToLayout(layout.getSidePanelComponent(), contactDto, documentList);
 
-		setContactEditPermission(container);
+		if (isContactEditAllowed(false)) {
+			if (FacadeProvider.getContactFacade().isArchived(contactDto.getUuid())
+				&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.EDIT_ARCHIVED_ENTITIES)) {
+				layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+			}
+		} else {
+			layout.disable();
+		}
+
 	}
 
 	private CaseInfoLayout createCaseInfoLayout(String caseUuid) {

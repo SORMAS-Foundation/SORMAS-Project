@@ -91,7 +91,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	CaseDataDto getCaseDataByUuid(String uuid);
 
-	CaseDataDto save(@Valid @NotNull CaseDataDto dto, Boolean systemSave) throws ValidationRuntimeException;
+	CaseDataDto save(@Valid @NotNull CaseDataDto dto, boolean systemSave) throws ValidationRuntimeException;
 
 	void setSampleAssociations(ContactReferenceDto sourceContact, CaseReferenceDto cazeRef);
 
@@ -165,7 +165,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	FollowUpPeriodDto calculateFollowUpUntilDate(CaseDataDto caseDto, boolean ignoreOverwrite);
 
-	boolean isCaseEditAllowed(String caseUuid);
+	boolean isCaseEditAllowed(String caseUuid, boolean withArchive);
 
 	boolean hasPositiveLabResult(String caseUuid);
 
@@ -185,7 +185,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	List<String> getUuidsNotShareableWithExternalReportingTools(List<String> caseUuids);
 
-	void saveBulkCase(
+	Integer saveBulkCase(
 		List<String> caseUuidList,
 		@Valid CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,

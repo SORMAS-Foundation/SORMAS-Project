@@ -40,11 +40,11 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinitionFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaService;
-import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
@@ -166,6 +166,9 @@ public class CampaignFacadeEjb
 	public CampaignDto save(@Valid @NotNull CampaignDto dto) {
 		validate(dto);
 		Campaign campaign = fillOrBuildEntity(dto, service.getByUuid(dto.getUuid()), true);
+		if (!service.isEditAllowed(campaign, true)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEntityNotEditable));
+		}
 		service.ensurePersisted(campaign);
 		return toDto(campaign);
 	}
@@ -403,6 +406,13 @@ public class CampaignFacadeEjb
 	@Override
 	public AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid) {
 		return null; // campaigns do not support automatic deletion yet
+	}
+
+	@Override
+	public boolean isCampaignEditAllowed(String caseUuid, boolean withArchive) {
+		Campaign campaign = service.getByUuid(caseUuid);
+
+		return service.isEditAllowed(campaign, withArchive);
 	}
 
 	@LocalBean

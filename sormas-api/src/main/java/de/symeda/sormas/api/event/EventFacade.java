@@ -62,7 +62,7 @@ public interface EventFacade extends CoreFacade<EventDto, EventIndexDto, EventRe
 
 	void archiveAllArchivableEvents(int daysAfterEventsGetsArchived);
 
-	Boolean isEventEditAllowed(String eventUuid);
+	Boolean isEventEditAllowed(String eventUuid, boolean withArchive);
 
 	boolean doesExternalTokenExist(String externalToken, String eventUuid);
 
@@ -87,4 +87,11 @@ public interface EventFacade extends CoreFacade<EventDto, EventIndexDto, EventRe
 	boolean hasRegionAndDistrict(String eventUuid);
 
 	boolean hasAnyEventParticipantWithoutJurisdiction(String eventUuid);
+
+	int saveBulkEvents(
+		List<String> eventUuidList,
+		EventDto updatedTempEvent,
+		boolean eventStatusChange,
+		boolean eventInvestigationStatusChange,
+		boolean eventManagementStatusChange);
 }
