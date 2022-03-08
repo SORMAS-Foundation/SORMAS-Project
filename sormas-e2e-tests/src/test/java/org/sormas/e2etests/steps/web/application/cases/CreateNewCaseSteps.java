@@ -113,8 +113,6 @@ public class CreateNewCaseSteps implements En {
           fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
           fillDateOfReport(date, Locale.ENGLISH);
           fillPlaceDescription(caze.getPlaceDescription());
-
-          System.out.println("Random uuid second user: " + randomUUID_first_user);
         });
 
     When(
@@ -139,8 +137,6 @@ public class CreateNewCaseSteps implements En {
           fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
           fillDateOfReport(date, Locale.ENGLISH);
           fillPlaceDescription(caze.getPlaceDescription());
-
-          System.out.println("Random uuid second user: " + randomUUID_second_user);
         });
 
     When(
@@ -234,9 +230,7 @@ public class CreateNewCaseSteps implements En {
           int rec = Integer.parseInt(record);
           int selectedRecord = 1;
           Integer rec1 = rec - selectedRecord;
-          System.out.println(" --- > " + rec1);
           detailedCasesTableRow = tableRowsData.get(rec1);
-          System.out.println(detailedCasesTableRow);
           softly.assertEquals(
               status,
               detailedCasesTableRow.get(CaseDetailedTableViewHeaders.OUTCOME_OF_CASE.toString()),
