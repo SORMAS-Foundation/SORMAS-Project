@@ -281,14 +281,14 @@ public class TravelEntryFacadeEjb
 			return null;
 		}
 		return new TravelEntryReferenceDto(
-				entity.getUuid(),
-				entity.getExternalId(),
-				entity.getPerson().getFirstName(),
-				entity.getPerson().getLastName());
+			entity.getUuid(),
+			entity.getExternalId(),
+			entity.getPerson().getFirstName(),
+			entity.getPerson().getLastName());
 	}
 
 	@Override
-	protected TravelEntry fillOrBuildEntity(@NotNull TravelEntryDto source, TravelEntry target, boolean checkChangeDate) {
+	protected TravelEntry fillOrBuildEntity(@NotNull TravelEntryDto source, TravelEntry target, boolean checkChangeDate, boolean copyVaccinations) {
 		target = DtoHelper.fillOrBuildEntity(source, target, TravelEntry::new, checkChangeDate);
 
 		target.setPerson(personService.getByReferenceDto(source.getPerson()));

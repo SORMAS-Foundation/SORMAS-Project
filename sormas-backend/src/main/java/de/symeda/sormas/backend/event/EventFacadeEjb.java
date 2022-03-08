@@ -254,7 +254,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validReportDateTime));
 		}
 
-		Event event = fillOrBuildEntity(dto, existingEvent, checkChangeDate);
+		Event event = fillOrBuildEntity(dto, existingEvent, checkChangeDate, true);
 		service.ensurePersisted(event);
 
 		onEventChange(toDto(event), internal);
@@ -1092,7 +1092,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		}
 	}
 
-	public Event fillOrBuildEntity(@NotNull EventDto source, Event target, boolean checkChangeDate) {
+	public Event fillOrBuildEntity(@NotNull EventDto source, Event target, boolean checkChangeDate, boolean copyVaccinations) {
 		target = DtoHelper.fillOrBuildEntity(source, target, Event::new, checkChangeDate);
 
 		target.setEventStatus(source.getEventStatus());

@@ -44,7 +44,6 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinitionFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaService;
-import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
@@ -165,12 +164,12 @@ public class CampaignFacadeEjb
 	@Override
 	public CampaignDto save(@Valid @NotNull CampaignDto dto) {
 		validate(dto);
-		Campaign campaign = fillOrBuildEntity(dto, service.getByUuid(dto.getUuid()), true);
+		Campaign campaign = fillOrBuildEntity(dto, service.getByUuid(dto.getUuid()), true, true);
 		service.ensurePersisted(campaign);
 		return toDto(campaign);
 	}
 
-	public Campaign fillOrBuildEntity(@NotNull CampaignDto source, Campaign target, boolean checkChangeDate) {
+	public Campaign fillOrBuildEntity(@NotNull CampaignDto source, Campaign target, boolean checkChangeDate, boolean copyVaccinations) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, Campaign::new, checkChangeDate);
 

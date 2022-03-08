@@ -63,7 +63,7 @@ import de.symeda.sormas.backend.util.QueryHelper;
 @Stateless(name = "SubcontinentFacade")
 public class SubcontinentFacadeEjb
 	extends
-        AbstractInfrastructureFacadeEjb<Subcontinent, SubcontinentDto, SubcontinentIndexDto, SubcontinentReferenceDto, SubcontinentService, SubcontinentCriteria>
+	AbstractInfrastructureFacadeEjb<Subcontinent, SubcontinentDto, SubcontinentIndexDto, SubcontinentReferenceDto, SubcontinentService, SubcontinentCriteria>
 	implements SubcontinentFacade {
 
 	@EJB
@@ -257,7 +257,11 @@ public class SubcontinentFacadeEjb
 	}
 
 	@Override
-	protected Subcontinent fillOrBuildEntity(@NotNull SubcontinentDto source, Subcontinent target, boolean checkChangeDate) {
+	protected Subcontinent fillOrBuildEntity(
+		@NotNull SubcontinentDto source,
+		Subcontinent target,
+		boolean checkChangeDate,
+		boolean copyVaccinations) {
 		target = DtoHelper.fillOrBuildEntity(source, target, Subcontinent::new, checkChangeDate);
 
 		target.setDefaultName(source.getDefaultName());

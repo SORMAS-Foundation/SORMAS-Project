@@ -90,7 +90,6 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -136,7 +135,7 @@ import de.symeda.sormas.utils.EventParticipantJoins;
 @Stateless(name = "EventParticipantFacade")
 public class EventParticipantFacadeEjb
 	extends
-        AbstractCoreFacadeEjb<EventParticipant, EventParticipantDto, EventParticipantIndexDto, EventParticipantReferenceDto, EventParticipantService, EventParticipantCriteria>
+	AbstractCoreFacadeEjb<EventParticipant, EventParticipantDto, EventParticipantIndexDto, EventParticipantReferenceDto, EventParticipantService, EventParticipantCriteria>
 	implements EventParticipantFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -296,7 +295,7 @@ public class EventParticipantFacadeEjb
 
 		validate(dto);
 
-		EventParticipant entity = fillOrBuildEntity(dto, existingParticipant, checkChangeDate);
+		EventParticipant entity = fillOrBuildEntity(dto, existingParticipant, checkChangeDate, true);
 		service.ensurePersisted(entity);
 
 		if (existingParticipant == null) {
@@ -876,7 +875,11 @@ public class EventParticipantFacadeEjb
 			.orElse(null);
 	}
 
-	public EventParticipant fillOrBuildEntity(@NotNull EventParticipantDto source, EventParticipant target, boolean checkChangeDate) {
+	public EventParticipant fillOrBuildEntity(
+		@NotNull EventParticipantDto source,
+		EventParticipant target,
+		boolean checkChangeDate,
+		boolean copyVaccinations) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, EventParticipant::new, checkChangeDate);
 
