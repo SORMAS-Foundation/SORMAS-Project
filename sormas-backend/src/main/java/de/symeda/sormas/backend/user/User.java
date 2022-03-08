@@ -47,6 +47,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -65,6 +66,7 @@ public class User extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "users";
 	public static final String TABLE_NAME_USERROLES = "users_userroles";
+	public static final String TABLE_NAME_USERRIGHTS = "users_userrights";
 
 	public static final String USER_NAME = "userName";
 	public static final String PASSWORD = "password";
@@ -79,6 +81,7 @@ public class User extends AbstractDomainObject {
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
 	public static final String USER_ROLES = "userRoles";
+	public static final String USER_RIGHTS = "userRights";
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String LABORATORY = "laboratory";
 	public static final String POINT_OF_ENTRY = "pointOfEntry";
@@ -100,6 +103,7 @@ public class User extends AbstractDomainObject {
 	private Location address;
 
 	private Set<UserRole> userRoles;
+	private Set<UserRight> userRights;
 	private JurisdictionLevel jurisdictionLevel;
 
 	private Region region;
@@ -225,6 +229,22 @@ public class User extends AbstractDomainObject {
 	@Column(name = "userrole", nullable = false)
 	public Set<UserRole> getUserRoles() {
 		return userRoles;
+	}
+
+	@ElementCollection(fetch = FetchType.EAGER)
+	@Enumerated(EnumType.STRING)
+	@CollectionTable(name = TABLE_NAME_USERRIGHTS,
+			joinColumns = @JoinColumn(name = "user_id", referencedColumnName = User.ID, nullable = false),
+			uniqueConstraints = @UniqueConstraint(columnNames = {
+					"user_id",
+					"userright" }))
+	@Column(name = "userright", nullable = false)
+	public Set<UserRight> getUserRights() {
+		return userRights;
+	}
+
+	public void setUserRights(Set<UserRight> userRights) {
+		this.userRights = userRights;
 	}
 
 	/**

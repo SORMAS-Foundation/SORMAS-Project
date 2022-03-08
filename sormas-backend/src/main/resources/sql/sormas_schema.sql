@@ -10049,4 +10049,22 @@ ALTER TABLE campaigns_history ADD COLUMN archiveundonereason character varying(5
 
 INSERT INTO schema_version (version_number, comment) VALUES (445, 'CoreAdo: Introduce "end of processing date" #7247');
 
+-- 2022-03-08   -   Replace direct usage of user roles #2804
+CREATE TABLE users_userrights (
+                           user_id bigint NOT NULL,
+                           userright character varying(255) NOT NULL,
+                           FOREIGN KEY (user_id) REFERENCES users(id),
+                           sys_period tstzrange NOT NULL
+);
+
+ALTER TABLE users_userrights OWNER TO sormas_user;
+
+CREATE TABLE users_userrights_history (LIKE users_userrights);
+CREATE TRIGGER versioning_trigger_rights
+    BEFORE INSERT OR UPDATE OR DELETE ON users_userrights
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'users_userrights_history', true);
+ALTER TABLE users_userrights_history OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment) VALUES (446, 'Replace direct usage of user roles #2804');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

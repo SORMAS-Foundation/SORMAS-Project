@@ -48,6 +48,7 @@ import de.symeda.sormas.api.task.TaskJurisdictionFlagsDto;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
@@ -453,7 +454,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 			assignee = contact.getContactOfficer();
 		} else {
 			// 2) A random contact officer from the contact's, contact person's or contact case's district
-			Function<District, User> lookupByDistrict = district -> userService.getRandomUser(district, UserRole.CONTACT_OFFICER);
+			Function<District, User> lookupByDistrict = district -> userService.getRandomUser(district, UserRight.TASK_VIEW);
 			if (contact.getDistrict() != null) {
 				assignee = lookupByDistrict.apply(contact.getDistrict());
 			}
@@ -472,7 +473,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 
 		if (assignee == null) {
 			// 3) Assign a random contact supervisor from the contact's, contact person's or contact case's region
-			Function<Region, User> lookupByRegion = region -> userService.getRandomUser(region, UserRole.CONTACT_SUPERVISOR);
+			Function<Region, User> lookupByRegion = region -> userService.getRandomUser(region, UserRight.TASK_ASSIGN);
 			if (contact.getRegion() != null) {
 				assignee = lookupByRegion.apply(contact.getRegion());
 			}

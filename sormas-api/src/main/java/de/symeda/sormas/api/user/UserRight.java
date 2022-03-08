@@ -21,10 +21,12 @@ import static de.symeda.sormas.api.user.UserRole.ADMIN;
 import static de.symeda.sormas.api.user.UserRole.ADMIN_SUPERVISOR;
 import static de.symeda.sormas.api.user.UserRole.BAG_USER;
 import static de.symeda.sormas.api.user.UserRole.CASE_OFFICER;
+import static de.symeda.sormas.api.user.UserRole.CASE_RESPONSIBLE;
 import static de.symeda.sormas.api.user.UserRole.CASE_SUPERVISOR;
 import static de.symeda.sormas.api.user.UserRole.COMMUNITY_INFORMANT;
 import static de.symeda.sormas.api.user.UserRole.COMMUNITY_OFFICER;
 import static de.symeda.sormas.api.user.UserRole.CONTACT_OFFICER;
+import static de.symeda.sormas.api.user.UserRole.CONTACT_RESPONSIBLE;
 import static de.symeda.sormas.api.user.UserRole.CONTACT_SUPERVISOR;
 import static de.symeda.sormas.api.user.UserRole.DISTRICT_OBSERVER;
 import static de.symeda.sormas.api.user.UserRole.EVENT_OFFICER;
@@ -72,7 +74,8 @@ public enum UserRight {
 			COMMUNITY_INFORMANT,
 			LAB_USER,
 			EVENT_OFFICER,
-			COMMUNITY_OFFICER
+			COMMUNITY_OFFICER,
+			CASE_RESPONSIBLE
 	),
 	CASE_VIEW(
 			ADMIN,
@@ -95,7 +98,8 @@ public enum UserRight {
 			COMMUNITY_INFORMANT,
 			LAB_USER,
 			EVENT_OFFICER,
-			COMMUNITY_OFFICER
+			COMMUNITY_OFFICER,
+			CASE_RESPONSIBLE
 	),
 	CASE_EDIT(
 			ADMIN,
@@ -115,7 +119,8 @@ public enum UserRight {
 			COMMUNITY_INFORMANT,
 			LAB_USER,
 			EVENT_OFFICER,
-			COMMUNITY_OFFICER
+			COMMUNITY_OFFICER,
+			CASE_RESPONSIBLE
 	),
 	CASE_TRANSFER(
 			ADMIN,
@@ -125,7 +130,8 @@ public enum UserRight {
 			ADMIN_SUPERVISOR,
 			SURVEILLANCE_OFFICER,
 			CASE_SUPERVISOR,
-			COMMUNITY_OFFICER
+			COMMUNITY_OFFICER,
+			CASE_RESPONSIBLE
 	),
 	CASE_REFER_FROM_POE(
 			ADMIN,
@@ -699,7 +705,9 @@ public enum UserRight {
 			POE_SUPERVISOR,
 			LAB_USER,
 			SURVEILLANCE_OFFICER,
-			COMMUNITY_OFFICER
+			COMMUNITY_OFFICER,
+			CASE_RESPONSIBLE,
+			CONTACT_RESPONSIBLE
 	),
 	TASK_DELETE(
 			ADMIN,

@@ -2934,8 +2934,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		if (assignee == null) {
 			if (caze.getReportingUser() != null
-				&& (caze.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)
-					|| caze.getReportingUser().getUserRoles().contains(UserRole.ADMIN_SUPERVISOR))) {
+				&& (caze.getReportingUser().getUserRights().contains(UserRight.TASK_ASSIGN))) {
 				// 4) If the case was created by a surveillance supervisor, assign them
 				assignee = caze.getReportingUser();
 			} else {
@@ -2956,12 +2955,23 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	private User getRandomSurveillanceOfficer(District district) {
 
-		return userService.getRandomUser(district, UserRole.SURVEILLANCE_OFFICER);
+		return userService.getRandomUser(district, UserRight.EVENT_CREATE, UserRight.EVENT_VIEW,
+				UserRight.EVENT_EDIT, UserRight.EVENTPARTICIPANT_CREATE, UserRight.EVENTPARTICIPANT_EDIT,
+				UserRight.EVENTPARTICIPANT_IMPORT, UserRight.EVENTPARTICIPANT_VIEW, UserRight.EVENTGROUP_CREATE,
+				UserRight.EVENTGROUP_EDIT, UserRight.EVENTGROUP_LINK);
 	}
 
 	private User getRandomRegionUser(Region region) {
 
-		return userService.getRandomUser(region, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.ADMIN_SUPERVISOR);
+		return userService.getRandomUser(region, UserRight.CASE_CREATE, UserRight.CASE_VIEW, UserRight.CASE_EDIT,
+				UserRight.CASE_TRANSFER, UserRight.CASE_REFER_FROM_POE, UserRight.CASE_INVESTIGATE,
+				UserRight.CASE_CLASSIFY, UserRight.CASE_CHANGE_DISEASE, UserRight.CASE_CHANGE_EPID_NUMBER,
+				UserRight.CONTACT_CREATE, UserRight.CONTACT_VIEW, UserRight.CONTACT_EDIT, UserRight.CONTACT_CONVERT,
+				UserRight.CONTACT_EXPORT, UserRight.CONTACT_REASSIGN_CASE, UserRight.VISIT_EXPORT, UserRight.TASK_CREATE,
+				UserRight.TASK_VIEW, UserRight.TASK_EDIT, UserRight.TASK_ASSIGN, UserRight.TASK_EXPORT, UserRight.EVENT_CREATE,
+				UserRight.EVENT_VIEW, UserRight.EVENT_EDIT, UserRight.EVENT_EXPORT, UserRight.EVENT_ARCHIVE, UserRight.EVENTPARTICIPANT_CREATE,
+				UserRight.EVENTPARTICIPANT_EDIT, UserRight.EVENTPARTICIPANT_VIEW, UserRight.EVENTGROUP_CREATE,
+				UserRight.EVENTGROUP_EDIT, UserRight.EVENTGROUP_LINK);
 	}
 
 	@Override
