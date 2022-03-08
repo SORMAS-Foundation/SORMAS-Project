@@ -81,6 +81,7 @@ public class CreateNewEventSteps implements En {
   }
 
   private Event collectEventUuid() {
+      webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 30);
     return Event.builder().uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT)).build();
   }
 

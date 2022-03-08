@@ -360,7 +360,7 @@ public class ContactDirectorySteps implements En {
   private void openContactFromResultsByUUID(String uuid) {
     By uuidLocator = By.cssSelector(String.format(CONTACT_RESULTS_UUID_LOCATOR, uuid));
     webDriverHelpers.clickOnWebElementBySelector((uuidLocator));
-    webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
+    webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 40);
   }
 
   private void fillExposure(Exposure exposureData) {
