@@ -4,7 +4,14 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 
+import de.symeda.sormas.api.location.LocationDto;
+import de.symeda.sormas.api.person.OccupationType;
+import de.symeda.sormas.api.person.PersonAddressType;
+import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -170,5 +177,48 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(new Long(3), evdBurden.getCaseCount());
 		assertEquals(new Long(1), evdBurden.getPreviousCaseCount());
 		assertEquals(rdcf.district.getCaption(), evdBurden.getLastReportedDistrictName());
+	}
+
+	@Test
+	public void testGetCasesForDashboardPerPerson() {
+
+		TestDataCreator.RDCFEntities rdcf = creator.createRDCFEntities();
+		UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
+
+		PersonDto undefinedPerson = creator.createPerson();
+		CaseDataDto caze = creator.createCase(user.toReference(), undefinedPerson.toReference(), Disease.CORONAVIRUS, CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING, new Date(), rdcf);
+		creator.createCase(user.toReference(), undefinedPerson.toReference(), Disease.CORONAVIRUS, CaseClassification.SUSPECT,
+			InvestigationStatus.PENDING, new Date(), rdcf);
+
+		createCasesForPersonWithCondition(PresentCondition.ALIVE, user.toReference(), rdcf, 2);
+		createCasesForPersonWithCondition(PresentCondition.DEAD, user.toReference(), rdcf, 3);
+		createCasesForPersonWithCondition(PresentCondition.BURIED, user.toReference(), rdcf, 2);
+		createCasesForPersonWithCondition(PresentCondition.UNKNOWN, user.toReference(), rdcf, 4);
+
+		DashboardCriteria dashboardCriteria = new DashboardCriteria().region(caze.getResponsibleRegion())
+			.district(caze.getDistrict())
+			.disease(caze.getDisease())
+			.newCaseDateType(NewCaseDateType.MOST_RELEVANT)
+			.dateBetween(DateHelper.subtractDays(new Date(), 1), DateHelper.addDays(new Date(), 1));
+
+		Map<PresentCondition, Integer> dashboardCaseDtos = getDashboardFacade().getCasesCountPerPersonCondition(dashboardCriteria);
+		assertEquals(4, dashboardCaseDtos.size());
+		assertEquals(2, dashboardCaseDtos.get(PresentCondition.ALIVE).intValue());
+		assertEquals(3, dashboardCaseDtos.get(PresentCondition.DEAD).intValue());
+		assertEquals(2, dashboardCaseDtos.get(PresentCondition.BURIED).intValue());
+		assertEquals(6, dashboardCaseDtos.get(PresentCondition.UNKNOWN).intValue());
+	}
+
+	private void createCasesForPersonWithCondition(PresentCondition presentCondition, UserReferenceDto userReferenceDto,
+		TestDataCreator.RDCFEntities rdcf, int nrOfCases){
+		PersonDto buriedPerson = creator.createPerson("James Smith", presentCondition.name(), p -> {
+			p.setPresentCondition(presentCondition);
+		});
+
+		for(int i=0 ; i<nrOfCases; i++){
+			creator.createCase(userReferenceDto, buriedPerson.toReference(), Disease.CORONAVIRUS, CaseClassification.NOT_CLASSIFIED,
+				InvestigationStatus.PENDING, new Date(), rdcf);
+		}
 	}
 }
