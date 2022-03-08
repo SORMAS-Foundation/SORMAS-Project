@@ -24,6 +24,7 @@ import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.
 import cucumber.api.java8.En;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.TravelEntry;
@@ -83,7 +84,7 @@ public class CreateNewTravelEntrySteps implements En {
     When(
         "I check the created data is correctly displayed on Edit travel entry page for DE version",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
+          TimeUnit.SECONDS.sleep(2);
           aTravelEntry = collectTravelEntryData();
           ComparisonHelper.compareEqualFieldsOfEntities(
               aTravelEntry,
@@ -100,7 +101,7 @@ public class CreateNewTravelEntrySteps implements En {
     When(
         "I check the created data is correctly displayed on Edit travel entry person page for DE version",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
+          TimeUnit.SECONDS.sleep(2);
           aTravelEntry = collectTravelEntryPersonData();
           ComparisonHelper.compareEqualFieldsOfEntities(
               aTravelEntry, travelEntry, List.of("firstName", "lastName", "sex"));

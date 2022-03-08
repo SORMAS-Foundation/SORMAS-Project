@@ -1,5 +1,5 @@
 @UI @Sanity @TravelEntries
-Feature: Upload document template
+Feature: Create travel entries
 
   @issue=SORDEV-8266 @env_de
   Scenario: Upload Travel Entry CSV
@@ -23,7 +23,7 @@ Feature: Upload document template
     And I navigate to person tab in Edit travel entry page
     And I check the created data is correctly displayed on Edit travel entry person page for DE version
 
-  @issue=SORDEV-8266 @env_de @dev
+  @issue=SORDEV-8266 @env_de
   Scenario: Create a Travel Entry through case view
     Given I log in as a National User
     And I click on the Cases button from navbar
