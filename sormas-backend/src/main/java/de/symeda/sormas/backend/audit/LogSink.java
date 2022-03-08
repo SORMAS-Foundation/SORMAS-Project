@@ -1,3 +1,18 @@
+/*
+ * SORMAS® - Surveillance Outbreak Response Management & Analysis System
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * This program is free software: you can redistribute it and/or modify
+ * it under the terms of the GNU General Public License as published by
+ * the Free Software Foundation, either version 3 of the License, or
+ * (at your option) any later version.
+ * This program is distributed in the hope that it will be useful,
+ * but WITHOUT ANY WARRANTY; without even the implied warranty of
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
+ * GNU General Public License for more details.
+ * You should have received a copy of the GNU General Public License
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
+ */
+
 package de.symeda.sormas.backend.audit;
 
 import ch.qos.logback.classic.LoggerContext;
@@ -10,9 +25,13 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.nio.file.InvalidPathException;
 
+/**
+ * Provides a configurable log sink for the SORMAS audit trail.
+ */
 public class LogSink {
     private static final Logger logger = LoggerFactory.getLogger(LogSink.class);
     private static LogSink instance;
+    private static final String CONFIG_PATH = "/opt/config/audit-logback.xml";
 
     private Logger auditLogger;
 
@@ -35,7 +54,7 @@ public class LogSink {
     public static synchronized LogSink getInstance() {
         if (instance == null) {
             try {
-                instance = new LogSink("/tmp/audit.xml");
+                instance = new LogSink(CONFIG_PATH);
             } catch (MalformedURLException | JoranException e) {
                 logger.error("Could not create auditLogger: %s", e);
             }

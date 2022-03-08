@@ -246,7 +246,6 @@
             <groupId>ch.qos.logback</groupId>
             <artifactId>logback-core</artifactId>
 			<scope>compile</scope>
-            <version>1.2.10</version>
         </dependency>
 
     </dependencies>

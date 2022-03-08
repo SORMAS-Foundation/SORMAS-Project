@@ -187,9 +187,6 @@ public class StartupShutdownService {
 
 	@PostConstruct
 	public void startup() {
-		Logger auditLogger = LogSink.getInstance().getAuditLogger();
-		auditLogger.info("Hello World!");
-
 		checkDatabaseConfig(em);
 
 		logger.info("Initiating automatic database update of main database...");
