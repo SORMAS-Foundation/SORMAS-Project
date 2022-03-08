@@ -125,7 +125,7 @@ Feature: Contact filter functionality
     When I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     And I fill a new contact form for DE version
-    And I click SAVE a new contact
+    And I click SAVE button on Edit Contact Page
     Then I check the created data is correctly displayed on Edit Contact page for DE version
     And I click on BESTÄTIGTER KONTAKT radio button Contact Person tab
     Then I click SAVE button on Edit Contact Page
@@ -169,7 +169,7 @@ Feature: Contact filter functionality
     When I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     And I fill a new contact form for DE version
-    And I click SAVE a new contact
+    And I click SAVE button on Edit Contact Page
     Then I check the created data is correctly displayed on Edit Contact page for DE version
     And I click on BESTÄTIGTER KONTAKT radio button Contact Person tab
     Then I click SAVE button on Edit Contact Page
