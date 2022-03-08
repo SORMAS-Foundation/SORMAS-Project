@@ -19,15 +19,13 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
 import de.symeda.sormas.api.ConfigFacade;
-import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.helpers.NOPLogger;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.io.File;
-import java.net.MalformedURLException;
-import java.nio.file.InvalidPathException;
 
 /**
  * Provides a configurable log sink for the SORMAS audit trail.
@@ -38,36 +36,54 @@ public class LogSink {
 
     private Logger auditLogger;
 
-    private LogSink(String fileName) throws MalformedURLException, JoranException {
-
-
-        if (fileName.endsWith("xml")) {
-            File file = new File(fileName);
-            JoranConfigurator configurator = new JoranConfigurator();
-            LoggerContext context = new LoggerContext();
-            configurator.setContext(context);
-            configurator.doConfigure(file);
-            auditLogger = context.getLogger("Audit");
-        } else {
-            throw new InvalidPathException(fileName, "Please provide an XML file!");
+    private LogSink(String fileName) {
+        if (fileName == null || fileName.equals("")) {
+            setupNopLogger();
+            return;
         }
 
+        File file = new File(fileName);
+        JoranConfigurator configurator = new JoranConfigurator();
+        LoggerContext context = new LoggerContext();
+        configurator.setContext(context);
+
+        try {
+            configurator.doConfigure(file);
+        } catch (JoranException e) {
+            logger.error("Could not setup audit logger: ", e);
+            setupNopLogger();
+            return;
+        }
+        auditLogger = context.getLogger("Audit");
+    }
+
+    /**
+     * Issue a warning and make audit logging a NOP
+     */
+    private void setupNopLogger() {
+        logger.warn("Audit logger is disabled! Using NOP Logger instead!");
+        auditLogger = NOPLogger.NOP_LOGGER;
     }
 
     public static synchronized LogSink getInstance() {
+        String configPath = null;
+
         if (instance == null) {
+            // initialize
             try {
                 ConfigFacade configFacade = (ConfigFacade) new InitialContext().lookup("java:module/ConfigFacade");
-                instance = new LogSink(configFacade.getAuditLoggerConfig());
-            } catch (MalformedURLException | JoranException | NamingException e) {
-                logger.error("Could not create auditLogger: %s", e);
-
+                // happy path
+                configPath = configFacade.getAuditLoggerConfig();
+            } catch (NamingException e) {
+                // constructor in finally block will set up NOPLogger
+                logger.error("Could not lookup ConfigFacade");
+            } finally {
+                instance = new LogSink(configPath);
             }
-
         }
+
         return instance;
     }
-
 
     public Logger getAuditLogger() {
         return auditLogger;

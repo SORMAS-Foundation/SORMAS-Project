@@ -713,7 +713,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	@Override
 	public String getAuditLoggerConfig(){
-		return getProperty(AUDIT_LOGGER_CONFIG,"/opt/config/audit-logback.xml");
+		return getProperty(AUDIT_LOGGER_CONFIG,"");
 	}
 
 	@Override
