@@ -1,7 +1,7 @@
 @UI @Sanity @Case @Symptoms
 Feature: Case symptoms tab e2e test cases
 
-  @issue=SORDEV-5521 @env_main @ignore
+  @issue=SORDEV-5521 @env_main
   Scenario: Fill the symptoms tab
     When API: I create a new person
     Then API: I check that POST call body is "OK"
