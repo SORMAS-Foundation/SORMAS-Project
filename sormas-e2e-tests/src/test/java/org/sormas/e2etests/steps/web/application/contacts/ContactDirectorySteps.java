@@ -139,72 +139,6 @@ public class ContactDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(MORE_BUTTON);
         });
 
-    When(
-        "I apply Contact or Case Region filter to {string} on Contact Directory Page",
-        (String contactOrCaseRegion) -> {
-          webDriverHelpers.selectFromCombobox(CONTACT_REGION_FILTER_COMBOBOX, contactOrCaseRegion);
-        });
-
-    When(
-        "I apply Contact or Case District filter to {string} on Contact Directory Page",
-        (String contactOrCaseDistrict) -> {
-          webDriverHelpers.selectFromCombobox(
-              CONTACT_DISTRICT_FILTER_COMBOBOX, contactOrCaseDistrict);
-        });
-
-    When(
-        "I apply Contact or Case Community filter to {string} on Contact Directory Page",
-        (String contactOrCaseCommunity) -> {
-          webDriverHelpers.selectFromCombobox(
-              CONTACT_COMMUNITY_FILTER_COMBOBOX, contactOrCaseCommunity);
-        });
-
-    When(
-        "I apply Responsible Contact filter to {string} on Contact Directory Page",
-        (String responsibleContact) -> {
-          webDriverHelpers.selectFromCombobox(CONTACT_OFFICER_FILTER_COMBOBOX, responsibleContact);
-        });
-
-    When(
-        "I apply Reported By filter to {string} on Contact Directory Page",
-        (String reportedBy) -> {
-          webDriverHelpers.selectFromCombobox(CONTACT_REPORTED_BY_FILTER_COMBOBOX, reportedBy);
-        });
-
-    When(
-        "I apply Vaccination status filter to {string} on Contact Directory Page",
-        (String vaccinationStatus) -> {
-          webDriverHelpers.selectFromCombobox(
-              CONTACT_VACCINATION_STATUS_FILTER_COMBOBOX, vaccinationStatus);
-        });
-
-    When(
-        "I apply Relationship With Case filter to {string} on Contact Directory Page",
-        (String relationshipWithCase) -> {
-          webDriverHelpers.selectFromCombobox(
-              CONTACT_RELATIONSHIP_WITH_CASE_FILTER_COMBOBOX, relationshipWithCase);
-        });
-
-    When(
-        "I apply Year of birth filter to {string} on Contact Directory Page",
-        (String relationshipWithCase) -> {
-          webDriverHelpers.selectFromCombobox(
-              CONTACT_YEAR_OF_BIRTH_FILTER_COMBOBOX, relationshipWithCase);
-        });
-
-    When(
-        "I apply Month of birth filter to {string} on Contact Directory Page",
-        (String relationshipWithCase) -> {
-          webDriverHelpers.selectFromCombobox(
-              CONTACT_MONTH_OF_BIRTH_FILTER_COMBOBOX, relationshipWithCase);
-        });
-    When(
-        "I apply Day of birth filter to {string} on Contact Directory Page",
-        (String relationshipWithCase) -> {
-          webDriverHelpers.selectFromCombobox(
-              CONTACT_DAY_OF_BIRTH_FILTER_COMBOBOX, relationshipWithCase);
-        });
-
     And(
         "I click on Link to Event from Bulk Actions combobox on Contact Directory Page",
         () -> webDriverHelpers.clickOnWebElementBySelector(BULK_ACTIONS_CONTACT_VALUES));
@@ -246,6 +180,12 @@ public class ContactDirectorySteps implements En {
         (String contactClassification) -> {
           webDriverHelpers.selectFromCombobox(
               CONTACT_CLASSIFICATION_FILTER_COMBOBOX, contactClassification);
+        });
+    Then(
+        "I apply Disease variant filter to {string} on Contact Directory Page",
+        (String diseaseVariant) -> {
+          webDriverHelpers.selectFromCombobox(
+              CONTACT_DISEASE_VARIANT_FILTER_COMBOBOX, diseaseVariant);
         });
     And(
         "I apply Classification of source case filter to {string} on Contact Directory Page",
@@ -319,7 +259,7 @@ public class ContactDirectorySteps implements En {
               webDriverHelpers.clickOnWebElementBySelector(
                   CONTACTS_WITH_NO_QUARANTINE_ORDERED_CHECKBOX);
               break;
-            case ("Ma\u00DFahmen zur Gew\u00E4hrleistung der Versorgung"):
+            case ("Ma\u00DFnahmen zur Gew\u00E4hrleistung der Versorgung"):
               webDriverHelpers.clickOnWebElementBySelector(
                   CONTACTS_WITH_HELP_NEEDED_IN_QUARANTINE_ORDERED_CHECKBOX);
               break;

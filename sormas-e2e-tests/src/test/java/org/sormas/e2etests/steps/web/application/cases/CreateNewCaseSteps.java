@@ -195,6 +195,8 @@ public class CreateNewCaseSteps implements En {
           fillPlaceDescription(caze.getPlaceDescription());
           selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
           fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.GERMAN);
+          webDriverHelpers.selectFromCombobox(
+              CASE_DISEASE_VARIANT_COMBOBOX, "Sequenzierung ausstehend");
 
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_CASE_SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);

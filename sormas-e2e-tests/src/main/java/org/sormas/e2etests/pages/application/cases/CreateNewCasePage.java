@@ -59,4 +59,6 @@ public class CreateNewCasePage {
       By.xpath("//div[contains(@class, 'popupContent')]//div[@id='commit']");
   public static final By ENTER_HOME_ADDRESS_CHECKBOX =
       By.cssSelector("[location='enterHomeAddressNow'] span.v-checkbox");
+  public static final By CASE_DISEASE_VARIANT_COMBOBOX =
+      By.cssSelector(".v-window #diseaseVariant div");
 }
