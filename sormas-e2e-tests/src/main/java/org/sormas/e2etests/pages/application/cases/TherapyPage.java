@@ -10,7 +10,6 @@ public class TherapyPage {
   public static final By ROUTE_SPECIFICATION = By.cssSelector(".popupContent #routeDetails");
   public static final By TYPE_OF_DRUG_HORIZONTAL_CHECKBOX =
       By.cssSelector(".popupContent #typeOfDrug .v-select-option");
-
   public static final By NEW_PRESCRIPTION_BUTTON = By.cssSelector("#prescriptionNewPrescription");
   public static final By PRESCRIPTION_TYPE_COMBOBOX =
       By.cssSelector(".popupContent #prescriptionType div");

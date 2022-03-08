@@ -452,15 +452,16 @@ public class EditEventSteps implements En {
               Paths.get(
                   userDirPath
                       + "/downloads/"
-                      + uuid.substring(0, 6)
+                      + uuid.substring(0, 6).toUpperCase()
                       + "-"
                       + aEventHandout.getDocumentTemplate());
-          assertHelpers.assertWithPoll20Second(
+          assertHelpers.assertWithPoll(
               () ->
                   Assert.assertTrue(
                       Files.exists(path),
                       "Event document was not downloaded. Searched after path: "
-                          + path.toAbsolutePath()));
+                          + path.toAbsolutePath()),
+              120);
         });
   }
 

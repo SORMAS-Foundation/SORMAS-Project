@@ -217,15 +217,16 @@ public class EditContactSteps implements En {
               Paths.get(
                   userDirPath
                       + "/downloads/"
-                      + uuid.substring(0, 6)
+                      + uuid.substring(0, 6).toUpperCase()
                       + "-"
                       + aQuarantineOrder.getDocumentTemplate());
-          assertHelpers.assertWithPoll20Second(
+          assertHelpers.assertWithPoll(
               () ->
                   Assert.assertTrue(
                       Files.exists(path),
                       "Contact document was not downloaded. Path used for check: "
-                          + path.toAbsolutePath()));
+                          + path.toAbsolutePath()),
+              120);
         });
     When(
         "^I click on ([^\"]*) radio button Contact Person tab$",
