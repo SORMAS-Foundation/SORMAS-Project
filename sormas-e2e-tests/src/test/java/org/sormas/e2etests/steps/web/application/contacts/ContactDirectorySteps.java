@@ -27,6 +27,7 @@ import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPag
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
+import static org.sormas.e2etests.steps.web.application.contacts.EditContactSteps.collectedContact;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -123,11 +124,87 @@ public class ContactDirectorySteps implements En {
           webDriverHelpers.fillAndSubmitInWebElement(
               CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, contactUuid);
         });
+
+    When(
+        "I apply Id of last created Contact on Contact Directory Page",
+        () -> {
+          String contactUuid =
+              dataOperations.getPartialUuidFromAssociatedLink(collectedContact.getUuid());
+          webDriverHelpers.fillAndSubmitInWebElement(
+              CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, contactUuid);
+        });
     When(
         "I click on the More button on Contact directory page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(MORE_BUTTON);
         });
+
+    When(
+        "I apply Contact or Case Region filter to {string} on Contact Directory Page",
+        (String contactOrCaseRegion) -> {
+          webDriverHelpers.selectFromCombobox(CONTACT_REGION_FILTER_COMBOBOX, contactOrCaseRegion);
+        });
+
+    When(
+        "I apply Contact or Case District filter to {string} on Contact Directory Page",
+        (String contactOrCaseDistrict) -> {
+          webDriverHelpers.selectFromCombobox(
+              CONTACT_DISTRICT_FILTER_COMBOBOX, contactOrCaseDistrict);
+        });
+
+    When(
+        "I apply Contact or Case Community filter to {string} on Contact Directory Page",
+        (String contactOrCaseCommunity) -> {
+          webDriverHelpers.selectFromCombobox(
+              CONTACT_COMMUNITY_FILTER_COMBOBOX, contactOrCaseCommunity);
+        });
+
+    When(
+        "I apply Responsible Contact filter to {string} on Contact Directory Page",
+        (String responsibleContact) -> {
+          webDriverHelpers.selectFromCombobox(CONTACT_OFFICER_FILTER_COMBOBOX, responsibleContact);
+        });
+
+    When(
+        "I apply Reported By filter to {string} on Contact Directory Page",
+        (String reportedBy) -> {
+          webDriverHelpers.selectFromCombobox(CONTACT_REPORTED_BY_FILTER_COMBOBOX, reportedBy);
+        });
+
+    When(
+        "I apply Vaccination status filter to {string} on Contact Directory Page",
+        (String vaccinationStatus) -> {
+          webDriverHelpers.selectFromCombobox(
+              CONTACT_VACCINATION_STATUS_FILTER_COMBOBOX, vaccinationStatus);
+        });
+
+    When(
+        "I apply Relationship With Case filter to {string} on Contact Directory Page",
+        (String relationshipWithCase) -> {
+          webDriverHelpers.selectFromCombobox(
+              CONTACT_RELATIONSHIP_WITH_CASE_FILTER_COMBOBOX, relationshipWithCase);
+        });
+
+    When(
+        "I apply Year of birth filter to {string} on Contact Directory Page",
+        (String relationshipWithCase) -> {
+          webDriverHelpers.selectFromCombobox(
+              CONTACT_YEAR_OF_BIRTH_FILTER_COMBOBOX, relationshipWithCase);
+        });
+
+    When(
+        "I apply Month of birth filter to {string} on Contact Directory Page",
+        (String relationshipWithCase) -> {
+          webDriverHelpers.selectFromCombobox(
+              CONTACT_MONTH_OF_BIRTH_FILTER_COMBOBOX, relationshipWithCase);
+        });
+    When(
+        "I apply Day of birth filter to {string} on Contact Directory Page",
+        (String relationshipWithCase) -> {
+          webDriverHelpers.selectFromCombobox(
+              CONTACT_DAY_OF_BIRTH_FILTER_COMBOBOX, relationshipWithCase);
+        });
+
     And(
         "I click on Link to Event from Bulk Actions combobox on Contact Directory Page",
         () -> webDriverHelpers.clickOnWebElementBySelector(BULK_ACTIONS_CONTACT_VALUES));
@@ -221,6 +298,43 @@ public class ContactDirectorySteps implements En {
                   CONTACTS_WITH_REDUCED_QUARANTINE_CHECKBOX);
               break;
             case ("Only contacts from other instances"):
+              webDriverHelpers.clickOnWebElementBySelector(CONTACTS_FROM_OTHER_INSTANCES_CHECKBOX);
+              break;
+          }
+        });
+
+    And(
+        "I click {string} checkbox on Contact directory page for DE version",
+        (String checkboxDescription) -> {
+          switch (checkboxDescription) {
+            case ("Quarant\u00E4ne m\u00FCndlich verordnet?"):
+              webDriverHelpers.clickOnWebElementBySelector(
+                  CONTACTS_WITH_QUARANTINE_ORDERED_VERBALLY_CHECKBOX);
+              break;
+            case ("Quarant\u00E4ne schriftlich verordnet?"):
+              webDriverHelpers.clickOnWebElementBySelector(
+                  CONTACTS_WITH_QUARANTINE_ORDERED_BY_OFFICIAL_DOCUMENT_CHECKBOX);
+              break;
+            case ("Keine Quarant\u00E4ne verordnet"):
+              webDriverHelpers.clickOnWebElementBySelector(
+                  CONTACTS_WITH_NO_QUARANTINE_ORDERED_CHECKBOX);
+              break;
+            case ("Ma\u00DFahmen zur Gew\u00E4hrleistung der Versorgung"):
+              webDriverHelpers.clickOnWebElementBySelector(
+                  CONTACTS_WITH_HELP_NEEDED_IN_QUARANTINE_ORDERED_CHECKBOX);
+              break;
+            case ("Nur Kontakte mit hoher Priorit\u00E4t"):
+              webDriverHelpers.clickOnWebElementBySelector(CONTACTS_ONLY_HIGH_PRIOROTY_CHECKBOX);
+              break;
+            case ("Nur Kontakte mit verl\u00E4ngerter Quarant\u00E4ne"):
+              webDriverHelpers.clickOnWebElementBySelector(
+                  CONTACTS_WITH_EXTENDED_QUARANTINE_CHECKBOX);
+              break;
+            case ("Nur Kontakte mit verk\u00FCrzter Quarant\u00E4ne"):
+              webDriverHelpers.clickOnWebElementBySelector(
+                  CONTACTS_WITH_REDUCED_QUARANTINE_CHECKBOX);
+              break;
+            case ("Nur Kontakte von anderen Instanzen"):
               webDriverHelpers.clickOnWebElementBySelector(CONTACTS_FROM_OTHER_INSTANCES_CHECKBOX);
               break;
           }

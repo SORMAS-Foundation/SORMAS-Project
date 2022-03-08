@@ -53,6 +53,8 @@ public class ContactDirectoryPage {
   public static final By CONTACT_RESET_FILTERS_BUTTON = By.cssSelector("[id='actionResetFilters']");
   public static final By CONTACT_DISEASE_FILTER_COMBOBOX =
       By.cssSelector("[id='disease'] [class='v-filterselect-button']");
+  public static final By CONTACT_DISEASE_VARIANT_FILTER_COMBOBOX =
+      By.cssSelector("[id='diseaseVariant'] [class='v-filterselect-button']");
   public static final By CONTACT_CLASSIFICATION_FILTER_COMBOBOX =
       By.cssSelector("[id='contactClassification'] [class='v-filterselect-button']");
   public static final By CONTACT_CASE_CLASSIFICATION_FILTER_COMBOBOX =
@@ -83,4 +85,24 @@ public class ContactDirectoryPage {
   public static final By CONVERTED_TO_CASE_BUTTON = By.id("status-Converted to case");
   public static final By DROPPED_BUTTON = By.id("status-Dropped");
   public static final By BULK_ACTIONS_CONTACT_VALUES = By.id("bulkActions-9");
+  public static final By CONTACT_REGION_FILTER_COMBOBOX =
+      By.cssSelector("[id='region'] [class='v-filterselect-button']");
+  public static final By CONTACT_DISTRICT_FILTER_COMBOBOX =
+      By.cssSelector("[id='district'] [class='v-filterselect-button']");
+  public static final By CONTACT_COMMUNITY_FILTER_COMBOBOX =
+      By.cssSelector("[id='community'] [class='v-filterselect-button']");
+  public static final By CONTACT_OFFICER_FILTER_COMBOBOX =
+      By.cssSelector("[id='contactOfficer'] [class='v-filterselect-button']");
+  public static final By CONTACT_REPORTED_BY_FILTER_COMBOBOX =
+      By.cssSelector("[id='reportingUserRole'] [class='v-filterselect-button']");
+  public static final By CONTACT_VACCINATION_STATUS_FILTER_COMBOBOX =
+      By.cssSelector("[id='reportingUserRole'] [class='v-filterselect-button']");
+  public static final By CONTACT_RELATIONSHIP_WITH_CASE_FILTER_COMBOBOX =
+      By.cssSelector("[id='relationToCase'] [class='v-filterselect-button']");
+  public static final By CONTACT_YEAR_OF_BIRTH_FILTER_COMBOBOX =
+      By.cssSelector("[id='birthdateYYYY'] [class='v-filterselect-button']");
+  public static final By CONTACT_MONTH_OF_BIRTH_FILTER_COMBOBOX =
+      By.cssSelector("[id='birthdateMM'] [class='v-filterselect-button']");
+  public static final By CONTACT_DAY_OF_BIRTH_FILTER_COMBOBOX =
+      By.cssSelector("[id='birthdateDD'] [class='v-filterselect-button']");
 }

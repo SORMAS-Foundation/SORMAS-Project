@@ -45,6 +45,35 @@ public class CreateNewContactSteps implements En {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
+        "^I fill a new contact form for DE version$",
+        () -> {
+          contact = contactService.buildGeneratedContactDE();
+          fillFirstName(contact.getFirstName());
+          fillLastName(contact.getLastName());
+          fillDateOfDateOfBirthDE(contact.getDateOfBirth());
+          selectSex(contact.getSex());
+          fillPrimaryPhoneNumber(contact.getPrimaryPhoneNumber());
+          fillPrimaryEmailAddress(contact.getPrimaryEmailAddress());
+          selectReturningTraveler(contact.getReturningTraveler());
+          fillDateOfReport(contact.getReportDate(), Locale.GERMAN);
+          fillDiseaseOfSourceCase(contact.getDiseaseOfSourceCase());
+          fillCaseIdInExternalSystem(contact.getCaseIdInExternalSystem());
+          selectMultiDayContact();
+          fillDateOfFirstContact(contact.getDateOfFirstContact(), Locale.GERMAN);
+          fillDateOfLastContact(contact.getDateOfLastContact(), Locale.GERMAN);
+          fillCaseOrEventInformation(contact.getCaseOrEventInformation());
+          selectResponsibleRegion(contact.getResponsibleRegion());
+          selectResponsibleDistrict(contact.getResponsibleDistrict());
+          selectResponsibleCommunity(contact.getResponsibleCommunity());
+          selectTypeOfContact(contact.getTypeOfContact());
+          fillAdditionalInformationOnTheTypeOfContact(
+              contact.getAdditionalInformationOnContactType());
+          selectContactCategory(contact.getContactCategory().toUpperCase());
+          fillRelationshipWithCase(contact.getRelationshipWithCase());
+          fillDescriptionOfHowContactTookPlace(contact.getDescriptionOfHowContactTookPlace());
+        });
+
+    When(
         "^I fill a new contact form$",
         () -> {
           contact = contactService.buildGeneratedContact();
@@ -55,12 +84,12 @@ public class CreateNewContactSteps implements En {
           fillPrimaryPhoneNumber(contact.getPrimaryPhoneNumber());
           fillPrimaryEmailAddress(contact.getPrimaryEmailAddress());
           selectReturningTraveler(contact.getReturningTraveler());
-          fillDateOfReport(contact.getReportDate());
+          fillDateOfReport(contact.getReportDate(), Locale.ENGLISH);
           fillDiseaseOfSourceCase(contact.getDiseaseOfSourceCase());
           fillCaseIdInExternalSystem(contact.getCaseIdInExternalSystem());
           selectMultiDayContact();
-          fillDateOfFirstContact(contact.getDateOfFirstContact());
-          fillDateOfLastContact(contact.getDateOfLastContact());
+          fillDateOfFirstContact(contact.getDateOfFirstContact(), Locale.ENGLISH);
+          fillDateOfLastContact(contact.getDateOfLastContact(), Locale.ENGLISH);
           fillCaseOrEventInformation(contact.getCaseOrEventInformation());
           selectResponsibleRegion(contact.getResponsibleRegion());
           selectResponsibleDistrict(contact.getResponsibleDistrict());
@@ -120,6 +149,16 @@ public class CreateNewContactSteps implements En {
         DATE_OF_BIRTH_DAY_COMBOBOX, String.valueOf(localDate.getDayOfMonth()));
   }
 
+  private void fillDateOfDateOfBirthDE(LocalDate localDate) {
+    webDriverHelpers.selectFromCombobox(
+        DATE_OF_BIRTH_YEAR_COMBOBOX, String.valueOf(localDate.getYear()));
+    webDriverHelpers.selectFromCombobox(
+        DATE_OF_BIRTH_MONTH_COMBOBOX,
+        localDate.getMonth().getDisplayName(TextStyle.FULL, Locale.GERMAN));
+    webDriverHelpers.selectFromCombobox(
+        DATE_OF_BIRTH_DAY_COMBOBOX, String.valueOf(localDate.getDayOfMonth()));
+  }
+
   private void selectSex(String sex) {
     webDriverHelpers.selectFromCombobox(SEX_COMBOBOX, sex);
   }
@@ -136,7 +175,10 @@ public class CreateNewContactSteps implements En {
     webDriverHelpers.clickWebElementByText(TYPE_OF_CONTACT_TRAVELER, option);
   }
 
-  private void fillDateOfReport(LocalDate date) {
+  private void fillDateOfReport(LocalDate date, Locale locale) {
+    DateTimeFormatter formatter;
+    if (locale.equals(Locale.GERMAN)) formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    else formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     webDriverHelpers.clearAndFillInWebElement(DATE_OF_REPORT_INPUT, formatter.format(date));
   }
 
@@ -148,7 +190,10 @@ public class CreateNewContactSteps implements En {
     webDriverHelpers.fillInWebElement(CASE_ID_IN_EXTERNAL_SYSTEM_INPUT, externalId);
   }
 
-  private void fillDateOfLastContact(LocalDate date) {
+  private void fillDateOfLastContact(LocalDate date, Locale locale) {
+    DateTimeFormatter formatter;
+    if (locale.equals(Locale.GERMAN)) formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    else formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     webDriverHelpers.fillInWebElement(DATE_OF_LAST_CONTACT_INPUT, formatter.format(date));
   }
 
@@ -194,7 +239,10 @@ public class CreateNewContactSteps implements En {
     webDriverHelpers.clickOnWebElementBySelector(MULTI_DAY_CONTACT_LABEL);
   }
 
-  public void fillDateOfFirstContact(LocalDate date) {
+  public void fillDateOfFirstContact(LocalDate date, Locale locale) {
+    DateTimeFormatter formatter;
+    if (locale.equals(Locale.GERMAN)) formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    else formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     webDriverHelpers.clearAndFillInWebElement(FIRST_DAY_CONTACT_DATE, formatter.format(date));
   }
 }

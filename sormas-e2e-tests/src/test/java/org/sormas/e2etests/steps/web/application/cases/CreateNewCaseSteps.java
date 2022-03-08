@@ -179,6 +179,28 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
+
+    When(
+        "^I create a new case for contact with specific data for DE$",
+        () -> {
+          caze = caseService.buildGeneratedCaseDE();
+          fillDateOfReport(caze.getDateOfReport(), Locale.GERMAN);
+          selectCaseOrigin(caze.getCaseOrigin());
+          fillExternalId(caze.getExternalId());
+          selectResponsibleRegion(caze.getResponsibleRegion());
+          selectResponsibleDistrict(caze.getResponsibleDistrict());
+          selectResponsibleCommunity(caze.getResponsibleCommunity());
+
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          fillPlaceDescription(caze.getPlaceDescription());
+          selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+          fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.GERMAN);
+
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_CASE_SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+        });
     Then(
         "^I click on save case button$",
         () -> {
