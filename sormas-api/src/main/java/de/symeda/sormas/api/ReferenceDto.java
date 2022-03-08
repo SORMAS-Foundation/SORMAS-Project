@@ -46,7 +46,7 @@ public abstract class ReferenceDto implements Serializable, HasUuid, Comparable<
 	}
 
 	public ReferenceDto(String uuid, String caption) {
-		System.out.println("ddddddddddddddddddddddddddddddddddddd>_____vvvvvv____xxx_______xx__ddddddddddddddddddddddddddddddddddddddddddddddddddd");
+		//System.out.println(caption+"  DEBUGGER:  )(*&?YHJKI(*UJKLO");
 		this.uuid = uuid;
 		this.caption = caption;
 	}

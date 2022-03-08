@@ -78,6 +78,7 @@ import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
+import de.symeda.sormas.backend.infrastructure.area.Area;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
@@ -134,6 +135,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	public static final String RESPONSIBLE_REGION = "responsibleRegion";
 	public static final String RESPONSIBLE_DISTRICT = "responsibleDistrict";
 	public static final String RESPONSIBLE_COMMUNITY = "responsibleCommunity";
+	public static final String AREA = "area";
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
@@ -254,10 +256,12 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	private MaternalHistory maternalHistory;
 	private PortHealthInfo portHealthInfo;
 
+	private Area responsibleArea;
 	private Region responsibleRegion;
 	private District responsibleDistrict;
 	private Community responsibleCommunity;
 
+	private Area area;
 	private Region region;
 	private District district;
 	private Community community;
@@ -272,6 +276,7 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 	private Float reportLatLonAccuracy;
 
 	private Date investigatedDate;
+	private Date areaLevelDate;
 	private Date regionLevelDate;
 	private Date nationalLevelDate;
 	private Date districtLevelDate;
@@ -716,6 +721,15 @@ public class Case extends CoreAdo implements SormasToSormasEntity, HasExternalDa
 		this.responsibleCommunity = responsibleCommunity;
 	}
 
+	@ManyToOne(cascade = {})
+	public Area getArea() {
+		return area;
+	}
+
+	public void setArea(Area area) {
+		this.area = area;
+	}
+	
 	@ManyToOne(cascade = {})
 	public Region getRegion() {
 		return region;

@@ -61,6 +61,7 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.area.Area;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -117,6 +118,64 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		return entity;
 	}
 
+	public List<User> getAllByAreaAndUserRoles(Area area, UserRole... userRoles) {
+		return getAllByAreasAndUserRoles(Collections.singletonList(area), Arrays.asList(userRoles), null);
+	}
+
+	public List<User> getAllByAreasAndUserRoles(List<Area> areas, UserRole... userRoles) {
+		return getAllByAreasAndUserRoles(areas, Arrays.asList(userRoles), null);
+	}
+
+	public List<User> getAllByAreaAndUserRolesInJurisdiction(Area area, UserRole... userRoles) {
+		return getAllByAreasAndUserRoles(Collections.singletonList(area), Arrays.asList(userRoles), this::createJurisdictionFilter);
+	}
+	
+	
+	
+	
+
+	/**
+	 * @see #getReferenceList(List, List, List, boolean, boolean, boolean, List) This method is partly a duplication for getReferenceList,
+	 *      but it's still in use for WeeklyReports and messageRecipients where more information of the user is needed
+	 *      and method signatures rely on {@link User}.
+	 */
+	private List<User> getAllByAreasAndUserRoles(
+		List<Area> areas,
+		Collection<UserRole> userRoles,
+		BiFunction<CriteriaBuilder, Root<User>, Predicate> createExtraFilters) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<User> cq = cb.createQuery(getElementClass());
+		Root<User> from = cq.from(getElementClass());
+
+		Predicate filter = createDefaultFilter(cb, from);
+		if (areas != null) {
+			filter = from.get(User.AREA).in(areas);
+		}
+
+		if (userRoles.size() > 0) {
+			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
+			Predicate rolesFilter = joinRoles.in(userRoles);
+			filter = CriteriaBuilderHelper.and(cb, filter, rolesFilter);
+		}
+
+		if (createExtraFilters != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, createExtraFilters.apply(cb, from));
+		}
+
+		if (filter != null) {
+			cq.where(filter);
+		}
+
+		cq.distinct(true).orderBy(cb.asc(from.get(AbstractDomainObject.ID)));
+
+		return em.createQuery(cq).getResultList();
+	}
+	
+	
+	
+	
+
 	public List<User> getAllByRegionAndUserRoles(Region region, UserRole... userRoles) {
 		return getAllByRegionsAndUserRoles(Collections.singletonList(region), Arrays.asList(userRoles), null);
 	}
@@ -128,7 +187,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 	public List<User> getAllByRegionAndUserRolesInJurisdiction(Region region, UserRole... userRoles) {
 		return getAllByRegionsAndUserRoles(Collections.singletonList(region), Arrays.asList(userRoles), this::createJurisdictionFilter);
 	}
-
+	
 	/**
 	 * @see #getReferenceList(List, List, List, boolean, boolean, boolean, List) This method is partly a duplication for getReferenceList,
 	 *      but it's still in use for WeeklyReports and messageRecipients where more information of the user is needed
@@ -434,6 +493,10 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		if (userCriteria.getUserRole() != null) {
 			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
 			filter = CriteriaBuilderHelper.and(cb, filter, joinRoles.in(Arrays.asList(userCriteria.getUserRole())));
+		}
+		if (userCriteria.getArea() != null) {
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(from.join(Case.AREA, JoinType.LEFT).get(Area.UUID), userCriteria.getArea().getUuid()));
 		}
 		if (userCriteria.getRegion() != null) {
 			filter = CriteriaBuilderHelper

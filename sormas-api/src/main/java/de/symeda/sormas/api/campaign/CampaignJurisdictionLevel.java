@@ -16,6 +16,8 @@ public enum CampaignJurisdictionLevel {
 		case NATION:
 		case NONE:
 			return AREA;
+		case AREA:
+			return AREA;
 		case REGION:
 			return REGION;
 		case DISTRICT:

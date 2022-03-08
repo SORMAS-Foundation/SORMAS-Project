@@ -266,7 +266,29 @@ public class UsersView extends AbstractView {
 			filterLayout.addComponent(regionFilter);
 		}
 		
+		districtFilter = ComboBoxHelper.createComboBoxV7();
+		districtFilter.setId(CaseDataDto.DISTRICT);
+/*
+		if (user.getDistrict() == null) {
+			districtFilter.setWidth(140, Unit.PIXELS);
+			districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionFilter.getId()));
+			districtFilter.addValueChangeListener(e -> {
+				DistrictReferenceDto district = (DistrictReferenceDto) e.getProperty().getValue();
+				criteria.district(district);
+				navigateTo(criteria);
+				
+				if (!DataHelper.equal(district, criteria.getDistrict())) {
+					criteria.district(null);
+				}
+
+				criteria.district(district);
+				navigateTo(criteria);
+			});
+			filterLayout.addComponent(districtFilter);
+		}
 		
+		*/
 		
 		districtFilter = ComboBoxHelper.createComboBoxV7();
 		districtFilter.setId(CaseDataDto.DISTRICT);
@@ -279,6 +301,7 @@ public class UsersView extends AbstractView {
 			navigateTo(criteria);
 		});
 		filterLayout.addComponent(districtFilter);
+
 
 		searchField = new TextField();
 		searchField.setId("search");
@@ -354,6 +377,33 @@ public class UsersView extends AbstractView {
 		userRolesFilter.setValue(criteria.getUserRole());
 		areaFilter.setValue(criteria.getArea());
 //work here TODO TONIGHT
+		
+		if (user.getArea() != null && user.getRegion() == null){
+			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByArea(user.getArea().getUuid()));
+			regionFilter.setEnabled(true);
+		} else if (criteria.getArea() != null) {
+			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByArea(criteria.getArea().getUuid()));
+			regionFilter.setEnabled(true);
+		} else {
+			regionFilter.setEnabled(false);
+		}
+		
+		
+		
+		if (user.getRegion() != null && user.getDistrict() == null) {
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(user.getRegion().getUuid()));
+			districtFilter.setEnabled(true);
+		} else if (criteria.getRegion() != null) {
+			districtFilter.addItems(FacadeProvider.getDistrictFacade().getAllActiveByRegion(criteria.getRegion().getUuid()));
+			districtFilter.setEnabled(true);
+		} else {
+			districtFilter.setEnabled(false);
+		}
+
+		
+		
+		/*
+		
 		if (user.getArea() != null && user.getRegion() == null){
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByArea(user.getArea().getUuid()));
 			regionFilter.setEnabled(true);
@@ -367,6 +417,9 @@ public class UsersView extends AbstractView {
 			regionFilter.setEnabled(false);
 			districtFilter.setEnabled(false);
 		}
+		*/
+		
+		
 		regionFilter.setValue(criteria.getRegion());
 		districtFilter.setValue(criteria.getDistrict());
 		searchField.setValue(criteria.getFreeText());

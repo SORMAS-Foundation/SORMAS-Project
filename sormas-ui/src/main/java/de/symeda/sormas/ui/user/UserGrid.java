@@ -108,6 +108,7 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 	}
 
 	public void setLazyDataProvider() {
+		System.out.println("sdafasdfasddfgsdfhsdfg");
 		DataProvider<UserDto, UserCriteria> dataProvider = DataProvider.fromFilteringCallbacks(
 			query -> FacadeProvider.getUserFacade()
 				.getIndexList(
@@ -122,6 +123,7 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 			query -> {
 				return (int) FacadeProvider.getUserFacade().count(query.getFilter().orElse(null));
 			});
+		System.out.println("sdafasdfasdfgasdgvasdfgsdfhsdfg "+dataProvider);
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}
