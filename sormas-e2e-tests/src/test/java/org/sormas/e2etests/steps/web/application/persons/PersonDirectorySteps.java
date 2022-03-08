@@ -311,7 +311,6 @@ public class PersonDirectorySteps implements En {
         "I click on first person in person directory",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(By.cssSelector("[role='gridcell'] a"));
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(EXTERNAL_TOKEN_INPUT);
         });
 
