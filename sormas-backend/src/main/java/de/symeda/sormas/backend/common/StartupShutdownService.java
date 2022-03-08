@@ -54,6 +54,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import de.symeda.sormas.backend.audit.LogSink;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -186,6 +187,8 @@ public class StartupShutdownService {
 
 	@PostConstruct
 	public void startup() {
+		Logger audit = LogSink.getInstance().getAuditLogger();
+		audit.info("Hello World!");
 		checkDatabaseConfig(em);
 
 		logger.info("Initiating automatic database update of main database...");

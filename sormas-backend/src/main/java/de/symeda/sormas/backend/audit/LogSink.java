@@ -18,9 +18,13 @@ package de.symeda.sormas.backend.audit;
 import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.classic.joran.JoranConfigurator;
 import ch.qos.logback.core.joran.spi.JoranException;
+import de.symeda.sormas.api.ConfigFacade;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.nio.file.InvalidPathException;
@@ -31,7 +35,6 @@ import java.nio.file.InvalidPathException;
 public class LogSink {
     private static final Logger logger = LoggerFactory.getLogger(LogSink.class);
     private static LogSink instance;
-    private static final String CONFIG_PATH = "/opt/config/audit-logback.xml";
 
     private Logger auditLogger;
 
@@ -54,10 +57,13 @@ public class LogSink {
     public static synchronized LogSink getInstance() {
         if (instance == null) {
             try {
-                instance = new LogSink(CONFIG_PATH);
-            } catch (MalformedURLException | JoranException e) {
+                ConfigFacade configFacade = (ConfigFacade) new InitialContext().lookup("java:module/ConfigFacade");
+                instance = new LogSink(configFacade.getAuditLoggerConfig());
+            } catch (MalformedURLException | JoranException | NamingException e) {
                 logger.error("Could not create auditLogger: %s", e);
+
             }
+
         }
         return instance;
     }
