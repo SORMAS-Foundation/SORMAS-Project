@@ -113,7 +113,7 @@ public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
 
 	@Override
 	public void deleteSurveillanceReport(String surveillanceReportUuid) {
-		service.delete(service.getByUuid(surveillanceReportUuid));
+		service.deletePermanent(service.getByUuid(surveillanceReportUuid));
 	}
 
 	@Override

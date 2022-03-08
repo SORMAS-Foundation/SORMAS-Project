@@ -122,7 +122,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 		}
 
 		Prescription prescription = service.getByUuid(prescriptionUuid);
-		service.delete(prescription);
+		service.deletePermanent(prescription);
 	}
 
 	@Override
