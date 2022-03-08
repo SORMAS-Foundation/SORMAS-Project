@@ -103,6 +103,9 @@ chmod +x $(date +%F)/server-setup.sh
 * Unzip the ZIP archive (e.g. into you download directory)
 * Open Git Bash and navigate to the setup sub-directory
 
+### Auditing
+You can configure the audit logger of SORMAS by providing a Logback [configuration file](https://logback.qos.ch/manual/configuration.html) and setting the `audit.logger.config` property accordingly. An example is provided in `sormas-base/setup/audit-logback.xml`.
+
 ### Post-Installation Configuration
 
 * Optional: Open ``server-setup.sh`` in a text editor to customize the install paths, database access and ports for the server. The default ports are 6080 (HTTP), 6081 (HTTPS) and 6048 (admin). **Important:** Do not change the name of the database user. The pre-defined name is used in the statements executed in the database.
