@@ -144,27 +144,54 @@ public class EditContactsSteps implements En {
               By.cssSelector(
                   String.format(
                       CONTACT_RESULTS_UUID_LOCATOR, apiState.getCreatedContact().getUuid())));
+          //          log.info("Collecting contact ID");
+          //          String contactId =
+          // webDriverHelpers.getValueFromTableRowUsingTheHeader("Contact ID", 0);
+          //          log.info("Collecting contact disease");
+          //          String contactDisease =
+          //              (webDriverHelpers.getValueFromTableRowUsingTheHeader("Disease",
+          // 0).equals("COVID-19"))
+          //                  ? "CORONAVIRUS"
+          //                  : "Not expected string!";
+          //          log.info("Collecting contact classification");
+          //          String contactClassification =
+          //              (webDriverHelpers
+          //                      .getValueFromTableRowUsingTheHeader("Contact classification", 0)
+          //                      .equals("Unconfirmed contact"))
+          //                  ? "UNCONFIRMED"
+          //                  : "Not expected string!";
+          //          log.info("Collecting contact first name");
+          //          String firstName =
+          //              webDriverHelpers.getValueFromTableRowUsingTheHeader(
+          //                  "First name of contact person", 0);
+          //          log.info("Collecting contact last name");
+          //          String lastName =
+          //              webDriverHelpers.getValueFromTableRowUsingTheHeader("Last name of contact
+          // person", 0);
+
           log.info("Collecting contact ID");
-          String contactId = webDriverHelpers.getValueFromTableRowUsingTheHeader("Contact ID", 0);
+          String contactId =
+              webDriverHelpers.getTextFromWebElement(By.xpath("//tbody/tr[1]//td[2]/a"));
           log.info("Collecting contact disease");
           String contactDisease =
-              (webDriverHelpers.getValueFromTableRowUsingTheHeader("Disease", 0).equals("COVID-19"))
+              (webDriverHelpers
+                      .getTextFromWebElement(By.xpath("//tbody/tr[1]//td[6]"))
+                      .equals("COVID-19"))
                   ? "CORONAVIRUS"
                   : "Not expected string!";
           log.info("Collecting contact classification");
           String contactClassification =
               (webDriverHelpers
-                      .getValueFromTableRowUsingTheHeader("Contact classification", 0)
+                      .getTextFromWebElement(By.xpath("//tbody/tr[1]//td[7]"))
                       .equals("Unconfirmed contact"))
                   ? "UNCONFIRMED"
                   : "Not expected string!";
           log.info("Collecting contact first name");
           String firstName =
-              webDriverHelpers.getValueFromTableRowUsingTheHeader(
-                  "First name of contact person", 0);
+              webDriverHelpers.getTextFromWebElement(By.xpath("//tbody/tr[1]//td[10]"));
           log.info("Collecting contact last name");
           String lastName =
-              webDriverHelpers.getValueFromTableRowUsingTheHeader("Last name of contact person", 0);
+              webDriverHelpers.getTextFromWebElement(By.xpath("//tbody/tr[1]//td[11]"));
 
           softly.assertTrue(
               apiState.getCreatedContact().getUuid().substring(0, 6).equalsIgnoreCase(contactId),
