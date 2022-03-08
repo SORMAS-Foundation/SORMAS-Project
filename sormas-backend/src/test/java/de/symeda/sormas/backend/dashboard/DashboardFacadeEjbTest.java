@@ -6,11 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.person.OccupationType;
-import de.symeda.sormas.api.person.PersonAddressType;
 import de.symeda.sormas.api.person.PresentCondition;
-import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import org.junit.Test;
 
