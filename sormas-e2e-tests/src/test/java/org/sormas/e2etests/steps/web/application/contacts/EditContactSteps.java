@@ -679,7 +679,7 @@ public class EditContactSteps implements En {
         .build();
   }
 
-  public Contact collectComplexContactData() {
+  private Contact collectComplexContactData() {
     String collectedDateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE);
     LocalDate parsedDateOfReport = LocalDate.parse(collectedDateOfReport, formatter);
     String collectedLastDateOfContact = webDriverHelpers.getValueFromWebElement(LAST_CONTACT_DATE);
