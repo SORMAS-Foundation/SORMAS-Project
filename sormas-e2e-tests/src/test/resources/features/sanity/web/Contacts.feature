@@ -56,7 +56,7 @@ Feature: Contacts end to end tests
     And I open the last created UI Contact
     Then I check the created data is correctly displayed on Edit Contact page
 
-  @env_main @ignore @check1
+  @env_main @ignore @check
   Scenario: Source case selected for contact
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
