@@ -266,14 +266,14 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		UserDto user = creator.createUser(rdcf, SURVEILLANCE_SUPERVISOR);
 		String password = getUserFacade().resetPassword(user.getUuid());
 
-		Set<UserRight> validLoginRoles = getUserFacade().getValidLoginUserRights(user.getUserName(), password);
-		assertThat(validLoginRoles, containsInAnyOrder(getUserRoleConfigFacade().getEffectiveUserRights(SURVEILLANCE_SUPERVISOR).toArray(new UserRight[]{})));
+		Set<UserRight> validLoginRights = getUserFacade().getValidLoginRights(user.getUserName(), password);
+		assertThat(validLoginRights, containsInAnyOrder(getUserRoleConfigFacade().getEffectiveUserRights(SURVEILLANCE_SUPERVISOR).toArray(new UserRight[]{})));
 
 		user.setActive(false);
 		getUserFacade().saveUser(user);
 
-		validLoginRoles = getUserFacade().getValidLoginUserRights(user.getUserName(), password);
-		assertThat(validLoginRoles, nullValue());
+		validLoginRights = getUserFacade().getValidLoginRights(user.getUserName(), password);
+		assertThat(validLoginRights, nullValue());
 
 		//Important: release static mock.
 		mockAuthProvider.closeOnDemand();

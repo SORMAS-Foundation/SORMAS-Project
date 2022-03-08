@@ -693,7 +693,7 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	public Set<UserRight> getValidLoginUserRights(String userName, String password) {
+	public Set<UserRight> getValidLoginRights(String userName, String password) {
 
 		User user = userService.getByUserName(userName);
 		if (user != null && user.isActive()) {

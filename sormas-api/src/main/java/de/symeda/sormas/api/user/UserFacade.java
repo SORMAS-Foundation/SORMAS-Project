@@ -86,7 +86,7 @@ public interface UserFacade {
 
 	UserReferenceDto getCurrentUserAsReference();
 
-	Set<UserRight> getValidLoginUserRights(String userName, String password);
+	Set<UserRight> getValidLoginRights(String userName, String password);
 
 	void removeUserAsSurveillanceAndContactOfficer(String userUuid);
 
