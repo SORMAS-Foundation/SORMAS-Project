@@ -76,7 +76,7 @@ public final class DateHelper {
 	}
 
 	public static SimpleDateFormat getLocalDateTimeFormat(Language language) {
-		return new SimpleDateFormat(language.getDateTimeFormat());
+		return new SimpleDateFormat(language.getDateTimeFormat(), language.getLocale());
 	}
 
 	// End of methods to create patterns/date formats that use the system's locale.

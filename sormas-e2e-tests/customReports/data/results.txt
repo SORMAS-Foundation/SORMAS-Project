@@ -7,3 +7,5 @@ Tasks page=8.724/
 Persons page=11.526/
 Contacts Dashboard page=6.935/
 Immunizations page=17.396/
+Samples page=2.355/
+Contacts page=3.61/
