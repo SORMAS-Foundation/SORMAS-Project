@@ -26,6 +26,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_IN
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.web.Event;
 import org.sormas.e2etests.entities.services.EventService;
@@ -36,17 +37,45 @@ public class CreateNewEventSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   protected static Event newEvent;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
+  public static final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
 
   @Inject
   public CreateNewEventSteps(WebDriverHelpers webDriverHelpers, EventService eventService) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
+        "^I create a new event with specific data for DE version$",
+        () -> {
+          newEvent = eventService.buildGeneratedEventDE();
+          fillDateOfReport(newEvent.getReportDate(), Locale.GERMAN);
+          fillStartData(newEvent.getEventDate(), Locale.GERMAN);
+          selectEventStatus(newEvent.getEventStatus());
+          selectEventInvestigationStatusOptions(newEvent.getInvestigationStatus());
+          selectEventInvestigationStatusOptions(
+              newEvent.getInvestigationStatus()); // remove after bug 5547 is fixed the duplication
+          selectEventManagementStatusOption(newEvent.getEventManagementStatus());
+          selectRiskLevel(newEvent.getRiskLevel());
+          selectDisease(newEvent.getDisease());
+          fillTitle(newEvent.getTitle());
+          selectSourceType(newEvent.getSourceType());
+          selectTypeOfPlace(newEvent.getEventLocation());
+          selectResponsibleRegion(newEvent.getRegion());
+          selectResponsibleDistrict(newEvent.getDistrict());
+          selectResponsibleCommunity(newEvent.getCommunity());
+          newEvent =
+              newEvent.toBuilder()
+                  .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+                  .build();
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(NEW_EVENT_CREATED_DE_MESSAGE);
+        });
+
+    When(
         "^I create a new event with specific data$",
         () -> {
           newEvent = eventService.buildGeneratedEvent();
-          fillDateOfReport(newEvent.getReportDate());
-          fillStartData(newEvent.getEventDate());
+          fillDateOfReport(newEvent.getReportDate(), Locale.ENGLISH);
+          fillStartData(newEvent.getEventDate(), Locale.ENGLISH);
           selectEventStatus(newEvent.getEventStatus());
           selectEventInvestigationStatusOptions(newEvent.getInvestigationStatus());
           selectEventInvestigationStatusOptions(
@@ -97,8 +126,10 @@ public class CreateNewEventSteps implements En {
         EVENT_MANAGEMENT_STATUS_OPTIONS, eventManagementStatusOption);
   }
 
-  private void fillStartData(LocalDate date) {
-    webDriverHelpers.fillInWebElement(START_DATA_INPUT, DATE_FORMATTER.format(date));
+  private void fillStartData(LocalDate date, Locale locale) {
+    if (locale.equals(Locale.GERMAN))
+      webDriverHelpers.fillInWebElement(START_DATA_INPUT, DATE_FORMATTER_DE.format(date));
+    else webDriverHelpers.fillInWebElement(START_DATA_INPUT, DATE_FORMATTER.format(date));
   }
 
   private void selectEventInvestigationStatusOptions(String eventInvestigationStatusOption) {
@@ -131,8 +162,10 @@ public class CreateNewEventSteps implements En {
         SOURCE_INSTITUTIONAL_PARTNER_COMBOBOX, institutionalPartner);
   }
 
-  private void fillDateOfReport(LocalDate date) {
-    webDriverHelpers.fillInWebElement(REPORT_DATE_INPUT, DATE_FORMATTER.format(date));
+  private void fillDateOfReport(LocalDate date, Locale locale) {
+    if (locale.equals(Locale.GERMAN))
+      webDriverHelpers.fillInWebElement(REPORT_DATE_INPUT, DATE_FORMATTER_DE.format(date));
+    else webDriverHelpers.fillInWebElement(REPORT_DATE_INPUT, DATE_FORMATTER.format(date));
   }
 
   private void selectResponsibleRegion(String selectResponsibleRegion) {
