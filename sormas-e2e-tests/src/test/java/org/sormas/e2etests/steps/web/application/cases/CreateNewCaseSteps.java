@@ -92,7 +92,7 @@ public class CreateNewCaseSteps implements En {
     UUID randomUUID_second_user = UUID.randomUUID();
 
     When(
-        "I fill new case with for one person with specified date",
+        "I fill new case with for one person with specified date for month ago",
         () -> {
           LocalDate date = LocalDate.now().minusMonths(1);
           caze = caseService.buildGeneratedCaseForOnePerson(firstName, lastName, dateOfBirth);
@@ -116,7 +116,7 @@ public class CreateNewCaseSteps implements En {
         });
 
     When(
-        "I fill second new case with for one person with specified date",
+        "I fill second new case with for one person with specified date for present day",
         () -> {
           LocalDate date = LocalDate.now();
           caze = caseService.buildGeneratedCaseForOnePerson(firstName, lastName, dateOfBirth);
@@ -140,11 +140,9 @@ public class CreateNewCaseSteps implements En {
         });
 
     When(
-        "I click on save case button and confirm Pick person in Case",
+        "I confirm Pick person in Case",
         () -> {
           String expectedTitle = "Pick or create person";
-          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           String checkPopupTitle =
               webDriverHelpers.getTextFromWebElement(PICK_OR_CREATE_PERSON_TITLE);
           softly.assertEquals(
@@ -156,7 +154,6 @@ public class CreateNewCaseSteps implements En {
     When(
         "I filter Cases by created person name",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.fillInWebElement(
               PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT, firstName + " " + lastName);
           webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
@@ -202,7 +199,7 @@ public class CreateNewCaseSteps implements En {
         });
 
     When(
-        "I back to the cases list",
+        "I back to the cases list from edit case",
         () -> {
           webDriverHelpers.scrollToElement(BACK_TO_THE_CASES_LIST_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(BACK_TO_THE_CASES_LIST_BUTTON);
@@ -219,23 +216,6 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
           TimeUnit.SECONDS.sleep(2); // Wait for filter
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
-          webDriverHelpers.waitForPageLoaded();
-        });
-
-    When(
-        "I check if created user is on filtered list with ([^\"]*) status as a ([^\"]*) record in the table",
-        (String status, String record) -> {
-          List<Map<String, String>> tableRowsData = getTableRowsData();
-          Map<String, String> detailedCasesTableRow;
-          int rec = Integer.parseInt(record);
-          int selectedRecord = 1;
-          Integer rec1 = rec - selectedRecord;
-          detailedCasesTableRow = tableRowsData.get(rec1);
-          softly.assertEquals(
-              status,
-              detailedCasesTableRow.get(CaseDetailedTableViewHeaders.OUTCOME_OF_CASE.toString()),
-              "Outcome of case status is invalid");
-          softly.assertAll();
         });
 
     When(
@@ -256,7 +236,7 @@ public class CreateNewCaseSteps implements En {
         });
 
     When(
-        "I check if created user is on filtered list with ([^\"]*) status",
+        "I check if created person is on filtered list with ([^\"]*) status",
         (String status) -> {
           List<Map<String, String>> tableRowsData = getTableRowsData();
           Map<String, String> detailedCasesTableRow = tableRowsData.get(0);
@@ -268,10 +248,9 @@ public class CreateNewCaseSteps implements En {
         });
 
     When(
-        "I filter Persons by created person name",
+        "I filter Persons by created person name in cases",
         () -> {
-          TimeUnit.SECONDS.sleep(3);
-          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(SEARCH_PERSON_BY_FREE_TEXT);
           webDriverHelpers.fillAndSubmitInWebElement(
               SEARCH_PERSON_BY_FREE_TEXT, firstName + " " + lastName);
           TimeUnit.SECONDS.sleep(3); // wait for filter
