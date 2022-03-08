@@ -3448,7 +3448,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return sampleService.exists((cb, root, cq) -> cb.and(casePredicate, testPositivityPredicate));
 	}
 
-	public Page<CaseFollowUpDto> getCaseFollowUpIndexedList(
+	public Page<CaseFollowUpDto> getCaseFollowUpIndexPage(
 		CaseFollowUpCriteria criteria,
 		Integer offset,
 		Integer size,

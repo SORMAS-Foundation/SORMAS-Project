@@ -187,7 +187,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 		Integer max,
 		List<SortProperty> sortProperties);
 
-	Page<CaseFollowUpDto> getCaseFollowUpIndexedList(
+	Page<CaseFollowUpDto> getCaseFollowUpIndexPage(
 		@NotNull CaseFollowUpCriteria criteria,
 		Integer offset,
 		Integer max,

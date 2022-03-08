@@ -157,12 +157,12 @@ public class CaseResource extends EntityDtoResource {
 
 	@POST
 	@Path("/caseFollowUpIndexList")
-	public Page<CaseFollowUpDto> getCaseFollowUpIndexedList(
+	public Page<CaseFollowUpDto> getCaseFollowUpIndexList(
 		@RequestBody CriteriaWithSorting<CaseFollowUpCriteria> criteriaWithSorting,
 		@QueryParam("offset") int offset,
 		@QueryParam("size") int size) {
 		return FacadeProvider.getCaseFacade()
-			.getCaseFollowUpIndexedList(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
+			.getCaseFollowUpIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
 
 	@GET
