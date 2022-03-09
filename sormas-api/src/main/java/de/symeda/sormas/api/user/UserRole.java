@@ -132,7 +132,6 @@ public enum UserRole
 			NotificationType.VISIT_COMPLETED,
 			NotificationType.EVENT_PARTICIPANT_CASE_CLASSIFICATION_CONFIRMED)),
 	CASE_OFFICER(false, true, false, false, JurisdictionLevel.DISTRICT, Collections.emptyList(), Collections.emptyList()),
-	CASE_RESPONSIBLE(false, true, false, false, JurisdictionLevel.DISTRICT, Collections.emptyList(), Collections.emptyList()),
 	CONTACT_SUPERVISOR(true,
 		false,
 		false,

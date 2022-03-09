@@ -453,8 +453,8 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 			// 1) The contact officer that is responsible for the contact
 			assignee = contact.getContactOfficer();
 		} else {
-			// 2) A random contact officer from the contact's, contact person's or contact case's district
-			Function<District, User> lookupByDistrict = district -> userService.getRandomUser(district, UserRight.TASK_VIEW);
+			// 2) A random user with user right CONTACT_RESPONSIBLE from the contact's, contact person's or contact case's district
+			Function<District, User> lookupByDistrict = district -> userService.getRandomUser(district, UserRight.CONTACT_RESPONSIBLE);
 			if (contact.getDistrict() != null) {
 				assignee = lookupByDistrict.apply(contact.getDistrict());
 			}
@@ -472,8 +472,8 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		}
 
 		if (assignee == null) {
-			// 3) Assign a random contact supervisor from the contact's, contact person's or contact case's region
-			Function<Region, User> lookupByRegion = region -> userService.getRandomUser(region, UserRight.TASK_ASSIGN);
+			// 3) Assign a random user with user right CONTACT_RESPONSIBLE from the contact's, contact person's or contact case's region
+			Function<Region, User> lookupByRegion = region -> userService.getRandomUser(region, UserRight.CONTACT_RESPONSIBLE);
 			if (contact.getRegion() != null) {
 				assignee = lookupByRegion.apply(contact.getRegion());
 			}

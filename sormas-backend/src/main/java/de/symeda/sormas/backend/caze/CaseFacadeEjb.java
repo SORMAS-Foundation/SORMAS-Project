@@ -2032,11 +2032,11 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				} else {
 					User survOff = null;
 					if (caze.getResponsibleDistrict() != null) {
-						survOff = getRandomSurveillanceOfficer(caze.getResponsibleDistrict());
+						survOff = getRandomDistrictCaseResponsible(caze.getResponsibleDistrict());
 					}
 
 					if (survOff == null && caze.getDistrict() != null) {
-						survOff = getRandomSurveillanceOfficer(caze.getDistrict());
+						survOff = getRandomDistrictCaseResponsible(caze.getDistrict());
 					}
 
 					caze.setSurveillanceOfficer(survOff);
@@ -2924,12 +2924,12 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			assignee = caze.getSurveillanceOfficer();
 		} else {
 			// 2) A random surveillance officer from the case responsible district
-			assignee = getRandomSurveillanceOfficer(caze.getResponsibleDistrict());
+			assignee = getRandomDistrictCaseResponsible(caze.getResponsibleDistrict());
 		}
 
 		if (assignee == null && caze.getDistrict() != null) {
 			// 3) A random surveillance officer from the case district
-			assignee = getRandomSurveillanceOfficer(caze.getDistrict());
+			assignee = getRandomDistrictCaseResponsible(caze.getDistrict());
 		}
 
 		if (assignee == null) {
@@ -2939,11 +2939,11 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				assignee = caze.getReportingUser();
 			} else {
 				// 5) Assign a random surveillance supervisor from the case responsible region
-				assignee = getRandomRegionUser(caze.getResponsibleRegion());
+				assignee = getRandomRegionCaseResponsible(caze.getResponsibleRegion());
 			}
 			if (assignee == null && caze.getRegion() != null) {
 				// 6) Assign a random surveillance supervisor from the case region
-				assignee = getRandomRegionUser(caze.getRegion());
+				assignee = getRandomRegionCaseResponsible(caze.getRegion());
 			}
 		}
 
@@ -2953,25 +2953,14 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 	}
 
-	private User getRandomSurveillanceOfficer(District district) {
+	private User getRandomDistrictCaseResponsible(District district) {
 
-		return userService.getRandomUser(district, UserRight.EVENT_CREATE, UserRight.EVENT_VIEW,
-				UserRight.EVENT_EDIT, UserRight.EVENTPARTICIPANT_CREATE, UserRight.EVENTPARTICIPANT_EDIT,
-				UserRight.EVENTPARTICIPANT_IMPORT, UserRight.EVENTPARTICIPANT_VIEW, UserRight.EVENTGROUP_CREATE,
-				UserRight.EVENTGROUP_EDIT, UserRight.EVENTGROUP_LINK);
+		return userService.getRandomUser(district, UserRight.CASE_RESPONSIBLE);
 	}
 
-	private User getRandomRegionUser(Region region) {
+	private User getRandomRegionCaseResponsible(Region region) {
 
-		return userService.getRandomUser(region, UserRight.CASE_CREATE, UserRight.CASE_VIEW, UserRight.CASE_EDIT,
-				UserRight.CASE_TRANSFER, UserRight.CASE_REFER_FROM_POE, UserRight.CASE_INVESTIGATE,
-				UserRight.CASE_CLASSIFY, UserRight.CASE_CHANGE_DISEASE, UserRight.CASE_CHANGE_EPID_NUMBER,
-				UserRight.CONTACT_CREATE, UserRight.CONTACT_VIEW, UserRight.CONTACT_EDIT, UserRight.CONTACT_CONVERT,
-				UserRight.CONTACT_EXPORT, UserRight.CONTACT_REASSIGN_CASE, UserRight.VISIT_EXPORT, UserRight.TASK_CREATE,
-				UserRight.TASK_VIEW, UserRight.TASK_EDIT, UserRight.TASK_ASSIGN, UserRight.TASK_EXPORT, UserRight.EVENT_CREATE,
-				UserRight.EVENT_VIEW, UserRight.EVENT_EDIT, UserRight.EVENT_EXPORT, UserRight.EVENT_ARCHIVE, UserRight.EVENTPARTICIPANT_CREATE,
-				UserRight.EVENTPARTICIPANT_EDIT, UserRight.EVENTPARTICIPANT_VIEW, UserRight.EVENTGROUP_CREATE,
-				UserRight.EVENTGROUP_EDIT, UserRight.EVENTGROUP_LINK);
+		return userService.getRandomUser(region, UserRight.CASE_RESPONSIBLE);
 	}
 
 	@Override
