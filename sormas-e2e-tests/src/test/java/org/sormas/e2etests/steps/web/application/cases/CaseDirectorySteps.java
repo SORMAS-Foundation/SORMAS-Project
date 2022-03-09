@@ -208,6 +208,7 @@ public class CaseDirectorySteps implements En {
               CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, partialUuid);
           webDriverHelpers.clickOnWebElementBySelector(
               CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
+
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_RESULT_IN_GRID);
         });
 
