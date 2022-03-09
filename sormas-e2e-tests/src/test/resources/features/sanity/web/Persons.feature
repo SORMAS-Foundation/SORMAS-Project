@@ -20,7 +20,7 @@ Feature: Edit Persons
     Then I click on save button from Edit Person page
     And I check that previous edited person is correctly displayed in Edit Person page
 
-  @issue=SORDEV-8466 @env_main @check
+  @issue=SORDEV-8466 @env_main
   Scenario: Check Filters on Person page work as expected
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -107,7 +107,7 @@ Feature: Edit Persons
     Then I check that an invalid data error message appears
 
      #please address
-    @issue=SORDEV-8469 @env_main @ignore
+    @issue=SORDEV-8469 @env_main @check
   Scenario: Test for navigating through Case, Contact and Immunization cards on Edit Person Page
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
