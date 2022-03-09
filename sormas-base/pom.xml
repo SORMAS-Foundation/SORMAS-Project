@@ -584,10 +584,15 @@
 				<version>${slf4j.version}</version>
 				<scope>provided</scope>
 			</dependency>
-
 			<!-- *** Domain libs END *** -->
 
 			<!-- *** Compile dependencies *** -->
+			<dependency>
+				<groupId>ca.uhn.hapi.fhir</groupId>
+				<artifactId>org.hl7.fhir.r4</artifactId>
+				<version>5.6.36</version>
+				<scope>compile</scope>
+			</dependency>
 
 			<dependency>
 				<groupId>com.googlecode.libphonenumber</groupId>
