@@ -106,7 +106,7 @@ public class FollowUpVisitService {
         .dateOfVisit(LocalDate.now().minusDays(faker.number().numberBetween(1, 10)))
         .timeOfVisit(LocalTime.of(faker.number().numberBetween(10, 23), 30))
         .visitRemarks(faker.book().title())
-        .currentBodyTemperature("36.6")
+        .currentBodyTemperature("36,6")
         .sourceOfBodyTemperature(getRandomTemperature())
         .build();
   }

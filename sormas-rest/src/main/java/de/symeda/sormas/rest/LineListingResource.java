@@ -3,7 +3,6 @@ package de.symeda.sormas.rest;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 import javax.ws.rs.POST;
@@ -24,9 +23,6 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 @Path("/lineListing")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
-@RolesAllowed({
-	"USER",
-	"REST_USER" })
 public class LineListingResource extends EntityDtoResource {
 
 	@POST
