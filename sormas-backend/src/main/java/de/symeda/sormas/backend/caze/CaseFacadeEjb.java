@@ -159,12 +159,9 @@ import de.symeda.sormas.api.person.CauseOfDeath;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.PresentCondition;
-import de.symeda.sormas.api.sample.AdditionalTestDto;
-import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleCriteria;
-import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.ShareTreeCriteria;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
@@ -276,13 +273,9 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
-import de.symeda.sormas.backend.sample.AdditionalTest;
-import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTest;
-import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestService;
 import de.symeda.sormas.backend.sample.Sample;
-import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.share.ExternalShareInfoCountAndLatestDate;
@@ -375,8 +368,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@EJB
 	private PathogenTestService pathogenTestService;
 	@EJB
-	private PathogenTestFacadeEjbLocal sampleTestFacade;
-	@EJB
 	private HospitalizationFacadeEjbLocal hospitalizationFacade;
 	@EJB
 	private EpiDataFacadeEjbLocal epiDataFacade;
@@ -426,8 +417,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 	@EJB
 	private ManualMessageLogService manualMessageLogService;
-	@EJB
-	private AdditionalTestFacadeEjbLocal additionalTestFacade;
 	@EJB
 	private ExternalJournalService externalJournalService;
 	@EJB
@@ -3216,22 +3205,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		List<Sample> samples = sampleService.findBy(new SampleCriteria().caze(otherCase.toReference()), null);
 		for (Sample sample : samples) {
 			if (cloning) {
-				SampleDto newSample = SampleDto.build(sample.getReportingUser().toReference(), leadCase.toReference());
-				DtoHelper.copyDtoValues(newSample, SampleFacadeEjb.toDto(sample), cloning);
-				sampleFacade.saveSample(newSample, false, true, true);
-
-				// 2.2.1 Pathogen Tests
-				for (PathogenTest pathogenTest : sample.getPathogenTests()) {
-					PathogenTestDto newPathogenTest = PathogenTestDto.build(newSample.toReference(), pathogenTest.getLabUser().toReference());
-					DtoHelper.copyDtoValues(newPathogenTest, PathogenTestFacadeEjbLocal.toDto(pathogenTest), cloning);
-					sampleTestFacade.savePathogenTest(newPathogenTest);
-				}
-
-				for (AdditionalTest additionalTest : sample.getAdditionalTests()) {
-					AdditionalTestDto newAdditionalTest = AdditionalTestDto.build(newSample.toReference());
-					DtoHelper.copyDtoValues(newAdditionalTest, AdditionalTestFacadeEjbLocal.toDto(additionalTest), cloning);
-					additionalTestFacade.saveAdditionalTest(newAdditionalTest);
-				}
+				sampleFacade.cloneSampleForCase(sample, leadCase.toReference());
 			} else {
 				// simply move existing entities to the merge target
 				sample.setAssociatedCase(leadCase);
