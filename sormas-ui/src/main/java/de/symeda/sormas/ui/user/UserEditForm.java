@@ -44,6 +44,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserHelper;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -165,7 +166,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
                     districtDto != null ? FacadeProvider.getFacilityFacade().getActiveHospitalsByDistrict(districtDto, false) : null);
             FieldHelper.updateItems(
                     associatedOfficer,
-                    districtDto != null ? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, UserRole.SURVEILLANCE_OFFICER) : null);
+                    districtDto != null ? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, UserRight.CASE_RESPONSIBLE, UserRight.WEEKLYREPORT_CREATE) : null);
             FieldHelper.updateItems(
                     cbPointOfEntry,
                     districtDto != null ? FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(districtDto.getUuid(), false) : null);

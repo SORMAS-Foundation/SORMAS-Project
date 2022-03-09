@@ -208,7 +208,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		}
 
 		ComboBox officerField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.SURVEILLANCE_OFFICER, 140));
-		officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), UserRole.SURVEILLANCE_OFFICER));
+		officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(user.getRegion(), UserRight.CASE_RESPONSIBLE));
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP)) {
 			Field<?> followUpUntilTo = addField(
@@ -497,7 +497,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 							FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(newDistrict.getUuid(), true));
 					}
 
-					officerField.addItems(FacadeProvider.getUserFacade().getUserRefsByDistrict(newDistrict, false, UserRole.SURVEILLANCE_OFFICER));
+					officerField.addItems(FacadeProvider.getUserFacade().getUserRefsByDistrict(newDistrict, UserRight.CASE_RESPONSIBLE));
 				} else {
 					clearAndDisableFields(communityField, pointOfEntryField, facilityField, facilityTypeField, facilityTypeGroupField);
 
@@ -614,7 +614,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 	}
 
 	private void addOfficers(ComboBox officerField, RegionReferenceDto region) {
-		officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, UserRole.SURVEILLANCE_OFFICER));
+		officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(region, UserRight.CASE_RESPONSIBLE));
 	}
 
 	@SuppressWarnings("rawtypes")

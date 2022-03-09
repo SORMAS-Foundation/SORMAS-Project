@@ -156,7 +156,6 @@ public enum UserRole
 			NotificationType.VISIT_COMPLETED,
 			NotificationType.CONTACT_SYMPTOMATIC)),
 	CONTACT_OFFICER(false, true, false, false, JurisdictionLevel.DISTRICT, Collections.emptyList(), Collections.emptyList()),
-	CONTACT_RESPONSIBLE (false, true, false, false, JurisdictionLevel.DISTRICT, Collections.emptyList(), Collections.emptyList()),
 	EVENT_OFFICER(true,
 		false,
 		false,

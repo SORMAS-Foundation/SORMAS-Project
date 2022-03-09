@@ -2114,6 +2114,16 @@ public class ContactFacadeEjb
 		return completeness;
 	}
 
+	private User getRandomDistrictContactResponsible(District district) {
+
+		return userService.getRandomUser(district, UserRight.CONTACT_RESPONSIBLE);
+	}
+
+	public User getRandomRegionContactResponsible(Region region) {
+
+		return userService.getRandomUser(region, UserRight.CONTACT_RESPONSIBLE);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class ContactFacadeEjbLocal extends ContactFacadeEjb {

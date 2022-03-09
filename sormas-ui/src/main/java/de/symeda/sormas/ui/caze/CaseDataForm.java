@@ -1268,7 +1268,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		addValueChangeListener(e -> {
 			diseaseField.addValueChangeListener(new DiseaseChangeListener(diseaseField, getValue().getDisease()));
 
-			FieldHelper.updateOfficersField(surveillanceOfficerField, getValue(), UserRole.SURVEILLANCE_OFFICER);
+			FieldHelper.updateOfficersField(surveillanceOfficerField, getValue(), UserRight.CASE_RESPONSIBLE);
 
 			// Replace classification user if case has been automatically classified
 			if (getValue().getClassificationDate() != null && getValue().getClassificationUser() == null) {
@@ -1751,9 +1751,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 	@Override
 	protected String createHtmlLayout() {
-		return MAIN_HTML_LAYOUT
-			+ (caseFollowUpEnabled ? FOLLOWUP_LAYOUT : "")
-			+ PAPER_FORM_DATES_AND_HEALTH_CONDITIONS_HTML_LAYOUT;
+		return MAIN_HTML_LAYOUT + (caseFollowUpEnabled ? FOLLOWUP_LAYOUT : "") + PAPER_FORM_DATES_AND_HEALTH_CONDITIONS_HTML_LAYOUT;
 	}
 
 	private void setEpidNumberError(TextField epidField, Button assignNewEpidNumberButton, Label epidNumberWarningLabel, String fieldValue) {

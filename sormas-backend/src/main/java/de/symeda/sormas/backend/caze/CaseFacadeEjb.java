@@ -182,7 +182,6 @@ import de.symeda.sormas.api.therapy.TreatmentCriteria;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
@@ -1807,7 +1806,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		District survOffDistrict = newCase.getSurveillanceOfficer() != null ? newCase.getSurveillanceOfficer().getDistrict() : null;
 		if (survOffDistrict == null
 			|| (!survOffDistrict.equals(newCase.getResponsibleDistrict()) && !survOffDistrict.equals(newCase.getDistrict()))) {
-			setResponsibleSurveillanceOfficer(newCase);
+			setCaseResponsible(newCase);
 		}
 
 		updateInvestigationByStatus(existingCase, newCase);
@@ -2015,11 +2014,11 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 	}
 
-	public void setResponsibleSurveillanceOfficer(Case caze) {
+	public void setCaseResponsible(Case caze) {
 		if (featureConfigurationFacade.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.AUTOMATIC_RESPONSIBILITY_ASSIGNMENT)) {
 			District reportingUserDistrict = caze.getReportingUser().getDistrict();
 
-			if (caze.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_OFFICER)
+			if (caze.getReportingUser().getUserRights().contains(UserRight.CASE_RESPONSIBLE)
 				&& (reportingUserDistrict.equals(caze.getResponsibleDistrict()) || reportingUserDistrict.equals(caze.getDistrict()))) {
 				caze.setSurveillanceOfficer(caze.getReportingUser());
 			} else {
@@ -2923,7 +2922,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			// 1) The surveillance officer that is responsible for the case
 			assignee = caze.getSurveillanceOfficer();
 		} else {
-			// 2) A random surveillance officer from the case responsible district
+			// 2) A random user with UserRight.CASE_RESPONSIBLE from the case responsible district
 			assignee = getRandomDistrictCaseResponsible(caze.getResponsibleDistrict());
 		}
 
@@ -2933,8 +2932,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 
 		if (assignee == null) {
-			if (caze.getReportingUser() != null
-				&& (caze.getReportingUser().getUserRights().contains(UserRight.TASK_ASSIGN))) {
+			if (caze.getReportingUser() != null && (caze.getReportingUser().getUserRights().contains(UserRight.TASK_ASSIGN))) {
 				// 4) If the case was created by a surveillance supervisor, assign them
 				assignee = caze.getReportingUser();
 			} else {
