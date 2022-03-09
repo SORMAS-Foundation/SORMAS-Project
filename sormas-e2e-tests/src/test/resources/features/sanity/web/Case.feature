@@ -471,7 +471,7 @@ Feature: Case end to end tests
     And From Symptoms Tab I click on Clear All button
     And I change all symptoms fields to "UNKNOWN" option field and save
     When I am accessing the Symptoms tab using of created case via api
-  And I check the created data that describes Clinical signs and Symptoms are correctly displayed for No or UNKNOWN option in Symptoms tab page
+    And I check the created data that describes Clinical signs and Symptoms are correctly displayed for No or UNKNOWN option in Symptoms tab page
     And From Symptoms Tab I click on Case tab
     Then I click on save case button in Symptoms tab
     And I collect the case person UUID displayed on Edit case page
