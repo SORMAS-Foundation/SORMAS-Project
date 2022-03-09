@@ -112,11 +112,19 @@ public class NavBarSteps implements En {
         "^I click on the Dashboard button from navbar and access Surveillance Dashboard$",
         () -> {
           webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.PERSONS_BUTTON);
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
           startTime = ZonedDateTime.now().toInstant().toEpochMilli();
         });
+
+      When(
+              "^I click on the Persons button then Dashboard button from navbar and access Surveillance Dashboard$",
+              () -> {
+                  webDriverHelpers.waitForPageLoaded();
+                  webDriverHelpers.clickOnWebElementBySelector(NavBarPage.PERSONS_BUTTON);
+                  webDriverHelpers.waitForPageLoaded();
+                  webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
+                  startTime = ZonedDateTime.now().toInstant().toEpochMilli();
+              });
 
     When(
         "^I click on the Dashboard button from navbar and access Contacts Dashboard$",
