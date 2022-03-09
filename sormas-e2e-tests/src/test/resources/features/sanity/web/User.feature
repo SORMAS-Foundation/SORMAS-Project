@@ -20,7 +20,7 @@ Feature: Create user
       | Sormas to Sormas Client |
       | National Clinician      |
 
-  @env_main
+  @env_main @check
   Scenario Outline: Edit user
     Given I log in as a Admin User
     And I click on the Users from navbar
@@ -36,7 +36,7 @@ Feature: Create user
       | National User     |
       | POE National User |
 
-    @issue=SORDEV-9366 @env_main
+    @issue=SORDEV-9366 @env_main @check
     Scenario: Users with limited disease
       Given I log in as a Admin User
       And I click on the Users from navbar
