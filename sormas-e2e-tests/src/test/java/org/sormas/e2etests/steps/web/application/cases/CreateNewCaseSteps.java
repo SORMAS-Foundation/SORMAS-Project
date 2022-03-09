@@ -21,6 +21,9 @@ package org.sormas.e2etests.steps.web.application.cases;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.*;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONTACT_CASE_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_CASE_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -42,6 +45,14 @@ public class CreateNewCaseSteps implements En {
   public CreateNewCaseSteps(WebDriverHelpers webDriverHelpers, CaseService caseService) {
     this.webDriverHelpers = webDriverHelpers;
 
+    When("I collect the UUID displayed on Case event page", () -> caze = collectCaseUuid());
+
+    When(
+        "I search for the last case uuid in the CHOOSE SOURCE window for UI",
+        () -> {
+          webDriverHelpers.fillInWebElement(SOURCE_CASE_WINDOW_CASE_INPUT, caze.getUuid());
+          webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
+        });
     When(
         "I create a new case with specific data for DE version",
         () -> {
@@ -327,5 +338,9 @@ public class CreateNewCaseSteps implements En {
 
   private void fillPrimaryEmailAddress(String primaryPhoneNumber) {
     webDriverHelpers.fillInWebElement(PRIMARY_EMAIL_ADDRESS_INPUT, primaryPhoneNumber);
+  }
+
+  private Case collectCaseUuid() {
+    return Case.builder().uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT)).build();
   }
 }

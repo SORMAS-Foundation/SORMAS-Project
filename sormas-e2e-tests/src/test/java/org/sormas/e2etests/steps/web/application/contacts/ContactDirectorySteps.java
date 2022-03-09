@@ -38,6 +38,7 @@ import javax.inject.Inject;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Contact;
 import org.sormas.e2etests.entities.pojo.web.EpidemiologicalData;
 import org.sormas.e2etests.entities.pojo.web.epidemiologicalData.Exposure;
 import org.sormas.e2etests.entities.services.ContactService;
@@ -59,6 +60,7 @@ public class ContactDirectorySteps implements En {
   public static Exposure exposureData;
   public static EpidemiologicalData dataSavedFromCheckbox;
   public static EpidemiologicalData specificCaseData;
+  public static Contact contact;
 
   @Inject
   public ContactDirectorySteps(

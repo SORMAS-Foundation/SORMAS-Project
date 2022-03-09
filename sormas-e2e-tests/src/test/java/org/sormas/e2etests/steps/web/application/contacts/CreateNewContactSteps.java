@@ -38,6 +38,7 @@ public class CreateNewContactSteps implements En {
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
   private final WebDriverHelpers webDriverHelpers;
   public static Contact contact;
+  public static Contact collectedContactUUID;
 
   @Inject
   public CreateNewContactSteps(

@@ -121,7 +121,6 @@ Feature: Contact filter functionality
   @issue=SORQA-5911 @env_de
   Scenario: Check all filters are working properly in Contacts directory
     Given I log in with National User
-    And I click on the Contacts button from navbar
     When I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     And I fill a new contact form for DE version
@@ -129,9 +128,18 @@ Feature: Contact filter functionality
     Then I check the created data is correctly displayed on Edit Contact page for DE version
     And I click on BESTÄTIGTER KONTAKT radio button Contact Person tab
     Then I click SAVE button on Edit Contact Page
+    And I collect the UUID displayed on Contact event page
     And I click Create Case from Contact button
     When I create a new case for contact with specific data for DE
     Then I check case created from created contact is correctly displayed on Edit Case page for DE
+    And I collect the UUID displayed on Case event page
+    And I click on the Contacts button from navbar
+    And I open the last created contact by UI
+    And I click on the CHOOSE SOURCE CASE button from CONTACT page
+    And I click yes on the DISCARD UNSAVED CHANGES popup from CONTACT page
+    And I search for the last case uuid in the CHOOSE SOURCE window for UI
+    And I open the first found result in the CHOOSE SOURCE window for DE version
+    Then I click SAVE button on Edit Contact Page
     Then I click on the Contacts button from navbar
     And I apply Id of last created Contact on Contact Directory Page
     And I apply Contact classification filter to "Bestätigter Kontakt" on Contact Directory Page

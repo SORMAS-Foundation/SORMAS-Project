@@ -22,6 +22,9 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRS
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REPORT_DATE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFORMATION;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.APPLY_FILTERS_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_RESULTS_UUID_LOCATOR;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.MULTIPLE_OPTIONS_SEARCH_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.DATE_OF_BIRTH_DAY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.DATE_OF_BIRTH_MONTH_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.DATE_OF_BIRTH_YEAR_COMBOBOX;
@@ -40,6 +43,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import org.openqa.selenium.By;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Contact;
 import org.sormas.e2etests.entities.pojo.web.QuarantineOrder;
@@ -74,6 +78,13 @@ public class EditContactSteps implements En {
     When(
         "I collect the UUID displayed on Contact event page",
         () -> collectedContact = collectContactUuid());
+
+    When(
+        "I open the last created contact by UI",
+        () -> {
+          searchAfterContactByMultipleOptions(collectedContact.getUuid());
+          openContactFromResultsByUUID(collectedContact.getUuid());
+        });
 
     When(
         "I check the created data is correctly displayed on Edit Contact page",
@@ -753,5 +764,17 @@ public class EditContactSteps implements En {
         localDate.getMonth().getDisplayName(TextStyle.FULL, Locale.GERMAN));
     webDriverHelpers.selectFromCombobox(
         DATE_OF_BIRTH_DAY_COMBOBOX, String.valueOf(localDate.getDayOfMonth()));
+  }
+
+  private void searchAfterContactByMultipleOptions(String idPhoneNameEmail) {
+    webDriverHelpers.waitUntilElementIsVisibleAndClickable(APPLY_FILTERS_BUTTON);
+    webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, idPhoneNameEmail);
+    webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
+  }
+
+  private void openContactFromResultsByUUID(String uuid) {
+    By uuidLocator = By.cssSelector(String.format(CONTACT_RESULTS_UUID_LOCATOR, uuid));
+    webDriverHelpers.clickOnWebElementBySelector((uuidLocator));
+    webDriverHelpers.waitUntilIdentifiedElementIsPresent(EditContactPage.UUID_INPUT);
   }
 }
