@@ -30,32 +30,32 @@ Feature: Edit Persons
     And API: I check that POST call status code is 200
     When I log in with National User
     When I click on the Persons button from navbar
-    Then I choose random value for Year of birth filter in Persons for the last created person by API
-    And I choose random value for Month of birth filter in Persons for the last created person by API
-    And I choose random value for Day of birth filter in Persons for the last created person by API
-    Then I fill Persons UUID for the last created person by API
-    And I choose present condition field from specific range for the last created person by API
+    Then I fill Year of birth filter in Persons with the year of the last created person via API
+    And I fill Month of birth filter in Persons with the month of the last created person via API
+    And I fill Day of birth filter in Persons with the day of birth of the last created person via API
+    Then I fill UUID of the last created person via API
+    And I select present condition field with condition of the last created person via API
     And I choose random value of Region in Persons for the last created person by API
     And I choose random value of District in Persons for the last created person by API
     And I choose random value of Community in Persons for the last created person by API
     Then I apply on the APPLY FILTERS button
     And I check that number of displayed Person results is 1
-    And I change Year of birth filter by random value for Person
+    And I fill Year of birth filter in Persons with wrong value for last created Person via API
     Then I apply on the APPLY FILTERS button
     And I check that number of displayed Person results is 0
-    Then I choose random value for Year of birth filter in Persons for the last created person by API
+    Then I fill Year of birth filter in Persons with the year of the last created person via API
     Then I apply on the APPLY FILTERS button
     And I check that number of displayed Person results is 1
-    And I change Month of birth filter  by random value for Person
+    And I fill Month of birth filter in Persons with wrong value for last created Person via API
     Then I apply on the APPLY FILTERS button
     And I check that number of displayed Person results is 0
-    And I choose random value for Month of birth filter in Persons for the last created person by API
+    And I fill Month of birth filter in Persons with the month of the last created person via API
     Then I apply on the APPLY FILTERS button
     And I check that number of displayed Person results is 1
-    And I change Day of birth filter by random value for Person
+    And I fill Day of birth filter in Persons with wrong value for last created Person via API
     Then I apply on the APPLY FILTERS button
     And I check that number of displayed Person results is 0
-    And I choose random value for Day of birth filter in Persons for the last created person by API
+    And I fill Day of birth filter in Persons with the day of birth of the last created person via API
     Then I apply on the APPLY FILTERS button
     And  I search after last created person from API by factor "full name" in Person directory
     And I apply on the APPLY FILTERS button
@@ -63,11 +63,11 @@ Feature: Edit Persons
     Then I change "full name" information data field for Person
     And I apply on the APPLY FILTERS button
     And I check that number of displayed Person results is 0
-    Then I fill Persons UUID for the last created person by API
+    Then I fill UUID of the last created person via API
     And I change present condition filter to other than condition of last created via API Person
     And I apply on the APPLY FILTERS button
     And I check that number of displayed Person results is 0
-    And I choose present condition field from specific range for the last created person by API
+    And I select present condition field with condition of the last created person via API
     Then I apply on the APPLY FILTERS button
     And I check that number of displayed Person results is 1
     And I change REGION filter to "Berlin" for Person
