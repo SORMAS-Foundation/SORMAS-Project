@@ -3366,6 +3366,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		List<TravelEntry> travelEntries = travelEntryService.getAllByResultingCase(otherCase);
 		travelEntries.forEach(t -> {
 			t.setResultingCase(leadCase);
+			t.setPerson(leadCase.getPerson());
 			travelEntryService.ensurePersisted(t);
 		});
 	}
