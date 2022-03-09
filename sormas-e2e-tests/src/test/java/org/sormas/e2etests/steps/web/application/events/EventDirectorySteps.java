@@ -29,7 +29,6 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERS
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_PARTICIPANTS_TAB;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_EVENT_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_TASK_BUTTON;
-import static org.sormas.e2etests.pages.application.events.EditEventPage.TITLE_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.APPLY_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BULK_ACTIONS_EVENT_DIRECTORY;
@@ -238,9 +237,7 @@ public class EventDirectorySteps implements En {
 
     When(
         "I click on the NEW EVENT button",
-        () ->
-            webDriverHelpers.clickWhileOtherButtonIsDisplayed(
-                EventDirectoryPage.NEW_EVENT_BUTTON, TITLE_INPUT));
+        () -> webDriverHelpers.clickOnWebElementBySelector(EventDirectoryPage.NEW_EVENT_BUTTON));
     And(
         "I apply {string} to combobox on Event Directory Page",
         (String eventParameter) -> {
