@@ -1,18 +1,19 @@
 package de.symeda.sormas.backend.audit;
 
-
+import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
+import de.symeda.sormas.api.ConfigFacade;
 import org.hl7.fhir.r4.model.AuditEvent;
-
 import org.hl7.fhir.r4.model.CodeableConcept;
+import org.hl7.fhir.r4.model.Coding;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import ca.uhn.fhir.context.FhirContext;
-import org.hl7.fhir.r4.model.Coding;
 
+import javax.naming.InitialContext;
+import java.net.InetAddress;
+import java.net.UnknownHostException;
 import java.util.Calendar;
 import java.util.Collections;
-import java.util.Date;
 import java.util.TimeZone;
 
 public class AuditLogger {
@@ -33,7 +34,7 @@ public class AuditLogger {
         FhirContext ctx = FhirContext.forR4();
         IParser parser = ctx.newJsonParser();
         String serialized = parser.encodeResourceToString(event);
-        logger.info(serialized);
+        LogSink.getInstance().getAuditLogger().info(serialized);
     }
 
     public void logApplicationStart() {
@@ -57,11 +58,17 @@ public class AuditLogger {
         applicationStartAudit.setAgent(Collections.singletonList(agent));
 
         AuditEvent.AuditEventSourceComponent source = new AuditEvent.AuditEventSourceComponent();
-        // todo source.site
-        // todo source.observer
+        try {
+            source.setSite(InetAddress.getLocalHost().getHostName());
+        } catch (UnknownHostException e) {
+            logger.error("Could not read the hostname of the machine: {}", e.toString());
+        }
+
         source.addType(new Coding("https://www.hl7.org/fhir/valueset-audit-source-type.html", "4", "Application Server"));
         applicationStartAudit.setSource(source);
 
         applicationStartAudit.addEntity();
+
+        accept(applicationStartAudit);
     }
 }
