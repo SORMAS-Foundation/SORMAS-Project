@@ -434,3 +434,13 @@ Feature: Case end to end tests
     When I open created Sample
     Then I click on the new pathogen test from the Edit Sample page for DE version
     And I complete all fields from Pathogen test result popup for IgM test type for DE version and save
+
+  @issue=SORDEV-7456 @env_de
+  Scenario: Check different facility types depending on type of place in Epidemiological Tab
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data for DE version
+    And I navigate to Epidemiological Data tab on Edit Case Page
+    And I click on JA Radiobutton on Epidemiological Data Page
+
