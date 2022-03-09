@@ -218,7 +218,6 @@ public enum UserRole
 	 * 1. java:S115: Violation of name convention for String constants of this class is accepted: Close as false positive.
 	 */
 
-	public static final String _SYSTEM = "SYSTEM";
 	public static final String _USER = "USER";
 	public static final String _ADMIN = ADMIN.name();
 	public static final String _NATIONAL_USER = NATIONAL_USER.name();

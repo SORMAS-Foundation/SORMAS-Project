@@ -53,6 +53,33 @@ public class EditContactPersonSteps implements En {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
+        "I check the created data for DE version is correctly displayed on Edit Contact Person page",
+        () -> {
+          aPerson = collectPersonDataDE();
+          createdContact = CreateNewContactSteps.contact;
+          softly.assertEquals(
+              aPerson.getFirstName(), createdContact.getFirstName(), "First name is not correct");
+          softly.assertEquals(
+              aPerson.getLastName(),
+              createdContact.getLastName().toUpperCase(),
+              "Last name is not correct");
+          softly.assertEquals(
+              aPerson.getDateOfBirth(),
+              createdContact.getDateOfBirth(),
+              "Date of birth is not correct");
+          softly.assertEquals(aPerson.getSex(), createdContact.getSex(), "Sex is not correct");
+          softly.assertEquals(
+              aPerson.getEmailAddress(),
+              createdContact.getPrimaryEmailAddress(),
+              "Primary email address is not correct");
+          softly.assertEquals(
+              aPerson.getPhoneNumber(),
+              createdContact.getPrimaryPhoneNumber(),
+              "Phone number is not correct");
+          softly.assertAll();
+        });
+
+    When(
         "I check the created data is correctly displayed on Edit Contact Person page",
         () -> {
           aPerson = collectPersonData();
@@ -260,8 +287,35 @@ public class EditContactPersonSteps implements En {
         .build();
   }
 
+  private Person collectPersonDataDE() {
+    Person contactInfo = getPersonInformationDE();
+
+    return Person.builder()
+        .firstName(contactInfo.getFirstName())
+        .lastName(contactInfo.getLastName())
+        .dateOfBirth(contactInfo.getDateOfBirth())
+        .sex(webDriverHelpers.getValueFromWebElement(SEX_INPUT))
+        .emailAddress(webDriverHelpers.getTextFromPresentWebElement(EMAIL_FIELD))
+        .phoneNumber(webDriverHelpers.getTextFromPresentWebElement(PHONE_FIELD))
+        .build();
+  }
+
   private Person getPersonInformation() {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+    String contactInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
+    String uuid = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
+    String[] personInfo = contactInfo.split(" ");
+    LocalDate localDate = LocalDate.parse(personInfo[3].replace(")", ""), formatter);
+    return Person.builder()
+        .firstName(personInfo[0])
+        .lastName(personInfo[1])
+        .dateOfBirth(localDate)
+        .uuid(uuid)
+        .build();
+  }
+
+  private Person getPersonInformationDE() {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d.M.yyyy");
     String contactInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
     String uuid = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
     String[] personInfo = contactInfo.split(" ");

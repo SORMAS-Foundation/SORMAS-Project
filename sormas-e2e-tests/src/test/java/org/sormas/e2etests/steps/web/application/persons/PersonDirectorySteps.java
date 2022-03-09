@@ -107,7 +107,7 @@ public class PersonDirectorySteps implements En {
                         "Number of displayed cases is not correct")));
 
     Then(
-        "I choose random value for Year of birth filter in Persons for the last created person by API",
+        "I fill Year of birth filter in Persons with the year of the last created person via API",
         () -> {
           String yearOfBirth = apiState.getLastCreatedPerson().getBirthdateYYYY().toString();
           webDriverHelpers.waitForPageLoaded();
@@ -115,38 +115,34 @@ public class PersonDirectorySteps implements En {
         });
 
     Then(
-        "I choose random value for Month of birth filter in Persons for the last created person by API",
+        "I fill Month of birth filter in Persons with the month of the last created person via API",
         () -> {
           String monthOfBirth = apiState.getLastCreatedPerson().getBirthdateMM().toString();
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(BIRTH_MONTH_COMBOBOX, monthOfBirth);
         });
 
     Then(
-        "I choose random value for Day of birth filter in Persons for the last created person by API",
+        "I fill Day of birth filter in Persons with the day of birth of the last created person via API",
         () -> {
           String dayOfBirth = apiState.getLastCreatedPerson().getBirthdateDD().toString();
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(BIRTH_DAY_COMBOBOX, dayOfBirth);
         });
 
     Then(
-        "I fill Persons UUID for the last created person by API",
+        "I fill UUID of the last created person via API",
         () -> {
           String personUUID =
               dataOperations.getPartialUuidFromAssociatedLink(
                   apiState.getLastCreatedPerson().getUuid());
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, personUUID);
         });
 
     Then(
-        "I choose present condition field from specific range for the last created person by API",
+        "I select present condition field with condition of the last created person via API",
         () -> {
-          String presentCondition = apiState.getLastCreatedPerson().getPresentCondition();
-          webDriverHelpers.waitForPageLoaded();
+          String personCondition = apiState.getLastCreatedPerson().getPresentCondition();
           webDriverHelpers.selectFromCombobox(
-              PRESENT_CONDITION, PresentCondition.getValueFor(presentCondition));
+              PRESENT_CONDITION, PresentCondition.getValueFor(personCondition));
         });
 
     Then(
@@ -179,7 +175,6 @@ public class PersonDirectorySteps implements En {
     Then(
         "I check that number of displayed Person results is {int}",
         (Integer number) -> {
-          webDriverHelpers.waitForPageLoaded();
           assertHelpers.assertWithPoll20Second(
               () ->
                   Assert.assertEquals(
@@ -189,34 +184,39 @@ public class PersonDirectorySteps implements En {
         });
 
     Then(
-        "I change Year of birth filter by random value for Person",
+        "I fill Year of birth filter in Persons with wrong value for last created Person via API",
         () -> {
-          Integer yearOfBirth = faker.number().numberBetween(1900, 2022);
-          webDriverHelpers.waitForPageLoaded();
+          Integer yearOfBirth = apiState.getLastCreatedPerson().getBirthdateYYYY() + 1;
           webDriverHelpers.selectFromCombobox(BIRTH_YEAR_COMBOBOX, yearOfBirth.toString());
         });
 
     Then(
-        "I change Month of birth filter  by random value for Person",
+        "I fill Month of birth filter in Persons with wrong value for last created Person via API",
         () -> {
-          Integer monthOfBirth = faker.number().numberBetween(1, 12);
-          webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.selectFromCombobox(BIRTH_MONTH_COMBOBOX, monthOfBirth.toString());
-        });
-
-    Then(
-        "I change Day of birth filter by random value for Person",
-        () -> {
-          Integer dayOfBirth = faker.number().numberBetween(1, 29);
-          webDriverHelpers.selectFromCombobox(BIRTH_DAY_COMBOBOX, dayOfBirth.toString());
-        });
-
-    Then(
-        "I change present condition filter to random for Person",
-        () -> {
-          webDriverHelpers.waitForPageLoaded();
+          Integer monthOfBirth = apiState.getLastCreatedPerson().getBirthdateMM();
+          Integer differentMonthOfBirth =
+              (monthOfBirth.intValue() == 12) ? monthOfBirth - 1 : monthOfBirth + 1;
           webDriverHelpers.selectFromCombobox(
-              PRESENT_CONDITION, PresentCondition.getRandomUIPresentCondition());
+              BIRTH_MONTH_COMBOBOX, differentMonthOfBirth.toString());
+        });
+
+    Then(
+        "I fill Day of birth filter in Persons with wrong value for last created Person via API",
+        () -> {
+          Integer dayOfBirth = apiState.getLastCreatedPerson().getBirthdateDD();
+          Integer differentDayOfBirth =
+              (dayOfBirth.intValue() >= 30) ? dayOfBirth - 1 : dayOfBirth + 1;
+          webDriverHelpers.selectFromCombobox(BIRTH_DAY_COMBOBOX, differentDayOfBirth.toString());
+        });
+
+    Then(
+        "I change present condition filter to other than condition of last created via API Person",
+        () -> {
+          String conditionOfLastCreatedApiPerson =
+              apiState.getLastCreatedPerson().getPresentCondition();
+          webDriverHelpers.selectFromCombobox(
+              PRESENT_CONDITION,
+              PresentCondition.getRandomConditionDifferentThan(conditionOfLastCreatedApiPerson));
         });
 
     Then(
