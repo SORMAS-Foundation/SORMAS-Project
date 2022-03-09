@@ -21,6 +21,9 @@ import de.symeda.sormas.api.ConfigFacade;
 import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.codesystems.AuditEntityType;
+import org.hl7.fhir.r4.model.codesystems.AuditSourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,8 +64,9 @@ public class AuditLogger {
 
         applicationStartAudit.setAction(AuditEvent.AuditEventAction.E);
         applicationStartAudit.setRecorded(Calendar.getInstance(TimeZone.getDefault()).getTime());
+
         // success
-        applicationStartAudit.setOutcome(AuditEvent.AuditEventOutcome.fromCode("0"));
+        applicationStartAudit.setOutcome(AuditEvent.AuditEventOutcome._0);
         applicationStartAudit.setOutcomeDesc("Application starting");
 
         AuditEvent.AuditEventAgentComponent agent = new AuditEvent.AuditEventAgentComponent();
@@ -79,10 +83,18 @@ public class AuditLogger {
             logger.error("Could not read the hostname of the machine: {}", e.toString());
         }
 
-        source.addType(new Coding("https://www.hl7.org/fhir/valueset-audit-source-type.html", "4", "Application Server"));
+        // Application Server
+        AuditSourceType auditSourceType = AuditSourceType._4;
+        source.addType(new Coding(auditSourceType.getSystem(), auditSourceType.toCode(), auditSourceType.getDisplay()));
         applicationStartAudit.setSource(source);
 
-        applicationStartAudit.addEntity();
+        AuditEvent.AuditEventEntityComponent entity = new AuditEvent.AuditEventEntityComponent();
+        entity.setWhat(new Reference("StartupShutdownService"));
+
+        // System Object
+        AuditEntityType entityType = AuditEntityType._2;
+        entity.setType(new Coding(entityType.getSystem(), entityType.toCode(), entityType.getDisplay()));
+        applicationStartAudit.addEntity(entity);
 
         accept(applicationStartAudit);
     }
