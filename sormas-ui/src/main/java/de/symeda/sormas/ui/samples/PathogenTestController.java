@@ -193,9 +193,11 @@ public class PathogenTestController {
 		final EventParticipantReferenceDto associatedEventParticipant = sample.getAssociatedEventParticipant();
 		if (associatedCase != null) {
 			handleAssociatedCase(dto, onSavedPathogenTest, associatedCase, suppressSampleResultUpdatePopup, suppressNavigateToCase);
-		} else if (associatedContact != null) {
+		}
+		if (associatedContact != null) {
 			handleAssociatedContact(dto, onSavedPathogenTest, associatedContact, suppressSampleResultUpdatePopup);
-		} else if (associatedEventParticipant != null) {
+		}
+		if (associatedEventParticipant != null) {
 			handleAssociatedEventParticipant(dto, onSavedPathogenTest, associatedEventParticipant, suppressSampleResultUpdatePopup);
 		}
 		Notification.show(I18nProperties.getString(Strings.messagePathogenTestSavedShort), TRAY_NOTIFICATION);
