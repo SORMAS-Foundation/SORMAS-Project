@@ -1,17 +1,14 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
@@ -30,11 +27,11 @@ import javax.inject.Inject;
 import javax.security.enterprise.identitystore.CredentialValidationResult;
 import javax.security.enterprise.identitystore.IdentityStore;
 
-import org.apache.commons.collections.CollectionUtils;
-
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRole;
 import fish.payara.security.openid.OpenIdCredential;
 import fish.payara.security.openid.OpenIdIdentityStore;
 import fish.payara.security.openid.api.AccessToken;
@@ -43,7 +40,8 @@ import fish.payara.security.openid.domain.OpenIdContextImpl;
 
 /**
  * Identity store validates the identity token & access token and returns the validation result with the caller name and groups.
- * Implementation based on {@link fish.payara.security.openid.OpenIdIdentityStore}, but updated to read the user roles from the Sormas System.
+ * Implementation based on {@link fish.payara.security.openid.OpenIdIdentityStore}, but updated to read the user roles from the Sormas
+ * System.
  *
  * @author Alex Vidrean
  * @see fish.payara.security.openid.OpenIdIdentityStore
@@ -64,7 +62,7 @@ public class SormasOpenIdIdentityStore implements IdentityStore {
 			Set<String> groups = getCallerGroups(user);
 			context.setCallerGroups(groups);
 			updateLocale(context.getAccessToken(), user);
-			return new CredentialValidationResult(context.getCallerName(),	groups);
+			return new CredentialValidationResult(context.getCallerName(), groups);
 		}
 		return result;
 	}
@@ -80,8 +78,12 @@ public class SormasOpenIdIdentityStore implements IdentityStore {
 	}
 
 	private Set<String> getCallerGroups(UserDto user) {
-		if (user != null && CollectionUtils.isNotEmpty(user.getUserRoles())) {
-			return user.getUserRoles().stream().map(Enum::name).collect(Collectors.toSet());
+
+		if (user != null) {
+			Set<UserRight> userRights =
+				FacadeProvider.getUserRoleConfigFacade().getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[] {}));
+
+			return userRights.stream().map(Enum::name).collect(Collectors.toSet());
 		}
 
 		return Collections.emptySet();

@@ -50,6 +50,41 @@ public class ContactService {
     this.faker = faker;
   }
 
+  public Contact buildGeneratedContactDE() {
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+
+    return Contact.builder()
+        .firstName(firstName)
+        .lastName(lastName)
+        .dateOfBirth(
+            LocalDate.of(
+                faker.number().numberBetween(1900, 2002),
+                faker.number().numberBetween(1, 12),
+                faker.number().numberBetween(1, 27)))
+        .sex(GenderValues.getRandomGenderDE())
+        .primaryEmailAddress(
+            ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
+        .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
+        .returningTraveler("NEIN")
+        .reportDate(LocalDate.now().minusDays(random.nextInt(10)))
+        .diseaseOfSourceCase("COVID-19")
+        .caseIdInExternalSystem(UUID.randomUUID().toString())
+        .dateOfFirstContact(LocalDate.now().minusDays(5))
+        .dateOfLastContact(LocalDate.now().minusDays(3))
+        .caseOrEventInformation("Automated test dummy description")
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
+        .additionalInformationOnContactType("Automated test dummy description")
+        .typeOfContact(
+            "Personen mit direktem Kontakt zu Sekreten oder K\u00F6rperfl\u00FCssigkeiten")
+        .contactCategory("Kontaktperson der Kategorie III")
+        .relationshipWithCase("Arbeiten in der gleichen Umgebung")
+        .descriptionOfHowContactTookPlace("Automated test dummy description")
+        .build();
+  }
+
   public Contact buildGeneratedContact() {
     firstName = faker.name().firstName();
     lastName = faker.name().lastName();

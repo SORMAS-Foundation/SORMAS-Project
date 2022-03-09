@@ -2,7 +2,6 @@ package de.symeda.sormas.rest;
 
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -17,9 +16,6 @@ import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 @Path("/surveillancereports")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
-@RolesAllowed({
-	"USER",
-	"REST_USER" })
 public class SurveillanceReportResource extends EntityDtoResource {
 
 	@POST

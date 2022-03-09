@@ -16,6 +16,7 @@
 package de.symeda.sormas.ui.labmessage;
 
 import java.io.ByteArrayInputStream;
+import java.util.Collections;
 import java.util.Date;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -27,7 +28,9 @@ import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.StreamResource;
 import com.vaadin.shared.data.sort.SortDirection;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Component;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -63,6 +66,7 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 	private static final String SHOW_MESSAGE = "show_message";
 	private static final String EDIT_ASSIGNEE = "edit_assignee";
 
+	private static final String PLACEHOLDER_SPACE = String.join("", Collections.nCopies(35, "&nbsp"));
 	private static final String PDF_FILENAME_FORMAT = "sormas_lab_message_%s_%s.pdf";
 
 	private DataProviderListener<LabMessageIndexDto> dataProviderListener;
@@ -89,13 +93,7 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 			.setCaption(I18nProperties.getPrefixCaption(LabMessageDto.I18N_PREFIX, LabMessageDto.ASSIGNEE))
 			.setSortable(false);
 
-		addComponentColumn(
-			indexDto -> indexDto.getStatus().isProcessable()
-				? ButtonHelper.createButton(
-					Captions.labMessageProcess,
-					e -> ControllerProvider.getLabMessageController().processLabMessage(indexDto.getUuid()),
-					ValoTheme.BUTTON_PRIMARY)
-				: null).setId(COLUMN_PROCESS).setMinimumWidth(100);
+		addComponentColumn(this::buildProcessComponent).setId(COLUMN_PROCESS);
 
 		addComponentColumn(this::buildDownloadButton).setId(COLUMN_DOWNLOAD);
 
@@ -206,6 +204,21 @@ public class LabMessageGrid extends FilteredGrid<LabMessageIndexDto, LabMessageC
 		button.addClickListener(e -> ControllerProvider.getLabMessageController().editAssignee(labMessage.getUuid()));
 		layout.addComponent(button);
 		return layout;
+	}
+
+	private Component buildProcessComponent(LabMessageIndexDto indexDto) {
+		if (indexDto.getStatus().isProcessable()) {
+			// build process button
+			return ButtonHelper.createButton(
+				Captions.labMessageProcess,
+				e -> ControllerProvider.getLabMessageController().processLabMessage(indexDto.getUuid()),
+				ValoTheme.BUTTON_PRIMARY);
+		} else {
+			// build placeholder necessary to circumvent a vaadin scaling issue (see #7681)
+			Label placeholder = new Label(PLACEHOLDER_SPACE);
+			placeholder.setContentMode(ContentMode.HTML);
+			return placeholder;
+		}
 	}
 
 	private Button buildDownloadButton(LabMessageIndexDto labMessage) {
