@@ -212,11 +212,13 @@ public class PersonDirectorySteps implements En {
         });
 
     Then(
-        "I change present condition filter to random for Person",
+        "I change present condition filter to other than condition of last created via API Person",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
+          String conditionOfLastCreatedApiPerson =
+              apiState.getLastCreatedPerson().getPresentCondition();
           webDriverHelpers.selectFromCombobox(
-              PRESENT_CONDITION, PresentCondition.getRandomUIPresentCondition());
+              PRESENT_CONDITION,
+              PresentCondition.getRandomConditionDifferentThan(conditionOfLastCreatedApiPerson));
         });
 
     Then(

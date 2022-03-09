@@ -20,8 +20,7 @@ Feature: Edit Persons
     Then I click on save button from Edit Person page
     And I check that previous edited person is correctly displayed in Edit Person page
 
-    #please address
-  @issue=SORDEV-8466 @env_main @ignore
+  @issue=SORDEV-8466 @env_main @check
   Scenario: Check Filters on Person page work as expected
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -65,7 +64,7 @@ Feature: Edit Persons
     And I apply on the APPLY FILTERS button
     And I check that number of displayed Person results is 0
     Then I fill Persons UUID for the last created person by API
-    And I change present condition filter to random for Person
+    And I change present condition filter to other than condition of last created via API Person
     And I apply on the APPLY FILTERS button
     And I check that number of displayed Person results is 0
     And I choose present condition field from specific range for the last created person by API
