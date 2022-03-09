@@ -18,7 +18,6 @@ package de.symeda.sormas.rest;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -33,7 +32,6 @@ import de.symeda.sormas.api.customizableenum.CustomizableEnumValueDto;
 @Path("/customizableenumvalues")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
-@RolesAllowed("USER")
 public class CustomizableEnumValueResource extends EntityDtoResource {
 
 	@GET

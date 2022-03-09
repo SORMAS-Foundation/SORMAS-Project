@@ -265,8 +265,6 @@ public class WebDriverHelpers {
             .getDriver()
             .findElement(selector)
             .findElement(By.xpath("preceding-sibling::input"));
-    // TODO check in Jenkins if this is a fix for flaky situations when option is selected twice
-    // comboboxInput.sendKeys(Keys.chord(Keys.BACK_SPACE));
     String comboBoxItemWithText =
         "//td[@role='listitem']/span[ contains(text(), '"
             + text
@@ -721,26 +719,6 @@ public class WebDriverHelpers {
     } else {
       throw new Error(String.format("checked was found as NULL for %s: ", checkbox));
     }
-  }
-
-  // always needs the raw header value from the DOM, not the stylized one (the one displayed in UI)
-  // rowIndex parameter will return the demanded row. 0 is the header
-  // style.substring(style.length() - 17) matches the width value for the selector. it will be used
-  // to match the header and the rows by the length.
-  public String getValueFromTableRowUsingTheHeader(String headerValue, int rowIndex) {
-    // TODO remove try catch after Jenkins investigation
-    try {
-      By header = By.xpath("//div[contains(text(), '" + headerValue + "')]/ancestor::th");
-      waitUntilIdentifiedElementIsPresent(header);
-      scrollToElement(header);
-      String style = getAttributeFromWebElement(header, "style");
-      By selector = By.cssSelector("[style*='" + style.substring(style.length() - 17) + "']");
-      waitUntilIdentifiedElementIsPresent(selector);
-      return baseSteps.getDriver().findElements(selector).get(rowIndex).getText();
-    } catch (Exception e) {
-      Assert.fail("Failed due to: " + e.getMessage());
-    }
-    return null;
   }
 
   public boolean isElementDisplayedIn20SecondsOrThrowException(Object selector) {
