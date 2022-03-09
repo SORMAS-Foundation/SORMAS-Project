@@ -247,6 +247,10 @@
             <artifactId>logback-core</artifactId>
 			<scope>compile</scope>
         </dependency>
+		<dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>org.hl7.fhir.r4</artifactId>
+		</dependency>
 
     </dependencies>
 
