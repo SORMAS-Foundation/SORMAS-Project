@@ -1566,7 +1566,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		if (sourceContact != null) {
 			final Contact contact = contactService.getByUuid(sourceContact.getUuid());
 			final Case caze = service.getByUuid(cazeRef.getUuid());
-			contact.getSamples().forEach(sample -> sample.setAssociatedCase(caze));
+			contact.getSamples().forEach(sample -> sampleFacade.cloneSampleForCase(sample, caze));
 		}
 	}
 
