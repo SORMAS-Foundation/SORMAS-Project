@@ -1023,6 +1023,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		DtoHelper.copyDtoValues(newSample, SampleFacadeEjb.toDto(sample), true);
 		newSample.setAssociatedCase(caze.toReference());
 		newSample.setAssociatedContact(null);
+		newSample.setAssociatedEventParticipant(null);
 		saveSample(newSample, false, true, true);
 
 		for (PathogenTest pathogenTest : sample.getPathogenTests()) {

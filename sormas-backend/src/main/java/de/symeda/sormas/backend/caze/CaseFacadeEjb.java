@@ -1575,7 +1575,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		if (sourceEventParticipant != null) {
 			final EventParticipant eventParticipant = eventParticipantService.getByUuid(sourceEventParticipant.getUuid());
 			final Case caze = service.getByUuid(cazeRef.getUuid());
-			eventParticipant.getSamples().forEach(sample -> sample.setAssociatedCase(caze));
+			eventParticipant.getSamples().forEach(sample -> sampleFacade.cloneSampleForCase(sample, caze));
 		}
 	}
 
@@ -1587,7 +1587,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		eventParticipant.getSamples()
 			.stream()
 			.filter(sample -> sampleContainsTestForDisease(sample, disease))
-			.forEach(sample -> sample.setAssociatedCase(caze));
+			.forEach(sample -> sampleFacade.cloneSampleForCase(sample, caze));
 
 	}
 
