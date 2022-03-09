@@ -1,8 +1,7 @@
 @UI @Sanity @Sample
 Feature: Sample Functionalities
 
-  #please address
-  @env_main @ignore
+  @env_main
   Scenario: Edit a new case Sample
     Given I log in with National User
     And I click on the Cases button from navbar
