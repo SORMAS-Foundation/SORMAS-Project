@@ -27,7 +27,6 @@
 		<!-- *** Other dependency versions *** -->
 		<glassfish.jaxb.version>2.3.3</glassfish.jaxb.version>
 		<slf4j.version>1.7.36</slf4j.version>
-		<hapifhir.version>5.7</hapifhir.version>
 		<logback.version>1.2.10</logback.version>
 		<vaadin.version.warning>TODO: Remove bootstrap.js in widgetset</vaadin.version.warning>
 		<vaadin.version>8.14.3</vaadin.version>
