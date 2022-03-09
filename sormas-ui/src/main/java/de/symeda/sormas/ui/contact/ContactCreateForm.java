@@ -100,15 +100,18 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 
 	private PersonCreateForm personCreateForm;
 
+	private final boolean showPersonSearchButton;
+
 	/**
 	 * TODO use disease and case relation information given in ContactDto
 	 */
-	public ContactCreateForm(Disease disease, boolean hasCaseRelation, boolean asSourceContact) {
+	public ContactCreateForm(Disease disease, boolean hasCaseRelation, boolean asSourceContact, boolean showPersonSearchButton) {
 		super(ContactDto.class, ContactDto.I18N_PREFIX);
 
 		this.disease = disease;
 		this.hasCaseRelation = hasCaseRelation;
 		this.asSourceContact = asSourceContact;
+		this.showPersonSearchButton = showPersonSearchButton;
 
 		addFields();
 
@@ -127,7 +130,7 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		ComboBox cbDisease = addDiseaseField(ContactDto.DISEASE, false, true);
 		addField(ContactDto.DISEASE_DETAILS, TextField.class);
 
-		personCreateForm = new PersonCreateForm(false, false, false);
+		personCreateForm = new PersonCreateForm(false, false, false, showPersonSearchButton);
 		personCreateForm.setWidth(100, Unit.PERCENTAGE);
 		personCreateForm.setValue(new PersonDto());
 		getContent().addComponent(personCreateForm, ContactDto.PERSON);

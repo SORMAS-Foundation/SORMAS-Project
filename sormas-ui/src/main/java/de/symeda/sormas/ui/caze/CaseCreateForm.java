@@ -36,6 +36,7 @@ import org.apache.commons.collections.CollectionUtils;
 import com.google.common.collect.Sets;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
@@ -61,6 +62,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
@@ -91,6 +93,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	private static final String POINT_OF_ENTRY_REGION = "pointOfEntryRegion";
 	private static final String POINT_OF_ENTRY_DISTRICT = "pointOfEntryDistrict";
 
+	private TextField diseaseVariantDetailsField;
 	private NullableOptionGroup facilityOrHome;
 	private ComboBox facilityTypeGroup;
 	private ComboBox facilityType;
@@ -106,6 +109,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	private PersonCreateForm personCreateForm;
 
 	private final boolean showHomeAddressForm;
+	private final boolean showPersonSearchButton;
 
 	// If a case is created form a TravelEntry, the variable convertedTravelEntry provides the
 	// necessary extra data. This variable is expected to be replaced in the implementation of
@@ -138,14 +142,14 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
     //@formatter:on
 
 	public CaseCreateForm() {
-		this(true, null);
+		this(true, true, null);
 	}
 
 	public CaseCreateForm(TravelEntryDto convertedTravelEntry) {
-		this(false, convertedTravelEntry);
+		this(false, true, convertedTravelEntry);
 	}
 
-	private CaseCreateForm(Boolean showHomeAddressForm, TravelEntryDto convertedTravelEntry) {
+	public CaseCreateForm(Boolean showHomeAddressForm, Boolean showPersonSearchButton, TravelEntryDto convertedTravelEntry) {
 		super(
 			CaseDataDto.class,
 			CaseDataDto.I18N_PREFIX,
@@ -154,6 +158,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			UiFieldAccessCheckers.getNoop());
 		this.convertedTravelEntry = convertedTravelEntry;
 		this.showHomeAddressForm = showHomeAddressForm;
+		this.showPersonSearchButton = showPersonSearchButton;
 		addFields();
 		setWidth(720, Unit.PIXELS);
 		hideValidationUntilNextCommit();
@@ -180,7 +185,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.REPORT_DATE, DateField.class);
 		ComboBox diseaseField = addDiseaseField(CaseDataDto.DISEASE, false, true);
 		ComboBox diseaseVariantField = addField(CaseDataDto.DISEASE_VARIANT, ComboBox.class);
-		TextField diseaseVariantDetailsField = addField(CaseDataDto.DISEASE_VARIANT_DETAILS, TextField.class);
+		diseaseVariantDetailsField = addField(CaseDataDto.DISEASE_VARIANT_DETAILS, TextField.class);
 		diseaseVariantDetailsField.setVisible(false);
 		diseaseVariantField.setNullSelectionAllowed(true);
 		diseaseVariantField.setVisible(false);
@@ -189,9 +194,8 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		addField(CaseDataDto.DENGUE_FEVER_TYPE, NullableOptionGroup.class);
 		addField(CaseDataDto.RABIES_TYPE, NullableOptionGroup.class);
 
-		personCreateForm = new PersonCreateForm(showHomeAddressForm, true, true);
+		personCreateForm = new PersonCreateForm(showHomeAddressForm, true, true, showPersonSearchButton);
 		personCreateForm.setWidth(100, Unit.PERCENTAGE);
-		// personCreateForm.setValue(new PersonDto());
 		getContent().addComponent(personCreateForm, CaseDataDto.PERSON);
 
 		differentPlaceOfStayJurisdiction = addCustomField(DIFFERENT_PLACE_OF_STAY_JURISDICTION, Boolean.class, CheckBox.class);
@@ -639,5 +643,22 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	@Override
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
+	}
+
+	@Override
+	public void setValue(CaseDataDto caseDataDto) throws com.vaadin.v7.data.Property.ReadOnlyException, Converter.ConversionException {
+		super.setValue(caseDataDto);
+		if (convertedTravelEntry != null) {
+			diseaseVariantDetailsField.setValue(convertedTravelEntry.getDiseaseVariantDetails());
+		}
+
+		PersonReferenceDto casePersonReference = caseDataDto.getPerson();
+		String personUuid = casePersonReference == null ? null : casePersonReference.getUuid();
+		PersonDto personByUuid = personUuid == null ? null : FacadeProvider.getPersonFacade().getPersonByUuid(personUuid);
+		personCreateForm.setPerson(personByUuid);
+	}
+
+	public void setSearchedPerson(PersonDto searchedPerson) {
+		personCreateForm.setSearchedPerson(searchedPerson);
 	}
 }

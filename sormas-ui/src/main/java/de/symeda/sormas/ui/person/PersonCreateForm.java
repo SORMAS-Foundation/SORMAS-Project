@@ -30,7 +30,6 @@ import org.apache.commons.lang3.StringUtils;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
-import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
@@ -71,25 +70,35 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 	private static final String HOME_ADDRESS_LOC = "homeAddressLoc";
 
 	private ComboBox birthDateDay;
+	private CheckBox enterHomeAddressNow;
 	private LocationEditForm homeAddressForm;
+	private Button searchPersonButton;
+
+	private PersonDto searchedPerson;
 
 	private final boolean showHomeAddressForm;
 	private final boolean showPresentCondition;
 	private final boolean showSymptomsOnsetDate;
+	private final boolean showPersonSearchButton;
 
-	private PersonDto searchedPerson;
-	private Button searchPersonButton;
+	private static final String HTML_LAYOUT =
+		"%s" + fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD), fluidRowLocs(PersonDto.SEX))
+			+ fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER)
+			+ fluidRowLocs(PersonDto.PRESENT_CONDITION, SymptomsDto.ONSET_DATE) + fluidRowLocs(PersonDto.PHONE, PersonDto.EMAIL_ADDRESS)
+			+ fluidRowLocs(ENTER_HOME_ADDRESS_NOW) + loc(HOME_ADDRESS_HEADER) + divsCss(VSPACE_3, fluidRowLocs(HOME_ADDRESS_LOC));
 
-	private static final String HTML_LAYOUT = fluidRowLocs(6, PersonDto.FIRST_NAME, 5, PersonDto.LAST_NAME, 1, PERSON_SEARCH_LOC)
-		+ fluidRow(fluidRowLocs(PersonDto.BIRTH_DATE_YYYY, PersonDto.BIRTH_DATE_MM, PersonDto.BIRTH_DATE_DD), fluidRowLocs(PersonDto.SEX))
-		+ fluidRowLocs(PersonDto.NATIONAL_HEALTH_ID, PersonDto.PASSPORT_NUMBER)
-		+ fluidRowLocs(PersonDto.PRESENT_CONDITION, SymptomsDto.ONSET_DATE)
-		+ fluidRowLocs(PersonDto.PHONE, PersonDto.EMAIL_ADDRESS)
-		+ fluidRowLocs(ENTER_HOME_ADDRESS_NOW)
-		+ loc(HOME_ADDRESS_HEADER)
-		+ divsCss(VSPACE_3, fluidRowLocs(HOME_ADDRESS_LOC));
+	private static final String NAME_ROW_WITH_PERSON_SEARCH = fluidRowLocs(6, PersonDto.FIRST_NAME, 4, PersonDto.LAST_NAME, 2, PERSON_SEARCH_LOC);
+	private static final String NAME_ROW_WITHOUT_PERSON_SEARCH = fluidRowLocs(PersonDto.FIRST_NAME, PersonDto.LAST_NAME);
 
 	public PersonCreateForm(boolean showHomeAddressForm, boolean showPresentCondition, boolean showSymptomsOnsetDate) {
+		this(showHomeAddressForm, showPresentCondition, showSymptomsOnsetDate, true);
+	}
+
+	public PersonCreateForm(
+		boolean showHomeAddressForm,
+		boolean showPresentCondition,
+		boolean showSymptomsOnsetDate,
+		boolean showPersonSearchButton) {
 		super(
 			PersonDto.class,
 			PersonDto.I18N_PREFIX,
@@ -99,12 +108,13 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 		this.showHomeAddressForm = showHomeAddressForm;
 		this.showPresentCondition = showPresentCondition;
 		this.showSymptomsOnsetDate = showSymptomsOnsetDate;
+		this.showPersonSearchButton = showPersonSearchButton;
 		addFields();
 	}
 
 	@Override
 	protected String createHtmlLayout() {
-		return HTML_LAYOUT;
+		return String.format(HTML_LAYOUT, showPersonSearchButton ? NAME_ROW_WITH_PERSON_SEARCH : NAME_ROW_WITHOUT_PERSON_SEARCH);
 	}
 
 	@Override
@@ -112,8 +122,10 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 		addField(PersonDto.FIRST_NAME, TextField.class);
 		addField(PersonDto.LAST_NAME, TextField.class);
 
-		searchPersonButton = createPersonSearchButton(PERSON_SEARCH_LOC);
-		getContent().addComponent(searchPersonButton, PERSON_SEARCH_LOC);
+		if (showPersonSearchButton) {
+			searchPersonButton = createPersonSearchButton(PERSON_SEARCH_LOC);
+			getContent().addComponent(searchPersonButton, PERSON_SEARCH_LOC);
+		}
 
 		birthDateDay = addField(PersonDto.BIRTH_DATE_DD, ComboBox.class);
 		// @TODO: Done for nullselection Bug, fixed in Vaadin 7.7.3
@@ -223,7 +235,7 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 	}
 
 	private void addHomeAddressForm() {
-		CheckBox enterHomeAddressNow = new CheckBox(I18nProperties.getCaption(Captions.caseDataEnterHomeAddressNow));
+		enterHomeAddressNow = new CheckBox(I18nProperties.getCaption(Captions.caseDataEnterHomeAddressNow));
 		enterHomeAddressNow.addStyleName(VSPACE_3);
 		getContent().addComponent(enterHomeAddressNow, ENTER_HOME_ADDRESS_NOW);
 
@@ -238,6 +250,7 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 		homeAddressForm.setValue(new LocationDto());
 		homeAddressForm.setCaption(null);
 		homeAddressForm.setWidthFull();
+		homeAddressForm.setDisableFacilityAddressCheck(true);
 
 		getContent().addComponent(homeAddressForm, HOME_ADDRESS_LOC);
 		homeAddressForm.setVisible(false);
@@ -265,11 +278,10 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 					SimilarPersonDto pickedPerson = personSearchField.getValue();
 					if (pickedPerson != null) {
 						// add consumer
-						PersonDto personByUuid = FacadeProvider.getPersonFacade().getPersonByUuid(pickedPerson.getUuid());
-						setPerson(personByUuid);
+						searchedPerson = FacadeProvider.getPersonFacade().getPersonByUuid(pickedPerson.getUuid());
+						setPerson(searchedPerson);
 						enablePersonFields(false);
 						clickEvent.getButton().setIcon(VaadinIcons.CLOSE);
-						searchedPerson = personByUuid;
 					}
 				});
 
@@ -279,15 +291,26 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 
 				VaadinUiUtil.showModalPopupWindow(component, I18nProperties.getString(Strings.headingSelectPerson));
 			} else {
-				setPerson(null);
+				searchedPerson = null;
+				setPerson(searchedPerson);
 				enablePersonFields(true);
 				clickEvent.getButton().setIcon(VaadinIcons.SEARCH);
-				searchedPerson = null;
 			}
-		}, ValoTheme.BUTTON_BORDERLESS, CssStyles.FORCE_CAPTION);
+		}, CssStyles.FORCE_CAPTION);
 	}
 
 	public void setPerson(PersonDto person) {
+
+		if (showHomeAddressForm) {
+			enterHomeAddressNow.setEnabled(searchedPerson != null ? false : true);
+			if (searchedPerson == null) {
+				homeAddressForm.clear();
+				homeAddressForm.setFacilityFieldsVisible(false, true);
+				homeAddressForm.setVisible(false);
+			} else {
+				enterHomeAddressNow.setValue(false);
+			}
+		}
 
 		if (person != null) {
 			setValue(person);
@@ -416,5 +439,9 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 
 	public PersonDto getSearchedPerson() {
 		return searchedPerson;
+	}
+
+	public void setSearchedPerson(PersonDto searchedPerson) {
+		this.searchedPerson = searchedPerson;
 	}
 }
