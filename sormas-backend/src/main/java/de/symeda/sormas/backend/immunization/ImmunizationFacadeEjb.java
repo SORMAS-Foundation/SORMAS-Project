@@ -36,6 +36,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

@@ -71,7 +71,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	// todo - update this test case as CoreEntityDeletionService permanently deletes other core entities
 	@Test
-	public void testPermanentDelete() {
+	public void testPermanentDelete() throws ExternalSurveillanceToolException {
 		RDCF rdcf = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
 		final UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
 		user.setRegion(new RegionReferenceDto(rdcf.region.getUuid()));

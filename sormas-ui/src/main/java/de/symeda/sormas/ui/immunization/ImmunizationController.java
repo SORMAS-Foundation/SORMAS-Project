@@ -15,6 +15,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -39,8 +40,12 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.automaticdeletion.AutomaticDeletionLabel;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayoutHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class ImmunizationController {
+
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	public void registerViews(Navigator navigator) {
 		navigator.addView(ImmunizationsView.VIEW_NAME, ImmunizationsView.class);
@@ -181,7 +186,11 @@ public class ImmunizationController {
 		// Initialize 'Delete' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_DELETE)) {
 			editComponent.addDeleteListener(() -> {
-				FacadeProvider.getImmunizationFacade().delete(immunizationDto.getUuid());
+				try {
+					FacadeProvider.getImmunizationFacade().delete(immunizationDto.getUuid());
+				} catch (ExternalSurveillanceToolException e) {
+					logger.error("The immunization with uuid:" + immunizationDto.getUuid() + "could not be deleted");
+				}
 				UI.getCurrent().getNavigator().navigateTo(ImmunizationsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityImmunization));
 		}

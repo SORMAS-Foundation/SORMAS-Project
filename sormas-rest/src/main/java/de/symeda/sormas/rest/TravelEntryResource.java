@@ -19,10 +19,13 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.travelentry.TravelEntryCriteria;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.travelentry.TravelEntryIndexDto;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Path("/travelentries")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
@@ -31,6 +34,8 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 	"USER",
 	"REST_USER" })
 public class TravelEntryResource extends EntityDtoResource {
+
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	@POST
 	@Path("/indexList")
@@ -58,7 +63,12 @@ public class TravelEntryResource extends EntityDtoResource {
 	@DELETE
 	@Path("/{uuid}")
 	public Response delete(@PathParam("uuid") String uuid) {
-		FacadeProvider.getTravelEntryFacade().delete(uuid);
+		try {
+			FacadeProvider.getTravelEntryFacade().delete(uuid);
+		} catch (ExternalSurveillanceToolException e) {
+			logger.error("The travel entry with uuid:" + uuid + " could not be deleted");
+			return Response.ok(PushResult.ERROR).build();
+		}
 		return Response.ok("OK").build();
 	}
 

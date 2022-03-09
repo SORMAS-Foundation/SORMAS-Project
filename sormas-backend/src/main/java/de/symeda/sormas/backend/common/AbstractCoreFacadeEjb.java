@@ -109,7 +109,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		return service.exists(uuid);
 	}
 
-	public void delete(String uuid) {
+	public void delete(String uuid) throws ExternalSurveillanceToolException {
 		ADO ado = service.getByUuid(uuid);
 		service.delete(ado);
 	}

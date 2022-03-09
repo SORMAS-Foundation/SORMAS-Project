@@ -42,6 +42,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
@@ -393,7 +394,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testContactDeletion() {
+	public void testContactDeletion() throws ExternalSurveillanceToolException {
 
 		Date since = new Date();
 

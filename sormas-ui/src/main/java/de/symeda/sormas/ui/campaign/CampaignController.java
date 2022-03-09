@@ -31,6 +31,7 @@ import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -49,8 +50,12 @@ import de.symeda.sormas.ui.campaign.campaigns.CampaignsView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CampaignController {
+
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	public void createOrEditCampaign(String uuid) {
 
@@ -65,7 +70,11 @@ public class CampaignController {
 
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE)) {
 				campaignComponent.addDeleteListener(() -> {
-					FacadeProvider.getCampaignFacade().delete(campaign.getUuid());
+					try {
+						FacadeProvider.getCampaignFacade().delete(campaign.getUuid());
+					} catch (ExternalSurveillanceToolException e) {
+						logger.error("The campaign with uuid:" + campaign.getUuid() + "could not be deleted");
+					}
 					campaignComponent.discard();
 					SormasUI.refreshView();
 				}, I18nProperties.getString(Strings.entityCampaign));
@@ -162,7 +171,11 @@ public class CampaignController {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CAMPAIGN_DELETE) && !isCreate) {
 			CampaignDto finalCampaignDto = campaignDto;
 			campaignComponent.addDeleteListener(() -> {
-				FacadeProvider.getCampaignFacade().delete(finalCampaignDto.getUuid());
+				try {
+					FacadeProvider.getCampaignFacade().delete(finalCampaignDto.getUuid());
+				} catch (ExternalSurveillanceToolException e) {
+					logger.error("The campaign with uuid:" + finalCampaignDto.getUuid() + "could not be deleted");
+				}
 				UI.getCurrent().getNavigator().navigateTo(CampaignsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityCampaign));
 		}

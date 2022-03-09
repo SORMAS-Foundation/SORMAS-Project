@@ -20,20 +20,19 @@ package de.symeda.sormas.ui.events;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.themes.ValoTheme;
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.ui.contact.ContactDataView;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Validator;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -44,6 +43,8 @@ import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -56,6 +57,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -64,6 +66,8 @@ import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayoutHelper;
 
 public class EventParticipantsController {
+
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private final EventParticipantFacade eventParticipantFacade = FacadeProvider.getEventParticipantFacade();
 	private final PersonFacade personFacade = FacadeProvider.getPersonFacade();
@@ -178,7 +182,11 @@ public class EventParticipantsController {
 				String.format(I18nProperties.getString(Strings.confirmationDeleteEventParticipants), selectedRows.size()),
 				() -> {
 					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getEventParticipantFacade().delete(((EventParticipantIndexDto) selectedRow).getUuid());
+						try {
+							FacadeProvider.getEventParticipantFacade().delete(((EventParticipantIndexDto) selectedRow).getUuid());
+						} catch (ExternalSurveillanceToolException e) {
+							logger.error("The event participant with uuid:" + ((EventParticipantIndexDto) selectedRow).getUuid() + " could not be deleted");
+						}
 					}
 					callback.run();
 					new Notification(
@@ -197,7 +205,11 @@ public class EventParticipantsController {
 				EventParticipantReferenceDto eventParticipantRef =
 					FacadeProvider.getEventParticipantFacade().getReferenceByEventAndPerson(eventUuid, personUuid);
 				if (eventParticipantRef != null) {
-					FacadeProvider.getEventParticipantFacade().delete(eventParticipantRef.getUuid());
+					try {
+						FacadeProvider.getEventParticipantFacade().delete(eventParticipantRef.getUuid());
+					} catch (ExternalSurveillanceToolException e) {
+						logger.error("The event participant with uuid:" + eventParticipantRef.getUuid() + "could not be deleted");
+					}
 					callback.run();
 				} else {
 					Notification.show(I18nProperties.getString(Strings.errorOccurred), Type.ERROR_MESSAGE);
@@ -223,7 +235,11 @@ public class EventParticipantsController {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
 			editComponent.addDeleteListener(() -> {
-				FacadeProvider.getEventParticipantFacade().delete(eventParticipant.getUuid());
+				try {
+					FacadeProvider.getEventParticipantFacade().delete(eventParticipant.getUuid());
+				} catch (ExternalSurveillanceToolException e) {
+					logger.error("The event participant with uuid:" + eventParticipant.getUuid() + "could not be deleted");
+				}
 				ControllerProvider.getEventController().navigateToParticipants(eventParticipant.getEvent().getUuid());
 			}, I18nProperties.getString(Strings.entityEventParticipant));
 		}

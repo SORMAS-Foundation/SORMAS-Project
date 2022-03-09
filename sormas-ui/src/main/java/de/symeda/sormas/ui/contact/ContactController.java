@@ -24,11 +24,6 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.themes.ValoTheme;
-import de.symeda.sormas.ui.immunization.ImmunizationDataView;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,11 +31,14 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
@@ -62,6 +60,7 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -83,6 +82,7 @@ import de.symeda.sormas.ui.contact.components.linelisting.layout.LineListingLayo
 import de.symeda.sormas.ui.epidata.ContactEpiDataView;
 import de.symeda.sormas.ui.epidata.EpiDataForm;
 import de.symeda.sormas.ui.utils.AbstractView;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -598,7 +598,11 @@ public class ContactController {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)) {
 			editComponent.addDeleteListener(() -> {
-				FacadeProvider.getContactFacade().delete(contact.getUuid());
+				try {
+					FacadeProvider.getContactFacade().delete(contact.getUuid());
+				} catch (ExternalSurveillanceToolException e) {
+					logger.error("The contact with uuid:" + contact.getUuid() + "could not be deleted");
+				}
 				UI.getCurrent().getNavigator().navigateTo(ContactsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityContact));
 		}
@@ -715,7 +719,11 @@ public class ContactController {
 
 					public void run() {
 						for (ContactIndexDto selectedRow : selectedRows) {
-							FacadeProvider.getContactFacade().delete(selectedRow.getUuid());
+							try {
+								FacadeProvider.getContactFacade().delete(selectedRow.getUuid());
+							} catch (ExternalSurveillanceToolException e) {
+								logger.error("The contact with uuid:" + selectedRow.getUuid() + "could not be deleted");
+							}
 						}
 						callback.run();
 						new Notification(
@@ -847,7 +855,11 @@ public class ContactController {
 		VaadinUiUtil.showDeleteConfirmationWindow(
 			String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), I18nProperties.getString(Strings.entityContact)),
 			() -> {
-				FacadeProvider.getContactFacade().delete(contact.getUuid());
+				try {
+					FacadeProvider.getContactFacade().delete(contact.getUuid());
+				} catch (ExternalSurveillanceToolException e) {
+					logger.error("The contact with uuid:" + contact.getUuid() + "could not be deleted");
+				}
 				callback.run();
 			});
 	}

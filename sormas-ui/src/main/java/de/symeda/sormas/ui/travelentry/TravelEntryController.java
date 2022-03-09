@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.travelentry;
 
 import java.util.Collection;
 
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
@@ -36,8 +37,12 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.automaticdeletion.AutomaticDeletionLabel;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayoutHelper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class TravelEntryController {
+
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	public void registerViews(Navigator navigator) {
 		navigator.addView(TravelEntriesView.VIEW_NAME, TravelEntriesView.class);
@@ -158,7 +163,11 @@ public class TravelEntryController {
 		// Initialize 'Delete' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_DELETE)) {
 			editComponent.addDeleteListener(() -> {
-				FacadeProvider.getTravelEntryFacade().delete(travelEntry.getUuid());
+				try {
+					FacadeProvider.getTravelEntryFacade().delete(travelEntry.getUuid());
+				} catch (ExternalSurveillanceToolException e) {
+					e.printStackTrace();
+				}
 				UI.getCurrent().getNavigator().navigateTo(TravelEntriesView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityTravel));
 		}
@@ -237,7 +246,11 @@ public class TravelEntryController {
 				String.format(I18nProperties.getString(Strings.confirmationDeleteTravelEntries), selectedRows.size()),
 				() -> {
 					for (TravelEntryIndexDto selectedRow : selectedRows) {
-						FacadeProvider.getTravelEntryFacade().delete(selectedRow.getUuid());
+						try {
+							FacadeProvider.getTravelEntryFacade().delete(selectedRow.getUuid());
+						} catch (ExternalSurveillanceToolException e) {
+							logger.error("The travel entry with uuid:" + selectedRow.getUuid() + "could not be deleted");
+						}
 					}
 					callback.run();
 					new Notification(

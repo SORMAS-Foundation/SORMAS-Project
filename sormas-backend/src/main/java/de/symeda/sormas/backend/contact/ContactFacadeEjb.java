@@ -62,6 +62,7 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditionsMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -478,7 +479,7 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	public void delete(String contactUuid) {
+	public void delete(String contactUuid) throws ExternalSurveillanceToolException  {
 
 		if (!userService.hasRight(UserRight.CONTACT_DELETE)) {
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete contacts.");
@@ -1889,7 +1890,7 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	public void deleteContactAsDuplicate(String uuid, String duplicateOfUuid) {
+	public void deleteContactAsDuplicate(String uuid, String duplicateOfUuid) throws ExternalSurveillanceToolException {
 		Contact contact = service.getByUuid(uuid);
 		Contact duplicateOfContact = service.getByUuid(duplicateOfUuid);
 		contact.setDuplicateOf(duplicateOfContact);

@@ -16,16 +16,21 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.MergeContactIndexDto;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.ui.utils.AbstractMergeGrid;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class MergeContactsGrid extends AbstractMergeGrid<MergeContactIndexDto, ContactCriteria> {
 
 	public static final String COLUMN_DISEASE = Captions.columnDiseaseShort;
+
+	protected final Logger logger = LoggerFactory.getLogger(getClass());
 
 	public MergeContactsGrid() {
 		super(
@@ -82,7 +87,11 @@ public class MergeContactsGrid extends AbstractMergeGrid<MergeContactIndexDto, C
 	@Override
 	protected void merge(MergeContactIndexDto targetedContact, MergeContactIndexDto contactToMergeAndDelete) {
 		FacadeProvider.getContactFacade().mergeContact(targetedContact.getUuid(), contactToMergeAndDelete.getUuid());
-		FacadeProvider.getContactFacade().deleteContactAsDuplicate(contactToMergeAndDelete.getUuid(), targetedContact.getUuid());
+		try {
+			FacadeProvider.getContactFacade().deleteContactAsDuplicate(contactToMergeAndDelete.getUuid(), targetedContact.getUuid());
+		} catch (ExternalSurveillanceToolException e) {
+			logger.error("The contact with uuid:" + contactToMergeAndDelete.getUuid() + "could not be deleted");
+		}
 
 		if (FacadeProvider.getContactFacade().isDeleted(contactToMergeAndDelete.getUuid())) {
 			reload();
@@ -94,7 +103,11 @@ public class MergeContactsGrid extends AbstractMergeGrid<MergeContactIndexDto, C
 
 	@Override
 	protected void pick(MergeContactIndexDto targetedContact, MergeContactIndexDto contactToDelete) {
-		FacadeProvider.getContactFacade().deleteContactAsDuplicate(contactToDelete.getUuid(), targetedContact.getUuid());
+		try {
+			FacadeProvider.getContactFacade().deleteContactAsDuplicate(contactToDelete.getUuid(), targetedContact.getUuid());
+		} catch (ExternalSurveillanceToolException e) {
+			e.printStackTrace();
+		}
 
 		if (FacadeProvider.getContactFacade().isDeleted(contactToDelete.getUuid())) {
 			reload();
