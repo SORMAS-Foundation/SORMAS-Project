@@ -92,6 +92,8 @@ public interface ConfigFacade {
 
 	int getDaysAfterEventGetsArchived();
 
+	int getDaysAfterEventParticipantGetsArchived();
+
 	int getDaysAfterSystemEventGetsDeleted();
 
 	int getDaysAfterTravelEntryGetsArchived();
@@ -147,4 +149,6 @@ public interface ConfigFacade {
 	long getDocumentUploadSizeLimitMb();
 
 	long getImportFileSizeLimitMb();
+
+	String getAuditLoggerConfig();
 }

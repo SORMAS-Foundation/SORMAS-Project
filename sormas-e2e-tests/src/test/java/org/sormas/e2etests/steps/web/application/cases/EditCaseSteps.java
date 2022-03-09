@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.*;
 import static org.sormas.e2etests.pages.application.cases.SymptomsTabPage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.FOLLOW_UP_UNTIL_DATE;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
 import java.nio.file.Files;
@@ -33,20 +34,24 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
-import javax.inject.Named;
 import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Case;
+import org.sormas.e2etests.entities.pojo.web.QuarantineOrder;
+import org.sormas.e2etests.entities.services.CaseDocumentService;
+import org.sormas.e2etests.entities.services.CaseService;
 import org.sormas.e2etests.enums.CaseOutcome;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.cases.EditCasePage;
-import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.pojo.web.Case;
-import org.sormas.e2etests.pojo.web.QuarantineOrder;
-import org.sormas.e2etests.services.CaseDocumentService;
-import org.sormas.e2etests.services.CaseService;
 import org.sormas.e2etests.state.ApiState;
+import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
+@Slf4j
 public class EditCaseSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
@@ -57,6 +62,7 @@ public class EditCaseSteps implements En {
   private static Case specificCaseData;
   private static LocalDate dateFollowUp;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
+  public static final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
   public static final String userDirPath = System.getProperty("user.dir");
 
   @SneakyThrows
@@ -66,8 +72,9 @@ public class EditCaseSteps implements En {
       CaseService caseService,
       CaseDocumentService caseDocumentService,
       SoftAssert softly,
+      AssertHelpers assertHelpers,
       ApiState apiState,
-      @Named("ENVIRONMENT_URL") String environmentUrl) {
+      EnvironmentManager environmentManager) {
     this.webDriverHelpers = webDriverHelpers;
 
     And(
@@ -102,10 +109,36 @@ public class EditCaseSteps implements En {
         "I navigate to Hospitalization tab in Cases",
         () -> webDriverHelpers.clickOnWebElementBySelector(HOSPITALIZATION_TAB));
 
+    And(
+        "I navigate to case person tab",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CASE_PERSON_TAB));
+
     When(
         "I check the created data is correctly displayed on Edit case page",
         () -> {
           aCase = collectCasePersonData();
+          createdCase = CreateNewCaseSteps.caze;
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              aCase,
+              createdCase,
+              List.of(
+                  "dateOfReport",
+                  "disease",
+                  "externalId",
+                  "responsibleRegion",
+                  "responsibleDistrict",
+                  "responsibleCommunity",
+                  "placeOfStay",
+                  "placeDescription",
+                  "firstName",
+                  "lastName",
+                  "dateOfBirth"));
+        });
+
+    When(
+        "I check the created data is correctly displayed on Edit case page for DE version",
+        () -> {
+          aCase = collectCasePersonDataDE();
           createdCase = CreateNewCaseSteps.caze;
           ComparisonHelper.compareEqualFieldsOfEntities(
               aCase,
@@ -493,7 +526,7 @@ public class EditCaseSteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_DOCUMENT_BUTTON));
 
     When(
-        "I create a case document from template",
+        "I create and download a case document from template",
         () -> {
           aQuarantineOrder = caseDocumentService.buildQuarantineOrder();
           aQuarantineOrder = aQuarantineOrder.toBuilder().build();
@@ -512,15 +545,17 @@ public class EditCaseSteps implements En {
               Paths.get(
                   userDirPath
                       + "/downloads/"
-                      + uuid.substring(0, 6)
+                      + uuid.substring(0, 6).toUpperCase()
                       + "-"
                       + aQuarantineOrder.getDocumentTemplate());
-          softly.assertTrue(
-              Files.exists(path),
-              String.format(
-                  "The document with expected name was not downloaded. Searching path was: %s",
-                  path.toAbsolutePath()));
-          softly.assertAll();
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertTrue(
+                      Files.exists(path),
+                      String.format(
+                          "Case document was not downloaded. Searching path was: %s",
+                          path.toAbsolutePath())),
+              120);
         });
 
     When(
@@ -530,7 +565,8 @@ public class EditCaseSteps implements En {
               NavBarPage.SAMPLE_BUTTON);
           String caseLinkPath = "/sormas-ui/#!cases/data/";
           String uuid = aCase.getUuid();
-          webDriverHelpers.accessWebSite(environmentUrl + caseLinkPath + uuid);
+          webDriverHelpers.accessWebSite(
+              environmentManager.getEnvironmentUrlForMarket(locale) + caseLinkPath + uuid);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(REPORT_DATE_INPUT);
         });
 
@@ -539,7 +575,8 @@ public class EditCaseSteps implements En {
         () -> {
           String caseLinkPath = "/sormas-ui/#!cases/data/";
           String uuid = apiState.getCreatedCase().getUuid();
-          webDriverHelpers.accessWebSite(environmentUrl + caseLinkPath + uuid);
+          webDriverHelpers.accessWebSite(
+              environmentManager.getEnvironmentUrlForMarket(locale) + caseLinkPath + uuid);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
         });
 
@@ -665,6 +702,25 @@ public class EditCaseSteps implements En {
         .build();
   }
 
+  private Case collectCasePersonDataDE() {
+    Case userInfo = getUserInformationDE();
+
+    return Case.builder()
+        .dateOfReport(getDateOfReportDE())
+        .firstName(userInfo.getFirstName())
+        .lastName(userInfo.getLastName())
+        .dateOfBirth(userInfo.getDateOfBirth())
+        .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+        .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
+        .responsibleRegion(webDriverHelpers.getValueFromWebElement(REGION_INPUT))
+        .responsibleDistrict(webDriverHelpers.getValueFromWebElement(DISTRICT_INPUT))
+        .responsibleCommunity(webDriverHelpers.getValueFromWebElement(COMMUNITY_INPUT))
+        .placeOfStay(webDriverHelpers.getTextFromWebElement(PLACE_OF_STAY_SELECTED_VALUE))
+        .placeDescription(webDriverHelpers.getValueFromWebElement(PLACE_DESCRIPTION_INPUT))
+        .build();
+  }
+
   private Case collectCaseData() {
     return Case.builder()
         .dateOfReport(getDateOfReport())
@@ -748,6 +804,11 @@ public class EditCaseSteps implements En {
     return LocalDate.parse(dateOfReport, DATE_FORMATTER);
   }
 
+  private LocalDate getDateOfReportDE() {
+    String dateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE_INPUT);
+    return LocalDate.parse(dateOfReport, DATE_FORMATTER_DE);
+  }
+
   private LocalDate getDateReceivedAtDistrictLevel() {
     String dateOfReport =
         webDriverHelpers.getValueFromWebElement(DATE_RECEIVED_AT_DISTRICT_LEVEL_INPUT);
@@ -770,6 +831,17 @@ public class EditCaseSteps implements En {
     String userInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
     String[] userInfos = userInfo.split(" ");
     LocalDate localDate = LocalDate.parse(userInfos[3].replace(")", ""), DATE_FORMATTER);
+    return Case.builder()
+        .firstName(userInfos[0])
+        .lastName(userInfos[1])
+        .dateOfBirth(localDate)
+        .build();
+  }
+
+  private Case getUserInformationDE() {
+    String userInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
+    String[] userInfos = userInfo.split(" ");
+    LocalDate localDate = LocalDate.parse(userInfos[3].replace(")", ""), DATE_FORMATTER_DE);
     return Case.builder()
         .firstName(userInfos[0])
         .lastName(userInfos[1])

@@ -38,8 +38,9 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ClickableLabel;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentField;
 
-public class EventGroupListEntry extends HorizontalLayout {
+public class EventGroupListEntry extends SideComponentField {
 
 	private final EventGroupIndexDto eventGroup;
 	private Button editButton;
@@ -49,23 +50,11 @@ public class EventGroupListEntry extends HorizontalLayout {
 	public EventGroupListEntry(EventGroupIndexDto eventGroup) {
 		this.eventGroup = eventGroup;
 
-		setMargin(false);
-		setSpacing(true);
-		setWidth(100, Unit.PERCENTAGE);
-		addStyleName(CssStyles.SORMAS_LIST_ENTRY);
-
-		VerticalLayout mainLayout = new VerticalLayout();
-		mainLayout.setWidth(100, Unit.PERCENTAGE);
-		mainLayout.setMargin(false);
-		mainLayout.setSpacing(false);
-		addComponent(mainLayout);
-		setExpandRatio(mainLayout, 1);
-
 		HorizontalLayout topLayout = new HorizontalLayout();
 		topLayout.setWidth(100, Unit.PERCENTAGE);
 		topLayout.setMargin(false);
 		topLayout.setSpacing(false);
-		mainLayout.addComponent(topLayout);
+		addComponentToField(topLayout);
 
 		VerticalLayout topLeftLayout = new VerticalLayout();
 		{

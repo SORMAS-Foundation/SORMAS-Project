@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -25,15 +25,13 @@ import com.github.javafaker.Faker;
 import com.google.inject.Exposed;
 import com.google.inject.PrivateModule;
 import com.google.inject.Provides;
-import io.restassured.RestAssured;
-import io.restassured.specification.RequestSpecification;
 import java.io.FileNotFoundException;
 import java.io.InputStream;
 import java.util.Locale;
 import java.util.Properties;
 import javax.inject.Singleton;
 import lombok.SneakyThrows;
-import org.sormas.e2etests.enums.TestDataUser;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.webdriver.DriverManager;
 import org.testng.asserts.SoftAssert;
 
@@ -50,6 +48,13 @@ public class CommonModule extends PrivateModule {
   @Exposed
   Faker provideFaker() {
     return new Faker(Locale.GERMANY);
+  }
+
+  @Provides
+  @Singleton
+  @Exposed
+  EnvironmentManager provideEnvManager() {
+    return new EnvironmentManager();
   }
 
   @Provides
@@ -85,15 +90,5 @@ public class CommonModule extends PrivateModule {
     objectMapper.setSerializationInclusion(JsonInclude.Include.NON_NULL);
     objectMapper.registerModule(new Jdk8Module());
     return objectMapper;
-  }
-
-  @Provides
-  @Exposed
-  RequestSpecification provideRestAssured() {
-    return RestAssured.given()
-        .auth()
-        .preemptive()
-        .basic(
-            TestDataUser.REST_AUTOMATION.getUsername(), TestDataUser.REST_AUTOMATION.getPassword());
   }
 }

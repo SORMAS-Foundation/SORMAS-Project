@@ -414,7 +414,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 			eventService.ensurePersisted(event);
 		}
 
-		eventGroupService.delete(eventGroup);
+		eventGroupService.deletePermanent(eventGroup);
 	}
 
 	@Override

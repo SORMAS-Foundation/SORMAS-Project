@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,14 +20,62 @@ package org.sormas.e2etests.steps.web.application.events;
 
 import static org.sormas.e2etests.pages.application.actions.CreateNewActionPage.NEW_ACTION_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
-import static org.sormas.e2etests.pages.application.events.EditEventPage.*;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.DISEASE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.DISEASE_INPUT;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.EDIT_EVENT_GROUP_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.EDIT_FIRST_TASK;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_ACTIONS_TAB;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_DATA_SAVED_MESSAGE;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_HANDOUT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_INVESTIGATION_STATUS_OPTIONS;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_MANAGEMENT_STATUS_OPTIONS;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_STATUS_OPTIONS;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_GROUP_ID;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.GROUP_EVENT_NAME_POPUP_INPUT;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.GROUP_EVENT_UUID;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.LINK_EVENT_GROUP_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.NAVIGATE_TO_EVENT_DIRECTORY_EVENT_GROUP_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_ACTION_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_EVENT_GROUP_RADIOBUTTON;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_GROUP_EVENT_CREATED_MESSAGE;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.REPORT_DATE_INPUT;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.RISK_LEVEL_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.RISK_LEVEL_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.SAVE_BUTTON_FOR_EDIT_EVENT_GROUP;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.SAVE_BUTTON_FOR_POPUP_WINDOWS;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.SELECT_EVENT_GROUP_RADIOBUTTON;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.SOURCE_TYPE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.SOURCE_TYPE_INPUT;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.START_DATA_INPUT;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.TITLE_INPUT;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.TOTAL_ACTIONS_COUNTER;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.TYPE_OF_PLACE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.TYPE_OF_PLACE_INPUT;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.UNLINK_EVENT_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.getGroupEventName;
 import static org.sormas.e2etests.pages.application.events.EventActionsPage.CREATE_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.TOTAL_EVENTS_COUNTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
-import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.*;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.ADD_PARTICIPANT_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CREATE_NEW_PERSON_RADIO_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DISCARD_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.ERROR_MESSAGE_TEXT;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EVENT_PARTICIPANTS_TAB;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PARTICIPANT_DISTRICT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PARTICIPANT_FIRST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PARTICIPANT_LAST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PARTICIPANT_REGION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_PERSON_POPUP;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_POPUP_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.SEX_COMBOBOX;
-import static org.sormas.e2etests.pages.application.persons.EditPersonPage.*;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PERSON_DATA_ADDED_AS_A_PARTICIPANT_MESSAGE;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PERSON_DATA_SAVED;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.POPUP_PERSON_ID;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.POPUP_RESPONSIBLE_DISTRICT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.POPUP_RESPONSIBLE_REGION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.POPUP_SAVE;
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
@@ -38,23 +86,23 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.inject.Inject;
-import javax.inject.Named;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Event;
+import org.sormas.e2etests.entities.pojo.web.EventGroup;
+import org.sormas.e2etests.entities.pojo.web.EventHandout;
+import org.sormas.e2etests.entities.pojo.web.EventParticipant;
+import org.sormas.e2etests.entities.pojo.web.Person;
+import org.sormas.e2etests.entities.services.EventDocumentService;
+import org.sormas.e2etests.entities.services.EventGroupService;
+import org.sormas.e2etests.entities.services.EventParticipantService;
+import org.sormas.e2etests.entities.services.EventService;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.events.EditEventPage;
-import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.pojo.web.*;
-import org.sormas.e2etests.pojo.web.Event;
-import org.sormas.e2etests.pojo.web.EventGroup;
-import org.sormas.e2etests.pojo.web.EventParticipant;
-import org.sormas.e2etests.pojo.web.Person;
-import org.sormas.e2etests.services.EventDocumentService;
-import org.sormas.e2etests.services.EventGroupService;
-import org.sormas.e2etests.services.EventParticipantService;
-import org.sormas.e2etests.services.EventService;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
@@ -69,6 +117,7 @@ public class EditEventSteps implements En {
   public static Person person;
   public static EventHandout aEventHandout;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
+  public static final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
   public static final String userDirPath = System.getProperty("user.dir");
 
   @Inject
@@ -81,7 +130,7 @@ public class EditEventSteps implements En {
       SoftAssert softly,
       EventParticipantService eventParticipant,
       AssertHelpers assertHelpers,
-      @Named("ENVIRONMENT_URL") String environmentUrl,
+      EnvironmentManager environmentManager,
       ApiState apiState) {
     this.webDriverHelpers = webDriverHelpers;
 
@@ -98,6 +147,29 @@ public class EditEventSteps implements En {
     When(
         "I collect the UUID displayed on Edit event page",
         () -> collectedEvent = collectEventUuid());
+
+    When(
+        "I check the created data for DE version is correctly displayed in event edit page",
+        () -> {
+          collectedEvent = collectEventDataDE();
+          createdEvent = CreateNewEventSteps.newEvent;
+
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              collectedEvent,
+              createdEvent,
+              List.of(
+                  "uuid",
+                  "reportDate",
+                  "eventDate",
+                  "eventStatus",
+                  "investigationStatus",
+                  "eventManagementStatus",
+                  "riskLevel",
+                  "disease",
+                  "title",
+                  "sourceType",
+                  "eventLocation"));
+        });
 
     When(
         "I check the created data is correctly displayed in event edit page",
@@ -320,7 +392,7 @@ public class EditEventSteps implements En {
         "I open the last created event via api",
         () -> {
           String LAST_CREATED_EVENT_URL =
-              environmentUrl
+              environmentManager.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!events/data/"
                   + apiState.getCreatedEvent().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_EVENT_URL);
@@ -337,7 +409,7 @@ public class EditEventSteps implements En {
         "I navigate to Event Action tab for created Event",
         () -> {
           String LAST_CREATED_EVENT_ACTIONS_URL =
-              environmentUrl
+              environmentManager.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!events/eventactions/"
                   + apiState.getCreatedEvent().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_EVENT_ACTIONS_URL);
@@ -364,13 +436,26 @@ public class EditEventSteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(EditEventPage.CREATE_DOCUMENT_BUTTON));
 
     When(
-        "I create an event document from template",
+        "I create and download an event document from template",
         () -> {
           aEventHandout = eventDocumentService.buildEventHandout();
           aEventHandout = aEventHandout.toBuilder().build();
           selectEventHandoutTemplate(aEventHandout.getDocumentTemplate());
           webDriverHelpers.clickOnWebElementBySelector(EditEventPage.CREATE_EVENT_HANDOUT_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(EditEventPage.CANCEL_EVENT_HANDOUT_BUTTON);
+        });
+    And(
+        "I check that number of displayed Event Participants is {int}",
+        (Integer number) -> {
+          webDriverHelpers.clickOnWebElementBySelector(EditEventPage.EVENT_PARTICIPANTS_TAB);
+          webDriverHelpers.waitForPageLoaded();
+          assertHelpers.assertWithPoll20Second(
+              () ->
+                  Assert.assertEquals(
+                      Integer.parseInt(
+                          webDriverHelpers.getTextFromPresentWebElement(TOTAL_EVENTS_COUNTER)),
+                      number.intValue(),
+                      "Number of displayed actions is not correct"));
         });
     And(
         "I check that number of actions in Edit Event Tab is {int}",
@@ -391,14 +476,16 @@ public class EditEventSteps implements En {
               Paths.get(
                   userDirPath
                       + "/downloads/"
-                      + uuid.substring(0, 6)
+                      + uuid.substring(0, 6).toUpperCase()
                       + "-"
                       + aEventHandout.getDocumentTemplate());
-          softly.assertTrue(
-              Files.exists(path),
-              "The document with expected name was not downloaded. Searched after path: "
-                  + path.toAbsolutePath());
-          softly.assertAll();
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertTrue(
+                      Files.exists(path),
+                      "Event document was not downloaded. Searched after path: "
+                          + path.toAbsolutePath()),
+              120);
         });
   }
 
@@ -415,6 +502,32 @@ public class EditEventSteps implements En {
     LocalDate reportDate = LocalDate.parse(reportingDate, DATE_FORMATTER);
     String eventStartDate = webDriverHelpers.getValueFromWebElement(START_DATA_INPUT);
     LocalDate eventDate = LocalDate.parse(eventStartDate, DATE_FORMATTER);
+
+    return Event.builder()
+        .reportDate(reportDate)
+        .eventDate(eventDate)
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+        .eventStatus(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(EVENT_STATUS_OPTIONS))
+        .investigationStatus(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                EVENT_INVESTIGATION_STATUS_OPTIONS))
+        .eventManagementStatus(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                EVENT_MANAGEMENT_STATUS_OPTIONS))
+        .riskLevel(webDriverHelpers.getValueFromWebElement(RISK_LEVEL_INPUT))
+        .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
+        .title(webDriverHelpers.getValueFromWebElement(TITLE_INPUT))
+        .sourceType(webDriverHelpers.getValueFromWebElement(SOURCE_TYPE_INPUT))
+        .eventLocation(webDriverHelpers.getValueFromWebElement(TYPE_OF_PLACE_INPUT))
+        .build();
+  }
+
+  private Event collectEventDataDE() {
+    String reportingDate = webDriverHelpers.getValueFromWebElement(REPORT_DATE_INPUT);
+    LocalDate reportDate = LocalDate.parse(reportingDate, DATE_FORMATTER_DE);
+    String eventStartDate = webDriverHelpers.getValueFromWebElement(START_DATA_INPUT);
+    LocalDate eventDate = LocalDate.parse(eventStartDate, DATE_FORMATTER_DE);
 
     return Event.builder()
         .reportDate(reportDate)

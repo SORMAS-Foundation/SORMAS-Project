@@ -22,6 +22,11 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
+import com.vaadin.ui.themes.ValoTheme;
+import de.symeda.sormas.ui.immunization.ImmunizationDataView;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -370,8 +375,12 @@ public class ContactController {
 		boolean createdFromLabMesssage) {
 
 		final PersonDto casePerson = caze != null ? FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()) : null;
-		ContactCreateForm createForm =
-			new ContactCreateForm(caze != null ? caze.getDisease() : null, caze != null && !asSourceContact, asSourceContact);
+		ContactCreateForm createForm;
+		if (createdFromLabMesssage) {
+			createForm = new ContactCreateForm(caze != null ? caze.getDisease() : null, caze != null && !asSourceContact, asSourceContact, false);
+		} else {
+			createForm = new ContactCreateForm(caze != null ? caze.getDisease() : null, caze != null && !asSourceContact, asSourceContact);
+		}
 		createForm.setValue(createNewContact(caze, asSourceContact));
 		if (casePerson != null && asSourceContact) {
 			createForm.setPerson(casePerson);
@@ -574,9 +583,45 @@ public class ContactController {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)) {
 			editComponent.addDeleteListener(() -> {
-				FacadeProvider.getContactFacade().deleteContact(contact.getUuid());
+				FacadeProvider.getContactFacade().delete(contact.getUuid());
 				UI.getCurrent().getNavigator().navigateTo(ContactsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityContact));
+		}
+
+		// Initialize 'Archive' button
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_ARCHIVE)) {
+			boolean archived = FacadeProvider.getContactFacade().isArchived(contact.getUuid());
+			Button archiveButton = ButtonHelper.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {
+				if (editComponent.isModified()) {
+					editComponent.commit();
+				}
+
+				if (archived) {
+					ControllerProvider.getArchiveController()
+						.dearchiveEntity(
+							contact,
+							FacadeProvider.getContactFacade(),
+							Strings.headingDearchiveContact,
+							Strings.confirmationDearchiveContact,
+							Strings.entityContact,
+							Strings.messageContactDearchived,
+							() -> navigateToView(ContactDataView.VIEW_NAME, contact.getUuid(), false));
+				} else {
+					ControllerProvider.getArchiveController()
+						.archiveEntity(
+							contact,
+							FacadeProvider.getContactFacade(),
+							Strings.headingArchiveContact,
+							Strings.confirmationArchiveContact,
+							Strings.entityContact,
+							Strings.messageContactArchived,
+							() -> navigateToView(ContactDataView.VIEW_NAME, contact.getUuid(), false));
+				}
+
+			}, ValoTheme.BUTTON_LINK);
+
+			editComponent.getButtonsPanel().addComponentAsFirst(archiveButton);
+			editComponent.getButtonsPanel().setComponentAlignment(archiveButton, Alignment.BOTTOM_LEFT);
 		}
 
 		return editComponent;
@@ -655,7 +700,7 @@ public class ContactController {
 
 					public void run() {
 						for (ContactIndexDto selectedRow : selectedRows) {
-							FacadeProvider.getContactFacade().deleteContact(selectedRow.getUuid());
+							FacadeProvider.getContactFacade().delete(selectedRow.getUuid());
 						}
 						callback.run();
 						new Notification(
@@ -787,7 +832,7 @@ public class ContactController {
 		VaadinUiUtil.showDeleteConfirmationWindow(
 			String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), I18nProperties.getString(Strings.entityContact)),
 			() -> {
-				FacadeProvider.getContactFacade().deleteContact(contact.getUuid());
+				FacadeProvider.getContactFacade().delete(contact.getUuid());
 				callback.run();
 			});
 	}

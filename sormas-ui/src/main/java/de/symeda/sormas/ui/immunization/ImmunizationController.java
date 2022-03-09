@@ -8,7 +8,6 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Sizeable;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
@@ -182,7 +181,7 @@ public class ImmunizationController {
 		// Initialize 'Delete' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_DELETE)) {
 			editComponent.addDeleteListener(() -> {
-				FacadeProvider.getImmunizationFacade().deleteImmunization(immunizationDto.getUuid());
+				FacadeProvider.getImmunizationFacade().delete(immunizationDto.getUuid());
 				UI.getCurrent().getNavigator().navigateTo(ImmunizationsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityImmunization));
 		}
@@ -191,8 +190,32 @@ public class ImmunizationController {
 		if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_ARCHIVE)) {
 			boolean archived = FacadeProvider.getImmunizationFacade().isArchived(immunizationDto.getUuid());
 			Button archiveButton = ButtonHelper.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {
-				editComponent.commit();
-				archiveOrDearchiveImmunization(immunizationDto.getUuid(), !archived);
+				if (editComponent.isModified()) {
+					editComponent.commit();
+				}
+
+				if (archived) {
+					ControllerProvider.getArchiveController()
+						.dearchiveEntity(
+							immunizationDto,
+							FacadeProvider.getImmunizationFacade(),
+							Strings.headingDearchiveImmunization,
+							Strings.confirmationDearchiveImmunization,
+							Strings.entityImmunization,
+							Strings.messageImmunizationDearchived,
+							() -> navigateToImmunization(immunizationDto.getUuid()));
+				} else {
+					ControllerProvider.getArchiveController()
+						.archiveEntity(
+							immunizationDto,
+							FacadeProvider.getImmunizationFacade(),
+							Strings.headingArchiveImmunization,
+							Strings.confirmationArchiveImmunization,
+							Strings.entityImmunization,
+							Strings.messageImmunizationArchived,
+							() -> navigateToImmunization(immunizationDto.getUuid()));
+				}
+
 			}, ValoTheme.BUTTON_LINK);
 
 			editComponent.getButtonsPanel().addComponentAsFirst(archiveButton);
@@ -224,57 +247,6 @@ public class ImmunizationController {
 
 	private ImmunizationDto findImmunization(String uuid) {
 		return FacadeProvider.getImmunizationFacade().getByUuid(uuid);
-	}
-
-	private void archiveOrDearchiveImmunization(String uuid, boolean archive) {
-
-		if (archive) {
-			Label contentLabel = new Label(
-				String.format(
-					I18nProperties.getString(Strings.confirmationArchiveImmunization),
-					I18nProperties.getString(Strings.entityImmunization).toLowerCase(),
-					I18nProperties.getString(Strings.entityImmunization).toLowerCase()));
-			VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getString(Strings.headingArchiveImmunization),
-				contentLabel,
-				I18nProperties.getString(Strings.yes),
-				I18nProperties.getString(Strings.no),
-				640,
-				e -> {
-					if (e) {
-						FacadeProvider.getImmunizationFacade().archive(uuid);
-						Notification.show(
-							String.format(
-								I18nProperties.getString(Strings.messageImmunizationArchived),
-								I18nProperties.getString(Strings.entityImmunization)),
-							Notification.Type.ASSISTIVE_NOTIFICATION);
-						navigateToImmunization(uuid);
-					}
-				});
-		} else {
-			Label contentLabel = new Label(
-				String.format(
-					I18nProperties.getString(Strings.confirmationDearchiveImmunization),
-					I18nProperties.getString(Strings.entityImmunization).toLowerCase(),
-					I18nProperties.getString(Strings.entityImmunization).toLowerCase()));
-			VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getString(Strings.headingDearchiveImmunization),
-				contentLabel,
-				I18nProperties.getString(Strings.yes),
-				I18nProperties.getString(Strings.no),
-				640,
-				e -> {
-					if (e) {
-						FacadeProvider.getImmunizationFacade().dearchive(uuid);
-						Notification.show(
-							String.format(
-								I18nProperties.getString(Strings.messageImmunizationDearchived),
-								I18nProperties.getString(Strings.entityImmunization)),
-							Notification.Type.ASSISTIVE_NOTIFICATION);
-						navigateToImmunization(uuid);
-					}
-				});
-		}
 	}
 
 	private void selectOrCreateimmunizationForPerson(ImmunizationDto dto, PersonReferenceDto selectedPerson) {

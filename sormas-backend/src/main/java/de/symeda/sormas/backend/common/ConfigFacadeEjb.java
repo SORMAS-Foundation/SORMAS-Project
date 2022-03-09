@@ -124,6 +124,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	public static final String DAYS_AFTER_CASE_GETS_ARCHIVED = "daysAfterCaseGetsArchived";
 	private static final String DAYS_AFTER_EVENT_GETS_ARCHIVED = "daysAfterEventGetsArchived";
+	private static final String DAYS_AFTER_EVENT_PARTICIPANT_GETS_ARCHIVED = "daysAfterEventParticipantGetsArchived";
 	private static final String DAYS_AFTER_TRAVEL_ENTRY_GETS_ARCHIVED = "daysAfterTravelEntryGetsArchived";
 
 	private static final String DAYS_AFTER_SYSTEM_EVENT_GETS_DELETED = "daysAfterSystemEventGetsDeleted";
@@ -161,6 +162,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	private static final String DASHBOARD_MAP_MARKER_LIMIT = "dashboardMapMarkerLimit";
 	private static final String AUDITOR_ATTRIBUTE_LOGGING = "auditor.attribute.logging";
+	private static final String AUDIT_LOGGER_CONFIG = "audit.logger.config";
 
 	private static final String CREATE_DEFAULT_ENTITIES = "createDefaultEntities";
 	private static final String SKIP_DEFAULT_PASSWORD_CHECK = "skipDefaultPasswordCheck";
@@ -459,6 +461,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
+	public int getDaysAfterEventParticipantGetsArchived() {
+		return getInt(DAYS_AFTER_EVENT_PARTICIPANT_GETS_ARCHIVED, 90);
+	}
+
+	@Override
 	public int getDaysAfterSystemEventGetsDeleted() {
 		return getInt(DAYS_AFTER_SYSTEM_EVENT_GETS_DELETED, 90);
 	}
@@ -702,6 +709,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public boolean isAuditorAttributeLoggingEnabled() {
 		return getBoolean(AUDITOR_ATTRIBUTE_LOGGING, true);
+	}
+
+	@Override
+	public String getAuditLoggerConfig(){
+		return getProperty(AUDIT_LOGGER_CONFIG,"");
 	}
 
 	@Override

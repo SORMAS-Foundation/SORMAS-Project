@@ -54,7 +54,7 @@ public enum FeatureType {
 		new FeatureType[] {
 			SAMPLES_LAB },
 		null),
-	TASK_MANAGEMENT(true, true, null, null),
+	TASK_MANAGEMENT(true, true, null, ImmutableMap.of(FeatureTypeProperty.ALLOW_FREE_EDITING, Boolean.FALSE)),
 	WEEKLY_REPORTING(true, true, null, null),
 	IMMUNIZATION_MANAGEMENT(true, true, null, ImmutableMap.of(FeatureTypeProperty.REDUCED, Boolean.FALSE)),
 	TRAVEL_ENTRIES(true, false, null, null),
@@ -244,7 +244,8 @@ public enum FeatureType {
 		true,
 		new FeatureType[] {
 			TASK_MANAGEMENT },
-		null);
+		null),
+	DELETE_PERMANENT(true, false, null, null);
 
 	/**
 	 * Server feature means that the feature only needs to be configured once per server since they define the way the system

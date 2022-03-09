@@ -1,9 +1,11 @@
 package de.symeda.sormas.ui.utils.components.sidecomponent;
 
+import java.util.Arrays;
 import java.util.function.Consumer;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Sizeable;
+import com.vaadin.shared.Registration;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
@@ -15,6 +17,10 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.components.sidecomponent.event.SideComponentCreateEvent;
+import de.symeda.sormas.ui.utils.components.sidecomponent.event.SideComponentCreateEventListener;
+import de.symeda.sormas.ui.utils.components.sidecomponent.event.SideComponentEditEvent;
+import de.symeda.sormas.ui.utils.components.sidecomponent.event.SideComponentEditEventListener;
 
 public class SideComponent extends VerticalLayout {
 
@@ -50,5 +56,34 @@ public class SideComponent extends VerticalLayout {
 			createButton.addClickListener(clickListener::accept);
 			addCreateButton(createButton);
 		}
+	}
+
+	protected void addCreateButton(String caption, UserRight... userRights) {
+		if (userHasRight(userRights)) {
+			Button createButton = ButtonHelper.createButton(caption);
+			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
+			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
+			createButton.addClickListener(e -> fireEvent(new SideComponentCreateEvent(this)));
+			addCreateButton(createButton);
+		}
+	}
+
+	public Registration addSideComponentCreateEventListener(SideComponentCreateEventListener sideComponentCreateEventListener) {
+		return addListener(
+			SideComponentCreateEvent.class,
+			sideComponentCreateEventListener,
+			SideComponentCreateEventListener.ON_SIDE_COMPONENT_CREATE_METHOD);
+	}
+
+	public Registration addSideComponentEditEventListener(SideComponentEditEventListener sideComponentEditEventListener) {
+		return addListener(
+			SideComponentEditEvent.class,
+			sideComponentEditEventListener,
+			SideComponentEditEventListener.ON_SIDE_COMPONENT_EDIT_METHOD);
+	}
+
+	private boolean userHasRight(UserRight... userRights) {
+		UserProvider currentUser = UserProvider.getCurrent();
+		return Arrays.stream(userRights).anyMatch(currentUser::hasUserRight);
 	}
 }

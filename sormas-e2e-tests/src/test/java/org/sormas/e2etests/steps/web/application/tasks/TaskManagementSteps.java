@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -33,17 +33,20 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
+import org.sormas.e2etests.entities.pojo.web.Task;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.web.Task;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
 import org.testng.asserts.SoftAssert;
 
+@Slf4j
 public class TaskManagementSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
@@ -165,7 +168,7 @@ public class TaskManagementSteps implements En {
     When(
         "^I am checking if all the fields are correctly displayed in the Task Management table$",
         () -> {
-          org.sormas.e2etests.pojo.api.Task expectedTask = apiState.getCreatedTask();
+          org.sormas.e2etests.entities.pojo.api.Task expectedTask = apiState.getCreatedTask();
           Task actualTask = taskTableRows.get(1);
           softly.assertTrue(
               apiState
@@ -310,14 +313,19 @@ public class TaskManagementSteps implements En {
     return headerHashmap;
   }
 
+  @SneakyThrows
   private LocalDateTime getLocalDateTimeFromColumns(String date) {
+    if (date.isEmpty()) {
+      throw new Exception(String.format("Provided date to be parsed: %s, is empty!", date));
+    }
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy h:m a");
     try {
+      log.info("Parsing date: [{}]", date);
       return LocalDateTime.parse(date.trim(), formatter);
     } catch (Exception e) {
       throw new WebDriverException(
           String.format(
-              "Unable to parse date: %s due to caught exception: %s", date, e.getMessage()));
+              "Unable to parse date: [ %s ] due to caught exception: %s", date, e.getMessage()));
     }
   }
 
