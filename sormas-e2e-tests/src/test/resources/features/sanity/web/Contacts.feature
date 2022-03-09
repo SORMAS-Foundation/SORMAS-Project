@@ -316,10 +316,10 @@ Feature: Contacts end to end tests
     Then I click on the Epidemiological Data button
     And I fill all the data in Exposure for Epidemiological data tab in Contacts
     And I click on save button from Epidemiological Data
-    Then I click on the Contact button tab in Contacts
+    Then I click on the Contact tab in Contacts
     And I click on CONFIRMED CONTACT radio button Contact Person tab
     Then I click SAVE button on Edit Contact Page
     And I click Create Case from Contact button
     And I create a new case for contact with specific data
-    Then I click on the Epidemiological Data button in Case form
-    And I am checking all Exposure data is saved and displayed in Cases
+    Then I click on the Epidemiological data button tab in Case form
+    And I am checking all Exposure data created by UI is saved and displayed in Cases

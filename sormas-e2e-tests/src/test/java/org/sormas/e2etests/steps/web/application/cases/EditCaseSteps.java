@@ -620,7 +620,7 @@ public class EditCaseSteps implements En {
         });
 
     When(
-        "I am checking all Exposure data is saved and displayed in Cases",
+        "I am checking all Exposure data created by UI is saved and displayed in Cases",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(OPEN_SAVED_EXPOSURE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(OPEN_SAVED_EXPOSURE_BUTTON);
@@ -637,7 +637,7 @@ public class EditCaseSteps implements En {
                       apiState.getCreatedContact().getUuid().toUpperCase())
                   + ")";
 
-          softly.assertEquals(contactToCase, contactToCaseUIvalue, "The value is different");
+          softly.assertEquals(contactToCase, contactToCaseUIvalue, "The First Name,Last Name and Contact ID for Contact to source case field in Exposure form is different than data filled in Contact to case");
           softly.assertAll();
           Exposure actualExposureData = collectExposureDataCase();
           ComparisonHelper.compareEqualEntities(exposureData, actualExposureData);

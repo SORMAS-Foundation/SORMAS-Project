@@ -328,7 +328,7 @@ public class ContactDirectorySteps implements En {
         });
 
     When(
-        "I click on the Contact button tab in Contacts",
+        "I click on the Contact tab in Contacts",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_DATA_TAB);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);

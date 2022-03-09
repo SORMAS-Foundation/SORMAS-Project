@@ -170,7 +170,7 @@ public class CaseDirectorySteps implements En {
         });
 
     When(
-        "I click on the Epidemiological Data button in Case form",
+        "I click on the Epidemiological data button tab in Case form",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CASE_EPIDEMIOLOGICAL_DATA_TAB);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
