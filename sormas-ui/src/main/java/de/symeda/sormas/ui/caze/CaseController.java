@@ -26,6 +26,7 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.ui.utils.NotificationHelper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -1021,9 +1022,10 @@ public class CaseController {
 				if (changedCases == selectedCases.size()) {
 					Notification.show(I18nProperties.getString(Strings.messageCasesEdited), Type.HUMANIZED_MESSAGE);
 				} else {
-					Notification.show(
+					NotificationHelper.showNotification(
 						String.format(I18nProperties.getString(Strings.messageCasesBulkEdited), selectedCases.size(), changedCases),
-						Type.HUMANIZED_MESSAGE);
+						Type.HUMANIZED_MESSAGE,
+						-1);
 				}
 			}
 		});

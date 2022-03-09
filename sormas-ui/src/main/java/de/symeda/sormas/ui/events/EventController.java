@@ -873,7 +873,7 @@ public class EventController {
 					NotificationHelper.showNotification(
 						String.format(I18nProperties.getString(Strings.messageEventsBulkEdited), selectedEvents.size(), changedEvents),
 						Type.HUMANIZED_MESSAGE,
-						5000);
+						-1);
 				}
 			}
 		});

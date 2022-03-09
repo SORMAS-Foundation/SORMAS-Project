@@ -24,6 +24,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.ui.utils.NotificationHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -667,9 +668,10 @@ public class ContactController {
 			if (changedContacts == selectedContacts.size()) {
 				Notification.show(I18nProperties.getString(Strings.messageContactsEdited), Type.HUMANIZED_MESSAGE);
 			} else {
-				Notification.show(
+				NotificationHelper.showNotification(
 					String.format(I18nProperties.getString(Strings.messageContactsBulkEdited), selectedContacts.size(), changedContacts),
-					Type.HUMANIZED_MESSAGE);
+					Type.HUMANIZED_MESSAGE,
+					-1);
 			}
 		});
 
