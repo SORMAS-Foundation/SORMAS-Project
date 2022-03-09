@@ -18,9 +18,16 @@ package de.symeda.sormas.backend.info;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
+import java.io.File;
+import java.io.IOException;
 import java.net.URISyntaxException;
 import java.nio.file.Paths;
+import java.util.Iterator;
 
+import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
+import org.apache.poi.ss.usermodel.Row;
+import org.apache.poi.xssf.usermodel.XSSFSheet;
+import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.junit.After;
 import org.junit.Test;
 
@@ -33,6 +40,7 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 public class InfoFacadeEjbTest extends AbstractBeanTest {
 
 	private String originalCustomFilesPath;
+	private String originalServerCountry;
 
 	@Override
 	public void init() {
@@ -41,6 +49,11 @@ public class InfoFacadeEjbTest extends AbstractBeanTest {
 		originalCustomFilesPath = MockProducer.getProperties().getProperty(ConfigFacadeEjb.CUSTOM_FILES_PATH);
 		if (originalCustomFilesPath == null) {
 			originalCustomFilesPath = "";
+		}
+
+		originalServerCountry = MockProducer.getProperties().getProperty(ConfigFacadeEjb.COUNTRY_LOCALE);
+		if (originalServerCountry == null) {
+			originalServerCountry = "";
 		}
 
 		try {
@@ -59,10 +72,42 @@ public class InfoFacadeEjbTest extends AbstractBeanTest {
 	@After
 	public void destroy() {
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.CUSTOM_FILES_PATH, originalCustomFilesPath);
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, originalServerCountry);
 	}
 
 	@Test
 	public void testDataDictionaryAllowed() {
 		assertThat(getInfoFacade().isGenerateDataProtectionDictionaryAllowed(), is(true));
+	}
+
+	@Test
+	public void testFieldsAddedBasedOnServerCountry() throws IOException, InvalidFormatException {
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "en");
+		XSSFWorkbook workbook = new XSSFWorkbook(new File(getInfoFacade().generateDataProtectionDictionary()));
+
+		assertThat(isFieldAdded(workbook, "Person", "Person.nickname"), is(true));
+		assertThat(isFieldAdded(workbook, "Case", "CaseData.epidNumber"), is(true));
+
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "de");
+		workbook = new XSSFWorkbook(new File(getInfoFacade().generateDataProtectionDictionary()));
+		assertThat(isFieldAdded(workbook, "Person", "Person.nickname"), is(false));
+		assertThat(isFieldAdded(workbook, "Case", "CaseData.epidNumber"), is(false));
+	}
+
+	private boolean isFieldAdded(XSSFWorkbook dataDictionaryWb, String sheetName, String fieldId) throws IOException, InvalidFormatException {
+		XSSFSheet sheet = dataDictionaryWb.getSheet(sheetName);
+
+		Iterator<Row> rowIterator = sheet.rowIterator();
+
+		boolean found = false;
+		while (!found && rowIterator.hasNext()) {
+			Row row = rowIterator.next();
+
+			String stringCellValue = row.getCell(0).getStringCellValue();
+
+			found = fieldId.equals(stringCellValue);
+		}
+
+		return found;
 	}
 }
