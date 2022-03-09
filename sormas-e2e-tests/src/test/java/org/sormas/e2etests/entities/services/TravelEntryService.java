@@ -18,6 +18,9 @@
 
 package org.sormas.e2etests.entities.services;
 
+import static org.sormas.e2etests.enums.DiseasesValues.getRandomDiseaseCaptionDE;
+import static org.sormas.e2etests.enums.PointOfEntryValues.getRandomPointOfEntryDE;
+
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalDate;
@@ -41,20 +44,21 @@ public class TravelEntryService {
     this.faker = faker;
   }
 
-  public TravelEntry buildGeneratedEntry() {
+  public TravelEntry buildGeneratedEntryDE() {
     firstName = faker.name().firstName();
     lastName = faker.name().lastName();
 
     return TravelEntry.builder()
+        .reportDate(LocalDate.now())
         .firstName(firstName)
         .lastName(lastName)
         .sex(GenderValues.getRandomGenderDE())
-        .reportDate(LocalDate.now().minusDays(random.nextInt(10)))
+        .reportDate(LocalDate.now())
         .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
         .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
         .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
-        .disease("COVID-19")
-        .pointOfEntry("Anderer Einreiseort")
+        .disease(getRandomDiseaseCaptionDE())
+        .pointOfEntry(getRandomPointOfEntryDE())
         .pointOfEntryDetails("Automated test dummy description")
         .build();
   }

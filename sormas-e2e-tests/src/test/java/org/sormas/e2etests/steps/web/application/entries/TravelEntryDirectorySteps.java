@@ -19,7 +19,12 @@
 package org.sormas.e2etests.steps.web.application.entries;
 
 import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
-import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.*;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.COMMIT_BUTTON;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.IMPORT_BUTTON;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.IMPORT_SUCCESS_DE;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.NEW_PERSON_RADIOBUTTON_DE;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.NEW_TRAVEL_ENTRY_BUTTON;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.START_DATA_IMPORT_BUTTON;
 
 import cucumber.api.java8.En;
 import javax.inject.Inject;
@@ -45,34 +50,34 @@ public class TravelEntryDirectorySteps implements En {
         });
 
     When(
-        "I pick the travel entry CSV file",
+        "I select the German travel entry CSV file in the file picker",
         () -> {
           webDriverHelpers.sendFile(
               FILE_PICKER, userDirPath + "/uploads/Importvorlage_Einreise_21.11.04.csv");
         });
 
     When(
-        "I click on the START DATA IMPORT button from the popup",
+        "I click on the START DATA IMPORT button from the Import Travel Entries popup",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(START_DATA_IMPORT_BUTTON);
         });
 
     When(
-        "I select to create new person from the popup",
+        "I select to create new person from the Import Travel Entries popup",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(NEW_PERSON_RADIOBUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(NEW_PERSON_RADIOBUTTON_DE);
         });
 
     When(
-        "I confirm the save popup",
+        "I confirm the save Travel Entries Import popup",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(COMMIT_BUTTON);
         });
 
     When(
-        "I check that an import success notification appears",
+        "I check that an import success notification appears in the Import Travel Entries popup",
         () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(IMPORT_SUCCESS);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(IMPORT_SUCCESS_DE);
         });
 
     When(

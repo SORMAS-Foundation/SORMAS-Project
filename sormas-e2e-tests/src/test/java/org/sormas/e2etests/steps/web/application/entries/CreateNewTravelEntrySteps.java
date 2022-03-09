@@ -18,8 +18,12 @@
 
 package org.sormas.e2etests.steps.web.application.entries;
 
-import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.*;
-import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.*;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.FIRST_NAME_OF_CONTACT_PERSON_INPUT;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.LAST_NAME_OF_CONTACT_PERSON_INPUT;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.FIRST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.LAST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.TRAVEL_ENTRY_PERSON_TAB;
 
 import cucumber.api.java8.En;
 import java.time.format.DateTimeFormatter;
@@ -30,6 +34,8 @@ import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.TravelEntry;
 import org.sormas.e2etests.entities.services.TravelEntryService;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage;
+import org.sormas.e2etests.pages.application.entries.EditTravelEntryPage;
 import org.sormas.e2etests.state.ApiState;
 
 public class CreateNewTravelEntrySteps implements En {
@@ -46,7 +52,7 @@ public class CreateNewTravelEntrySteps implements En {
     When(
         "^I fill the required fields in a new travel entry form$",
         () -> {
-          travelEntry = travelEntryService.buildGeneratedEntry();
+          travelEntry = travelEntryService.buildGeneratedEntryDE();
           fillFirstName(travelEntry.getFirstName());
           fillLastName(travelEntry.getLastName());
           selectSex(travelEntry.getSex());
@@ -61,7 +67,7 @@ public class CreateNewTravelEntrySteps implements En {
     When(
         "^I fill the required fields in a new case travel entry form$",
         () -> {
-          travelEntry = travelEntryService.buildGeneratedEntry();
+          travelEntry = travelEntryService.buildGeneratedEntryDE();
           selectResponsibleRegion(travelEntry.getResponsibleRegion());
           selectResponsibleDistrict(travelEntry.getResponsibleDistrict());
           selectResponsibleCommunity(travelEntry.getResponsibleCommunity());
@@ -70,7 +76,7 @@ public class CreateNewTravelEntrySteps implements En {
         });
 
     When(
-        "^I save the travel entry$",
+        "^I click on Save button from the new travel entry form$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
@@ -99,6 +105,22 @@ public class CreateNewTravelEntrySteps implements En {
         });
 
     When(
+        "I check the created data is correctly displayed on Edit case travel entry page for DE version",
+        () -> {
+          TimeUnit.SECONDS.sleep(2);
+          aTravelEntry = collectTravelEntryData();
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              aTravelEntry,
+              travelEntry,
+              List.of(
+                  "responsibleRegion",
+                  "responsibleDistrict",
+                  "responsibleCommunity",
+                  "pointOfEntry",
+                  "pointOfEntryDetails"));
+        });
+
+    When(
         "I check the created data is correctly displayed on Edit travel entry person page for DE version",
         () -> {
           TimeUnit.SECONDS.sleep(2);
@@ -117,49 +139,62 @@ public class CreateNewTravelEntrySteps implements En {
   }
 
   private void selectSex(String sex) {
-    webDriverHelpers.selectFromCombobox(SEX_COMBOBOX, sex);
+    webDriverHelpers.selectFromCombobox(CreateNewTravelEntryPage.SEX_COMBOBOX, sex);
   }
 
   private void selectResponsibleRegion(String selectResponsibleRegion) {
-    webDriverHelpers.selectFromCombobox(RESPONSIBLE_REGION_COMBOBOX, selectResponsibleRegion);
+    webDriverHelpers.selectFromCombobox(
+        CreateNewTravelEntryPage.RESPONSIBLE_REGION_COMBOBOX, selectResponsibleRegion);
   }
 
   private void selectResponsibleDistrict(String responsibleDistrict) {
-    webDriverHelpers.selectFromCombobox(RESPONSIBLE_DISTRICT_COMBOBOX, responsibleDistrict);
+    webDriverHelpers.selectFromCombobox(
+        CreateNewTravelEntryPage.RESPONSIBLE_DISTRICT_COMBOBOX, responsibleDistrict);
   }
 
   private void selectResponsibleCommunity(String responsibleCommunity) {
-    webDriverHelpers.selectFromCombobox(RESPONSIBLE_COMMUNITY_COMBOBOX, responsibleCommunity);
+    webDriverHelpers.selectFromCombobox(
+        CreateNewTravelEntryPage.RESPONSIBLE_COMMUNITY_COMBOBOX, responsibleCommunity);
   }
 
   private void fillDisease(String disease) {
-    webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, disease);
+    webDriverHelpers.selectFromCombobox(CreateNewTravelEntryPage.DISEASE_COMBOBOX, disease);
   }
 
   private void fillPointOfEntry(String pointOfEntry) {
-    webDriverHelpers.selectFromCombobox(POINT_OF_ENTRY_COMBOBOX, pointOfEntry);
+    webDriverHelpers.selectFromCombobox(
+        CreateNewTravelEntryPage.POINT_OF_ENTRY_COMBOBOX, pointOfEntry);
   }
 
   private void fillPointOfEntryDetails(String pointOfEntryDetails) {
-    webDriverHelpers.fillInWebElement(POINT_OF_ENTRY_DETAILS_INPUT, pointOfEntryDetails);
+    webDriverHelpers.fillInWebElement(
+        CreateNewTravelEntryPage.POINT_OF_ENTRY_DETAILS_INPUT, pointOfEntryDetails);
   }
 
   private TravelEntry collectTravelEntryData() {
     return TravelEntry.builder()
-        .disease(webDriverHelpers.getValueFromCombobox(DISEASE))
-        .responsibleRegion(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_REGION))
-        .responsibleDistrict(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_DISTRICT))
-        .responsibleCommunity(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_COMMUNITY))
-        .pointOfEntry(webDriverHelpers.getValueFromCombobox(POINT_OF_ENTRY))
-        .pointOfEntryDetails(webDriverHelpers.getValueFromWebElement(POINT_OF_ENTRY_DETAILS))
+        .disease(webDriverHelpers.getValueFromCombobox(EditTravelEntryPage.DISEASE_COMBOBOX))
+        .responsibleRegion(
+            webDriverHelpers.getValueFromCombobox(EditTravelEntryPage.RESPONSIBLE_REGION_COMBOBOX))
+        .responsibleDistrict(
+            webDriverHelpers.getValueFromCombobox(
+                EditTravelEntryPage.RESPONSIBLE_DISTRICT_COMBOBOX))
+        .responsibleCommunity(
+            webDriverHelpers.getValueFromCombobox(
+                EditTravelEntryPage.RESPONSIBLE_COMMUNITY_COMBOBOX))
+        .pointOfEntry(
+            webDriverHelpers.getValueFromCombobox(EditTravelEntryPage.POINT_OF_ENTRY_COMBOBOX))
+        .pointOfEntryDetails(
+            webDriverHelpers.getValueFromWebElement(
+                EditTravelEntryPage.POINT_OF_ENTRY_DETAILS_INPUT))
         .build();
   }
 
   private TravelEntry collectTravelEntryPersonData() {
     return TravelEntry.builder()
-        .firstName(webDriverHelpers.getValueFromWebElement(FIRST_NAME))
-        .lastName(webDriverHelpers.getValueFromWebElement(LAST_NAME))
-        .sex(webDriverHelpers.getValueFromCombobox(SEX))
+        .firstName(webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT))
+        .lastName(webDriverHelpers.getValueFromWebElement(LAST_NAME_INPUT))
+        .sex(webDriverHelpers.getValueFromCombobox(EditTravelEntryPage.SEX_COMBOBOX))
         .build();
   }
 }
