@@ -90,7 +90,7 @@ public class SampleService {
         .reasonForSample("Screening")
         .sampleID(faker.number().randomNumber(8, false))
         .laboratory("Other facility")
-        .laboratoryName(faker.crypto() + " Laboratory Edit")
+        .laboratoryName("Laboratory Edit " + currentTimeMillis)
         .received("Received")
         .receivedDate(LocalDate.now().minusDays(10))
         .specimenCondition("Adequate")
