@@ -122,11 +122,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String DOCGENERATION_NULL_REPLACEMENT = "docgeneration.nullReplacement";
 	public static final String INTERFACE_DEMIS_JNDINAME = "interface.demis.jndiName";
 
-	public static final String DAYS_AFTER_CASE_GETS_ARCHIVED = "daysAfterCaseGetsArchived";
-	private static final String DAYS_AFTER_EVENT_GETS_ARCHIVED = "daysAfterEventGetsArchived";
-	private static final String DAYS_AFTER_EVENT_PARTICIPANT_GETS_ARCHIVED = "daysAfterEventParticipantGetsArchived";
-	private static final String DAYS_AFTER_TRAVEL_ENTRY_GETS_ARCHIVED = "daysAfterTravelEntryGetsArchived";
-
 	private static final String DAYS_AFTER_SYSTEM_EVENT_GETS_DELETED = "daysAfterSystemEventGetsDeleted";
 
 	private static final String GEOCODING_SERVICE_URL_TEMPLATE = "geocodingServiceUrlTemplate";
@@ -448,11 +443,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			throw new IllegalArgumentException(CSV_SEPARATOR + " must be a single character instead of '" + seperatorString + "'");
 		}
 		return seperatorString.charAt(0);
-	}
-
-	@Override
-	public int getDaysAfterEventParticipantGetsArchived() {
-		return getInt(DAYS_AFTER_EVENT_PARTICIPANT_GETS_ARCHIVED, 90);
 	}
 
 	@Override

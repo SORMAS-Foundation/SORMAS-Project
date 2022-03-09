@@ -192,21 +192,25 @@ public class TravelEntriesView extends AbstractView {
 
 		// Show active/archived/all dropdown
 		if (Objects.nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_VIEW)) {
-			int daysAfterTravelEntryGetsArchived = FacadeProvider.getFeatureConfigurationFacade()
-				.getProperty(
-					FeatureType.AUTOMATIC_ARCHIVING,
-					CoreEntityType.TRAVEL_ENTRY,
-					FeatureTypeProperty.THRESHOLD_IN_DAYS,
-					Integer.class);
-			if (daysAfterTravelEntryGetsArchived > 0) {
-				relevanceStatusInfoLabel = new Label(
-					VaadinIcons.INFO_CIRCLE.getHtml() + " "
-						+ String.format(I18nProperties.getString(Strings.infoArchivedTravelEntries), daysAfterTravelEntryGetsArchived),
-					ContentMode.HTML);
-				relevanceStatusInfoLabel.setVisible(false);
-				relevanceStatusInfoLabel.addStyleName(CssStyles.LABEL_VERTICAL_ALIGN_SUPER);
-				actionButtonsLayout.addComponent(relevanceStatusInfoLabel);
-				actionButtonsLayout.setComponentAlignment(relevanceStatusInfoLabel, Alignment.MIDDLE_RIGHT);
+
+			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.TRAVEL_ENTRY)) {
+
+				int daysAfterTravelEntryGetsArchived = FacadeProvider.getFeatureConfigurationFacade()
+						.getProperty(
+								FeatureType.AUTOMATIC_ARCHIVING,
+								CoreEntityType.TRAVEL_ENTRY,
+								FeatureTypeProperty.THRESHOLD_IN_DAYS,
+								Integer.class);
+				if (daysAfterTravelEntryGetsArchived > 0) {
+					relevanceStatusInfoLabel = new Label(
+							VaadinIcons.INFO_CIRCLE.getHtml() + " "
+									+ String.format(I18nProperties.getString(Strings.infoArchivedTravelEntries), daysAfterTravelEntryGetsArchived),
+							ContentMode.HTML);
+					relevanceStatusInfoLabel.setVisible(false);
+					relevanceStatusInfoLabel.addStyleName(CssStyles.LABEL_VERTICAL_ALIGN_SUPER);
+					actionButtonsLayout.addComponent(relevanceStatusInfoLabel);
+					actionButtonsLayout.setComponentAlignment(relevanceStatusInfoLabel, Alignment.MIDDLE_RIGHT);
+				}
 			}
 			relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
 			relevanceStatusFilter.setId("relevanceStatus");
@@ -220,7 +224,9 @@ public class TravelEntriesView extends AbstractView {
 			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.travelEntryAllTravelEntries));
 			relevanceStatusFilter.setCaption("");
 			relevanceStatusFilter.addValueChangeListener(e -> {
-				relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
+				if (relevanceStatusInfoLabel != null) {
+					relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
+				}
 				criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 				navigateTo(criteria);
 			});

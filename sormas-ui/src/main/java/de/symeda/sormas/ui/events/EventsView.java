@@ -500,27 +500,28 @@ public class EventsView extends AbstractView {
 					});
 					actionButtonsLayout.addComponent(groupRelevanceStatusFilter);
 				} else {
-					int daysAfterEventGetsArchived = FacadeProvider.getFeatureConfigurationFacade()
-						.getProperty(
-							FeatureType.AUTOMATIC_ARCHIVING,
-							CoreEntityType.EVENT,
-							FeatureTypeProperty.THRESHOLD_IN_DAYS,
-							Integer.class);
-					if (daysAfterEventGetsArchived > 0) {
-						relevanceStatusInfoLabel = new Label(
-							VaadinIcons.INFO_CIRCLE.getHtml() + " "
-								+ String.format(I18nProperties.getString(Strings.infoArchivedEvents), daysAfterEventGetsArchived),
-							ContentMode.HTML);
-						relevanceStatusInfoLabel.setVisible(false);
-						relevanceStatusInfoLabel.addStyleName(CssStyles.LABEL_VERTICAL_ALIGN_SUPER);
-						actionButtonsLayout.addComponent(relevanceStatusInfoLabel);
-						actionButtonsLayout.setComponentAlignment(relevanceStatusInfoLabel, Alignment.MIDDLE_RIGHT);
+					if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.EVENT)) {
+
+						int daysAfterEventGetsArchived = FacadeProvider.getFeatureConfigurationFacade()
+							.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.EVENT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
+						if (daysAfterEventGetsArchived > 0) {
+							relevanceStatusInfoLabel = new Label(
+								VaadinIcons.INFO_CIRCLE.getHtml() + " "
+									+ String.format(I18nProperties.getString(Strings.infoArchivedEvents), daysAfterEventGetsArchived),
+								ContentMode.HTML);
+							relevanceStatusInfoLabel.setVisible(false);
+							relevanceStatusInfoLabel.addStyleName(CssStyles.LABEL_VERTICAL_ALIGN_SUPER);
+							actionButtonsLayout.addComponent(relevanceStatusInfoLabel);
+							actionButtonsLayout.setComponentAlignment(relevanceStatusInfoLabel, Alignment.MIDDLE_RIGHT);
+						}
 					}
 
 					eventRelevanceStatusFilter =
 						buildRelevanceStatus(Captions.eventActiveEvents, Captions.eventArchivedEvents, Captions.eventAllEvents);
 					eventRelevanceStatusFilter.addValueChangeListener(e -> {
-						relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
+						if (relevanceStatusInfoLabel != null) {
+							relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
+						}
 						eventCriteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 						navigateTo(eventCriteria);
 					});
