@@ -48,6 +48,7 @@ public class EventApiService {
     this.environmentManager = environmentManager;
     this.faker = faker;
   }
+
   public EventApiService(Faker faker) {
     this.faker = faker;
   }

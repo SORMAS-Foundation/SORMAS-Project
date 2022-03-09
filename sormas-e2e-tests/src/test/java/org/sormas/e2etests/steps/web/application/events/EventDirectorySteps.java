@@ -192,14 +192,12 @@ public class EventDirectorySteps implements En {
               searchText = apiState.getCreatedEvent().getEventDesc();
               break;
           }
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.fillInWebElement(EVENT_GROUP_FREE_TEXT_EVENT_INPUT, searchText);
         });
 
     When(
         "I chose Region option in Event Group Directory",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           String region = apiState.getCreatedEvent().getEventLocation().getRegion().getUuid();
           webDriverHelpers.selectFromCombobox(
               EVENT_REGION_COMBOBOX_INPUT, RegionsValues.getValueFor(region));
@@ -265,21 +263,18 @@ public class EventDirectorySteps implements En {
     When(
         "I sort all rows by Group ID in Event Group Directory",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(EVENT_GROUP_ID_SORT);
         });
 
     When(
         "I sort all rows by Group NAME in Event Group Directory",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(EVENT_GROUP_NAME_SORT);
         });
 
     When(
         "I click on a Export button in Event Group Directory",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(EVENT_EXPORT_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(EVENT_EXPORT_BASIC_BUTTON);
         });

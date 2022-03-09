@@ -434,7 +434,6 @@ public class EditEventSteps implements En {
               searchText = groupEvent.getName();
               break;
           }
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.fillInWebElement(EVENT_GROUP_ID_NAME_INPUT, searchText);
         });
     And(

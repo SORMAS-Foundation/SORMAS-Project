@@ -348,7 +348,7 @@ Feature: Create events
     And I check the number of displayed Event results from All button is 1
 
   @issue=SORDEV-5569 @env_main
-  Scenario: Event groups view
+  Scenario: Testing Event groups view filters with sorting actions
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
