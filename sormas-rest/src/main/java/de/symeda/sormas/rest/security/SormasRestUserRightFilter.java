@@ -34,6 +34,11 @@ import javax.ws.rs.core.Response;
 
 import de.symeda.sormas.api.user.UserRight;
 
+/**
+ * Filter to ensure authenticated user has SORMAS_REST user right,
+ * return status 403 when missing
+ */
+
 @Priority(AUTHORIZATION)
 public class SormasRestUserRightFilter implements ContainerRequestFilter {
 
