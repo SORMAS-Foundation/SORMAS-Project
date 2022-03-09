@@ -271,6 +271,7 @@ public class TravelEntryFacadeEjb
 		dto.setQuarantineReduced(entity.isQuarantineReduced());
 		dto.setQuarantineOfficialOrderSent(entity.isQuarantineOfficialOrderSent());
 		dto.setQuarantineOfficialOrderSentDate(entity.getQuarantineOfficialOrderSentDate());
+		dto.setDateOfArrival(entity.getDateOfArrival());
 
 		return dto;
 	}
@@ -281,10 +282,10 @@ public class TravelEntryFacadeEjb
 			return null;
 		}
 		return new TravelEntryReferenceDto(
-				entity.getUuid(),
-				entity.getExternalId(),
-				entity.getPerson().getFirstName(),
-				entity.getPerson().getLastName());
+			entity.getUuid(),
+			entity.getExternalId(),
+			entity.getPerson().getFirstName(),
+			entity.getPerson().getLastName());
 	}
 
 	@Override
@@ -331,6 +332,7 @@ public class TravelEntryFacadeEjb
 		target.setQuarantineReduced(source.isQuarantineReduced());
 		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
 		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
+		target.setDateOfArrival(source.getDateOfArrival());
 
 		return target;
 	}

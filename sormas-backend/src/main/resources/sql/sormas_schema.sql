@@ -10049,4 +10049,13 @@ ALTER TABLE campaigns_history ADD COLUMN archiveundonereason character varying(5
 
 INSERT INTO schema_version (version_number, comment) VALUES (445, 'CoreAdo: Introduce "end of processing date" #7247');
 
+-- 2022-03-08 Add dateOfArrival to travel entries #7845
+ALTER TABLE travelentry ADD COLUMN dateofarrival timestamp without time zone default creationdate;
+ALTER TABLE travelentry_history ADD COLUMN dateofarrival timestamp without time zone;
+
+UPDATE travelentry SET dateofarrival = creationdate;
+UPDATE travelentry SET dateofarrival = (SELECT * FROM travelentry WHERE (travelentry.deacontent->>'Einreisedatum')::timestamp without time zone);
+
+INSERT INTO schema_version (version_number, comment) VALUES (446, 'Add dateOfArrival to travel entries #7845');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
