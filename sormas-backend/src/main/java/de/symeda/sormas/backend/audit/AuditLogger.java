@@ -17,7 +17,6 @@ package de.symeda.sormas.backend.audit;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
-import de.symeda.sormas.api.ConfigFacade;
 import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
@@ -27,7 +26,6 @@ import org.hl7.fhir.r4.model.codesystems.AuditSourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.naming.InitialContext;
 import java.net.InetAddress;
 import java.net.UnknownHostException;
 import java.util.Calendar;
@@ -56,10 +54,21 @@ public class AuditLogger {
     }
 
     public void logApplicationStart() {
+        Coding subtype = new Coding("https://hl7.org/fhir/R4/valueset-audit-event-sub-type.html", "110120", "Application Start");
+        String outcomeDesc = "Application starting";
+        logApplicationLifecycle(subtype, outcomeDesc);
+    }
+
+    public void logApplicationStop() {
+        Coding subtype = new Coding("https://hl7.org/fhir/R4/valueset-audit-event-sub-type.html", "110121", "Application Stop");
+        String outcomeDesc = "Application stopping";
+        logApplicationLifecycle(subtype, outcomeDesc);
+    }
+
+    private void logApplicationLifecycle(Coding subtype, String outcomeDesc) {
         AuditEvent applicationStartAudit = new AuditEvent();
         applicationStartAudit.setType(new Coding("https://hl7.org/fhir/R4/valueset-audit-event-type.html", "110100", "Application Activity"));
 
-        Coding subtype = new Coding("https://hl7.org/fhir/R4/valueset-audit-event-sub-type.html", "110120", "Application Start");
         applicationStartAudit.setSubtype(Collections.singletonList(subtype));
 
         applicationStartAudit.setAction(AuditEvent.AuditEventAction.E);
@@ -67,7 +76,7 @@ public class AuditLogger {
 
         // success
         applicationStartAudit.setOutcome(AuditEvent.AuditEventOutcome._0);
-        applicationStartAudit.setOutcomeDesc("Application starting");
+        applicationStartAudit.setOutcomeDesc(outcomeDesc);
 
         AuditEvent.AuditEventAgentComponent agent = new AuditEvent.AuditEventAgentComponent();
         CodeableConcept codeableConcept = new CodeableConcept();
