@@ -1,8 +1,7 @@
 @UI @Sanity @Users
 Feature: Create user
 
-  #please address - verify sormas to client/rest user scenarios
-  @env_main
+  @env_main @check
   Scenario Outline: Create a new user
     Given I log in as a Admin User
     And I click on the Users from navbar
