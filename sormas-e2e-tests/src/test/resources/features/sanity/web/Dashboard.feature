@@ -2,7 +2,7 @@
 Feature: Dashboard counters
 
   #please address
-  @env_main @ignore
+  @env_main @ignore @check
   Scenario: Check disease and new cases counter in Surveillance Dashboard
     Given I log in with National User
     When I click on the Dashboard button from navbar and access Surveillance Dashboard
@@ -20,7 +20,7 @@ Feature: Dashboard counters
     Then I check that previous saved Surveillance Dashboard counters for COVID-19 have been increment
 
     #please address
-  @env_main @ignore
+  @env_main @ignore @check
   Scenario: Check contacts counter in Contacts Dashboard
     Given I log in with National User
     When I click on the Dashboard button from navbar and access Contacts Dashboard
