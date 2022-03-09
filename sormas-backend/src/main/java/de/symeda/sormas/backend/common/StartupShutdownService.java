@@ -864,7 +864,7 @@ public class StartupShutdownService {
 
 	@PreDestroy
 	public void shutdown() {
-
+		AuditLogger.getInstance().logApplicationStop();
 	}
 
 	@LocalBean
