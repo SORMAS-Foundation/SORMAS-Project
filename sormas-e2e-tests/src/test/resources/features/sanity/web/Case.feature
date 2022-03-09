@@ -448,3 +448,13 @@ Feature: Case end to end tests
     Then I click on save case button
     Then I check the created data is correctly displayed on Edit case page
     And I check the created data is correctly displayed on Edit case person page
+
+  @issue=SORDEV-7456 @env_de
+  Scenario: Check different facility types depending on type of place in Epidemiological Tab
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data for DE version
+    And I navigate to Epidemiological Data tab on Edit Case Page
+    And I click on JA Radiobutton on Epidemiological Data Page
+

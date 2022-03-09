@@ -37,6 +37,8 @@ public class CaseDirectoryPage {
   public static final By SAVE_BUTTON_IN_LINK_FORM = By.cssSelector(".popupContent #commit");
   public static final By FIRST_CASE_ID_BUTTON = By.cssSelector(".v-grid-row-has-data a[title]");
   public static final By NAME_UUID_EPID_NUMBER_LIKE_INPUT = By.cssSelector("input#caseLike");
+  public static final By EPI_DATA_TAB = By.id("tab-cases-epidata");
+
   public static final By PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT =
       By.cssSelector("#personLike");
   public static final By CASE_OUTCOME_FILTER_COMBOBOX =

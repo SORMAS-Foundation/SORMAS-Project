@@ -66,6 +66,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_FROM_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_TO_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ENTER_BULK_EDIT_MODE;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.EPI_DATA_TAB;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRST_CASE_ID_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRST_RESULT_IN_GRID;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.GRID_HEADERS;
@@ -83,6 +84,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SEAR
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHOW_MORE_LESS_FILTERS;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.TOTAL_CASES_COUNTER;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_OPTIONS;
 
 import com.github.javafaker.Faker;
 import com.google.common.truth.Truth;
@@ -267,6 +269,15 @@ public class CaseDirectorySteps implements En {
         (String outcomeFilterOption) -> {
           webDriverHelpers.selectFromCombobox(
               CASE_OUTCOME_FILTER_COMBOBOX, CaseOutcome.getValueFor(outcomeFilterOption));
+        });
+    And(
+        "I navigate to Epidemiological Data tab on Edit Case Page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(EPI_DATA_TAB));
+    When(
+        "^I click on ([^\"]*) Radiobutton on Epidemiological Data Page$",
+        (String buttonName) -> {
+          webDriverHelpers.clickWebElementByText(ACTIVITY_AS_CASE_OPTIONS, buttonName);
+          webDriverHelpers.waitForPageLoaded();
         });
 
     And(
