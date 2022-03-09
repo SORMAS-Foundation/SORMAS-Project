@@ -41,14 +41,14 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptionFacade;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasErrorResponse;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.rest.security.oidc.ClientCredentials;
 
 @Path(SormasToSormasApiConstants.RESOURCE_PATH)
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @ClientCredentials
-@RolesAllowed(UserRole._SORMAS_TO_SORMAS_CLIENT)
+@RolesAllowed(UserRight._SORMAS_TO_SORMAS_CLIENT)
 public class SormasToSormasResource {
 
 	private static final Logger LOGGER = LoggerFactory.getLogger(SormasToSormasResource.class);
