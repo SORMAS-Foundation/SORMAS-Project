@@ -154,10 +154,10 @@ public class AboutView extends VerticalLayout implements View {
 		}
 
 		if (FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()) {
-//			addExternalServiceVersion(
-//				Captions.aboutExternalSurveillanceToolGateway,
-//				() -> FacadeProvider.getExternalSurveillanceToolFacade().getVersion(),
-//				infoLayout);
+			addExternalServiceVersion(
+				Captions.aboutExternalSurveillanceToolGateway,
+				() -> FacadeProvider.getExternalSurveillanceToolFacade().getVersion(),
+				infoLayout);
 		}
 
 		Link whatsNewLink = new Link(
