@@ -223,7 +223,7 @@ public class ContinentFacadeEjb
 	}
 
 	@Override
-	protected Continent fillOrBuildEntity(@NotNull ContinentDto source, Continent target, boolean checkChangeDate, boolean copyVaccinations) {
+	protected Continent fillOrBuildEntity(@NotNull ContinentDto source, Continent target, boolean checkChangeDate) {
 		target = DtoHelper.fillOrBuildEntity(source, target, Continent::new, checkChangeDate);
 
 		target.setDefaultName(source.getDefaultName());

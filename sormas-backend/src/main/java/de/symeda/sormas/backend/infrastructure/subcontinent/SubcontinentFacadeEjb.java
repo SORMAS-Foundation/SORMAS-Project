@@ -257,11 +257,7 @@ public class SubcontinentFacadeEjb
 	}
 
 	@Override
-	protected Subcontinent fillOrBuildEntity(
-		@NotNull SubcontinentDto source,
-		Subcontinent target,
-		boolean checkChangeDate,
-		boolean copyVaccinations) {
+	protected Subcontinent fillOrBuildEntity(@NotNull SubcontinentDto source, Subcontinent target, boolean checkChangeDate) {
 		target = DtoHelper.fillOrBuildEntity(source, target, Subcontinent::new, checkChangeDate);
 
 		target.setDefaultName(source.getDefaultName());

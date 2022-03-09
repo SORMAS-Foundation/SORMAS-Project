@@ -72,7 +72,7 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 	// todo find a better name, it is not clear what it does
 	protected abstract void selectDtoFields(CriteriaQuery<DTO> cq, Root<ADO> root);
 
-	protected abstract ADO fillOrBuildEntity(@NotNull DTO source, ADO target, boolean checkChangeDate, boolean copyVaccinations);
+	protected abstract ADO fillOrBuildEntity(@NotNull DTO source, ADO target, boolean checkChangeDate);
 
 	public abstract DTO toDto(ADO ado);
 

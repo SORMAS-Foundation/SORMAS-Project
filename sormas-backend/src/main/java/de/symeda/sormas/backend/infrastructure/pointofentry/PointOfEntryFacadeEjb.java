@@ -289,11 +289,7 @@ public class PointOfEntryFacadeEjb
 	}
 
 	@Override
-	protected PointOfEntry fillOrBuildEntity(
-		@NotNull PointOfEntryDto source,
-		PointOfEntry target,
-		boolean checkChangeDate,
-		boolean copyVaccinations) {
+	protected PointOfEntry fillOrBuildEntity(@NotNull PointOfEntryDto source, PointOfEntry target, boolean checkChangeDate) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, PointOfEntry::new, checkChangeDate);
 

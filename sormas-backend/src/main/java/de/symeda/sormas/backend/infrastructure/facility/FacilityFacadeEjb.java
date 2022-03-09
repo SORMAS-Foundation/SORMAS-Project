@@ -587,7 +587,7 @@ public class FacilityFacadeEjb
 	}
 
 	@Override
-	protected Facility fillOrBuildEntity(@NotNull FacilityDto source, Facility target, boolean checkChangeDate, boolean copyVaccinations) {
+	protected Facility fillOrBuildEntity(@NotNull FacilityDto source, Facility target, boolean checkChangeDate) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, Facility::new, checkChangeDate);
 

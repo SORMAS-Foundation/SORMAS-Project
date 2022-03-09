@@ -164,12 +164,12 @@ public class CampaignFacadeEjb
 	@Override
 	public CampaignDto save(@Valid @NotNull CampaignDto dto) {
 		validate(dto);
-		Campaign campaign = fillOrBuildEntity(dto, service.getByUuid(dto.getUuid()), true, true);
+		Campaign campaign = fillOrBuildEntity(dto, service.getByUuid(dto.getUuid()), true);
 		service.ensurePersisted(campaign);
 		return toDto(campaign);
 	}
 
-	public Campaign fillOrBuildEntity(@NotNull CampaignDto source, Campaign target, boolean checkChangeDate, boolean copyVaccinations) {
+	public Campaign fillOrBuildEntity(@NotNull CampaignDto source, Campaign target, boolean checkChangeDate) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, Campaign::new, checkChangeDate);
 

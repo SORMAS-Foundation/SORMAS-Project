@@ -99,7 +99,7 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	}
 
 	protected DTO persistEntity(DTO dto, ADO entityToPersist, boolean checkChangeDate) {
-		entityToPersist = fillOrBuildEntity(dto, entityToPersist, checkChangeDate, true);
+		entityToPersist = fillOrBuildEntity(dto, entityToPersist, checkChangeDate);
 		service.ensurePersisted(entityToPersist);
 		return toDto(entityToPersist);
 	}

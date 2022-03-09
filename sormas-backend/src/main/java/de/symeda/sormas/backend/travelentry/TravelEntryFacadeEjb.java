@@ -288,7 +288,7 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-	protected TravelEntry fillOrBuildEntity(@NotNull TravelEntryDto source, TravelEntry target, boolean checkChangeDate, boolean copyVaccinations) {
+	protected TravelEntry fillOrBuildEntity(@NotNull TravelEntryDto source, TravelEntry target, boolean checkChangeDate) {
 		target = DtoHelper.fillOrBuildEntity(source, target, TravelEntry::new, checkChangeDate);
 
 		target.setPerson(personService.getByReferenceDto(source.getPerson()));

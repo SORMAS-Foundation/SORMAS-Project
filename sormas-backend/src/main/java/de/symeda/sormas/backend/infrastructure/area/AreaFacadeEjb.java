@@ -104,7 +104,7 @@ public class AreaFacadeEjb extends AbstractInfrastructureFacadeEjb<Area, AreaDto
 	}
 
 	@Override
-	public Area fillOrBuildEntity(@NotNull AreaDto source, Area target, boolean checkChangeDate, boolean copyVaccinations) {
+	public Area fillOrBuildEntity(@NotNull AreaDto source, Area target, boolean checkChangeDate) {
 		target = DtoHelper.fillOrBuildEntity(source, target, Area::new, checkChangeDate);
 		target.setName(source.getName());
 		target.setExternalId(source.getExternalId());

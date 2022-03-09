@@ -1507,7 +1507,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		externalJournalService.handleExternalJournalPersonUpdateAsync(dto.getPerson());
 
-		existingCaze = fillOrBuildEntity(dto, existingCaze, checkChangeDate, true);
+		existingCaze = fillOrBuildEntity(dto, existingCaze, checkChangeDate);
 
 		// Set version number on a new case
 		if (existingCaze.getCreationDate() == null && StringUtils.isEmpty(dto.getCreationVersion())) {
@@ -2597,7 +2597,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return convertToReferenceDto(aCase);
 	}
 
-	public Case fillOrBuildEntity(@NotNull CaseDataDto source, Case target, boolean checkChangeDate, boolean copyVaccinations) {
+	public Case fillOrBuildEntity(@NotNull CaseDataDto source, Case target, boolean checkChangeDate) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, () -> {
 			Case newCase = new Case();

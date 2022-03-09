@@ -263,7 +263,7 @@ public class CountryFacadeEjb
 	}
 
 	@Override
-	protected Country fillOrBuildEntity(@NotNull CountryDto source, Country target, boolean checkChangeDate, boolean copyVaccinations) {
+	protected Country fillOrBuildEntity(@NotNull CountryDto source, Country target, boolean checkChangeDate) {
 		target = DtoHelper.fillOrBuildEntity(source, target, Country::new, checkChangeDate);
 
 		target.setDefaultName(source.getDefaultName());

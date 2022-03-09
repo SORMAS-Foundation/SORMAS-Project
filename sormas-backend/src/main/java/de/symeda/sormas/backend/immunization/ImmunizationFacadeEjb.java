@@ -304,7 +304,7 @@ public class ImmunizationFacadeEjb
 
 		validate(dto);
 
-		Immunization immunization = fillOrBuildEntity(dto, existingImmunization, checkChangeDate, true);
+		Immunization immunization = fillOrBuildEntity(dto, existingImmunization, checkChangeDate);
 
 		service.updateImmunizationStatusBasedOnVaccinations(immunization);
 
@@ -426,6 +426,11 @@ public class ImmunizationFacadeEjb
 	@Override
 	public ImmunizationReferenceDto toRefDto(Immunization immunization) {
 		return toReferenceDto(immunization);
+	}
+
+	@Override
+	protected Immunization fillOrBuildEntity(@NotNull ImmunizationDto source, Immunization target, boolean checkChangeDate) {
+		return fillOrBuildEntity(source, target, checkChangeDate, true);
 	}
 
 	protected Immunization fillOrBuildEntity(

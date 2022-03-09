@@ -321,7 +321,7 @@ public class DistrictFacadeEjb
 	}
 
 	@Override
-	protected District fillOrBuildEntity(@NotNull DistrictDto source, District target, boolean checkChangeDate, boolean copyVaccinations) {
+	protected District fillOrBuildEntity(@NotNull DistrictDto source, District target, boolean checkChangeDate) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, District::new, checkChangeDate);
 

@@ -15,9 +15,6 @@
 
 package de.symeda.sormas.backend.event;
 
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
-import de.symeda.sormas.api.user.NotificationType;
-import de.symeda.sormas.backend.common.NotificationService;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.ArrayList;
@@ -70,6 +67,7 @@ import de.symeda.sormas.api.event.EventParticipantListEntryDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -82,6 +80,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -94,6 +93,7 @@ import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
+import de.symeda.sormas.backend.common.NotificationService;
 import de.symeda.sormas.backend.common.messaging.MessageContents;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
@@ -295,7 +295,7 @@ public class EventParticipantFacadeEjb
 
 		validate(dto);
 
-		EventParticipant entity = fillOrBuildEntity(dto, existingParticipant, checkChangeDate, true);
+		EventParticipant entity = fillOrBuildEntity(dto, existingParticipant, checkChangeDate);
 		service.ensurePersisted(entity);
 
 		if (existingParticipant == null) {
@@ -325,23 +325,26 @@ public class EventParticipantFacadeEjb
 	private void notifyEventResponsibleUsersOfCommonEventParticipant(EventParticipant eventParticipant, Event event) {
 		try {
 
-			notificationService.sendNotifications(NotificationType.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS, MessageSubject.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS, () -> {
+			notificationService.sendNotifications(
+				NotificationType.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS,
+				MessageSubject.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS,
+				() -> {
 
-				final Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
-				final Map<String, Optional<User>> responsibleUserByEventUuid =
-					eventService.getAllEventUuidsWithResponsibleUserByPersonAndDiseaseAfterDateForNotification(
-						eventParticipant.getPerson().getUuid(),
-						event.getDisease(),
-						fromDate);
-				if (responsibleUserByEventUuid.size() == 1 && responsibleUserByEventUuid.containsKey(event.getUuid())) {
-					// it means the event participant is only appearing into the current event
-					return new HashMap<>();
-				}
+					final Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
+					final Map<String, Optional<User>> responsibleUserByEventUuid =
+						eventService.getAllEventUuidsWithResponsibleUserByPersonAndDiseaseAfterDateForNotification(
+							eventParticipant.getPerson().getUuid(),
+							event.getDisease(),
+							fromDate);
+					if (responsibleUserByEventUuid.size() == 1 && responsibleUserByEventUuid.containsKey(event.getUuid())) {
+						// it means the event participant is only appearing into the current event
+						return new HashMap<>();
+					}
 
-				final Map<User, String> mapToReturn = new HashMap<>();
-				for (Map.Entry<String, Optional<User>> entry : responsibleUserByEventUuid.entrySet()) {
-					entry.getValue().filter(user -> StringUtils.isNotEmpty(user.getUserEmail())).ifPresent(user -> {
-						String message = String.format(
+					final Map<User, String> mapToReturn = new HashMap<>();
+					for (Map.Entry<String, Optional<User>> entry : responsibleUserByEventUuid.entrySet()) {
+						entry.getValue().filter(user -> StringUtils.isNotEmpty(user.getUserEmail())).ifPresent(user -> {
+							String message = String.format(
 								I18nProperties.getString(MessageContents.CONTENT_EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS),
 								DataHelper.getShortUuid(eventParticipant.getPerson().getUuid()),
 								DataHelper.getShortUuid(eventParticipant.getUuid()),
@@ -349,13 +352,11 @@ public class EventParticipantFacadeEjb
 								User.buildCaptionForNotification(event.getResponsibleUser()),
 								User.buildCaptionForNotification(userService.getCurrentUser()),
 								buildEventListContentForNotification(responsibleUserByEventUuid));
-						mapToReturn.put(
-							user,
-								message);
-					});
-				}
-				return mapToReturn;
-			});
+							mapToReturn.put(user, message);
+						});
+					}
+					return mapToReturn;
+				});
 		} catch (NotificationDeliveryFailedException e) {
 			logger.error(
 				String.format(
@@ -875,11 +876,7 @@ public class EventParticipantFacadeEjb
 			.orElse(null);
 	}
 
-	public EventParticipant fillOrBuildEntity(
-		@NotNull EventParticipantDto source,
-		EventParticipant target,
-		boolean checkChangeDate,
-		boolean copyVaccinations) {
+	public EventParticipant fillOrBuildEntity(@NotNull EventParticipantDto source, EventParticipant target, boolean checkChangeDate) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, EventParticipant::new, checkChangeDate);
 

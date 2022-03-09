@@ -277,7 +277,7 @@ public class CommunityFacadeEjb
 	}
 
 	@Override
-	protected Community fillOrBuildEntity(@NotNull CommunityDto source, Community target, boolean checkChangeDate, boolean copyVaccinations) {
+	protected Community fillOrBuildEntity(@NotNull CommunityDto source, Community target, boolean checkChangeDate) {
 		target = DtoHelper.fillOrBuildEntity(source, target, Community::new, checkChangeDate);
 
 		target.setName(source.getName());

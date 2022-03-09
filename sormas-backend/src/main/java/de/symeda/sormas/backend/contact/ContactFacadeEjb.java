@@ -338,7 +338,7 @@ public class ContactFacadeEjb
 		//			throw new UnsupportedOperationException("Contact creation is not allowed for diseases that don't have contact follow-up.");
 		//		}
 
-		Contact entity = fillOrBuildEntity(dto, existingContact, checkChangeDate, true);
+		Contact entity = fillOrBuildEntity(dto, existingContact, checkChangeDate);
 		doSave(entity, true);
 
 		if (existingContact == null && featureConfigurationFacade.isTaskGenerationFeatureEnabled(TaskType.CONTACT_INVESTIGATION)) {
@@ -1255,7 +1255,7 @@ public class ContactFacadeEjb
 
 	}
 
-	public Contact fillOrBuildEntity(@NotNull ContactDto source, Contact target, boolean checkChangeDate, boolean copyVaccinations) {
+	public Contact fillOrBuildEntity(@NotNull ContactDto source, Contact target, boolean checkChangeDate) {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, Contact::new, checkChangeDate);
 
