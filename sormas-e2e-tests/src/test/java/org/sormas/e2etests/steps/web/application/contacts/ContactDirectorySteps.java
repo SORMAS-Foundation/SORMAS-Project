@@ -176,7 +176,6 @@ public class ContactDirectorySteps implements En {
         () -> {
           webDriverHelpers.scrollToElement(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
@@ -224,20 +223,17 @@ public class ContactDirectorySteps implements En {
         "I click Enter Bulk Edit Mode on Contact directory page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ENTER_BULK_EDIT_MODE);
-          webDriverHelpers.waitForPageLoaded();
         });
 
     When(
         "I click checkbox to choose all Contact results on Contact Directory Page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ALL_RESULTS_CHECKBOX);
-          webDriverHelpers.waitForPageLoaded();
         });
 
     When(
         "I click on New Entry in Exposure Details Known",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NEW_ENTRY_EPIDEMIOLOGICAL_DATA);
         });
 
@@ -273,7 +269,6 @@ public class ContactDirectorySteps implements En {
     When(
         "I click on edit Exposure vision button",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(OPEN_SAVED_EXPOSURE_BUTTON);
         });
 
@@ -332,28 +327,24 @@ public class ContactDirectorySteps implements En {
     When(
         "I select a Type of activity ([^\"]*) option in Exposure for Epidemiological data tab in Contacts",
         (String option) -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(TYPE_OF_ACTIVITY_COMBOBOX, option);
         });
 
     When(
         "I select a type of gathering ([^\"]*) from Combobox in Exposure for Epidemiological data tab in Contacts",
         (String option) -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(TYPE_OF_GATHERING_COMBOBOX, option);
         });
 
     When(
         "I fill a type of gathering details in Exposure for Epidemiological data tab in Contacts",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.fillInWebElement(TYPE_OF_GATHERING_DETAILS, faker.chuckNorris().fact());
         });
 
     When(
         "I fill a Type of activity details field in Exposure for Epidemiological data tab in Contacts",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.fillInWebElement(TYPE_OF_ACTIVITY_DETAILS, faker.book().title());
         });
 
@@ -569,7 +560,6 @@ public class ContactDirectorySteps implements En {
   }
 
   private void fillLocation(Exposure exposureData) {
-    webDriverHelpers.waitForPageLoaded();
     webDriverHelpers.selectFromCombobox(CONTINENT_COMBOBOX, exposureData.getContinent());
     webDriverHelpers.selectFromCombobox(SUBCONTINENT_COMBOBOX, exposureData.getSubcontinent());
     webDriverHelpers.selectFromCombobox(COUNTRY_COMBOBOX, exposureData.getCountry());
@@ -589,7 +579,6 @@ public class ContactDirectorySteps implements En {
   }
 
   private void fillExposure(Exposure exposureData) {
-    webDriverHelpers.waitForPageLoaded();
     webDriverHelpers.fillInWebElement(
         START_OF_EXPOSURE_INPUT, formatter.format(exposureData.getStartOfExposure()));
     webDriverHelpers.fillInWebElement(
