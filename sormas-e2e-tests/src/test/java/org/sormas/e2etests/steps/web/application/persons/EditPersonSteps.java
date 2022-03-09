@@ -224,8 +224,10 @@ public class EditPersonSteps implements En {
     Then(
         "I click on save button from Edit Person page",
         () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+          webDriverHelpers.clickOnWebElementBySelector(UUID_INPUT);
           previousCreatedPerson = collectedPerson;
         });
 

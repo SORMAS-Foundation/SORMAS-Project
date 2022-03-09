@@ -135,7 +135,6 @@ public class NavBarSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CONTACTS_BUTTON);
           TimeUnit.SECONDS.sleep(10); // mandatory due to loading time issue
           webDriverHelpers.clickOnWebElementBySelector(CONTACTS_BUTTON);
-
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               CONTACTS_DASHBOARD_NAME, 10);
