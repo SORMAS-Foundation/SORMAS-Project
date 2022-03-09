@@ -187,7 +187,6 @@ public class StartupShutdownService {
 
 	@PostConstruct
 	public void startup() {
-
 		checkDatabaseConfig(em);
 
 		logger.info("Initiating automatic database update of main database...");
