@@ -143,4 +143,6 @@ public interface ConfigFacade {
 	long getDocumentUploadSizeLimitMb();
 
 	long getImportFileSizeLimitMb();
+
+	String getAuditLoggerConfig();
 }

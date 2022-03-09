@@ -37,7 +37,7 @@ Feature: Sample Functionalities
     When I change all Sample fields and save
     Then I check the edited Sample is correctly displayed on Edit Sample page
 
-  @issue=SORDEV-5471 @env_main @check
+  @issue=SORDEV-5471 @env_main
   Scenario: Edit a new contact Sample with alternate purpose
     Given I log in with National User
     And I click on the Contacts button from navbar

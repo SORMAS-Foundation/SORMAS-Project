@@ -1624,7 +1624,7 @@ public class ContactFacadeEjb
 		return convertToReferenceDto(contact);
 	}
 
-	@RolesAllowed(UserRole._SYSTEM)
+	@RolesAllowed(UserRight._SYSTEM)
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void generateContactFollowUpTasks() {
 

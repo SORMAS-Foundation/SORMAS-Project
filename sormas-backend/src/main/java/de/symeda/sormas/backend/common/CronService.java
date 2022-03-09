@@ -33,7 +33,7 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.task.TaskType;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
@@ -50,7 +50,7 @@ import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb.SystemEventFaca
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
 
 @Singleton
-@RunAs(UserRole._SYSTEM)
+@RunAs(UserRight._SYSTEM)
 public class CronService {
 
 	public static final int TASK_UPDATE_INTERVAL = 10;
