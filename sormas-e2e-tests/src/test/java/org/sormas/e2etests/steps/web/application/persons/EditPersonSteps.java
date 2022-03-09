@@ -91,11 +91,13 @@ import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Person;
 import org.sormas.e2etests.entities.services.PersonService;
 import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
 import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
+import org.testng.Assert;
 
 public class EditPersonSteps implements En {
 
@@ -109,6 +111,7 @@ public class EditPersonSteps implements En {
       WebDriverHelpers webDriverHelpers,
       PersonService personService,
       BaseSteps baseSteps,
+      AssertHelpers assertHelpers,
       ApiState apiState,
       EnvironmentManager environmentManager) {
     this.webDriverHelpers = webDriverHelpers;
@@ -254,10 +257,20 @@ public class EditPersonSteps implements En {
         });
 
     When(
+        "I clear Region and District fields from Person",
+        () -> {
+          webDriverHelpers.selectFromCombobox(DISTRICT_COMBOBOX, "");
+          webDriverHelpers.selectFromCombobox(REGION_COMBOBOX, "");
+        });
+
+    When(
         "^I check that an invalid data error message appears$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(INVALID_DATA_ERROR);
+          assertHelpers.assertWithPoll20Second(
+              () ->
+                  Assert.assertTrue(
+                      webDriverHelpers.isElementVisibleWithTimeout(INVALID_DATA_ERROR, 10),
+                      "Missing mandatory fields error message is not displayed"));
           webDriverHelpers.clickOnWebElementBySelector(INVALID_DATA_ERROR);
         });
 
@@ -276,10 +289,13 @@ public class EditPersonSteps implements En {
         });
 
     When(
-        "^I check that an empty district highlight appears above the facility combobox$",
+        "^I check that an error highlight appears above the facility combobox$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(ERROR_INDICATOR);
+          assertHelpers.assertWithPoll20Second(
+              () ->
+                  Assert.assertTrue(
+                      webDriverHelpers.isElementVisibleWithTimeout(ERROR_INDICATOR, 10),
+                      "Facility highlight error message wasn't displayed"));
         });
   }
 
