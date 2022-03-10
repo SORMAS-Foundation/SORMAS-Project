@@ -347,9 +347,8 @@ public class EventDirectorySteps implements En {
         "I select random Disease filter among the filter options from API",
         () -> {
           String disease = apiState.getCreatedEvent().getDisease();
-                    webDriverHelpers.selectFromCombobox(
-                        FILTER_BY_DISEASE, DiseasesValues);
-         // webDriverHelpers.selectFromCombobox(FILTER_BY_DISEASE, disease);
+          webDriverHelpers.selectFromCombobox(
+              FILTER_BY_DISEASE, DiseasesValues.getCaptionForName(disease));
         });
 
     When(
@@ -580,6 +579,7 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               RESET_FILTERS_BUTTON, 30);
           webDriverHelpers.clickOnWebElementBySelector(RESET_FILTERS_BUTTON);
+          TimeUnit.SECONDS.sleep(3);
         });
 
     When(

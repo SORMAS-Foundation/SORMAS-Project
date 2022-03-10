@@ -1,7 +1,7 @@
 @UI @Sanity @Event @UI
 Feature: Event Directory filters check
 
-  @issue=SORDEV-5915 @env_main @ignore
+  @issue=SORDEV-5915 @env_main
   Scenario: Check all filters are working properly in Event directory
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
