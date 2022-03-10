@@ -221,6 +221,9 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 	protected final TestDataCreator creator = new TestDataCreator(this);
 	public static final String CONFIDENTIAL = "Confidential";
 
+	protected TestDataCreator.RDCF rdcf;
+	protected TestDataCreator.RDCFEntities rdcfEntities;
+
 	/**
 	 * Resets mocks to their initial state so that mock configurations are not
 	 * shared between tests.
@@ -233,6 +236,8 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		creator.createUser(null, null, null, "ad", "min", UserRole.ADMIN, UserRole.NATIONAL_USER);
 		when(MockProducer.getPrincipal().getName()).thenReturn("admin");
 
+		rdcf = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
+		rdcfEntities = creator.createRDCFEntities();
 		I18nProperties.setUserLanguage(Language.EN);
 	}
 
@@ -280,6 +285,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	/**
 	 * Using local bean here to avoid multiple transactions in test.
+	 * 
 	 * @return
 	 */
 	public CaseFacadeEjbLocal getCaseFacade() {
