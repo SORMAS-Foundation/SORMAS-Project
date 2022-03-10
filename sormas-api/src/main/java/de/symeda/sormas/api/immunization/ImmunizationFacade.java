@@ -33,8 +33,6 @@ public interface ImmunizationFacade extends CoreFacade<ImmunizationDto, Immuniza
 
 	List<String> getDeletedUuidsSince(Date since);
 
-	void deleteImmunization(String uuid);
-
 	List<String> deleteImmunizations(List<String> immunizationUuids);
 
 	boolean isImmunizationEditAllowed(String uuid);

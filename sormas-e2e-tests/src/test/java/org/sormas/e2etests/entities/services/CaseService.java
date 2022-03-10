@@ -154,6 +154,32 @@ public class CaseService {
         .build();
   }
 
+  public Case buildCaseForLineListingFeatureDE() {
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+
+    return Case.builder()
+        .disease(DiseasesValues.CORONAVIRUS.getDiseaseCaption())
+        .region("Voreingestellte")
+        .district(DistrictsValues.VoreingestellterLandkreis.getName())
+        .facilityCategory("Beherbergungsst\u00E4tten")
+        .facilityType("Andere Beherbergungsst\u00E4tte")
+        .facility("Andere Einrichtung")
+        .dateOfReport(LocalDate.now().minusDays(1))
+        .community(CommunityValues.VoreingestellteGemeinde.getName())
+        .placeDescription(faker.harryPotter().location()) // used for Facility Name
+        .firstName(firstName)
+        .lastName(lastName)
+        .dateOfBirth(
+            LocalDate.of(
+                faker.number().numberBetween(1900, 2002),
+                faker.number().numberBetween(1, 12),
+                faker.number().numberBetween(1, 27)))
+        .sex(GenderValues.getRandomGenderDE())
+        .dateOfSymptomOnset(LocalDate.now().minusDays(1))
+        .build();
+  }
+
   public Case buildCaseForLineListingFeature() {
     firstName = faker.name().firstName();
     lastName = faker.name().lastName();

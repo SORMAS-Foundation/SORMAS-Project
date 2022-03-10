@@ -71,7 +71,15 @@ public class EditSampleSteps implements En {
         });
 
     When(
-        "I click on the new pathogen test from the Edit Sample page",
+        "^I click on the new pathogen test from the Edit Sample page for DE version$",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEW_TEST_RESULT_DE);
+          webDriverHelpers.scrollToElement(NEW_TEST_RESULT_DE);
+          webDriverHelpers.clickOnWebElementBySelector(NEW_TEST_RESULT_DE);
+        });
+
+    When(
+        "^I click on the new pathogen test from the Edit Sample page$",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(PATHOGEN_NEW_TEST_RESULT_BUTTON);
           webDriverHelpers.scrollToElement(PATHOGEN_NEW_TEST_RESULT_BUTTON);

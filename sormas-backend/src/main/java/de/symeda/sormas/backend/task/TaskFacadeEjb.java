@@ -861,7 +861,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		}
 
 		Task task = taskService.getByUuid(taskDto.getUuid());
-		taskService.delete(task);
+		taskService.deletePermanent(task);
 	}
 
 	public List<String> deleteTasks(List<String> tasksUuids) {
@@ -872,7 +872,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		List<Task> tasksToBeDeleted = taskService.getByUuids(tasksUuids);
 		if (tasksToBeDeleted != null) {
 			tasksToBeDeleted.forEach(taskToBeDeleted -> {
-				taskService.delete(taskToBeDeleted);
+				taskService.deletePermanent(taskToBeDeleted);
 				deletedTaskUuids.add(taskToBeDeleted.getUuid());
 			});
 		}

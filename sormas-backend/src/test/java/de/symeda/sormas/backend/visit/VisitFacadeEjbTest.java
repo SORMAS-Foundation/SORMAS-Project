@@ -263,12 +263,12 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 		creator.createContact(user.toReference(), person.toReference());
 		creator.createContact(user.toReference(), person5.toReference());
 		ContactDto deletedContact = creator.createContact(user.toReference(), person2.toReference());
-		getContactFacade().deleteContact(deletedContact.getUuid());
+		getContactFacade().delete(deletedContact.getUuid());
 		// cases
 		creator.createCase(user.toReference(), person.toReference(), rdcf);
 		creator.createCase(user.toReference(), person3.toReference(), rdcf);
 		CaseDataDto deletedCase = creator.createCase(user.toReference(), person4.toReference(), rdcf);
-		getCaseFacade().deleteCase(deletedCase.getUuid());
+		getCaseFacade().delete(deletedCase.getUuid());
 
 		// Attached to case and contact
 		creator.createVisit(person.toReference());
@@ -299,11 +299,11 @@ public class VisitFacadeEjbTest extends AbstractBeanTest {
 		creator.createContact(user.toReference(), person.toReference());
 		creator.createContact(user.toReference(), person3.toReference());
 		ContactDto deletedContact = creator.createContact(user.toReference(), person2.toReference());
-		getContactFacade().deleteContact(deletedContact.getUuid());
+		getContactFacade().delete(deletedContact.getUuid());
 		creator.createCase(user.toReference(), person3.toReference(), rdcf);
 		creator.createCase(user.toReference(), person4.toReference(), rdcf);
 		CaseDataDto deletedCaseDto = creator.createCase(user.toReference(), person5.toReference(), rdcf);
-		getCaseFacade().deleteCase(deletedCaseDto.getUuid());
+		getCaseFacade().delete(deletedCaseDto.getUuid());
 
 		creator.createVisit(person.toReference());
 		creator.createVisit(person3.toReference());

@@ -64,6 +64,7 @@ import de.symeda.sormas.backend.immunization.transformers.ImmunizationListEntryD
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonJoins;
 import de.symeda.sormas.backend.person.PersonJurisdictionPredicateValidator;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -87,6 +88,18 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 	public ImmunizationService() {
 		super(Immunization.class);
+	}
+
+	@Override
+	public void deletePermanent(Immunization immunization) {
+
+		sormasToSormasShareInfoService.getByAssociatedEntity(SormasToSormasShareInfo.IMMUNIZATION, immunization.getUuid())
+			.forEach(sormasToSormasShareInfo -> {
+				sormasToSormasShareInfo.setImmunization(null);
+				sormasToSormasShareInfoService.ensurePersisted(sormasToSormasShareInfo);
+			});
+
+		super.deletePermanent(immunization);
 	}
 
 	public List<ImmunizationListEntryDto> getEntriesList(Long personId, Disease disease, Integer first, Integer max) {
