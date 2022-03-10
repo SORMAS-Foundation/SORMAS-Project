@@ -18,6 +18,8 @@
 
 package org.sormas.e2etests.entities.services.api;
 
+import static org.sormas.e2etests.steps.BaseSteps.locale;
+
 import com.google.inject.Inject;
 import java.util.Date;
 import java.util.UUID;
@@ -26,16 +28,27 @@ import org.sormas.e2etests.entities.pojo.api.Case;
 import org.sormas.e2etests.entities.pojo.api.Lab;
 import org.sormas.e2etests.entities.pojo.api.ReportingUser;
 import org.sormas.e2etests.entities.pojo.api.Sample;
+import org.sormas.e2etests.enums.UserRoles;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 
 public class SampleApiService {
+  EnvironmentManager environmentManager;
 
   @Inject
-  public SampleApiService() {}
+  public SampleApiService(EnvironmentManager environmentManager) {
+    this.environmentManager = environmentManager;
+  }
 
   public Sample buildGeneratedSample(Case caze) {
     return Sample.builder()
         .uuid(UUID.randomUUID().toString())
-        .reportingUser(ReportingUser.builder().uuid("QLW4AN-TGWLRA-3UQVEM-WCDFCIVM").build())
+        .reportingUser(
+            ReportingUser.builder()
+                .uuid(
+                    environmentManager
+                        .getUserByRole(locale, UserRoles.RestUser.getRole())
+                        .getUuid())
+                .build())
         .reportDateTime(new Date())
         .sampleDateTime(new Date())
         .associatedCase(AssociatedCase.builder().uuid(caze.getUuid()).build())
