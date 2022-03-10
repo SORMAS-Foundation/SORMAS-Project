@@ -20,8 +20,10 @@ package org.sormas.e2etests.entities.services;
 
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
+import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
+import java.util.Date;
 import org.sormas.e2etests.entities.pojo.web.Task;
 import org.sormas.e2etests.enums.immunizations.StatusValues;
 
@@ -33,7 +35,10 @@ public class TaskService {
     this.faker = faker;
   }
 
+  private final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss");
+
   public Task buildGeneratedTask() {
+    Date date = new Date(System.currentTimeMillis());
     return Task.builder()
         .taskContext("GENERAL")
         .taskType("other task as described in comments")
@@ -43,23 +48,25 @@ public class TaskService {
         .dueDateTime(LocalTime.of(11, 30))
         .assignedTo("Surveillance OFFICER - Surveillance Officer")
         .priority("Normal")
-        .commentsOnTask(faker.beer().name() + LocalDate.now().getDayOfWeek())
+        .commentsOnTask("Task comment - " + formatter.format(date))
+        .commentsOnExecution("Execution comment - " + formatter.format(date))
         .taskStatus(StatusValues.PENDING.getValue())
         .build();
   }
 
   public Task buildEditTask(String currentTaskContext, String currentStatus) {
-    long currentTimeMillis = System.currentTimeMillis();
+    Date date = new Date(System.currentTimeMillis());
     return Task.builder()
         .taskContext(currentTaskContext)
         .taskType("contact tracing")
-        .suggestedStartDate(LocalDate.now().plusDays(3))
+        .suggestedStartDate(LocalDate.now().plusDays(1))
         .suggestedStartTime(LocalTime.of(12, 30))
-        .dueDateDate(LocalDate.now().plusDays(5))
+        .dueDateDate(LocalDate.now().plusDays(2))
         .dueDateTime(LocalTime.of(13, 30))
         .assignedTo("Surveillance OFFICER - Surveillance Officer")
         .priority("High")
-        .commentsOnTask("Comment on task" + currentTimeMillis)
+        .commentsOnTask("Task comment - " + formatter.format(date))
+        .commentsOnExecution("Execution comment - " + formatter.format(date))
         .taskStatus(currentStatus)
         .build();
   }
