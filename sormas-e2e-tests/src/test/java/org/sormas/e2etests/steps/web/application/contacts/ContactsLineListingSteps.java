@@ -174,12 +174,12 @@ public class ContactsLineListingSteps implements En {
 
   private void fillFirstDateOfReport(LocalDate dateOfReport) {
     webDriverHelpers.clearAndFillInWebElement(
-        LINE_LISTING_FIRST_DATE_OF_REPORT_INPUT, DATE_FORMATTER.format(dateOfReport));
+        getLineListingDateReportInputByIndex("1"), DATE_FORMATTER.format(dateOfReport));
   }
 
   private void fillSecondDateOfReport(LocalDate dateOfReport) {
     webDriverHelpers.clearAndFillInWebElement(
-        LINE_LISTING_SECOND_DATE_OF_REPORT_INPUT, DATE_FORMATTER.format(dateOfReport));
+        getLineListingDateReportInputByIndex("2"), DATE_FORMATTER.format(dateOfReport));
   }
 
   private void selectTypeOfContact(String typeOfContact) {

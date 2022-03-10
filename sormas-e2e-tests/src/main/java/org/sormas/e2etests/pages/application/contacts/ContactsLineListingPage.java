@@ -29,10 +29,6 @@ public class ContactsLineListingPage {
       By.cssSelector("[id='lineListingSharedInfoField'] [id='district'] div");
   public static final By LINE_LISTING_DATE_REPORT_INPUT =
       By.cssSelector("[id='dateOfReport'] input");
-  public static final By LINE_LISTING_FIRST_DATE_OF_REPORT_INPUT =
-      By.xpath("(//div[@id='dateOfReport']//input)[1]");
-  public static final By LINE_LISTING_SECOND_DATE_OF_REPORT_INPUT =
-      By.xpath("(//div[@id='dateOfReport']//input)[2]");
   public static final By LINE_LISTING_SECOND_DATE_REPORT_INPUT =
       By.cssSelector("[id='lineListingContactLineField_1'] [id='dateOfReport'] input");
   public static final By LINE_LISTING_DATE_LAST_CONTACT_INPUT =
@@ -66,4 +62,8 @@ public class ContactsLineListingPage {
       By.cssSelector("[id='lineListingContactLineField_1'] [id='sex'] div");
   public static final By ADD_LINE = By.cssSelector("[id='lineListingAddLine']");
   public static final By LINE_LISTING_ACTION_SAVE = By.cssSelector("[id='actionSave']");
+
+  public static By getLineListingDateReportInputByIndex(String dateOfReportNumber) {
+    return By.xpath(String.format("(//div[@id='dateOfReport']//input)[%s]", dateOfReportNumber));
+  }
 }
