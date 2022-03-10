@@ -73,6 +73,7 @@ import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SimilarPersonDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
@@ -168,16 +169,19 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		List<String> casePersonsResultList = em.createQuery(casePersonsQuery).getResultList();
 
 		// persons by contact
-		CriteriaQuery<String> contactPersonsQuery = cb.createQuery(String.class);
-		Root<Contact> contactPersonsRoot = contactPersonsQuery.from(Contact.class);
-		Join<Person, Person> contactPersonsSelect = contactPersonsRoot.join(Contact.PERSON);
-		contactPersonsQuery.select(contactPersonsSelect.get(Person.UUID));
-		Predicate contactPersonsFilter = contactService.createUserFilter(cb, contactPersonsQuery, contactPersonsRoot);
-		if (contactPersonsFilter != null) {
-			contactPersonsQuery.where(contactPersonsFilter);
+		List<String> contactPersonsResultList = new ArrayList<>();
+		if (featureConfigurationFacade.isFeatureDisabled(FeatureType.CONTACT_TRACING) || userService.hasRight(UserRight.CONTACT_VIEW)) {
+			CriteriaQuery<String> contactPersonsQuery = cb.createQuery(String.class);
+			Root<Contact> contactPersonsRoot = contactPersonsQuery.from(Contact.class);
+			Join<Person, Person> contactPersonsSelect = contactPersonsRoot.join(Contact.PERSON);
+			contactPersonsQuery.select(contactPersonsSelect.get(Person.UUID));
+			Predicate contactPersonsFilter = contactService.createUserFilter(cb, contactPersonsQuery, contactPersonsRoot);
+			if (contactPersonsFilter != null) {
+				contactPersonsQuery.where(contactPersonsFilter);
+			}
+			contactPersonsQuery.distinct(true);
+			contactPersonsResultList = em.createQuery(contactPersonsQuery).getResultList();
 		}
-		contactPersonsQuery.distinct(true);
-		List<String> contactPersonsResultList = em.createQuery(contactPersonsQuery).getResultList();
 
 		// persons by event participant
 		CriteriaQuery<String> eventPersonsQuery = cb.createQuery(String.class);
@@ -249,17 +253,20 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		final boolean fullImmunizationModuleUsed =
 			!featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED);
 
+		boolean contactViewAllowed =
+			featureConfigurationFacade.isFeatureDisabled(FeatureType.CONTACT_TRACING) || userService.hasRight(UserRight.CONTACT_VIEW);
+
 		// 1. Define filters per association lazy to avoid superfluous joins
 		final Supplier<Predicate> caseFilter = () -> CriteriaBuilderHelper.and(
 			cb,
 			caseService.createUserFilter(cb, cq, joins.getCaze(), new CaseUserFilterCriteria()),
 			caseService.createDefaultFilter(cb, joins.getCaze()));
-		final Supplier<Predicate> contactFilter = () -> {
+		final Supplier<Predicate> contactFilter = contactViewAllowed ? () -> {
 			final Predicate contactUserFilter = contactService.createUserFilterForJoin(
 				new ContactQueryContext(cb, cq, joins.getContact()),
 				new ContactCriteria().includeContactsFromOtherJurisdictions(false));
 			return CriteriaBuilderHelper.and(cb, contactUserFilter, contactService.createDefaultFilter(cb, joins.getContact()));
-		};
+		} : () -> null;
 		final Supplier<Predicate> eventParticipantFilter = () -> CriteriaBuilderHelper.and(
 			cb,
 			eventParticipantService.createUserFilterForJoin(

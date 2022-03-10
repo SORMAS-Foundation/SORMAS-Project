@@ -957,12 +957,12 @@ public class PersonFacadeEjb implements PersonFacade {
 			Set<Long> distinctPersonIds = new HashSet<>();
 			boolean immunizationModuleReduced =
 				featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED);
-			boolean contactView =
+			boolean contactViewAllowed =
 				featureConfigurationFacade.isFeatureDisabled(FeatureType.CONTACT_TRACING) || userService.hasRight(UserRight.CONTACT_VIEW);
 
 			Arrays.stream(PersonAssociation.getSingleAssociations())
 				.filter(e -> !(immunizationModuleReduced && e == PersonAssociation.IMMUNIZATION))
-				.filter(e -> !(!contactView && e == PersonAssociation.CONTACT))
+				.filter(e -> !(!contactViewAllowed && e == PersonAssociation.CONTACT))
 				.map(e -> getPersonIds(SerializationUtils.clone(nullSafeCriteria).personAssociation(e)))
 				.forEach(distinctPersonIds::addAll);
 			count = distinctPersonIds.size();
