@@ -15,7 +15,7 @@ Feature: Sample filter functionality
     When I search for samples created with the API
     Then I check the displayed Laboratory filter dropdown
 
-  @issue=SORDEV-5981 @env_main @ignore
+  @issue=SORDEV-5981 @env_main
   Scenario: Check all filters are work properly in Samples directory
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -31,7 +31,7 @@ Feature: Sample filter functionality
     Then fill a Full name of person from API
     And I select Test result filter among the filter options from API
     And I select Specimen condition filter among the filter options from API
-    And I select Case clasification filter among the filter options from API
+    And I select Case classification filter among the filter options from API
     And I select Disease filter among the filter options from API
     And I select Region filter among the filter options from API
     And I select District filter among the filter options from API
@@ -46,10 +46,10 @@ Feature: Sample filter functionality
     And I click a apply button on Sample
     And I check that number of displayed sample results is 0
     And I select Specimen condition filter among the filter options from API
-    Then I select random Case clasification filter among the filter options
+    Then I select random Case classification filter among the filter options
     And I click a apply button on Sample
     And I check that number of displayed sample results is 0
-    And I select Case clasification filter among the filter options from API
+    And I select Case classification filter among the filter options from API
     Then I select random Disease filter among the filter options in Sample directory
     And I click a apply button on Sample
     And I check that number of displayed sample results is 0
@@ -64,7 +64,7 @@ Feature: Sample filter functionality
     And I check that number of displayed sample results is 0
     And I select Region filter among the filter options from API
     And I select District filter among the filter options from API
-    Then I change Labolatory filter to "Other facility" option in Sample directory
+    Then I change Laboratory filter to "Other facility" option in Sample directory
     And I click a apply button on Sample
     And I check that number of displayed sample results is 0
     And I click a Reset button on Sample
