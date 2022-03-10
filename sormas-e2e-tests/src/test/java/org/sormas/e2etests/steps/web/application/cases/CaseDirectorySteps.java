@@ -194,10 +194,8 @@ public class CaseDirectorySteps implements En {
         () -> {
           String partialUuid =
               dataOperations.getPartialUuidFromAssociatedLink(apiState.getCreatedCase().getUuid());
-          webDriverHelpers.fillInWebElement(CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, partialUuid);
-          webDriverHelpers.clickOnWebElementBySelector(
-              CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
-          TimeUnit.SECONDS.sleep(3); // needed for table refresh
+          webDriverHelpers.fillAndSubmitInWebElement(
+              CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, partialUuid);
         });
     When(
         "I filter by CaseID of last created UI Case on Case directory page",
@@ -270,7 +268,6 @@ public class CaseDirectorySteps implements En {
         (String outcomeFilterOption) -> {
           webDriverHelpers.selectFromCombobox(
               CASE_OUTCOME_FILTER_COMBOBOX, CaseOutcome.getValueFor(outcomeFilterOption));
-          webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
         });
 
     And(
@@ -298,7 +295,6 @@ public class CaseDirectorySteps implements En {
         (String diseaseFilterOption) -> {
           webDriverHelpers.selectFromCombobox(
               CASE_DISEASE_FILTER_COMBOBOX, DiseasesValues.getCaptionFor(diseaseFilterOption));
-          webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
         });
 
     Then(
@@ -406,7 +402,7 @@ public class CaseDirectorySteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(
               CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          TimeUnit.SECONDS.sleep(3);
         });
 
     Then(
@@ -463,7 +459,7 @@ public class CaseDirectorySteps implements En {
     And(
         "I fill Cases from input to {int} days before UI Case created on Case directory page",
         (Integer number) -> {
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
           webDriverHelpers.fillInWebElement(
               DATE_FROM_COMBOBOX,
               formatter.format(CreateNewCaseSteps.caze.getDateOfReport().minusDays(number)));
@@ -490,7 +486,7 @@ public class CaseDirectorySteps implements En {
     And(
         "I fill Cases from input to {int} days after before UI Case created on Case directory page",
         (Integer number) -> {
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
           webDriverHelpers.fillInWebElement(
               DATE_FROM_COMBOBOX,
               formatter.format(CreateNewCaseSteps.caze.getDateOfReport().plusDays(number)));
@@ -588,7 +584,7 @@ public class CaseDirectorySteps implements En {
     And(
         "I fill Cases to input to {int} days after UI Case created on Case directory page",
         (Integer number) -> {
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
           webDriverHelpers.fillInWebElement(
               DATE_TO_COMBOBOX,
               formatter.format(CreateNewCaseSteps.caze.getDateOfReport().plusDays(number)));
