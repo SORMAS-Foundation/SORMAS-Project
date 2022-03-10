@@ -245,7 +245,7 @@ public class ContactDirectorySteps implements En {
         "I click on Converted to case pending button on Contact Directory Page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CONVERTED_TO_CASE_BUTTON);
-            TimeUnit.SECONDS.sleep(3); // needed for table refresh
+            TimeUnit.SECONDS.sleep(5); // needed for table refresh
         });
     And(
         "I click on Active contact button in Contact Directory Page",
