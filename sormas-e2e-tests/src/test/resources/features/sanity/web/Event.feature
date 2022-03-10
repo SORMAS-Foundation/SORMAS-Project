@@ -383,12 +383,6 @@ Feature: Create events
     And I create a new Contacts from Event Participants using Line Listing
     And I save the new contacts from Event Participants using line listing feature in Event Participant tab
 
-
-
-
-
-
-
   @issue=SORDEV-5569 @env_main
   Scenario: Testing Event groups view filters with sorting actions
     Given API: I create a new event
