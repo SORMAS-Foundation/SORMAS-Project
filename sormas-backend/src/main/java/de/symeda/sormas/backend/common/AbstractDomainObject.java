@@ -31,6 +31,7 @@ import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
 import javax.validation.constraints.Size;
 
+import com.vladmihalcea.hibernate.type.json.JsonType;
 import org.hibernate.annotations.TypeDef;
 import org.hibernate.annotations.TypeDefs;
 
@@ -44,7 +45,7 @@ import de.symeda.sormas.api.utils.DataHelper;
  * Since JsonBinaryType does not work with H2, we are using JsonStringType instead
  */
 @TypeDefs({
-	@TypeDef(name = "json", typeClass = JsonBinaryType.class),
+	@TypeDef(name = "json", typeClass = JsonType.class),
 	@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class) })
 @MappedSuperclass
 public abstract class AbstractDomainObject implements Serializable, Cloneable, HasUuid {
