@@ -856,7 +856,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		List<ImmunizationDto> immunizationDtoList =
 			getImmunizationFacade().getByPersonUuids(Collections.singletonList(leadPersonWithVaccination.getUuid()));
 
-		// TODO: add assertions here - check the number of vaccinations
+		Assert.assertEquals(immunizationDtoList.size(), 1);
+		Assert.assertEquals(immunizationDtoList.get(0).getVaccinations().size(), 2);
 	}
 
 	@Test
@@ -868,7 +869,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		List<ImmunizationDto> immunizationDtoList =
 			getImmunizationFacade().getByPersonUuids(Collections.singletonList(leadPersonWithoutVaccination.getUuid()));
 
-		// TODO: add assertions here - check the number of vaccinations
+		Assert.assertEquals(immunizationDtoList.size(), 1);
+		//TODO after solving bug #8333: assert the number of vaccinations too
 	}
 
 	@Test
