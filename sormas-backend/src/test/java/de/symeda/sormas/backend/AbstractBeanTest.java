@@ -16,8 +16,6 @@ package de.symeda.sormas.backend;
 
 import static org.mockito.Mockito.when;
 
-import de.symeda.sormas.api.info.InfoFacade;
-import de.symeda.sormas.backend.info.InfoFacadeEjb;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -54,6 +52,7 @@ import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.importexport.ExportFacade;
 import de.symeda.sormas.api.importexport.ImportFacade;
+import de.symeda.sormas.api.info.InfoFacade;
 import de.symeda.sormas.api.infrastructure.PopulationDataFacade;
 import de.symeda.sormas.api.infrastructure.area.AreaFacade;
 import de.symeda.sormas.api.infrastructure.community.CommunityFacade;
@@ -140,6 +139,7 @@ import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb.ImmunizationF
 import de.symeda.sormas.backend.importexport.ExportFacadeEjb;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.parser.ImportParserService;
+import de.symeda.sormas.backend.info.InfoFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.area.AreaFacadeEjb.AreaFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb.CommunityFacadeEjbLocal;
@@ -225,6 +225,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	protected TestDataCreator.RDCF rdcf;
 	protected TestDataCreator.RDCFEntities rdcfEntities;
+	protected UserDto nationalUser;
 
 	/**
 	 * Resets mocks to their initial state so that mock configurations are not
@@ -240,6 +241,14 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 		rdcf = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
 		rdcfEntities = creator.createRDCFEntities();
+		nationalUser = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.community.getUuid(),
+			rdcf.facility.getUuid(),
+			"Nat",
+			"User",
+			UserRole.NATIONAL_USER);
 		I18nProperties.setUserLanguage(Language.EN);
 	}
 

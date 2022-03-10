@@ -29,6 +29,7 @@ import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.event.EventDto;
@@ -638,13 +639,11 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetPersonsAfter() throws InterruptedException {
-		UserDto natUser = useNationalUserLogin();
-
 		Date t1 = new Date();
 
 		PersonDto person1 = creator.createPerson();
 		person1 = getPersonFacade().savePerson(person1);
-		final ContactDto contact1 = creator.createContact(natUser.toReference(), person1.toReference());
+		final ContactDto contact1 = creator.createContact(nationalUser.toReference(), person1.toReference());
 		getContactFacade().save(contact1);
 
 		List<PersonDto> personsAfterT1 = getPersonFacade().getPersonsAfter(t1);
@@ -655,7 +654,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		PersonDto person2 = creator.createPerson();
 		person2 = getPersonFacade().savePerson(person2);
-		final ContactDto contact2 = creator.createContact(natUser.toReference(), person2.toReference());
+		final ContactDto contact2 = creator.createContact(nationalUser.toReference(), person2.toReference());
 		getContactFacade().save(contact2);
 
 		List<PersonDto> personsAfterT2 = getPersonFacade().getPersonsAfter(t2);
@@ -669,7 +668,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		person3 = getPersonFacade().savePerson(person3);
 
 		TravelEntryDto travelEntry = creator
-			.createTravelEntry(person3.toReference(), natUser.toReference(), Disease.CORONAVIRUS, rdcf.region, rdcf.district, rdcf.pointOfEntry);
+			.createTravelEntry(person3.toReference(), nationalUser.toReference(), Disease.CORONAVIRUS, rdcf.region, rdcf.district, rdcf.pointOfEntry);
 		getTravelEntryFacade().save(travelEntry);
 
 		personsAfterT1 = getPersonFacade().getPersonsAfter(t1);
@@ -777,7 +776,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testMergePersonsWithoutImmunizationWithoutVaccination() {
+	public void testMergePersonsWithoutVaccinations() {
 		PersonDto leadPerson = creator.createPerson("Alex", "Miller");
 		PersonDto otherPerson = creator.createPerson("Max", "Smith");
 
@@ -803,6 +802,77 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 				.get(0)
 				.getContactInformation(),
 			is("123"));
+	}
+
+	public PersonDto createPersonWithImmunizationAndVaccination(String firstName, String lastName) {
+		loginWith(nationalUser);
+		final PersonDto person = creator.createPerson(firstName, lastName);
+
+		final ImmunizationDto immunization = creator.createImmunizationDto(
+			Disease.DENGUE,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.EXPIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.SCHEDULED,
+			rdcf);
+
+		immunization.setNumberOfDoses(2);
+		immunization.setStartDate(DateHelper.subtractDays(new Date(), 1));
+		immunization.setVaccinations(
+			Arrays.asList(
+				creator.createVaccinationDto(nationalUser.toReference(), immunization.toReference(), new HealthConditionsDto()),
+				creator.createVaccinationDto(nationalUser.toReference(), immunization.toReference(), new HealthConditionsDto())));
+		getImmunizationFacade().save(immunization);
+
+		return person;
+	}
+
+	@Test
+	public void testMergePersonsWithVaccinations() {
+		PersonDto leadPerson = createPersonWithImmunizationAndVaccination("firstName1", "lastName1");
+		PersonDto otherPerson = createPersonWithImmunizationAndVaccination("firstName2", "lastName2");
+
+		getPersonFacade().mergePerson(leadPerson, otherPerson);
+		List<ImmunizationDto> immunizationDtoList = getImmunizationFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid()));
+
+		// TODO: add assertions here - check the number of vaccinations
+	}
+
+	@Test
+	public void testMergePersonWithVaccinationWithPersonWithoutVaccination() {
+		PersonDto leadPersonWithVaccination = createPersonWithImmunizationAndVaccination("firstName3", "lastName3");
+		PersonDto otherPersonWithoutVaccination = creator.createPerson("firstName4", "lastName4");
+
+		getPersonFacade().mergePerson(leadPersonWithVaccination, otherPersonWithoutVaccination);
+		List<ImmunizationDto> immunizationDtoList =
+			getImmunizationFacade().getByPersonUuids(Collections.singletonList(leadPersonWithVaccination.getUuid()));
+
+		// TODO: add assertions here - check the number of vaccinations
+	}
+
+	@Test
+	public void testMergePersonWithoutVaccinationWithPersonWithVaccination() {
+		PersonDto leadPersonWithoutVaccination = creator.createPerson("firstName5", "lastName5");
+		PersonDto otherPersonWithVaccination = createPersonWithImmunizationAndVaccination("firstName6", "lastName6");
+
+		getPersonFacade().mergePerson(leadPersonWithoutVaccination, otherPersonWithVaccination);
+		List<ImmunizationDto> immunizationDtoList =
+			getImmunizationFacade().getByPersonUuids(Collections.singletonList(leadPersonWithoutVaccination.getUuid()));
+
+		// TODO: add assertions here - check the number of vaccinations
+	}
+
+	@Test
+	public void testMergePersonWithoutVaccinationWithPersonWithoutVaccination() {
+		PersonDto leadPersonWithoutVaccination = creator.createPerson("firstName7", "lastName7");
+		PersonDto otherPersonWithoutVaccination = creator.createPerson("firstName8", "lastName8");
+
+		getPersonFacade().mergePerson(leadPersonWithoutVaccination, otherPersonWithoutVaccination);
+		List<ImmunizationDto> immunizationDtoList =
+			getImmunizationFacade().getByPersonUuids(Collections.singletonList(leadPersonWithoutVaccination.getUuid()));
+
+		// TODO: add assertions here - check the number of vaccinations
 	}
 
 	private void updateFollowUpStatus(ContactDto contact, FollowUpStatus status) {
@@ -928,20 +998,24 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		PersonCriteria criteria = new PersonCriteria();
 		criteria.setPersonAssociation(PersonAssociation.TRAVEL_ENTRY);
 
-		UserDto natUser = useNationalUserLogin();
 		// CORONAVIRUS Travel Entry
 		PersonDto personWithCorona = creator.createPerson("Person Coronavirus", "Test");
 		creator.createTravelEntry(
 			personWithCorona.toReference(),
-			natUser.toReference(),
+			nationalUser.toReference(),
 			Disease.CORONAVIRUS,
 			rdcf.region,
 			rdcf.district,
 			rdcf.pointOfEntry);
 		// DENGUE Travel Entry
 		PersonDto personWithDengue = creator.createPerson("Person Dengue", "Test");
-		creator
-			.createTravelEntry(personWithDengue.toReference(), natUser.toReference(), Disease.DENGUE, rdcf.region, rdcf.district, rdcf.pointOfEntry);
+		creator.createTravelEntry(
+			personWithDengue.toReference(),
+			nationalUser.toReference(),
+			Disease.DENGUE,
+			rdcf.region,
+			rdcf.district,
+			rdcf.pointOfEntry);
 		//National User with no restrictions can see all the travel entries
 		List<PersonIndexDto> personIndexDtos = getPersonFacade().getIndexList(criteria, 0, 100, null);
 		assertEquals(2, personIndexDtos.size());
