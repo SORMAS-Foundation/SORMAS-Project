@@ -239,25 +239,25 @@ public class ContactDirectorySteps implements En {
         "I click on All button in Contact Directory Page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ALL_BUTTON_CONTACT);
-          TimeUnit.SECONDS.sleep(3); // needed for table refresh
+          TimeUnit.SECONDS.sleep(5); // needed for table refresh
         });
     And(
         "I click on Converted to case pending button on Contact Directory Page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CONVERTED_TO_CASE_BUTTON);
-          TimeUnit.SECONDS.sleep(3); // needed for table refresh
+          TimeUnit.SECONDS.sleep(5); // needed for table refresh
         });
     And(
         "I click on Active contact button in Contact Directory Page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ACTIVE_CONTACT_BUTTON);
-          TimeUnit.SECONDS.sleep(3); // needed for table refresh
+          TimeUnit.SECONDS.sleep(5); // needed for table refresh
         });
     And(
         "I click on Dropped button on Contact Directory Page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(DROPPED_BUTTON);
-          TimeUnit.SECONDS.sleep(3); // needed for table refresh
+          TimeUnit.SECONDS.sleep(5); // needed for table refresh
         });
 
     When(
@@ -340,6 +340,7 @@ public class ContactDirectorySteps implements En {
     Then(
         "I check that number of displayed contact results is (\\d+)",
         (Integer number) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               TOTAL_CONTACTS_COUNTER, 50);
           assertHelpers.assertWithPoll20Second(
