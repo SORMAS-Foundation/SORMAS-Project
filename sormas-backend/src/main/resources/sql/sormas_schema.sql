@@ -10055,7 +10055,7 @@ ALTER TABLE featureconfiguration_history ADD COLUMN entitytype character varying
 
 INSERT INTO schema_version (version_number, comment) VALUES (446, 'Configuration for automatic archiving #7775');
 
--- 2022-01-22 change by user #7323
+-- 2022-03-10 change by user #7323
 
 ALTER TABLE action ADD COLUMN change_user_id BIGINT,
                    ADD CONSTRAINT fk_change_user_id
@@ -10522,5 +10522,5 @@ ALTER TABLE weeklyreportentry ADD COLUMN change_user_id BIGINT,
 
 ALTER TABLE weeklyreportentry_history ADD COLUMN change_user_id BIGINT;
 
-INSERT INTO schema_version (version_number, comment) VALUES (443, 'Changed by user #7323');
+INSERT INTO schema_version (version_number, comment) VALUES (447, 'Changed by user #7323');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
