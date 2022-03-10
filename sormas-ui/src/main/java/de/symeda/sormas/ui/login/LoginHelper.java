@@ -33,7 +33,7 @@ import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 
 public final class LoginHelper {
 
@@ -63,7 +63,7 @@ public final class LoginHelper {
 			authentication);
 
 		if (status == AuthenticationStatus.SUCCESS) {
-			if (!VaadinServletService.getCurrentServletRequest().isUserInRole(UserRole._USER)) {
+			if (!VaadinServletService.getCurrentServletRequest().isUserInRole(UserRight.SORMAS_UI.name())) {
 				try {
 					VaadinServletService.getCurrentServletRequest().logout();
 				} catch (ServletException e) {
@@ -86,7 +86,7 @@ public final class LoginHelper {
 	public static boolean logout() {
 
 		if (!AuthProvider.getProvider(FacadeProvider.getConfigFacade()).isDefaultProvider()) {
-			 Page.getCurrent().setLocation("logout");
+			Page.getCurrent().setLocation("logout");
 		} else {
 			try {
 				VaadinServletService.getCurrentServletRequest().logout();

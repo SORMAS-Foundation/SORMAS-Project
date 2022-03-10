@@ -117,6 +117,7 @@ public class EditEventSteps implements En {
   public static Person person;
   public static EventHandout aEventHandout;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
+  public static final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
   public static final String userDirPath = System.getProperty("user.dir");
 
   @Inject
@@ -146,6 +147,29 @@ public class EditEventSteps implements En {
     When(
         "I collect the UUID displayed on Edit event page",
         () -> collectedEvent = collectEventUuid());
+
+    When(
+        "I check the created data for DE version is correctly displayed in event edit page",
+        () -> {
+          collectedEvent = collectEventDataDE();
+          createdEvent = CreateNewEventSteps.newEvent;
+
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              collectedEvent,
+              createdEvent,
+              List.of(
+                  "uuid",
+                  "reportDate",
+                  "eventDate",
+                  "eventStatus",
+                  "investigationStatus",
+                  "eventManagementStatus",
+                  "riskLevel",
+                  "disease",
+                  "title",
+                  "sourceType",
+                  "eventLocation"));
+        });
 
     When(
         "I check the created data is correctly displayed in event edit page",
@@ -452,15 +476,16 @@ public class EditEventSteps implements En {
               Paths.get(
                   userDirPath
                       + "/downloads/"
-                      + uuid.substring(0, 6)
+                      + uuid.substring(0, 6).toUpperCase()
                       + "-"
                       + aEventHandout.getDocumentTemplate());
-          assertHelpers.assertWithPoll20Second(
+          assertHelpers.assertWithPoll(
               () ->
                   Assert.assertTrue(
                       Files.exists(path),
                       "Event document was not downloaded. Searched after path: "
-                          + path.toAbsolutePath()));
+                          + path.toAbsolutePath()),
+              120);
         });
   }
 
@@ -477,6 +502,32 @@ public class EditEventSteps implements En {
     LocalDate reportDate = LocalDate.parse(reportingDate, DATE_FORMATTER);
     String eventStartDate = webDriverHelpers.getValueFromWebElement(START_DATA_INPUT);
     LocalDate eventDate = LocalDate.parse(eventStartDate, DATE_FORMATTER);
+
+    return Event.builder()
+        .reportDate(reportDate)
+        .eventDate(eventDate)
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+        .eventStatus(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(EVENT_STATUS_OPTIONS))
+        .investigationStatus(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                EVENT_INVESTIGATION_STATUS_OPTIONS))
+        .eventManagementStatus(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                EVENT_MANAGEMENT_STATUS_OPTIONS))
+        .riskLevel(webDriverHelpers.getValueFromWebElement(RISK_LEVEL_INPUT))
+        .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
+        .title(webDriverHelpers.getValueFromWebElement(TITLE_INPUT))
+        .sourceType(webDriverHelpers.getValueFromWebElement(SOURCE_TYPE_INPUT))
+        .eventLocation(webDriverHelpers.getValueFromWebElement(TYPE_OF_PLACE_INPUT))
+        .build();
+  }
+
+  private Event collectEventDataDE() {
+    String reportingDate = webDriverHelpers.getValueFromWebElement(REPORT_DATE_INPUT);
+    LocalDate reportDate = LocalDate.parse(reportingDate, DATE_FORMATTER_DE);
+    String eventStartDate = webDriverHelpers.getValueFromWebElement(START_DATA_INPUT);
+    LocalDate eventDate = LocalDate.parse(eventStartDate, DATE_FORMATTER_DE);
 
     return Event.builder()
         .reportDate(reportDate)

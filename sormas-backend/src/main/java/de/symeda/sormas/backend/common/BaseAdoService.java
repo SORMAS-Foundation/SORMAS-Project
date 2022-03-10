@@ -25,6 +25,8 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
@@ -306,6 +308,11 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 	public void deletePermanent(ADO ado) {
 		em.remove(em.contains(ado) ? ado : em.merge(ado)); // todo: investigate why the entity might be detached (example: AdditionalTest)
 		em.flush();
+	}
+
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	protected void deletePermanent(List<String> uuids) {
+		uuids.forEach(uuid-> deletePermanent(getByUuid(uuid)));
 	}
 
 	@Override
