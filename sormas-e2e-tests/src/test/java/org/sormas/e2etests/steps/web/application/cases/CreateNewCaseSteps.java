@@ -114,6 +114,7 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
+
     When(
         "^I fill new case form with specific data$",
         () -> {
