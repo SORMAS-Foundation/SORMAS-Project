@@ -65,7 +65,6 @@ public class EventParticipant extends CoreAdo implements SormasToSormasShareable
 	public static final String SORMAS_TO_SORMAS_ORIGIN_INFO = "sormasToSormasOriginInfo";
 	public static final String SORMAS_TO_SORMAS_SHARES = "sormasToSormasShares";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
-	public static final String DELETED = "deleted";
 
 	private User reportingUser;
 	private Event event;
@@ -78,7 +77,6 @@ public class EventParticipant extends CoreAdo implements SormasToSormasShareable
 	private SormasToSormasOriginInfo sormasToSormasOriginInfo;
 	private List<SormasToSormasShareInfo> sormasToSormasShares = new ArrayList<>(0);
 	private VaccinationStatus vaccinationStatus;
-	private boolean deleted;
 
 	@ManyToOne
 	@JoinColumn(nullable = false)
@@ -193,13 +191,5 @@ public class EventParticipant extends CoreAdo implements SormasToSormasShareable
 
 	public void setVaccinationStatus(VaccinationStatus vaccinationStatus) {
 		this.vaccinationStatus = vaccinationStatus;
-	}
-
-	public boolean getDeleted() {
-		return deleted;
-	}
-
-	public void setDeleted(boolean deleted) {
-		this.deleted = deleted;
 	}
 }
