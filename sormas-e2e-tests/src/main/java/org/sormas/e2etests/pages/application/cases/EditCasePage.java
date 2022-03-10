@@ -37,6 +37,7 @@ public class EditCasePage {
   public static final By EXTERNAL_ID_INPUT = By.id("externalID");
   public static final By UUID_INPUT = By.id("uuid");
   public static final By DISEASE_INPUT = By.cssSelector("#disease input");
+  public static final By DISEASE_VARIANT_INPUT = By.cssSelector("#diseaseVariant input");
   public static final By USER_INFORMATION =
       By.cssSelector(".v-slot-view-header .v-slot-primary div");
   public static final By CASE_PERSON_TAB = By.cssSelector("div#tab-cases-person");

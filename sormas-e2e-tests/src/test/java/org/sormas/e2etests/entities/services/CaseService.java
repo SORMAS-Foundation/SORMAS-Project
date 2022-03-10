@@ -94,6 +94,7 @@ public class CaseService {
         .dateOfReport(LocalDate.now().minusDays(1))
         .externalId(UUID.randomUUID().toString())
         .disease("COVID-19")
+        .diseaseVariant("B.1.617.1")
         .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
         .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
         .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
@@ -110,6 +111,7 @@ public class CaseService {
         .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
         .primaryEmailAddress(
             ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
+        .outcomeOfCase("VERSTORBEN")
         .build();
   }
 
