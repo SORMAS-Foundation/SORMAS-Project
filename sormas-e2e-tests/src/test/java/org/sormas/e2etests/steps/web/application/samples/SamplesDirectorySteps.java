@@ -40,7 +40,10 @@ import static org.sormas.e2etests.steps.BaseSteps.locale;
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+
+import org.junit.rules.Timeout;
 import org.sormas.e2etests.enums.CaseClassification;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.DistrictsValues;
@@ -68,6 +71,7 @@ public class SamplesDirectorySteps implements En {
         "I click a apply button on Sample",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER_BUTTON);
+            TimeUnit.SECONDS.sleep(3);
         });
 
     When(
@@ -84,7 +88,6 @@ public class SamplesDirectorySteps implements En {
               apiState.getLastCreatedPerson().getFirstName()
                   + " "
                   + apiState.getLastCreatedPerson().getLastName());
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAMPLE_SEARCH_INPUT);
         });
 
     When(
