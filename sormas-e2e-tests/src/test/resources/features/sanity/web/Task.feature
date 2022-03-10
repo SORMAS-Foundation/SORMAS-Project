@@ -1,7 +1,8 @@
 @UI @Sanity @Task
 Feature: Tasks functionalities
 
-  @env_main @check
+  #please check this test once test-auto has latest development version
+  @env_main @check @ignore
   Scenario: Create and check a new task data
     Given I log in with National User
     And I click on the Tasks button from navbar
@@ -10,7 +11,7 @@ Feature: Tasks functionalities
     And I open last created task from Tasks Directory
     Then I check the created task is correctly displayed on Edit task page
 
-  @issue=SORDEV-5476 @env_main @check
+  @issue=SORDEV-5476 @env_main
   Scenario: Check the edit of task from Case
     Given I log in as a Surveillance Officer
     And I click on the Cases button from navbar
@@ -28,7 +29,7 @@ Feature: Tasks functionalities
     When I click on first edit Task
     Then I check the created task is correctly displayed on Edit task page
 
-  @env_main @check
+  @env_main
   Scenario: Check all fields from the created Task in the Task Management table
     Given API: I create a new person
     Then API: I check that POST call body is "OK"

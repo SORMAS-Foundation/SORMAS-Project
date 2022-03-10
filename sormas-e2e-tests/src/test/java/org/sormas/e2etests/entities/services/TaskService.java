@@ -20,10 +20,8 @@ package org.sormas.e2etests.entities.services;
 
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
-import java.text.SimpleDateFormat;
 import java.time.LocalDate;
 import java.time.LocalTime;
-import java.util.Date;
 import org.sormas.e2etests.entities.pojo.web.Task;
 import org.sormas.e2etests.enums.immunizations.StatusValues;
 
@@ -35,10 +33,8 @@ public class TaskService {
     this.faker = faker;
   }
 
-  private final SimpleDateFormat formatter = new SimpleDateFormat("yyyy-MM-dd 'at' HH:mm:ss");
-
   public Task buildGeneratedTask() {
-    Date date = new Date(System.currentTimeMillis());
+    long timeStamp = System.currentTimeMillis();
     return Task.builder()
         .taskContext("GENERAL")
         .taskType("other task as described in comments")
@@ -48,14 +44,14 @@ public class TaskService {
         .dueDateTime(LocalTime.of(11, 30))
         .assignedTo("Surveillance OFFICER - Surveillance Officer")
         .priority("Normal")
-        .commentsOnTask("Task comment - " + formatter.format(date))
-        .commentsOnExecution("Execution comment - " + formatter.format(date))
+        .commentsOnTask("Task comment-" + timeStamp)
+        .commentsOnExecution("Execution comment-" + timeStamp)
         .taskStatus(StatusValues.PENDING.getValue())
         .build();
   }
 
   public Task buildEditTask(String currentTaskContext, String currentStatus) {
-    Date date = new Date(System.currentTimeMillis());
+    long timeStamp = System.currentTimeMillis();
     return Task.builder()
         .taskContext(currentTaskContext)
         .taskType("contact tracing")
@@ -65,8 +61,8 @@ public class TaskService {
         .dueDateTime(LocalTime.of(13, 30))
         .assignedTo("Surveillance OFFICER - Surveillance Officer")
         .priority("High")
-        .commentsOnTask("Task comment - " + formatter.format(date))
-        .commentsOnExecution("Execution comment - " + formatter.format(date))
+        .commentsOnTask("Task comment-" + timeStamp)
+        .commentsOnExecution("Execution comment-" + timeStamp)
         .taskStatus(currentStatus)
         .build();
   }
