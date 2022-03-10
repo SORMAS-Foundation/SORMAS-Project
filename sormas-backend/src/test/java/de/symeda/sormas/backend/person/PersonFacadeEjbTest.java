@@ -64,6 +64,7 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 
 public class PersonFacadeEjbTest extends AbstractBeanTest {
@@ -831,12 +832,19 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testMergePersonsWithVaccinations() {
 		PersonDto leadPerson = createPersonWithImmunizationAndVaccination("firstName1", "lastName1");
+		List<ImmunizationDto> leadPersonImmunizationDto = getImmunizationFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid()));
+		List<VaccinationDto> leadPersonVaccinations = leadPersonImmunizationDto.get(0).getVaccinations();
+
 		PersonDto otherPerson = createPersonWithImmunizationAndVaccination("firstName2", "lastName2");
+		List<ImmunizationDto> otherPersonImmunizationDto = getImmunizationFacade().getByPersonUuids(Collections.singletonList(otherPerson.getUuid()));
+		List<VaccinationDto> otherPersonVaccinations = otherPersonImmunizationDto.get(0).getVaccinations();
 
 		getPersonFacade().mergePerson(leadPerson, otherPerson);
-		List<ImmunizationDto> immunizationDtoList = getImmunizationFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid()));
+		List<ImmunizationDto> mergedPersonImmunizationDtoList =
+			getImmunizationFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid()));
 
-		// TODO: add assertions here - check the number of vaccinations
+		//TODO after solving bug #8333: check the immunizations and vaccinations list and number
+		Assert.assertEquals(mergedPersonImmunizationDtoList.size(), 2);
 	}
 
 	@Test
@@ -872,7 +880,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		List<ImmunizationDto> immunizationDtoList =
 			getImmunizationFacade().getByPersonUuids(Collections.singletonList(leadPersonWithoutVaccination.getUuid()));
 
-		// TODO: add assertions here - check the number of vaccinations
+		// both persons are without immunization and vaccination so the merged person should not have immunization
+		Assert.assertEquals(immunizationDtoList.size(), 0);
 	}
 
 	private void updateFollowUpStatus(ContactDto contact, FollowUpStatus status) {
