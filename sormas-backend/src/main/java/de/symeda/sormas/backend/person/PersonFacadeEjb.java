@@ -106,6 +106,7 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -956,8 +957,12 @@ public class PersonFacadeEjb implements PersonFacade {
 			Set<Long> distinctPersonIds = new HashSet<>();
 			boolean immunizationModuleReduced =
 				featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED);
+			boolean contactView =
+				featureConfigurationFacade.isFeatureDisabled(FeatureType.CONTACT_TRACING) || userService.hasRight(UserRight.CONTACT_VIEW);
+
 			Arrays.stream(PersonAssociation.getSingleAssociations())
 				.filter(e -> !(immunizationModuleReduced && e == PersonAssociation.IMMUNIZATION))
+				.filter(e -> !(!contactView && e == PersonAssociation.CONTACT))
 				.map(e -> getPersonIds(SerializationUtils.clone(nullSafeCriteria).personAssociation(e)))
 				.forEach(distinctPersonIds::addAll);
 			count = distinctPersonIds.size();
