@@ -27,6 +27,9 @@ import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import com.vaadin.shared.ui.ContentMode;
+import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.icons.VaadinIcons;
@@ -107,6 +110,8 @@ public class ContactsView extends AbstractView {
 	private MenuBar bulkOperationsDropdown;
 	private HashMap<Button, String> statusButtons;
 	private Button activeStatusButton;
+
+	private Label relevanceStatusInfoLabel;
 
 	// Filters
 	private ContactsFilterForm filterForm;
@@ -437,6 +442,23 @@ public class ContactsView extends AbstractView {
 		{
 			// Show active/archived/all dropdown
 			if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
+
+				if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CONTACT)) {
+					int daysAfterContactGetsArchived = FacadeProvider.getFeatureConfigurationFacade()
+							.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CONTACT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
+					if (daysAfterContactGetsArchived > 0) {
+						relevanceStatusInfoLabel = new Label(
+								VaadinIcons.INFO_CIRCLE.getHtml() + " "
+										+ String
+										.format(I18nProperties.getString(Strings.infoArchivedContacts), daysAfterContactGetsArchived),
+								ContentMode.HTML);
+						relevanceStatusInfoLabel.setVisible(false);
+						relevanceStatusInfoLabel.addStyleName(CssStyles.LABEL_VERTICAL_ALIGN_SUPER);
+						actionButtonsLayout.addComponent(relevanceStatusInfoLabel);
+						actionButtonsLayout.setComponentAlignment(relevanceStatusInfoLabel, Alignment.MIDDLE_RIGHT);
+					}
+				}
+
 				relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
 				relevanceStatusFilter.setId("relevanceStatus");
 				relevanceStatusFilter.setWidth(140, Unit.PERCENTAGE);
@@ -446,6 +468,9 @@ public class ContactsView extends AbstractView {
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.contactArchivedContacts));
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.contactAllContacts));
 				relevanceStatusFilter.addValueChangeListener(e -> {
+					if (relevanceStatusInfoLabel != null) {
+						relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
+					}
 					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					navigateTo(criteria);
 				});

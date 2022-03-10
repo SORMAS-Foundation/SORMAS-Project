@@ -37,10 +37,11 @@ public class EditCasePersonSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   protected Case collectedCase;
-  protected Case createdCase;
+  public static Case createdCase;
   private static Case addressData;
 
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MMMM/d/yyyy");
+  public static final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
 
   @Inject
   public EditCasePersonSteps(final WebDriverHelpers webDriverHelpers, CaseService caseService) {

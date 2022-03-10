@@ -45,6 +45,8 @@ public class CaseDirectoryPage {
       By.cssSelector("[id='caseClassification'] [class='v-filterselect-button']");
   public static final By CASE_DISEASE_FILTER_COMBOBOX =
       By.cssSelector("[id='disease'] [class='v-filterselect-button']");
+  public static final By CASE_DISEASE_VARIANT_FILTER_COMBOBOX =
+      By.cssSelector("[id='diseaseVariant'] [class='v-filterselect-button']");
   public static final By CASE_APPLY_FILTERS_BUTTON = By.cssSelector("[id='actionApplyFilters']");
   public static final By CASE_RESET_FILTERS_BUTTON = By.cssSelector("[id='actionResetFilters']");
   public static final String CASE_RESULTS_UUID_LOCATOR = "[title = '%s']";

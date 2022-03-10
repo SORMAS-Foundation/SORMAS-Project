@@ -107,7 +107,7 @@ Feature: Case end to end tests
     And I delete the case
     Then I check that number of displayed cases results is 0
 
-  @env_main
+  @issue=SORDEV-5530 @env_main
   Scenario: Edit all fields from Case Contacts tab
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -399,7 +399,8 @@ Feature: Case end to end tests
     And I navigate to the last created through API Event page via URL
     And I check that number of displayed Event Participants is 1
 
-  @issue=SORDEV-8048 @env_de
+    #TODO separate into 3 tests - test doesn't reflect test case steps
+  @issue=SORDEV-8048 @env_de @ignore
   Scenario: Test Default value for disease if only one is used by the server
     Given I log in with National User
     And I click on the Cases button from navbar
