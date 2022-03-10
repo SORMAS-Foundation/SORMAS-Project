@@ -31,62 +31,62 @@ import java.io.File;
  * Provides a configurable log sink for the SORMAS audit trail.
  */
 public class LogSink {
+    private static final Logger logger = LoggerFactory.getLogger(LogSink.class);
+    private static LogSink instance;
 
-	private static final Logger logger = LoggerFactory.getLogger(LogSink.class);
-	private static LogSink instance;
+    private Logger auditLogger;
 
-	private Logger auditLogger;
+    private LogSink(String fileName) {
+        if (fileName == null || fileName.equals("")) {
+            setupNopLogger();
+            return;
+        }
 
-	private LogSink(String fileName) {
-		if (fileName == null || fileName.equals("")) {
-			setupNopLogger();
-			return;
-		}
+        File file = new File(fileName);
+        JoranConfigurator configurator = new JoranConfigurator();
+        LoggerContext context = new LoggerContext();
+        configurator.setContext(context);
 
-		File file = new File(fileName);
-		JoranConfigurator configurator = new JoranConfigurator();
-		LoggerContext context = new LoggerContext();
-		configurator.setContext(context);
+        try {
+            configurator.doConfigure(file);
+        } catch (JoranException e) {
+            logger.error("Could not setup audit logger: ", e);
+            setupNopLogger();
+            return;
+        }
+        auditLogger = context.getLogger("Audit");
+    }
 
-		try {
-			configurator.doConfigure(file);
-		} catch (JoranException e) {
-			logger.error("Could not setup audit logger: ", e);
-			setupNopLogger();
-			return;
-		}
-		auditLogger = context.getLogger("Audit");
-	}
+    /**
+     * Issue a warning and make audit logging a NOP
+     */
+    private void setupNopLogger() {
+        logger.warn("Audit logger is disabled! Using NOP Logger instead!");
+        auditLogger = NOPLogger.NOP_LOGGER;
+    }
 
-	/**
-	 * Issue a warning and make audit logging a NOP
-	 */
-	private void setupNopLogger() {
-		logger.warn("Audit logger is disabled! Using NOP Logger instead!");
-		auditLogger = NOPLogger.NOP_LOGGER;
-	}
+    public static synchronized LogSink getInstance() {
+        String configPath = null;
 
-	public static synchronized LogSink getInstance() {
-		String configPath = null;
+        if (instance == null) {
+            // initialize
+            try {
+                ConfigFacade configFacade = (ConfigFacade) new InitialContext().lookup("java:module/ConfigFacade");
+                // happy path
+                configPath = configFacade.getAuditLoggerConfig();
+            } catch (NamingException e) {
+                // constructor in finally block will set up NOPLogger
+                logger.error("Could not lookup ConfigFacade");
+            } finally {
+                instance = new LogSink(configPath);
+            }
+        }
 
-		if (instance == null) {
-			// initialize
-			try {
-				ConfigFacade configFacade = (ConfigFacade) new InitialContext().lookup("java:module/ConfigFacade");
-				// happy path
-				configPath = configFacade.getAuditLoggerConfig();
-			} catch (NamingException e) {
-				// constructor in finally block will set up NOPLogger
-				logger.error("Could not lookup ConfigFacade");
-			} finally {
-				instance = new LogSink(configPath);
-			}
-		}
+        return instance;
+    }
 
-		return instance;
-	}
-
-	public Logger getAuditLogger() {
-		return auditLogger;
-	}
+    public Logger getAuditLogger() {
+        return auditLogger;
+    }
 }
+
