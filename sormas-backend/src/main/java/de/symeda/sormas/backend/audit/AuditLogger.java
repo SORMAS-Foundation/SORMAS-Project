@@ -34,88 +34,89 @@ import java.util.Collections;
 import java.util.TimeZone;
 
 public class AuditLogger {
-    private static AuditLogger instance;
-    private static final Logger logger = LoggerFactory.getLogger(AuditLogger.class);
-    private final Logger auditLogger;
-    private final String auditSourceSite;
 
-    private AuditLogger(String auditSourceSite) {
-        auditLogger = LogSink.getInstance().getAuditLogger();
-        this.auditSourceSite = auditSourceSite;
-    }
+	private static AuditLogger instance;
+	private static final Logger logger = LoggerFactory.getLogger(AuditLogger.class);
+	private final Logger auditLogger;
+	private final String auditSourceSite;
 
-    public static synchronized AuditLogger getInstance() {
-        if (instance == null) {
-            try {
-                ConfigFacade configFacade = (ConfigFacade) new InitialContext().lookup("java:module/ConfigFacade");
-                String sourceSite = configFacade.getAuditSourceSite();
-                if (sourceSite.equals("")) {
-                    logger.warn("audit.source.site is empty! Please configure it for more expedient audit trail analysis.");
-                    sourceSite = "NOT CONFIGURED";
-                }
-                instance = new AuditLogger(sourceSite);
-            } catch (NamingException e) {
-                logger.error("Could not fetch ConfigFacade for audit logger.");
-                throw new RuntimeException(e);
-            }
-        }
-        return instance;
-    }
+	private AuditLogger(String auditSourceSite) {
+		auditLogger = LogSink.getInstance().getAuditLogger();
+		this.auditSourceSite = auditSourceSite;
+	}
 
-    private void accept(AuditEvent event) {
-        FhirContext ctx = FhirContext.forR4();
-        IParser parser = ctx.newJsonParser();
-        String serialized = parser.encodeResourceToString(event);
-        auditLogger.info(serialized);
-    }
+	public static synchronized AuditLogger getInstance() {
+		if (instance == null) {
+			try {
+				ConfigFacade configFacade = (ConfigFacade) new InitialContext().lookup("java:module/ConfigFacade");
+				String sourceSite = configFacade.getAuditSourceSite();
+				if (sourceSite.equals("")) {
+					logger.warn("audit.source.site is empty! Please configure it for more expedient audit trail analysis.");
+					sourceSite = "NOT CONFIGURED";
+				}
+				instance = new AuditLogger(sourceSite);
+			} catch (NamingException e) {
+				logger.error("Could not fetch ConfigFacade for audit logger.");
+				throw new RuntimeException(e);
+			}
+		}
+		return instance;
+	}
 
-    public void logApplicationStart() {
-        Coding subtype = new Coding("https://hl7.org/fhir/R4/valueset-audit-event-sub-type.html", "110120", "Application Start");
-        String outcomeDesc = "Application starting";
-        logApplicationLifecycle(subtype, outcomeDesc);
-    }
+	private void accept(AuditEvent event) {
+		FhirContext ctx = FhirContext.forR4();
+		IParser parser = ctx.newJsonParser();
+		String serialized = parser.encodeResourceToString(event);
+		auditLogger.info(serialized);
+	}
 
-    public void logApplicationStop() {
-        Coding subtype = new Coding("https://hl7.org/fhir/R4/valueset-audit-event-sub-type.html", "110121", "Application Stop");
-        String outcomeDesc = "Application stopping";
-        logApplicationLifecycle(subtype, outcomeDesc);
-    }
+	public void logApplicationStart() {
+		Coding subtype = new Coding("https://hl7.org/fhir/R4/valueset-audit-event-sub-type.html", "110120", "Application Start");
+		String outcomeDesc = "Application starting";
+		logApplicationLifecycle(subtype, outcomeDesc);
+	}
 
-    private void logApplicationLifecycle(Coding subtype, String outcomeDesc) {
-        AuditEvent applicationStartAudit = new AuditEvent();
-        applicationStartAudit.setType(new Coding("https://hl7.org/fhir/R4/valueset-audit-event-type.html", "110100", "Application Activity"));
+	public void logApplicationStop() {
+		Coding subtype = new Coding("https://hl7.org/fhir/R4/valueset-audit-event-sub-type.html", "110121", "Application Stop");
+		String outcomeDesc = "Application stopping";
+		logApplicationLifecycle(subtype, outcomeDesc);
+	}
 
-        applicationStartAudit.setSubtype(Collections.singletonList(subtype));
+	private void logApplicationLifecycle(Coding subtype, String outcomeDesc) {
+		AuditEvent applicationStartAudit = new AuditEvent();
+		applicationStartAudit.setType(new Coding("https://hl7.org/fhir/R4/valueset-audit-event-type.html", "110100", "Application Activity"));
 
-        applicationStartAudit.setAction(AuditEvent.AuditEventAction.E);
-        applicationStartAudit.setRecorded(Calendar.getInstance(TimeZone.getDefault()).getTime());
+		applicationStartAudit.setSubtype(Collections.singletonList(subtype));
 
-        // success
-        applicationStartAudit.setOutcome(AuditEvent.AuditEventOutcome._0);
-        applicationStartAudit.setOutcomeDesc(outcomeDesc);
+		applicationStartAudit.setAction(AuditEvent.AuditEventAction.E);
+		applicationStartAudit.setRecorded(Calendar.getInstance(TimeZone.getDefault()).getTime());
 
-        AuditEvent.AuditEventAgentComponent agent = new AuditEvent.AuditEventAgentComponent();
-        CodeableConcept codeableConcept = new CodeableConcept();
-        codeableConcept.addCoding(new Coding("https://www.hl7.org/fhir/valueset-participation-role-type.html", "110151", "Application Launcher"));
-        agent.setType(codeableConcept);
-        agent.setName("SYSTEM");
-        applicationStartAudit.setAgent(Collections.singletonList(agent));
+		// success
+		applicationStartAudit.setOutcome(AuditEvent.AuditEventOutcome._0);
+		applicationStartAudit.setOutcomeDesc(outcomeDesc);
 
-        AuditEvent.AuditEventSourceComponent source = new AuditEvent.AuditEventSourceComponent();
-        source.setSite(auditSourceSite);
-        // Application Server
-        AuditSourceType auditSourceType = AuditSourceType._4;
-        source.addType(new Coding(auditSourceType.getSystem(), auditSourceType.toCode(), auditSourceType.getDisplay()));
-        applicationStartAudit.setSource(source);
+		AuditEvent.AuditEventAgentComponent agent = new AuditEvent.AuditEventAgentComponent();
+		CodeableConcept codeableConcept = new CodeableConcept();
+		codeableConcept.addCoding(new Coding("https://www.hl7.org/fhir/valueset-participation-role-type.html", "110151", "Application Launcher"));
+		agent.setType(codeableConcept);
+		agent.setName("SYSTEM");
+		applicationStartAudit.setAgent(Collections.singletonList(agent));
 
-        AuditEvent.AuditEventEntityComponent entity = new AuditEvent.AuditEventEntityComponent();
-        entity.setWhat(new Reference("StartupShutdownService"));
+		AuditEvent.AuditEventSourceComponent source = new AuditEvent.AuditEventSourceComponent();
+		source.setSite(auditSourceSite);
+		// Application Server
+		AuditSourceType auditSourceType = AuditSourceType._4;
+		source.addType(new Coding(auditSourceType.getSystem(), auditSourceType.toCode(), auditSourceType.getDisplay()));
+		applicationStartAudit.setSource(source);
 
-        // System Object
-        AuditEntityType entityType = AuditEntityType._2;
-        entity.setType(new Coding(entityType.getSystem(), entityType.toCode(), entityType.getDisplay()));
-        applicationStartAudit.addEntity(entity);
+		AuditEvent.AuditEventEntityComponent entity = new AuditEvent.AuditEventEntityComponent();
+		entity.setWhat(new Reference("StartupShutdownService"));
 
-        accept(applicationStartAudit);
-    }
+		// System Object
+		AuditEntityType entityType = AuditEntityType._2;
+		entity.setType(new Coding(entityType.getSystem(), entityType.toCode(), entityType.getDisplay()));
+		applicationStartAudit.addEntity(entity);
+
+		accept(applicationStartAudit);
+	}
 }
