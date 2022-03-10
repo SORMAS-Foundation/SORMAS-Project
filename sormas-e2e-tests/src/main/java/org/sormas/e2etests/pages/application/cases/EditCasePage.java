@@ -80,6 +80,8 @@ public class EditCasePage {
   public static final By FACILITY_CATEGORY_COMBOBOX = By.cssSelector("#typeGroup div");
   public static final By FACILITY_TYPE_COMBOBOX = By.cssSelector("#facilityType div");
   public static final By FACILITY_HEALTH_COMBOBOX = By.cssSelector("#healthFacility div");
+  public static final By FACILITY_ACTIVITY_COMBOBOX =
+      By.cssSelector("[id='typeOfPlace'] [class='v-filterselect-button']");
   public static final By REGION_COMBOBOX = By.cssSelector("#responsibleRegion div");
   public static final By DISTRICT_COMBOBOX = By.cssSelector("#responsibleDistrict div");
   public static final By COMMUNITY_COMBOBOX = By.cssSelector("#responsibleCommunity div");
@@ -103,6 +105,7 @@ public class EditCasePage {
       By.cssSelector(".popupContent #actionConfirm");
   public static final By QUARANTINE_POPUP_DISCARD_BUTTON =
       By.cssSelector(".popupContent #actionCancel");
+  public static final By DISCARD_BUTTON_POPUP = By.cssSelector(".popupContent #discard");
   public static final By QUARANTINE_ORDERED_VERBALLY_CHECKBOX_LABEL =
       By.xpath("//*[@id='quarantineOrderedVerbally']/label");
   public static final By QUARANTINE_ORDERED_VERBALLY_CHECKBOX_INPUT =
