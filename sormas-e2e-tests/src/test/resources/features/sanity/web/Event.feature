@@ -346,3 +346,19 @@ Feature: Create events
     And I hover to Event Groups column of the Event result
     And I check that name appearing in hover is equal to name of linked Event group
     And I check the number of displayed Event results from All button is 1
+
+  @issue=SORDEV-9355 @env_main
+  Scenario: Day of birth filter for event participant test
+    Given I log in with National User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with specific data
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    And I collect the UUID displayed on Edit event page
+    Then I add a participant to the event
+    Then I check if participant appears in the event participants list
+    And I fill birth fields for participant in event participant list
+    Then I click on Apply filters button in event participant list
+    Then I check if filtered participant appears in the event participants list
