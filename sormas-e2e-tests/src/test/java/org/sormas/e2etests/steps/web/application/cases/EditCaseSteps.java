@@ -272,6 +272,22 @@ public class EditCaseSteps implements En {
               FACILITY_HEALTH_COMBOBOX, CaseOutcome.getValueFor(facility));
           editedCase = editedCase.toBuilder().facility(facility).build();
         });
+    When(
+        "I set Facility to {string} from New Entry popup",
+        (String facility) -> {
+          webDriverHelpers.selectFromCombobox(FACILITY_ACTIVITY_COMBOBOX, facility);
+        });
+    When(
+        "And I click on Discard button from New Entry popup",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DISCARD_BUTTON_POPUP);
+        });
+
+    When(
+        "I set Facility Type to {string} from New Entry popup",
+        (String facilityType) -> {
+          webDriverHelpers.selectFromCombobox(FACILITY_TYPE_COMBOBOX, facilityType);
+        });
 
     When(
         "I fill Facility name and description filed by ([^\"]*)",
