@@ -45,7 +45,7 @@ public class SampleApiService {
         .pathogenTestResult("PENDING")
         .lab(
             Lab.builder()
-                .uuid(UUID.randomUUID().toString())
+                .uuid("VQL6NJ-HPJY24-56F2R5-T5UV2HUI")
                 .caption("Voreingestelltes Labor")
                 .build())
         .labDetails("Dexter laboratory")
