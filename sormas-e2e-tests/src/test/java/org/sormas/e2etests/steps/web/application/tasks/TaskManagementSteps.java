@@ -75,7 +75,7 @@ public class TaskManagementSteps implements En {
               By.xpath(
                   String.format(
                       EDIT_BUTTON_XPATH_BY_TEXT, CreateNewTaskSteps.task.getCommentsOnTask()));
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(lastTaskEditButton, 20);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(lastTaskEditButton, 40);
           webDriverHelpers.clickOnWebElementBySelector(lastTaskEditButton);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               COMMENTS_ON_EXECUTION_TEXTAREA);

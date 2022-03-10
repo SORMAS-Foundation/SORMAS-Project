@@ -27,7 +27,7 @@ Feature: Tasks functionalities
     When I open last created case
     When I click on first edit Task
     Then I check the created task is correctly displayed on Edit task page
-    
+
   @env_main @check
   Scenario: Check all fields from the created Task in the Task Management table
     Given API: I create a new person
