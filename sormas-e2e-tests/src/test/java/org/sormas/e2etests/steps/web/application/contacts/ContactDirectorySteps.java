@@ -211,8 +211,7 @@ public class ContactDirectorySteps implements En {
         "I apply Id of last api created Contact on Contact Directory Page",
         () -> {
           String contactUuid =
-              dataOperations.getPartialUuidFromAssociatedLink(
-                  apiState.getCreatedContact().getUuid());
+                  apiState.getCreatedContact().getUuid();
           webDriverHelpers.fillAndSubmitInWebElement(
               CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, contactUuid);
         });
@@ -459,25 +458,25 @@ public class ContactDirectorySteps implements En {
         "I click on All button in Contact Directory Page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ALL_BUTTON_CONTACT);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
+          TimeUnit.SECONDS.sleep(5); // needed for table refresh
         });
     And(
         "I click on Converted to case pending button on Contact Directory Page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CONVERTED_TO_CASE_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
+          TimeUnit.SECONDS.sleep(5); // needed for table refresh
         });
     And(
         "I click on Active contact button in Contact Directory Page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ACTIVE_CONTACT_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
+          TimeUnit.SECONDS.sleep(5); // needed for table refresh
         });
     And(
         "I click on Dropped button on Contact Directory Page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(DROPPED_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
+          TimeUnit.SECONDS.sleep(5); // needed for table refresh
         });
 
     When(
@@ -560,13 +559,14 @@ public class ContactDirectorySteps implements En {
     Then(
         "I check that number of displayed contact results is (\\d+)",
         (Integer number) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              TOTAL_CONTACTS_COUNTER, 50);
+                  GRID_RESULTS_COUNTER_CONTACT_DIRECTORY, 50);
           assertHelpers.assertWithPoll20Second(
               () ->
                   Assert.assertEquals(
                       Integer.parseInt(
-                          webDriverHelpers.getTextFromPresentWebElement(TOTAL_CONTACTS_COUNTER)),
+                          webDriverHelpers.getTextFromPresentWebElement(GRID_RESULTS_COUNTER_CONTACT_DIRECTORY)),
                       number.intValue(),
                       "Number of displayed contacts is not correct"));
         });
