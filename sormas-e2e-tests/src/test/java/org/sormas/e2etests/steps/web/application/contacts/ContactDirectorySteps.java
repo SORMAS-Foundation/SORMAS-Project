@@ -82,12 +82,12 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.EPIDEMIOLOGICAL_DATA_TAB;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.FIRST_CONTACT_ID_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.GRID_HEADERS;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.GRID_RESULTS_COUNTER_CONTACT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.LINE_LISTING;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.MULTIPLE_OPTIONS_SEARCH_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.NEW_ENTRY_EPIDEMIOLOGICAL_DATA;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.PERSON_LIKE_SEARCH_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.RESULTS_GRID_HEADER;
-import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.TOTAL_CONTACTS_COUNTER;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.FIRST_NAME_OF_CONTACT_PERSON_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;

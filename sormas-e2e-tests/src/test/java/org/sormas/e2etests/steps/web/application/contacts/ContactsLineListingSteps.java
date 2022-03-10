@@ -81,6 +81,15 @@ public class ContactsLineListingSteps implements En {
           selectBirthDay(contactsLineListing.getBirthDay());
           selectSex(contactsLineListing.getSex());
         });
+    When(
+        "^I create a new Contacts from Event Participants using Line Listing$",
+        () -> {
+          contactsLineListing = contactsLineListingService.buildGeneratedLineListingContacts();
+          selectRegion(contactsLineListing.getRegion());
+          selectDistrict(contactsLineListing.getDistrict());
+          fillFirstDateOfReport(contactsLineListing.getDateOfReport());
+          fillSecondDateOfReport(contactsLineListing.getDateOfReport());
+        });
 
     When(
         "I save the new contact using line listing feature",
@@ -93,6 +102,12 @@ public class ContactsLineListingSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(
               By.xpath("//*[@class='v-Notification-caption']"));
           // end
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(25);
+        });
+    When(
+        "I save the new contacts from Event Participants using line listing feature in Event Participant tab",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_ACTION_SAVE);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(25);
         });
 
@@ -155,6 +170,16 @@ public class ContactsLineListingSteps implements En {
     else
       webDriverHelpers.clearAndFillInWebElement(
           LINE_LISTING_DATE_LAST_CONTACT_INPUT, DATE_FORMATTER.format(dateOfLastContact));
+  }
+
+  private void fillFirstDateOfReport(LocalDate dateOfReport) {
+    webDriverHelpers.clearAndFillInWebElement(
+        getLineListingDateReportInputByIndex("1"), DATE_FORMATTER.format(dateOfReport));
+  }
+
+  private void fillSecondDateOfReport(LocalDate dateOfReport) {
+    webDriverHelpers.clearAndFillInWebElement(
+        getLineListingDateReportInputByIndex("2"), DATE_FORMATTER.format(dateOfReport));
   }
 
   private void selectTypeOfContact(String typeOfContact) {

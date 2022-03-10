@@ -31,6 +31,7 @@ public class Case {
   LocalDate dateOfReport;
   LocalDate dateOfSymptomOnset;
   String disease;
+  String diseaseVariant;
   String reinfection;
   String outcomeOfCase;
   String reportingDistrict;
