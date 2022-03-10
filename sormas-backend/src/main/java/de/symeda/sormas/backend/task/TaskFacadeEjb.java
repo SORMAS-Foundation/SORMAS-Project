@@ -17,6 +17,42 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.task;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
+import java.util.Set;
+import java.util.function.Supplier;
+import java.util.stream.Collectors;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.persistence.EntityManager;
+import javax.persistence.PersistenceContext;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Selection;
+import javax.validation.Valid;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
@@ -82,40 +118,6 @@ import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.ejb.TransactionAttribute;
-import javax.ejb.TransactionAttributeType;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.persistence.criteria.Selection;
-import javax.validation.Valid;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
-import java.util.function.Supplier;
-import java.util.stream.Collectors;
 
 @Stateless(name = "TaskFacade")
 public class TaskFacadeEjb implements TaskFacade {
@@ -457,33 +459,42 @@ public class TaskFacadeEjb implements TaskFacade {
 		// Filter select based on case/contact/event region/district/community
 		Expression<Object> region = cb.selectCase()
 			.when(cb.isNotNull(joins.getCaseResponsibleRegion()), joins.getCaseResponsibleRegion().get(Region.NAME))
-			.otherwise(cb.selectCase()
-				.when(cb.isNotNull(joins.getCaseRegion()), joins.getCaseRegion().get(Region.NAME))
-				.otherwise(cb.selectCase()
-					.when(cb.isNotNull(joins.getContactRegion()), joins.getContactRegion().get(Region.NAME))
-					.otherwise(cb.selectCase()
-						.when(cb.isNotNull(joins.getEventRegion()), joins.getEventRegion().get(Region.NAME))
-						.otherwise(joins.getTravelEntryResponsibleRegion().get(Region.NAME)))));
+			.otherwise(
+				cb.selectCase()
+					.when(cb.isNotNull(joins.getCaseRegion()), joins.getCaseRegion().get(Region.NAME))
+					.otherwise(
+						cb.selectCase()
+							.when(cb.isNotNull(joins.getContactRegion()), joins.getContactRegion().get(Region.NAME))
+							.otherwise(
+								cb.selectCase()
+									.when(cb.isNotNull(joins.getEventRegion()), joins.getEventRegion().get(Region.NAME))
+									.otherwise(joins.getTravelEntryResponsibleRegion().get(Region.NAME)))));
 
 		Expression<Object> district = cb.selectCase()
 			.when(cb.isNotNull(joins.getCaseResponsibleDistrict()), joins.getCaseResponsibleDistrict().get(District.NAME))
-			.otherwise(cb.selectCase()
-				.when(cb.isNotNull(joins.getCaseDistrict()), joins.getCaseDistrict().get(District.NAME))
-				.otherwise(cb.selectCase()
-					.when(cb.isNotNull(joins.getContactDistrict()), joins.getContactDistrict().get(District.NAME))
-					.otherwise(cb.selectCase()
-						.when(cb.isNotNull(joins.getEventDistrict()), joins.getEventDistrict().get(District.NAME))
-						.otherwise(joins.getTravelEntryResponsibleDistrict().get(District.NAME)))));
+			.otherwise(
+				cb.selectCase()
+					.when(cb.isNotNull(joins.getCaseDistrict()), joins.getCaseDistrict().get(District.NAME))
+					.otherwise(
+						cb.selectCase()
+							.when(cb.isNotNull(joins.getContactDistrict()), joins.getContactDistrict().get(District.NAME))
+							.otherwise(
+								cb.selectCase()
+									.when(cb.isNotNull(joins.getEventDistrict()), joins.getEventDistrict().get(District.NAME))
+									.otherwise(joins.getTravelEntryResponsibleDistrict().get(District.NAME)))));
 
 		Expression<Object> community = cb.selectCase()
 			.when(cb.isNotNull(joins.getCaseResponsibleCommunity()), joins.getCaseResponsibleCommunity().get(Community.NAME))
-			.otherwise(cb.selectCase()
-				.when(cb.isNotNull(joins.getCaseCommunity()), joins.getCaseCommunity().get(Community.NAME))
-				.otherwise(cb.selectCase()
-					.when(cb.isNotNull(joins.getContactCommunity()), joins.getContactCommunity().get(Community.NAME))
-					.otherwise(cb.selectCase()
-						.when(cb.isNotNull(joins.getEventCommunity()), joins.getEventCommunity().get(Community.NAME))
-						.otherwise(joins.getTravelEntryResponsibleCommunity().get(Community.NAME)))));
+			.otherwise(
+				cb.selectCase()
+					.when(cb.isNotNull(joins.getCaseCommunity()), joins.getCaseCommunity().get(Community.NAME))
+					.otherwise(
+						cb.selectCase()
+							.when(cb.isNotNull(joins.getContactCommunity()), joins.getContactCommunity().get(Community.NAME))
+							.otherwise(
+								cb.selectCase()
+									.when(cb.isNotNull(joins.getEventCommunity()), joins.getEventCommunity().get(Community.NAME))
+									.otherwise(joins.getTravelEntryResponsibleCommunity().get(Community.NAME)))));
 
 		List<Selection<?>> selections = new ArrayList<>(
 			Arrays.asList(
