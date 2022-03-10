@@ -16,6 +16,8 @@ package de.symeda.sormas.backend;
 
 import static org.mockito.Mockito.when;
 
+import de.symeda.sormas.api.info.InfoFacade;
+import de.symeda.sormas.backend.info.InfoFacadeEjb;
 import java.util.Arrays;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -797,5 +799,9 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	public DeletionConfigurationService getDeletionConfigurationService() {
 		return getBean(DeletionConfigurationService.class);
+	}
+
+	public InfoFacade getInfoFacade() {
+		return getBean(InfoFacadeEjb.InfoFacadeEjbLocal.class);
 	}
 }

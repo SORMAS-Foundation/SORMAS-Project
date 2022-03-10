@@ -399,7 +399,8 @@ Feature: Case end to end tests
     And I navigate to the last created through API Event page via URL
     And I check that number of displayed Event Participants is 1
 
-  @issue=SORDEV-8048 @env_de
+    #TODO separate into 3 tests - test doesn't reflect test case steps
+  @issue=SORDEV-8048 @env_de @ignore
   Scenario: Test Default value for disease if only one is used by the server
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -415,7 +416,7 @@ Feature: Case end to end tests
     Then I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     And I fill a new contact form for DE version
-    Then I click SAVE a new contact
+    Then I click on SAVE new contact button
     Then I check the created data for DE version is correctly displayed on Edit Contact page
     Then I click on the Contacts button from navbar
     Then I click on Line Listing button
@@ -434,3 +435,16 @@ Feature: Case end to end tests
     When I open created Sample
     Then I click on the new pathogen test from the Edit Sample page for DE version
     And I complete all fields from Pathogen test result popup for IgM test type for DE version and save
+
+  @issue=SORDEV-9353 @env_main
+  Scenario: Deselecting the "Enter home address of the case person now" test regression
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I fill new case form with specific data
+    When I click on Enter Home Address of the Case Person Now in the Create New Case popup
+    And I fill specific address data in Case Person tab
+    Then I click on Enter Home Address of the Case Person Now in the Create New Case popup
+    Then I click on save case button
+    Then I check the created data is correctly displayed on Edit case page
+    And I check the created data is correctly displayed on Edit case person page

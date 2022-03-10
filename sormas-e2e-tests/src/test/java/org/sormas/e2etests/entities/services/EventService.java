@@ -44,7 +44,7 @@ public class EventService {
         .disease(DiseasesValues.CORONAVIRUS.getDiseaseCaption())
         .title("EVENT_AUTOMATION_" + timestamp + faker.address().city())
         .eventDate(LocalDate.now().minusDays(1))
-        .reportDate(LocalDate.now())
+        .reportDate(LocalDate.now().minusDays(2))
         .eventLocation("Zuhause")
         .riskLevel("Geringes Risiko")
         .sourceType("Nicht erhoben")

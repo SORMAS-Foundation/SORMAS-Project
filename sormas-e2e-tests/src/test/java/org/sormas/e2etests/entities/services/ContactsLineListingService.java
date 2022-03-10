@@ -18,7 +18,7 @@
 
 package org.sormas.e2etests.entities.services;
 
-import static org.sormas.e2etests.enums.DiseasesValues.getRandomDiseaseCaption;
+import static org.sormas.e2etests.enums.DiseasesValues.CORONAVIRUS;
 
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
@@ -45,10 +45,10 @@ public class ContactsLineListingService {
     lastName = faker.name().lastName();
 
     return ContactsLineListing.builder()
-        .disease(getRandomDiseaseCaption())
+        .disease(CORONAVIRUS.getDiseaseCaption()) // fix for line listing, don't change it!
         .region(RegionsValues.VoreingestellteBundeslander.getName())
         .district(DistrictsValues.VoreingestellterLandkreis.getName())
-        .dateOfReport(LocalDate.now().minusDays(5))
+        .dateOfReport(LocalDate.now().minusDays(8)) // fix for line listing, don't change it!
         .dateOfLastContact(LocalDate.now().minusDays(8))
         .typeOfContact("Was in same room or house with source case")
         .relationshipWithCase("Live in the same household")
@@ -69,7 +69,7 @@ public class ContactsLineListingService {
         .disease(DiseasesValues.CORONAVIRUS.getDiseaseCaption())
         .region(RegionsValues.VoreingestellteBundeslander.getName())
         .district(DistrictsValues.VoreingestellterLandkreis.getName())
-        .dateOfReport(LocalDate.now().minusDays(5))
+        .dateOfReport(LocalDate.now().minusDays(8)) // fix for line listing, don't touch!
         .dateOfLastContact(LocalDate.now().minusDays(8))
         .typeOfContact(
             "Personen mit direktem Kontakt zu Sekreten oder K\u00F6rperfl\u00FCssigkeiten")
