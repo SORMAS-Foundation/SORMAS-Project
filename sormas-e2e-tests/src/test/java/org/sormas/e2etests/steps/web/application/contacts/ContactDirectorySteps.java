@@ -118,8 +118,7 @@ public class ContactDirectorySteps implements En {
         "I apply Id of last api created Contact on Contact Directory Page",
         () -> {
           String contactUuid =
-              dataOperations.getPartialUuidFromAssociatedLink(
-                  apiState.getCreatedContact().getUuid());
+                  apiState.getCreatedContact().getUuid();
           webDriverHelpers.fillAndSubmitInWebElement(
               CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, contactUuid);
         });
