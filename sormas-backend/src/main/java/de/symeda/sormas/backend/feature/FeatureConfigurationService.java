@@ -15,6 +15,7 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 
+import de.symeda.sormas.api.common.CoreEntityType;
 import org.apache.commons.lang3.ArrayUtils;
 
 import de.symeda.sormas.api.feature.FeatureConfigurationCriteria;
@@ -128,11 +129,22 @@ public class FeatureConfigurationService extends AdoServiceWithUserFilter<Featur
 		FeatureType.getAllServerFeatures().forEach(featureType -> {
 			FeatureConfiguration savedConfiguration = configs.get(featureType);
 			if (savedConfiguration == null) {
-				FeatureConfiguration configuration = FeatureConfiguration.build(featureType, featureType.isEnabledDefault());
-				configuration.setProperties(featureType.getSupportedPropertyDefaults());
-				ensurePersisted(configuration);
+				if (featureType.getEntityTypes() != null) {
+					featureType.getEntityTypes().forEach(coreEntityType -> {
+						createFeatureConfiguration(featureType, coreEntityType);
+					});
+				} else {
+					createFeatureConfiguration(featureType, null);
+				}
 			}
 		});
+	}
+
+	private void createFeatureConfiguration(FeatureType featureType, CoreEntityType coreEntityType) {
+		FeatureConfiguration configuration = FeatureConfiguration.build(featureType, featureType.isEnabledDefault());
+		configuration.setEntityType(coreEntityType);
+		configuration.setProperties(featureType.getSupportedPropertyDefaults());
+		ensurePersisted(configuration);
 	}
 
 	public void updateFeatureConfigurations() {
