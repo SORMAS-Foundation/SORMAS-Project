@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.api.caze;
 
+import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_FRANCE;
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_GERMANY;
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_SWITZERLAND;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
@@ -251,9 +252,21 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	@Outbreaks
 	@Required
 	private UserReferenceDto reportingUser;
+	@HideForCountries(countries = {
+		COUNTRY_CODE_FRANCE,
+		COUNTRY_CODE_GERMANY,
+		COUNTRY_CODE_SWITZERLAND })
 	private Date regionLevelDate;
+	@HideForCountries(countries = {
+		COUNTRY_CODE_FRANCE,
+		COUNTRY_CODE_GERMANY,
+		COUNTRY_CODE_SWITZERLAND })
 	private Date nationalLevelDate;
 	@Outbreaks
+	@HideForCountries(countries = {
+		COUNTRY_CODE_FRANCE,
+		COUNTRY_CODE_GERMANY,
+		COUNTRY_CODE_SWITZERLAND })
 	private Date districtLevelDate;
 	@Outbreaks
 	@Required
