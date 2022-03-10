@@ -301,7 +301,6 @@ public class EventDirectorySteps implements En {
         "I select random Risk level filter among the filter options from API",
         () -> {
           String riskLevel = apiState.getCreatedEvent().getRiskLevel();
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
               FILTER_BY_RISK_LEVEL, RiskLevelValues.getCaptionForName(riskLevel));
         });
@@ -335,26 +334,34 @@ public class EventDirectorySteps implements En {
     When(
         "I select random Risk level filter among the filter options",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
+          String randomRiskLevel = RiskLevelValues.getRandomRiskLevelName();
+          String apiValue = apiState.getCreatedEvent().getRiskLevel();
+          while (randomRiskLevel.equals(apiValue)) {
+            randomRiskLevel = RiskLevelValues.getRandomRiskLevelName();
+          }
           webDriverHelpers.selectFromCombobox(
-              FILTER_BY_RISK_LEVEL, RiskLevelValues.getRandomRiskLevelCaption());
+              FILTER_BY_RISK_LEVEL, RiskLevelValues.getCaptionForName(randomRiskLevel));
         });
 
     When(
         "I select random Disease filter among the filter options from API",
         () -> {
           String disease = apiState.getCreatedEvent().getDisease();
-          webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.selectFromCombobox(
-              FILTER_BY_DISEASE, DiseasesValues.getCaptionForName(disease));
+                    webDriverHelpers.selectFromCombobox(
+                        FILTER_BY_DISEASE, DiseasesValues);
+         // webDriverHelpers.selectFromCombobox(FILTER_BY_DISEASE, disease);
         });
 
     When(
         "I select random Disease filter among the filter options",
         () -> {
-          String disease = DiseasesValues.getRandomDiseaseCaption();
-          webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.selectFromCombobox(FILTER_BY_DISEASE, disease);
+          String randomDisease = DiseasesValues.getRandomDiseaseName();
+          String apiValue = apiState.getCreatedEvent().getDisease();
+          while (randomDisease.equals(apiValue)) {
+            randomDisease = DiseasesValues.getRandomDiseaseName();
+          }
+          webDriverHelpers.selectFromCombobox(
+              FILTER_BY_DISEASE, DiseasesValues.getCaptionForName(randomDisease));
         });
     When(
         "I filter by last created group in Event Directory Page",
@@ -413,7 +420,6 @@ public class EventDirectorySteps implements En {
         "I select Source Type among the filter options from API",
         () -> {
           String sourceType = apiState.getCreatedEvent().getSrcType();
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
               FILTER_BY_SOURCE_TYPE, SourceTypeValues.getCaptionForName((sourceType)));
         });
@@ -421,16 +427,19 @@ public class EventDirectorySteps implements En {
     When(
         "I select random Source Type among the filter options",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
+          String randomSourceType = SourceTypeValues.getRandomSourceTypeName();
+          String apiValue = apiState.getCreatedEvent().getSrcType();
+          while (randomSourceType.equals(apiValue)) {
+            randomSourceType = SourceTypeValues.getRandomSourceTypeName();
+          }
           webDriverHelpers.selectFromCombobox(
-              FILTER_BY_SOURCE_TYPE, SourceTypeValues.getRandomSourceTypeCaption());
+              FILTER_BY_SOURCE_TYPE, SourceTypeValues.getCaptionForName(randomSourceType));
         });
 
     When(
         "I select Type of Place field among the filter options from API",
         () -> {
           String sourceTypeOfPlace = apiState.getCreatedEvent().getTypeOfPlace();
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
               FILTER_BY_TYPE_OF_PLACE, TypeOfPlace.getValueFor(sourceTypeOfPlace));
         });
@@ -438,10 +447,13 @@ public class EventDirectorySteps implements En {
     When(
         "I select random Type of Place field among the filter options",
         () -> {
-          String typeOfPlace = TypeOfPlace.getRandomUITypeOfPlace();
-          webDriverHelpers.waitForPageLoaded();
+          String randomTypeOfPlace = TypeOfPlace.getRandomUITypeOfPlace();
+          String apiValue = apiState.getCreatedEvent().getTypeOfPlace();
+          while (randomTypeOfPlace.equals(apiValue)) {
+            randomTypeOfPlace = TypeOfPlace.getRandomUITypeOfPlace();
+          }
           webDriverHelpers.selectFromCombobox(
-              FILTER_BY_TYPE_OF_PLACE, TypeOfPlace.getValueFor(typeOfPlace));
+              FILTER_BY_TYPE_OF_PLACE, TypeOfPlace.getValueFor(randomTypeOfPlace));
         });
 
     When(
@@ -552,7 +564,7 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               APPLY_FILTERS_BUTTON, 30);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
-          TimeUnit.SECONDS.sleep(10);
+          TimeUnit.SECONDS.sleep(3);
         });
     When(
         "I hover to Event Groups column of the Event result",
@@ -567,9 +579,7 @@ public class EventDirectorySteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               RESET_FILTERS_BUTTON, 30);
-          TimeUnit.SECONDS.sleep(10);
           webDriverHelpers.clickOnWebElementBySelector(RESET_FILTERS_BUTTON);
-          TimeUnit.SECONDS.sleep(10);
         });
 
     When(

@@ -48,6 +48,9 @@ public class EventDirectoryPage {
       By.cssSelector("[id='relevanceStatusFilter'] [class='v-filterselect-button']");
   public static final By FILTER_BY_DISEASE =
       By.cssSelector("[id='disease'] [class='v-filterselect-button']");
+  public static final By EVENT_DISEASE_COMBOBOX =
+      By.xpath(
+          "/html/body/div[1]/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div[1]/div/div/div/div/div/div[1]/div[4]");
   public static final By DISTRICT_COMBOBOX =
       By.cssSelector("[id='district'] [class='v-filterselect-button']");
   public static final By EVENT_SHOW_MORE_FILTERS = By.id("showHideMoreFilters");
@@ -69,7 +72,6 @@ public class EventDirectoryPage {
   public static final By EVENTS_TABLE_DATA = By.tagName("td");
   public static final By EVENT_PARTICIPANT_INPUT = By.id("freeTextEventParticipants");
   public static final By EVENT_GROUP_INPUT = By.id("freeTextEventGroups");
-
   public static final By EVENTS_RADIO_BUTTON = By.cssSelector(".v-radiobutton");
   public static final By LINK_EVENT_BUTTON = By.id("Link event");
   public static final By LINK_EVENT_BUTTON_EDIT_PAGE = By.id("Link event group");
