@@ -138,7 +138,14 @@
 			<groupId>org.slf4j</groupId>
 			<artifactId>jul-to-slf4j</artifactId>
 		</dependency>
-
+		<dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>hapi-fhir-structures-r4</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>ca.uhn.hapi.fhir</groupId>
+			<artifactId>org.hl7.fhir.r4</artifactId>
+		</dependency>
 		<!-- *** Exclude Payara modules *** (with explicite scope "runtime") -->
 
 		<dependency>

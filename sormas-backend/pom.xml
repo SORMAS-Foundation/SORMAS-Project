@@ -254,7 +254,6 @@
 		<dependency>
 			<groupId>ca.uhn.hapi.fhir</groupId>
 			<artifactId>hapi-fhir-structures-r4</artifactId>
-			<scope>runtime</scope>
 		</dependency>
 
 		<dependency>
