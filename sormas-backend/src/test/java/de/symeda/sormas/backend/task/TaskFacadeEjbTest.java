@@ -17,28 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.task;
 
-import static org.hamcrest.MatcherAssert.assertThat;
-import static org.hamcrest.Matchers.empty;
-import static org.hamcrest.Matchers.is;
-import static org.hamcrest.Matchers.not;
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-import static org.junit.Assert.assertTrue;
-
-import java.sql.Timestamp;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
-
-import de.symeda.sormas.api.task.TaskIndexDto;
-import org.junit.Test;
-import org.junit.runner.RunWith;
-import org.mockito.junit.MockitoJUnitRunner;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -52,6 +30,7 @@ import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
+import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserDto;
@@ -60,6 +39,21 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
+import org.junit.Test;
+import org.junit.runner.RunWith;
+import org.mockito.junit.MockitoJUnitRunner;
+
+import java.sql.Timestamp;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+
+import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.*;
+import static org.junit.Assert.*;
 
 @RunWith(MockitoJUnitRunner.class)
 public class TaskFacadeEjbTest extends AbstractBeanTest {
@@ -400,12 +394,11 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		assertThat(taskCounts.get(user2.getUuid()), is(1L));
 	}
 
-	@Test
-	public void testAllTaskAndDispalyCaseResponsibleRegion(){
+	@Test public void testAllTaskAndDispalyCaseResponsibleRegion() {
 		RDCF rdcf1 = new RDCF(creator.createRDCFEntities("Region1", "District1", "Community1", "Facility1"));
 		RDCF rdcf2 = new RDCF(creator.createRDCFEntities("Region2", "District2", "Community2", "Facility2"));
 
-		UserDto user = creator.createUser(rdcf1,  UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(rdcf1, UserRole.SURVEILLANCE_SUPERVISOR);
 		PersonDto person = creator.createPerson();
 		creator.createCase(user.toReference(), rdcf1, (c) -> {
 			c.setPerson(person.toReference());
