@@ -24,6 +24,7 @@ public class ContactDirectoryPage {
   public static final By NEW_CONTACT_PAGE_BUTTON = By.id("contactNewContact");
   public static final By LINE_LISTING = By.cssSelector("[id='lineListing']");
   public static final By MULTIPLE_OPTIONS_SEARCH_INPUT = By.cssSelector("#contactOrCaseLike");
+  public static final By PERSON_LIKE_SEARCH_INPUT = By.cssSelector("#personLike");
   public static final By APPLY_FILTERS_BUTTON = By.id("actionApplyFilters");
   public static final String CONTACT_RESULTS_UUID_LOCATOR = "[title = '%s']";
   public static final By CONTACT_GRID_RESULTS_ROWS = By.cssSelector("[role=rowgroup] tr a");
@@ -49,8 +50,6 @@ public class ContactDirectoryPage {
   public static final String RESULTS_GRID_HEADER = "//div[contains(text(), '%s')]";
   public static final By FIRST_CONTACT_ID_BUTTON = By.cssSelector(".v-grid-row-has-data a[title]");
   public static final By EPIDEMIOLOGICAL_DATA_TAB = By.cssSelector("#tab-contacts-epidata");
-  public static final By CONTACT_APPLY_FILTERS_BUTTON = By.cssSelector("[id='actionApplyFilters']");
-  public static final By CONTACT_RESET_FILTERS_BUTTON = By.cssSelector("[id='actionResetFilters']");
   public static final By CONTACT_DISEASE_FILTER_COMBOBOX =
       By.cssSelector("[id='disease'] [class='v-filterselect-button']");
   public static final By CONTACT_CLASSIFICATION_FILTER_COMBOBOX =
@@ -63,7 +62,7 @@ public class ContactDirectoryPage {
       By.cssSelector("[id='followUpStatus'] [class='v-filterselect-button']");
   public static final By CONTACT_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON =
       By.cssSelector("div#actionApplyFilters");
-  public static final By TOTAL_CONTACTS_COUNTER = By.cssSelector(".badge");
+  public static final By GRID_RESULTS_COUNTER_CONTACT_DIRECTORY = By.cssSelector(".badge");
   public static final By CONTACTS_WITH_QUARANTINE_ORDERED_VERBALLY_CHECKBOX =
       By.id("quarantineOrderedVerbally");
   public static final By CONTACTS_WITH_QUARANTINE_ORDERED_BY_OFFICIAL_DOCUMENT_CHECKBOX =
@@ -78,9 +77,10 @@ public class ContactDirectoryPage {
   public static final By CONTACTS_WITH_REDUCED_QUARANTINE_CHECKBOX = By.id("withReducedQuarantine");
   public static final By CONTACTS_FROM_OTHER_INSTANCES_CHECKBOX =
       By.id("onlyContactsFromOtherInstances");
-  public static final By ALLBUTTON_CONTACT = By.id("All");
+  public static final By ALL_BUTTON_CONTACT = By.id("All");
   public static final By ACTIVE_CONTACT_BUTTON = By.id("status-Active contact");
   public static final By CONVERTED_TO_CASE_BUTTON = By.id("status-Converted to case");
   public static final By DROPPED_BUTTON = By.id("status-Dropped");
   public static final By BULK_ACTIONS_CONTACT_VALUES = By.id("bulkActions-9");
+  public static final By NEW_ENTRY_EPIDEMIOLOGICAL_DATA = By.id("actionNewEntry");
 }

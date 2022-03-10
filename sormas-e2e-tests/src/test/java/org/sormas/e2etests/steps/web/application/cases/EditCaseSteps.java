@@ -726,6 +726,7 @@ public class EditCaseSteps implements En {
         .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
         .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
         .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
+        .diseaseVariant(webDriverHelpers.getValueFromWebElement(DISEASE_VARIANT_INPUT))
         .responsibleRegion(webDriverHelpers.getValueFromWebElement(REGION_INPUT))
         .responsibleDistrict(webDriverHelpers.getValueFromWebElement(DISTRICT_INPUT))
         .responsibleCommunity(webDriverHelpers.getValueFromWebElement(COMMUNITY_INPUT))

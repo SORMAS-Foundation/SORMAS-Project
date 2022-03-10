@@ -12,6 +12,7 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.backend.common.BaseAdoService;
 
 @Stateless

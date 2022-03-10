@@ -267,8 +267,7 @@ public class AboutView extends VerticalLayout implements View {
 			DownloadUtil.attachDataDictionaryDownloader(dataDictionaryButton);
 		}
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EXPORT_DATA_PROTECTION_DATA)
-			&& FacadeProvider.getInfoFacade().isGenerateDataProtectionDictionaryAllowed()) {
+		if (FacadeProvider.getInfoFacade().isGenerateDataProtectionDictionaryAllowed()) {
 			Button dataProtectionButton =
 				ButtonHelper.createButton(Captions.aboutDataProtectionDictionary, null, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
 			documentsLayout.addComponent(dataProtectionButton);

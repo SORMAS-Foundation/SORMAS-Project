@@ -1,7 +1,6 @@
 @UI @Sanity @Users
 Feature: Create user
 
-  #please address - verify sormas to client/rest user scenarios
   @env_main
   Scenario Outline: Create a new user
     Given I log in as a Admin User

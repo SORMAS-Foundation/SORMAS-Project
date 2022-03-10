@@ -1,17 +1,14 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
@@ -27,7 +24,7 @@ import javax.security.enterprise.identitystore.CredentialValidationResult;
 import javax.security.enterprise.identitystore.IdentityStore;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 
 /**
  * See https://www.baeldung.com/java-ee-8-security
@@ -38,13 +35,13 @@ public class SormasIdentityStore implements IdentityStore {
 
 	public CredentialValidationResult validate(UsernamePasswordCredential usernamePasswordCredential) {
 
-		Set<UserRole> userRoles = FacadeProvider.getUserFacade()
-			.getValidLoginRoles(usernamePasswordCredential.getCaller(), usernamePasswordCredential.getPasswordAsString());
+		Set<UserRight> userRights = FacadeProvider.getUserFacade()
+			.getValidLoginRights(usernamePasswordCredential.getCaller(), usernamePasswordCredential.getPasswordAsString());
 
-		if (userRoles != null && !userRoles.isEmpty()) {
+		if (userRights != null && !userRights.isEmpty()) {
 			return new CredentialValidationResult(
 				usernamePasswordCredential.getCaller(),
-				userRoles.stream().map(userRole -> userRole.name()).collect(Collectors.toSet()));
+				userRights.stream().map(Enum::name).collect(Collectors.toSet()));
 		}
 
 		return CredentialValidationResult.INVALID_RESULT;
