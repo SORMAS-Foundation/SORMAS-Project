@@ -341,12 +341,12 @@ public class ContactDirectorySteps implements En {
         (Integer number) -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              TOTAL_CONTACTS_COUNTER, 50);
+                  GRID_RESULTS_COUNTER_CONTACT_DIRECTORY, 50);
           assertHelpers.assertWithPoll20Second(
               () ->
                   Assert.assertEquals(
                       Integer.parseInt(
-                          webDriverHelpers.getTextFromPresentWebElement(TOTAL_CONTACTS_COUNTER)),
+                          webDriverHelpers.getTextFromPresentWebElement(GRID_RESULTS_COUNTER_CONTACT_DIRECTORY)),
                       number.intValue(),
                       "Number of displayed contacts is not correct"));
         });
