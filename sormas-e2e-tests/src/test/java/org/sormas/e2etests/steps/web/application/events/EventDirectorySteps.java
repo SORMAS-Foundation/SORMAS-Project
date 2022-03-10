@@ -278,11 +278,11 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(EVENT_EXPORT_BUTTON);
         });
 
-      When(
-              "I click on a Basic Export button from Export options in Event Group Directory",
-              () -> {
-                  webDriverHelpers.clickOnWebElementBySelector(EVENT_EXPORT_BASIC_BUTTON);
-              });
+    When(
+        "I click on a Basic Export button from Export options in Event Group Directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EVENT_EXPORT_BASIC_BUTTON);
+        });
 
     And(
         "I click on Bulk Actions combobox on Event Directory Page",
