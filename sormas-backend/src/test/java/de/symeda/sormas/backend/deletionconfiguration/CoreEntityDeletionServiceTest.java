@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import de.symeda.sormas.api.common.CoreEntityType;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.internal.SessionImpl;
 import org.hibernate.query.spi.QueryImplementor;
