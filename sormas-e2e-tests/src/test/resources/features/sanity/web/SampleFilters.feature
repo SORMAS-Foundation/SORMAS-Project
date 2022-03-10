@@ -28,7 +28,7 @@ Feature: Sample filter functionality
     And API: I check that POST call status code is 200
     Given I log in with National User
     When I click on the Sample button from navbar
-    Then fill a Full name of person from API
+    Then I fill a Full name of person from API
     And I select Test result filter among the filter options from API
     And I select Specimen condition filter among the filter options from API
     And I select Case classification filter among the filter options from API

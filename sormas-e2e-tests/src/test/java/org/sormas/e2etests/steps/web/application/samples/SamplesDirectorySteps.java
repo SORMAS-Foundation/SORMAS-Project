@@ -77,13 +77,14 @@ public class SamplesDirectorySteps implements En {
         });
 
     When(
-        "fill a Full name of person from API",
+        "I fill a Full name of person from API",
         () -> {
           webDriverHelpers.fillAndSubmitInWebElement(
               SAMPLE_SEARCH_INPUT,
               apiState.getLastCreatedPerson().getFirstName()
                   + " "
                   + apiState.getLastCreatedPerson().getLastName());
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAMPLE_SEARCH_INPUT);
         });
 
     When(
