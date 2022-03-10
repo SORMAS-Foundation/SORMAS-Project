@@ -27,16 +27,19 @@ import static org.hamcrest.Matchers.hasItems;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
-import static org.junit.Assert.*;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertThrows;
+import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
-import static org.mockito.ArgumentMatchers.refEq;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
-import java.util.Date;
 import java.util.List;
 import java.util.Set;
 import java.util.UUID;
@@ -46,12 +49,8 @@ import javax.validation.ValidationException;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.caze.CaseClassification;
-import de.symeda.sormas.api.caze.CaseDataDto;
-import de.symeda.sormas.api.caze.InvestigationStatus;
 import org.junit.Before;
 import org.junit.Test;
-import org.junit.function.ThrowingRunnable;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.MockedStatic;
@@ -68,7 +67,6 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
@@ -270,14 +268,14 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		UserDto user = creator.createUser(rdcf, SURVEILLANCE_SUPERVISOR);
 		String password = getUserFacade().resetPassword(user.getUuid());
 
-		Set<UserRole> validLoginRoles = getUserFacade().getValidLoginRoles(user.getUserName(), password);
-		assertThat(validLoginRoles, containsInAnyOrder(SURVEILLANCE_SUPERVISOR));
+		Set<UserRight> validLoginRights = getUserFacade().getValidLoginRights(user.getUserName(), password);
+		assertThat(validLoginRights, containsInAnyOrder(getUserRoleConfigFacade().getEffectiveUserRights(SURVEILLANCE_SUPERVISOR).toArray(new UserRight[]{})));
 
 		user.setActive(false);
 		getUserFacade().saveUser(user);
 
-		validLoginRoles = getUserFacade().getValidLoginRoles(user.getUserName(), password);
-		assertThat(validLoginRoles, nullValue());
+		validLoginRights = getUserFacade().getValidLoginRights(user.getUserName(), password);
+		assertThat(validLoginRights, nullValue());
 
 		//Important: release static mock.
 		mockAuthProvider.closeOnDemand();

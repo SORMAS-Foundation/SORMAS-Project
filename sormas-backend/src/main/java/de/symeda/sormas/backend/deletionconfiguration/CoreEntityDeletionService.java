@@ -14,16 +14,21 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
+import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
 
 @LocalBean
 @Singleton
 public class CoreEntityDeletionService {
 
+	private static final int DELETE_BATCH_SIZE = 200;
+
 	private final List<EntityTypeFacadePair> coreEntityFacades = new ArrayList<>();
 
 	@EJB
 	private DeletionConfigurationService deletionConfigurationService;
+	@EJB
+	private PersonService personService;
 
 	public CoreEntityDeletionService() {
 	}
@@ -46,14 +51,23 @@ public class CoreEntityDeletionService {
 
 	public void executeAutomaticDeletion() {
 
-		coreEntityFacades.forEach(coreEntityType -> {
-			DeletionConfiguration coreEntityTypeConfig = deletionConfigurationService.getCoreEntityTypeConfig(coreEntityType.coreEntityType);
+		coreEntityFacades.forEach(entityTypeFacadePair -> {
+			DeletionConfiguration coreEntityTypeConfig = deletionConfigurationService.getCoreEntityTypeConfig(entityTypeFacadePair.coreEntityType);
 
 			if (coreEntityTypeConfig.getDeletionReference() != null && coreEntityTypeConfig.deletionPeriod != null) {
-				coreEntityType.entityFacade.executeAutomaticDeletion(coreEntityTypeConfig);
+				entityTypeFacadePair.entityFacade.executeAutomaticDeletion(coreEntityTypeConfig);
 			}
 		});
+	}
 
+	public void executePermanentDeletion() {
+		coreEntityFacades.forEach(entityTypeFacadePair -> {
+			if (entityTypeFacadePair.coreEntityType == CoreEntityType.IMMUNIZATION
+				|| entityTypeFacadePair.coreEntityType == CoreEntityType.TRAVEL_ENTRY) {
+				entityTypeFacadePair.entityFacade.executePermanentDeletion(DELETE_BATCH_SIZE);
+			}
+		});
+		personService.executePermanentDeletion(DELETE_BATCH_SIZE);
 	}
 
 	private static final class EntityTypeFacadePair {

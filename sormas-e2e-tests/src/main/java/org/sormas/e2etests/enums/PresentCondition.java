@@ -53,4 +53,13 @@ public enum PresentCondition {
     }
     throw new Exception("Unable to find " + option + " value in PresentCondition Enum");
   }
+
+  @SneakyThrows
+  public static String getRandomConditionDifferentThan(String excludedOption) {
+    PresentCondition[] caseOutcomeOptions = PresentCondition.values();
+    for (PresentCondition value : caseOutcomeOptions) {
+      if (!value.getCondition().equalsIgnoreCase(excludedOption)) return value.getCondition();
+    }
+    throw new Exception("Unable to provide option different than: " + excludedOption);
+  }
 }

@@ -238,26 +238,26 @@ public class ContactDirectorySteps implements En {
     And(
         "I click on All button in Contact Directory Page",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(ALLBUTTON_CONTACT);
-          TimeUnit.SECONDS.sleep(8); // needed for table refresh
+          webDriverHelpers.clickOnWebElementBySelector(ALL_BUTTON_CONTACT);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
         });
     And(
         "I click on Converted to case pending button on Contact Directory Page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CONVERTED_TO_CASE_BUTTON);
-          TimeUnit.SECONDS.sleep(8); // needed for table refresh
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
         });
     And(
         "I click on Active contact button in Contact Directory Page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ACTIVE_CONTACT_BUTTON);
-          TimeUnit.SECONDS.sleep(8); // needed for table refresh
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
         });
     And(
         "I click on Dropped button on Contact Directory Page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(DROPPED_BUTTON);
-          TimeUnit.SECONDS.sleep(8); // needed for table refresh
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
         });
 
     When(
@@ -312,9 +312,24 @@ public class ContactDirectorySteps implements En {
         });
 
     When(
-        "I open the last created contact",
+        "I search after last created contact via API by UUID and open",
         () -> {
           searchAfterContactByMultipleOptions(apiState.getCreatedContact().getUuid());
+          openContactFromResultsByUUID(apiState.getCreatedContact().getUuid());
+        });
+
+    When(
+        "I search after last created contact via API by name and uuid then open",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(APPLY_FILTERS_BUTTON);
+          webDriverHelpers.fillInWebElement(
+              MULTIPLE_OPTIONS_SEARCH_INPUT, apiState.getCreatedContact().getUuid());
+          webDriverHelpers.fillInWebElement(
+              PERSON_LIKE_SEARCH_INPUT,
+              apiState.getCreatedContact().getPerson().getFirstName()
+                  + " "
+                  + apiState.getCreatedContact().getPerson().getLastName());
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
           openContactFromResultsByUUID(apiState.getCreatedContact().getUuid());
         });
 
@@ -325,7 +340,8 @@ public class ContactDirectorySteps implements En {
     Then(
         "I check that number of displayed contact results is (\\d+)",
         (Integer number) -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(NEW_CONTACT_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              TOTAL_CONTACTS_COUNTER, 50);
           assertHelpers.assertWithPoll20Second(
               () ->
                   Assert.assertEquals(
@@ -345,7 +361,7 @@ public class ContactDirectorySteps implements En {
   private void openContactFromResultsByUUID(String uuid) {
     By uuidLocator = By.cssSelector(String.format(CONTACT_RESULTS_UUID_LOCATOR, uuid));
     webDriverHelpers.clickOnWebElementBySelector((uuidLocator));
-    webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
+    webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 40);
   }
 
   private void fillExposure(Exposure exposureData) {
@@ -381,7 +397,7 @@ public class ContactDirectorySteps implements En {
     webDriverHelpers.clickWebElementByText(
         HANDLING_SAMPLES_OPTIONS, exposureData.getHandlingSamples().toString());
     webDriverHelpers.selectFromCombobox(
-        TYPE_OF_PLACE_COMBOBOX, exposureData.getTypeOfPlace().getPlace());
+        TYPE_OF_PLACE_COMBOBOX, exposureData.getTypeOfPlace().getUiValue());
     webDriverHelpers.selectFromCombobox(CONTINENT_COMBOBOX, exposureData.getContinent());
     webDriverHelpers.selectFromCombobox(SUBCONTINENT_COMBOBOX, exposureData.getSubcontinent());
     webDriverHelpers.selectFromCombobox(COUNTRY_COMBOBOX, exposureData.getCountry());

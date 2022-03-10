@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.backend.user;
 
+import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -86,7 +87,6 @@ import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.EventJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.event.EventQueryContext;
-import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
@@ -107,7 +107,6 @@ import de.symeda.sormas.backend.task.TaskFacadeEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
-import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.UserCreateEvent;
 import de.symeda.sormas.backend.user.event.UserUpdateEvent;
@@ -143,19 +142,16 @@ public class UserFacadeEjb implements UserFacade {
 	@EJB
 	private ContactService contactService;
 	@EJB
-	private EventService eventService;
-	@EJB
-	private TravelEntryService travelEntryService;
-	@EJB
 	private PointOfEntryService pointOfEntryService;
 	@EJB
-	private UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 	@Inject
 	private Event<UserCreateEvent> userCreateEvent;
 	@Inject
 	private Event<UserUpdateEvent> userUpdateEvent;
 	@Inject
 	private Event<PasswordResetEvent> passwordResetEvent;
+
 
 	public static UserDto toDto(User source) {
 
@@ -716,12 +712,12 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	public Set<UserRole> getValidLoginRoles(String userName, String password) {
+	public Set<UserRight> getValidLoginRights(String userName, String password) {
 
 		User user = userService.getByUserName(userName);
 		if (user != null && user.isActive()) {
 			if (DataHelper.equal(user.getPassword(), PasswordHelper.encodePassword(password, user.getSeed()))) {
-				return new HashSet<>(user.getUserRoles());
+				return new HashSet<>(userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[]{})));
 			}
 		}
 		return null;

@@ -262,7 +262,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 		}
 
 		ClinicalVisit clinicalVisit = service.getByUuid(clinicalVisitUuid);
-		service.delete(clinicalVisit);
+		service.deletePermanent(clinicalVisit);
 	}
 
 	@Override

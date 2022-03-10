@@ -100,7 +100,7 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 		}
 
 		AdditionalTest additionalTest = service.getByUuid(additionalTestUuid);
-		service.delete(additionalTest);
+		service.deletePermanent(additionalTest);
 	}
 
 	@Override

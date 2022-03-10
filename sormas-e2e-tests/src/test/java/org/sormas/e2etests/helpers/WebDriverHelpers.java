@@ -19,7 +19,6 @@ import static com.google.common.truth.Truth.assertWithMessage;
 import static java.time.Duration.ofSeconds;
 import static org.awaitility.Awaitility.await;
 import static org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
-import static org.sormas.e2etests.helpers.AssertHelpers.takeScreenshot;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
@@ -74,6 +73,7 @@ public class WebDriverHelpers {
   }
 
   public void waitForPageLoaded() {
+    log.info("Waiting for page to load");
     assertHelpers.assertWithPoll20Second(
         () ->
             Assert.assertEquals(
@@ -95,6 +95,7 @@ public class WebDriverHelpers {
   }
 
   public void waitUntilIdentifiedElementIsVisibleAndClickable(final Object selector, int seconds) {
+    log.info("Waiting for element [{}] to be visible and clickable", selector);
     if (selector instanceof By) {
       assertHelpers.assertWithPoll(
           () -> {
@@ -128,6 +129,7 @@ public class WebDriverHelpers {
   }
 
   public void waitUntilIdentifiedElementDisappear(final Object selector, int seconds) {
+    log.info("Waiting for element [{}] to disappear", selector);
     if (selector instanceof By) {
       assertHelpers.assertWithPoll(
           () -> {
@@ -169,6 +171,7 @@ public class WebDriverHelpers {
   }
 
   public void fillInWebElement(By selector, String text) {
+    log.info("Filling element [{{}] with text [{}]", selector, text);
     try {
       await()
           .pollInterval(ONE_HUNDRED_MILLISECONDS)
@@ -199,7 +202,6 @@ public class WebDriverHelpers {
 
     } catch (ConditionTimeoutException ignored) {
       log.error("Unable to fill on element identified by locator: {} and text {}", selector, text);
-      takeScreenshot(baseSteps.getDriver());
       throw new TimeoutException(
           "Unable to fill on element identified by locator: " + selector + " and text : " + text);
     }
@@ -235,7 +237,6 @@ public class WebDriverHelpers {
 
     } catch (ConditionTimeoutException ignored) {
       log.error("Unable to fill on element identified by locator: {} and text {}", selector, text);
-      takeScreenshot(baseSteps.getDriver());
       throw new TimeoutException(
           "Unable to fill on element identified by locator: " + selector + " and text : " + text);
     }
@@ -264,8 +265,6 @@ public class WebDriverHelpers {
             .getDriver()
             .findElement(selector)
             .findElement(By.xpath("preceding-sibling::input"));
-    // TODO check in Jenkins if this is a fix for flaky situations when option is selected twice
-    // comboboxInput.sendKeys(Keys.chord(Keys.BACK_SPACE));
     String comboBoxItemWithText =
         "//td[@role='listitem']/span[ contains(text(), '"
             + text
@@ -333,7 +332,6 @@ public class WebDriverHelpers {
 
     } catch (ConditionTimeoutException ignored) {
       log.error("Unable to click on element identified by locator: {}", selector);
-      takeScreenshot(baseSteps.getDriver());
       throw new TimeoutException(
           String.format("Unable to click on element identified by locator: %s", selector));
     }
@@ -378,7 +376,7 @@ public class WebDriverHelpers {
       baseSteps.getDriver().findElements(byObject).get(index).click();
     } catch (Exception exception) {
       log.warn(
-          "Unable tp click on element:  {}, at index {}, due to: {}",
+          "Unable to click on element:  {}, at index {}, due to: {}",
           byObject,
           index,
           exception.getMessage());
@@ -386,6 +384,7 @@ public class WebDriverHelpers {
   }
 
   public void scrollToElement(final Object selector) {
+    log.info("Scrolling to element [{}]", selector);
     JavascriptExecutor javascriptExecutor = baseSteps.getDriver();
     try {
       if (selector instanceof WebElement) {
@@ -400,19 +399,17 @@ public class WebDriverHelpers {
   }
 
   public void hoverToElement(By selector) {
-    WebElement menuOption = baseSteps.getDriver().findElement(selector);
+    WebElement element = baseSteps.getDriver().findElement(selector);
     Actions actions = new Actions(baseSteps.getDriver());
     try {
       assertHelpers.assertWithPoll20Second(
           () -> {
             scrollToElement(selector);
-            actions.moveToElement(menuOption).perform();
+            actions.moveToElement(element).perform();
             waitUntilIdentifiedElementIsVisibleAndClickable(selector);
           });
     } catch (ConditionTimeoutException ignored) {
-      log.error("Unable to fill on element identified by locator: {}", selector);
-      takeScreenshot(baseSteps.getDriver());
-      throw new TimeoutException("Unable to fill on element identified by locator: " + selector);
+      throw new TimeoutException("Unable to hover on element identified by locator: " + selector);
     }
   }
 
@@ -585,8 +582,10 @@ public class WebDriverHelpers {
     try {
       return baseSteps.getDriver().findElements(byObject).size();
     } catch (Exception e) {
-      log.warn("Exception caught while getting the number of elements for locator: {}", byObject);
-      log.warn("Exception: {}", e.getMessage());
+      log.warn(
+          "Exception caught while getting the number of elements for locator: {} : {}",
+          byObject,
+          e.getMessage());
       throw new WebDriverException(String.format("No elements found for element: %s", byObject));
     }
   }
@@ -722,26 +721,6 @@ public class WebDriverHelpers {
     }
   }
 
-  // always needs the raw header value from the DOM, not the stylized one (the one displayed in UI)
-  // rowIndex parameter will return the demanded row. 0 is the header
-  // style.substring(style.length() - 17) matches the width value for the selector. it will be used
-  // to match the header and the rows by the length.
-  public String getValueFromTableRowUsingTheHeader(String headerValue, int rowIndex) {
-    // TODO remove try catch after Jenkins investigation
-    try {
-      By header = By.xpath("//div[contains(text(), '" + headerValue + "')]/ancestor::th");
-      waitUntilIdentifiedElementIsPresent(header);
-      scrollToElement(header);
-      String style = getAttributeFromWebElement(header, "style");
-      By selector = By.cssSelector("[style*='" + style.substring(style.length() - 17) + "']");
-      waitUntilIdentifiedElementIsPresent(selector);
-      return baseSteps.getDriver().findElements(selector).get(rowIndex).getText();
-    } catch (Exception e) {
-      Assert.fail("Failed due to: " + e.getMessage());
-    }
-    return null;
-  }
-
   public boolean isElementDisplayedIn20SecondsOrThrowException(Object selector) {
     if (selector instanceof WebElement) {
       try {
@@ -790,17 +769,16 @@ public class WebDriverHelpers {
     boolean isSpinnerDisplayed;
 
     try {
-      assertHelpers.assertWithPoll(
+      assertHelpers.assertWithPollWithoutFail(
           () ->
               Assert.assertTrue(
                   baseSteps.getDriver().findElement(loadingSpinner).isDisplayed(),
                   "Loading spinner isn't displayed"),
-          3);
+          5);
       isSpinnerDisplayed = true;
-    } catch (Throwable ignored) {
+    } catch (ConditionTimeoutException ignored) {
       isSpinnerDisplayed = false;
     }
-
     try {
       if (isSpinnerDisplayed)
         assertHelpers.assertWithPoll(

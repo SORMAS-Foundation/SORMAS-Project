@@ -26,6 +26,26 @@ public class CaseLineListingSteps implements En {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
+        "^I create a new case in line listing feature popup for DE version$",
+        () -> {
+          caze = caseService.buildCaseForLineListingFeatureDE();
+          selectDisease(caze.getDisease());
+          selectRegion(caze.getRegion());
+          selectDistrict(caze.getDistrict());
+          selectFacilityCategory(caze.getFacilityCategory());
+          selectFacilityType(caze.getFacilityType());
+          fillDateOfReport(caze.getDateOfReport(), Locale.GERMAN);
+          selectCommunity(caze.getCommunity());
+          selectFacility("Andere Einrichtung");
+          fillFacilityName(caze.getPlaceDescription());
+          fillFirstName(caze.getFirstName());
+          fillLastName(caze.getLastName());
+          fillDateOfBirth(caze.getDateOfBirth(), Locale.GERMAN);
+          selectSex(caze.getSex());
+          fillDateOfSymptom(caze.getDateOfSymptomOnset(), Locale.GERMAN);
+        });
+
+    When(
         "^I create a new case in line listing feature popup$",
         () -> {
           caze = caseService.buildCaseForLineListingFeature();
@@ -34,15 +54,15 @@ public class CaseLineListingSteps implements En {
           selectDistrict(caze.getDistrict());
           selectFacilityCategory(caze.getFacilityCategory());
           selectFacilityType(caze.getFacilityType());
-          fillDateOfReport(caze.getDateOfReport());
+          fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
           selectCommunity(caze.getCommunity());
-          selectFacility();
+          selectFacility("Other facility");
           fillFacilityName(caze.getPlaceDescription());
           fillFirstName(caze.getFirstName());
           fillLastName(caze.getLastName());
-          fillDateOfBirth(caze.getDateOfBirth());
+          fillDateOfBirth(caze.getDateOfBirth(), Locale.ENGLISH);
           selectSex(caze.getSex());
-          fillDateOfSymptom(caze.getDateOfSymptomOnset());
+          fillDateOfSymptom(caze.getDateOfSymptomOnset(), Locale.ENGLISH);
         });
 
     When(
@@ -60,6 +80,13 @@ public class CaseLineListingSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(
               By.xpath("//*[@class='v-Notification-caption']"));
           // end
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(25);
+        });
+
+    When(
+        "^I save the new line listing case$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(25);
         });
 
@@ -86,6 +113,30 @@ public class CaseLineListingSteps implements En {
               "Health facility value doesn't match");
           softly.assertAll();
         });
+
+    When(
+        "I check that case created from Line Listing for DE version is saved and displayed in results grid",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+
+          softly.assertEquals(
+              getCaseDiseaseFromGridResults(), caze.getDisease(), "Disease value doesn't match");
+          softly.assertEquals(
+              getCaseFirstNameFromGridResults(),
+              caze.getFirstName(),
+              "First name value doesn't match");
+          softly.assertEquals(
+              getCaseLastNameFromGridResults(),
+              caze.getLastName(),
+              "Last name value doesn't match");
+          softly.assertEquals(
+              getCaseDistrictFromGridResults(), caze.getDistrict(), "District value doesn't match");
+          softly.assertEquals(
+              getCaseHealthFacilityFromGridResults(),
+              "Andere Einrichtung - " + caze.getPlaceDescription(),
+              "Health facility value doesn't match");
+          softly.assertAll();
+        });
   }
 
   private void selectDisease(String disease) {
@@ -108,8 +159,11 @@ public class CaseLineListingSteps implements En {
     webDriverHelpers.selectFromCombobox(FACILITY_TYPE_COMBOBOX, facilityType);
   }
 
-  private void fillDateOfReport(LocalDate date) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+  private void fillDateOfReport(LocalDate date, Locale locale) {
+    DateTimeFormatter formatter;
+    if (locale.equals(Locale.GERMAN))
+      formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy").localizedBy(Locale.GERMANY);
+    else formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     webDriverHelpers.fillInWebElement(DATE_OF_REPORT, formatter.format(date));
   }
 
@@ -117,8 +171,8 @@ public class CaseLineListingSteps implements En {
     webDriverHelpers.selectFromCombobox(COMMUNITY_COMBOBOX, community);
   }
 
-  private void selectFacility() {
-    webDriverHelpers.selectFromCombobox(FACILITY_COMBOBOX, "Other facility");
+  private void selectFacility(String facility) {
+    webDriverHelpers.selectFromCombobox(FACILITY_COMBOBOX, facility);
   }
 
   private void fillFacilityName(String facilityName) {
@@ -133,12 +187,11 @@ public class CaseLineListingSteps implements En {
     webDriverHelpers.fillInWebElement(LAST_NAME_INPUT, lastName);
   }
 
-  private void fillDateOfBirth(LocalDate localDate) {
+  private void fillDateOfBirth(LocalDate localDate, Locale locale) {
     webDriverHelpers.selectFromCombobox(
         DATE_OF_BIRTH_YEAR_COMBOBOX, String.valueOf(localDate.getYear()));
     webDriverHelpers.selectFromCombobox(
-        DATE_OF_BIRTH_MONTH_COMBOBOX,
-        localDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH));
+        DATE_OF_BIRTH_MONTH_COMBOBOX, localDate.getMonth().getDisplayName(TextStyle.FULL, locale));
     webDriverHelpers.selectFromCombobox(
         DATE_OF_BIRTH_DAY_COMBOBOX, String.valueOf(localDate.getDayOfMonth()));
   }
@@ -147,8 +200,11 @@ public class CaseLineListingSteps implements En {
     webDriverHelpers.selectFromCombobox(SEX, sex);
   }
 
-  private void fillDateOfSymptom(LocalDate date) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+  private void fillDateOfSymptom(LocalDate date, Locale locale) {
+    DateTimeFormatter formatter;
+    if (locale.equals(Locale.GERMAN))
+      formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy").localizedBy(Locale.GERMANY);
+    else formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     webDriverHelpers.fillInWebElement(DATE_OF_SYMPTOM_INPUT, formatter.format(date));
   }
 

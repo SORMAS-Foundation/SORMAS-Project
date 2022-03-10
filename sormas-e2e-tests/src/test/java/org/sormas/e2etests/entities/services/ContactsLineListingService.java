@@ -24,6 +24,7 @@ import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.time.LocalDate;
 import org.sormas.e2etests.entities.pojo.web.ContactsLineListing;
+import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.enums.RegionsValues;
@@ -57,6 +58,30 @@ public class ContactsLineListingService {
         .birthMonth("May")
         .birthDay(String.valueOf(faker.number().numberBetween(1, 27)))
         .sex(GenderValues.getRandomGender())
+        .build();
+  }
+
+  public ContactsLineListing buildGeneratedLineListingContactsDE() {
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+
+    return ContactsLineListing.builder()
+        .disease(DiseasesValues.CORONAVIRUS.getDiseaseCaption())
+        .region(RegionsValues.VoreingestellteBundeslander.getName())
+        .district(DistrictsValues.VoreingestellterLandkreis.getName())
+        .dateOfReport(LocalDate.now().minusDays(5))
+        .dateOfLastContact(LocalDate.now().minusDays(8))
+        .typeOfContact(
+            "Personen mit direktem Kontakt zu Sekreten oder K\u00F6rperfl\u00FCssigkeiten")
+        .relationshipWithCase("Leben im selben Haushalt")
+        .firstName(firstName)
+        .lastName(lastName)
+        .dateOfBirth(
+            LocalDate.of(
+                faker.number().numberBetween(1900, 2002),
+                faker.number().numberBetween(1, 12),
+                faker.number().numberBetween(1, 27)))
+        .sex(GenderValues.getRandomGenderDE())
         .build();
   }
 }

@@ -152,7 +152,7 @@ Feature: Pathogen Functionalities
     And API: I check that POST call status code is 200
     Given I log in with National User
     When I click on the Contacts button from navbar
-    Then I open the last created contact
+    Then I search after last created contact via API by UUID and open
     And I click on New Sample
     When I collect the sample UUID displayed on create new sample page
     And I create a new Sample with specific data and save
@@ -167,7 +167,8 @@ Feature: Pathogen Functionalities
     When I open created Sample
     Then I check if Pathogen test result in Samples is displayed correctly and save
 
-  @issue=SORDEV-8058 @env_main
+    #please address
+  @issue=SORDEV-8058 @env_main @ignore
   Scenario: Unify pathogen test saving logic between cases and event participants
     When API: I create a new person
     Then API: I check that POST call body is "OK"

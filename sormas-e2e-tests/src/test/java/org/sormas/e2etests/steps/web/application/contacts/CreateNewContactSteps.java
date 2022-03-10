@@ -22,6 +22,7 @@ import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPag
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CONTACT_CREATED_POPUP;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -45,22 +46,51 @@ public class CreateNewContactSteps implements En {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
+        "^I fill a new contact form for DE version$",
+        () -> {
+          contact = contactService.buildGeneratedContactDE();
+          fillFirstName(contact.getFirstName());
+          fillLastName(contact.getLastName());
+          fillDateOfBirth(contact.getDateOfBirth(), Locale.GERMAN);
+          selectSex(contact.getSex());
+          fillPrimaryPhoneNumber(contact.getPrimaryPhoneNumber());
+          fillPrimaryEmailAddress(contact.getPrimaryEmailAddress());
+          selectReturningTraveler(contact.getReturningTraveler());
+          fillDateOfReport(contact.getReportDate(), Locale.GERMAN);
+          fillDiseaseOfSourceCase(contact.getDiseaseOfSourceCase());
+          fillCaseIdInExternalSystem(contact.getCaseIdInExternalSystem());
+          selectMultiDayContact();
+          fillDateOfFirstContact(contact.getDateOfFirstContact(), Locale.GERMAN);
+          fillDateOfLastContact(contact.getDateOfLastContact(), Locale.GERMAN);
+          fillCaseOrEventInformation(contact.getCaseOrEventInformation());
+          selectResponsibleRegion(contact.getResponsibleRegion());
+          selectResponsibleDistrict(contact.getResponsibleDistrict());
+          selectResponsibleCommunity(contact.getResponsibleCommunity());
+          selectTypeOfContact(contact.getTypeOfContact());
+          fillAdditionalInformationOnTheTypeOfContact(
+              contact.getAdditionalInformationOnContactType());
+          selectContactCategory(contact.getContactCategory().toUpperCase());
+          fillRelationshipWithCase(contact.getRelationshipWithCase());
+          fillDescriptionOfHowContactTookPlace(contact.getDescriptionOfHowContactTookPlace());
+        });
+
+    When(
         "^I fill a new contact form$",
         () -> {
           contact = contactService.buildGeneratedContact();
           fillFirstName(contact.getFirstName());
           fillLastName(contact.getLastName());
-          fillDateOfBirth(contact.getDateOfBirth());
+          fillDateOfBirth(contact.getDateOfBirth(), Locale.ENGLISH);
           selectSex(contact.getSex());
           fillPrimaryPhoneNumber(contact.getPrimaryPhoneNumber());
           fillPrimaryEmailAddress(contact.getPrimaryEmailAddress());
           selectReturningTraveler(contact.getReturningTraveler());
-          fillDateOfReport(contact.getReportDate());
+          fillDateOfReport(contact.getReportDate(), Locale.ENGLISH);
           fillDiseaseOfSourceCase(contact.getDiseaseOfSourceCase());
           fillCaseIdInExternalSystem(contact.getCaseIdInExternalSystem());
           selectMultiDayContact();
-          fillDateOfFirstContact(contact.getDateOfFirstContact());
-          fillDateOfLastContact(contact.getDateOfLastContact());
+          fillDateOfFirstContact(contact.getDateOfFirstContact(), Locale.ENGLISH);
+          fillDateOfLastContact(contact.getDateOfLastContact(), Locale.ENGLISH);
           fillCaseOrEventInformation(contact.getCaseOrEventInformation());
           selectResponsibleRegion(contact.getResponsibleRegion());
           selectResponsibleDistrict(contact.getResponsibleDistrict());
@@ -93,12 +123,14 @@ public class CreateNewContactSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON);
         });
     When(
-        "^I click SAVE a new contact$",
+        "^I click on SAVE new contact button$",
         () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CONTACT_CREATED_POPUP);
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_CREATED_POPUP);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
         });
   }
 
@@ -110,12 +142,11 @@ public class CreateNewContactSteps implements En {
     webDriverHelpers.fillInWebElement(LAST_NAME_OF_CONTACT_PERSON_INPUT, lastName);
   }
 
-  private void fillDateOfBirth(LocalDate localDate) {
+  private void fillDateOfBirth(LocalDate localDate, Locale locale) {
     webDriverHelpers.selectFromCombobox(
         DATE_OF_BIRTH_YEAR_COMBOBOX, String.valueOf(localDate.getYear()));
     webDriverHelpers.selectFromCombobox(
-        DATE_OF_BIRTH_MONTH_COMBOBOX,
-        localDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH));
+        DATE_OF_BIRTH_MONTH_COMBOBOX, localDate.getMonth().getDisplayName(TextStyle.FULL, locale));
     webDriverHelpers.selectFromCombobox(
         DATE_OF_BIRTH_DAY_COMBOBOX, String.valueOf(localDate.getDayOfMonth()));
   }
@@ -136,7 +167,10 @@ public class CreateNewContactSteps implements En {
     webDriverHelpers.clickWebElementByText(TYPE_OF_CONTACT_TRAVELER, option);
   }
 
-  private void fillDateOfReport(LocalDate date) {
+  private void fillDateOfReport(LocalDate date, Locale locale) {
+    DateTimeFormatter formatter;
+    if (locale.equals(Locale.GERMAN)) formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    else formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     webDriverHelpers.clearAndFillInWebElement(DATE_OF_REPORT_INPUT, formatter.format(date));
   }
 
@@ -148,7 +182,10 @@ public class CreateNewContactSteps implements En {
     webDriverHelpers.fillInWebElement(CASE_ID_IN_EXTERNAL_SYSTEM_INPUT, externalId);
   }
 
-  private void fillDateOfLastContact(LocalDate date) {
+  private void fillDateOfLastContact(LocalDate date, Locale locale) {
+    DateTimeFormatter formatter;
+    if (locale.equals(Locale.GERMAN)) formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    else formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     webDriverHelpers.fillInWebElement(DATE_OF_LAST_CONTACT_INPUT, formatter.format(date));
   }
 
@@ -194,7 +231,10 @@ public class CreateNewContactSteps implements En {
     webDriverHelpers.clickOnWebElementBySelector(MULTI_DAY_CONTACT_LABEL);
   }
 
-  public void fillDateOfFirstContact(LocalDate date) {
+  public void fillDateOfFirstContact(LocalDate date, Locale locale) {
+    DateTimeFormatter formatter;
+    if (locale.equals(Locale.GERMAN)) formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+    else formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     webDriverHelpers.clearAndFillInWebElement(FIRST_DAY_CONTACT_DATE, formatter.format(date));
   }
 }

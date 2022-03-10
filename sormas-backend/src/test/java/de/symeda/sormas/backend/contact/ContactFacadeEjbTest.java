@@ -443,7 +443,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(getVisitFacade().getVisitByUuid(visit.getUuid()));
 		assertNotNull(getSampleFacade().getSampleByUuid(sample.getUuid()));
 
-		getContactFacade().deleteContact(contact.getUuid());
+		getContactFacade().delete(contact.getUuid());
 
 		// Deleted flag should be set for contact; Task should be deleted
 		assertTrue(getContactFacade().getDeletedUuidsSince(since).contains(contact.getUuid()));
