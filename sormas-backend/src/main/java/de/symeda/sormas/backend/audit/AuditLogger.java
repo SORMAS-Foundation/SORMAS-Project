@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.audit;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
+import de.symeda.sormas.api.ConfigFacade;
 import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
@@ -26,8 +27,8 @@ import org.hl7.fhir.r4.model.codesystems.AuditSourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.net.InetAddress;
-import java.net.UnknownHostException;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.TimeZone;
@@ -35,13 +36,28 @@ import java.util.TimeZone;
 public class AuditLogger {
     private static AuditLogger instance;
     private static final Logger logger = LoggerFactory.getLogger(AuditLogger.class);
+    private final Logger auditLogger;
+    private final String auditSourceSite;
 
-    private AuditLogger() {
+    private AuditLogger(String auditSourceSite) {
+        auditLogger = LogSink.getInstance().getAuditLogger();
+        this.auditSourceSite = auditSourceSite;
     }
 
     public static synchronized AuditLogger getInstance() {
         if (instance == null) {
-            instance = new AuditLogger();
+            try {
+                ConfigFacade configFacade = (ConfigFacade) new InitialContext().lookup("java:module/ConfigFacade");
+                String sourceSite = configFacade.getAuditSourceSite();
+                if (sourceSite.equals("")) {
+                    logger.warn("audit.source.site is empty! Please configure it for more expedient audit trail analysis.");
+                    sourceSite = "NOT CONFIGURED";
+                }
+                instance = new AuditLogger(sourceSite);
+            } catch (NamingException e) {
+                logger.error("Could not fetch ConfigFacade for audit logger.");
+                throw new RuntimeException(e);
+            }
         }
         return instance;
     }
@@ -50,7 +66,7 @@ public class AuditLogger {
         FhirContext ctx = FhirContext.forR4();
         IParser parser = ctx.newJsonParser();
         String serialized = parser.encodeResourceToString(event);
-        LogSink.getInstance().getAuditLogger().info(serialized);
+        auditLogger.info(serialized);
     }
 
     public void logApplicationStart() {
@@ -86,12 +102,7 @@ public class AuditLogger {
         applicationStartAudit.setAgent(Collections.singletonList(agent));
 
         AuditEvent.AuditEventSourceComponent source = new AuditEvent.AuditEventSourceComponent();
-        try {
-            source.setSite(InetAddress.getLocalHost().getHostName());
-        } catch (UnknownHostException e) {
-            logger.error("Could not read the hostname of the machine: {}", e.toString());
-        }
-
+        source.setSite(auditSourceSite);
         // Application Server
         AuditSourceType auditSourceType = AuditSourceType._4;
         source.addType(new Coding(auditSourceType.getSystem(), auditSourceType.toCode(), auditSourceType.getDisplay()));
