@@ -170,14 +170,6 @@ public class ContactsLineListingSteps implements En {
     else
       webDriverHelpers.clearAndFillInWebElement(
           LINE_LISTING_DATE_LAST_CONTACT_INPUT, DATE_FORMATTER.format(dateOfLastContact));
-  private void fillFirstDateOfReport(LocalDate dateOfReport) {
-    webDriverHelpers.clearAndFillInWebElement(
-        LINE_LISTING_FIRST_DATE_OF_REPORT_INPUT, DATE_FORMATTER.format(dateOfReport));
-  }
-
-  private void fillSecondDateOfReport(LocalDate dateOfReport) {
-    webDriverHelpers.clearAndFillInWebElement(
-        LINE_LISTING_SECOND_DATE_OF_REPORT_INPUT, DATE_FORMATTER.format(dateOfReport));
   }
 
   private void fillFirstDateOfReport(LocalDate dateOfReport) {
@@ -188,11 +180,6 @@ public class ContactsLineListingSteps implements En {
   private void fillSecondDateOfReport(LocalDate dateOfReport) {
     webDriverHelpers.clearAndFillInWebElement(
         LINE_LISTING_SECOND_DATE_OF_REPORT_INPUT, DATE_FORMATTER.format(dateOfReport));
-  }
-
-  private void fillDateOfLastContact(LocalDate dateOfLastContact) {
-    webDriverHelpers.clearAndFillInWebElement(
-        LINE_LISTING_DATE_LAST_CONTACT_INPUT, DATE_FORMATTER.format(dateOfLastContact));
   }
 
   private void selectTypeOfContact(String typeOfContact) {
