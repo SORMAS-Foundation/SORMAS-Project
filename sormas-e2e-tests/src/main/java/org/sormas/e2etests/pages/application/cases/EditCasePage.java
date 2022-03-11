@@ -155,6 +155,7 @@ public class EditCasePage {
   public static final By QUARANTINE_ORDER_COMBOBOX =
       By.cssSelector(".popupContent div[role='combobox'] div");
   public static final By CLINICAL_COURSE_TAB = By.id("tab-cases-clinicalcourse");
+  public static final By NEW_TRAVEL_ENTRY_BUTTON_DE = By.id("Neue Einreise");
   public static final By PICK_OR_CREATE_PERSON_TITLE = By.xpath("//div[@class='v-window-header']");
   public static final By SAVE_POPUP_CONTENT = By.cssSelector(".popupContent #commit");
   public static final By BACK_TO_THE_CASES_LIST_BUTTON =
