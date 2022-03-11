@@ -196,7 +196,8 @@ public class CaseDirectorySteps implements En {
     When(
         "I filter by CaseID on Case directory page",
         () -> {
-          webDriverHelpers.fillInWebElement(CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, apiState.getCreatedCase().getUuid());
+          webDriverHelpers.fillInWebElement(
+              CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, apiState.getCreatedCase().getUuid());
           String partialUuid =
               dataOperations.getPartialUuidFromAssociatedLink(apiState.getCreatedCase().getUuid());
           webDriverHelpers.fillAndSubmitInWebElement(
@@ -205,10 +206,8 @@ public class CaseDirectorySteps implements En {
     When(
         "I filter by CaseID of last created UI Case on Case directory page",
         () -> {
-          String partialUuid =
-              dataOperations.getPartialUuidFromAssociatedLink(EditCaseSteps.aCase.getUuid());
           webDriverHelpers.fillAndSubmitInWebElement(
-              CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, partialUuid);
+              CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, EditCaseSteps.aCase.getUuid());
           webDriverHelpers.clickOnWebElementBySelector(
               CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_CASE_ID_BUTTON);
