@@ -108,7 +108,6 @@ public class EditContactSteps implements En {
         () -> {
           collectedContact = collectContactDataDE();
           createdContact = CreateNewContactSteps.contact;
-          // collectedContact = collectContactUuid();
           ComparisonHelper.compareEqualFieldsOfEntities(
               collectedContact,
               createdContact,
@@ -506,8 +505,8 @@ public class EditContactSteps implements En {
   private Contact collectContactDataDE() {
     String collectedDateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE);
     String collectedLastDateOfContact = webDriverHelpers.getValueFromWebElement(LAST_CONTACT_DATE);
-    collectedContact =
-        Contact.builder().uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT)).build();
+    //    collectedContact =
+    //        Contact.builder().uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT)).build();
 
     LocalDate parsedDateOfReport = LocalDate.parse(collectedDateOfReport, formatterDE);
     LocalDate parsedLastDateOfContact = LocalDate.parse(collectedLastDateOfContact, formatterDE);

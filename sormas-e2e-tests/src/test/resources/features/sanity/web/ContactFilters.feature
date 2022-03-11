@@ -139,7 +139,6 @@ Feature: Contact filter functionality
     And I open the first found result in the CHOOSE SOURCE window for DE version
     Then I click SAVE button on Edit Contact Page
     Then I click on the Contacts button from navbar
-    And I apply Id of last created Contact on Contact Directory Page
     And I apply Contact classification filter to "Bestätigter Kontakt" on Contact Directory Page
     And I apply Disease of source filter "COVID-19" on Contact Directory Page
     And I apply Disease variant filter to "B.1.617.1" on Contact Directory Page

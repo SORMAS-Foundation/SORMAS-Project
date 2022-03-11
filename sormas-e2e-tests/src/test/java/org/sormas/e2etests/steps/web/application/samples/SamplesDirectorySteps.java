@@ -135,9 +135,12 @@ public class SamplesDirectorySteps implements En {
         "I select random Case classification filter among the filter options",
         () -> {
           String caseSpecification = CaseClassification.getRandomUIClassification();
-          String apiCaseSpecification = apiState.getCreatedCase().getCaseClassification();
-          while (caseSpecification.equals(apiCaseSpecification))
+          String apiCaseSpecification =
+              CaseClassification.getUIValueForGivenAPIValue(
+                  apiState.getCreatedCase().getCaseClassification());
+          while (caseSpecification.equals(apiCaseSpecification)) {
             caseSpecification = CaseClassification.getRandomUIClassification();
+          }
           webDriverHelpers.selectFromCombobox(
               SAMPLE_CLASIFICATION_SEARCH_COMBOBOX, caseSpecification);
         });
