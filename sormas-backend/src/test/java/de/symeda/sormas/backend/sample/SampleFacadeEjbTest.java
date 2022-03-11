@@ -311,13 +311,13 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(2, samplesOfConvertedCase.size());
 
 		final SampleIndexDto sample11 = samplesOfConvertedCase.get(0);
-		Assert.assertNotEquals(sample.getUuid(), sample11.getUuid());
+		Assert.assertEquals(sample.getUuid(), sample11.getUuid());
 		Assert.assertEquals(caseConvertedFromContact.getUuid(), sample11.getAssociatedCase().getUuid());
-		Assert.assertNull(sample11.getAssociatedContact());
+		Assert.assertEquals(contact.getUuid(), sample11.getAssociatedContact().getUuid());
 
 		final SampleIndexDto sample12 = samplesOfConvertedCase.get(1);
-		Assert.assertNotEquals(referredSample.getUuid(), sample12.getUuid());
-		Assert.assertNull(sample12.getAssociatedContact());
+		Assert.assertEquals(referredSample.getUuid(), sample12.getUuid());
+		Assert.assertEquals(contact.getUuid(), sample12.getAssociatedContact().getUuid());
 		Assert.assertEquals(caseConvertedFromContact.getUuid(), sample11.getAssociatedCase().getUuid());
 	}
 
