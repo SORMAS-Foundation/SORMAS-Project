@@ -1566,7 +1566,13 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		if (sourceContact != null) {
 			final Contact contact = contactService.getByUuid(sourceContact.getUuid());
 			final Case caze = service.getByUuid(cazeRef.getUuid());
-			contact.getSamples().forEach(sample -> sampleFacade.cloneSampleForCase(sample, caze));
+			contact.getSamples().forEach(sample -> {
+				if (sample.getAssociatedCase() == null) {
+					sample.setAssociatedCase(caze);
+				} else {
+					sampleFacade.cloneSampleForCase(sample, caze);
+				}
+			});
 		}
 	}
 
@@ -1575,7 +1581,13 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		if (sourceEventParticipant != null) {
 			final EventParticipant eventParticipant = eventParticipantService.getByUuid(sourceEventParticipant.getUuid());
 			final Case caze = service.getByUuid(cazeRef.getUuid());
-			eventParticipant.getSamples().forEach(sample -> sampleFacade.cloneSampleForCase(sample, caze));
+			eventParticipant.getSamples().forEach(sample -> {
+				if (sample.getAssociatedCase() == null) {
+					sample.setAssociatedCase(caze);
+				} else {
+					sampleFacade.cloneSampleForCase(sample, caze);
+				}
+			});
 		}
 	}
 
@@ -1584,10 +1596,13 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		final EventParticipant eventParticipant = eventParticipantService.getByUuid(sourceEventParticipant.getUuid());
 		final Case caze = service.getByUuid(cazeRef.getUuid());
 		final Disease disease = caze.getDisease();
-		eventParticipant.getSamples()
-			.stream()
-			.filter(sample -> sampleContainsTestForDisease(sample, disease))
-			.forEach(sample -> sampleFacade.cloneSampleForCase(sample, caze));
+		eventParticipant.getSamples().stream().filter(sample -> sampleContainsTestForDisease(sample, disease)).forEach(sample -> {
+			if (sample.getAssociatedCase() == null) {
+				sample.setAssociatedCase(caze);
+			} else {
+				sampleFacade.cloneSampleForCase(sample, caze);
+			}
+		});
 
 	}
 
