@@ -223,10 +223,6 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 	protected final TestDataCreator creator = new TestDataCreator(this);
 	public static final String CONFIDENTIAL = "Confidential";
 
-	protected TestDataCreator.RDCF rdcf;
-	protected TestDataCreator.RDCFEntities rdcfEntities;
-	protected UserDto nationalUser;
-
 	/**
 	 * Resets mocks to their initial state so that mock configurations are not
 	 * shared between tests.
@@ -238,21 +234,10 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 		creator.createUser(null, null, null, "ad", "min", UserRole.ADMIN, UserRole.NATIONAL_USER);
 		when(MockProducer.getPrincipal().getName()).thenReturn("admin");
-
-		rdcf = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
-		rdcfEntities = creator.createRDCFEntities();
-		nationalUser = creator.createUser(
-			rdcf.region.getUuid(),
-			rdcf.district.getUuid(),
-			rdcf.community.getUuid(),
-			rdcf.facility.getUuid(),
-			"Nat",
-			"User",
-			UserRole.NATIONAL_USER);
 		I18nProperties.setUserLanguage(Language.EN);
 	}
 
-	private void initH2Functions() {
+	protected void initH2Functions() {
 		EntityManager em = getEntityManager();
 		em.getTransaction().begin();
 		Query nativeQuery = em.createNativeQuery("CREATE ALIAS similarity FOR \"de.symeda.sormas.backend.H2Function.similarity\"");
