@@ -28,10 +28,10 @@ Feature: Sample filter functionality
     And API: I check that POST call status code is 200
     Given I log in with National User
     When I click on the Sample button from navbar
-    Then fill a Full name of person from API
+    Then I fill a Full name of person from API
     And I select Test result filter among the filter options from API
     And I select Specimen condition filter among the filter options from API
-    And I select Case clasification filter among the filter options from API
+    And I select Case classification filter among the filter options from API
     And I set Disease filter to disease value of last created via API Case in Sample Directory
     And I select Region filter among the filter options from API
     And I select District filter among the filter options from API
@@ -46,10 +46,10 @@ Feature: Sample filter functionality
     And I click a apply button on Sample
     And I check that number of displayed sample results is 0
     And I select Specimen condition filter among the filter options from API
-    Then I select random Case clasification filter among the filter options
+    Then I select random Case classification filter among the filter options
     And I click a apply button on Sample
     And I check that number of displayed sample results is 0
-    And I select Case clasification filter among the filter options from API
+    And I select Case classification filter among the filter options from API
     Then I select random Disease filter among the filter options in Sample directory
     And I click a apply button on Sample
     And I check that number of displayed sample results is 0
@@ -64,7 +64,7 @@ Feature: Sample filter functionality
     And I check that number of displayed sample results is 0
     And I select Region filter among the filter options from API
     And I select District filter among the filter options from API
-    Then I change Labolatory filter to "Other facility" option in Sample directory
+    Then I change Laboratory filter to "Other facility" option in Sample directory
     And I click a apply button on Sample
     And I check that number of displayed sample results is 0
     And I click a Reset button on Sample
