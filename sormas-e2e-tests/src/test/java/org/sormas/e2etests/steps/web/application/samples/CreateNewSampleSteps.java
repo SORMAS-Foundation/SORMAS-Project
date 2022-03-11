@@ -73,6 +73,7 @@ public class CreateNewSampleSteps implements En {
           fillLabSampleId(sample.getLabSampleId());
           fillCommentsOnSample(sample.getCommentsOnSample());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
         });
 
     When(

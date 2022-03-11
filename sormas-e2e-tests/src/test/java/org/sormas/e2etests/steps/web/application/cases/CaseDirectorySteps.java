@@ -159,13 +159,11 @@ public class CaseDirectorySteps implements En {
         "I click Enter Bulk Edit Mode on Case directory page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ENTER_BULK_EDIT_MODE);
-          webDriverHelpers.waitForPageLoaded();
         });
     When(
         "I click checkbox to choose all Case results",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ALL_RESULTS_CHECKBOX);
-          webDriverHelpers.waitForPageLoaded();
         });
     And(
         "I click on Bulk Actions combobox on Case Directory Page",
@@ -179,11 +177,10 @@ public class CaseDirectorySteps implements En {
         "I click on New Event option in Link to Event Form",
         () -> webDriverHelpers.clickOnWebElementBySelector(NEW_EVENT_CHECKBOX));
     And(
-        "I fill Event Id filter with last created EventId on Link to Event form",
+        "I fill Event Id filter in Link to Event form with last created via API Event uuid",
         () -> {
           String eventUuid = apiState.getCreatedEvent().getUuid();
-          webDriverHelpers.fillInWebElement(
-              SEARCH_BUTTON, dataOperations.getPartialUuidFromAssociatedLink(eventUuid));
+          webDriverHelpers.fillInWebElement(SEARCH_BUTTON, eventUuid);
         });
     And(
         "I click first result in grid on Link to Event form",
@@ -312,14 +309,11 @@ public class CaseDirectorySteps implements En {
                               webDriverHelpers.getTextFromPresentWebElement(TOTAL_CASES_COUNTER))));
         });
     And(
-        "I apply last created api Person Id filter on Case directory page",
+        "I apply uuid filter for last created via API Person in Case directory page",
         () ->
             webDriverHelpers.fillAndSubmitInWebElement(
                 PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT,
-                apiState.getLastCreatedPerson().getFirstName()
-                    + " "
-                    + apiState.getLastCreatedPerson().getLastName()));
-
+                apiState.getLastCreatedPerson().getUuid()));
     And(
         "I apply mocked Person Id filter on Case directory page",
         () ->
@@ -410,8 +404,10 @@ public class CaseDirectorySteps implements En {
             webDriverHelpers.selectFromCombobox(CASE_QUARANTINE_FILTER_COMBOBOX, quarantine));
     And(
         "I apply Reinfection filter to {string} on Case directory page",
-        (String reinfection) ->
-            webDriverHelpers.selectFromCombobox(CASE_REINFECTION_FILTER_COMBOBOX, reinfection));
+        (String reinfection) -> {
+          webDriverHelpers.selectFromCombobox(CASE_REINFECTION_FILTER_COMBOBOX, reinfection);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+        });
     And(
         "I apply Date type filter to {string} on Case directory page",
         (String dataType) ->

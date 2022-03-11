@@ -1,7 +1,7 @@
 @UI @Sanity @Sample
 Feature: Sample Functionalities
 
-  @env_main
+  @env_main @check
   Scenario: Edit a new case Sample
     Given I log in with National User
     And I click on the Cases button from navbar

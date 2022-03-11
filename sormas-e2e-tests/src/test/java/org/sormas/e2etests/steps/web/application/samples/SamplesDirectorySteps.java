@@ -143,12 +143,12 @@ public class SamplesDirectorySteps implements En {
         });
 
     When(
-        "I select Disease filter among the filter options from API",
+        "I set Disease filter to disease value of last created via API Case in Sample Directory",
         () -> {
           String disease = apiState.getCreatedCase().getDisease();
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
               SAMPLE_DISEASE_SEARCH_COMBOBOX, DiseasesValues.getCaptionForName(disease));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
         });
 
     When(

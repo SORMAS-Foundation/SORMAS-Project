@@ -530,9 +530,11 @@ public class WebDriverHelpers {
     return getWebElementByText(selector, webElement -> webElement.getText().contentEquals(text));
   }
 
+  @SneakyThrows
   public void clickWebElementByText(final By selector, final String text) {
     scrollToElement(selector);
     getWebElementBySelectorAndText(selector, text).click();
+    TimeUnit.MILLISECONDS.sleep(200);
   }
 
   public String getValueFromWebElement(By byObject) {
