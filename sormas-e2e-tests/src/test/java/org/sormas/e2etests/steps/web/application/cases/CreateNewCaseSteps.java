@@ -31,13 +31,13 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_T
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_PERSON_TITLE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_DETAILED_COLUMN_HEADERS;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_DETAILED_FIRST_TABLE_ROW;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_DETAILED_TABLE_DATA;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_CASE_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.SEARCH_PERSON_BY_FREE_TEXT;
+import static org.sormas.e2etests.steps.web.application.cases.EditCaseSteps.aCase;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
@@ -260,12 +260,10 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
-    When("I collect the UUID displayed on Case event page", () -> caze = collectCaseUuid());
-
     When(
         "I search for the last case uuid in the CHOOSE SOURCE window for UI",
         () -> {
-          webDriverHelpers.fillInWebElement(SOURCE_CASE_WINDOW_CASE_INPUT, caze.getUuid());
+          webDriverHelpers.fillInWebElement(SOURCE_CASE_WINDOW_CASE_INPUT, aCase.getUuid());
           webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
         });
     When(
@@ -552,10 +550,6 @@ public class CreateNewCaseSteps implements En {
 
   private void fillPrimaryEmailAddress(String primaryPhoneNumber) {
     webDriverHelpers.fillInWebElement(PRIMARY_EMAIL_ADDRESS_INPUT, primaryPhoneNumber);
-  }
-
-  private Case collectCaseUuid() {
-    return Case.builder().uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT)).build();
   }
 
   private List<WebElement> getTableRows() {

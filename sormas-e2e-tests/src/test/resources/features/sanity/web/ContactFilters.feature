@@ -130,7 +130,6 @@ Feature: Contact filter functionality
     And I click Create Case from Contact button
     When I create a new case for contact with specific data for DE
     Then I check case created from created contact is correctly displayed on Edit Case page for DE
-    And I collect the UUID displayed on Case event page
     And I click on the Contacts button from navbar
     And I open the last created contact by UI
     And I click on the CHOOSE SOURCE CASE button from CONTACT page
