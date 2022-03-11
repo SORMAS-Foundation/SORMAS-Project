@@ -95,13 +95,6 @@ public class ContactsLineListingSteps implements En {
         "I save the new contact using line listing feature",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_ACTION_SAVE);
-          // TODO remove this logic once problem is investigated in Jenkins
-          // start
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              By.xpath("//*[@class='v-Notification-caption']"));
-          webDriverHelpers.clickOnWebElementBySelector(
-              By.xpath("//*[@class='v-Notification-caption']"));
-          // end
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(25);
         });
     When(
@@ -115,7 +108,14 @@ public class ContactsLineListingSteps implements En {
         "I check that contact created from Line Listing is saved and displayed in results grid",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(DISEASE_COLUMNS);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(PERSON_LIKE_SEARCH_INPUT);
+          String caseName =
+              contactsLineListing.getFirstName() + " " + contactsLineListing.getLastName();
+          webDriverHelpers.fillInWebElement(PERSON_LIKE_SEARCH_INPUT, caseName);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
+          webDriverHelpers.waitUntilNumberOfElementsIsReduceToGiven(CONTACT_GRID_RESULTS_ROWS, 2);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(FIRST_CONTACT_ID_BUTTON);
+
           softly.assertTrue(
               contactsLineListing
                   .getDisease()

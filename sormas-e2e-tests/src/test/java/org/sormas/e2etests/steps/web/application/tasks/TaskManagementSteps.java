@@ -104,7 +104,7 @@ public class TaskManagementSteps implements En {
     When(
         "^I am checking if the associated linked event appears in task management and click on it$",
         () -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(70);
           String eventUuid = apiState.getCreatedEvent().getUuid();
           webDriverHelpers.fillAndSubmitInWebElement(GENERAL_SEARCH_INPUT, eventUuid);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(15);

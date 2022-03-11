@@ -118,8 +118,6 @@ public class EditContactPersonSteps implements En {
           fillExternalToken(newGeneratedPerson.getExternalToken());
           fillExternalToken(newGeneratedPerson.getExternalToken());
           selectTypeOfOccupation(newGeneratedPerson.getTypeOfOccupation());
-          TimeUnit.SECONDS.sleep(3);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           selectStaffOfArmedForces(newGeneratedPerson.getStaffOfArmedForces());
           selectRegion(newGeneratedPerson.getRegion());
           selectDistrict(newGeneratedPerson.getDistrict());
@@ -193,13 +191,14 @@ public class EditContactPersonSteps implements En {
   @SneakyThrows
   private void fillExternalToken(String token) {
     webDriverHelpers.fillInWebElement(EXTERNAL_TOKEN_INPUT, token);
-    // TODO validate if this fix is stable in Jenkins run
-    TimeUnit.SECONDS.sleep(3);
-    webDriverHelpers.waitForPageLoadingSpinnerToDisappear(15);
+    webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+    TimeUnit.SECONDS.sleep(5); // fix for weird behaviour in UI
   }
 
+  @SneakyThrows
   private void selectTypeOfOccupation(String occupation) {
     webDriverHelpers.selectFromCombobox(TYPE_OF_OCCUPATION_COMBOBOX, occupation);
+    TimeUnit.SECONDS.sleep(1); // fix for weird behaviour in UI
   }
 
   private void selectStaffOfArmedForces(String armedForces) {
