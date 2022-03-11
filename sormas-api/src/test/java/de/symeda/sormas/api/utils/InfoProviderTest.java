@@ -124,9 +124,9 @@ public class InfoProviderTest {
 	public void testIsSnapshot() {
 
 		InfoProvider cut = InfoProvider.get();
-		assertTrue(cut.isSnapshot("1.69.0-SNAPSHOT"));
-		assertTrue(cut.isSnapshot("1.69.1-SNAPSHOT"));
-		assertFalse(cut.isSnapshot("1.69.0"));
-		assertFalse(cut.isSnapshot("1.69.1"));
+		assertTrue(cut.isSnapshot("1.70.0-SNAPSHOT"));
+		assertTrue(cut.isSnapshot("1.70.0-SNAPSHOT"));
+		assertFalse(cut.isSnapshot("1.70.0"));
+		assertFalse(cut.isSnapshot("1.70.0"));
 	}
 }
