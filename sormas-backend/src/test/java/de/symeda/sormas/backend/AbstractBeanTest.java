@@ -364,7 +364,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(VisitService.class);
 	}
 
-	public PersonFacade getPersonFacade() {
+	public PersonFacadeEjbLocal getPersonFacade() {
 		return getBean(PersonFacadeEjbLocal.class);
 	}
 
