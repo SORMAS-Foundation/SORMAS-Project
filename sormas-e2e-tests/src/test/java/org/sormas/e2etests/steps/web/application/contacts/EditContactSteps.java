@@ -50,7 +50,6 @@ import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
 public class EditContactSteps implements En {
-  DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
   private final WebDriverHelpers webDriverHelpers;
   public static Contact createdContact;
   public static Contact collectedContact;
@@ -58,6 +57,7 @@ public class EditContactSteps implements En {
   public static Contact editedContact;
   public static Contact aContact;
   public static final String userDirPath = System.getProperty("user.dir");
+  public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
   public static final DateTimeFormatter formatterDE = DateTimeFormatter.ofPattern("d.M.yyyy");
 
   @Inject
@@ -68,37 +68,6 @@ public class EditContactSteps implements En {
       AssertHelpers assertHelpers,
       ContactDocumentService contactDocumentService) {
     this.webDriverHelpers = webDriverHelpers;
-
-    When(
-        "I check the created data for DE version is correctly displayed on Edit Contact page",
-        () -> {
-          collectedContact = collectContactDataDE();
-          createdContact = CreateNewContactSteps.contact;
-          ComparisonHelper.compareEqualFieldsOfEntities(
-              collectedContact,
-              createdContact,
-              List.of(
-                  "firstName",
-                  "lastName",
-                  "returningTraveler",
-                  "reportDate",
-                  "diseaseOfSourceCase",
-                  "caseIdInExternalSystem",
-                  "dateOfLastContact",
-                  "caseOrEventInformation",
-                  "responsibleRegion",
-                  "responsibleDistrict",
-                  "responsibleCommunity",
-                  "additionalInformationOnContactType",
-                  "typeOfContact",
-                  "contactCategory",
-                  "relationshipWithCase",
-                  "descriptionOfHowContactTookPlace"));
-        });
-
-    When(
-        "I collect the UUID displayed on Contact event page",
-        () -> collectedContact = collectContactUuid());
 
     When(
         "I open the last created contact by UI",
@@ -139,6 +108,7 @@ public class EditContactSteps implements En {
         () -> {
           collectedContact = collectContactDataDE();
           createdContact = CreateNewContactSteps.contact;
+          // collectedContact = collectContactUuid();
           ComparisonHelper.compareEqualFieldsOfEntities(
               collectedContact,
               createdContact,
@@ -159,7 +129,6 @@ public class EditContactSteps implements En {
                   "contactCategory",
                   "relationshipWithCase",
                   "descriptionOfHowContactTookPlace"));
-          TimeUnit.SECONDS.sleep(6);
         });
 
     When(
@@ -537,6 +506,8 @@ public class EditContactSteps implements En {
   private Contact collectContactDataDE() {
     String collectedDateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE);
     String collectedLastDateOfContact = webDriverHelpers.getValueFromWebElement(LAST_CONTACT_DATE);
+    collectedContact =
+        Contact.builder().uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT)).build();
 
     LocalDate parsedDateOfReport = LocalDate.parse(collectedDateOfReport, formatterDE);
     LocalDate parsedLastDateOfContact = LocalDate.parse(collectedLastDateOfContact, formatterDE);
@@ -761,10 +732,6 @@ public class EditContactSteps implements En {
 
   private Contact collectContactPersonUuid() {
     webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 40);
-    return Contact.builder().uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT)).build();
-  }
-
-  private Contact collectContactUuid() {
     return Contact.builder().uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT)).build();
   }
 

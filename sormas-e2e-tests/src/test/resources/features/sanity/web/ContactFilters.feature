@@ -118,7 +118,7 @@ Feature: Contact filter functionality
     And I check that number of displayed contact results is 0
 
   @issue=SORQA-5911 @env_de
-  Scenario: Check all filters are working properly in Contacts directory
+  Scenario: Check Contact basic filters on Contact directory page for DE version
     Given I log in with National User
     When I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
@@ -127,7 +127,6 @@ Feature: Contact filter functionality
     Then I check the created data is correctly displayed on Edit Contact page for DE version
     And I click on BESTÄTIGTER KONTAKT radio button Contact Person tab
     Then I click SAVE button on Edit Contact Page
-    And I collect the UUID displayed on Contact event page
     And I click Create Case from Contact button
     When I create a new case for contact with specific data for DE
     Then I check case created from created contact is correctly displayed on Edit Case page for DE
@@ -143,12 +142,11 @@ Feature: Contact filter functionality
     And I apply Id of last created Contact on Contact Directory Page
     And I apply Contact classification filter to "Bestätigter Kontakt" on Contact Directory Page
     And I apply Disease of source filter "COVID-19" on Contact Directory Page
-    And I apply Disease variant filter to "Sequenzierung ausstehend" on Contact Directory Page
+    And I apply Disease variant filter to "B.1.617.1" on Contact Directory Page
     And I apply Classification of source case filter to "0. Nicht klassifiziert" on Contact Directory Page
     And I apply Follow-up status filter to "Nachverfolgung abgebrochen" on Contact Directory Page
     And I click APPLY BUTTON in Contact Directory Page
     And I check that number of displayed contact results is 1
-    And I apply Id of last created Contact on Contact Directory Page
     And I apply Contact classification filter to "Kein Kontakt" on Contact Directory Page
     And I click APPLY BUTTON in Contact Directory Page
     And I check that number of displayed contact results is 0
@@ -160,7 +158,7 @@ Feature: Contact filter functionality
     And I apply Disease variant filter to "B.1.617.3" on Contact Directory Page
     And I click APPLY BUTTON in Contact Directory Page
     And I check that number of displayed contact results is 0
-    And I apply Disease variant filter to "Sequenzierung ausstehend" on Contact Directory Page
+    And I apply Disease variant filter to "B.1.617.1" on Contact Directory Page
     And I apply Classification of source case filter to "D. Labordiagnostisch bei nicht erfüllter Klinik" on Contact Directory Page
     And I click APPLY BUTTON in Contact Directory Page
     And I check that number of displayed contact results is 0
@@ -171,7 +169,7 @@ Feature: Contact filter functionality
     And I apply Follow-up status filter to "Nachverfolgung abgebrochen" on Contact Directory Page
 
   @issue=SORQA-5911 @env_de
-  Scenario: Check all filters are working properly in Contacts directory
+  Scenario: Check checkbox filters on Contact directory page for DE version
     Given I log in with National User
     When I click on the Contacts button from navbar
     And I click on the NEW CONTACT button

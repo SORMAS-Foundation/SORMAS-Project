@@ -203,14 +203,12 @@ public class CreateNewCaseSteps implements En {
           selectResponsibleRegion(caze.getResponsibleRegion());
           selectResponsibleDistrict(caze.getResponsibleDistrict());
           selectResponsibleCommunity(caze.getResponsibleCommunity());
-
           selectPlaceOfStay(caze.getPlaceOfStay());
           fillPlaceDescription(caze.getPlaceDescription());
           selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
           fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.GERMAN);
           webDriverHelpers.selectFromCombobox(
-              CASE_DISEASE_VARIANT_COMBOBOX, "Sequenzierung ausstehend");
-
+              CASE_DISEASE_VARIANT_COMBOBOX, caze.getDiseaseVariant());
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_CASE_SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
