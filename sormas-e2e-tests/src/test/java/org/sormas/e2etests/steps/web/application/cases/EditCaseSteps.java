@@ -92,6 +92,13 @@ public class EditCaseSteps implements En {
           TimeUnit.SECONDS.sleep(1);
         });
 
+    When(
+        "I fill the specific Date of outcome",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              DATE_OF_OUTCOME_INPUT, DATE_FORMATTER.format(LocalDate.now().minusDays(1)));
+        });
+
     And(
         "I click on save button from Edit Case page",
         () -> {
