@@ -679,7 +679,7 @@ public class CaseController {
 					// automatically change the contact classification to "confirmed"
 					updatedContact.setContactClassification(ContactClassification.CONFIRMED);
 					// set resulting case on contact and save it
-					if (updatedContact.getResultingCase() == null) {
+					if (updatedContact.getResultingCase() == null && updatedContact.getDisease() == dto.getDisease()) {
 						updatedContact.setResultingCase(dto.toReference());
 					}
 					FacadeProvider.getContactFacade().save(updatedContact);
