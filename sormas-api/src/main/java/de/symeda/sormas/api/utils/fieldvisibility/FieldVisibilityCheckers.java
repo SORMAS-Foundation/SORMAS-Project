@@ -106,6 +106,10 @@ public class FieldVisibilityCheckers implements Serializable {
 		}
 	}
 
+	public static FieldVisibilityCheckers getNoop() {
+		return new FieldVisibilityCheckers();
+	}
+
 	public static FieldVisibilityCheckers withDisease(Disease disease) {
 		return withCheckers(new DiseaseFieldVisibilityChecker(disease));
 	}
@@ -128,7 +132,7 @@ public class FieldVisibilityCheckers implements Serializable {
 		return ret;
 	}
 
-	interface Checker extends Serializable {
+	public interface Checker extends Serializable {
 
 	}
 

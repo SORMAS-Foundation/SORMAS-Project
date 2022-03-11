@@ -206,8 +206,9 @@ public class ContactDataView extends AbstractContactView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
-			SampleListComponent sampleList = new SampleListComponent(
-				new SampleCriteria().contact(getContactRef()).sampleAssociationType(SampleAssociationType.CONTACT),
+			SampleListComponent sampleList =
+				new SampleListComponent(new SampleCriteria().contact(getContactRef()).sampleAssociationType(SampleAssociationType.CONTACT));
+			sampleList.addSideComponentCreateEventListener(
 				e -> showNavigationConfirmPopupIfDirty(
 					() -> ControllerProvider.getSampleController().create(getContactRef(), contactDto.getDisease(), () -> {
 						final ContactDto contactByUuid = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());

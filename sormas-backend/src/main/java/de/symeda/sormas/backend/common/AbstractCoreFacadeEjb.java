@@ -42,7 +42,7 @@ import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
-import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfigurationService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;

@@ -144,7 +144,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.TaskCreationException;
-import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.document.Document;
 import de.symeda.sormas.backend.document.DocumentService;
@@ -1625,7 +1625,7 @@ public class ContactFacadeEjb
 		return convertToReferenceDto(contact);
 	}
 
-	@RolesAllowed(UserRole._SYSTEM)
+	@RolesAllowed(UserRight._SYSTEM)
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void generateContactFollowUpTasks() {
 

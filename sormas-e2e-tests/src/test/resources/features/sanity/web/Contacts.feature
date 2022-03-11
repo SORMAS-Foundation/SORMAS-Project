@@ -152,7 +152,7 @@ Feature: Contacts end to end tests
     And I open Follow up Visits tab from contact directory
     Then I am validating the From and To dates displayed
 
-  @issue=SORDEV-5490 @env_main
+  @issue=SORDEV-5490 @env_main @ignore
   Scenario: Create a contact and create a case for contact person
     Given I log in with National User
     When I click on the Contacts button from navbar
@@ -290,8 +290,46 @@ Feature: Contacts end to end tests
     And I click checkbox to choose all Contact results on Contact Directory Page
     And I click on Bulk Actions combobox on Contact Directory Page
     And I click on Link to Event from Bulk Actions combobox on Contact Directory Page
-    And I fill Event Id filter with last created EventId on Link to Event form
+    And I fill Event Id filter in Link to Event form with last created via API Event uuid
     And I click first result in grid on Link to Event form
     And I click on SAVE button in Link Event to group form
     And I navigate to the last created through API Event page via URL
     And I check that number of displayed Event Participants is 1
+
+  @issue=SORDEV-5640 @env_main
+  Scenario: Enter an exposure data in Contacts to testing all available options
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in with National User
+    When I click on the Contacts button from navbar
+    Then I open the last created contact
+    And I click on the Epidemiological Data navbar field
+    And I click on Exposure details known with NO option
+    And I click on Exposure details known with UNKNOWN option
+    And I click on Exposure details known with YES option
+    Then I click on New Entry in Exposure Details Known
+    And I select all options in Type of activity from Combobox in Exposure for Epidemiological data tab in Contacts
+    Then I select a Type of activity Other option in Exposure for Epidemiological data tab in Contacts
+    And I fill a Type of activity details field in Exposure for Epidemiological data tab in Contacts
+    Then I select a Type of activity Gathering option in Exposure for Epidemiological data tab in Contacts
+    And I select all Type of gathering from Combobox in Exposure for Epidemiological data tab in Contacts
+    And I select a type of gathering Other from Combobox in Exposure for Epidemiological data tab in Contacts
+    And I fill a type of gathering details in Exposure for Epidemiological data tab in Contacts
+    Then I check all Type of place from Combobox in Exposure for Epidemiological data tab in Contacts
+    Then I fill Location form for Type of place by chosen "HOME" options in Exposure for Epidemiological data
+    And I click on save button in Exposure for Epidemiological data tab in Contacts
+    And I click on save button from Epidemiological Data
+    And I click on edit Exposure vision button
+    And I select Work option in Type of activity from Combobox in Exposure form
+    Then I fill Location form for Type of place by chosen "OTHER" options in Exposure for Epidemiological data
+    And I click on save button in Exposure for Epidemiological data tab in Contacts
+    And I click on save button from Epidemiological Data
+    And I click on edit Exposure vision button
+    And I select Travel option in Type of activity from Combobox in Exposure form
+    Then I fill Location form for Type of place by chosen "FACILITY" options in Exposure for Epidemiological data
+    And I click on save button in Exposure for Epidemiological data tab in Contacts
+    And I click on save button from Epidemiological Data

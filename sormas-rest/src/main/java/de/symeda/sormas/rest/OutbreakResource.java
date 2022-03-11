@@ -20,7 +20,6 @@ package de.symeda.sormas.rest;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -48,9 +47,6 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
  */
 @Path("/outbreaks")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
-@RolesAllowed({
-	"USER",
-	"REST_USER" })
 public class OutbreakResource extends EntityDtoResource {
 
 	@GET

@@ -45,7 +45,6 @@ public class ContactDirectoryPage {
   public static final By FOLLOW_UP_VISITS_BUTTON =
       By.cssSelector("#contactsViewSwitcher span:nth-child(3)");
   public static final By FROM_INPUT = By.cssSelector("#fromReferenceDateField input");
-  public static final By TO_INPUT = By.cssSelector("#toReferenceDateField input");
   public static final By GRID_HEADERS = By.xpath("//thead//tr//th");
   public static final String RESULTS_GRID_HEADER = "//div[contains(text(), '%s')]";
   public static final By FIRST_CONTACT_ID_BUTTON = By.cssSelector(".v-grid-row-has-data a[title]");
@@ -62,7 +61,7 @@ public class ContactDirectoryPage {
       By.cssSelector("[id='followUpStatus'] [class='v-filterselect-button']");
   public static final By CONTACT_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON =
       By.cssSelector("div#actionApplyFilters");
-  public static final By TOTAL_CONTACTS_COUNTER = By.cssSelector("#All span[class='badge']");
+  public static final By GRID_RESULTS_COUNTER_CONTACT_DIRECTORY = By.cssSelector(".badge");
   public static final By CONTACTS_WITH_QUARANTINE_ORDERED_VERBALLY_CHECKBOX =
       By.id("quarantineOrderedVerbally");
   public static final By CONTACTS_WITH_QUARANTINE_ORDERED_BY_OFFICIAL_DOCUMENT_CHECKBOX =
@@ -82,4 +81,5 @@ public class ContactDirectoryPage {
   public static final By CONVERTED_TO_CASE_BUTTON = By.id("status-Converted to case");
   public static final By DROPPED_BUTTON = By.id("status-Dropped");
   public static final By BULK_ACTIONS_CONTACT_VALUES = By.id("bulkActions-9");
+  public static final By NEW_ENTRY_EPIDEMIOLOGICAL_DATA = By.id("actionNewEntry");
 }

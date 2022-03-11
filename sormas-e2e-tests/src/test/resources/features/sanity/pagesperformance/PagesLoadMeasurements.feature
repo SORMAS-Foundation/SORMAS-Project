@@ -52,5 +52,5 @@ Feature: Pages loading time
   @env_performance
   Scenario: Check Surveillance Dashboard page loading time
     Given I log in with National User
-    And I click on the Dashboard button from navbar and access Surveillance Dashboard
+    And I click on the Persons button then Dashboard button from navbar and access Surveillance Dashboard
     Then I wait for "Surveillance Dashboard" page to load and calculate elapsed time

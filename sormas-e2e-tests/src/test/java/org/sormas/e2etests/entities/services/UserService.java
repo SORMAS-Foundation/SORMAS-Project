@@ -48,7 +48,7 @@ public class UserService {
         .lastName(lastName)
         .emailAddress(ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
         .phoneNumber(generatePhoneNumber())
-        .language("English")
+        .language("Dari")
         .country("Germany")
         .region(RegionsValues.VoreingestellteBundeslander.getName())
         .district(DistrictsValues.VoreingestellterLandkreis.getName())

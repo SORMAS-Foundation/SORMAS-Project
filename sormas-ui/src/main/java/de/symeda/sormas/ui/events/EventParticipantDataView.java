@@ -127,8 +127,8 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 
 		SampleCriteria sampleCriteria = new SampleCriteria().eventParticipant(eventParticipantRef);
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
-			SampleListComponent sampleList = new SampleListComponent(
-				sampleCriteria.sampleAssociationType(SampleAssociationType.EVENT_PARTICIPANT),
+			SampleListComponent sampleList = new SampleListComponent(sampleCriteria.sampleAssociationType(SampleAssociationType.EVENT_PARTICIPANT));
+			sampleList.addSideComponentCreateEventListener(
 				e -> showNavigationConfirmPopupIfDirty(
 					() -> ControllerProvider.getSampleController().create(eventParticipantRef, event.getDisease(), SormasUI::refreshView)));
 

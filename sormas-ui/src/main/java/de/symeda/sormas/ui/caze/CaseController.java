@@ -1,20 +1,18 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.ui.caze;
 
 import java.util.ArrayList;
@@ -28,7 +26,6 @@ import java.util.stream.Collectors;
 
 import de.symeda.sormas.ui.utils.NotificationHelper;
 import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.ExternalResource;
@@ -793,24 +790,7 @@ public class CaseController {
 	}
 
 	private void transferDataToPerson(CaseCreateForm createForm, PersonDto person) {
-		person.setFirstName(createForm.getPersonFirstName());
-		person.setLastName(createForm.getPersonLastName());
-		person.setBirthdateDD(createForm.getBirthdateDD());
-		person.setBirthdateMM(createForm.getBirthdateMM());
-		person.setBirthdateYYYY(createForm.getBirthdateYYYY());
-		person.setSex(createForm.getSex());
-		person.setPresentCondition(createForm.getPresentCondition());
-		if (StringUtils.isNotEmpty(createForm.getPhone())) {
-			person.setPhone(createForm.getPhone());
-		}
-		if (StringUtils.isNotEmpty(createForm.getEmailAddress())) {
-			person.setEmailAddress(createForm.getEmailAddress());
-		}
-		person.setNationalHealthId(createForm.getNationalHealthId());
-		person.setPassportNumber(createForm.getPassportNumber());
-		if (createForm.getHomeAddressForm() != null) {
-			person.setAddress(createForm.getHomeAddressForm().getValue());
-		}
+		createForm.getPersonCreateForm().transferDataToPerson(person);
 	}
 
 	public void selectOrCreateCase(CaseDataDto caseDto, PersonDto person, Consumer<String> selectedCaseUuidConsumer) {
@@ -845,44 +825,6 @@ public class CaseController {
 			selectedCaseUuidConsumer.accept(null);
 		}
 	}
-
-//	public CommitDiscardWrapperComponent<? extends Component> getCaseCombinedEditComponent(final String caseUuid,
-//			final ViewMode viewMode) {
-//
-//		CaseDataDto caze = findCase(caseUuid);
-//		PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid());
-//
-//		CaseDataForm caseEditForm = new CaseDataForm(person, caze.getDisease(), viewMode);
-//		caseEditForm.setValue(caze);
-//
-//		HospitalizationForm hospitalizationForm = new HospitalizationForm(caze, viewMode);
-//		hospitalizationForm.setValue(caze.getHospitalization());
-//
-//		SymptomsForm symptomsForm = new SymptomsForm(caze, caze.getDisease(), person, SymptomsContext.CASE, viewMode);
-//		symptomsForm.setValue(caze.getSymptoms());
-//
-//		EpiDataForm epiDataForm = new EpiDataForm(caze.getDisease(), viewMode);
-//		epiDataForm.setValue(caze.getEpiData());
-//
-//		CommitDiscardWrapperComponent<? extends Component> editView = AbstractEditForm
-//				.buildCommitDiscardWrapper(caseEditForm, hospitalizationForm, symptomsForm, epiDataForm);
-//
-//		editView.addCommitListener(new CommitListener() {
-//			@Override
-//			public void onCommit() {
-//				CaseDataDto cazeDto = caseEditForm.getValue();
-//				cazeDto.setHospitalization(hospitalizationForm.getValue());
-//				cazeDto.setSymptoms(symptomsForm.getValue());
-//				cazeDto.setEpiData(epiDataForm.getValue());
-//
-//				saveCase(cazeDto);
-//			}
-//		});
-//
-//		appendSpecialCommands(caze, editView);
-//
-//		return editView;
-//	}
 
 	public CommitDiscardWrapperComponent<CaseDataForm> getCaseDataEditComponent(final String caseUuid, final ViewMode viewMode) {
 		CaseDataDto caze = findCase(caseUuid);

@@ -686,6 +686,7 @@ public interface Strings {
 	String infoActivityAsCaseInvestigation = "infoActivityAsCaseInvestigation";
 	String infoAddTestsToSample = "infoAddTestsToSample";
 	String infoArchivedCases = "infoArchivedCases";
+	String infoArchivedContacts = "infoArchivedContacts";
 	String infoArchivedEventParticipants = "infoArchivedEventParticipants";
 	String infoArchivedEvents = "infoArchivedEvents";
 	String infoArchivedTravelEntries = "infoArchivedTravelEntries";

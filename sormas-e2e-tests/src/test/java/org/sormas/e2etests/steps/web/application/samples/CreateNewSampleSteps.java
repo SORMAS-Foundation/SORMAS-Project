@@ -73,6 +73,7 @@ public class CreateNewSampleSteps implements En {
           fillLabSampleId(sample.getLabSampleId());
           fillCommentsOnSample(sample.getCommentsOnSample());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
         });
 
     When(
@@ -247,12 +248,14 @@ public class CreateNewSampleSteps implements En {
     When(
         "I confirm the Create case from event participant with positive test result",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONFIRM_BUTTON);
           String displayedText =
               webDriverHelpers.getTextFromWebElement(CREATE_CASE_POSITIVE_TEST_RESULT_LABEL);
           String expectedText = "Create case from event participant with positive test result?";
-          softly.assertEquals(displayedText, expectedText);
+          softly.assertEquals(
+              displayedText,
+              expectedText,
+              "Case creation confirmation popup message is not correct");
           softly.assertAll();
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
         });
@@ -330,7 +333,7 @@ public class CreateNewSampleSteps implements En {
   }
 
   private void fillReportDate(LocalDate dateOfCollection, Locale locale) {
-      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d.M.yyyy");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d.M.yyyy");
     if (locale.equals(Locale.GERMAN))
       webDriverHelpers.clearAndFillInWebElement(
           DATE_TEST_REPORT, formatter.format(dateOfCollection));
@@ -348,10 +351,9 @@ public class CreateNewSampleSteps implements En {
   }
 
   private void fillDateOfResult(LocalDate dateOfCollection, Locale locale) {
-      DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d.M.yyyy");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d.M.yyyy");
     if (locale.equals(Locale.GERMAN))
-      webDriverHelpers.clearAndFillInWebElement(
-          DATE_OF_RESULT, formatter.format(dateOfCollection));
+      webDriverHelpers.clearAndFillInWebElement(DATE_OF_RESULT, formatter.format(dateOfCollection));
     else
       webDriverHelpers.clearAndFillInWebElement(
           DATE_OF_RESULT, DATE_FORMATTER.format(dateOfCollection));

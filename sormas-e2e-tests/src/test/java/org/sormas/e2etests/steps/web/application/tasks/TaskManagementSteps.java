@@ -21,7 +21,7 @@ package org.sormas.e2etests.steps.web.application.tasks;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.APPLY_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.RESET_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
-import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.TASK_POPUP;
+import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.COMMENTS_ON_EXECUTION_TEXTAREA;
 import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.TASK_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.*;
 
@@ -69,33 +69,42 @@ public class TaskManagementSteps implements En {
             webDriverHelpers.clickWhileOtherButtonIsDisplayed(NEW_TASK_BUTTON, TASK_TYPE_COMBOBOX));
 
     When(
-        "^I open last created task$",
+        "^I open last created task from Tasks Directory$",
         () -> {
           By lastTaskEditButton =
               By.xpath(
                   String.format(
                       EDIT_BUTTON_XPATH_BY_TEXT, CreateNewTaskSteps.task.getCommentsOnTask()));
-          do {
-            webDriverHelpers.scrollInTable(10);
-          } while (!webDriverHelpers.isElementVisibleWithTimeout(lastTaskEditButton, 2));
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(lastTaskEditButton, 40);
           webDriverHelpers.clickOnWebElementBySelector(lastTaskEditButton);
-          webDriverHelpers.isElementVisibleWithTimeout(TASK_POPUP, 5);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              COMMENTS_ON_EXECUTION_TEXTAREA);
         });
 
     When(
-        "^I search last created task by Case UUID$",
+        "^I search last created task by Case UUID and open it$",
         () -> {
+          String lastCreatedCaseWithTaskUUID = EditCaseSteps.aCase.getUuid();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               GENERAL_SEARCH_INPUT, 50);
           webDriverHelpers.fillAndSubmitInWebElement(
-              GENERAL_SEARCH_INPUT, EditCaseSteps.aCase.getUuid());
+              GENERAL_SEARCH_INPUT, lastCreatedCaseWithTaskUUID);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+
+          By lastTaskEditButton =
+              By.xpath(
+                  String.format(
+                      EDIT_BUTTON_XPATH_BY_TEXT, CreateNewTaskSteps.task.getCommentsOnTask()));
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(lastTaskEditButton, 20);
+          webDriverHelpers.clickOnWebElementBySelector(lastTaskEditButton);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              COMMENTS_ON_EXECUTION_TEXTAREA);
         });
 
     When(
         "^I am checking if the associated linked event appears in task management and click on it$",
         () -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(70);
           String eventUuid = apiState.getCreatedEvent().getUuid();
           webDriverHelpers.fillAndSubmitInWebElement(GENERAL_SEARCH_INPUT, eventUuid);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(15);

@@ -47,10 +47,13 @@ import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -307,17 +310,26 @@ public class EventParticipantsView extends AbstractEventView {
 
 		// Show active/archived/all dropdown
 		if (Objects.nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_VIEW)) {
-			int daysAfterdaysAfterEventParticipantGetsArchived = FacadeProvider.getConfigFacade().getDaysAfterEventParticipantGetsArchived();
-			if (daysAfterdaysAfterEventParticipantGetsArchived > 0) {
-				relevanceStatusInfoLabel = new Label(
-					VaadinIcons.INFO_CIRCLE.getHtml() + " "
-						+ String
-							.format(I18nProperties.getString(Strings.infoArchivedEventParticipants), daysAfterdaysAfterEventParticipantGetsArchived),
-					ContentMode.HTML);
-				relevanceStatusInfoLabel.setVisible(false);
-				relevanceStatusInfoLabel.addStyleName(CssStyles.LABEL_VERTICAL_ALIGN_SUPER);
-				actionButtonsLayout.addComponent(relevanceStatusInfoLabel);
-				actionButtonsLayout.setComponentAlignment(relevanceStatusInfoLabel, Alignment.MIDDLE_RIGHT);
+
+			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.EVENT_PARTICIPANT)) {
+				int daysAfterEventParticipantGetsArchived = FacadeProvider.getFeatureConfigurationFacade()
+					.getProperty(
+						FeatureType.AUTOMATIC_ARCHIVING,
+						CoreEntityType.EVENT_PARTICIPANT,
+						FeatureTypeProperty.THRESHOLD_IN_DAYS,
+						Integer.class);
+				if (daysAfterEventParticipantGetsArchived > 0) {
+					relevanceStatusInfoLabel =
+						new Label(
+							VaadinIcons.INFO_CIRCLE.getHtml() + " "
+								+ String
+									.format(I18nProperties.getString(Strings.infoArchivedEventParticipants), daysAfterEventParticipantGetsArchived),
+							ContentMode.HTML);
+					relevanceStatusInfoLabel.setVisible(false);
+					relevanceStatusInfoLabel.addStyleName(CssStyles.LABEL_VERTICAL_ALIGN_SUPER);
+					actionButtonsLayout.addComponent(relevanceStatusInfoLabel);
+					actionButtonsLayout.setComponentAlignment(relevanceStatusInfoLabel, Alignment.MIDDLE_RIGHT);
+				}
 			}
 
 			eventParticipantRelevanceStatusFilter = buildRelevanceStatusFilter(
@@ -326,7 +338,9 @@ public class EventParticipantsView extends AbstractEventView {
 				Captions.eventParticipantAllEventParticipants);
 
 			eventParticipantRelevanceStatusFilter.addValueChangeListener(e -> {
-				relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
+				if (relevanceStatusInfoLabel != null) {
+					relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
+				}
 				criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 				navigateTo(criteria);
 			});

@@ -225,7 +225,7 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.contact.VisitSummaryExportDetails;
-import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.document.Document;
 import de.symeda.sormas.backend.document.DocumentService;
@@ -1575,7 +1575,13 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		if (sourceContact != null) {
 			final Contact contact = contactService.getByUuid(sourceContact.getUuid());
 			final Case caze = service.getByUuid(cazeRef.getUuid());
-			contact.getSamples().forEach(sample -> sample.setAssociatedCase(caze));
+			contact.getSamples().forEach(sample -> {
+				if (sample.getAssociatedCase() == null) {
+					sample.setAssociatedCase(caze);
+				} else {
+					sampleFacade.cloneSampleForCase(sample, caze);
+				}
+			});
 		}
 	}
 
@@ -1584,7 +1590,13 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		if (sourceEventParticipant != null) {
 			final EventParticipant eventParticipant = eventParticipantService.getByUuid(sourceEventParticipant.getUuid());
 			final Case caze = service.getByUuid(cazeRef.getUuid());
-			eventParticipant.getSamples().forEach(sample -> sample.setAssociatedCase(caze));
+			eventParticipant.getSamples().forEach(sample -> {
+				if (sample.getAssociatedCase() == null) {
+					sample.setAssociatedCase(caze);
+				} else {
+					sampleFacade.cloneSampleForCase(sample, caze);
+				}
+			});
 		}
 	}
 
@@ -1593,10 +1605,13 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		final EventParticipant eventParticipant = eventParticipantService.getByUuid(sourceEventParticipant.getUuid());
 		final Case caze = service.getByUuid(cazeRef.getUuid());
 		final Disease disease = caze.getDisease();
-		eventParticipant.getSamples()
-			.stream()
-			.filter(sample -> sampleContainsTestForDisease(sample, disease))
-			.forEach(sample -> sample.setAssociatedCase(caze));
+		eventParticipant.getSamples().stream().filter(sample -> sampleContainsTestForDisease(sample, disease)).forEach(sample -> {
+			if (sample.getAssociatedCase() == null) {
+				sample.setAssociatedCase(caze);
+			} else {
+				sampleFacade.cloneSampleForCase(sample, caze);
+			}
+		});
 
 	}
 

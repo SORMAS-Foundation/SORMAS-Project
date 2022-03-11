@@ -73,7 +73,6 @@ public class WebDriverHelpers {
   }
 
   public void waitForPageLoaded() {
-    log.info("Waiting for page to load");
     assertHelpers.assertWithPoll20Second(
         () ->
             Assert.assertEquals(
@@ -265,8 +264,6 @@ public class WebDriverHelpers {
             .getDriver()
             .findElement(selector)
             .findElement(By.xpath("preceding-sibling::input"));
-    // TODO check in Jenkins if this is a fix for flaky situations when option is selected twice
-    // comboboxInput.sendKeys(Keys.chord(Keys.BACK_SPACE));
     String comboBoxItemWithText =
         "//td[@role='listitem']/span[ contains(text(), '"
             + text
@@ -532,9 +529,11 @@ public class WebDriverHelpers {
     return getWebElementByText(selector, webElement -> webElement.getText().contentEquals(text));
   }
 
+  @SneakyThrows
   public void clickWebElementByText(final By selector, final String text) {
     scrollToElement(selector);
     getWebElementBySelectorAndText(selector, text).click();
+    TimeUnit.MILLISECONDS.sleep(200);
   }
 
   public String getValueFromWebElement(By byObject) {
