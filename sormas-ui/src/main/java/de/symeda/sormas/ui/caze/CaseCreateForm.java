@@ -93,6 +93,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 	private static final String POINT_OF_ENTRY_REGION = "pointOfEntryRegion";
 	private static final String POINT_OF_ENTRY_DISTRICT = "pointOfEntryDistrict";
 
+	private ComboBox diseaseVariantField;
 	private TextField diseaseVariantDetailsField;
 	private NullableOptionGroup facilityOrHome;
 	private ComboBox facilityTypeGroup;
@@ -184,7 +185,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 		addField(CaseDataDto.REPORT_DATE, DateField.class);
 		ComboBox diseaseField = addDiseaseField(CaseDataDto.DISEASE, false, true);
-		ComboBox diseaseVariantField = addField(CaseDataDto.DISEASE_VARIANT, ComboBox.class);
+		diseaseVariantField = addField(CaseDataDto.DISEASE_VARIANT, ComboBox.class);
 		diseaseVariantDetailsField = addField(CaseDataDto.DISEASE_VARIANT_DETAILS, TextField.class);
 		diseaseVariantDetailsField.setVisible(false);
 		diseaseVariantField.setNullSelectionAllowed(true);
@@ -483,18 +484,23 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 				setVisible(true, CaseDataDto.POINT_OF_ENTRY);
 			}
 		});
-		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> {
-			Disease disease = (Disease) valueChangeEvent.getProperty().getValue();
-			List<DiseaseVariant> diseaseVariants =
-				FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
-			FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
-			diseaseVariantField
-				.setVisible(disease != null && isVisibleAllowed(CaseDataDto.DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
-		});
+		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> updateDiseaseVariant((Disease) valueChangeEvent.getProperty().getValue()));
+
 		diseaseVariantField.addValueChangeListener(e -> {
 			DiseaseVariant diseaseVariant = (DiseaseVariant) e.getProperty().getValue();
 			diseaseVariantDetailsField.setVisible(diseaseVariant != null && diseaseVariant.matchPropertyValue(DiseaseVariant.HAS_DETAILS, true));
 		});
+
+		if (diseaseField.getValue() != null) {
+			updateDiseaseVariant((Disease) diseaseField.getValue());
+		}
+	}
+
+	private void updateDiseaseVariant(Disease disease) {
+		List<DiseaseVariant> diseaseVariants =
+				FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
+		FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
+		diseaseVariantField.setVisible(disease != null && isVisibleAllowed(CaseDataDto.DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
 	}
 
 	private void setNoneFacility() {
@@ -545,7 +551,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 	private void updatePOEs() {
 
-		ComboBox comboBoxPOE = (ComboBox) getField(CaseDataDto.POINT_OF_ENTRY);
+		ComboBox comboBoxPOE = getField(CaseDataDto.POINT_OF_ENTRY);
 		if (!comboBoxPOE.isReadOnly()) {
 			DistrictReferenceDto districtDto;
 
