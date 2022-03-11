@@ -19,15 +19,11 @@
 package org.sormas.e2etests.steps.web.application.contacts;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRST_CASE_ID_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.REPORT_DATE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFORMATION;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_RESULTS_UUID_LOCATOR;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.MULTIPLE_OPTIONS_SEARCH_INPUT;
-import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.DATE_OF_BIRTH_DAY_COMBOBOX;
-import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.DATE_OF_BIRTH_MONTH_COMBOBOX;
-import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.DATE_OF_BIRTH_YEAR_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.CONTACT_PERSON_TAB;
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.GENERAL_SEARCH_INPUT;
@@ -38,9 +34,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.format.TextStyle;
 import java.util.List;
-import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
@@ -57,7 +51,6 @@ import org.testng.asserts.SoftAssert;
 
 public class EditContactSteps implements En {
   DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
-  public static final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
   private final WebDriverHelpers webDriverHelpers;
   public static Contact createdContact;
   public static Contact collectedContact;
@@ -65,7 +58,6 @@ public class EditContactSteps implements En {
   public static Contact editedContact;
   public static Contact aContact;
   public static final String userDirPath = System.getProperty("user.dir");
-  public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
   public static final DateTimeFormatter formatterDE = DateTimeFormatter.ofPattern("d.M.yyyy");
 
   @Inject
@@ -617,43 +609,6 @@ public class EditContactSteps implements En {
         .build();
   }
 
-  private Contact collectContactDataDE() {
-    Contact contactInfo = getContactInformationDE();
-
-    return Contact.builder()
-        .firstName(contactInfo.getFirstName())
-        .lastName(contactInfo.getLastName())
-        .returningTraveler(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RETURNING_TRAVELER_OPTIONS))
-        .reportDate(
-            LocalDate.parse(
-                webDriverHelpers.getValueFromWebElement(REPORT_DATE), DATE_FORMATTER_DE))
-        .diseaseOfSourceCase(webDriverHelpers.getValueFromCombobox(DISEASE_COMBOBOX))
-        .caseIdInExternalSystem(
-            webDriverHelpers.getValueFromWebElement(CASE_ID_IN_EXTERNAL_SYSTEM_INPUT))
-        .dateOfLastContact(
-            LocalDate.parse(
-                webDriverHelpers.getValueFromWebElement(LAST_CONTACT_DATE), DATE_FORMATTER_DE))
-        .caseOrEventInformation(
-            webDriverHelpers.getValueFromWebElement(CASE_OR_EVENT_INFORMATION_INPUT))
-        .responsibleRegion(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_REGION_COMBOBOX))
-        .responsibleDistrict(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_DISTRICT_COMBOBOX))
-        .responsibleCommunity(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_COMMUNITY_COMBOBOX))
-        .additionalInformationOnContactType(
-            webDriverHelpers.getValueFromWebElement(
-                ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT))
-        .typeOfContact(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(TYPE_OF_CONTACT_OPTIONS))
-        .contactCategory(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CATEGORY_OPTIONS))
-        .relationshipWithCase(
-            webDriverHelpers.getValueFromCombobox(RELATIONSHIP_WITH_CASE_COMBOBOX))
-        .descriptionOfHowContactTookPlace(
-            webDriverHelpers.getValueFromWebElement(DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT))
-        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
-        .build();
-  }
-
   private Contact collectContactDataAfterEdit() {
     webDriverHelpers.waitForPageLoaded();
     String collectedDateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE);
@@ -811,26 +766,6 @@ public class EditContactSteps implements En {
 
   private Contact collectContactUuid() {
     return Contact.builder().uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT)).build();
-  }
-
-  private LocalDate getDateOfReportDE() {
-    String dateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE_INPUT);
-    return LocalDate.parse(dateOfReport, DATE_FORMATTER_DE);
-  }
-
-  private LocalDate dateOfLastContactDE() {
-    String dateOfReport = webDriverHelpers.getValueFromWebElement(LAST_CONTACT_DATE);
-    return LocalDate.parse(dateOfReport, DATE_FORMATTER_DE);
-  }
-
-  private void fillDateOfBirthDE(LocalDate localDate) {
-    webDriverHelpers.selectFromCombobox(
-        DATE_OF_BIRTH_YEAR_COMBOBOX, String.valueOf(localDate.getYear()));
-    webDriverHelpers.selectFromCombobox(
-        DATE_OF_BIRTH_MONTH_COMBOBOX,
-        localDate.getMonth().getDisplayName(TextStyle.FULL, Locale.GERMAN));
-    webDriverHelpers.selectFromCombobox(
-        DATE_OF_BIRTH_DAY_COMBOBOX, String.valueOf(localDate.getDayOfMonth()));
   }
 
   private void searchAfterContactByMultipleOptions(String idPhoneNameEmail) {
