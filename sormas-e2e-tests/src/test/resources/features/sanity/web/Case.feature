@@ -107,7 +107,7 @@ Feature: Case end to end tests
     And I delete the case
     Then I check that number of displayed cases results is 0
 
-  @env_main
+  @issue=SORDEV-5530 @env_main
   Scenario: Edit all fields from Case Contacts tab
     Given API: I create a new person
     Then API: I check that POST call body is "OK"

@@ -125,7 +125,6 @@ public class PersonDirectorySteps implements En {
         "I fill Month of birth filter in Persons with the month of the last created person via API",
         () -> {
           String monthOfBirth = apiState.getLastCreatedPerson().getBirthdateMM().toString();
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(BIRTH_MONTH_COMBOBOX, monthOfBirth);
         });
 
@@ -142,7 +141,6 @@ public class PersonDirectorySteps implements En {
           String personUUID =
               dataOperations.getPartialUuidFromAssociatedLink(
                   apiState.getLastCreatedPerson().getUuid());
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, personUUID);
         });
 
@@ -311,7 +309,6 @@ public class PersonDirectorySteps implements En {
         "I click on first person in person directory",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(By.cssSelector("[role='gridcell'] a"));
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(EXTERNAL_TOKEN_INPUT);
         });
 
     When(
