@@ -59,7 +59,6 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_REINFECTION_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_REPORTING_USER_FILTER;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_RESET_FILTERS_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_RESULTS_UUID_LOCATOR;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_SURVOFF_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_VACCINATION_STATUS_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_YEAR_FILTER;
@@ -82,6 +81,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.RESU
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SEARCH_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHOW_MORE_LESS_FILTERS;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.TOTAL_CASES_COUNTER;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getCaseResultsUuidLocator;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
 
 import com.github.javafaker.Faker;
@@ -211,9 +211,9 @@ public class CaseDirectorySteps implements En {
         () -> {
           String caseUUID = apiState.getCreatedCase().getUuid();
           webDriverHelpers.fillAndSubmitInWebElement(NAME_UUID_EPID_NUMBER_LIKE_INPUT, caseUUID);
-          By caseLocator = By.cssSelector(String.format(CASE_RESULTS_UUID_LOCATOR, caseUUID));
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(caseLocator);
-          webDriverHelpers.clickOnWebElementBySelector(caseLocator);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              getCaseResultsUuidLocator(caseUUID));
+          webDriverHelpers.clickOnWebElementBySelector(getCaseResultsUuidLocator(caseUUID));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
         });
 

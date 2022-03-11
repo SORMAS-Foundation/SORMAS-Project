@@ -73,7 +73,6 @@ public class WebDriverHelpers {
   }
 
   public void waitForPageLoaded() {
-    log.info("Waiting for page to load");
     assertHelpers.assertWithPoll20Second(
         () ->
             Assert.assertEquals(
