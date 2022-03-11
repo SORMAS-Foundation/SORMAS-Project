@@ -308,7 +308,7 @@ Feature: Case end to end tests
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
     Then I click on the Contacts button from navbar
-    Then I open the last created contact
+    Then I search after last created contact via API by UUID and open
     Then I set place for Quarantine as Home
     And I set Start date of Quarantine 2 days ago
     And I set End date of Quarantine to 5 days
@@ -596,7 +596,3 @@ Feature: Case end to end tests
     Then I click on save case button
     Then I check the created data is correctly displayed on Edit case page
     And I check the created data is correctly displayed on Edit case person page
-
-
-
-
