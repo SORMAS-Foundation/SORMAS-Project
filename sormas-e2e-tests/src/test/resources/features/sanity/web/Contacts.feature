@@ -206,7 +206,7 @@ Feature: Contacts end to end tests
     Given I log in with National User
     When I click on the Contacts button from navbar
     Then I search after last created contact via API by UUID and open
-    And I click on the Epidemiological Data button
+    And I click on the Epidemiological Data button tab in Contact form
     And I click on Exposure details known with UNKNOWN option
     And I click on Exposure details known with NO option
     Then I fill all the data in Exposure for Epidemiological data tab in Contacts
@@ -307,7 +307,7 @@ Feature: Contacts end to end tests
     Given I log in with National User
     When I click on the Contacts button from navbar
     Then I open the last created contact
-    Then I click on the Epidemiological Data button
+    Then I click on the Epidemiological Data button tab in Contact form
     And I fill all the data in Exposure for Epidemiological data tab in Contacts
     And I click on save button from Epidemiological Data
     Then I click on the Contact tab in Contacts
