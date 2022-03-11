@@ -320,17 +320,13 @@ public class CaseDirectorySteps implements En {
         () ->
             webDriverHelpers.fillAndSubmitInWebElement(
                 PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT,
-                apiState.getLastCreatedPerson().getFirstName()
-                    + " "
-                    + apiState.getLastCreatedPerson().getLastName()));
+                    apiState.getLastCreatedPerson().getUuid()));
     And(
         "I apply Person Id filter to one attached to last created UI Case on Case directory page",
         () ->
             webDriverHelpers.fillAndSubmitInWebElement(
                 PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT,
                 EditCaseSteps.aCase.getFirstName() + " " + EditCaseSteps.aCase.getLastName()));
-
-                apiState.getLastCreatedPerson().getUuid()));
     And(
         "I apply mocked Person Id filter on Case directory page",
         () ->
