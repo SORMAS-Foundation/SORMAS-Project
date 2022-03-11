@@ -679,7 +679,9 @@ public class CaseController {
 					// automatically change the contact classification to "confirmed"
 					updatedContact.setContactClassification(ContactClassification.CONFIRMED);
 					// set resulting case on contact and save it
-					updatedContact.setResultingCase(dto.toReference());
+					if (updatedContact.getResultingCase() == null) {
+						updatedContact.setResultingCase(dto.toReference());
+					}
 					FacadeProvider.getContactFacade().save(updatedContact);
 					FacadeProvider.getCaseFacade().setSampleAssociations(updatedContact.toReference(), dto.toReference());
 					Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
