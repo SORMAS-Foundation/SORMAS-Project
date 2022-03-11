@@ -44,6 +44,7 @@ import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -76,7 +77,6 @@ import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
-import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
@@ -471,7 +471,6 @@ public class ImmunizationFacadeEjb
 		target.setValidUntil(source.getValidUntil());
 		target.setRelatedCase(caseService.getByReferenceDto(source.getRelatedCase()));
 
-		//In case of merge the copyVaccinations will be false
 		if (copyVaccinations) {
 			copyVaccinations(source, target, checkChangeDate);
 		}
@@ -604,12 +603,9 @@ public class ImmunizationFacadeEjb
 		Immunization newImmunization = new Immunization();
 		newImmunization.setUuid(DataHelper.createUuid());
 
-		// add new param with false in other cases with true
 		newImmunization = fillOrBuildEntity(immunizationDto, newImmunization, false, false);
 
 		newImmunization.setPerson(personService.getByReferenceDto(leadPerson.toReference()));
-		// newImmunization.setVaccinations(new ArrayList<>());
-
 		service.persist(newImmunization);
 
 		copyVaccinations(immunizationDto, newImmunization, false);

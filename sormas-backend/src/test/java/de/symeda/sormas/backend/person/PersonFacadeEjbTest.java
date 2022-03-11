@@ -843,7 +843,6 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		List<ImmunizationDto> mergedPersonImmunizationDtoList =
 			getImmunizationFacade().getByPersonUuids(Collections.singletonList(leadPerson.getUuid()));
 
-		//TODO after solving bug #8333: check the immunizations and vaccinations list and number
 		Assert.assertEquals(mergedPersonImmunizationDtoList.size(), 2);
 	}
 
@@ -870,7 +869,6 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			getImmunizationFacade().getByPersonUuids(Collections.singletonList(leadPersonWithoutVaccination.getUuid()));
 
 		Assert.assertEquals(immunizationDtoList.size(), 1);
-		//TODO after solving bug #8333: assert the number of vaccinations too
 	}
 
 	@Test
