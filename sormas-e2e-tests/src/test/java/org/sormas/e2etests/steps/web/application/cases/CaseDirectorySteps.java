@@ -429,7 +429,6 @@ public class CaseDirectorySteps implements En {
         "I apply Community {string} on Case directory page",
         (String community) ->
             webDriverHelpers.selectFromCombobox(CASE_COMMUNITY_FILTER_COMBOBOX, community));
-
     And(
         "I apply Region filter {string} on Case directory page",
         (String region) ->
