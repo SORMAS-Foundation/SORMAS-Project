@@ -31,6 +31,18 @@ public class Exposure {
   YesNoUnknownOptions handlingSamples;
   String contactToSourceCase;
   TypeOfPlace typeOfPlace;
+  String typeOfPlaceDetails;
+  String latitude;
+  String longitude;
+  String latLonAccuracy;
+  String facilityCategory;
+  String facilityType;
+  String facility;
+  String facilityDetails;
+  String contactPersonFirstName;
+  String contactPersonLastName;
+  String contactPersonPhone;
+  String contactPersonEmail;
   String continent;
   String subcontinent;
   String country;

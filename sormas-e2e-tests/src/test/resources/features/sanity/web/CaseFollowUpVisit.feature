@@ -1,7 +1,7 @@
-@UI @Sanity @Case @Visit
+@UI @Sanity @Case @Visit @Follow-up
 Feature: Follow-up new visit functionality
 
-  @env_main @ignore
+  @env_main
   Scenario: Create a new visit from case follow-up
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -18,9 +18,8 @@ Feature: Follow-up new visit functionality
     And I click on edit Visit button
     Then I validate all fields from Visit
 
-    #please rename it to reflect the precise aim of the test because the same test exists in Case.feature
-  @issue=SORDEV-5528 @env_main @ignore
-  Scenario: Fill the therapy tab
+  @issue=SORDEV-5528 @env_main
+  Scenario: Fill the therapy tab for follow-up test
     When API: I create a new person
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200

@@ -39,6 +39,7 @@ import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
 import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Contact;
@@ -48,6 +49,7 @@ import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.asserts.SoftAssert;
 
+@Slf4j
 public class EditContactsSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
@@ -137,23 +139,28 @@ public class EditContactsSteps implements En {
     Then(
         "I check the linked contact information is correctly displayed",
         () -> {
-          webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(By.xpath("//tr"));
-          String contactId = webDriverHelpers.getValueFromTableRowUsingTheHeader("Contact ID", 1);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              By.cssSelector(
+                  String.format(
+                      CONTACT_RESULTS_UUID_LOCATOR, apiState.getCreatedContact().getUuid())));
+          String contactId =
+              webDriverHelpers.getTextFromWebElement(By.xpath("//tbody/tr[1]//td[2]/a"));
           String contactDisease =
-              (webDriverHelpers.getValueFromTableRowUsingTheHeader("Disease", 1).equals("COVID-19"))
+              (webDriverHelpers
+                      .getTextFromWebElement(By.xpath("//tbody/tr[1]//td[6]"))
+                      .equals("COVID-19"))
                   ? "CORONAVIRUS"
                   : "Not expected string!";
           String contactClassification =
               (webDriverHelpers
-                      .getValueFromTableRowUsingTheHeader("Contact classification", 1)
+                      .getTextFromWebElement(By.xpath("//tbody/tr[1]//td[7]"))
                       .equals("Unconfirmed contact"))
                   ? "UNCONFIRMED"
                   : "Not expected string!";
           String firstName =
-              webDriverHelpers.getValueFromTableRowUsingTheHeader(
-                  "First name of contact person", 1);
+              webDriverHelpers.getTextFromWebElement(By.xpath("//tbody/tr[1]//td[10]"));
           String lastName =
-              webDriverHelpers.getValueFromTableRowUsingTheHeader("Last name of contact person", 1);
+              webDriverHelpers.getTextFromWebElement(By.xpath("//tbody/tr[1]//td[11]"));
 
           softly.assertTrue(
               apiState.getCreatedContact().getUuid().substring(0, 6).equalsIgnoreCase(contactId),
@@ -167,11 +174,9 @@ public class EditContactsSteps implements En {
                   .getContactClassification()
                   .equalsIgnoreCase(contactClassification),
               "Classification doesn't match");
-
           softly.assertTrue(
               apiState.getCreatedContact().getPerson().getFirstName().equalsIgnoreCase(firstName),
               "First name doesn't match");
-
           softly.assertTrue(
               apiState.getCreatedContact().getPerson().getLastName().equalsIgnoreCase(lastName),
               "Last name doesn't match");

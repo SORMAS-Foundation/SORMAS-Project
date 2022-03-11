@@ -65,6 +65,8 @@ public class EditContactSteps implements En {
   public static Contact editedContact;
   public static Contact aContact;
   public static final String userDirPath = System.getProperty("user.dir");
+  public static final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+  public static final DateTimeFormatter formatterDE = DateTimeFormatter.ofPattern("d.M.yyyy");
 
   @Inject
   public EditContactSteps(
@@ -74,6 +76,33 @@ public class EditContactSteps implements En {
       AssertHelpers assertHelpers,
       ContactDocumentService contactDocumentService) {
     this.webDriverHelpers = webDriverHelpers;
+
+    When(
+        "I check the created data for DE version is correctly displayed on Edit Contact page",
+        () -> {
+          collectedContact = collectContactDataDE();
+          createdContact = CreateNewContactSteps.contact;
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              collectedContact,
+              createdContact,
+              List.of(
+                  "firstName",
+                  "lastName",
+                  "returningTraveler",
+                  "reportDate",
+                  "diseaseOfSourceCase",
+                  "caseIdInExternalSystem",
+                  "dateOfLastContact",
+                  "caseOrEventInformation",
+                  "responsibleRegion",
+                  "responsibleDistrict",
+                  "responsibleCommunity",
+                  "additionalInformationOnContactType",
+                  "typeOfContact",
+                  "contactCategory",
+                  "relationshipWithCase",
+                  "descriptionOfHowContactTookPlace"));
+        });
 
     When(
         "I collect the UUID displayed on Contact event page",
@@ -164,7 +193,6 @@ public class EditContactSteps implements En {
     When(
         "I open Contact Person tab",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.scrollToElement(CONTACT_PERSON_TAB);
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_PERSON_TAB);
         });
@@ -285,6 +313,7 @@ public class EditContactSteps implements En {
         (String buttonName) ->
             webDriverHelpers.clickWebElementByText(
                 CONTACT_CLASSIFICATION_RADIO_BUTTON, buttonName));
+
     When(
         "^I click SAVE button on Edit Contact Page$",
         () -> {
@@ -513,10 +542,48 @@ public class EditContactSteps implements En {
     return !isFollowUpIsVisible();
   }
 
+  private Contact collectContactDataDE() {
+    String collectedDateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE);
+    String collectedLastDateOfContact = webDriverHelpers.getValueFromWebElement(LAST_CONTACT_DATE);
+
+    LocalDate parsedDateOfReport = LocalDate.parse(collectedDateOfReport, formatterDE);
+    LocalDate parsedLastDateOfContact = LocalDate.parse(collectedLastDateOfContact, formatterDE);
+    Contact contactInfo = getContactInformationDE();
+
+    return Contact.builder()
+        .firstName(contactInfo.getFirstName())
+        .lastName(contactInfo.getLastName())
+        .returningTraveler(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RETURNING_TRAVELER_OPTIONS))
+        .reportDate(parsedDateOfReport)
+        .diseaseOfSourceCase(webDriverHelpers.getValueFromCombobox(DISEASE_COMBOBOX))
+        .caseIdInExternalSystem(
+            webDriverHelpers.getValueFromWebElement(CASE_ID_IN_EXTERNAL_SYSTEM_INPUT))
+        .dateOfLastContact(parsedLastDateOfContact)
+        .caseOrEventInformation(
+            webDriverHelpers.getValueFromWebElement(CASE_OR_EVENT_INFORMATION_INPUT))
+        .responsibleRegion(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_REGION_COMBOBOX))
+        .responsibleDistrict(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_DISTRICT_COMBOBOX))
+        .responsibleCommunity(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_COMMUNITY_COMBOBOX))
+        .additionalInformationOnContactType(
+            webDriverHelpers.getValueFromWebElement(
+                ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT))
+        .typeOfContact(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(TYPE_OF_CONTACT_OPTIONS))
+        .contactCategory(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CATEGORY_OPTIONS))
+        .relationshipWithCase(
+            webDriverHelpers.getValueFromCombobox(RELATIONSHIP_WITH_CASE_COMBOBOX))
+        .descriptionOfHowContactTookPlace(
+            webDriverHelpers.getValueFromWebElement(DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT))
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+        .build();
+  }
+
   private Contact collectContactData() {
     String collectedDateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE);
-    LocalDate parsedDateOfReport = LocalDate.parse(collectedDateOfReport, formatter);
     String collectedLastDateOfContact = webDriverHelpers.getValueFromWebElement(LAST_CONTACT_DATE);
+    LocalDate parsedDateOfReport = LocalDate.parse(collectedDateOfReport, formatter);
     LocalDate parsedLastDateOfContact = LocalDate.parse(collectedLastDateOfContact, formatter);
     Contact contactInfo = getContactInformation();
 
@@ -693,7 +760,7 @@ public class EditContactSteps implements En {
   private Contact getContactInformationDE() {
     String contactInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
     String[] contactInfos = contactInfo.split(" ");
-    LocalDate localDate = LocalDate.parse(contactInfos[3].replace(")", ""), DATE_FORMATTER_DE);
+    LocalDate localDate = LocalDate.parse(contactInfos[3].replace(")", ""), formatterDE);
     return Contact.builder()
         .firstName(contactInfos[0])
         .lastName(contactInfos[1])
@@ -701,7 +768,7 @@ public class EditContactSteps implements En {
         .build();
   }
 
-  public Contact collectComplexContactData() {
+  private Contact collectComplexContactData() {
     String collectedDateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE);
     LocalDate parsedDateOfReport = LocalDate.parse(collectedDateOfReport, formatter);
     String collectedLastDateOfContact = webDriverHelpers.getValueFromWebElement(LAST_CONTACT_DATE);
