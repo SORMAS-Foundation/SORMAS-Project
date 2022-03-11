@@ -28,48 +28,48 @@ Feature: Sample filter functionality
     And API: I check that POST call status code is 200
     Given I log in with National User
     When I click on the Sample button from navbar
-    Then I fill a Full name of person from API
+    Then I fill full name of last created via API Person into Sample Directory
     And I select Test result filter among the filter options from API
     And I select Specimen condition filter among the filter options from API
-    And I select Case classification filter among the filter options from API
+    And I select Case classification filter value with value for case classification of the last created via API Case
     And I set Disease filter to disease value of last created via API Case in Sample Directory
-    And I select Region filter among the filter options from API
-    And I select District filter among the filter options from API
-    And I select Laboratory filter among the filter options from API
-    And I click a apply button on Sample
+    And I select Region filter value with the region value of the last created via API Case in Sample Directory
+    And I select District filter value with the district value of the last created via API Case in Sample Directory
+    And I select Laboratory filter value with the uuid value of the last created via API Sample in Sample Directory
+    And I click on apply filters button from Sample Directory
     And I check that number of displayed sample results is 1
-    Then I select random Test result filter among the filter options
-    And I click a apply button on Sample
+    Then I select a Test result value different than the test result of the last created via API Sample Pathogen test result
+    And I click on apply filters button from Sample Directory
     And I check that number of displayed sample results is 0
     And I select Test result filter among the filter options from API
     Then I select "Not adequate" Specimen condition option among the filter options
-    And I click a apply button on Sample
+    And I click on apply filters button from Sample Directory
     And I check that number of displayed sample results is 0
     And I select Specimen condition filter among the filter options from API
-    Then I select random Case classification filter among the filter options
-    And I click a apply button on Sample
+    Then I select a Case classification value different than the case classification value of last created via API Case in Sample Directory
+    And I click on apply filters button from Sample Directory
     And I check that number of displayed sample results is 0
-    And I select Case classification filter among the filter options from API
-    Then I select random Disease filter among the filter options in Sample directory
-    And I click a apply button on Sample
+    And I select Case classification filter value with value for case classification of the last created via API Case
+    Then I select Disease filter value different than the disease value of the last created via API case in Sample Directory
+    And I click on apply filters button from Sample Directory
     And I check that number of displayed sample results is 0
     And I set Disease filter to disease value of last created via API Case in Sample Directory
     Then I change Region filter to "Berlin" option in Sample directory
-    And I click a apply button on Sample
+    And I click on apply filters button from Sample Directory
     And I check that number of displayed sample results is 0
-    And I select Region filter among the filter options from API
+    And I select Region filter value with the region value of the last created via API Case in Sample Directory
     Then I change Region filter to "Region1" option in Sample directory
     And I change District filter to "District11" option in Sample directory
-    And I click a apply button on Sample
+    And I click on apply filters button from Sample Directory
     And I check that number of displayed sample results is 0
-    And I select Region filter among the filter options from API
-    And I select District filter among the filter options from API
+    And I select Region filter value with the region value of the last created via API Case in Sample Directory
+    And I select District filter value with the district value of the last created via API Case in Sample Directory
     Then I change Laboratory filter to "Other facility" option in Sample directory
-    And I click a apply button on Sample
+    And I click on apply filters button from Sample Directory
     And I check that number of displayed sample results is 0
-    And I click a Reset button on Sample
+    And I click on reset filters button from Sample Directory
     Then I select "Not shipped" filter from quick filter
     And I select "Shipped" filter from quick filter
     And I select "Received" filter from quick filter
     And I select "Referred to other lab" filter from quick filter
-    And I click a Reset button on Sample
+    And I click on reset filters button from Sample Directory

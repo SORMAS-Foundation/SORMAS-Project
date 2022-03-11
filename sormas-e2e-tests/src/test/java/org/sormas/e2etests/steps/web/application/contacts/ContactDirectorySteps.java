@@ -180,12 +180,12 @@ public class ContactDirectorySteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
-      When(
-              "I open the last created contact",
-              () -> {
-                  searchAfterContactByMultipleOptions(apiState.getCreatedContact().getUuid());
-                  openContactFromResultsByUUID(apiState.getCreatedContact().getUuid());
-              });
+    When(
+        "I open the last created contact",
+        () -> {
+          searchAfterContactByMultipleOptions(apiState.getCreatedContact().getUuid());
+          openContactFromResultsByUUID(apiState.getCreatedContact().getUuid());
+        });
 
     When(
         "I click on the DETAILED radiobutton from Contact directory",
@@ -210,8 +210,7 @@ public class ContactDirectorySteps implements En {
     When(
         "I apply Id of last api created Contact on Contact Directory Page",
         () -> {
-          String contactUuid =
-                  apiState.getCreatedContact().getUuid();
+          String contactUuid = apiState.getCreatedContact().getUuid();
           webDriverHelpers.fillAndSubmitInWebElement(
               CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, contactUuid);
         });
@@ -221,7 +220,6 @@ public class ContactDirectorySteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(MORE_BUTTON);
         });
-
 
     And(
         "I click on Link to Event from Bulk Actions combobox on Contact Directory Page",
@@ -561,12 +559,13 @@ public class ContactDirectorySteps implements En {
         (Integer number) -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-                  GRID_RESULTS_COUNTER_CONTACT_DIRECTORY, 50);
+              GRID_RESULTS_COUNTER_CONTACT_DIRECTORY, 50);
           assertHelpers.assertWithPoll20Second(
               () ->
                   Assert.assertEquals(
                       Integer.parseInt(
-                          webDriverHelpers.getTextFromPresentWebElement(GRID_RESULTS_COUNTER_CONTACT_DIRECTORY)),
+                          webDriverHelpers.getTextFromPresentWebElement(
+                              GRID_RESULTS_COUNTER_CONTACT_DIRECTORY)),
                       number.intValue(),
                       "Number of displayed contacts is not correct"));
         });

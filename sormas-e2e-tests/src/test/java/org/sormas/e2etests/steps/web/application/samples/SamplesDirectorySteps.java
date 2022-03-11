@@ -66,20 +66,20 @@ public class SamplesDirectorySteps implements En {
       AssertHelpers assertHelpers) {
 
     When(
-        "I click a apply button on Sample",
+        "I click on apply filters button from Sample Directory",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER_BUTTON);
           TimeUnit.SECONDS.sleep(3);
         });
 
     When(
-        "I click a Reset button on Sample",
+        "I click on reset filters button from Sample Directory",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(RESET_FILTER_BUTTON);
         });
 
     When(
-        "I fill a Full name of person from API",
+        "I fill full name of last created via API Person into Sample Directory",
         () -> {
           webDriverHelpers.fillAndSubmitInWebElement(
               SAMPLE_SEARCH_INPUT,
@@ -98,13 +98,12 @@ public class SamplesDirectorySteps implements En {
         });
 
     When(
-        "I select random Test result filter among the filter options",
+        "I select a Test result value different than the test result of the last created via API Sample Pathogen test result",
         () -> {
-          String testResult = PathogenTestResults.geRandomResultName();
           String apiTestResult = apiState.getCreatedSample().getPathogenTestResult();
-          while (testResult.equals(apiTestResult))
-            testResult = PathogenTestResults.geRandomResultName();
-          webDriverHelpers.selectFromCombobox(TEST_RESULTS_SEARCH_COMBOBOX, testResult);
+          webDriverHelpers.selectFromCombobox(
+              TEST_RESULTS_SEARCH_COMBOBOX,
+              PathogenTestResults.geRandomResultNameDifferentThan(apiTestResult));
         });
 
     When(
@@ -123,7 +122,7 @@ public class SamplesDirectorySteps implements En {
         });
 
     When(
-        "I select Case classification filter among the filter options from API",
+        "I select Case classification filter value with value for case classification of the last created via API Case",
         () -> {
           String caseSpecification = apiState.getCreatedCase().getCaseClassification();
           webDriverHelpers.selectFromCombobox(
@@ -132,14 +131,12 @@ public class SamplesDirectorySteps implements En {
         });
 
     When(
-        "I select random Case classification filter among the filter options",
+        "I select a Case classification value different than the case classification value of last created via API Case in Sample Directory",
         () -> {
-          String caseSpecification = CaseClassification.getRandomUIClassification();
           String apiCaseSpecification = apiState.getCreatedCase().getCaseClassification();
-          while (caseSpecification.equals(apiCaseSpecification))
-            caseSpecification = CaseClassification.getRandomUIClassification();
           webDriverHelpers.selectFromCombobox(
-              SAMPLE_CLASIFICATION_SEARCH_COMBOBOX, caseSpecification);
+              SAMPLE_CLASIFICATION_SEARCH_COMBOBOX,
+              CaseClassification.getRandomUIClassificationDifferentThan(apiCaseSpecification));
         });
 
     When(
@@ -152,16 +149,16 @@ public class SamplesDirectorySteps implements En {
         });
 
     When(
-        "I select random Disease filter among the filter options in Sample directory",
+        "I select Disease filter value different than the disease value of the last created via API case in Sample Directory",
         () -> {
-          String disease = DiseasesValues.getRandomDiseaseCaption();
           String apiDisease = apiState.getCreatedCase().getDisease();
-          while (disease.equals(apiDisease)) disease = DiseasesValues.getRandomDiseaseCaption();
-          webDriverHelpers.selectFromCombobox(SAMPLE_DISEASE_SEARCH_COMBOBOX, disease);
+          webDriverHelpers.selectFromCombobox(
+              SAMPLE_DISEASE_SEARCH_COMBOBOX,
+              DiseasesValues.getRandomDiseaseCaptionDifferentThan(apiDisease));
         });
 
     When(
-        "I select Region filter among the filter options from API",
+        "I select Region filter value with the region value of the last created via API Case in Sample Directory",
         () -> {
           String region = apiState.getCreatedCase().getRegion().getUuid();
           webDriverHelpers.selectFromCombobox(
@@ -175,7 +172,7 @@ public class SamplesDirectorySteps implements En {
         });
 
     When(
-        "I select District filter among the filter options from API",
+        "I select District filter value with the district value of the last created via API Case in Sample Directory",
         () -> {
           String district = apiState.getCreatedCase().getDistrict().getUuid();
           webDriverHelpers.selectFromCombobox(
@@ -189,7 +186,7 @@ public class SamplesDirectorySteps implements En {
         });
 
     When(
-        "I select Laboratory filter among the filter options from API",
+        "I select Laboratory filter value with the uuid value of the last created via API Sample in Sample Directory",
         () -> {
           String laboratory = apiState.getCreatedSample().getLab().getCaption();
           webDriverHelpers.selectFromCombobox(LABORATORY_SEARCH_COMBOBOX, laboratory);
@@ -224,7 +221,7 @@ public class SamplesDirectorySteps implements En {
         });
 
     When(
-        "I am accessing the created sample via api",
+        "I am opening the last created via API Sample by url navigation",
         () -> {
           String CREATED_SAMPLE_VIA_API_URL =
               environmentManager.getEnvironmentUrlForMarket(locale)

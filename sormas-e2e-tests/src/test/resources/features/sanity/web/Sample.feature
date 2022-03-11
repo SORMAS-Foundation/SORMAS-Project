@@ -89,7 +89,7 @@ Feature: Sample Functionalities
     And API: I check that POST call status code is 200
     When I log in with National User
     And I click on the Sample button from navbar
-    And I am accessing the created sample via api
+    And I am opening the last created via API Sample by url navigation
     And I click on the new pathogen test from the Edit Sample page
     And I complete all fields from Pathogen test result popup and save
     Then I check that the created Pathogen is correctly displayed
