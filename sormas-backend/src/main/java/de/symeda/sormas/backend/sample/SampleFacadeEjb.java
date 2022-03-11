@@ -14,7 +14,6 @@
  */
 package de.symeda.sormas.backend.sample;
 
-import de.symeda.sormas.backend.event.EventFacadeEjb;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -53,6 +52,8 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
+import de.symeda.sormas.api.sample.AdditionalTestDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -89,6 +90,7 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
@@ -399,22 +401,18 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		return sampleService.findBy(criteria, userService.getCurrentUser(), AbstractDomainObject.CREATION_DATE, false)
 			.stream()
-			.collect(
-				Collectors.toMap(
-					s -> associatedObjectFn.apply(s).getUuid(),
-					s -> s,
-					(s1, s2) -> {
+			.collect(Collectors.toMap(s -> associatedObjectFn.apply(s).getUuid(), s -> s, (s1, s2) -> {
 
-						// keep the positive one
-						if (s1.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
-							return s1;
-						} else if (s2.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
-							return s2;
-						}
+				// keep the positive one
+				if (s1.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
+					return s1;
+				} else if (s2.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
+					return s2;
+				}
 
-						// ordered by creation date by default, so always keep the first one
-						return s1;
-					}))
+				// ordered by creation date by default, so always keep the first one
+				return s1;
+			}))
 			.values()
 			.stream()
 			.map(s -> convertToDto(s, pseudonymizer))
@@ -1014,16 +1012,36 @@ public class SampleFacadeEjb implements SampleFacade {
 		return count > 0;
 	}
 
-	@LocalBean
-	@Stateless
-	public static class SampleFacadeEjbLocal extends SampleFacadeEjb {
-
-	}
-
 	public Boolean isSampleEditAllowed(String sampleUuid) {
 		Sample sample = sampleService.getByUuid(sampleUuid);
 
 		return sampleService.isSampleEditAllowed(sample);
 	}
 
+	public void cloneSampleForCase(Sample sample, Case caze) {
+		SampleDto newSample = SampleDto.build(sample.getReportingUser().toReference(), caze.toReference());
+		DtoHelper.copyDtoValues(newSample, SampleFacadeEjb.toDto(sample), true);
+		newSample.setAssociatedCase(caze.toReference());
+		newSample.setAssociatedContact(null);
+		newSample.setAssociatedEventParticipant(null);
+		saveSample(newSample, false, true, true);
+
+		for (PathogenTest pathogenTest : sample.getPathogenTests()) {
+			PathogenTestDto newPathogenTest = PathogenTestDto.build(newSample.toReference(), pathogenTest.getLabUser().toReference());
+			DtoHelper.copyDtoValues(newPathogenTest, PathogenTestFacadeEjbLocal.toDto(pathogenTest), true);
+			pathogenTestFacade.savePathogenTest(newPathogenTest);
+		}
+
+		for (AdditionalTest additionalTest : sample.getAdditionalTests()) {
+			AdditionalTestDto newAdditionalTest = AdditionalTestDto.build(newSample.toReference());
+			DtoHelper.copyDtoValues(newAdditionalTest, AdditionalTestFacadeEjbLocal.toDto(additionalTest), true);
+			additionalTestFacade.saveAdditionalTest(newAdditionalTest);
+		}
+	}
+
+	@LocalBean
+	@Stateless
+	public static class SampleFacadeEjbLocal extends SampleFacadeEjb {
+
+	}
 }
