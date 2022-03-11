@@ -53,6 +53,30 @@ public class CaseService {
         .build();
   }
 
+  public Case buildGeneratedCaseForOnePerson(
+      String firstName, String lastName, LocalDate dateOfBirth) {
+    return Case.builder()
+        .firstName(firstName)
+        .lastName(lastName)
+        .caseOrigin("IN-COUNTRY")
+        .dateOfReport(LocalDate.now().minusDays(1))
+        .externalId(UUID.randomUUID().toString())
+        .disease(DiseasesValues.getRandomDiseaseCaption())
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
+        .placeOfStay("HOME")
+        .placeDescription(faker.harryPotter().location())
+        .dateOfBirth(dateOfBirth)
+        .sex(GenderValues.getRandomGender())
+        .presentConditionOfPerson("Alive")
+        .dateOfSymptomOnset(LocalDate.now().minusDays(1))
+        .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
+        .primaryEmailAddress(
+            ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
+        .build();
+  }
+
   public Case buildGeneratedCase() {
     firstName = faker.name().firstName();
     lastName = faker.name().lastName();

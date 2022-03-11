@@ -218,14 +218,7 @@ public class ContactDirectorySteps implements En {
           webDriverHelpers.fillAndSubmitInWebElement(
               CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, contactUuid);
         });
-
-    When(
-        "I apply Id of last created Contact on Contact Directory Page",
-        () -> {
-          String contactUuid = collectedContact.getUuid();
-          webDriverHelpers.fillAndSubmitInWebElement(
-              CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, contactUuid);
-        });
+          String contactUuid = apiState.getCreatedContact().getUuid();
 
     When(
         "I click on the More button on Contact directory page",
