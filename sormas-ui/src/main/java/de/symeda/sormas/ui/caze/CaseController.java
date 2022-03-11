@@ -709,7 +709,9 @@ public class CaseController {
 								navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
 							}
 						} else {
-							convertedEventParticipant.setResultingCase(FacadeProvider.getCaseFacade().getReferenceByUuid(uuid));
+							if (unrelatedDisease == null && convertedEventParticipant.getResultingCase() == null) {
+								convertedEventParticipant.setResultingCase(FacadeProvider.getCaseFacade().getReferenceByUuid(uuid));
+							}
 							FacadeProvider.getEventParticipantFacade().saveEventParticipant(convertedEventParticipant);
 							if (!createdFromLabMessage) {
 								navigateToView(CaseDataView.VIEW_NAME, uuid, null);
