@@ -152,7 +152,7 @@ Feature: Contacts end to end tests
     And I open Follow up Visits tab from contact directory
     Then I am validating the From and To dates displayed
 
-  @issue=SORDEV-5490 @env_main @check
+  @issue=SORDEV-5490 @env_main @ignore
   Scenario: Create a contact and create a case for contact person
     Given I log in with National User
     When I click on the Contacts button from navbar

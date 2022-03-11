@@ -89,7 +89,7 @@ public class SamplesDirectorySteps implements En {
         });
 
     When(
-        "I select Test result filter among the filter options from API",
+        "I select Test result filter value with the value for pathogen test result of last created via API Sample in Sample Directory",
         () -> {
           String testResult = apiState.getCreatedSample().getPathogenTestResult();
           webDriverHelpers.selectFromCombobox(
@@ -107,7 +107,7 @@ public class SamplesDirectorySteps implements En {
         });
 
     When(
-        "I select Specimen condition filter among the filter options from API",
+        "I select Specimen condition filter value with value for specimen condition of the last created via API Sample in Sample Directory",
         () -> {
           String specimenCondition = apiState.getCreatedSample().getSpecimenCondition();
           webDriverHelpers.selectFromCombobox(
@@ -122,7 +122,7 @@ public class SamplesDirectorySteps implements En {
         });
 
     When(
-        "I select Case classification filter value with value for case classification of the last created via API Case",
+        "I select Case classification filter value with value for case classification of the last created via API Case in Sample Directory",
         () -> {
           String caseSpecification = apiState.getCreatedCase().getCaseClassification();
           webDriverHelpers.selectFromCombobox(

@@ -29,9 +29,9 @@ Feature: Sample filter functionality
     Given I log in with National User
     When I click on the Sample button from navbar
     Then I fill full name of last created via API Person into Sample Directory
-    And I select Test result filter among the filter options from API
-    And I select Specimen condition filter among the filter options from API
-    And I select Case classification filter value with value for case classification of the last created via API Case
+    And I select Test result filter value with the value for pathogen test result of last created via API Sample in Sample Directory
+    And I select Specimen condition filter value with value for specimen condition of the last created via API Sample in Sample Directory
+    And I select Case classification filter value with value for case classification of the last created via API Case in Sample Directory
     And I set Disease filter to disease value of last created via API Case in Sample Directory
     And I select Region filter value with the region value of the last created via API Case in Sample Directory
     And I select District filter value with the district value of the last created via API Case in Sample Directory
@@ -41,15 +41,15 @@ Feature: Sample filter functionality
     Then I select a Test result value different than the test result of the last created via API Sample Pathogen test result
     And I click on apply filters button from Sample Directory
     And I check that number of displayed sample results is 0
-    And I select Test result filter among the filter options from API
+    And I select Test result filter value with the value for pathogen test result of last created via API Sample in Sample Directory
     Then I select "Not adequate" Specimen condition option among the filter options
     And I click on apply filters button from Sample Directory
     And I check that number of displayed sample results is 0
-    And I select Specimen condition filter among the filter options from API
+    And I select Specimen condition filter value with value for specimen condition of the last created via API Sample in Sample Directory
     Then I select a Case classification value different than the case classification value of last created via API Case in Sample Directory
     And I click on apply filters button from Sample Directory
     And I check that number of displayed sample results is 0
-    And I select Case classification filter value with value for case classification of the last created via API Case
+    And I select Case classification filter value with value for case classification of the last created via API Case in Sample Directory
     Then I select Disease filter value different than the disease value of the last created via API case in Sample Directory
     And I click on apply filters button from Sample Directory
     And I check that number of displayed sample results is 0
