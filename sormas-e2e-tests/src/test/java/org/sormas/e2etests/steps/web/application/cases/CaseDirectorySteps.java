@@ -42,6 +42,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DIRECTORY_DETAILED_RADIOBUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DISEASE_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DISEASE_VARIANT_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DISPLAY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DISTRICT_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_EPIDEMIOLOGICAL_DATA_TAB;
@@ -94,7 +95,6 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.common.DataOperations;
-import org.sormas.e2etests.enums.CaseOrigin;
 import org.sormas.e2etests.enums.CaseOutcome;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.DistrictsValues;
@@ -202,10 +202,19 @@ public class CaseDirectorySteps implements En {
         () -> {
           String partialUuid =
               dataOperations.getPartialUuidFromAssociatedLink(apiState.getCreatedCase().getUuid());
-          webDriverHelpers.fillInWebElement(CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, partialUuid);
+          webDriverHelpers.fillAndSubmitInWebElement(
+              CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, partialUuid);
+        });
+    When(
+        "I filter by CaseID of last created UI Case on Case directory page",
+        () -> {
+          String partialUuid =
+              dataOperations.getPartialUuidFromAssociatedLink(EditCaseSteps.aCase.getUuid());
+          webDriverHelpers.fillAndSubmitInWebElement(
+              CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, partialUuid);
           webDriverHelpers.clickOnWebElementBySelector(
               CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
-          TimeUnit.SECONDS.sleep(3); // needed for table refresh
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_CASE_ID_BUTTON);
         });
 
     When(
@@ -266,7 +275,6 @@ public class CaseDirectorySteps implements En {
         (String outcomeFilterOption) -> {
           webDriverHelpers.selectFromCombobox(
               CASE_OUTCOME_FILTER_COMBOBOX, CaseOutcome.getValueFor(outcomeFilterOption));
-          webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
         });
 
     And(
@@ -294,7 +302,6 @@ public class CaseDirectorySteps implements En {
         (String diseaseFilterOption) -> {
           webDriverHelpers.selectFromCombobox(
               CASE_DISEASE_FILTER_COMBOBOX, DiseasesValues.getCaptionFor(diseaseFilterOption));
-          webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
         });
 
     Then(
@@ -327,6 +334,12 @@ public class CaseDirectorySteps implements En {
                 apiState.getLastCreatedPerson().getFirstName()
                     + " "
                     + apiState.getLastCreatedPerson().getLastName()));
+    And(
+        "I apply Person Id filter to one attached to last created UI Case on Case directory page",
+        () ->
+            webDriverHelpers.fillAndSubmitInWebElement(
+                PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT,
+                EditCaseSteps.aCase.getFirstName() + " " + EditCaseSteps.aCase.getLastName()));
 
     And(
         "I apply mocked Person Id filter on Case directory page",
@@ -338,6 +351,11 @@ public class CaseDirectorySteps implements En {
         (String diseaseFilterOption) ->
             webDriverHelpers.selectFromCombobox(
                 CASE_DISEASE_FILTER_COMBOBOX, DiseasesValues.getCaptionFor(diseaseFilterOption)));
+    Then(
+        "I apply Disease Variant filter {string} on Case directory page",
+        (String diseaseFilterOption) ->
+            webDriverHelpers.selectFromCombobox(
+                CASE_DISEASE_VARIANT_FILTER_COMBOBOX, diseaseFilterOption));
     And(
         "I click SHOW MORE FILTERS button on Case directory page",
         () -> webDriverHelpers.clickOnWebElementBySelector(SHOW_MORE_LESS_FILTERS));
@@ -345,8 +363,7 @@ public class CaseDirectorySteps implements En {
     Then(
         "I apply Outcome of case filter {string} on Case directory page",
         (String outcomeFilterOption) ->
-            webDriverHelpers.selectFromCombobox(
-                CASE_OUTCOME_FILTER_COMBOBOX, CaseOutcome.getValueFor(outcomeFilterOption)));
+            webDriverHelpers.selectFromCombobox(CASE_OUTCOME_FILTER_COMBOBOX, outcomeFilterOption));
     And(
         "I apply Case classification filter {string} on Case directory page",
         (String caseClassification) ->
@@ -364,6 +381,16 @@ public class CaseDirectorySteps implements En {
                 CASE_PRESENT_CONDITION_COMBOBOX,
                 PresentCondition.getValueFor(
                     apiState.getLastCreatedPerson().getPresentCondition())));
+    And(
+        "I apply Present Condition filter on Case directory page to condition of person attached to created Case",
+        () ->
+            webDriverHelpers.selectFromCombobox(
+                CASE_PRESENT_CONDITION_COMBOBOX,
+                CreateNewCaseSteps.caze.getPresentConditionOfPerson()));
+    And(
+        "I apply Present Condition filter to {string} on Case directory page",
+        (String presentCondition) ->
+            webDriverHelpers.selectFromCombobox(CASE_PRESENT_CONDITION_COMBOBOX, presentCondition));
 
     And(
         "I apply Present Condition filter on Case directory page to different than actual",
@@ -382,14 +409,13 @@ public class CaseDirectorySteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(
               CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          TimeUnit.SECONDS.sleep(3);
         });
 
     Then(
         "I apply Case origin {string} on Case directory page",
         (String caseOrigin) ->
-            webDriverHelpers.selectFromCombobox(
-                CASE_ORIGIN_FILTER_COMBOBOX, CaseOrigin.getValueFor(caseOrigin)));
+            webDriverHelpers.selectFromCombobox(CASE_ORIGIN_FILTER_COMBOBOX, caseOrigin));
     Then(
         "I apply Community {string} on Case directory page",
         (String community) ->
@@ -438,6 +464,14 @@ public class CaseDirectorySteps implements En {
                       .minusDays(number)));
         });
     And(
+        "I fill Cases from input to {int} days before UI Case created on Case directory page",
+        (Integer number) -> {
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+          webDriverHelpers.fillInWebElement(
+              DATE_FROM_COMBOBOX,
+              formatter.format(CreateNewCaseSteps.caze.getDateOfReport().minusDays(number)));
+        });
+    And(
         "I fill Cases from input to {int} days before mocked Cases created on Case directory page",
         (Integer number) -> {
           DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
@@ -455,6 +489,14 @@ public class CaseDirectorySteps implements En {
           DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
           webDriverHelpers.fillInWebElement(
               DATE_FROM_COMBOBOX, formatter.format(LocalDate.now().plusDays(number)));
+        });
+    And(
+        "I fill Cases from input to {int} days after before UI Case created on Case directory page",
+        (Integer number) -> {
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+          webDriverHelpers.fillInWebElement(
+              DATE_FROM_COMBOBOX,
+              formatter.format(CreateNewCaseSteps.caze.getDateOfReport().plusDays(number)));
         });
     And(
         "I click All button in Case Directory Page",
@@ -486,39 +528,49 @@ public class CaseDirectorySteps implements En {
         (String checkboxDescription) -> {
           switch (checkboxDescription) {
             case ("Only cases without geo coordinates"):
+            case ("Nur F\u00E4lle ohne Geo-Koordinaten"):
               webDriverHelpers.clickOnWebElementBySelector(CASES_WITHOUT_GEO_COORDINATES_CHECKBOX);
               break;
             case ("Only cases without responsible officer"):
+            case ("Nur F\u00E4lle ohne verantwortlichen Beauftragten"):
               webDriverHelpers.clickOnWebElementBySelector(
                   CASES_WITHOUT_RESPONSIBLE_OFFICER_CHECKBOX);
               break;
             case ("Only cases with extended quarantine"):
+            case ("Nur F\u00E4lle mit verl\u00E4ngerter Isolation"):
               webDriverHelpers.clickOnWebElementBySelector(CASES_WITH_EXTENDED_QUARANTINE_CHECKBOX);
               break;
             case ("Only cases with reduced quarantine"):
+            case ("Nur F\u00E4lle mit verk\u00FCrzter Isolation"):
               webDriverHelpers.clickOnWebElementBySelector(CASES_WITH_REDUCED_QUARANTINE_CHECKBOX);
               break;
             case ("Help needed in quarantine"):
+            case ("Ma\u00DFnahmen zur Gew\u00E4hrleistung der Versorgung"):
               webDriverHelpers.clickOnWebElementBySelector(
                   CASES_HELP_NEEDED_IN_QUARANTINE_CHECKBOX);
               break;
             case ("Only cases with events"):
+            case ("Nur F\u00E4lle mit Ereignissen"):
               webDriverHelpers.clickOnWebElementBySelector(CASES_WITH_EVENTS_CHECKBOX);
               break;
             case ("Only cases from other instances"):
+            case ("Nur F\u00E4lle von anderen Instanzen"):
               webDriverHelpers.clickOnWebElementBySelector(CASES_FROM_OTHER_INSTANCES_CHECKBOX);
               break;
             case ("Only cases with reinfection"):
+            case ("Nur F\u00E4lle mit Reinfektion"):
               webDriverHelpers.clickOnWebElementBySelector(CASES_WITH_REINFECTION_CHECKBOX);
               break;
             case ("Include cases from other jurisdictions"):
               webDriverHelpers.clickOnWebElementBySelector(CASES_FROM_OTHER_JURISDICTIONS_CHECKBOX);
               break;
             case ("Only cases with fulfilled reference definition"):
+            case ("Nur F\u00E4lle mit erf\u00FCllter Referenzdefinition"):
               webDriverHelpers.clickOnWebElementBySelector(
                   CASES_WITH_FULFILLED_REFERENCE_DEFINITION_CHECKBOX);
               break;
             case ("Only port health cases without a facility"):
+            case ("Nur Einreisef\u00E4lle ohne zugewiesene Einrichtung"):
               webDriverHelpers.clickOnWebElementBySelector(CASES_WITHOUT_FACILITY_CHECKBOX);
               break;
           }
@@ -537,6 +589,14 @@ public class CaseDirectorySteps implements En {
                       .plusDays(number)));
         });
     And(
+        "I fill Cases to input to {int} days after UI Case created on Case directory page",
+        (Integer number) -> {
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+          webDriverHelpers.fillInWebElement(
+              DATE_TO_COMBOBOX,
+              formatter.format(CreateNewCaseSteps.caze.getDateOfReport().plusDays(number)));
+        });
+    And(
         "I apply Year filter different than Person has on Case directory page",
         () ->
             webDriverHelpers.selectFromCombobox(
@@ -549,6 +609,51 @@ public class CaseDirectorySteps implements En {
         () ->
             webDriverHelpers.selectFromCombobox(
                 CASE_YEAR_FILTER, apiState.getLastCreatedPerson().getBirthdateYYYY().toString()));
+    And(
+        "I apply Year filter of Person attached to last created UI Case on Case directory page",
+        () -> {
+          String year = Integer.toString(CreateNewCaseSteps.caze.getDateOfBirth().getYear());
+          webDriverHelpers.selectFromCombobox(CASE_YEAR_FILTER, year);
+        });
+    And(
+        "I apply Month filter of Person attached to last created UI Case on Case directory page",
+        () -> {
+          String month = Integer.toString(CreateNewCaseSteps.caze.getDateOfBirth().getMonthValue());
+          webDriverHelpers.selectFromCombobox(CASE_MONTH_FILTER, month);
+        });
+    And(
+        "I apply Day filter of Person attached to last created UI Case on Case directory page",
+        () -> {
+          String day = Integer.toString(CreateNewCaseSteps.caze.getDateOfBirth().getDayOfMonth());
+          webDriverHelpers.selectFromCombobox(CASE_DAY_FILTER, day);
+        });
+    And(
+        "I apply Year filter other than Person attached has to last created UI Case on Case directory page",
+        () -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_YEAR_FILTER,
+              getRandomNumberForBirthDateDifferentThanCreated(
+                      CreateNewCaseSteps.caze.getDateOfBirth().getYear(), 1900, 2002)
+                  .toString());
+        });
+    And(
+        "I apply Month filter other than Person attached has to last created UI Case on Case directory page",
+        () -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_MONTH_FILTER,
+              getRandomNumberForBirthDateDifferentThanCreated(
+                      CreateNewCaseSteps.caze.getDateOfBirth().getMonthValue(), 1, 12)
+                  .toString());
+        });
+    And(
+        "I apply Day filter other than Person attached has to last created UI Case on Case directory page",
+        () -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_DAY_FILTER,
+              getRandomNumberForBirthDateDifferentThanCreated(
+                      CreateNewCaseSteps.caze.getDateOfBirth().getDayOfMonth(), 1, 28)
+                  .toString());
+        });
     And(
         "I apply {string} to combobox on Case Directory Page",
         (String caseParameter) ->

@@ -40,6 +40,7 @@ import static org.sormas.e2etests.steps.BaseSteps.locale;
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
 import java.util.Arrays;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.enums.CaseClassification;
 import org.sormas.e2etests.enums.DiseasesValues;
@@ -67,19 +68,18 @@ public class SamplesDirectorySteps implements En {
     When(
         "I click a apply button on Sample",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER_BUTTON);
+          TimeUnit.SECONDS.sleep(3);
         });
 
     When(
         "I click a Reset button on Sample",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(RESET_FILTER_BUTTON);
         });
 
     When(
-        "fill a Full name of person from API",
+        "I fill a Full name of person from API",
         () -> {
           webDriverHelpers.fillAndSubmitInWebElement(
               SAMPLE_SEARCH_INPUT,
@@ -92,7 +92,6 @@ public class SamplesDirectorySteps implements En {
         "I select Test result filter among the filter options from API",
         () -> {
           String testResult = apiState.getCreatedSample().getPathogenTestResult();
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
               TEST_RESULTS_SEARCH_COMBOBOX,
               testResult.substring(0, 1).toUpperCase() + testResult.substring(1).toLowerCase());
@@ -102,7 +101,9 @@ public class SamplesDirectorySteps implements En {
         "I select random Test result filter among the filter options",
         () -> {
           String testResult = PathogenTestResults.geRandomResultName();
-          webDriverHelpers.waitForPageLoaded();
+          String apiTestResult = apiState.getCreatedSample().getPathogenTestResult();
+          while (testResult.equals(apiTestResult))
+            testResult = PathogenTestResults.geRandomResultName();
           webDriverHelpers.selectFromCombobox(TEST_RESULTS_SEARCH_COMBOBOX, testResult);
         });
 
@@ -110,7 +111,6 @@ public class SamplesDirectorySteps implements En {
         "I select Specimen condition filter among the filter options from API",
         () -> {
           String specimenCondition = apiState.getCreatedSample().getSpecimenCondition();
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
               SPECIMEN_CONDITION_SEARCH_COMBOBOX, SpecimenConditions.getForName(specimenCondition));
         });
@@ -118,26 +118,26 @@ public class SamplesDirectorySteps implements En {
     When(
         "I select {string} Specimen condition option among the filter options",
         (String specimenCondition) -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
               SPECIMEN_CONDITION_SEARCH_COMBOBOX, specimenCondition);
         });
 
     When(
-        "I select Case clasification filter among the filter options from API",
+        "I select Case classification filter among the filter options from API",
         () -> {
           String caseSpecification = apiState.getCreatedCase().getCaseClassification();
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
               SAMPLE_CLASIFICATION_SEARCH_COMBOBOX,
               CaseClassification.getUIValueForGivenAPIValue(caseSpecification));
         });
 
     When(
-        "I select random Case clasification filter among the filter options",
+        "I select random Case classification filter among the filter options",
         () -> {
           String caseSpecification = CaseClassification.getRandomUIClassification();
-          webDriverHelpers.waitForPageLoaded();
+          String apiCaseSpecification = apiState.getCreatedCase().getCaseClassification();
+          while (caseSpecification.equals(apiCaseSpecification))
+            caseSpecification = CaseClassification.getRandomUIClassification();
           webDriverHelpers.selectFromCombobox(
               SAMPLE_CLASIFICATION_SEARCH_COMBOBOX, caseSpecification);
         });
@@ -146,7 +146,6 @@ public class SamplesDirectorySteps implements En {
         "I select Disease filter among the filter options from API",
         () -> {
           String disease = apiState.getCreatedCase().getDisease();
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
               SAMPLE_DISEASE_SEARCH_COMBOBOX, DiseasesValues.getCaptionForName(disease));
         });
@@ -155,7 +154,8 @@ public class SamplesDirectorySteps implements En {
         "I select random Disease filter among the filter options in Sample directory",
         () -> {
           String disease = DiseasesValues.getRandomDiseaseCaption();
-          webDriverHelpers.waitForPageLoaded();
+          String apiDisease = apiState.getCreatedCase().getDisease();
+          while (disease.equals(apiDisease)) disease = DiseasesValues.getRandomDiseaseCaption();
           webDriverHelpers.selectFromCombobox(SAMPLE_DISEASE_SEARCH_COMBOBOX, disease);
         });
 
@@ -163,7 +163,6 @@ public class SamplesDirectorySteps implements En {
         "I select Region filter among the filter options from API",
         () -> {
           String region = apiState.getCreatedCase().getRegion().getUuid();
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
               SAMPLE_REGION_SEARCH_COMBOBOX, RegionsValues.getValueFor(region));
         });
@@ -171,7 +170,6 @@ public class SamplesDirectorySteps implements En {
     When(
         "I change Region filter to {string} option in Sample directory",
         (String region) -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(SAMPLE_REGION_SEARCH_COMBOBOX, region);
         });
 
@@ -179,7 +177,6 @@ public class SamplesDirectorySteps implements En {
         "I select District filter among the filter options from API",
         () -> {
           String district = apiState.getCreatedCase().getDistrict().getUuid();
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
               SAMPLE_DISTRICT_SEARCH_COMBOBOX, DistrictsValues.getNameByUUID(district));
         });
@@ -187,7 +184,6 @@ public class SamplesDirectorySteps implements En {
     When(
         "I change District filter to {string} option in Sample directory",
         (String district) -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(SAMPLE_DISTRICT_SEARCH_COMBOBOX, district);
         });
 
@@ -195,14 +191,12 @@ public class SamplesDirectorySteps implements En {
         "I select Laboratory filter among the filter options from API",
         () -> {
           String laboratory = apiState.getCreatedSample().getLab().getCaption();
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(LABORATORY_SEARCH_COMBOBOX, laboratory);
         });
 
     When(
-        "I change Labolatory filter to {string} option in Sample directory",
+        "I change Laboratory filter to {string} option in Sample directory",
         (String laboratory) -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(LABORATORY_SEARCH_COMBOBOX, laboratory);
         });
 

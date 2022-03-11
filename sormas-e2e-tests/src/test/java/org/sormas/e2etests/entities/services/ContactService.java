@@ -27,6 +27,8 @@ import org.sormas.e2etests.entities.pojo.web.Contact;
 import org.sormas.e2etests.entities.pojo.web.epidemiologicalData.Exposure;
 import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.FacilityCategory;
+import org.sormas.e2etests.enums.FacilityType;
 import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.enums.YesNoUnknownOptions;
@@ -191,6 +193,54 @@ public class ContactService {
         .continent("Africa")
         .subcontinent("Central Africa")
         .country("Cameroon")
+        .build();
+  }
+
+  public Exposure buildGeneratedExposureDataContactForRandomInputs() {
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+    return Exposure.builder()
+        .startOfExposure(LocalDate.now().minusDays(3))
+        .endOfExposure(LocalDate.now().minusDays(1))
+        .exposureDescription(faker.medical().symptoms())
+        .typeOfActivity(TypeOfActivityExposure.VISIT)
+        .exposureDetailsRole(ExposureDetailsRole.MEDICAL_STAFF)
+        .riskArea(YesNoUnknownOptions.NO)
+        .indoors(YesNoUnknownOptions.YES)
+        .outdoors(YesNoUnknownOptions.NO)
+        .wearingMask(YesNoUnknownOptions.NO)
+        .wearingPpe(YesNoUnknownOptions.NO)
+        .otherProtectiveMeasures(YesNoUnknownOptions.NO)
+        .shortDistance(YesNoUnknownOptions.YES)
+        .longFaceToFaceContact(YesNoUnknownOptions.YES)
+        .percutaneous(YesNoUnknownOptions.NO)
+        .contactToBodyFluids(YesNoUnknownOptions.NO)
+        .handlingSamples(YesNoUnknownOptions.NO)
+        .typeOfPlace(TypeOfPlace.HOME)
+        .typeOfPlaceDetails(faker.address().fullAddress())
+        .continent("Europe")
+        .subcontinent("Central Europe")
+        .country("Germany")
+        .exposureRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .district(DistrictsValues.VoreingestellterLandkreis.getName())
+        .community(CommunityValues.VoreingestellteGemeinde.getName())
+        .street(faker.address().streetAddress())
+        .houseNumber(String.valueOf(faker.number().numberBetween(1, 99)))
+        .additionalInformation(faker.address().streetAddress())
+        .postalCode(faker.address().zipCode())
+        .city(faker.address().cityName())
+        .areaType("Urban")
+        .latitude(faker.address().latitude())
+        .longitude(faker.address().longitude())
+        .latLonAccuracy(faker.address().latitude())
+        .facilityCategory(FacilityCategory.ACCOMMODATION.getFacility())
+        .facilityType(FacilityType.CAMPSITE.getType())
+        .facility("Other facility")
+        .facilityDetails(faker.book().title())
+        .contactPersonFirstName(firstName)
+        .contactPersonLastName(lastName)
+        .contactPersonPhone(faker.phoneNumber().phoneNumber())
+        .contactPersonEmail(firstName + lastName + emailDomain)
         .build();
   }
 }

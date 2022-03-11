@@ -62,7 +62,7 @@ public class ContactDirectoryPage {
       By.cssSelector("[id='followUpStatus'] [class='v-filterselect-button']");
   public static final By CONTACT_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON =
       By.cssSelector("div#actionApplyFilters");
-  public static final By TOTAL_CONTACTS_COUNTER = By.cssSelector("#All span[class='badge']");
+  public static final By GRID_RESULTS_COUNTER_CONTACT_DIRECTORY = By.cssSelector(".badge");
   public static final By CONTACTS_WITH_QUARANTINE_ORDERED_VERBALLY_CHECKBOX =
       By.id("quarantineOrderedVerbally");
   public static final By CONTACTS_WITH_QUARANTINE_ORDERED_BY_OFFICIAL_DOCUMENT_CHECKBOX =
@@ -83,4 +83,5 @@ public class ContactDirectoryPage {
   public static final By DROPPED_BUTTON = By.id("status-Dropped");
   public static final By BULK_ACTIONS_CONTACT_VALUES = By.id("bulkActions-9");
   public static final By CONTACT_DATA_TAB = By.cssSelector("#tab-contacts-data");
+  public static final By NEW_ENTRY_EPIDEMIOLOGICAL_DATA = By.id("actionNewEntry");
 }

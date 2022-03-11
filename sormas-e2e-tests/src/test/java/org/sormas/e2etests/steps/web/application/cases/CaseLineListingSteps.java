@@ -9,7 +9,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
 import javax.inject.Inject;
-import org.openqa.selenium.By;
 import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.entities.services.CaseService;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
@@ -68,20 +67,6 @@ public class CaseLineListingSteps implements En {
     When(
         "^From case line listing I click on add line button$",
         () -> webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_ADD_LINE_BUTTON));
-
-    When(
-        "^I save the new case using line listing feature$",
-        () -> {
-          webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_SAVE_BUTTON);
-          // TODO remove this logic once problem is investigated in Jenkins
-          // start
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              By.xpath("//*[@class='v-Notification-caption']"));
-          webDriverHelpers.clickOnWebElementBySelector(
-              By.xpath("//*[@class='v-Notification-caption']"));
-          // end
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(25);
-        });
 
     When(
         "^I save the new line listing case$",

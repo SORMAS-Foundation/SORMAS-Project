@@ -45,6 +45,8 @@ public class CaseDirectoryPage {
       By.cssSelector("[id='caseClassification'] [class='v-filterselect-button']");
   public static final By CASE_DISEASE_FILTER_COMBOBOX =
       By.cssSelector("[id='disease'] [class='v-filterselect-button']");
+  public static final By CASE_DISEASE_VARIANT_FILTER_COMBOBOX =
+      By.cssSelector("[id='diseaseVariant'] [class='v-filterselect-button']");
   public static final By CASE_APPLY_FILTERS_BUTTON = By.cssSelector("[id='actionApplyFilters']");
   public static final By CASE_RESET_FILTERS_BUTTON = By.cssSelector("[id='actionResetFilters']");
   public static final String CASE_RESULTS_UUID_LOCATOR = "[title = '%s']";
@@ -137,5 +139,7 @@ public class CaseDirectoryPage {
       By.xpath("//div[contains(@class, 'popupContent')]//tr[@role='row']");
   public static final By SEARCH_BUTTON = By.id("search");
   public static final By CASE_EPIDEMIOLOGICAL_DATA_TAB = By.cssSelector("#tab-cases-epidata");
+  public static final By EPIDEMIOLOGICAL_DATA_TAB = By.cssSelector("#tab-cases-epidata");
   // TODO refactor the other headers based on the last one added
+  public static final By SECOND_CASE_ID_BUTTON = By.xpath("//table//tr[2]//a");
 }

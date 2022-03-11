@@ -247,12 +247,14 @@ public class CreateNewSampleSteps implements En {
     When(
         "I confirm the Create case from event participant with positive test result",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONFIRM_BUTTON);
           String displayedText =
               webDriverHelpers.getTextFromWebElement(CREATE_CASE_POSITIVE_TEST_RESULT_LABEL);
           String expectedText = "Create case from event participant with positive test result?";
-          softly.assertEquals(displayedText, expectedText);
+          softly.assertEquals(
+              displayedText,
+              expectedText,
+              "Case creation confirmation popup message is not correct");
           softly.assertAll();
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
         });

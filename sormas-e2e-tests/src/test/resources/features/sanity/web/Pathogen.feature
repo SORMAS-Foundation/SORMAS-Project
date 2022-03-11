@@ -167,8 +167,7 @@ Feature: Pathogen Functionalities
     When I open created Sample
     Then I check if Pathogen test result in Samples is displayed correctly and save
 
-    #please address
-  @issue=SORDEV-8058 @env_main @ignore
+  @issue=SORDEV-8058 @env_main
   Scenario: Unify pathogen test saving logic between cases and event participants
     When API: I create a new person
     Then API: I check that POST call body is "OK"
