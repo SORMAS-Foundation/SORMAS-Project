@@ -492,3 +492,47 @@ Feature: Case end to end tests
     And I set Facility Type to "Mobiler/Ambulanter Pflegedienst" from New Entry popup
     And I set Facility Type to "Aufsuchende ambulante Hilfen" from New Entry popup
     And And I click on Discard button from New Entry popup
+
+  @issue=SORDEV-7456 @env_de
+  Scenario: Check different facility types depending on type of place in Epidemiological Tab
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data for DE version
+    And I navigate to Epidemiological Data tab on Edit Case Page
+    And I click on JA Radiobutton on Epidemiological Data Page
+    And I click on new entry button from Epidemiological Data tab
+    And I set Facility to "Einrichtung (§ 23 IfSG)" from New Entry popup
+    And I set Facility Type to "Krankenhaus" from New Entry popup
+    And I set Facility Type to "Einrichtung für ambulantes Operieren" from New Entry popup
+    And I set Facility Type to "Reha Einrichtung" from New Entry popup
+    And I set Facility Type to "Dialyseeinrichtung" from New Entry popup
+    And I set Facility Type to "Tagesklinik" from New Entry popup
+    And I set Facility Type to "Entbindungseinrichtung" from New Entry popup
+    And I set Facility Type to "Andere medizinische Einrichtung" from New Entry popup
+    And I set Facility Type to "Arztpraxis" from New Entry popup
+    And I set Facility Type to "Zahnarztpraxis" from New Entry popup
+    And I set Facility Type to "Praxis sonstiger humanmedizinischer Heilberufe" from New Entry popup
+    And I set Facility Type to "Einrichtung des ÖGD zur Diagnostik, Prävention, Therapie" from New Entry popup
+    And I set Facility Type to "Mobiler/Ambulanter Pflegedienst" from New Entry popup
+    And I set Facility Type to "Rettungsdienst" from New Entry popup
+    And I set Facility to "Gemeinschaftseinrichtung (§ 33 IfSG)" from New Entry popup
+    And I set Facility Type to "Kindertageseinrichtung" from New Entry popup
+    And I set Facility Type to "Kindertagespflege" from New Entry popup
+    And I set Facility Type to "Schule" from New Entry popup
+    And I set Facility Type to "Kinderheim" from New Entry popup
+    And I set Facility Type to "Ferienlager" from New Entry popup
+    And I set Facility Type to "Kinderhort" from New Entry popup
+    And I set Facility Type to "Andere Betreuungs- und Bildungseinrichtung" from New Entry popup
+    And I set Facility to "Einrichtung (§ 36 IfSG)" from New Entry popup
+    And I set Facility Type to "Andere Pflegeeinrichtung" from New Entry popup
+    And I set Facility Type to "Pflegeeinrichtung für ältere Menschen" from New Entry popup
+    And I set Facility Type to "Pflegeeinrichtung für Menschen mit Behinderung" from New Entry popup
+    And I set Facility Type to "Pflegeeinrichtung für pflegebedürftige Menschen" from New Entry popup
+    And I set Facility Type to "Obdachlosenunterkunft" from New Entry popup
+    And I set Facility Type to "Flüchtlingsunterkunft/Erstaufnahmeeinrichtung" from New Entry popup
+    And I set Facility Type to "Massenunterkunft (z.B. Gast- und Erntearbeiter)" from New Entry popup
+    And I set Facility Type to "Justizvollzugsanstalt" from New Entry popup
+    And I set Facility Type to "Mobiler/Ambulanter Pflegedienst" from New Entry popup
+    And I set Facility Type to "Aufsuchende ambulante Hilfen" from New Entry popup
+    And And I click on Discard button from New Entry popup
