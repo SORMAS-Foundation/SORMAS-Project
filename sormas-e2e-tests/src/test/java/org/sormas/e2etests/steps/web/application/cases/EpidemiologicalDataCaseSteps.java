@@ -2,7 +2,11 @@ package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.*;
+import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_ACTIVITY_DETAILS;
+import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_GATHERING_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_GATHERING_DETAILS;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
+import static org.sormas.e2etests.steps.web.application.cases.FollowUpStep.faker;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -19,6 +23,7 @@ import org.sormas.e2etests.enums.YesNoUnknownOptions;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.ActivityAsCaseType;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.ExposureDetailsRole;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfActivityExposure;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfGathering;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
 import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
@@ -116,6 +121,51 @@ public class EpidemiologicalDataCaseSteps implements En {
         "I click on New Entry in Exposure Details Known in Cases directory",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EXPOSURE_DETAILS_NEW_ENTRY_BUTTON);
+        });
+    When(
+        "I select from Combobox all options in Type of activity field in Exposure for Epidemiological data tab for Cases",
+        () -> {
+          String[] ListOfTypeOfActivityExposure =
+              TypeOfActivityExposure.ListOfTypeOfActivityExposure;
+          for (String value : ListOfTypeOfActivityExposure) {
+            webDriverHelpers.selectFromCombobox(TYPE_OF_ACTIVITY_COMBOBOX, value);
+          }
+        });
+    When(
+        "I select from Combobox all Type of gathering in Exposure for Epidemiological data tab in Cases",
+        () -> {
+          for (TypeOfGathering value : TypeOfGathering.values()) {
+            if (value != TypeOfGathering.valueOf("OTHER")) {
+              webDriverHelpers.selectFromCombobox(TYPE_OF_GATHERING_COMBOBOX, value.toString());
+            }
+          }
+        });
+
+    When(
+        "I select a type of gathering ([^\"]*) option from Combobox in Exposure for Epidemiological data tab in Cases",
+        (String option) -> {
+          webDriverHelpers.selectFromCombobox(TYPE_OF_GATHERING_COMBOBOX, option);
+        });
+    When(
+        "I fill a type of gathering details in Exposure for Epidemiological data tab in Cases",
+        () -> {
+          webDriverHelpers.fillInWebElement(TYPE_OF_GATHERING_DETAILS, faker.chuckNorris().fact());
+        });
+    When(
+        "I click on save button in Exposure for Epidemiological data tab in Cases",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
+        });
+
+    When(
+        "I select a Type of activity ([^\"]*) option in Exposure for Epidemiological data tab in Cases",
+        (String option) -> {
+          webDriverHelpers.selectFromCombobox(TYPE_OF_ACTIVITY_COMBOBOX, option);
+        });
+    When(
+        "I fill a Type of activity details field in Exposure for Epidemiological data tab in Cases",
+        () -> {
+          webDriverHelpers.fillInWebElement(TYPE_OF_ACTIVITY_DETAILS, faker.book().title());
         });
 
     Then(

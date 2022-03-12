@@ -68,28 +68,30 @@ Feature: Epidemiological data coverage
     Given I log in with National User
     And I click on the Cases button from navbar
     And I open the last created Case via API
-#    And I click on the Epidemiological Data button in Cases directory
+    And I click on New Entry in Exposure Details Known in Cases directory
     And I navigate to epidemiological data tab in Edit case page
     And I click on Exposure details known with NO option
     And I click on Exposure details known with UNKNOWN option
     And I click on Exposure details known with YES option
     Then I click on New Entry in Exposure Details Known in Cases directory
-#    And I select all options in Type of activity from Combobox in Exposure form
-#    Then  I select a Type of activity Other option in Exposure form
-#    And I fill a Type of activity details in Exposure by some type of activity details
-#    Then  I select a Type of activity Gathering option in Exposure form
-#    And I select all Type of gathering from Combobox in Exposure form
-#    And I select a type of gathering Other from Combobox in Exposure form
-#    And I fill a type of gathering details in Exposure form by type of gathering details
-#    Then I fill Location form for Type of place by options excluded Other and Facility
-#    And I click on save button from Epidemiological Data
-#    And I click on edit Exposure vision button
-#    And I select Work option in Type of activity from Combobox in Exposure form
-#    Then I fill Location form for Type of place by Other option
-#    And I click on save button from Epidemiological Data
-#    And I click on edit Exposure vision button
-#    And I select Travel option in Type of activity from Combobox in Exposure form
-#    Then I fill Location form for Type of place by Facility option
-#    And I click on save button from Epidemiological Data
-
-
+    And I select from Combobox all options in Type of activity field in Exposure for Epidemiological data tab for Cases
+    Then  I select a Type of activity Other option in Exposure for Epidemiological data tab in Cases
+    And I fill a Type of activity details field in Exposure for Epidemiological data tab in Cases
+    Then  I select a Type of activity Gathering option in Exposure for Epidemiological data tab in Cases
+    And I select from Combobox all Type of gathering in Exposure for Epidemiological data tab in Cases
+    And I select a type of gathering Other option from Combobox in Exposure for Epidemiological data tab in Cases
+    And I fill a type of gathering details in Exposure for Epidemiological data tab in Cases
+    Then I fill Location form for Type of place by chosen "HOME" options in Exposure for Epidemiological data
+    And I click on save button in Exposure for Epidemiological data tab in Cases
+    And I am checking all Exposure data is saved and displayed
+    And I click on edit Exposure vision button
+    And I select Work option in Type of activity from Combobox in Exposure form
+    Then I fill Location form for Type of place by chosen "OTHER" options in Exposure for Epidemiological data
+    And I click on save button in Exposure for Epidemiological data tab in Cases
+    And I am checking all Exposure data is saved and displayed
+    And I click on save button from Epidemiological Data
+    And I select Travel option in Type of activity from Combobox in Exposure form
+    Then I fill Location form for Type of place by chosen "FACILITY" options in Exposure for Epidemiological data
+    And I click on save button in Exposure for Epidemiological data tab in Cases
+    And I am checking all Exposure data is saved and displayed
+    And I click on save button from Epidemiological Data
