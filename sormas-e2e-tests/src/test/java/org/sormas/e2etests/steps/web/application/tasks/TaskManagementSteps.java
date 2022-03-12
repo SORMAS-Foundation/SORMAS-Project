@@ -327,7 +327,8 @@ public class TaskManagementSteps implements En {
     if (date.isEmpty()) {
       throw new Exception(String.format("Provided date to be parsed: %s, is empty!", date));
     }
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy h:m a");
+    DateTimeFormatter formatter =
+        DateTimeFormatter.ofPattern("M/d/yyyy h:m a").localizedBy(Locale.ENGLISH);
     try {
       log.info("Parsing date: [{}]", date);
       return LocalDateTime.parse(date.trim(), formatter);
