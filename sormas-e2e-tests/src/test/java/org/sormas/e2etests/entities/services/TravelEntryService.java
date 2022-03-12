@@ -62,4 +62,23 @@ public class TravelEntryService {
         .pointOfEntryDetails("Automated test dummy description")
         .build();
   }
+
+  public TravelEntry buildGeneratedEntryWithPointOfEntryDetails(String pointOfEntry) {
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+
+    return TravelEntry.builder()
+        .reportDate(LocalDate.now())
+        .firstName(firstName)
+        .lastName(lastName)
+        .sex(GenderValues.getRandomGenderDE())
+        .reportDate(LocalDate.now())
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
+        .disease(getRandomDiseaseCaptionDE())
+        .pointOfEntry(getRandomPointOfEntryDE())
+        .pointOfEntryDetails(pointOfEntry)
+        .build();
+  }
 }

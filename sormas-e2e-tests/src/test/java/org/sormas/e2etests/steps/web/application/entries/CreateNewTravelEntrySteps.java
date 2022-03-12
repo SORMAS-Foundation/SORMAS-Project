@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.entries;
 
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.EPIDEMIOLOGICAL_DATA_TAB;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.COMMUNITY_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISTRICT_INPUT;
@@ -28,7 +29,11 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFO
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.FIRST_NAME_OF_CONTACT_PERSON_INPUT;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.LAST_NAME_OF_CONTACT_PERSON_INPUT;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.PICK_A_EXISTING_CASE_LABEL_DE;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.PICK_A_EXISTING_PERSON_LABEL_DE;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.PICK_OR_CREATE_PERSON_TITLE_DE;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.SAVE_POPUP_CONTENT;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.CASE_PERSON_NAME;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.CREATE_CASE_FROM_TRAVEL_ENTRY;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DISEASE_NAME_INPUT;
@@ -45,6 +50,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import org.openqa.selenium.By;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.entities.pojo.web.TravelEntry;
@@ -63,6 +69,11 @@ public class CreateNewTravelEntrySteps implements En {
   public static TravelEntry aTravelEntry;
   public static TravelEntry newCaseFromTravelEntryData;
   public static Case aCase;
+  String firstName;
+  String lastName;
+  String sex;
+  String disease;
+  String entryPoint = "Test entry point";
 
   @Inject
   public CreateNewTravelEntrySteps(
@@ -77,12 +88,34 @@ public class CreateNewTravelEntrySteps implements En {
         () -> {
           travelEntry = travelEntryService.buildGeneratedEntryDE();
           fillFirstName(travelEntry.getFirstName());
+          firstName = travelEntry.getFirstName();
           fillLastName(travelEntry.getLastName());
+          lastName = travelEntry.getLastName();
           selectSex(travelEntry.getSex());
+          sex = travelEntry.getSex();
           selectResponsibleRegion(travelEntry.getResponsibleRegion());
           selectResponsibleDistrict(travelEntry.getResponsibleDistrict());
           selectResponsibleCommunity(travelEntry.getResponsibleCommunity());
           fillDisease(travelEntry.getDisease());
+          disease = travelEntry.getDisease();
+          if (travelEntry.getDisease().equals("Andere epidemische Krankheit"))
+            fillOtherDisease("Test");
+
+          fillPointOfEntry(travelEntry.getPointOfEntry());
+          fillPointOfEntryDetails(travelEntry.getPointOfEntryDetails());
+        });
+
+    When(
+        "^I fill the required fields in a new travel entry form for previous created person$",
+        () -> {
+          travelEntry = travelEntryService.buildGeneratedEntryWithPointOfEntryDetails(entryPoint);
+          fillFirstName(firstName);
+          fillLastName(lastName);
+          selectSex(sex);
+          selectResponsibleRegion(travelEntry.getResponsibleRegion());
+          selectResponsibleDistrict(travelEntry.getResponsibleDistrict());
+          selectResponsibleCommunity(travelEntry.getResponsibleCommunity());
+          fillDisease(disease);
           if (travelEntry.getDisease().equals("Andere epidemische Krankheit"))
             fillOtherDisease("Test");
 
@@ -216,7 +249,7 @@ public class CreateNewTravelEntrySteps implements En {
         });
 
     When(
-        "I check if first and last for case in travel entry is correct",
+        "I check if first and last user name for case in travel entry is correct",
         () -> {
           softly.assertEquals(
               webDriverHelpers.getTextFromWebElement(CASE_PERSON_NAME).toLowerCase(Locale.GERMAN),
@@ -225,6 +258,58 @@ public class CreateNewTravelEntrySteps implements En {
                   + travelEntry.getLastName().toLowerCase(Locale.GERMAN),
               "User name is invalid");
           softly.assertAll();
+        });
+
+    When(
+        "^I check if pick or create person popup in travel entry is displayed$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              PICK_OR_CREATE_PERSON_TITLE_DE); // wait for popup
+          String expectedTitle = "Person ausw\u00E4hlen oder erstellen";
+          String checkPopupTitle =
+              webDriverHelpers
+                  .getTextFromWebElement(PICK_OR_CREATE_PERSON_TITLE_DE)
+                  .toLowerCase(Locale.GERMAN);
+          softly.assertEquals(
+              checkPopupTitle,
+              expectedTitle.toLowerCase(Locale.GERMAN),
+              "Wrong popup title for Pick or create person");
+          softly.assertAll();
+        });
+
+    When(
+        "^I check Pick an existing case in Pick or create person popup in travel entry$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(PICK_A_EXISTING_PERSON_LABEL_DE));
+
+    When(
+        "^I click confirm button in popup from travel entry$",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT));
+
+    When(
+        "I choose an existing case while creating case from travel entry",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              PICK_A_EXISTING_CASE_LABEL_DE); // wait for popup
+          String expectedTitle = "Fall ausw\u00E4hlen oder erstellen";
+          String checkPopupTitle =
+              webDriverHelpers
+                  .getTextFromWebElement(PICK_OR_CREATE_PERSON_TITLE_DE)
+                  .toLowerCase(Locale.GERMAN);
+          softly.assertEquals(
+              checkPopupTitle,
+              expectedTitle.toLowerCase(Locale.GERMAN),
+              "Wrong popup title for Pick or create a case");
+          softly.assertAll();
+          webDriverHelpers.clickOnWebElementBySelector(PICK_A_EXISTING_CASE_LABEL_DE);
+        });
+
+    When(
+        "^I check if created travel entries are listed in the epidemiological data tab$",
+        () -> {
+          webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
+              By.xpath("//div[text()='" + entryPoint + "']"));
+          webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
+              By.xpath("//div[text()='Automated test dummy description']"));
         });
   }
 
