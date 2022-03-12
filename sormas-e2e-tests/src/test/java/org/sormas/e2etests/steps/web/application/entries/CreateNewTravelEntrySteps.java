@@ -18,35 +18,58 @@
 
 package org.sormas.e2etests.steps.web.application.entries;
 
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.COMMUNITY_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISTRICT_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXTERNAL_ID_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.REGION_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.REPORT_DATE_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFORMATION;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.FIRST_NAME_OF_CONTACT_PERSON_INPUT;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.LAST_NAME_OF_CONTACT_PERSON_INPUT;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.CASE_PERSON_NAME;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.CREATE_CASE_FROM_TRAVEL_ENTRY;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DISEASE_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.FIRST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.LAST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.POINT_OF_ENTRY_CASE;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.SAVE_NEW_CASE_FOR_TRAVEL_ENTRY_POPUP;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.TRAVEL_ENTRY_PERSON_TAB;
 
 import cucumber.api.java8.En;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.entities.pojo.web.TravelEntry;
 import org.sormas.e2etests.entities.services.TravelEntryService;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage;
 import org.sormas.e2etests.pages.application.entries.EditTravelEntryPage;
 import org.sormas.e2etests.state.ApiState;
+import org.testng.asserts.SoftAssert;
 
 public class CreateNewTravelEntrySteps implements En {
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
+  public static final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
   private final WebDriverHelpers webDriverHelpers;
   public static TravelEntry travelEntry;
   public static TravelEntry aTravelEntry;
+  public static TravelEntry newCaseFromTravelEntryData;
+  public static Case aCase;
 
   @Inject
   public CreateNewTravelEntrySteps(
-      WebDriverHelpers webDriverHelpers, TravelEntryService travelEntryService, ApiState apiState) {
+      WebDriverHelpers webDriverHelpers,
+      TravelEntryService travelEntryService,
+      ApiState apiState,
+      SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -60,6 +83,9 @@ public class CreateNewTravelEntrySteps implements En {
           selectResponsibleDistrict(travelEntry.getResponsibleDistrict());
           selectResponsibleCommunity(travelEntry.getResponsibleCommunity());
           fillDisease(travelEntry.getDisease());
+          if (travelEntry.getDisease().equals("Andere epidemische Krankheit"))
+            fillOtherDisease("Test");
+
           fillPointOfEntry(travelEntry.getPointOfEntry());
           fillPointOfEntryDetails(travelEntry.getPointOfEntryDetails());
         });
@@ -128,6 +154,78 @@ public class CreateNewTravelEntrySteps implements En {
           ComparisonHelper.compareEqualFieldsOfEntities(
               aTravelEntry, travelEntry, List.of("firstName", "lastName", "sex"));
         });
+
+    When(
+        "I click on new case button for travel entry",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_CASE_FROM_TRAVEL_ENTRY));
+
+    When(
+        "I check if data from travel entry for new case is correct",
+        () -> {
+          newCaseFromTravelEntryData = collectTravelEntryData();
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              newCaseFromTravelEntryData,
+              travelEntry,
+              List.of(
+                  "responsibleRegion",
+                  "responsibleDistrict",
+                  "responsibleCommunity",
+                  "pointOfEntry",
+                  "pointOfEntryDetails"));
+          newCaseFromTravelEntryData = collectTravelEntryPersonData();
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              newCaseFromTravelEntryData, travelEntry, List.of("firstName", "lastName", "sex"));
+        });
+
+    When(
+        "I save the new case for travel entry",
+        () -> {
+          webDriverHelpers.scrollToElement(SAVE_NEW_CASE_FOR_TRAVEL_ENTRY_POPUP);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_NEW_CASE_FOR_TRAVEL_ENTRY_POPUP);
+        });
+
+    When(
+        "I check if data in case based on travel entry is correct",
+        () -> {
+          aCase = collectCasePersonDataBasedOnTravelEntryDE();
+          softly.assertEquals(
+              aCase.getResponsibleRegion(),
+              travelEntry.getResponsibleRegion(),
+              "Regions are not equal");
+          softly.assertEquals(
+              aCase.getResponsibleDistrict(),
+              travelEntry.getResponsibleDistrict(),
+              "Districts are not equal");
+          softly.assertEquals(
+              aCase.getResponsibleCommunity(),
+              travelEntry.getResponsibleCommunity(),
+              "Communities are not equal");
+          softly.assertEquals(
+              aCase.getPointOfEntry(),
+              travelEntry.getPointOfEntry() + " (Inaktiv)",
+              "Point of entries are not equal");
+          softly.assertEquals(
+              aCase.getFirstName().toLowerCase(Locale.GERMAN),
+              travelEntry.getFirstName().toLowerCase(Locale.GERMAN),
+              "First names are not equal");
+          softly.assertEquals(
+              aCase.getLastName().toLowerCase(Locale.GERMAN),
+              travelEntry.getLastName().toLowerCase(Locale.GERMAN),
+              "Last names are not equal");
+          softly.assertAll();
+        });
+
+    When(
+        "I check if first and last for case in travel entry is correct",
+        () -> {
+          softly.assertEquals(
+              webDriverHelpers.getTextFromWebElement(CASE_PERSON_NAME).toLowerCase(Locale.GERMAN),
+              travelEntry.getFirstName().toLowerCase(Locale.GERMAN)
+                  + " "
+                  + travelEntry.getLastName().toLowerCase(Locale.GERMAN),
+              "User name is invalid");
+          softly.assertAll();
+        });
   }
 
   private void fillFirstName(String firstName) {
@@ -159,6 +257,10 @@ public class CreateNewTravelEntrySteps implements En {
 
   private void fillDisease(String disease) {
     webDriverHelpers.selectFromCombobox(CreateNewTravelEntryPage.DISEASE_COMBOBOX, disease);
+  }
+
+  private void fillOtherDisease(String otherDisease) {
+    webDriverHelpers.fillInWebElement(DISEASE_NAME_INPUT, otherDisease);
   }
 
   private void fillPointOfEntry(String pointOfEntry) {
@@ -195,6 +297,35 @@ public class CreateNewTravelEntrySteps implements En {
         .firstName(webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT))
         .lastName(webDriverHelpers.getValueFromWebElement(LAST_NAME_INPUT))
         .sex(webDriverHelpers.getValueFromCombobox(EditTravelEntryPage.SEX_COMBOBOX))
+        .build();
+  }
+
+  private Case getUserInformationDE() {
+    String userInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
+    String[] userInfos = userInfo.split(" ");
+    return Case.builder().firstName(userInfos[0]).lastName(userInfos[1]).build();
+  }
+
+  private LocalDate getDateOfReport() {
+    String dateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE_INPUT);
+    return LocalDate.parse(dateOfReport, DATE_FORMATTER_DE);
+  }
+
+  private Case collectCasePersonDataBasedOnTravelEntryDE() {
+    Case userInfo = getUserInformationDE();
+
+    return Case.builder()
+        .dateOfReport(getDateOfReport())
+        .firstName(userInfo.getFirstName())
+        .lastName(userInfo.getLastName())
+        .dateOfBirth(userInfo.getDateOfBirth())
+        .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+        .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
+        .responsibleRegion(webDriverHelpers.getValueFromWebElement(REGION_INPUT))
+        .responsibleDistrict(webDriverHelpers.getValueFromWebElement(DISTRICT_INPUT))
+        .responsibleCommunity(webDriverHelpers.getValueFromWebElement(COMMUNITY_INPUT))
+        .pointOfEntry(webDriverHelpers.getValueFromWebElement(POINT_OF_ENTRY_CASE))
         .build();
   }
 }
