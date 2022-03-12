@@ -9,9 +9,10 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
 import javax.inject.Inject;
+import org.sormas.e2etests.entities.pojo.web.Immunization;
+import org.sormas.e2etests.entities.services.ImmunizationService;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.web.Immunization;
-import org.sormas.e2etests.services.ImmunizationService;
+import org.testng.asserts.SoftAssert;
 
 public class CreateNewImmunizationSteps implements En {
 
@@ -21,7 +22,9 @@ public class CreateNewImmunizationSteps implements En {
 
   @Inject
   public CreateNewImmunizationSteps(
-      WebDriverHelpers webDriverHelpers, ImmunizationService immunizationService) {
+      WebDriverHelpers webDriverHelpers,
+      ImmunizationService immunizationService,
+      SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -47,6 +50,32 @@ public class CreateNewImmunizationSteps implements En {
           fillPrimaryPhoneNumber(immunization.getPrimaryPhoneNumber());
           fillPrimaryEmailAddress(immunization.getPrimaryEmailAddress());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
+
+    When(
+        "I check Overwrite immunization management status option",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(
+              OVERWRITE_IMMUNIZATION_MANAGEMENT_STATUS_INPUT);
+        });
+
+    When(
+        "I check if Overwrite immunization management status is unchecked by Management Status",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(MANAGEMENT_STATUS);
+          webDriverHelpers.scrollToElement(MANAGEMENT_STATUS);
+          softly.assertFalse(
+              webDriverHelpers.isElementEnabled(MANAGEMENT_STATUS),
+              "Expected management status is not correct");
+          softly.assertAll();
+        });
+
+    When(
+        "I click on discard button from immunization tab",
+        () -> {
+          webDriverHelpers.scrollToElement(DISCARD_IMMUNIZATION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(DISCARD_IMMUNIZATION_BUTTON);
         });
   }
 

@@ -21,6 +21,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -33,6 +34,10 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
+import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
+import de.symeda.sormas.api.immunization.ImmunizationStatus;
+import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.JournalPersonDto;
@@ -63,6 +68,45 @@ import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 
 public class PersonFacadeEjbTest extends AbstractBeanTest {
+
+	// todo - update this test case as CoreEntityDeletionService permanently deletes other core entities
+	@Test
+	public void testPermanentDelete() {
+		RDCF rdcf = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
+		final UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
+		user.setRegion(new RegionReferenceDto(rdcf.region.getUuid()));
+		getUserFacade().saveUser(user);
+		loginWith(user);
+
+		final PersonDto person = creator.createPerson("James", "Smith", Sex.MALE, 1920, 1, 1);
+
+		ImmunizationDto immunization = creator.createImmunization(
+			Disease.CORONAVIRUS,
+			person.toReference(),
+			user.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf);
+
+		TravelEntryDto travelEntry =
+			creator.createTravelEntry(person.toReference(), user.toReference(), Disease.CORONAVIRUS, rdcf.region, rdcf.district, rdcf.pointOfEntry);
+
+		Assert.assertEquals(1, getPersonFacade().count(new PersonCriteria()));
+
+		getImmunizationFacade().delete(immunization.getUuid());
+		getCoreEntityDeletionService().executePermanentDeletion();
+
+		Assert.assertEquals(1, getPersonFacade().count(new PersonCriteria()));
+		Assert.assertTrue(getPersonFacade().exists(person.getUuid()));
+
+		getTravelEntryFacade().delete(travelEntry.getUuid());
+
+		getCoreEntityDeletionService().executePermanentDeletion();
+
+		Assert.assertEquals(0, getPersonFacade().count(new PersonCriteria()));
+		Assert.assertFalse(getPersonFacade().exists(person.getUuid()));
+	}
 
 	/**
 	 * Test all {@link PersonAssociation} variants if they work. Also serves to review the generated SQL.
@@ -272,11 +316,11 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		assertEquals(1, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 
-		getCaseFacade().deleteCase(caze.getUuid());
+		getCaseFacade().delete(caze.getUuid());
 
 		assertEquals(1, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 
-		getCaseFacade().deleteCase(caze2.getUuid());
+		getCaseFacade().delete(caze2.getUuid());
 
 		assertEquals(0, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 
@@ -284,7 +328,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 		assertEquals(1, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 
-		getContactFacade().deleteContact(contact.getUuid());
+		getContactFacade().delete(contact.getUuid());
 
 		assertEquals(0, getPersonFacade().getIndexList(new PersonCriteria(), null, null, null).size());
 	}
@@ -313,8 +357,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		EventDto inactiveEvent = creator.createEvent(user.toReference());
 		creator.createEventParticipant(inactiveEvent.toReference(), person7, user.toReference());
 
-		getCaseFacade().archive(inactiveCase.getUuid());
-		getEventFacade().archive(inactiveEvent.getUuid());
+		getCaseFacade().archive(inactiveCase.getUuid(), null);
+		getEventFacade().archive(inactiveEvent.getUuid(), null);
 
 		// Only persons that have active case, contact or event participant associations should be retrieved
 		List<String> relevantNameUuids =
@@ -325,8 +369,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			containsInAnyOrder(person1.getUuid(), person2.getUuid(), person3.getUuid(), person5.getUuid(), person6.getUuid(), person7.getUuid()));
 
 		creator.createCase(user.toReference(), person4.toReference(), rdcf);
-		getCaseFacade().dearchive(inactiveCase.getUuid());
-		getEventFacade().archive(inactiveEvent.getUuid());
+		getCaseFacade().dearchive(Collections.singletonList(inactiveCase.getUuid()), null);
+		getEventFacade().dearchive(Collections.singletonList(inactiveEvent.getUuid()), null);
 
 		PersonSimilarityCriteria criteria = new PersonSimilarityCriteria().sex(Sex.MALE).birthdateYYYY(1980).birthdateMM(1).birthdateDD(1);
 		List<String> matchingUuids =
@@ -899,5 +943,36 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			creator.createEventParticipant(creator.createEvent(userRef).toReference(), eventParticipantPerson, userRef);
 
 		assertThat(getPersonFacade().getByContext(PersonContext.EVENT_PARTICIPANT, eventParticipant.getUuid()), equalTo(eventParticipantPerson));
+	}
+
+	@Test
+	public void testUserWithLimitedDiseaseSeeOnlyLimitedTravelEntry(){
+		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility", "PointOfEntry");
+		PersonCriteria criteria = new PersonCriteria();
+		criteria.setPersonAssociation(PersonAssociation.TRAVEL_ENTRY);
+
+		UserDto natUser = useNationalUserLogin();
+		// CORONAVIRUS Travel Entry
+		PersonDto personWithCorona = creator.createPerson("Person Coronavirus","Test");
+		creator.createTravelEntry(personWithCorona.toReference(), natUser.toReference(), Disease.CORONAVIRUS, rdcf.region, rdcf.district, rdcf.pointOfEntry);
+
+		// DENGUE Travel Entry
+		PersonDto personWithDengue = creator.createPerson("Person Dengue","Test");
+		creator.createTravelEntry(personWithDengue.toReference(), natUser.toReference(), Disease.DENGUE, rdcf.region, rdcf.district, rdcf.pointOfEntry);
+
+		//National User with no restrictions can see all the travel entries
+		List<PersonIndexDto> personIndexDtos = getPersonFacade().getIndexList(criteria, 0, 100, null);
+		assertEquals(2 , personIndexDtos.size());
+		List<String> firstNames = personIndexDtos.stream().map(p -> p.getFirstName()).collect(Collectors.toList());
+		assertTrue(firstNames.contains(personWithCorona.getFirstName()));
+		assertTrue(firstNames.contains(personWithDengue.getFirstName()));
+
+		//login with a user wiht limieted disease restrictions
+		final UserDto user = creator.createUser(rdcf, "Limieted Disease", "National User", Disease.DENGUE, UserRole.NATIONAL_USER);
+		loginWith(user);
+
+		personIndexDtos = getPersonFacade().getIndexList(criteria, 0, 100, null);
+		assertEquals(1 , personIndexDtos.size());
+		assertEquals(personWithDengue.getFirstName(), personIndexDtos.get(0).getFirstName());
 	}
 }

@@ -127,8 +127,6 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	List<CaseDataDto> getAllCasesOfPerson(String personUuid);
 
-	void deleteCase(String caseUuid) throws ExternalSurveillanceToolException;
-
 	List<String> deleteCases(List<String> caseUuids);
 
 	void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid) throws ExternalSurveillanceToolException;
@@ -162,14 +160,6 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 	CaseDataDto cloneCase(CaseDataDto existingCaseDto);
 
 	void archiveAllArchivableCases(int daysAfterCaseGetsArchived);
-
-	/**
-	 * @param caseUuids
-	 *            Cases identified by {@code uuid} to be archived or not.
-	 * @param archived
-	 *            {@code true} archives the Case, {@code false} unarchives it.
-	 */
-	void updateArchived(List<String> caseUuids, boolean archived);
 
 	List<CaseReferenceDto> getRandomCaseReferences(CaseCriteria criteria, int count, Random randomGenerator);
 

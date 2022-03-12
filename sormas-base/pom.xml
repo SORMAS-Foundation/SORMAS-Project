@@ -5,7 +5,7 @@
 	<groupId>de.symeda.sormas</groupId>
 	<artifactId>sormas-base</artifactId>
 	<packaging>pom</packaging>
-	<version>1.69.0-SNAPSHOT</version>
+	<version>1.70.0-SNAPSHOT</version>
 
 	<properties>
 		<maven.compiler.source>1.8</maven.compiler.source>
@@ -444,6 +444,17 @@
 			</dependency>
 
 			<dependency>
+				<groupId>org.apache.xmlgraphics</groupId>
+				<artifactId>fop-events</artifactId>
+				<version>2.7</version>
+			</dependency>
+			<dependency>
+				<groupId>org.apache.xmlgraphics</groupId>
+				<artifactId>xmlgraphics-commons</artifactId>
+				<version>2.7</version>
+			</dependency>
+
+			<dependency>
 				<groupId>org.bouncycastle</groupId>
 				<artifactId>bcpkix-jdk15on</artifactId>
 				<version>${bouncycastle.version}</version>
@@ -573,10 +584,22 @@
 				<version>${slf4j.version}</version>
 				<scope>provided</scope>
 			</dependency>
+			<dependency>
+				<groupId>ca.uhn.hapi.fhir</groupId>
+				<artifactId>hapi-fhir-structures-r4</artifactId>
+				<version>5.7.0</version>
+				<scope>runtime</scope>
+			</dependency>
 
 			<!-- *** Domain libs END *** -->
 
 			<!-- *** Compile dependencies *** -->
+			<dependency>
+				<groupId>ca.uhn.hapi.fhir</groupId>
+				<artifactId>org.hl7.fhir.r4</artifactId>
+				<version>5.6.36</version>
+				<scope>compile</scope>
+			</dependency>
 
 			<dependency>
 				<groupId>com.googlecode.libphonenumber</groupId>
@@ -628,12 +651,6 @@
 				<groupId>org.docx4j</groupId>
 				<artifactId>docx4j-JAXB-ReferenceImpl</artifactId>
 				<version>${docx4j.version}</version>
-			</dependency>
-
-			<dependency>
-				<groupId>org.freemarker</groupId>
-				<artifactId>freemarker</artifactId>
-				<version>2.3.31</version>
 			</dependency>
 
 			<dependency>
@@ -775,6 +792,13 @@
 			</dependency>
 
 			<dependency>
+				<groupId>org.testcontainers</groupId>
+				<artifactId>postgresql</artifactId>
+				<version>1.16.3</version>
+				<scope>test</scope>
+			</dependency>
+
+			<dependency>
 				<groupId>info.novatec</groupId>
 				<artifactId>bean-test</artifactId>
 				<version>0.2.Final</version>
@@ -798,7 +822,7 @@
 			<dependency>
 				<groupId>org.apache.poi</groupId>
 				<artifactId>poi-ooxml</artifactId>
-				<version>3.17</version>
+				<version>5.2.0</version>
 			</dependency>
 
 			<dependency>
@@ -1212,6 +1236,34 @@
 						</execution>
 					</executions>
 					<!-- Usage (on sormas-base/pom.xml): "mvn org.owasp:dependency-check-maven:check" -->
+				</plugin>
+				<plugin>
+					<groupId>io.github.git-commit-id</groupId>
+					<artifactId>git-commit-id-maven-plugin</artifactId>
+					<version>5.0.0</version>
+					<executions>
+						<execution>
+							<id>get-the-git-infos</id>
+							<goals>
+								<goal>revision</goal>
+							</goals>
+							<phase>initialize</phase>
+						</execution>
+					</executions>
+					<configuration>
+						<dotGitDirectory>${project.basedir}/../.git</dotGitDirectory>
+						<format>properties</format>
+						<generateGitPropertiesFile>true</generateGitPropertiesFile>
+						<generateGitPropertiesFilename>${project.build.outputDirectory}/git.properties</generateGitPropertiesFilename>
+						<includeOnlyProperties>
+							<includeOnlyProperty>^git.build.time$</includeOnlyProperty>
+							<includeOnlyProperty>^git.build.version$</includeOnlyProperty>
+							<includeOnlyProperty>^git.commit.id.abbrev$</includeOnlyProperty>
+							<includeOnlyProperty>^git.commit.id.full$</includeOnlyProperty>
+							<includeOnlyProperty>^git.remote.origin.url$</includeOnlyProperty>
+						</includeOnlyProperties>
+						<commitIdGenerationMode>full</commitIdGenerationMode>
+					</configuration>
 				</plugin>
 				<!-- *** Plugins for generate-reports END *** -->
 

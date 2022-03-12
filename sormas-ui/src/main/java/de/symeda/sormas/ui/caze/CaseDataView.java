@@ -31,6 +31,7 @@ import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.messaging.SmsListComponent;
 import de.symeda.sormas.ui.caze.surveillancereport.SurveillanceReportListComponent;
@@ -138,9 +139,14 @@ public class CaseDataView extends AbstractCaseView {
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SAMPLES_LAB)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)
 			&& !caze.checkIsUnreferredPortHealthCase()) {
-			SampleListComponent sampleList = new SampleListComponent(
-				new SampleCriteria().caze(getCaseRef()).sampleAssociationType(SampleAssociationType.CASE),
-				e -> showNavigationConfirmPopupIfDirty(() -> ControllerProvider.getSampleController().create(getCaseRef(), caze.getDisease())));
+			SampleListComponent sampleList =
+				new SampleListComponent(new SampleCriteria().caze(getCaseRef()).sampleAssociationType(SampleAssociationType.CASE));
+			sampleList.addSideComponentCreateEventListener(
+				e -> showNavigationConfirmPopupIfDirty(() -> ControllerProvider.getSampleController().create(getCaseRef(), caze.getDisease(), () -> {
+					final CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
+					FacadeProvider.getCaseFacade().save(caseDataByUuid);
+					SormasUI.refreshView();
+				})));
 
 			SampleListComponentLayout sampleListComponentLayout =
 				new SampleListComponentLayout(sampleList, I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesCase));
@@ -201,8 +207,7 @@ public class CaseDataView extends AbstractCaseView {
 		}
 		DocumentListComponent documentList = null;
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)) {
-			documentList =
-				new DocumentListComponent(DocumentRelatedEntityType.CASE, getCaseRef(), UserRight.CASE_EDIT, caze.isPseudonymized());
+			documentList = new DocumentListComponent(DocumentRelatedEntityType.CASE, getCaseRef(), UserRight.CASE_EDIT, caze.isPseudonymized());
 			layout.addComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 

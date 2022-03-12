@@ -47,8 +47,6 @@ public interface EventParticipantFacade extends CoreFacade<EventParticipantDto, 
 
 	List<String> getAllActiveUuids();
 
-	void deleteEventParticipant(EventParticipantReferenceDto eventParticipantRef);
-
 	Page<EventParticipantIndexDto> getIndexPage(
 		EventParticipantCriteria eventParticipantCriteria,
 		Integer offset,

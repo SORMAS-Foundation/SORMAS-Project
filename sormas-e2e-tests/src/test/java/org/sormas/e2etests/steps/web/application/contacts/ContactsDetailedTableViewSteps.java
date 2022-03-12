@@ -1,6 +1,7 @@
 package org.sormas.e2etests.steps.web.application.contacts;
 
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.*;
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
 import java.util.ArrayList;
@@ -13,7 +14,8 @@ import javax.inject.Inject;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.enums.ContactOutcome;
-import org.sormas.e2etests.enums.TestDataUser;
+import org.sormas.e2etests.enums.UserRoles;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
@@ -30,7 +32,8 @@ public class ContactsDetailedTableViewSteps implements En {
       BaseSteps baseSteps,
       ApiState apiState,
       DataOperations dataOperations,
-      SoftAssert softly) {
+      SoftAssert softly,
+      EnvironmentManager environmentManager) {
     this.webDriverHelpers = webDriverHelpers;
     this.baseSteps = baseSteps;
 
@@ -100,7 +103,7 @@ public class ContactsDetailedTableViewSteps implements En {
           softly.assertEquals(
               detailedContactDTableRow.get(
                   ContactsDetailedTableViewHeaders.REPORTING_USER.toString()),
-              TestDataUser.REST_AUTOMATION.getUserRole(),
+              environmentManager.getUserByRole(locale, UserRoles.RestUser.getRole()).getUserRole(),
               "Reporting user is not correct");
           softly.assertAll();
         });

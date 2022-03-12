@@ -30,7 +30,6 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
@@ -48,8 +47,6 @@ public interface EventFacade extends CoreFacade<EventDto, EventIndexDto, EventRe
 	EventReferenceDto getReferenceByEventParticipant(String uuid);
 
 	List<String> getAllActiveUuids();
-
-	void deleteEvent(String eventUuid) throws ExternalSurveillanceToolException;
 
 	List<String> deleteEvents(List<String> eventUuids);
 

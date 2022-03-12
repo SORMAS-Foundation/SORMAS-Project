@@ -40,6 +40,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 
+import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -474,31 +475,26 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 	@Override
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Event> eventPath, Timestamp date) {
-		return addChangeDateFilter(new ChangeDateFilterBuilder(cb, date), eventPath).build();
+		return addChangeDates(new ChangeDateFilterBuilder(cb, date), eventPath, false).build();
 	}
 
 	private Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Event> eventPath, Timestamp date, String lastSynchronizedUuid) {
-
 		ChangeDateFilterBuilder changeDateFilterBuilder = lastSynchronizedUuid == null
 			? new ChangeDateFilterBuilder(cb, date)
 			: new ChangeDateFilterBuilder(cb, date, eventPath, lastSynchronizedUuid);
 
-		return addChangeDateFilter(changeDateFilterBuilder, eventPath).build();
+		return addChangeDates(changeDateFilterBuilder, eventPath, false).build();
 	}
 
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Event> eventPath, Expression<? extends Date> dateExpression) {
-
-		return addChangeDateFilter(new ChangeDateFilterBuilder(cb, dateExpression), eventPath).build();
+		return addChangeDates(new ChangeDateFilterBuilder(cb, dateExpression), eventPath, false).build();
 	}
 
-	private ChangeDateFilterBuilder addChangeDateFilter(ChangeDateFilterBuilder filterBuilder, From<?, Event> eventPath) {
-
-		filterBuilder.add(eventPath)
-			.add(eventPath, Event.EVENT_LOCATION)
-			.add(eventPath, Event.SORMAS_TO_SORMAS_ORIGIN_INFO)
-			.add(eventPath, Event.SORMAS_TO_SORMAS_SHARES);
-
-		return filterBuilder;
+	@Override
+	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, From<?, Event> eventFrom, boolean includeExtendedChangeDateFilters) {
+		return super.addChangeDates(builder, eventFrom, includeExtendedChangeDateFilters).add(eventFrom, Event.EVENT_LOCATION)
+			.add(eventFrom, Event.SORMAS_TO_SORMAS_ORIGIN_INFO)
+			.add(eventFrom, Event.SORMAS_TO_SORMAS_SHARES);
 	}
 
 	@Override
@@ -513,13 +509,13 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		// Delete all tasks associated with this event
 		List<Task> tasks = taskService.findBy(new TaskCriteria().event(new EventReferenceDto(event.getUuid())), true);
 		for (Task task : tasks) {
-			taskService.delete(task);
+			taskService.deletePermanent(task);
 		}
 
 		// Delete all event actions associated with this event
 		List<Action> actions = actionService.getAllByEvent(event);
 		for (Action action : actions) {
-			actionService.delete(action);
+			actionService.deletePermanent(action);
 		}
 
 		// Mark the event as deleted

@@ -53,6 +53,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.action.ActionDto;
 import de.symeda.sormas.api.action.ActionStatus;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.event.EventActionExportDto;
 import de.symeda.sormas.api.event.EventActionIndexDto;
 import de.symeda.sormas.api.event.EventCriteria;
@@ -62,6 +63,7 @@ import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -498,22 +500,28 @@ public class EventsView extends AbstractView {
 					});
 					actionButtonsLayout.addComponent(groupRelevanceStatusFilter);
 				} else {
-					int daysAfterEventGetsArchived = FacadeProvider.getConfigFacade().getDaysAfterEventGetsArchived();
-					if (daysAfterEventGetsArchived > 0) {
-						relevanceStatusInfoLabel = new Label(
-							VaadinIcons.INFO_CIRCLE.getHtml() + " "
-								+ String.format(I18nProperties.getString(Strings.infoArchivedEvents), daysAfterEventGetsArchived),
-							ContentMode.HTML);
-						relevanceStatusInfoLabel.setVisible(false);
-						relevanceStatusInfoLabel.addStyleName(CssStyles.LABEL_VERTICAL_ALIGN_SUPER);
-						actionButtonsLayout.addComponent(relevanceStatusInfoLabel);
-						actionButtonsLayout.setComponentAlignment(relevanceStatusInfoLabel, Alignment.MIDDLE_RIGHT);
+					if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.EVENT)) {
+
+						int daysAfterEventGetsArchived = FacadeProvider.getFeatureConfigurationFacade()
+							.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.EVENT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
+						if (daysAfterEventGetsArchived > 0) {
+							relevanceStatusInfoLabel = new Label(
+								VaadinIcons.INFO_CIRCLE.getHtml() + " "
+									+ String.format(I18nProperties.getString(Strings.infoArchivedEvents), daysAfterEventGetsArchived),
+								ContentMode.HTML);
+							relevanceStatusInfoLabel.setVisible(false);
+							relevanceStatusInfoLabel.addStyleName(CssStyles.LABEL_VERTICAL_ALIGN_SUPER);
+							actionButtonsLayout.addComponent(relevanceStatusInfoLabel);
+							actionButtonsLayout.setComponentAlignment(relevanceStatusInfoLabel, Alignment.MIDDLE_RIGHT);
+						}
 					}
 
 					eventRelevanceStatusFilter =
 						buildRelevanceStatus(Captions.eventActiveEvents, Captions.eventArchivedEvents, Captions.eventAllEvents);
 					eventRelevanceStatusFilter.addValueChangeListener(e -> {
-						relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
+						if (relevanceStatusInfoLabel != null) {
+							relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
+						}
 						eventCriteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 						navigateTo(eventCriteria);
 					});
@@ -547,7 +555,7 @@ public class EventsView extends AbstractView {
 							I18nProperties.getCaption(Captions.actionArchive),
 							VaadinIcons.ARCHIVE,
 							mi -> grid.bulkActionHandler(
-								items -> ControllerProvider.getEventController().archiveAllSelectedItems(items, () -> navigateTo(eventCriteria)),
+								items -> ControllerProvider.getEventController().archiveAllSelectedItems(items, () -> navigateTo(eventCriteria, true)),
 								true),
 							EntityRelevanceStatus.ACTIVE.equals(eventCriteria.getRelevanceStatus())));
 					bulkActions.add(
@@ -556,7 +564,7 @@ public class EventsView extends AbstractView {
 							VaadinIcons.ARCHIVE,
 							mi -> grid.bulkActionHandler(
 								items -> ControllerProvider.getEventController()
-									.dearchiveAllSelectedItems(eventGrid.asMultiSelect().getSelectedItems(), () -> navigateTo(eventCriteria)),
+									.dearchiveAllSelectedItems(eventGrid.asMultiSelect().getSelectedItems(), () ->  navigateTo(eventCriteria, true)),
 								true),
 							EntityRelevanceStatus.ARCHIVED.equals(eventCriteria.getRelevanceStatus())));
 				}

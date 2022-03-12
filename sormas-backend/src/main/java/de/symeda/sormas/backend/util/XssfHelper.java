@@ -14,7 +14,10 @@
  */
 package de.symeda.sormas.backend.util;
 
+import org.apache.poi.ss.util.AreaReference;
+import org.apache.poi.xssf.usermodel.DefaultIndexedColorMap;
 import org.apache.poi.xssf.usermodel.XSSFCell;
+import org.apache.poi.xssf.usermodel.XSSFColor;
 import org.apache.poi.xssf.usermodel.XSSFRow;
 import org.apache.poi.xssf.usermodel.XSSFSheet;
 import org.apache.poi.xssf.usermodel.XSSFTable;
@@ -24,6 +27,24 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import de.symeda.sormas.api.utils.InfoProvider;
 
 public final class XssfHelper {
+
+	private XssfHelper() {
+		// Hide utility class constructor
+	}
+
+	public static final int TABLE_STYLE_PRIMARY = 1;
+	public static final int TABLE_STYLE_SECONDARY = 2;
+
+	public static XSSFTable configureTable(AreaReference reference, String safeTableName, XSSFSheet sheet, int styleNumber) {
+
+		XSSFTable table = sheet.createTable(reference);
+		table.setName(safeTableName);
+		table.setDisplayName(safeTableName);
+		XssfHelper.styleTable(table, styleNumber);
+		table.getCTTable().addNewAutoFilter();
+
+		return table;
+	}
 
 	public static void styleTable(XSSFTable table, int styleNumber) {
 
@@ -49,5 +70,16 @@ public final class XssfHelper {
 		row = sheet.createRow(1);
 		cell = row.createCell(0);
 		cell.setCellValue(InfoProvider.get().getVersion());
+	}
+
+	public static final XSSFColor createColor(int red, int green, int blue) {
+
+		byte[] rgb = new byte[3];
+		rgb[0] = (byte) red;
+		rgb[1] = (byte) green;
+		rgb[2] = (byte) blue;
+
+		XSSFColor color = new XSSFColor(rgb, new DefaultIndexedColorMap());
+		return color;
 	}
 }

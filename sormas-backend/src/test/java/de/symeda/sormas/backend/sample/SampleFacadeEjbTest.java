@@ -31,6 +31,7 @@ import static org.junit.Assert.assertTrue;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -51,11 +52,11 @@ import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
-import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.AdditionalTestingStatus;
 import de.symeda.sormas.api.sample.PathogenTestDto;
@@ -507,7 +508,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, getSampleTestFacade().getAllActivePathogenTestsAfter(null).size());
 		assertEquals(1, getSampleTestFacade().getAllActiveUuids().size());
 
-		getCaseFacade().archive(caze.getUuid());
+		getCaseFacade().archive(caze.getUuid(), null);
 
 		// getAllActiveSamples/getAllActiveSampleTests and getAllUuids should return length 0
 		assertEquals(0, getSampleFacade().getAllActiveSamplesAfter(null).size());
@@ -515,7 +516,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(0, getSampleTestFacade().getAllActivePathogenTestsAfter(null).size());
 		assertEquals(0, getSampleTestFacade().getAllActiveUuids().size());
 
-		getCaseFacade().dearchive(caze.getUuid());
+		getCaseFacade().dearchive(Collections.singletonList(caze.getUuid()), null);
 
 		// getAllActiveSamples/getAllActiveSampleTests and getAllUuids should return length 1
 		assertEquals(1, getSampleFacade().getAllActiveSamplesAfter(null).size());

@@ -34,13 +34,13 @@ public class DashboardController {
 	}
 
 	public void registerViews(Navigator navigator) {
-		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.DASHBOARD_SURVEILLANCE_ACCESS)) {
+		if (permitted(FeatureType.CASE_SURVEILANCE, UserRight.DASHBOARD_SURVEILLANCE_VIEW)) {
 			navigator.addView(SurveillanceDashboardView.VIEW_NAME, SurveillanceDashboardView.class);
 		}
-		if (permitted(FeatureType.CONTACT_TRACING, UserRight.DASHBOARD_CONTACT_ACCESS)) {
+		if (permitted(FeatureType.CONTACT_TRACING, UserRight.DASHBOARD_CONTACT_VIEW)) {
 			navigator.addView(ContactsDashboardView.VIEW_NAME, ContactsDashboardView.class);
 		}
-		if (permitted(FeatureType.CAMPAIGNS, UserRight.DASHBOARD_CAMPAIGNS_ACCESS)) {
+		if (permitted(FeatureType.CAMPAIGNS, UserRight.DASHBOARD_CAMPAIGNS_VIEW)) {
 			navigator.addView(CampaignDashboardView.VIEW_NAME, CampaignDashboardView.class);
 		}
 	}

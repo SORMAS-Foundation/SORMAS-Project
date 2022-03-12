@@ -6,7 +6,6 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -71,7 +70,7 @@ public class PersonFilterForm extends AbstractFilterForm<PersonCriteria> {
 		UserDto user = currentUserDto();
 		ComboBox regionField = null;
 		if (user.getRegion() == null) {
-			regionField = addField(getContent(), FieldConfiguration.pixelSized(CaseDataDto.REGION, 140));
+			regionField = addField(getContent(), FieldConfiguration.pixelSized(PersonCriteria.REGION, 140));
 			regionField.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 		}
 
@@ -112,6 +111,7 @@ public class PersonFilterForm extends AbstractFilterForm<PersonCriteria> {
 				districtFilter.removeAllItems();
 				districtFilter.clear();
 			}
+			clearAndDisableFields(communityFilter);
 			break;
 		case PersonCriteria.DISTRICT:
 			DistrictReferenceDto district = (DistrictReferenceDto) event.getProperty().getValue();

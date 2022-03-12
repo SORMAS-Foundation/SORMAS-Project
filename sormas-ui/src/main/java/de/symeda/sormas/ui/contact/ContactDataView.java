@@ -41,6 +41,7 @@ import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
 import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
@@ -214,10 +215,15 @@ public class ContactDataView extends AbstractContactView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
-			SampleListComponent sampleList = new SampleListComponent(
-				new SampleCriteria().contact(getContactRef()).sampleAssociationType(SampleAssociationType.CONTACT),
+			SampleListComponent sampleList =
+				new SampleListComponent(new SampleCriteria().contact(getContactRef()).sampleAssociationType(SampleAssociationType.CONTACT));
+			sampleList.addSideComponentCreateEventListener(
 				e -> showNavigationConfirmPopupIfDirty(
-					() -> ControllerProvider.getSampleController().create(getContactRef(), contactDto.getDisease())));
+					() -> ControllerProvider.getSampleController().create(getContactRef(), contactDto.getDisease(), () -> {
+						final ContactDto contactByUuid = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
+						FacadeProvider.getContactFacade().save(contactByUuid);
+						SormasUI.refreshView();
+					})));
 
 			SampleListComponentLayout sampleListComponentLayout =
 				new SampleListComponentLayout(sampleList, I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesContact));

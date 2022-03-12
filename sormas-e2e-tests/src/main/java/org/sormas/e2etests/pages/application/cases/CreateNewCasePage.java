@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,7 @@ import org.openqa.selenium.By;
 public class CreateNewCasePage {
   public static final By DATE_OF_REPORT_INPUT = By.cssSelector(".v-window #reportDate input");
   public static final By DISEASE_COMBOBOX = By.cssSelector(".v-window #disease div");
+  public static final By DISEASE_VARIANT_COMBOBOX = By.cssSelector(".v-window #diseaseVariant div");
   public static final By RESPONSIBLE_REGION_COMBOBOX =
       By.cssSelector(".v-window #responsibleRegion div");
   public static final By RESPONSIBLE_DISTRICT_COMBOBOX =
@@ -57,4 +58,6 @@ public class CreateNewCasePage {
   public static final By PRIMARY_EMAIL_ADDRESS_INPUT = By.cssSelector(".v-window #emailAddress");
   public static final By CONTACT_CASE_SAVE_BUTTON =
       By.xpath("//div[contains(@class, 'popupContent')]//div[@id='commit']");
+  public static final By ENTER_HOME_ADDRESS_CHECKBOX =
+      By.cssSelector("[location='enterHomeAddressNow'] span.v-checkbox");
 }

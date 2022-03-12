@@ -603,7 +603,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 			});
 			return results.stream()
 				.filter(e -> e[0] != null)
-				.collect(Collectors.toMap(e -> PathogenTestResultType.valueOf((String) e[0]), e -> ((BigInteger) e[1]).longValue()));
+				.collect(Collectors.toMap(e -> PathogenTestResultType.valueOf((String) e[0]), e -> ((BigInteger) e[1]).longValue(), Long::sum));
 		}
 	}
 
@@ -923,7 +923,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 
 		// Delete all additional tests of this sample
 		for (AdditionalTest additionalTest : sample.getAdditionalTests()) {
-			additionalTestService.delete(additionalTest);
+			additionalTestService.deletePermanent(additionalTest);
 		}
 
 		// Remove the reference from another sample to this sample if existing

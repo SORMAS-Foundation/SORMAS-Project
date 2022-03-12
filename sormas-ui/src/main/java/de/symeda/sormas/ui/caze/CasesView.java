@@ -61,8 +61,10 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportType;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -123,7 +125,8 @@ public class CasesView extends AbstractView {
 	public static final int BULK_EDIT_MODE_WARNING_THRESHOLD = 1000;
 
 	private final boolean caseFollowUpEnabled;
-	private final boolean hasCaseManagementRight;
+	private final boolean hasClinicalCourseRight;
+	private final boolean hasTherapyRight;
 	private final ExportConfigurationDto detailedExportConfiguration;
 
 	private final CaseCriteria criteria;
@@ -153,7 +156,8 @@ public class CasesView extends AbstractView {
 		super(VIEW_NAME);
 
 		caseFollowUpEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP);
-		hasCaseManagementRight = UserProvider.getCurrent().hasUserRight(UserRight.CASE_MANAGEMENT_ACCESS);
+		hasClinicalCourseRight = UserProvider.getCurrent().hasUserRight(UserRight.CLINICAL_COURSE_VIEW);
+		hasTherapyRight = UserProvider.getCurrent().hasUserRight(UserRight.THERAPY_VIEW);
 		detailedExportConfiguration = buildDetailedExportConfiguration();
 		viewConfiguration = ViewModelProviders.of(CasesView.class).get(CasesViewConfiguration.class);
 		if (viewConfiguration.getViewType() == null) {
@@ -233,7 +237,8 @@ public class CasesView extends AbstractView {
 				.getCaseExportProperties(
 					CaseDownloadUtil::getPropertyCaption,
 					caseFollowUpEnabled,
-					hasCaseManagementRight,
+					hasClinicalCourseRight,
+					hasTherapyRight,
 					FacadeProvider.getConfigFacade().getCountryLocale())
 				.stream()
 				.map(ExportPropertyMetaInfo::getPropertyId)
@@ -308,7 +313,7 @@ public class CasesView extends AbstractView {
 					Strings.infoDetailedExport);
 			}
 
-			if (hasCaseManagementRight) {
+			if (hasClinicalCourseRight || hasTherapyRight) {
 				StreamResource caseManagementExportStreamResource =
 					DownloadUtil.createCaseManagementExportResource(grid.getCriteria(), this::getSelectedRows, ExportEntityName.CONTACTS);
 				addExportButton(
@@ -372,7 +377,8 @@ public class CasesView extends AbstractView {
 						ImportExportUtils.getCaseExportProperties(
 							CaseDownloadUtil::getPropertyCaption,
 							caseFollowUpEnabled,
-							hasCaseManagementRight,
+							hasClinicalCourseRight,
+							hasTherapyRight,
 							FacadeProvider.getConfigFacade().getCountryLocale()),
 						customExportWindow::close);
 					customExportsLayout.setExportCallback(
@@ -623,16 +629,20 @@ public class CasesView extends AbstractView {
 		{
 			// Show active/archived/all dropdown
 			if (Objects.nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasUserRight(UserRight.CASE_VIEW)) {
-				int daysAfterCaseGetsArchived = FacadeProvider.getConfigFacade().getDaysAfterCaseGetsArchived();
-				if (daysAfterCaseGetsArchived > 0) {
-					relevanceStatusInfoLabel = new Label(
-						VaadinIcons.INFO_CIRCLE.getHtml() + " "
-							+ String.format(I18nProperties.getString(Strings.infoArchivedCases), daysAfterCaseGetsArchived),
-						ContentMode.HTML);
-					relevanceStatusInfoLabel.setVisible(false);
-					relevanceStatusInfoLabel.addStyleName(CssStyles.LABEL_VERTICAL_ALIGN_SUPER);
-					actionButtonsLayout.addComponent(relevanceStatusInfoLabel);
-					actionButtonsLayout.setComponentAlignment(relevanceStatusInfoLabel, Alignment.MIDDLE_RIGHT);
+
+				if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CASE)) {
+					int daysAfterCaseGetsArchived = FacadeProvider.getFeatureConfigurationFacade()
+						.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CASE, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
+					if (daysAfterCaseGetsArchived > 0) {
+						relevanceStatusInfoLabel = new Label(
+							VaadinIcons.INFO_CIRCLE.getHtml() + " "
+								+ String.format(I18nProperties.getString(Strings.infoArchivedCases), daysAfterCaseGetsArchived),
+							ContentMode.HTML);
+						relevanceStatusInfoLabel.setVisible(false);
+						relevanceStatusInfoLabel.addStyleName(CssStyles.LABEL_VERTICAL_ALIGN_SUPER);
+						actionButtonsLayout.addComponent(relevanceStatusInfoLabel);
+						actionButtonsLayout.setComponentAlignment(relevanceStatusInfoLabel, Alignment.MIDDLE_RIGHT);
+					}
 				}
 				relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
 				relevanceStatusFilter.setId("relevanceStatus");
@@ -643,7 +653,9 @@ public class CasesView extends AbstractView {
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.caseArchivedCases));
 				relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.caseAllCases));
 				relevanceStatusFilter.addValueChangeListener(e -> {
-					relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
+					if (relevanceStatusInfoLabel != null) {
+						relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
+					}
 					criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 					navigateTo(criteria);
 				});
@@ -680,12 +692,12 @@ public class CasesView extends AbstractView {
 					}
 					menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE, mi -> {
 						grid.bulkActionHandler(
-							items -> ControllerProvider.getCaseController().archiveAllSelectedItems(items, () -> navigateTo(criteria)),
+							items -> ControllerProvider.getCaseController().archiveAllSelectedItems(items, () -> navigateTo(criteria, true)),
 							true);
 					}, hasBulkOperationsRight && EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())));
 					menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchive), VaadinIcons.ARCHIVE, mi -> {
 						grid.bulkActionHandler(
-							items -> ControllerProvider.getCaseController().dearchiveAllSelectedItems(items, () -> navigateTo(criteria)),
+							items -> ControllerProvider.getCaseController().dearchiveAllSelectedItems(items, () -> navigateTo(criteria, true)),
 							true);
 					}, hasBulkOperationsRight && EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 					menuBarItems.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.sormasToSormasShare), VaadinIcons.SHARE, mi -> {

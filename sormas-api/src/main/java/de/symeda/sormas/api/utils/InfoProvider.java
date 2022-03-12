@@ -19,20 +19,29 @@ package de.symeda.sormas.api.utils;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Properties;
+
+import org.jsoup.UncheckedIOException;
 
 public class InfoProvider {
 
 	private static InfoProvider instance;
 
 	private final String version;
+	private final String commitShortId;
+	private final String commitHistoryUrl;
 
 	InfoProvider() {
-		try {
-			InputStream stream = InfoProvider.class.getResourceAsStream("/version.txt");
-			String version = DataHelper.convertStreamToString(stream);
-			this.version = version.trim();
+
+		try (InputStream fis = InfoProvider.class.getResourceAsStream("/git.properties")) {
+
+			Properties prop = new Properties();
+			prop.load(fis);
+			this.version = prop.getProperty("git.build.version");
+			this.commitShortId = prop.getProperty("git.commit.id.abbrev");
+			this.commitHistoryUrl = createLastCommitHistoryUrl(prop.getProperty("git.remote.origin.url"), prop.getProperty("git.commit.id.full"));
 		} catch (IOException e) {
-			throw new RuntimeException(e);
+			throw new UncheckedIOException(e);
 		}
 	}
 
@@ -41,6 +50,25 @@ public class InfoProvider {
 			instance = new InfoProvider();
 		}
 		return instance;
+	}
+
+	/**
+	 * @param gitRemoteOriginUrl
+	 *            URL of the origin repo.
+	 * @param commitFullId
+	 *            The full/ling id of the last commit.
+	 * @return {@code lastCommitHistoryUrl}
+	 */
+	static String createLastCommitHistoryUrl(String gitRemoteOriginUrl, String commitFullId) {
+
+		String url = gitRemoteOriginUrl;
+		if (url.startsWith("git@")) {
+			url = url.replaceFirst(":", "/").replace("git@", "https://");
+		}
+
+		url = url.replace(".git", "/commits/");
+		url = url + commitFullId;
+		return url;
 	}
 
 	/**
@@ -53,18 +81,48 @@ public class InfoProvider {
 	}
 
 	/**
-	 * Reads the version from the version.txt where it is written by maven.
-	 * We are doing it this way, because all other version information (manifest, pom) will be removed in the android app by gradle.
+	 * Reads the current version.
 	 */
 	public String getVersion() {
 		return version;
 	}
 
 	/**
-	 * Reads the version from the version.txt where it is written by maven and replaces the last version number with a 0.
+	 * Reads the current version and replaces the last version number with a 0.
 	 */
 	public String getBaseVersion() {
 		return version.substring(0, version.lastIndexOf(".")) + ".0";
+	}
+
+	/**
+	 * @return The abbreviated id of the last commit.
+	 */
+	public String getLastCommitShortId() {
+		return commitShortId;
+	}
+
+	/**
+	 * @return The URL to the commit history starting at the last commit.
+	 */
+	public String getLastCommitHistoryUrl() {
+		return commitHistoryUrl;
+	}
+
+	/**
+	 * @return {@code true}, if this artifact was built from a SNAPSHOT version.
+	 */
+	public boolean isSnapshotVersion() {
+		return isSnapshot(version);
+	}
+
+	/**
+	 * @param versionString
+	 *            A {@code versionString} to check.
+	 * @return {@code true}, if the artifact was built from a SNAPSHOT version.
+	 */
+	public boolean isSnapshot(String versionString) {
+
+		return versionString.endsWith("SNAPSHOT");
 	}
 
 	/**

@@ -88,17 +88,15 @@ public interface ConfigFacade {
 
 	int getInfrastructureSyncThreshold();
 
-	int getDaysAfterCaseGetsArchived();
-
-	int getDaysAfterEventGetsArchived();
-
 	int getDaysAfterSystemEventGetsDeleted();
-
-	int getDaysAfterTravelEntryGetsArchived();
 
 	GeoLatLon getCountryCenter();
 
 	boolean isMapUseCountryCenter();
+
+	String getMapTilersUrl();
+
+	String getMapTilersAttribution();
 
 	int getMapZoom();
 
@@ -143,4 +141,8 @@ public interface ConfigFacade {
 	long getDocumentUploadSizeLimitMb();
 
 	long getImportFileSizeLimitMb();
+
+	String getAuditLoggerConfig();
+
+	String getAuditSourceSite();
 }

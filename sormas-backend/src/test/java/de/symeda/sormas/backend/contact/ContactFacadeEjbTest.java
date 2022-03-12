@@ -400,7 +400,8 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Another", "Admin", UserRole.ADMIN);
+		UserDto admin =
+			creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Another", "Admin", UserRole.ADMIN);
 		String adminUuid = admin.getUuid();
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
@@ -442,7 +443,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(getVisitFacade().getVisitByUuid(visit.getUuid()));
 		assertNotNull(getSampleFacade().getSampleByUuid(sample.getUuid()));
 
-		getContactFacade().deleteContact(contact.getUuid());
+		getContactFacade().delete(contact.getUuid());
 
 		// Deleted flag should be set for contact; Task should be deleted
 		assertTrue(getContactFacade().getDeletedUuidsSince(since).contains(contact.getUuid()));
@@ -1285,7 +1286,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, getVisitFacade().getAllActiveVisitsAfter(null).size());
 		assertEquals(1, getVisitFacade().getAllActiveUuids().size());
 
-		getCaseFacade().archive(caze.getUuid());
+		getCaseFacade().archive(caze.getUuid(), null);
 
 		// getAllActiveContacts and getAllUuids should return length 0
 		assertEquals(0, getContactFacade().getAllAfter(null).size());
@@ -1293,7 +1294,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(0, getVisitFacade().getAllActiveVisitsAfter(null).size());
 		assertEquals(0, getVisitFacade().getAllActiveUuids().size());
 
-		getCaseFacade().dearchive(caze.getUuid());
+		getCaseFacade().dearchive(Collections.singletonList(caze.getUuid()), null);
 
 		// getAllActiveContacts and getAllUuids should return length 1
 		assertEquals(1, getContactFacade().getAllAfter(null).size());

@@ -45,7 +45,6 @@ import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.inject.Inject;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -64,7 +63,6 @@ import org.slf4j.LoggerFactory;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDetailedReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -96,7 +94,7 @@ import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -132,6 +130,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
+	@EJB
+	private UserService userService;
 	@EJB
 	private EventGroupService eventGroupService;
 	@EJB
@@ -275,7 +275,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Override
-	public void deleteEvent(String eventUuid) throws ExternalSurveillanceToolException {
+	public void delete(String eventUuid) throws ExternalSurveillanceToolException {
 		if (!userService.hasRight(UserRight.EVENT_DELETE)) {
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete events.");
 		}
@@ -1188,19 +1188,11 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
 		cq.where(cb.equal(from.get(Event.ARCHIVED), false), cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
-		cq.select(from.get(Event.UUID));
-		List<String> uuids = em.createQuery(cq).getResultList();
+		cq.select(from.get(Event.UUID)).distinct(true);
+		List<String> eventUuids = em.createQuery(cq).getResultList();
 
-		if (!uuids.isEmpty()) {
-
-			CriteriaUpdate<Event> cu = cb.createCriteriaUpdate(Event.class);
-			Root<Event> root = cu.from(Event.class);
-
-			cu.set(root.get(Event.ARCHIVED), true);
-
-			cu.where(root.get(Event.UUID).in(uuids));
-
-			em.createQuery(cu).executeUpdate();
+		if (!eventUuids.isEmpty()) {
+			archive(eventUuids);
 		}
 	}
 
@@ -1296,7 +1288,6 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	public static class EventFacadeEjbLocal extends EventFacadeEjb {
 
 		public EventFacadeEjbLocal() {
-			super();
 		}
 
 		@Inject
@@ -1305,8 +1296,4 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		}
 	}
 
-	@Override
-	protected void delete(Event entity) {
-		service.delete(entity);
-	}
 }

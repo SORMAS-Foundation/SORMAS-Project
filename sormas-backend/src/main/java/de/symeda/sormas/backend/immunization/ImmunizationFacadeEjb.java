@@ -45,7 +45,6 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -77,7 +76,7 @@ import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
-import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
@@ -214,7 +213,7 @@ public class ImmunizationFacadeEjb
 
 		List<VaccinationDto> vaccinationDtos = new ArrayList<>();
 		for (Vaccination vaccination : entity.getVaccinations()) {
-			VaccinationDto vaccinationDto = VaccinationFacadeEjbLocal.toDto(vaccination);
+			VaccinationDto vaccinationDto = vaccinationFacade.toDto(vaccination);
 			vaccinationDtos.add(vaccinationDto);
 		}
 		dto.setVaccinations(vaccinationDtos);
@@ -254,7 +253,7 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
-	public void deleteImmunization(String uuid) {
+	public void delete(String uuid) {
 		if (!userService.hasRight(UserRight.IMMUNIZATION_DELETE)) {
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete immunizations");
 		}
@@ -594,11 +593,6 @@ public class ImmunizationFacadeEjb
 
 		vaccinationFacade.copyExistingVaccinationsToNewImmunization(immunizationDto, newImmunization);
 		service.ensurePersisted(newImmunization);
-	}
-
-	@Override
-	protected void delete(Immunization entity) {
-		service.delete(entity);
 	}
 
 	@LocalBean

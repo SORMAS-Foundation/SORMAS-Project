@@ -1,6 +1,7 @@
 @UI @Sanity @Sample
 Feature: Sample Functionalities
 
+  @env_main @check
   Scenario: Edit a new case Sample
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -17,13 +18,13 @@ Feature: Sample Functionalities
     When I change all Sample fields and save
     Then I check the edited Sample is correctly displayed on Edit Sample page
 
-  @issue=SORDEV-5471
+  @issue=SORDEV-5471 @env_main
   Scenario: Edit a new contact Sample
     Given I log in with National User
     And I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     And I fill a new contact form
-    And I click on the popup Save button
+    And I click on SAVE new contact button
     And I collect the contact person UUID displayed on Edit contact page
     And I click on New Sample
     When I collect the sample UUID displayed on create new sample page
@@ -35,13 +36,13 @@ Feature: Sample Functionalities
     When I change all Sample fields and save
     Then I check the edited Sample is correctly displayed on Edit Sample page
 
-  @issue=SORDEV-5471
+  @issue=SORDEV-5471 @env_main
   Scenario: Edit a new contact Sample with alternate purpose
     Given I log in with National User
     And I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     And I fill a new contact form
-    And I click on the popup Save button
+    And I click on SAVE new contact button
     And I collect the contact person UUID displayed on Edit contact page
     And I click on New Sample
     When I collect the sample UUID displayed on create new sample page
@@ -52,7 +53,7 @@ Feature: Sample Functionalities
     When I open created Sample
     Then I check the alternate Sample is correctly displayed on Edit Sample page
 
-  @issue=SORDEV-5471
+  @issue=SORDEV-5471 @env_main
   Scenario: Edit a new event participant Sample
     Given I log in with National User
     And I click on the Events button from navbar
@@ -75,7 +76,7 @@ Feature: Sample Functionalities
     When I change all Sample fields and save
     Then I check the edited Sample is correctly displayed on Edit Sample page
 
-
+  @env_main
   Scenario: Add a Pathogen test from Samples and verify the fields
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -88,11 +89,12 @@ Feature: Sample Functionalities
     And API: I check that POST call status code is 200
     When I log in with National User
     And I click on the Sample button from navbar
-    And I am accessing the created sample via api
+    And I am opening the last created via API Sample by url navigation
     And I click on the new pathogen test from the Edit Sample page
     And I complete all fields from Pathogen test result popup and save
     Then I check that the created Pathogen is correctly displayed
 
+  @env_main
   Scenario: Delete created sample
     Given API: I create a new person
     Then API: I check that POST call body is "OK"

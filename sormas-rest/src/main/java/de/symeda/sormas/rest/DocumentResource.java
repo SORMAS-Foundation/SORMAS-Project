@@ -3,7 +3,6 @@ package de.symeda.sormas.rest;
 import java.util.List;
 import java.util.Map;
 
-import javax.annotation.security.RolesAllowed;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
@@ -20,9 +19,6 @@ import de.symeda.sormas.api.document.DocumentDto;
 @Path("/documents")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
-@RolesAllowed({
-	"USER",
-	"REST_USER" })
 public class DocumentResource {
 
 	@GET

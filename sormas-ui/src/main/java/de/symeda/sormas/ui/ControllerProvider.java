@@ -44,6 +44,7 @@ import de.symeda.sormas.ui.task.TaskController;
 import de.symeda.sormas.ui.therapy.TherapyController;
 import de.symeda.sormas.ui.travelentry.TravelEntryController;
 import de.symeda.sormas.ui.user.UserController;
+import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.BaseControllerProvider;
 import de.symeda.sormas.ui.vaccination.VaccinationController;
 import de.symeda.sormas.ui.visit.VisitController;
@@ -79,6 +80,7 @@ public class ControllerProvider extends BaseControllerProvider {
 	private final TravelEntryController travelEntryController;
 	private final ImmunizationController immunizationController;
 	private final VaccinationController vaccinationController;
+	private final ArchivingController archivingController;
 
 	public ControllerProvider() {
 		super();
@@ -112,6 +114,7 @@ public class ControllerProvider extends BaseControllerProvider {
 		travelEntryController = new TravelEntryController();
 		immunizationController = new ImmunizationController();
 		vaccinationController = new VaccinationController();
+		archivingController = new ArchivingController();
 	}
 
 	protected static ControllerProvider get() {
@@ -232,5 +235,9 @@ public class ControllerProvider extends BaseControllerProvider {
 
 	public static VaccinationController getVaccinationController() {
 		return get().vaccinationController;
+	}
+
+	public static ArchivingController getArchiveController() {
+		return get().archivingController;
 	}
 }

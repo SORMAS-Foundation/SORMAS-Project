@@ -15,6 +15,7 @@
 package de.symeda.sormas.backend.common;
 
 import java.nio.charset.StandardCharsets;
+import java.time.Duration;
 import java.util.List;
 import java.util.Locale;
 import java.util.Map;
@@ -63,6 +64,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String COUNTRY_CENTER_LAT = "country.center.latitude";
 	private static final String COUNTRY_CENTER_LON = "country.center.longitude";
 	private static final String MAP_USE_COUNTRY_CENTER = "map.usecountrycenter";
+	private static final String MAP_TILES_URL = "map.tiles.url";
+	private static final String MAP_TILES_ATTRIBUTION = "map.tiles.attribution";
 	private static final String MAP_ZOOM = "map.zoom";
 
 	public static final String VERSION_PLACEHOLER = "%version";
@@ -109,6 +112,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	public static final String INTERFACE_PATIENT_DIARY_PROBANDS_URL = "interface.patientdiary.probandsurl";
 	public static final String INTERFACE_PATIENT_DIARY_AUTH_URL = "interface.patientdiary.authurl";
 	public static final String INTERFACE_PATIENT_DIARY_FRONTEND_AUTH_URL = "interface.patientdiary.frontendAuthurl";
+	public static final String INTERFACE_PATIENT_DIARY_TOKEN_LIFETIME = "interface.patientdiary.tokenLifetime";
 	public static final String INTERFACE_PATIENT_DIARY_EMAIL = "interface.patientdiary.email";
 	public static final String INTERFACE_PATIENT_DIARY_PASSWORD = "interface.patientdiary.password";
 	public static final String INTERFACE_PATIENT_DIARY_DEFAULT_USER_USERNAME = "interface.patientdiary.defaultuser.username";
@@ -117,10 +121,6 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	public static final String DOCGENERATION_NULL_REPLACEMENT = "docgeneration.nullReplacement";
 	public static final String INTERFACE_DEMIS_JNDINAME = "interface.demis.jndiName";
-
-	public static final String DAYS_AFTER_CASE_GETS_ARCHIVED = "daysAfterCaseGetsArchived";
-	private static final String DAYS_AFTER_EVENT_GETS_ARCHIVED = "daysAfterEventGetsArchived";
-	private static final String DAYS_AFTER_TRAVEL_ENTRY_GETS_ARCHIVED = "daysAfterTravelEntryGetsArchived";
 
 	private static final String DAYS_AFTER_SYSTEM_EVENT_GETS_DELETED = "daysAfterSystemEventGetsDeleted";
 
@@ -157,6 +157,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	private static final String DASHBOARD_MAP_MARKER_LIMIT = "dashboardMapMarkerLimit";
 	private static final String AUDITOR_ATTRIBUTE_LOGGING = "auditor.attribute.logging";
+	private static final String AUDIT_LOGGER_CONFIG = "audit.logger.config";
+	private static final String AUDIT_SOURCE_SITE = "audit.source.site";
 
 	private static final String CREATE_DEFAULT_ENTITIES = "createDefaultEntities";
 	private static final String SKIP_DEFAULT_PASSWORD_CHECK = "skipDefaultPasswordCheck";
@@ -287,6 +289,16 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public boolean isMapUseCountryCenter() {
 		return getBoolean(MAP_USE_COUNTRY_CENTER, false);
+	}
+
+	@Override
+	public String getMapTilersUrl() {
+		return getProperty(MAP_TILES_URL, null);
+	}
+
+	@Override
+	public String getMapTilersAttribution() {
+		return getProperty(MAP_TILES_ATTRIBUTION, null);
 	}
 
 	@Override
@@ -435,23 +447,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
-	public int getDaysAfterCaseGetsArchived() {
-		return getInt(DAYS_AFTER_CASE_GETS_ARCHIVED, 90);
-	}
-
-	@Override
-	public int getDaysAfterEventGetsArchived() {
-		return getInt(DAYS_AFTER_EVENT_GETS_ARCHIVED, 90);
-	}
-
-	@Override
 	public int getDaysAfterSystemEventGetsDeleted() {
 		return getInt(DAYS_AFTER_SYSTEM_EVENT_GETS_DELETED, 90);
-	}
-
-	@Override
-	public int getDaysAfterTravelEntryGetsArchived() {
-		return getInt(DAYS_AFTER_TRAVEL_ENTRY_GETS_ARCHIVED, 90);
 	}
 
 	@Override
@@ -502,6 +499,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		config.setProbandsUrl(getProperty(INTERFACE_PATIENT_DIARY_PROBANDS_URL, null));
 		config.setAuthUrl(getProperty(INTERFACE_PATIENT_DIARY_AUTH_URL, null));
 		config.setFrontendAuthUrl(getProperty(INTERFACE_PATIENT_DIARY_FRONTEND_AUTH_URL, null));
+		config.setTokenLifetime(Duration.ofSeconds(getLong(INTERFACE_PATIENT_DIARY_TOKEN_LIFETIME, 21600L)));
 		config.setEmail(getProperty(INTERFACE_PATIENT_DIARY_EMAIL, null));
 		config.setPassword(getProperty(INTERFACE_PATIENT_DIARY_PASSWORD, null));
 		config.setAcceptPhoneContact(getBoolean(INTERFACE_PATIENT_DIARY_ACCEPT_PHONE_CONTACT, true));
@@ -687,6 +685,16 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public boolean isAuditorAttributeLoggingEnabled() {
 		return getBoolean(AUDITOR_ATTRIBUTE_LOGGING, true);
+	}
+
+	@Override
+	public String getAuditLoggerConfig(){
+		return getProperty(AUDIT_LOGGER_CONFIG,"");
+	}
+
+	@Override
+	public String getAuditSourceSite(){
+		return getProperty(AUDIT_SOURCE_SITE,"");
 	}
 
 	@Override
