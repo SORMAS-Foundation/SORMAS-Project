@@ -57,6 +57,39 @@ Feature: Epidemiological data coverage
     And I open saved activity from Epidemiological Data
     Then I am checking all Activity data is saved and displayed
 
-
+  @issue=SORDEV-5523 @env_main
+  Scenario: Enter an exposure data in Case Directory
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+#    And I click on the Epidemiological Data button in Cases directory
+    And I navigate to epidemiological data tab in Edit case page
+    And I click on Exposure details known with NO option
+    And I click on Exposure details known with UNKNOWN option
+    And I click on Exposure details known with YES option
+    Then I click on New Entry in Exposure Details Known in Cases directory
+#    And I select all options in Type of activity from Combobox in Exposure form
+#    Then  I select a Type of activity Other option in Exposure form
+#    And I fill a Type of activity details in Exposure by some type of activity details
+#    Then  I select a Type of activity Gathering option in Exposure form
+#    And I select all Type of gathering from Combobox in Exposure form
+#    And I select a type of gathering Other from Combobox in Exposure form
+#    And I fill a type of gathering details in Exposure form by type of gathering details
+#    Then I fill Location form for Type of place by options excluded Other and Facility
+#    And I click on save button from Epidemiological Data
+#    And I click on edit Exposure vision button
+#    And I select Work option in Type of activity from Combobox in Exposure form
+#    Then I fill Location form for Type of place by Other option
+#    And I click on save button from Epidemiological Data
+#    And I click on edit Exposure vision button
+#    And I select Travel option in Type of activity from Combobox in Exposure form
+#    Then I fill Location form for Type of place by Facility option
+#    And I click on save button from Epidemiological Data
 
 

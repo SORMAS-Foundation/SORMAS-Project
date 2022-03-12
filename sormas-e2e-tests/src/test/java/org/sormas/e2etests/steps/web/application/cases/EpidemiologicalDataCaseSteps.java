@@ -112,6 +112,12 @@ public class EpidemiologicalDataCaseSteps implements En {
                   "contactsWithSourceCaseKnown"));
         });
 
+    When(
+        "I click on New Entry in Exposure Details Known in Cases directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EXPOSURE_DETAILS_NEW_ENTRY_BUTTON);
+        });
+
     Then(
         "I create a new Exposure for Epidemiological data tab and fill all the data",
         () -> {
