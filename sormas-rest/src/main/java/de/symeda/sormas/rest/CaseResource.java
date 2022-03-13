@@ -36,6 +36,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.caze.CaseAndPersonDataDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
@@ -84,6 +85,12 @@ public class CaseResource extends EntityDtoResource {
 	@Path("/push")
 	public List<PushResult> postCases(@Valid List<CaseDataDto> dtos) {
 		return savePushedDto(dtos, FacadeProvider.getCaseFacade()::save);
+	}
+
+	@POST
+	@Path("/create")
+	public CaseDataDto createCase(@Valid CaseAndPersonDataDto dto) {
+		return FacadeProvider.getCaseFacade().save(dto);
 	}
 
 	@POST
