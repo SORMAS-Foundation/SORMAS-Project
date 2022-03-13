@@ -45,6 +45,7 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.EditPermissionType;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -1419,17 +1420,17 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return ContactJurisdictionPredicateValidator.of(contactQueryContext, user).inJurisdictionOrOwned();
 	}
 
-	public boolean isContactEditAllowed(Contact contact, boolean withArchive) {
-
-		if (!super.isEditAllowed(contact, withArchive)) {
-			return false;
-		}
+	public EditPermissionType isContactEditAllowed(Contact contact) {
 
 		if (contact.getSormasToSormasOriginInfo() != null && !contact.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
-			return false;
+			return EditPermissionType.REFUSED;
 		}
 
-		return inJurisdictionOrOwned(contact).getInJurisdiction() && !sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact);
+		if (!inJurisdictionOrOwned(contact).getInJurisdiction() || sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact)) {
+			return EditPermissionType.REFUSED;
+		}
+
+		return super.isEditAllowed(contact);
 	}
 
 	public List<Selection<?>> getJurisdictionSelections(ContactQueryContext qc) {

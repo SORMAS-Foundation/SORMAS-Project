@@ -68,6 +68,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.EditPermissionType;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -1378,7 +1379,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		for (String caseUuid : caseUuidList) {
 			Case caze = service.getByUuid(caseUuid);
 
-			if (service.isEditAllowed(caze, true)) {
+			if (service.isEditAllowed(caze).equals(EditPermissionType.ALLOWED)) {
 				CaseDataDto existingCaseDto = toDto(caze);
 
 				updateCaseWithBulkData(
@@ -1417,7 +1418,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		for (String caseUuid : caseUuidList) {
 			Case caze = service.getByUuid(caseUuid);
 
-			if (service.isEditAllowed(caze, true)) {
+			if (service.isEditAllowed(caze).equals(EditPermissionType.ALLOWED)) {
 				CaseDataDto existingCaseDto = toDto(caze);
 
 				updateCaseWithBulkData(
@@ -1491,7 +1492,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		Case existingCase = service.getByUuid(dto.getUuid());
 
-		if (!systemSave && internal && existingCase != null && !service.isEditAllowed(existingCase, true)) {
+		if (!systemSave && internal && existingCase != null && !service.isEditAllowed(existingCase).equals(EditPermissionType.ALLOWED)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorCaseNotEditable));
 		}
 
@@ -3585,10 +3586,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			featureConfigurationFacade.isPropertyValueTrue(FeatureType.CASE_FOLLOWUP, FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE));
 	}
 
-	public boolean isCaseEditAllowed(String caseUuid, boolean withArchive) {
+	public EditPermissionType isCaseEditAllowed(String caseUuid) {
 		Case caze = service.getByUuid(caseUuid);
 
-		return service.isEditAllowed(caze, withArchive);
+		return service.isEditAllowed(caze);
 	}
 
 	@Override

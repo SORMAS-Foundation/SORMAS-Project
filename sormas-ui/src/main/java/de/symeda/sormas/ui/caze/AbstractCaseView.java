@@ -25,6 +25,7 @@ import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
@@ -286,12 +287,12 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 
 	public void setCaseEditPermission(Component component) {
 
-		if (!isCaseEditAllowed(true)) {
+		if (!isCaseEditAllowed()) {
 			component.setEnabled(false);
 		}
 	}
 
-	protected boolean isCaseEditAllowed(boolean withArchive) {
-		return FacadeProvider.getCaseFacade().isCaseEditAllowed(getReference().getUuid(), withArchive);
+	protected boolean isCaseEditAllowed() {
+		return FacadeProvider.getCaseFacade().isCaseEditAllowed(getReference().getUuid()).equals(EditPermissionType.ALLOWED);
 	}
 }

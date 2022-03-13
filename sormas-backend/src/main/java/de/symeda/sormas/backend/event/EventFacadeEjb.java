@@ -55,6 +55,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.EditPermissionType;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -241,7 +242,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 		Event existingEvent = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 
-		if (internal && existingEvent != null && !service.isEventEditAllowed(existingEvent, true)) {
+		if (internal && existingEvent != null && !service.isEventEditAllowed(existingEvent).equals(EditPermissionType.ALLOWED)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEventNotEditable));
 		}
 
@@ -1285,7 +1286,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		for (String evetUuid : eventUuidList) {
 			Event event = service.getByUuid(evetUuid);
 
-			if (service.isEventEditAllowed(event, true)) {
+			if (service.isEventEditAllowed(event).equals(EditPermissionType.ALLOWED)) {
 				EventDto eventDto = toDto(event);
 				if (eventStatusChange) {
 					eventDto.setEventStatus(updatedTempEvent.getEventStatus());
@@ -1307,9 +1308,9 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		return changedEvents;
 	}
 
-	public Boolean isEventEditAllowed(String eventUuid, boolean withArchive) {
+	public EditPermissionType isEventEditAllowed(String eventUuid) {
 		Event event = service.getByUuid(eventUuid);
-		return service.isEventEditAllowed(event, withArchive);
+		return service.isEventEditAllowed(event);
 	}
 
 	@Override

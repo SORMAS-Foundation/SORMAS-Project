@@ -32,6 +32,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -110,7 +111,7 @@ public class SormasToSormasCaseFacadeEjb extends AbstractSormasToSormasInterface
 	protected void validateEntitiesBeforeShare(List<Case> entities, boolean handOverOwnership) throws SormasToSormasException {
 		List<ValidationErrors> validationErrors = new ArrayList<>();
 		for (Case caze : entities) {
-			if (!caseService.isEditAllowed(caze, true)) {
+			if (!caseService.isEditAllowed(caze).equals(EditPermissionType.ALLOWED)) {
 				validationErrors.add(
 					new ValidationErrors(
 						buildCaseValidationGroupName(caze),

@@ -17,6 +17,7 @@ package de.symeda.sormas.ui.campaign.campaigndata;
 
 import com.vaadin.navigator.ViewChangeListener;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
@@ -67,7 +68,7 @@ public abstract class AbstractCampaignDataView extends AbstractDetailView<Campai
 		return ROOT_VIEW_NAME;
 	}
 
-	protected boolean isCampaignEditAllowed(boolean withArchive) {
-		return FacadeProvider.getCampaignFacade().isCampaignEditAllowed(getReference().getUuid(), withArchive);
+	protected boolean isCampaignEditAllowed() {
+		return FacadeProvider.getCampaignFacade().isCampaignEditAllowed(getReference().getUuid()).equals(EditPermissionType.ALLOWED);
 	}
 }

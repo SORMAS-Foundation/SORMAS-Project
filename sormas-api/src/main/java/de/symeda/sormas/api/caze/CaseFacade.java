@@ -33,6 +33,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -165,7 +166,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	FollowUpPeriodDto calculateFollowUpUntilDate(CaseDataDto caseDto, boolean ignoreOverwrite);
 
-	boolean isCaseEditAllowed(String caseUuid, boolean withArchive);
+	EditPermissionType isCaseEditAllowed(String caseUuid);
 
 	boolean hasPositiveLabResult(String caseUuid);
 

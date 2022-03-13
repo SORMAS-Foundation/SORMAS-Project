@@ -39,6 +39,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import de.symeda.sormas.api.EditPermissionType;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -434,17 +435,17 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 			.add(eventParticipantFrom, EventParticipant.SORMAS_TO_SORMAS_SHARES);
 	}
 
-	public boolean isEventParticipantEditAllowed(EventParticipant eventParticipant, boolean withArchive) {
-
-		if (!super.isEditAllowed(eventParticipant, withArchive)) {
-			return false;
-		}
+	public EditPermissionType isEventParticipantEditAllowed(EventParticipant eventParticipant) {
 
 		if (eventParticipant.getSormasToSormasOriginInfo() != null && !eventParticipant.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
-			return false;
+			return EditPermissionType.REFUSED;
 		}
 
-		return inJurisdiction(eventParticipant) && !sormasToSormasShareInfoService.isEventParticipantOwnershipHandedOver(eventParticipant);
+		if (!inJurisdiction(eventParticipant) || sormasToSormasShareInfoService.isEventParticipantOwnershipHandedOver(eventParticipant)) {
+			return EditPermissionType.REFUSED;
+		}
+
+		return super.isEditAllowed(eventParticipant);
 	}
 
 	public Collection<EventParticipant> getByPersonUuids(List<String> personUuids) {

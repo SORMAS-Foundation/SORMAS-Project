@@ -62,6 +62,7 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.EditPermissionType;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -320,7 +321,7 @@ public class ContactFacadeEjb
 	public ContactDto save(ContactDto dto, boolean handleChanges, boolean handleCaseChanges, boolean checkChangeDate, boolean internal) {
 		final Contact existingContact = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 
-		if (internal && existingContact != null && !service.isContactEditAllowed(existingContact, true)) {
+		if (internal && existingContact != null && !service.isContactEditAllowed(existingContact).equals(EditPermissionType.ALLOWED)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorContactNotEditable));
 		}
 
@@ -1817,10 +1818,10 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	public boolean isContactEditAllowed(String contactUuid, boolean withArchive) {
+	public EditPermissionType isContactEditAllowed(String contactUuid) {
 		Contact contact = service.getByUuid(contactUuid);
 
-		return service.isContactEditAllowed(contact, withArchive);
+		return service.isContactEditAllowed(contact);
 	}
 
 	@Override
@@ -2081,7 +2082,7 @@ public class ContactFacadeEjb
 		for (String contactUuid : contactUuidlist) {
 			Contact contact = service.getByUuid(contactUuid);
 
-			if (service.isContactEditAllowed(contact, true)) {
+			if (service.isContactEditAllowed(contact).equals(EditPermissionType.ALLOWED)) {
 				ContactDto existingContactDto = toDto(contact);
 				if (classificationChange) {
 					existingContactDto.setContactClassification(updatedContactBulkEditData.getContactClassification());

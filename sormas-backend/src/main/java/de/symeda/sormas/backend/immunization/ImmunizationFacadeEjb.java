@@ -36,6 +36,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.EditPermissionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -264,10 +265,9 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
-	public boolean isImmunizationEditAllowed(String uuid, boolean withArchive) {
+	public EditPermissionType isImmunizationEditAllowed(String uuid) {
 		Immunization immunization = service.getByUuid(uuid);
-
-		return service.isImmunizationEditAllowed(immunization, withArchive);
+		return service.isImmunizationEditAllowed(immunization);
 	}
 
 	@Override
@@ -293,7 +293,7 @@ public class ImmunizationFacadeEjb
 	public ImmunizationDto save(@Valid @NotNull ImmunizationDto dto, boolean checkChangeDate, boolean internal) {
 		Immunization existingImmunization = service.getByUuid(dto.getUuid());
 
-		if (internal && existingImmunization != null && !service.isImmunizationEditAllowed(existingImmunization, true)) {
+		if (internal && existingImmunization != null && !service.isImmunizationEditAllowed(existingImmunization).equals(EditPermissionType.ALLOWED)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorImmunizationNotEditable));
 		}
 

@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.immunization;
 
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
@@ -61,12 +62,11 @@ public class ImmunizationDataView extends AbstractImmunizationView {
 			layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
 		}
 
-		if (isImmunizationEditAllowed(false)) {
-			if (FacadeProvider.getImmunizationFacade().isArchived(immunization.getUuid())
-				&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.EDIT_ARCHIVED_ENTITIES)) {
-				layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
-			}
-		} else {
+		EditPermissionType immunizationEditAllowed = FacadeProvider.getImmunizationFacade().isImmunizationEditAllowed(immunization.getUuid());
+
+		if (immunizationEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
+			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+		} else if (immunizationEditAllowed.equals(EditPermissionType.REFUSED)) {
 			layout.disable();
 		}
 	}

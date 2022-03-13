@@ -24,6 +24,7 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -278,15 +279,13 @@ public class ContactDataView extends AbstractContactView {
 
 		QuarantineOrderDocumentsComponent.addComponentToLayout(layout.getSidePanelComponent(), contactDto, documentList);
 
-		if (isContactEditAllowed(false)) {
-			if (FacadeProvider.getContactFacade().isArchived(contactDto.getUuid())
-				&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.EDIT_ARCHIVED_ENTITIES)) {
-				layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
-			}
-		} else {
+		EditPermissionType contactEditAllowed = FacadeProvider.getContactFacade().isContactEditAllowed(contactDto.getUuid());
+
+		if (contactEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
+			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+		} else if (contactEditAllowed.equals(EditPermissionType.REFUSED)) {
 			layout.disable();
 		}
-
 	}
 
 	private CaseInfoLayout createCaseInfoLayout(String caseUuid) {

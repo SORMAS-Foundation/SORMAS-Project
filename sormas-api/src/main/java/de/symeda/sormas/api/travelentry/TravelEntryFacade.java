@@ -5,6 +5,7 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.CoreFacade;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.utils.SortProperty;
 
@@ -15,7 +16,7 @@ public interface TravelEntryFacade extends CoreFacade<TravelEntryDto, TravelEntr
 
 	boolean isDeleted(String eventUuid);
 
-	Boolean isTravelEntryEditAllowed(String travelEntryUuid, boolean withArchive);
+	EditPermissionType isTravelEntryEditAllowed(String travelEntryUuid);
 
 	long count(TravelEntryCriteria criteria, boolean ignoreUserFilter);
 

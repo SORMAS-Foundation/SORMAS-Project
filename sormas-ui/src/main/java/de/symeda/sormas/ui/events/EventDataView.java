@@ -25,6 +25,7 @@ import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.action.ActionContext;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -254,12 +255,11 @@ public class EventDataView extends AbstractEventView {
 
 		layout.addSidePanelComponent(shortcutLinksLayout, SHORTCUT_LINKS_LOC);
 
-		if (isEventEditAllowed(false)) {
-			if (FacadeProvider.getEventFacade().isArchived(event.getUuid())
-				&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.EDIT_ARCHIVED_ENTITIES)) {
-				layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
-			}
-		} else {
+		EditPermissionType eventEditAllowed = FacadeProvider.getEventFacade().isEventEditAllowed(event.getUuid());
+
+		if (eventEditAllowed == EditPermissionType.ARCHIVING_STATUS_ONLY) {
+			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+		} else if (eventEditAllowed == EditPermissionType.REFUSED) {
 			layout.disable();
 		}
 	}

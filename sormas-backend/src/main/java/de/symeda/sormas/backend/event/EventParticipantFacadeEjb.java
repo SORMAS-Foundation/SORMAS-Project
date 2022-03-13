@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.event;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.backend.common.NotificationService;
@@ -274,7 +275,9 @@ public class EventParticipantFacadeEjb
 	public EventParticipantDto saveEventParticipant(@Valid EventParticipantDto dto, boolean checkChangeDate, boolean internal) {
 		EventParticipant existingParticipant = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 
-		if (internal && existingParticipant != null && !service.isEventParticipantEditAllowed(existingParticipant, true)) {
+		if (internal
+			&& existingParticipant != null
+			&& !service.isEventParticipantEditAllowed(existingParticipant).equals(EditPermissionType.ALLOWED)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEventParticipantNotEditable));
 		}
 
@@ -327,23 +330,26 @@ public class EventParticipantFacadeEjb
 	private void notifyEventResponsibleUsersOfCommonEventParticipant(EventParticipant eventParticipant, Event event) {
 		try {
 
-			notificationService.sendNotifications(NotificationType.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS, MessageSubject.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS, () -> {
+			notificationService.sendNotifications(
+				NotificationType.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS,
+				MessageSubject.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS,
+				() -> {
 
-				final Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
-				final Map<String, Optional<User>> responsibleUserByEventUuid =
-					eventService.getAllEventUuidsWithResponsibleUserByPersonAndDiseaseAfterDateForNotification(
-						eventParticipant.getPerson().getUuid(),
-						event.getDisease(),
-						fromDate);
-				if (responsibleUserByEventUuid.size() == 1 && responsibleUserByEventUuid.containsKey(event.getUuid())) {
-					// it means the event participant is only appearing into the current event
-					return new HashMap<>();
-				}
+					final Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
+					final Map<String, Optional<User>> responsibleUserByEventUuid =
+						eventService.getAllEventUuidsWithResponsibleUserByPersonAndDiseaseAfterDateForNotification(
+							eventParticipant.getPerson().getUuid(),
+							event.getDisease(),
+							fromDate);
+					if (responsibleUserByEventUuid.size() == 1 && responsibleUserByEventUuid.containsKey(event.getUuid())) {
+						// it means the event participant is only appearing into the current event
+						return new HashMap<>();
+					}
 
-				final Map<User, String> mapToReturn = new HashMap<>();
-				for (Map.Entry<String, Optional<User>> entry : responsibleUserByEventUuid.entrySet()) {
-					entry.getValue().filter(user -> StringUtils.isNotEmpty(user.getUserEmail())).ifPresent(user -> {
-						String message = String.format(
+					final Map<User, String> mapToReturn = new HashMap<>();
+					for (Map.Entry<String, Optional<User>> entry : responsibleUserByEventUuid.entrySet()) {
+						entry.getValue().filter(user -> StringUtils.isNotEmpty(user.getUserEmail())).ifPresent(user -> {
+							String message = String.format(
 								I18nProperties.getString(MessageContents.CONTENT_EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS),
 								DataHelper.getShortUuid(eventParticipant.getPerson().getUuid()),
 								DataHelper.getShortUuid(eventParticipant.getUuid()),
@@ -351,13 +357,11 @@ public class EventParticipantFacadeEjb
 								User.buildCaptionForNotification(event.getResponsibleUser()),
 								User.buildCaptionForNotification(userService.getCurrentUser()),
 								buildEventListContentForNotification(responsibleUserByEventUuid));
-						mapToReturn.put(
-							user,
-								message);
-					});
-				}
-				return mapToReturn;
-			});
+							mapToReturn.put(user, message);
+						});
+					}
+					return mapToReturn;
+				});
 		} catch (NotificationDeliveryFailedException e) {
 			logger.error(
 				String.format(
@@ -860,10 +864,10 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
-	public boolean isEventParticipantEditAllowed(String uuid, boolean withArchive) {
+	public EditPermissionType isEventParticipantEditAllowed(String uuid) {
 		EventParticipant eventParticipant = service.getByUuid(uuid);
 
-		return service.isEventParticipantEditAllowed(eventParticipant, withArchive);
+		return service.isEventParticipantEditAllowed(eventParticipant);
 	}
 
 	@Override

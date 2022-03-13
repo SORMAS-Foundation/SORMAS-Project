@@ -5,6 +5,7 @@ import static com.vaadin.ui.Notification.Type.TRAY_NOTIFICATION;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Notification;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
@@ -74,18 +75,17 @@ public class CampaignView extends AbstractDetailView<CampaignReferenceDto> {
 
 		getViewTitleLabel().setValue(campaignDto.getName());
 
-		if (isCampaignEditAllowed(false)) {
-			if (FacadeProvider.getCampaignFacade().isArchived(campaignDto.getUuid())
-				&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.EDIT_ARCHIVED_ENTITIES)) {
-				editComponent.setEditable(false, ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
-			}
-		} else {
+		EditPermissionType campaignEditAllowed = FacadeProvider.getCampaignFacade().isCampaignEditAllowed(campaignDto.getUuid());
+
+		if (campaignEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
+			editComponent.setEditable(false, ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+		} else if (campaignEditAllowed.equals(EditPermissionType.REFUSED)) {
 			editComponent.setEditable(false, "");
 		}
 	}
 
-	protected boolean isCampaignEditAllowed(boolean withArchive) {
-		return FacadeProvider.getCampaignFacade().isCampaignEditAllowed(getReference().getUuid(), withArchive);
+	protected boolean isCampaignEditAllowed() {
+		return FacadeProvider.getCampaignFacade().isCampaignEditAllowed(getReference().getUuid()).equals(EditPermissionType.ALLOWED);
 	}
 
 	@Override

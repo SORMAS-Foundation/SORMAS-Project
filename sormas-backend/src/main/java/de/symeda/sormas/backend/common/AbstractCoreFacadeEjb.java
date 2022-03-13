@@ -30,6 +30,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.CoreFacade;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
@@ -95,7 +96,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	public DTO save(@Valid @NotNull DTO dto) {
 		ADO existingAdo = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 
-		if (existingAdo != null && !service.isEditAllowed(existingAdo, true)) {
+		if (existingAdo != null && !service.isEditAllowed(existingAdo).equals(EditPermissionType.ALLOWED)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEntityNotEditable));
 		}
 

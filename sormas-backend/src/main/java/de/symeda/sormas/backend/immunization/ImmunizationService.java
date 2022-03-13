@@ -37,6 +37,7 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.EditPermissionType;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -535,20 +536,20 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		return filter;
 	}
 
-	public boolean isImmunizationEditAllowed(Immunization immunization, boolean withArchive) {
-
-		if (!super.isEditAllowed(immunization, withArchive)) {
-			return false;
-		}
+	public EditPermissionType isImmunizationEditAllowed(Immunization immunization) {
 
 		if (!userService.hasRight(UserRight.IMMUNIZATION_EDIT)) {
-			return false;
+			return EditPermissionType.REFUSED;
 		}
 
 		if (immunization.getSormasToSormasOriginInfo() != null && !immunization.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
-			return false;
+			return EditPermissionType.REFUSED;
 		}
 
-		return inJurisdictionOrOwned(immunization) && !sormasToSormasShareInfoService.isImmunizationsOwnershipHandedOver(immunization);
+		if (!inJurisdictionOrOwned(immunization) || sormasToSormasShareInfoService.isImmunizationsOwnershipHandedOver(immunization)) {
+			return EditPermissionType.REFUSED;
+		}
+
+		return super.isEditAllowed(immunization);
 	}
 }

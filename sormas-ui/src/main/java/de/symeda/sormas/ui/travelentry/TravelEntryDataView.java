@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.travelentry;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -92,12 +93,11 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 			layout.addSidePanelComponent(taskList, TASKS_LOC);
 		}
 
-		if (isTravelEntryEditAllowed(false)) {
-			if (FacadeProvider.getTravelEntryFacade().isArchived(travelEntryDto.getUuid())
-				&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.EDIT_ARCHIVED_ENTITIES)) {
-				layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
-			}
-		} else {
+		EditPermissionType travelEntryEditAllowed = FacadeProvider.getTravelEntryFacade().isTravelEntryEditAllowed(travelEntryDto.getUuid());
+
+		if (travelEntryEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
+			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+		} else if (travelEntryEditAllowed.equals(EditPermissionType.REFUSED)) {
 			layout.disable();
 		}
 	}

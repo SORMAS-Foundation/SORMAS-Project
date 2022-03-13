@@ -33,6 +33,7 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
@@ -143,10 +144,13 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 		});
 	}
 
-	public boolean isEditAllowed(ADO entity, boolean withArchive) {
-		if (withArchive) {
-			return !entity.isArchived() || featureConfigurationFacade.isFeatureEnabled(FeatureType.EDIT_ARCHIVED_ENTITIES);
+	public EditPermissionType isEditAllowed(ADO entity) {
+		if (entity.isArchived()) {
+			return featureConfigurationFacade.isFeatureEnabled(FeatureType.EDIT_ARCHIVED_ENTITIES)
+				? EditPermissionType.ALLOWED
+				: EditPermissionType.ARCHIVING_STATUS_ONLY;
 		}
-		return true;
+
+		return EditPermissionType.ALLOWED;
 	}
 }

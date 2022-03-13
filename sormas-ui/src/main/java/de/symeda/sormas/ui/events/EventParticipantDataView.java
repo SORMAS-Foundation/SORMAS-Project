@@ -19,6 +19,7 @@ import static de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponen
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.docgeneneration.DocumentWorkflow;
 import de.symeda.sormas.api.event.EventDto;
@@ -193,11 +194,12 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 			}
 		}
 
-		if (FacadeProvider.getEventParticipantFacade().isEventParticipantEditAllowed(eventParticipantRef.getUuid(), false)) {
-			if (FacadeProvider.getEventParticipantFacade().isArchived(eventParticipant.getUuid())) {
-				layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
-			}
-		} else {
+		EditPermissionType eventParticipantEditAllowed =
+			FacadeProvider.getEventParticipantFacade().isEventParticipantEditAllowed(eventParticipantRef.getUuid());
+
+		if (eventParticipantEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
+			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+		} else if (eventParticipantEditAllowed.equals(EditPermissionType.REFUSED)) {
 			layout.disable();
 		}
 	}

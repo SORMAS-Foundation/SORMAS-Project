@@ -51,6 +51,7 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.EditPermissionType;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -1281,17 +1282,18 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	@Override
-	public boolean isEditAllowed(Case caze, boolean withArchive) {
-
-		if (!super.isEditAllowed(caze, withArchive)) {
-			return false;
-		}
+	public EditPermissionType isEditAllowed(Case caze) {
 
 		if (caze.getSormasToSormasOriginInfo() != null && !caze.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
-			return false;
+			return EditPermissionType.REFUSED;
 		}
 
-		return inJurisdictionOrOwned(caze) && !sormasToSormasShareInfoService.isCaseOwnershipHandedOver(caze);
+		if (!inJurisdictionOrOwned(caze) || sormasToSormasShareInfoService.isCaseOwnershipHandedOver(caze)) {
+			return EditPermissionType.REFUSED;
+		}
+
+		return super.isEditAllowed(caze);
+
 	}
 
 	public boolean inJurisdiction(Case caze, User user) {

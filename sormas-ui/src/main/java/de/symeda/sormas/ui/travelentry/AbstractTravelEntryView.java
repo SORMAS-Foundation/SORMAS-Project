@@ -6,6 +6,7 @@ import java.util.List;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.ui.Component;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -57,16 +58,16 @@ public abstract class AbstractTravelEntryView extends AbstractDetailView<TravelE
 		return getReference();
 	}
 
-	protected Boolean isTravelEntryEditAllowed(boolean withArchive) {
-		return FacadeProvider.getTravelEntryFacade().isTravelEntryEditAllowed(getReference().getUuid(), withArchive);
-	}
-
 	public void setTravelEntryEditPermission(Component component) {
-		boolean isTravelEntryEditAllowed = isTravelEntryEditAllowed(true);
+		boolean isTravelEntryEditAllowed = isTravelEntryEditAllowed();
 
 		if (!isTravelEntryEditAllowed) {
 			component.setEnabled(false);
 		}
+	}
+
+	protected Boolean isTravelEntryEditAllowed() {
+		return FacadeProvider.getTravelEntryFacade().isTravelEntryEditAllowed(getReference().getUuid()).equals(EditPermissionType.ALLOWED);
 	}
 
 	@Override

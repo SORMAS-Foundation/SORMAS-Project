@@ -20,6 +20,7 @@ package de.symeda.sormas.ui.events;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Component;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
@@ -89,13 +90,13 @@ public abstract class AbstractEventView extends AbstractDetailView<EventReferenc
 	}
 
 	public void setEventEditPermission(Component component) {
-		if (!isEventEditAllowed(true)) {
+		if (!isEventEditAllowed()) {
 			component.setEnabled(false);
 		}
 	}
 
-	protected boolean isEventEditAllowed(boolean withArchive) {
-		return FacadeProvider.getEventFacade().isEventEditAllowed(getEventRef().getUuid(), withArchive);
+	protected boolean isEventEditAllowed() {
+		return FacadeProvider.getEventFacade().isEventEditAllowed(getEventRef().getUuid()).equals(EditPermissionType.ALLOWED);
 	}
 
 	public EventReferenceDto getEventRef() {

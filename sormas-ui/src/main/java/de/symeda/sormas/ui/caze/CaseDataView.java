@@ -16,6 +16,7 @@ package de.symeda.sormas.ui.caze;
 
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
@@ -198,12 +199,11 @@ public class CaseDataView extends AbstractCaseView {
 
 		QuarantineOrderDocumentsComponent.addComponentToLayout(layout.getSidePanelComponent(), caze, documentList);
 
-		if (isCaseEditAllowed(false)) {
-			if (FacadeProvider.getCaseFacade().isArchived(caze.getUuid())
-				&& FacadeProvider.getFeatureConfigurationFacade().isFeatureDisabled(FeatureType.EDIT_ARCHIVED_ENTITIES)) {
-				layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
-			}
-		} else {
+		EditPermissionType caseEditAllowed = FacadeProvider.getCaseFacade().isCaseEditAllowed(caze.getUuid());
+
+		if (caseEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
+			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+		} else if (caseEditAllowed.equals(EditPermissionType.REFUSED)) {
 			layout.disable();
 		}
 	}

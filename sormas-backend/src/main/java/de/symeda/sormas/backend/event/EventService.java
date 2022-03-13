@@ -40,6 +40,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 
+import de.symeda.sormas.api.EditPermissionType;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -884,17 +885,17 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return eventSummaryDetailsList;
 	}
 
-	public boolean isEventEditAllowed(Event event, boolean withArchive) {
-
-		if (!super.isEditAllowed(event, withArchive)) {
-			return false;
-		}
+	public EditPermissionType isEventEditAllowed(Event event) {
 
 		if (event.getSormasToSormasOriginInfo() != null && !event.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
-			return false;
+			return EditPermissionType.REFUSED;
 		}
 
-		return inJurisdictionOrOwned(event) && !sormasToSormasShareInfoService.isEventOwnershipHandedOver(event);
+		if (!inJurisdictionOrOwned(event) || sormasToSormasShareInfoService.isEventOwnershipHandedOver(event)) {
+			return EditPermissionType.REFUSED;
+		} ;
+
+		return super.isEditAllowed(event);
 	}
 
 	public boolean inJurisdictionOrOwned(Event event, User user) {
