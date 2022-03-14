@@ -716,7 +716,7 @@ public abstract class DataImporter {
 	 * Inserts the entry of a single cell into a related object
 	 */
 	protected void insertColumnEntryIntoRelatedObject(Object currentElement, String entry, String[] entryHeaderPath)
-			throws InvalidColumnException, de.symeda.sormas.api.importexport.ImportErrorException {
+		throws InvalidColumnException, de.symeda.sormas.api.importexport.ImportErrorException {
 		for (int i = 0; i < entryHeaderPath.length; i++) {
 			String headerPathElementName = entryHeaderPath[i];
 
@@ -733,14 +733,14 @@ public abstract class DataImporter {
 						continue;
 					} else {
 						throw new UnsupportedOperationException(
-								I18nProperties.getValidationError(Validations.importCasesPropertyTypeNotAllowed, propertyType.getName()));
+							I18nProperties.getValidationError(Validations.importCasesPropertyTypeNotAllowed, propertyType.getName()));
 					}
 				}
 			} catch (IntrospectionException e) {
 				throw new InvalidColumnException(buildEntityProperty(entryHeaderPath));
 			} catch (InvocationTargetException | IllegalAccessException e) {
 				throw new ImportErrorException(
-						I18nProperties.getValidationError(Validations.importErrorInColumn, buildEntityProperty(entryHeaderPath)));
+					I18nProperties.getValidationError(Validations.importErrorInColumn, buildEntityProperty(entryHeaderPath)));
 			} catch (IllegalArgumentException e) {
 				throw new ImportErrorException(entry, buildEntityProperty(entryHeaderPath));
 			} catch (ImportErrorException e) {
