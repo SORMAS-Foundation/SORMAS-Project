@@ -59,7 +59,7 @@ public class PersonSteps implements En {
           for (int i = 0; i < numberOfPersons; i++) {
             personList.add(personApiService.buildGeneratedPerson());
           }
-          log.info("Pushing %s Persons", numberOfPersons);
+          log.info("Pushing {} Persons", numberOfPersons);
           personsHelper.createMultiplePersons(personList);
           apiState.setLastCreatedPersonsList(personList);
         });
