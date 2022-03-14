@@ -29,4 +29,16 @@ public class TravelEntryPage {
       By.xpath("//*[text()='Eine neue Person anlegen']");
   public static final By IMPORT_SUCCESS_DE = By.xpath("//*[text()='Import erfolgreich!']");
   public static final By NEW_TRAVEL_ENTRY_BUTTON = By.cssSelector("div#travelEntryNewTravelEntry");
+  public static final By PERSON_FILTER_INPUT = By.id("nameUuidExternalIDLike");
+  public static final By RECOVERED_ENTRIES = By.id("onlyRecoveredEntries");
+  public static final By VACCINATED_ENTRIES = By.id("onlyVaccinatedEntries");
+  public static final By NEGATIVE_TESTES_ENTRIES = By.id("onlyEntriesTestedNegative");
+  public static final By CONVERTE_TO_CASE_ENTRIES = By.id("onlyEntriesConvertedToCase");
+  public static final By TRAVEL_ENTRY_DIRECTORY_PAGE_APPLY_FILTER_BUTTON =
+      By.id("actionApplyFilters");
+  public static final By TRAVEL_ENTRY_GRID_RESULTS_ROWS = By.cssSelector("[role=rowgroup] tr a");
+  public static final By TRAVEL_ENTRY_DIRECTORY_PAGE_SHOW_MORE_FILTERS_BUTTON =
+      By.id("showHideMoreFilters");
+  public static final By TRAVEL_ENTRY_AGGREGATION_COMBOBOX =
+      By.cssSelector("[id='relevanceStatus'] [class='v-filterselect-button']");
 }
