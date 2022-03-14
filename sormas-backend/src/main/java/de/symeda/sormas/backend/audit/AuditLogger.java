@@ -31,6 +31,7 @@ import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.List;
 import java.util.TimeZone;
 
 public class AuditLogger {
@@ -100,7 +101,7 @@ public class AuditLogger {
 		codeableConcept.addCoding(new Coding("https://www.hl7.org/fhir/valueset-participation-role-type.html", "110151", "Application Launcher"));
 		agent.setType(codeableConcept);
 		agent.setName("SYSTEM");
-		applicationStartAudit.setAgent(Collections.singletonList(agent));
+		applicationStartAudit.addAgent(agent);
 
 		AuditEvent.AuditEventSourceComponent source = new AuditEvent.AuditEventSourceComponent();
 		source.setSite(auditSourceSite);
@@ -118,5 +119,72 @@ public class AuditLogger {
 		applicationStartAudit.addEntity(entity);
 
 		accept(applicationStartAudit);
+	}
+
+	public void logBackendCall(String subject, String object, String calledMethod, List<String> params, String returnValue) {
+		AuditEvent backendCall = new AuditEvent();
+
+		// backendCall.setType();
+		// backendCall.setSubType();
+
+		backendCall.setAction(inferAction(calledMethod));
+		backendCall.setRecorded(Calendar.getInstance(TimeZone.getDefault()).getTime());
+
+		// success
+		//backendCall.setOutcome(AuditEvent.AuditEventOutcome._0);
+		//applicationStartAudit.setOutcomeDesc(outcomeDesc);
+		/*
+		 * AuditEvent.AuditEventAgentComponent agent = new AuditEvent.AuditEventAgentComponent();
+		 * CodeableConcept codeableConcept = new CodeableConcept();
+		 * codeableConcept.addCoding(new Coding("https://www.hl7.org/fhir/valueset-participation-role-type.html", "110151",
+		 * "Application Launcher"));
+		 * agent.setType(codeableConcept);
+		 * agent.setName("SYSTEM");
+		 * applicationStartAudit.setAgent(Collections.singletonList(agent));
+		 */
+
+		AuditEvent.AuditEventSourceComponent source = new AuditEvent.AuditEventSourceComponent();
+		source.setSite(auditSourceSite);
+		// Application Server
+		// AuditSourceType auditSourceType = AuditSourceType._4;
+		//source.addType(new Coding(auditSourceType.getSystem(), auditSourceType.toCode(), auditSourceType.getDisplay()));
+
+		backendCall.setSource(source);
+
+		//AuditEvent.AuditEventEntityComponent entity = new AuditEvent.AuditEventEntityComponent();
+		//entity.setWhat(new Reference("StartupShutdownService"));
+
+		// System Object
+		//AuditEntityType entityType = AuditEntityType._2;
+		//entity.setType(new Coding(entityType.getSystem(), entityType.toCode(), entityType.getDisplay()));
+		//applicationStartAudit.addEntity(entity);
+
+		accept(backendCall);
+
+	}
+
+	private AuditEvent.AuditEventAction inferAction(String calledMethod) {
+		if (calledMethod.startsWith("count")
+			|| calledMethod.startsWith("get")
+			|| calledMethod.startsWith("is")
+			|| calledMethod.startsWith("has")
+			|| calledMethod.startsWith("does")
+			|| calledMethod.startsWith("validate")) {
+			return AuditEvent.AuditEventAction.R;
+		} else if (calledMethod.startsWith("save")
+			|| calledMethod.startsWith("update")
+			|| calledMethod.startsWith("post")
+			|| calledMethod.startsWith("set")
+			|| calledMethod.startsWith("archive")
+			|| calledMethod.startsWith("dearchive")) {
+			return AuditEvent.AuditEventAction.U;
+		} else if (calledMethod.startsWith("delete") || calledMethod.startsWith("merge")) {
+			return AuditEvent.AuditEventAction.D;
+		} else if (calledMethod.startsWith("send")) {
+			return AuditEvent.AuditEventAction.E;
+		} else {
+			// todo
+			return AuditEvent.AuditEventAction.E;
+		}
 	}
 }

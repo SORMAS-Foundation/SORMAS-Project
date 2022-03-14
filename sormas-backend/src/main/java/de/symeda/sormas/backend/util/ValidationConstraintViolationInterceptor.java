@@ -15,7 +15,9 @@
 
 package de.symeda.sormas.backend.util;
 
+import javax.annotation.Priority;
 import javax.interceptor.AroundInvoke;
+import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 import javax.validation.ConstraintViolationException;
 
@@ -24,6 +26,8 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+@Interceptor
+@Priority(Interceptor.Priority.APPLICATION + 3)
 public class ValidationConstraintViolationInterceptor {
 
 	private static final Logger logger = LoggerFactory.getLogger(ValidationConstraintViolationInterceptor.class);

@@ -1,6 +1,8 @@
 package de.symeda.sormas.backend.util;
 
+import javax.annotation.Priority;
 import javax.interceptor.AroundInvoke;
+import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 
 import org.slf4j.Logger;
@@ -20,6 +22,8 @@ import de.symeda.sormas.api.utils.DateHelper;
  * 
  * @see https://www.adam-bien.com/roller/abien/entry/simplest_possible_ejb_3_12
  */
+@Interceptor
+@Priority(Interceptor.Priority.APPLICATION + 2)
 public class PerformanceLoggingInterceptor {
 
 	/**
