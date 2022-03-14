@@ -33,6 +33,7 @@ import java.util.List;
 
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
+import org.junit.Assert;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -204,5 +205,32 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 		assertThat(eps, hasSize(2));
 		eps = getEventParticipantFacade().getByPersonUuids(Arrays.asList(person1.getUuid(), person2.getUuid()));
 		assertThat(eps, hasSize(3));
+	}
+
+	@Test
+	public void testExistEventParticipantWithDeletedFalse(){
+		RDCFEntities rdcf = creator.createRDCFEntities();
+		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+		EventDto event = creator.createEvent(user.toReference());
+		PersonDto person = creator.createPerson();
+
+		creator.createEventParticipant(event.toReference(), person, user.toReference());
+
+		boolean exist = getEventParticipantFacade().exists(person.getUuid(), event.getUuid());
+		Assert.assertTrue(exist);
+	}
+
+	@Test
+	public void testExistEventParticipantWithDeletedTrue(){
+		RDCFEntities rdcf = creator.createRDCFEntities();
+		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+		EventDto event = creator.createEvent(user.toReference());
+		PersonDto person = creator.createPerson();
+
+		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, user.toReference());
+		getEventParticipantFacade().delete(eventParticipant.toReference().getUuid());
+
+		boolean exist = getEventParticipantFacade().exists(person.getUuid(), event.getUuid());
+		Assert.assertFalse(exist);
 	}
 }

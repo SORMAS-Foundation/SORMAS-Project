@@ -24,6 +24,8 @@ import static org.sormas.e2etests.pages.application.contacts.ContactsLineListing
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.Locale;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.entities.pojo.web.ContactsLineListing;
@@ -33,6 +35,7 @@ import org.testng.asserts.SoftAssert;
 
 public class ContactsLineListingSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
+  public static final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
   private final WebDriverHelpers webDriverHelpers;
   public static ContactsLineListing contactsLineListing;
 
@@ -44,14 +47,31 @@ public class ContactsLineListingSteps implements En {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
+        "^I create a new Contact with specific data for DE version through Line Listing$",
+        () -> {
+          contactsLineListing = contactsLineListingService.buildGeneratedLineListingContactsDE();
+          selectDisease(contactsLineListing.getDisease());
+          selectRegion(contactsLineListing.getRegion());
+          selectDistrict(contactsLineListing.getDistrict());
+          fillDateOfReport(contactsLineListing.getDateOfReport(), Locale.GERMAN);
+          fillDateOfLastContact(contactsLineListing.getDateOfLastContact(), Locale.GERMAN);
+          selectTypeOfContact(contactsLineListing.getTypeOfContact());
+          selectRelationshipWithCase(contactsLineListing.getRelationshipWithCase());
+          fillFirstName(contactsLineListing.getFirstName());
+          fillLastName(contactsLineListing.getLastName());
+          filldateOfBirth(contactsLineListing.getDateOfBirth(), Locale.GERMAN);
+          selectSex(contactsLineListing.getSex());
+        });
+
+    When(
         "^I create a new Contact with specific data through Line Listing$",
         () -> {
           contactsLineListing = contactsLineListingService.buildGeneratedLineListingContacts();
           selectDisease(contactsLineListing.getDisease());
           selectRegion(contactsLineListing.getRegion());
           selectDistrict(contactsLineListing.getDistrict());
-          fillDateOfReport(contactsLineListing.getDateOfReport());
-          fillDateOfLastContact(contactsLineListing.getDateOfLastContact());
+          fillDateOfReport(contactsLineListing.getDateOfReport(), Locale.ENGLISH);
+          fillDateOfLastContact(contactsLineListing.getDateOfLastContact(), Locale.ENGLISH);
           selectTypeOfContact(contactsLineListing.getTypeOfContact());
           selectRelationshipWithCase(contactsLineListing.getRelationshipWithCase());
           fillFirstName(contactsLineListing.getFirstName());
@@ -61,18 +81,26 @@ public class ContactsLineListingSteps implements En {
           selectBirthDay(contactsLineListing.getBirthDay());
           selectSex(contactsLineListing.getSex());
         });
+    When(
+        "^I create a new Contacts from Event Participants using Line Listing$",
+        () -> {
+          contactsLineListing = contactsLineListingService.buildGeneratedLineListingContacts();
+          selectRegion(contactsLineListing.getRegion());
+          selectDistrict(contactsLineListing.getDistrict());
+          fillFirstDateOfReport(contactsLineListing.getDateOfReport());
+          fillSecondDateOfReport(contactsLineListing.getDateOfReport());
+        });
 
     When(
         "I save the new contact using line listing feature",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_ACTION_SAVE);
-          // TODO remove this logic once problem is investigated in Jenkins
-          // start
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              By.xpath("//*[@class='v-Notification-caption']"));
-          webDriverHelpers.clickOnWebElementBySelector(
-              By.xpath("//*[@class='v-Notification-caption']"));
-          // end
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(25);
+        });
+    When(
+        "I save the new contacts from Event Participants using line listing feature in Event Participant tab",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_ACTION_SAVE);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(25);
         });
 
@@ -80,7 +108,14 @@ public class ContactsLineListingSteps implements En {
         "I check that contact created from Line Listing is saved and displayed in results grid",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(DISEASE_COLUMNS);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(PERSON_LIKE_SEARCH_INPUT);
+          String caseName =
+              contactsLineListing.getFirstName() + " " + contactsLineListing.getLastName();
+          webDriverHelpers.fillInWebElement(PERSON_LIKE_SEARCH_INPUT, caseName);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
+          webDriverHelpers.waitUntilNumberOfElementsIsReduceToGiven(CONTACT_GRID_RESULTS_ROWS, 2);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(FIRST_CONTACT_ID_BUTTON);
+
           softly.assertTrue(
               contactsLineListing
                   .getDisease()
@@ -117,14 +152,34 @@ public class ContactsLineListingSteps implements En {
     webDriverHelpers.selectFromCombobox(LINE_LISTING_DISTRICT_COMBOBOX, district);
   }
 
-  private void fillDateOfReport(LocalDate dateOfReport) {
-    webDriverHelpers.clearAndFillInWebElement(
-        LINE_LISTING_DATE_REPORT_INPUT, DATE_FORMATTER.format(dateOfReport));
+  private void fillDateOfReport(LocalDate dateOfReport, Locale locale) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    if (locale.equals(Locale.GERMAN))
+      webDriverHelpers.clearAndFillInWebElement(
+          LINE_LISTING_DATE_REPORT_INPUT, formatter.format(dateOfReport));
+    else
+      webDriverHelpers.clearAndFillInWebElement(
+          LINE_LISTING_DATE_REPORT_INPUT, DATE_FORMATTER.format(dateOfReport));
   }
 
-  private void fillDateOfLastContact(LocalDate dateOfLastContact) {
+  private void fillDateOfLastContact(LocalDate dateOfLastContact, Locale locale) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    if (locale.equals(Locale.GERMAN))
+      webDriverHelpers.clearAndFillInWebElement(
+          LINE_LISTING_DATE_LAST_CONTACT_INPUT, formatter.format(dateOfLastContact));
+    else
+      webDriverHelpers.clearAndFillInWebElement(
+          LINE_LISTING_DATE_LAST_CONTACT_INPUT, DATE_FORMATTER.format(dateOfLastContact));
+  }
+
+  private void fillFirstDateOfReport(LocalDate dateOfReport) {
     webDriverHelpers.clearAndFillInWebElement(
-        LINE_LISTING_DATE_LAST_CONTACT_INPUT, DATE_FORMATTER.format(dateOfLastContact));
+        getLineListingDateReportInputByIndex("1"), DATE_FORMATTER.format(dateOfReport));
+  }
+
+  private void fillSecondDateOfReport(LocalDate dateOfReport) {
+    webDriverHelpers.clearAndFillInWebElement(
+        getLineListingDateReportInputByIndex("2"), DATE_FORMATTER.format(dateOfReport));
   }
 
   private void selectTypeOfContact(String typeOfContact) {
@@ -154,6 +209,16 @@ public class ContactsLineListingSteps implements En {
 
   private void selectBirthDay(String day) {
     webDriverHelpers.selectFromCombobox(LINE_LISTING_BIRTHDATE_DAY_COMBOBOX, day);
+  }
+
+  private void filldateOfBirth(LocalDate localDate, Locale locale) {
+    webDriverHelpers.selectFromCombobox(
+        LINE_LISTING_BIRTHDATE_YEAR_COMBOBOX, String.valueOf(localDate.getYear()));
+    webDriverHelpers.selectFromCombobox(
+        LINE_LISTING_BIRTHDATE_MONTH_COMBOBOX,
+        localDate.getMonth().getDisplayName(TextStyle.FULL, locale));
+    webDriverHelpers.selectFromCombobox(
+        LINE_LISTING_BIRTHDATE_DAY_COMBOBOX, String.valueOf(localDate.getDayOfMonth()));
   }
 
   private void selectSex(String sex) {

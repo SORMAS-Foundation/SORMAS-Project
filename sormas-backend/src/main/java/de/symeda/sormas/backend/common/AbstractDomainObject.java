@@ -21,32 +21,43 @@ import java.io.Serializable;
 import java.sql.Timestamp;
 import java.time.Instant;
 
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
 import javax.persistence.Basic;
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
+import javax.persistence.EntityListeners;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.MappedSuperclass;
+import javax.persistence.PrePersist;
+import javax.persistence.PreUpdate;
 import javax.persistence.SequenceGenerator;
 import javax.persistence.Version;
 import javax.validation.constraints.Size;
 
 import org.hibernate.annotations.TypeDef;
-import org.hibernate.annotations.TypeDefs;
 
 import com.vladmihalcea.hibernate.type.json.JsonBinaryType;
+import com.vladmihalcea.hibernate.type.json.JsonType;
 
 import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.backend.user.CurrentUserService;
+import de.symeda.sormas.backend.user.User;
 
 /**
  * Note: The hibernate-types article suggests to use JsonBinaryType for Postgres, but doesn't explain why.
  * Since JsonBinaryType does not work with H2, we are using JsonStringType instead
  */
-@TypeDefs({
-	@TypeDef(name = "json", typeClass = JsonBinaryType.class),
-	@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class) })
+
+@TypeDef(name = "json", typeClass = JsonType.class)
+@TypeDef(name = "jsonb", typeClass = JsonBinaryType.class)
 @MappedSuperclass
+@EntityListeners(AbstractDomainObject.AdoListener.class)
 public abstract class AbstractDomainObject implements Serializable, Cloneable, HasUuid {
 
 	private static final long serialVersionUID = 3957437214306161226L;
@@ -65,6 +76,7 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, H
 	private String uuid;
 	private Timestamp creationDate;
 	private Timestamp changeDate;
+	private User changeUser;
 
 	@Override
 	public AbstractDomainObject clone() {
@@ -133,6 +145,16 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, H
 		this.changeDate = changeDate;
 	}
 
+	@ManyToOne(cascade = CascadeType.REFRESH)
+	@JoinColumn(name = "change_user_id")
+	public User getChangeUser() {
+		return changeUser;
+	}
+
+	public void setChangeUser(User changeUser) {
+		this.changeUser = changeUser;
+	}
+
 	@Override
 	public boolean equals(Object o) {
 
@@ -156,5 +178,25 @@ public abstract class AbstractDomainObject implements Serializable, Cloneable, H
 	@Override
 	public int hashCode() {
 		return getUuid().hashCode();
+	}
+
+	static class AdoListener {
+
+		private User getCurrentUser() {
+			try {
+				CurrentUserService currentUserService =
+					(CurrentUserService) new InitialContext().lookup("java:global/sormas-ear/sormas-backend/CurrentUserService");
+				return currentUserService.getCurrentUser();
+			} catch (NamingException e) {
+				throw new RuntimeException(e);
+			}
+		}
+
+		@PrePersist
+		@PreUpdate
+		private void beforeAnyUpdate(AbstractDomainObject ado) {
+			User currentUser = getCurrentUser();
+			ado.setChangeUser(currentUser);
+		}
 	}
 }

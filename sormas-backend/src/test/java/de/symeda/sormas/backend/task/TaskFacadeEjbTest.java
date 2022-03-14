@@ -51,6 +51,7 @@ import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
+import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserDto;
@@ -397,5 +398,31 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		assertThat(taskCounts.size(), is(2));
 		assertThat(taskCounts.get(user1.getUuid()), is(2L));
 		assertThat(taskCounts.get(user2.getUuid()), is(1L));
+	}
+
+	@Test
+	public void testAllTaskAndDispalyCaseResponsibleRegion() {
+		RDCF rdcf1 = new RDCF(creator.createRDCFEntities("Region1", "District1", "Community1", "Facility1"));
+		RDCF rdcf2 = new RDCF(creator.createRDCFEntities("Region2", "District2", "Community2", "Facility2"));
+
+		UserDto user = creator.createUser(rdcf1, UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto person = creator.createPerson();
+		creator.createCase(user.toReference(), rdcf1, (c) -> {
+			c.setPerson(person.toReference());
+			c.setDisease(Disease.CORONAVIRUS);
+			c.setRegion(rdcf1.region);
+			c.setDistrict(rdcf1.district);
+			c.setCommunity(rdcf1.community);
+			c.setResponsibleRegion(rdcf2.region);
+			c.setResponsibleDistrict(rdcf2.district);
+			c.setResponsibleCommunity(rdcf2.community);
+			c.setReportDate(new Date());
+		});
+
+		List<TaskIndexDto> taskIndexDtos = getTaskFacade().getIndexList(null, 0, 100, null);
+		assertEquals(1, taskIndexDtos.size());
+		assertEquals(rdcf2.region.getCaption(), taskIndexDtos.get(0).getRegion());
+		assertEquals(rdcf2.district.getCaption(), taskIndexDtos.get(0).getDistrict());
+		assertEquals(rdcf2.community.getCaption(), taskIndexDtos.get(0).getCommunity());
 	}
 }

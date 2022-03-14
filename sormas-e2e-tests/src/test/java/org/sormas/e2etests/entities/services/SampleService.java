@@ -105,7 +105,7 @@ public class SampleService {
         .reasonForSample("Screening")
         .sampleID(faker.number().randomNumber(8, false))
         .laboratory("Other facility")
-        .laboratoryName(faker.crypto() + " Laboratory Edit")
+        .laboratoryName("Laboratory Edit " + currentTimeMillis)
         .received("Received")
         .receivedDate(LocalDate.now().minusDays(10))
         .specimenCondition("Adequate")
@@ -153,15 +153,31 @@ public class SampleService {
   public Sample buildPathogenTestResultTypeVerified(String testType) {
     long currentTimeMillis = System.currentTimeMillis();
     return Sample.builder()
+        .reportDate(LocalDate.now().minusDays(2))
+        .typeOfTest(testType)
+        .testedDisease("COVID-19")
+        .dateOfResult(LocalDate.now().minusDays(1))
+        .timeOfResult(LocalTime.of(15, 15))
+        .laboratory("Other facility")
+        .laboratoryName("Test laboratory - " + currentTimeMillis)
+        .sampleTestResults("Positive")
+        .resultVerifiedByLabSupervisor("YES")
+        .testResultsComment("Comment on Edit Pathogen requests or received " + currentTimeMillis)
+        .build();
+  }
+
+  public Sample buildPathogenTestUnverifiedDE(String testType) {
+    long currentTimeMillis = System.currentTimeMillis();
+    return Sample.builder()
         .reportDate(LocalDate.now())
         .typeOfTest(testType)
         .testedDisease("COVID-19")
         .dateOfResult(LocalDate.now())
         .timeOfResult(LocalTime.of(15, 15))
-        .laboratory("Other facility")
-        .laboratoryName("Test laboratory")
-        .sampleTestResults("Positive")
-        .resultVerifiedByLabSupervisor("YES")
+        .laboratory("Andere Einrichtung")
+        .laboratoryName("Test name")
+        .sampleTestResults("Positiv")
+        .resultVerifiedByLabSupervisor("NEIN")
         .testResultsComment("Comment on Edit Pathogen requests or received " + currentTimeMillis)
         .build();
   }

@@ -5,9 +5,11 @@ import static org.junit.Assert.assertFalse;
 
 import java.util.List;
 
+import org.junit.Assert;
 import org.junit.Test;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.feature.FeatureConfigurationIndexDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
@@ -49,5 +51,27 @@ public class FeatureConfigurationFacadeEjbTest extends AbstractBeanTest {
 		assertFalse(getFeatureConfigurationFacade().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED));
 
 		// TODO: Test for an explicitely added property; currently problematic because H2 has issues with the JSON converting
+	}
+
+	@Test
+	public void testGetProperty() {
+		FeatureConfigurationService featureConfigurationService = getBean(FeatureConfigurationService.class);
+		featureConfigurationService.createMissingFeatureConfigurations();
+
+		Integer defaultDaysForCaseArchiving = getFeatureConfigurationFacade()
+			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CASE, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
+		Assert.assertEquals(90, (int) defaultDaysForCaseArchiving);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetPropertyWithWrongPropertyType() {
+		getFeatureConfigurationFacade()
+			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CASE, FeatureTypeProperty.THRESHOLD_IN_DAYS, Boolean.class);
+	}
+
+	@Test(expected = IllegalArgumentException.class)
+	public void testGetPropertyWhenFeatureTypeDoesNotContainIt() {
+		getFeatureConfigurationFacade()
+			.getProperty(FeatureType.CASE_SURVEILANCE, CoreEntityType.CASE, FeatureTypeProperty.THRESHOLD_IN_DAYS, Boolean.class);
 	}
 }

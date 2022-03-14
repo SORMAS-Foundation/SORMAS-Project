@@ -1,7 +1,7 @@
 @UI @Sanity @Case @Filters
 Feature: Case filter functionality
 
-  @env_main @ignore
+  @env_main
   Scenario: Check Cases on Sample page work as expected
     Given API: I create 10 new cases
     Then API: I check that POST call body is "OK"
@@ -25,7 +25,7 @@ Feature: Case filter functionality
     And API: I check that POST call status code is 200
     Given I log in with National User
     And I click on the Cases button from navbar
-    Then I apply last created api Person Id filter on Case directory page
+    Then I apply uuid filter for last created via API Person in Case directory page
     And I filter by CaseID on Case directory page
     And I click SHOW MORE FILTERS button on Case directory page
     And I apply Present Condition filter on Case directory page to condition of last created person
@@ -37,7 +37,7 @@ Feature: Case filter functionality
     And I apply mocked Person Id filter on Case directory page
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
-    And I apply last created api Person Id filter on Case directory page
+    And I apply uuid filter for last created via API Person in Case directory page
     And I apply Day filter different than Person has on Case directory page
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
@@ -241,7 +241,7 @@ Feature: Case filter functionality
     And I check that number of displayed cases results is 0
     And I fill Cases from input to 1 days before mocked Case created on Case directory page
 
-  @issue=SORQA-30 @env_main
+  @issue=SORQA-30 @env_main @check
   Scenario: Check complex filters regarding responsibilities, vaccination, reinfection adn quarantine
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -277,3 +277,140 @@ Feature: Case filter functionality
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
     And I apply Reinfection filter to "Confirmed reinfection" on Case directory page
+
+  @issue=SORQA-83 @env_de
+  Scenario: German Case Directory filters
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data for DE version
+    Then I check the created data is correctly displayed on Edit case page for DE version
+    Then I back to Case Directory using case list button
+    And I apply Person Id filter to one attached to last created UI Case on Case directory page
+    And I filter by CaseID of last created UI Case on Case directory page
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I apply Present Condition filter to "Lebendig" on Case directory page
+    And I apply Year filter of Person attached to last created UI Case on Case directory page
+    And I apply Month filter of Person attached to last created UI Case on Case directory page
+    And I apply Day filter of Person attached to last created UI Case on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 1
+    And I apply mocked Person Id filter on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+    And I apply Person Id filter to one attached to last created UI Case on Case directory page
+    And I apply Year filter other than Person attached has to last created UI Case on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+    And I apply Year filter of Person attached to last created UI Case on Case directory page
+    And I apply Month filter other than Person attached has to last created UI Case on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+    And I apply Month filter of Person attached to last created UI Case on Case directory page
+    And I apply Day filter other than Person attached has to last created UI Case on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+    And I apply Day filter of Person attached to last created UI Case on Case directory page
+    And I apply Present Condition filter to "Verstorben" on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+
+  @issue=SORQA-83 @env_de
+  Scenario: Check Case basic filters on Case directory page for DE version
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data for DE version
+    Then I check the created data is correctly displayed on Edit case page for DE version
+    Then I back to Case Directory using case list button
+    And I filter by CaseID of last created UI Case on Case directory page
+    And I apply Case origin "Im Land" on Case directory page
+    And I apply Disease filter "COVID-19" on Case directory page
+    And I apply Disease Variant filter "B.1.617.1" on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 1
+    And I apply Case origin "Einreiseort" on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+    And I apply Case origin "Im Land" on Case directory page
+    And I apply Disease filter "Cholera" on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+    And I apply Disease filter "COVID-19" on Case directory page
+    And I apply Disease Variant filter "B.1.526.1" on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+
+  @issue=SORQA-83 @env_de
+  Scenario: Check checkboxes filters on Case directory page for DE specific
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data for DE version
+    Then I check the created data is correctly displayed on Edit case page for DE version
+    Then I back to Case Directory using case list button
+    And I filter by CaseID of last created UI Case on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 1
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I click "Nur Fälle ohne Geo-Koordinaten" checkbox on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 1
+    And I click "Nur Fälle ohne Geo-Koordinaten" checkbox on Case directory page
+    And I click "Nur Fälle ohne verantwortlichen Beauftragten" checkbox on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+    And I click "Nur Fälle ohne verantwortlichen Beauftragten" checkbox on Case directory page
+    And I click "Nur Fälle mit verlängerter Isolation" checkbox on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+    And I click "Nur Fälle mit verlängerter Isolation" checkbox on Case directory page
+    And I click "Nur Fälle mit verkürzter Isolation" checkbox on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+    And I click "Nur Fälle mit verkürzter Isolation" checkbox on Case directory page
+    And I click "Maßnahmen zur Gewährleistung der Versorgung" checkbox on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+    And I click "Maßnahmen zur Gewährleistung der Versorgung" checkbox on Case directory page
+    And I click "Nur Fälle mit Ereignissen" checkbox on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+    And I click "Nur Fälle mit Ereignissen" checkbox on Case directory page
+    And I click "Nur Fälle von anderen Instanzen" checkbox on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+    And I click "Nur Fälle von anderen Instanzen" checkbox on Case directory page
+    And I click "Nur Fälle mit Reinfektion" checkbox on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+    And I click "Nur Fälle mit Reinfektion" checkbox on Case directory page
+    And I click "Nur Fälle mit erfüllter Referenzdefinition" checkbox on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+    And I click "Nur Fälle mit erfüllter Referenzdefinition" checkbox on Case directory page
+    And I click "Nur Einreisefälle ohne zugewiesene Einrichtung" checkbox on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+    And I click "Nur Einreisefälle ohne zugewiesene Einrichtung" checkbox on Case directory page
+
+  @issue=SORQA-83 @env_de @ignore
+  Scenario: Check Case report date filters on Case directory page for De specific
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data for DE version
+    Then I check the created data is correctly displayed on Edit case page for DE version
+    Then I back to Case Directory using case list button
+    And I filter by CaseID of last created UI Case on Case directory page
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I apply Date type filter to "Fallmeldedatum" on Case directory page
+    And I fill Cases from input to 2 days before UI Case created on Case directory page
+    And I fill Cases to input to 5 days after UI Case created on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 1
+    And I fill Cases from input to 3 days after before UI Case created on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I check that number of displayed cases results is 0
+
+    

@@ -32,16 +32,14 @@ import de.symeda.sormas.ui.person.PersonSearchField;
 
 public abstract class PersonDependentEditForm<DTO> extends AbstractEditForm<DTO> {
 
+	private static final long serialVersionUID = 4593655319667892022L;
+
 	protected static final String PERSON_SEARCH_LOC = "personSearchLoc";
 
 	private PersonDto searchedPerson;
 
 	protected PersonDependentEditForm(Class<DTO> type, String propertyI18nPrefix) {
 		super(type, propertyI18nPrefix);
-	}
-
-	protected PersonDependentEditForm(Class<DTO> type, String propertyI18nPrefix, FieldVisibilityCheckers fieldVisibilityCheckers) {
-		super(type, propertyI18nPrefix, fieldVisibilityCheckers);
 	}
 
 	protected PersonDependentEditForm(
