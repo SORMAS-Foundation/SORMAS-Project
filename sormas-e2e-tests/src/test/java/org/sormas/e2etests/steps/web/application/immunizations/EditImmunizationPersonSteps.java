@@ -41,11 +41,17 @@ public class EditImmunizationPersonSteps implements En {
                   "primaryEmailAddress",
                   "dateOfBirth"));
         });
+
+    Then(
+        "I click on Person tab from Immunization page",
+        () -> {
+          webDriverHelpers.scrollToElement(IMMUNIZATION_PERSON_TAB);
+          webDriverHelpers.clickOnWebElementBySelector(IMMUNIZATION_PERSON_TAB);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(FIRST_NAME_INPUT);
+        });
   }
 
   private Immunization collectImmunizationPersonData() {
-    webDriverHelpers.scrollToElement(IMMUNIZATION_PERSON_TAB);
-    webDriverHelpers.clickOnWebElementBySelector(IMMUNIZATION_PERSON_TAB);
     return Immunization.builder()
         .firstName(webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT))
         .lastName(webDriverHelpers.getValueFromWebElement(LAST_NAME_INPUT))

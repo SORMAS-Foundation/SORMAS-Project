@@ -23,6 +23,7 @@ import org.openqa.selenium.By;
 public class CreateNewCasePage {
   public static final By DATE_OF_REPORT_INPUT = By.cssSelector(".v-window #reportDate input");
   public static final By DISEASE_COMBOBOX = By.cssSelector(".v-window #disease div");
+  public static final By DISEASE_VARIANT_COMBOBOX = By.cssSelector(".v-window #diseaseVariant div");
   public static final By RESPONSIBLE_REGION_COMBOBOX =
       By.cssSelector(".v-window #responsibleRegion div");
   public static final By RESPONSIBLE_DISTRICT_COMBOBOX =

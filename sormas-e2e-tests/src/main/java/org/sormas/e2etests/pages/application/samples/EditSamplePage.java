@@ -23,6 +23,7 @@ import org.openqa.selenium.By;
 public class EditSamplePage {
 
   public static final By PATHOGEN_NEW_TEST_RESULT_BUTTON = By.cssSelector("[id='New test result']");
+  public static final By NEW_TEST_RESULT_DE = By.cssSelector("[id='Neues Testresultat']");
   public static final By COLLECTED_DATE_TIME_COMBOBOX =
       By.cssSelector("[id='sampleDateTime_time'] [class='v-filterselect-button']");
   public static final By COMMENT_AREA_INPUT = By.cssSelector("[id='comment']");

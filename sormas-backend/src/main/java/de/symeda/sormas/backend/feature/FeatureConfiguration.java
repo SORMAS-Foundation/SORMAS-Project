@@ -11,6 +11,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 
+import de.symeda.sormas.api.common.CoreEntityType;
 import org.hibernate.annotations.Type;
 
 import de.symeda.auditlog.api.Audited;
@@ -36,6 +37,7 @@ public class FeatureConfiguration extends AbstractDomainObject {
 	public static final String DISEASE = "disease";
 	public static final String END_DATE = "endDate";
 	public static final String ENABLED = "enabled";
+	public static final String ENTITY_TYPE = "entityType";
 	public static final String PROPERTIES = "properties";
 
 	private FeatureType featureType;
@@ -44,6 +46,7 @@ public class FeatureConfiguration extends AbstractDomainObject {
 	private Disease disease;
 	private Date endDate;
 	private boolean enabled;
+	private CoreEntityType entityType;
 	private Map<FeatureTypeProperty, Object> properties;
 
 	public static FeatureConfiguration build(FeatureType featureType, boolean enabled) {
@@ -62,6 +65,15 @@ public class FeatureConfiguration extends AbstractDomainObject {
 
 	public void setFeatureType(FeatureType featureType) {
 		this.featureType = featureType;
+	}
+
+	@Enumerated(EnumType.STRING)
+	public CoreEntityType getEntityType() {
+		return entityType;
+	}
+
+	public void setEntityType(CoreEntityType coreEntityType) {
+		this.entityType = coreEntityType;
 	}
 
 	@ManyToOne(cascade = {})

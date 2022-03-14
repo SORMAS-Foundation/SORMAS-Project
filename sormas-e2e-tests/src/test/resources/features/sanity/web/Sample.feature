@@ -1,8 +1,7 @@
 @UI @Sanity @Sample
 Feature: Sample Functionalities
 
-  #please address
-  @env_main @ignore
+  @env_main @check
   Scenario: Edit a new case Sample
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -37,7 +36,7 @@ Feature: Sample Functionalities
     When I change all Sample fields and save
     Then I check the edited Sample is correctly displayed on Edit Sample page
 
-  @issue=SORDEV-5471 @env_main @check
+  @issue=SORDEV-5471 @env_main
   Scenario: Edit a new contact Sample with alternate purpose
     Given I log in with National User
     And I click on the Contacts button from navbar
@@ -90,7 +89,7 @@ Feature: Sample Functionalities
     And API: I check that POST call status code is 200
     When I log in with National User
     And I click on the Sample button from navbar
-    And I am accessing the created sample via api
+    And I am opening the last created via API Sample by url navigation
     And I click on the new pathogen test from the Edit Sample page
     And I complete all fields from Pathogen test result popup and save
     Then I check that the created Pathogen is correctly displayed
