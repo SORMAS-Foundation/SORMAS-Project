@@ -10055,4 +10055,475 @@ ALTER TABLE featureconfiguration_history ADD COLUMN entitytype character varying
 
 INSERT INTO schema_version (version_number, comment) VALUES (446, 'Configuration for automatic archiving #7775');
 
+-- 2022-03-10 change by user #7323
+ALTER TABLE action ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE action_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE activityascase ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE activityascase_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE additionaltest ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE additionaltest_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE aggregatereport ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE aggregatereport_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE areas ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE areas_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE campaigndiagramdefinition ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE campaigndiagramdefinition_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE campaignformdata ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE campaignformdata_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE campaignformmeta ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE campaignformmeta_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE campaigns ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE campaigns_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE cases ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE cases_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE clinicalcourse ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE clinicalcourse_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE clinicalvisit ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE clinicalvisit_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE community ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE community_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE contact ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE contact_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE continent ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE continent_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE country ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE country_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE customizableenumvalue ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE customizableenumvalue_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE deletionconfiguration ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE deletionconfiguration_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE diseaseconfiguration ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE diseaseconfiguration_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE district ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE district_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE documents ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE documents_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE epidata ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE epidata_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE eventgroups ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE eventgroups_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE eventparticipant ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE eventparticipant_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE events ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE events_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE exportconfiguration ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE exportconfiguration_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE exposures ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE exposures_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE externalshareinfo ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE externalshareinfo_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE facility ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE facility_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE featureconfiguration ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE featureconfiguration_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE healthconditions ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE healthconditions_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE hospitalization ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE hospitalization_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE immunization ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE immunization_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE labmessage ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE labmessage_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE location ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE location_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE manualmessagelog ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE manualmessagelog_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE maternalhistory ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE maternalhistory_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE outbreak ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE outbreak_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE pathogentest ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE pathogentest_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE person ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE person_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE personcontactdetail ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE personcontactdetail_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE pointofentry ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE pointofentry_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE populationdata ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE populationdata_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE porthealthinfo ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE porthealthinfo_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE prescription ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE prescription_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE previoushospitalization ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE previoushospitalization_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE region ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE region_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE samples ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE samples_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE sharerequestinfo ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE sharerequestinfo_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE sormastosormasorigininfo ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE sormastosormasorigininfo_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE sormastosormasshareinfo ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE sormastosormasshareinfo_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE sormastosormassharerequest ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE sormastosormassharerequest_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE subcontinent ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE subcontinent_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE surveillancereports ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE surveillancereports_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE symptoms ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE symptoms_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE systemevent ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE task ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE task_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE testreport ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE testreport_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE therapy ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE therapy_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE travelentry ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE travelentry_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE treatment ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE treatment_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE userrolesconfig ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE userrolesconfig_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE users ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE users_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE vaccination ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE vaccination_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE vaccinationinfo_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE visit ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE visit_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE weeklyreport ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE weeklyreport_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE weeklyreportentry ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE weeklyreportentry_history ADD COLUMN change_user_id BIGINT;
+
+INSERT INTO schema_version (version_number, comment) VALUES (447, 'Changed by user #7323');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
