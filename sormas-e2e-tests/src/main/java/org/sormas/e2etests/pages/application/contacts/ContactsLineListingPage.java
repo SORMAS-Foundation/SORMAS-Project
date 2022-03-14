@@ -62,4 +62,8 @@ public class ContactsLineListingPage {
       By.cssSelector("[id='lineListingContactLineField_1'] [id='sex'] div");
   public static final By ADD_LINE = By.cssSelector("[id='lineListingAddLine']");
   public static final By LINE_LISTING_ACTION_SAVE = By.cssSelector("[id='actionSave']");
+
+  public static By getLineListingDateReportInputByIndex(String dateOfReportNumber) {
+    return By.xpath(String.format("(//div[@id='dateOfReport']//input)[%s]", dateOfReportNumber));
+  }
 }

@@ -44,7 +44,7 @@ public class FollowUpVisitService {
         .dateOfVisit(LocalDate.now().minusDays(1))
         .timeOfVisit(LocalTime.now())
         .visitRemarks(faker.book().title())
-        .currentBodyTemperature("35.5")
+        .currentBodyTemperature("35,5")
         .sourceOfBodyTemperature(getRandomTemperature())
         .setClearToNo("Set cleared to No")
         .chillsAndSweats(YES.toString())

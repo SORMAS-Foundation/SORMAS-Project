@@ -15,11 +15,8 @@
 
 package de.symeda.sormas.app.person.edit;
 
-import android.view.View;
-import android.view.ViewGroup;
-
-import androidx.databinding.ObservableArrayList;
-import androidx.databinding.ObservableList;
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -27,12 +24,18 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.databinding.ObservableArrayList;
+import androidx.databinding.ObservableList;
+
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
-import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ArmedForcesRelationType;
@@ -59,6 +62,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.immunization.Immunization;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
@@ -76,9 +80,6 @@ import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
 import de.symeda.sormas.app.util.InfrastructureFieldsDependencyHandler;
-
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
 
 public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayoutBinding, Person, PseudonymizableAdo> {
 
@@ -122,11 +123,18 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
 	}
 
-	public static void setUpLayoutBinding(
-		final BaseEditFragment fragment,
-		final Person record,
-		final FragmentPersonEditLayoutBinding contentBinding,
-		AbstractDomainObject rootData) {
+	public static PersonEditFragment newInstance(EventParticipant activityRootData) {
+
+		return newInstanceWithFieldCheckers(
+			PersonEditFragment.class,
+			null,
+			activityRootData,
+			FieldVisibilityCheckers.withDisease(activityRootData.getEvent().getDisease()),
+			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
+	}
+
+	private void setUpLayoutBinding(final BaseEditFragment fragment, final Person record, final FragmentPersonEditLayoutBinding contentBinding) {
+
 		setUpControlListeners(record, fragment, contentBinding);
 
 		fragment.setFieldVisibilitiesAndAccesses(PersonDto.class, contentBinding.mainContent);
@@ -545,6 +553,9 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		} else if (ado instanceof Contact) {
 			record = ((Contact) ado).getPerson();
 			rootData = ado;
+		} else if (ado instanceof EventParticipant) {
+			record = ((EventParticipant) ado).getPerson();
+			rootData = ado;
 		} else if (ado instanceof Immunization) {
 			record = ((Immunization) ado).getPerson();
 			rootData = ado;
@@ -579,7 +590,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 
 	@Override
 	public void onAfterLayoutBinding(final FragmentPersonEditLayoutBinding contentBinding) {
-		PersonEditFragment.setUpLayoutBinding(this, record, contentBinding, rootData);
+		setUpLayoutBinding(this, record, contentBinding);
 		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			contentBinding.personArmedForcesRelationType.setVisibility(GONE);
 		}

@@ -53,4 +53,22 @@ public class ExposureNewEntryPage {
   public static final By GPS_LONGITUDE_INPUT = By.cssSelector(".v-window #longitude");
   public static final By GPS_ACCURACY_INPUT = By.cssSelector(".v-window #latLonAccuracy");
   public static final By DONE_BUTTON = By.cssSelector(".v-window #commit");
+  public static final By TYPE_OF_ACTIVITY_DETAILS = By.id("exposureTypeDetails");
+  public static final By TYPE_OF_GATHERING_COMBOBOX =
+      By.cssSelector(".v-window #gatheringType div");
+  public static final By TYPE_OF_GATHERING_DETAILS = By.id("gatheringDetails");
+  public static final By TYPE_OF_PLACE_DETAILS = By.id("typeOfPlaceDetails");
+  public static final By FACILITY_CATEGORY_COMBOBOX = By.cssSelector(".v-window #typeGroup div");
+  public static final By FACILITY_TYPE_COMBOBOX = By.cssSelector(".v-window #facilityType div");
+  public static final By FACILITY_DETAILS_COMBOBOX = By.cssSelector(".v-window #facility div");
+  public static final By FACILITY_NAME_AND_DESCRIPTION =
+      By.cssSelector(".v-window input#facilityDetails");
+  public static final By CONTACT_PERSON_FIRST_NAME =
+      By.cssSelector(".v-window input#contactPersonFirstName");
+  public static final By CONTACT_PERSON_LAST_NAME =
+      By.cssSelector(".v-window input#contactPersonLastName");
+  public static final By CONTACT_PERSON_PHONE_NUMBER =
+      By.cssSelector(".v-window input#contactPersonPhone");
+  public static final By CONTACT_PERSON_EMAIL_ADRESS =
+      By.cssSelector(".v-window input#contactPersonEmail");
 }
