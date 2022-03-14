@@ -235,6 +235,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		System.setProperty("java.naming.factory.initial", MockProducer.class.getCanonicalName());
 		creator.createUser(null, null, null, "ad", "min", UserRole.ADMIN, UserRole.NATIONAL_USER);
 		when(MockProducer.getPrincipal().getName()).thenReturn("admin");
+
 		I18nProperties.setUserLanguage(Language.EN);
 
 	}
