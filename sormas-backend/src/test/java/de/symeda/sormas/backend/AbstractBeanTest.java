@@ -231,10 +231,12 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 	public void init() {
 		MockProducer.resetMocks();
 		initH2Functions();
-
+		// this is used to provide the current user to the ADO Listener taking care of updating the last change user
+		System.setProperty("java.naming.factory.initial", MockProducer.class.getCanonicalName());
 		creator.createUser(null, null, null, "ad", "min", UserRole.ADMIN, UserRole.NATIONAL_USER);
 		when(MockProducer.getPrincipal().getName()).thenReturn("admin");
 		I18nProperties.setUserLanguage(Language.EN);
+
 	}
 
 	protected void initH2Functions() {

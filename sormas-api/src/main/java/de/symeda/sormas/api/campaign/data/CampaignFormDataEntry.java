@@ -18,8 +18,6 @@ package de.symeda.sormas.api.campaign.data;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAULT;
 
 import java.io.Serializable;
-import java.util.Collection;
-import java.util.Iterator;
 import java.util.Objects;
 
 import javax.validation.constraints.Size;
@@ -76,17 +74,6 @@ public class CampaignFormDataEntry implements Serializable, JsonDataEntry {
 		}
 
 		return value.toString();
-	}
-
-	public static void removeNullValueEntries(Collection<CampaignFormDataEntry> entries) {
-
-		Iterator<CampaignFormDataEntry> iterator = entries.iterator();
-		while (iterator.hasNext()) {
-			CampaignFormDataEntry entry = iterator.next();
-			if (entry.value == null) {
-				iterator.remove();
-			}
-		}
 	}
 
 	/**
