@@ -15,7 +15,7 @@ Feature: Pathogen Functionalities
     And API: I check that POST call status code is 200
     When I log in with National User
     And I click on the Sample button from navbar
-    And I am accessing the created sample via api
+    And I am opening the last created via API Sample by url navigation
     And I click on the new pathogen test from the Edit Sample page
     And I complete all fields from Pathogen test result popup for IgM test type and save
     Then I check that the created Pathogen is correctly displayed
@@ -35,7 +35,7 @@ Feature: Pathogen Functionalities
     And API: I check that POST call status code is 200
     When I log in with National User
     And I click on the Sample button from navbar
-    And I am accessing the created sample via api
+    And I am opening the last created via API Sample by url navigation
     Then I click on the new pathogen test from the Edit Sample page
     And I complete all fields from Pathogen test result popup for IgG test type and save
     Then I check that the created Pathogen is correctly displayed
@@ -55,7 +55,7 @@ Feature: Pathogen Functionalities
     And API: I check that POST call status code is 200
     When I log in with National User
     And I click on the Sample button from navbar
-    And I am accessing the created sample via api
+    And I am opening the last created via API Sample by url navigation
     Then I click on the new pathogen test from the Edit Sample page
     And I complete all fields from Pathogen test result popup for PCR RT PCR Value Detection test type and save
     Then I check that the created Pathogen is correctly displayed
@@ -75,7 +75,7 @@ Feature: Pathogen Functionalities
     And API: I check that POST call status code is 200
     When I log in with National User
     And I click on the Sample button from navbar
-    And I am accessing the created sample via api
+    And I am opening the last created via API Sample by url navigation
     Then I click on the new pathogen test from the Edit Sample page
     And I complete all fields from Pathogen test result popup for CQ Value Detection test type and save
     Then I check that the created Pathogen is correctly displayed
@@ -95,7 +95,7 @@ Feature: Pathogen Functionalities
     And API: I check that POST call status code is 200
     When I log in with National User
     And I click on the Sample button from navbar
-    And I am accessing the created sample via api
+    And I am opening the last created via API Sample by url navigation
     Then I click on the new pathogen test from the Edit Sample page
     And I complete all fields from Pathogen test result popup for Sequencing test type and save
     Then I check that the created Pathogen is correctly displayed
@@ -115,7 +115,7 @@ Feature: Pathogen Functionalities
     And API: I check that POST call status code is 200
     When I log in with National User
     And I click on the Sample button from navbar
-    And I am accessing the created sample via api
+    And I am opening the last created via API Sample by url navigation
     Then I click on the new pathogen test from the Edit Sample page
     And I complete all fields from Pathogen test result popup for DNA Microarray test type and save
     Then I check that the created Pathogen is correctly displayed
@@ -135,7 +135,7 @@ Feature: Pathogen Functionalities
     And API: I check that POST call status code is 200
     When I log in with National User
     And I click on the Sample button from navbar
-    And I am accessing the created sample via api
+    And I am opening the last created via API Sample by url navigation
     Then I click on the new pathogen test from the Edit Sample page
     And I complete all fields from Pathogen test result popup for Other test type and save
     Then I check that the created Pathogen is correctly displayed
@@ -152,7 +152,7 @@ Feature: Pathogen Functionalities
     And API: I check that POST call status code is 200
     Given I log in with National User
     When I click on the Contacts button from navbar
-    Then I open the last created contact
+    Then I search after last created contact via API by UUID and open
     And I click on New Sample
     When I collect the sample UUID displayed on create new sample page
     And I create a new Sample with specific data and save

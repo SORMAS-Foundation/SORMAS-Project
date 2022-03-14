@@ -25,6 +25,7 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.utils.SortProperty;
@@ -61,6 +62,10 @@ public interface FeatureConfigurationFacade {
 	boolean isFeatureDisabled(FeatureType featureType);
 
 	boolean isFeatureEnabled(FeatureType featureType);
+
+	boolean isFeatureEnabled(FeatureType featureType, CoreEntityType entityType);
+
+	<T extends Object> T getProperty(FeatureType featureType, CoreEntityType entityType, FeatureTypeProperty property, Class<T> returnType);
 
 	/**
 	 * Checks whether the property of the specified feature type in the database equals to true.

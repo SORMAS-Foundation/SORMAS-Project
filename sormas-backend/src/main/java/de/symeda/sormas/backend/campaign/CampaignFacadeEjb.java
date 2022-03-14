@@ -44,10 +44,9 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinitionFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaService;
-import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
@@ -188,11 +187,6 @@ public class CampaignFacadeEjb
 		}
 		target.setDashboardElements(source.getCampaignDashboardElements());
 		return target;
-	}
-
-	@Override
-	protected void delete(Campaign entity) {
-		service.delete(entity);
 	}
 
 	public void validate(CampaignReferenceDto campaignReferenceDto) {
@@ -345,7 +339,7 @@ public class CampaignFacadeEjb
 	}
 
 	@Override
-	public void deleteCampaign(String campaignUuid) {
+	public void delete(String campaignUuid) {
 
 		User user = userService.getCurrentUser();
 		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))

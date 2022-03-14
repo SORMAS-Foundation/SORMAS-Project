@@ -906,20 +906,20 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		// Delete all tasks associated with this case
 		List<Task> tasks = taskService.findBy(new TaskCriteria().caze(new CaseReferenceDto(caze.getUuid())), true);
 		for (Task task : tasks) {
-			taskService.delete(task);
+			taskService.deletePermanent(task);
 		}
 
 		// Delete all prescriptions/treatments/clinical visits
 		if (caze.getTherapy() != null) {
 			TherapyReferenceDto therapy = new TherapyReferenceDto(caze.getTherapy().getUuid());
-			treatmentService.findBy(new TreatmentCriteria().therapy(therapy)).stream().forEach(t -> treatmentService.delete(t));
-			prescriptionService.findBy(new PrescriptionCriteria().therapy(therapy)).stream().forEach(p -> prescriptionService.delete(p));
+			treatmentService.findBy(new TreatmentCriteria().therapy(therapy)).stream().forEach(t -> treatmentService.deletePermanent(t));
+			prescriptionService.findBy(new PrescriptionCriteria().therapy(therapy)).stream().forEach(p -> prescriptionService.deletePermanent(p));
 		}
 		if (caze.getClinicalCourse() != null) {
 			ClinicalCourseReferenceDto clinicalCourse = new ClinicalCourseReferenceDto(caze.getClinicalCourse().getUuid());
 			clinicalVisitService.findBy(new ClinicalVisitCriteria().clinicalCourse(clinicalCourse))
 				.stream()
-				.forEach(c -> clinicalVisitService.delete(c));
+				.forEach(c -> clinicalVisitService.deletePermanent(c));
 		}
 
 		// Remove all events linked to case by removing the case_id from event participant

@@ -92,6 +92,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseExportType;
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.caze.CaseFollowUpCriteria;
 import de.symeda.sormas.api.caze.CaseFollowUpDto;
 import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
@@ -225,7 +226,7 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.contact.VisitSummaryExportDetails;
-import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.document.Document;
 import de.symeda.sormas.backend.document.DocumentService;
@@ -1566,7 +1567,13 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		if (sourceContact != null) {
 			final Contact contact = contactService.getByUuid(sourceContact.getUuid());
 			final Case caze = service.getByUuid(cazeRef.getUuid());
-			contact.getSamples().forEach(sample -> sample.setAssociatedCase(caze));
+			contact.getSamples().forEach(sample -> {
+				if (sample.getAssociatedCase() == null) {
+					sample.setAssociatedCase(caze);
+				} else {
+					sampleFacade.cloneSampleForCase(sample, caze);
+				}
+			});
 		}
 	}
 
@@ -1575,7 +1582,13 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		if (sourceEventParticipant != null) {
 			final EventParticipant eventParticipant = eventParticipantService.getByUuid(sourceEventParticipant.getUuid());
 			final Case caze = service.getByUuid(cazeRef.getUuid());
-			eventParticipant.getSamples().forEach(sample -> sample.setAssociatedCase(caze));
+			eventParticipant.getSamples().forEach(sample -> {
+				if (sample.getAssociatedCase() == null) {
+					sample.setAssociatedCase(caze);
+				} else {
+					sampleFacade.cloneSampleForCase(sample, caze);
+				}
+			});
 		}
 	}
 
@@ -1584,10 +1597,13 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		final EventParticipant eventParticipant = eventParticipantService.getByUuid(sourceEventParticipant.getUuid());
 		final Case caze = service.getByUuid(cazeRef.getUuid());
 		final Disease disease = caze.getDisease();
-		eventParticipant.getSamples()
-			.stream()
-			.filter(sample -> sampleContainsTestForDisease(sample, disease))
-			.forEach(sample -> sample.setAssociatedCase(caze));
+		eventParticipant.getSamples().stream().filter(sample -> sampleContainsTestForDisease(sample, disease)).forEach(sample -> {
+			if (sample.getAssociatedCase() == null) {
+				sample.setAssociatedCase(caze);
+			} else {
+				sampleFacade.cloneSampleForCase(sample, caze);
+			}
+		});
 
 	}
 
@@ -2243,7 +2259,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	public void deleteCase(String caseUuid) throws ExternalSurveillanceToolException {
+	public void delete(String caseUuid) throws ExternalSurveillanceToolException {
 
 		if (!userService.hasRight(UserRight.CASE_DELETE)) {
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete cases.");
@@ -2294,7 +2310,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		caze.setDuplicateOf(duplicateOfCase);
 		service.ensurePersisted(caze);
 
-		deleteCase(caseUuid);
+		delete(caseUuid);
 	}
 
 	@Override
@@ -3357,6 +3373,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		List<TravelEntry> travelEntries = travelEntryService.getAllByResultingCase(otherCase);
 		travelEntries.forEach(t -> {
 			t.setResultingCase(leadCase);
+			t.setPerson(leadCase.getPerson());
 			travelEntryService.ensurePersisted(t);
 		});
 	}
@@ -3429,6 +3446,18 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		final Predicate casePredicate = criteriaBuilder.equal(caseJoin.get(AbstractDomainObject.UUID), caseUuid);
 		final Predicate testPositivityPredicate = criteriaBuilder.equal(sampleRoot.get(Sample.PATHOGEN_TEST_RESULT), PathogenTestResultType.POSITIVE);
 		return sampleService.exists((cb, root, cq) -> cb.and(casePredicate, testPositivityPredicate));
+	}
+
+	public Page<CaseFollowUpDto> getCaseFollowUpIndexPage(
+		CaseFollowUpCriteria criteria,
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties) {
+		List<CaseFollowUpDto> caseFollowUpIndexList =
+			getCaseFollowUpList(criteria, criteria.getReferenceDate(), criteria.getInterval(), offset, size, sortProperties);
+		long totalElementCount = count(criteria);
+		return new Page<>(caseFollowUpIndexList, offset, size, totalElementCount);
+
 	}
 
 	@Override
@@ -3801,11 +3830,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@Override
 	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		service.updateExternalData(externalData);
-	}
-
-	@Override
-	protected void delete(Case entity) {
-		service.delete(entity);
 	}
 
 	@LocalBean

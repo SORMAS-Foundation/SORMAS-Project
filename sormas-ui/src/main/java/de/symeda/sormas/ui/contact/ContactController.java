@@ -1,20 +1,18 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.ui.contact;
 
 import java.util.Collection;
@@ -24,11 +22,6 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.themes.ValoTheme;
-import de.symeda.sormas.ui.immunization.ImmunizationDataView;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -36,11 +29,14 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
+import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
@@ -83,6 +79,7 @@ import de.symeda.sormas.ui.contact.components.linelisting.layout.LineListingLayo
 import de.symeda.sormas.ui.epidata.ContactEpiDataView;
 import de.symeda.sormas.ui.epidata.EpiDataForm;
 import de.symeda.sormas.ui.utils.AbstractView;
+import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -377,12 +374,12 @@ public class ContactController {
 		boolean createdFromLabMesssage) {
 
 		final PersonDto casePerson = caze != null ? FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid()) : null;
-		ContactCreateForm createForm;
-		if (createdFromLabMesssage) {
-			createForm = new ContactCreateForm(caze != null ? caze.getDisease() : null, caze != null && !asSourceContact, asSourceContact, false);
-		} else {
-			createForm = new ContactCreateForm(caze != null ? caze.getDisease() : null, caze != null && !asSourceContact, asSourceContact);
-		}
+		ContactCreateForm createForm = new ContactCreateForm(
+			caze != null ? caze.getDisease() : null,
+			caze != null && !asSourceContact,
+			asSourceContact,
+			!createdFromLabMesssage);
+
 		createForm.setValue(createNewContact(caze, asSourceContact));
 		if (casePerson != null && asSourceContact) {
 			createForm.setPerson(casePerson);
@@ -469,20 +466,7 @@ public class ContactController {
 	}
 
 	private void transferDataToPerson(ContactCreateForm createForm, PersonDto person) {
-		person.setFirstName(createForm.getPersonFirstName());
-		person.setLastName(createForm.getPersonLastName());
-		person.setNationalHealthId(createForm.getNationalHealthId());
-		person.setPassportNumber(createForm.getPassportNumber());
-		person.setBirthdateYYYY(createForm.getBirthdateYYYY());
-		person.setBirthdateMM(createForm.getBirthdateMM());
-		person.setBirthdateDD(createForm.getBirthdateDD());
-		person.setSex(createForm.getSex());
-		if (StringUtils.isNotEmpty(createForm.getPhone())) {
-			person.setPhone(createForm.getPhone());
-		}
-		if (StringUtils.isNotEmpty(createForm.getEmailAddress())) {
-			person.setEmailAddress(createForm.getEmailAddress());
-		}
+		createForm.getPersonCreateForm().transferDataToPerson(person);
 	}
 
 	public CommitDiscardWrapperComponent<ContactCreateForm> getContactCreateComponent(EventParticipantDto eventParticipant) {
@@ -493,7 +477,7 @@ public class ContactController {
 		} else {
 			disease = FacadeProvider.getEventFacade().getEventByUuid(eventParticipant.getEvent().getUuid(), false).getDisease();
 		}
-		createForm = new ContactCreateForm(disease, false, false);
+		createForm = new ContactCreateForm(disease, false, false, true);
 
 		createForm.setValue(createNewContact(eventParticipant, disease));
 		createForm.setPerson(eventParticipant.getPerson());
@@ -598,7 +582,7 @@ public class ContactController {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_DELETE)) {
 			editComponent.addDeleteListener(() -> {
-				FacadeProvider.getContactFacade().deleteContact(contact.getUuid());
+				FacadeProvider.getContactFacade().delete(contact.getUuid());
 				UI.getCurrent().getNavigator().navigateTo(ContactsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityContact));
 		}
@@ -715,7 +699,7 @@ public class ContactController {
 
 					public void run() {
 						for (ContactIndexDto selectedRow : selectedRows) {
-							FacadeProvider.getContactFacade().deleteContact(selectedRow.getUuid());
+							FacadeProvider.getContactFacade().delete(selectedRow.getUuid());
 						}
 						callback.run();
 						new Notification(
@@ -847,7 +831,7 @@ public class ContactController {
 		VaadinUiUtil.showDeleteConfirmationWindow(
 			String.format(I18nProperties.getString(Strings.confirmationDeleteEntity), I18nProperties.getString(Strings.entityContact)),
 			() -> {
-				FacadeProvider.getContactFacade().deleteContact(contact.getUuid());
+				FacadeProvider.getContactFacade().delete(contact.getUuid());
 				callback.run();
 			});
 	}

@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.event;
 
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.backend.common.NotificationService;
 import java.time.Duration;
@@ -89,7 +90,6 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
@@ -99,7 +99,7 @@ import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
-import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.ImmunizationEntityHelper;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
@@ -387,13 +387,13 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
-	public void deleteEventParticipant(EventParticipantReferenceDto eventParticipantRef) {
+	public void delete(String uuid) throws ExternalSurveillanceToolException {
 
 		if (!userService.hasRight(UserRight.EVENTPARTICIPANT_DELETE)) {
 			throw new UnsupportedOperationException("Your user is not allowed to delete event participants");
 		}
 
-		EventParticipant eventParticipant = service.getByReferenceDto(eventParticipantRef);
+		EventParticipant eventParticipant = service.getByUuid(uuid);
 		service.delete(eventParticipant);
 	}
 
@@ -839,6 +839,7 @@ public class EventParticipantFacadeEjb
 	public boolean exists(String personUuid, String eventUuid) {
 		return service.exists(
 			(cb, root, cq) -> cb.and(
+				cb.isFalse(root.get(EventParticipant.DELETED)),
 				cb.equal(root.get(EventParticipant.PERSON).get(AbstractDomainObject.UUID), personUuid),
 				cb.equal(root.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID), eventUuid)));
 	}
@@ -1073,10 +1074,5 @@ public class EventParticipantFacadeEjb
 	@Override
 	protected CoreEntityType getCoreEntityType() {
 		return CoreEntityType.EVENT_PARTICIPANT;
-	}
-
-	@Override
-	protected void delete(EventParticipant entity) {
-		service.delete(entity);
 	}
 }

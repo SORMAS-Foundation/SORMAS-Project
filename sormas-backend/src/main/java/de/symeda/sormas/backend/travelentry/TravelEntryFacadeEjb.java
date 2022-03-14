@@ -28,9 +28,8 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
-import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
@@ -102,7 +101,7 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-	public void deleteTravelEntry(String travelEntryUuid) {
+	public void delete(String travelEntryUuid) {
 		if (!userService.hasRight(UserRight.TRAVEL_ENTRY_DELETE)) {
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete travel entries");
 		}
@@ -342,11 +341,6 @@ public class TravelEntryFacadeEjb
 			return TravelEntry.REPORT_DATE;
 		}
 		return super.getDeleteReferenceField(deletionReference);
-	}
-
-	@Override
-	protected void delete(TravelEntry entity) {
-		service.delete(entity);
 	}
 
 	@LocalBean

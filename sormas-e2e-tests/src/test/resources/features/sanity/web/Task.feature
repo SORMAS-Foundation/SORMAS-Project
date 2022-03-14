@@ -1,13 +1,14 @@
 @UI @Sanity @Task
 Feature: Tasks functionalities
 
-  @env_main
+  #please check this test once test-auto has latest development version
+  @env_main @ignore
   Scenario: Create and check a new task data
     Given I log in with National User
     And I click on the Tasks button from navbar
     And I click on the NEW TASK button
     When I create a new task with specific data
-    And I open last created task
+    And I open last created task from Tasks Directory
     Then I check the created task is correctly displayed on Edit task page
 
   @issue=SORDEV-5476 @env_main
@@ -20,9 +21,8 @@ Feature: Tasks functionalities
     And I click on New Task from Case page
     And I create a new task with specific data
     And I click on the Tasks button from navbar
-    And I search last created task by Case UUID
-    When I open last created task
-    When I change all Task's fields and save
+    And I search last created task by Case UUID and open it
+    Then I change all Task's fields and save
     And I click on the Cases button from navbar
     And Search for Case using Case UUID from the created Task
     When I open last created case

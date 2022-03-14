@@ -61,7 +61,7 @@ Feature: Create events
     Then I check if event is available at person information
 
   @issue=SORDEV-5475 @env_main
-  Scenario: Add a participant to an event
+  Scenario: Verify error messages while adding a participant to an event
     Given I log in with National User
     And I click on the Events button from navbar
     And I click on the NEW EVENT button
@@ -129,7 +129,7 @@ Feature: Create events
     Then I open the last created event via api
     And I check that number of actions in Edit Event Tab is 1
 
-  @env_main
+  @env_main @ignore
   Scenario: Add a New action for an Event and verify the Action in EventActions table
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -144,7 +144,7 @@ Feature: Create events
     And I collect the event actions from table view
     And I am checking if all the fields are correctly displayed in the Event directory Actions table
 
-  @issue=SORDEV-5476 @env_main
+  @issue=SORDEV-5476 @env_main @ignore
   Scenario: Add a Task from event and verify the fields
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -171,15 +171,15 @@ Feature: Create events
     Then I am checking event group name and id is correctly displayed
 
   @issue=SORDEV-5496 @env_main
-  Scenario: Generate event document
+  Scenario: Generate and download Event document
     Given I log in with National User
     And I click on the Events button from navbar
     And I open the first event from events list
     And I click on the Create button from Event Document Templates
-    When I create an event document from template
+    When I create and download an event document from template
     And I verify that the event document is downloaded and correctly named
 
-  @issue=SORDEV-5491 @env_main
+  @issue=SORDEV-5491 @env_main @ignore
   Scenario: Add a participant to an event and create case
     Given I log in with National User
     And I click on the Events button from navbar
@@ -195,7 +195,7 @@ Feature: Create events
     And I fill all fields for a new case created for event participant
     And I click on save case button
 
-    @issue=SORDEV-5915 @env_main @ignore
+    @issue=SORDEV-5915 @env_main
   Scenario: Check all filters are work properly in Event directory
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -346,5 +346,44 @@ Feature: Create events
     And I hover to Event Groups column of the Event result
     And I check that name appearing in hover is equal to name of linked Event group
     And I check the number of displayed Event results from All button is 1
+
+  @issue=SORDEV-9355 @env_main
+  Scenario: Day of birth filter for event participant test
+    Given I log in with National User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with specific data
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    And I collect the UUID displayed on Edit event page
+    Then I add a participant to the event
+    Then I check if participant appears in the event participants list
+    And I fill birth fields for participant in event participant list
+    Then I click on Apply filters button in event participant list
+    Then I check if filtered participant appears in the event participants list
+
+  @issue=SORDEV-7138  @env_main
+  Scenario: Add a participant to an event and bulk create contacts
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with specific data
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    And I collect the UUID displayed on Edit event page
+    Then I add a participant to the event
+    Then I check if participant appears in the event participants list
+    Then I add a participant to the event
+    Then I check if participant appears in the event participants list
+    And I click checkbox to choose all Event Participants results in Event Participant Tab
+    And I click on Bulk Actions combobox in Event Parcitipant Tab
+    And I click on Create Contacts button from bulk actions menu in Event Participant Tab
+    And I create a new Contacts from Event Participants using Line Listing
+    And I save the new contacts from Event Participants using line listing feature in Event Participant tab
+
+
+
 
 

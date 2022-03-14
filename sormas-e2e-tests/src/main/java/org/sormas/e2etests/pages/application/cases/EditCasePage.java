@@ -37,6 +37,7 @@ public class EditCasePage {
   public static final By EXTERNAL_ID_INPUT = By.id("externalID");
   public static final By UUID_INPUT = By.id("uuid");
   public static final By DISEASE_INPUT = By.cssSelector("#disease input");
+  public static final By DISEASE_VARIANT_INPUT = By.cssSelector("#diseaseVariant input");
   public static final By USER_INFORMATION =
       By.cssSelector(".v-slot-view-header .v-slot-primary div");
   public static final By CASE_PERSON_TAB = By.cssSelector("div#tab-cases-person");
@@ -63,6 +64,7 @@ public class EditCasePage {
   public static final By REINFECTION_OPTIONS = By.cssSelector("#reInfection label");
   public static final By OUTCOME_OF_CASE_OPTIONS = By.cssSelector("#outcome label");
   public static final By DATE_OF_OUTCOME = By.cssSelector("#outcomeDate");
+  public static final By DATE_OF_OUTCOME_INPUT = By.cssSelector("#outcomeDate input");
   public static final By SEQUELAE_OPTIONS = By.cssSelector("#sequelae label");
   public static final By SEQUELAE_DETAILS = By.cssSelector("#sequelaeDetails");
   public static final By PLACE_OF_STAY_CHECKBOX_LABEL =
@@ -153,4 +155,11 @@ public class EditCasePage {
   public static final By QUARANTINE_ORDER_COMBOBOX =
       By.cssSelector(".popupContent div[role='combobox'] div");
   public static final By CLINICAL_COURSE_TAB = By.id("tab-cases-clinicalcourse");
+  public static final By NEW_TRAVEL_ENTRY_BUTTON_DE = By.id("Neue Einreise");
+  public static final By PICK_OR_CREATE_PERSON_TITLE = By.xpath("//div[@class='v-window-header']");
+  public static final By SAVE_POPUP_CONTENT = By.cssSelector(".popupContent #commit");
+  public static final By BACK_TO_THE_CASES_LIST_BUTTON =
+      By.xpath("//div[@class='v-link v-widget v-caption v-link-v-caption']/a[@href='#!cases']");
+  public static final By EDIT_TRAVEL_ENTRY_FROM_CASE_BUTTON =
+      By.xpath("//div[@class='v-slot v-slot-s-list']//div[@role='button']");
 }

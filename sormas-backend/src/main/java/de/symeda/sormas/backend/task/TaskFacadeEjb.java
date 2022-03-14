@@ -84,10 +84,10 @@ import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.NotificationService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.CronService;
+import de.symeda.sormas.backend.common.NotificationService;
 import de.symeda.sormas.backend.common.messaging.MessageContents;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.MessagingService;
@@ -458,34 +458,43 @@ public class TaskFacadeEjb implements TaskFacade {
 
 		// Filter select based on case/contact/event region/district/community
 		Expression<Object> region = cb.selectCase()
-			.when(cb.isNotNull(joins.getCaseRegion()), joins.getCaseRegion().get(Region.NAME))
+			.when(cb.isNotNull(joins.getCaseResponsibleRegion()), joins.getCaseResponsibleRegion().get(Region.NAME))
 			.otherwise(
 				cb.selectCase()
-					.when(cb.isNotNull(joins.getContactRegion()), joins.getContactRegion().get(Region.NAME))
+					.when(cb.isNotNull(joins.getCaseRegion()), joins.getCaseRegion().get(Region.NAME))
 					.otherwise(
 						cb.selectCase()
-							.when(cb.isNotNull(joins.getEventRegion()), joins.getEventRegion().get(Region.NAME))
-							.otherwise(joins.getTravelEntryResponsibleRegion().get(Region.NAME))));
+							.when(cb.isNotNull(joins.getContactRegion()), joins.getContactRegion().get(Region.NAME))
+							.otherwise(
+								cb.selectCase()
+									.when(cb.isNotNull(joins.getEventRegion()), joins.getEventRegion().get(Region.NAME))
+									.otherwise(joins.getTravelEntryResponsibleRegion().get(Region.NAME)))));
 
 		Expression<Object> district = cb.selectCase()
-			.when(cb.isNotNull(joins.getCaseDistrict()), joins.getCaseDistrict().get(District.NAME))
+			.when(cb.isNotNull(joins.getCaseResponsibleDistrict()), joins.getCaseResponsibleDistrict().get(District.NAME))
 			.otherwise(
 				cb.selectCase()
-					.when(cb.isNotNull(joins.getContactDistrict()), joins.getContactDistrict().get(District.NAME))
+					.when(cb.isNotNull(joins.getCaseDistrict()), joins.getCaseDistrict().get(District.NAME))
 					.otherwise(
 						cb.selectCase()
-							.when(cb.isNotNull(joins.getEventDistrict()), joins.getEventDistrict().get(District.NAME))
-							.otherwise(joins.getTravelEntryResponsibleDistrict().get(District.NAME))));
+							.when(cb.isNotNull(joins.getContactDistrict()), joins.getContactDistrict().get(District.NAME))
+							.otherwise(
+								cb.selectCase()
+									.when(cb.isNotNull(joins.getEventDistrict()), joins.getEventDistrict().get(District.NAME))
+									.otherwise(joins.getTravelEntryResponsibleDistrict().get(District.NAME)))));
 
 		Expression<Object> community = cb.selectCase()
-			.when(cb.isNotNull(joins.getCaseCommunity()), joins.getCaseCommunity().get(Community.NAME))
+			.when(cb.isNotNull(joins.getCaseResponsibleCommunity()), joins.getCaseResponsibleCommunity().get(Community.NAME))
 			.otherwise(
 				cb.selectCase()
-					.when(cb.isNotNull(joins.getContactCommunity()), joins.getContactCommunity().get(Community.NAME))
+					.when(cb.isNotNull(joins.getCaseCommunity()), joins.getCaseCommunity().get(Community.NAME))
 					.otherwise(
 						cb.selectCase()
-							.when(cb.isNotNull(joins.getEventCommunity()), joins.getEventCommunity().get(Community.NAME))
-							.otherwise(joins.getTravelEntryResponsibleCommunity().get(Community.NAME))));
+							.when(cb.isNotNull(joins.getContactCommunity()), joins.getContactCommunity().get(Community.NAME))
+							.otherwise(
+								cb.selectCase()
+									.when(cb.isNotNull(joins.getEventCommunity()), joins.getEventCommunity().get(Community.NAME))
+									.otherwise(joins.getTravelEntryResponsibleCommunity().get(Community.NAME)))));
 
 		List<Selection<?>> selections = new ArrayList<>(
 			Arrays.asList(
@@ -863,7 +872,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		}
 
 		Task task = taskService.getByUuid(taskDto.getUuid());
-		taskService.delete(task);
+		taskService.deletePermanent(task);
 	}
 
 	public List<String> deleteTasks(List<String> tasksUuids) {
@@ -874,7 +883,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		List<Task> tasksToBeDeleted = taskService.getByUuids(tasksUuids);
 		if (tasksToBeDeleted != null) {
 			tasksToBeDeleted.forEach(taskToBeDeleted -> {
-				taskService.delete(taskToBeDeleted);
+				taskService.deletePermanent(taskToBeDeleted);
 				deletedTaskUuids.add(taskToBeDeleted.getUuid());
 			});
 		}

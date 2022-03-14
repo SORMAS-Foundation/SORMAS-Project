@@ -113,6 +113,6 @@ Feature: Contact filter functionality
     And I click on Converted to case pending button on Contact Directory Page
     And I check that number of displayed contact results is 0
     And I click on Active contact button in Contact Directory Page
-    And I check that number of displayed contact results is 0
+    And I check that number of displayed contact results is 1
     And I click on Dropped button on Contact Directory Page
     And I check that number of displayed contact results is 0

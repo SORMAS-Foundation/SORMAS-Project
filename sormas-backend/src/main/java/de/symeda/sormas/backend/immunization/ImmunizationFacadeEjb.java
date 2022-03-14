@@ -75,9 +75,8 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
-import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
@@ -254,7 +253,7 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
-	public void deleteImmunization(String uuid) {
+	public void delete(String uuid) {
 		if (!userService.hasRight(UserRight.IMMUNIZATION_DELETE)) {
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete immunizations");
 		}
@@ -594,11 +593,6 @@ public class ImmunizationFacadeEjb
 
 		vaccinationFacade.copyExistingVaccinationsToNewImmunization(immunizationDto, newImmunization);
 		service.ensurePersisted(newImmunization);
-	}
-
-	@Override
-	protected void delete(Immunization entity) {
-		service.delete(entity);
 	}
 
 	@LocalBean

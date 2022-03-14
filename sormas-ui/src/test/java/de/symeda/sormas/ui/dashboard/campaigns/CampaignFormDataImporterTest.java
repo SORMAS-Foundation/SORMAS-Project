@@ -15,7 +15,6 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.junit.Ignore;
 import org.junit.Test;
 
 import com.opencsv.exceptions.CsvValidationException;
@@ -35,7 +34,6 @@ import de.symeda.sormas.ui.importer.ImportResultStatus;
 public class CampaignFormDataImporterTest extends AbstractBeanTest {
 
 	@Test
-	@Ignore("Remove ignore once we have replaced H2 - #2526")
 	public void testImportCampaignFormData()
 		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 
@@ -78,7 +76,6 @@ public class CampaignFormDataImporterTest extends AbstractBeanTest {
 	}
 
 	@Test
-	@Ignore("Remove ignore once we have replaced H2 - #2526")
 	public void testImportCampaignFormDataIgnoringNonExistingColumn()
 		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 

@@ -37,6 +37,7 @@ public class EditCasePersonPage {
   public static final By PRESENT_CONDITION_COMBOBOX = By.cssSelector("#presentCondition div");
   public static final By DATE_OF_DEATH_INPUT = By.cssSelector("#deathDate input");
   public static final By CASE_OF_DEATH = By.cssSelector("#causeOfDeath");
+  public static final By CASE_OF_DEATH_COMBOBOX = By.cssSelector("#causeOfDeath div");
   public static final By DEATH_PLACE_TYPE_COMBOBOX = By.cssSelector("#deathPlaceType div");
   public static final By DEATH_PLACE_DESCRIPTION = By.cssSelector("#deathPlaceDescription");
   public static final By DATE_OF_BURIAL_INPUT = By.cssSelector("#burialDate input");

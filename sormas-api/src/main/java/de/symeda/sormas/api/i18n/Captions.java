@@ -1450,11 +1450,13 @@ public interface Captions {
 	String Location_addressType = "Location.addressType";
 	String Location_addressTypeDetails = "Location.addressTypeDetails";
 	String Location_areaType = "Location.areaType";
+	String Location_community = "Location.community";
 	String Location_contactPersonEmail = "Location.contactPersonEmail";
 	String Location_contactPersonFirstName = "Location.contactPersonFirstName";
 	String Location_contactPersonLastName = "Location.contactPersonLastName";
 	String Location_contactPersonPhone = "Location.contactPersonPhone";
 	String Location_details = "Location.details";
+	String Location_district = "Location.district";
 	String Location_facility = "Location.facility";
 	String Location_facilityDetails = "Location.facilityDetails";
 	String Location_facilityType = "Location.facilityType";

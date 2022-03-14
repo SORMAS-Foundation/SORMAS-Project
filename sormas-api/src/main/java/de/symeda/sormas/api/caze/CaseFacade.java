@@ -127,8 +127,6 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	List<CaseDataDto> getAllCasesOfPerson(String personUuid);
 
-	void deleteCase(String caseUuid) throws ExternalSurveillanceToolException;
-
 	List<String> deleteCases(List<String> caseUuids);
 
 	void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid) throws ExternalSurveillanceToolException;
@@ -176,6 +174,12 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 		Date referenceDate,
 		int interval,
 		Integer first,
+		Integer max,
+		List<SortProperty> sortProperties);
+
+	Page<CaseFollowUpDto> getCaseFollowUpIndexPage(
+		@NotNull CaseFollowUpCriteria criteria,
+		Integer offset,
 		Integer max,
 		List<SortProperty> sortProperties);
 
