@@ -115,12 +115,12 @@ public class CreateNewSampleSteps implements En {
         "I fill all fields from Pathogen test for COVID-19 disease result popup and save",
         () -> {
           sampleTestResult = sampleService.buildGeneratedSampleTestResultForCovid();
-          fillReportDate(sampleTestResult.getReportDate());
+          fillReportDate(sampleTestResult.getReportDate(), Locale.ENGLISH);
           selectTypeOfTest(sampleTestResult.getTypeOfTest());
           selectTestedDisease(sampleTestResult.getTestedDisease());
           selectPathogenLaboratory(sampleTestResult.getLaboratory());
           selectTestResult(sampleTestResult.getSampleTestResults());
-          fillDateOfResult(sampleTestResult.getDateOfResult());
+          fillDateOfResult(sampleTestResult.getDateOfResult(), Locale.ENGLISH);
           fillTimeOfResult(sampleTestResult.getTimeOfResult());
           selectResultVerifiedByLabSupervisor(
               sampleTestResult.getResultVerifiedByLabSupervisor(),
