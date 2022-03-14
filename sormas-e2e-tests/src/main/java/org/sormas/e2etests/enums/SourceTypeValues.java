@@ -34,7 +34,8 @@ public enum SourceTypeValues {
   public static String getRandomSourceTypeDifferentThan(String excludedOption) {
     SourceTypeValues[] sourceTypeValuesOptions = SourceTypeValues.values();
     for (SourceTypeValues value : sourceTypeValuesOptions) {
-      if (!value.getSourceTypeCaption().equalsIgnoreCase(excludedOption))
+      if (!value.getSourceTypeCaption().equalsIgnoreCase(excludedOption)
+          && !value.getSourceTypeName().equalsIgnoreCase(excludedOption))
         return value.getSourceTypeCaption();
     }
     throw new Exception("Unable to provide option different than: " + excludedOption);
