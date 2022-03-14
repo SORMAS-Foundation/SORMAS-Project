@@ -77,6 +77,28 @@ public class EditCaseSteps implements En {
       EnvironmentManager environmentManager) {
     this.webDriverHelpers = webDriverHelpers;
 
+    When(
+        "I fill the Date of outcome to yesterday",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              DATE_OF_OUTCOME_INPUT, DATE_FORMATTER.format(LocalDate.now().minusDays(1)));
+        });
+
+    When(
+        "I select ([^\"]*) as Outcome Of Case Status",
+        (String caseStatus) -> {
+          webDriverHelpers.clickWebElementByText(
+              OUTCOME_OF_CASE_OPTIONS, CaseOutcome.getValueFor(caseStatus).toUpperCase());
+          TimeUnit.SECONDS.sleep(1);
+        });
+
+    When(
+        "I fill the specific Date of outcome",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              DATE_OF_OUTCOME_INPUT, DATE_FORMATTER.format(LocalDate.now().minusDays(1)));
+        });
+
     And(
         "I click on save button from Edit Case page",
         () -> {
@@ -675,6 +697,25 @@ public class EditCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(DELETE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(DELETE_POPUP_YES_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(CASE_APPLY_FILTERS_BUTTON);
+        });
+
+    When(
+        "I navigate to epidemiological data tab in Edit case page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EPIDEMIOLOGICAL_DATA_TAB);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I click on the New Travel Entry button from Edit case page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(NEW_TRAVEL_ENTRY_BUTTON_DE);
+        });
+
+    When(
+        "I click on edit travel entry button form case epidemiological tab",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_TRAVEL_ENTRY_FROM_CASE_BUTTON);
         });
   }
 

@@ -25,7 +25,7 @@ Feature: Case filter functionality
     And API: I check that POST call status code is 200
     Given I log in with National User
     And I click on the Cases button from navbar
-    Then I apply last created api Person Id filter on Case directory page
+    Then I apply uuid filter for last created via API Person in Case directory page
     And I filter by CaseID on Case directory page
     And I click SHOW MORE FILTERS button on Case directory page
     And I apply Present Condition filter on Case directory page to condition of last created person
@@ -37,7 +37,7 @@ Feature: Case filter functionality
     And I apply mocked Person Id filter on Case directory page
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
-    And I apply last created api Person Id filter on Case directory page
+    And I apply uuid filter for last created via API Person in Case directory page
     And I apply Day filter different than Person has on Case directory page
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
@@ -241,7 +241,7 @@ Feature: Case filter functionality
     And I check that number of displayed cases results is 0
     And I fill Cases from input to 1 days before mocked Case created on Case directory page
 
-  @issue=SORQA-30 @env_main
+  @issue=SORQA-30 @env_main @check
   Scenario: Check complex filters regarding responsibilities, vaccination, reinfection adn quarantine
     Given API: I create a new person
     Then API: I check that POST call body is "OK"

@@ -29,9 +29,6 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.databinding.FragmentEventParticipantReadLayoutBinding;
-import de.symeda.sormas.app.databinding.FragmentPersonReadLayoutBinding;
-import de.symeda.sormas.app.person.edit.PersonEditFragment;
-import de.symeda.sormas.app.person.read.PersonReadFragment;
 
 public class EventParticipantReadFragment extends BaseReadFragment<FragmentEventParticipantReadLayoutBinding, EventParticipant, EventParticipant> {
 
@@ -68,14 +65,6 @@ public class EventParticipantReadFragment extends BaseReadFragment<FragmentEvent
 		});
 	}
 
-	private void setUpPersonFragmentFieldVisibilities(FragmentPersonReadLayoutBinding contentBinding) {
-		PersonReadFragment.setUpFieldVisibilities(this, contentBinding, record.getEvent());
-		PersonEditFragment.initializeCauseOfDeathDetailsFieldVisibility(
-			contentBinding.personCauseOfDeath,
-			contentBinding.personCauseOfDeathDisease,
-			contentBinding.personCauseOfDeathDetails);
-	}
-
 	// Overrides
 
 	@Override
@@ -88,16 +77,11 @@ public class EventParticipantReadFragment extends BaseReadFragment<FragmentEvent
 		setUpControlListeners(contentBinding);
 
 		contentBinding.setData(record);
-		PersonReadFragment.initCountryTranslations(contentBinding.eventParticipantPersonLayout, record.getPerson());
 	}
 
 	@Override
 	public void onAfterLayoutBinding(FragmentEventParticipantReadLayoutBinding contentBinding) {
 		setUpFieldVisibilities(contentBinding);
-
-		if (contentBinding.eventParticipantPersonLayout != null) {
-			setUpPersonFragmentFieldVisibilities(contentBinding.eventParticipantPersonLayout);
-		}
 	}
 
 	@Override

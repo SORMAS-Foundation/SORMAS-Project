@@ -76,6 +76,17 @@ public enum CaseClassification {
         CaseClassification.values()[random.nextInt(values().length)].classificationUIvalue);
   }
 
+  @SneakyThrows
+  public static String getRandomUIClassificationDifferentThan(String excludedOption) {
+    CaseClassification[] caseClassifications = CaseClassification.values();
+    for (CaseClassification value : caseClassifications) {
+      if (!value.getClassificationUIvalue().equalsIgnoreCase(excludedOption)
+          && !value.getClassificationAPIvalue().equalsIgnoreCase(excludedOption))
+        return value.getClassificationUIvalue();
+    }
+    throw new Exception("Unable to provide option different than: " + excludedOption);
+  }
+
   public static String getRandomAPIClassification() {
     Random random = new Random();
     return String.valueOf(

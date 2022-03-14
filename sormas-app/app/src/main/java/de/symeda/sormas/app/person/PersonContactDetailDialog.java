@@ -16,7 +16,6 @@
 package de.symeda.sormas.app.person;
 
 import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
-import static de.symeda.sormas.app.epidata.EpiDataFragmentHelper.getDiseaseOfCaseOrContact;
 
 import android.content.Context;
 import android.util.Log;
@@ -63,7 +62,7 @@ public class PersonContactDetailDialog extends FormDialog {
 			-1,
 			false,
 			UiFieldAccessCheckers.forSensitiveData(personContactDetail.isPseudonymized()),
-			FieldVisibilityCheckers.withDisease(getDiseaseOfCaseOrContact(activityRootData)));
+			FieldVisibilityCheckers.withDisease(PersonFragmentHelper.getDiseaseOfAssociatedEntity(activityRootData)));
 
 		this.data = personContactDetail;
 		this.create = create;
