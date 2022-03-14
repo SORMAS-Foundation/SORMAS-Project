@@ -12,7 +12,7 @@ Feature: Event Directory filters check
     And I fill EVENT ID filter by API
     And I apply on the APPLY FILTERS button from Event
     And I check that number of displayed Event results is 1
-    Then I select random Risk level filter among the filter options
+    Then I select random risk level value different than risk level value of last created via API Event in Event Directory
     And I apply on the APPLY FILTERS button from Event
     And I check that number of displayed Event results is 0
     And I click on the RESET FILTERS button from Event
@@ -20,7 +20,7 @@ Feature: Event Directory filters check
     And I fill EVENT ID filter by API
     And I apply on the APPLY FILTERS button from Event
     And I check that number of displayed Event results is 1
-    Then I select random Disease filter among the filter options
+    Then I select Disease filter value different than the disease value of the last created via API case in Event Directory
     And I apply on the APPLY FILTERS button from Event
     And I check that number of displayed Event results is 0
     And I click on the RESET FILTERS button from Event
@@ -29,7 +29,7 @@ Feature: Event Directory filters check
     And I fill EVENT ID filter by API
     And I apply on the APPLY FILTERS button from Event
     And I check that number of displayed Event results is 1
-    Then I select random Source Type among the filter options
+    Then I select source Type filter value different than the source type value of the last created via API case in Event Directory
     And I apply on the APPLY FILTERS button from Event
     And I check the number of displayed Event results from All button is 0
     And I click on the RESET FILTERS button from Event
@@ -38,7 +38,7 @@ Feature: Event Directory filters check
     And I fill EVENT ID filter by API
     And I apply on the APPLY FILTERS button from Event
     And I check that number of displayed Event results is 1
-    Then I select random Type of Place field among the filter options
+    Then I select type of place filter value different than the type of place value of the last created via API case in Event Directory
     And I apply on the APPLY FILTERS button from Event
     And I check the number of displayed Event results from All button is 0
     And I click on the RESET FILTERS button from Event
