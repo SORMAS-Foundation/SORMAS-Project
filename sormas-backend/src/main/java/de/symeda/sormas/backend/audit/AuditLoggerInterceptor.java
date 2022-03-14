@@ -5,8 +5,7 @@ import javax.interceptor.AroundInvoke;
 import javax.interceptor.Interceptor;
 import javax.interceptor.InvocationContext;
 import java.util.Collections;
-@Interceptor
-@Priority(Interceptor.Priority.APPLICATION + 1)
+
 public class AuditLoggerInterceptor {
 
 	private final AuditLogger auditLogger = AuditLogger.getInstance();
