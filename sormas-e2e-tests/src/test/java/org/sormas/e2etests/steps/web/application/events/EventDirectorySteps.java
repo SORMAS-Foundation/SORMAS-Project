@@ -669,7 +669,6 @@ public class EventDirectorySteps implements En {
     When(
         "I read the UUIDs of the first four events in Events directory",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           List<Map<String, String>> tableRowsData = getTableRowsData();
           for (int i = 0; i < 4; i++) {
             String eventUUID =
