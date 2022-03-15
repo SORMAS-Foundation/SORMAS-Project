@@ -22,11 +22,11 @@ import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
 import org.hl7.fhir.r4.model.Identifier;
+import org.hl7.fhir.r4.model.Period;
 import org.hl7.fhir.r4.model.Reference;
 import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.codesystems.AuditEntityType;
 import org.hl7.fhir.r4.model.codesystems.AuditSourceType;
-import org.hl7.fhir.r4.model.codesystems.ExtraSecurityRoleType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,6 +35,7 @@ import javax.naming.NamingException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
@@ -125,30 +126,42 @@ public class AuditLogger {
 		accept(applicationStartAudit);
 	}
 
-	public void logBackendCall(String agentName, String agentUuid, String calledMethod, List<String> params, String returnValue) {
+	public void logBackendCall(String agentName, String agentUuid, String calledMethod, List<String> params, String returnValue, Date start) {
 		AuditEvent backendCall = new AuditEvent();
 
 		// backendCall.setType();
 		// backendCall.setSubType();
 
 		backendCall.setAction(inferAction(calledMethod));
-		backendCall.setRecorded(Calendar.getInstance(TimeZone.getDefault()).getTime());
+		Period period = new Period();
+		period.setStart(start);
+		Date end = Calendar.getInstance(TimeZone.getDefault()).getTime();
+		period.setEnd(end);
+		backendCall.setPeriod(period);
+
+		backendCall.setRecorded(end);
 
 		// success
 		//backendCall.setOutcome(AuditEvent.AuditEventOutcome._0);
-		// todo
-		//backendCall.setOutcomeDesc(agentName);
+		backendCall.setOutcomeDesc(returnValue);
 
-		// todo fix for SYSTEM
 		AuditEvent.AuditEventAgentComponent agent = new AuditEvent.AuditEventAgentComponent();
 		CodeableConcept codeableConcept = new CodeableConcept();
-		codeableConcept.addCoding(new Coding("https://www.hl7.org/fhir/valueset-participation-role-type.html", "humanuser", "human user"));
-		agent.setType(codeableConcept);
+
+		if (agentName.equals("SYSTEM") || agentName.equals("ANONYMOUS")) {
+			//todo
+		} else {
+			codeableConcept.addCoding(new Coding("https://www.hl7.org/fhir/valueset-participation-role-type.html", "humanuser", "human user"));
+			agent.setType(codeableConcept);
+		}
+
 		agent.setName(agentName);
 		Reference who = new Reference();
-		who.setType("https://hl7.org/fhir/R4/codesystem-resource-types.html#resource-types-Person");
 		Identifier identifier = new Identifier();
-		identifier.setValue(agentUuid);
+		if (!agentName.equals("SYSTEM") && !agentName.equals("ANONYMOUS")) {
+			identifier.setValue(agentUuid);
+		}
+
 		who.setIdentifier(identifier);
 		agent.setWho(who);
 		backendCall.addAgent(agent);
