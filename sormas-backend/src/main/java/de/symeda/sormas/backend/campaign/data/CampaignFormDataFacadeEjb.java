@@ -171,8 +171,11 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 	@Override
 	public CampaignFormDataDto saveCampaignFormData(@Valid CampaignFormDataDto campaignFormDataDto) throws ValidationRuntimeException {
 
-		CampaignFormData campaignFormData = fromDto(campaignFormDataDto, true);
-		CampaignFormDataEntry.removeNullValueEntries(campaignFormData.getFormValues());
+		final CampaignFormData campaignFormData = fromDto(campaignFormDataDto, true);
+		final List<CampaignFormDataEntry> entries = campaignFormData.getFormValues();
+		final ArrayList<CampaignFormDataEntry> removableEntries = new ArrayList<>(entries);
+		removableEntries.removeIf(entry -> entry.getValue() == null);
+		campaignFormData.setFormValues(removableEntries);
 
 		validate(campaignFormDataDto);
 

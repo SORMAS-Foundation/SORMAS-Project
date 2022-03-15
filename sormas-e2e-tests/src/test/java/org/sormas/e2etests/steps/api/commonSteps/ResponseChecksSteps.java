@@ -31,10 +31,35 @@ public class ResponseChecksSteps implements En {
         "API: I check that POST call body is {string}",
         (String expectedBody) -> {
           String responseBody = apiState.getResponse().getBody().asString();
+          if (responseBody.isEmpty()) {
+            Assert.fail("Response body call is empty!");
+          }
+          String regexUpdatedResponseBody = responseBody.replaceAll("[^a-zA-Z0-9]", "");
           Assert.assertEquals(
-              String.valueOf(responseBody).replaceAll("[^a-zA-Z0-9]", ""),
-              expectedBody,
-              "Request response body is not correct");
+              regexUpdatedResponseBody, expectedBody, "Request response body is not correct");
+        });
+
+    Then(
+        "API: I check that POST call body for bulk request is {string}",
+        (String expectedBody) -> {
+          try {
+            String[] responseBodyList;
+            responseBodyList =
+                apiState
+                    .getResponse()
+                    .getBody()
+                    .asString()
+                    .replace("[", "")
+                    .replace("]", "")
+                    .split(",");
+            for (String postBody : responseBodyList)
+              Assert.assertEquals(
+                  postBody.replaceAll("[^a-zA-Z0-9]", ""),
+                  expectedBody,
+                  "Request response body is not correct");
+          } catch (Exception any) {
+            Assert.fail("Unable to check response body due to: " + any.getMessage());
+          }
         });
 
     Then(

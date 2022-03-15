@@ -178,6 +178,12 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 		Integer max,
 		List<SortProperty> sortProperties);
 
+	Page<CaseFollowUpDto> getCaseFollowUpIndexPage(
+		@NotNull CaseFollowUpCriteria criteria,
+		Integer offset,
+		Integer max,
+		List<SortProperty> sortProperties);
+
 	void sendMessage(List<String> caseUuids, String subject, String messageContent, MessageType... messageTypes);
 
 	long countCasesWithMissingContactInformation(List<String> caseUuids, MessageType messageType);

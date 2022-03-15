@@ -25,7 +25,7 @@ import lombok.Getter;
 public enum PointOfEntryValues {
   AIRPORT("Other airport", "Anderer Flughafen"),
   SEAPORT("Other seaport", "Anderer Seehafen"),
-  GROUND("Other ground crossing", "Anderer Grenzübergang/Landweg"),
+  GROUND("Other ground crossing", "Anderer Grenz\u00FCbergang/Landweg"),
   OTHER("Other point of entry", "Anderer Einreiseort");
 
   private final String pointOfEntry;
