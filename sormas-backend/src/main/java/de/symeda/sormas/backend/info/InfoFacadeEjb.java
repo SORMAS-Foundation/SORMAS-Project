@@ -16,12 +16,27 @@
 package de.symeda.sormas.backend.info;
 
 import static de.symeda.sormas.api.i18n.Captions.ActivityAsCase_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.AdditionalTest_worksheet;
 import static de.symeda.sormas.api.i18n.Captions.CaseData_worksheet;
 import static de.symeda.sormas.api.i18n.Captions.CaseHospitalization_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.CasePreviousHospitalization_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.ClinicalVisit_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.Contact_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.EpiData_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.Event_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.Exposure_worksheet;
 import static de.symeda.sormas.api.i18n.Captions.HealthConditions_worksheet;
 import static de.symeda.sormas.api.i18n.Captions.Location_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.PathogenTest_worksheet;
 import static de.symeda.sormas.api.i18n.Captions.PersonContactDetail_worksheet;
 import static de.symeda.sormas.api.i18n.Captions.Person_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.Prescription_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.Sample_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.SurveillanceReport_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.Symptoms_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.Task_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.Treatment_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.Visit_worksheet;
 
 import java.io.File;
 import java.io.IOException;
@@ -176,7 +191,7 @@ public class InfoFacadeEjb implements InfoFacade {
 		createEntitySheet(
 			workbook,
 			PersonContactDetailDto.class,
-                PersonContactDetail_worksheet,
+			PersonContactDetail_worksheet,
 			entityColumns,
 			fieldVisibilityCheckers,
 			extraColumns,
@@ -202,7 +217,7 @@ public class InfoFacadeEjb implements InfoFacade {
 		createEntitySheet(
 			workbook,
 			PreviousHospitalizationDto.class,
-			PreviousHospitalizationDto.I18N_PREFIX,
+			CasePreviousHospitalization_worksheet,
 			entityColumns,
 			fieldVisibilityCheckers,
 			extraColumns,
@@ -210,14 +225,14 @@ public class InfoFacadeEjb implements InfoFacade {
 		createEntitySheet(
 			workbook,
 			SurveillanceReportDto.class,
-			SurveillanceReportDto.I18N_PREFIX,
+			SurveillanceReport_worksheet,
 			entityColumns,
 			fieldVisibilityCheckers,
 			extraColumns,
 			extraCells);
-		createEntitySheet(workbook, SymptomsDto.class, SymptomsDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
-		createEntitySheet(workbook, EpiDataDto.class, EpiDataDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
-		createEntitySheet(workbook, ExposureDto.class, ExposureDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, SymptomsDto.class, Symptoms_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, EpiDataDto.class, EpiData_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, ExposureDto.class, Exposure_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 		createEntitySheet(
 			workbook,
 			HealthConditionsDto.class,
@@ -226,30 +241,23 @@ public class InfoFacadeEjb implements InfoFacade {
 			fieldVisibilityCheckers,
 			extraColumns,
 			extraCells);
-		createEntitySheet(
-			workbook,
-			PrescriptionDto.class,
-			PrescriptionDto.I18N_PREFIX,
-			entityColumns,
-			fieldVisibilityCheckers,
-			extraColumns,
-			extraCells);
-		createEntitySheet(workbook, TreatmentDto.class, TreatmentDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, PrescriptionDto.class, Prescription_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, TreatmentDto.class, Treatment_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 		createEntitySheet(
 			workbook,
 			ClinicalVisitDto.class,
-			ClinicalVisitDto.I18N_PREFIX,
+			ClinicalVisit_worksheet,
 			entityColumns,
 			fieldVisibilityCheckers,
 			extraColumns,
 			extraCells);
-		createEntitySheet(workbook, ContactDto.class, ContactDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
-		createEntitySheet(workbook, VisitDto.class, VisitDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
-		createEntitySheet(workbook, SampleDto.class, SampleDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, ContactDto.class, Contact_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, VisitDto.class, Visit_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, SampleDto.class, Sample_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 		createEntitySheet(
 			workbook,
 			PathogenTestDto.class,
-			PathogenTestDto.I18N_PREFIX,
+			PathogenTest_worksheet,
 			entityColumns,
 			fieldVisibilityCheckers,
 			extraColumns,
@@ -257,13 +265,13 @@ public class InfoFacadeEjb implements InfoFacade {
 		createEntitySheet(
 			workbook,
 			AdditionalTestDto.class,
-			AdditionalTestDto.I18N_PREFIX,
+			AdditionalTest_worksheet,
 			entityColumns,
 			fieldVisibilityCheckers,
 			extraColumns,
 			extraCells);
-		createEntitySheet(workbook, TaskDto.class, TaskDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
-		createEntitySheet(workbook, EventDto.class, EventDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, TaskDto.class, Task_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, EventDto.class, Event_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 		createEntitySheet(
 			workbook,
 			EventParticipantDto.class,
