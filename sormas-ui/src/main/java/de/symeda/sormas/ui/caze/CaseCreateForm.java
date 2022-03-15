@@ -810,13 +810,15 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 
 		if (showHomeAddressForm) {
 			PersonDto searchedPerson = getSearchedPerson();
-			enterHomeAddressNow.setEnabled(searchedPerson != null ? false : true);
-			if (searchedPerson == null) {
+			enterHomeAddressNow.setEnabled(searchedPerson == null);
+			if (searchedPerson == null && (person == null || person.getAddress() == null)) {
 				homeAddressForm.clear();
 				homeAddressForm.setFacilityFieldsVisible(false, true);
 				homeAddressForm.setVisible(false);
-			} else {
+			} else if (searchedPerson != null) {
 				enterHomeAddressNow.setValue(false);
+			} else {
+				enterHomeAddressNow.setValue(person.getAddress() != null);
 			}
 		}
 
@@ -927,8 +929,10 @@ public class CaseCreateForm extends PersonDependentEditForm<CaseDataDto> {
 			boolean isChecked = (boolean) e.getProperty().getValue();
 			addressHeader.setVisible(isChecked);
 			homeAddressForm.setVisible(isChecked);
-			homeAddressForm.clear();
 			homeAddressForm.setFacilityFieldsVisible(isChecked, true);
+			if (!isChecked) {
+				homeAddressForm.clear();
+			}
 		});
 	}
 
