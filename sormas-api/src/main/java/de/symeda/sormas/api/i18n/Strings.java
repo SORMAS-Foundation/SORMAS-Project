@@ -284,6 +284,8 @@ public interface Strings {
 	String errorNoAccessToWeb = "errorNoAccessToWeb";
 	String errorNoPopulationDataFound = "errorNoPopulationDataFound";
 	String errorNoPopulationDataLocations = "errorNoPopulationDataLocations";
+	String errorNoRightsForChangingField = "errorNoRightsForChangingField";
+	String errorNoRightsForChangingMultipleFields = "errorNoRightsForChangingMultipleFields";
 	String errorNotRequiredRights = "errorNotRequiredRights";
 	String errorOccurred = "errorOccurred";
 	String errorProblemOccurred = "errorProblemOccurred";
