@@ -23,7 +23,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
-import de.symeda.sormas.ui.utils.SidePanelLayout;
+import de.symeda.sormas.ui.utils.LayoutWithSidePanel;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 
 public class TravelEntryDataView extends AbstractTravelEntryView {
@@ -58,8 +58,8 @@ public class TravelEntryDataView extends AbstractTravelEntryView {
 		container.setMargin(true);
 		setSubComponent(container);
 
-		SidePanelLayout layout =
-			new SidePanelLayout(editComponent, CASE_LOC, DOCUMENTS_LOC, QuarantineOrderDocumentsComponent.QUARANTINE_LOC, TASKS_LOC);
+		LayoutWithSidePanel layout =
+			new LayoutWithSidePanel(editComponent, CASE_LOC, DOCUMENTS_LOC, QuarantineOrderDocumentsComponent.QUARANTINE_LOC, TASKS_LOC);
 
 		container.addComponent(layout);
 

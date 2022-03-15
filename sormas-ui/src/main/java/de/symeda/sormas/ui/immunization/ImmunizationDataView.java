@@ -4,7 +4,6 @@ import com.vaadin.ui.VerticalLayout;
 
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.immunization.components.form.ImmunizationDataForm;
@@ -13,7 +12,7 @@ import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
-import de.symeda.sormas.ui.utils.SidePanelLayout;
+import de.symeda.sormas.ui.utils.LayoutWithSidePanel;
 
 public class ImmunizationDataView extends AbstractImmunizationView {
 
@@ -45,7 +44,7 @@ public class ImmunizationDataView extends AbstractImmunizationView {
 		container.setMargin(true);
 		setSubComponent(container);
 
-		SidePanelLayout layout = new SidePanelLayout(editComponent, SORMAS_TO_SORMAS_LOC);
+		LayoutWithSidePanel layout = new LayoutWithSidePanel(editComponent, SORMAS_TO_SORMAS_LOC);
 
 		container.addComponent(layout);
 

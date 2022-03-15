@@ -969,7 +969,7 @@ public class CaseController {
 					Notification.show(I18nProperties.getString(Strings.messageCasesEdited), Type.HUMANIZED_MESSAGE);
 				} else {
 					NotificationHelper.showNotification(
-						String.format(I18nProperties.getString(Strings.messageCasesBulkEdited), selectedCases.size(), changedCases),
+						String.format(I18nProperties.getString(Strings.messageCasesEditedExceptArchived), changedCases),
 						Type.HUMANIZED_MESSAGE,
 						-1);
 				}

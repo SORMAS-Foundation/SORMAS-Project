@@ -871,7 +871,7 @@ public class EventController {
 					Notification.show(I18nProperties.getString(Strings.messageEventsEdited), Type.HUMANIZED_MESSAGE);
 				} else {
 					NotificationHelper.showNotification(
-						String.format(I18nProperties.getString(Strings.messageEventsBulkEdited), selectedEvents.size(), changedEvents),
+						String.format(I18nProperties.getString(Strings.messageEventsEditedExceptArchived), selectedEvents.size(), changedEvents),
 						Type.HUMANIZED_MESSAGE,
 						-1);
 				}

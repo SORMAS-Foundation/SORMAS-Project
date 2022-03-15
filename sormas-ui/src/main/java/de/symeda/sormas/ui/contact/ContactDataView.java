@@ -57,7 +57,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
-import de.symeda.sormas.ui.utils.SidePanelLayout;
+import de.symeda.sormas.ui.utils.LayoutWithSidePanel;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
@@ -101,7 +101,7 @@ public class ContactDataView extends AbstractContactView {
 		container.setMargin(true);
 		setSubComponent(container);
 
-		SidePanelLayout layout = new SidePanelLayout(
+		LayoutWithSidePanel layout = new LayoutWithSidePanel(
 			editComponent,
 			CASE_LOC,
 			CASE_BUTTONS_LOC,

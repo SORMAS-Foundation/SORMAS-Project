@@ -913,7 +913,7 @@ public interface Strings {
 	String messageCasesArchived = "messageCasesArchived";
 	String messageCaseSaved = "messageCaseSaved";
 	String messageCaseSavedClassificationChanged = "messageCaseSavedClassificationChanged";
-	String messageCasesBulkEdited = "messageCasesBulkEdited";
+	String messageCasesEditedExceptArchived = "messageCasesEditedExceptArchived";
 	String messageCasesDearchived = "messageCasesDearchived";
 	String messageCasesDeleted = "messageCasesDeleted";
 	String messageCasesEdited = "messageCasesEdited";
@@ -946,7 +946,7 @@ public interface Strings {
 	String messageContactDuplicateDeleted = "messageContactDuplicateDeleted";
 	String messageContactExternalTokenWarning = "messageContactExternalTokenWarning";
 	String messageContactSaved = "messageContactSaved";
-	String messageContactsBulkEdited = "messageContactsBulkEdited";
+	String messageContactsEditedExceptArchived = "messageContactsEditedExceptArchived";
 	String messageContactsDeleted = "messageContactsDeleted";
 	String messageContactsEdited = "messageContactsEdited";
 	String messageContactsMerged = "messageContactsMerged";
@@ -1016,7 +1016,7 @@ public interface Strings {
 	String messageEventParticipationUnlinked = "messageEventParticipationUnlinked";
 	String messageEventsArchived = "messageEventsArchived";
 	String messageEventSaved = "messageEventSaved";
-	String messageEventsBulkEdited = "messageEventsBulkEdited";
+	String messageEventsEditedExceptArchived = "messageEventsEditedExceptArchived";
 	String messageEventsDearchived = "messageEventsDearchived";
 	String messageEventsDeleted = "messageEventsDeleted";
 	String messageEventsEdited = "messageEventsEdited";

@@ -658,7 +658,7 @@ public class ContactController {
 				Notification.show(I18nProperties.getString(Strings.messageContactsEdited), Type.HUMANIZED_MESSAGE);
 			} else {
 				NotificationHelper.showNotification(
-					String.format(I18nProperties.getString(Strings.messageContactsBulkEdited), selectedContacts.size(), changedContacts),
+					String.format(I18nProperties.getString(Strings.messageContactsEditedExceptArchived), changedContacts),
 					Type.HUMANIZED_MESSAGE,
 					-1);
 			}

@@ -7,7 +7,7 @@ import java.util.stream.Collectors;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CustomLayout;
 
-public class SidePanelLayout extends CustomLayout {
+public class LayoutWithSidePanel extends CustomLayout {
 
 	private static final String CONTENT_COMPONENT = "contentComponent";
 	private static final String SIDE_PANEL = "sidePanel";
@@ -17,7 +17,7 @@ public class SidePanelLayout extends CustomLayout {
 	private final CustomLayout sidePanel;
 	private final CommitDiscardWrapperComponent<?> editComponent;
 
-	public SidePanelLayout(CommitDiscardWrapperComponent editComponent, String... sideComponentLocs) {
+	public LayoutWithSidePanel(CommitDiscardWrapperComponent editComponent, String... sideComponentLocs) {
 		this.editComponent = editComponent;
 
 		addStyleName(CssStyles.ROOT_COMPONENT);
@@ -49,6 +49,7 @@ public class SidePanelLayout extends CustomLayout {
 		return sidePanel;
 	}
 
+	//excludeButtons: represent the buttons from the CommitDiscardComponent that we intend to exclude from disabling
 	public void disable(String... excludedButtons) {
 		editComponent.setEditable(false, excludedButtons);
 		sidePanel.setEnabled(false);

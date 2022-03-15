@@ -51,7 +51,7 @@ import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
-import de.symeda.sormas.ui.utils.SidePanelLayout;
+import de.symeda.sormas.ui.utils.LayoutWithSidePanel;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 import de.symeda.sormas.ui.vaccination.list.VaccinationListComponent;
 
@@ -119,8 +119,8 @@ public class EventParticipantDataView extends AbstractDetailView<EventParticipan
 		container.setMargin(true);
 		setSubComponent(container);
 
-		SidePanelLayout layout =
-			new SidePanelLayout(editComponent, SAMPLES_LOC, CONTACTS_LOC, IMMUNIZATION_LOC, VACCINATIONS_LOC, QUARANTINE_LOC, SORMAS_TO_SORMAS_LOC);
+		LayoutWithSidePanel layout =
+			new LayoutWithSidePanel(editComponent, SAMPLES_LOC, CONTACTS_LOC, IMMUNIZATION_LOC, VACCINATIONS_LOC, QUARANTINE_LOC, SORMAS_TO_SORMAS_LOC);
 
 		container.addComponent(layout);
 

@@ -552,7 +552,7 @@ public class EventsView extends AbstractView {
 				if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_ARCHIVE)) {
 					bulkActions.add(
 						new MenuBarHelper.MenuBarItem(
-							I18nProperties.getCaption(Captions.actionArchiveInfrastructure),
+							I18nProperties.getCaption(Captions.actionArchiveCoreEntity),
 							VaadinIcons.ARCHIVE,
 							mi -> grid.bulkActionHandler(
 								items -> ControllerProvider.getEventController().archiveAllSelectedItems(items, () -> navigateTo(eventCriteria, true)),
@@ -560,7 +560,7 @@ public class EventsView extends AbstractView {
 							EntityRelevanceStatus.ACTIVE.equals(eventCriteria.getRelevanceStatus())));
 					bulkActions.add(
 						new MenuBarHelper.MenuBarItem(
-							I18nProperties.getCaption(Captions.actionDearchiveInfrastructure),
+							I18nProperties.getCaption(Captions.actionDearchiveCoreEntity),
 							VaadinIcons.ARCHIVE,
 							mi -> grid.bulkActionHandler(
 								items -> ControllerProvider.getEventController()

@@ -20,7 +20,6 @@ import java.util.stream.Collectors;
 
 import com.vaadin.server.Page;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -62,7 +61,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
-import de.symeda.sormas.ui.utils.SidePanelLayout;
+import de.symeda.sormas.ui.utils.LayoutWithSidePanel;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 
 public class EventDataView extends AbstractEventView {
@@ -103,7 +102,7 @@ public class EventDataView extends AbstractEventView {
 		editComponent =
 			ControllerProvider.getEventController().getEventDataEditComponent(getEventRef().getUuid(), this::setExternalSurvToolLayoutVisibility);
 
-		SidePanelLayout layout = new SidePanelLayout(
+		LayoutWithSidePanel layout = new LayoutWithSidePanel(
 			editComponent,
 			TASKS_LOC,
 			ACTIONS_LOC,

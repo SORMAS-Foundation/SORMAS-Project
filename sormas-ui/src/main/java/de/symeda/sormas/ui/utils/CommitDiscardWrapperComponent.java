@@ -829,12 +829,14 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		this.dirty = dirty;
 	}
 
-	public void setEditable(boolean editable, String... buttonsExcepted) {
+	//excludedButtons: contains the buttons attached to the CommitDiscardWrapperComponent which we intend to
+	// exclude from applying a new editable status
+	public void setEditable(boolean editable, String... excludedButtons) {
 		wrappedComponent.setEnabled(editable);
 
 		for (int i = 0; i < buttonsPanel.getComponentCount(); i++) {
 			Component button = buttonsPanel.getComponent(i);
-			if (!ArrayUtils.contains(buttonsExcepted, button.getId())) {
+			if (!ArrayUtils.contains(excludedButtons, button.getId())) {
 				button.setEnabled(editable);
 			}
 		}

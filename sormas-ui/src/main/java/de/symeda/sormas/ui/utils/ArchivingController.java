@@ -210,7 +210,7 @@ public class ArchivingController {
 		CommitDiscardWrapperComponent editView,
 		Runnable callback) {
 		boolean archived = coreFacade.isArchived(entityDto.getUuid());
-		Button archiveCaseButton = ButtonHelper.createButton(
+		Button archiveButton = ButtonHelper.createButton(
 			ARCHIVE_DEARCHIVE_BUTTON_ID,
 			I18nProperties.getCaption(archived ? Captions.actionDearchiveCoreEntity : Captions.actionArchiveCoreEntity),
 			e -> {
@@ -226,7 +226,7 @@ public class ArchivingController {
 			},
 			ValoTheme.BUTTON_LINK);
 
-		editView.getButtonsPanel().addComponentAsFirst(archiveCaseButton);
-		editView.getButtonsPanel().setComponentAlignment(archiveCaseButton, Alignment.BOTTOM_LEFT);
+		editView.getButtonsPanel().addComponentAsFirst(archiveButton);
+		editView.getButtonsPanel().setComponentAlignment(archiveButton, Alignment.BOTTOM_LEFT);
 	}
 }
