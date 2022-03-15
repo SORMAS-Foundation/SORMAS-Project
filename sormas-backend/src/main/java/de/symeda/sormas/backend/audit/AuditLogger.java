@@ -21,14 +21,18 @@ import de.symeda.sormas.api.ConfigFacade;
 import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
+import org.hl7.fhir.r4.model.Identifier;
 import org.hl7.fhir.r4.model.Reference;
+import org.hl7.fhir.r4.model.StringType;
 import org.hl7.fhir.r4.model.codesystems.AuditEntityType;
 import org.hl7.fhir.r4.model.codesystems.AuditSourceType;
+import org.hl7.fhir.r4.model.codesystems.ExtraSecurityRoleType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
@@ -121,7 +125,7 @@ public class AuditLogger {
 		accept(applicationStartAudit);
 	}
 
-	public void logBackendCall(String subject, String object, String calledMethod, List<String> params, String returnValue) {
+	public void logBackendCall(String agentName, String agentUuid, String calledMethod, List<String> params, String returnValue) {
 		AuditEvent backendCall = new AuditEvent();
 
 		// backendCall.setType();
@@ -132,38 +136,54 @@ public class AuditLogger {
 
 		// success
 		//backendCall.setOutcome(AuditEvent.AuditEventOutcome._0);
-		//applicationStartAudit.setOutcomeDesc(outcomeDesc);
-		/*
-		 * AuditEvent.AuditEventAgentComponent agent = new AuditEvent.AuditEventAgentComponent();
-		 * CodeableConcept codeableConcept = new CodeableConcept();
-		 * codeableConcept.addCoding(new Coding("https://www.hl7.org/fhir/valueset-participation-role-type.html", "110151",
-		 * "Application Launcher"));
-		 * agent.setType(codeableConcept);
-		 * agent.setName("SYSTEM");
-		 * applicationStartAudit.setAgent(Collections.singletonList(agent));
-		 */
+		// todo
+		//backendCall.setOutcomeDesc(agentName);
+
+		// todo fix for SYSTEM
+		AuditEvent.AuditEventAgentComponent agent = new AuditEvent.AuditEventAgentComponent();
+		CodeableConcept codeableConcept = new CodeableConcept();
+		codeableConcept.addCoding(new Coding("https://www.hl7.org/fhir/valueset-participation-role-type.html", "humanuser", "human user"));
+		agent.setType(codeableConcept);
+		agent.setName(agentName);
+		Reference who = new Reference();
+		who.setType("https://hl7.org/fhir/R4/codesystem-resource-types.html#resource-types-Person");
+		Identifier identifier = new Identifier();
+		identifier.setValue(agentUuid);
+		who.setIdentifier(identifier);
+		agent.setWho(who);
+		backendCall.addAgent(agent);
 
 		AuditEvent.AuditEventSourceComponent source = new AuditEvent.AuditEventSourceComponent();
 		source.setSite(auditSourceSite);
-		// Application Server
-		// AuditSourceType auditSourceType = AuditSourceType._4;
-		//source.addType(new Coding(auditSourceType.getSystem(), auditSourceType.toCode(), auditSourceType.getDisplay()));
-
+		//Application Server process
+		AuditSourceType auditSourceType = AuditSourceType._4;
+		source.addType(new Coding(auditSourceType.getSystem(), auditSourceType.toCode(), auditSourceType.getDisplay()));
 		backendCall.setSource(source);
 
-		//AuditEvent.AuditEventEntityComponent entity = new AuditEvent.AuditEventEntityComponent();
-		//entity.setWhat(new Reference("StartupShutdownService"));
+		AuditEvent.AuditEventEntityComponent entity = new AuditEvent.AuditEventEntityComponent();
+		entity.setWhat(new Reference(calledMethod));
+
+		List<AuditEvent.AuditEventEntityDetailComponent> details = new ArrayList<>();
+		params.forEach(p -> {
+			AuditEvent.AuditEventEntityDetailComponent detail =
+				new AuditEvent.AuditEventEntityDetailComponent(new StringType("param"), new StringType(p));
+			details.add(detail);
+		});
+
+		entity.setDetail(details);
 
 		// System Object
 		//AuditEntityType entityType = AuditEntityType._2;
 		//entity.setType(new Coding(entityType.getSystem(), entityType.toCode(), entityType.getDisplay()));
-		//applicationStartAudit.addEntity(entity);
+
+		backendCall.addEntity(entity);
 
 		accept(backendCall);
-
 	}
 
 	private AuditEvent.AuditEventAction inferAction(String calledMethod) {
+		// todo last element
+		calledMethod = calledMethod.split("\\.")[1];
 		if (calledMethod.startsWith("count")
 			|| calledMethod.startsWith("get")
 			|| calledMethod.startsWith("is")

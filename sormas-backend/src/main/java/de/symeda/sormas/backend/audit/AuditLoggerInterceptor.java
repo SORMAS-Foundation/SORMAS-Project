@@ -1,18 +1,33 @@
 package de.symeda.sormas.backend.audit;
 
-import javax.annotation.Priority;
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.Interceptor;
-import javax.interceptor.InvocationContext;
+import java.util.Arrays;
 import java.util.Collections;
+import java.util.List;
+import java.util.Objects;
+import java.util.stream.Collectors;
+
+import javax.annotation.Resource;
+import javax.ejb.SessionContext;
+import javax.interceptor.AroundInvoke;
+import javax.interceptor.InvocationContext;
 
 public class AuditLoggerInterceptor {
 
-	private final AuditLogger auditLogger = AuditLogger.getInstance();
+	@Resource
+	private SessionContext sessionContext;
 
 	@AroundInvoke
 	public Object logInvokeDuration(InvocationContext context) throws Exception {
-		auditLogger.logBackendCall("Subject", "Object", getInvokedMethod(context), Collections.emptyList(), "ReturnValue");
+		if (!context.getTarget().toString().startsWith("de.symeda.sormas.backend.common.ConfigFacadeEjb")) {
+			List<String> parameters=Collections.emptyList();
+			Object[] contextParameters = context.getParameters();
+			if (contextParameters != null){
+				parameters = Arrays.stream(contextParameters).filter(Objects::nonNull).map(Object::toString).collect(Collectors.toList());
+			}
+
+			String invokedMethod = getInvokedMethod(context);
+			AuditLogger.getInstance().logBackendCall(sessionContext.getCallerPrincipal().getName(),"SUBJECT-UUID", invokedMethod, parameters, "ReturnValue");
+		}
 		return context.proceed();
 	}
 
