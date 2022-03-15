@@ -157,7 +157,6 @@ public class SurveillanceDashboardSteps implements En {
         "^I validate show all diseases button is available and clickable$",
         () -> {
           webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.SHOW_ALL_DISEASES);
         });
@@ -165,7 +164,6 @@ public class SurveillanceDashboardSteps implements En {
         "^I validate only 6 disease categories are displayed$",
         () -> {
           webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
           Assert.assertEquals(
               webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.DISEASE_CATEGORIES),
               6,
@@ -175,14 +173,18 @@ public class SurveillanceDashboardSteps implements En {
         "^I click on show all diseases$",
         () -> {
           webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.SHOW_ALL_DISEASES);
+          TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.SHOW_ALL_DISEASES);
+          // webDriverHelpers.javaScriptClickElement(SurveillanceDashboardPage.SHOW_ALL_DISEASES);
+          webDriverHelpers.waitUntilAListOfElementsIsPresent(
+              SurveillanceDashboardPage.SHOW_ALL_DISEASES, 7);
         });
     Then(
         "^I validate presence of all diseases$",
         () -> {
           webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
           Assert.assertEquals(
               webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.DISEASE_CATEGORIES),
               20,
@@ -451,8 +453,10 @@ public class SurveillanceDashboardSteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
+          TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.clickOnWebElementBySelector(
               SurveillanceDashboardPage.BURDEN_TABLE_VIEW_SWITCH);
+          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.DISEASE_BURDEN_INFORMATION);
         });
@@ -498,10 +502,261 @@ public class SurveillanceDashboardSteps implements En {
         "^I validate switching back to disease boxes is working$",
         () -> {
           webDriverHelpers.waitForPageLoaded();
+          TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.clickOnWebElementBySelector(
               SurveillanceDashboardPage.BURDEN_TILE_VIEW_SWITCH);
+          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.FIRST_DISEASE_BOX);
+        });
+    Then(
+        "^I validate all diseases are displayed in the carousel slider options$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          // TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.AFP_BOX_IN_CAROUSEL_SLIDER_BAR);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.ANTHRAX_BOX_IN_CAROUSEL_SLIDER_BAR);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.COVID_19_BOX_IN_CAROUSEL_SLIDER_BAR);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.CHOLERA_BOX_IN_CAROUSEL_SLIDER_BAR);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.CRS_BOX_IN_CAROUSEL_SLIDER_BAR);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.DENGUE_BOX_IN_CAROUSEL_SLIDER_BAR);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.EVD_BOX_IN_CAROUSEL_SLIDER_BAR);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.GUINEA_WORM_BOX_IN_CAROUSEL_SLIDER_BAR);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.RABIES_BOX_IN_CAROUSEL_SLIDER_BAR);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.NEW_FLU_BOX_IN_CAROUSEL_SLIDER_BAR);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.LASSA_BOX_IN_CAROUSEL_SLIDER_BAR);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.MEASLES_BOX_IN_CAROUSEL_SLIDER_BAR);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.MENINGITIS_BOX_IN_CAROUSEL_SLIDER_BAR);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.MONKEYPOX_BOX_IN_CAROUSEL_SLIDER_BAR);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.PLAGUE_BOX_IN_CAROUSEL_SLIDER_BAR);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.POLIO_BOX_IN_CAROUSEL_SLIDER_BAR);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.VHF_BOX_IN_CAROUSEL_SLIDER_BAR);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.YELLOW_FEVER_BOX_IN_CAROUSEL_SLIDER_BAR);
+        });
+    Then(
+        "^I validate counter is present$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          // TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.NEW_CASES_COUNTER_BOX_IN_CAROUSEL_SLIDER_BAR);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.NEW_EVENTS_COUNTER_BOX_IN_CAROUSEL_SLIDER_BAR);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.TEST_RESULTS_COUNTER_BOX_IN_CAROUSEL_SLIDER_BAR);
+        });
+    Then(
+        "^I validate presence of left statistics charts$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          // TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.STATISTICS_CHARTS);
+        });
+    Then(
+        "^I validate presence of cases metrics$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.CASES_METRICS_MAIN_BOX);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.CASES_METRICS_NOT_A_CASE_BOX);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.CASES_METRICS_CONFIRMED_BOX);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.CASES_METRICS_CONFIRMED_NO_SYMPTOMS_BOX);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.CASES_METRICS_CONFIRMED_UNKNOWN_SYMPTOMS_BOX);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.CASES_METRICS_PROBABLE_BOX);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.CASES_METRICS_SUSPECT_BOX);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.CASES_METRICS_NOT_YET_CLASSIFIED_BOX);
+        });
+    Then(
+        "^I validate presence of fatalities counter$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.FATALITIES_COUNTER);
+        });
+    Then(
+        "^I validate presence of events counter$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.NEW_EVENTS_COUNTER);
+        });
+    Then(
+        "^I validate presence of events metrics$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.NEW_EVENTS_TYPE_CLUSTER);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.NEW_EVENTS_TYPE_EVENT);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.NEW_EVENTS_TYPE_SIGNAL);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.NEW_EVENTS_TYPE_DROPPED);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.NEW_EVENTS_TYPE_SCREENING);
+        });
+    Then(
+        "^I validate presence of test results counter$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.TEST_RESULTS_COUNTER);
+        });
+    Then(
+        "^I validate presence of test results metrics$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.TEST_RESULTS_INDETERMINATE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.TEST_RESULTS_POSITIVE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.TEST_RESULTS_NEGATIVE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.TEST_RESULTS_PENDING);
+        });
+    Then(
+        "^I validate presence of legend data$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.TEST_RESULTS_PENDING);
+        });
+    Then(
+        "^I validate presence of chart$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.LEGEND_DATA);
+          Assert.assertEquals(
+              webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.STATISTICS_CHARTS),
+              2,
+              "Statistic chart is missing or not displayed");
+        });
+    Then(
+        "^I validate presence of chart download button$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.LEGEND_CHART_DOWNLOAD_BUTTON);
+        });
+    Then(
+        "^I validate chart download options$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(
+              SurveillanceDashboardPage.LEGEND_CHART_DOWNLOAD_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.DOWNLOAD_CHART_OPTION_PRINT_CHART);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.DOWNLOAD_CHART_OPTION_DOWNLOAD_PNG_IMAGE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.DOWNLOAD_CHART_OPTION_DOWNLOAD_JPEG_IMAGE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.DOWNLOAD_CHART_OPTION_DOWNLOAD_PDF_DOCUMENT);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.DOWNLOAD_CHART_OPTION_DOWNLOAD_SVG_VECTOR_IMAGE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.DOWNLOAD_CHART_OPTION_DOWNLOAD_CSV);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.DOWNLOAD_CHART_OPTION_DOWNLOAD_XLS);
+        });
+    Then(
+        "^I validate presence of chart buttons$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.LEGEND_DATA_EXPAND_EPI_CURVE_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.LEGEND_DATA_GROUPING_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(
+              SurveillanceDashboardPage.LEGEND_DATA_GROUPING_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.LEGEND_DATA_GROUPING_DAY);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.LEGEND_DATA_GROUPING_EPI_WEEK);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.LEGEND_DATA_GROUPING_MONTH);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.LEGEND_DATA_GROUPING_ALWAYS_SHOW_AT_LEAST_7_ENTRIES);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.LEGEND_DATA_CASE_STATUS_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.LEGEND_DATA_DEAD_OR_ALIVE_BUTTON);
+        });
+    Then(
+        "^I click on legend case status$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.LEGEND_DATA_CASE_STATUS_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(
+              SurveillanceDashboardPage.LEGEND_DATA_CASE_STATUS_BUTTON);
+        });
+    Then(
+        "^I check case status chart$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.LEGEND_CHART_CASE_STATUS_CONFIRMED);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.LEGEND_CHART_CASE_STATUS_CONFIRMED_NO_SYMPTOMS);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.LEGEND_CHART_CASE_STATUS_CONFIRMED_UNKNOWN_SYMPTOMS);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.LEGEND_CHART_CASE_STATUS_NOT_YET_CLASSIFIED);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.LEGEND_CHART_CASE_STATUS_PROBABLE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.LEGEND_CHART_CASE_STATUS_SUSPECT);
+        });
+    Then(
+        "^I click on legend alive or dead$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.LEGEND_DATA_DEAD_OR_ALIVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(
+              SurveillanceDashboardPage.LEGEND_DATA_DEAD_OR_ALIVE_BUTTON);
+        });
+    Then(
+        "^I check alive or dead chart$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.LEGEND_CHART_ALIVE_OR_DEAD_DEAD);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.LEGEND_CHART_ALIVE_OR_DEAD_ALIVE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.LEGEND_CHART_ALIVE_OR_DEAD_UNKNOWN);
         });
   }
 }

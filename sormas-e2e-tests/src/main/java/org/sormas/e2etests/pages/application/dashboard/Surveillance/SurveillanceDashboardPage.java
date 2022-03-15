@@ -49,7 +49,7 @@ public class SurveillanceDashboardPage {
       By.cssSelector(
           "div:nth-of-type(1) > .v-has-height.v-has-width.v-layout.v-margin-bottom.v-margin-left.v-margin-right.v-margin-top.v-vertical.v-verticallayout.v-widget > .v-expand > div:nth-of-type(1) > .v-has-width.v-horizontal.v-horizontallayout.v-horizontallayout-vspace-4.v-layout.v-widget.vspace-4 > .v-expand > .v-align-bottom.v-slot.v-slot-h2.v-slot-vspace-4.v-slot-vspace-top-none");
   public static final By STATUS_MAP = By.cssSelector("[id^='leaflet_']");
-  public static final By SHOW_ALL_DISEASES = By.cssSelector("div#dashboardShowAllDiseases");
+  public static final By SHOW_ALL_DISEASES = By.cssSelector("#dashboardShowAllDiseases");
   public static final By DISEASE_CATEGORIES_COUNTER =
       By.cssSelector("[class='v-verticallayout v-layout v-vertical v-widget v-has-width']");
   public static final By DISEASE_CATEGORIES =
@@ -205,5 +205,148 @@ public class SurveillanceDashboardPage {
   public static final By DISEASE_BURDEN_BOX_SIXTH_DISEASE =
       By.xpath(
           "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]/div[3]/table[1]/tbody[1]/tr[6]/td[1]");
-  public static final By DIS = By.xpath("");
+  public static final By AFP_BOX_IN_CAROUSEL_SLIDER_BAR =
+      By.xpath("//span[contains(text(),'AFP')]");
+  public static final By ANTHRAX_BOX_IN_CAROUSEL_SLIDER_BAR =
+      By.xpath("//span[contains(text(),'Anthrax')]");
+  public static final By COVID_19_BOX_IN_CAROUSEL_SLIDER_BAR =
+      By.xpath("//span[contains(text(),'COVID-19')]");
+  public static final By CHOLERA_BOX_IN_CAROUSEL_SLIDER_BAR =
+      By.xpath("//span[contains(text(),'Cholera')]");
+  public static final By CRS_BOX_IN_CAROUSEL_SLIDER_BAR =
+      By.xpath("//span[contains(text(),'CRS')]");
+  public static final By DENGUE_BOX_IN_CAROUSEL_SLIDER_BAR =
+      By.xpath("//span[contains(text(),'Dengue')]");
+  public static final By EVD_BOX_IN_CAROUSEL_SLIDER_BAR =
+      By.xpath("//span[contains(text(),'EVD')]");
+  public static final By GUINEA_WORM_BOX_IN_CAROUSEL_SLIDER_BAR =
+      By.xpath("//span[contains(text(),'Guinea Worm')]");
+  public static final By RABIES_BOX_IN_CAROUSEL_SLIDER_BAR =
+      By.xpath("//span[contains(text(),'Rabies')]");
+  public static final By NEW_FLU_BOX_IN_CAROUSEL_SLIDER_BAR =
+      By.xpath("//span[contains(text(),'New Flu')]");
+  public static final By LASSA_BOX_IN_CAROUSEL_SLIDER_BAR =
+      By.xpath("//span[contains(text(),'Lassa')]");
+  public static final By MEASLES_BOX_IN_CAROUSEL_SLIDER_BAR =
+      By.xpath("//span[contains(text(),'Measles')]");
+  public static final By MENINGITIS_BOX_IN_CAROUSEL_SLIDER_BAR =
+      By.xpath("//span[contains(text(),'Meningitis')]");
+  public static final By MONKEYPOX_BOX_IN_CAROUSEL_SLIDER_BAR =
+      By.xpath("//span[contains(text(),'Monkeypox')]");
+  public static final By PLAGUE_BOX_IN_CAROUSEL_SLIDER_BAR =
+      By.xpath("//span[contains(text(),'Plague')]");
+  public static final By POLIO_BOX_IN_CAROUSEL_SLIDER_BAR =
+      By.xpath("//span[contains(text(),'Polio')]");
+  public static final By VHF_BOX_IN_CAROUSEL_SLIDER_BAR =
+      By.xpath("//span[contains(text(),'VHF')]");
+  public static final By YELLOW_FEVER_BOX_IN_CAROUSEL_SLIDER_BAR =
+      By.xpath("//span[contains(text(),'Yellow Fever')]");
+  public static final By NEW_CASES_COUNTER_BOX_IN_CAROUSEL_SLIDER_BAR =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[3]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]");
+  public static final By NEW_EVENTS_COUNTER_BOX_IN_CAROUSEL_SLIDER_BAR =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[3]/div[1]/div[2]/div[1]/div[1]/div[3]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]");
+  public static final By TEST_RESULTS_COUNTER_BOX_IN_CAROUSEL_SLIDER_BAR =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[3]/div[1]/div[2]/div[1]/div[1]/div[3]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]");
+  public static final By STATISTICS_CHARTS = By.cssSelector("[id^='highchart_']");
+  public static final By DIFFERENCE_IN_NUMBER_OF_CASES_GRAPH =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]");
+  public static final By CASES_METRICS_MAIN_BOX =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[3]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]");
+  public static final By CASES_METRICS_CONFIRMED_NO_SYMPTOMS_BOX =
+      By.xpath("//div[contains(text(),'Confirmed no symptoms')]");
+  public static final By CASES_METRICS_CONFIRMED_BOX =
+      By.xpath("//div[contains(text(),'Confirmed')]");
+  public static final By CASES_METRICS_CONFIRMED_UNKNOWN_SYMPTOMS_BOX =
+      By.xpath("//div[contains(text(),'Confirmed unknown symptoms')]");
+  public static final By CASES_METRICS_PROBABLE_BOX =
+      By.xpath("//div[contains(text(),'Probable')]");
+  public static final By CASES_METRICS_SUSPECT_BOX = By.xpath("//div[contains(text(),'Suspect')]");
+  public static final By CASES_METRICS_NOT_A_CASE_BOX =
+      By.xpath("//div[contains(text(),'Not A Case')]");
+  public static final By CASES_METRICS_NOT_YET_CLASSIFIED_BOX =
+      By.xpath("//div[contains(text(),'Not Yet Classified')]");
+  public static final By FATALITIES_COUNTER =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[3]/div[1]/div[2]/div[1]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]/div[3]/div[1]/div[2]");
+  public static final By NEW_EVENTS_COUNTER =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[3]/div[1]/div[2]/div[1]/div[1]/div[3]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]/div[1]");
+  public static final By NEW_EVENTS_TYPE_CLUSTER = By.xpath("//div[contains(text(),'Cluster')]");
+  public static final By NEW_EVENTS_TYPE_EVENT = By.xpath("//div[contains(text(),'Event')]");
+  public static final By NEW_EVENTS_TYPE_SIGNAL = By.xpath("//div[contains(text(),'Signal')]");
+  public static final By NEW_EVENTS_TYPE_SCREENING =
+      By.xpath("//div[contains(text(),'Screening')]");
+  public static final By NEW_EVENTS_TYPE_DROPPED = By.xpath("//div[contains(text(),'Dropped')]");
+  public static final By TEST_RESULTS_COUNTER =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[3]/div[1]/div[2]/div[1]/div[1]/div[3]/div[1]/div[2]/div[1]/div[1]/div[1]/div[1]/div[1]");
+  public static final By TEST_RESULTS_POSITIVE = By.xpath("//div[contains(text(),'Positive')]");
+  public static final By TEST_RESULTS_NEGATIVE = By.xpath("//div[contains(text(),'Negative')]");
+  public static final By TEST_RESULTS_PENDING = By.xpath("//div[contains(text(),'Pending')]");
+  public static final By TEST_RESULTS_INDETERMINATE =
+      By.xpath("//div[contains(text(),'Indeterminate')]");
+  public static final By LEGEND_DATA =
+      By.xpath(
+          "/html[1]/body[1]/div[1]/div[1]/div[2]/div[1]/div[2]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/div[3]/div[1]/div[3]/div[1]/div[1]/div[1]/div[1]/div[1]/div[2]/div[1]/div[1]/*[name()='svg'][1]/*[name()='rect'][1]");
+  public static final By LEGEND_CHART_DOWNLOAD_BUTTON =
+      By.xpath(
+          "//*[name()='g' and contains(@class,'highcharts')]//*[name()='g' and contains(@class,'highcharts')]//*[name()='path' and contains(@class,'highcharts')]");
+  public static final By DOWNLOAD_CHART_OPTION_PRINT_CHART =
+      By.xpath("//li[contains(text(),'Print chart')]");
+  public static final By DOWNLOAD_CHART_OPTION_DOWNLOAD_PNG_IMAGE =
+      By.xpath("//li[contains(text(),'Download PNG image')]");
+  public static final By DOWNLOAD_CHART_OPTION_DOWNLOAD_JPEG_IMAGE =
+      By.xpath("//li[contains(text(),'Download JPEG image')]");
+  public static final By DOWNLOAD_CHART_OPTION_DOWNLOAD_PDF_DOCUMENT =
+      By.xpath("//li[contains(text(),'Download PDF document')]");
+  public static final By DOWNLOAD_CHART_OPTION_DOWNLOAD_SVG_VECTOR_IMAGE =
+      By.xpath("//li[contains(text(),'Download SVG vector image')]");
+  public static final By DOWNLOAD_CHART_OPTION_DOWNLOAD_CSV =
+      By.xpath("//li[contains(text(),'Download CSV')]");
+  public static final By DOWNLOAD_CHART_OPTION_DOWNLOAD_XLS =
+      By.xpath("//li[contains(text(),'Download XLS')]");
+  public static final By LEGEND_DATA_EXPAND_EPI_CURVE_BUTTON =
+      By.xpath("//div[@id='expandEpiCurve']");
+  public static final By LEGEND_DATA_DEAD_OR_ALIVE_BUTTON =
+      By.xpath("//label[contains(text(),'Alive or dead')]/parent::*");
+  public static final By LEGEND_DATA_CASE_STATUS_BUTTON =
+      By.xpath("//label[contains(text(),'Case status')]/parent::*");
+  public static final By LEGEND_DATA_GROUPING_BUTTON = By.xpath("//div[@id='dashboardGrouping']");
+  public static final By LEGEND_DATA_GROUPING_DAY =
+      By.xpath("//label[contains(text(),'Day')]/preceding::input[1]");
+  public static final By LEGEND_DATA_GROUPING_EPI_WEEK =
+      By.xpath("//label[contains(text(),'Epi Week')]/preceding::input[1]");
+  public static final By LEGEND_DATA_GROUPING_MONTH =
+      By.xpath("//label[contains(text(),'Month')]/preceding::input[1]");
+  public static final By LEGEND_DATA_GROUPING_ALWAYS_SHOW_AT_LEAST_7_ENTRIES =
+      By.xpath("//label[contains(text(),'Always show at least 7 entries')]");
+  public static final By LEGEND_CHART_CASE_STATUS_CONFIRMED =
+      By.cssSelector(
+          "g.highcharts-legend-item.highcharts-column-series.highcharts-color-undefined.highcharts-series-5 > text > tspan");
+  public static final By LEGEND_CHART_CASE_STATUS_CONFIRMED_UNKNOWN_SYMPTOMS =
+      By.cssSelector(
+          "g.highcharts-legend-item.highcharts-column-series.highcharts-color-undefined.highcharts-series-3 > text > tspan");
+  public static final By LEGEND_CHART_CASE_STATUS_SUSPECT =
+      By.cssSelector(
+          "g.highcharts-legend-item.highcharts-column-series.highcharts-color-undefined.highcharts-series-1 > text > tspan");
+  public static final By LEGEND_CHART_CASE_STATUS_CONFIRMED_NO_SYMPTOMS =
+      By.cssSelector(
+          "g.highcharts-legend-item.highcharts-column-series.highcharts-color-undefined.highcharts-series-4 > text > tspan");
+  public static final By LEGEND_CHART_CASE_STATUS_PROBABLE =
+      By.cssSelector(
+          "g.highcharts-legend-item.highcharts-column-series.highcharts-color-undefined.highcharts-series-2 > text > tspan");
+  public static final By LEGEND_CHART_CASE_STATUS_NOT_YET_CLASSIFIED =
+      By.cssSelector(
+          "g.highcharts-legend-item.highcharts-column-series.highcharts-color-undefined.highcharts-series-0 > text > tspan");
+  public static final By LEGEND_CHART_ALIVE_OR_DEAD_UNKNOWN =
+      By.xpath("//*/text()[normalize-space(.)='Unknown']/parent::*");
+  public static final By LEGEND_CHART_ALIVE_OR_DEAD_DEAD =
+      By.xpath("//*/text()[normalize-space(.)='Dead']/parent::*");
+  public static final By LEGEND_CHART_ALIVE_OR_DEAD_ALIVE =
+      By.xpath("//*/text()[normalize-space(.)='Alive']/parent::*");
 }
