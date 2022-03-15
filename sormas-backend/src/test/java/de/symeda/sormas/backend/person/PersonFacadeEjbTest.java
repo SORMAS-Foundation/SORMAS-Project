@@ -13,7 +13,6 @@ import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertTrue;
-import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
 import java.util.Collections;
@@ -23,12 +22,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.junit.Assert;
-import org.junit.Before;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -38,7 +35,6 @@ import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
-import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
@@ -70,7 +66,6 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
-import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 
 public class PersonFacadeEjbTest extends AbstractBeanTest {
@@ -84,14 +79,9 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	 * shared between tests.
 	 */
 
-	@Before
 	@Override
 	public void init() {
-		MockProducer.resetMocks();
-		initH2Functions();
-
-		creator.createUser(null, null, null, "ad", "min", UserRole.ADMIN, UserRole.NATIONAL_USER);
-		when(MockProducer.getPrincipal().getName()).thenReturn("admin");
+		super.init();
 
 		rdcf = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1", "Point of entry 1");
 		rdcfEntities = creator.createRDCFEntities();
@@ -103,7 +93,6 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			"Nat",
 			"User",
 			UserRole.NATIONAL_USER);
-		I18nProperties.setUserLanguage(Language.EN);
 	}
 
 	// todo - update this test case as CoreEntityDeletionService permanently deletes other core entities
