@@ -913,10 +913,10 @@ public interface Strings {
 	String messageCasesArchived = "messageCasesArchived";
 	String messageCaseSaved = "messageCaseSaved";
 	String messageCaseSavedClassificationChanged = "messageCaseSavedClassificationChanged";
-	String messageCasesEditedExceptArchived = "messageCasesEditedExceptArchived";
 	String messageCasesDearchived = "messageCasesDearchived";
 	String messageCasesDeleted = "messageCasesDeleted";
 	String messageCasesEdited = "messageCasesEdited";
+	String messageCasesEditedExceptArchived = "messageCasesEditedExceptArchived";
 	String messageCasesMerged = "messageCasesMerged";
 	String messageCasesNotDeletedReasonExternalSurveillanceTool = "messageCasesNotDeletedReasonExternalSurveillanceTool";
 	String messageCasesSentToExternalSurveillanceTool = "messageCasesSentToExternalSurveillanceTool";
@@ -946,9 +946,9 @@ public interface Strings {
 	String messageContactDuplicateDeleted = "messageContactDuplicateDeleted";
 	String messageContactExternalTokenWarning = "messageContactExternalTokenWarning";
 	String messageContactSaved = "messageContactSaved";
-	String messageContactsEditedExceptArchived = "messageContactsEditedExceptArchived";
 	String messageContactsDeleted = "messageContactsDeleted";
 	String messageContactsEdited = "messageContactsEdited";
+	String messageContactsEditedExceptArchived = "messageContactsEditedExceptArchived";
 	String messageContactsMerged = "messageContactsMerged";
 	String messageContactToCaseConfirmationRequired = "messageContactToCaseConfirmationRequired";
 	String messageContinentArchived = "messageContinentArchived";
@@ -1016,10 +1016,10 @@ public interface Strings {
 	String messageEventParticipationUnlinked = "messageEventParticipationUnlinked";
 	String messageEventsArchived = "messageEventsArchived";
 	String messageEventSaved = "messageEventSaved";
-	String messageEventsEditedExceptArchived = "messageEventsEditedExceptArchived";
 	String messageEventsDearchived = "messageEventsDearchived";
 	String messageEventsDeleted = "messageEventsDeleted";
 	String messageEventsEdited = "messageEventsEdited";
+	String messageEventsEditedExceptArchived = "messageEventsEditedExceptArchived";
 	String messageEventsNotDeletedReason = "messageEventsNotDeletedReason";
 	String messageEventsNotDeletedReasonExternalSurveillanceTool = "messageEventsNotDeletedReasonExternalSurveillanceTool";
 	String messageEventsSentToExternalSurveillanceTool = "messageEventsSentToExternalSurveillanceTool";
