@@ -27,7 +27,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
 import javax.inject.Inject;
-import org.openqa.selenium.By;
 import org.sormas.e2etests.entities.pojo.web.ContactsLineListing;
 import org.sormas.e2etests.entities.services.ContactsLineListingService;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
