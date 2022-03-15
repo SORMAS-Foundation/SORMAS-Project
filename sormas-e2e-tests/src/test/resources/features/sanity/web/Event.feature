@@ -383,6 +383,17 @@ Feature: Create events
     And I create a new Contacts from Event Participants using Line Listing
     And I save the new contacts from Event Participants using line listing feature in Event Participant tab
 
+  @issue=SORDEV-5480  @env_main
+  Scenario: Import Events
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    And I read the UUIDs of the first four events in Events directory
+    When I click on the Import button from Events directory
+    And I select the Event CSV file in the file picker
+    And I click on the Start Data Import button from Import Events popup
+    Then I check that an import success notification appears in the Import Events popup
+    And I close the Import Events popups
+    And I check that four new events have appeared in Events directory
 
 
 
