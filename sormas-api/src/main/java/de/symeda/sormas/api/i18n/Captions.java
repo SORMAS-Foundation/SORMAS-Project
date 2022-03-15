@@ -115,6 +115,7 @@ public interface Captions {
 	String actionYesForAll = "actionYesForAll";
 	String actionYesForSome = "actionYesForSome";
 	String ActivityAsCase = "ActivityAsCase";
+    String ActivityAsCase_worksheet = "ActivityAsCase.worksheet";
 	String ActivityAsCase_activityAsCaseDate = "ActivityAsCase.activityAsCaseDate";
 	String ActivityAsCase_activityAsCaseType = "ActivityAsCase.activityAsCaseType";
 	String ActivityAsCase_activityAsCaseTypeDetails = "ActivityAsCase.activityAsCaseTypeDetails";
@@ -263,6 +264,7 @@ public interface Captions {
 	String caseCreateCase = "caseCreateCase";
 	String caseCreateNew = "caseCreateNew";
 	String CaseData = "CaseData";
+	String CaseData_worksheet = "CaseData.worksheet";
 	String CaseData_additionalDetails = "CaseData.additionalDetails";
 	String CaseData_bloodOrganOrTissueDonated = "CaseData.bloodOrganOrTissueDonated";
 	String CaseData_caseClassification = "CaseData.caseClassification";
@@ -489,6 +491,7 @@ public interface Captions {
 	String caseFilterWithReducedQuarantine = "caseFilterWithReducedQuarantine";
 	String caseFollowupVisitsView = "caseFollowupVisitsView";
 	String CaseHospitalization = "CaseHospitalization";
+    String CaseHospitalization_worksheet = "CaseHospitalization.worksheet";
 	String CaseHospitalization_admissionDate = "CaseHospitalization.admissionDate";
 	String CaseHospitalization_admittedToHealthFacility = "CaseHospitalization.admittedToHealthFacility";
 	String CaseHospitalization_dischargeDate = "CaseHospitalization.dischargeDate";
@@ -1298,6 +1301,7 @@ public interface Captions {
 	String formatSimpleNumberFormat = "formatSimpleNumberFormat";
 	String from = "from";
 	String HealthConditions = "HealthConditions";
+	String HealthConditions_worksheet = "HealthConditions.worksheet";
 	String HealthConditions_asplenia = "HealthConditions.asplenia";
 	String HealthConditions_asthma = "HealthConditions.asthma";
 	String HealthConditions_cardiovascularDiseaseIncludingHypertension = "HealthConditions.cardiovascularDiseaseIncludingHypertension";
@@ -1446,6 +1450,7 @@ public interface Captions {
 	String linkEventGroup = "linkEventGroup";
 	String linkImmunizationToCaseButton = "linkImmunizationToCaseButton";
 	String Location = "Location";
+    String Location_worksheet = "Location.worksheet";
 	String Location_additionalInformation = "Location.additionalInformation";
 	String Location_addressType = "Location.addressType";
 	String Location_addressTypeDetails = "Location.addressTypeDetails";
@@ -1580,7 +1585,8 @@ public interface Captions {
 	String patientDiaryPersonNotExportable = "patientDiaryPersonNotExportable";
 	String patientDiaryRegistrationError = "patientDiaryRegistrationError";
 	String Person = "Person";
-	String Person_additionalDetails = "Person.additionalDetails";
+    String Person_worksheet = "Person.worksheet";
+    String Person_additionalDetails = "Person.additionalDetails";
 	String Person_address = "Person.address";
 	String Person_addresses = "Person.addresses";
 	String Person_ageAndBirthDate = "Person.ageAndBirthDate";
@@ -1655,6 +1661,7 @@ public interface Captions {
 	String Person_uuid = "Person.uuid";
 	String personAgeAndBirthdate = "personAgeAndBirthdate";
 	String PersonContactDetail = "PersonContactDetail";
+    String PersonContactDetail_worksheet = "PersonContactDetail.worksheet";
 	String PersonContactDetail_additionalInformation = "PersonContactDetail.additionalInformation";
 	String PersonContactDetail_contactInformation = "PersonContactDetail.contactInformation";
 	String PersonContactDetail_details = "PersonContactDetail.details";

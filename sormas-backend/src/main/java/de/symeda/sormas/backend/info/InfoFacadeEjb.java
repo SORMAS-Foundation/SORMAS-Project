@@ -15,6 +15,14 @@
 
 package de.symeda.sormas.backend.info;
 
+import static de.symeda.sormas.api.i18n.Captions.ActivityAsCase_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.CaseData_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.CaseHospitalization_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.HealthConditions_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.Location_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.PersonContactDetail_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.Person_worksheet;
+
 import java.io.File;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -164,21 +172,21 @@ public class InfoFacadeEjb implements InfoFacade {
 		throws IOException {
 		XSSFWorkbook workbook = new XSSFWorkbook();
 
-		createEntitySheet(workbook, PersonDto.class, PersonDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, PersonDto.class, Person_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 		createEntitySheet(
 			workbook,
 			PersonContactDetailDto.class,
-			PersonContactDetailDto.I18N_PREFIX,
+                PersonContactDetail_worksheet,
 			entityColumns,
 			fieldVisibilityCheckers,
 			extraColumns,
 			extraCells);
-		createEntitySheet(workbook, LocationDto.class, LocationDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
-		createEntitySheet(workbook, CaseDataDto.class, CaseDataDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, LocationDto.class, Location_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, CaseDataDto.class, CaseData_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 		createEntitySheet(
 			workbook,
 			ActivityAsCaseDto.class,
-			ActivityAsCaseDto.I18N_PREFIX,
+			ActivityAsCase_worksheet,
 			entityColumns,
 			fieldVisibilityCheckers,
 			extraColumns,
@@ -186,7 +194,7 @@ public class InfoFacadeEjb implements InfoFacade {
 		createEntitySheet(
 			workbook,
 			HospitalizationDto.class,
-			HospitalizationDto.I18N_PREFIX,
+			CaseHospitalization_worksheet,
 			entityColumns,
 			fieldVisibilityCheckers,
 			extraColumns,
@@ -213,7 +221,7 @@ public class InfoFacadeEjb implements InfoFacade {
 		createEntitySheet(
 			workbook,
 			HealthConditionsDto.class,
-			HealthConditionsDto.I18N_PREFIX,
+			HealthConditions_worksheet,
 			entityColumns,
 			fieldVisibilityCheckers,
 			extraColumns,
@@ -522,7 +530,7 @@ public class InfoFacadeEjb implements InfoFacade {
 
 		Enum<?>[] enumValues = enumType.getEnumConstants();
 		for (Enum<?> enumValue : enumValues) {
-			if(!fieldVisibilityCheckers.isVisible(enumType, enumValue.name())){
+			if (!fieldVisibilityCheckers.isVisible(enumType, enumValue.name())) {
 				continue;
 			}
 
