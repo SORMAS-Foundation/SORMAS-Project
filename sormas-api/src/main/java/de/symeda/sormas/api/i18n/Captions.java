@@ -38,6 +38,7 @@ public interface Captions {
 	String Action_priority = "Action.priority";
 	String Action_reply = "Action.reply";
 	String Action_title = "Action.title";
+    String Action_worksheet = "Action.worksheet";
 	String actionAccept = "actionAccept";
 	String actionAdjustChanges = "actionAdjustChanges";
 	String actionApplyDateFilter = "actionApplyDateFilter";
@@ -567,6 +568,7 @@ public interface Captions {
 	String Community = "Community";
 	String Community_archived = "Community.archived";
 	String Community_externalID = "Community.externalID";
+    String Community_worksheet = "Community.worksheet";
 	String communityActiveCommunities = "communityActiveCommunities";
 	String communityAllCommunities = "communityAllCommunities";
 	String communityArchivedCommunities = "communityArchivedCommunities";
@@ -745,6 +747,7 @@ public interface Captions {
 	String Continent_defaultName = "Continent.defaultName";
 	String Continent_displayName = "Continent.displayName";
 	String Continent_externalId = "Continent.externalId";
+    String Continent_worksheet = "Continent.worksheet";
 	String continentActiveContinents = "continentActiveContinents";
 	String continentAllContinents = "continentAllContinents";
 	String continentArchivedContinents = "continentArchivedContinents";
@@ -758,6 +761,7 @@ public interface Captions {
 	String Country_isoCode = "Country.isoCode";
 	String Country_subcontinent = "Country.subcontinent";
 	String Country_unoCode = "Country.unoCode";
+    String Country_worksheet = "Country.worksheet";
 	String countryActiveCountries = "countryActiveCountries";
 	String countryAllCountries = "countryAllCountries";
 	String countryArchivedCountries = "countryArchivedCountries";
@@ -959,6 +963,7 @@ public interface Captions {
 	String District_externalID = "District.externalID";
 	String District_growthRate = "District.growthRate";
 	String District_population = "District.population";
+    String District_worksheet = "District.worksheet";
 	String districtActiveDistricts = "districtActiveDistricts";
 	String districtAllDistricts = "districtAllDistricts";
 	String districtArchivedDistricts = "districtArchivedDistricts";
@@ -1144,6 +1149,7 @@ public interface Captions {
 	String EventParticipant_sex = "EventParticipant.sex";
 	String EventParticipant_uuid = "EventParticipant.uuid";
 	String EventParticipant_vaccinationStatus = "EventParticipant.vaccinationStatus";
+    String EventParticipant_worksheet = "EventParticipant.worksheet";
 	String eventParticipantActiveEventParticipants = "eventParticipantActiveEventParticipants";
 	String eventParticipantAddPerson = "eventParticipantAddPerson";
 	String eventParticipantAllEventParticipants = "eventParticipantAllEventParticipants";
@@ -1291,6 +1297,7 @@ public interface Captions {
 	String Facility_street = "Facility.street";
 	String Facility_type = "Facility.type";
 	String Facility_typeGroup = "Facility.typeGroup";
+    String Facility_worksheet = "Facility.worksheet";
 	String facilityActiveFacilities = "facilityActiveFacilities";
 	String facilityAllFacilities = "facilityAllFacilities";
 	String facilityArchivedFacilities = "facilityArchivedFacilities";
@@ -1370,6 +1377,7 @@ public interface Captions {
 	String Immunization_vaccinations = "Immunization.vaccinations";
 	String Immunization_validFrom = "Immunization.validFrom";
 	String Immunization_validUntil = "Immunization.validUntil";
+    String Immunization_worksheet = "Immunization.worksheet";
 	String immunizationCreateNewImmunization = "immunizationCreateNewImmunization";
 	String immunizationImmunizationsList = "immunizationImmunizationsList";
 	String immunizationKeepImmunization = "immunizationKeepImmunization";
@@ -1427,6 +1435,7 @@ public interface Captions {
 	String LabMessage_specimenCondition = "LabMessage.specimenCondition";
 	String LabMessage_status = "LabMessage.status";
 	String LabMessage_testedDisease = "LabMessage.testedDisease";
+    String LabMessage_worksheet = "LabMessage.worksheet";
 	String LabMessageCriteria_birthDateFrom = "LabMessageCriteria.birthDateFrom";
 	String LabMessageCriteria_birthDateTo = "LabMessageCriteria.birthDateTo";
 	String LabMessageCriteria_messageDateFrom = "LabMessageCriteria.messageDateFrom";
@@ -1710,6 +1719,7 @@ public interface Captions {
 	String PointOfEntry_OTHER_POE = "PointOfEntry.OTHER_POE";
 	String PointOfEntry_OTHER_SEAPORT = "PointOfEntry.OTHER_SEAPORT";
 	String PointOfEntry_pointOfEntryType = "PointOfEntry.pointOfEntryType";
+    String PointOfEntry_worksheet = "PointOfEntry.worksheet";
 	String pointOfEntryActivePointsOfEntry = "pointOfEntryActivePointsOfEntry";
 	String pointOfEntryAllPointsOfEntry = "pointOfEntryAllPointsOfEntry";
 	String pointOfEntryArchivedPointsOfEntry = "pointOfEntryArchivedPointsOfEntry";
@@ -1766,6 +1776,7 @@ public interface Captions {
 	String Region_externalID = "Region.externalID";
 	String Region_growthRate = "Region.growthRate";
 	String Region_population = "Region.population";
+    String Region_worksheet = "Region.worksheet";
 	String regionActiveRegions = "regionActiveRegions";
 	String regionAllRegions = "regionAllRegions";
 	String regionArchivedRegions = "regionArchivedRegions";
@@ -1994,6 +2005,7 @@ public interface Captions {
 	String Subcontinent_defaultName = "Subcontinent.defaultName";
 	String Subcontinent_displayName = "Subcontinent.displayName";
 	String Subcontinent_externalId = "Subcontinent.externalId";
+    String Subcontinent_worksheet = "Subcontinent.worksheet";
 	String subcontinentActiveSubcontinents = "subcontinentActiveSubcontinents";
 	String subcontinentAllSubcontinents = "subcontinentAllSubcontinents";
 	String subcontinentArchivedSubcontinents = "subcontinentArchivedSubcontinents";
@@ -2264,6 +2276,7 @@ public interface Captions {
 	String TestReport_testLabPostalCode = "TestReport.testLabPostalCode";
 	String TestReport_testResult = "TestReport.testResult";
 	String TestReport_testType = "TestReport.testType";
+    String TestReport_worksheet = "TestReport.worksheet";
 	String to = "to";
 	String total = "total";
 	String travelEntriesNoTravelEntriesForPerson = "travelEntriesNoTravelEntriesForPerson";
@@ -2304,6 +2317,7 @@ public interface Captions {
 	String TravelEntry_testedNegative = "TravelEntry.testedNegative";
 	String TravelEntry_uuid = "TravelEntry.uuid";
 	String TravelEntry_vaccinated = "TravelEntry.vaccinated";
+    String TravelEntry_worksheet = "TravelEntry.worksheet";
 	String travelEntryActiveTravelEntries = "travelEntryActiveTravelEntries";
 	String travelEntryAllTravelEntries = "travelEntryAllTravelEntries";
 	String travelEntryArchivedTravelEntries = "travelEntryArchivedTravelEntries";
@@ -2352,6 +2366,7 @@ public interface Captions {
 	String User_userName = "User.userName";
 	String User_userRoles = "User.userRoles";
 	String User_uuid = "User.uuid";
+    String User_worksheet = "User.worksheet";
 	String userNewUser = "userNewUser";
 	String userResetPassword = "userResetPassword";
 	String userRight = "userRight";
@@ -2378,6 +2393,7 @@ public interface Captions {
 	String Vaccination_vaccineName = "Vaccination.vaccineName";
 	String Vaccination_vaccineType = "Vaccination.vaccineType";
 	String Vaccination_vaccineUniiCode = "Vaccination.vaccineUniiCode";
+    String Vaccination_worksheet = "Vaccination.worksheet";
 	String vaccinationNewVaccination = "vaccinationNewVaccination";
 	String vaccinationNoVaccinationsForPerson = "vaccinationNoVaccinationsForPerson";
 	String vaccinationNoVaccinationsForPersonAndDisease = "vaccinationNoVaccinationsForPersonAndDisease";

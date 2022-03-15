@@ -15,27 +15,43 @@
 
 package de.symeda.sormas.backend.info;
 
+import static de.symeda.sormas.api.i18n.Captions.Action_worksheet;
 import static de.symeda.sormas.api.i18n.Captions.ActivityAsCase_worksheet;
 import static de.symeda.sormas.api.i18n.Captions.AdditionalTest_worksheet;
 import static de.symeda.sormas.api.i18n.Captions.CaseData_worksheet;
 import static de.symeda.sormas.api.i18n.Captions.CaseHospitalization_worksheet;
 import static de.symeda.sormas.api.i18n.Captions.CasePreviousHospitalization_worksheet;
 import static de.symeda.sormas.api.i18n.Captions.ClinicalVisit_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.Community_worksheet;
 import static de.symeda.sormas.api.i18n.Captions.Contact_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.Continent_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.Country_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.District_worksheet;
 import static de.symeda.sormas.api.i18n.Captions.EpiData_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.EventParticipant_worksheet;
 import static de.symeda.sormas.api.i18n.Captions.Event_worksheet;
 import static de.symeda.sormas.api.i18n.Captions.Exposure_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.Facility_worksheet;
 import static de.symeda.sormas.api.i18n.Captions.HealthConditions_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.Immunization_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.LabMessage_worksheet;
 import static de.symeda.sormas.api.i18n.Captions.Location_worksheet;
 import static de.symeda.sormas.api.i18n.Captions.PathogenTest_worksheet;
 import static de.symeda.sormas.api.i18n.Captions.PersonContactDetail_worksheet;
 import static de.symeda.sormas.api.i18n.Captions.Person_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.PointOfEntry_worksheet;
 import static de.symeda.sormas.api.i18n.Captions.Prescription_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.Region_worksheet;
 import static de.symeda.sormas.api.i18n.Captions.Sample_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.Subcontinent_worksheet;
 import static de.symeda.sormas.api.i18n.Captions.SurveillanceReport_worksheet;
 import static de.symeda.sormas.api.i18n.Captions.Symptoms_worksheet;
 import static de.symeda.sormas.api.i18n.Captions.Task_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.TestReport_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.TravelEntry_worksheet;
 import static de.symeda.sormas.api.i18n.Captions.Treatment_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.User_worksheet;
+import static de.symeda.sormas.api.i18n.Captions.Vaccination_worksheet;
 import static de.symeda.sormas.api.i18n.Captions.Visit_worksheet;
 
 import java.io.File;
@@ -275,16 +291,16 @@ public class InfoFacadeEjb implements InfoFacade {
 		createEntitySheet(
 			workbook,
 			EventParticipantDto.class,
-			EventParticipantDto.I18N_PREFIX,
+			EventParticipant_worksheet,
 			entityColumns,
 			fieldVisibilityCheckers,
 			extraColumns,
 			extraCells);
-		createEntitySheet(workbook, ActionDto.class, ActionDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, ActionDto.class, Action_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 		createEntitySheet(
 			workbook,
 			ImmunizationDto.class,
-			ImmunizationDto.I18N_PREFIX,
+			Immunization_worksheet,
 			entityColumns,
 			fieldVisibilityCheckers,
 			extraColumns,
@@ -292,7 +308,7 @@ public class InfoFacadeEjb implements InfoFacade {
 		createEntitySheet(
 			workbook,
 			VaccinationDto.class,
-			VaccinationDto.I18N_PREFIX,
+			Vaccination_worksheet,
 			entityColumns,
 			fieldVisibilityCheckers,
 			extraColumns,
@@ -300,36 +316,36 @@ public class InfoFacadeEjb implements InfoFacade {
 		createEntitySheet(
 			workbook,
 			TravelEntryDto.class,
-			TravelEntryDto.I18N_PREFIX,
+			TravelEntry_worksheet,
 			entityColumns,
 			fieldVisibilityCheckers,
 			extraColumns,
 			extraCells);
-		createEntitySheet(workbook, ContinentDto.class, ContinentDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, ContinentDto.class, Continent_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 		createEntitySheet(
 			workbook,
 			SubcontinentDto.class,
-			SubcontinentDto.I18N_PREFIX,
+			Subcontinent_worksheet,
 			entityColumns,
 			fieldVisibilityCheckers,
 			extraColumns,
 			extraCells);
-		createEntitySheet(workbook, CountryDto.class, CountryDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
-		createEntitySheet(workbook, RegionDto.class, RegionDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
-		createEntitySheet(workbook, DistrictDto.class, DistrictDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
-		createEntitySheet(workbook, CommunityDto.class, CommunityDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
-		createEntitySheet(workbook, FacilityDto.class, FacilityDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, CountryDto.class, Country_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, RegionDto.class, Region_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, DistrictDto.class, District_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, CommunityDto.class, Community_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, FacilityDto.class, Facility_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 		createEntitySheet(
 			workbook,
 			PointOfEntryDto.class,
-			PointOfEntryDto.I18N_PREFIX,
+			PointOfEntry_worksheet,
 			entityColumns,
 			fieldVisibilityCheckers,
 			extraColumns,
 			extraCells);
-		createEntitySheet(workbook, UserDto.class, UserDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
-		createEntitySheet(workbook, LabMessageDto.class, LabMessageDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
-		createEntitySheet(workbook, TestReportDto.class, TestReportDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, UserDto.class, User_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, LabMessageDto.class, LabMessage_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, TestReportDto.class, TestReport_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 
 		XssfHelper.addAboutSheet(workbook);
 
