@@ -240,7 +240,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	}
 
-	private void initH2Functions() {
+	protected void initH2Functions() {
 		EntityManager em = getEntityManager();
 		em.getTransaction().begin();
 		Query nativeQuery = em.createNativeQuery("CREATE ALIAS similarity FOR \"de.symeda.sormas.backend.H2Function.similarity\"");
