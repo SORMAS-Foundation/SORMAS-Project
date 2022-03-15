@@ -270,14 +270,7 @@ public class InfoFacadeEjb implements InfoFacade {
 		createEntitySheet(workbook, ContactDto.class, Contact_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 		createEntitySheet(workbook, VisitDto.class, Visit_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 		createEntitySheet(workbook, SampleDto.class, Sample_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
-		createEntitySheet(
-			workbook,
-			PathogenTestDto.class,
-			PathogenTest_worksheet,
-			entityColumns,
-			fieldVisibilityCheckers,
-			extraColumns,
-			extraCells);
+		createEntitySheet(workbook, PathogenTestDto.class, PathogenTest_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 		createEntitySheet(
 			workbook,
 			AdditionalTestDto.class,
@@ -297,52 +290,17 @@ public class InfoFacadeEjb implements InfoFacade {
 			extraColumns,
 			extraCells);
 		createEntitySheet(workbook, ActionDto.class, Action_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
-		createEntitySheet(
-			workbook,
-			ImmunizationDto.class,
-			Immunization_worksheet,
-			entityColumns,
-			fieldVisibilityCheckers,
-			extraColumns,
-			extraCells);
-		createEntitySheet(
-			workbook,
-			VaccinationDto.class,
-			Vaccination_worksheet,
-			entityColumns,
-			fieldVisibilityCheckers,
-			extraColumns,
-			extraCells);
-		createEntitySheet(
-			workbook,
-			TravelEntryDto.class,
-			TravelEntry_worksheet,
-			entityColumns,
-			fieldVisibilityCheckers,
-			extraColumns,
-			extraCells);
+		createEntitySheet(workbook, ImmunizationDto.class, Immunization_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, VaccinationDto.class, Vaccination_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, TravelEntryDto.class, TravelEntry_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 		createEntitySheet(workbook, ContinentDto.class, Continent_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
-		createEntitySheet(
-			workbook,
-			SubcontinentDto.class,
-			Subcontinent_worksheet,
-			entityColumns,
-			fieldVisibilityCheckers,
-			extraColumns,
-			extraCells);
+		createEntitySheet(workbook, SubcontinentDto.class, Subcontinent_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 		createEntitySheet(workbook, CountryDto.class, Country_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 		createEntitySheet(workbook, RegionDto.class, Region_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 		createEntitySheet(workbook, DistrictDto.class, District_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 		createEntitySheet(workbook, CommunityDto.class, Community_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 		createEntitySheet(workbook, FacilityDto.class, Facility_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
-		createEntitySheet(
-			workbook,
-			PointOfEntryDto.class,
-			PointOfEntry_worksheet,
-			entityColumns,
-			fieldVisibilityCheckers,
-			extraColumns,
-			extraCells);
+		createEntitySheet(workbook, PointOfEntryDto.class, PointOfEntry_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 		createEntitySheet(workbook, UserDto.class, User_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 		createEntitySheet(workbook, LabMessageDto.class, LabMessage_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 		createEntitySheet(workbook, TestReportDto.class, TestReport_worksheet, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
