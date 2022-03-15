@@ -167,7 +167,7 @@ public class CampaignFacadeEjb
 	public CampaignDto save(@Valid @NotNull CampaignDto dto) {
 		validate(dto);
 		Campaign campaign = fillOrBuildEntity(dto, service.getByUuid(dto.getUuid()), true);
-		if (!service.isEditAllowed(campaign).equals(EditPermissionType.ALLOWED)) {
+		if (!service.getEditPermissionType(campaign).equals(EditPermissionType.ALLOWED)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEntityNotEditable));
 		}
 		service.ensurePersisted(campaign);
@@ -412,7 +412,7 @@ public class CampaignFacadeEjb
 	@Override
 	public EditPermissionType isCampaignEditAllowed(String caseUuid) {
 		Campaign campaign = service.getByUuid(caseUuid);
-		return service.isEditAllowed(campaign);
+		return service.getEditPermissionType(campaign);
 	}
 
 	@LocalBean

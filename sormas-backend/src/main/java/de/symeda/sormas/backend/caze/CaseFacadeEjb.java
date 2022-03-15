@@ -1380,7 +1380,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		for (String caseUuid : caseUuidList) {
 			Case caze = service.getByUuid(caseUuid);
 
-			if (service.isEditAllowed(caze).equals(EditPermissionType.ALLOWED)) {
+			if (service.getEditPermissionType(caze).equals(EditPermissionType.ALLOWED)) {
 				CaseDataDto existingCaseDto = toDto(caze);
 
 				updateCaseWithBulkData(
@@ -1419,7 +1419,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		for (String caseUuid : caseUuidList) {
 			Case caze = service.getByUuid(caseUuid);
 
-			if (service.isEditAllowed(caze).equals(EditPermissionType.ALLOWED)) {
+			if (service.getEditPermissionType(caze).equals(EditPermissionType.ALLOWED)) {
 				CaseDataDto existingCaseDto = toDto(caze);
 
 				updateCaseWithBulkData(
@@ -1493,7 +1493,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		Case existingCase = service.getByUuid(dto.getUuid());
 
-		if (!systemSave && internal && existingCase != null && !service.isEditAllowed(existingCase).equals(EditPermissionType.ALLOWED)) {
+		if (!systemSave && internal && existingCase != null && !service.getEditPermissionType(existingCase).equals(EditPermissionType.ALLOWED)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorCaseNotEditable));
 		}
 
@@ -3602,7 +3602,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	public EditPermissionType isCaseEditAllowed(String caseUuid) {
 		Case caze = service.getByUuid(caseUuid);
 
-		return service.isEditAllowed(caze);
+		return service.getEditPermissionType(caze);
 	}
 
 	@Override

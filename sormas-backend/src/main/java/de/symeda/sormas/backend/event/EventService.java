@@ -895,7 +895,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			return EditPermissionType.REFUSED;
 		} ;
 
-		return super.isEditAllowed(event);
+		return super.getEditPermissionType(event);
 	}
 
 	public boolean inJurisdictionOrOwned(Event event, User user) {
