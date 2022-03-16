@@ -30,10 +30,13 @@
     <!-- Don't log bean test internal debug logs -->
     <logger name="info.novatec.beantest" level="ERROR" />
 
-    <!-- Don't ArchUnit internal debug logs -->
+    <!-- Don't log ArchUnit internal debug logs -->
     <logger name="com.tngtech.archunit.core.importer" level="ERROR" />
 
-    <root level="debug">
+    <!-- Don't log KeycloakService warnings and info as it doesn't provide much information for tests -->
+    <logger name="de.symeda.sormas.backend.user.KeycloakService" level="ERROR" />
+
+    <root level="error">
         <appender-ref ref="STDOUT" />
     </root>
 
