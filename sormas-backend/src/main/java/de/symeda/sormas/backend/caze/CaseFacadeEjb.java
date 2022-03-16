@@ -3469,17 +3469,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			DateHelper.durationMillies(startTime));
 	}
 
-	@Override
-	public boolean hasPositiveLabResult(String caseUuid) {
-		final CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-		final CriteriaQuery<Sample> query = criteriaBuilder.createQuery(Sample.class);
-		final Root<Sample> sampleRoot = query.from(Sample.class);
-		final Join<Sample, Case> caseJoin = sampleRoot.join(Sample.ASSOCIATED_CASE, JoinType.INNER);
-		final Predicate casePredicate = criteriaBuilder.equal(caseJoin.get(AbstractDomainObject.UUID), caseUuid);
-		final Predicate testPositivityPredicate = criteriaBuilder.equal(sampleRoot.get(Sample.PATHOGEN_TEST_RESULT), PathogenTestResultType.POSITIVE);
-		return sampleService.exists((cb, root, cq) -> cb.and(casePredicate, testPositivityPredicate));
-	}
-
 	public Page<CaseFollowUpDto> getCaseFollowUpIndexPage(
 		CaseFollowUpCriteria criteria,
 		Integer offset,
