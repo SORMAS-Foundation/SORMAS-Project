@@ -39,7 +39,7 @@ public class InfoProvider {
 			prop.load(fis);
 			this.version = prop.getProperty("git.build.version");
 			this.commitShortId = prop.getProperty("git.commit.id.abbrev");
-			this.commitHistoryUrl = prop.getProperty("git.remote.origin.url").replace(".git", "/commits/") + prop.getProperty("git.commit.id.full");
+			this.commitHistoryUrl = createLastCommitHistoryUrl(prop.getProperty("git.remote.origin.url"), prop.getProperty("git.commit.id.full"));
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
@@ -50,6 +50,25 @@ public class InfoProvider {
 			instance = new InfoProvider();
 		}
 		return instance;
+	}
+
+	/**
+	 * @param gitRemoteOriginUrl
+	 *            URL of the origin repo.
+	 * @param commitFullId
+	 *            The full/ling id of the last commit.
+	 * @return {@code lastCommitHistoryUrl}
+	 */
+	static String createLastCommitHistoryUrl(String gitRemoteOriginUrl, String commitFullId) {
+
+		String url = gitRemoteOriginUrl;
+		if (url.startsWith("git@")) {
+			url = url.replaceFirst(":", "/").replace("git@", "https://");
+		}
+
+		url = url.replace(".git", "/commits/");
+		url = url + commitFullId;
+		return url;
 	}
 
 	/**

@@ -32,15 +32,14 @@ import javax.ws.rs.core.StreamingOutput;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.bagexport.BAGExportCaseDto;
 import de.symeda.sormas.api.bagexport.BAGExportContactDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.CsvStreamUtils;
 import de.symeda.sormas.api.utils.DateHelper;
 
 @Path("/bagexport")
 @Produces(MediaType.APPLICATION_OCTET_STREAM)
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
-@RolesAllowed({
-	UserRole._BAG_USER })
+@RolesAllowed(UserRight._BAG_EXPORT)
 public class BAGExportResource {
 
 	@GET

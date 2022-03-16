@@ -23,6 +23,7 @@ import com.google.inject.Inject;
 import java.time.LocalDate;
 import org.sormas.e2etests.entities.pojo.web.Event;
 import org.sormas.e2etests.enums.CommunityValues;
+import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.RegionsValues;
 
@@ -32,6 +33,25 @@ public class EventService {
   @Inject
   public EventService(Faker faker) {
     this.faker = faker;
+  }
+
+  public Event buildGeneratedEventDE() {
+    String timestamp = String.valueOf(System.currentTimeMillis());
+    return Event.builder()
+        .eventStatus("EREIGNIS")
+        .investigationStatus("UNTERSUCHUNG AUSSTEHEND")
+        .eventManagementStatus("FORTLAUFEND")
+        .disease(DiseasesValues.CORONAVIRUS.getDiseaseCaption())
+        .title("EVENT_AUTOMATION_" + timestamp + faker.address().city())
+        .eventDate(LocalDate.now().minusDays(1))
+        .reportDate(LocalDate.now().minusDays(2))
+        .eventLocation("Zuhause")
+        .riskLevel("Geringes Risiko")
+        .sourceType("Nicht erhoben")
+        .region(RegionsValues.VoreingestellteBundeslander.getName())
+        .district(DistrictsValues.VoreingestellterLandkreis.getName())
+        .community(CommunityValues.VoreingestellteGemeinde.getName())
+        .build();
   }
 
   public Event buildGeneratedEvent() {

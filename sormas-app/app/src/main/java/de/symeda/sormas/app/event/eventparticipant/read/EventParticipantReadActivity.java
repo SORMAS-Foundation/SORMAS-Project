@@ -20,6 +20,7 @@ import java.util.List;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.MenuItem;
+
 import androidx.annotation.NonNull;
 
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
@@ -38,6 +39,7 @@ import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.component.menu.PageMenuItem;
 import de.symeda.sormas.app.event.eventparticipant.EventParticipantSection;
 import de.symeda.sormas.app.event.eventparticipant.edit.EventParticipantEditActivity;
+import de.symeda.sormas.app.person.read.PersonReadFragment;
 import de.symeda.sormas.app.util.Bundler;
 
 public class EventParticipantReadActivity extends BaseReadActivity<EventParticipant> {
@@ -95,6 +97,9 @@ public class EventParticipantReadActivity extends BaseReadActivity<EventParticip
 		case EVENT_PARTICIPANT_INFO:
 			fragment = EventParticipantReadFragment.newInstance(activityRootData);
 			break;
+		case PERSON_INFO:
+			fragment = PersonReadFragment.newInstance(activityRootData);
+			break;
 		case IMMUNIZATIONS:
 			fragment = EventParticipantReadImmunizationListFragment.newInstance(activityRootData);
 			break;
@@ -109,7 +114,9 @@ public class EventParticipantReadActivity extends BaseReadActivity<EventParticip
 
 	@Override
 	public void goToEditView() {
-		EventParticipantEditActivity.startActivity(this, getRootUuid(), eventUuid, EventParticipantSection.EVENT_PARTICIPANT_INFO);
+		EventParticipantSection section = EventParticipantSection.fromOrdinal(getActivePage().getPosition());
+
+		EventParticipantEditActivity.startActivity(this, getRootUuid(), eventUuid, section);
 	}
 
 	@Override

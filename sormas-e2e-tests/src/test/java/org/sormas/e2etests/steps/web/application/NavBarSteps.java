@@ -112,6 +112,14 @@ public class NavBarSteps implements En {
         "^I click on the Dashboard button from navbar and access Surveillance Dashboard$",
         () -> {
           webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
+          startTime = ZonedDateTime.now().toInstant().toEpochMilli();
+        });
+
+    When(
+        "^I click on the Persons button then Dashboard button from navbar and access Surveillance Dashboard$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.PERSONS_BUTTON);
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
@@ -127,7 +135,6 @@ public class NavBarSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CONTACTS_BUTTON);
           TimeUnit.SECONDS.sleep(10); // mandatory due to loading time issue
           webDriverHelpers.clickOnWebElementBySelector(CONTACTS_BUTTON);
-
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               CONTACTS_DASHBOARD_NAME, 10);
@@ -171,6 +178,13 @@ public class NavBarSteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.LOGOUT_BUTTON);
+        });
+
+    When(
+        "^I click on the Entries button from navbar$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.ENTRIES_BUTTON);
         });
 
     Then(

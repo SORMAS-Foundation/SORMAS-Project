@@ -466,6 +466,13 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		burialDate.addValidator(
 			new DateComparisonValidator(
 				burialDate,
+				this::calcBirthDateValue,
+				false,
+				false,
+				I18nProperties.getValidationError(Validations.afterDate, burialDate.getCaption(), birthDateYear.getCaption())));
+		burialDate.addValidator(
+			new DateComparisonValidator(
+				burialDate,
 				deathDate,
 				false,
 				false,
