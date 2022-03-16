@@ -270,7 +270,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			Integer birthMonth = (Integer) contentBinding.personBirthdateMM.getValue();
 
 			Calendar birthDate = new GregorianCalendar();
-			birthDate.set(birthYear, birthMonth != null ? birthMonth : 0, birthDay != null ? birthDay : 1);
+			birthDate.set(birthYear, birthMonth != null ? birthMonth-1 : 0, birthDay != null ? birthDay : 1);
 			return birthDate.getTime();
 		}
 		return null;
@@ -293,6 +293,10 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			contentBinding.personApproximateAge.setValue(String.valueOf(approximateAge.getElement0()));
 			contentBinding.personApproximateAgeType.setValue(ageType);
 		} else {
+			if (contentBinding.personApproximateAge.isEnabled() == false && contentBinding.personApproximateAgeType.isEnabled() == false) {
+				contentBinding.personApproximateAge.setValue(null);
+				contentBinding.personApproximateAgeType.setValue(null);
+			}
 			contentBinding.personApproximateAge.setEnabled(true);
 			contentBinding.personApproximateAgeType.setEnabled(true);
 		}
