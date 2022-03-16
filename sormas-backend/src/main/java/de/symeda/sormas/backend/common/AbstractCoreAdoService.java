@@ -23,6 +23,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.ejb.EJB;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -32,12 +33,18 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.EditPermissionType;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.util.IterableHelper;
 
 public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends AbstractDeletableAdoService<ADO> {
 
 	private static final int ARCHIVE_BATCH_SIZE = 1000;
+
+	@EJB
+	protected FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	protected AbstractCoreAdoService(Class<ADO> elementClass) {
 		super(elementClass);
@@ -135,5 +142,15 @@ public abstract class AbstractCoreAdoService<ADO extends CoreAdo> extends Abstra
 
 			em.createQuery(cu).executeUpdate();
 		});
+	}
+
+	public EditPermissionType getEditPermissionType(ADO entity) {
+		if (entity.isArchived()) {
+			return featureConfigurationFacade.isFeatureEnabled(FeatureType.EDIT_ARCHIVED_ENTITIES)
+				? EditPermissionType.ALLOWED
+				: EditPermissionType.ARCHIVING_STATUS_ONLY;
+		}
+
+		return EditPermissionType.ALLOWED;
 	}
 }
