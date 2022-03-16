@@ -333,3 +333,23 @@ Feature: Contacts end to end tests
     Then I fill Location form for Type of place by chosen "FACILITY" options in Exposure for Epidemiological data
     And I click on save button in Exposure for Epidemiological data tab in Contacts
     And I click on save button from Epidemiological Data
+
+  @issue=SORDEV-5478 @env_main
+  Scenario: Upload Contact CSV
+    Given I log in as a Admin User
+    And I click on the Contacts button from navbar
+    And I apply filter ID to "UXEMTD"
+    And I click APPLY BUTTON in Contact Directory Page
+    And I click on Export button from Contacts directory
+    And I click on Detailed Export button from Contacts directory
+    And I close popup after export in Contacts directory
+    And I click on the More button from Contacts directory
+    When I click on the Import button from Contacts directory
+    And I select the contact CSV file in the file picker
+    And I click on the "START DATA IMPORT" button from the Import Contact popup
+    And I select to create new person from the Import Contact popup
+    And I confirm the save Contact Import popup
+    And I select to create new contact from the Import Contact popup
+    And I confirm the save Contact Import popup
+    Then I check that an import success notification appears in the Import Contact popup
+    And I delete exported file from Contact Directory

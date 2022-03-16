@@ -82,4 +82,13 @@ public class ContactDirectoryPage {
   public static final By DROPPED_BUTTON = By.id("status-Dropped");
   public static final By BULK_ACTIONS_CONTACT_VALUES = By.id("bulkActions-9");
   public static final By NEW_ENTRY_EPIDEMIOLOGICAL_DATA = By.id("actionNewEntry");
+  public static final By IMPORT_BUTTON = By.id("actionImport");
+  public static final By EXPORT_BUTTON = By.id("export");
+  public static final By MORE_BUTTON = By.id("more");
+  public static final By DETAILED_EXPORT_BUTTON = By.id("exportDetailed");
+  public static final By IMPORT_SUCCESS = By.xpath("//*[text()='Import successful!']");
+  public static final By IMPORT_POPUP_BUTTON = By.cssSelector("[class='v-button']");
+  public static final By CLOSE_POPUP_BUTTON = By.cssSelector(".v-window-closebox");
+  public static final By NEW_PERSON_RADIOBUTTON = By.xpath("//*[text()='Create a new person']");
+  public static final By NEW_CONTACT_RADIOBUTTON = By.xpath("//*[text()='Create a new contact']");
 }
