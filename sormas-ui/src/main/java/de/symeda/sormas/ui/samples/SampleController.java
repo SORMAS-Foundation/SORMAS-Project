@@ -320,8 +320,16 @@ public class SampleController {
 				SormasUI.refreshView();
 
 				final CaseReferenceDto associatedCase = changedDto.getAssociatedCase();
-				final CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
-				FacadeProvider.getCaseFacade().save(caseDataByUuid);
+				if (associatedCase != null) {
+					final CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
+					FacadeProvider.getCaseFacade().save(caseDataByUuid);
+				}
+
+				final ContactReferenceDto associatedContact = changedDto.getAssociatedContact();
+				if (associatedContact != null) {
+					final ContactDto contactDataByUuid = FacadeProvider.getContactFacade().getByUuid(associatedContact.getUuid());
+					FacadeProvider.getContactFacade().save(contactDataByUuid);
+				}
 
 				if (changedDto.getSpecimenCondition() != originalDto.getSpecimenCondition()
 					&& changedDto.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE
