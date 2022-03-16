@@ -1,6 +1,10 @@
 package de.symeda.sormas.backend.audit;
 
 import de.symeda.sormas.api.HasUuid;
+import de.symeda.sormas.backend.auditlog.AuditContextProducer;
+import de.symeda.sormas.backend.auditlog.AuditLogServiceBean;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.i18n.I18nFacadeEjb;
 import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.User;
 
@@ -8,12 +12,15 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
+import java.util.Set;
 import java.util.TimeZone;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
+import javax.ejb.LocalBean;
 import javax.ejb.SessionContext;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
@@ -25,72 +32,76 @@ public class AuditLoggerInterceptor {
 	@Resource
 	private SessionContext sessionContext;
 
+	private final static Set<Class<?>> ignoreAuditClasses = new HashSet<>(
+		Arrays.asList(ConfigFacadeEjb.class, CurrentUserService.class, AuditContextProducer.class, AuditLogServiceBean.class, I18nFacadeEjb.class));
+
 	@AroundInvoke
-	public Object logInvokeDuration(InvocationContext context) throws Exception {
-		String target = context.getTarget().toString();
-		if (!target.startsWith("de.symeda.sormas.backend.common.ConfigFacadeEjb")
-			&& !target.startsWith("de.symeda.sormas.backend.user.CurrentUserService")) {
-			Date start = Calendar.getInstance(TimeZone.getDefault()).getTime();
-			List<String> parameters = Collections.emptyList();
-			Object[] contextParameters = context.getParameters();
-			if (contextParameters != null) {
-				parameters = Arrays.stream(contextParameters).filter(Objects::nonNull).map(p -> {
-					if (p instanceof HasUuid) {
-						return ((HasUuid) p).getUuid();
-					} else {
-						return p.toString();
-					}
-
-				}).collect(Collectors.toList());
-			}
-
-			User currentUser;
-			try {
-				CurrentUserService currentUserService =
-
-					(CurrentUserService) new InitialContext().lookup("java:global/sormas-ear/sormas-backend/CurrentUserService");
-				currentUser = currentUserService.getCurrentUser();
-			} catch (NamingException e) {
-				throw new RuntimeException(e);
-			}
-
-			String invokedMethod = getInvokedMethod(context);
-			String agentUuid = currentUser == null ? "" : currentUser.getUuid();
-			Object result = context.proceed();
-			String returnValue = null;
-			if (result != null) {
-				if (result instanceof HasUuid) {
-					returnValue = String.format("%s:%s", result.getClass().getSimpleName(), ((HasUuid) result).getUuid());
-				} else {
-					returnValue = result.toString();
-				}
-			}
-
-			AuditLogger.getInstance()
-				.logBackendCall(sessionContext.getCallerPrincipal().getName(), agentUuid, invokedMethod, parameters, returnValue, start);
-			return result;
+	public Object logAudit(InvocationContext context) throws Exception {
+		Object target = context.getTarget();
+		if (target.getClass().getAnnotationsByType(LocalBean.class).length > 0) {
+			// with this we ignore EJB calls which definitely originate from within the backend
+			// as they can never be called direct from outside (i.e., remote) of he backend
+			return context.proceed();
 		}
-		return context.proceed();
+
+		if (ignoreAuditClasses.contains(target.getClass())) {
+			// ignore certain classes for audit altogether
+			return context.proceed();
+		}
+
+		// start auditing
+
+		// AuditContextProducer
+		Date start = Calendar.getInstance(TimeZone.getDefault()).getTime();
+		List<String> parameters = getParameters(context);
+
+		User currentUser;
+		try {
+			CurrentUserService currentUserService =
+				(CurrentUserService) new InitialContext().lookup("java:global/sormas-ear/sormas-backend/CurrentUserService");
+			currentUser = currentUserService.getCurrentUser();
+		} catch (NamingException e) {
+			throw new RuntimeException(e);
+		}
+
+		String agentUuid = currentUser == null ? null : currentUser.getUuid();
+
+		// do the actual call
+		Object result = context.proceed();
+
+		String returnValue = printObject(result);
+
+		AuditLogger.getInstance()
+			.logBackendCall(sessionContext.getCallerPrincipal().getName(), agentUuid, context.getMethod().toString(), parameters, returnValue, start);
+
+		return result;
 	}
 
-	/**
-	 * @return Better readable method name (with EJB class) that was invoked.
-	 */
-	static String getInvokedMethod(InvocationContext context) {
+	private List<String> getParameters(InvocationContext context) {
+		Object[] contextParameters = context.getParameters();
 
-		return getInvokedMethod(context.getTarget().toString(), context.getMethod().getName());
+		if (contextParameters != null) {
+			return Arrays.stream(contextParameters).filter(Objects::nonNull).map(this::printObject).collect(Collectors.toList());
+		} else {
+			return Collections.emptyList();
+		}
 	}
 
-	/**
-	 * @return Better readable method name (with EJB class) that was invoked.
-	 */
-	static String getInvokedMethod(String targetName, String methodName) {
-
-		int classBegin = targetName.lastIndexOf(".") + 1;
-		int innerClassBegin = targetName.indexOf("$");
-		int instanceBegin = targetName.indexOf("@");
-
-		String ejbName = targetName.substring(classBegin, innerClassBegin > 0 ? innerClassBegin : instanceBegin);
-		return String.format("%s.%s", ejbName, methodName);
+	private String printObject(Object o) {
+		if (o == null) {
+			return null;
+		}
+		if (o instanceof HasUuid) {
+			return ((HasUuid) o).getUuid();
+		}
+		if (o instanceof List) {
+			List list = (List) o;
+			if (!list.isEmpty() && list.get(0) instanceof HasUuid) {
+				List<HasUuid> uuidList = list;
+				String str = uuidList.stream().map(HasUuid::getUuid).collect(Collectors.joining());
+				return String.format("List(%s)", str);
+			}
+		}
+		return o.toString();
 	}
 }
