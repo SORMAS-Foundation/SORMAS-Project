@@ -233,6 +233,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		initH2Functions();
 		// this is used to provide the current user to the ADO Listener taking care of updating the last change user
 		System.setProperty("java.naming.factory.initial", MockProducer.class.getCanonicalName());
+		System.setProperty("logback.configurationFile", "./logback.xml");
 		creator.createUser(null, null, null, "ad", "min", UserRole.ADMIN, UserRole.NATIONAL_USER);
 		when(MockProducer.getPrincipal().getName()).thenReturn("admin");
 

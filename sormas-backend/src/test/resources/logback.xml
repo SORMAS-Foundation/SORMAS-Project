@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE xml>
+<!-- scan disabled as precaution for CVE-2021-42550 and similar -->
+<configuration scan="false" scanPeriod="30 seconds" debug="true">
+
+    <!-- allow JMX configuration (http://logback.qos.ch/manual/jmxConfig.html) -->
+    <!-- <jmxConfigurator /> -->
+
+	<appender name="STDOUT" class="ch.qos.logback.core.ConsoleAppender">
+		<encoder class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+               <Pattern>%date %-5level \(%C.java:%L\) - %msg%n</Pattern>
+        </encoder>
+	</appender>	
+	
+    <!-- Don't log personal data when copying to/from dto -->
+    <logger name="org.apache.commons.beanutils.BeanUtils" level="INFO" />
+
+    <!-- Log only errors and warnings for document generation -->
+    <logger name="fr.opensagres.xdocreport" level="WARN" />
+
+	<!-- Lower this log level to DEBUG or TRACE to have EJB method invocations logged with duration in ms to find performance leaks -->
+	<logger name="de.symeda.sormas.backend.util.PerformanceLoggingInterceptor" level="INFO" />
+
+    <!-- Prevent the org.apache.http.impl.conn.Wire to log debug data which could contain plain Basic Auth credentials -->
+    <logger name="org.apache.http" level="INFO" />
+
+    <!-- Prevent the TLSManager and ClientGenerator from outputting sensitive information -->
+    <logger name="de.rki.demis.importer" level="INFO" />
+
+    <!-- Don't log bean test internal debug logs -->
+    <logger name="info.novatec.beantest" level="ERROR" />
+
+    <!-- Don't ArchUnit internal debug logs -->
+    <logger name="com.tngtech.archunit.core.importer" level="ERROR" />
+
+    <root level="debug">
+        <appender-ref ref="STDOUT" />
+    </root>
+
+</configuration>
