@@ -518,6 +518,24 @@ public class ContactFacadeEjb
 	}
 
 	@Override
+	@RolesAllowed(UserRight._CONTACT_ARCHIVE)
+	public void archive(String entityUuid, Date endOfProcessingDate) {
+		super.archive(entityUuid, endOfProcessingDate);
+	}
+
+	@Override
+	@RolesAllowed(UserRight._CONTACT_ARCHIVE)
+	public void archive(List<String> entityUuids) {
+		super.archive(entityUuids);
+	}
+
+	@Override
+	@RolesAllowed(UserRight._CONTACT_ARCHIVE)
+	public void dearchive(List<String> entityUuids, String dearchiveReason) {
+		super.dearchive(entityUuids, dearchiveReason);
+	}
+
+	@Override
 	@RolesAllowed(UserRight._CONTACT_EXPORT)
 	public List<ContactExportDto> getExportList(
 		ContactCriteria contactCriteria,

@@ -1592,7 +1592,7 @@ public enum UserRight {
 	public static final String _CASE_ARCHIVE = "CASE_ARCHIVE";
 	public static final String _CASE_MERGE = "CASE_MERGE";
 	public static final String _IMMUNIZATION_VIEW = "IMMUNIZATION_VIEW";
-	public static final String _IMM_CONTACTUNIZATION_CREATE = "IMMUNIZATION_CREATE";
+	public static final String _IMMUNIZATION_CREATE = "IMMUNIZATION_CREATE";
 	public static final String _IMMUNIZATION_EDIT = "IMMUNIZATION_EDIT";
 	public static final String _IMMUNIZATION_DELETE = "IMMUNIZATION_DELETE";
 	public static final String _IMMUNIZATION_ARCHIVE = "IMMUNIZATION_ARCHIVE";
