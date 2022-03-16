@@ -164,14 +164,7 @@ public class InfoFacadeEjb implements InfoFacade {
 		throws IOException {
 		XSSFWorkbook workbook = new XSSFWorkbook();
 
-		createEntitySheet(
-			workbook,
-			PersonDto.class,
-			PersonDto.I18N_PREFIX,
-			entityColumns,
-			fieldVisibilityCheckers,
-			extraColumns,
-			extraCells);
+		createEntitySheet(workbook, PersonDto.class, PersonDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 		createEntitySheet(
 			workbook,
 			PersonContactDetailDto.class,
@@ -345,7 +338,7 @@ public class InfoFacadeEjb implements InfoFacade {
 		List<ColumnData> extraColumns,
 		Map<String, List<XSSFCell>> extraCells) {
 
-        String name = DataHelper.getHumanClassName(entityClass);
+		String name = DataHelper.getHumanClassName(entityClass);
 		String safeName = WorkbookUtil.createSafeSheetName(name);
 		XSSFSheet sheet = workbook.createSheet(safeName);
 
