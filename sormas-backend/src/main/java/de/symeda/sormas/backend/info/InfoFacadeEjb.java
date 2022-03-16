@@ -125,9 +125,7 @@ public class InfoFacadeEjb implements InfoFacade {
 			EnumSet.allOf(EntityColumn.class),
 			FieldVisibilityCheckers.getNoop(),
 			Collections.emptyList(),
-			Collections.emptyMap(),
-			false);
-
+			Collections.emptyMap());
 	}
 
 	@Override
@@ -151,7 +149,7 @@ public class InfoFacadeEjb implements InfoFacade {
 			entityColumns.remove(EntityColumn.IGNORED_COUNTRIES);
 			entityColumns.remove(EntityColumn.EXCLUSIVE_COUNTRIES);
 
-			return generateDataDictionary(entityColumns, fieldVisibilityCheckers, dataProtectionColumns, dataProtectionData, true);
+			return generateDataDictionary(entityColumns, fieldVisibilityCheckers, dataProtectionColumns, dataProtectionData);
 
 		} catch (InvalidFormatException e) {
 			throw new IOException(e);
@@ -162,20 +160,11 @@ public class InfoFacadeEjb implements InfoFacade {
 		EnumSet<EntityColumn> entityColumns,
 		FieldVisibilityCheckers fieldVisibilityCheckers,
 		List<ColumnData> extraColumns,
-		Map<String, List<XSSFCell>> extraCells,
-		boolean isDataProtectionDictionary)
+		Map<String, List<XSSFCell>> extraCells)
 		throws IOException {
 		XSSFWorkbook workbook = new XSSFWorkbook();
 
-		createEntitySheet(
-			workbook,
-			PersonDto.class,
-			PersonDto.I18N_PREFIX,
-			entityColumns,
-			fieldVisibilityCheckers,
-			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
+		createEntitySheet(workbook, PersonDto.class, PersonDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 		createEntitySheet(
 			workbook,
 			PersonContactDetailDto.class,
@@ -183,26 +172,9 @@ public class InfoFacadeEjb implements InfoFacade {
 			entityColumns,
 			fieldVisibilityCheckers,
 			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
-		createEntitySheet(
-			workbook,
-			LocationDto.class,
-			LocationDto.I18N_PREFIX,
-			entityColumns,
-			fieldVisibilityCheckers,
-			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
-		createEntitySheet(
-			workbook,
-			CaseDataDto.class,
-			CaseDataDto.I18N_PREFIX,
-			entityColumns,
-			fieldVisibilityCheckers,
-			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
+			extraCells);
+		createEntitySheet(workbook, LocationDto.class, LocationDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, CaseDataDto.class, CaseDataDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 		createEntitySheet(
 			workbook,
 			ActivityAsCaseDto.class,
@@ -210,8 +182,7 @@ public class InfoFacadeEjb implements InfoFacade {
 			entityColumns,
 			fieldVisibilityCheckers,
 			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
+			extraCells);
 		createEntitySheet(
 			workbook,
 			HospitalizationDto.class,
@@ -219,8 +190,7 @@ public class InfoFacadeEjb implements InfoFacade {
 			entityColumns,
 			fieldVisibilityCheckers,
 			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
+			extraCells);
 		createEntitySheet(
 			workbook,
 			PreviousHospitalizationDto.class,
@@ -228,8 +198,7 @@ public class InfoFacadeEjb implements InfoFacade {
 			entityColumns,
 			fieldVisibilityCheckers,
 			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
+			extraCells);
 		createEntitySheet(
 			workbook,
 			SurveillanceReportDto.class,
@@ -237,35 +206,10 @@ public class InfoFacadeEjb implements InfoFacade {
 			entityColumns,
 			fieldVisibilityCheckers,
 			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
-		createEntitySheet(
-			workbook,
-			SymptomsDto.class,
-			SymptomsDto.I18N_PREFIX,
-			entityColumns,
-			fieldVisibilityCheckers,
-			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
-		createEntitySheet(
-			workbook,
-			EpiDataDto.class,
-			EpiDataDto.I18N_PREFIX,
-			entityColumns,
-			fieldVisibilityCheckers,
-			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
-		createEntitySheet(
-			workbook,
-			ExposureDto.class,
-			ExposureDto.I18N_PREFIX,
-			entityColumns,
-			fieldVisibilityCheckers,
-			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
+			extraCells);
+		createEntitySheet(workbook, SymptomsDto.class, SymptomsDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, EpiDataDto.class, EpiDataDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, ExposureDto.class, ExposureDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 		createEntitySheet(
 			workbook,
 			HealthConditionsDto.class,
@@ -273,8 +217,7 @@ public class InfoFacadeEjb implements InfoFacade {
 			entityColumns,
 			fieldVisibilityCheckers,
 			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
+			extraCells);
 		createEntitySheet(
 			workbook,
 			PrescriptionDto.class,
@@ -282,17 +225,8 @@ public class InfoFacadeEjb implements InfoFacade {
 			entityColumns,
 			fieldVisibilityCheckers,
 			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
-		createEntitySheet(
-			workbook,
-			TreatmentDto.class,
-			TreatmentDto.I18N_PREFIX,
-			entityColumns,
-			fieldVisibilityCheckers,
-			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
+			extraCells);
+		createEntitySheet(workbook, TreatmentDto.class, TreatmentDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 		createEntitySheet(
 			workbook,
 			ClinicalVisitDto.class,
@@ -300,35 +234,10 @@ public class InfoFacadeEjb implements InfoFacade {
 			entityColumns,
 			fieldVisibilityCheckers,
 			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
-		createEntitySheet(
-			workbook,
-			ContactDto.class,
-			ContactDto.I18N_PREFIX,
-			entityColumns,
-			fieldVisibilityCheckers,
-			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
-		createEntitySheet(
-			workbook,
-			VisitDto.class,
-			VisitDto.I18N_PREFIX,
-			entityColumns,
-			fieldVisibilityCheckers,
-			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
-		createEntitySheet(
-			workbook,
-			SampleDto.class,
-			SampleDto.I18N_PREFIX,
-			entityColumns,
-			fieldVisibilityCheckers,
-			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
+			extraCells);
+		createEntitySheet(workbook, ContactDto.class, ContactDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, VisitDto.class, VisitDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, SampleDto.class, SampleDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 		createEntitySheet(
 			workbook,
 			PathogenTestDto.class,
@@ -336,8 +245,7 @@ public class InfoFacadeEjb implements InfoFacade {
 			entityColumns,
 			fieldVisibilityCheckers,
 			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
+			extraCells);
 		createEntitySheet(
 			workbook,
 			AdditionalTestDto.class,
@@ -345,26 +253,9 @@ public class InfoFacadeEjb implements InfoFacade {
 			entityColumns,
 			fieldVisibilityCheckers,
 			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
-		createEntitySheet(
-			workbook,
-			TaskDto.class,
-			TaskDto.I18N_PREFIX,
-			entityColumns,
-			fieldVisibilityCheckers,
-			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
-		createEntitySheet(
-			workbook,
-			EventDto.class,
-			EventDto.I18N_PREFIX,
-			entityColumns,
-			fieldVisibilityCheckers,
-			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
+			extraCells);
+		createEntitySheet(workbook, TaskDto.class, TaskDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, EventDto.class, EventDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 		createEntitySheet(
 			workbook,
 			EventParticipantDto.class,
@@ -372,17 +263,8 @@ public class InfoFacadeEjb implements InfoFacade {
 			entityColumns,
 			fieldVisibilityCheckers,
 			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
-		createEntitySheet(
-			workbook,
-			ActionDto.class,
-			ActionDto.I18N_PREFIX,
-			entityColumns,
-			fieldVisibilityCheckers,
-			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
+			extraCells);
+		createEntitySheet(workbook, ActionDto.class, ActionDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 		createEntitySheet(
 			workbook,
 			ImmunizationDto.class,
@@ -390,8 +272,7 @@ public class InfoFacadeEjb implements InfoFacade {
 			entityColumns,
 			fieldVisibilityCheckers,
 			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
+			extraCells);
 		createEntitySheet(
 			workbook,
 			VaccinationDto.class,
@@ -399,8 +280,7 @@ public class InfoFacadeEjb implements InfoFacade {
 			entityColumns,
 			fieldVisibilityCheckers,
 			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
+			extraCells);
 		createEntitySheet(
 			workbook,
 			TravelEntryDto.class,
@@ -408,17 +288,8 @@ public class InfoFacadeEjb implements InfoFacade {
 			entityColumns,
 			fieldVisibilityCheckers,
 			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
-		createEntitySheet(
-			workbook,
-			ContinentDto.class,
-			ContinentDto.I18N_PREFIX,
-			entityColumns,
-			fieldVisibilityCheckers,
-			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
+			extraCells);
+		createEntitySheet(workbook, ContinentDto.class, ContinentDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 		createEntitySheet(
 			workbook,
 			SubcontinentDto.class,
@@ -426,53 +297,12 @@ public class InfoFacadeEjb implements InfoFacade {
 			entityColumns,
 			fieldVisibilityCheckers,
 			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
-		createEntitySheet(
-			workbook,
-			CountryDto.class,
-			CountryDto.I18N_PREFIX,
-			entityColumns,
-			fieldVisibilityCheckers,
-			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
-		createEntitySheet(
-			workbook,
-			RegionDto.class,
-			RegionDto.I18N_PREFIX,
-			entityColumns,
-			fieldVisibilityCheckers,
-			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
-		createEntitySheet(
-			workbook,
-			DistrictDto.class,
-			DistrictDto.I18N_PREFIX,
-			entityColumns,
-			fieldVisibilityCheckers,
-			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
-		createEntitySheet(
-			workbook,
-			CommunityDto.class,
-			CommunityDto.I18N_PREFIX,
-			entityColumns,
-			fieldVisibilityCheckers,
-			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
-		createEntitySheet(
-			workbook,
-			FacilityDto.class,
-			FacilityDto.I18N_PREFIX,
-			entityColumns,
-			fieldVisibilityCheckers,
-			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
+			extraCells);
+		createEntitySheet(workbook, CountryDto.class, CountryDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, RegionDto.class, RegionDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, DistrictDto.class, DistrictDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, CommunityDto.class, CommunityDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, FacilityDto.class, FacilityDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 		createEntitySheet(
 			workbook,
 			PointOfEntryDto.class,
@@ -480,35 +310,10 @@ public class InfoFacadeEjb implements InfoFacade {
 			entityColumns,
 			fieldVisibilityCheckers,
 			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
-		createEntitySheet(
-			workbook,
-			UserDto.class,
-			UserDto.I18N_PREFIX,
-			entityColumns,
-			fieldVisibilityCheckers,
-			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
-		createEntitySheet(
-			workbook,
-			LabMessageDto.class,
-			LabMessageDto.I18N_PREFIX,
-			entityColumns,
-			fieldVisibilityCheckers,
-			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
-		createEntitySheet(
-			workbook,
-			TestReportDto.class,
-			TestReportDto.I18N_PREFIX,
-			entityColumns,
-			fieldVisibilityCheckers,
-			extraColumns,
-			extraCells,
-			isDataProtectionDictionary);
+			extraCells);
+		createEntitySheet(workbook, UserDto.class, UserDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, LabMessageDto.class, LabMessageDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+		createEntitySheet(workbook, TestReportDto.class, TestReportDto.I18N_PREFIX, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
 
 		XssfHelper.addAboutSheet(workbook);
 
@@ -531,16 +336,9 @@ public class InfoFacadeEjb implements InfoFacade {
 		EnumSet<EntityColumn> entityColumns,
 		FieldVisibilityCheckers fieldVisibilityCheckers,
 		List<ColumnData> extraColumns,
-		Map<String, List<XSSFCell>> extraCells,
-		boolean isDataProtectionDictionary) {
+		Map<String, List<XSSFCell>> extraCells) {
 
-	    String name;
-	    if (isDataProtectionDictionary) {
-	        name = DataHelper.getHumanClassName(entityClass);
-        } else {
-	        name = I18nProperties.getCaption(i18nPrefix);
-        }
-
+		String name = I18nProperties.getCaption(i18nPrefix);
 		String safeName = WorkbookUtil.createSafeSheetName(name);
 		XSSFSheet sheet = workbook.createSheet(safeName);
 
@@ -724,7 +522,7 @@ public class InfoFacadeEjb implements InfoFacade {
 
 		Enum<?>[] enumValues = enumType.getEnumConstants();
 		for (Enum<?> enumValue : enumValues) {
-			if (!fieldVisibilityCheckers.isVisible(enumType, enumValue.name())) {
+			if(!fieldVisibilityCheckers.isVisible(enumType, enumValue.name())){
 				continue;
 			}
 
