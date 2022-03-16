@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.audit;
 
+import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.User;
 
@@ -33,7 +34,14 @@ public class AuditLoggerInterceptor {
 			List<String> parameters = Collections.emptyList();
 			Object[] contextParameters = context.getParameters();
 			if (contextParameters != null) {
-				parameters = Arrays.stream(contextParameters).filter(Objects::nonNull).map(Object::toString).collect(Collectors.toList());
+				parameters = Arrays.stream(contextParameters).filter(Objects::nonNull).map(p -> {
+					if (p instanceof HasUuid) {
+						return ((HasUuid) p).getUuid();
+					} else {
+						return p.toString();
+					}
+
+				}).collect(Collectors.toList());
 			}
 
 			User currentUser;
@@ -49,7 +57,14 @@ public class AuditLoggerInterceptor {
 			String invokedMethod = getInvokedMethod(context);
 			String agentUuid = currentUser == null ? "" : currentUser.getUuid();
 			Object result = context.proceed();
-			String returnValue = result == null ? "" : result.toString();
+			String returnValue = null;
+			if (result != null) {
+				if (result instanceof HasUuid) {
+					returnValue = String.format("%s:%s", result.getClass().getSimpleName(), ((HasUuid) result).getUuid());
+				} else {
+					returnValue = result.toString();
+				}
+			}
 
 			AuditLogger.getInstance()
 				.logBackendCall(sessionContext.getCallerPrincipal().getName(), agentUuid, invokedMethod, parameters, returnValue, start);
