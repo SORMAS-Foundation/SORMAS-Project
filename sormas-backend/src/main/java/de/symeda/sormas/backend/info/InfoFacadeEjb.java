@@ -524,10 +524,6 @@ public class InfoFacadeEjb implements InfoFacade {
 		return documentPath.toString();
 	}
 
-	public String getNameForDataDictionaryType(boolean isDataProtectionDictionary, Class<? extends EntityDto> entityClass, String i18nPrefix) {
-		return isDataProtectionDictionary ? DataHelper.getHumanClassName(entityClass) : I18nProperties.getCaption(i18nPrefix);
-	}
-
 	private void createEntitySheet(
 		XSSFWorkbook workbook,
 		Class<? extends EntityDto> entityClass,
@@ -538,7 +534,13 @@ public class InfoFacadeEjb implements InfoFacade {
 		Map<String, List<XSSFCell>> extraCells,
 		boolean isDataProtectionDictionary) {
 
-		String name = getNameForDataDictionaryType(isDataProtectionDictionary, entityClass, i18nPrefix);
+	    String name;
+	    if (isDataProtectionDictionary) {
+	        name = DataHelper.getHumanClassName(entityClass);
+        } else {
+	        name = I18nProperties.getCaption(i18nPrefix);
+        }
+
 		String safeName = WorkbookUtil.createSafeSheetName(name);
 		XSSFSheet sheet = workbook.createSheet(safeName);
 
