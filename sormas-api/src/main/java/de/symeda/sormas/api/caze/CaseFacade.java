@@ -93,7 +93,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	CaseDataDto save(@Valid @NotNull CaseDataDto dto, Boolean systemSave) throws ValidationRuntimeException;
 
-	CaseDataDto save(@Valid @NotNull CaseAndPersonDataDto dto) throws ValidationRuntimeException;
+	CoreAndPersonDto<CaseDataDto> save(@Valid @NotNull CoreAndPersonDto<CaseDataDto> dto) throws ValidationRuntimeException;
 
 	void setSampleAssociations(ContactReferenceDto sourceContact, CaseReferenceDto cazeRef);
 

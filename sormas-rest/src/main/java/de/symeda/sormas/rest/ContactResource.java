@@ -33,6 +33,7 @@ import javax.ws.rs.core.Response;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.caze.CoreAndPersonDto;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -92,8 +93,8 @@ public class ContactResource extends EntityDtoResource {
 	}
 
 	@POST
-	@Path("/create")
-	public ContactDto createContact(@Valid ContactDto dto) {
+	@Path("/post")
+	public CoreAndPersonDto<ContactDto> postContact(@Valid CoreAndPersonDto<ContactDto> dto) {
 		return FacadeProvider.getContactFacade().save(dto);
 
 	}

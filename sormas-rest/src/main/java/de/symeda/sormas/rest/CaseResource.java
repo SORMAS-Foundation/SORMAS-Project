@@ -36,12 +36,12 @@ import com.fasterxml.jackson.databind.JsonNode;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
-import de.symeda.sormas.api.caze.CaseAndPersonDataDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CasePersonDto;
+import de.symeda.sormas.api.caze.CoreAndPersonDto;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
@@ -88,8 +88,8 @@ public class CaseResource extends EntityDtoResource {
 	}
 
 	@POST
-	@Path("/create")
-	public CaseDataDto createCase(@Valid CaseAndPersonDataDto dto) {
+	@Path("/post")
+	public CoreAndPersonDto<CaseDataDto> postCase(@Valid CoreAndPersonDto<CaseDataDto> dto) {
 		return FacadeProvider.getCaseFacade().save(dto);
 	}
 

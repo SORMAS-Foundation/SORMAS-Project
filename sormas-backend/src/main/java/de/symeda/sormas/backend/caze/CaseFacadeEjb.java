@@ -85,7 +85,6 @@ import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
-import de.symeda.sormas.api.caze.CaseAndPersonDataDto;
 import de.symeda.sormas.api.caze.CaseBulkEditData;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -105,6 +104,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDefinition;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
+import de.symeda.sormas.api.caze.CoreAndPersonDto;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
@@ -1366,13 +1366,17 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	public CaseDataDto save(@Valid @NotNull CaseAndPersonDataDto caseAndPersonDataDto) throws ValidationRuntimeException {
-		CaseDataDto caseDto = caseAndPersonDataDto.getCaseData();
-		if (caseAndPersonDataDto.getPerson() != null) {
-			PersonDto newlyCreatedPersonDto = personFacade.savePerson(caseAndPersonDataDto.getPerson());
+	public CoreAndPersonDto<CaseDataDto> save(@Valid @NotNull CoreAndPersonDto<CaseDataDto> coreAndPersonDto) throws ValidationRuntimeException {
+		CaseDataDto caseDto = coreAndPersonDto.getCoreData();
+		CoreAndPersonDto savedCoreAndPersonDto = new CoreAndPersonDto();
+		if (coreAndPersonDto.getPerson() != null) {
+			PersonDto newlyCreatedPersonDto = personFacade.savePerson(coreAndPersonDto.getPerson());
 			caseDto.setPerson(newlyCreatedPersonDto.toReference());
+			savedCoreAndPersonDto.setPerson(newlyCreatedPersonDto);
 		}
-		return save(caseDto, true, true, true, false);
+		CaseDataDto savedCaseData = save(caseDto, true, true, true, false);
+		savedCoreAndPersonDto.setCoreData(savedCaseData);
+		return savedCoreAndPersonDto;
 	}
 
 	public void saveBulkCase(
