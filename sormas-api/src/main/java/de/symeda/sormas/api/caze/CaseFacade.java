@@ -33,6 +33,7 @@ import com.fasterxml.jackson.databind.JsonNode;
 import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -91,7 +92,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	CaseDataDto getCaseDataByUuid(String uuid);
 
-	CaseDataDto save(@Valid @NotNull CaseDataDto dto, Boolean systemSave) throws ValidationRuntimeException;
+	CaseDataDto save(@Valid @NotNull CaseDataDto dto, boolean systemSave) throws ValidationRuntimeException;
 
 	CoreAndPersonDto<CaseDataDto> save(@Valid @NotNull CoreAndPersonDto<CaseDataDto> dto) throws ValidationRuntimeException;
 
@@ -167,7 +168,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	FollowUpPeriodDto calculateFollowUpUntilDate(CaseDataDto caseDto, boolean ignoreOverwrite);
 
-	boolean isCaseEditAllowed(String caseUuid);
+	EditPermissionType isCaseEditAllowed(String caseUuid);
 
 	boolean hasPositiveLabResult(String caseUuid);
 
@@ -179,6 +180,12 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 		Integer max,
 		List<SortProperty> sortProperties);
 
+	Page<CaseFollowUpDto> getCaseFollowUpIndexPage(
+		@NotNull CaseFollowUpCriteria criteria,
+		Integer offset,
+		Integer max,
+		List<SortProperty> sortProperties);
+
 	void sendMessage(List<String> caseUuids, String subject, String messageContent, MessageType... messageTypes);
 
 	long countCasesWithMissingContactInformation(List<String> caseUuids, MessageType messageType);
@@ -187,7 +194,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	List<String> getUuidsNotShareableWithExternalReportingTools(List<String> caseUuids);
 
-	void saveBulkCase(
+	Integer saveBulkCase(
 		List<String> caseUuidList,
 		@Valid CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,

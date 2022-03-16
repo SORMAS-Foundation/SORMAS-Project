@@ -15,6 +15,8 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -38,6 +40,8 @@ import de.symeda.sormas.ui.utils.components.linelisting.section.LineListingSecti
 
 public class LineListingLayout extends VerticalLayout {
 
+	private static final long serialVersionUID = 5372515237174090496L;
+
 	public static final float DEFAULT_WIDTH = 1696;
 
 	private final SharedInfoField sharedInfoField;
@@ -57,6 +61,7 @@ public class LineListingLayout extends VerticalLayout {
 
 		this.sharedInfoField = sharedInfoField;
 		this.sharedInfoField.setId("lineListingSharedInfoField");
+		this.sharedInfoField.addDiseaseChangeHandler(this::updateTypeOfContactValues);
 		sharedInformationComponent.addComponent(this.sharedInfoField);
 
 		addComponent(sharedInformationComponent);
@@ -68,16 +73,20 @@ public class LineListingLayout extends VerticalLayout {
 		addComponent(lineComponent);
 	}
 
-	public LineListingLayout(Window window, CaseDataDto caseReferenceDto) {
-		this(window, new SharedInfoField(caseReferenceDto));
+	public LineListingLayout(Window window, CaseDataDto caseDataDto) {
+		this(window, new SharedInfoField(caseDataDto));
+
+		Disease disease = caseDataDto == null ? FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease() : caseDataDto.getDisease();
 
 		ContactLineLayout line = buildNewLine(lineComponent);
+		line.updateTypeOfContactValues(disease);
 		lines.add(line);
 		lineComponent.addComponent(line);
 
 		HorizontalLayout actionBar = new HorizontalLayout();
 		Button addLine = ButtonHelper.createIconButton(Captions.lineListingAddLine, VaadinIcons.PLUS, e -> {
 			ContactLineLayout newLine = buildNewLine(lineComponent);
+			newLine.updateTypeOfContactValues(sharedInfoField.getValue().getDisease());
 			lines.add(newLine);
 			lineComponent.addComponent(newLine);
 			lines.get(0).enableDelete(true);
@@ -114,11 +123,16 @@ public class LineListingLayout extends VerticalLayout {
 			newLine.enablePersonField(false);
 			newLine.setPerson(eventParticipantDto.getPerson());
 			newLine.setBean(newLineDto);
+			if (eventDto != null) {
+				newLine.updateTypeOfContactValues(eventDto.getDisease());
+			}
 
 			lines.add(newLine);
 			lineComponent.addComponent(newLine);
 		}
 
+		Disease disease = eventDto == null ? FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease() : eventDto.getDisease();
+		updateTypeOfContactValues(disease);
 		addButtons();
 	}
 
@@ -205,6 +219,12 @@ public class LineListingLayout extends VerticalLayout {
 		this.saveCallback = saveCallback;
 	}
 
+	public void updateTypeOfContactValues(Disease disease) {
+		for (ContactLineLayout line : lines) {
+			line.updateTypeOfContactValues(disease);
+		}
+	}
+
 	private ContactLineLayout buildNewLine(VerticalLayout lineComponent) {
 		ContactLineLayout newLine = new ContactLineLayout(lines.size());
 		ContactLineLayoutDto newLineDto = new ContactLineLayoutDto();
@@ -226,6 +246,8 @@ public class LineListingLayout extends VerticalLayout {
 	}
 
 	class ContactLineLayout extends LineLayout {
+
+		private static final long serialVersionUID = -6430490310394731389L;
 
 		private final Binder<ContactLineLayoutDto> binder = new Binder<>(ContactLineLayoutDto.class);
 
@@ -252,6 +274,10 @@ public class LineListingLayout extends VerticalLayout {
 			setComponentAlignment(delete, Alignment.BOTTOM_LEFT);
 
 			contactLineField.showCaptions();
+		}
+
+		public void updateTypeOfContactValues(Disease disease) {
+			contactLineField.updateTypeOfContactValues(disease);
 		}
 
 		public void setBean(ContactLineLayoutDto bean) {
@@ -285,6 +311,8 @@ public class LineListingLayout extends VerticalLayout {
 
 	public static class ContactLineLayoutDto implements Serializable {
 
+		private static final long serialVersionUID = 1043859942972062173L;
+
 		public static final String LINE_FIELD = "lineField";
 
 		private ContactLineFieldDto lineField;
@@ -299,6 +327,8 @@ public class LineListingLayout extends VerticalLayout {
 	}
 
 	public static class ContactLineDto implements Serializable {
+
+		private static final long serialVersionUID = -4356132050282062118L;
 
 		private ContactDto contact;
 		private PersonDto person;

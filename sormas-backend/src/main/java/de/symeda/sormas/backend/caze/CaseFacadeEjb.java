@@ -68,6 +68,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.EditPermissionType;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -92,6 +93,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.CaseExportType;
 import de.symeda.sormas.api.caze.CaseFacade;
+import de.symeda.sormas.api.caze.CaseFollowUpCriteria;
 import de.symeda.sormas.api.caze.CaseFollowUpDto;
 import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
@@ -1361,7 +1363,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	public CaseDataDto save(@Valid @NotNull CaseDataDto dto, Boolean systemSave) throws ValidationRuntimeException {
+	public CaseDataDto save(@Valid @NotNull CaseDataDto dto, boolean systemSave) throws ValidationRuntimeException {
 		return save(dto, true, true, true, systemSave);
 	}
 
@@ -1379,7 +1381,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return savedCoreAndPersonDto;
 	}
 
-	public void saveBulkCase(
+	public Integer saveBulkCase(
 		List<String> caseUuidList,
 		@Valid CaseBulkEditData updatedCaseBulkEditData,
 		boolean diseaseChange,
@@ -1389,20 +1391,26 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		boolean surveillanceOfficerChange)
 		throws ValidationRuntimeException {
 
+		int changedCases = 0;
 		for (String caseUuid : caseUuidList) {
 			Case caze = service.getByUuid(caseUuid);
-			CaseDataDto existingCaseDto = toDto(caze);
 
-			updateCaseWithBulkData(
-				updatedCaseBulkEditData,
-				caze,
-				diseaseChange,
-				classificationChange,
-				investigationStatusChange,
-				outcomeChange,
-				surveillanceOfficerChange);
-			doSave(caze, true, existingCaseDto, true);
+			if (service.getEditPermissionType(caze).equals(EditPermissionType.ALLOWED)) {
+				CaseDataDto existingCaseDto = toDto(caze);
+
+				updateCaseWithBulkData(
+					updatedCaseBulkEditData,
+					caze,
+					diseaseChange,
+					classificationChange,
+					investigationStatusChange,
+					outcomeChange,
+					surveillanceOfficerChange);
+				doSave(caze, true, existingCaseDto, true);
+				changedCases++;
+			}
 		}
+		return changedCases;
 	}
 
 	public void saveBulkEditWithFacilities(
@@ -1425,25 +1433,28 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		for (String caseUuid : caseUuidList) {
 			Case caze = service.getByUuid(caseUuid);
-			CaseDataDto existingCaseDto = toDto(caze);
 
-			updateCaseWithBulkData(
-				updatedCaseBulkEditData,
-				caze,
-				diseaseChange,
-				classificationChange,
-				investigationStatusChange,
-				outcomeChange,
-				surveillanceOfficerChange);
+			if (service.getEditPermissionType(caze).equals(EditPermissionType.ALLOWED)) {
+				CaseDataDto existingCaseDto = toDto(caze);
 
-			caze.setRegion(newRegion);
-			caze.setDistrict(newDistrict);
-			caze.setCommunity(newCommunity);
-			caze.setFacilityType(updatedCaseBulkEditData.getFacilityType());
-			caze.setHealthFacility(facilityService.getByUuid(updatedCaseBulkEditData.getHealthFacility().getUuid()));
-			caze.setHealthFacilityDetails(updatedCaseBulkEditData.getHealthFacilityDetails());
-			CaseLogic.handleHospitalization(toDto(caze), existingCaseDto, doTransfer);
-			doSave(caze, true, existingCaseDto, true);
+				updateCaseWithBulkData(
+					updatedCaseBulkEditData,
+					caze,
+					diseaseChange,
+					classificationChange,
+					investigationStatusChange,
+					outcomeChange,
+					surveillanceOfficerChange);
+
+				caze.setRegion(newRegion);
+				caze.setDistrict(newDistrict);
+				caze.setCommunity(newCommunity);
+				caze.setFacilityType(updatedCaseBulkEditData.getFacilityType());
+				caze.setHealthFacility(facilityService.getByUuid(updatedCaseBulkEditData.getHealthFacility().getUuid()));
+				caze.setHealthFacilityDetails(updatedCaseBulkEditData.getHealthFacilityDetails());
+				CaseLogic.handleHospitalization(toDto(caze), existingCaseDto, doTransfer);
+				doSave(caze, true, existingCaseDto, true);
+			}
 		}
 	}
 
@@ -1488,16 +1499,16 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 	}
 
-	public CaseDataDto save(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, Boolean systemSave) {
+	public CaseDataDto save(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, boolean systemSave) {
 		return save(dto, handleChanges, checkChangeDate, true, systemSave);
 	}
 
-	public CaseDataDto save(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, boolean internal, Boolean systemSave)
+	public CaseDataDto save(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, boolean internal, boolean systemSave)
 		throws ValidationRuntimeException {
 
 		Case existingCase = service.getByUuid(dto.getUuid());
 
-		if (!systemSave && internal && existingCase != null && !service.isCaseEditAllowed(existingCase)) {
+		if (!systemSave && internal && existingCase != null && !service.getEditPermissionType(existingCase).equals(EditPermissionType.ALLOWED)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorCaseNotEditable));
 		}
 
@@ -3462,6 +3473,18 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return sampleService.exists((cb, root, cq) -> cb.and(casePredicate, testPositivityPredicate));
 	}
 
+	public Page<CaseFollowUpDto> getCaseFollowUpIndexPage(
+		CaseFollowUpCriteria criteria,
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties) {
+		List<CaseFollowUpDto> caseFollowUpIndexList =
+			getCaseFollowUpList(criteria, criteria.getReferenceDate(), criteria.getInterval(), offset, size, sortProperties);
+		long totalElementCount = count(criteria);
+		return new Page<>(caseFollowUpIndexList, offset, size, totalElementCount);
+
+	}
+
 	@Override
 	public List<CaseFollowUpDto> getCaseFollowUpList(
 		CaseCriteria caseCriteria,
@@ -3591,10 +3614,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			featureConfigurationFacade.isPropertyValueTrue(FeatureType.CASE_FOLLOWUP, FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE));
 	}
 
-	public boolean isCaseEditAllowed(String caseUuid) {
+	public EditPermissionType isCaseEditAllowed(String caseUuid) {
 		Case caze = service.getByUuid(caseUuid);
 
-		return service.isCaseEditAllowed(caze);
+		return service.getEditPermissionType(caze);
 	}
 
 	@Override

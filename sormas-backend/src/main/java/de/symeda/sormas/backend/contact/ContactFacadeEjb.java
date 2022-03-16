@@ -62,6 +62,7 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.EditPermissionType;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -73,6 +74,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CoreAndPersonDto;
 import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.contact.ContactBulkEditData;
 import de.symeda.sormas.api.contact.ContactAndPersonDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -340,7 +342,7 @@ public class ContactFacadeEjb
 	public ContactDto save(ContactDto dto, boolean handleChanges, boolean handleCaseChanges, boolean checkChangeDate, boolean internal) {
 		final Contact existingContact = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 
-		if (internal && existingContact != null && !service.isContactEditAllowed(existingContact)) {
+		if (internal && existingContact != null && !service.isContactEditAllowed(existingContact).equals(EditPermissionType.ALLOWED)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorContactNotEditable));
 		}
 
@@ -1837,7 +1839,7 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	public boolean isContactEditAllowed(String contactUuid) {
+	public EditPermissionType isContactEditAllowed(String contactUuid) {
 		Contact contact = service.getByUuid(contactUuid);
 
 		return service.isContactEditAllowed(contact);
@@ -2087,6 +2089,35 @@ public class ContactFacadeEjb
 	@Override
 	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		service.updateExternalData(externalData);
+	}
+
+	@Override
+	public int saveBulkContacts(
+		List<String> contactUuidlist,
+		ContactBulkEditData updatedContactBulkEditData,
+		boolean classificationChange,
+		boolean contactOfficerChange)
+		throws ValidationRuntimeException {
+
+		int changedContacts = 0;
+		for (String contactUuid : contactUuidlist) {
+			Contact contact = service.getByUuid(contactUuid);
+
+			if (service.isContactEditAllowed(contact).equals(EditPermissionType.ALLOWED)) {
+				ContactDto existingContactDto = toDto(contact);
+				if (classificationChange) {
+					existingContactDto.setContactClassification(updatedContactBulkEditData.getContactClassification());
+				}
+				// Setting the contact officer is only allowed if all selected contacts are in the same district
+				if (contactOfficerChange) {
+					existingContactDto.setContactOfficer(updatedContactBulkEditData.getContactOfficer());
+				}
+
+				save(existingContactDto);
+				changedContacts++;
+			}
+		}
+		return changedContacts;
 	}
 
 	@Override
