@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
+import java.nio.channels.spi.AbstractSelectableChannel;
+import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -43,7 +45,10 @@ import com.vaadin.v7.ui.Field;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.InfrastructureDataReferenceDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -578,8 +583,19 @@ public final class FieldHelper {
 		if (items != null) {
 			select.addItems(items);
 		}
+		if (value instanceof InfrastructureDataReferenceDto){
+			updateInactiveInfrastructureItem(select, (InfrastructureDataReferenceDto) value);
+		}
 		select.setValue(value);
 		select.setReadOnly(readOnly);
+	}
+
+	public static void updateInactiveInfrastructureItem(AbstractSelect infrastructureField, InfrastructureDataReferenceDto value){
+		if (value != null && !infrastructureField.containsId(value)) {
+			InfrastructureDataReferenceDto inactiveValue = value.clone();
+			inactiveValue.setCaption(value.getCaption() + " (" + I18nProperties.getString(Strings.inactive) + ")");
+			infrastructureField.addItem(inactiveValue);
+		}
 	}
 
 	public static void updateItems(

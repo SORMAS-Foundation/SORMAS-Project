@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.ConfigFacade;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -1248,9 +1249,11 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			}
 		}
 
-		Label paperFormDatesLabel = new Label(I18nProperties.getString(Strings.headingPaperFormDates));
-		paperFormDatesLabel.addStyleName(H3);
-		getContent().addComponent(paperFormDatesLabel, PAPER_FORM_DATES_LOC);
+		if (shouldShowPaperFormDates()) {
+			Label paperFormDatesLabel = new Label(I18nProperties.getString(Strings.headingPaperFormDates));
+			paperFormDatesLabel.addStyleName(H3);
+			getContent().addComponent(paperFormDatesLabel, PAPER_FORM_DATES_LOC);
+		}
 
 		// Automatic case classification rules button - invisible for other diseases
 		DiseaseClassificationCriteriaDto diseaseClassificationCriteria = FacadeProvider.getCaseClassificationFacade().getByDisease(disease);
@@ -1774,6 +1777,12 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 					&& !CaseLogic.isEpidNumberPrefix(fieldValue)
 					&& !CaseLogic.isCompleteEpidNumber(fieldValue));
 		}
+	}
+
+	private boolean shouldShowPaperFormDates() {
+		return FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_FRANCE)
+			&& FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)
+			&& FacadeProvider.getConfigFacade().isConfiguredCountry(CountryHelper.COUNTRY_CODE_SWITZERLAND);
 	}
 
 	private static class DiseaseChangeListener implements ValueChangeListener {

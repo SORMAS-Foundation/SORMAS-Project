@@ -1,5 +1,7 @@
 package de.symeda.sormas.ui.contact.components.linelisting.sharedinfo;
 
+import java.util.function.Consumer;
+
 import com.vaadin.data.Binder;
 import com.vaadin.data.BinderValidationStatus;
 import com.vaadin.ui.ComboBox;
@@ -24,6 +26,8 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
 public class SharedInfoField extends CustomField<SharedInfoFieldDto> {
+
+	private static final long serialVersionUID = 1869000092813141681L;
 
 	private final Binder<SharedInfoFieldDto> binder = new Binder<>(SharedInfoFieldDto.class);
 
@@ -142,5 +146,9 @@ public class SharedInfoField extends CustomField<SharedInfoFieldDto> {
 
 	private void updateDistricts(RegionReferenceDto regionDto) {
 		FieldHelper.updateItems(district, regionDto != null ? FacadeProvider.getDistrictFacade().getAllActiveByRegion(regionDto.getUuid()) : null);
+	}
+
+	public void addDiseaseChangeHandler(Consumer<Disease> diseaseChangeHandler) {
+		disease.addValueChangeListener(e -> diseaseChangeHandler.accept(disease.getValue()));
 	}
 }
