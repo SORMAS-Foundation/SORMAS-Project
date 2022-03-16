@@ -5,9 +5,12 @@ import de.symeda.sormas.backend.auditlog.AuditContextProducer;
 import de.symeda.sormas.backend.auditlog.AuditLogServiceBean;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.i18n.I18nFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.continent.ContinentFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEjb;
 import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.User;
 
+import java.lang.reflect.Method;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
@@ -35,6 +38,19 @@ public class AuditLoggerInterceptor {
 	private final static Set<Class<?>> ignoreAuditClasses = new HashSet<>(
 		Arrays.asList(ConfigFacadeEjb.class, CurrentUserService.class, AuditContextProducer.class, AuditLogServiceBean.class, I18nFacadeEjb.class));
 
+	private static Set<Method> ignoreAuditMethods;
+
+	static {
+		try {
+			ignoreAuditMethods = new HashSet<>(
+				Arrays.asList(
+					ContinentFacadeEjb.class.getMethod("getByDefaultName", String.class, boolean.class),
+					SubcontinentFacadeEjb.class.getMethod("getByDefaultName", String.class, boolean.class)));
+		} catch (NoSuchMethodException e) {
+			throw new RuntimeException(e);
+		}
+	}
+
 	@AroundInvoke
 	public Object logAudit(InvocationContext context) throws Exception {
 		Object target = context.getTarget();
@@ -46,6 +62,12 @@ public class AuditLoggerInterceptor {
 
 		if (ignoreAuditClasses.contains(target.getClass())) {
 			// ignore certain classes for audit altogether
+			return context.proceed();
+		}
+
+		Method calledMethod = context.getMethod();
+
+		if (ignoreAuditMethods.contains(calledMethod)) {
 			return context.proceed();
 		}
 
@@ -72,7 +94,7 @@ public class AuditLoggerInterceptor {
 		String returnValue = printObject(result);
 
 		AuditLogger.getInstance()
-			.logBackendCall(sessionContext.getCallerPrincipal().getName(), agentUuid, context.getMethod().toString(), parameters, returnValue, start);
+			.logBackendCall(sessionContext.getCallerPrincipal().getName(), agentUuid, calledMethod.toString(), parameters, returnValue, start);
 
 		return result;
 	}
