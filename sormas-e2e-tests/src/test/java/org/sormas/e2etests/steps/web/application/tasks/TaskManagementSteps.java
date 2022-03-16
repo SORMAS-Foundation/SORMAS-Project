@@ -104,7 +104,7 @@ public class TaskManagementSteps implements En {
     When(
         "^I am checking if the associated linked event appears in task management and click on it$",
         () -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(70);
           String eventUuid = apiState.getCreatedEvent().getUuid();
           webDriverHelpers.fillAndSubmitInWebElement(GENERAL_SEARCH_INPUT, eventUuid);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(15);
@@ -327,7 +327,8 @@ public class TaskManagementSteps implements En {
     if (date.isEmpty()) {
       throw new Exception(String.format("Provided date to be parsed: %s, is empty!", date));
     }
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy h:m a");
+    DateTimeFormatter formatter =
+        DateTimeFormatter.ofPattern("M/d/yyyy h:m a").localizedBy(Locale.ENGLISH);
     try {
       log.info("Parsing date: [{}]", date);
       return LocalDateTime.parse(date.trim(), formatter);

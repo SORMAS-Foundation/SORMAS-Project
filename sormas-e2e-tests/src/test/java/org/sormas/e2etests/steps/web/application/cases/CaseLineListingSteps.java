@@ -18,6 +18,7 @@ public class CaseLineListingSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   protected static Case caze;
+  public static Case caseLineListing;
 
   @Inject
   public CaseLineListingSteps(
@@ -47,21 +48,21 @@ public class CaseLineListingSteps implements En {
     When(
         "^I create a new case in line listing feature popup$",
         () -> {
-          caze = caseService.buildCaseForLineListingFeature();
-          selectDisease(caze.getDisease());
-          selectRegion(caze.getRegion());
-          selectDistrict(caze.getDistrict());
-          selectFacilityCategory(caze.getFacilityCategory());
-          selectFacilityType(caze.getFacilityType());
-          fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
-          selectCommunity(caze.getCommunity());
+          caseLineListing = caseService.buildCaseForLineListingFeature();
+          selectDisease(caseLineListing.getDisease());
+          selectRegion(caseLineListing.getRegion());
+          selectDistrict(caseLineListing.getDistrict());
+          selectFacilityCategory(caseLineListing.getFacilityCategory());
+          selectFacilityType(caseLineListing.getFacilityType());
+          fillDateOfReport(caseLineListing.getDateOfReport(), Locale.ENGLISH);
+          selectCommunity(caseLineListing.getCommunity());
           selectFacility("Other facility");
-          fillFacilityName(caze.getPlaceDescription());
-          fillFirstName(caze.getFirstName());
-          fillLastName(caze.getLastName());
-          fillDateOfBirth(caze.getDateOfBirth(), Locale.ENGLISH);
-          selectSex(caze.getSex());
-          fillDateOfSymptom(caze.getDateOfSymptomOnset(), Locale.ENGLISH);
+          fillFacilityName(caseLineListing.getPlaceDescription());
+          fillFirstName(caseLineListing.getFirstName());
+          fillLastName(caseLineListing.getLastName());
+          fillDateOfBirth(caseLineListing.getDateOfBirth(), Locale.ENGLISH);
+          selectSex(caseLineListing.getSex());
+          fillDateOfSymptom(caseLineListing.getDateOfSymptomOnset(), Locale.ENGLISH);
         });
 
     When(
@@ -78,23 +79,34 @@ public class CaseLineListingSteps implements En {
     When(
         "I check that case created from Line Listing is saved and displayed in results grid",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT);
+          String caseName = caseLineListing.getFirstName() + " " + caseLineListing.getLastName();
+          webDriverHelpers.fillInWebElement(
+              PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT, caseName);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+          webDriverHelpers.waitUntilNumberOfElementsIsReduceToGiven(CASE_DETAILED_TABLE_ROWS, 2);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(FIRST_CASE_ID_BUTTON);
 
           softly.assertEquals(
-              getCaseDiseaseFromGridResults(), caze.getDisease(), "Disease value doesn't match");
+              getCaseDiseaseFromGridResults(),
+              caseLineListing.getDisease(),
+              "Disease value doesn't match");
           softly.assertEquals(
               getCaseFirstNameFromGridResults(),
-              caze.getFirstName(),
+              caseLineListing.getFirstName(),
               "First name value doesn't match");
           softly.assertEquals(
               getCaseLastNameFromGridResults(),
-              caze.getLastName(),
+              caseLineListing.getLastName(),
               "Last name value doesn't match");
           softly.assertEquals(
-              getCaseDistrictFromGridResults(), caze.getDistrict(), "District value doesn't match");
+              getCaseDistrictFromGridResults(),
+              caseLineListing.getDistrict(),
+              "District value doesn't match");
           softly.assertEquals(
               getCaseHealthFacilityFromGridResults(),
-              "Other facility - " + caze.getPlaceDescription(),
+              "Other facility - " + caseLineListing.getPlaceDescription(),
               "Health facility value doesn't match");
           softly.assertAll();
         });

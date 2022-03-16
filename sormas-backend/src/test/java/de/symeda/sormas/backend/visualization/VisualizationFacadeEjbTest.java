@@ -19,7 +19,6 @@ import java.util.Map;
 import java.util.Optional;
 
 import org.hamcrest.Matchers;
-import org.junit.Ignore;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.TemporaryFolder;
@@ -32,10 +31,7 @@ public class VisualizationFacadeEjbTest { // extends AbstractBeanTest {
 	public TemporaryFolder temp = new TemporaryFolder();
 
 	@Test
-	@Ignore
 	public void testStaticBuildTransmissionChainJson() {
-
-		// FIXME depends on local database
 
 		List<Long> contactIds = Arrays.asList(30481L, 30478L);
 

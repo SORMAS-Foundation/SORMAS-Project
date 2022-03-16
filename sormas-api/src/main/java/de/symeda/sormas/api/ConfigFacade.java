@@ -143,4 +143,6 @@ public interface ConfigFacade {
 	long getImportFileSizeLimitMb();
 
 	String getAuditLoggerConfig();
+
+	String getAuditSourceSite();
 }

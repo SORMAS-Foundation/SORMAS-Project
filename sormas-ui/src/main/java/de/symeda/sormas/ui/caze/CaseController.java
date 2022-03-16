@@ -679,7 +679,9 @@ public class CaseController {
 					// automatically change the contact classification to "confirmed"
 					updatedContact.setContactClassification(ContactClassification.CONFIRMED);
 					// set resulting case on contact and save it
-					updatedContact.setResultingCase(dto.toReference());
+					if (updatedContact.getResultingCase() == null && updatedContact.getDisease() == dto.getDisease()) {
+						updatedContact.setResultingCase(dto.toReference());
+					}
 					FacadeProvider.getContactFacade().save(updatedContact);
 					FacadeProvider.getCaseFacade().setSampleAssociations(updatedContact.toReference(), dto.toReference());
 					Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
@@ -707,7 +709,9 @@ public class CaseController {
 								navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
 							}
 						} else {
-							convertedEventParticipant.setResultingCase(FacadeProvider.getCaseFacade().getReferenceByUuid(uuid));
+							if (unrelatedDisease == null && convertedEventParticipant.getResultingCase() == null) {
+								convertedEventParticipant.setResultingCase(FacadeProvider.getCaseFacade().getReferenceByUuid(uuid));
+							}
 							FacadeProvider.getEventParticipantFacade().saveEventParticipant(convertedEventParticipant);
 							if (!createdFromLabMessage) {
 								navigateToView(CaseDataView.VIEW_NAME, uuid, null);
@@ -823,44 +827,6 @@ public class CaseController {
 			selectedCaseUuidConsumer.accept(null);
 		}
 	}
-
-//	public CommitDiscardWrapperComponent<? extends Component> getCaseCombinedEditComponent(final String caseUuid,
-//			final ViewMode viewMode) {
-//
-//		CaseDataDto caze = findCase(caseUuid);
-//		PersonDto person = FacadeProvider.getPersonFacade().getPersonByUuid(caze.getPerson().getUuid());
-//
-//		CaseDataForm caseEditForm = new CaseDataForm(person, caze.getDisease(), viewMode);
-//		caseEditForm.setValue(caze);
-//
-//		HospitalizationForm hospitalizationForm = new HospitalizationForm(caze, viewMode);
-//		hospitalizationForm.setValue(caze.getHospitalization());
-//
-//		SymptomsForm symptomsForm = new SymptomsForm(caze, caze.getDisease(), person, SymptomsContext.CASE, viewMode);
-//		symptomsForm.setValue(caze.getSymptoms());
-//
-//		EpiDataForm epiDataForm = new EpiDataForm(caze.getDisease(), viewMode);
-//		epiDataForm.setValue(caze.getEpiData());
-//
-//		CommitDiscardWrapperComponent<? extends Component> editView = AbstractEditForm
-//				.buildCommitDiscardWrapper(caseEditForm, hospitalizationForm, symptomsForm, epiDataForm);
-//
-//		editView.addCommitListener(new CommitListener() {
-//			@Override
-//			public void onCommit() {
-//				CaseDataDto cazeDto = caseEditForm.getValue();
-//				cazeDto.setHospitalization(hospitalizationForm.getValue());
-//				cazeDto.setSymptoms(symptomsForm.getValue());
-//				cazeDto.setEpiData(epiDataForm.getValue());
-//
-//				saveCase(cazeDto);
-//			}
-//		});
-//
-//		appendSpecialCommands(caze, editView);
-//
-//		return editView;
-//	}
 
 	public CommitDiscardWrapperComponent<CaseDataForm> getCaseDataEditComponent(final String caseUuid, final ViewMode viewMode) {
 		CaseDataDto caze = findCase(caseUuid);
