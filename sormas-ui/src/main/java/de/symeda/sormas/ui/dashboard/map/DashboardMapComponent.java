@@ -516,7 +516,7 @@ public class DashboardMapComponent extends VerticalLayout {
 					refreshMap(true);
 				});
 				layersLayout.addComponent(showEventsCheckBox);
-				if (nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasNationalJurisdictionLevel()) {
+				if (nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasNationJurisdictionLevel()) {
 					OptionGroup regionMapVisualizationSelect = new OptionGroup();
 					regionMapVisualizationSelect.setWidth(100, Unit.PERCENTAGE);
 					regionMapVisualizationSelect.addItems((Object[]) CaseMeasure.values());

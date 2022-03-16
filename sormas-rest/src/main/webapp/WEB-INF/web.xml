@@ -1,11 +1,16 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<web-app id="sormas-rest-app" 
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
-	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
-	version="3.1">
-	
-	<display-name>SORMAS Rest Interface</display-name>
+<web-app id="sormas-ui-app"
+ 	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+ 	xmlns="http://xmlns.jcp.org/xml/ns/javaee"
+ 	xsi:schemaLocation="http://xmlns.jcp.org/xml/ns/javaee http://xmlns.jcp.org/xml/ns/javaee/web-app_3_1.xsd"
+ 	version="3.1">
+
+	<display-name>SORMAS Web Interface</display-name>
+	<context-param>
+		<description>Vaadin Production Mode</description>
+		<param-name>productionMode</param-name>
+		<param-value>true</param-value>
+	</context-param>
 
 	<security-role>
 		<role-name>CASE_CREATE</role-name>
@@ -392,6 +397,14 @@
 	</security-role>
 
 	<security-role>
+		<role-name>PERFORM_BULK_OPERATIONS_LAB_MESSAGES</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>PERFORM_BULK_OPERATIONS_PSEUDONYM</role-name>
+	</security-role>
+
+	<security-role>
 		<role-name>INFRASTRUCTURE_CREATE</role-name>
 	</security-role>
 
@@ -584,10 +597,6 @@
 	</security-role>
 
 	<security-role>
-		<role-name>PERFORM_BULK_OPERATIONS_LAB_MESSAGES</role-name>
-	</security-role>
-
-	<security-role>
 		<role-name>TRAVEL_ENTRY_MANAGEMENT_ACCESS</role-name>
 	</security-role>
 
@@ -637,6 +646,22 @@
 
 	<security-role>
 		<role-name>EXTERNAL_VISITS</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>CASE_RESPONSIBLE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>CONTACT_RESPONSIBLE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EVENT_RESPONSIBLE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>DEV_MODE</role-name>
 	</security-role>
 
 </web-app>

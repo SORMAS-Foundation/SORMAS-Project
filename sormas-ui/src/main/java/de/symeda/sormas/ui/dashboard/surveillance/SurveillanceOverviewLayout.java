@@ -72,7 +72,7 @@ public class SurveillanceOverviewLayout extends CustomLayout {
 		diseaseOverviewComponent = new DiseaseOverviewComponent();
 		addComponent(diseaseOverviewComponent, BURDEN_LOC);
 
-		if (UserProvider.getCurrent().hasRegionalJurisdictionLevel())
+		if (UserProvider.getCurrent().hasRegionJurisdictionLevel())
 			diseaseOverviewComponent.getShowTableViewButton().click();
 	}
 

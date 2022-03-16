@@ -242,8 +242,8 @@ public class PersonsView extends AbstractView {
 			}
 
 			Button associationButton = ButtonHelper.createButton(association.toString(), e -> {
-					if ( (nonNull(UserProvider.getCurrent()) && !UserProvider.getCurrent().hasNationalJurisdictionLevel())
-							&& association == PersonAssociation.ALL) {
+				if ((nonNull(UserProvider.getCurrent()) && !UserProvider.getCurrent().hasNationJurisdictionLevel())
+					&& association == PersonAssociation.ALL) {
 					Label contentLabel = new Label(I18nProperties.getString(Strings.confirmationSeeAllPersons));
 					VaadinUiUtil.showConfirmationPopup(
 						I18nProperties.getString(Strings.headingSeeAllPersons),

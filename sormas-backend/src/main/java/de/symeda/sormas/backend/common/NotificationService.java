@@ -17,6 +17,7 @@ package de.symeda.sormas.backend.common;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -30,6 +31,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.user.NotificationProtocol;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -77,8 +79,8 @@ public class NotificationService {
 			allowedNotificationTypes,
 			subject,
 			new Object[] {},
-			() -> buildUserMessages(regions, additionalUsers, message, UserRole.getWithEmailNotificationTypes(allowedNotificationTypes)),
-			() -> buildUserMessages(regions, additionalUsers, message, UserRole.getWithSmsNotificationTypes(allowedNotificationTypes)));
+			() -> buildUserMessages(regions, additionalUsers, message, NotificationProtocol.EMAIL, allowedNotificationTypes),
+			() -> buildUserMessages(regions, additionalUsers, message, NotificationProtocol.SMS, allowedNotificationTypes));
 	}
 
 	public void sendNotifications(NotificationType notificationType, MessageSubject subject, Supplier<Map<User, String>> userMessagesSupplier)
@@ -117,26 +119,26 @@ public class NotificationService {
 
 		if (!allowedNotificationTypes.isEmpty()) {
 			messagingService.sendEmail(
-				filterUserMessagesByRoles(emailUserMessagesSupplier.get(), UserRole.getWithEmailNotificationTypes(allowedNotificationTypes)),
+				filterUserMessagesByRoles(emailUserMessagesSupplier.get(), UserRole.getWithNotificationTypes(NotificationProtocol.EMAIL, allowedNotificationTypes)),
 				subject,
 				subjectParams);
 			messagingService.sendSms(
-				filterUserMessagesByRoles(smsUserMessagesSupplier.get(), UserRole.getWithSmsNotificationTypes(allowedNotificationTypes)),
+				filterUserMessagesByRoles(smsUserMessagesSupplier.get(), UserRole.getWithNotificationTypes(NotificationProtocol.SMS, allowedNotificationTypes)),
 				subject,
 				subjectParams);
 		}
 	}
 
-	private Map<User, String> buildUserMessages(List<Region> regions, List<User> additionalUsers, String message, UserRole[] userRoles) {
+	private Map<User, String> buildUserMessages(List<Region> regions, List<User> additionalUsers, String message, NotificationProtocol notificationProtocol, Collection<NotificationType> notificationTypes) {
 		List<User> recipients = new ArrayList<>();
-		UserRight[] userRights = Arrays.stream(userRoles).flatMap(e -> e.getDefaultUserRights().stream()).toArray(UserRight[]::new);
 		if (regions != null) {
-			recipients.addAll(userService.getAllByRegionsAndUserRights(regions, userRights));
+			recipients.addAll(userService.getAllByRegionsAndNotificationTypes(regions, notificationProtocol, notificationTypes));
 		}
 
 		if (additionalUsers != null) {
+			UserRole[] userRoles = UserRole.getWithNotificationTypes(notificationProtocol, notificationTypes);
 			recipients
-				.addAll(additionalUsers.stream().filter(u -> !recipients.contains(u) && u.hasAnyUserRight(userRights)).collect(Collectors.toList()));
+				.addAll(additionalUsers.stream().filter(u -> !recipients.contains(u) && u.hasAnyUserRole(userRoles)).collect(Collectors.toList()));
 		}
 
 		return recipients.stream().collect(Collectors.toMap(Function.identity(), (u) -> message));

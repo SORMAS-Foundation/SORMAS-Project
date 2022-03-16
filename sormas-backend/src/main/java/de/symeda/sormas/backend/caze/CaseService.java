@@ -1015,7 +1015,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Predicate filterResponsible = null;
 		Predicate filter = null;
 
-		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (jurisdictionLevel != JurisdictionLevel.NATION) {
 			// whoever created the case or is assigned to it is allowed to access it
 			if (userFilterCriteria == null || (userFilterCriteria.getIncludeCasesFromOtherJurisdictions())) {
@@ -1722,7 +1722,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	public void updateCompleteness(Case caze) {
-
 		float completeness = calculateCompleteness(caze);
 
 		/*

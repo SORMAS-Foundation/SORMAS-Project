@@ -111,10 +111,6 @@ public class TestDataCreator {
 		user.setLastName(lastName);
 		user.setUserName(firstName + lastName);
 		user.setUserRoles(new HashSet<UserRole>(Arrays.asList(roles)));
-		if (user.getUserRoles() != null) {
-			user.setUserRights(
-				new HashSet<>(user.getUserRoles().stream().flatMap(e -> e.getDefaultUserRights().stream()).collect(Collectors.toSet())));
-		}
 		user.setRegion(FacadeProvider.getRegionFacade().getReferenceByUuid(regionUuid));
 		user.setDistrict(FacadeProvider.getDistrictFacade().getReferenceByUuid(districtUuid));
 		user.setHealthFacility(FacadeProvider.getFacilityFacade().getReferenceByUuid(facilityUuid));

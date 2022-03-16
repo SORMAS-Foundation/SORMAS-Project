@@ -167,7 +167,7 @@ public class EventDataView extends AbstractEventView {
 			eventGroupsList.addSideComponentCreateEventListener(e -> showNavigationConfirmPopupIfDirty(() -> {
 				EventDto eventByUuid = FacadeProvider.getEventFacade().getEventByUuid(eventReference.getUuid(), false);
 				UserProvider user = UserProvider.getCurrent();
-				if (!user.hasNationalJurisdictionLevel() && !user.hasRegion(eventByUuid.getEventLocation().getRegion())) {
+				if (!user.hasNationJurisdictionLevel() && !user.hasRegion(eventByUuid.getEventLocation().getRegion())) {
 					new Notification(
 						I18nProperties.getString(Strings.headingEventGroupLinkEventIssue),
 						I18nProperties.getString(Strings.errorEventFromAnotherJurisdiction),

@@ -2,11 +2,19 @@ package de.symeda.sormas.backend.user;
 
 import static de.symeda.sormas.api.user.UserRole.ADMIN;
 import static de.symeda.sormas.api.user.UserRole.CASE_OFFICER;
+import static de.symeda.sormas.api.user.UserRole.CASE_SUPERVISOR;
+import static de.symeda.sormas.api.user.UserRole.COMMUNITY_INFORMANT;
+import static de.symeda.sormas.api.user.UserRole.COMMUNITY_OFFICER;
 import static de.symeda.sormas.api.user.UserRole.CONTACT_OFFICER;
 import static de.symeda.sormas.api.user.UserRole.CONTACT_SUPERVISOR;
 import static de.symeda.sormas.api.user.UserRole.DISTRICT_OBSERVER;
+import static de.symeda.sormas.api.user.UserRole.EVENT_OFFICER;
+import static de.symeda.sormas.api.user.UserRole.HOSPITAL_INFORMANT;
+import static de.symeda.sormas.api.user.UserRole.NATIONAL_OBSERVER;
 import static de.symeda.sormas.api.user.UserRole.NATIONAL_USER;
 import static de.symeda.sormas.api.user.UserRole.POE_INFORMANT;
+import static de.symeda.sormas.api.user.UserRole.POE_SUPERVISOR;
+import static de.symeda.sormas.api.user.UserRole.STATE_OBSERVER;
 import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_OFFICER;
 import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_SUPERVISOR;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -26,6 +34,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -34,6 +43,9 @@ import java.util.stream.Collectors;
 
 import javax.validation.ValidationException;
 
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;

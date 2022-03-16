@@ -31,6 +31,7 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import org.hibernate.annotations.Immutable;
 
 import de.symeda.sormas.api.user.UserRight;
@@ -48,11 +49,17 @@ public class UserReference extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 9025694116880610101L;
 
+	public static final String ACTIVE = "active";
+	public static final String FIRST_NAME = "firstName";
+	public static final String LAST_NAME = "lastName";
+	public static final String USER_ROLES = "userRoles";
+	public static final String JURISDICTION_LEVEL = "jurisdictionLevel";
+
 	private boolean active;
 	private String firstName;
 	private String lastName;
 	private Set<UserRole> userRoles;
-	private Set<UserRight> userRights;
+	private JurisdictionLevel jurisdictionLevel;
 
 	public boolean isActive() {
 		return active;
@@ -95,19 +102,13 @@ public class UserReference extends AbstractDomainObject {
 	}
 
 	@Enumerated(EnumType.STRING)
-	@ElementCollection(fetch = FetchType.EAGER)
-	@CollectionTable(name = User.TABLE_NAME_USERRIGHTS,
-		joinColumns = @JoinColumn(name = "user_id", referencedColumnName = User.ID, nullable = false),
-		uniqueConstraints = @UniqueConstraint(columnNames = {
-			"user_id",
-			"userright" }))
-	@Column(name = "userright", nullable = false)
-	public Set<UserRight> getUserRights() {
-		return userRights;
+	@Column(nullable = false)
+	public JurisdictionLevel getJurisdictionLevel() {
+		return jurisdictionLevel;
 	}
 
-	public void setUserRights(Set<UserRight> userRights) {
-		this.userRights = userRights;
+	public void setJurisdictionLevel(JurisdictionLevel jurisdictionLevel) {
+		this.jurisdictionLevel = jurisdictionLevel;
 	}
 
 	@Transient

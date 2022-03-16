@@ -363,7 +363,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			} else {
 				clearAndDisableFields(ContactCriteria.DISTRICT, ContactCriteria.COMMUNITY);
 			}
-			populateEventResponsiblesForRegion(region);
+			populateContactResponsiblesForRegion(region);
 			break;
 		}
 		case ContactCriteria.DISTRICT: {
@@ -373,7 +373,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			} else {
 				clearAndDisableFields(ContactCriteria.COMMUNITY);
 			}
-			populateEventResponsiblesForDistrict(district);
+			populateContactResponsiblesForDistrict(district);
 			break;
 		}
 		case ContactIndexDto.DISEASE: {
@@ -564,25 +564,25 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		this.getField(ContactCriteria.EVENT_LIKE).setEnabled(enabled);
 	}
 
-	private void populateEventResponsiblesForRegion(RegionReferenceDto regionReferenceDto) {
+	private void populateContactResponsiblesForRegion(RegionReferenceDto regionReferenceDto) {
 		List<UserReferenceDto> items =
 			fetchContactResponsiblesByRegion(regionReferenceDto != null ? regionReferenceDto : currentUserDto().getRegion());
-		populateEventResponsibles(items);
+		populateContactResponsibles(items);
 	}
 
-	private void populateEventResponsiblesForDistrict(DistrictReferenceDto districtReferenceDto) {
+	private void populateContactResponsiblesForDistrict(DistrictReferenceDto districtReferenceDto) {
 		if (districtReferenceDto != null) {
 			List<UserReferenceDto> items = FacadeProvider.getUserFacade().getUserRefsByDistrict(districtReferenceDto, UserRight.CONTACT_RESPONSIBLE);
-			populateEventResponsibles(items);
+			populateContactResponsibles(items);
 		} else {
 			final ComboBox regionField = getField(ContactCriteria.REGION);
 			if (regionField != null) {
-				populateEventResponsiblesForRegion((RegionReferenceDto) regionField.getValue());
+				populateContactResponsiblesForRegion((RegionReferenceDto) regionField.getValue());
 			}
 		}
 	}
 
-	private void populateEventResponsibles(List<UserReferenceDto> items) {
+	private void populateContactResponsibles(List<UserReferenceDto> items) {
 		final ComboBox officerField = getField(ContactCriteria.CONTACT_OFFICER);
 		officerField.removeAllItems();
 		officerField.addItems(items);

@@ -154,7 +154,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	@Override
 	public List<WeeklyReportRegionSummaryDto> getSummariesPerRegion(EpiWeek epiWeek) {
 
-		if (userService.getCurrentUser().getCalculatedJurisdictionLevel() != JurisdictionLevel.NATION) {
+		if (userService.getCurrentUser().getJurisdictionLevel() != JurisdictionLevel.NATION) {
 			return new ArrayList<>();
 		}
 
@@ -175,10 +175,9 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 			}
 
 			summaryDto.setOfficers(officers.intValue());
-			Long informants = userService.countByInformants(
-				region.getDistricts().stream().flatMap(e -> e.getCommunities().stream()).collect(Collectors.toList()),
-				facilityService.getAll(),
-				poeService.getAll());
+			Long informants = userService.countByCommunities(region.getDistricts(), UserRight.WEEKLYREPORT_CREATE);
+			informants += userService.countByHealthFacilities(region.getDistricts(), UserRight.WEEKLYREPORT_CREATE);
+			informants += userService.countByPointOfEntries(region.getDistricts(), UserRight.WEEKLYREPORT_CREATE);
 			summaryDto.setInformants(informants.intValue());
 
 			regionReportCriteria.reportingUserRegion(summaryDto.getRegion());

@@ -314,6 +314,7 @@ import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserReference;
+import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -422,6 +423,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	private PopulationDataFacadeEjbLocal populationDataFacade;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	@EJB
+	private UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 	@EJB
 	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 	@EJB
@@ -2034,12 +2037,12 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		if (featureConfigurationFacade.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.AUTOMATIC_RESPONSIBILITY_ASSIGNMENT)) {
 			District reportingUserDistrict = caze.getReportingUser().getDistrict();
 
-			if (caze.getReportingUser().getUserRights().contains(UserRight.CASE_RESPONSIBLE)
+			if (userRoleConfigFacade.hasUserRight(caze.getReportingUser().getUserRoles(), UserRight.CASE_RESPONSIBLE)
 				&& (reportingUserDistrict.equals(caze.getResponsibleDistrict()) || reportingUserDistrict.equals(caze.getDistrict()))) {
 				caze.setSurveillanceOfficer(caze.getReportingUser());
 			} else {
 				List<User> hospitalUsers = caze.getHealthFacility() != null && FacilityType.HOSPITAL.equals(caze.getHealthFacility().getType())
-					? userService.getUsersOfHospital(caze.getHealthFacility())
+					? userService.getFacilityUsersOfHospital(caze.getHealthFacility())
 					: new ArrayList<>();
 				Random rand = new Random();
 				if (!hospitalUsers.isEmpty()) {
@@ -2948,7 +2951,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 
 		if (assignee == null) {
-			if (caze.getReportingUser() != null && (caze.getReportingUser().getUserRights().contains(UserRight.TASK_ASSIGN))) {
+			if (caze.getReportingUser() != null && (userRoleConfigFacade.hasUserRight(caze.getReportingUser().getUserRoles(), UserRight.TASK_ASSIGN))) {
 				// 4) If the case was created by a surveillance supervisor, assign them
 				assignee = caze.getReportingUser();
 			} else {

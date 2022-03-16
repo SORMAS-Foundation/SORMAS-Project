@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -47,7 +48,26 @@ public interface UserRoleConfigFacade {
 	 */
 	Set<UserRight> getEffectiveUserRights(UserRole... userRoles);
 
+	/**
+	 * Will fallback to default user rights for each role that has no configuration defined
+	 */
+	Set<UserRight> getEffectiveUserRights(Collection<UserRole> userRoles);
+
+	/**
+	 * Will fallback to default user rights for each role that has no configuration defined
+	 */
+	Set<UserRole> getEffectiveUserRoles(UserRight... userRights);
+
+	boolean hasUserRight(Collection<UserRole> userRoles, UserRight userRight);
+
+	boolean hasAnyUserRight(Collection<UserRole> userRoles, Collection<UserRight> userRights);
+
+	/**
+	 * Will fallback to default user rights for each role that has no configuration defined
+	 */
+	Set<UserRole> getEffectiveUserRoles(Collection<UserRight> userRights);
+
 	Set<UserRole> getEnabledUserRoles();
 
-	Map<UserRole, Set<UserRight>> getAllAsMap();
+	Map<UserRole, Set<UserRight>> getUserRoleRights();
 }

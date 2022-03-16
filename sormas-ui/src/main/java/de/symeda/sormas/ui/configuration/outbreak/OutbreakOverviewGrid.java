@@ -82,7 +82,7 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 						throws ConversionException {
 
 						boolean styleAsButton =
-							(UserProvider.getCurrent().hasNoneJurisdictionLevel() || UserProvider.getCurrent().hasNationalJurisdictionLevel())
+							(UserProvider.getCurrent().hasNoneJurisdictionLevel() || UserProvider.getCurrent().hasNationJurisdictionLevel())
 								|| UserProvider.getCurrent().hasUserRight(UserRight.OUTBREAK_EDIT)
 									&& DataHelper.equal(UserProvider.getCurrent().getUser().getRegion(), value.getRegion());
 						boolean moreThanHalfOfDistricts = value.getAffectedDistricts().size() >= value.getTotalDistricts() / 2.0f;
@@ -221,7 +221,7 @@ public class OutbreakOverviewGrid extends Grid implements ItemClickListener {
 		// Open the outbreak configuration window for the clicked row when
 		// a) the user is allowed to configure all existing outbreaks or
 		// b) the user is allowed to configure outbreaks in his assigned region and has clicked the respective row
-		if (UserProvider.getCurrent().hasNoneJurisdictionLevel() || UserProvider.getCurrent().hasNationalJurisdictionLevel()) {
+		if (UserProvider.getCurrent().hasNoneJurisdictionLevel() || UserProvider.getCurrent().hasNationJurisdictionLevel()) {
 			ControllerProvider.getOutbreakController()
 				.openOutbreakConfigurationWindow(
 					(Disease) event.getPropertyId(),

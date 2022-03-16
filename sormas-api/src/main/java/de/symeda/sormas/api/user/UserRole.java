@@ -34,6 +34,8 @@ import de.symeda.sormas.api.utils.ValidationException;
 
 /**
  * These are also used as user groups in the server realm
+ * 
+ * @Deprected until this is moved to DefaultUserRole in #4461
  */
 @Deprecated
 public enum UserRole
@@ -431,19 +433,6 @@ public enum UserRole
 		return laboratoryJurisdictionPresent ? JurisdictionLevel.LABORATORY : JurisdictionLevel.NONE;
 	}
 
-	@Deprecated
-	public static boolean isSupervisor(Collection<UserRole> roles) {
-
-		for (UserRole role : roles) {
-			if (role.isSupervisor()) {
-				return true;
-			}
-		}
-		return false;
-	}
-
-	//TODO: #2804
-	@Deprecated
 	public static boolean hasAssociatedOfficer(Collection<UserRole> roles) {
 
 		for (UserRole role : roles) {
@@ -454,8 +443,6 @@ public enum UserRole
 		return false;
 	}
 
-	//TODO: #2804
-	@Deprecated
 	public static boolean hasOptionalHealthFacility(Collection<UserRole> roles) {
 
 		for (UserRole role : roles) {
@@ -466,8 +453,6 @@ public enum UserRole
 		return false;
 	}
 
-	@Deprecated
-	//TODO: #2804
 	public static boolean isPortHealthUser(Collection<UserRole> roles) {
 
 		for (UserRole role : roles) {
@@ -476,12 +461,6 @@ public enum UserRole
 			}
 		}
 		return false;
-	}
-
-	//TODO: #2804
-	@Deprecated
-	public static boolean isLabUser(Collection<UserRole> roles) {
-		return roles.contains(UserRole.LAB_USER) || roles.contains(UserRole.EXTERNAL_LAB_USER);
 	}
 
 	public static void validate(Collection<UserRole> roles) throws UserRoleValidationException {
@@ -545,24 +524,20 @@ public enum UserRole
 		return ret;
 	}
 
-	public static UserRole[] getWithEmailNotificationTypes(Set<NotificationType> notificationTypes) {
+	public static UserRole[] getWithNotificationTypes(NotificationProtocol notificationProtocol, Collection<NotificationType> notificationTypes) {
 		List<UserRole> ret = new ArrayList<>();
 
-		for (UserRole role : UserRole.values()) {
-			if (role.emailNotifications.stream().anyMatch(notificationTypes::contains)) {
-				ret.add(role);
+		if (notificationProtocol == NotificationProtocol.EMAIL) {
+			for (UserRole role : UserRole.values()) {
+				if (role.emailNotifications.stream().anyMatch(notificationTypes::contains)) {
+					ret.add(role);
+				}
 			}
-		}
-
-		return ret.toArray(new UserRole[] {});
-	}
-
-	public static UserRole[] getWithSmsNotificationTypes(Set<NotificationType> notificationTypes) {
-		List<UserRole> ret = new ArrayList<>();
-
-		for (UserRole role : UserRole.values()) {
-			if (role.emailNotifications.stream().anyMatch(notificationTypes::contains)) {
-				ret.add(role);
+		} else if (notificationProtocol == NotificationProtocol.SMS) {
+			for (UserRole role : UserRole.values()) {
+				if (role.smsNotifications.stream().anyMatch(notificationTypes::contains)) {
+					ret.add(role);
+				}
 			}
 		}
 

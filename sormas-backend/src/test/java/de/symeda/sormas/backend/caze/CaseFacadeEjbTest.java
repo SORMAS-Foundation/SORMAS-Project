@@ -1646,12 +1646,14 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	public void testCreateInvestigationTask() {
 		RDCF rdcf = creator.createRDCF();
 		UserReferenceDto user = creator.createUser(rdcf, "First", "User", UserRole.SURVEILLANCE_SUPERVISOR).toReference();
+		UserReferenceDto surveillanceOfficer = creator.createUser(rdcf, "Second", "User", UserRole.SURVEILLANCE_OFFICER).toReference();
+		UserReferenceDto informant = creator.createUser(rdcf, "Third", "User", UserRole.COMMUNITY_INFORMANT).toReference();
 		PersonReferenceDto person = creator.createPerson("Case", "Person").toReference();
 
-		CaseDataDto caze = creator.createCase(user, person, rdcf);
+		CaseDataDto caze = creator.createCase(informant, person, rdcf);
 
 		List<TaskDto> caseTasks = getTaskFacade().getAllPendingByCase(caze.toReference());
-		assertEquals(user, caseTasks.get(0).getAssigneeUser());
+		assertEquals(surveillanceOfficer, caseTasks.get(0).getAssigneeUser());
 	}
 
 	@Test

@@ -149,10 +149,8 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 
 		// National users can access all tasks in the system that are assigned in their jurisdiction
 		User currentUser = getCurrentUser();
-		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
-		if (currentUser == null
-			|| (jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
-			|| currentUser.hasAnyUserRight(UserRight.SORMAS_REST)) {
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		if (currentUser == null || (jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))) {
 			return assigneeFilter;
 		}
 

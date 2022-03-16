@@ -486,6 +486,16 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>PERFORM_BULK_OPERATIONS_LAB_MESSAGES</role-name>
+        <group-name>PERFORM_BULK_OPERATIONS_LAB_MESSAGES</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>PERFORM_BULK_OPERATIONS_PSEUDONYM</role-name>
+        <group-name>PERFORM_BULK_OPERATIONS_PSEUDONYM</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>INFRASTRUCTURE_CREATE</role-name>
         <group-name>INFRASTRUCTURE_CREATE</group-name>
     </security-role-mapping>
@@ -726,11 +736,6 @@
     </security-role-mapping>
 
     <security-role-mapping>
-        <role-name>PERFORM_BULK_OPERATIONS_LAB_MESSAGES</role-name>
-        <group-name>PERFORM_BULK_OPERATIONS_LAB_MESSAGES</group-name>
-    </security-role-mapping>
-
-    <security-role-mapping>
         <role-name>TRAVEL_ENTRY_MANAGEMENT_ACCESS</role-name>
         <group-name>TRAVEL_ENTRY_MANAGEMENT_ACCESS</group-name>
     </security-role-mapping>
@@ -813,11 +818,6 @@
     <security-role-mapping>
         <role-name>DEV_MODE</role-name>
         <group-name>DEV_MODE</group-name>
-    </security-role-mapping>
-
-    <security-role-mapping>
-        <role-name>FILTERED_GRID_BULK_ACTION</role-name>
-        <group-name>FILTERED_GRID_BULK_ACTION</group-name>
     </security-role-mapping>
 
 </glassfish-web-app>

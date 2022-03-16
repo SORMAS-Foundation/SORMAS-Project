@@ -196,11 +196,11 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
 		final boolean hasAssociatedOfficer = UserRole.hasAssociatedOfficer(userRoles);
 		final boolean hasOptionalHealthFacility = UserRole.hasOptionalHealthFacility(userRoles);
-		final boolean isLabUser = UserRole.isLabUser(userRoles);
 		final boolean isPortHealthUser = UserRole.isPortHealthUser(userRoles);
 
 		final boolean usePointOfEntry = (isPortHealthUser && hasAssociatedOfficer) || jurisdictionLevel == JurisdictionLevel.POINT_OF_ENTRY;
 		final boolean useHealthFacility = jurisdictionLevel == JurisdictionLevel.HEALTH_FACILITY;
+        final boolean useLaboratory = jurisdictionLevel == JurisdictionLevel.LABORATORY;
 		final boolean useCommunity = jurisdictionLevel == JurisdictionLevel.COMMUNITY;
 		final boolean useDistrict = hasAssociatedOfficer || jurisdictionLevel == JurisdictionLevel.DISTRICT	|| useCommunity || useHealthFacility || usePointOfEntry;;
 		final boolean useRegion = jurisdictionLevel == JurisdictionLevel.REGION || useDistrict;
@@ -227,9 +227,9 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 		}
 
 		final ComboBox laboratory = (ComboBox) getFieldGroup().getField(UserDto.LABORATORY);
-		laboratory.setVisible(isLabUser);
-		setRequired(isLabUser, UserDto.LABORATORY);
-		if (!isLabUser) {
+		laboratory.setVisible(useLaboratory);
+		setRequired(useLaboratory, UserDto.LABORATORY);
+		if (!useLaboratory) {
 			laboratory.clear();
 		}
 

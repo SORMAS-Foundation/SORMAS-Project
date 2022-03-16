@@ -351,7 +351,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		final EventUserFilterCriteria eventUserFilterCriteria) {
 
 		final User currentUser = getCurrentUser();
-		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		Predicate filter = null;
 
 		final EventJoins eventJoins;
@@ -445,7 +445,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		Predicate filter = caseService.createUserFilter(cb, cq, caseJoin);
 
 		final User currentUser = getCurrentUser();
-		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (jurisdictionLevel == JurisdictionLevel.REGION || jurisdictionLevel == JurisdictionLevel.DISTRICT) {
 
 			switch (jurisdictionLevel) {

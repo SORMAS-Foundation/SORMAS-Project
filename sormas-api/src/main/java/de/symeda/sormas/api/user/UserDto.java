@@ -81,7 +81,6 @@ public class UserDto extends EntityDto {
 	private LocationDto address;
 
 	private Set<UserRole> userRoles;
-	private Set<UserRight> userRights;
 
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
@@ -175,14 +174,6 @@ public class UserDto extends EntityDto {
 
 	public void setUserRoles(Set<UserRole> userRoles) {
 		this.userRoles = userRoles;
-	}
-
-	public Set<UserRight> getUserRights() {
-		return userRights;
-	}
-
-	public void setUserRights(Set<UserRight> userRights) {
-		this.userRights = userRights;
 	}
 
 	@Override

@@ -189,7 +189,7 @@ public class EventGroupController {
 			new CommitDiscardWrapperComponent<>(eventGroupEditForm, user.hasUserRight(UserRight.EVENTGROUP_EDIT), eventGroupEditForm.getFieldGroup());
 
 		List<RegionReferenceDto> regions = FacadeProvider.getEventGroupFacade().getEventGroupRelatedRegions(uuid);
-		boolean hasRegion = user.hasNationalJurisdictionLevel() || regions.stream().allMatch(user::hasRegion);
+		boolean hasRegion = user.hasNationJurisdictionLevel() || regions.stream().allMatch(user::hasRegion);
 		editView.setReadOnly(hasRegion);
 
 		if (user.hasUserRight(UserRight.EVENTGROUP_EDIT) && hasRegion) {
@@ -321,7 +321,7 @@ public class EventGroupController {
 		List<EventReferenceDto> eventReferences = selectedItems.stream().map(EventIndexDto::toReference).collect(Collectors.toList());
 		List<String> eventUuids = eventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList());
 
-		if (!user.hasNationalJurisdictionLevel()) {
+		if (!user.hasNationJurisdictionLevel()) {
 			Set<RegionReferenceDto> regions = FacadeProvider.getEventFacade().getAllRegionsRelatedToEventUuids(eventUuids);
 			for (RegionReferenceDto region : regions) {
 				if (!user.hasRegion(region)) {

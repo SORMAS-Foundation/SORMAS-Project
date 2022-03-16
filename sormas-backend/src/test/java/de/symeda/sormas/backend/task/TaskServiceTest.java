@@ -4,6 +4,7 @@ import static junit.framework.TestCase.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
+import java.util.Arrays;
 import java.util.Collections;
 
 import org.junit.Before;
@@ -91,7 +92,7 @@ public class TaskServiceTest extends AbstractBeanTest {
 		Case caze = new Case();
 		contact.setCaze(caze);
 
-		Mockito.when(userService.getAllByRegionAndUserRights(any(Region.class), any())).thenReturn(Collections.emptyList());
+		Mockito.when(userService.getRandomUser(any(Region.class), any())).thenReturn(null);
 
 		taskService.getTaskAssignee(contact);
 	}

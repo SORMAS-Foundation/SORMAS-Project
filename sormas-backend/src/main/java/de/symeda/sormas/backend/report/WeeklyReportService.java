@@ -123,10 +123,8 @@ public class WeeklyReportService extends AdoServiceWithUserFilter<WeeklyReport> 
 
 		User currentUser = getCurrentUser();
 		// National users can access all reports in the system
-		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
-		if (currentUser == null
-			|| (jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
-			|| currentUser.hasAnyUserRight(UserRight.SORMAS_REST)) {
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		if (currentUser == null || (jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))) {
 			return null;
 		}
 
@@ -142,7 +140,7 @@ public class WeeklyReportService extends AdoServiceWithUserFilter<WeeklyReport> 
 		}
 
 		// Officers see all reports from their assigned informants
-		if (JurisdictionLevel.DISTRICT.equals(currentUser.getJurisdictionLevel()) && currentUser.hasAnyUserRight(UserRight.WEEKLYREPORT_CREATE)) {
+		if (JurisdictionLevel.DISTRICT.equals(currentUser.getJurisdictionLevel())) {
 			filter = cb.or(filter, cb.equal(informant.get(User.ASSOCIATED_OFFICER), currentUser));
 		}
 
@@ -160,7 +158,7 @@ public class WeeklyReportService extends AdoServiceWithUserFilter<WeeklyReport> 
 			return usersStream;
 		}
 
-		final JurisdictionLevel jurisdictionLevel = user.getCalculatedJurisdictionLevel();
+		final JurisdictionLevel jurisdictionLevel = user.getJurisdictionLevel();
 		// National users can access all reports in the system
 		if (jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(user.getUserRoles())) {
 			return usersStream;
@@ -177,7 +175,7 @@ public class WeeklyReportService extends AdoServiceWithUserFilter<WeeklyReport> 
 		}
 
 		// Officers see all reports from their assigned informants
-		if (JurisdictionLevel.DISTRICT.equals(user.getJurisdictionLevel()) && user.hasAnyUserRight(UserRight.WEEKLYREPORT_CREATE)) {
+		if (JurisdictionLevel.DISTRICT.equals(user.getJurisdictionLevel())) {
 			constraints = constraints.or(u -> user.equals(u.getAssociatedOfficer()));
 		}
 

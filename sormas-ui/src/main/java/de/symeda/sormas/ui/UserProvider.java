@@ -44,6 +44,7 @@ public class UserProvider {
 	private UserDto user;
 	private UserReferenceDto userReference;
 	private Set<UserRight> userRights;
+	private JurisdictionLevel jurisdictionLevel;
 
 	public UserDto getUser() {
 
@@ -56,7 +57,7 @@ public class UserProvider {
 	public Set<UserRight> getUserRights() {
 
 		if (userRights == null) {
-			userRights = FacadeProvider.getUserRoleConfigFacade().getEffectiveUserRights(getUser().getUserRoles().toArray(new UserRole[] {}));
+			userRights = FacadeProvider.getUserRoleConfigFacade().getEffectiveUserRights(getUser().getUserRoles());
 		}
 		return userRights;
 	}
@@ -65,16 +66,11 @@ public class UserProvider {
 		return getUser().getUserRoles();
 	}
 
-	public boolean hasUserRole(UserRole userRole) {
-		return getUser().getUserRoles().contains(userRole);
-	}
-
-	/**
-	 * Checks if the User possesses any of the specified userRoles
-	 */
-	public boolean hasAnyUserRole(UserRole... userRoles) {
-		Set<UserRole> currentUserRoles = getUser().getUserRoles();
-		return Arrays.stream(userRoles).anyMatch(currentUserRoles::contains);
+	public JurisdictionLevel getJurisdictionLevel() {
+		if (jurisdictionLevel == null) {
+			jurisdictionLevel = UserRole.getJurisdictionLevel(getUser().getUserRoles());
+		}
+		return jurisdictionLevel;
 	}
 
 	public boolean hasConfigurationAccess() {
@@ -90,19 +86,25 @@ public class UserProvider {
 		return getUserRights().containsAll(Arrays.asList(userRights));
 	}
 
-	public boolean hasNationalJurisdictionLevel() {
-		//TODO: #4461
-		return UserRole.getJurisdictionLevel(getCurrent().getUserRoles()) == JurisdictionLevel.NATION;
+	public boolean hasNationJurisdictionLevel() {
+		return getJurisdictionLevel() == JurisdictionLevel.NATION;
 	}
 
-	public boolean hasRegionalJurisdictionLevel() {
-		//TODO: #4461
-		return UserRole.getJurisdictionLevel(getCurrent().getUserRoles()) == JurisdictionLevel.REGION;
+	public boolean hasRegionJurisdictionLevel() {
+		return getJurisdictionLevel() == JurisdictionLevel.REGION;
 	}
 
 	public boolean hasNoneJurisdictionLevel() {
-		//TODO: #4461
-		return UserRole.getJurisdictionLevel(getCurrent().getUserRoles()) == JurisdictionLevel.NONE;
+		return getJurisdictionLevel() == JurisdictionLevel.NONE;
+	}
+
+	public boolean hasLaboratoryOrExternalLaboratoryJurisdictionLevel() {
+		JurisdictionLevel jurisdictionLevel = getJurisdictionLevel();
+		return jurisdictionLevel == JurisdictionLevel.LABORATORY || jurisdictionLevel == jurisdictionLevel.EXTERNAL_LABORATORY;
+	}
+
+	public boolean hasExternalLaboratoryJurisdictionLevel() {
+		return getJurisdictionLevel() == jurisdictionLevel.EXTERNAL_LABORATORY;
 	}
 
 	public boolean hasRegion(RegionReferenceDto regionReference) {
@@ -116,16 +118,6 @@ public class UserProvider {
 			userReference = getUser().toReference();
 		}
 		return userReference;
-	}
-
-	public boolean hasLaboratoryOrExternalLaboratoryJurisdictionLevel() {
-		JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(getCurrent().getUserRoles());
-		return (jurisdictionLevel == JurisdictionLevel.LABORATORY) || (jurisdictionLevel == jurisdictionLevel.EXTERNAL_LABORATORY);
-	}
-
-	public boolean hasExternalLaboratoryJurisdictionLevel() {
-		JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(getCurrent().getUserRoles());
-		return jurisdictionLevel == jurisdictionLevel.EXTERNAL_LABORATORY;
 	}
 
 	public String getUuid() {

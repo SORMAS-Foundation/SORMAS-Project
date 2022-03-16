@@ -52,8 +52,6 @@ public interface UserFacade {
 
 	List<UserReferenceDto> getUsersByRegionAndRights(RegionReferenceDto regionRef, UserRight... userRights);
 
-	List<UserReferenceDto> getUsersByRegionsAndRights(List<RegionReferenceDto> regionRefs, UserRight... userRights);
-
 	List<UserReferenceDto> getUsersWithSuperiorJurisdiction(UserDto user);
 
 	List<UserDto> getIndexList(UserCriteria userCriteria, Integer first, Integer max, List<SortProperty> sortProperties);

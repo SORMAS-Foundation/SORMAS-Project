@@ -104,8 +104,8 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 
 		// National users can access all actions in the system
 		User currentUser = getCurrentUser();
-		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
-		if (jurisdictionLevel == JurisdictionLevel.NATION || jurisdictionLevel == JurisdictionLevel.NONE) {
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		if (jurisdictionLevel == JurisdictionLevel.NATION) {
 			return null;
 		}
 

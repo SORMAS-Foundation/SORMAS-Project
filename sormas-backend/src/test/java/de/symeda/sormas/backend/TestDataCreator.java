@@ -147,9 +147,6 @@ public class TestDataCreator {
 		user.setLastName("User");
 		user.setUserName("Username");
 		user.setUserRoles(new HashSet<>(Arrays.asList(userRole)));
-		if (user.getUserRoles() != null) {
-			user.setUserRights(userRole.getDefaultUserRights());
-		}
 		user.setRegion(rdcf.region);
 		user.setDistrict(rdcf.district);
 		user.setCommunity(rdcf.community);
@@ -208,7 +205,6 @@ public class TestDataCreator {
 		user1.setLastName(lastName);
 		user1.setUserName(firstName + lastName);
 		user1.setUserRoles(new HashSet<UserRole>(Arrays.asList(roles)));
-		user1.setUserRights(Arrays.stream(roles).flatMap(e -> e.getDefaultUserRights().stream()).collect(Collectors.toSet()));
 
 		user1.setLimitedDisease(limitedDisease);
 		UserDto user = user1;

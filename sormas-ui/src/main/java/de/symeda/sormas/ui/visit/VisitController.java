@@ -98,7 +98,7 @@ public class VisitController {
 			}
 		});
 
-		if (UserProvider.getCurrent().hasUserRight(UserRight.ACTION_DELETE)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_DELETE)) {
 			editView.addDeleteListener(() -> {
 				FacadeProvider.getVisitFacade().deleteVisit(visitRef.getUuid());
 				UI.getCurrent().removeWindow(window);
