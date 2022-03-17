@@ -85,8 +85,8 @@ public class DashboardDataProvider {
 	private Long casesPlacedInQuarantineCount = 0L;
 	private Long contactsConvertedToCaseCount = 0L;
 	private Long caseWithReferenceDefinitionFulfilledCount = 0L;
-	private Map<SampleCountType, Long> sampleCount = new HashMap<SampleCountType, Long>();
-	private Map<SampleCountType, Long> previousSampleCount = new HashMap<SampleCountType, Long>();
+	private Map<SampleCountType, Long> sampleCounts = new HashMap<SampleCountType, Long>();
+	private Map<SampleCountType, Long> previousSampleCounts = new HashMap<SampleCountType, Long>();
 
 	public void refreshData() {
 
@@ -216,7 +216,7 @@ public class DashboardDataProvider {
 		if (getDashboardType() == DashboardType.SAMPLES) {
 			//Samples counts
 			setSampleCount(FacadeProvider.getSampleFacade().getSampleCounts(region, district, disease, fromDate, toDate));
-			setPreviousSampleCount(FacadeProvider.getSampleFacade().getSampleCounts(region, district, disease, previousFromDate, previousToDate));
+			setPreviousSampleCounts(FacadeProvider.getSampleFacade().getSampleCounts(region, district, disease, previousFromDate, previousToDate));
 		}
 
 		if (this.disease == null || getDashboardType() == DashboardType.CONTACTS) {
@@ -469,18 +469,18 @@ public class DashboardDataProvider {
 	}
 
 	public Map<SampleCountType, Long> getSampleCount() {
-		return sampleCount;
+		return sampleCounts;
 	}
 
-	public void setSampleCount(Map<SampleCountType, Long> sampleCount) {
-		this.sampleCount = sampleCount;
+	public void setSampleCount(Map<SampleCountType, Long> sampleCounts) {
+		this.sampleCounts = sampleCounts;
 	}
 
-	public Map<SampleCountType, Long> getPreviousSampleCount() {
-		return previousSampleCount;
+	public Map<SampleCountType, Long> getPreviousSampleCounts() {
+		return previousSampleCounts;
 	}
 
-	public void setPreviousSampleCount(Map<SampleCountType, Long> previousSampleCount) {
-		this.previousSampleCount = previousSampleCount;
+	public void setPreviousSampleCounts(Map<SampleCountType, Long> previousSampleCounts) {
+		this.previousSampleCounts = previousSampleCounts;
 	}
 }
