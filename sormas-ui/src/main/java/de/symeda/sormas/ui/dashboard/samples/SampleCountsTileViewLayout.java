@@ -49,7 +49,7 @@ public class SampleCountsTileViewLayout extends CssLayout {
 
 	public void refresh() {
 		Map<SampleCountType, Long> sampleCount = dashboardDataProvider.getSampleCount();
-		Map<SampleCountType, Long> previousSampleCount = dashboardDataProvider.getPreviousSampleCount();
+		Map<SampleCountType, Long> previousSampleCount = dashboardDataProvider.getPreviousSampleCounts();
 		this.removeAllComponents();
 
 		SampleCountType[] totalCol = {
@@ -77,7 +77,7 @@ public class SampleCountsTileViewLayout extends CssLayout {
 
 		HorizontalLayout totalHorizontalLayout = new HorizontalLayout();
 		totalHorizontalLayout.setWidth(500, Unit.PIXELS);
-		totalHorizontalLayout.addComponent(createCountRow(totalCol, sampleCount, previousSampleCount, Captions.SampleSamples));
+		totalHorizontalLayout.addComponent(createCountRow(totalCol, sampleCount, previousSampleCount, Captions.sampleSamples));
 		addComponent(totalHorizontalLayout);
 
 		HorizontalLayout conditionHorizontalLayout = new HorizontalLayout();
@@ -91,7 +91,7 @@ public class SampleCountsTileViewLayout extends CssLayout {
 
 		HorizontalLayout shipmentHorizontalLayout = new HorizontalLayout();
 		shipmentHorizontalLayout.setWidth(100, Unit.PERCENTAGE);
-		shipmentHorizontalLayout.addComponent(createCountRow(shipmentCol, sampleCount, previousSampleCount, Captions.SampleShipmentStatus));
+		shipmentHorizontalLayout.addComponent(createCountRow(shipmentCol, sampleCount, previousSampleCount, Captions.sampleShipmentStatus));
 		addComponent(shipmentHorizontalLayout);
 	}
 
