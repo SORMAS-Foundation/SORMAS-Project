@@ -598,7 +598,7 @@ public class SampleService extends AbstractCoreAdoService<Sample> {
 			case SHIPMENT:
 				dateProperty = Sample.SHIPMENT_DATE;
 				break;
-			case RECIPIENT:
+			case RECIPIENCE:
 				dateProperty = Sample.RECEIVED_DATE;
 				break;
 			case RESULT:
