@@ -81,7 +81,6 @@ import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleJurisdictionFlagsDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
-import de.symeda.sormas.api.sample.SamplePurpose;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
 import de.symeda.sormas.api.sample.SpecimenCondition;
@@ -915,6 +914,55 @@ public class SampleFacadeEjb implements SampleFacade {
 		return em.createQuery(cq).getSingleResult();
 	}
 
+	public SampleDashboardCount getPathogenTestResultsCountObj(SampleCriteria sampleCriteria) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<SampleDashboardCount> cq = cb.createQuery(SampleDashboardCount.class);
+		final Root<Sample> root = cq.from(Sample.class);
+		SampleJoins<Sample> joins = new SampleJoins<>(root);
+		Predicate filter = sampleService.createUserFilter(cq, cb, joins, sampleCriteria);
+		if (sampleCriteria != null) {
+			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, joins);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		}
+		if (filter != null) {
+			cq.where(filter);
+			cq.multiselect(
+				cb.sum(
+					cb.selectCase()
+						.when(cb.equal(root.get(Sample.PATHOGEN_TEST_RESULT), PathogenTestResultType.NEGATIVE), 1)
+						.otherwise(0)
+						.as(Long.class)),
+				cb.sum(
+					cb.selectCase()
+						.when(cb.equal(root.get(Sample.PATHOGEN_TEST_RESULT), PathogenTestResultType.POSITIVE), 1)
+						.otherwise(0)
+						.as(Long.class)),
+				cb.sum(
+					cb.selectCase()
+						.when(cb.equal(root.get(Sample.PATHOGEN_TEST_RESULT), PathogenTestResultType.PENDING), 1)
+						.otherwise(0)
+						.as(Long.class)),
+				cb.sum(
+					cb.selectCase()
+						.when(cb.equal(root.get(Sample.PATHOGEN_TEST_RESULT), PathogenTestResultType.INDETERMINATE), 1)
+						.otherwise(0)
+						.as(Long.class)),
+				cb.sum(cb.selectCase().when(cb.equal(root.get(Sample.SHIPPED), "true"), 1).otherwise(0).as(Long.class)),
+				cb.sum(cb.selectCase().when(cb.equal(root.get(Sample.SHIPPED), "false"), 1).otherwise(0).as(Long.class)),
+				cb.sum(cb.selectCase().when(cb.equal(root.get(Sample.RECEIVED), "true"), 1).otherwise(0).as(Long.class)),
+				cb.sum(cb.selectCase().when(cb.equal(root.get(Sample.RECEIVED), "false"), 1).otherwise(0).as(Long.class)),
+				cb.sum(
+					cb.selectCase().when(cb.equal(root.get(Sample.SPECIMEN_CONDITION), SpecimenCondition.ADEQUATE), 1).otherwise(0).as(Long.class)),
+				cb.sum(
+					cb.selectCase()
+						.when(cb.equal(root.get(Sample.SPECIMEN_CONDITION), SpecimenCondition.NOT_ADEQUATE), 1)
+						.otherwise(0)
+						.as(Long.class)));
+
+		}
+		return em.createQuery(cq).getSingleResult();
+	}
+
 	@Override
 	public SampleReferenceDto getReferredFrom(String sampleUuid) {
 		return toReferenceDto(sampleService.getReferredFrom(sampleUuid));
@@ -979,96 +1027,27 @@ public class SampleFacadeEjb implements SampleFacade {
 		Disease disease,
 		Date from,
 		Date to) {
-		long total = count(
-			new SampleCriteria().region(regionRef)
-				.district(districtRef)
-				.disease(disease)
-				.sampleDateBetween(from, to, SampleDateType.COLLECTION, DateFilterOption.DATE));
+		SampleCriteria sampleCriteria = new SampleCriteria().region(regionRef)
+			.district(districtRef)
+			.disease(disease)
+			.sampleDateBetween(from, to, SampleDateType.COLLECTION, DateFilterOption.DATE);
 
-		long indeterminateCount = count(
-			new SampleCriteria().region(regionRef)
-				.district(districtRef)
-				.disease(disease)
-				.sampleDateBetween(from, to, SampleDateType.RESULT, DateFilterOption.DATE)
-				.pathogenTestResult(PathogenTestResultType.INDETERMINATE));
-
-		long pendingCount = count(
-			new SampleCriteria().region(regionRef)
-				.district(districtRef)
-				.disease(disease)
-				.sampleDateBetween(from, to, SampleDateType.RESULT, DateFilterOption.DATE)
-				.pathogenTestResult(PathogenTestResultType.PENDING));
-
-		long negativeCount = count(
-			new SampleCriteria().region(regionRef)
-				.district(districtRef)
-				.disease(disease)
-				.sampleDateBetween(from, to, SampleDateType.RESULT, DateFilterOption.DATE)
-				.pathogenTestResult(PathogenTestResultType.NEGATIVE));
-
-		long positiveCount = count(
-			new SampleCriteria().region(regionRef)
-				.district(districtRef)
-				.disease(disease)
-				.sampleDateBetween(from, to, SampleDateType.RESULT, DateFilterOption.DATE)
-				.pathogenTestResult(PathogenTestResultType.POSITIVE));
-
-		long adequateCount = count(
-			new SampleCriteria().region(regionRef)
-				.district(districtRef)
-				.disease(disease)
-				.sampleDateBetween(from, to, SampleDateType.RECIPIENT, DateFilterOption.DATE)
-				.specimenCondition(SpecimenCondition.ADEQUATE));
-
-		long inadequateCount = count(
-			new SampleCriteria().region(regionRef)
-				.district(districtRef)
-				.disease(disease)
-				.sampleDateBetween(from, to, SampleDateType.RECIPIENT, DateFilterOption.DATE)
-				.specimenCondition(SpecimenCondition.NOT_ADEQUATE));
-
-		long shippedCount = count(
-			new SampleCriteria().region(regionRef)
-				.district(districtRef)
-				.disease(disease)
-				.sampleDateBetween(from, to, SampleDateType.SHIPMENT, DateFilterOption.DATE)
-				.shipped(true));
-
-		long notShippedCount = count(
-			new SampleCriteria().region(regionRef)
-				.district(districtRef)
-				.disease(disease)
-				.sampleDateBetween(from, to, SampleDateType.COLLECTION, DateFilterOption.DATE)
-				.samplePurpose(SamplePurpose.EXTERNAL)
-				.shipped(false));
-
-		long receivedCount = count(
-			new SampleCriteria().region(regionRef)
-				.district(districtRef)
-				.disease(disease)
-				.sampleDateBetween(from, to, SampleDateType.RECIPIENT, DateFilterOption.DATE)
-				.received(true));
-
-		long notReceivedCount = count(
-			new SampleCriteria().region(regionRef)
-				.district(districtRef)
-				.disease(disease)
-				.sampleDateBetween(from, to, SampleDateType.SHIPMENT, DateFilterOption.DATE)
-				.shipped(true)
-				.received(false));
+		long total = count(sampleCriteria);
+		SampleDashboardCount sampleCount =
+			getPathogenTestResultsCountObj(sampleCriteria.sampleDateBetween(from, to, SampleDateType.COLLECTION, DateFilterOption.DATE));
 
 		Map<SampleCountType, Long> map = new HashMap<SampleCountType, Long>();
 		map.put(SampleCountType.COLLECTED, total);
-		map.put(SampleCountType.INDETERMINATE, indeterminateCount);
-		map.put(SampleCountType.PENDING, pendingCount);
-		map.put(SampleCountType.POSITIVE, positiveCount);
-		map.put(SampleCountType.NEGATIVE, negativeCount);
-		map.put(SampleCountType.ADEQUATE, adequateCount);
-		map.put(SampleCountType.INADEQUATE, inadequateCount);
-		map.put(SampleCountType.SHIPPED, shippedCount);
-		map.put(SampleCountType.NOT_SHIPED, notShippedCount);
-		map.put(SampleCountType.RECEIVED, receivedCount);
-		map.put(SampleCountType.NOT_RECEIVED, notReceivedCount);
+		map.put(SampleCountType.INDETERMINATE, sampleCount.getPathogenTestResultIndeterminate());
+		map.put(SampleCountType.PENDING, sampleCount.getPathogenTestResultPending());
+		map.put(SampleCountType.POSITIVE, sampleCount.getPathogenTestResultPositive());
+		map.put(SampleCountType.NEGATIVE, sampleCount.getPathogenTestResultNegative());
+		map.put(SampleCountType.ADEQUATE, sampleCount.getSpecimenConditionAdequate());
+		map.put(SampleCountType.INADEQUATE, sampleCount.getSpecimenConditionInadequate());
+		map.put(SampleCountType.SHIPPED, sampleCount.getSampleShipped());
+		map.put(SampleCountType.NOT_SHIPED, sampleCount.getSampleNotShipped());
+		map.put(SampleCountType.RECEIVED, sampleCount.getSampleReceived());
+		map.put(SampleCountType.NOT_RECEIVED, sampleCount.getSampleNotReceived());
 
 		return map;
 	}
