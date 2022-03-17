@@ -23,47 +23,58 @@ import lombok.Getter;
 
 @Getter
 public enum PathogenTestedDisease {
-  ACUTE_FLACCID_PARALYSIS("ACUTE_VIRAL_HEPATITIS", "Acute Flaccid Paralysis"),
-  ANTHRAX("ANTHRAX", "Anthrax"),
-  COVID19("CORONAVIRUS", "COVID-19"),
-  CHOLERA("CHOLERA", "Cholera"),
-  CONGENITAL_RUBELLA("CONGENITAL_RUBELLA", "Congenital Rubella"),
-  DENGUE_FEVER("DENGUE", "Dengue Fever"),
-  EBOLA("EVD", "Ebola Virus Disease"),
-  GUINEA_WORM("GUINEA_WORM", "Guinea Worm"),
-  HUMAN_RABIES("RABIES", "Human Rabies"),
-  INFLUENZA("NEW_INFLUENZA", "Influenza (New subtype)"),
-  LASSA("LASSA", "Lassa"),
-  MEASLES("MEASLES", "Measles"),
-  MENINGITIS("CSM", "Meningitis (CSM)"),
-  MONKEYPOX("MONKEYPOX", "Monkeypox"),
-  NOT_YET_DEFINED("UNDEFINED", "Not Yet Defined"),
-  OTHER_EPIDEMIC_DISEASE("OTHER", "Other Epidemic Disease"),
-  PLAGUE("PLAGUE", "Plague"),
-  POLIOMYELITIS("POLIO", "Poliomyelitis"),
-  UNSPECIFIED_VHF("UNSPECIFIED_VHF", "Unspecified VHF"),
-  YELLOW_FEVER("YELLOW_FEVER", "Yellow Fever"),
-  ADENOVIRUS("ADENOVIRUS", "Adenovirus"),
-  C_PNEUMONIAE("C_PNEUMONIAE", "C.pneumoniae"),
-  ENTEROVIRUS("ENTEROVIRUS", "Enterovirus"),
-  H_METAPNEUMOVIRUS("H_METAPNEUMOVIRUS", "H.metapneumovirus"),
-  INFLUENZA_A("INFLUENZA_A", "Influenza A"),
-  INFLUENZA_B("INFLUENZA_B", "Influenza B"),
-  M_PNEUMONIAE("M_PNEUMONIAE", "M.pneumoniae"),
-  PARAINFLUENZA("PARAINFLUENZA_1_4", "Parainfluenza (1-4)"),
-  PNEUMONIA("PNEUMONIA", "Pneumonia"),
+  ACUTE_FLACCID_PARALYSIS(
+      "ACUTE_VIRAL_HEPATITIS", "Acute Flaccid Paralysis", "Akute schlaffe L\u00E4hmung"),
+  ANTHRAX("ANTHRAX", "Anthrax", "Milzbrand"),
+  COVID19("CORONAVIRUS", "COVID-19", "COVID-19"),
+  CHOLERA("CHOLERA", "Cholera", "Cholera"),
+  CONGENITAL_RUBELLA("CONGENITAL_RUBELLA", "Congenital Rubella", "Kongenitale Röteln"),
+  DENGUE_FEVER("DENGUE", "Dengue Fever", "Dengue-Fieber"),
+  EBOLA("EVD", "Ebola Virus Disease", "Ebola"),
+  GUINEA_WORM("GUINEA_WORM", "Guinea Worm", "Medinawurm"),
+  HUMAN_RABIES("RABIES", "Human Rabies", "Tollwut"),
+  INFLUENZA("NEW_INFLUENZA", "Influenza (New subtype)", "Influenza (neuer Subtyp)"),
+  LASSA("LASSA", "Lassa", "Lassa"),
+  MEASLES("MEASLES", "Measles", "Masern"),
+  MENINGITIS("CSM", "Meningitis (CSM)", "Meningitis (CSM)"),
+  MONKEYPOX("MONKEYPOX", "Monkeypox", "Affenpocken"),
+  NOT_YET_DEFINED("UNDEFINED", "Not Yet Defined", "Noch nicht definiert"),
+  OTHER_EPIDEMIC_DISEASE("OTHER", "Other Epidemic Disease", "Andere epidemische Krankheit"),
+  PLAGUE("PLAGUE", "Plague", "Pest"),
+  POLIOMYELITIS("POLIO", "Poliomyelitis", "Poliomyelitis"),
+  UNSPECIFIED_VHF(
+      "UNSPECIFIED_VHF",
+      "Unspecified VHF",
+      "Nicht n\u00E4her bezeichnete h\u00E4morrhagische Viruskrankheit"),
+  YELLOW_FEVER("YELLOW_FEVER", "Yellow Fever", "Gelbfieber"),
+  ADENOVIRUS("ADENOVIRUS", "Adenovirus", "Adenovirus"),
+  C_PNEUMONIAE("C_PNEUMONIAE", "C.pneumoniae", "Chlamydophila pneumoniae"),
+  ENTEROVIRUS("ENTEROVIRUS", "Enterovirus", "Enterovirus"),
+  H_METAPNEUMOVIRUS("H_METAPNEUMOVIRUS", "H.metapneumovirus", "Humanes Metapneumovirus"),
+  INFLUENZA_A("INFLUENZA_A", "Influenza A", "Influenza A"),
+  INFLUENZA_B("INFLUENZA_B", "Influenza B", "Influenza B"),
+  M_PNEUMONIAE("M_PNEUMONIAE", "M.pneumoniae", "Mycoplasma pneumoniae"),
+  PARAINFLUENZA("PARAINFLUENZA_1_4", "Parainfluenza (1-4)", "Parainfluenza (1-4)"),
+  PNEUMONIA("PNEUMONIA", "Pneumonia", "Lungenentz\u00FCndung"),
   RESPIRATORY_SYNCYTIAL_VIRUS_RSV(
-      "RESPIRATORY_SYNCYTIAL_VIRUS", "Respiratory syncytial virus (RSV)"),
-  RHINOVIRUS("RHINOVIRUS", "Rhinovirus"),
-  WEST_NILE_FEVER("WEST_NILE_FEVER", "West Nile Fever");
+      "RESPIRATORY_SYNCYTIAL_VIRUS",
+      "Respiratory syncytial virus (RSV)",
+      "Humanes Respiratorisches Synzytial-Virus (RSV)"),
+  RHINOVIRUS("RHINOVIRUS", "Rhinovirus", "Rhinovirus"),
+  WEST_NILE_FEVER("WEST_NILE_FEVER", "West Nile Fever", "West-Nil-Fieber");
 
   private final String pathogenTestedDiseaseName;
   private final String pathogenTestedDiseaseCaption;
+  private final String pathogenTestedDiseaseCaptionDE;
 
-  PathogenTestedDisease(String pathogenTestedDiseaseName, String pathogenTestedDiseaseCaption) {
+  PathogenTestedDisease(
+      String pathogenTestedDiseaseName,
+      String pathogenTestedDiseaseCaption,
+      String pathogenTestedDiseaseCaptionDE) {
 
     this.pathogenTestedDiseaseName = pathogenTestedDiseaseName;
     this.pathogenTestedDiseaseCaption = pathogenTestedDiseaseCaption;
+    this.pathogenTestedDiseaseCaptionDE = pathogenTestedDiseaseCaptionDE;
   }
   /** Returns values used for UI tests */
   public static String getRandomPathogenTestedDisease() {
@@ -72,6 +83,15 @@ public enum PathogenTestedDisease {
         PathogenTestedDisease.values()[random.nextInt(values().length)]
             .pathogenTestedDiseaseCaption);
   }
+
+  /** Returns values used for German UI tests */
+  public static String getRandomPathogenTestedDiseaseDE() {
+    Random random = new Random();
+    return String.valueOf(
+        PathogenTestedDisease.values()[random.nextInt(values().length)]
+            .pathogenTestedDiseaseCaptionDE);
+  }
+
   /** Returns values used for API tests */
   public static String getRandomPathogenTestedDiseaseName() {
     Random random = new Random();
