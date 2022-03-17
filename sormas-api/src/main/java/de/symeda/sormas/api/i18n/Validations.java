@@ -158,6 +158,7 @@ public interface Validations {
 	String personMultiplePrimaryPhoneNumbers = "personMultiplePrimaryPhoneNumbers";
 	String phoneNumberValidation = "phoneNumberValidation";
 	String required = "required";
+	String requiredField = "requiredField";
 	String softAddEntryToList = "softAddEntryToList";
 	String softApproximateAgeTooHigh = "softApproximateAgeTooHigh";
 	String sormasToSormasCaseExists = "sormasToSormasCaseExists";

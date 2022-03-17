@@ -4,6 +4,8 @@ import java.util.Date;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.Disease;
@@ -134,7 +136,7 @@ public class TravelEntryDto extends PseudonymizableDto {
 	private boolean quarantineReduced;
 	private boolean quarantineOfficialOrderSent;
 	private Date quarantineOfficialOrderSentDate;
-	@Required
+	@NotNull(message = Validations.requiredField)
 	private Date dateOfArrival;
 
 	public static TravelEntryDto build(PersonReferenceDto person) {

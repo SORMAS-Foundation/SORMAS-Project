@@ -10527,11 +10527,17 @@ ALTER TABLE weeklyreportentry_history ADD COLUMN change_user_id BIGINT;
 
 INSERT INTO schema_version (version_number, comment) VALUES (447, 'Changed by user #7323');
 -- 2022-03-08 Add dateOfArrival to travel entries #7845
-ALTER TABLE travelentry ADD COLUMN dateofarrival timestamp without time zone default creationdate;
+ALTER TABLE travelentry ADD COLUMN dateofarrival timestamp without time zone;
 ALTER TABLE travelentry_history ADD COLUMN dateofarrival timestamp without time zone;
 
-UPDATE travelentry SET dateofarrival = creationdate;
-UPDATE travelentry SET dateofarrival = (SELECT * FROM travelentry WHERE (travelentry.deacontent->>'Einreisedatum')::timestamp without time zone);
+UPDATE travelentry SET dateofarrival = TO_TIMESTAMP(dea_entry->>'value', 'DD.MM.YYYY')
+    FROM travelentry t
+    CROSS JOIN LATERAL json_array_elements(t.deacontent) dea_entry
+    WHERE dea_entry->>'caption' ilike 'eingangsdatum' and t.id = travelentry.id;
+
+UPDATE travelentry SET dateofarrival = creationdate where dateofarrival is null;
+
+ALTER TABLE travelentry ALTER COLUMN dateofarrival SET NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (448, 'Add dateOfArrival to travel entries #7845');
 

@@ -61,6 +61,7 @@ public class TravelEntry extends CoreAdo {
 	public static final String VACCINATED = "vaccinated";
 	public static final String TESTED_NEGATIVE = "testedNegative";
 	public static final String QUARANTINE_TO = "quarantineTo";
+	public static final String DATE_OF_ARRIVAL = "dateOfArrival";
 
 	private Person person;
 	private Date reportDate;

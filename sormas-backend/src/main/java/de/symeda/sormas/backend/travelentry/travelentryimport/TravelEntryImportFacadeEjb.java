@@ -88,6 +88,7 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 	private static final String PHONE_PRIVATE = "phonePrivate";
 	private static final String PHONE_ADDITIONAL = "phoneAdditional";
 	private static final String EMAIL = "email";
+	private static final String DATE_OF_ARRIVAL = "einreisedatum";
 
 	@EJB
 	private TravelEntryFacadeEjbLocal travelEntryFacade;
@@ -134,6 +135,10 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 
 		ImportLineResultDto<TravelEntryImportEntities> validationResult = validateEntities(entities);
 		if (validationResult.isError()) {
+			if(entities.getTravelEntry().getDateOfArrival() == null){
+				return ImportLineResultDto.skippedResult(I18nProperties.getString(Strings.messageTravelEntryImportNoDateOfArrival));
+			}
+
 			return validationResult;
 		}
 
@@ -341,6 +346,8 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 			} else if (EMAIL.equals(personProperty)) {
 				person.setEmailAddress(entry);
 				return;
+			} else if(DATE_OF_ARRIVAL.equalsIgnoreCase(propertyCaption)){
+				travelEntry.setDateOfArrival(DateHelper.parseDateWithException(entry, I18nProperties.getUserLanguage().getDateFormat()));
 			}
 
 			String relevantProperty = personProperty != null ? personProperty : propertyCaption;
