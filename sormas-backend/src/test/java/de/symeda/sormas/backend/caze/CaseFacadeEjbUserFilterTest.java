@@ -270,14 +270,14 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetCaseUsersWithoutUsesLimitedToOthersDiseses(){
+	public void testGetCaseUsersWithoutUsesLimitedToOthersDiseses() {
 		loginWith(nationalUser);
 
 		CaseDataDto caze = createCase(rdcf1, districtUser1);
-		UserDto limitedCovidNationalUser = creator.createUser(rdcf1,"Limited Disease Covid","National User"
-			, Disease.CORONAVIRUS,UserRole.NATIONAL_USER);
-		UserDto limitedDengueNationalUser = creator.createUser(rdcf1,"Limited Disease Dengue","National User"
-			, Disease.DENGUE,UserRole.NATIONAL_USER);
+		UserDto limitedCovidNationalUser =
+			creator.createUser(rdcf1, "Limited Disease Covid", "National User", Disease.CORONAVIRUS, UserRole.NATIONAL_USER);
+		UserDto limitedDengueNationalUser =
+			creator.createUser(rdcf1, "Limited Disease Dengue", "National User", Disease.DENGUE, UserRole.NATIONAL_USER);
 
 		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUsersHavingCaseInJurisdiction(caze.toReference());
 		Assert.assertNotNull(userReferenceDtos);

@@ -596,7 +596,8 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 			items.addAll(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, null, UserRole.SURVEILLANCE_SUPERVISOR));
 		} else {
 			items.addAll(
-				FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, null, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.SURVEILLANCE_OFFICER));
+				FacadeProvider.getUserFacade()
+					.getUsersByRegionAndRoles(region, null, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.SURVEILLANCE_OFFICER));
 		}
 		FieldHelper.updateItems((ComboBox) getField(EventCriteria.RESPONSIBLE_USER), items);
 	}

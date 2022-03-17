@@ -1601,22 +1601,28 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetContactUsersWithoutUsesLimitedToOthersDiseses(){
+	public void testGetContactUsersWithoutUsersLimitedToOthersDiseses() {
 		RDCF rdcf = creator.createRDCF();
 		useNationalUserLogin();
 
-
 		UserDto userDto = creator.createUser(rdcf, UserRole.NATIONAL_USER);
 		PersonDto personDto = creator.createPerson();
-		CaseDataDto caze = creator.createCase(userDto.toReference(),	personDto.toReference(), Disease.CORONAVIRUS, CaseClassification.PROBABLE,
-			InvestigationStatus.PENDING,new Date(), rdcf,null);
-		ContactDto contact =
-			creator.createContact(userDto.toReference(), userDto.toReference(), personDto.toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS);
+		CaseDataDto caze = creator.createCase(
+			userDto.toReference(),
+			personDto.toReference(),
+			Disease.CORONAVIRUS,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf,
+			null);
+		ContactDto contact = creator
+			.createContact(userDto.toReference(), userDto.toReference(), personDto.toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS);
 
-		UserDto limitedCovidNationalUser = creator.createUser(rdcf,"Limited Disease Covid","National User"
-			, Disease.CORONAVIRUS,UserRole.NATIONAL_USER);
-		UserDto limitedDengueNationalUser = creator.createUser(rdcf,"Limited Disease Dengue","National User"
-			, Disease.DENGUE,UserRole.NATIONAL_USER);
+		UserDto limitedCovidNationalUser =
+			creator.createUser(rdcf, "Limited Disease Covid", "National User", Disease.CORONAVIRUS, UserRole.NATIONAL_USER);
+		UserDto limitedDengueNationalUser =
+			creator.createUser(rdcf, "Limited Disease Dengue", "National User", Disease.DENGUE, UserRole.NATIONAL_USER);
 
 		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUsersHavingContactInJurisdiction(contact.toReference());
 		Assert.assertNotNull(userReferenceDtos);

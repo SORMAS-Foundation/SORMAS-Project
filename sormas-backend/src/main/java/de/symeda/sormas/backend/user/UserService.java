@@ -14,6 +14,32 @@
  */
 package de.symeda.sormas.backend.user;
 
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Random;
+import java.util.function.BiFunction;
+import java.util.stream.Collectors;
+
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.From;
+import javax.persistence.criteria.Join;
+import javax.persistence.criteria.JoinType;
+import javax.persistence.criteria.ParameterExpression;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
+import org.apache.commons.collections4.CollectionUtils;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -36,30 +62,6 @@ import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-import org.apache.commons.collections4.CollectionUtils;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.From;
-import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
-import javax.persistence.criteria.ParameterExpression;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.Collections;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Random;
-import java.util.function.BiFunction;
-import java.util.stream.Collectors;
 
 @Stateless
 @LocalBean
@@ -172,8 +174,13 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 	 * @param activeOnly
 	 * @param userRoles
 	 */
-	public List<UserReference> getReferenceList(List<String> regionUuids, List<String> districtUuids, boolean includeSupervisors,	boolean filterByJurisdiction,
-		boolean activeOnly,	UserRole... userRoles) {
+	public List<UserReference> getReferenceList(
+		List<String> regionUuids,
+		List<String> districtUuids,
+		boolean includeSupervisors,
+		boolean filterByJurisdiction,
+		boolean activeOnly,
+		UserRole... userRoles) {
 
 		return getReferenceList(regionUuids, districtUuids, null, includeSupervisors, filterByJurisdiction, activeOnly, Arrays.asList(userRoles));
 	}
@@ -193,8 +200,14 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 	 * @param activeOnly
 	 * @param userRoles
 	 */
-	public List<UserReference> getReferenceList(List<String> regionUuids, List<String> districtUuids, List<String> communityUuids, boolean includeSupervisors,
-		boolean filterByJurisdiction, boolean activeOnly, List<UserRole> userRoles) {
+	public List<UserReference> getReferenceList(
+		List<String> regionUuids,
+		List<String> districtUuids,
+		List<String> communityUuids,
+		boolean includeSupervisors,
+		boolean filterByJurisdiction,
+		boolean activeOnly,
+		List<UserRole> userRoles) {
 
 		return getReferenceList(regionUuids, districtUuids, communityUuids, includeSupervisors, filterByJurisdiction, activeOnly, null, userRoles);
 	}
@@ -212,11 +225,19 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 	 *            If set to {@code true}, all supervisors are returned independent of other filters.
 	 * @param filterByJurisdiction
 	 * @param activeOnly
-	 * @param limitedDisease the disease to restrict users with limitedDisease
+	 * @param limitedDisease
+	 *            the disease to restrict users with limitedDisease
 	 * @param userRoles
 	 */
-	public List<UserReference> getReferenceList( List<String> regionUuids, List<String> districtUuids, List<String> communityUuids,
-		boolean includeSupervisors,	boolean filterByJurisdiction, boolean activeOnly, Disease limitedDisease, List<UserRole> userRoles) {
+	public List<UserReference> getReferenceList(
+		List<String> regionUuids,
+		List<String> districtUuids,
+		List<String> communityUuids,
+		boolean includeSupervisors,
+		boolean filterByJurisdiction,
+		boolean activeOnly,
+		Disease limitedDisease,
+		List<UserRole> userRoles) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<UserReference> cq = cb.createQuery(UserReference.class);
@@ -263,10 +284,9 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		}
 
 		// eliminate users that are limited to others diseases
-		if(limitedDisease != null){
-			Predicate restrictOtherLimitedDiseaseUsers = cb.or(
-				cb.isNull(userRoot.get(User.LIMITED_DISEASE)),
-				cb.equal(userRoot.get(User.LIMITED_DISEASE), limitedDisease));
+		if (limitedDisease != null) {
+			Predicate restrictOtherLimitedDiseaseUsers =
+				cb.or(cb.isNull(userRoot.get(User.LIMITED_DISEASE)), cb.equal(userRoot.get(User.LIMITED_DISEASE), limitedDisease));
 			filter = CriteriaBuilderHelper.and(cb, filter, restrictOtherLimitedDiseaseUsers);
 		}
 

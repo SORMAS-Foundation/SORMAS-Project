@@ -14,7 +14,6 @@
  */
 package de.symeda.sormas.backend.user;
 
-import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -44,17 +43,17 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.ValidationException;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Validations;
 import org.apache.commons.beanutils.BeanUtils;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.task.TaskContext;
@@ -107,6 +106,7 @@ import de.symeda.sormas.backend.task.TaskFacadeEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
+import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.UserCreateEvent;
 import de.symeda.sormas.backend.user.event.UserUpdateEvent;
@@ -151,7 +151,6 @@ public class UserFacadeEjb implements UserFacade {
 	private Event<UserUpdateEvent> userUpdateEvent;
 	@Inject
 	private Event<PasswordResetEvent> passwordResetEvent;
-
 
 	public static UserDto toDto(User source) {
 
@@ -210,8 +209,7 @@ public class UserFacadeEjb implements UserFacade {
 	@Override
 	public List<UserReferenceDto> getUsersByRegionAndRoles(RegionReferenceDto regionRef, Disease limitedDisease, UserRole... assignableRoles) {
 
-		return userService.getReferenceList(toUuidList(regionRef), null, null, false, true,
-				true, limitedDisease, Arrays.asList(assignableRoles))
+		return userService.getReferenceList(toUuidList(regionRef), null, null, false, true, true, limitedDisease, Arrays.asList(assignableRoles))
 			.stream()
 			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
@@ -308,26 +306,34 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
-	public List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto districtRef, boolean includeSupervisors,  Disease limitedDisease, UserRole... userRoles) {
-		List<UserReferenceDto> l = userService.getReferenceList(null, toUuidList(districtRef), null,  includeSupervisors,
-				true, true, limitedDisease, Arrays.asList(userRoles))
-			.stream()
-			.map(UserFacadeEjb::toReferenceDto)
-			.collect(Collectors.toList());
-
-
-		return userService.getReferenceList(null, toUuidList(districtRef), null,  includeSupervisors,
-				true, true, limitedDisease, Arrays.asList(userRoles))
+	public List<UserReferenceDto> getUserRefsByDistrict(
+		DistrictReferenceDto districtRef,
+		boolean includeSupervisors,
+		Disease limitedDisease,
+		UserRole... userRoles) {
+		return userService
+			.getReferenceList(null, toUuidList(districtRef), null, includeSupervisors, true, true, limitedDisease, Arrays.asList(userRoles))
 			.stream()
 			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
 	}
 
 	@Override
-	public List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districtRefs, boolean includeSupervisors, Disease limitedDisease, UserRole... userRoles) {
+	public List<UserReferenceDto> getUserRefsByDistricts(
+		List<DistrictReferenceDto> districtRefs,
+		boolean includeSupervisors,
+		Disease limitedDisease,
+		UserRole... userRoles) {
 		return userService
-			.getReferenceList(null, districtRefs.stream().map(DistrictReferenceDto::getUuid).collect(Collectors.toList()), null,
-				includeSupervisors,true,true, limitedDisease, Arrays.asList(userRoles))
+			.getReferenceList(
+				null,
+				districtRefs.stream().map(DistrictReferenceDto::getUuid).collect(Collectors.toList()),
+				null,
+				includeSupervisors,
+				true,
+				true,
+				limitedDisease,
+				Arrays.asList(userRoles))
 			.stream()
 			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
@@ -403,8 +409,7 @@ public class UserFacadeEjb implements UserFacade {
 						cb.isTrue(caseJurisdictionPredicateValidator.inJurisdictionOrOwned()),
 						cb.or(
 							cb.isNull(userRoot.get(User.LIMITED_DISEASE)),
-							cb.equal(userRoot.get(User.LIMITED_DISEASE), caseRoot.get(Case.DISEASE)))
-					));
+							cb.equal(userRoot.get(User.LIMITED_DISEASE), caseRoot.get(Case.DISEASE)))));
 			return caseJurisdictionSubquery;
 		});
 	}
@@ -425,8 +430,7 @@ public class UserFacadeEjb implements UserFacade {
 						cb.isTrue(contactJurisdictionPredicateValidator.inJurisdictionOrOwned()),
 						cb.or(
 							cb.isNull(userRoot.get(User.LIMITED_DISEASE)),
-							cb.equal(userRoot.get(User.LIMITED_DISEASE), contactRoot.get(Contact.DISEASE)))
-					));
+							cb.equal(userRoot.get(User.LIMITED_DISEASE), contactRoot.get(Contact.DISEASE)))));
 			return contactJurisdictionSubquery;
 		});
 	}
@@ -448,8 +452,7 @@ public class UserFacadeEjb implements UserFacade {
 						cb.isTrue(eventJurisdictionPredicateValidator.inJurisdictionOrOwned()),
 						cb.or(
 							cb.isNull(userRoot.get(User.LIMITED_DISEASE)),
-							cb.equal(userRoot.get(User.LIMITED_DISEASE), eventRoot.get(de.symeda.sormas.backend.event.Event.DISEASE)))
-					));
+							cb.equal(userRoot.get(User.LIMITED_DISEASE), eventRoot.get(de.symeda.sormas.backend.event.Event.DISEASE)))));
 			return eventJurisdictionSubquery;
 		});
 	}
@@ -471,8 +474,7 @@ public class UserFacadeEjb implements UserFacade {
 						cb.isTrue(travelEntryJurisdictionPredicateValidator.inJurisdictionOrOwned()),
 						cb.or(
 							cb.isNull(userRoot.get(User.LIMITED_DISEASE)),
-							cb.equal(userRoot.get(User.LIMITED_DISEASE), travelEntryRoot.get(TravelEntry.DISEASE)))
-					));
+							cb.equal(userRoot.get(User.LIMITED_DISEASE), travelEntryRoot.get(TravelEntry.DISEASE)))));
 			return travelEntrySubquery;
 		});
 	}
@@ -491,11 +493,6 @@ public class UserFacadeEjb implements UserFacade {
 		cq.orderBy(cb.asc(root.get(AbstractDomainObject.ID)));
 		List<User> resultList = em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
 		return resultList.stream().map(UserFacadeEjb::toReferenceDto).collect(Collectors.toList());
-	}
-
-	public interface JurisdictionOverEntitySubqueryBuilder<ADO extends AbstractDomainObject> {
-
-		Subquery<ADO> buildSubquery(CriteriaBuilder cb, CriteriaQuery<?> cq, Root<User> userRoot);
 	}
 
 	@Override
@@ -717,7 +714,7 @@ public class UserFacadeEjb implements UserFacade {
 		User user = userService.getByUserName(userName);
 		if (user != null && user.isActive()) {
 			if (DataHelper.equal(user.getPassword(), PasswordHelper.encodePassword(password, user.getSeed()))) {
-				return new HashSet<>(userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[]{})));
+				return new HashSet<>(userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[] {})));
 			}
 		}
 		return null;
@@ -819,6 +816,11 @@ public class UserFacadeEjb implements UserFacade {
 
 			userUpdateEvent.fire(new UserUpdateEvent(oldUser, user));
 		}
+	}
+
+	public interface JurisdictionOverEntitySubqueryBuilder<ADO extends AbstractDomainObject> {
+
+		Subquery<ADO> buildSubquery(CriteriaBuilder cb, CriteriaQuery<?> cq, Root<User> userRoot);
 	}
 
 	@LocalBean

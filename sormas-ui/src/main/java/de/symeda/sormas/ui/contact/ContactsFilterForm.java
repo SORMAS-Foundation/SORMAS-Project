@@ -428,7 +428,8 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 
 		ComboBox officerField = getField(ContactCriteria.CONTACT_OFFICER);
 		if (user.getRegion() != null) {
-			officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), newValue.getDisease(), UserRole.CONTACT_OFFICER));
+			officerField
+				.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), newValue.getDisease(), UserRole.CONTACT_OFFICER));
 		} else if (region != null) {
 			officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, newValue.getDisease(), UserRole.CONTACT_OFFICER));
 		} else {

@@ -497,7 +497,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 							FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(newDistrict.getUuid(), true));
 					}
 
-					officerField.addItems(FacadeProvider.getUserFacade().getUserRefsByDistrict(newDistrict, false, null, UserRole.SURVEILLANCE_OFFICER));
+					officerField
+						.addItems(FacadeProvider.getUserFacade().getUserRefsByDistrict(newDistrict, false, null, UserRole.SURVEILLANCE_OFFICER));
 				} else {
 					clearAndDisableFields(communityField, pointOfEntryField, facilityField, facilityTypeField, facilityTypeGroupField);
 

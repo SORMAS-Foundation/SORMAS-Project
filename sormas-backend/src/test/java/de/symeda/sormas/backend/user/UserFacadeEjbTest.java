@@ -29,8 +29,8 @@ import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
@@ -47,8 +47,6 @@ import java.util.stream.Collectors;
 
 import javax.validation.ValidationException;
 
-import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.EntityDto;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -58,6 +56,8 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import de.symeda.sormas.api.AuthProvider;
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
@@ -209,7 +209,9 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		UserDto userS4 = creator.createUser(region2.getUuid(), null, facility1.getUuid(), "Tommy", "Ramone", POE_SUPERVISOR);
 
 		// Tests
-		assertThat(getUserFacade().getUsersByRegionAndRoles(region1, null, COMMUNITY_OFFICER, SURVEILLANCE_OFFICER), containsInAnyOrder(userD2, userC2));
+		assertThat(
+			getUserFacade().getUsersByRegionAndRoles(region1, null, COMMUNITY_OFFICER, SURVEILLANCE_OFFICER),
+			containsInAnyOrder(userD2, userC2));
 		assertThat(
 			getUserFacade()
 				.getUsersByRegionsAndRoles(Arrays.asList(region1, region2), COMMUNITY_INFORMANT, CASE_OFFICER, CONTACT_OFFICER, STATE_OBSERVER),
@@ -219,8 +221,13 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 			getUserFacade().getUserRefsByDistrict(district1_1, false, null, STATE_OBSERVER, CASE_OFFICER, COMMUNITY_OFFICER, POE_INFORMANT),
 			containsInAnyOrder(userD1, userC2));
 		assertThat(
-			getUserFacade()
-				.getUserRefsByDistricts(Arrays.asList(district1_1, district2), false, null, SURVEILLANCE_OFFICER, CONTACT_OFFICER, COMMUNITY_INFORMANT),
+			getUserFacade().getUserRefsByDistricts(
+				Arrays.asList(district1_1, district2),
+				false,
+				null,
+				SURVEILLANCE_OFFICER,
+				CONTACT_OFFICER,
+				COMMUNITY_INFORMANT),
 			containsInAnyOrder(userD3, userC1, userC3));
 
 		assertThat(getUserFacade().getUserRefsByDistrict(district1_1, true, null, CASE_OFFICER), containsInAnyOrder(userD1, userS1, userS2, userS3));
@@ -269,7 +276,9 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		String password = getUserFacade().resetPassword(user.getUuid());
 
 		Set<UserRight> validLoginRights = getUserFacade().getValidLoginRights(user.getUserName(), password);
-		assertThat(validLoginRights, containsInAnyOrder(getUserRoleConfigFacade().getEffectiveUserRights(SURVEILLANCE_SUPERVISOR).toArray(new UserRight[]{})));
+		assertThat(
+			validLoginRights,
+			containsInAnyOrder(getUserRoleConfigFacade().getEffectiveUserRights(SURVEILLANCE_SUPERVISOR).toArray(new UserRight[] {})));
 
 		user.setActive(false);
 		getUserFacade().saveUser(user);
@@ -370,16 +379,15 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetUserRefsByDistrictsWithLimitedDiseaseUsers(){
+	public void testGetUserRefsByDistrictsWithLimitedDiseaseUsers() {
 
 		RDCF rdcf = creator.createRDCF();
 
 		UserDto generalSurveillanceOfficer = creator.createUser(rdcf, "General ", "SURVEILLANCE_OFFICER", SURVEILLANCE_OFFICER);
 		UserDto limitedSurveillanceOfficer = creator.createUser(rdcf, "Limited Dengue", "SURVEILLANCE_OFFICER", Disease.DENGUE, SURVEILLANCE_OFFICER);
 
-
-		List<UserReferenceDto> userReferenceDtos = getUserFacade()
-			.getUserRefsByDistricts(Arrays.asList(rdcf.district), false, Disease.CORONAVIRUS,  SURVEILLANCE_OFFICER);
+		List<UserReferenceDto> userReferenceDtos =
+			getUserFacade().getUserRefsByDistricts(Arrays.asList(rdcf.district), false, Disease.CORONAVIRUS, SURVEILLANCE_OFFICER);
 
 		assertNotNull(userReferenceDtos);
 		assertTrue(userReferenceDtos.contains(generalSurveillanceOfficer));
@@ -388,16 +396,15 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetUserRefsByDistrictsWithLimitedDiseaseUsersSingleDistrict(){
+	public void testGetUserRefsByDistrictsWithLimitedDiseaseUsersSingleDistrict() {
 
 		RDCF rdcf = creator.createRDCF();
 
 		UserDto generalSurveillanceOfficer = creator.createUser(rdcf, "General ", "SURVEILLANCE_OFFICER", SURVEILLANCE_OFFICER);
 		UserDto limitedSurveillanceOfficer = creator.createUser(rdcf, "Limited Dengue", "SURVEILLANCE_OFFICER", Disease.DENGUE, SURVEILLANCE_OFFICER);
 
-
-		List<UserReferenceDto> userReferenceDtos = getUserFacade()
-			.getUserRefsByDistrict(rdcf.district, false, Disease.CORONAVIRUS,  SURVEILLANCE_OFFICER);
+		List<UserReferenceDto> userReferenceDtos =
+			getUserFacade().getUserRefsByDistrict(rdcf.district, false, Disease.CORONAVIRUS, SURVEILLANCE_OFFICER);
 
 		assertNotNull(userReferenceDtos);
 		assertTrue(userReferenceDtos.contains(generalSurveillanceOfficer));

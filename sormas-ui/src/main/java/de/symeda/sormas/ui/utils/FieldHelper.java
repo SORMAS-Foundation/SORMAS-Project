@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
-import java.nio.channels.spi.AbstractSelectableChannel;
-import java.util.AbstractSet;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -583,14 +581,14 @@ public final class FieldHelper {
 		if (items != null) {
 			select.addItems(items);
 		}
-		if (value instanceof InfrastructureDataReferenceDto){
+		if (value instanceof InfrastructureDataReferenceDto) {
 			updateInactiveInfrastructureItem(select, (InfrastructureDataReferenceDto) value);
 		}
 		select.setValue(value);
 		select.setReadOnly(readOnly);
 	}
 
-	public static void updateInactiveInfrastructureItem(AbstractSelect infrastructureField, InfrastructureDataReferenceDto value){
+	public static void updateInactiveInfrastructureItem(AbstractSelect infrastructureField, InfrastructureDataReferenceDto value) {
 		if (value != null && !infrastructureField.containsId(value)) {
 			InfrastructureDataReferenceDto inactiveValue = value.clone();
 			inactiveValue.setCaption(value.getCaption() + " (" + I18nProperties.getString(Strings.inactive) + ")");
@@ -798,7 +796,9 @@ public final class FieldHelper {
 			Stream.of(caze.getResponsibleDistrict(), caze.getDistrict()).filter(Objects::nonNull).collect(Collectors.toList());
 		FieldHelper.updateItems(
 			officerField,
-			officerDistricts.size() > 0 ? FacadeProvider.getUserFacade().getUserRefsByDistricts(officerDistricts, false, caze.getDisease(), role) : null);
+			officerDistricts.size() > 0
+				? FacadeProvider.getUserFacade().getUserRefsByDistricts(officerDistricts, false, caze.getDisease(), role)
+				: null);
 
 	}
 }
