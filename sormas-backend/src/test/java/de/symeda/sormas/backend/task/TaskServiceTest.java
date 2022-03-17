@@ -1,12 +1,8 @@
 package de.symeda.sormas.backend.task;
 
-import static de.symeda.sormas.api.user.UserRole.CONTACT_OFFICER;
-import static de.symeda.sormas.api.user.UserRole.CONTACT_SUPERVISOR;
 import static junit.framework.TestCase.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
-
-import java.util.Collections;
 
 import org.junit.Before;
 import org.junit.Test;
@@ -15,6 +11,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.TaskCreationException;
@@ -58,7 +55,7 @@ public class TaskServiceTest extends AbstractBeanTest {
 		Contact contact = new Contact();
 		contact.setDistrict(district);
 
-		Mockito.when(userService.getRandomUser(any(District.class), eq(CONTACT_OFFICER))).thenReturn(contactOfficer);
+		Mockito.when(userService.getRandomDistrictUser(any(District.class), eq(UserRight.CONTACT_RESPONSIBLE))).thenReturn(contactOfficer);
 
 		User actualAssignee = taskService.getTaskAssignee(contact);
 		assertEquals(actualAssignee.getId(), contactOfficer.getId());
@@ -76,7 +73,7 @@ public class TaskServiceTest extends AbstractBeanTest {
 		Region region = new Region();
 		contact.setRegion(region);
 
-		Mockito.when(userService.getRandomUser(any(Region.class), eq(CONTACT_SUPERVISOR))).thenReturn(contactSupervisor);
+		Mockito.when(userService.getRandomRegionUser(any(Region.class), eq(UserRight.CONTACT_RESPONSIBLE))).thenReturn(contactSupervisor);
 
 		User actualAssignee = taskService.getTaskAssignee(contact);
 		assertEquals(actualAssignee.getId(), contactSupervisor.getId());
@@ -92,7 +89,7 @@ public class TaskServiceTest extends AbstractBeanTest {
 		Case caze = new Case();
 		contact.setCaze(caze);
 
-		Mockito.when(userService.getAllByRegionAndUserRoles(any(Region.class), any())).thenReturn(Collections.emptyList());
+		Mockito.when(userService.getRandomRegionUser(any(Region.class), any())).thenReturn(null);
 
 		taskService.getTaskAssignee(contact);
 	}

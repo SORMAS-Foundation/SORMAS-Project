@@ -1,24 +1,23 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.backend.common;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
@@ -32,7 +31,9 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.user.NotificationProtocol;
 import de.symeda.sormas.api.user.NotificationType;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.MessagingService;
@@ -78,8 +79,8 @@ public class NotificationService {
 			allowedNotificationTypes,
 			subject,
 			new Object[] {},
-			() -> buildUserMessages(regions, additionalUsers, message, UserRole.getWithEmailNotificationTypes(allowedNotificationTypes)),
-			() -> buildUserMessages(regions, additionalUsers, message, UserRole.getWithSmsNotificationTypes(allowedNotificationTypes)));
+			() -> buildUserMessages(regions, additionalUsers, message, NotificationProtocol.EMAIL, allowedNotificationTypes),
+			() -> buildUserMessages(regions, additionalUsers, message, NotificationProtocol.SMS, allowedNotificationTypes));
 	}
 
 	public void sendNotifications(NotificationType notificationType, MessageSubject subject, Supplier<Map<User, String>> userMessagesSupplier)
@@ -118,23 +119,24 @@ public class NotificationService {
 
 		if (!allowedNotificationTypes.isEmpty()) {
 			messagingService.sendEmail(
-				filterUserMessagesByRoles(emailUserMessagesSupplier.get(), UserRole.getWithEmailNotificationTypes(allowedNotificationTypes)),
+				filterUserMessagesByRoles(emailUserMessagesSupplier.get(), UserRole.getWithNotificationTypes(NotificationProtocol.EMAIL, allowedNotificationTypes)),
 				subject,
 				subjectParams);
 			messagingService.sendSms(
-				filterUserMessagesByRoles(smsUserMessagesSupplier.get(), UserRole.getWithSmsNotificationTypes(allowedNotificationTypes)),
+				filterUserMessagesByRoles(smsUserMessagesSupplier.get(), UserRole.getWithNotificationTypes(NotificationProtocol.SMS, allowedNotificationTypes)),
 				subject,
 				subjectParams);
 		}
 	}
 
-	private Map<User, String> buildUserMessages(List<Region> regions, List<User> additionalUsers, String message, UserRole[] userRoles) {
+	private Map<User, String> buildUserMessages(List<Region> regions, List<User> additionalUsers, String message, NotificationProtocol notificationProtocol, Collection<NotificationType> notificationTypes) {
 		List<User> recipients = new ArrayList<>();
 		if (regions != null) {
-			recipients.addAll(userService.getAllByRegionsAndUserRoles(regions, userRoles));
+			recipients.addAll(userService.getAllByRegionsAndNotificationTypes(regions, notificationProtocol, notificationTypes));
 		}
 
 		if (additionalUsers != null) {
+			UserRole[] userRoles = UserRole.getWithNotificationTypes(notificationProtocol, notificationTypes);
 			recipients
 				.addAll(additionalUsers.stream().filter(u -> !recipients.contains(u) && u.hasAnyUserRole(userRoles)).collect(Collectors.toList()));
 		}
