@@ -198,6 +198,10 @@ public class SubcontinentFacadeEjb
 	}
 
 	@Override
+	public void foobarFoo(String fobar) {
+	}
+
+	@Override
 	protected void selectDtoFields(CriteriaQuery<SubcontinentDto> cq, Root<Subcontinent> root) {
 		// we do not select DTO fields in getAllAfter query
 	}

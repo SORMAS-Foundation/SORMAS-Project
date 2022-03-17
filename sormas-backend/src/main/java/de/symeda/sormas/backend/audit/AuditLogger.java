@@ -33,11 +33,20 @@ import org.slf4j.LoggerFactory;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 import java.util.TimeZone;
+
+import static de.symeda.sormas.api.audit.Constants.createPrefix;
+import static de.symeda.sormas.api.audit.Constants.deletePrefix;
+import static de.symeda.sormas.api.audit.Constants.executePrefix;
+import static de.symeda.sormas.api.audit.Constants.readPrefix;
+import static de.symeda.sormas.api.audit.Constants.updatePrefix;
 
 public class AuditLogger {
 
@@ -197,26 +206,18 @@ public class AuditLogger {
 	private AuditEvent.AuditEventAction inferAction(String calledMethod) {
 		// todo last element
 		calledMethod = calledMethod.split("\\.")[1];
-		if (calledMethod.startsWith("count")
-			|| calledMethod.startsWith("get")
-			|| calledMethod.startsWith("is")
-			|| calledMethod.startsWith("has")
-			|| calledMethod.startsWith("does")
-			|| calledMethod.startsWith("validate")) {
+		if (createPrefix.contains(calledMethod)) {
+			return AuditEvent.AuditEventAction.C;
+		} else if (readPrefix.contains(calledMethod)) {
 			return AuditEvent.AuditEventAction.R;
-		} else if (calledMethod.startsWith("save")
-			|| calledMethod.startsWith("update")
-			|| calledMethod.startsWith("post")
-			|| calledMethod.startsWith("set")
-			|| calledMethod.startsWith("archive")
-			|| calledMethod.startsWith("dearchive")) {
+		} else if (updatePrefix.contains(calledMethod)) {
 			return AuditEvent.AuditEventAction.U;
-		} else if (calledMethod.startsWith("delete") || calledMethod.startsWith("merge")) {
+		} else if (deletePrefix.contains(calledMethod)) {
 			return AuditEvent.AuditEventAction.D;
-		} else if (calledMethod.startsWith("send")) {
+		} else if (executePrefix.contains(calledMethod)) {
 			return AuditEvent.AuditEventAction.E;
 		} else {
-			// todo
+			// todo what should be do by default?
 			return AuditEvent.AuditEventAction.E;
 		}
 	}
