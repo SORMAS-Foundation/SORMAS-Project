@@ -152,6 +152,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 		travelEntryDto.setUuid("VQCJU2-DZPOBO-7FWMLV-G3F3SACI");
 		travelEntryDto.setReportDate(parseDate("09/01/2021"));
 		travelEntryDto.setReportingUser(userDto.toReference());
+		travelEntryDto.setDateOfArrival(new Date());
 		travelEntryDto.setPointOfEntry(rdcf.pointOfEntry);
 		// To survive validation:
 		travelEntryDto.setDisease(Disease.CORONAVIRUS);
