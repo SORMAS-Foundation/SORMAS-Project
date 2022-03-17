@@ -1,7 +1,6 @@
 package de.symeda.sormas.ui.dashboard.samples;
 
 import com.vaadin.icons.VaadinIcons;
-import com.vaadin.server.Sizeable.Unit;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Label;
@@ -13,11 +12,11 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.ui.dashboard.AbstractDashboardView;
 import de.symeda.sormas.ui.dashboard.DashboardDataProvider;
-import de.symeda.sormas.ui.dashboard.DashboardType;
 import de.symeda.sormas.ui.dashboard.components.DashboardFilterLayout;
 import de.symeda.sormas.ui.utils.CssStyles;
 
-public class DashboardSampleFilterLayout extends DashboardFilterLayout{
+public class DashboardSampleFilterLayout extends DashboardFilterLayout {
+
 	private ComboBox diseaseFilter;
 
 	public DashboardSampleFilterLayout(AbstractDashboardView dashboardView, DashboardDataProvider dashboardDataProvider) {
@@ -31,12 +30,10 @@ public class DashboardSampleFilterLayout extends DashboardFilterLayout{
 		createDateFilters();
 		createInfoLabel();
 		createRegionAndDistrictFilter();
-		if (dashboardDataProvider.getDashboardType() == DashboardType.SAMPLES) {
-			createDiseaseFilter();
-		}
-		createResetAndApplyButtons();		
+		createDiseaseFilter();
+		createResetAndApplyButtons();
 	}
-	
+
 	public boolean hasDiseaseSelected() {
 		return diseaseFilter.getValue() != null;
 	}
