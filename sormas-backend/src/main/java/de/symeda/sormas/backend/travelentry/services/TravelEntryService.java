@@ -18,6 +18,7 @@ import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.api.EditPermissionType;
 import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
@@ -187,8 +188,13 @@ public class TravelEntryService extends BaseTravelEntryService {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public boolean isTravelEntryEditAllowed(TravelEntry travelEntry) {
-		return userService.hasRight(UserRight.TRAVEL_ENTRY_EDIT) && inJurisdictionOrOwned(travelEntry);
+	public EditPermissionType isTravelEntryEditAllowed(TravelEntry travelEntry) {
+
+		if (!userService.hasRight(UserRight.TRAVEL_ENTRY_EDIT) || !inJurisdictionOrOwned(travelEntry)) {
+			return EditPermissionType.REFUSED;
+		}
+
+		return super.getEditPermissionType(travelEntry);
 	}
 
 	@Override

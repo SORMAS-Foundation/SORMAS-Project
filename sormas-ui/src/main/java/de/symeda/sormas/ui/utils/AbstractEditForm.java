@@ -228,11 +228,7 @@ public abstract class AbstractEditForm<DTO> extends AbstractForm<DTO> implements
 		// Make sure that the ComboBox still contains a pre-selected inactive infrastructure entity
 		field.addValueChangeListener(e -> {
 			InfrastructureDataReferenceDto value = (InfrastructureDataReferenceDto) e.getProperty().getValue();
-			if (value != null && !field.containsId(value)) {
-				InfrastructureDataReferenceDto inactiveValue = value.clone();
-				inactiveValue.setCaption(value.getCaption() + " (" + I18nProperties.getString(Strings.inactive) + ")");
-				field.addItem(inactiveValue);
-			}
+			FieldHelper.updateInactiveInfrastructureItem(field, value);
 		});
 		return field;
 	}

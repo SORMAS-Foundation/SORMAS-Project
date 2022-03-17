@@ -27,6 +27,7 @@ import javax.validation.Valid;
 
 import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
@@ -123,7 +124,7 @@ public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, C
 
 	List<SimilarContactDto> getMatchingContacts(ContactSimilarityCriteria criteria);
 
-	boolean isContactEditAllowed(String contactUuid);
+	EditPermissionType isContactEditAllowed(String contactUuid);
 
 	boolean doesExternalTokenExist(String externalToken, String contactUuid);
 
@@ -138,4 +139,10 @@ public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, C
 	void updateCompleteness(String uuid);
 
 	void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
+
+	int saveBulkContacts(
+		List<String> contactUuidlist,
+		@Valid ContactBulkEditData updatedContacBulkEditData,
+		boolean classificationChange,
+		boolean contactOfficerChange);
 }
