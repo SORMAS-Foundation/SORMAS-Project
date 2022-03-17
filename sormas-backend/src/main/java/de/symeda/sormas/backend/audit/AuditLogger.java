@@ -32,13 +32,14 @@ import org.slf4j.LoggerFactory;
 
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
+import java.lang.reflect.Method;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashSet;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
@@ -54,10 +55,12 @@ public class AuditLogger {
 	private static final Logger logger = LoggerFactory.getLogger(AuditLogger.class);
 	private final Logger auditLogger;
 	private final String auditSourceSite;
+	private final Map<String, AuditEvent.AuditEventAction> actionMap;
 
 	private AuditLogger(String auditSourceSite) {
 		auditLogger = LogSink.getInstance().getAuditLogger();
 		this.auditSourceSite = auditSourceSite;
+		actionMap = new HashMap<>();
 	}
 
 	public static synchronized AuditLogger getInstance() {
@@ -135,13 +138,13 @@ public class AuditLogger {
 		accept(applicationStartAudit);
 	}
 
-	public void logBackendCall(String agentName, String agentUuid, String calledMethod, List<String> params, String returnValue, Date start) {
+	public void logBackendCall(String agentName, String agentUuid, Method calledMethod, List<String> params, String returnValue, Date start) {
 		AuditEvent backendCall = new AuditEvent();
 
 		// backendCall.setType();
 		// backendCall.setSubType();
 
-		backendCall.setAction(inferAction(calledMethod));
+		backendCall.setAction(inferAction(calledMethod.getName()));
 		Period period = new Period();
 		period.setStart(start);
 		Date end = Calendar.getInstance(TimeZone.getDefault()).getTime();
@@ -183,7 +186,7 @@ public class AuditLogger {
 		backendCall.setSource(source);
 
 		AuditEvent.AuditEventEntityComponent entity = new AuditEvent.AuditEventEntityComponent();
-		entity.setWhat(new Reference(calledMethod));
+		entity.setWhat(new Reference(calledMethod.toString()));
 
 		List<AuditEvent.AuditEventEntityDetailComponent> details = new ArrayList<>();
 		params.forEach(p -> {
@@ -204,21 +207,32 @@ public class AuditLogger {
 	}
 
 	private AuditEvent.AuditEventAction inferAction(String calledMethod) {
-		// todo last element
-		calledMethod = calledMethod.split("\\.")[1];
-		if (createPrefix.contains(calledMethod)) {
-			return AuditEvent.AuditEventAction.C;
-		} else if (readPrefix.contains(calledMethod)) {
-			return AuditEvent.AuditEventAction.R;
-		} else if (updatePrefix.contains(calledMethod)) {
-			return AuditEvent.AuditEventAction.U;
-		} else if (deletePrefix.contains(calledMethod)) {
-			return AuditEvent.AuditEventAction.D;
-		} else if (executePrefix.contains(calledMethod)) {
-			return AuditEvent.AuditEventAction.E;
-		} else {
-			// todo what should be do by default?
-			return AuditEvent.AuditEventAction.E;
+
+		AuditEvent.AuditEventAction cached = actionMap.get(calledMethod);
+		if (cached != null) {
+			return cached;
 		}
+
+		AuditEvent.AuditEventAction infered;
+		if (methodsStartsWith(calledMethod, createPrefix)) {
+			infered = AuditEvent.AuditEventAction.C;
+		} else if (methodsStartsWith(calledMethod, readPrefix)) {
+			infered = AuditEvent.AuditEventAction.R;
+		} else if (methodsStartsWith(calledMethod, updatePrefix)) {
+			infered = AuditEvent.AuditEventAction.U;
+		} else if (methodsStartsWith(calledMethod, deletePrefix)) {
+			infered = AuditEvent.AuditEventAction.D;
+		} else if (methodsStartsWith(calledMethod, executePrefix)) {
+			infered = AuditEvent.AuditEventAction.E;
+		} else {
+			infered = AuditEvent.AuditEventAction.E;
+		}
+		actionMap.put(calledMethod, infered);
+		return infered;
 	}
+
+	private boolean methodsStartsWith(String methodName, Set<String> prefixes) {
+		return prefixes.stream().anyMatch(methodName::startsWith);
+	}
+
 }

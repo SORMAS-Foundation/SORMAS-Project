@@ -94,7 +94,7 @@ public class AuditLoggerInterceptor {
 		String returnValue = printObject(result);
 
 		AuditLogger.getInstance()
-			.logBackendCall(sessionContext.getCallerPrincipal().getName(), agentUuid, calledMethod.toString(), parameters, returnValue, start);
+			.logBackendCall(sessionContext.getCallerPrincipal().getName(), agentUuid, calledMethod, parameters, returnValue, start);
 
 		return result;
 	}

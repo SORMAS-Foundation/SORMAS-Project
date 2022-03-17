@@ -63,7 +63,7 @@ import de.symeda.sormas.backend.util.QueryHelper;
 @Stateless(name = "SubcontinentFacade")
 public class SubcontinentFacadeEjb
 	extends
-        AbstractInfrastructureFacadeEjb<Subcontinent, SubcontinentDto, SubcontinentIndexDto, SubcontinentReferenceDto, SubcontinentService, SubcontinentCriteria>
+	AbstractInfrastructureFacadeEjb<Subcontinent, SubcontinentDto, SubcontinentIndexDto, SubcontinentReferenceDto, SubcontinentService, SubcontinentCriteria>
 	implements SubcontinentFacade {
 
 	@EJB
@@ -195,10 +195,6 @@ public class SubcontinentFacadeEjb
 			.map(SubcontinentFacadeEjb::toReferenceDto)
 			.sorted(Comparator.comparing(SubcontinentReferenceDto::getCaption))
 			.collect(Collectors.toList());
-	}
-
-	@Override
-	public void foobarFoo(String fobar) {
 	}
 
 	@Override
