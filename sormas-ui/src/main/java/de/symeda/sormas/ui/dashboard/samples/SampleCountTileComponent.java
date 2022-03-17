@@ -33,7 +33,7 @@ public class SampleCountTileComponent extends VerticalLayout {
 	private static final long serialVersionUID = 6582975657305031105L;
 
 	public SampleCountTileComponent(SampleCountType sampleCountType, Long count, Long countDifference) {
-		createLayout(sampleCountType, count, countDifference);
+		createLayout(sampleCountType, count == null ? 0 : count, countDifference == null ? 0 : countDifference);
 		setMargin(false);
 		setSpacing(false);
 	}
