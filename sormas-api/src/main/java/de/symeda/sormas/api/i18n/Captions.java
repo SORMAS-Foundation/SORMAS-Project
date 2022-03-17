@@ -1735,8 +1735,6 @@ public interface Captions {
 	String Sample_labDetails = "Sample.labDetails";
 	String Sample_labSampleID = "Sample.labSampleID";
 	String Sample_labUser = "Sample.labUser";
-	String SampleShipmentStatus = "sampleShipmentStatus";
-	String SampleSamples = "sampleSamples";
 	String Sample_noTestPossibleReason = "Sample.noTestPossibleReason";
 	String Sample_otherLab = "Sample.otherLab";
 	String Sample_pathogenTestCount = "Sample.pathogenTestCount";
@@ -1860,8 +1858,10 @@ public interface Captions {
 	String sampleReferredShort = "sampleReferredShort";
 	String sampleReferredTo = "sampleReferredTo";
 	String sampleReferredToInternal = "sampleReferredToInternal";
+	String sampleSamples = "sampleSamples";
 	String sampleSamplesList = "sampleSamplesList";
 	String sampleSelect = "sampleSelect";
+	String sampleShipmentStatus = "sampleShipmentStatus";
 	String sampleShipped = "sampleShipped";
 	String sampleSpecimenNotAdequate = "sampleSpecimenNotAdequate";
 	String sex = "sex";
