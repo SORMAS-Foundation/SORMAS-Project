@@ -1042,6 +1042,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			rdcf.region,
 			rdcf.district,
 			rdcf.pointOfEntry);
+
 		// DENGUE Travel Entry
 		PersonDto personWithDengue = creator.createPerson("Person Dengue", "Test");
 		creator.createTravelEntry(
@@ -1051,6 +1052,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			rdcf.region,
 			rdcf.district,
 			rdcf.pointOfEntry);
+
 		//National User with no restrictions can see all the travel entries
 		List<PersonIndexDto> personIndexDtos = getPersonFacade().getIndexList(criteria, 0, 100, null);
 		assertEquals(2, personIndexDtos.size());

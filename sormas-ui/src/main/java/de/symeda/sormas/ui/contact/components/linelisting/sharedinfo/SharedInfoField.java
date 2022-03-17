@@ -20,7 +20,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.contact.components.linelisting.CaseSelector;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -118,7 +117,7 @@ public class SharedInfoField extends CustomField<SharedInfoFieldDto> {
 		layout.addComponent(sharedInformationBar);
 
 		UserProvider currentUserProvider = UserProvider.getCurrent();
-		if (currentUserProvider != null && UserRole.isSupervisor(currentUserProvider.getUserRoles())) {
+		if (currentUserProvider != null && currentUserProvider.hasRegionJurisdictionLevel()) {
 			RegionReferenceDto userRegion = currentUserProvider.getUser().getRegion();
 			region.setValue(userRegion);
 			region.setVisible(false);

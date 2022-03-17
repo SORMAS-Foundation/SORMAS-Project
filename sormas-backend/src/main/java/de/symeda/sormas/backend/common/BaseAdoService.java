@@ -44,6 +44,7 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.user.UserRight;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -75,6 +76,10 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 
 	public User getCurrentUser() {
 		return currentUserService.getCurrentUser();
+	}
+
+	public boolean hasCurrentUserRight(UserRight userRight) {
+		return currentUserService.hasUserRight(userRight);
 	}
 
 	protected Class<ADO> getElementClass() {

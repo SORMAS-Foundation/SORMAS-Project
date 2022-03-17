@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.task;
 
+import static java.util.Objects.nonNull;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -39,7 +41,6 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -139,8 +140,7 @@ public class TaskGridComponent extends VerticalLayout {
 			Button myTasks = createAndAddStatusButton(Captions.taskMyTasks, MY_TASKS, buttonFilterLayout);
 
 			// Default filter for lab users (that don't have any other role) is "My tasks"
-			if ((UserProvider.getCurrent().hasUserRole(UserRole.LAB_USER) || UserProvider.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER))
-				&& UserProvider.getCurrent().getUserRoles().size() == 1) {
+			if (nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasLaboratoryOrExternalLaboratoryJurisdictionLevel()) {
 				activeStatusButton = myTasks;
 			} else {
 				activeStatusButton = allTasks;

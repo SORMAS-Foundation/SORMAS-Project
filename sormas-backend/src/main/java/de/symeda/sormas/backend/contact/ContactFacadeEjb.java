@@ -62,12 +62,12 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.EditPermissionType;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -2159,6 +2159,16 @@ public class ContactFacadeEjb
 		}
 
 		return completeness;
+	}
+
+	private User getRandomDistrictContactResponsible(District district) {
+
+		return userService.getRandomDistrictUser(district, UserRight.CONTACT_RESPONSIBLE);
+	}
+
+	public User getRandomRegionContactResponsible(Region region) {
+
+		return userService.getRandomRegionUser(region, UserRight.CONTACT_RESPONSIBLE);
 	}
 
 	@LocalBean
