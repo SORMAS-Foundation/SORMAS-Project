@@ -143,9 +143,6 @@ public class CaseDirectoryPage {
   public static final By EPIDEMIOLOGICAL_DATA_TAB = By.cssSelector("#tab-cases-epidata");
 
   public static By getResultByIndex(String rowNumber) {
-    return By.xpath(
-        String.format(
-            "/html/body/div[1]/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div[3]/div/div[3]/table/tbody/tr[%s]/td[1]",
-            rowNumber));
+    return By.xpath(String.format("//tr[%s]//a", rowNumber));
   }
 }
