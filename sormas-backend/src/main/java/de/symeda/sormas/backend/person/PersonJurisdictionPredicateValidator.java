@@ -77,7 +77,7 @@ public class PersonJurisdictionPredicateValidator extends PredicateJurisdictionV
 
 	@Override
 	protected Predicate isInJurisdiction() {
-		return isInJurisdictionByJurisdictionLevel(user.getCalculatedJurisdictionLevel());
+		return isInJurisdictionByJurisdictionLevel(user.getJurisdictionLevel());
 	}
 
 	@Override

@@ -397,6 +397,14 @@
 	</security-role>
 
 	<security-role>
+		<role-name>PERFORM_BULK_OPERATIONS_LAB_MESSAGES</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>PERFORM_BULK_OPERATIONS_PSEUDONYM</role-name>
+	</security-role>
+
+	<security-role>
 		<role-name>INFRASTRUCTURE_CREATE</role-name>
 	</security-role>
 
@@ -589,10 +597,6 @@
 	</security-role>
 
 	<security-role>
-		<role-name>PERFORM_BULK_OPERATIONS_LAB_MESSAGES</role-name>
-	</security-role>
-
-	<security-role>
 		<role-name>TRAVEL_ENTRY_MANAGEMENT_ACCESS</role-name>
 	</security-role>
 
@@ -643,5 +647,21 @@
 	<security-role>
 		<role-name>EXTERNAL_VISITS</role-name>
 	</security-role>
-	
+
+	<security-role>
+		<role-name>CASE_RESPONSIBLE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>CONTACT_RESPONSIBLE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>EVENT_RESPONSIBLE</role-name>
+	</security-role>
+
+	<security-role>
+		<role-name>DEV_MODE</role-name>
+	</security-role>
+
 </web-app>

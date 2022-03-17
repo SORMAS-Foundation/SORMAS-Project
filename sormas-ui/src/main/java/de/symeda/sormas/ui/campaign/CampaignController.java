@@ -18,20 +18,16 @@ package de.symeda.sormas.ui.campaign;
 import static com.vaadin.v7.data.Validator.InvalidValueException;
 import static de.symeda.sormas.api.campaign.data.CampaignFormDataCriteria.CAMPAIGN;
 
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
@@ -46,8 +42,8 @@ import de.symeda.sormas.ui.campaign.campaigndata.CampaignFormDataView;
 import de.symeda.sormas.ui.campaign.campaigns.CampaignEditForm;
 import de.symeda.sormas.ui.campaign.campaigns.CampaignView;
 import de.symeda.sormas.ui.campaign.campaigns.CampaignsView;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class CampaignController {
@@ -87,37 +83,13 @@ public class CampaignController {
 	}
 
 	private void createArchiveButton(CommitDiscardWrapperComponent<CampaignEditForm> campaignComponent, CampaignDto campaign) {
-		boolean archived = FacadeProvider.getCampaignFacade().isArchived(campaign.getUuid());
-		Button archiveCampaignButton = ButtonHelper.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {
-			if (campaignComponent.isModified()) {
-				campaignComponent.commit();
-			}
-
-			if (archived) {
-				ControllerProvider.getArchiveController()
-					.dearchiveEntity(
-						campaign,
-						FacadeProvider.getCampaignFacade(),
-						Strings.headingDearchiveCampaign,
-						Strings.confirmationDearchiveCampaign,
-						Strings.entityCampaign,
-						Strings.messageCampaignDearchived,
-						() -> navigateToCampaign(campaign.getUuid()));
-			} else {
-				ControllerProvider.getArchiveController()
-					.archiveEntity(
-						campaign,
-						FacadeProvider.getCampaignFacade(),
-						Strings.headingArchiveCampaign,
-						Strings.confirmationArchiveCampaign,
-						Strings.entityCampaign,
-						Strings.messageCampaignArchived,
-						() -> navigateToCampaign(campaign.getUuid()));
-			}
-		}, ValoTheme.BUTTON_LINK);
-
-		campaignComponent.getButtonsPanel().addComponentAsFirst(archiveCampaignButton);
-		campaignComponent.getButtonsPanel().setComponentAlignment(archiveCampaignButton, Alignment.BOTTOM_LEFT);
+		ControllerProvider.getArchiveController()
+			.addArchivingButton(
+				campaign,
+				FacadeProvider.getCampaignFacade(),
+				CoreEntityArchiveMessages.CAMPAIGN,
+				campaignComponent,
+				() -> navigateToCampaign(campaign.getUuid()));
 	}
 
 	public void createCampaignDataForm(CampaignReferenceDto campaign, CampaignFormMetaReferenceDto campaignForm) {

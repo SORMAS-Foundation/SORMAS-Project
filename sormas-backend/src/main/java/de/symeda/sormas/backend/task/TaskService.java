@@ -48,6 +48,7 @@ import de.symeda.sormas.api.task.TaskJurisdictionFlagsDto;
 import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
@@ -148,10 +149,8 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 
 		// National users can access all tasks in the system that are assigned in their jurisdiction
 		User currentUser = getCurrentUser();
-		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
-		if (currentUser == null
-			|| (jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
-			|| currentUser.hasAnyUserRole(UserRole.REST_USER)) {
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		if (currentUser == null || (jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))) {
 			return assigneeFilter;
 		}
 
@@ -180,7 +179,8 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 	}
 
 	public Predicate createAssigneeFilter(CriteriaBuilder cb, Join<?, User> assigneeUserJoin) {
-		return CriteriaBuilderHelper.or(cb, cb.isNull(assigneeUserJoin.get(User.UUID)), userService.createJurisdictionFilter(cb, assigneeUserJoin));
+		return CriteriaBuilderHelper
+			.or(cb, cb.isNull(assigneeUserJoin.get(User.UUID)), userService.createCurrentUserJurisdictionFilter(cb, assigneeUserJoin));
 	}
 
 	public long getCount(TaskCriteria taskCriteria) {
@@ -452,8 +452,8 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 			// 1) The contact officer that is responsible for the contact
 			assignee = contact.getContactOfficer();
 		} else {
-			// 2) A random contact officer from the contact's, contact person's or contact case's district
-			Function<District, User> lookupByDistrict = district -> userService.getRandomUser(district, UserRole.CONTACT_OFFICER);
+			// 2) A random user with user right CONTACT_RESPONSIBLE from the contact's, contact person's or contact case's district
+			Function<District, User> lookupByDistrict = district -> userService.getRandomDistrictUser(district, UserRight.CONTACT_RESPONSIBLE);
 			if (contact.getDistrict() != null) {
 				assignee = lookupByDistrict.apply(contact.getDistrict());
 			}
@@ -471,8 +471,8 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		}
 
 		if (assignee == null) {
-			// 3) Assign a random contact supervisor from the contact's, contact person's or contact case's region
-			Function<Region, User> lookupByRegion = region -> userService.getRandomUser(region, UserRole.CONTACT_SUPERVISOR);
+			// 3) Assign a random user with user right CONTACT_RESPONSIBLE from the contact's, contact person's or contact case's region
+			Function<Region, User> lookupByRegion = region -> userService.getRandomRegionUser(region, UserRight.CONTACT_RESPONSIBLE);
 			if (contact.getRegion() != null) {
 				assignee = lookupByRegion.apply(contact.getRegion());
 			}

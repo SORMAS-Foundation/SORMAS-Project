@@ -61,7 +61,9 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDetailedReferenceDto;
@@ -94,7 +96,6 @@ import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -241,7 +242,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 		Event existingEvent = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 
-		if (internal && existingEvent != null && !service.isEventEditAllowed(existingEvent)) {
+		if (internal && existingEvent != null && !service.isEventEditAllowed(existingEvent).equals(EditPermissionType.ALLOWED)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEventNotEditable));
 		}
 
@@ -1263,6 +1264,16 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		return subordinateEventUuids;
 	}
 
+	private User getRandomDistrictEventResponsible(District district) {
+
+		return userService.getRandomDistrictUser(district, UserRight.EVENT_RESPONSIBLE);
+	}
+
+	private User getRandomRegionEventResponsible(Region region) {
+
+		return userService.getRandomRegionUser(region, UserRight.EVENT_RESPONSIBLE);
+	}
+
 	@Override
 	public boolean hasRegionAndDistrict(String eventUuid) {
 		return service.hasRegionAndDistrict(eventUuid);
@@ -1273,7 +1284,41 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		return service.hasAnyEventParticipantWithoutJurisdiction(eventUuid);
 	}
 
-	public Boolean isEventEditAllowed(String eventUuid) {
+	@Override
+	public int saveBulkEvents(
+		List<String> eventUuidList,
+		EventDto updatedTempEvent,
+		boolean eventStatusChange,
+		boolean eventInvestigationStatusChange,
+		boolean eventManagementStatusChange) {
+
+		int changedEvents = 0;
+		for (String evetUuid : eventUuidList) {
+			Event event = service.getByUuid(evetUuid);
+
+			if (service.isEventEditAllowed(event).equals(EditPermissionType.ALLOWED)) {
+				EventDto eventDto = toDto(event);
+				if (eventStatusChange) {
+					eventDto.setEventStatus(updatedTempEvent.getEventStatus());
+				}
+
+				if (eventInvestigationStatusChange) {
+					eventDto.setEventInvestigationStatus(updatedTempEvent.getEventInvestigationStatus());
+				}
+
+				if (eventManagementStatusChange) {
+					eventDto.setEventManagementStatus(updatedTempEvent.getEventManagementStatus());
+				}
+
+				save(eventDto);
+				changedEvents++;
+			}
+		}
+
+		return changedEvents;
+	}
+
+	public EditPermissionType isEventEditAllowed(String eventUuid) {
 		Event event = service.getByUuid(eventUuid);
 		return service.isEventEditAllowed(event);
 	}

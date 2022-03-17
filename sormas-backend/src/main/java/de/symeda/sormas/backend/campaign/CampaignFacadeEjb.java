@@ -24,6 +24,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.EditPermissionType;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -40,6 +41,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinitionFacadeEjb;
@@ -165,6 +167,9 @@ public class CampaignFacadeEjb
 	public CampaignDto save(@Valid @NotNull CampaignDto dto) {
 		validate(dto);
 		Campaign campaign = fillOrBuildEntity(dto, service.getByUuid(dto.getUuid()), true);
+		if (!service.getEditPermissionType(campaign).equals(EditPermissionType.ALLOWED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEntityNotEditable));
+		}
 		service.ensurePersisted(campaign);
 		return toDto(campaign);
 	}
@@ -402,6 +407,12 @@ public class CampaignFacadeEjb
 	@Override
 	public AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid) {
 		return null; // campaigns do not support automatic deletion yet
+	}
+
+	@Override
+	public EditPermissionType isCampaignEditAllowed(String caseUuid) {
+		Campaign campaign = service.getByUuid(caseUuid);
+		return service.getEditPermissionType(campaign);
 	}
 
 	@LocalBean
