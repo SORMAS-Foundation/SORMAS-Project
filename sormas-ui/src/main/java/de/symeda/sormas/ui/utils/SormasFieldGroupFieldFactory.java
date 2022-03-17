@@ -31,6 +31,7 @@ import de.symeda.sormas.ui.exposure.ExposuresField;
 import de.symeda.sormas.ui.hospitalization.PreviousHospitalizationsField;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.person.LocationsField;
+import de.symeda.sormas.ui.person.PersonContactDetailsField;
 import de.symeda.sormas.ui.utils.components.JsonForm;
 import de.symeda.sormas.ui.utils.components.MultiSelect;
 import de.symeda.sormas.ui.vaccination.VaccinationsField;
@@ -126,6 +127,8 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			return (T) new ActivityAsCaseField(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (LocationsField.class.isAssignableFrom(fieldType)) {
 			return (T) new LocationsField(fieldVisibilityCheckers, fieldAccessCheckers);
+		} else if (PersonContactDetailsField.class.isAssignableFrom(fieldType)) {
+			return (T) new PersonContactDetailsField(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (VaccinationsField.class.isAssignableFrom(fieldType)) {
 			return (T) new VaccinationsField(fieldAccessCheckers);
 		} else if (JsonForm.class.isAssignableFrom(fieldType)) {
