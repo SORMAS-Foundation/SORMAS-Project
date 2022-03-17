@@ -10,6 +10,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
@@ -95,7 +96,7 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-	public Boolean isTravelEntryEditAllowed(String travelEntryUuid) {
+	public EditPermissionType isTravelEntryEditAllowed(String travelEntryUuid) {
 		TravelEntry travelEntry = service.getByUuid(travelEntryUuid);
 		return service.isTravelEntryEditAllowed(travelEntry);
 	}

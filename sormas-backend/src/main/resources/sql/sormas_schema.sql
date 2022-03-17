@@ -10526,6 +10526,7 @@ ALTER TABLE weeklyreportentry ADD COLUMN change_user_id BIGINT,
 ALTER TABLE weeklyreportentry_history ADD COLUMN change_user_id BIGINT;
 
 INSERT INTO schema_version (version_number, comment) VALUES (447, 'Changed by user #7323');
+
 -- 2022-03-08 Add dateOfArrival to travel entries #7845
 ALTER TABLE travelentry ADD COLUMN dateofarrival timestamp without time zone;
 ALTER TABLE travelentry_history ADD COLUMN dateofarrival timestamp without time zone;

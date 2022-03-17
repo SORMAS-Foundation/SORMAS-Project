@@ -82,7 +82,6 @@ import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.api.utils.ExtendedReduced;
@@ -478,11 +477,11 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 			if (districtDto == null && getValue().getCaze() != null) {
 				CaseDataDto caseDto = FacadeProvider.getCaseFacade().getCaseDataByUuid(getValue().getCaze().getUuid());
 
-				FieldHelper.updateOfficersField(contactOfficerField, caseDto, UserRole.CONTACT_OFFICER);
+				FieldHelper.updateOfficersField(contactOfficerField, caseDto, UserRight.CONTACT_RESPONSIBLE);
 			} else {
 				FieldHelper.updateItems(
 					contactOfficerField,
-					districtDto != null ? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, UserRole.CONTACT_OFFICER) : null);
+					districtDto != null ? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, UserRight.CONTACT_RESPONSIBLE) : null);
 			}
 		});
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
@@ -597,7 +596,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					getValue().getDistrict() != null ? getValue().getDistrict() : caseDto != null ? caseDto.getDistrict() : null;
 				if (referenceDistrict != null) {
 					contactOfficerField
-						.addItems(FacadeProvider.getUserFacade().getUserRefsByDistrict(referenceDistrict, false, UserRole.CONTACT_OFFICER));
+						.addItems(FacadeProvider.getUserFacade().getUserRefsByDistrict(referenceDistrict, UserRight.CONTACT_RESPONSIBLE));
 				}
 
 				getContent().removeComponent(TO_CASE_BTN_LOC);

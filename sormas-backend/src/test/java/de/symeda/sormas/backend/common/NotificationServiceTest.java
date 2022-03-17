@@ -1,19 +1,16 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.backend.common;
@@ -22,12 +19,14 @@ import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 import static org.mockito.ArgumentMatchers.any;
 
+import java.util.Collection;
 import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import org.junit.Before;
+import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.user.NotificationProtocol;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.InjectMocks;
@@ -38,6 +37,7 @@ import org.mockito.junit.MockitoJUnitRunner;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
@@ -87,11 +87,11 @@ public class NotificationServiceTest extends AbstractBeanTest {
 		UserDto survSup = creator.createUser(rdcf, "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 		UserDto caseSup = creator.createUser(rdcf, "Case", "Sup", UserRole.CASE_SUPERVISOR);
 
-		Mockito.when(userService.getAllByRegionsAndUserRoles(any(), any())).then(invocation -> {
-			return getUserService().getAllByRegionsAndUserRoles(
+		Mockito.when(userService.getAllByRegionsAndNotificationTypes(any(), any(), any())).then(invocation -> {
+			return getUserService().getAllByRegionsAndNotificationTypes(
 				(List<Region>) invocation.getArgument(0),
-				(UserRole) invocation.getArgument(1),
-				(UserRole) invocation.getArgument(2));
+				(NotificationProtocol) invocation.getArgument(1),
+				(Collection<NotificationType>) invocation.getArgument(2));
 		});
 		Mockito.doAnswer(invocation -> {
 			Map<User, String> userMessages = (Map<User, String>) invocation.getArgument(0);
@@ -120,30 +120,32 @@ public class NotificationServiceTest extends AbstractBeanTest {
 		Region region = getRegionService().getByReferenceDto(rdcf.region);
 
 		UserDto survSup = creator.createUser(rdcf, "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		UserDto caseSup = creator.createUser(rdcf, "Case", "Sup", UserRole.CASE_SUPERVISOR);
+		UserDto survOff = creator.createUser(rdcf, "Case", "Sup", UserRole.SURVEILLANCE_OFFICER);
 
-		User caseSupUser = getUserService().getByReferenceDto(caseSup.toReference());
+		User survOffUser = getUserService().getByReferenceDto(survOff.toReference());
 
-		Mockito.when(userService.getAllByRegionsAndUserRoles(any(), any())).then(invocation -> {
-			// load only for SURVEILLANCE_SUPERVISOR, so the additional CASE_SUPERVISOR user will be added in the notification service
-			return getUserService().getAllByRegionsAndUserRoles(
-				(List<Region>) invocation.getArgument(0),
-					UserRole.SURVEILLANCE_SUPERVISOR);
-		});
-		Mockito.doAnswer(invocation -> {
-			Map<User, String> userMessages = (Map<User, String>) invocation.getArgument(0);
+//		Mockito.when(userService.getAllByRegionsAndNotificationTypes(any(),any(), any())).then(invocation -> {
+//			// load only for SURVEILLANCE_SUPERVISOR, so the additional CASE_SUPERVISOR user will be added in the notification service
+//			return getUserService().getAllByRegionsAndNotificationTypes(
+//				(List<Region>) invocation.getArgument(0),
+//				(NotificationProtocol) invocation.getArgument(1),
+//				Collections.singletonList(NotificationType.REGION));
+//		});
+//		Mockito.doAnswer(invocation -> {
+//			Map<User, String> userMessages = (Map<User, String>) invocation.getArgument(0);
+//
+//			assertThat(userMessages.size(), is(2));
+//			assertThat(userMessages.get(getUserService().getByReferenceDto(survSup.toReference())), is("Test message"));
+//			assertThat(userMessages.get(getUserService().getByReferenceDto(survOff.toReference())), is("Test message"));
+//
+//			return null;
+//		}).when(messagingService).sendEmail(any(), any(), any());
 
-			assertThat(userMessages.size(), is(2));
-			assertThat(userMessages.get(getUserService().getByReferenceDto(survSup.toReference())), is("Test message"));
-			assertThat(userMessages.get(getUserService().getByReferenceDto(caseSup.toReference())), is("Test message"));
-
-			return null;
-		}).when(messagingService).sendEmail(any(), any(), any());
-
+		// VISIT_COMPLETED would normally only be sent to the SURVEILLANCE_SUPERVISOR
 		notificationService.sendNotifications(
 			NotificationType.VISIT_COMPLETED,
 			Collections.singletonList(region),
-			Collections.singletonList(caseSupUser),
+			Collections.singletonList(survOffUser),
 			MessageSubject.VISIT_COMPLETED,
 			"Test message");
 
