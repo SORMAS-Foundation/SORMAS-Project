@@ -4,9 +4,6 @@ import static junit.framework.TestCase.assertEquals;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.ArgumentMatchers.eq;
 
-import java.util.Arrays;
-import java.util.Collections;
-
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -58,7 +55,7 @@ public class TaskServiceTest extends AbstractBeanTest {
 		Contact contact = new Contact();
 		contact.setDistrict(district);
 
-		Mockito.when(userService.getRandomUser(any(District.class), eq(UserRight.CONTACT_RESPONSIBLE))).thenReturn(contactOfficer);
+		Mockito.when(userService.getRandomDistrictUser(any(District.class), eq(UserRight.CONTACT_RESPONSIBLE))).thenReturn(contactOfficer);
 
 		User actualAssignee = taskService.getTaskAssignee(contact);
 		assertEquals(actualAssignee.getId(), contactOfficer.getId());
@@ -76,7 +73,7 @@ public class TaskServiceTest extends AbstractBeanTest {
 		Region region = new Region();
 		contact.setRegion(region);
 
-		Mockito.when(userService.getRandomUser(any(Region.class), eq(UserRight.CONTACT_RESPONSIBLE))).thenReturn(contactSupervisor);
+		Mockito.when(userService.getRandomRegionUser(any(Region.class), eq(UserRight.CONTACT_RESPONSIBLE))).thenReturn(contactSupervisor);
 
 		User actualAssignee = taskService.getTaskAssignee(contact);
 		assertEquals(actualAssignee.getId(), contactSupervisor.getId());
@@ -92,7 +89,7 @@ public class TaskServiceTest extends AbstractBeanTest {
 		Case caze = new Case();
 		contact.setCaze(caze);
 
-		Mockito.when(userService.getRandomUser(any(Region.class), any())).thenReturn(null);
+		Mockito.when(userService.getRandomRegionUser(any(Region.class), any())).thenReturn(null);
 
 		taskService.getTaskAssignee(contact);
 	}

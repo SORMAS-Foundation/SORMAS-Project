@@ -226,14 +226,15 @@ public class UserFacadeEjb implements UserFacade {
 		switch (superordinateJurisdiction) {
 		case NATION:
 			superiorUsersList =
-				userService.getUserReferencesByJurisdictions(null, null, null, Collections.singletonList(superordinateJurisdiction));
+				userService.getUserReferencesByJurisdictions(null, null, null, Collections.singletonList(superordinateJurisdiction), null);
 			break;
 		case REGION:
 			superiorUsersList = userService.getUserReferencesByJurisdictions(
 				Collections.singletonList(user.getRegion().getUuid()),
 				null,
 				null,
-				Collections.singletonList(superordinateJurisdiction));
+				Collections.singletonList(superordinateJurisdiction),
+				null);
 			break;
 		case DISTRICT:
 			// if user is assigned to a facility, but that facility is not assigned to a district, show no superordinate users. Else, show users of the district (and community) in which the facility is located
@@ -254,13 +255,19 @@ public class UserFacadeEjb implements UserFacade {
 			if (community == null) {
 				superiorUsersList =
 					userService
-						.getUserReferencesByJurisdictions(null, Collections.singletonList(district.getUuid()), null, superordinateJurisdictions);
+						.getUserReferencesByJurisdictions(
+							null,
+							Collections.singletonList(district.getUuid()),
+							null,
+							superordinateJurisdictions,
+							null);
 			} else if (district != null) {
 				superiorUsersList = userService.getUserReferencesByJurisdictions(
 					null,
 					Collections.singletonList(district.getUuid()),
 					Collections.singletonList(community.getUuid()),
-					superordinateJurisdictions);
+					superordinateJurisdictions,
+					null);
 			}
 
 			break;

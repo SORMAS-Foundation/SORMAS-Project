@@ -68,7 +68,6 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.EditPermissionType;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -81,6 +80,7 @@ import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.AgeAndBirthDateDto;
@@ -2048,7 +2048,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			District reportingUserDistrict = caze.getReportingUser().getDistrict();
 
 			if (userRoleConfigFacade.hasUserRight(caze.getReportingUser().getUserRoles(), UserRight.CASE_RESPONSIBLE)
-				&& (reportingUserDistrict.equals(caze.getResponsibleDistrict()) || reportingUserDistrict.equals(caze.getDistrict()))) {
+				&& (reportingUserDistrict == null || reportingUserDistrict.equals(caze.getResponsibleDistrict()) || reportingUserDistrict.equals(caze.getDistrict()))) {
 				caze.setSurveillanceOfficer(caze.getReportingUser());
 			} else {
 				List<User> hospitalUsers = caze.getHealthFacility() != null && FacilityType.HOSPITAL.equals(caze.getHealthFacility().getType())
@@ -2961,7 +2961,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 
 		if (assignee == null) {
-			if (caze.getReportingUser() != null && (userRoleConfigFacade.hasUserRight(caze.getReportingUser().getUserRoles(), UserRight.TASK_ASSIGN))) {
+			if (caze.getReportingUser() != null
+				&& (userRoleConfigFacade.hasUserRight(caze.getReportingUser().getUserRoles(), UserRight.TASK_ASSIGN))) {
 				// 4) If the case was created by a surveillance supervisor, assign them
 				assignee = caze.getReportingUser();
 			} else {
@@ -2982,12 +2983,12 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	private User getRandomDistrictCaseResponsible(District district) {
 
-		return userService.getRandomUser(district, UserRight.CASE_RESPONSIBLE);
+		return userService.getRandomDistrictUser(district, UserRight.CASE_RESPONSIBLE);
 	}
 
 	private User getRandomRegionCaseResponsible(Region region) {
 
-		return userService.getRandomUser(region, UserRight.CASE_RESPONSIBLE);
+		return userService.getRandomRegionUser(region, UserRight.CASE_RESPONSIBLE);
 	}
 
 	@Override

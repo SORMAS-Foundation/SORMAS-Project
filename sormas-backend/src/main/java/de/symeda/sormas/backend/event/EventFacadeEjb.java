@@ -55,14 +55,15 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.EditPermissionType;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDetailedReferenceDto;
@@ -95,7 +96,6 @@ import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -1266,12 +1266,12 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 	private User getRandomDistrictEventResponsible(District district) {
 
-		return userService.getRandomUser(district, UserRight.EVENT_RESPONSIBLE);
+		return userService.getRandomDistrictUser(district, UserRight.EVENT_RESPONSIBLE);
 	}
 
 	private User getRandomRegionEventResponsible(Region region) {
 
-		return userService.getRandomUser(region, UserRight.EVENT_RESPONSIBLE);
+		return userService.getRandomRegionUser(region, UserRight.EVENT_RESPONSIBLE);
 	}
 
 	@Override

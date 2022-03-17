@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.user.UserRight;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -64,44 +65,53 @@ public class UserServiceTest extends AbstractBeanTest {
 
 		// 0. No conditions, test signature with userRoles varArg parameter
 		List<UserReference> result =
-			getUserService().getUserReferencesByJurisdictions(regionUuids, districtUuids, null,  null);
+			getUserService().getUserReferencesByJurisdictions(regionUuids, districtUuids, null,  null, null);
 		assertThat(result, hasSize(1));
 		UserReference admin = result.get(0);
 		assertThat(admin.getUserRoles(), containsInAnyOrder(UserRole.ADMIN, UserRole.NATIONAL_USER));
 
 		// 1a. Find admin with several conditions
 		jurisdictionLevels = Arrays.asList(JurisdictionLevel.NATION);
-		result = getUserService().getUserReferencesByJurisdictions(regionUuids, districtUuids, communityUuids, jurisdictionLevels);
+		result = getUserService().getUserReferencesByJurisdictions(regionUuids, districtUuids, communityUuids, jurisdictionLevels, null);
 		assertThat(result, contains(admin));
 		jurisdictionLevels = Arrays.asList(JurisdictionLevel.NATION, JurisdictionLevel.DISTRICT);
-		result = getUserService().getUserReferencesByJurisdictions(regionUuids, districtUuids, communityUuids, jurisdictionLevels);
+		result = getUserService().getUserReferencesByJurisdictions(regionUuids, districtUuids, communityUuids, jurisdictionLevels, null);
 		assertThat(result, contains(admin));
 
 		// 1b. Exclude admin by role
 		jurisdictionLevels = Arrays.asList(JurisdictionLevel.DISTRICT);
-		result = getUserService().getUserReferencesByJurisdictions(regionUuids, districtUuids, communityUuids, jurisdictionLevels);
+		result = getUserService().getUserReferencesByJurisdictions(regionUuids, districtUuids, communityUuids, jurisdictionLevels, null);
 		assertThat(result, is(empty()));
 
 		// 2. Exclude inactive user as overall condition
 		RDCF rdcf = creator.createRDCF();
 		UserDto supervisor = creator.createUser(rdcf, UserRole.CONTACT_SUPERVISOR);
 		jurisdictionLevels = Arrays.asList(JurisdictionLevel.REGION);
-		result = getUserService().getUserReferencesByJurisdictions(regionUuids, districtUuids, communityUuids, jurisdictionLevels);
+		result = getUserService().getUserReferencesByJurisdictions(regionUuids, districtUuids, communityUuids, jurisdictionLevels, null);
 		assertThat(result.get(0).getUuid(), equalTo(supervisor.getUuid()));
 		getUserFacade().disableUsers(Arrays.asList(supervisor.getUuid()));
-		result = getUserService().getUserReferencesByJurisdictions(regionUuids, districtUuids, communityUuids, jurisdictionLevels);
+		result = getUserService().getUserReferencesByJurisdictions(regionUuids, districtUuids, communityUuids, jurisdictionLevels, null);
 		assertThat(result, is(empty()));
 
 		// 3. regions filter
 		getUserFacade().enableUsers(Arrays.asList(supervisor.getUuid()));
-		result = getUserService().getUserReferencesByJurisdictions(Arrays.asList(rdcf.region.getUuid()), null, null, null);
+		result = getUserService().getUserReferencesByJurisdictions(Arrays.asList(rdcf.region.getUuid()), null, null, null, null);
 		assertThat(result, hasSize(1));
 		assertThat(result.get(0).getUuid(), equalTo(supervisor.getUuid()));
 
+		UserDto officer = creator.createUser(rdcf, UserRole.CONTACT_OFFICER);
+		result = getUserService().getUserReferencesByJurisdictions(Arrays.asList(rdcf.region.getUuid()), null, null, null, null);
+		assertThat(result, hasSize(2));
+
 		// 4. districts filter
-		result = getUserService().getUserReferencesByJurisdictions(null, Arrays.asList(rdcf.district.getUuid()), null, null);
-		assertThat(result, hasSize(1));
+		result = getUserService().getUserReferencesByJurisdictions(null, Arrays.asList(rdcf.district.getUuid()), null, null, null);
+		assertThat(result, hasSize(2));
 		assertThat(result.get(0).getUuid(), equalTo(supervisor.getUuid()));
+
+		// 5. user rights
+		result = getUserService().getUserReferencesByJurisdictions(null, Arrays.asList(rdcf.district.getUuid()), null, null, Arrays.asList(UserRight.CONTACT_RESPONSIBLE));
+		assertThat(result, hasSize(1));
+		assertThat(result.get(0).getUuid(), equalTo(officer.getUuid()));
 	}
 
 	@Test

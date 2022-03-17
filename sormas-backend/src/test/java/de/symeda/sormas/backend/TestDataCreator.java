@@ -23,7 +23,6 @@ import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
-import java.util.stream.Collectors;
 
 import org.jetbrains.annotations.NotNull;
 
@@ -144,8 +143,8 @@ public class TestDataCreator {
 
 		UserDto user = UserDto.build();
 		user.setFirstName("User");
-		user.setLastName("User");
-		user.setUserName("Username");
+		user.setLastName(userRole.toShortString());
+		user.setUserName(userRole.toString());
 		user.setUserRoles(new HashSet<>(Arrays.asList(userRole)));
 		user.setRegion(rdcf.region);
 		user.setDistrict(rdcf.district);
@@ -160,11 +159,23 @@ public class TestDataCreator {
 	}
 
 	public UserDto createUser(RDCFEntities rdcf, UserRole... roles) {
-		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "First", "Name", roles);
+		return createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			roles.length > 0 ? roles[0].toShortString() : "First",
+			"User",
+			roles);
 	}
 
 	public UserDto createUser(RDCF rdcf, UserRole... roles) {
-		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "First", "Name", roles);
+		return createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			roles.length > 0 ? roles[0].toShortString() : "First",
+			"User",
+			roles);
 	}
 
 	public UserDto createUser(RDCF rdcf, String firstName, String lastName, UserRole... roles) {

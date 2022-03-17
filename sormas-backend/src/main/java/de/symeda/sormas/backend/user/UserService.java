@@ -38,13 +38,13 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.user.NotificationProtocol;
-import de.symeda.sormas.api.user.NotificationType;
 import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.user.NotificationProtocol;
+import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
@@ -158,21 +158,21 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 	 * Condition combination if parameter is set:<br />
 	 * {@code ((regionUuids & districtUuids & filterByJurisdiction & userRoles) | includeSupervisors) & activeOnly}
 	 * 
-	 * @see #createJurisdictionFilter(CriteriaBuilder, From)
+	 * @see #createCurrentUserJurisdictionFilter(CriteriaBuilder, From)
 	 * @param regionUuids
 	 * @param districtUuids
-	 * @param filterByJurisdiction
+	 * @param filterByCurrentUserJurisdiction
 	 * @param activeOnly
 	 * @param userRights
 	 */
 	public List<UserReference> getUserReferences(
 		List<String> regionUuids,
 		List<String> districtUuids,
-		boolean filterByJurisdiction,
+		boolean filterByCurrentUserJurisdiction,
 		boolean activeOnly,
 		UserRight... userRights) {
 
-		return getUserReferences(regionUuids, districtUuids, null, filterByJurisdiction, activeOnly, Arrays.asList(userRights));
+		return getUserReferences(regionUuids, districtUuids, null, filterByCurrentUserJurisdiction, activeOnly, Arrays.asList(userRights));
 	}
 
 	/**
@@ -180,7 +180,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 	 * Condition combination if parameter is set:<br />
 	 * {@code ((regionUuids & districtUuids & communityUuids & filterByJurisdiction & userRoles) | includeSupervisors) & activeOnly}
 	 *
-	 * @see #createJurisdictionFilter(CriteriaBuilder, From)
+	 * @see #createCurrentUserJurisdictionFilter(CriteriaBuilder, From)
 	 * @param regionUuids
 	 * @param districtUuids
 	 * @param communityUuids
@@ -217,7 +217,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 			userEntityJoinUsed = true;
 		}
 		if (filterByJurisdiction) {
-			filter = CriteriaBuilderHelper.and(cb, filter, createJurisdictionFilter(cb, userRoot));
+			filter = CriteriaBuilderHelper.and(cb, filter, createCurrentUserJurisdictionFilter(cb, userRoot));
 			userEntityJoinUsed = true;
 		}
 
@@ -251,7 +251,8 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		List<String> regionUuids,
 		List<String> districtUuids,
 		List<String> communityUuids,
-		Collection<JurisdictionLevel> jurisdictionLevels) {
+		Collection<JurisdictionLevel> jurisdictionLevels,
+		Collection<UserRight> userRights) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<UserReference> cq = cb.createQuery(UserReference.class);
@@ -281,6 +282,12 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		if (CollectionUtils.isNotEmpty(jurisdictionLevels)) {
 			filter = CriteriaBuilderHelper.and(cb, filter, root.get(UserReference.JURISDICTION_LEVEL).in(jurisdictionLevels));
 		}
+		Predicate userRightsFilter = buildUserRightsFilter(userRoot, userRights);
+		if (userRightsFilter != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, userRightsFilter);
+			userEntityJoinUsed = true;
+		}
+
 		if (userEntityJoinUsed) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(root.get(UserReference.ID), userRoot.get(AbstractDomainObject.ID)));
 		}
@@ -305,14 +312,26 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		return em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
 	}
 
-	public User getRandomUser(District district, UserRight... userRights) {
+	public User getRandomDistrictUser(District district, UserRight... userRights) {
 
-		return getRandomUser(getUserReferences(null, Collections.singletonList(district.getUuid()), false, true, userRights));
+		return getRandomUser(
+			getUserReferencesByJurisdictions(
+				null,
+				Collections.singletonList(district.getUuid()),
+				null,
+				Collections.singletonList(JurisdictionLevel.DISTRICT),
+				Arrays.asList(userRights)));
 	}
 
-	public User getRandomUser(Region region, UserRight... userRights) {
+	public User getRandomRegionUser(Region region, UserRight... userRights) {
 
-		return getRandomUser(getUserReferences(Collections.singletonList(region.getUuid()), null, false, true, userRights));
+		return getRandomUser(
+			getUserReferencesByJurisdictions(
+				Collections.singletonList(region.getUuid()),
+				null,
+				null,
+				Collections.singletonList(JurisdictionLevel.REGION),
+				Arrays.asList(userRights)));
 	}
 
 	public User getRandomUser(List<UserReference> candidates) {
@@ -471,19 +490,14 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		return null;
 	}
 
-	/**
-	 * Caution: Because this filter joins the users_userroles table, using it can result in duplicate results if the
-	 * user in question has more than one user role.
-	 */
-	public Predicate createJurisdictionFilter(CriteriaBuilder cb, From<?, User> from) {
+	public Predicate createCurrentUserJurisdictionFilter(CriteriaBuilder cb, From<?, User> from) {
 		if (hasRight(UserRight.SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION)) {
 			return cb.conjunction();
 		}
 
 		User currentUser = getCurrentUser();
 
-		Predicate regionalOrNationalFilter =
-			from.join(User.USER_ROLES, JoinType.LEFT).in(UserRole.getWithJurisdictionLevels(JurisdictionLevel.NATION));
+		Predicate regionalOrNationalFilter = cb.equal(from.get(User.JURISDICTION_LEVEL), JurisdictionLevel.NATION);
 
 		Predicate jurisdictionFilter = cb.conjunction();
 		if (currentUser.getHealthFacility() != null) {
@@ -505,7 +519,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 
 	public Predicate buildUserRightsFilter(Root<User> from, Collection<UserRight> userRights) {
 
-		if (!userRights.isEmpty()) {
+		if (userRights != null && !userRights.isEmpty()) {
 			// TODO #4461: Replace by joinging rights of roles
 			Set<UserRole> userRoles = userRoleConfigFacade.getEffectiveUserRoles(userRights);
 			if (!userRoles.isEmpty()) {
