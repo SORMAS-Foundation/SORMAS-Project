@@ -25,6 +25,7 @@ import com.vaadin.v7.data.Property;
 import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
@@ -268,7 +269,7 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 	}
 
 	public CaseReferenceDto getCaseRef() {
-		return getReference();
+		return (CaseReferenceDto) getReference();
 	}
 
 	public boolean isHasOutbreak() {
@@ -292,6 +293,6 @@ public abstract class AbstractCaseView extends AbstractDetailView<CaseReferenceD
 	}
 
 	protected boolean isCaseEditAllowed() {
-		return FacadeProvider.getCaseFacade().isCaseEditAllowed(getReference().getUuid());
+		return FacadeProvider.getCaseFacade().isCaseEditAllowed(getReference().getUuid()).equals(EditPermissionType.ALLOWED);
 	}
 }

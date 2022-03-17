@@ -267,6 +267,7 @@ public class LabMessageController {
 	private PersonDto buildPerson(LabMessageMapper mapper) {
 		final PersonDto personDto = PersonDto.build();
 		mapper.mapToPerson(personDto);
+		mapper.mapToLocation(personDto.getAddress());
 		return personDto;
 	}
 
