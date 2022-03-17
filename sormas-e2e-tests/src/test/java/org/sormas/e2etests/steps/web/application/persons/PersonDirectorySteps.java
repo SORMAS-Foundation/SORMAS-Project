@@ -19,6 +19,8 @@
 package org.sormas.e2etests.steps.web.application.persons;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
+import static org.sormas.e2etests.pages.application.cases.EditCasePersonPage.CASE_OF_DEATH_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePersonPage.DATE_OF_DEATH_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.*;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.*;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
@@ -26,6 +28,8 @@ import static org.sormas.e2etests.steps.BaseSteps.locale;
 import com.github.javafaker.Faker;
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -43,10 +47,12 @@ import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
 import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
 import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
 
 public class PersonDirectorySteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   protected Person createdPerson;
+  public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
 
   @Inject
   public PersonDirectorySteps(
@@ -55,7 +61,8 @@ public class PersonDirectorySteps implements En {
       DataOperations dataOperations,
       Faker faker,
       AssertHelpers assertHelpers,
-      EnvironmentManager environmentManager) {
+      EnvironmentManager environmentManager,
+      SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
 
     // TODO refactor all BDD methods naming to be more explicit regarding where data comes from
@@ -279,6 +286,23 @@ public class PersonDirectorySteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.selectFromCombobox(PRESENT_CONDITION_FILTER_COMBOBOX, "Alive");
+        });
+
+    When(
+        "I check if Date of dead for specified case is correct",
+        () -> {
+          String date = webDriverHelpers.getValueFromWebElement(DATE_OF_DEATH_INPUT);
+          LocalDate deadDate = LocalDate.now().minusDays(1);
+          softly.assertEquals(DATE_FORMATTER.format(deadDate), date, "Death date is not equal");
+          softly.assertAll();
+        });
+
+    When(
+        "I check if Cause of death is ([^\"]*)",
+        (String causeOfDeath) -> {
+          String deathCause = webDriverHelpers.getValueFromCombobox(CASE_OF_DEATH_COMBOBOX);
+          softly.assertEquals(deathCause, causeOfDeath, "Cause of death is not equal");
+          softly.assertAll();
         });
 
     When(

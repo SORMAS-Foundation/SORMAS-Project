@@ -55,6 +55,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.EditPermissionType;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -94,7 +95,7 @@ import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -241,7 +242,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 		Event existingEvent = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 
-		if (internal && existingEvent != null && !service.isEventEditAllowed(existingEvent)) {
+		if (internal && existingEvent != null && !service.isEventEditAllowed(existingEvent).equals(EditPermissionType.ALLOWED)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEventNotEditable));
 		}
 
@@ -1273,7 +1274,41 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		return service.hasAnyEventParticipantWithoutJurisdiction(eventUuid);
 	}
 
-	public Boolean isEventEditAllowed(String eventUuid) {
+	@Override
+	public int saveBulkEvents(
+		List<String> eventUuidList,
+		EventDto updatedTempEvent,
+		boolean eventStatusChange,
+		boolean eventInvestigationStatusChange,
+		boolean eventManagementStatusChange) {
+
+		int changedEvents = 0;
+		for (String evetUuid : eventUuidList) {
+			Event event = service.getByUuid(evetUuid);
+
+			if (service.isEventEditAllowed(event).equals(EditPermissionType.ALLOWED)) {
+				EventDto eventDto = toDto(event);
+				if (eventStatusChange) {
+					eventDto.setEventStatus(updatedTempEvent.getEventStatus());
+				}
+
+				if (eventInvestigationStatusChange) {
+					eventDto.setEventInvestigationStatus(updatedTempEvent.getEventInvestigationStatus());
+				}
+
+				if (eventManagementStatusChange) {
+					eventDto.setEventManagementStatus(updatedTempEvent.getEventManagementStatus());
+				}
+
+				save(eventDto);
+				changedEvents++;
+			}
+		}
+
+		return changedEvents;
+	}
+
+	public EditPermissionType isEventEditAllowed(String eventUuid) {
 		Event event = service.getByUuid(eventUuid);
 		return service.isEventEditAllowed(event);
 	}

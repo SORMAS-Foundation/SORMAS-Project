@@ -52,6 +52,7 @@ import de.symeda.sormas.api.hospitalization.HospitalizationFacade;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.importexport.ExportFacade;
 import de.symeda.sormas.api.importexport.ImportFacade;
+import de.symeda.sormas.api.info.InfoFacade;
 import de.symeda.sormas.api.infrastructure.PopulationDataFacade;
 import de.symeda.sormas.api.infrastructure.area.AreaFacade;
 import de.symeda.sormas.api.infrastructure.community.CommunityFacade;
@@ -138,6 +139,7 @@ import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb.ImmunizationF
 import de.symeda.sormas.backend.importexport.ExportFacadeEjb;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.parser.ImportParserService;
+import de.symeda.sormas.backend.info.InfoFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.PopulationDataFacadeEjb.PopulationDataFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.area.AreaFacadeEjb.AreaFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb.CommunityFacadeEjbLocal;
@@ -229,14 +231,16 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 	public void init() {
 		MockProducer.resetMocks();
 		initH2Functions();
-
+		// this is used to provide the current user to the ADO Listener taking care of updating the last change user
+		System.setProperty("java.naming.factory.initial", MockProducer.class.getCanonicalName());
 		creator.createUser(null, null, null, "ad", "min", UserRole.ADMIN, UserRole.NATIONAL_USER);
 		when(MockProducer.getPrincipal().getName()).thenReturn("admin");
 
 		I18nProperties.setUserLanguage(Language.EN);
+
 	}
 
-	private void initH2Functions() {
+	protected void initH2Functions() {
 		EntityManager em = getEntityManager();
 		em.getTransaction().begin();
 		Query nativeQuery = em.createNativeQuery("CREATE ALIAS similarity FOR \"de.symeda.sormas.backend.H2Function.similarity\"");
@@ -280,6 +284,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	/**
 	 * Using local bean here to avoid multiple transactions in test.
+	 * 
 	 * @return
 	 */
 	public CaseFacadeEjbLocal getCaseFacade() {
@@ -791,5 +796,9 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	public DeletionConfigurationService getDeletionConfigurationService() {
 		return getBean(DeletionConfigurationService.class);
+	}
+
+	public InfoFacade getInfoFacade() {
+		return getBean(InfoFacadeEjb.InfoFacadeEjbLocal.class);
 	}
 }

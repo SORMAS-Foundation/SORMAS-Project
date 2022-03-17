@@ -1,7 +1,6 @@
-package de.symeda.sormas.ui.contact;
+package de.symeda.sormas.api.contact;
 
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
 /**

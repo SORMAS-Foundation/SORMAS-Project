@@ -53,6 +53,30 @@ public class CaseService {
         .build();
   }
 
+  public Case buildGeneratedCaseForOnePerson(
+      String firstName, String lastName, LocalDate dateOfBirth) {
+    return Case.builder()
+        .firstName(firstName)
+        .lastName(lastName)
+        .caseOrigin("IN-COUNTRY")
+        .dateOfReport(LocalDate.now().minusDays(1))
+        .externalId(UUID.randomUUID().toString())
+        .disease(DiseasesValues.getRandomDiseaseCaption())
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
+        .placeOfStay("HOME")
+        .placeDescription(faker.harryPotter().location())
+        .dateOfBirth(dateOfBirth)
+        .sex(GenderValues.getRandomGender())
+        .presentConditionOfPerson("Alive")
+        .dateOfSymptomOnset(LocalDate.now().minusDays(1))
+        .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
+        .primaryEmailAddress(
+            ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
+        .build();
+  }
+
   public Case buildGeneratedCase() {
     firstName = faker.name().firstName();
     lastName = faker.name().lastName();
@@ -94,6 +118,7 @@ public class CaseService {
         .dateOfReport(LocalDate.now().minusDays(1))
         .externalId(UUID.randomUUID().toString())
         .disease("COVID-19")
+        .diseaseVariant("B.1.617.1")
         .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
         .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
         .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
@@ -110,6 +135,7 @@ public class CaseService {
         .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
         .primaryEmailAddress(
             ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
+        .outcomeOfCase("VERSTORBEN")
         .build();
   }
 
@@ -165,7 +191,7 @@ public class CaseService {
         .facilityCategory("Beherbergungsst\u00E4tten")
         .facilityType("Andere Beherbergungsst\u00E4tte")
         .facility("Andere Einrichtung")
-        .dateOfReport(LocalDate.now().minusDays(1))
+        .dateOfReport(LocalDate.now().minusDays(8)) // fix for line listing, don't touch!
         .community(CommunityValues.VoreingestellteGemeinde.getName())
         .placeDescription(faker.harryPotter().location()) // used for Facility Name
         .firstName(firstName)
@@ -190,7 +216,7 @@ public class CaseService {
         .district(DistrictsValues.VoreingestellterLandkreis.getName())
         .facilityCategory("Accommodation")
         .facilityType("Other Accommodation")
-        .dateOfReport(LocalDate.now().minusDays(1))
+        .dateOfReport(LocalDate.now().minusDays(8)) // fix for line listing, don't change!
         .community(CommunityValues.VoreingestellteGemeinde.getName())
         .placeDescription(faker.address().streetAddressNumber()) // used for Facility Name
         .firstName(firstName)

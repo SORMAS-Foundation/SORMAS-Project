@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.EditPermissionType;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.event.ShortcutAction;
@@ -388,6 +389,8 @@ public class CaseContactsView extends AbstractCaseView {
 			grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
 
 			setSubComponent(gridLayout);
+			gridLayout.setEnabled(
+				!FacadeProvider.getCaseFacade().isCaseEditAllowed(getCaseRef().getUuid()).equals(EditPermissionType.ARCHIVING_STATUS_ONLY));
 		}
 
 		if (params.startsWith("?")) {

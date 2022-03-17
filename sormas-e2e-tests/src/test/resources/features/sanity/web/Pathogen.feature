@@ -15,7 +15,7 @@ Feature: Pathogen Functionalities
     And API: I check that POST call status code is 200
     When I log in with National User
     And I click on the Sample button from navbar
-    And I am accessing the created sample via api
+    And I am opening the last created via API Sample by url navigation
     And I click on the new pathogen test from the Edit Sample page
     And I complete all fields from Pathogen test result popup for IgM test type and save
     Then I check that the created Pathogen is correctly displayed
@@ -35,7 +35,7 @@ Feature: Pathogen Functionalities
     And API: I check that POST call status code is 200
     When I log in with National User
     And I click on the Sample button from navbar
-    And I am accessing the created sample via api
+    And I am opening the last created via API Sample by url navigation
     Then I click on the new pathogen test from the Edit Sample page
     And I complete all fields from Pathogen test result popup for IgG test type and save
     Then I check that the created Pathogen is correctly displayed
@@ -55,7 +55,7 @@ Feature: Pathogen Functionalities
     And API: I check that POST call status code is 200
     When I log in with National User
     And I click on the Sample button from navbar
-    And I am accessing the created sample via api
+    And I am opening the last created via API Sample by url navigation
     Then I click on the new pathogen test from the Edit Sample page
     And I complete all fields from Pathogen test result popup for PCR RT PCR Value Detection test type and save
     Then I check that the created Pathogen is correctly displayed
@@ -75,7 +75,7 @@ Feature: Pathogen Functionalities
     And API: I check that POST call status code is 200
     When I log in with National User
     And I click on the Sample button from navbar
-    And I am accessing the created sample via api
+    And I am opening the last created via API Sample by url navigation
     Then I click on the new pathogen test from the Edit Sample page
     And I complete all fields from Pathogen test result popup for CQ Value Detection test type and save
     Then I check that the created Pathogen is correctly displayed
@@ -95,7 +95,7 @@ Feature: Pathogen Functionalities
     And API: I check that POST call status code is 200
     When I log in with National User
     And I click on the Sample button from navbar
-    And I am accessing the created sample via api
+    And I am opening the last created via API Sample by url navigation
     Then I click on the new pathogen test from the Edit Sample page
     And I complete all fields from Pathogen test result popup for Sequencing test type and save
     Then I check that the created Pathogen is correctly displayed
@@ -115,7 +115,7 @@ Feature: Pathogen Functionalities
     And API: I check that POST call status code is 200
     When I log in with National User
     And I click on the Sample button from navbar
-    And I am accessing the created sample via api
+    And I am opening the last created via API Sample by url navigation
     Then I click on the new pathogen test from the Edit Sample page
     And I complete all fields from Pathogen test result popup for DNA Microarray test type and save
     Then I check that the created Pathogen is correctly displayed
@@ -135,7 +135,7 @@ Feature: Pathogen Functionalities
     And API: I check that POST call status code is 200
     When I log in with National User
     And I click on the Sample button from navbar
-    And I am accessing the created sample via api
+    And I am opening the last created via API Sample by url navigation
     Then I click on the new pathogen test from the Edit Sample page
     And I complete all fields from Pathogen test result popup for Other test type and save
     Then I check that the created Pathogen is correctly displayed
@@ -167,8 +167,7 @@ Feature: Pathogen Functionalities
     When I open created Sample
     Then I check if Pathogen test result in Samples is displayed correctly and save
 
-    #please address
-  @issue=SORDEV-8058 @env_main @ignore
+  @issue=SORDEV-8058 @env_main
   Scenario: Unify pathogen test saving logic between cases and event participants
     When API: I create a new person
     Then API: I check that POST call body is "OK"

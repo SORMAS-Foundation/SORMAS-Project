@@ -45,7 +45,7 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.api.EditPermissionType;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -96,7 +96,6 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.exposure.ExposureService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
-import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -145,8 +144,6 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	private ExternalJournalService externalJournalService;
 	@EJB
 	private UserService userService;
-	@EJB
-	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	public ContactService() {
 		super(Contact.class);
@@ -925,7 +922,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		Predicate filter;
 		if (userFilter != null) {
-			filter = cb.or(createUserFilterWithoutCase(contactQueryContext, contactCriteria), userFilter);
+			filter = CriteriaBuilderHelper.or(cb, createUserFilterWithoutCase(contactQueryContext, contactCriteria), userFilter);
 		} else {
 			filter = createUserFilterWithoutCase(contactQueryContext, contactCriteria);
 		}
@@ -1423,12 +1420,17 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return ContactJurisdictionPredicateValidator.of(contactQueryContext, user).inJurisdictionOrOwned();
 	}
 
-	public boolean isContactEditAllowed(Contact contact) {
+	public EditPermissionType isContactEditAllowed(Contact contact) {
+
 		if (contact.getSormasToSormasOriginInfo() != null && !contact.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
-			return false;
+			return EditPermissionType.REFUSED;
 		}
 
-		return inJurisdictionOrOwned(contact).getInJurisdiction() && !sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact);
+		if (!inJurisdictionOrOwned(contact).getInJurisdiction() || sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact)) {
+			return EditPermissionType.REFUSED;
+		}
+
+		return super.getEditPermissionType(contact);
 	}
 
 	public List<Selection<?>> getJurisdictionSelections(ContactQueryContext qc) {
