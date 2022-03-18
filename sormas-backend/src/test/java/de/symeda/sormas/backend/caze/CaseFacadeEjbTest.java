@@ -29,7 +29,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import de.symeda.sormas.api.caze.Trimester;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -2357,7 +2356,25 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertThat(
 			getCaseFacade().getMostRecentPreviousCase(person1.toReference(), Disease.EVD, newCase.getReportDate()).getUuid(),
 			is(previousCase1.getUuid()));
+	}
 
+	@Test
+	public void testDeleteWithContacts() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
+		PersonDto person1 = creator.createPerson();
+		PersonDto person2 = creator.createPerson();
+
+		CaseDataDto caze = creator.createCase(user.toReference(), person1.toReference(), rdcf);
+		ContactDto contact = creator.createContact(user.toReference(), person2.toReference(), caze);
+
+		assertEquals(1, getCaseFacade().getAllActiveUuids().size());
+		assertEquals(1, getContactFacade().getAllActiveUuids().size());
+
+		getCaseFacade().deleteWithContacts(caze.getUuid());
+
+		assertEquals(0, getCaseFacade().getAllActiveUuids().size());
+		assertEquals(0, getContactFacade().getAllActiveUuids().size());
 	}
 
 	private static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ";

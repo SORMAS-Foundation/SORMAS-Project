@@ -29,6 +29,7 @@ import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
@@ -145,4 +146,6 @@ public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, C
 		@Valid ContactBulkEditData updatedContacBulkEditData,
 		boolean classificationChange,
 		boolean contactOfficerChange);
+
+	long getContactCount(CaseReferenceDto caze);
 }

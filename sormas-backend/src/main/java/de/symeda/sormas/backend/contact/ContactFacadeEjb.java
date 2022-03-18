@@ -309,13 +309,17 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed({UserRight._CONTACT_CREATE, UserRight._CONTACT_EDIT})
+	@RolesAllowed({
+		UserRight._CONTACT_CREATE,
+		UserRight._CONTACT_EDIT })
 	public ContactDto save(@Valid @NotNull ContactDto dto) {
 		return save(dto, true, true);
 	}
 
 	@Override
-	@RolesAllowed({UserRight._CONTACT_CREATE, UserRight._CONTACT_EDIT})
+	@RolesAllowed({
+		UserRight._CONTACT_CREATE,
+		UserRight._CONTACT_EDIT })
 	public ContactDto save(@Valid ContactDto dto, boolean handleChanges, boolean handleCaseChanges) {
 		return save(dto, handleChanges, handleCaseChanges, true, true);
 	}
@@ -2125,6 +2129,11 @@ public class ContactFacadeEjb
 			}
 		}
 		return changedContacts;
+	}
+
+	@Override
+	public long getContactCount(CaseReferenceDto caze) {
+		return service.getContactCount(caze);
 	}
 
 	@Override

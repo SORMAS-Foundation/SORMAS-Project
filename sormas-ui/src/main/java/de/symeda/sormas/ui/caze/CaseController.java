@@ -24,7 +24,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.ui.utils.NotificationHelper;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.navigator.Navigator;
@@ -133,6 +132,7 @@ import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
+import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
@@ -1063,16 +1063,25 @@ public class CaseController {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_DELETE)) {
 			editView.addDeleteListener(() -> {
-				try {
-					FacadeProvider.getCaseFacade().delete(caze.getUuid());
-					UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
-				} catch (ExternalSurveillanceToolException e) {
-					Notification.show(
-						String.format(
-							I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntryNotDeleted),
-							DataHelper.getShortUuid(caze.getUuid())),
-						"",
-						Type.ERROR_MESSAGE);
+				long contactCount = FacadeProvider.getContactFacade().getContactCount(caze.toReference());
+				if (contactCount > 0) {
+					VaadinUiUtil.showThreeOptionsPopup(
+						I18nProperties.getString(Strings.headingDeleteContacts),
+						new Label(I18nProperties.getString(Strings.confirmationDeleteCaseContacts)),
+						I18nProperties.getCaption(Captions.actionYes),
+						I18nProperties.getCaption(Captions.actionNo),
+						I18nProperties.getCaption(Captions.caseCancelDeletion),
+						null,
+						option -> {
+							if (option == VaadinUiUtil.PopupOption.OPTION1) {
+								deleteCase(caze, true);
+							} else if (option == VaadinUiUtil.PopupOption.OPTION2) {
+								deleteCase(caze, false);
+							}
+							// Option 3 does not need to be handled because it would just return
+						});
+				} else {
+					deleteCase(caze, false);
 				}
 			}, I18nProperties.getString(Strings.entityCase));
 		}
@@ -1097,6 +1106,24 @@ public class CaseController {
 
 			editView.getButtonsPanel().addComponentAsFirst(btnReferToFacility);
 			editView.getButtonsPanel().setComponentAlignment(btnReferToFacility, Alignment.BOTTOM_LEFT);
+		}
+	}
+
+	private void deleteCase(CaseDataDto caze, boolean withContacts) {
+		try {
+			if (withContacts) {
+				FacadeProvider.getCaseFacade().deleteWithContacts(caze.getUuid());
+			} else {
+				FacadeProvider.getCaseFacade().delete(caze.getUuid());
+			}
+			UI.getCurrent().getNavigator().navigateTo(CasesView.VIEW_NAME);
+		} catch (ExternalSurveillanceToolException e) {
+			Notification.show(
+				String.format(
+					I18nProperties.getString(Strings.ExternalSurveillanceToolGateway_notificationEntryNotDeleted),
+					DataHelper.getShortUuid(caze.getUuid())),
+				"",
+				Type.ERROR_MESSAGE);
 		}
 	}
 
