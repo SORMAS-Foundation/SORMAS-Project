@@ -1,5 +1,27 @@
 package de.symeda.sormas.backend.audit;
 
+import java.lang.reflect.Method;
+import java.util.Arrays;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+import java.util.TimeZone;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.stream.Collectors;
+
+import javax.annotation.Resource;
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.SessionContext;
+import javax.interceptor.AroundInvoke;
+import javax.interceptor.InvocationContext;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.backend.auditlog.AuditContextProducer;
@@ -11,41 +33,33 @@ import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEj
 import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.User;
 
-import java.lang.reflect.Method;
-import java.util.Arrays;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-import java.util.TimeZone;
-import java.util.stream.Collectors;
-
-import javax.annotation.Resource;
-import javax.ejb.LocalBean;
-import javax.ejb.SessionContext;
-import javax.interceptor.AroundInvoke;
-import javax.interceptor.InvocationContext;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-
 public class AuditLoggerInterceptor {
 
+	@EJB
+	CurrentUserService currentUserService;
+
+	@EJB
+	ConfigFacade configFacade;
+	// todo we need the session context in addition to the UserService as SYSTEM/ANONYMOUS do return null in the currentUserService
 	@Resource
 	private SessionContext sessionContext;
 
 	/**
 	 * Cache to track all classes annotated with @LocalBean. Contained Classes will be skipped for auditing.
 	 */
-	private final Set<Class<?>> ignoreLocalAnnotatedClasses = new HashSet<>();
+	private final static Set<Class<?>> ignoreLocalAnnotatedClasses = ConcurrentHashMap.newKeySet();
 
 	/**
 	 * Cache to track all classes which should be completely ignored for audit.
 	 */
-	private final static Set<Class<?>> ignoreAuditClasses = new HashSet<>(
-		Arrays.asList(ConfigFacadeEjb.class, CurrentUserService.class, AuditContextProducer.class, AuditLogServiceBean.class, I18nFacadeEjb.class));
+	private final static Set<Class<?>> ignoreAuditClasses = Collections.unmodifiableSet(
+		new HashSet<>(
+			Arrays.asList(
+				ConfigFacadeEjb.class,
+				CurrentUserService.class,
+				AuditContextProducer.class,
+				AuditLogServiceBean.class,
+				I18nFacadeEjb.class)));
 
 	/**
 	 * Cache to track all methods which should be completely ignored.
@@ -54,10 +68,11 @@ public class AuditLoggerInterceptor {
 
 	static {
 		try {
-			ignoreAuditMethods = new HashSet<>(
-				Arrays.asList(
-					ContinentFacadeEjb.class.getMethod("getByDefaultName", String.class, boolean.class),
-					SubcontinentFacadeEjb.class.getMethod("getByDefaultName", String.class, boolean.class)));
+			ignoreAuditMethods = Collections.unmodifiableSet(
+				new HashSet<>(
+					Arrays.asList(
+						ContinentFacadeEjb.class.getMethod("getByDefaultName", String.class, boolean.class),
+						SubcontinentFacadeEjb.class.getMethod("getByDefaultName", String.class, boolean.class))));
 		} catch (NoSuchMethodException e) {
 			throw new RuntimeException(e);
 		}
@@ -65,18 +80,17 @@ public class AuditLoggerInterceptor {
 
 	@AroundInvoke
 	public Object logAudit(InvocationContext context) throws Exception {
-		try {
-			// todo change this later, but we need to make it NOP for now
-			ConfigFacade configFacade = (ConfigFacade) new InitialContext().lookup("java:module/ConfigFacade");
-			String sourceSite = configFacade.getAuditSourceSite();
-			if (sourceSite.equals("")) {
-				return context.proceed();
-			}
-		} catch (NamingException e) {
-			throw new RuntimeException(e);
+		Class<?> target = context.getTarget().getClass();
+
+		if (ignoreAuditClasses.contains(target)) {
+			// ignore certain classes for audit altogether. Statically populated cache.
+			return context.proceed();
+		}
+		// todo change this later, but we need to make it NOP for now. This mus happen after the class check to avoid recursion
+		if (configFacade.getAuditSourceSite().equals("")) {
+			return context.proceed();
 		}
 
-		Class<?> target = context.getTarget().getClass();
 		if (ignoreLocalAnnotatedClasses.contains(target)) {
 			// ignore previously discovered local beans
 			return context.proceed();
@@ -89,11 +103,6 @@ public class AuditLoggerInterceptor {
 			// cache that this class is local
 			ignoreLocalAnnotatedClasses.add(target);
 
-			return context.proceed();
-		}
-
-		if (ignoreAuditClasses.contains(target)) {
-			// ignore certain classes for audit altogether. Statically populated cache.
 			return context.proceed();
 		}
 
@@ -110,15 +119,7 @@ public class AuditLoggerInterceptor {
 		Date start = Calendar.getInstance(TimeZone.getDefault()).getTime();
 		List<String> parameters = getParameters(context);
 
-		User currentUser;
-		try {
-			CurrentUserService currentUserService =
-				(CurrentUserService) new InitialContext().lookup("java:global/sormas-ear/sormas-backend/CurrentUserService");
-			currentUser = currentUserService.getCurrentUser();
-		} catch (NamingException e) {
-			throw new RuntimeException(e);
-		}
-
+		User currentUser = currentUserService.getCurrentUser();
 		String agentUuid = currentUser == null ? null : currentUser.getUuid();
 
 		// do the actual call
