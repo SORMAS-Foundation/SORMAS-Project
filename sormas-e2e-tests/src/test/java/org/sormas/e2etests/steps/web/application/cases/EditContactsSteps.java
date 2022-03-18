@@ -125,6 +125,7 @@ public class EditContactsSteps implements En {
         "I click on the {string} button from the Import Case Contacts popup",
         (String buttonName) -> {
           webDriverHelpers.clickWebElementByText(IMPORT_POPUP_BUTTON, buttonName);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(COMMIT_BUTTON);
         });
     When(
         "I confirm the save Case Contact Import popup",
