@@ -65,11 +65,15 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_YEAR_FILTER;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_FROM_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_TO_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DETAILED_IMPORT_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DOWNLOAD_DATA_DICTIONARY_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DOWNLOAD_IMPORT_GUIDE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ENTER_BULK_EDIT_MODE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.EPI_DATA_TAB;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRST_CASE_ID_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRST_RESULT_IN_GRID;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.GRID_HEADERS;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.IMPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.INVESTIGATION_DISCARDED_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.INVESTIGATION_DONE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.INVESTIGATION_PENDING_BUTTON;
@@ -92,6 +96,9 @@ import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCas
 import com.github.javafaker.Faker;
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -112,6 +119,9 @@ import org.testng.Assert;
 
 public class CaseDirectorySteps implements En {
   Faker faker = new Faker();
+  public static final String userDirPath = System.getProperty("user.dir");
+  private final DateTimeFormatter formatterDataDictionary =
+      DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
   @Inject
   public CaseDirectorySteps(
@@ -727,6 +737,59 @@ public class CaseDirectorySteps implements En {
     And(
         "I apply Day filter {string} on Case directory page",
         (String day) -> webDriverHelpers.selectFromCombobox(CASE_DAY_FILTER, day));
+
+    When(
+        "I click on the import button for Cases in Case tab",
+        () -> webDriverHelpers.clickOnWebElementBySelector(IMPORT_BUTTON));
+
+    When(
+        "I click on the detailed button from import Case tab",
+        () -> webDriverHelpers.clickOnWebElementBySelector(DETAILED_IMPORT_BUTTON));
+
+    When(
+        "I click on the Download Import Guide button in Import Cases",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DOWNLOAD_IMPORT_GUIDE_BUTTON);
+        });
+
+    When(
+        "And I click on the Download Data Dictionary button in Import Cases",
+        () -> webDriverHelpers.clickOnWebElementBySelector(DOWNLOAD_DATA_DICTIONARY_BUTTON));
+
+    When(
+        "I check if Import Guide for cases was downloaded correctly",
+        () -> {
+          String fileName = "SORMAS_Import_Guide.pdf";
+          Path path = Paths.get(userDirPath + "/downloads/" + fileName);
+
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertTrue(
+                      Files.exists(path),
+                      String.format(
+                          "SORMAS_Import_Guide was not downloaded. Searching path was: %s",
+                          path.toAbsolutePath())),
+              20);
+        });
+
+    When(
+        "I check if Data Dictionary for cases was downloaded correctly",
+        () -> {
+          String fileName =
+              "sormas_datenbeschreibungsverzeichnis_"
+                  + LocalDate.now().format(formatterDataDictionary)
+                  + "_.xlsx";
+          Path path = Paths.get(userDirPath + "/downloads/" + fileName);
+
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertTrue(
+                      Files.exists(path),
+                      String.format(
+                          "SORMAS_Import_Guide was not downloaded. Searching path was: %s",
+                          path.toAbsolutePath())),
+              20);
+        });
   }
 
   private Number getRandomNumberForBirthDateDifferentThanCreated(Number created, int min, int max) {
