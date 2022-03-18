@@ -53,7 +53,6 @@ import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
@@ -353,7 +352,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		final EventUserFilterCriteria eventUserFilterCriteria) {
 
 		final User currentUser = getCurrentUser();
-		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		Predicate filter = null;
 
 		final EventJoins eventJoins;
@@ -371,7 +370,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			eventParticipantJoin = eventParticipantPath;
 		}
 
-		if (jurisdictionLevel != JurisdictionLevel.NATION && !currentUser.hasAnyUserRole(UserRole.REST_USER)) {
+		if (jurisdictionLevel != JurisdictionLevel.NATION) {
 			switch (jurisdictionLevel) {
 			case REGION:
 				if (currentUser.getRegion() != null) {
@@ -447,7 +446,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		Predicate filter = caseService.createUserFilter(cb, cq, caseJoin);
 
 		final User currentUser = getCurrentUser();
-		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (jurisdictionLevel == JurisdictionLevel.REGION || jurisdictionLevel == JurisdictionLevel.DISTRICT) {
 
 			switch (jurisdictionLevel) {

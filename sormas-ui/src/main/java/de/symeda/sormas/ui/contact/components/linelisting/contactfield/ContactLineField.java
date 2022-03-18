@@ -1,6 +1,7 @@
 package de.symeda.sormas.ui.contact.components.linelisting.contactfield;
 
 import java.time.LocalDate;
+import java.util.Arrays;
 
 import com.vaadin.data.Binder;
 import com.vaadin.data.BinderValidationStatus;
@@ -11,6 +12,8 @@ import com.vaadin.ui.CustomField;
 import com.vaadin.ui.DateField;
 import com.vaadin.ui.HorizontalLayout;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.contact.ContactProximity;
@@ -23,6 +26,8 @@ import de.symeda.sormas.ui.utils.components.linelisting.person.PersonFieldDto;
 import de.symeda.sormas.ui.utils.components.multidayselector.MultiDaySelectorDto;
 
 public class ContactLineField extends CustomField<ContactLineFieldDto> {
+
+	private static final long serialVersionUID = 7634199030865304458L;
 
 	private final Binder<ContactLineFieldDto> binder = new Binder<>(ContactLineFieldDto.class);
 
@@ -56,7 +61,6 @@ public class ContactLineField extends CustomField<ContactLineFieldDto> {
 		binder.forField(multiDay).bind(ContactLineFieldDto.MULTI_DAY_SELECTOR);
 
 		typeOfContact.setId("typeOfContact");
-		typeOfContact.setItems(ContactProximity.values());
 		typeOfContact.setWidth(150, Unit.PIXELS);
 		typeOfContact.addStyleName(CssStyles.CAPTION_OVERFLOW);
 		binder.forField(typeOfContact).bind(ContactLineFieldDto.TYPE_OF_CONTACT);
@@ -78,6 +82,14 @@ public class ContactLineField extends CustomField<ContactLineFieldDto> {
 		layout.setComponentAlignment(person, Alignment.BOTTOM_LEFT);
 
 		return layout;
+	}
+
+	public void updateTypeOfContactValues(Disease disease) {
+		ContactProximity[] values = ContactProximity.getValues(disease, FacadeProvider.getConfigFacade().getCountryLocale());
+		typeOfContact.setItems(values);
+		if (!Arrays.asList(values).contains(typeOfContact.getValue())) {
+			typeOfContact.setValue(null);
+		}
 	}
 
 	@Override

@@ -50,9 +50,7 @@ public interface UserFacade {
 
 	UserDto getByUserName(String userName);
 
-	List<UserReferenceDto> getUsersByRegionAndRoles(RegionReferenceDto regionRef, UserRole... assignableRoles);
-
-	List<UserReferenceDto> getUsersByRegionsAndRoles(List<RegionReferenceDto> regionRefs, UserRole... assignableRoles);
+	List<UserReferenceDto> getUsersByRegionAndRights(RegionReferenceDto regionRef, UserRight... userRights);
 
 	List<UserReferenceDto> getUsersWithSuperiorJurisdiction(UserDto user);
 
@@ -64,19 +62,17 @@ public interface UserFacade {
 
 	/**
 	 * @param district
-	 * @param includeSupervisors
-	 *            independent from the district
-	 * @param userRoles
-	 *            roles of the users by district
+	 * @param userRights
+	 *            rights of the users by district
 	 * @return
 	 */
-	List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto district, boolean includeSupervisors, UserRole... userRoles);
+	List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto district, UserRight... userRights);
 
-	List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districts, boolean includeSupervisors, UserRole... userRoles);
+	List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districts, UserRight... userRights);
 
 	List<UserReferenceDto> getAllUserRefs(boolean includeInactive);
 
-	List<UserDto> getUsersByAssociatedOfficer(UserReferenceDto associatedOfficer, UserRole... userRoles);
+	List<UserDto> getUsersByAssociatedOfficer(UserReferenceDto associatedOfficer, UserRight... userRights);
 
 	List<String> getAllUuids();
 
@@ -107,6 +103,4 @@ public interface UserFacade {
 	List<UserReferenceDto> getUsersHavingTravelEntryInJurisdiction(TravelEntryReferenceDto travelEntryReferenceDto);
 
 	List<UserReferenceWithTaskNumbersDto> getAssignableUsersWithTaskNumbers(@NotNull TaskContextIndex taskContextIndex);
-
-	List<UserReferenceDto> getUsersByRegionAndRight(RegionReferenceDto region, UserRight userRight);
 }
