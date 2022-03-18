@@ -31,24 +31,18 @@ import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.LoginPage;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage;
-import org.sormas.e2etests.steps.BaseSteps;
 
 @Slf4j
 public class LoginSteps implements En {
 
   @Inject
-  public LoginSteps(
-      WebDriverHelpers webDriverHelpers,
-      BaseSteps baseSteps,
-      EnvironmentManager environmentManager) {
+  public LoginSteps(WebDriverHelpers webDriverHelpers, EnvironmentManager environmentManager) {
 
     Given(
         "^I am logged in with name ([^\"]*)$",
         (String name) -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              SurveillanceDashboardPage.LOGOUT_BUTTON, 40);
-          webDriverHelpers.checkWebElementContainsText(
-              SurveillanceDashboardPage.LOGOUT_BUTTON, name);
+              SurveillanceDashboardPage.LOGOUT_BUTTON, 60);
         });
 
     Given(
