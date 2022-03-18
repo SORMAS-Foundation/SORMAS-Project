@@ -277,6 +277,7 @@ public interface Strings {
 	String errorExternalSurveillanceToolNonCoronavirusCase = "errorExternalSurveillanceToolNonCoronavirusCase";
 	String errorFieldValidationFailed = "errorFieldValidationFailed";
 	String errorFileNotFound = "errorFileNotFound";
+	String errorForbidden = "errorForbidden";
 	String errorFormIdPopulationAgeGroup = "errorFormIdPopulationAgeGroup";
 	String errorIllegalFilename = "errorIllegalFilename";
 	String errorImmunizationNotEditable = "errorImmunizationNotEditable";
