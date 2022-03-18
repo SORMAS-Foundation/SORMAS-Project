@@ -30,23 +30,25 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.CoreFacade;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
-import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfigurationService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
-import org.hibernate.mapping.Collection;
 
 public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, SRV extends AbstractCoreAdoService<ADO>, CRITERIA extends BaseCriteria>
 	extends AbstractBaseEjb<ADO, DTO, INDEX_DTO, REF_DTO, SRV, CRITERIA>
@@ -92,6 +94,11 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	@Override
 	public DTO save(@Valid @NotNull DTO dto) {
 		ADO existingAdo = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
+
+		if (existingAdo != null && !service.getEditPermissionType(existingAdo).equals(EditPermissionType.ALLOWED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEntityNotEditable));
+		}
+
 		DTO existingDto = toDto(existingAdo);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);

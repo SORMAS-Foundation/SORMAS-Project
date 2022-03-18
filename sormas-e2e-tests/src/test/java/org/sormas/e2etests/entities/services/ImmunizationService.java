@@ -51,7 +51,7 @@ public class ImmunizationService {
         .facilityCategory("Care facility")
         .facilityType("Elderly care facility")
         .facility("Other facility")
-        .facilityDescription("dummy description")
+        .facilityDescription("Dummy description " + System.currentTimeMillis())
         .startDate(LocalDate.now().minusDays(1))
         .endDate(LocalDate.now())
         .validFrom(LocalDate.now().minusDays(1))

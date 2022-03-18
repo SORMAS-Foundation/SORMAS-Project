@@ -36,6 +36,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.EditPermissionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,7 +77,7 @@ import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
-import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
@@ -264,9 +265,8 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
-	public boolean isImmunizationEditAllowed(String uuid) {
+	public EditPermissionType isImmunizationEditAllowed(String uuid) {
 		Immunization immunization = service.getByUuid(uuid);
-
 		return service.isImmunizationEditAllowed(immunization);
 	}
 
@@ -293,7 +293,7 @@ public class ImmunizationFacadeEjb
 	public ImmunizationDto save(@Valid @NotNull ImmunizationDto dto, boolean checkChangeDate, boolean internal) {
 		Immunization existingImmunization = service.getByUuid(dto.getUuid());
 
-		if (internal && existingImmunization != null && !service.isImmunizationEditAllowed(existingImmunization)) {
+		if (internal && existingImmunization != null && !service.isImmunizationEditAllowed(existingImmunization).equals(EditPermissionType.ALLOWED)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorImmunizationNotEditable));
 		}
 
@@ -428,15 +428,12 @@ public class ImmunizationFacadeEjb
 		return toReferenceDto(immunization);
 	}
 
+	@Override
 	protected Immunization fillOrBuildEntity(@NotNull ImmunizationDto source, Immunization target, boolean checkChangeDate) {
 		return fillOrBuildEntity(source, target, checkChangeDate, true);
 	}
 
-	protected Immunization fillOrBuildEntity(
-		@NotNull ImmunizationDto source,
-		Immunization target,
-		boolean checkChangeDate,
-		boolean includeVaccinations) {
+	protected Immunization fillOrBuildEntity(@NotNull ImmunizationDto source, Immunization target, boolean checkChangeDate, boolean copyVaccinations) {
 		target = DtoHelper.fillOrBuildEntity(source, target, Immunization::new, checkChangeDate);
 
 		target.setDisease(source.getDisease());
@@ -470,24 +467,26 @@ public class ImmunizationFacadeEjb
 		target.setValidUntil(source.getValidUntil());
 		target.setRelatedCase(caseService.getByReferenceDto(source.getRelatedCase()));
 
-		List<Vaccination> vaccinationEntities = new ArrayList<>();
-
-		if (includeVaccinations) {
-			for (VaccinationDto vaccinationDto : source.getVaccinations()) {
-				Vaccination vaccination = vaccinationFacade.fromDto(vaccinationDto, checkChangeDate);
-				vaccination.setImmunization(target);
-				vaccinationEntities.add(vaccination);
-			}
+		if (copyVaccinations) {
+			copyVaccinations(source, target, checkChangeDate);
 		}
-
-		target.getVaccinations().clear();
-		target.getVaccinations().addAll(vaccinationEntities);
 
 		if (source.getSormasToSormasOriginInfo() != null) {
 			target.setSormasToSormasOriginInfo(originInfoFacade.fromDto(source.getSormasToSormasOriginInfo(), checkChangeDate));
 		}
 
 		return target;
+	}
+
+	public void copyVaccinations(ImmunizationDto source, Immunization target, boolean checkChangeDate) {
+		List<Vaccination> vaccinationEntities = new ArrayList<>();
+		for (VaccinationDto vaccinationDto : source.getVaccinations()) {
+			Vaccination vaccination = vaccinationFacade.fromDto(vaccinationDto, checkChangeDate);
+			vaccination.setImmunization(target);
+			vaccinationEntities.add(vaccination);
+		}
+		target.getVaccinations().clear();
+		target.getVaccinations().addAll(vaccinationEntities);
 	}
 
 	@Override
@@ -599,10 +598,13 @@ public class ImmunizationFacadeEjb
 	public void copyImmunizationsToLeadPerson(ImmunizationDto immunizationDto, PersonDto leadPerson) {
 		Immunization newImmunization = new Immunization();
 		newImmunization.setUuid(DataHelper.createUuid());
+
 		newImmunization = fillOrBuildEntity(immunizationDto, newImmunization, false, false);
 
 		newImmunization.setPerson(personService.getByReferenceDto(leadPerson.toReference()));
-		newImmunization.setVaccinations(new ArrayList<>());
+		service.persist(newImmunization);
+
+		copyVaccinations(immunizationDto, newImmunization, false);
 
 		vaccinationFacade.copyExistingVaccinationsToNewImmunization(immunizationDto, newImmunization);
 		service.ensurePersisted(newImmunization);

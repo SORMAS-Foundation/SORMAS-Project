@@ -34,6 +34,7 @@ public class EditImmunizationSteps implements En {
     When(
         "I check the created data is correctly displayed on Edit immunization page",
         () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(DISEASE_COMBOBOX);
           collectedImmunization = collectImmunizationData();
           createdImmunization = CreateNewImmunizationSteps.immunization;
           ComparisonHelper.compareEqualFieldsOfEntities(

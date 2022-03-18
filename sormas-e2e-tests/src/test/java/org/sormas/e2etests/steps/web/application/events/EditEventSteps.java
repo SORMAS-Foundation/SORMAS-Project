@@ -19,7 +19,9 @@
 package org.sormas.e2etests.steps.web.application.events;
 
 import static org.sormas.e2etests.pages.application.actions.CreateNewActionPage.NEW_ACTION_POPUP;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALL_RESULTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.CREATE_CONTACTS_BULK_EDIT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DISEASE_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EDIT_EVENT_GROUP_BUTTON;
@@ -55,9 +57,11 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.TYPE_OF
 import static org.sormas.e2etests.pages.application.events.EditEventPage.UNLINK_EVENT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.getGroupEventName;
 import static org.sormas.e2etests.pages.application.events.EventActionsPage.CREATE_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BULK_ACTIONS_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.TOTAL_EVENTS_COUNTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.ADD_PARTICIPANT_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CREATE_NEW_PERSON_RADIO_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.ERROR_MESSAGE_TEXT;
@@ -69,6 +73,9 @@ import static org.sormas.e2etests.pages.application.events.EventParticipantsPage
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_PERSON_POPUP;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_POPUP_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.SEX_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DATE_OF_BIRTH_DAY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DATE_OF_BIRTH_MONTH_COMBOBOX;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DATE_OF_BIRTH_YEAR_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PERSON_DATA_ADDED_AS_A_PARTICIPANT_MESSAGE;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PERSON_DATA_SAVED;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.POPUP_PERSON_ID;
@@ -84,7 +91,9 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
 import java.util.List;
+import java.util.Locale;
 import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Event;
@@ -117,7 +126,9 @@ public class EditEventSteps implements En {
   public static Person person;
   public static EventHandout aEventHandout;
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
+  public static final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
   public static final String userDirPath = System.getProperty("user.dir");
+  LocalDate dateOfBirth;
 
   @Inject
   public EditEventSteps(
@@ -146,6 +157,29 @@ public class EditEventSteps implements En {
     When(
         "I collect the UUID displayed on Edit event page",
         () -> collectedEvent = collectEventUuid());
+
+    When(
+        "I check the created data for DE version is correctly displayed in event edit page",
+        () -> {
+          collectedEvent = collectEventDataDE();
+          createdEvent = CreateNewEventSteps.newEvent;
+
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              collectedEvent,
+              createdEvent,
+              List.of(
+                  "uuid",
+                  "reportDate",
+                  "eventDate",
+                  "eventStatus",
+                  "investigationStatus",
+                  "eventManagementStatus",
+                  "riskLevel",
+                  "disease",
+                  "title",
+                  "sourceType",
+                  "eventLocation"));
+        });
 
     When(
         "I check the created data is correctly displayed in event edit page",
@@ -222,8 +256,39 @@ public class EditEventSteps implements En {
           person = collectPersonUuid();
           selectResponsibleRegion("Region1");
           selectResponsibleDistrict("District11");
+          dateOfBirth =
+              LocalDate.of(
+                  faker.number().numberBetween(1900, 2002),
+                  faker.number().numberBetween(1, 12),
+                  faker.number().numberBetween(1, 27));
+
+          webDriverHelpers.selectFromCombobox(
+              DATE_OF_BIRTH_YEAR_COMBOBOX, String.valueOf(dateOfBirth.getYear()));
+          webDriverHelpers.selectFromCombobox(
+              DATE_OF_BIRTH_MONTH_COMBOBOX,
+              dateOfBirth.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH));
+          webDriverHelpers.selectFromCombobox(
+              DATE_OF_BIRTH_DAY_COMBOBOX, String.valueOf(dateOfBirth.getDayOfMonth()));
           webDriverHelpers.clickOnWebElementBySelector(POPUP_SAVE);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(PERSON_DATA_SAVED);
+        });
+
+    When(
+        "I fill birth fields for participant in event participant list",
+        () -> {
+          webDriverHelpers.selectFromCombobox(
+              DATE_OF_BIRTH_YEAR_COMBOBOX, String.valueOf(dateOfBirth.getYear()));
+          webDriverHelpers.selectFromCombobox(
+              DATE_OF_BIRTH_MONTH_COMBOBOX, String.valueOf(dateOfBirth.getMonth().getValue()));
+          webDriverHelpers.selectFromCombobox(
+              DATE_OF_BIRTH_DAY_COMBOBOX, String.valueOf(dateOfBirth.getDayOfMonth()));
+        });
+
+    When(
+        "I click on Apply filters button in event participant list",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(
@@ -275,6 +340,19 @@ public class EditEventSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
         });
 
+    When(
+        "I click on Create Contacts button from bulk actions menu in Event Participant Tab",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_CONTACTS_BULK_EDIT_BUTTON);
+        });
+    When(
+        "I click checkbox to choose all Event Participants results in Event Participant Tab",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ALL_RESULTS_CHECKBOX);
+        });
+    And(
+        "I click on Bulk Actions combobox in Event Parcitipant Tab",
+        () -> webDriverHelpers.clickOnWebElementBySelector(BULK_ACTIONS_EVENT_DIRECTORY));
     When(
         "I discard changes in participant window",
         () -> {
@@ -478,6 +556,32 @@ public class EditEventSteps implements En {
     LocalDate reportDate = LocalDate.parse(reportingDate, DATE_FORMATTER);
     String eventStartDate = webDriverHelpers.getValueFromWebElement(START_DATA_INPUT);
     LocalDate eventDate = LocalDate.parse(eventStartDate, DATE_FORMATTER);
+
+    return Event.builder()
+        .reportDate(reportDate)
+        .eventDate(eventDate)
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+        .eventStatus(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(EVENT_STATUS_OPTIONS))
+        .investigationStatus(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                EVENT_INVESTIGATION_STATUS_OPTIONS))
+        .eventManagementStatus(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                EVENT_MANAGEMENT_STATUS_OPTIONS))
+        .riskLevel(webDriverHelpers.getValueFromWebElement(RISK_LEVEL_INPUT))
+        .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
+        .title(webDriverHelpers.getValueFromWebElement(TITLE_INPUT))
+        .sourceType(webDriverHelpers.getValueFromWebElement(SOURCE_TYPE_INPUT))
+        .eventLocation(webDriverHelpers.getValueFromWebElement(TYPE_OF_PLACE_INPUT))
+        .build();
+  }
+
+  private Event collectEventDataDE() {
+    String reportingDate = webDriverHelpers.getValueFromWebElement(REPORT_DATE_INPUT);
+    LocalDate reportDate = LocalDate.parse(reportingDate, DATE_FORMATTER_DE);
+    String eventStartDate = webDriverHelpers.getValueFromWebElement(START_DATA_INPUT);
+    LocalDate eventDate = LocalDate.parse(eventStartDate, DATE_FORMATTER_DE);
 
     return Event.builder()
         .reportDate(reportDate)

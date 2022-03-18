@@ -1,18 +1,17 @@
 @UI @Sanity @Task
 Feature: Tasks functionalities
 
-  #please address
+  #please check this test once test-auto has latest development version
   @env_main @ignore
   Scenario: Create and check a new task data
     Given I log in with National User
     And I click on the Tasks button from navbar
     And I click on the NEW TASK button
     When I create a new task with specific data
-    And I open last created task
+    And I open last created task from Tasks Directory
     Then I check the created task is correctly displayed on Edit task page
 
-    #please address
-  @issue=SORDEV-5476 @env_main @ignore
+  @issue=SORDEV-5476 @env_main
   Scenario: Check the edit of task from Case
     Given I log in as a Surveillance Officer
     And I click on the Cases button from navbar
@@ -22,17 +21,15 @@ Feature: Tasks functionalities
     And I click on New Task from Case page
     And I create a new task with specific data
     And I click on the Tasks button from navbar
-    And I search last created task by Case UUID
-    When I open last created task
-    When I change all Task's fields and save
+    And I search last created task by Case UUID and open it
+    Then I change all Task's fields and save
     And I click on the Cases button from navbar
     And Search for Case using Case UUID from the created Task
     When I open last created case
     When I click on first edit Task
     Then I check the created task is correctly displayed on Edit task page
 
-    #please address
-  @env_main @ignore
+  @env_main
   Scenario: Check all fields from the created Task in the Task Management table
     Given API: I create a new person
     Then API: I check that POST call body is "OK"

@@ -84,6 +84,21 @@ public class InfoProviderTest {
 	}
 
 	@Test
+	public void testCreateLastCommitHistoryUrl() {
+
+		String commitFullId = "eb4364e0cea411d90c772a7b0168eee732f8bc87";
+		String expectedUrl = "https://github.com/hzi-braunschweig/SORMAS-Project/commits/eb4364e0cea411d90c772a7b0168eee732f8bc87";
+
+		// 1. HTTPS git checkout
+		String httpsOriginUrl = "https://github.com/hzi-braunschweig/SORMAS-Project.git";
+		assertThat(InfoProvider.createLastCommitHistoryUrl(httpsOriginUrl, commitFullId), equalTo(expectedUrl));
+
+		// 2. SSH git checkout
+		String sshOriginUrl = "git@github.com:hzi-braunschweig/SORMAS-Project.git";
+		assertThat(InfoProvider.createLastCommitHistoryUrl(sshOriginUrl, commitFullId), equalTo(expectedUrl));
+	}
+
+	@Test
 	public void testGetLastCommitShortId() {
 
 		InfoProvider cut = InfoProvider.get();

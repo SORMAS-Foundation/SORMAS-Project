@@ -39,8 +39,7 @@ public class SurveillanceDashboardSteps implements En {
     When(
         "^I save value for COVID disease counter in Surveillance Dashboard$",
         () -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
-
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(15);
           covid19DiseaseCounterBefore =
               Integer.parseInt(
                   webDriverHelpers.getTextFromWebElement(
@@ -50,7 +49,7 @@ public class SurveillanceDashboardSteps implements En {
     Then(
         "^I check that previous saved Surveillance Dashboard counters for COVID-19 have been increment$",
         () -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
 
           newCasesCounterAfter =
               Integer.parseInt(
@@ -77,10 +76,10 @@ public class SurveillanceDashboardSteps implements En {
     When(
         "I select {string} in TabSheet of Surveillance Dashboard",
         (String tabSheetValue) -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.clickWebElementByText(
               SurveillanceDashboardPage.TAB_SHEET_CAPTION, tabSheetValue);
-          TimeUnit.SECONDS.sleep(5);
+          TimeUnit.SECONDS.sleep(10);
         });
 
     When(

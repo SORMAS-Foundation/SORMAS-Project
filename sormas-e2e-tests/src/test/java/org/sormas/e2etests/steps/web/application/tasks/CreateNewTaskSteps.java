@@ -60,7 +60,6 @@ public class CreateNewTaskSteps implements En {
     When(
         "^I check the created task is correctly displayed on Edit task page",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           final Task actualTask = collectTaskData();
           ComparisonHelper.compareEqualEntities(task, actualTask);
         });
@@ -71,6 +70,7 @@ public class CreateNewTaskSteps implements En {
           task = taskService.buildEditTask("CASE", getStatus());
           fillAllFields(task);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
         });
   }
 
@@ -83,6 +83,7 @@ public class CreateNewTaskSteps implements En {
     selectAssignedTo(task.getAssignedTo());
     selectPriority(task.getPriority());
     fillCommentsOnTask(task.getCommentsOnTask());
+    fillCommentsOnExecution(task.getCommentsOnExecution());
   }
 
   private void selectTaskType(String taskType) {
@@ -139,6 +140,7 @@ public class CreateNewTaskSteps implements En {
         .assignedTo(getAssignedToWithoutNoTasks())
         .priority(getPriority())
         .commentsOnTask(getCommentsOnTask())
+        .commentsOnExecution(getCommentsOnExecution())
         .taskStatus(getStatus())
         .build();
   }

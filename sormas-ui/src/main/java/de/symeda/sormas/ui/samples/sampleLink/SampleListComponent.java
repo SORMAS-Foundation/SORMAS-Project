@@ -15,10 +15,6 @@
 
 package de.symeda.sormas.ui.samples.sampleLink;
 
-import java.util.function.Consumer;
-
-import com.vaadin.ui.Button;
-
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -29,10 +25,10 @@ import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 @SuppressWarnings("serial")
 public class SampleListComponent extends SideComponent {
 
-	public SampleListComponent(SampleCriteria sampleCriteria, Consumer<Button.ClickEvent> clickListener) {
+	public SampleListComponent(SampleCriteria sampleCriteria) {
 		super(I18nProperties.getString(Strings.entitySamples));
 
-		addCreateButton(I18nProperties.getCaption(Captions.sampleNewSample), UserRight.SAMPLE_CREATE, clickListener);
+		addCreateButton(I18nProperties.getCaption(Captions.sampleNewSample), UserRight.SAMPLE_CREATE);
 
 		SampleList sampleList = new SampleList(sampleCriteria);
 		addComponent(sampleList);
