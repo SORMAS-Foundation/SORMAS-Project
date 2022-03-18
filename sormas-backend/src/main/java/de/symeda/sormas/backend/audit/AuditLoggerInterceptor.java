@@ -34,6 +34,8 @@ import de.symeda.sormas.backend.user.User;
 public class AuditLoggerInterceptor {
 
 	@EJB
+	AuditLogger auditLogger;
+	@EJB
 	CurrentUserService currentUserService;
 
 	@EJB
@@ -125,8 +127,7 @@ public class AuditLoggerInterceptor {
 
 		String returnValue = printObject(result);
 
-		AuditLogger.getInstance()
-			.logBackendCall(sessionContext.getCallerPrincipal().getName(), agentUuid, calledMethod, parameters, returnValue, start);
+		auditLogger.logBackendCall(sessionContext.getCallerPrincipal().getName(), agentUuid, calledMethod, parameters, returnValue, start);
 
 		return result;
 	}

@@ -15,9 +15,29 @@
 
 package de.symeda.sormas.backend.audit;
 
-import ca.uhn.fhir.context.FhirContext;
-import ca.uhn.fhir.parser.IParser;
-import de.symeda.sormas.api.ConfigFacade;
+import static de.symeda.sormas.api.audit.Constants.createPrefix;
+import static de.symeda.sormas.api.audit.Constants.deletePrefix;
+import static de.symeda.sormas.api.audit.Constants.executePrefix;
+import static de.symeda.sormas.api.audit.Constants.readPrefix;
+import static de.symeda.sormas.api.audit.Constants.updatePrefix;
+
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Calendar;
+import java.util.Collections;
+import java.util.Date;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Set;
+import java.util.TimeZone;
+import java.util.concurrent.ConcurrentHashMap;
+
+import javax.annotation.PostConstruct;
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Singleton;
+
 import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
@@ -30,62 +50,39 @@ import org.hl7.fhir.r4.model.codesystems.AuditSourceType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Collections;
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.Set;
-import java.util.TimeZone;
+import ca.uhn.fhir.context.FhirContext;
+import ca.uhn.fhir.parser.IParser;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
-import static de.symeda.sormas.api.audit.Constants.createPrefix;
-import static de.symeda.sormas.api.audit.Constants.deletePrefix;
-import static de.symeda.sormas.api.audit.Constants.executePrefix;
-import static de.symeda.sormas.api.audit.Constants.readPrefix;
-import static de.symeda.sormas.api.audit.Constants.updatePrefix;
-
+@Singleton
+@LocalBean
 public class AuditLogger {
 
-	private static AuditLogger instance;
 	private static final Logger logger = LoggerFactory.getLogger(AuditLogger.class);
-	private final Logger auditLogger;
-	private final String auditSourceSite;
-	private final Map<String, AuditEvent.AuditEventAction> actionMap;
+	private String auditSourceSite;
+	private Map<String, AuditEvent.AuditEventAction> actionMap;
 
-	private AuditLogger(String auditSourceSite) {
-		auditLogger = LogSink.getInstance().getAuditLogger();
-		this.auditSourceSite = auditSourceSite;
-		actionMap = new HashMap<>();
-	}
+	@EJB
+	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
+	@EJB
+	private LogSink auditLogger;
 
-	public static synchronized AuditLogger getInstance() {
-		if (instance == null) {
-			try {
-				ConfigFacade configFacade = (ConfigFacade) new InitialContext().lookup("java:module/ConfigFacade");
-				String sourceSite = configFacade.getAuditSourceSite();
-				if (sourceSite.equals("")) {
-					logger.warn("audit.source.site is empty! Please configure it for more expedient audit trail analysis.");
-					sourceSite = "NOT CONFIGURED";
-				}
-				instance = new AuditLogger(sourceSite);
-			} catch (NamingException e) {
-				logger.error("Could not fetch ConfigFacade for audit logger.");
-				throw new RuntimeException(e);
-			}
+	@PostConstruct
+	private void setup() {
+		String sourceSite = configFacade.getAuditSourceSite();
+		if (sourceSite.equals("")) {
+			logger.warn("audit.source.site is empty! Please configure it for more expedient audit trail analysis.");
+			sourceSite = "NOT CONFIGURED";
 		}
-		return instance;
+		this.auditSourceSite = sourceSite;
+		actionMap = new HashMap<>();
 	}
 
 	private void accept(AuditEvent event) {
 		FhirContext ctx = FhirContext.forR4();
 		IParser parser = ctx.newJsonParser();
 		String serialized = parser.encodeResourceToString(event);
-		auditLogger.info(serialized);
+		auditLogger.getAuditLogger().info(serialized);
 	}
 
 	public void logApplicationStart() {
