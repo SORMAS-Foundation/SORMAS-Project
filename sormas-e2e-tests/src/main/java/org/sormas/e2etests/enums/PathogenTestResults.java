@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,6 +20,7 @@ package org.sormas.e2etests.enums;
 
 import java.util.Random;
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 @Getter
 public enum PathogenTestResults {
@@ -44,5 +45,15 @@ public enum PathogenTestResults {
     Random random = new Random();
     return String.valueOf(
         PathogenTestResults.values()[random.nextInt(values().length)].pathogenResults);
+  }
+
+  @SneakyThrows
+  public static String geRandomResultNameDifferentThan(String excludedOption) {
+    PathogenTestResults[] pathogenTestResults = PathogenTestResults.values();
+    for (PathogenTestResults value : pathogenTestResults) {
+      if (!value.getPathogenResults().equalsIgnoreCase(excludedOption))
+        return value.getPathogenResults();
+    }
+    throw new Exception("Unable to provide option different than: " + excludedOption);
   }
 }

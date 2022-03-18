@@ -43,8 +43,8 @@ import com.vaadin.v7.data.Buffered.SourceException;
 import com.vaadin.v7.data.Validator.InvalidValueException;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
-
 import com.vaadin.v7.ui.Field;
+
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -104,20 +104,20 @@ public class SampleController {
 		SormasUI.get().getNavigator().navigateTo(navigationState);
 	}
 
-	public void create(CaseReferenceDto caseRef, Disease disease) {
-		createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), caseRef), disease);
+	public void create(CaseReferenceDto caseRef, Disease disease, Runnable callback) {
+		createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), caseRef), disease, callback);
 	}
 
-	public void create(ContactReferenceDto contactRef, Disease disease) {
-		createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), contactRef), disease);
+	public void create(ContactReferenceDto contactRef, Disease disease, Runnable callback) {
+		createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), contactRef), disease, callback);
 	}
 
-	public void create(EventParticipantReferenceDto eventParticipantRef, Disease disease) {
-		createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), eventParticipantRef), disease);
+	public void create(EventParticipantReferenceDto eventParticipantRef, Disease disease, Runnable callback) {
+		createSample(SampleDto.build(UserProvider.getCurrent().getUserReference(), eventParticipantRef), disease, callback);
 	}
 
-	private void createSample(SampleDto sampleDto, Disease disease) {
-		final CommitDiscardWrapperComponent<SampleCreateForm> editView = getSampleCreateComponent(sampleDto, disease, SormasUI::refreshView);
+	private void createSample(SampleDto sampleDto, Disease disease, Runnable callback) {
+		final CommitDiscardWrapperComponent<SampleCreateForm> editView = getSampleCreateComponent(sampleDto, disease, callback);
 		// add option to create additional pathogen tests
 		addPathogenTestButton(editView, false);
 		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreateNewSample));
@@ -196,7 +196,7 @@ public class SampleController {
 		// validate pathogen test create component before saving the sample
 		sampleComponent.addFieldGroups(pathogenTestForm.getFieldGroup());
 		CommitDiscardWrapperComponent.CommitListener savePathogenTest = () -> {
-			ControllerProvider.getPathogenTestController().savePathogenTest(pathogenTestForm.getValue(), null, true);
+			ControllerProvider.getPathogenTestController().savePathogenTest(pathogenTestForm.getValue(), null, true, true);
 			if (callback != null) {
 				callback.run();
 			}
@@ -318,6 +318,10 @@ public class SampleController {
 				SampleDto originalDto = FacadeProvider.getSampleFacade().getSampleByUuid(changedDto.getUuid());
 				FacadeProvider.getSampleFacade().saveSample(changedDto);
 				SormasUI.refreshView();
+
+				final CaseReferenceDto associatedCase = changedDto.getAssociatedCase();
+				final CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
+				FacadeProvider.getCaseFacade().save(caseDataByUuid);
 
 				if (changedDto.getSpecimenCondition() != originalDto.getSpecimenCondition()
 					&& changedDto.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE

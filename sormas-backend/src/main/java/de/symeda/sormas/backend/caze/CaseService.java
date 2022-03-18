@@ -18,7 +18,6 @@
 package de.symeda.sormas.backend.caze;
 
 import java.sql.Timestamp;
-import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -42,7 +41,6 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Fetch;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -53,7 +51,7 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.api.EditPermissionType;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -107,11 +105,12 @@ import de.symeda.sormas.backend.caze.transformers.CaseSelectionDtoResultTransfor
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisit;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitService;
-import de.symeda.sormas.backend.common.AbstractDeletableAdoService;
+import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
-import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -120,7 +119,6 @@ import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
-import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -186,8 +184,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	@EJB
 	private ImmunizationService immunizationService;
 	@EJB
-	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
-	@EJB
 	private DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
@@ -237,8 +233,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Root<Case> from = cq.from(getElementClass());
 		from.fetch(Case.SYMPTOMS);
 		from.fetch(Case.THERAPY);
-		Fetch<Case, ClinicalCourse> clinicalCourseFetch = from.fetch(Case.CLINICAL_COURSE);
-		clinicalCourseFetch.fetch(ClinicalCourse.HEALTH_CONDITIONS);
+		from.fetch(Case.HEALTH_CONDITIONS);
 		from.fetch(Case.HOSPITALIZATION);
 		from.fetch(Case.EPI_DATA);
 		from.fetch(Case.PORT_HEALTH_INFO);
@@ -908,20 +903,20 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		// Delete all tasks associated with this case
 		List<Task> tasks = taskService.findBy(new TaskCriteria().caze(new CaseReferenceDto(caze.getUuid())), true);
 		for (Task task : tasks) {
-			taskService.delete(task);
+			taskService.deletePermanent(task);
 		}
 
 		// Delete all prescriptions/treatments/clinical visits
 		if (caze.getTherapy() != null) {
 			TherapyReferenceDto therapy = new TherapyReferenceDto(caze.getTherapy().getUuid());
-			treatmentService.findBy(new TreatmentCriteria().therapy(therapy)).stream().forEach(t -> treatmentService.delete(t));
-			prescriptionService.findBy(new PrescriptionCriteria().therapy(therapy)).stream().forEach(p -> prescriptionService.delete(p));
+			treatmentService.findBy(new TreatmentCriteria().therapy(therapy)).stream().forEach(t -> treatmentService.deletePermanent(t));
+			prescriptionService.findBy(new PrescriptionCriteria().therapy(therapy)).stream().forEach(p -> prescriptionService.deletePermanent(p));
 		}
 		if (caze.getClinicalCourse() != null) {
 			ClinicalCourseReferenceDto clinicalCourse = new ClinicalCourseReferenceDto(caze.getClinicalCourse().getUuid());
 			clinicalVisitService.findBy(new ClinicalVisitCriteria().clinicalCourse(clinicalCourse))
 				.stream()
-				.forEach(c -> clinicalVisitService.delete(c));
+				.forEach(c -> clinicalVisitService.deletePermanent(c));
 		}
 
 		// Remove all events linked to case by removing the case_id from event participant
@@ -956,7 +951,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	 */
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Case> casePath, Timestamp date, boolean includeExtendedChangeDateFilters) {
 
-		return addChangeDateFilter(new ChangeDateFilterBuilder(cb, date), casePath, includeExtendedChangeDateFilters).build();
+		return addChangeDates(new ChangeDateFilterBuilder(cb, date), casePath, includeExtendedChangeDateFilters).build();
 	}
 
 	private Predicate createChangeDateFilter(
@@ -966,7 +961,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		boolean includeExtendedChangeDateFilters,
 		String lastSynchronizedUuid) {
 
-		return addChangeDateFilter(new ChangeDateFilterBuilder(cb, date, casePath, lastSynchronizedUuid), casePath, includeExtendedChangeDateFilters)
+		return addChangeDates(new ChangeDateFilterBuilder(cb, date, casePath, lastSynchronizedUuid), casePath, includeExtendedChangeDateFilters)
 			.build();
 	}
 
@@ -976,41 +971,35 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Expression<? extends Date> dateExpression,
 		boolean includeExtendedChangeDateFilters) {
 
-		return addChangeDateFilter(new ChangeDateFilterBuilder(cb, dateExpression), casePath, includeExtendedChangeDateFilters).build();
+		return addChangeDates(new ChangeDateFilterBuilder(cb, dateExpression), casePath, includeExtendedChangeDateFilters).build();
 	}
 
-	private ChangeDateFilterBuilder addChangeDateFilter(
-		ChangeDateFilterBuilder filterBuilder,
-		From<?, Case> casePath,
-		boolean includeExtendedChangeDateFilters) {
+	@Override
+	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, From<?, Case> caseFrom, boolean includeExtendedChangeDateFilters) {
+		Join<Case, Hospitalization> hospitalization = caseFrom.join(Case.HOSPITALIZATION, JoinType.LEFT);
+		Join<Case, ClinicalCourse> clinicalCourse = caseFrom.join(Case.CLINICAL_COURSE, JoinType.LEFT);
 
-		Join<Case, Hospitalization> hospitalization = casePath.join(Case.HOSPITALIZATION, JoinType.LEFT);
-		Join<Case, ClinicalCourse> clinicalCourse = casePath.join(Case.CLINICAL_COURSE, JoinType.LEFT);
-
-		filterBuilder = filterBuilder.add(casePath)
-			.add(casePath, Case.SYMPTOMS)
+		builder = super.addChangeDates(builder, caseFrom, includeExtendedChangeDateFilters).add(caseFrom, Case.SYMPTOMS)
 			.add(hospitalization)
-			.add(hospitalization, Hospitalization.PREVIOUS_HOSPITALIZATIONS);
-
-		filterBuilder = epiDataService.addChangeDateFilters(filterBuilder, casePath.join(Contact.EPI_DATA, JoinType.LEFT));
-
-		filterBuilder = filterBuilder.add(casePath, Case.THERAPY)
+			.add(hospitalization, Hospitalization.PREVIOUS_HOSPITALIZATIONS)
+			.add(caseFrom, Case.THERAPY)
 			.add(clinicalCourse)
-			.add(clinicalCourse, ClinicalCourse.HEALTH_CONDITIONS)
-			.add(casePath, Case.MATERNAL_HISTORY)
-			.add(casePath, Case.PORT_HEALTH_INFO)
-			.add(casePath, Case.SORMAS_TO_SORMAS_ORIGIN_INFO)
-			.add(casePath, Case.SORMAS_TO_SORMAS_SHARES);
+			.add(caseFrom, Case.HEALTH_CONDITIONS)
+			.add(caseFrom, Case.MATERNAL_HISTORY)
+			.add(caseFrom, Case.PORT_HEALTH_INFO)
+			.add(caseFrom, Case.SORMAS_TO_SORMAS_ORIGIN_INFO)
+			.add(caseFrom, Case.SORMAS_TO_SORMAS_SHARES);
+
+		builder = epiDataService.addChangeDates(builder, caseFrom.join(Case.EPI_DATA, JoinType.LEFT));
 
 		if (includeExtendedChangeDateFilters) {
-			Join<Case, Sample> caseSampleJoin = casePath.join(Case.SAMPLES, JoinType.LEFT);
-			Join<Case, Person> casePersonJoin = casePath.join(Case.PERSON, JoinType.LEFT);
+			Join<Case, Sample> caseSampleJoin = caseFrom.join(Case.SAMPLES, JoinType.LEFT);
+			Join<Case, Person> casePersonJoin = caseFrom.join(Case.PERSON, JoinType.LEFT);
 
-			filterBuilder =
-				filterBuilder.add(caseSampleJoin).add(caseSampleJoin, Sample.PATHOGENTESTS).add(casePersonJoin).add(casePersonJoin, Person.ADDRESS);
+			builder = builder.add(caseSampleJoin).add(caseSampleJoin, Sample.PATHOGENTESTS).add(casePersonJoin).add(casePersonJoin, Person.ADDRESS);
 		}
 
-		return filterBuilder;
+		return builder;
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -1024,8 +1013,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Predicate filterResponsible = null;
 		Predicate filter = null;
 
-		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
-		if (jurisdictionLevel != JurisdictionLevel.NATION && !currentUser.hasAnyUserRole(UserRole.REST_USER, UserRole.REST_EXTERNAL_VISITS_USER)) {
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		if (jurisdictionLevel != JurisdictionLevel.NATION) {
 			// whoever created the case or is assigned to it is allowed to access it
 			if (userFilterCriteria == null || (userFilterCriteria.getIncludeCasesFromOtherJurisdictions())) {
 				filterResponsible = cb.equal(casePath.get(Case.REPORTING_USER).get(User.ID), currentUser.getId());
@@ -1292,35 +1281,19 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		ensurePersisted(caze);
 	}
 
-	/**
-	 * @param caseUuids
-	 *            {@link Case}s identified by {@code uuid} to be archived or not.
-	 * @param archived
-	 *            {@code true} archives the Case, {@code false} unarchives it.
-	 * @see {@link Case#setArchived(boolean)}
-	 */
-	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public void updateArchived(List<String> caseUuids, boolean archived) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaUpdate<Case> cu = cb.createCriteriaUpdate(Case.class);
-		Root<Case> root = cu.from(Case.class);
-
-		cu.set(Case.CHANGE_DATE, Timestamp.from(Instant.now()));
-		cu.set(root.get(Case.ARCHIVED), archived);
-
-		cu.where(root.get(Case.UUID).in(caseUuids));
-
-		em.createQuery(cu).executeUpdate();
-	}
-
-	public boolean isCaseEditAllowed(Case caze) {
+	@Override
+	public EditPermissionType getEditPermissionType(Case caze) {
 
 		if (caze.getSormasToSormasOriginInfo() != null && !caze.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
-			return false;
+			return EditPermissionType.REFUSED;
 		}
 
-		return inJurisdictionOrOwned(caze) && !sormasToSormasShareInfoService.isCaseOwnershipHandedOver(caze);
+		if (!inJurisdictionOrOwned(caze) || sormasToSormasShareInfoService.isCaseOwnershipHandedOver(caze)) {
+			return EditPermissionType.REFUSED;
+		}
+
+		return super.getEditPermissionType(caze);
+
 	}
 
 	public boolean inJurisdiction(Case caze, User user) {
@@ -1753,7 +1726,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	public void updateCompleteness(Case caze) {
-
 		float completeness = calculateCompleteness(caze);
 
 		/*

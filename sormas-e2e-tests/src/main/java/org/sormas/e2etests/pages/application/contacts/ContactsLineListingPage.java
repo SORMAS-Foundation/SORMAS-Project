@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -62,4 +62,8 @@ public class ContactsLineListingPage {
       By.cssSelector("[id='lineListingContactLineField_1'] [id='sex'] div");
   public static final By ADD_LINE = By.cssSelector("[id='lineListingAddLine']");
   public static final By LINE_LISTING_ACTION_SAVE = By.cssSelector("[id='actionSave']");
+
+  public static By getLineListingDateReportInputByIndex(String dateOfReportNumber) {
+    return By.xpath(String.format("(//div[@id='dateOfReport']//input)[%s]", dateOfReportNumber));
+  }
 }

@@ -64,7 +64,6 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ApproximateAgeType.ApproximateAgeHelper;
 import de.symeda.sormas.api.person.CauseOfDeath;
-import de.symeda.sormas.api.person.DeathPlaceType;
 import de.symeda.sormas.api.person.EducationType;
 import de.symeda.sormas.api.person.OccupationType;
 import de.symeda.sormas.api.person.PersonContext;
@@ -299,11 +298,10 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addField(PersonDto.ADDRESS, LocationEditForm.class).setCaption(null);
 		addField(PersonDto.ADDRESSES, LocationsField.class).setCaption(null);
 
-		PersonContactDetailsField personContactDetailsField = new PersonContactDetailsField(getValue(), fieldVisibilityCheckers, fieldAccessCheckers);
-		personContactDetailsField.setId(PersonDto.PERSON_CONTACT_DETAILS);
+		PersonContactDetailsField personContactDetailsField = addField(PersonDto.PERSON_CONTACT_DETAILS, PersonContactDetailsField.class);
+		personContactDetailsField.setThisPerson(getValue());
+		personContactDetailsField.setCaption(null);
 		personContactDetailsField.setPseudonymized(isPseudonymized);
-		getFieldGroup().bind(personContactDetailsField, PersonDto.PERSON_CONTACT_DETAILS);
-		getContent().addComponent(personContactDetailsField, PersonDto.PERSON_CONTACT_DETAILS);
 
 		addFields(
 			PersonDto.OCCUPATION_TYPE,
@@ -464,6 +462,13 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				false,
 				false,
 				I18nProperties.getValidationError(Validations.afterDate, deathDate.getCaption(), birthDateYear.getCaption())));
+		burialDate.addValidator(
+			new DateComparisonValidator(
+				burialDate,
+				this::calcBirthDateValue,
+				false,
+				false,
+				I18nProperties.getValidationError(Validations.afterDate, burialDate.getCaption(), birthDateYear.getCaption())));
 		burialDate.addValidator(
 			new DateComparisonValidator(
 				burialDate,
@@ -845,7 +850,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private void fillDeathAndBurialFields(AbstractSelect deathPlaceType, TextField deathPlaceDesc, TextField burialPlaceDesc) {
 
 		if (deathPlaceType.isVisible() && deathPlaceType.getValue() == null) {
-			deathPlaceType.setValue(DeathPlaceType.OTHER);
 			if (deathPlaceDesc.isVisible() && StringUtils.isBlank(deathPlaceDesc.getValue())) {
 				deathPlaceDesc.setValue(getValue().getAddress().toString());
 			}

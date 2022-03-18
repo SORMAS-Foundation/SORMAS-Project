@@ -9,12 +9,11 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.inject.Inject;
-import javax.inject.Named;
 import lombok.SneakyThrows;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Therapy;
+import org.sormas.e2etests.entities.services.TherapyService;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.pojo.web.Therapy;
-import org.sormas.e2etests.services.TherapyService;
 
 public class EditTherapySteps implements En {
 
@@ -28,20 +27,20 @@ public class EditTherapySteps implements En {
 
   @SneakyThrows
   @Inject
-  public EditTherapySteps(
-      WebDriverHelpers webDriverHelpers,
-      TherapyService therapyService,
-      @Named("ENVIRONMENT_URL") String environmentUrl) {
+  public EditTherapySteps(WebDriverHelpers webDriverHelpers, TherapyService therapyService) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
         "I am accessing the Therapy tab of created case",
-        () -> webDriverHelpers.clickOnWebElementBySelector(THERAPY_TAB));
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(THERAPY_TAB);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NEW_PRESCRIPTION_BUTTON);
+        });
 
     When(
         "I create and fill Prescriptions with specific data for drug intake",
         () -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
           webDriverHelpers.clickOnWebElementBySelector(NEW_PRESCRIPTION_BUTTON);
           therapyData = therapyService.buildPrescriptionDrugIntake();
           selectPrescriptionType(therapyData.getPrescriptionType());
@@ -135,8 +134,12 @@ public class EditTherapySteps implements En {
         });
 
     When(
-        "I click on the popup Save button",
+        "I click on Save button from New Prescription popup",
         () -> webDriverHelpers.clickOnWebElementBySelector(THERAPY_POPUP_SAVE_BUTTON));
+
+    When(
+        "I click on Save button from New Treatment popup",
+        () -> webDriverHelpers.clickOnWebElementBySelector(TREATMENT_POPUP_SAVE_BUTTON));
   }
 
   private void selectPrescriptionType(String prescriptionType) {

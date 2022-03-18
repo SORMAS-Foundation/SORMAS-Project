@@ -27,7 +27,7 @@ import retrofit2.http.Path;
 
 public interface ImmunizationFacadeRetro {
 
-	@GET("contacts/all/{since}/{size}/{lastSynchronizedUuid}")
+	@GET("immunizations/all/{since}/{size}/{lastSynchronizedUuid}")
 	Call<List<ImmunizationDto>> pullAllSince(
 		@Path("since") long since,
 		@Path("size") int size,

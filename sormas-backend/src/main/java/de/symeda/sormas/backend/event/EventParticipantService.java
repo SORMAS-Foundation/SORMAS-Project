@@ -39,16 +39,20 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import de.symeda.sormas.backend.common.AbstractCoreAdoService;
+import de.symeda.sormas.api.EditPermissionType;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.ChangeDateBuilder;
+import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
@@ -77,7 +81,6 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	public EventParticipantService() {
 		super(EventParticipant.class);
 	}
-
 
 	public List<EventParticipant> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 		return getAllAfter(date, null, batchSize, lastSynchronizedUuid);
@@ -218,6 +221,15 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		}
 		if (Boolean.TRUE.equals(criteria.getNoResultingCase())) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(from.get(EventParticipant.RESULTING_CASE)));
+		}
+
+		if (criteria.getRelevanceStatus() != null) {
+			if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
+				filter = CriteriaBuilderHelper
+					.and(cb, filter, cb.or(cb.equal(from.get(EventParticipant.ARCHIVED), false), cb.isNull(from.get(EventParticipant.ARCHIVED))));
+			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(EventParticipant.ARCHIVED), true));
+			}
 		}
 
 		filter = CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, from));
@@ -406,20 +418,34 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 
 	@Override
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, EventParticipant> from, Timestamp date) {
-		Predicate dateFilter = super.createChangeDateFilter(cb, from, date);
-		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, from, EventParticipant.SORMAS_TO_SORMAS_ORIGIN_INFO));
-		dateFilter = cb.or(dateFilter, changeDateFilter(cb, date, from, EventParticipant.SORMAS_TO_SORMAS_SHARES));
+		ChangeDateFilterBuilder changeDateFilterBuilder = new ChangeDateFilterBuilder(cb, date, from, null);
 
-		return dateFilter;
+		return addChangeDates(changeDateFilterBuilder, from, false).build();
 
 	}
 
-	public boolean isEventParticipantEditAllowed(EventParticipant eventParticipant) {
+	@Override
+	protected <T extends ChangeDateBuilder<T>> T addChangeDates(
+		T builder,
+		From<?, EventParticipant> eventParticipantFrom,
+		boolean includeExtendedChangeDateFilters) {
+
+		return super.addChangeDates(builder, eventParticipantFrom, includeExtendedChangeDateFilters)
+			.add(eventParticipantFrom, EventParticipant.SORMAS_TO_SORMAS_ORIGIN_INFO)
+			.add(eventParticipantFrom, EventParticipant.SORMAS_TO_SORMAS_SHARES);
+	}
+
+	public EditPermissionType isEventParticipantEditAllowed(EventParticipant eventParticipant) {
+
 		if (eventParticipant.getSormasToSormasOriginInfo() != null && !eventParticipant.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
-			return false;
+			return EditPermissionType.REFUSED;
 		}
 
-		return inJurisdiction(eventParticipant) && !sormasToSormasShareInfoService.isEventParticipantOwnershipHandedOver(eventParticipant);
+		if (!inJurisdiction(eventParticipant) || sormasToSormasShareInfoService.isEventParticipantOwnershipHandedOver(eventParticipant)) {
+			return EditPermissionType.REFUSED;
+		}
+
+		return super.getEditPermissionType(eventParticipant);
 	}
 
 	public Collection<EventParticipant> getByPersonUuids(List<String> personUuids) {

@@ -35,9 +35,9 @@ public interface AdoService<ADO extends AbstractDomainObject> {
 	/**
 	 * <b>DELETES</b> an entity from the database!
 	 * 
-	 * @param deleteme
+	 * @param ado
 	 */
-	void delete(ADO deleteme);
+	void deletePermanent(ADO ado);
 
 	/**
 	 * Speichert ein neues Objekt in der Datenbank.

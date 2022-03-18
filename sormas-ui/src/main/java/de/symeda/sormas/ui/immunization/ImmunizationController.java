@@ -6,12 +6,8 @@ import java.util.function.Consumer;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Sizeable;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -33,8 +29,8 @@ import de.symeda.sormas.ui.immunization.components.fields.pickorcreate.Immunizat
 import de.symeda.sormas.ui.immunization.components.fields.popup.SimilarImmunizationPopup;
 import de.symeda.sormas.ui.immunization.components.form.ImmunizationCreationForm;
 import de.symeda.sormas.ui.immunization.components.form.ImmunizationDataForm;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
 import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.automaticdeletion.AutomaticDeletionLabel;
@@ -182,21 +178,20 @@ public class ImmunizationController {
 		// Initialize 'Delete' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_DELETE)) {
 			editComponent.addDeleteListener(() -> {
-				FacadeProvider.getImmunizationFacade().deleteImmunization(immunizationDto.getUuid());
+				FacadeProvider.getImmunizationFacade().delete(immunizationDto.getUuid());
 				UI.getCurrent().getNavigator().navigateTo(ImmunizationsView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityImmunization));
 		}
 
 		// Initialize 'Archive' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_ARCHIVE)) {
-			boolean archived = FacadeProvider.getImmunizationFacade().isArchived(immunizationDto.getUuid());
-			Button archiveButton = ButtonHelper.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {
-				editComponent.commit();
-				archiveOrDearchiveImmunization(immunizationDto.getUuid(), !archived);
-			}, ValoTheme.BUTTON_LINK);
-
-			editComponent.getButtonsPanel().addComponentAsFirst(archiveButton);
-			editComponent.getButtonsPanel().setComponentAlignment(archiveButton, Alignment.BOTTOM_LEFT);
+			ControllerProvider.getArchiveController()
+				.addArchivingButton(
+					immunizationDto,
+					FacadeProvider.getImmunizationFacade(),
+					CoreEntityArchiveMessages.IMMUNIZATION,
+					editComponent,
+					() -> navigateToImmunization(immunizationDto.getUuid()));
 		}
 
 		return editComponent;
@@ -224,57 +219,6 @@ public class ImmunizationController {
 
 	private ImmunizationDto findImmunization(String uuid) {
 		return FacadeProvider.getImmunizationFacade().getByUuid(uuid);
-	}
-
-	private void archiveOrDearchiveImmunization(String uuid, boolean archive) {
-
-		if (archive) {
-			Label contentLabel = new Label(
-				String.format(
-					I18nProperties.getString(Strings.confirmationArchiveImmunization),
-					I18nProperties.getString(Strings.entityImmunization).toLowerCase(),
-					I18nProperties.getString(Strings.entityImmunization).toLowerCase()));
-			VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getString(Strings.headingArchiveImmunization),
-				contentLabel,
-				I18nProperties.getString(Strings.yes),
-				I18nProperties.getString(Strings.no),
-				640,
-				e -> {
-					if (e) {
-						FacadeProvider.getImmunizationFacade().archive(uuid);
-						Notification.show(
-							String.format(
-								I18nProperties.getString(Strings.messageImmunizationArchived),
-								I18nProperties.getString(Strings.entityImmunization)),
-							Notification.Type.ASSISTIVE_NOTIFICATION);
-						navigateToImmunization(uuid);
-					}
-				});
-		} else {
-			Label contentLabel = new Label(
-				String.format(
-					I18nProperties.getString(Strings.confirmationDearchiveImmunization),
-					I18nProperties.getString(Strings.entityImmunization).toLowerCase(),
-					I18nProperties.getString(Strings.entityImmunization).toLowerCase()));
-			VaadinUiUtil.showConfirmationPopup(
-				I18nProperties.getString(Strings.headingDearchiveImmunization),
-				contentLabel,
-				I18nProperties.getString(Strings.yes),
-				I18nProperties.getString(Strings.no),
-				640,
-				e -> {
-					if (e) {
-						FacadeProvider.getImmunizationFacade().dearchive(uuid);
-						Notification.show(
-							String.format(
-								I18nProperties.getString(Strings.messageImmunizationDearchived),
-								I18nProperties.getString(Strings.entityImmunization)),
-							Notification.Type.ASSISTIVE_NOTIFICATION);
-						navigateToImmunization(uuid);
-					}
-				});
-		}
 	}
 
 	private void selectOrCreateimmunizationForPerson(ImmunizationDto dto, PersonReferenceDto selectedPerson) {

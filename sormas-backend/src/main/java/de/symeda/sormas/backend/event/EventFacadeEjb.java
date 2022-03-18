@@ -45,7 +45,6 @@ import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.inject.Inject;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -62,9 +61,10 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.caze.CaseOutcome;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDetailedReferenceDto;
 import de.symeda.sormas.api.event.EventDto;
@@ -96,7 +96,6 @@ import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
 import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -132,6 +131,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
 
+	@EJB
+	private UserService userService;
 	@EJB
 	private EventGroupService eventGroupService;
 	@EJB
@@ -241,7 +242,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 		Event existingEvent = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 
-		if (internal && existingEvent != null && !service.isEventEditAllowed(existingEvent)) {
+		if (internal && existingEvent != null && !service.isEventEditAllowed(existingEvent).equals(EditPermissionType.ALLOWED)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEventNotEditable));
 		}
 
@@ -275,7 +276,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Override
-	public void deleteEvent(String eventUuid) throws ExternalSurveillanceToolException {
+	public void delete(String eventUuid) throws ExternalSurveillanceToolException {
 		if (!userService.hasRight(UserRight.EVENT_DELETE)) {
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete events.");
 		}
@@ -1188,19 +1189,11 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
 		cq.where(cb.equal(from.get(Event.ARCHIVED), false), cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
-		cq.select(from.get(Event.UUID));
-		List<String> uuids = em.createQuery(cq).getResultList();
+		cq.select(from.get(Event.UUID)).distinct(true);
+		List<String> eventUuids = em.createQuery(cq).getResultList();
 
-		if (!uuids.isEmpty()) {
-
-			CriteriaUpdate<Event> cu = cb.createCriteriaUpdate(Event.class);
-			Root<Event> root = cu.from(Event.class);
-
-			cu.set(root.get(Event.ARCHIVED), true);
-
-			cu.where(root.get(Event.UUID).in(uuids));
-
-			em.createQuery(cu).executeUpdate();
+		if (!eventUuids.isEmpty()) {
+			archive(eventUuids);
 		}
 	}
 
@@ -1271,6 +1264,16 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		return subordinateEventUuids;
 	}
 
+	private User getRandomDistrictEventResponsible(District district) {
+
+		return userService.getRandomDistrictUser(district, UserRight.EVENT_RESPONSIBLE);
+	}
+
+	private User getRandomRegionEventResponsible(Region region) {
+
+		return userService.getRandomRegionUser(region, UserRight.EVENT_RESPONSIBLE);
+	}
+
 	@Override
 	public boolean hasRegionAndDistrict(String eventUuid) {
 		return service.hasRegionAndDistrict(eventUuid);
@@ -1281,7 +1284,41 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		return service.hasAnyEventParticipantWithoutJurisdiction(eventUuid);
 	}
 
-	public Boolean isEventEditAllowed(String eventUuid) {
+	@Override
+	public int saveBulkEvents(
+		List<String> eventUuidList,
+		EventDto updatedTempEvent,
+		boolean eventStatusChange,
+		boolean eventInvestigationStatusChange,
+		boolean eventManagementStatusChange) {
+
+		int changedEvents = 0;
+		for (String evetUuid : eventUuidList) {
+			Event event = service.getByUuid(evetUuid);
+
+			if (service.isEventEditAllowed(event).equals(EditPermissionType.ALLOWED)) {
+				EventDto eventDto = toDto(event);
+				if (eventStatusChange) {
+					eventDto.setEventStatus(updatedTempEvent.getEventStatus());
+				}
+
+				if (eventInvestigationStatusChange) {
+					eventDto.setEventInvestigationStatus(updatedTempEvent.getEventInvestigationStatus());
+				}
+
+				if (eventManagementStatusChange) {
+					eventDto.setEventManagementStatus(updatedTempEvent.getEventManagementStatus());
+				}
+
+				save(eventDto);
+				changedEvents++;
+			}
+		}
+
+		return changedEvents;
+	}
+
+	public EditPermissionType isEventEditAllowed(String eventUuid) {
 		Event event = service.getByUuid(eventUuid);
 		return service.isEventEditAllowed(event);
 	}
@@ -1296,7 +1333,6 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	public static class EventFacadeEjbLocal extends EventFacadeEjb {
 
 		public EventFacadeEjbLocal() {
-			super();
 		}
 
 		@Inject
@@ -1305,8 +1341,4 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		}
 	}
 
-	@Override
-	protected void delete(Event entity) {
-		service.delete(entity);
-	}
 }

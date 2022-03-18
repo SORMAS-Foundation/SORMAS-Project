@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -39,8 +39,7 @@ public class SurveillanceDashboardSteps implements En {
     When(
         "^I save value for COVID disease counter in Surveillance Dashboard$",
         () -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
-
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(15);
           covid19DiseaseCounterBefore =
               Integer.parseInt(
                   webDriverHelpers.getTextFromWebElement(
@@ -50,7 +49,7 @@ public class SurveillanceDashboardSteps implements En {
     Then(
         "^I check that previous saved Surveillance Dashboard counters for COVID-19 have been increment$",
         () -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
 
           newCasesCounterAfter =
               Integer.parseInt(
@@ -77,10 +76,10 @@ public class SurveillanceDashboardSteps implements En {
     When(
         "I select {string} in TabSheet of Surveillance Dashboard",
         (String tabSheetValue) -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.clickWebElementByText(
               SurveillanceDashboardPage.TAB_SHEET_CAPTION, tabSheetValue);
-          TimeUnit.SECONDS.sleep(5);
+          TimeUnit.SECONDS.sleep(10);
         });
 
     When(

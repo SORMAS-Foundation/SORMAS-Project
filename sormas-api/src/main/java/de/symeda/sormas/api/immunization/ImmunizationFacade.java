@@ -21,8 +21,8 @@ import java.util.List;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.CoreFacade;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
@@ -34,11 +34,9 @@ public interface ImmunizationFacade extends CoreFacade<ImmunizationDto, Immuniza
 
 	List<String> getDeletedUuidsSince(Date since);
 
-	void deleteImmunization(String uuid);
-
 	List<String> deleteImmunizations(List<String> immunizationUuids);
 
-	boolean isImmunizationEditAllowed(String uuid);
+	EditPermissionType isImmunizationEditAllowed(String uuid);
 
 	List<ImmunizationDto> getSimilarImmunizations(ImmunizationSimilarityCriteria criteria);
 

@@ -6,6 +6,7 @@ For this reason, there are a number of ways in which such a SORMAS instance can 
 * **[Server Configuration](#server-configuration):** The basic server configuration is available as a .properties file, needs to be adjusted for every SORMAS instance, and is relevant for both production and development. This should be edited directly after installing the server.
 * **[Feature Configuration](#feature-configuration):** Most SORMAS features are optional and can be turned on or off directly in the database.
 * **[Disease Configuration](#disease-configuration):** SORMAS supports a large number of infectious diseases which can be enabled or disabled and further customized directly in the database.
+* **[Deletion Configuration](#deletion-configuration):** SORMAS can be configured to automatically delete entities in the database.
 * **[Infrastructure Data](#infrastructure-data):** Most infrastructure data (except countries and continents) are not shipped with SORMAS because they are country-specific. Importing the infrastructure data of your country (or creating some dummy data) is one of the first things you should do after setting up a SORMAS server.
 
 Beyond that, the Wiki contains even more customization options:
@@ -44,7 +45,7 @@ Changing these entries overrides that default value. Unlike with features, disea
 
 **Important: If you're using the mobile app, you also need to update the `changedate` to the current date and time whenever you change a disease configuration!** Otherwise the mobile applications will not be notified about the change.
 
-It is possible to adjust the following properties that define how the  diseases are handled:
+It is possible to adjust the following properties that define how the diseases are handled:
 
 * **`active`:** Whether this disease is used in this SORMAS instance. The concrete type of usage is specified by the other properties.
 * **`primaryDisease`:** Primary diseases are enabled for case surveillance while non-primary diseases can only be used for pathogen testing.
@@ -55,6 +56,22 @@ It is possible to adjust the following properties that define how the  diseases 
 * **`eventParticipantFollowUpDuration`:** The minimum duration of follow-up for event participants of this disease. Please note that event participant follow-up is not yet implemented.
 * **`extendedClassification`:** Whether this disease uses an extended case classification system that allows users to specify whether a case has been clinically, epidemiologically or laboratory-diagnostically confirmed.
 * **`extendedClassificationMulti`:** Whether the three confirmation properties used for extended classification can be specified individually, i.e. users can enter multiple sources of confirmation.
+
+## Deletion Configuration
+SORMAS can be set up to automatically delete entities after a specific time period. There are seven core entities for which automatic deletion can be enabled and configured: *Case, Contact, Event, Event Participant, Immunization, Travel Entry, and Campaign.* This configuration is currently only possible directly in the database via the `deleteconfiguration` table, which already contains a row for each of these entities. The table consists of the following columns:
+
+* **`entityType`:** The name of the entity that supports automatic deletion.
+* **`deletionReference`:** The reference date for the calculation of the date on which deletion takes place (see below).
+* **`deletionPeriod`:** The number of days after which an entity is deleted, starting with the deletion reference. The minimum is 7.
+
+Both `deletionReference` and `deletionPeriod` need to be filled in order for the automatic deletion to take place. Entities for which at least one of these fields is left empty will not be automatically deleted. Deletion is executed via a nightly cron job and might therefore not happen immediately when the deletion date has been reached.
+
+### Deletion Reference
+The `deletionReference` field has three possible values which define the date that is used to calculate whether an entity needs to be deleted (i.e., when the date calculated by subtracting the deletion period from the current date is before the deletion reference date, the entity is deleted).
+
+* **`CREATION`**: The creation date of the entity will be used.
+* **`END`**: The latest change date of the entity itself and any of its depending entities will be used. E.g. for cases, this includes but is not limited to its epi data, symptoms, or hospitalization.
+* **`ORIGIN`**: This is currently only implemented for travel entries and means that the report date of the entity will be used. If this is specified for any other entity, the deletion job will be stopped and throw an error.
 
 ## Infrastructure Data
 When you start a SORMAS server for the first time and the `createDefaultEntities` property is enabled, some default infrastructure data is generated to ensure that the server is usable and the default users can be created.

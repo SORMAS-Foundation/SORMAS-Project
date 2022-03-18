@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,6 +41,8 @@ public class CreateNewSamplePage {
       By.cssSelector("[id='lab'] [class='v-filterselect-button']");
   public static final By LABORATORY_INPUT = By.cssSelector("[id='lab'] input");
   public static final By LABORATORY_NAME_INPUT = By.cssSelector("[id='labDetails']");
+  public static final By LABORATORY_NAME_POPUP_INPUT =
+      By.cssSelector(".popupContent [id='labDetails']");
   public static final By RECEIVED_OPTION_BUTTON = By.cssSelector("[id='received'] label");
   public static final By DATE_SAMPLE_RECEIVED = By.cssSelector("[id='receivedDate'] input");
   public static final By SPECIMEN_CONDITION_COMBOBOX =

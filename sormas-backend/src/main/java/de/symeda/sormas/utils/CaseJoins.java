@@ -65,7 +65,7 @@ public class CaseJoins<T> extends AbstractDomainObjectJoins<T, Case> {
 	private Join<Case, EpiData> epiData;
 	private Join<Case, Symptoms> symptoms;
 	private Join<Case, ClinicalCourse> clinicalCourse;
-	private Join<ClinicalCourse, HealthConditions> healthConditions;
+	private Join<Case, HealthConditions> healthConditions;
 	private Join<Case, EventParticipant> eventParticipants;
 	private Join<Person, List<Location>> personAddresses;
 	private Join<Case, Sample> samples;
@@ -248,11 +248,11 @@ public class CaseJoins<T> extends AbstractDomainObjectJoins<T, Case> {
 		this.clinicalCourse = clinicalCourse;
 	}
 
-	public Join<ClinicalCourse, HealthConditions> getHealthConditions() {
-		return getOrCreate(healthConditions, ClinicalCourse.HEALTH_CONDITIONS, JoinType.LEFT, getClinicalCourse(), this::setHealthConditions);
+	public Join<Case, HealthConditions> getHealthConditions() {
+		return getOrCreate(healthConditions, Case.HEALTH_CONDITIONS, JoinType.LEFT, this::setHealthConditions);
 	}
 
-	private void setHealthConditions(Join<ClinicalCourse, HealthConditions> healthConditions) {
+	private void setHealthConditions(Join<Case, HealthConditions> healthConditions) {
 		this.healthConditions = healthConditions;
 	}
 

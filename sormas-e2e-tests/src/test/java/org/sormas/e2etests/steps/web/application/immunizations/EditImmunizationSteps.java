@@ -12,12 +12,11 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.inject.Inject;
-import javax.inject.Named;
 import lombok.SneakyThrows;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Immunization;
+import org.sormas.e2etests.entities.services.ImmunizationService;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.pojo.web.Immunization;
-import org.sormas.e2etests.services.ImmunizationService;
 
 public class EditImmunizationSteps implements En {
 
@@ -29,14 +28,13 @@ public class EditImmunizationSteps implements En {
   @SneakyThrows
   @Inject
   public EditImmunizationSteps(
-      WebDriverHelpers webDriverHelpers,
-      ImmunizationService immunizationService,
-      @Named("ENVIRONMENT_URL") String environmentUrl) {
+      WebDriverHelpers webDriverHelpers, ImmunizationService immunizationService) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
         "I check the created data is correctly displayed on Edit immunization page",
         () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(DISEASE_COMBOBOX);
           collectedImmunization = collectImmunizationData();
           createdImmunization = CreateNewImmunizationSteps.immunization;
           ComparisonHelper.compareEqualFieldsOfEntities(

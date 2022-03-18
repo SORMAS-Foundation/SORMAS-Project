@@ -10,9 +10,10 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
-import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
+import de.symeda.sormas.api.EditPermissionType;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -29,7 +30,6 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
@@ -54,7 +54,7 @@ public class TravelEntryFacadeEjb
 	implements TravelEntryFacade {
 
 	@EJB
-	TravelEntryListService travelEntryListService;
+	private TravelEntryListService travelEntryListService;
 	@EJB
 	private PersonService personService;
 	@EJB
@@ -73,6 +73,18 @@ public class TravelEntryFacadeEjb
 	public TravelEntryFacadeEjb() {
 	}
 
+	public static TravelEntryReferenceDto toReferenceDto(TravelEntry entity) {
+
+		if (entity == null) {
+			return null;
+		}
+		return new TravelEntryReferenceDto(
+			entity.getUuid(),
+			entity.getExternalId(),
+			entity.getPerson().getFirstName(),
+			entity.getPerson().getLastName());
+	}
+
 	@Inject
 	public TravelEntryFacadeEjb(TravelEntryService service, UserService userService) {
 		super(TravelEntry.class, TravelEntryDto.class, service, userService);
@@ -84,20 +96,13 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-	public void archiveOrDearchiveTravelEntry(String travelEntryUuid, boolean archive) {
-		TravelEntry travelEntry = service.getByUuid(travelEntryUuid);
-		travelEntry.setArchived(archive);
-		service.ensurePersisted(travelEntry);
-	}
-
-	@Override
-	public Boolean isTravelEntryEditAllowed(String travelEntryUuid) {
+	public EditPermissionType isTravelEntryEditAllowed(String travelEntryUuid) {
 		TravelEntry travelEntry = service.getByUuid(travelEntryUuid);
 		return service.isTravelEntryEditAllowed(travelEntry);
 	}
 
 	@Override
-	public void deleteTravelEntry(String travelEntryUuid) {
+	public void delete(String travelEntryUuid) {
 		if (!userService.hasRight(UserRight.TRAVEL_ENTRY_DELETE)) {
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete travel entries");
 		}
@@ -277,10 +282,10 @@ public class TravelEntryFacadeEjb
 			return null;
 		}
 		return new TravelEntryReferenceDto(
-				entity.getUuid(),
-				entity.getExternalId(),
-				entity.getPerson().getFirstName(),
-				entity.getPerson().getLastName());
+			entity.getUuid(),
+			entity.getExternalId(),
+			entity.getPerson().getFirstName(),
+			entity.getPerson().getLastName());
 	}
 
 	@Override
@@ -337,11 +342,6 @@ public class TravelEntryFacadeEjb
 			return TravelEntry.REPORT_DATE;
 		}
 		return super.getDeleteReferenceField(deletionReference);
-	}
-
-	@Override
-	protected void delete(TravelEntry entity) {
-		service.delete(entity);
 	}
 
 	@LocalBean

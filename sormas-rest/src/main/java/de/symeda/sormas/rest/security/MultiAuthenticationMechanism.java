@@ -14,7 +14,7 @@
  */
 package de.symeda.sormas.rest.security;
 
-import java.util.Collections;
+import java.util.Arrays;
 import java.util.HashSet;
 
 import javax.enterprise.context.ApplicationScoped;
@@ -34,7 +34,7 @@ import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasApiConstants;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DefaultEntityHelper;
 import de.symeda.sormas.rest.security.config.KeycloakConfigResolver;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
@@ -110,6 +110,6 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 
 		return context.notifyContainerAboutLogin(
 			() -> DefaultEntityHelper.SORMAS_TO_SORMAS_USER_NAME,
-			new HashSet<>(Collections.singletonList(UserRole.SORMAS_TO_SORMAS_CLIENT.name())));
+			new HashSet<>(Arrays.asList(UserRight.SORMAS_REST.name(), UserRight.SORMAS_TO_SORMAS_CLIENT.name())));
 	}
 }

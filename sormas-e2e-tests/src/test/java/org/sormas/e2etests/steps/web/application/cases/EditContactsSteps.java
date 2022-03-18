@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -30,6 +30,7 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CON
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.LAST_CONTACT_DATE;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.TYPE_OF_CONTACT_OPTIONS;
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -38,15 +39,17 @@ import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
 import javax.inject.Inject;
-import javax.inject.Named;
+import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Contact;
+import org.sormas.e2etests.entities.services.ContactService;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.pojo.web.Contact;
-import org.sormas.e2etests.services.ContactService;
 import org.sormas.e2etests.state.ApiState;
 import org.testng.asserts.SoftAssert;
 
+@Slf4j
 public class EditContactsSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
@@ -62,14 +65,14 @@ public class EditContactsSteps implements En {
       ApiState apiState,
       ContactService contactService,
       SoftAssert softly,
-      @Named("ENVIRONMENT_URL") String environmentUrl) {
+      EnvironmentManager environmentManager) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
         "I open the Case Contacts tab of the created case via api",
         () -> {
           LAST_CREATED_CASE_CONTACTS_TAB_URL =
-              environmentUrl
+              environmentManager.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!cases/contacts/"
                   + apiState.getCreatedCase().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_CASE_CONTACTS_TAB_URL);
@@ -136,23 +139,28 @@ public class EditContactsSteps implements En {
     Then(
         "I check the linked contact information is correctly displayed",
         () -> {
-          webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(By.xpath("//tr"));
-          String contactId = webDriverHelpers.getValueFromTableRowUsingTheHeader("Contact ID", 1);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              By.cssSelector(
+                  String.format(
+                      CONTACT_RESULTS_UUID_LOCATOR, apiState.getCreatedContact().getUuid())));
+          String contactId =
+              webDriverHelpers.getTextFromWebElement(By.xpath("//tbody/tr[1]//td[2]/a"));
           String contactDisease =
-              (webDriverHelpers.getValueFromTableRowUsingTheHeader("Disease", 1).equals("COVID-19"))
+              (webDriverHelpers
+                      .getTextFromWebElement(By.xpath("//tbody/tr[1]//td[6]"))
+                      .equals("COVID-19"))
                   ? "CORONAVIRUS"
                   : "Not expected string!";
           String contactClassification =
               (webDriverHelpers
-                      .getValueFromTableRowUsingTheHeader("Contact classification", 1)
+                      .getTextFromWebElement(By.xpath("//tbody/tr[1]//td[7]"))
                       .equals("Unconfirmed contact"))
                   ? "UNCONFIRMED"
                   : "Not expected string!";
           String firstName =
-              webDriverHelpers.getValueFromTableRowUsingTheHeader(
-                  "First name of contact person", 1);
+              webDriverHelpers.getTextFromWebElement(By.xpath("//tbody/tr[1]//td[10]"));
           String lastName =
-              webDriverHelpers.getValueFromTableRowUsingTheHeader("Last name of contact person", 1);
+              webDriverHelpers.getTextFromWebElement(By.xpath("//tbody/tr[1]//td[11]"));
 
           softly.assertTrue(
               apiState.getCreatedContact().getUuid().substring(0, 6).equalsIgnoreCase(contactId),
@@ -166,11 +174,9 @@ public class EditContactsSteps implements En {
                   .getContactClassification()
                   .equalsIgnoreCase(contactClassification),
               "Classification doesn't match");
-
           softly.assertTrue(
               apiState.getCreatedContact().getPerson().getFirstName().equalsIgnoreCase(firstName),
               "First name doesn't match");
-
           softly.assertTrue(
               apiState.getCreatedContact().getPerson().getLastName().equalsIgnoreCase(lastName),
               "Last name doesn't match");

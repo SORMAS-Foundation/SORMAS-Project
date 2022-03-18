@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,25 +26,70 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.inject.Inject;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Case;
+import org.sormas.e2etests.entities.services.CaseService;
 import org.sormas.e2etests.enums.CaseClassification;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.pojo.web.Case;
-import org.sormas.e2etests.services.CaseService;
 import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
 
 public class EditCasePersonSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   protected Case collectedCase;
-  protected Case createdCase;
+  public static Case createdCase;
   private static Case addressData;
 
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("MMMM/d/yyyy");
+  public static final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
 
   @Inject
-  public EditCasePersonSteps(final WebDriverHelpers webDriverHelpers, CaseService caseService) {
+  public EditCasePersonSteps(
+      final WebDriverHelpers webDriverHelpers, CaseService caseService, SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
+
+    When(
+        "I set death date for person ([^\"]*) month ago",
+        (String dateOfDeath) -> {
+          LocalDate date = LocalDate.now().minusMonths(Long.parseLong(dateOfDeath));
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+          webDriverHelpers.fillInWebElement(DATE_OF_DEATH_INPUT, formatter.format(date));
+        });
+
+    When(
+        "I set death date for person ([^\"]*) days ago",
+        (String dateOfDeath) -> {
+          LocalDate date = LocalDate.now().minusDays(Long.parseLong(dateOfDeath));
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+          webDriverHelpers.clearWebElement(DATE_OF_DEATH_INPUT);
+          webDriverHelpers.fillInWebElement(DATE_OF_DEATH_INPUT, formatter.format(date));
+        });
+
+    When(
+        "I change Cause of death to ([^\"]*)",
+        (String causeOfDeath) ->
+            webDriverHelpers.selectFromCombobox(CASE_OF_DEATH_COMBOBOX, causeOfDeath));
+
+    When(
+        "I check if date of outcome is updated for ([^\"]*) month ago",
+        (String dateOfDeath) -> {
+          String date = webDriverHelpers.getValueFromWebElement(DATE_OF_OUTCOME_INPUT);
+          LocalDate deathDate = LocalDate.now().minusMonths(Long.parseLong(dateOfDeath));
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+          softly.assertEquals(formatter.format(deathDate), date, "Date is not equal");
+          softly.assertAll();
+        });
+
+    When(
+        "I check if date of outcome is updated for ([^\"]*) days ago",
+        (String dateOfDeath) -> {
+          String date = webDriverHelpers.getValueFromWebElement(DATE_OF_OUTCOME_INPUT);
+          LocalDate deathDate = LocalDate.now().minusDays(Long.parseLong(dateOfDeath));
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+          softly.assertEquals(formatter.format(deathDate), date, "Date is not equal");
+          softly.assertAll();
+        });
 
     When(
         "I check the created data is correctly displayed on Edit case person page",

@@ -19,41 +19,50 @@
 package org.sormas.e2etests.steps.web.application.persons;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
+import static org.sormas.e2etests.pages.application.cases.EditCasePersonPage.CASE_OF_DEATH_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePersonPage.DATE_OF_DEATH_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.*;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.*;
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.github.javafaker.Faker;
+import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
-import javax.inject.Named;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.common.DataOperations;
+import org.sormas.e2etests.entities.pojo.web.Person;
 import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.PresentCondition;
 import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.web.Person;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
 import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
 import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
 
 public class PersonDirectorySteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   protected Person createdPerson;
+  public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
 
   @Inject
   public PersonDirectorySteps(
       WebDriverHelpers webDriverHelpers,
-      @Named("ENVIRONMENT_URL") String environmentUrl,
       ApiState apiState,
       DataOperations dataOperations,
       Faker faker,
-      AssertHelpers assertHelpers) {
+      AssertHelpers assertHelpers,
+      EnvironmentManager environmentManager,
+      SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
 
     // TODO refactor all BDD methods naming to be more explicit regarding where data comes from
@@ -78,7 +87,34 @@ public class PersonDirectorySteps implements En {
         });
 
     Then(
-        "I choose random value for Year of birth filter in Persons for the last created person by API",
+        "I check the result for UID for second person in grid PERSON ID column",
+        () -> {
+          webDriverHelpers.waitUntilAListOfElementsHasText(
+              CASE_GRID_RESULTS_ROWS, apiState.getLastCreatedPerson().getUuid());
+          assertHelpers.assertWithPoll20Second(
+              () ->
+                  Truth.assertWithMessage(
+                          apiState.getLastCreatedPerson().getUuid()
+                              + " value is not displayed in grid Disease column")
+                      .that(apiState.getLastCreatedPerson().getUuid())
+                      .isEqualTo(
+                          String.valueOf(
+                              webDriverHelpers.getTextFromPresentWebElement(
+                                  CASE_PERSON_ID_COLUMN_HEADERS))));
+        });
+
+    Then(
+        "I check that number of displayed Persons results is {int}",
+        (Integer number) ->
+            assertHelpers.assertWithPoll20Second(
+                () ->
+                    Assert.assertEquals(
+                        webDriverHelpers.getNumberOfElements(CASE_GRID_RESULTS_ROWS),
+                        number.intValue(),
+                        "Number of displayed cases is not correct")));
+
+    Then(
+        "I fill Year of birth filter in Persons with the year of the last created person via API",
         () -> {
           String yearOfBirth = apiState.getLastCreatedPerson().getBirthdateYYYY().toString();
           webDriverHelpers.waitForPageLoaded();
@@ -86,38 +122,34 @@ public class PersonDirectorySteps implements En {
         });
 
     Then(
-        "I choose random value for Month of birth filter in Persons for the last created person by API",
+        "I fill Month of birth filter in Persons with the month of the last created person via API",
         () -> {
           String monthOfBirth = apiState.getLastCreatedPerson().getBirthdateMM().toString();
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(BIRTH_MONTH_COMBOBOX, monthOfBirth);
         });
 
     Then(
-        "I choose random value for Day of birth filter in Persons for the last created person by API",
+        "I fill Day of birth filter in Persons with the day of birth of the last created person via API",
         () -> {
           String dayOfBirth = apiState.getLastCreatedPerson().getBirthdateDD().toString();
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(BIRTH_DAY_COMBOBOX, dayOfBirth);
         });
 
     Then(
-        "I fill Persons UUID for the last created person by API",
+        "I fill UUID of the last created person via API",
         () -> {
           String personUUID =
               dataOperations.getPartialUuidFromAssociatedLink(
                   apiState.getLastCreatedPerson().getUuid());
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, personUUID);
         });
 
     Then(
-        "I choose present condition field from specific range for the last created person by API",
+        "I select present condition field with condition of the last created person via API",
         () -> {
-          String presentCondition = apiState.getLastCreatedPerson().getPresentCondition();
-          webDriverHelpers.waitForPageLoaded();
+          String personCondition = apiState.getLastCreatedPerson().getPresentCondition();
           webDriverHelpers.selectFromCombobox(
-              PRESENT_CONDITION, PresentCondition.getValueFor(presentCondition));
+              PRESENT_CONDITION, PresentCondition.getValueFor(personCondition));
         });
 
     Then(
@@ -135,7 +167,7 @@ public class PersonDirectorySteps implements En {
           String districtName = apiState.getLastCreatedPerson().getAddress().getDistrict();
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
-              DISTRICTS_COMBOBOX, DistrictsValues.getValueFor(districtName));
+              DISTRICTS_COMBOBOX, DistrictsValues.getNameByUUID(districtName));
         });
 
     Then(
@@ -150,7 +182,6 @@ public class PersonDirectorySteps implements En {
     Then(
         "I check that number of displayed Person results is {int}",
         (Integer number) -> {
-          webDriverHelpers.waitForPageLoaded();
           assertHelpers.assertWithPoll20Second(
               () ->
                   Assert.assertEquals(
@@ -160,34 +191,39 @@ public class PersonDirectorySteps implements En {
         });
 
     Then(
-        "I change Year of birth filter by random value for Person",
+        "I fill Year of birth filter in Persons with wrong value for last created Person via API",
         () -> {
-          Integer yearOfBirth = faker.number().numberBetween(1900, 2022);
-          webDriverHelpers.waitForPageLoaded();
+          Integer yearOfBirth = apiState.getLastCreatedPerson().getBirthdateYYYY() + 1;
           webDriverHelpers.selectFromCombobox(BIRTH_YEAR_COMBOBOX, yearOfBirth.toString());
         });
 
     Then(
-        "I change Month of birth filter  by random value for Person",
+        "I fill Month of birth filter in Persons with wrong value for last created Person via API",
         () -> {
-          Integer monthOfBirth = faker.number().numberBetween(1, 12);
-          webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.selectFromCombobox(BIRTH_MONTH_COMBOBOX, monthOfBirth.toString());
-        });
-
-    Then(
-        "I change Day of birth filter by random value for Person",
-        () -> {
-          Integer dayOfBirth = faker.number().numberBetween(1, 29);
-          webDriverHelpers.selectFromCombobox(BIRTH_DAY_COMBOBOX, dayOfBirth.toString());
-        });
-
-    Then(
-        "I change present condition filter to random for Person",
-        () -> {
-          webDriverHelpers.waitForPageLoaded();
+          Integer monthOfBirth = apiState.getLastCreatedPerson().getBirthdateMM();
+          Integer differentMonthOfBirth =
+              (monthOfBirth.intValue() == 12) ? monthOfBirth - 1 : monthOfBirth + 1;
           webDriverHelpers.selectFromCombobox(
-              PRESENT_CONDITION, PresentCondition.getRandomPresentCondition());
+              BIRTH_MONTH_COMBOBOX, differentMonthOfBirth.toString());
+        });
+
+    Then(
+        "I fill Day of birth filter in Persons with wrong value for last created Person via API",
+        () -> {
+          Integer dayOfBirth = apiState.getLastCreatedPerson().getBirthdateDD();
+          Integer differentDayOfBirth =
+              (dayOfBirth.intValue() >= 30) ? dayOfBirth - 1 : dayOfBirth + 1;
+          webDriverHelpers.selectFromCombobox(BIRTH_DAY_COMBOBOX, differentDayOfBirth.toString());
+        });
+
+    Then(
+        "I change present condition filter to other than condition of last created via API Person",
+        () -> {
+          String conditionOfLastCreatedApiPerson =
+              apiState.getLastCreatedPerson().getPresentCondition();
+          webDriverHelpers.selectFromCombobox(
+              PRESENT_CONDITION,
+              PresentCondition.getRandomConditionDifferentThan(conditionOfLastCreatedApiPerson));
         });
 
     Then(
@@ -211,8 +247,20 @@ public class PersonDirectorySteps implements En {
         () -> {
           String createdPersonUUID = EditContactPersonSteps.fullyDetailedPerson.getUuid();
           String LAST_CREATED_PERSON_PAGE_URL =
-              environmentUrl + "/sormas-webdriver/#!persons/data/" + createdPersonUUID;
+              environmentManager.getEnvironmentUrlForMarket(locale)
+                  + "/sormas-webdriver/#!persons/data/"
+                  + createdPersonUUID;
           webDriverHelpers.accessWebSite(LAST_CREATED_PERSON_PAGE_URL);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 50);
+        });
+    When(
+        "I navigate to the last created via api Person page via URL",
+        () -> {
+          String personLinkPath = "/sormas-ui/#!persons/data/";
+          String uuid = apiState.getLastCreatedPerson().getUuid();
+          webDriverHelpers.accessWebSite(
+              environmentManager.getEnvironmentUrlForMarket(locale) + personLinkPath + uuid);
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 50);
         });
@@ -241,19 +289,44 @@ public class PersonDirectorySteps implements En {
         });
 
     When(
+        "I check if Date of dead for specified case is correct",
+        () -> {
+          String date = webDriverHelpers.getValueFromWebElement(DATE_OF_DEATH_INPUT);
+          LocalDate deadDate = LocalDate.now().minusDays(1);
+          softly.assertEquals(DATE_FORMATTER.format(deadDate), date, "Death date is not equal");
+          softly.assertAll();
+        });
+
+    When(
+        "I check if Cause of death is ([^\"]*)",
+        (String causeOfDeath) -> {
+          String deathCause = webDriverHelpers.getValueFromCombobox(CASE_OF_DEATH_COMBOBOX);
+          softly.assertEquals(deathCause, causeOfDeath, "Cause of death is not equal");
+          softly.assertAll();
+        });
+
+    When(
         "I click on first person in person directory",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(By.cssSelector("[role='gridcell'] a"));
         });
 
-      When(
-              "I apply on the APPLY FILTERS button",
-              () -> {
-                  webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-                          APPLY_FILTERS_BUTTON, 30);
-                  webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
-                  TimeUnit.SECONDS.sleep(10);
-              });
+    When(
+        "I click on the APPLY FILTERS button",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              APPLY_FILTERS_BUTTON, 30);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+        });
+    When(
+        "I apply on the APPLY FILTERS button",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              APPLY_FILTERS_BUTTON, 30);
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
+          TimeUnit.SECONDS.sleep(10);
+        });
 
     When(
         "I click on the RESET FILTERS button for Person",
@@ -261,7 +334,6 @@ public class PersonDirectorySteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               RESET_FILTERS_BUTTON, 30);
           webDriverHelpers.clickOnWebElementBySelector(RESET_FILTERS_BUTTON);
-          TimeUnit.SECONDS.sleep(10);
         });
 
     Then(
@@ -279,12 +351,12 @@ public class PersonDirectorySteps implements En {
                       + " "
                       + apiState.getLastCreatedPerson().getFirstName();
               break;
-              case "phone number":
-                  searchText = apiState.getLastCreatedPerson().getPhone();
-                  break;
-              case "email":
-                  searchText = apiState.getLastCreatedPerson().getEmailAddress();
-                  break;
+            case "phone number":
+              searchText = apiState.getLastCreatedPerson().getPhone();
+              break;
+            case "email":
+              searchText = apiState.getLastCreatedPerson().getEmailAddress();
+              break;
           }
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(APPLY_FILTERS_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(ALL_BUTTON);

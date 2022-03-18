@@ -14,11 +14,17 @@
  */
 package de.symeda.sormas.ui.events;
 
+import java.util.Collections;
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import com.vaadin.server.Page;
 import com.vaadin.ui.Button;
-import com.vaadin.ui.CustomLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.action.ActionContext;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -26,11 +32,15 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventGroupCriteria;
+import de.symeda.sormas.api.event.EventGroupReferenceDto;
+import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
@@ -46,11 +56,12 @@ import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServi
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceShareComponent;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
 import de.symeda.sormas.ui.task.TaskListComponent;
+import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.LayoutWithSidePanel;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponentLayout;
 
 public class EventDataView extends AbstractEventView {
@@ -83,37 +94,28 @@ public class EventDataView extends AbstractEventView {
 
 		setHeightUndefined();
 
-		String htmlLayout = LayoutUtil.fluidRow(
-			LayoutUtil.fluidColumnLoc(8, 0, 12, 0, EVENT_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, TASKS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, ACTIONS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 12, 0, DOCUMENTS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EventDocumentsComponent.DOCGENERATION_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SUPERORDINATE_EVENT_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SUBORDINATE_EVENTS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, EVENT_GROUPS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SORMAS_TO_SORMAS_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, ExternalSurveillanceServiceGateway.EXTERANEL_SURVEILLANCE_TOOL_GATEWAY_LOC),
-			LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SHORTCUT_LINKS_LOC));
-
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
 		container.setMargin(true);
 		setSubComponent(container);
-		CustomLayout layout = new CustomLayout();
-		layout.addStyleName(CssStyles.ROOT_COMPONENT);
-		layout.setTemplateContents(htmlLayout);
-		layout.setWidth(100, Unit.PERCENTAGE);
-		layout.setHeightUndefined();
-		container.addComponent(layout);
 
 		editComponent =
 			ControllerProvider.getEventController().getEventDataEditComponent(getEventRef().getUuid(), this::setExternalSurvToolLayoutVisibility);
-		editComponent.setMargin(false);
-		editComponent.setWidth(100, Unit.PERCENTAGE);
-		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
-		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
-		layout.addComponent(editComponent, EVENT_LOC);
+
+		LayoutWithSidePanel layout = new LayoutWithSidePanel(
+			editComponent,
+			TASKS_LOC,
+			ACTIONS_LOC,
+			DOCUMENTS_LOC,
+			EventDocumentsComponent.DOCGENERATION_LOC,
+			SUPERORDINATE_EVENT_LOC,
+			SUBORDINATE_EVENTS_LOC,
+			EVENT_GROUPS_LOC,
+			SORMAS_TO_SORMAS_LOC,
+			ExternalSurveillanceServiceGateway.EXTERANEL_SURVEILLANCE_TOOL_GATEWAY_LOC,
+			SHORTCUT_LINKS_LOC);
+
+		container.addComponent(layout);
 
 		externalSurvToolLayout = ExternalSurveillanceServiceGateway.addComponentToLayout(layout, editComponent, event);
 		setExternalSurvToolLayoutVisibility(event.getEventStatus());
@@ -121,41 +123,81 @@ public class EventDataView extends AbstractEventView {
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.TASK_MANAGEMENT)) {
 			TaskListComponent taskList = new TaskListComponent(TaskContext.EVENT, getEventRef(), event.getDisease());
 			taskList.addStyleName(CssStyles.SIDE_COMPONENT);
-			layout.addComponent(taskList, TASKS_LOC);
+			layout.addSidePanelComponent(taskList, TASKS_LOC);
 		}
 
 		ActionStatsComponent actionList = new ActionStatsComponent(ActionContext.EVENT, getEventRef());
 		actionList.addStyleName(CssStyles.SIDE_COMPONENT);
-		layout.addComponent(actionList, ACTIONS_LOC);
+		layout.addSidePanelComponent(actionList, ACTIONS_LOC);
 
 		DocumentListComponent documentList = null;
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.DOCUMENTS)) {
 			// TODO: user rights?
-			documentList =
-				new DocumentListComponent(DocumentRelatedEntityType.EVENT, getEventRef(), UserRight.EVENT_EDIT, event.isPseudonymized());
-			layout.addComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
+			documentList = new DocumentListComponent(DocumentRelatedEntityType.EVENT, getEventRef(), UserRight.EVENT_EDIT, event.isPseudonymized());
+			layout.addSidePanelComponent(new SideComponentLayout(documentList), DOCUMENTS_LOC);
 		}
 
 		EventDocumentsComponent eventDocuments = new EventDocumentsComponent(getEventRef(), documentList);
 		eventDocuments.addStyleName(CssStyles.SIDE_COMPONENT);
-		layout.addComponent(eventDocuments, EventDocumentsComponent.DOCGENERATION_LOC);
+		layout.addSidePanelComponent(eventDocuments, EventDocumentsComponent.DOCGENERATION_LOC);
 
 		boolean eventHierarchiesFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_HIERARCHIES);
 		if (eventHierarchiesFeatureEnabled) {
 			SuperordinateEventComponent superordinateEventComponent = new SuperordinateEventComponent(event, () -> editComponent.discard());
 			superordinateEventComponent.addStyleName(CssStyles.SIDE_COMPONENT);
-			layout.addComponent(superordinateEventComponent, SUPERORDINATE_EVENT_LOC);
+			layout.addSidePanelComponent(superordinateEventComponent, SUPERORDINATE_EVENT_LOC);
 
 			EventListComponent subordinateEventList = new EventListComponent(event.toReference());
 			subordinateEventList.addStyleName(CssStyles.SIDE_COMPONENT);
-			layout.addComponent(subordinateEventList, SUBORDINATE_EVENTS_LOC);
+			layout.addSidePanelComponent(subordinateEventList, SUBORDINATE_EVENTS_LOC);
 		}
 
 		boolean eventGroupsFeatureEnabled = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_GROUPS);
 		if (eventGroupsFeatureEnabled) {
-			EventGroupListComponent eventGroupsList = new EventGroupListComponent(event.toReference());
-			eventGroupsList.addStyleName(CssStyles.SIDE_COMPONENT);
-			layout.addComponent(eventGroupsList, EVENT_GROUPS_LOC);
+			EventReferenceDto eventReference = event.toReference();
+			EventGroupListComponent eventGroupsList = new EventGroupListComponent(eventReference);
+			eventGroupsList.addSideComponentCreateEventListener(e -> showNavigationConfirmPopupIfDirty(() -> {
+				EventDto eventByUuid = FacadeProvider.getEventFacade().getEventByUuid(eventReference.getUuid(), false);
+				UserProvider user = UserProvider.getCurrent();
+				if (!user.hasNationJurisdictionLevel() && !user.hasRegion(eventByUuid.getEventLocation().getRegion())) {
+					new Notification(
+						I18nProperties.getString(Strings.headingEventGroupLinkEventIssue),
+						I18nProperties.getString(Strings.errorEventFromAnotherJurisdiction),
+						Notification.Type.ERROR_MESSAGE,
+						false).show(Page.getCurrent());
+					return;
+				}
+
+				EventGroupCriteria eventGroupCriteria = new EventGroupCriteria();
+				Set<String> eventGroupUuids = FacadeProvider.getEventGroupFacade()
+					.getCommonEventGroupsByEvents(Collections.singletonList(eventByUuid.toReference()))
+					.stream()
+					.map(EventGroupReferenceDto::getUuid)
+					.collect(Collectors.toSet());
+				eventGroupCriteria.setExcludedUuids(eventGroupUuids);
+				if (user.hasUserRight(UserRight.EVENTGROUP_CREATE) && user.hasUserRight(UserRight.EVENTGROUP_LINK)) {
+					long events = FacadeProvider.getEventGroupFacade().count(eventGroupCriteria);
+					if (events > 0) {
+						ControllerProvider.getEventGroupController().selectOrCreate(eventReference);
+					} else {
+						ControllerProvider.getEventGroupController().create(eventReference);
+					}
+				} else if (user.hasUserRight(UserRight.EVENTGROUP_CREATE)) {
+					ControllerProvider.getEventGroupController().create(eventReference);
+				} else {
+					long events = FacadeProvider.getEventGroupFacade().count(eventGroupCriteria);
+					if (events > 0) {
+						ControllerProvider.getEventGroupController().select(eventReference);
+					} else {
+						new Notification(
+							I18nProperties.getString(Strings.headingEventGroupLinkEventIssue),
+							I18nProperties.getString(Strings.errorNotRequiredRights),
+							Notification.Type.ERROR_MESSAGE,
+							false).show(Page.getCurrent());
+					}
+				}
+			}));
+			layout.addSidePanelComponent(new SideComponentLayout(eventGroupsList), EVENT_GROUPS_LOC);
 		}
 
 		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isSharingEventsEnabledForUser();
@@ -168,7 +210,7 @@ public class EventDataView extends AbstractEventView {
 			sormasToSormasListComponent.addStyleNames(CssStyles.SIDE_COMPONENT);
 			sormasToSormasLocLayout.addComponent(sormasToSormasListComponent);
 
-			layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
+			layout.addSidePanelComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
 		}
 
 		VerticalLayout shortcutLinksLayout = new VerticalLayout();
@@ -210,9 +252,15 @@ public class EventDataView extends AbstractEventView {
 			shortcutLinksLayout.addComponent(seeEventsWithinTheSameFacility);
 		}
 
-		layout.addComponent(shortcutLinksLayout, SHORTCUT_LINKS_LOC);
+		layout.addSidePanelComponent(shortcutLinksLayout, SHORTCUT_LINKS_LOC);
 
-		setEventEditPermission(container);
+		EditPermissionType eventEditAllowed = FacadeProvider.getEventFacade().isEventEditAllowed(event.getUuid());
+
+		if (eventEditAllowed == EditPermissionType.ARCHIVING_STATUS_ONLY) {
+			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+		} else if (eventEditAllowed == EditPermissionType.REFUSED) {
+			layout.disable();
+		}
 	}
 
 	private void setExternalSurvToolLayoutVisibility(EventStatus eventStatus) {

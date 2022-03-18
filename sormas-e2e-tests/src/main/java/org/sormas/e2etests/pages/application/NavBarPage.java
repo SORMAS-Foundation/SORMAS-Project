@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -35,5 +35,6 @@ public class NavBarPage {
   public static final By CONFIGURATION_BUTTON = By.cssSelector("div#configuration");
   public static final By ABOUT_BUTTON = By.cssSelector("div#about");
   public static final By USER_SETTINGS_BUTTON = By.cssSelector("[id='actionSettings-2']");
+  public static final By ENTRIES_BUTTON = By.cssSelector("div#travelEntries");
   public static final By LOGOUT_BUTTON = By.cssSelector("[id='actionLogout-2']");
 }

@@ -29,8 +29,8 @@ import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
@@ -49,8 +49,6 @@ public interface EventFacade extends CoreFacade<EventDto, EventIndexDto, EventRe
 
 	List<String> getAllActiveUuids();
 
-	void deleteEvent(String eventUuid) throws ExternalSurveillanceToolException;
-
 	List<String> deleteEvents(List<String> eventUuids);
 
 	Page<EventIndexDto> getIndexPage(@NotNull EventCriteria eventCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
@@ -65,7 +63,7 @@ public interface EventFacade extends CoreFacade<EventDto, EventIndexDto, EventRe
 
 	void archiveAllArchivableEvents(int daysAfterEventsGetsArchived);
 
-	Boolean isEventEditAllowed(String eventUuid);
+	EditPermissionType isEventEditAllowed(String eventUuid);
 
 	boolean doesExternalTokenExist(String externalToken, String eventUuid);
 
@@ -90,4 +88,11 @@ public interface EventFacade extends CoreFacade<EventDto, EventIndexDto, EventRe
 	boolean hasRegionAndDistrict(String eventUuid);
 
 	boolean hasAnyEventParticipantWithoutJurisdiction(String eventUuid);
+
+	int saveBulkEvents(
+		List<String> eventUuidList,
+		EventDto updatedTempEvent,
+		boolean eventStatusChange,
+		boolean eventInvestigationStatusChange,
+		boolean eventManagementStatusChange);
 }

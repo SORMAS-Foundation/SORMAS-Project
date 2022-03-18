@@ -16,10 +16,12 @@
 package de.symeda.sormas.backend.common;
 
 import java.io.Serializable;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -28,16 +30,22 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.CoreFacade;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
-import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfigurationService;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -48,6 +56,8 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 
 	@Inject
 	private DeletionConfigurationService deletionConfigurationService;
+	@EJB
+	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	protected AbstractCoreFacadeEjb() {
 	}
@@ -84,6 +94,11 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	@Override
 	public DTO save(@Valid @NotNull DTO dto) {
 		ADO existingAdo = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
+
+		if (existingAdo != null && !service.getEditPermissionType(existingAdo).equals(EditPermissionType.ALLOWED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEntityNotEditable));
+		}
+
 		DTO existingDto = toDto(existingAdo);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
@@ -101,21 +116,9 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		return service.exists(uuid);
 	}
 
-	@Override
-	public void archive(String uuid) {
+	public void delete(String uuid) {
 		ADO ado = service.getByUuid(uuid);
-		if (ado != null) {
-			ado.setArchived(true);
-			service.ensurePersisted(ado);
-		}
-	}
-
-	public void dearchive(String uuid) {
-		ADO ado = service.getByUuid(uuid);
-		if (ado != null) {
-			ado.setArchived(false);
-			service.ensurePersisted(ado);
-		}
+		service.delete(ado);
 	}
 
 	public boolean isArchived(String uuid) {
@@ -140,7 +143,15 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 
 		List<ADO> toDeleteEntities = QueryHelper.getResultList(em, cq, null, null);
 
-		toDeleteEntities.forEach(this::delete);
+		toDeleteEntities.forEach(ado -> service.delete(ado));
+	}
+
+	public void executePermanentDeletion(int batchSize) {
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.DELETE_PERMANENT)) {
+			service.executePermanentDeletion(batchSize);
+		} else {
+			throw new UnsupportedOperationException("Permanent deletion is not activated!");
+		}
 	}
 
 	@Override
@@ -155,18 +166,14 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		return new AutomaticDeletionInfoDto(deletiondate, (Date) deletionData[1], deletionConfiguration.getDeletionPeriod());
 	}
 
-	protected void delete(ADO entity) {
-		service.delete(entity);
-	}
-
 	protected String getDeleteReferenceField(DeletionReference deletionReference) {
 		switch (deletionReference) {
-			case CREATION:
-				return AbstractDomainObject.CREATION_DATE;
-			case END:
-				return AbstractDomainObject.CHANGE_DATE;
-			default:
-				throw new IllegalArgumentException("deletion reference " + deletionReference + " not supported in " + getClass().getSimpleName());
+		case CREATION:
+			return AbstractDomainObject.CREATION_DATE;
+		case END:
+			return AbstractDomainObject.CHANGE_DATE;
+		default:
+			throw new IllegalArgumentException("deletion reference " + deletionReference + " not supported in " + getClass().getSimpleName());
 		}
 	}
 
@@ -193,4 +200,20 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	protected abstract void restorePseudonymizedDto(DTO dto, DTO existingDto, ADO entity, Pseudonymizer pseudonymizer);
 
 	public abstract void validate(DTO dto) throws ValidationRuntimeException;
+
+	public void archive(String entityUuid, Date endOfProcessingDate) {
+		service.archive(entityUuid, endOfProcessingDate);
+	}
+
+	public void archive(List<String> entityUuids) {
+		service.archive(entityUuids);
+	}
+
+	public void dearchive(List<String> entityUuids, String dearchiveReason) {
+		service.dearchive(entityUuids, dearchiveReason);
+	}
+
+	public Date calculateEndOfProcessingDate(String entityUuid) {
+		return service.calculateEndOfProcessingDate(Collections.singletonList(entityUuid)).get(entityUuid);
+	}
 }

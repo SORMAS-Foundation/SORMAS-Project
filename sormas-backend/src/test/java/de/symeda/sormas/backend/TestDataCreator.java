@@ -143,8 +143,8 @@ public class TestDataCreator {
 
 		UserDto user = UserDto.build();
 		user.setFirstName("User");
-		user.setLastName("User");
-		user.setUserName("Username");
+		user.setLastName(userRole.toShortString());
+		user.setUserName(userRole.toString());
 		user.setUserRoles(new HashSet<>(Arrays.asList(userRole)));
 		user.setRegion(rdcf.region);
 		user.setDistrict(rdcf.district);
@@ -159,11 +159,23 @@ public class TestDataCreator {
 	}
 
 	public UserDto createUser(RDCFEntities rdcf, UserRole... roles) {
-		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "First", "Name", roles);
+		return createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			roles.length > 0 ? roles[0].toShortString() : "First",
+			"User",
+			roles);
 	}
 
 	public UserDto createUser(RDCF rdcf, UserRole... roles) {
-		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "First", "Name", roles);
+		return createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			roles.length > 0 ? roles[0].toShortString() : "First",
+			"User",
+			roles);
 	}
 
 	public UserDto createUser(RDCF rdcf, String firstName, String lastName, UserRole... roles) {
@@ -182,11 +194,30 @@ public class TestDataCreator {
 		String firstName,
 		String lastName,
 		UserRole... roles) {
+		return createUser(regionUuid, districtUuid, communityUuid, facilityUuid, firstName, lastName, null, roles);
+	}
+
+	public UserDto createUser(RDCF rdcf, String firstName, String lastName, Disease limitedDisease, UserRole... roles) {
+		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), null, rdcf.facility.getUuid(), firstName, lastName, limitedDisease, roles);
+	}
+
+	private UserDto createUser(
+		String regionUuid,
+		String districtUuid,
+		String communityUuid,
+		String facilityUuid,
+		String firstName,
+		String lastName,
+		Disease limitedDisease,
+		UserRole... roles) {
+
 		UserDto user1 = UserDto.build();
 		user1.setFirstName(firstName);
 		user1.setLastName(lastName);
 		user1.setUserName(firstName + lastName);
 		user1.setUserRoles(new HashSet<UserRole>(Arrays.asList(roles)));
+
+		user1.setLimitedDisease(limitedDisease);
 		UserDto user = user1;
 		user.setRegion(beanTest.getRegionFacade().getReferenceByUuid(regionUuid));
 		user.setDistrict(beanTest.getDistrictFacade().getReferenceByUuid(districtUuid));

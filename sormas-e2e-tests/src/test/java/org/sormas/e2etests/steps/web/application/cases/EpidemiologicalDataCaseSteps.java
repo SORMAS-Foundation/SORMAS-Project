@@ -2,25 +2,26 @@ package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.*;
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.inject.Inject;
-import javax.inject.Named;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.EpidemiologicalData;
+import org.sormas.e2etests.entities.pojo.web.epidemiologicalData.Activity;
+import org.sormas.e2etests.entities.pojo.web.epidemiologicalData.Exposure;
+import org.sormas.e2etests.entities.services.EpidemiologicalDataService;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.YesNoUnknownOptions;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.ActivityAsCaseType;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.ExposureDetailsRole;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfActivityExposure;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.pojo.web.EpidemiologicalData;
-import org.sormas.e2etests.pojo.web.epidemiologicalData.Activity;
-import org.sormas.e2etests.pojo.web.epidemiologicalData.Exposure;
-import org.sormas.e2etests.services.EpidemiologicalDataService;
 import org.sormas.e2etests.state.ApiState;
 
 public class EpidemiologicalDataCaseSteps implements En {
@@ -36,7 +37,7 @@ public class EpidemiologicalDataCaseSteps implements En {
       WebDriverHelpers webDriverHelpers,
       ApiState apiState,
       EpidemiologicalDataService epidemiologicalDataService,
-      @Named("ENVIRONMENT_URL") String environmentUrl) {
+      EnvironmentManager environmentManager) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -44,7 +45,9 @@ public class EpidemiologicalDataCaseSteps implements En {
         () -> {
           String uuid = apiState.getCreatedCase().getUuid();
           webDriverHelpers.accessWebSite(
-              environmentUrl + "/sormas-webdriver/#!cases/epidata/" + uuid);
+              environmentManager.getEnvironmentUrlForMarket(locale)
+                  + "/sormas-webdriver/#!cases/epidata/"
+                  + uuid);
           webDriverHelpers.waitForPageLoaded();
         });
 
@@ -229,7 +232,7 @@ public class EpidemiologicalDataCaseSteps implements En {
     webDriverHelpers.clickWebElementByText(
         HANDLING_SAMPLES_OPTIONS, exposureData.getHandlingSamples().toString());
     webDriverHelpers.selectFromCombobox(
-        TYPE_OF_PLACE_COMBOBOX, exposureData.getTypeOfPlace().getPlace());
+        TYPE_OF_PLACE_COMBOBOX, exposureData.getTypeOfPlace().getUiValue());
     webDriverHelpers.selectFromCombobox(CONTINENT_COMBOBOX, exposureData.getContinent());
     webDriverHelpers.selectFromCombobox(SUBCONTINENT_COMBOBOX, exposureData.getSubcontinent());
     webDriverHelpers.selectFromCombobox(COUNTRY_COMBOBOX, exposureData.getCountry());

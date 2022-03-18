@@ -7,7 +7,7 @@ import lombok.SneakyThrows;
 @Getter
 public enum RiskLevelValues {
   LOW("LOW", "Low risk"),
-  Moderate("Moderate", "Moderate risk"),
+  Moderate("MODERATE", "Moderate risk"),
   HIGH("HIGH", "High risk"),
   UNKNOWN("UNKNOWN", "Unknown");
 

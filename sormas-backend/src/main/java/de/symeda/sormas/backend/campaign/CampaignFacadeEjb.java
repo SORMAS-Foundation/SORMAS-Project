@@ -24,8 +24,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
-import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
+import de.symeda.sormas.api.EditPermissionType;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -36,17 +35,20 @@ import de.symeda.sormas.api.campaign.CampaignIndexDto;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
+import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinitionFacadeEjb;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
@@ -56,7 +58,9 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "CampaignFacade")
-public class CampaignFacadeEjb extends AbstractCoreFacadeEjb<Campaign, CampaignDto, CampaignIndexDto, CampaignReferenceDto, CampaignService, CampaignCriteria> implements CampaignFacade {
+public class CampaignFacadeEjb
+	extends AbstractCoreFacadeEjb<Campaign, CampaignDto, CampaignIndexDto, CampaignReferenceDto, CampaignService, CampaignCriteria>
+	implements CampaignFacade {
 
 	@EJB
 	private CampaignFormMetaService campaignFormMetaService;
@@ -163,6 +167,9 @@ public class CampaignFacadeEjb extends AbstractCoreFacadeEjb<Campaign, CampaignD
 	public CampaignDto save(@Valid @NotNull CampaignDto dto) {
 		validate(dto);
 		Campaign campaign = fillOrBuildEntity(dto, service.getByUuid(dto.getUuid()), true);
+		if (!service.getEditPermissionType(campaign).equals(EditPermissionType.ALLOWED)) {
+			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEntityNotEditable));
+		}
 		service.ensurePersisted(campaign);
 		return toDto(campaign);
 	}
@@ -337,7 +344,7 @@ public class CampaignFacadeEjb extends AbstractCoreFacadeEjb<Campaign, CampaignD
 	}
 
 	@Override
-	public void deleteCampaign(String campaignUuid) {
+	public void delete(String campaignUuid) {
 
 		User user = userService.getCurrentUser();
 		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
@@ -400,6 +407,12 @@ public class CampaignFacadeEjb extends AbstractCoreFacadeEjb<Campaign, CampaignD
 	@Override
 	public AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid) {
 		return null; // campaigns do not support automatic deletion yet
+	}
+
+	@Override
+	public EditPermissionType isCampaignEditAllowed(String caseUuid) {
+		Campaign campaign = service.getByUuid(caseUuid);
+		return service.getEditPermissionType(campaign);
 	}
 
 	@LocalBean
