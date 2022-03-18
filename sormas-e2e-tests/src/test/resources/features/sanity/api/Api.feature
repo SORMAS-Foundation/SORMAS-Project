@@ -7,7 +7,7 @@ Feature: Check basic POSTs RestApi endpoints
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
 
-  @env_performance
+  @env_main
   Scenario: Create new case
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
