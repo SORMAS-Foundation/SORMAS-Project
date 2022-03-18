@@ -42,7 +42,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import org.hibernate.annotations.Type;
 
 import de.symeda.auditlog.api.Audited;
@@ -78,6 +77,7 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory;
 import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfo;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
+import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
@@ -238,6 +238,7 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	public static final String CASE_REFERENCE_DEFINITION = "caseReferenceDefinition";
 	public static final String PREVIOUS_QUARANTINE_TO = "previousQuarantineTo";
 	public static final String QUARANTINE_CHANGE_COMMENT = "quarantineChangeComment";
+	public static final String DUPLICATE_OF = "duplicateOf";
 
 	private Person person;
 	private String description;
@@ -319,7 +320,6 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	private String sequelaeDetails;
 
 	private Integer caseAge;
-
 
 	private String creationVersion;
 	private Case duplicateOf;
