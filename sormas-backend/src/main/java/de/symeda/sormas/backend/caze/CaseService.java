@@ -1078,8 +1078,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Predicate filterResponsible = null;
 		Predicate filter = null;
 
-		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
-		if (jurisdictionLevel != JurisdictionLevel.NATION && !currentUser.hasAnyUserRole(UserRole.REST_USER, UserRole.REST_EXTERNAL_VISITS_USER)) {
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		if (jurisdictionLevel != JurisdictionLevel.NATION) {
 			// whoever created the case or is assigned to it is allowed to access it
 			if (userFilterCriteria == null || (userFilterCriteria.getIncludeCasesFromOtherJurisdictions())) {
 				filterResponsible = cb.equal(casePath.get(Case.REPORTING_USER).get(User.ID), currentUser.getId());
@@ -1791,7 +1791,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	public void updateCompleteness(Case caze) {
-
 		float completeness = calculateCompleteness(caze);
 
 		/*

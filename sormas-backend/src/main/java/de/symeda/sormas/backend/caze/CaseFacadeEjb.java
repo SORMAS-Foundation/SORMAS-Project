@@ -46,8 +46,10 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
+import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -185,7 +187,6 @@ import de.symeda.sormas.api.therapy.TreatmentCriteria;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
@@ -316,6 +317,7 @@ import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserReference;
+import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -333,6 +335,7 @@ import de.symeda.sormas.backend.visit.VisitService;
 import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless(name = "CaseFacade")
+@RolesAllowed(UserRight._CASE_VIEW)
 public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, CaseIndexDto, CaseReferenceDto, CaseService, CaseCriteria>
 	implements CaseFacade {
 
@@ -424,6 +427,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	private PopulationDataFacadeEjbLocal populationDataFacade;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	@EJB
+	private UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 	@EJB
 	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 	@EJB
@@ -678,15 +683,17 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return entries;
 	}
 
+	@RolesAllowed({UserRight._CASE_EDIT})
 	public CaseDataDto postUpdate(String uuid, JsonNode caseDataDtoJson) {
 		CaseDataDto existingCaseDto = getCaseDataWithoutPseudonyimization(uuid);
 		PatchHelper.postUpdate(caseDataDtoJson, existingCaseDto);
-		return this.save(existingCaseDto);
 
+		return this.save(existingCaseDto);
 	}
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	@RolesAllowed(UserRight._CASE_EXPORT)
 	public List<CaseExportDto> getExportList(
 		CaseCriteria caseCriteria,
 		Collection<String> selectedRows,
@@ -1338,6 +1345,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return service.getCasesForDuplicateMerging(criteria, ignoreRegion, configFacade.getNameSimilarityThreshold());
 	}
 
+	@RolesAllowed(UserRight._CASE_EDIT)
 	public void updateCompleteness(String caseUuid) {
 		service.updateCompleteness(caseUuid);
 	}
@@ -1357,15 +1365,18 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
+	@RolesAllowed({UserRight._CASE_CREATE, UserRight._CASE_EDIT})
 	public CaseDataDto save(@Valid @NotNull CaseDataDto dto) throws ValidationRuntimeException {
 		return save(dto, true, true, true, false);
 	}
 
 	@Override
+	@RolesAllowed({UserRight._CASE_CREATE, UserRight._CASE_EDIT})
 	public CaseDataDto save(@Valid @NotNull CaseDataDto dto, boolean systemSave) throws ValidationRuntimeException {
 		return save(dto, true, true, true, systemSave);
 	}
 
+	@RolesAllowed({UserRight._CASE_EDIT})
 	public Integer saveBulkCase(
 		List<String> caseUuidList,
 		@Valid CaseBulkEditData updatedCaseBulkEditData,
@@ -1398,6 +1409,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return changedCases;
 	}
 
+	@RolesAllowed({UserRight._CASE_EDIT})
 	public void saveBulkEditWithFacilities(
 		List<String> caseUuidList,
 		@Valid CaseBulkEditData updatedCaseBulkEditData,
@@ -1484,10 +1496,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 	}
 
-	public CaseDataDto save(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, boolean systemSave) {
-		return save(dto, handleChanges, checkChangeDate, true, systemSave);
-	}
-
 	public CaseDataDto save(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, boolean internal, boolean systemSave)
 		throws ValidationRuntimeException {
 
@@ -1497,9 +1505,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorCaseNotEditable));
 		}
 
-		CaseDataDto existingCaseDto = handleChanges ? toDto(existingCase) : null;
-
-		return caseSave(dto, handleChanges, existingCase, existingCaseDto, checkChangeDate, internal);
+		return caseSave(dto, handleChanges, existingCase, toDto(existingCase), checkChangeDate, internal);
 	}
 
 	private CaseDataDto caseSave(
@@ -1514,20 +1520,21 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		restorePseudonymizedDto(dto, existingCaseDto, existingCaze, Pseudonymizer.getDefault(userService::hasRight));
 
+		validateUserRights(dto, existingCaseDto);
 		validate(dto);
 
 		externalJournalService.handleExternalJournalPersonUpdateAsync(dto.getPerson());
 
-		existingCaze = fillOrBuildEntity(dto, existingCaze, checkChangeDate);
+		Case caze = fillOrBuildEntity(dto, existingCaze, checkChangeDate);
 
 		// Set version number on a new case
-		if (existingCaze.getCreationDate() == null && StringUtils.isEmpty(dto.getCreationVersion())) {
-			existingCaze.setCreationVersion(InfoProvider.get().getVersion());
+		if (caze.getCreationDate() == null && StringUtils.isEmpty(dto.getCreationVersion())) {
+			caze.setCreationVersion(InfoProvider.get().getVersion());
 		}
 
-		doSave(existingCaze, handleChanges, existingCaseDto, syncShares);
+		doSave(caze, handleChanges, existingCaseDto, syncShares);
 
-		return convertToDto(existingCaze, Pseudonymizer.getDefault(userService::hasRight));
+		return convertToDto(caze, Pseudonymizer.getDefault(userService::hasRight));
 	}
 
 	public void syncSharesAsync(ShareTreeCriteria criteria) {
@@ -1705,6 +1712,76 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 	}
 
+	public void validateUserRights(CaseDataDto caze, CaseDataDto existingCaze) {
+		if (existingCaze != null) {
+			if (!DataHelper.isSame(caze.getHealthFacility(), existingCaze.getHealthFacility())) {
+
+				if (existingCaze.getPointOfEntry() != null
+					&& caze.getHealthFacility() != null
+					&& !userService.hasRight(UserRight.CASE_REFER_FROM_POE)) {
+					throw new AccessDeniedException(
+						String.format(
+							I18nProperties.getString(Strings.errorNoRightsForChangingField),
+							I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY)));
+				}
+
+				if (!userService.hasRight(UserRight.CASE_TRANSFER)) {
+					throw new AccessDeniedException(
+						String.format(
+							I18nProperties.getString(Strings.errorNoRightsForChangingField),
+							I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY)));
+				}
+			}
+
+			if (!userService.hasRight(UserRight.CASE_INVESTIGATE)
+				&& (!DataHelper.equal(caze.getInvestigationStatus(), existingCaze.getInvestigationStatus())
+					|| !DataHelper.equal(caze.getInvestigatedDate(), existingCaze.getInvestigatedDate()))) {
+				throw new AccessDeniedException(
+					String.format(
+						I18nProperties.getString(Strings.errorNoRightsForChangingMultipleFields),
+						I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.INVESTIGATION_STATUS)));
+			}
+
+			if (!userService.hasRight(UserRight.CASE_CLASSIFY)
+				&& (!DataHelper.equal(caze.getCaseClassification(), existingCaze.getCaseClassification())
+					|| !DataHelper.equal(caze.getClassificationComment(), existingCaze.getClassificationComment())
+					|| !DataHelper.equal(caze.getClassificationDate(), existingCaze.getClassificationDate())
+					|| !DataHelper.equal(caze.getClassificationUser(), existingCaze.getClassificationUser())
+					|| !DataHelper.equal(caze.getOutcome(), existingCaze.getOutcome())
+					|| !DataHelper.equal(caze.getOutcomeDate(), existingCaze.getOutcomeDate()))) {
+				throw new AccessDeniedException(
+					String.format(
+						I18nProperties.getString(Strings.errorNoRightsForChangingMultipleFields),
+							I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CASE_CLASSIFICATION)));
+			}
+
+			if (!userService.hasRight(UserRight.CASE_CHANGE_DISEASE)
+				&& (!DataHelper.equal(caze.getDisease(), existingCaze.getDisease())
+					|| !DataHelper.equal(caze.getDiseaseDetails(), existingCaze.getDiseaseDetails()))) {
+				throw new AccessDeniedException(
+					String.format(
+						I18nProperties.getString(Strings.errorNoRightsForChangingField),
+							I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISEASE)));
+			}
+
+			if (!userService.hasRight(UserRight.CASE_CHANGE_EPID_NUMBER) && (!DataHelper.equal(caze.getEpidNumber(), existingCaze.getEpidNumber()))) {
+				throw new AccessDeniedException(
+					String.format(
+						I18nProperties.getString(Strings.errorNoRightsForChangingField),
+						I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.EPID_NUMBER)));
+			}
+
+			if (!userService.hasRight(UserRight.CASE_CLINICIAN_VIEW) && (!DataHelper.equal(caze.getClinicianName(), existingCaze.getClinicianName())
+				|| !DataHelper.equal(caze.getClinicianEmail(), existingCaze.getClinicianEmail())
+				|| !DataHelper.equal(caze.getClinicianPhone(), existingCaze.getClinicianPhone()))) {
+				throw new AccessDeniedException(
+					String.format(
+						I18nProperties.getString(Strings.errorNoRightsForChangingMultipleFields),
+						I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.CLINICIAN_NAME)));
+			}
+		}
+	}
+
 	/**
 	 * Handles potential changes of related tasks that needs to be done after
 	 * a case has been created/saved
@@ -1833,7 +1910,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		District survOffDistrict = newCase.getSurveillanceOfficer() != null ? newCase.getSurveillanceOfficer().getDistrict() : null;
 		if (survOffDistrict == null
 			|| (!survOffDistrict.equals(newCase.getResponsibleDistrict()) && !survOffDistrict.equals(newCase.getDistrict()))) {
-			setResponsibleSurveillanceOfficer(newCase);
+			setCaseResponsible(newCase);
 		}
 
 		updateInvestigationByStatus(existingCase, newCase);
@@ -1986,7 +2063,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 	}
 
-	public boolean evaluateFulfilledCondition(CaseDataDto newCase, CaseClassification caseClassification) {
+	private boolean evaluateFulfilledCondition(CaseDataDto newCase, CaseClassification caseClassification) {
 
 		if (newCase.getCaseClassification() != CaseClassification.NO_CASE) {
 			List<CaseClassification> fulfilledCaseClassificationOptions =
@@ -2041,28 +2118,28 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 	}
 
-	public void setResponsibleSurveillanceOfficer(Case caze) {
+	public void setCaseResponsible(Case caze) {
 		if (featureConfigurationFacade.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.AUTOMATIC_RESPONSIBILITY_ASSIGNMENT)) {
 			District reportingUserDistrict = caze.getReportingUser().getDistrict();
 
-			if (caze.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_OFFICER)
-				&& (reportingUserDistrict.equals(caze.getResponsibleDistrict()) || reportingUserDistrict.equals(caze.getDistrict()))) {
+			if (userRoleConfigFacade.hasUserRight(caze.getReportingUser().getUserRoles(), UserRight.CASE_RESPONSIBLE)
+				&& (reportingUserDistrict == null || reportingUserDistrict.equals(caze.getResponsibleDistrict()) || reportingUserDistrict.equals(caze.getDistrict()))) {
 				caze.setSurveillanceOfficer(caze.getReportingUser());
 			} else {
-				List<User> informants = caze.getHealthFacility() != null && FacilityType.HOSPITAL.equals(caze.getHealthFacility().getType())
-					? userService.getInformantsOfFacility(caze.getHealthFacility())
+				List<User> hospitalUsers = caze.getHealthFacility() != null && FacilityType.HOSPITAL.equals(caze.getHealthFacility().getType())
+					? userService.getFacilityUsersOfHospital(caze.getHealthFacility())
 					: new ArrayList<>();
 				Random rand = new Random();
-				if (!informants.isEmpty()) {
-					caze.setSurveillanceOfficer(informants.get(rand.nextInt(informants.size())).getAssociatedOfficer());
+				if (!hospitalUsers.isEmpty()) {
+					caze.setSurveillanceOfficer(hospitalUsers.get(rand.nextInt(hospitalUsers.size())).getAssociatedOfficer());
 				} else {
 					User survOff = null;
 					if (caze.getResponsibleDistrict() != null) {
-						survOff = getRandomSurveillanceOfficer(caze.getResponsibleDistrict());
+						survOff = getRandomDistrictCaseResponsible(caze.getResponsibleDistrict());
 					}
 
 					if (survOff == null && caze.getDistrict() != null) {
-						survOff = getRandomSurveillanceOfficer(caze.getDistrict());
+						survOff = getRandomDistrictCaseResponsible(caze.getDistrict());
 					}
 
 					caze.setSurveillanceOfficer(survOff);
@@ -2102,6 +2179,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
+	@RolesAllowed(UserRight._SYSTEM)
 	public int updateCompleteness() {
 		List<String> getCompletenessCheckCaseList = getCompletenessCheckNeededCaseList();
 
@@ -2269,6 +2347,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
+	@RolesAllowed(UserRight._CASE_DELETE)
 	public void delete(String caseUuid) throws ExternalSurveillanceToolException {
 
 		if (!userService.hasRight(UserRight.CASE_DELETE)) {
@@ -2305,6 +2384,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		service.delete(caze);
 	}
 
+	@RolesAllowed(UserRight._CASE_DELETE)
 	@Override
 	public List<String> deleteCases(List<String> caseUuids) {
 
@@ -2330,6 +2410,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
+	@RolesAllowed(UserRight._CASE_MERGE)
 	public void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid) throws ExternalSurveillanceToolException {
 
 		Case caze = service.getByUuid(caseUuid);
@@ -2338,6 +2419,24 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		service.ensurePersisted(caze);
 
 		delete(caseUuid);
+	}
+
+	@Override
+	@RolesAllowed(UserRight._CASE_ARCHIVE)
+	public void archive(String entityUuid, Date endOfProcessingDate) {
+		super.archive(entityUuid, endOfProcessingDate);
+	}
+
+	@Override
+	@RolesAllowed(UserRight._CASE_ARCHIVE)
+	public void archive(List<String> entityUuids) {
+		super.archive(entityUuids);
+	}
+
+	@Override
+	@RolesAllowed(UserRight._CASE_ARCHIVE)
+	public void dearchive(List<String> entityUuids, String dearchiveReason) {
+		super.dearchive(entityUuids, dearchiveReason);
 	}
 
 	@Override
@@ -2368,6 +2467,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return entity.toReference();
 	}
 
+	@Override
 	public void pseudonymizeDto(Case source, CaseDataDto dto, Pseudonymizer pseudonymizer) {
 		if (dto != null) {
 			boolean inJurisdiction = service.inJurisdictionOrOwned(source);
@@ -2401,6 +2501,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 	}
 
+	@Override
 	public void restorePseudonymizedDto(CaseDataDto dto, CaseDataDto existingCaseDto, Case caze, Pseudonymizer pseudonymizer) {
 		if (existingCaseDto != null) {
 			boolean inJurisdiction = service.inJurisdictionOrOwned(caze);
@@ -2817,7 +2918,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return target;
 	}
 
-	public Map<ReinfectionDetail, Boolean> cleanUpReinfectionDetails(Map<ReinfectionDetail, Boolean> reinfectionDetails) {
+	private Map<ReinfectionDetail, Boolean> cleanUpReinfectionDetails(Map<ReinfectionDetail, Boolean> reinfectionDetails) {
 		if (reinfectionDetails != null && reinfectionDetails.containsValue(Boolean.FALSE)) {
 			Map<ReinfectionDetail, Boolean> onlyTrueReinfectionDetails = new HashMap<>();
 			onlyTrueReinfectionDetails =
@@ -2834,7 +2935,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return CoreEntityType.CASE;
 	}
 
-	public void updateInvestigationByStatus(CaseDataDto existingCase, Case caze) {
+	private void updateInvestigationByStatus(CaseDataDto existingCase, Case caze) {
 
 		CaseReferenceDto caseRef = caze.toReference();
 		InvestigationStatus investigationStatus = caze.getInvestigationStatus();
@@ -2966,28 +3067,27 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			// 1) The surveillance officer that is responsible for the case
 			assignee = caze.getSurveillanceOfficer();
 		} else {
-			// 2) A random surveillance officer from the case responsible district
-			assignee = getRandomSurveillanceOfficer(caze.getResponsibleDistrict());
+			// 2) A random user with UserRight.CASE_RESPONSIBLE from the case responsible district
+			assignee = getRandomDistrictCaseResponsible(caze.getResponsibleDistrict());
 		}
 
 		if (assignee == null && caze.getDistrict() != null) {
 			// 3) A random surveillance officer from the case district
-			assignee = getRandomSurveillanceOfficer(caze.getDistrict());
+			assignee = getRandomDistrictCaseResponsible(caze.getDistrict());
 		}
 
 		if (assignee == null) {
 			if (caze.getReportingUser() != null
-				&& (caze.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)
-					|| caze.getReportingUser().getUserRoles().contains(UserRole.ADMIN_SUPERVISOR))) {
+				&& (userRoleConfigFacade.hasUserRight(caze.getReportingUser().getUserRoles(), UserRight.TASK_ASSIGN))) {
 				// 4) If the case was created by a surveillance supervisor, assign them
 				assignee = caze.getReportingUser();
 			} else {
 				// 5) Assign a random surveillance supervisor from the case responsible region
-				assignee = getRandomRegionUser(caze.getResponsibleRegion());
+				assignee = getRandomRegionCaseResponsible(caze.getResponsibleRegion());
 			}
 			if (assignee == null && caze.getRegion() != null) {
 				// 6) Assign a random surveillance supervisor from the case region
-				assignee = getRandomRegionUser(caze.getRegion());
+				assignee = getRandomRegionCaseResponsible(caze.getRegion());
 			}
 		}
 
@@ -2997,14 +3097,14 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 	}
 
-	private User getRandomSurveillanceOfficer(District district) {
+	private User getRandomDistrictCaseResponsible(District district) {
 
-		return userService.getRandomUser(district, UserRole.SURVEILLANCE_OFFICER);
+		return userService.getRandomDistrictUser(district, UserRight.CASE_RESPONSIBLE);
 	}
 
-	private User getRandomRegionUser(Region region) {
+	private User getRandomRegionCaseResponsible(Region region) {
 
-		return userService.getRandomUser(region, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.ADMIN_SUPERVISOR);
+		return userService.getRandomRegionUser(region, UserRight.CASE_RESPONSIBLE);
 	}
 
 	@Override
@@ -3213,6 +3313,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
+	@RolesAllowed(UserRight._CASE_MERGE)
 	public void mergeCase(String leadUuid, String otherUuid) {
 
 		mergeCase(getCaseDataWithoutPseudonyimization(leadUuid), getCaseDataWithoutPseudonyimization(otherUuid), false);
@@ -3433,6 +3534,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	 */
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	@RolesAllowed(UserRight._SYSTEM)
 	public void archiveAllArchivableCases(int daysAfterCaseGetsArchived) {
 
 		archiveAllArchivableCases(daysAfterCaseGetsArchived, LocalDate.now());
@@ -3462,17 +3564,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			caseUuids.size(),
 			daysAfterCaseGetsArchived,
 			DateHelper.durationMillies(startTime));
-	}
-
-	@Override
-	public boolean hasPositiveLabResult(String caseUuid) {
-		final CriteriaBuilder criteriaBuilder = em.getCriteriaBuilder();
-		final CriteriaQuery<Sample> query = criteriaBuilder.createQuery(Sample.class);
-		final Root<Sample> sampleRoot = query.from(Sample.class);
-		final Join<Sample, Case> caseJoin = sampleRoot.join(Sample.ASSOCIATED_CASE, JoinType.INNER);
-		final Predicate casePredicate = criteriaBuilder.equal(caseJoin.get(AbstractDomainObject.UUID), caseUuid);
-		final Predicate testPositivityPredicate = criteriaBuilder.equal(sampleRoot.get(Sample.PATHOGEN_TEST_RESULT), PathogenTestResultType.POSITIVE);
-		return sampleService.exists((cb, root, cq) -> cb.and(casePredicate, testPositivityPredicate));
 	}
 
 	public Page<CaseFollowUpDto> getCaseFollowUpIndexPage(
@@ -3855,6 +3946,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
+	@RolesAllowed(UserRight._CASE_EDIT)
 	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		service.updateExternalData(externalData);
 	}

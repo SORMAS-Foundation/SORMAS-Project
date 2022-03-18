@@ -143,8 +143,8 @@ public class TestDataCreator {
 
 		UserDto user = UserDto.build();
 		user.setFirstName("User");
-		user.setLastName("User");
-		user.setUserName("Username");
+		user.setLastName(userRole.toShortString());
+		user.setUserName(userRole.toString());
 		user.setUserRoles(new HashSet<>(Arrays.asList(userRole)));
 		user.setRegion(rdcf.region);
 		user.setDistrict(rdcf.district);
@@ -159,11 +159,23 @@ public class TestDataCreator {
 	}
 
 	public UserDto createUser(RDCFEntities rdcf, UserRole... roles) {
-		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "First", "Name", roles);
+		return createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			roles.length > 0 ? roles[0].toShortString() : "First",
+			"User",
+			roles);
 	}
 
 	public UserDto createUser(RDCF rdcf, UserRole... roles) {
-		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "First", "Name", roles);
+		return createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			roles.length > 0 ? roles[0].toShortString() : "First",
+			"User",
+			roles);
 	}
 
 	public UserDto createUser(RDCF rdcf, String firstName, String lastName, UserRole... roles) {
@@ -204,6 +216,7 @@ public class TestDataCreator {
 		user1.setLastName(lastName);
 		user1.setUserName(firstName + lastName);
 		user1.setUserRoles(new HashSet<UserRole>(Arrays.asList(roles)));
+
 		user1.setLimitedDisease(limitedDisease);
 		UserDto user = user1;
 		user.setRegion(beanTest.getRegionFacade().getReferenceByUuid(regionUuid));
