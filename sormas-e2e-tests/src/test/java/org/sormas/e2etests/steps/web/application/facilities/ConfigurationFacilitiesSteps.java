@@ -20,6 +20,7 @@ package org.sormas.e2etests.steps.web.application.facilities;
 
 import static org.sormas.e2etests.pages.application.configuration.ConfigurationTabsPage.CONFIGURATION_FACILITIES_TAB;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.CLOSE_DETAILED_EXPORT_POPUP;
+import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.CLOSE_FACILITIES_IMPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.CLOSE_POPUP_FACILITIES_BUTTON;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.DETAILED_EXPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.configuration.FacilitiesTabPage.EXPORT_FACILITY_BUTTON;
@@ -146,8 +147,12 @@ public class ConfigurationFacilitiesSteps implements En {
         });
 
     When(
-        "I close import facilites popup window",
+        "I close import facilities popup window",
         () -> webDriverHelpers.clickOnWebElementBySelector(CLOSE_POPUP_FACILITIES_BUTTON));
+
+    When(
+            "I close facilities popup window",
+            () -> webDriverHelpers.clickOnWebElementBySelector(CLOSE_FACILITIES_IMPORT_BUTTON));
 
     When(
         "I check if data from csv is correctly displayed in facilities tab",

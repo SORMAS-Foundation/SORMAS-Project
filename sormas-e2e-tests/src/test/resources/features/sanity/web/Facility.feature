@@ -14,5 +14,6 @@ Feature: Facility end to end tests
     Then I pick the facilities test data file
     And I click on the "START DATA IMPORT" button from the Import Facilities Entries popup
     Then I check if csv file for facilities is imported successfully
-    And I close import facilites popup window
+    And I close import facilities popup window
+    And I close facilities popup window
     Then I check if data from csv is correctly displayed in facilities tab
