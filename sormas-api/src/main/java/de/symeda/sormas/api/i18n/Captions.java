@@ -42,7 +42,8 @@ public interface Captions {
 	String actionAdjustChanges = "actionAdjustChanges";
 	String actionApplyDateFilter = "actionApplyDateFilter";
 	String actionApplyFilters = "actionApplyFilters";
-	String actionArchive = "actionArchive";
+	String actionArchiveCoreEntity = "actionArchiveCoreEntity";
+	String actionArchiveInfrastructure = "actionArchiveInfrastructure";
 	String actionAssignNewEpidNumber = "actionAssignNewEpidNumber";
 	String actionBack = "actionBack";
 	String actionBackToNationOverview = "actionBackToNationOverview";
@@ -56,7 +57,8 @@ public interface Captions {
 	String actionContinue = "actionContinue";
 	String actionCreate = "actionCreate";
 	String actionCreatingLabel = "actionCreatingLabel";
-	String actionDearchive = "actionDearchive";
+	String actionDearchiveCoreEntity = "actionDearchiveCoreEntity";
+	String actionDearchiveInfrastructure = "actionDearchiveInfrastructure";
 	String actionDelete = "actionDelete";
 	String actionDeselectAll = "actionDeselectAll";
 	String actionDeselectAndContinue = "actionDeselectAndContinue";
@@ -485,7 +487,7 @@ public interface Captions {
 	String caseFilterWithDifferentRegion = "caseFilterWithDifferentRegion";
 	String caseFilterWithExtendedQuarantine = "caseFilterWithExtendedQuarantine";
 	String caseFilterWithoutGeo = "caseFilterWithoutGeo";
-	String caseFilterWithoutResponsibleOfficer = "caseFilterWithoutResponsibleOfficer";
+	String caseFilterWithoutResponsibleUser = "caseFilterWithoutResponsibleUser";
 	String caseFilterWithReducedQuarantine = "caseFilterWithReducedQuarantine";
 	String caseFollowupVisitsView = "caseFollowupVisitsView";
 	String CaseHospitalization = "CaseHospitalization";

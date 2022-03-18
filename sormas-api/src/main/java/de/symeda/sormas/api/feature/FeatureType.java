@@ -156,6 +156,7 @@ public enum FeatureType {
 	DELETE_PERMANENT(true, false, null, null, null),
 	AUTOMATIC_ARCHIVING(true, true, null, Arrays.asList(CASE, CONTACT, EVENT, EVENT_PARTICIPANT, IMMUNIZATION, TRAVEL_ENTRY),
 			ImmutableMap.of(FeatureTypeProperty.THRESHOLD_IN_DAYS, 90)),
+	EDIT_ARCHIVED_ENTITIES(true, true, null, null, null),
 
 	// SHOW/HIDE VIEW TAB FEATURES
 	VIEW_TAB_CASES_HOSPITALIZATION(true,

@@ -6,11 +6,8 @@ import java.util.function.Consumer;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Sizeable;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -32,8 +29,8 @@ import de.symeda.sormas.ui.immunization.components.fields.pickorcreate.Immunizat
 import de.symeda.sormas.ui.immunization.components.fields.popup.SimilarImmunizationPopup;
 import de.symeda.sormas.ui.immunization.components.form.ImmunizationCreationForm;
 import de.symeda.sormas.ui.immunization.components.form.ImmunizationDataForm;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
 import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.automaticdeletion.AutomaticDeletionLabel;
@@ -188,38 +185,13 @@ public class ImmunizationController {
 
 		// Initialize 'Archive' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.IMMUNIZATION_ARCHIVE)) {
-			boolean archived = FacadeProvider.getImmunizationFacade().isArchived(immunizationDto.getUuid());
-			Button archiveButton = ButtonHelper.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {
-				if (editComponent.isModified()) {
-					editComponent.commit();
-				}
-
-				if (archived) {
-					ControllerProvider.getArchiveController()
-						.dearchiveEntity(
-							immunizationDto,
-							FacadeProvider.getImmunizationFacade(),
-							Strings.headingDearchiveImmunization,
-							Strings.confirmationDearchiveImmunization,
-							Strings.entityImmunization,
-							Strings.messageImmunizationDearchived,
-							() -> navigateToImmunization(immunizationDto.getUuid()));
-				} else {
-					ControllerProvider.getArchiveController()
-						.archiveEntity(
-							immunizationDto,
-							FacadeProvider.getImmunizationFacade(),
-							Strings.headingArchiveImmunization,
-							Strings.confirmationArchiveImmunization,
-							Strings.entityImmunization,
-							Strings.messageImmunizationArchived,
-							() -> navigateToImmunization(immunizationDto.getUuid()));
-				}
-
-			}, ValoTheme.BUTTON_LINK);
-
-			editComponent.getButtonsPanel().addComponentAsFirst(archiveButton);
-			editComponent.getButtonsPanel().setComponentAlignment(archiveButton, Alignment.BOTTOM_LEFT);
+			ControllerProvider.getArchiveController()
+				.addArchivingButton(
+					immunizationDto,
+					FacadeProvider.getImmunizationFacade(),
+					CoreEntityArchiveMessages.IMMUNIZATION,
+					editComponent,
+					() -> navigateToImmunization(immunizationDto.getUuid()));
 		}
 
 		return editComponent;

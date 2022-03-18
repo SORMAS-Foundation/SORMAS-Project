@@ -252,6 +252,7 @@ public interface Strings {
 	String epiWeek = "epiWeek";
 	String errorAccessDenied = "errorAccessDenied";
 	String errorCampaignDiagramTotalsCalculationError = "errorCampaignDiagramTotalsCalculationError";
+	String errorCampaignNotEditable = "errorCampaignNotEditable";
 	String errorCaseDuplicateDeletion = "errorCaseDuplicateDeletion";
 	String errorCaseMerging = "errorCaseMerging";
 	String errorCaseNotEditable = "errorCaseNotEditable";
@@ -264,6 +265,7 @@ public interface Strings {
 	String errorDeletingDocumentTemplate = "errorDeletingDocumentTemplate";
 	String errorDocumentGeneration = "errorDocumentGeneration";
 	String errorDocumentGenerationMultipleDiseasses = "errorDocumentGenerationMultipleDiseasses";
+	String errorEntityNotEditable = "errorEntityNotEditable";
 	String errorEntityOutdated = "errorEntityOutdated";
 	String errorEventFromAnotherJurisdiction = "errorEventFromAnotherJurisdiction";
 	String errorEventNotEditable = "errorEventNotEditable";
@@ -275,6 +277,7 @@ public interface Strings {
 	String errorExternalSurveillanceToolNonCoronavirusCase = "errorExternalSurveillanceToolNonCoronavirusCase";
 	String errorFieldValidationFailed = "errorFieldValidationFailed";
 	String errorFileNotFound = "errorFileNotFound";
+	String errorForbidden = "errorForbidden";
 	String errorFormIdPopulationAgeGroup = "errorFormIdPopulationAgeGroup";
 	String errorIllegalFilename = "errorIllegalFilename";
 	String errorImmunizationNotEditable = "errorImmunizationNotEditable";
@@ -916,6 +919,7 @@ public interface Strings {
 	String messageCasesDearchived = "messageCasesDearchived";
 	String messageCasesDeleted = "messageCasesDeleted";
 	String messageCasesEdited = "messageCasesEdited";
+	String messageCasesEditedExceptArchived = "messageCasesEditedExceptArchived";
 	String messageCasesMerged = "messageCasesMerged";
 	String messageCasesNotDeletedReasonExternalSurveillanceTool = "messageCasesNotDeletedReasonExternalSurveillanceTool";
 	String messageCasesSentToExternalSurveillanceTool = "messageCasesSentToExternalSurveillanceTool";
@@ -947,6 +951,7 @@ public interface Strings {
 	String messageContactSaved = "messageContactSaved";
 	String messageContactsDeleted = "messageContactsDeleted";
 	String messageContactsEdited = "messageContactsEdited";
+	String messageContactsEditedExceptArchived = "messageContactsEditedExceptArchived";
 	String messageContactsMerged = "messageContactsMerged";
 	String messageContactToCaseConfirmationRequired = "messageContactToCaseConfirmationRequired";
 	String messageContinentArchived = "messageContinentArchived";
@@ -1017,6 +1022,7 @@ public interface Strings {
 	String messageEventsDearchived = "messageEventsDearchived";
 	String messageEventsDeleted = "messageEventsDeleted";
 	String messageEventsEdited = "messageEventsEdited";
+	String messageEventsEditedExceptArchived = "messageEventsEditedExceptArchived";
 	String messageEventsNotDeletedReason = "messageEventsNotDeletedReason";
 	String messageEventsNotDeletedReasonExternalSurveillanceTool = "messageEventsNotDeletedReasonExternalSurveillanceTool";
 	String messageEventsSentToExternalSurveillanceTool = "messageEventsSentToExternalSurveillanceTool";

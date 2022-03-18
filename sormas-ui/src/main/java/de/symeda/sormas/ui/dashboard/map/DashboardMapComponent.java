@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.dashboard.map;
 
+import static java.util.Objects.nonNull;
+
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.ArrayList;
@@ -59,19 +61,18 @@ import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.dashboard.DashboardEventDto;
 import de.symeda.sormas.api.event.EventStatus;
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.geo.GeoLatLon;
+import de.symeda.sormas.api.geo.GeoShapeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
-import de.symeda.sormas.api.geo.GeoLatLon;
-import de.symeda.sormas.api.geo.GeoShapeProvider;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -159,16 +160,11 @@ public class DashboardMapComponent extends VerticalLayout {
 				mapCenter = FacadeProvider.getConfigFacade().getCountryCenter();
 				map.setCenter(mapCenter);
 			} else {
-				if (UserProvider.getCurrent().hasAnyUserRole(UserRole.NATIONAL_USER, UserRole.NATIONAL_CLINICIAN, UserRole.NATIONAL_OBSERVER)) {
-					mapCenter = geoShapeProvider.getCenterOfAllRegions();
-
+				UserDto user = UserProvider.getCurrent().getUser();
+				if (user.getRegion() != null) {
+					mapCenter = geoShapeProvider.getCenterOfRegion(user.getRegion());
 				} else {
-					UserDto user = UserProvider.getCurrent().getUser();
-					if (user.getRegion() != null) {
-						mapCenter = geoShapeProvider.getCenterOfRegion(user.getRegion());
-					} else {
-						mapCenter = geoShapeProvider.getCenterOfAllRegions();
-					}
+					mapCenter = geoShapeProvider.getCenterOfAllRegions();
 				}
 
 				GeoLatLon center = Optional.ofNullable(mapCenter).orElseGet(FacadeProvider.getConfigFacade()::getCountryCenter);
@@ -520,10 +516,7 @@ public class DashboardMapComponent extends VerticalLayout {
 					refreshMap(true);
 				});
 				layersLayout.addComponent(showEventsCheckBox);
-
-				if (UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_USER)
-					|| UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_CLINICIAN)
-					|| UserProvider.getCurrent().hasUserRole(UserRole.NATIONAL_OBSERVER)) {
+				if (nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasNationJurisdictionLevel()) {
 					OptionGroup regionMapVisualizationSelect = new OptionGroup();
 					regionMapVisualizationSelect.setWidth(100, Unit.PERCENTAGE);
 					regionMapVisualizationSelect.addItems((Object[]) CaseMeasure.values());

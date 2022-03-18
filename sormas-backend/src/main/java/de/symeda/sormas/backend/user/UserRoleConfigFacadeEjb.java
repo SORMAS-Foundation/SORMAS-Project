@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.user;
 
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.EnumMap;
@@ -47,8 +48,9 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 	@EJB
 	private UserService userService;
 
-	//Assumption: UserRoleConfigs are not changed during runtime 
+	//Assumption: UserRoleConfigs are not changed during runtime
 	private Map<UserRole, Set<UserRight>> userRoleRightsCache;
+	private Map<UserRight, Set<UserRole>> userRightRolesCache;
 
 	@Override
 	public List<UserRoleConfigDto> getAllAfter(Date since) {
@@ -99,8 +101,13 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 
 	@Override
 	public Set<UserRight> getEffectiveUserRights(UserRole... userRoles) {
+		return getEffectiveUserRights(Arrays.asList(userRoles));
+	}
 
-		Map<UserRole, Set<UserRight>> userRoleRights = getUserRoleRightsCached();
+	@Override
+	public Set<UserRight> getEffectiveUserRights(Collection<UserRole> userRoles) {
+
+		Map<UserRole, Set<UserRight>> userRoleRights = getUserRoleRights();
 
 		Set<UserRight> userRights = EnumSet.noneOf(UserRight.class);
 		for (UserRole userRole : userRoles) {
@@ -110,17 +117,71 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 		return userRights;
 	}
 
-	public void resetUserRoleRightsCache() {
-		userRoleRightsCache = null;
+	@Override
+	public Set<UserRole> getEffectiveUserRoles(UserRight... userRights) {
+		return getEffectiveUserRoles(Arrays.asList(userRights));
 	}
 
-	private Map<UserRole, Set<UserRight>> getUserRoleRightsCached() {
+	@Override
+	public boolean hasUserRight(Collection<UserRole> userRoles, UserRight userRight) {
+		Map<UserRole, Set<UserRight>> userRoleRights = getUserRoleRights();
+		for (UserRole userRole : userRoles) {
+			if (userRoleRights.get(userRole).contains(userRight))
+				return true;
+		}
+		return false;
+	}
+
+	@Override
+	public boolean hasAnyUserRight(Collection<UserRole> userRoles, Collection<UserRight> userRights) {
+		Map<UserRole, Set<UserRight>> userRoleRights = getUserRoleRights();
+		for (UserRole userRole : userRoles) {
+			for (UserRight userRight : userRights) {
+				if (userRoleRights.get(userRole).contains(userRight))
+					return true;
+			}
+		}
+		return false;
+	}
+
+	/**
+	 * TODO #4461 may no longer be needed, because it should be replaced by joining the user rights of the user's user roles
+	 */
+	@Override
+	public Set<UserRole> getEffectiveUserRoles(Collection<UserRight> userRights) {
+
+		Map<UserRight, Set<UserRole>> userRightRoles = getUserRightRoles();
+
+		Set<UserRole> userRoles = EnumSet.noneOf(UserRole.class);
+		for (UserRight userRight : userRights) {
+			userRoles.addAll(userRightRoles.get(userRight));
+		}
+
+		return userRoles;
+	}
+
+	public void resetUserRoleRightsCache() {
+		userRoleRightsCache = null;
+		userRightRolesCache = null;
+	}
+
+	@Override
+	public Map<UserRole, Set<UserRight>> getUserRoleRights() {
 
 		if (userRoleRightsCache == null) {
-			userRoleRightsCache = getAllAsMap();
+			userRoleRightsCache = buildRoleRightsMap();
 		}
 
 		return userRoleRightsCache;
+	}
+
+	private Map<UserRight, Set<UserRole>> getUserRightRoles() {
+
+		if (userRightRolesCache == null) {
+			userRightRolesCache = buildRightRolesMap();
+		}
+
+		return userRightRolesCache;
 	}
 
 	public UserRoleConfig fromDto(UserRoleConfigDto source, boolean checkChangeDate) {
@@ -153,12 +214,6 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 		return target;
 	}
 
-	@LocalBean
-	@Stateless
-	public static class UserRoleConfigFacadeEjbLocal extends UserRoleConfigFacadeEjb {
-
-	}
-
 	@Override
 	public Set<UserRole> getEnabledUserRoles() {
 
@@ -174,7 +229,7 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 		return userRolesList;
 	}
 
-	public Map<UserRole, Set<UserRight>> getAllAsMap() {
+	public Map<UserRole, Set<UserRight>> buildRoleRightsMap() {
 		Map<UserRole, Set<UserRight>> map = new EnumMap<>(UserRole.class);
 
 		userRoleConfigService.getAll().forEach(c -> map.put(c.getUserRole(), c.getUserRights()));
@@ -192,5 +247,26 @@ public class UserRoleConfigFacadeEjb implements UserRoleConfigFacade {
 		});
 
 		return map;
+	}
+
+	public Map<UserRight, Set<UserRole>> buildRightRolesMap() {
+
+		Map<UserRole, Set<UserRight>> userRoleRights = getUserRoleRights();
+
+		Map<UserRight, Set<UserRole>> map = new EnumMap<>(UserRight.class);
+
+		userRoleRights.forEach((role, rights) -> rights.forEach(right -> {
+			if (!map.containsKey(right))
+				map.put(right, EnumSet.noneOf(UserRole.class));
+			map.get(right).add(role);
+		}));
+
+		return map;
+	}
+
+	@LocalBean
+	@Stateless
+	public static class UserRoleConfigFacadeEjbLocal extends UserRoleConfigFacadeEjb {
+
 	}
 }
