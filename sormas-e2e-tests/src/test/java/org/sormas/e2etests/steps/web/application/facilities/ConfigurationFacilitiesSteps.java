@@ -228,7 +228,7 @@ public class ConfigurationFacilitiesSteps implements En {
   public static void writeCSVFromPOJOFacilityTab(FacilityCSV facilityData) {
 
     Random random = new Random();
-    uploadFileDirectoryAndName = "./uploads/testFile.csv";
+    uploadFileDirectoryAndName = "/uploads/testFile.csv";
     cityName = faker.harryPotter().location();
     aFacilityName = faker.harryPotter().location() + randomNr;
 
