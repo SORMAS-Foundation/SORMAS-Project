@@ -152,7 +152,9 @@ public final class DtoHelper {
 						}
 					} else if (targetValue == null
 						|| override
-						|| (pd.getPropertyType().equals(String.class) && StringUtils.isBlank((String) targetValue))
+						|| (pd.getPropertyType().equals(String.class)
+							&& StringUtils.isBlank((String) targetValue)
+							&& StringUtils.isNotBlank((String) sourceValue))
 						|| (pd.getPropertyType().equals(boolean.class) && ((boolean) sourceValue) && !((boolean) targetValue))) {
 						if (DataHelper.isValueType(pd.getPropertyType()) || ReferenceDto.class.isAssignableFrom(pd.getPropertyType())) {
 							pd.getWriteMethod().invoke(target, sourceValue);
