@@ -103,7 +103,7 @@ public class ConfigurationFacilitiesSteps implements En {
 
     When(
         "I pick the facilities test data file",
-        () -> webDriverHelpers.sendFile(FILE_PICKER, userDirPath + uploadFileDirectoryAndName));
+        () -> webDriverHelpers.sendFile(FILE_PICKER, uploadFileDirectoryAndName));
 
     When(
         "I click on the {string} button from the Import Facilities Entries popup",
@@ -226,7 +226,6 @@ public class ConfigurationFacilitiesSteps implements En {
 
   public static void writeCSVFromPOJOFacilityTab(FacilityCSV facilityData) {
 
-    Random random = new Random();
     uploadFileDirectoryAndName = userDirPath+"/uploads/testFile.csv";
     cityName = faker.harryPotter().location();
     aFacilityName = faker.harryPotter().location() + randomNr;
