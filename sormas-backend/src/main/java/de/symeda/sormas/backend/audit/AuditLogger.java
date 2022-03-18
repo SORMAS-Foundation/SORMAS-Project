@@ -212,22 +212,22 @@ public class AuditLogger {
 			return cached;
 		}
 
-		AuditEvent.AuditEventAction infered;
+		AuditEvent.AuditEventAction inferred;
 		if (methodsStartsWith(calledMethod, createPrefix)) {
-			infered = AuditEvent.AuditEventAction.C;
+			inferred = AuditEvent.AuditEventAction.C;
 		} else if (methodsStartsWith(calledMethod, readPrefix)) {
-			infered = AuditEvent.AuditEventAction.R;
+			inferred = AuditEvent.AuditEventAction.R;
 		} else if (methodsStartsWith(calledMethod, updatePrefix)) {
-			infered = AuditEvent.AuditEventAction.U;
+			inferred = AuditEvent.AuditEventAction.U;
 		} else if (methodsStartsWith(calledMethod, deletePrefix)) {
-			infered = AuditEvent.AuditEventAction.D;
+			inferred = AuditEvent.AuditEventAction.D;
 		} else if (methodsStartsWith(calledMethod, executePrefix)) {
-			infered = AuditEvent.AuditEventAction.E;
+			inferred = AuditEvent.AuditEventAction.E;
 		} else {
-			infered = AuditEvent.AuditEventAction.E;
+			inferred = AuditEvent.AuditEventAction.E;
 		}
-		actionMap.put(calledMethod, infered);
-		return infered;
+		actionMap.put(calledMethod, inferred);
+		return inferred;
 	}
 
 	private boolean methodsStartsWith(String methodName, Set<String> prefixes) {
