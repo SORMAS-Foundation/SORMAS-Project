@@ -26,14 +26,14 @@ import com.vaadin.v7.ui.Grid;
 import com.vaadin.v7.ui.renderers.HtmlRenderer;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.report.WeeklyReportDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -97,8 +97,7 @@ public class WeeklyReportInformantsGrid extends Grid {
 		getContainer().removeAllItems();
 
 		List<WeeklyReportInformantSummary> reportDetailDtos = new ArrayList<>();
-		List<UserDto> informants =
-			FacadeProvider.getUserFacade().getUsersByAssociatedOfficer(officerRef, UserRole.HOSPITAL_INFORMANT, UserRole.COMMUNITY_INFORMANT);
+		List<UserDto> informants = FacadeProvider.getUserFacade().getUsersByAssociatedOfficer(officerRef, UserRight.WEEKLYREPORT_CREATE);
 		// sort by...
 		informants.sort(
 			(a, b) -> {
