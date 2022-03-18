@@ -38,6 +38,7 @@ import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactIndexDetailedDto;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
@@ -119,6 +120,16 @@ public class ContactResource extends EntityDtoResource {
 		@QueryParam("size") int size) {
 		return FacadeProvider.getContactFacade()
 			.getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
+	}
+
+	@POST
+	@Path("/detailedIndexList")
+	public Page<ContactIndexDetailedDto> getIndexDetailedList(
+		@RequestBody CriteriaWithSorting<ContactCriteria> criteriaWithSorting,
+		@QueryParam("offset") int offset,
+		@QueryParam("size") int size) {
+		return FacadeProvider.getContactFacade()
+			.getIndexDetailedPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
 	}
 
 	@POST

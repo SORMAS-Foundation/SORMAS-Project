@@ -66,6 +66,12 @@ public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, C
 
 	Page<ContactIndexDto> getIndexPage(ContactCriteria contactCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
 
+	Page<ContactIndexDetailedDto> getIndexDetailedPage(
+		@NotNull ContactCriteria contactCriteria,
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties);
+
 	List<ContactIndexDetailedDto> getIndexDetailedList(
 		ContactCriteria contactCriteria,
 		Integer first,
