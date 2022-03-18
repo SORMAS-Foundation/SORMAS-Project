@@ -10539,25 +10539,6 @@ END;
 $$
     language 'plpgsql';
 
-
-DROP TRIGGER IF EXISTS versioning_trigger ON cases;
-CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE ON cases
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'cases_history', true);
-DROP TRIGGER IF EXISTS delete_history_trigger ON cases;
-CREATE TRIGGER delete_history_trigger
-    AFTER DELETE ON cases
-    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('cases_history', 'id');
-
-DROP TRIGGER IF EXISTS versioning_trigger ON additionaltest;
-CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE ON additionaltest
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'additionaltest_history', true);
-DROP TRIGGER IF EXISTS delete_history_trigger ON additionaltest;
-CREATE TRIGGER delete_history_trigger
-    AFTER DELETE ON additionaltest
-    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('additionaltest_history', 'id');
-
 DROP TRIGGER IF EXISTS versioning_trigger ON deletionconfiguration;
 CREATE TRIGGER versioning_trigger
     BEFORE INSERT OR UPDATE ON deletionconfiguration
@@ -10575,18 +10556,10 @@ DROP TRIGGER IF EXISTS delete_history_trigger ON contact;
 CREATE TRIGGER delete_history_trigger
     AFTER DELETE ON contact
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('contact_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_contacts_visits ON contact;
 CREATE TRIGGER delete_history_trigger_contacts_visits
     AFTER DELETE ON contact
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('contacts_visits_history', 'contact_id');
-
-DROP TRIGGER IF EXISTS versioning_trigger ON users_userroles;
-CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE ON users_userroles
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'users_userroles_history', true);
-DROP TRIGGER IF EXISTS delete_history_trigger ON users_userroles;
-CREATE TRIGGER delete_history_trigger
-    AFTER DELETE ON users_userroles
-    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('users_userroles_history', 'id');
 
 DROP TRIGGER IF EXISTS versioning_trigger ON events;
 CREATE TRIGGER versioning_trigger
@@ -10596,6 +10569,7 @@ DROP TRIGGER IF EXISTS delete_history_trigger ON events;
 CREATE TRIGGER delete_history_trigger
     AFTER DELETE ON events
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('events_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_events_eventgroups ON events;
 CREATE TRIGGER delete_history_trigger_events_eventgroups
     AFTER DELETE ON events
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('events_eventgroups_history', 'event_id');
@@ -10617,9 +10591,14 @@ DROP TRIGGER IF EXISTS delete_history_trigger ON users;
 CREATE TRIGGER delete_history_trigger
     AFTER DELETE ON users
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('users_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_task_observer ON users;
 CREATE TRIGGER delete_history_trigger_task_observer
     AFTER DELETE ON users
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('task_observer_history', 'user_id');
+DROP TRIGGER IF EXISTS delete_history_trigger_users_userroles ON users;
+CREATE TRIGGER delete_history_trigger_users_userroles
+    AFTER DELETE ON users
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('users_userroles_history', 'user_id');
 
 DROP TRIGGER IF EXISTS versioning_trigger ON customizableenumvalue;
 CREATE TRIGGER versioning_trigger
@@ -10638,15 +10617,6 @@ DROP TRIGGER IF EXISTS delete_history_trigger ON eventparticipant;
 CREATE TRIGGER delete_history_trigger
     AFTER DELETE ON eventparticipant
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('eventparticipant_history', 'id');
-
-DROP TRIGGER IF EXISTS versioning_trigger ON userroles_userrights;
-CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE ON userroles_userrights
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'userroles_userrights_history', true);
-DROP TRIGGER IF EXISTS delete_history_trigger ON userroles_userrights;
-CREATE TRIGGER delete_history_trigger
-    AFTER DELETE ON userroles_userrights
-    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('userroles_userrights_history', 'id');
 
 DROP TRIGGER IF EXISTS versioning_trigger ON clinicalvisit;
 CREATE TRIGGER versioning_trigger
@@ -10728,6 +10698,7 @@ DROP TRIGGER IF EXISTS delete_history_trigger ON sharerequestinfo;
 CREATE TRIGGER delete_history_trigger
     AFTER DELETE ON sharerequestinfo
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('sharerequestinfo_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_sharerequestinfo_shareinfo ON sharerequestinfo;
 CREATE TRIGGER delete_history_trigger_sharerequestinfo_shareinfo
     AFTER DELETE ON sharerequestinfo
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('sharerequestinfo_shareinfo_history', 'sharerequestinfo_id');
@@ -10776,6 +10747,7 @@ DROP TRIGGER IF EXISTS delete_history_trigger ON task;
 CREATE TRIGGER delete_history_trigger
     AFTER DELETE ON task
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('task_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_task_observer ON task;
 CREATE TRIGGER delete_history_trigger_task_observer
     AFTER DELETE ON task
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('task_observer_history', 'task_id');
@@ -10879,15 +10851,6 @@ CREATE TRIGGER delete_history_trigger
     AFTER DELETE ON campaignformdata
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('campaignformdata_history', 'id');
 
-DROP TRIGGER IF EXISTS versioning_trigger ON person_locations;
-CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE ON person_locations
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'person_locations_history', true);
-DROP TRIGGER IF EXISTS delete_history_trigger ON person_locations;
-CREATE TRIGGER delete_history_trigger
-    AFTER DELETE ON person_locations
-    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('person_locations_history', 'id');
-
 DROP TRIGGER IF EXISTS versioning_trigger ON symptoms;
 CREATE TRIGGER versioning_trigger
     BEFORE INSERT OR UPDATE ON symptoms
@@ -10905,6 +10868,7 @@ DROP TRIGGER IF EXISTS delete_history_trigger ON campaignformmeta;
 CREATE TRIGGER delete_history_trigger
     AFTER DELETE ON campaignformmeta
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('campaignformmeta_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_campaign_campaignformmeta ON campaignformmeta;
 CREATE TRIGGER delete_history_trigger_campaign_campaignformmeta
     AFTER DELETE ON campaignformmeta
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('campaign_campaignformmeta_history', 'campaignformmeta_id');
@@ -10917,6 +10881,7 @@ DROP TRIGGER IF EXISTS delete_history_trigger ON campaigns;
 CREATE TRIGGER delete_history_trigger
     AFTER DELETE ON campaigns
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('campaigns_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_campaign_campaignformmeta ON campaigns;
 CREATE TRIGGER delete_history_trigger_campaign_campaignformmeta
     AFTER DELETE ON campaigns
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('campaign_campaignformmeta_history', 'campaign_id');
@@ -10929,6 +10894,7 @@ DROP TRIGGER IF EXISTS delete_history_trigger ON visit;
 CREATE TRIGGER delete_history_trigger
     AFTER DELETE ON visit
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('visit_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_contacts_visits ON visit;
 CREATE TRIGGER delete_history_trigger_contacts_visits
     AFTER DELETE ON visit
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('contacts_visits_history', 'visit_id');
@@ -11058,6 +11024,7 @@ DROP TRIGGER IF EXISTS delete_history_trigger ON sormastosormasshareinfo;
 CREATE TRIGGER delete_history_trigger
     AFTER DELETE ON sormastosormasshareinfo
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('sormastosormasshareinfo_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_sharerequestinfo_shareinfo ON sormastosormasshareinfo;
 CREATE TRIGGER delete_history_trigger_sharerequestinfo_shareinfo
     AFTER DELETE ON sormastosormasshareinfo
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('sharerequestinfo_shareinfo_history', 'shareinfo_id');
@@ -11169,6 +11136,7 @@ DROP TRIGGER IF EXISTS delete_history_trigger ON eventgroups;
 CREATE TRIGGER delete_history_trigger
     AFTER DELETE ON eventgroups
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('eventgroups_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_events_eventgroups ON eventgroups;
 CREATE TRIGGER delete_history_trigger_events_eventgroups
     AFTER DELETE ON eventgroups
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('events_eventgroups_history', 'eventgroup_id');
@@ -11190,6 +11158,10 @@ DROP TRIGGER IF EXISTS delete_history_trigger ON location;
 CREATE TRIGGER delete_history_trigger
     AFTER DELETE ON location
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('location_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_person_locations ON location;
+CREATE TRIGGER delete_history_trigger_person_locations
+    AFTER DELETE ON location
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('person_locations_history', 'location_id');
 
 DROP TRIGGER IF EXISTS versioning_trigger ON pathogentest;
 CREATE TRIGGER versioning_trigger
@@ -11208,8 +11180,50 @@ DROP TRIGGER IF EXISTS delete_history_trigger ON person;
 CREATE TRIGGER delete_history_trigger
     AFTER DELETE ON person
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('person_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_person_locations ON person;
+CREATE TRIGGER delete_history_trigger_person_locations
+    AFTER DELETE ON person
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('person_locations_history', 'person_id');
 
+DROP TRIGGER IF EXISTS versioning_trigger ON users_userroles;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON users_userroles
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'users_userroles_history', true);
 
+DROP TRIGGER IF EXISTS versioning_trigger ON sharerequestinfo_shareinfo;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON sharerequestinfo_shareinfo
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'sharerequestinfo_shareinfo_history', true);
+
+DROP TRIGGER IF EXISTS versioning_trigger ON task_observer;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON task_observer
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'task_observer_history', true);
+
+DROP TRIGGER IF EXISTS versioning_trigger ON userroles_userrights;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON userroles_userrights
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'userroles_userrights_history', true);
+
+DROP TRIGGER IF EXISTS versioning_trigger ON contacts_visits;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON contacts_visits
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'contacts_visits_history', true);
+
+DROP TRIGGER IF EXISTS versioning_trigger ON person_locations;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON person_locations
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'person_locations_history', true);
+
+DROP TRIGGER IF EXISTS versioning_trigger ON campaign_campaignformmeta;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON campaign_campaignformmeta
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaign_campaignformmeta_history', true);
+
+DROP TRIGGER IF EXISTS versioning_trigger ON events_eventgroups;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON events_eventgroups
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'events_eventgroups_history', true);
 
 INSERT INTO schema_version (version_number, comment) VALUES (448, 'Delete history data on permanent deletion of entities #7713');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
