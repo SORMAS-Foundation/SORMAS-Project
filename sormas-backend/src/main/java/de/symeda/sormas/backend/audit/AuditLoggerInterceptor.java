@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend.audit;
 
+import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.backend.auditlog.AuditContextProducer;
 import de.symeda.sormas.backend.auditlog.AuditLogServiceBean;
@@ -35,10 +36,21 @@ public class AuditLoggerInterceptor {
 	@Resource
 	private SessionContext sessionContext;
 
+	/**
+	 * Cache to track all classes annotated with @LocalBean. Contained Classes will be skipped for auditing.
+	 */
+	private final Set<Class<?>> ignoreLocalAnnotatedClasses = new HashSet<>();
+
+	/**
+	 * Cache to track all classes which should be completely ignored for audit.
+	 */
 	private final static Set<Class<?>> ignoreAuditClasses = new HashSet<>(
 		Arrays.asList(ConfigFacadeEjb.class, CurrentUserService.class, AuditContextProducer.class, AuditLogServiceBean.class, I18nFacadeEjb.class));
 
-	private static Set<Method> ignoreAuditMethods;
+	/**
+	 * Cache to track all methods which should be completely ignored.
+	 */
+	private static final Set<Method> ignoreAuditMethods;
 
 	static {
 		try {
@@ -53,21 +65,42 @@ public class AuditLoggerInterceptor {
 
 	@AroundInvoke
 	public Object logAudit(InvocationContext context) throws Exception {
-		Object target = context.getTarget();
-		if (target.getClass().getAnnotationsByType(LocalBean.class).length > 0) {
-			// with this we ignore EJB calls which definitely originate from within the backend
-			// as they can never be called direct from outside (i.e., remote) of he backend
+		try {
+			// todo change this later, but we need to make it NOP for now
+			ConfigFacade configFacade = (ConfigFacade) new InitialContext().lookup("java:module/ConfigFacade");
+			String sourceSite = configFacade.getAuditSourceSite();
+			if (sourceSite.equals("")) {
+				return context.proceed();
+			}
+		} catch (NamingException e) {
+			throw new RuntimeException(e);
+		}
+
+		Class<?> target = context.getTarget().getClass();
+		if (ignoreLocalAnnotatedClasses.contains(target)) {
+			// ignore previously discovered local beans
 			return context.proceed();
 		}
 
-		if (ignoreAuditClasses.contains(target.getClass())) {
-			// ignore certain classes for audit altogether
+		if (target.getAnnotationsByType(LocalBean.class).length > 0) {
+			// with this we ignore EJB calls which definitely originate from within the backend
+			// as they can never be called direct from outside (i.e., remote) of the backend
+
+			// cache that this class is local
+			ignoreLocalAnnotatedClasses.add(target);
+
+			return context.proceed();
+		}
+
+		if (ignoreAuditClasses.contains(target)) {
+			// ignore certain classes for audit altogether. Statically populated cache.
 			return context.proceed();
 		}
 
 		Method calledMethod = context.getMethod();
 
 		if (ignoreAuditMethods.contains(calledMethod)) {
+			// ignore certain methods for audit altogether. Statically populated cache.
 			return context.proceed();
 		}
 
@@ -120,7 +153,7 @@ public class AuditLoggerInterceptor {
 			List list = (List) o;
 			if (!list.isEmpty() && list.get(0) instanceof HasUuid) {
 				List<HasUuid> uuidList = list;
-				String str = uuidList.stream().map(HasUuid::getUuid).collect(Collectors.joining());
+				String str = uuidList.stream().map(HasUuid::getUuid).collect(Collectors.joining(","));
 				return String.format("List(%s)", str);
 			}
 		}

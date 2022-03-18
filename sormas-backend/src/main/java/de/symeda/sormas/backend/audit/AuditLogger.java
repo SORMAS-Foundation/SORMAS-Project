@@ -153,15 +153,14 @@ public class AuditLogger {
 
 		backendCall.setRecorded(end);
 
-		// success
-		//backendCall.setOutcome(AuditEvent.AuditEventOutcome._0);
 		backendCall.setOutcomeDesc(returnValue);
 
 		AuditEvent.AuditEventAgentComponent agent = new AuditEvent.AuditEventAgentComponent();
 		CodeableConcept codeableConcept = new CodeableConcept();
 
 		if (agentName.equals("SYSTEM") || agentName.equals("ANONYMOUS")) {
-			//todo
+			codeableConcept.addCoding(new Coding("https://www.hl7.org/fhir/valueset-participation-role-type.html", "110150", "Application"));
+			agent.setType(codeableConcept);
 		} else {
 			codeableConcept.addCoding(new Coding("https://www.hl7.org/fhir/valueset-participation-role-type.html", "humanuser", "human user"));
 			agent.setType(codeableConcept);
