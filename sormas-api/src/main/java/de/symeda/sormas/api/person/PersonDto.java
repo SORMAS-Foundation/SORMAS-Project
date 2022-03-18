@@ -156,17 +156,23 @@ public class PersonDto extends PseudonymizableDto {
 	@PersonalData
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
-	@HideForCountries(countries = {CountryHelper.COUNTRY_CODE_GERMANY, CountryHelper.COUNTRY_CODE_FRANCE})
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_GERMANY,
+		CountryHelper.COUNTRY_CODE_FRANCE })
 	private String mothersName;
 	@PersonalData
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
-	@HideForCountries(countries = {CountryHelper.COUNTRY_CODE_GERMANY, CountryHelper.COUNTRY_CODE_FRANCE})
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_GERMANY,
+		CountryHelper.COUNTRY_CODE_FRANCE })
 	private String mothersMaidenName;
 	@PersonalData
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
-	@HideForCountries(countries = {CountryHelper.COUNTRY_CODE_GERMANY, CountryHelper.COUNTRY_CODE_FRANCE})
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_GERMANY,
+		CountryHelper.COUNTRY_CODE_FRANCE })
 	private String fathersName;
 	@PersonalData
 	@SensitiveData
@@ -263,7 +269,6 @@ public class PersonDto extends PseudonymizableDto {
 		Disease.GUINEA_WORM,
 		Disease.LASSA,
 		Disease.POLIO,
-		Disease.CORONAVIRUS,
 		Disease.UNSPECIFIED_VHF,
 		Disease.UNDEFINED,
 		Disease.OTHER })
@@ -274,7 +279,6 @@ public class PersonDto extends PseudonymizableDto {
 		Disease.GUINEA_WORM,
 		Disease.LASSA,
 		Disease.POLIO,
-		Disease.CORONAVIRUS,
 		Disease.UNSPECIFIED_VHF,
 		Disease.UNDEFINED,
 		Disease.OTHER })
@@ -287,7 +291,6 @@ public class PersonDto extends PseudonymizableDto {
 		Disease.GUINEA_WORM,
 		Disease.LASSA,
 		Disease.POLIO,
-		Disease.CORONAVIRUS,
 		Disease.UNSPECIFIED_VHF,
 		Disease.UNDEFINED,
 		Disease.OTHER })
@@ -297,11 +300,15 @@ public class PersonDto extends PseudonymizableDto {
 	@Valid
 	private LocationDto address;
 
-	@HideForCountries(countries = {CountryHelper.COUNTRY_CODE_GERMANY, CountryHelper.COUNTRY_CODE_FRANCE})
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_GERMANY,
+		CountryHelper.COUNTRY_CODE_FRANCE })
 	private EducationType educationType;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
-	@HideForCountries(countries = {CountryHelper.COUNTRY_CODE_GERMANY, CountryHelper.COUNTRY_CODE_FRANCE})
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_GERMANY,
+		CountryHelper.COUNTRY_CODE_FRANCE })
 	private String educationDetails;
 
 	private OccupationType occupationType;
@@ -313,7 +320,9 @@ public class PersonDto extends PseudonymizableDto {
 	private ArmedForcesRelationType armedForcesRelationType;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
-	@HideForCountries(countries = {CountryHelper.COUNTRY_CODE_GERMANY, CountryHelper.COUNTRY_CODE_FRANCE})
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_GERMANY,
+		CountryHelper.COUNTRY_CODE_FRANCE })
 	private String passportNumber;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
