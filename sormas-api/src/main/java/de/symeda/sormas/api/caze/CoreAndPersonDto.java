@@ -9,20 +9,15 @@ public class CoreAndPersonDto<T extends EntityDto> extends PseudonymizableDto {
 	private PersonDto person;
 	private T coreData;
 
+	public CoreAndPersonDto() {
+	}
+
 	public PersonDto getPerson() {
 		return person;
 	}
 
 	public T getCoreData() {
 		return coreData;
-	}
-
-	public CoreAndPersonDto(PersonDto person, T coreData) {
-		this.person = person;
-		this.coreData = coreData;
-	}
-
-	public CoreAndPersonDto() {
 	}
 
 	public void setPerson(PersonDto person) {

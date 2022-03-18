@@ -93,7 +93,7 @@ public class ContactResource extends EntityDtoResource {
 	}
 
 	@POST
-	@Path("/post")
+	@Path("/pushWithPerson")
 	public CoreAndPersonDto<ContactDto> postContact(@Valid CoreAndPersonDto<ContactDto> dto) {
 		return FacadeProvider.getContactFacade().save(dto);
 

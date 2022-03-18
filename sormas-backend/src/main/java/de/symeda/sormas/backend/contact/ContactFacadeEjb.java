@@ -75,7 +75,6 @@ import de.symeda.sormas.api.caze.CoreAndPersonDto;
 import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactBulkEditData;
-import de.symeda.sormas.api.contact.ContactAndPersonDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -311,13 +310,6 @@ public class ContactFacadeEjb
 
 	@Override
 	public ContactDto save(@Valid @NotNull ContactDto dto) {
-		if (dto instanceof ContactAndPersonDto) {
-			PersonDto newPerson = ((ContactAndPersonDto) dto).getPersonDto();
-			if (newPerson != null) {
-				PersonDto newlyCreatedPersonDto = personFacade.savePerson(newPerson);
-				dto.setPerson(newlyCreatedPersonDto.toReference());
-			}
-		}
 		return save(dto, true, true);
 	}
 

@@ -90,7 +90,7 @@ public class CaseResource extends EntityDtoResource {
 	}
 
 	@POST
-	@Path("/post")
+	@Path("/pushWithPerson")
 	public CoreAndPersonDto<CaseDataDto> postCase(@Valid CoreAndPersonDto<CaseDataDto> dto) {
 		return FacadeProvider.getCaseFacade().save(dto);
 	}
