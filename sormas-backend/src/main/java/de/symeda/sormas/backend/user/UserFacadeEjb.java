@@ -319,6 +319,28 @@ public class UserFacadeEjb implements UserFacade {
 	}
 
 	@Override
+	public List<UserReferenceDto> getUserRefsByDistrict(
+		DistrictReferenceDto districtRef,
+		boolean includeSupervisors,
+		boolean excludeLimitedDiseaseUsers,
+		UserRole... userRoles) {
+		return userService
+			.getReferenceList(
+				null,
+				toUuidList(districtRef),
+				null,
+				includeSupervisors,
+				true,
+				true,
+				null,
+				excludeLimitedDiseaseUsers,
+				Arrays.asList(userRoles))
+			.stream()
+			.map(UserFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
+	}
+
+	@Override
 	public List<UserReferenceDto> getUserRefsByDistricts(
 		List<DistrictReferenceDto> districtRefs,
 		boolean includeSupervisors,

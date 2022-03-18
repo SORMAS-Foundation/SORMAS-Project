@@ -29,6 +29,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -208,7 +209,10 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		}
 
 		ComboBox officerField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.SURVEILLANCE_OFFICER, 140));
-		officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), null, UserRole.SURVEILLANCE_OFFICER));
+
+		Disease selectedDisease = (Disease) getField(CaseIndexDto.DISEASE).getValue();
+		officerField
+			.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), selectedDisease, UserRole.SURVEILLANCE_OFFICER));
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP)) {
 			Field<?> followUpUntilTo = addField(
@@ -496,9 +500,9 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 							pointOfEntryField,
 							FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(newDistrict.getUuid(), true));
 					}
-
-					officerField
-						.addItems(FacadeProvider.getUserFacade().getUserRefsByDistrict(newDistrict, false, null, UserRole.SURVEILLANCE_OFFICER));
+					Disease selectedDisease = (Disease) getField(CaseIndexDto.DISEASE).getValue();
+					officerField.addItems(
+						FacadeProvider.getUserFacade().getUserRefsByDistrict(newDistrict, false, selectedDisease, UserRole.SURVEILLANCE_OFFICER));
 				} else {
 					clearAndDisableFields(communityField, pointOfEntryField, facilityField, facilityTypeField, facilityTypeGroupField);
 
@@ -615,7 +619,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 	}
 
 	private void addOfficers(ComboBox officerField, RegionReferenceDto region) {
-		officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, null, UserRole.SURVEILLANCE_OFFICER));
+		Disease selectedDisease = (Disease) getField(CaseIndexDto.DISEASE).getValue();
+		officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, selectedDisease, UserRole.SURVEILLANCE_OFFICER));
 	}
 
 	@SuppressWarnings("rawtypes")

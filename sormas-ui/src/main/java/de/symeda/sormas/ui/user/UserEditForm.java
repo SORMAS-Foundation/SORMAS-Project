@@ -268,6 +268,16 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         return HTML_LAYOUT;
     }
 
+    @Override
+    public void setValue(UserDto userDto) throws com.vaadin.v7.data.Property.ReadOnlyException, Converter.ConversionException {
+
+        OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
+        userRoles.removeAllItems();
+        userRoles.addItems(UserUiHelper.getAssignableRoles(userDto.getUserRoles()));
+
+        super.setValue(userDto);
+    }
+
     class UserNameValidator implements Validator {
 
         private static final long serialVersionUID = 1L;
@@ -278,15 +288,5 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
             if (!(value instanceof String && ControllerProvider.getUserController().isLoginUnique(dto.getUuid(), (String) value)))
                 throw new InvalidValueException(I18nProperties.getValidationError(Validations.userNameNotUnique));
         }
-    }
-
-    @Override
-    public void setValue(UserDto userDto) throws com.vaadin.v7.data.Property.ReadOnlyException, Converter.ConversionException {
-
-        OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
-        userRoles.removeAllItems();
-        userRoles.addItems(UserUiHelper.getAssignableRoles(userDto.getUserRoles()));
-        
-        super.setValue(userDto);
     }
 }

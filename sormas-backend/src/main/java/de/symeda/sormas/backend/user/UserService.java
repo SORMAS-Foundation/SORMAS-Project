@@ -212,6 +212,27 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		return getReferenceList(regionUuids, districtUuids, communityUuids, includeSupervisors, filterByJurisdiction, activeOnly, null, userRoles);
 	}
 
+	public List<UserReference> getReferenceList(
+		List<String> regionUuids,
+		List<String> districtUuids,
+		List<String> communityUuids,
+		boolean includeSupervisors,
+		boolean filterByJurisdiction,
+		boolean activeOnly,
+		Disease limitedDisease,
+		List<UserRole> userRoles) {
+		return getReferenceList(
+			regionUuids,
+			districtUuids,
+			communityUuids,
+			includeSupervisors,
+			filterByJurisdiction,
+			activeOnly,
+			limitedDisease,
+			false,
+			userRoles);
+	}
+
 	/**
 	 * Loads users filtered by combinable filter conditions.<br />
 	 * Condition combination if parameter is set:<br />
@@ -237,6 +258,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		boolean filterByJurisdiction,
 		boolean activeOnly,
 		Disease limitedDisease,
+		boolean excludeLimitedDiseaseUsers,
 		List<UserRole> userRoles) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -288,6 +310,11 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 			Predicate restrictOtherLimitedDiseaseUsers =
 				cb.or(cb.isNull(userRoot.get(User.LIMITED_DISEASE)), cb.equal(userRoot.get(User.LIMITED_DISEASE), limitedDisease));
 			filter = CriteriaBuilderHelper.and(cb, filter, restrictOtherLimitedDiseaseUsers);
+		}
+
+		//exclude users with limited diseases
+		if (excludeLimitedDiseaseUsers) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(userRoot.get(User.LIMITED_DISEASE)));
 		}
 
 		if (CollectionUtils.isNotEmpty(communityUuids)) {

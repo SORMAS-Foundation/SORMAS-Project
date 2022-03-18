@@ -26,6 +26,7 @@ import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.event.TypeOfPlace;
@@ -122,9 +123,9 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 					FacadeProvider.getFacilityFacade()
 						.getActiveFacilitiesByDistrictAndType(districtDto, (FacilityType) type.getValue(), true, false));
 			}
-
+			Disease caseDisease = getValue().getDisease();
 			List<UserReferenceDto> assignableSurveillanceOfficers =
-				FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, null, UserRole.SURVEILLANCE_OFFICER);
+				FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, caseDisease, UserRole.SURVEILLANCE_OFFICER);
 			FieldHelper.updateItems(officer, assignableSurveillanceOfficers);
 			if (assignableSurveillanceOfficers.size() == 1) {
 				officer.setValue(assignableSurveillanceOfficers.get(0));

@@ -26,7 +26,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -70,11 +69,39 @@ public interface UserFacade {
 	 *            independent from the district
 	 * @param userRoles
 	 *            roles of the users by district
+	 * @param limitedDisease
+	 *            filter users with limited Disease. Users with no limitation are included in list . If null all limited users are also
+	 *            included in list.
 	 * @return
 	 */
-	List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto district, boolean includeSupervisors,  Disease limitedDisease, UserRole... userRoles);
+	List<UserReferenceDto> getUserRefsByDistrict(
+		DistrictReferenceDto district,
+		boolean includeSupervisors,
+		Disease limitedDisease,
+		UserRole... userRoles);
 
-	List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districts, boolean includeSupervisors, Disease limitedDisease, UserRole... userRoles);
+	/**
+	 *
+	 * @param district
+	 * @param includeSupervisors
+	 *            independent from the district
+	 * @param userRoles
+	 *            roles of the users by district
+	 * @param excludeLimitedDiseaseUsers
+	 *            If true no uses with limited disease will be returned , if false all of them will be
+	 * @return
+	 */
+	List<UserReferenceDto> getUserRefsByDistrict(
+		DistrictReferenceDto district,
+		boolean includeSupervisors,
+		boolean excludeLimitedDiseaseUsers,
+		UserRole... userRoles);
+
+	List<UserReferenceDto> getUserRefsByDistricts(
+		List<DistrictReferenceDto> districts,
+		boolean includeSupervisors,
+		Disease limitedDisease,
+		UserRole... userRoles);
 
 	List<UserReferenceDto> getAllUserRefs(boolean includeInactive);
 

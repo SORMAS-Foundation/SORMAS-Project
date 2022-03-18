@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.themes.ValoTheme;
@@ -206,9 +207,18 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 				Arrays.asList(CaseBulkEditData.SURVEILLANCE_OFFICER),
 				Arrays.asList(true),
 				null);
-			List<UserReferenceDto> assignableSurveillanceOfficers =
-				FacadeProvider.getUserFacade().getUserRefsByDistrict(singleSelectedDistrict, false, null, UserRole.SURVEILLANCE_OFFICER);
-			FieldHelper.updateItems(surveillanceOfficer, assignableSurveillanceOfficers);
+			List<Disease> selectedDiseases = this.selectedCases.stream().map(c -> c.getDisease()).collect(Collectors.toList());
+			List<UserReferenceDto> assignableSurveillanceOfficers = null;
+			if (selectedDiseases.size() == 1) {
+				Disease selectedDisease = selectedDiseases.get(0);
+				assignableSurveillanceOfficers = FacadeProvider.getUserFacade()
+					.getUserRefsByDistrict(singleSelectedDistrict, false, selectedDisease, UserRole.SURVEILLANCE_OFFICER);
+				FieldHelper.updateItems(surveillanceOfficer, assignableSurveillanceOfficers);
+			} else {
+				assignableSurveillanceOfficers =
+					FacadeProvider.getUserFacade().getUserRefsByDistrict(singleSelectedDistrict, false, true, UserRole.SURVEILLANCE_OFFICER);
+				FieldHelper.updateItems(surveillanceOfficer, assignableSurveillanceOfficers);
+			}
 
 			surveillanceOfficerCheckBox.addValueChangeListener(e -> {
 				surveillanceOfficer.setEnabled((boolean) e.getProperty().getValue());
