@@ -191,7 +191,6 @@ public class ConfigurationFacilitiesSteps implements En {
       log.error("IOException csvReader: ", e);
     } catch (CsvException e) {
       log.error("CsvException csvReader: ", e);
-      ;
     }
     for (int i = 0; i < r.size(); i++) {
       values = r.get(i);
@@ -228,7 +227,7 @@ public class ConfigurationFacilitiesSteps implements En {
   public static void writeCSVFromPOJOFacilityTab(FacilityCSV facilityData) {
 
     Random random = new Random();
-    uploadFileDirectoryAndName = "/uploads/testFile.csv";
+    uploadFileDirectoryAndName = userDirPath+"/uploads/testFile.csv";
     cityName = faker.harryPotter().location();
     aFacilityName = faker.harryPotter().location() + randomNr;
 
