@@ -19,8 +19,6 @@ import javax.ejb.LocalBean;
 import javax.ejb.SessionContext;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
-import javax.naming.InitialContext;
-import javax.naming.NamingException;
 
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.HasUuid;
