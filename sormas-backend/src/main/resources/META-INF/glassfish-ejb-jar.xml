@@ -78,6 +78,11 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>CASE_RESPONSIBLE</role-name>
+        <group-name>CASE_RESPONSIBLE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>IMMUNIZATION_VIEW</role-name>
         <group-name>IMMUNIZATION_VIEW</group-name>
     </security-role-mapping>
@@ -258,6 +263,11 @@
     </security-role-mapping>
 
     <security-role-mapping>
+        <role-name>CONTACT_RESPONSIBLE</role-name>
+        <group-name>CONTACT_RESPONSIBLE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
         <role-name>MANAGE_EXTERNAL_SYMPTOM_JOURNAL</role-name>
         <group-name>MANAGE_EXTERNAL_SYMPTOM_JOURNAL</group-name>
     </security-role-mapping>
@@ -360,6 +370,11 @@
     <security-role-mapping>
         <role-name>EVENT_DELETE</role-name>
         <group-name>EVENT_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EVENT_RESPONSIBLE</role-name>
+        <group-name>EVENT_RESPONSIBLE</group-name>
     </security-role-mapping>
 
     <security-role-mapping>
@@ -480,6 +495,11 @@
     <security-role-mapping>
         <role-name>PERFORM_BULK_OPERATIONS_CASE_SAMPLES</role-name>
         <group-name>PERFORM_BULK_OPERATIONS_CASE_SAMPLES</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>PERFORM_BULK_OPERATIONS_PSEUDONYM</role-name>
+        <group-name>PERFORM_BULK_OPERATIONS_PSEUDONYM</group-name>
     </security-role-mapping>
 
     <security-role-mapping>
@@ -790,6 +810,11 @@
     <security-role-mapping>
         <role-name>EXTERNAL_VISITS</role-name>
         <group-name>EXTERNAL_VISITS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>DEV_MODE</role-name>
+        <group-name>DEV_MODE</group-name>
     </security-role-mapping>
 
 	<!-- SYSTEM ROLE -->
