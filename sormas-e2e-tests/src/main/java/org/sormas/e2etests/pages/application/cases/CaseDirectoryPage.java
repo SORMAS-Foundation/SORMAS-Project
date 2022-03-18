@@ -141,4 +141,17 @@ public class CaseDirectoryPage {
       By.xpath("//div[contains(@class, 'popupContent')]//tr[@role='row']");
   public static final By SEARCH_BUTTON = By.id("search");
   public static final By EPIDEMIOLOGICAL_DATA_TAB = By.cssSelector("#tab-cases-epidata");
+  public static final By CASE_IMPORT_BUTTON = By.cssSelector("#actionImport");
+  public static final By CASE_EXPORT_BUTTON = By.cssSelector("#export");
+  public static final By CASE_LINE_LISTING_IMPORT_POPUP_BUTTON =
+      By.cssSelector("#importLineListing");
+  public static final By CASE_DETAILED_IMPORT_BUTTON = By.cssSelector("#importDetailed");
+  public static final By CASE_BASIC_EXPORT_BUTTON = By.cssSelector("#exportBasic");
+  public static final By CASE_DETAILED_EXPORT_BUTTON = By.cssSelector("#exportDetailed");
+  public static final By CASE_START_DATA_IMPORT_BUTTON = By.cssSelector("[class='v-button']");
+  public static final By CREATE_NEW_CASE_RADIO_BUTTON =
+      By.xpath("//label[contains(text(),'Create a new case')]");
+  public static final By CASE_CLOSE_BUTTON = By.id("actionCancel");
+  public static final By CLOSE_IMPORT_CASES_BUTTON = By.id("actionCancel");
+  public static final By CASE_IMPORT_SUCCESS = By.xpath("//*[text()='Import successful!']");
 }

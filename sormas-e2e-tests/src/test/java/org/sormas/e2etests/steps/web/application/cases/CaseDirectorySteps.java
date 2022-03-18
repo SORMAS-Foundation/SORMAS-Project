@@ -34,10 +34,17 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASES_WITH_REDUCED_QUARANTINE_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASES_WITH_REINFECTION_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_APPLY_FILTERS_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_BASIC_EXPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_CLASSIFICATION_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_CLOSE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_COMMUNITY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DATA_TYPE_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DAY_FILTER;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DETAILED_COLUMN_HEADERS;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DETAILED_EXPORT_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DETAILED_IMPORT_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DETAILED_TABLE_DATA;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DETAILED_TABLE_ROWS;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DIRECTORY_DETAILED_RADIOBUTTON;
@@ -45,11 +52,15 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DISEASE_VARIANT_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DISPLAY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DISTRICT_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_EXPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_FACILITY_CATEGORY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_FACILITY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_FACILITY_TYPE_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_FOLLOWUP_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_GRID_RESULTS_ROWS;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_IMPORT_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_IMPORT_SUCCESS;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_LINE_LISTING_IMPORT_POPUP_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_MONTH_FILTER;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_ORIGIN_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_OUTCOME_FILTER_COMBOBOX;
@@ -59,9 +70,11 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_REINFECTION_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_REPORTING_USER_FILTER;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_RESET_FILTERS_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_START_DATA_IMPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_SURVOFF_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_VACCINATION_STATUS_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_YEAR_FILTER;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CREATE_NEW_CASE_RADIO_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_FROM_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_TO_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ENTER_BULK_EDIT_MODE;
@@ -83,16 +96,29 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHOW
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.TOTAL_CASES_COUNTER;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getCaseResultsUuidLocator;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CREATE_NEW_PERSON_RADIO_BUTTON;
+import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.CLOSE_DIALOG_BUTTON;
 
 import com.github.javafaker.Faker;
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
+import java.io.File;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
+import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.enums.CaseOutcome;
 import org.sormas.e2etests.enums.DiseasesValues;
@@ -103,9 +129,16 @@ import org.sormas.e2etests.enums.PresentCondition;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.BaseSteps;
+import org.sormas.e2etests.steps.web.application.events.EventsTableColumnsHeaders;
 import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
 
 public class CaseDirectorySteps implements En {
+  public static final String userDirPath = System.getProperty("user.dir");
+  private final WebDriverHelpers webDriverHelpers;
+  private final BaseSteps baseSteps;
+  private final List<String> oldCaseUUIDs = new ArrayList<>();
   Faker faker = new Faker();
 
   @Inject
@@ -114,13 +147,176 @@ public class CaseDirectorySteps implements En {
       DataOperations dataOperations,
       ApiState apiState,
       AssertHelpers assertHelpers,
+      SoftAssert softly,
+      BaseSteps baseSteps,
       Faker faker) {
+    this.webDriverHelpers = webDriverHelpers;
+    this.baseSteps = baseSteps;
 
     When(
         "^I click on the NEW CASE button$",
         () ->
             webDriverHelpers.clickWhileOtherButtonIsDisplayed(
                 NEW_CASE_BUTTON, DATE_OF_REPORT_INPUT));
+    When(
+        "^I click on import button in Case Directory page$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CASE_IMPORT_BUTTON);
+        });
+
+    When(
+        "^I click on export button in Case Directory page$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CASE_EXPORT_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CASE_EXPORT_BUTTON);
+          TimeUnit.SECONDS.sleep(3);
+        });
+
+    // I search case by UUID in Case Directory Page
+    //    And I apply uuid filter for last created via API Person in Case directory page
+    When(
+        "I search case by specific {string} UUID in Case Directory Page",
+        (String uuid) -> {
+          webDriverHelpers.fillInWebElement(CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, uuid);
+        });
+
+    When(
+        "I read the UUIDs of the first four events in Events directory",
+        () -> {
+          List<Map<String, String>> tableRowsData = getTableRowsData();
+          for (int i = 0; i < 4; i++) {
+            String caseUUID =
+                tableRowsData.get(i).get(EventsTableColumnsHeaders.EVENT_ID_HEADER.toString());
+            oldCaseUUIDs.add(caseUUID);
+          }
+        });
+    When(
+        "I click on the {string} button from Import Cases Entries",
+        (String buttonName) -> {
+          switch (buttonName) {
+            case "LINE LISTING IMPORT":
+              webDriverHelpers.clickOnWebElementBySelector(CASE_LINE_LISTING_IMPORT_POPUP_BUTTON);
+              TimeUnit.SECONDS.sleep(3); // should be
+              break;
+            case "DETAILED IMPORT":
+              webDriverHelpers.clickOnWebElementBySelector(CASE_DETAILED_IMPORT_BUTTON);
+              TimeUnit.SECONDS.sleep(3); // should be
+              break;
+          }
+        });
+
+    When(
+        "I click on the {string} button from Export Cases Entries",
+        (String buttonName) -> {
+          switch (buttonName) {
+            case "DETAILED EXPORT":
+              webDriverHelpers.clickOnWebElementBySelector(CASE_DETAILED_EXPORT_BUTTON);
+              TimeUnit.SECONDS.sleep(5);
+              webDriverHelpers.clickOnWebElementBySelector(CLOSE_DIALOG_BUTTON);
+              TimeUnit.SECONDS.sleep(5); // should be
+              break;
+            case "BASIC EXPORT":
+              webDriverHelpers.clickOnWebElementBySelector(CASE_BASIC_EXPORT_BUTTON);
+              TimeUnit.SECONDS.sleep(5);
+              webDriverHelpers.clickOnWebElementBySelector(CLOSE_DIALOG_BUTTON);
+              TimeUnit.SECONDS.sleep(5); // should be
+              break;
+          }
+        });
+    When(
+        "I read the UUIDs of the first four cases in Cases directory",
+        () -> {
+          List<Map<String, String>> tableRowsData = getTableRowsData();
+          for (int i = 0; i < 4; i++) {
+            String eventUUID =
+                tableRowsData.get(i).get(CaseDetailedTableViewHeaders.CASE_ID.toString());
+            oldCaseUUIDs.add(eventUUID);
+          }
+        });
+
+    When(
+        "I delete exported file from Cases Directory",
+        () -> {
+          File toDelete =
+              new File(userDirPath + "\\downloads\\sormas_cases_" + LocalDate.now() + "_.csv");
+          toDelete.deleteOnExit();
+        });
+
+    When(
+        "I select the case entry csv in file picker",
+        () -> {
+          webDriverHelpers.sendFile(
+              FILE_PICKER, userDirPath + "\\downloads\\sormas_cases_" + LocalDate.now() + "_.csv");
+          //          TimeUnit.SECONDS.sleep(3);
+        });
+
+    When(
+        "I click on the {string} button from the Import Cases Entries popup",
+        (String buttonOption) -> {
+          webDriverHelpers.clickWebElementByText(CASE_START_DATA_IMPORT_BUTTON, buttonOption);
+          TimeUnit.SECONDS.sleep(3);
+        });
+
+    When(
+        "I select Create a new Person Radiobutton from the Import Cases Entries popup",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_RADIO_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          TimeUnit.SECONDS.sleep(3);
+        });
+    When(
+        "I check that an import success notification appears in the Import Cases popup",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CASE_IMPORT_SUCCESS);
+        });
+
+    When(
+        "I select Create a new Case Radiobutton from the Import Cases Entries popup",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_CASE_RADIO_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          TimeUnit.SECONDS.sleep(3);
+        });
+
+    When(
+        "I click on Close button from the Import Cases Entries popup",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CASE_CLOSE_BUTTON);
+          TimeUnit.SECONDS.sleep(3);
+        });
+
+    When(
+        "I check that four new cases have appeared in Cases directory",
+        () -> {
+          List<String> casesUUIDs = new ArrayList<>();
+          List<String> casesTitles = new ArrayList<>();
+          List<Map<String, String>> tableRowsData = getTableRowsData();
+          for (int i = 0; i < 4; i++) {
+            String caseUUID =
+                tableRowsData.get(i).get(CaseDetailedTableViewHeaders.CASE_ID.toString());
+            casesUUIDs.add(caseUUID);
+            String caseTitle =
+                tableRowsData.get(i).get(EventsTableColumnsHeaders.TITLE_HEADER.toString());
+            casesTitles.add(caseTitle);
+          }
+          softly.assertTrue(
+              !casesUUIDs.equals(oldCaseUUIDs)
+                  && casesTitles.containsAll(
+                      Arrays.asList(
+                          "Test Import LineListing Case 1",
+                          "Test Import LineListing Case 2",
+                          "Test Import Detail Case 1 üäö",
+                          "Test Import Detail Case 2 üäö")),
+              "The imported cases did not show up correctly in Cases directory.");
+          softly.assertAll();
+        });
+
+    When(
+        "I click on Close button from Import Cases",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CLOSE_DIALOG_BUTTON);
+          TimeUnit.SECONDS.sleep(3);
+        });
 
     When(
         "^I click on Case Line Listing button$",
@@ -712,5 +908,53 @@ public class CaseDirectorySteps implements En {
       replacement = faker.number().numberBetween(min, max);
     }
     return replacement;
+  }
+
+  private List<Map<String, String>> getTableRowsData() {
+    Map<String, Integer> headers = extractColumnHeadersHashMap();
+    List<WebElement> tableRows = getTableRows();
+    List<HashMap<Integer, String>> tableDataList = new ArrayList<>();
+    tableRows.forEach(
+        table -> {
+          HashMap<Integer, String> indexWithData = new HashMap<>();
+          AtomicInteger atomicInt = new AtomicInteger();
+          List<WebElement> tableData = table.findElements(CASE_DETAILED_TABLE_DATA);
+          tableData.forEach(
+              dataText -> {
+                webDriverHelpers.scrollToElementUntilIsVisible(dataText);
+                indexWithData.put(atomicInt.getAndIncrement(), dataText.getText());
+              });
+          tableDataList.add(indexWithData);
+        });
+    List<Map<String, String>> tableObjects = new ArrayList<>();
+    tableDataList.forEach(
+        row -> {
+          ConcurrentHashMap<String, String> objects = new ConcurrentHashMap<>();
+          headers.forEach((headerText, index) -> objects.put(headerText, row.get(index)));
+          tableObjects.add(objects);
+        });
+    return tableObjects;
+  }
+
+  private List<WebElement> getTableRows() {
+    webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CASE_DETAILED_COLUMN_HEADERS);
+    return baseSteps.getDriver().findElements(CASE_DETAILED_TABLE_ROWS);
+  }
+
+  private Map<String, Integer> extractColumnHeadersHashMap() {
+    AtomicInteger atomicInt = new AtomicInteger();
+    HashMap<String, Integer> headerHashmap = new HashMap<>();
+    webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CASE_DETAILED_COLUMN_HEADERS);
+    webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(CASE_DETAILED_COLUMN_HEADERS);
+    webDriverHelpers.scrollToElementUntilIsVisible(CASE_DETAILED_COLUMN_HEADERS);
+    baseSteps
+        .getDriver()
+        .findElements(CASE_DETAILED_COLUMN_HEADERS)
+        .forEach(
+            webElement -> {
+              webDriverHelpers.scrollToElementUntilIsVisible(webElement);
+              headerHashmap.put(webElement.getText(), atomicInt.getAndIncrement());
+            });
+    return headerHashmap;
   }
 }

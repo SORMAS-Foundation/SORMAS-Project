@@ -596,3 +596,24 @@ Feature: Case end to end tests
     Then I click on save case button
     Then I check the created data is correctly displayed on Edit case page
     And I check the created data is correctly displayed on Edit case person page
+
+  @issue=SORDEV-5477 @env_main
+  Scenario: Import Case from csv in Case Directory
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I read the UUIDs of the first four cases in Cases directory
+    Then I search case by specific "V65K55-M3CXQS-4DXG5L-HFXCKGVE" UUID in Case Directory Page
+     And I click APPLY BUTTON in Case Directory Page
+    And I click on export button in Case Directory page
+    And I click on the "DETAILED EXPORT" button from Export Cases Entries
+    Then I click on import button in Case Directory page
+    And I click on the "DETAILED IMPORT" button from Import Cases Entries
+    And I select the case entry csv in file picker
+    And I click on the "START DATA IMPORT" button from the Import Cases Entries popup
+    And I select Create a new Person Radiobutton from the Import Cases Entries popup
+    And I select Create a new Case Radiobutton from the Import Cases Entries popup
+    And I check that an import success notification appears in the Import Cases popup
+    And I click on Close button from the Import Cases Entries popup
+    And I delete exported file from Cases Directory
+  And I click on Close button from Import Cases
+    And I check that four new cases have appeared in Cases directory
