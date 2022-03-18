@@ -170,6 +170,16 @@ public class EditContactsSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_CREATED_POPUP);
           contactUUID = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
         });
+    When(
+        "^I create a new basic contact to export from Cases Contacts tab$",
+        () -> {
+          contact = contactService.buildGeneratedContact();
+          fillFirstName(contact.getFirstName());
+          fillLastName(contact.getLastName());
+          selectSex(contact.getSex());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_CREATED_POPUP);
+        });
 
     Then(
         "I verify that created contact from Case Contacts tab is correctly displayed",
