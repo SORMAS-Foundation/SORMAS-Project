@@ -82,4 +82,6 @@ public class ContactDirectoryPage {
   public static final By DROPPED_BUTTON = By.id("status-Dropped");
   public static final By BULK_ACTIONS_CONTACT_VALUES = By.id("bulkActions-9");
   public static final By NEW_ENTRY_EPIDEMIOLOGICAL_DATA = By.id("actionNewEntry");
+  public static final By FIRST_PERSON_ID = By.xpath("//td[8]//a");
+  public static final By FIRST_ROW = By.xpath("//tr[@role='row']");
 }

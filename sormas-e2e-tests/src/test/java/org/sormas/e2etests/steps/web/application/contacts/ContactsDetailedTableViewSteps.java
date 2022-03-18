@@ -1,6 +1,8 @@
 package org.sormas.e2etests.steps.web.application.contacts;
 
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.*;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.FIRST_ROW;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CONTACT_DATA_TITLE;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
@@ -9,6 +11,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import org.openqa.selenium.WebElement;
@@ -106,6 +109,37 @@ public class ContactsDetailedTableViewSteps implements En {
               environmentManager.getUserByRole(locale, UserRoles.RestUser.getRole()).getUserRole(),
               "Reporting user is not correct");
           softly.assertAll();
+        });
+
+    When(
+        "I check that Person ID column is between Contact Status and First Name of Contact Person columns",
+        () -> {
+          Map<String, Integer> headers = extractColumnHeadersHashMap();
+          Integer investigationStatusKey = headers.get("CONTACT STATUS");
+          Integer personIDKey = headers.get("PERSON ID");
+          Integer firstNameKey = headers.get("FIRST NAME OF CONTACT PERSON");
+          softly.assertTrue(
+              investigationStatusKey == personIDKey - 1 && firstNameKey == personIDKey + 1);
+          softly.assertAll();
+        });
+
+    When(
+        "I click on the first Person ID from Contacts Directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_PERSON_ID);
+        });
+
+    When(
+        "I check that I get navigated to the Edit Contact page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_DATA_TITLE);
+        });
+
+    When(
+        "I double-click on any field in the first row from Contacts Directory that is not Person ID",
+        () -> {
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.doubleClickOnWebElementBySelector(FIRST_ROW);
         });
   }
 

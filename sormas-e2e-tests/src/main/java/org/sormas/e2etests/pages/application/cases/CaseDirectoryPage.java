@@ -141,4 +141,6 @@ public class CaseDirectoryPage {
       By.xpath("//div[contains(@class, 'popupContent')]//tr[@role='row']");
   public static final By SEARCH_BUTTON = By.id("search");
   public static final By EPIDEMIOLOGICAL_DATA_TAB = By.cssSelector("#tab-cases-epidata");
+  public static final By FIRST_PERSON_ID = By.xpath("//td[10]//a");
+  public static final By FIRST_ROW = By.xpath("//tr[@role='row']");
 }

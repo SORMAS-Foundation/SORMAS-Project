@@ -162,4 +162,5 @@ public class EditCasePage {
       By.xpath("//div[@class='v-link v-widget v-caption v-link-v-caption']/a[@href='#!cases']");
   public static final By EDIT_TRAVEL_ENTRY_FROM_CASE_BUTTON =
       By.xpath("//div[@class='v-slot v-slot-s-list']//div[@role='button']");
+  public static final By CASE_DATA_TITLE = By.cssSelector("[location='caseDataHeadingLoc']");
 }

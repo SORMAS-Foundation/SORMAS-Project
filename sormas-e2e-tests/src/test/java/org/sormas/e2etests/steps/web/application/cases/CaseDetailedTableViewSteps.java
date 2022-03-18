@@ -2,6 +2,8 @@ package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_CASES_LIST_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_DATA_TITLE;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PERSON_INFORMATION_TITLE;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static recorders.StepsLogger.PROCESS_ID_STRING;
 
@@ -167,6 +169,42 @@ public class CaseDetailedTableViewSteps implements En {
               checkDateFormatDE(detailedCaseDTableRow, "MELDEDATUM"),
               "Date format is invalid in MELDEDATUM field");
           softly.assertAll();
+        });
+
+    When(
+        "I check that Person ID column is between Investigation Status and First Name columns",
+        () -> {
+          Map<String, Integer> headers = extractColumnHeadersHashMap();
+          Integer investigationStatusKey = headers.get("INVESTIGATION STATUS");
+          Integer personIDKey = headers.get("PERSON ID");
+          Integer firstNameKey = headers.get("FIRST NAME");
+          softly.assertTrue(
+              investigationStatusKey == personIDKey - 1 && firstNameKey == personIDKey + 1);
+          softly.assertAll();
+        });
+
+    When(
+        "I click on the first Person ID from Case Directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_PERSON_ID);
+        });
+
+    When(
+        "I check that I get navigated to the Edit Person page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(PERSON_INFORMATION_TITLE);
+        });
+
+    When(
+        "I check that I get navigated to the Edit Case page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CASE_DATA_TITLE);
+        });
+
+    When(
+        "I double-click on any field in the first row from Case Directory that is not Person ID",
+        () -> {
+          webDriverHelpers.doubleClickOnWebElementBySelector(FIRST_ROW);
         });
   }
 
