@@ -192,6 +192,7 @@ public class CaseDetailedTableViewSteps implements En {
     When(
         "I check that I get navigated to the Edit Person page",
         () -> {
+          TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.clickOnWebElementBySelector(PERSON_INFORMATION_TITLE);
         });
 
