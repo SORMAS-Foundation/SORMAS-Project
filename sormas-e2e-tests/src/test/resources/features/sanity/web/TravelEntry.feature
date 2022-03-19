@@ -33,3 +33,20 @@ Feature: Create travel entries
     When I fill the required fields in a new case travel entry form
     And I click on Save button from the new travel entry form
     Then I check the created data is correctly displayed on Edit case travel entry page for DE version
+
+    @issue=SORDEV-8268 @env_de
+    Scenario: Create a case for a travel entry
+      Given I log in as a National User
+      And I click on the Entries button from navbar
+      And I click on the New Travel Entry button from Travel Entries directory
+      When I fill the required fields in a new travel entry form
+      And I click on Save button from the new travel entry form
+      Then I check the created data is correctly displayed on Edit travel entry page for DE version
+      When I click on new case button for travel entry
+      Then I check if data from travel entry for new case is correct
+      And I save the new case for travel entry
+      Then I check if data in case based on travel entry is correct
+      Then I navigate to epidemiological data tab in Edit case page
+      And I click on edit travel entry button form case epidemiological tab
+      Then I check the created data is correctly displayed on Edit travel entry page for DE version
+      And I check if first and last for case in travel entry is correct

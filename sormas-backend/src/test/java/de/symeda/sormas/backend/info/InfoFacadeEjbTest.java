@@ -86,12 +86,12 @@ public class InfoFacadeEjbTest extends AbstractBeanTest {
 		XSSFWorkbook workbook = new XSSFWorkbook(new File(getInfoFacade().generateDataProtectionDictionary()));
 
 		assertThat(isFieldAdded(workbook, "Person", "Person.nickname"), is(true));
-		assertThat(isFieldAdded(workbook, "Case", "CaseData.epidNumber"), is(true));
+		assertThat(isFieldAdded(workbook, "CaseData", "CaseData.epidNumber"), is(true));
 
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "de");
 		workbook = new XSSFWorkbook(new File(getInfoFacade().generateDataProtectionDictionary()));
 		assertThat(isFieldAdded(workbook, "Person", "Person.nickname"), is(false));
-		assertThat(isFieldAdded(workbook, "Case", "CaseData.epidNumber"), is(false));
+		assertThat(isFieldAdded(workbook, "CaseData", "CaseData.epidNumber"), is(false));
 	}
 
 	private boolean isFieldAdded(XSSFWorkbook dataDictionaryWb, String sheetName, String fieldId) throws IOException, InvalidFormatException {

@@ -158,6 +158,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String DASHBOARD_MAP_MARKER_LIMIT = "dashboardMapMarkerLimit";
 	private static final String AUDITOR_ATTRIBUTE_LOGGING = "auditor.attribute.logging";
 	private static final String AUDIT_LOGGER_CONFIG = "audit.logger.config";
+	private static final String AUDIT_SOURCE_SITE = "audit.source.site";
 
 	private static final String CREATE_DEFAULT_ENTITIES = "createDefaultEntities";
 	private static final String SKIP_DEFAULT_PASSWORD_CHECK = "skipDefaultPasswordCheck";
@@ -689,6 +690,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getAuditLoggerConfig(){
 		return getProperty(AUDIT_LOGGER_CONFIG,"");
+	}
+
+	@Override
+	public String getAuditSourceSite(){
+		return getProperty(AUDIT_SOURCE_SITE,"");
 	}
 
 	@Override

@@ -92,7 +92,8 @@ public class Pseudonymizer extends DtoPseudonymizer {
 
 	private boolean isUserInJurisdiction(User user, User currentUser) {
 
-		if (user.getCalculatedJurisdictionLevel() == JurisdictionLevel.NATION || user.getCalculatedJurisdictionLevel() == JurisdictionLevel.REGION) {
+		JurisdictionLevel jurisdictionLevel = user.getJurisdictionLevel();
+		if (jurisdictionLevel == JurisdictionLevel.NATION || jurisdictionLevel == JurisdictionLevel.REGION) {
 			return true;
 		}
 

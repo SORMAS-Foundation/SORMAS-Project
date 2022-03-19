@@ -45,7 +45,6 @@ public class ContactDirectoryPage {
   public static final By FOLLOW_UP_VISITS_BUTTON =
       By.cssSelector("#contactsViewSwitcher span:nth-child(3)");
   public static final By FROM_INPUT = By.cssSelector("#fromReferenceDateField input");
-  public static final By TO_INPUT = By.cssSelector("#toReferenceDateField input");
   public static final By GRID_HEADERS = By.xpath("//thead//tr//th");
   public static final String RESULTS_GRID_HEADER = "//div[contains(text(), '%s')]";
   public static final By FIRST_CONTACT_ID_BUTTON = By.cssSelector(".v-grid-row-has-data a[title]");

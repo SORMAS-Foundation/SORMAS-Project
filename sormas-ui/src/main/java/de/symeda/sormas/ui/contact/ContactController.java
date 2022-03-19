@@ -22,6 +22,7 @@ import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.ui.utils.NotificationHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,9 +46,11 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
+import de.symeda.sormas.api.contact.ContactBulkEditData;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.contact.ContactIndexDto;
 import de.symeda.sormas.api.contact.ContactRelation;
 import de.symeda.sormas.api.contact.ContactStatus;
@@ -81,6 +84,7 @@ import de.symeda.sormas.ui.epidata.EpiDataForm;
 import de.symeda.sormas.ui.utils.AbstractView;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
@@ -589,38 +593,13 @@ public class ContactController {
 
 		// Initialize 'Archive' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_ARCHIVE)) {
-			boolean archived = FacadeProvider.getContactFacade().isArchived(contact.getUuid());
-			Button archiveButton = ButtonHelper.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {
-				if (editComponent.isModified()) {
-					editComponent.commit();
-				}
-
-				if (archived) {
-					ControllerProvider.getArchiveController()
-						.dearchiveEntity(
-							contact,
-							FacadeProvider.getContactFacade(),
-							Strings.headingDearchiveContact,
-							Strings.confirmationDearchiveContact,
-							Strings.entityContact,
-							Strings.messageContactDearchived,
-							() -> navigateToView(ContactDataView.VIEW_NAME, contact.getUuid(), false));
-				} else {
-					ControllerProvider.getArchiveController()
-						.archiveEntity(
-							contact,
-							FacadeProvider.getContactFacade(),
-							Strings.headingArchiveContact,
-							Strings.confirmationArchiveContact,
-							Strings.entityContact,
-							Strings.messageContactArchived,
-							() -> navigateToView(ContactDataView.VIEW_NAME, contact.getUuid(), false));
-				}
-
-			}, ValoTheme.BUTTON_LINK);
-
-			editComponent.getButtonsPanel().addComponentAsFirst(archiveButton);
-			editComponent.getButtonsPanel().setComponentAlignment(archiveButton, Alignment.BOTTOM_LEFT);
+			ControllerProvider.getArchiveController()
+				.addArchivingButton(
+					contact,
+					FacadeProvider.getContactFacade(),
+					CoreEntityArchiveMessages.CONTACT,
+					editComponent,
+					() -> navigateToView(ContactDataView.VIEW_NAME, contact.getUuid(), false));
 		}
 
 		return editComponent;
@@ -661,28 +640,45 @@ public class ContactController {
 
 		editView.addCommitListener(() -> {
 			ContactBulkEditData updatedBulkEditData = form.getValue();
-			for (ContactIndexDto indexDto : selectedContacts) {
-				ContactDto contactDto = FacadeProvider.getContactFacade().getByUuid(indexDto.getUuid());
-				if (form.getClassificationCheckBox().getValue() == true) {
-					contactDto.setContactClassification(updatedBulkEditData.getContactClassification());
-				}
-				// Setting the contact officer is only allowed if all selected contacts are in the same district
-				if (district != null && form.getContactOfficerCheckBox().getValue() == true) {
-					contactDto.setContactOfficer(updatedBulkEditData.getContactOfficer());
-				}
+			ContactFacade contactFacade = FacadeProvider.getContactFacade();
 
-				FacadeProvider.getContactFacade().save(contactDto);
-			}
+			boolean classificationChange = form.getClassificationCheckBox().getValue();
+			boolean contactOfficerChange = district != null ? form.getContactOfficerCheckBox().getValue() : false;
+
+			int changedContacts = bulkEdit(selectedContacts, updatedBulkEditData, contactFacade, classificationChange, contactOfficerChange);
+
 			popupWindow.close();
 			if (caseUuid == null) {
 				overview();
 			} else {
 				caseContactsOverview(caseUuid);
 			}
-			Notification.show(I18nProperties.getString(Strings.messageContactsEdited), Type.HUMANIZED_MESSAGE);
+
+			if (changedContacts == selectedContacts.size()) {
+				Notification.show(I18nProperties.getString(Strings.messageContactsEdited), Type.HUMANIZED_MESSAGE);
+			} else {
+				NotificationHelper.showNotification(
+					String.format(I18nProperties.getString(Strings.messageContactsEditedExceptArchived), changedContacts),
+					Type.HUMANIZED_MESSAGE,
+					-1);
+			}
 		});
 
 		editView.addDiscardListener(() -> popupWindow.close());
+	}
+
+	private int bulkEdit(
+		Collection<? extends ContactIndexDto> selectedContacts,
+		ContactBulkEditData updatedContactBulkEditData,
+		ContactFacade contactFacade,
+		boolean classificationChange,
+		boolean contactOfficerChange) {
+
+		return contactFacade.saveBulkContacts(
+			selectedContacts.stream().map(ContactIndexDto::getUuid).collect(Collectors.toList()),
+			updatedContactBulkEditData,
+			classificationChange,
+			contactOfficerChange);
 	}
 
 	public void deleteAllSelectedItems(Collection<? extends ContactIndexDto> selectedRows, Runnable callback) {

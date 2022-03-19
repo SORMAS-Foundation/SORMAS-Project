@@ -1,7 +1,7 @@
 @UI @Sanity @Immunization
 Feature: Immunization end to end tests
 
-  @issue=SORDEV-8705 @env_main
+  @issue=SORDEV-8705 @env_main @check
   Scenario:Check a new immunization data
     Given I log in as a Surveillance Officer
     And I click on the Immunizations button from navbar

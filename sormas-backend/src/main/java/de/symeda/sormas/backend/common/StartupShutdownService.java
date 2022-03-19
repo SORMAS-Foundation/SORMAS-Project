@@ -55,6 +55,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import de.symeda.sormas.backend.audit.AuditLogger;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -187,6 +188,7 @@ public class StartupShutdownService {
 
 	@PostConstruct
 	public void startup() {
+		AuditLogger.getInstance().logApplicationStart();
 		checkDatabaseConfig(em);
 
 		logger.info("Initiating automatic database update of main database...");
@@ -862,7 +864,7 @@ public class StartupShutdownService {
 
 	@PreDestroy
 	public void shutdown() {
-
+		AuditLogger.getInstance().logApplicationStop();
 	}
 
 	@LocalBean
