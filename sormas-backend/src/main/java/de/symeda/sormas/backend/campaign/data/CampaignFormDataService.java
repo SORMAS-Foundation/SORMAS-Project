@@ -65,10 +65,12 @@ public class CampaignFormDataService extends AdoServiceWithUserFilter<CampaignFo
 		if (criteria.getCampaign() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(campaignJoin.get(Campaign.UUID), criteria.getCampaign().getUuid()));
 		} else {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(campaignJoin.get(Campaign.ARCHIVED), false), cb.isNull(campaignJoin.get(Campaign.ARCHIVED))));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.or(cb.equal(campaignJoin.get(Campaign.ARCHIVED), false), cb.isNull(campaignJoin.get(Campaign.ARCHIVED))));
 		}
 		if (criteria.getCampaignFormMeta() != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(campaignFormJoin.get(CampaignFormMeta.UUID), criteria.getCampaignFormMeta().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(campaignFormJoin.get(CampaignFormMeta.UUID), criteria.getCampaignFormMeta().getUuid()));
 		}
 		if (criteria.getRegion() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(regionJoin.get(Region.UUID), criteria.getRegion().getUuid()));
@@ -99,7 +101,7 @@ public class CampaignFormDataService extends AdoServiceWithUserFilter<CampaignFo
 
 		Predicate filter = null;
 
-		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (jurisdictionLevel != JurisdictionLevel.NATION) {
 			switch (jurisdictionLevel) {
 			case REGION:
@@ -111,13 +113,15 @@ public class CampaignFormDataService extends AdoServiceWithUserFilter<CampaignFo
 			case DISTRICT:
 				final District district = currentUser.getDistrict();
 				if (district != null) {
-					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(campaignPath.get(CampaignFormData.DISTRICT).get(District.ID), district.getId()));
+					filter = CriteriaBuilderHelper
+						.or(cb, filter, cb.equal(campaignPath.get(CampaignFormData.DISTRICT).get(District.ID), district.getId()));
 				}
 				break;
 			case COMMUNITY:
 				final Community community = currentUser.getCommunity();
 				if (community != null) {
-					filter = CriteriaBuilderHelper.or(cb, filter, cb.equal(campaignPath.get(CampaignFormData.COMMUNITY).get(Community.ID), community.getId()));
+					filter = CriteriaBuilderHelper
+						.or(cb, filter, cb.equal(campaignPath.get(CampaignFormData.COMMUNITY).get(Community.ID), community.getId()));
 				}
 				break;
 			default:

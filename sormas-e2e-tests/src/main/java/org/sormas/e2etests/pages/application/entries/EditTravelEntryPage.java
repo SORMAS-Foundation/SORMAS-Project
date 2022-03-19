@@ -33,4 +33,11 @@ public class EditTravelEntryPage {
   public static final By POINT_OF_ENTRY_COMBOBOX = By.cssSelector("#pointOfEntry div");
   public static final By POINT_OF_ENTRY_DETAILS_INPUT = By.cssSelector("#pointOfEntryDetails");
   public static final By TRAVEL_ENTRY_PERSON_TAB = By.id("tab-travelEntries-person");
+  public static final By CREATE_CASE_FROM_TRAVEL_ENTRY = By.id("travelEntryCreateCase");
+  public static final By SAVE_NEW_CASE_FOR_TRAVEL_ENTRY_POPUP =
+      By.cssSelector(".popupContent #commit");
+  public static final By POINT_OF_ENTRY_CASE = By.xpath("//*[@id='pointOfEntry']/input");
+  public static final By DISEASE_NAME_INPUT = By.cssSelector(".popupContent #diseaseDetails");
+  public static final By TRAVEL_ENTRY_CASE_UUID = By.cssSelector("#caseIdLabel");
+  public static final By CASE_PERSON_NAME = By.xpath("//div[@class='v-slot'][4]//div//div[2]");
 }

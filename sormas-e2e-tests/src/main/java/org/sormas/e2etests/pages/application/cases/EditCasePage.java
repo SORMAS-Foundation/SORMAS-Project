@@ -160,4 +160,6 @@ public class EditCasePage {
   public static final By SAVE_POPUP_CONTENT = By.cssSelector(".popupContent #commit");
   public static final By BACK_TO_THE_CASES_LIST_BUTTON =
       By.xpath("//div[@class='v-link v-widget v-caption v-link-v-caption']/a[@href='#!cases']");
+  public static final By EDIT_TRAVEL_ENTRY_FROM_CASE_BUTTON =
+      By.xpath("//div[@class='v-slot v-slot-s-list']//div[@role='button']");
 }
