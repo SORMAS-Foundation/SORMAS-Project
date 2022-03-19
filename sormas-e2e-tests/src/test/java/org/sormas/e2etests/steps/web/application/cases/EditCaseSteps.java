@@ -49,6 +49,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISTRICT_
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISTRICT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EDIT_SAMPLE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EDIT_TASK_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.EDIT_TRAVEL_ENTRY_FROM_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EPIDEMIOLOGICAL_CONFIRMATION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXTERNAL_ID_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXTERNAL_TOKEN_INPUT;
