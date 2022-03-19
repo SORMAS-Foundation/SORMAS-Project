@@ -197,7 +197,6 @@ public class LineListingLayout extends VerticalLayout {
 			if (UserProvider.getCurrent() != null) {
 				contact.setReportingUser(UserProvider.getCurrent().getUserReference());
 			}
-
 			result.setEntity(contact);
 
 			final PersonDto person;

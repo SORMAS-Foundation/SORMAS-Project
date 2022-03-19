@@ -24,7 +24,6 @@ import java.util.Optional;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.ui.utils.NotificationHelper;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.navigator.Navigator;
@@ -131,12 +130,13 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
-import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
+import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 import de.symeda.sormas.ui.utils.components.automaticdeletion.AutomaticDeletionLabel;
+import de.symeda.sormas.ui.utils.components.linelisting.model.LineDto;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayoutHelper;
 
@@ -1576,7 +1576,7 @@ public class CaseController {
 		UI.getCurrent().addWindow(window);
 	}
 
-	private void saveCasesFromLineListing(LineListingLayout lineListingForm, List<LineListingLayout.CaseLineDto> cases) {
+	private void saveCasesFromLineListing(LineListingLayout lineListingForm, List<LineDto<CaseDataDto>> cases) {
 		try {
 			lineListingForm.validate();
 		} catch (ValidationRuntimeException e) {
@@ -1584,34 +1584,9 @@ public class CaseController {
 			return;
 		}
 
-		for (LineListingLayout.CaseLineDto caseLineDto : cases) {
-			CaseDataDto newCase = CaseDataDto.build(PersonDto.build().toReference(), caseLineDto.getDisease());
-
-			newCase.setDiseaseDetails(caseLineDto.getDiseaseDetails());
-			newCase.setResponsibleRegion(caseLineDto.getRegion());
-			newCase.setResponsibleDistrict(caseLineDto.getDistrict());
-			newCase.setReportDate(DateHelper8.toDate(caseLineDto.getDateOfReport()));
-			newCase.setEpidNumber(caseLineDto.getEpidNumber());
-			newCase.setResponsibleCommunity(caseLineDto.getCommunity());
-			newCase.setFacilityType(caseLineDto.getFacilityType());
-			newCase.setHealthFacility(caseLineDto.getFacility());
-			newCase.setHealthFacilityDetails(caseLineDto.getFacilityDetails());
-
-			if (caseLineDto.getDateOfOnset() != null) {
-				newCase.getSymptoms().setOnsetDate(DateHelper8.toDate(caseLineDto.getDateOfOnset()));
-			}
-
-			newCase.setReportingUser(UserProvider.getCurrent().getUserReference());
-
-			final PersonDto newPerson = PersonDto.build();
-			newPerson.setFirstName(caseLineDto.getPerson().getFirstName());
-			newPerson.setLastName(caseLineDto.getPerson().getLastName());
-			if (caseLineDto.getPerson().getBirthDate() != null) {
-				newPerson.setBirthdateYYYY(caseLineDto.getPerson().getBirthDate().getDateOfBirthYYYY());
-				newPerson.setBirthdateMM(caseLineDto.getPerson().getBirthDate().getDateOfBirthMM());
-				newPerson.setBirthdateDD(caseLineDto.getPerson().getBirthDate().getDateOfBirthDD());
-			}
-			newPerson.setSex(caseLineDto.getPerson().getSex());
+		for (LineDto<CaseDataDto> caseLineDto : cases) {
+			CaseDataDto newCase = caseLineDto.getEntity();
+			PersonDto newPerson = caseLineDto.getPerson();
 
 			ControllerProvider.getPersonController()
 				.selectOrCreatePerson(newPerson, I18nProperties.getString(Strings.infoSelectOrCreatePersonForCase), selectedPerson -> {

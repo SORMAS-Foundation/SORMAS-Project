@@ -35,16 +35,19 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.FieldVisibleAndNotEmptyValidator;
 import de.symeda.sormas.ui.utils.components.linelisting.line.DeleteLineEvent;
 import de.symeda.sormas.ui.utils.components.linelisting.line.LineLayout;
+import de.symeda.sormas.ui.utils.components.linelisting.model.LineDto;
 import de.symeda.sormas.ui.utils.components.linelisting.person.PersonField;
 import de.symeda.sormas.ui.utils.components.linelisting.person.PersonFieldDto;
 import de.symeda.sormas.ui.utils.components.linelisting.section.LineListingSection;
@@ -67,7 +70,7 @@ public class LineListingLayout extends VerticalLayout {
 	private final List<CaseLineLayout> caseLines;
 
 	private final Window window;
-	private Consumer<List<CaseLineDto>> saveCallback;
+	private Consumer<List<LineDto<CaseDataDto>>> saveCallback;
 
 	public LineListingLayout(Window window) {
 
@@ -302,11 +305,46 @@ public class LineListingLayout extends VerticalLayout {
 		}
 	}
 
-	public List<CaseLineDto> getCaseLineDtos() {
-		return caseLines.stream().map(CaseLineLayout::getBean).collect(Collectors.toList());
+	public List<LineDto<CaseDataDto>> getCaseLineDtos() {
+		return caseLines.stream().map(line -> {
+			CaseLineDto caseLineDto = line.getBean();
+			LineDto<CaseDataDto> result = new LineDto<>();
+
+			CaseDataDto caze = CaseDataDto.build(PersonDto.build().toReference(), caseLineDto.getDisease());
+
+			caze.setDiseaseDetails(caseLineDto.getDiseaseDetails());
+			caze.setResponsibleRegion(caseLineDto.getRegion());
+			caze.setResponsibleDistrict(caseLineDto.getDistrict());
+			caze.setReportDate(DateHelper8.toDate(caseLineDto.getDateOfReport()));
+			caze.setEpidNumber(caseLineDto.getEpidNumber());
+			caze.setResponsibleCommunity(caseLineDto.getCommunity());
+			caze.setFacilityType(caseLineDto.getFacilityType());
+			caze.setHealthFacility(caseLineDto.getFacility());
+			caze.setHealthFacilityDetails(caseLineDto.getFacilityDetails());
+			if (caseLineDto.getDateOfOnset() != null) {
+				caze.getSymptoms().setOnsetDate(DateHelper8.toDate(caseLineDto.getDateOfOnset()));
+			}
+			if (UserProvider.getCurrent() != null) {
+				caze.setReportingUser(UserProvider.getCurrent().getUserReference());
+			}
+			result.setEntity(caze);
+
+			final PersonDto person = PersonDto.build();
+			person.setFirstName(caseLineDto.getPerson().getFirstName());
+			person.setLastName(caseLineDto.getPerson().getLastName());
+			if (caseLineDto.getPerson().getBirthDate() != null) {
+				person.setBirthdateYYYY(caseLineDto.getPerson().getBirthDate().getDateOfBirthYYYY());
+				person.setBirthdateMM(caseLineDto.getPerson().getBirthDate().getDateOfBirthMM());
+				person.setBirthdateDD(caseLineDto.getPerson().getBirthDate().getDateOfBirthDD());
+			}
+			person.setSex(caseLineDto.getPerson().getSex());
+			result.setPerson(person);
+
+			return result;
+		}).collect(Collectors.toList());
 	}
 
-	public void setSaveCallback(Consumer<List<CaseLineDto>> saveCallback) {
+	public void setSaveCallback(Consumer<List<LineDto<CaseDataDto>>> saveCallback) {
 		this.saveCallback = saveCallback;
 	}
 
