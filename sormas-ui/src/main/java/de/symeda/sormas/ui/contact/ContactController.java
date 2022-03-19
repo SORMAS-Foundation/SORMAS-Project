@@ -141,10 +141,6 @@ public class ContactController {
 
 		for (LineDto<ContactDto> contactLineDto : contacts) {
 			ContactDto newContact = contactLineDto.getEntity();
-			if (UserProvider.getCurrent() != null) {
-				newContact.setReportingUser(UserProvider.getCurrent().getUserReference());
-			}
-
 			PersonDto newPerson = contactLineDto.getPerson();
 
 			ControllerProvider.getPersonController()
