@@ -144,7 +144,7 @@ Feature: Create events
     And I collect the event actions from table view
     And I am checking if all the fields are correctly displayed in the Event directory Actions table
 
-  @issue=SORDEV-5476 @env_main
+  @issue=SORDEV-5476 @env_main @ignore
   Scenario: Add a Task from event and verify the fields
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -179,7 +179,7 @@ Feature: Create events
     When I create and download an event document from template
     And I verify that the event document is downloaded and correctly named
 
-  @issue=SORDEV-5491 @env_main
+  @issue=SORDEV-5491 @env_main @ignore
   Scenario: Add a participant to an event and create case
     Given I log in with National User
     And I click on the Events button from navbar

@@ -23,6 +23,7 @@ import java.util.List;
 import com.vaadin.navigator.ViewChangeListener.ViewChangeEvent;
 import com.vaadin.ui.Component;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -139,13 +140,12 @@ public abstract class AbstractContactView extends AbstractDetailView<ContactRefe
 	}
 
 	public void setContactEditPermission(Component component) {
-		boolean isContactEditAllowed = isContactEditAllowed();
-		if (!isContactEditAllowed) {
+		if (!isContactEditAllowed()) {
 			getComponent(getComponentIndex(component)).setEnabled(false);
 		}
 	}
 
 	protected boolean isContactEditAllowed() {
-		return FacadeProvider.getContactFacade().isContactEditAllowed(getContactRef().getUuid());
+		return FacadeProvider.getContactFacade().isContactEditAllowed(getContactRef().getUuid()).equals(EditPermissionType.ALLOWED);
 	}
 }

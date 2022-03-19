@@ -378,18 +378,18 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 
-		// persons by LGA
+		// persons by district
 		CriteriaQuery<Person> personsQuery = cb.createQuery(Person.class);
 		Root<Person> personsRoot = personsQuery.from(Person.class);
 		Join<Person, Location> address = personsRoot.join(Person.ADDRESS);
-		Predicate lgaFilter = cb.equal(address.get(Location.DISTRICT), user.getDistrict());
+		Predicate districtFilter = cb.equal(address.get(Location.DISTRICT), user.getDistrict());
 		// date range
 		if (date != null) {
 			Predicate dateFilter = createChangeDateFilter(cb, personsRoot, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
-			lgaFilter = cb.and(lgaFilter, dateFilter);
+			districtFilter = cb.and(districtFilter, dateFilter);
 		}
-		personsQuery.where(lgaFilter);
-		List<Person> lgaResultList = getBatchedQueryResults(cb, personsQuery, personsRoot, batchSize);
+		personsQuery.where(districtFilter);
+		List<Person> districtResultList = getBatchedQueryResults(cb, personsQuery, personsRoot, batchSize);
 
 		// persons by case
 		CriteriaQuery<Person> casePersonsQuery = cb.createQuery(Person.class);
@@ -514,7 +514,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 
 		return Stream
 			.of(
-				lgaResultList,
+				districtResultList,
 				casePersonsResultList,
 				contactPersonsResultList,
 				eventPersonsResultList,

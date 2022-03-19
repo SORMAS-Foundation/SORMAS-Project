@@ -152,7 +152,7 @@ Feature: Contacts end to end tests
     And I open Follow up Visits tab from contact directory
     Then I am validating the From and To dates displayed
 
-  @issue=SORDEV-5490 @env_main
+  @issue=SORDEV-5490 @env_main @ignore
   Scenario: Create a contact and create a case for contact person
     Given I log in with National User
     When I click on the Contacts button from navbar
@@ -290,7 +290,7 @@ Feature: Contacts end to end tests
     And I click checkbox to choose all Contact results on Contact Directory Page
     And I click on Bulk Actions combobox on Contact Directory Page
     And I click on Link to Event from Bulk Actions combobox on Contact Directory Page
-    And I fill Event Id filter with last created EventId on Link to Event form
+    And I fill Event Id filter in Link to Event form with last created via API Event uuid
     And I click first result in grid on Link to Event form
     And I click on SAVE button in Link Event to group form
     And I navigate to the last created through API Event page via URL
