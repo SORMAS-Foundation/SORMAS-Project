@@ -149,9 +149,6 @@ Feature: Contact filter functionality
     And I click APPLY BUTTON in Contact Directory Page
     And I check that number of displayed contact results is 0
     And I apply Contact classification filter to "Bestätigter Kontakt" on Contact Directory Page
-    And I apply Disease of source filter "Cholera" on Contact Directory Page
-    And I click APPLY BUTTON in Contact Directory Page
-    And I check that number of displayed contact results is 0
     And I apply Disease of source filter "COVID-19" on Contact Directory Page
     And I apply Disease variant filter to "B.1.617.3" on Contact Directory Page
     And I click APPLY BUTTON in Contact Directory Page
