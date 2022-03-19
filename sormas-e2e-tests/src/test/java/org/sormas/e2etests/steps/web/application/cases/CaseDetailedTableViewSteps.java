@@ -16,7 +16,6 @@ import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
-import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.WebElement;
@@ -193,7 +192,6 @@ public class CaseDetailedTableViewSteps implements En {
     When(
         "I check that I get navigated to the Edit Person page",
         () -> {
-          TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.clickOnWebElementBySelector(PERSON_INFORMATION_TITLE);
         });
 
