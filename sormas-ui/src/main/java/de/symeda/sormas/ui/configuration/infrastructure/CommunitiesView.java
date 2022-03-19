@@ -36,7 +36,6 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
 import de.symeda.sormas.api.infrastructure.community.CommunityCriteria;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
@@ -254,7 +253,7 @@ public class CommunitiesView extends AbstractConfigurationView {
 				if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(
 						Captions.bulkActions,
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE, selectedItem -> {
+						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchiveInfrastructure), VaadinIcons.ARCHIVE, selectedItem -> {
 							ControllerProvider.getInfrastructureController()
 								.archiveOrDearchiveAllSelectedItems(
 									true,
@@ -267,7 +266,7 @@ public class CommunitiesView extends AbstractConfigurationView {
 										}
 									});
 						}, EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchive), VaadinIcons.ARCHIVE, selectedItem -> {
+						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchiveInfrastructure), VaadinIcons.ARCHIVE, selectedItem -> {
 							ControllerProvider.getInfrastructureController()
 								.archiveOrDearchiveAllSelectedItems(
 									false,

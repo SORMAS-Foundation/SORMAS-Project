@@ -19,6 +19,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -46,7 +47,7 @@ public class EditAssigneeComponentContainer {
 		assigneeComboBox = new ComboBoxWithPlaceholder();
 		assigneeComboBox.setCaption(I18nProperties.getCaption(Captions.LabMessage_assignee));
 		assigneeComboBox.addItems(
-			FacadeProvider.getUserFacade().getUsersByRegionAndRight(UserProvider.getCurrent().getUser().getRegion(), UserRight.LAB_MESSAGES));
+			FacadeProvider.getUserFacade().getUsersByRegionAndRights(UserProvider.getCurrent().getUser().getRegion(), UserRight.LAB_MESSAGES));
 		assigneeComboBox.setNullSelectionAllowed(true);
 		assigneeComboBox.setWidth(300, Sizeable.Unit.PIXELS);
 

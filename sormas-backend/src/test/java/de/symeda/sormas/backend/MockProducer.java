@@ -26,6 +26,7 @@ import static org.mockito.Mockito.withSettings;
 import java.io.File;
 import java.lang.reflect.Field;
 import java.security.Principal;
+import java.util.Hashtable;
 import java.util.Properties;
 
 import javax.ejb.SessionContext;
@@ -36,6 +37,10 @@ import javax.enterprise.inject.Specializes;
 import javax.jms.ConnectionFactory;
 import javax.jms.Topic;
 import javax.mail.Session;
+import javax.naming.Context;
+import javax.naming.InitialContext;
+import javax.naming.NamingException;
+import javax.naming.spi.InitialContextFactory;
 import javax.transaction.UserTransaction;
 
 import de.symeda.sormas.api.utils.InfoProvider;
@@ -46,13 +51,23 @@ import de.symeda.sormas.backend.sormastosormas.access.SormasToSormasDiscoverySer
 import de.symeda.sormas.backend.sormastosormas.crypto.SormasToSormasEncryptionFacadeEjb.SormasToSormasEncryptionFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClient;
 import de.symeda.sormas.backend.sormastosormas.rest.SormasToSormasRestClientProducer;
+import de.symeda.sormas.backend.user.CurrentUserService;
 
 /**
  * Creates mocks for resources needed in bean test / external services.
  * 
  * @author Stefan Kock
  */
-public class MockProducer {
+public class MockProducer implements InitialContextFactory {
+
+	@Override
+	public Context getInitialContext(Hashtable<?, ?> environment) throws NamingException {
+		// this is used to provide the current user to the ADO Listener taking care of updating the last change user
+		CurrentUserService currentUserService = mock(CurrentUserService.class);
+		InitialContext mockCtx = mock(InitialContext.class);
+		when(mockCtx.lookup("java:global/sormas-ear/sormas-backend/CurrentUserService")).thenReturn(currentUserService);
+		return mockCtx;
+	}
 
 	private static final String TMP_PATH = "target/tmp";
 

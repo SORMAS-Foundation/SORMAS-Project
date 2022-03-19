@@ -60,7 +60,6 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_REINFECTION_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_REPORTING_USER_FILTER;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_RESET_FILTERS_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_RESULTS_UUID_LOCATOR;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_SURVOFF_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_VACCINATION_STATUS_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_YEAR_FILTER;
@@ -83,6 +82,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.RESU
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SEARCH_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHOW_MORE_LESS_FILTERS;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.TOTAL_CASES_COUNTER;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getCaseResultsUuidLocator;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
 
 import com.github.javafaker.Faker;
@@ -160,13 +160,11 @@ public class CaseDirectorySteps implements En {
         "I click Enter Bulk Edit Mode on Case directory page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ENTER_BULK_EDIT_MODE);
-          webDriverHelpers.waitForPageLoaded();
         });
     When(
         "I click checkbox to choose all Case results",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ALL_RESULTS_CHECKBOX);
-          webDriverHelpers.waitForPageLoaded();
         });
 
     When(
@@ -187,11 +185,10 @@ public class CaseDirectorySteps implements En {
         "I click on New Event option in Link to Event Form",
         () -> webDriverHelpers.clickOnWebElementBySelector(NEW_EVENT_CHECKBOX));
     And(
-        "I fill Event Id filter with last created EventId on Link to Event form",
+        "I fill Event Id filter in Link to Event form with last created via API Event uuid",
         () -> {
           String eventUuid = apiState.getCreatedEvent().getUuid();
-          webDriverHelpers.fillInWebElement(
-              SEARCH_BUTTON, dataOperations.getPartialUuidFromAssociatedLink(eventUuid));
+          webDriverHelpers.fillInWebElement(SEARCH_BUTTON, eventUuid);
         });
     And(
         "I click first result in grid on Link to Event form",
@@ -222,9 +219,9 @@ public class CaseDirectorySteps implements En {
         () -> {
           String caseUUID = apiState.getCreatedCase().getUuid();
           webDriverHelpers.fillAndSubmitInWebElement(NAME_UUID_EPID_NUMBER_LIKE_INPUT, caseUUID);
-          By caseLocator = By.cssSelector(String.format(CASE_RESULTS_UUID_LOCATOR, caseUUID));
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(caseLocator);
-          webDriverHelpers.clickOnWebElementBySelector(caseLocator);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              getCaseResultsUuidLocator(caseUUID));
+          webDriverHelpers.clickOnWebElementBySelector(getCaseResultsUuidLocator(caseUUID));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
         });
 
@@ -327,20 +324,17 @@ public class CaseDirectorySteps implements En {
                               webDriverHelpers.getTextFromPresentWebElement(TOTAL_CASES_COUNTER))));
         });
     And(
-        "I apply last created api Person Id filter on Case directory page",
+        "I apply uuid filter for last created via API Person in Case directory page",
         () ->
             webDriverHelpers.fillAndSubmitInWebElement(
                 PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT,
-                apiState.getLastCreatedPerson().getFirstName()
-                    + " "
-                    + apiState.getLastCreatedPerson().getLastName()));
+                apiState.getLastCreatedPerson().getUuid()));
     And(
         "I apply Person Id filter to one attached to last created UI Case on Case directory page",
         () ->
             webDriverHelpers.fillAndSubmitInWebElement(
                 PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT,
                 EditCaseSteps.aCase.getFirstName() + " " + EditCaseSteps.aCase.getLastName()));
-
     And(
         "I apply mocked Person Id filter on Case directory page",
         () ->
@@ -444,8 +438,10 @@ public class CaseDirectorySteps implements En {
             webDriverHelpers.selectFromCombobox(CASE_QUARANTINE_FILTER_COMBOBOX, quarantine));
     And(
         "I apply Reinfection filter to {string} on Case directory page",
-        (String reinfection) ->
-            webDriverHelpers.selectFromCombobox(CASE_REINFECTION_FILTER_COMBOBOX, reinfection));
+        (String reinfection) -> {
+          webDriverHelpers.selectFromCombobox(CASE_REINFECTION_FILTER_COMBOBOX, reinfection);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+        });
     And(
         "I apply Date type filter to {string} on Case directory page",
         (String dataType) ->

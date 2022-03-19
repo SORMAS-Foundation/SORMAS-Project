@@ -37,7 +37,7 @@ public final class DirectoryImmunizationJurisdictionPredicateValidator extends P
 
 	@Override
 	protected Predicate isInJurisdiction() {
-		return isInJurisdictionByJurisdictionLevel(user.getCalculatedJurisdictionLevel());
+		return isInJurisdictionByJurisdictionLevel(user.getJurisdictionLevel());
 	}
 
 	@Override

@@ -28,8 +28,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 import com.vaadin.v7.ui.CheckBox;
-
 import com.vaadin.v7.ui.ComboBox;
+
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -107,16 +107,12 @@ public class BulkTaskDataForm extends AbstractEditForm<TaskBulkEditData> {
 		getContent().addComponent(assigneeCheckbox, ASSIGNEE_CHECKBOX);
 		ComboBox assignee = addField(TaskBulkEditData.TASK_ASSIGNEE, ComboBox.class);
 		assignee.setEnabled(false);
-		FieldHelper.addSoftRequiredStyleWhen(
-				getFieldGroup(),
-				assigneeCheckbox,
-				Arrays.asList(TaskBulkEditData.TASK_ASSIGNEE),
-				Arrays.asList(true),
-				null);
+		FieldHelper
+			.addSoftRequiredStyleWhen(getFieldGroup(), assigneeCheckbox, Arrays.asList(TaskBulkEditData.TASK_ASSIGNEE), Arrays.asList(true), null);
 
 		List<UserReferenceDto> users = getUsers();
 		Map<String, Long> userTaskCounts =
-				FacadeProvider.getTaskFacade().getPendingTaskCountPerUser(users.stream().map(ReferenceDto::getUuid).collect(Collectors.toList()));
+			FacadeProvider.getTaskFacade().getPendingTaskCountPerUser(users.stream().map(ReferenceDto::getUuid).collect(Collectors.toList()));
 		for (UserReferenceDto user : users) {
 			assignee.addItem(user);
 			Long userTaskCount = userTaskCounts.get(user.getUuid());
@@ -124,9 +120,10 @@ public class BulkTaskDataForm extends AbstractEditForm<TaskBulkEditData> {
 		}
 
 		assigneeCheckbox.addValueChangeListener(e -> {
-			assignee.setEnabled((boolean) e.getProperty().getValue());
+			boolean changeAssignee = (boolean) e.getProperty().getValue();
+			assignee.setEnabled(changeAssignee);
+			assignee.setRequired(changeAssignee);
 		});
-
 	}
 
 	private List<UserReferenceDto> getUsers() {
@@ -134,7 +131,7 @@ public class BulkTaskDataForm extends AbstractEditForm<TaskBulkEditData> {
 		UserDto userDto = UserProvider.getCurrent().getUser();
 
 		if (district != null) {
-			users.addAll(FacadeProvider.getUserFacade().getUserRefsByDistrict(district, true));
+			users.addAll(FacadeProvider.getUserFacade().getUserRefsByDistrict(district));
 		} else {
 			users.addAll(FacadeProvider.getUserFacade().getAllUserRefs(false));
 		}
@@ -143,7 +140,7 @@ public class BulkTaskDataForm extends AbstractEditForm<TaskBulkEditData> {
 		// For facility users, this checks where the facility is located and considers the district & community of the faciliy the "higher level"
 		// For national users, there is no higher level
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.ASSIGN_TASKS_TO_HIGHER_LEVEL)
-				&& UserRole.getJurisdictionLevel(userDto.getUserRoles()) != JurisdictionLevel.NATION) {
+			&& UserRole.getJurisdictionLevel(userDto.getUserRoles()) != JurisdictionLevel.NATION) {
 
 			List<UserReferenceDto> superordinateUsers = FacadeProvider.getUserFacade().getUsersWithSuperiorJurisdiction(userDto);
 			if (superordinateUsers != null) {

@@ -61,6 +61,16 @@ public enum DiseasesValues {
     return String.valueOf(DiseasesValues.values()[random.nextInt(values().length)].diseaseCaption);
   }
 
+  @SneakyThrows
+  public static String getRandomDiseaseCaptionDifferentThan(String excludedOption) {
+    DiseasesValues[] diseasesValues = DiseasesValues.values();
+    for (DiseasesValues value : diseasesValues) {
+      if (!value.getDiseaseCaption().equalsIgnoreCase(excludedOption))
+        return value.getDiseaseCaption();
+    }
+    throw new Exception("Unable to provide option different than: " + excludedOption);
+  }
+
   /** Returns values used for German UI tests */
   public static String getRandomDiseaseCaptionDE() {
     return String.valueOf(

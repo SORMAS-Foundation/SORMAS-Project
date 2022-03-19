@@ -856,6 +856,12 @@ public class EditCaseSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(NEW_TRAVEL_ENTRY_BUTTON_DE);
         });
+
+    When(
+        "I click on edit travel entry button form case epidemiological tab",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_TRAVEL_ENTRY_FROM_CASE_BUTTON);
+        });
   }
 
   private Case collectCasePersonUuid() {

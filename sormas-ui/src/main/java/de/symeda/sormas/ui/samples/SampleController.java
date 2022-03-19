@@ -319,6 +319,10 @@ public class SampleController {
 				FacadeProvider.getSampleFacade().saveSample(changedDto);
 				SormasUI.refreshView();
 
+				final CaseReferenceDto associatedCase = changedDto.getAssociatedCase();
+				final CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
+				FacadeProvider.getCaseFacade().save(caseDataByUuid);
+
 				if (changedDto.getSpecimenCondition() != originalDto.getSpecimenCondition()
 					&& changedDto.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE
 					&& UserProvider.getCurrent().hasUserRight(UserRight.TASK_CREATE)) {
