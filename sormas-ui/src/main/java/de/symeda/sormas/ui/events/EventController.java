@@ -36,8 +36,6 @@ import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable;
 import com.vaadin.shared.ui.ContentMode;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
@@ -45,7 +43,6 @@ import com.vaadin.ui.TextArea;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -57,6 +54,7 @@ import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventGroupReferenceDto;
 import de.symeda.sormas.api.event.EventIndexDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -82,9 +80,9 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
 import de.symeda.sormas.ui.externalsurveillanceservice.ExternalSurveillanceServiceGateway;
 import de.symeda.sormas.ui.utils.AbstractView;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent.CommitListener;
+import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.NotificationHelper;
@@ -804,38 +802,13 @@ public class EventController {
 
 		// Initialize 'Archive' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENT_ARCHIVE)) {
-			boolean archived = FacadeProvider.getEventFacade().isArchived(eventUuid);
-			Button archiveEventButton = ButtonHelper.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {
-				if (editView.isModified()) {
-					editView.commit();
-				}
-
-				if (archived) {
-					ControllerProvider.getArchiveController()
-						.dearchiveEntity(
-							event,
-							FacadeProvider.getEventFacade(),
-							Strings.headingDearchiveEvent,
-							Strings.confirmationDearchiveEvent,
-							Strings.entityEvent,
-							Strings.messageEventDearchived,
-							() -> navigateToData(event.getUuid()));
-				} else {
-					ControllerProvider.getArchiveController()
-						.archiveEntity(
-							event,
-							FacadeProvider.getEventFacade(),
-							Strings.headingArchiveEvent,
-							Strings.confirmationArchiveEvent,
-							Strings.entityEvent,
-							Strings.messageEventArchived,
-							() -> navigateToData(event.getUuid()));
-				}
-
-			}, ValoTheme.BUTTON_LINK);
-
-			editView.getButtonsPanel().addComponentAsFirst(archiveEventButton);
-			editView.getButtonsPanel().setComponentAlignment(archiveEventButton, Alignment.BOTTOM_LEFT);
+			ControllerProvider.getArchiveController()
+				.addArchivingButton(
+					event,
+					FacadeProvider.getEventFacade(),
+					CoreEntityArchiveMessages.EVENT,
+					editView,
+					() -> navigateToData(event.getUuid()));
 		}
 
 		return editView;
@@ -877,29 +850,51 @@ public class EventController {
 			@Override
 			public void onCommit() {
 				EventDto updatedTempEvent = form.getValue();
-				for (EventIndexDto indexDto : selectedEvents) {
-					EventDto eventDto = FacadeProvider.getEventFacade().getEventByUuid(indexDto.getUuid(), false);
-					if (form.getEventStatusCheckBox().getValue() == true) {
-						eventDto.setEventStatus(updatedTempEvent.getEventStatus());
-					}
 
-					if (form.getEventInvestigationStatusCheckbox().getValue() == true) {
-						eventDto.setEventInvestigationStatus(updatedTempEvent.getEventInvestigationStatus());
-					}
+				EventFacade eventFacade = FacadeProvider.getEventFacade();
+				boolean eventStatusChange = form.getEventStatusCheckBox().getValue();
+				boolean eventInvestigationStatusChange = form.getEventInvestigationStatusCheckbox().getValue();
+				boolean eventManagementStatusChange = form.getEventManagementStatusCheckbox().getValue();
 
-					if (form.getEventManagementStatusCheckbox().getValue() == true) {
-						eventDto.setEventManagementStatus(updatedTempEvent.getEventManagementStatus());
-					}
+				int changedEvents = bulkEdit(
+					selectedEvents,
+					updatedTempEvent,
+					eventFacade,
+					eventStatusChange,
+					eventInvestigationStatusChange,
+					eventManagementStatusChange);
 
-					FacadeProvider.getEventFacade().save(eventDto);
-				}
 				popupWindow.close();
 				navigateToIndex();
-				Notification.show(I18nProperties.getString(Strings.messageEventsEdited), Type.HUMANIZED_MESSAGE);
+
+				if (changedEvents == selectedEvents.size()) {
+					Notification.show(I18nProperties.getString(Strings.messageEventsEdited), Type.HUMANIZED_MESSAGE);
+				} else {
+					NotificationHelper.showNotification(
+						String.format(I18nProperties.getString(Strings.messageEventsEditedExceptArchived), selectedEvents.size(), changedEvents),
+						Type.HUMANIZED_MESSAGE,
+						-1);
+				}
 			}
 		});
 
 		editView.addDiscardListener(() -> popupWindow.close());
+	}
+
+	private int bulkEdit(
+		Collection<? extends EventIndexDto> selectedEvents,
+		EventDto updatedTempEvent,
+		EventFacade eventFacade,
+		boolean eventStatusChange,
+		boolean eventInvestigationStatusChange,
+		boolean eventManagementStatusChange) {
+
+		return eventFacade.saveBulkEvents(
+			selectedEvents.stream().map(EventIndexDto::getUuid).collect(Collectors.toList()),
+			updatedTempEvent,
+			eventStatusChange,
+			eventInvestigationStatusChange,
+			eventManagementStatusChange);
 	}
 
 	public EventDto createNewEvent(Disease disease) {

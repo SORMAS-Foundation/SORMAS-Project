@@ -72,7 +72,7 @@ public class UserRightsFacadeEjb implements UserRightsFacade {
 		}
 
 		try (OutputStream fos = Files.newOutputStream(documentPath)) {
-			generateUserRightsDocument(withDbOverrides ? userRoleConfigFacade.getAllAsMap() : new HashMap<>(0), fos);
+			generateUserRightsDocument(withDbOverrides ? userRoleConfigFacade.getUserRoleRights() : new HashMap<>(0), fos);
 		} catch (IOException e) {
 			Files.deleteIfExists(documentPath);
 			throw e;

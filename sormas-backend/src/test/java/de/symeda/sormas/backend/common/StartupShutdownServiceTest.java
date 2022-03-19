@@ -30,6 +30,7 @@ import javax.persistence.Persistence;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.hamcrest.Matchers;
+import org.junit.Ignore;
 import org.junit.Test;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
@@ -114,6 +115,7 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 		assertContinuousSchemaVersions(StartupShutdownService.AUDIT_SCHEMA);
 	}
 
+	@Ignore
 	@Test
 	public void testHistoryTablesMatch() throws IOException, URISyntaxException {
 

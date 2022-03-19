@@ -15,6 +15,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless
@@ -59,6 +60,10 @@ public class CurrentUserService {
 			userCache.put(currentUsername, currentUser);
 			return currentUser;
 		}
+	}
+
+	public boolean hasUserRight(UserRight userRight) {
+		return context.isCallerInRole(userRight.name());
 	}
 
 	// We need a clean transaction as we do not want call potential entity listeners which would lead to recursion
