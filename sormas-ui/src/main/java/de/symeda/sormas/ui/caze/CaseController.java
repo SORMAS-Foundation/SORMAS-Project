@@ -18,6 +18,7 @@ package de.symeda.sormas.ui.caze;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Objects;
 import java.util.Optional;
@@ -1576,7 +1577,7 @@ public class CaseController {
 		UI.getCurrent().addWindow(window);
 	}
 
-	private void saveCasesFromLineListing(LineListingLayout lineListingForm, List<LineDto<CaseDataDto>> cases) {
+	private void saveCasesFromLineListing(LineListingLayout lineListingForm, LinkedList<LineDto<CaseDataDto>> cases) {
 		try {
 			lineListingForm.validate();
 		} catch (ValidationRuntimeException e) {
@@ -1584,7 +1585,8 @@ public class CaseController {
 			return;
 		}
 
-		for (LineDto<CaseDataDto> caseLineDto : cases) {
+		while (!cases.isEmpty()) {
+			LineDto<CaseDataDto> caseLineDto = cases.pop();
 			CaseDataDto newCase = caseLineDto.getEntity();
 			PersonDto newPerson = caseLineDto.getPerson();
 
@@ -1599,12 +1601,14 @@ public class CaseController {
 								Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
 							}
 						});
+
+						if (cases.isEmpty()) {
+							lineListingForm.closeWindow();
+							ControllerProvider.getCaseController().navigateToIndex();
+						}
 					}
 				}, true);
 		}
-
-		lineListingForm.closeWindow();
-		ControllerProvider.getCaseController().navigateToIndex();
 	}
 
 	public TitleLayout getCaseViewTitleLayout(CaseDataDto caseData) {

@@ -3,6 +3,7 @@ package de.symeda.sormas.ui.caze.components.linelisting;
 import java.io.Serializable;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -70,7 +71,7 @@ public class LineListingLayout extends VerticalLayout {
 	private final List<CaseLineLayout> caseLines;
 
 	private final Window window;
-	private Consumer<List<LineDto<CaseDataDto>>> saveCallback;
+	private Consumer<LinkedList<LineDto<CaseDataDto>>> saveCallback;
 
 	public LineListingLayout(Window window) {
 
@@ -305,7 +306,7 @@ public class LineListingLayout extends VerticalLayout {
 		}
 	}
 
-	public List<LineDto<CaseDataDto>> getCaseLineDtos() {
+	private LinkedList<LineDto<CaseDataDto>> getCaseLineDtos() {
 		return caseLines.stream().map(line -> {
 			CaseLineDto caseLineDto = line.getBean();
 			LineDto<CaseDataDto> result = new LineDto<>();
@@ -341,10 +342,10 @@ public class LineListingLayout extends VerticalLayout {
 			result.setPerson(person);
 
 			return result;
-		}).collect(Collectors.toList());
+		}).collect(Collectors.toCollection(LinkedList::new));
 	}
 
-	public void setSaveCallback(Consumer<List<LineDto<CaseDataDto>>> saveCallback) {
+	public void setSaveCallback(Consumer<LinkedList<LineDto<CaseDataDto>>> saveCallback) {
 		this.saveCallback = saveCallback;
 	}
 

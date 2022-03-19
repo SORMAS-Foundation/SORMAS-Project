@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.contact.components.linelisting.layout;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -51,7 +52,7 @@ public class LineListingLayout extends VerticalLayout {
 	private final LineListingSection lineComponent;
 
 	private final Window window;
-	private Consumer<List<LineDto<ContactDto>>> saveCallback;
+	private Consumer<LinkedList<LineDto<ContactDto>>> saveCallback;
 
 	private LineListingLayout(Window window, SharedInfoField sharedInfoField) {
 
@@ -178,7 +179,7 @@ public class LineListingLayout extends VerticalLayout {
 		}
 	}
 
-	private List<LineDto<ContactDto>> getContactLineDtos() {
+	private LinkedList<LineDto<ContactDto>> getContactLineDtos() {
 		return lines.stream().map(line -> {
 			ContactLineLayoutDto layoutBean = line.getBean();
 			LineDto<ContactDto> result = new LineDto<>();
@@ -216,10 +217,10 @@ public class LineListingLayout extends VerticalLayout {
 			result.setPerson(person);
 
 			return result;
-		}).collect(Collectors.toList());
+		}).collect(Collectors.toCollection(LinkedList::new));
 	}
 
-	public void setSaveCallback(Consumer<List<LineDto<ContactDto>>> saveCallback) {
+	public void setSaveCallback(Consumer<LinkedList<LineDto<ContactDto>>> saveCallback) {
 		this.saveCallback = saveCallback;
 	}
 

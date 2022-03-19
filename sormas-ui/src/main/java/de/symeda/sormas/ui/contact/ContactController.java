@@ -16,6 +16,7 @@
 package de.symeda.sormas.ui.contact;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
@@ -131,7 +132,7 @@ public class ContactController {
 		UI.getCurrent().addWindow(window);
 	}
 
-	private void saveContactsFromLineListing(LineListingLayout lineListingForm, List<LineDto<ContactDto>> contacts) {
+	private void saveContactsFromLineListing(LineListingLayout lineListingForm, LinkedList<LineDto<ContactDto>> contacts) {
 		try {
 			lineListingForm.validate();
 		} catch (ValidationRuntimeException e) {
@@ -139,7 +140,8 @@ public class ContactController {
 			return;
 		}
 
-		for (LineDto<ContactDto> contactLineDto : contacts) {
+		while (!contacts.isEmpty()) {
+			LineDto<ContactDto> contactLineDto = contacts.pop();
 			ContactDto newContact = contactLineDto.getEntity();
 			PersonDto newPerson = contactLineDto.getPerson();
 
@@ -154,12 +156,14 @@ public class ContactController {
 								Notification.show(I18nProperties.getString(Strings.messageContactCreated), Type.ASSISTIVE_NOTIFICATION);
 							}
 						});
+
+						if (contacts.isEmpty()) {
+							lineListingForm.closeWindow();
+							ControllerProvider.getContactController().navigateToIndex();
+						}
 					}
 				}, true);
 		}
-
-		lineListingForm.closeWindow();
-		ControllerProvider.getContactController().navigateToIndex();
 	}
 
 	public void openLineListingWindow(EventDto eventDto, Set<EventParticipantIndexDto> eventParticipantIndexDtos) {
@@ -186,7 +190,7 @@ public class ContactController {
 		UI.getCurrent().addWindow(window);
 	}
 
-	private void saveContactsFromEventParticipantsLineListing(LineListingLayout lineListingForm, List<LineDto<ContactDto>> contacts) {
+	private void saveContactsFromEventParticipantsLineListing(LineListingLayout lineListingForm, LinkedList<LineDto<ContactDto>> contacts) {
 		try {
 			lineListingForm.validate();
 		} catch (ValidationRuntimeException e) {
@@ -194,7 +198,8 @@ public class ContactController {
 			return;
 		}
 
-		for (LineDto<ContactDto> contactLineDto : contacts) {
+		while (!contacts.isEmpty()) {
+			LineDto<ContactDto> contactLineDto = contacts.pop();
 			ContactDto newContact = contactLineDto.getEntity();
 			if (UserProvider.getCurrent() != null) {
 				newContact.setReportingUser(UserProvider.getCurrent().getUserReference());
@@ -208,10 +213,12 @@ public class ContactController {
 					Notification.show(I18nProperties.getString(Strings.messageContactCreated), Type.ASSISTIVE_NOTIFICATION);
 				}
 			});
-		}
 
-		lineListingForm.closeWindow();
-		ControllerProvider.getContactController().navigateToIndex();
+			if (contacts.isEmpty()) {
+				lineListingForm.closeWindow();
+				ControllerProvider.getContactController().navigateToIndex();
+			}
+		}
 	}
 
 	public void create() {
