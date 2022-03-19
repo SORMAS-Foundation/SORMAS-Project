@@ -112,6 +112,7 @@ import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
+import java.text.DecimalFormat;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -140,6 +141,7 @@ public class ContactDirectorySteps implements En {
 
   protected WebDriverHelpers webDriverHelpers;
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+  private final DecimalFormat cf = new DecimalFormat("#.######");
   public static Exposure exposureData;
   public static EpidemiologicalData dataSavedFromCheckbox;
   public static EpidemiologicalData specificCaseData;
@@ -536,6 +538,31 @@ public class ContactDirectorySteps implements En {
         });
 
     When(
+        "I am checking all Location data in Exposure are saved and displayed",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(OPEN_SAVED_EXPOSURE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(OPEN_SAVED_EXPOSURE_BUTTON);
+          Exposure actualLocationData = collectLocationData();
+          System.out.println("From exposure: " + exposureData.getLongitude());
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              actualLocationData,
+              exposureData,
+              List.of(
+                  "continent",
+                  "subcontinent",
+                  "country",
+                  "exposureRegion",
+                  "district",
+                  "community",
+                  "street",
+                  "houseNumber",
+                  "additionalInformation",
+                  "postalCode",
+                  "city",
+                  "areaType"));
+        });
+
+    When(
         "I search after last created contact via API by name and uuid then open",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(APPLY_FILTERS_BUTTON);
@@ -600,6 +627,27 @@ public class ContactDirectorySteps implements En {
     webDriverHelpers.fillInWebElement(GPS_LATITUDE_INPUT, exposureData.getLatitude());
     webDriverHelpers.fillInWebElement(GPS_LONGITUDE_INPUT, exposureData.getLongitude());
     webDriverHelpers.fillInWebElement(GPS_ACCURACY_INPUT, exposureData.getLatLonAccuracy());
+  }
+
+  private Exposure collectLocationData() {
+    return Exposure.builder()
+        .continent(webDriverHelpers.getValueFromCombobox(CONTINENT_COMBOBOX))
+        .subcontinent(webDriverHelpers.getValueFromCombobox(SUBCONTINENT_COMBOBOX))
+        .country(webDriverHelpers.getValueFromCombobox(COUNTRY_COMBOBOX))
+        .exposureRegion(webDriverHelpers.getValueFromCombobox(EXPOSURE_REGION_COMBOBOX))
+        .district(webDriverHelpers.getValueFromCombobox(DISTRICT_COMBOBOX))
+        .community(webDriverHelpers.getValueFromCombobox(COMMUNITY_COMBOBOX))
+        .street(webDriverHelpers.getValueFromWebElement(STREET_INPUT))
+        .houseNumber(webDriverHelpers.getValueFromWebElement(HOUSE_NUMBER_INPUT))
+        .additionalInformation(
+            webDriverHelpers.getValueFromWebElement(ADDITIONAL_INFORMATION_INPUT))
+        .postalCode(webDriverHelpers.getValueFromWebElement(POSTAL_CODE_INPUT))
+        .city(webDriverHelpers.getValueFromWebElement(CITY_INPUT))
+        .areaType(webDriverHelpers.getValueFromCombobox(AREA_TYPE_COMBOBOX))
+        .latitude(webDriverHelpers.getValueFromWebElement(GPS_LATITUDE_INPUT))
+        .longitude(webDriverHelpers.getValueFromWebElement(GPS_LONGITUDE_INPUT))
+        .latLonAccuracy(webDriverHelpers.getValueFromWebElement(GPS_ACCURACY_INPUT))
+        .build();
   }
 
   private void fillExposure(Exposure exposureData) {
