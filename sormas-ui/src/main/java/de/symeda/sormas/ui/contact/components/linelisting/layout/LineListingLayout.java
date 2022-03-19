@@ -35,6 +35,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.components.linelisting.line.DeleteLineEvent;
 import de.symeda.sormas.ui.utils.components.linelisting.line.LineLayout;
+import de.symeda.sormas.ui.utils.components.linelisting.model.LineDto;
 import de.symeda.sormas.ui.utils.components.linelisting.person.PersonFieldDto;
 import de.symeda.sormas.ui.utils.components.linelisting.section.LineListingSection;
 
@@ -49,7 +50,7 @@ public class LineListingLayout extends VerticalLayout {
 	private final LineListingSection lineComponent;
 
 	private final Window window;
-	private Consumer<List<ContactLineDto>> saveCallback;
+	private Consumer<List<LineDto<ContactDto>>> saveCallback;
 
 	private LineListingLayout(Window window, SharedInfoField sharedInfoField) {
 
@@ -176,10 +177,10 @@ public class LineListingLayout extends VerticalLayout {
 		}
 	}
 
-	public List<ContactLineDto> getContactLineDtos() {
+	public List<LineDto<ContactDto>> getContactLineDtos() {
 		return lines.stream().map(line -> {
 			ContactLineLayoutDto layoutBean = line.getBean();
-			ContactLineDto result = new ContactLineDto();
+			LineDto<ContactDto> result = new LineDto<>();
 
 			final ContactDto contact = ContactDto.build();
 			contact.setCaze(sharedInfoField.getValue().getCaze());
@@ -193,7 +194,7 @@ public class LineListingLayout extends VerticalLayout {
 			contact.setContactProximity(layoutBean.getLineField().getTypeOfContact());
 			contact.setRelationToCase(layoutBean.getLineField().getRelationToCase());
 
-			result.setContact(contact);
+			result.setEntity(contact);
 
 			final PersonDto person;
 			if (line.getPerson() != null) {
@@ -215,7 +216,7 @@ public class LineListingLayout extends VerticalLayout {
 		}).collect(Collectors.toList());
 	}
 
-	public void setSaveCallback(Consumer<List<ContactLineDto>> saveCallback) {
+	public void setSaveCallback(Consumer<List<LineDto<ContactDto>>> saveCallback) {
 		this.saveCallback = saveCallback;
 	}
 
@@ -323,30 +324,6 @@ public class LineListingLayout extends VerticalLayout {
 
 		public void setLineField(ContactLineFieldDto lineField) {
 			this.lineField = lineField;
-		}
-	}
-
-	public static class ContactLineDto implements Serializable {
-
-		private static final long serialVersionUID = -4356132050282062118L;
-
-		private ContactDto contact;
-		private PersonDto person;
-
-		public ContactDto getContact() {
-			return contact;
-		}
-
-		public void setContact(ContactDto contact) {
-			this.contact = contact;
-		}
-
-		public PersonDto getPerson() {
-			return person;
-		}
-
-		public void setPerson(PersonDto person) {
-			this.person = person;
 		}
 	}
 }
