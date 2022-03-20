@@ -29,6 +29,7 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
+import de.symeda.sormas.api.caze.Trimester;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -1291,7 +1292,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				c.setAdditionalDetails("Test additional details");
 				c.setFollowUpComment("Test followup comment");
 			});
-		leadCase.setClinicianEmail("mail");
+		leadCase.setPregnant(YesNoUnknown.UNKNOWN);
 		leadCase.getEpiData().setActivityAsCaseDetailsKnown(YesNoUnknown.NO);
 		getCaseFacade().save(leadCase);
 		VisitDto leadVisit = creator.createVisit(leadCase.getDisease(), leadCase.getPerson(), leadCase.getReportDate());
@@ -1318,7 +1319,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				c.setAdditionalDetails("Test other additional details");
 				c.setFollowUpComment("Test other followup comment");
 			});
-		otherCase.setClinicianName("name");
+		otherCase.setCaseIdIsm(12345);
 		CaseReferenceDto otherCaseReference = getCaseFacade().getReferenceByUuid(otherCase.getUuid());
 		ContactDto contact =
 			creator.createContact(otherUserReference, otherUserReference, otherPersonReference, otherCase, new Date(), new Date(), null);
@@ -1402,10 +1403,10 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(leadCase.getDisease(), mergedCase.getDisease());
 
 		// Check 'lead has value, other has not'
-		assertEquals(leadCase.getClinicianEmail(), mergedCase.getClinicianEmail());
+		assertEquals(leadCase.getPregnant(), mergedCase.getPregnant());
 
 		// Check 'lead has no value, other has'
-		assertEquals(otherCase.getClinicianName(), mergedCase.getClinicianName());
+		assertEquals(otherCase.getCaseIdIsm(), mergedCase.getCaseIdIsm());
 
 		PersonDto mergedPerson = getPersonFacade().getPersonByUuid(mergedCase.getPerson().getUuid());
 
@@ -1523,7 +1524,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				c.setAdditionalDetails("Test other additional details");
 				c.setFollowUpComment("Test other followup comment");
 			});
-		aCase.setClinicianName("name");
 
 		aCase.getEpiData().setActivityAsCaseDetailsKnown(YesNoUnknown.YES);
 		final ArrayList<ActivityAsCaseDto> otherActivitiesAsCase = new ArrayList<>();

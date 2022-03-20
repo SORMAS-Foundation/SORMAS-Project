@@ -24,6 +24,7 @@ import java.util.Map;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.Disease;
@@ -60,6 +61,12 @@ public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, C
 	List<ContactListEntryDto> getEntriesList(String personUuid, Integer first, Integer max);
 
 	Page<ContactIndexDto> getIndexPage(ContactCriteria contactCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
+
+	Page<ContactIndexDetailedDto> getIndexDetailedPage(
+		@NotNull ContactCriteria contactCriteria,
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties);
 
 	List<ContactIndexDetailedDto> getIndexDetailedList(
 		ContactCriteria contactCriteria,

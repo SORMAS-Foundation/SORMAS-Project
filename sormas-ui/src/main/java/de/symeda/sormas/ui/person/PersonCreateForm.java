@@ -259,8 +259,10 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 			boolean isChecked = (boolean) e.getProperty().getValue();
 			addressHeader.setVisible(isChecked);
 			homeAddressForm.setVisible(isChecked);
-			homeAddressForm.clear();
 			homeAddressForm.setFacilityFieldsVisible(isChecked, true);
+			if (!isChecked && searchedPerson == null) {
+				homeAddressForm.clear();
+			}
 		});
 	}
 
@@ -302,11 +304,12 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 	public void setPerson(PersonDto person) {
 
 		if (showHomeAddressForm) {
-			enterHomeAddressNow.setEnabled(searchedPerson != null ? false : true);
+			enterHomeAddressNow.setEnabled(searchedPerson == null);
 			if (searchedPerson == null) {
 				homeAddressForm.clear();
 				homeAddressForm.setFacilityFieldsVisible(false, true);
 				homeAddressForm.setVisible(false);
+				enterHomeAddressNow.setValue(person != null && person.getAddress() != null);
 			} else {
 				enterHomeAddressNow.setValue(false);
 			}
