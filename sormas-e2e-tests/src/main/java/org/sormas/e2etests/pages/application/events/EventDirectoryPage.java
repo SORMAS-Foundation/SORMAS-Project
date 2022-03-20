@@ -96,6 +96,11 @@ public class EventDirectoryPage {
   public static final By BULK_ACTIONS_EVENT_DIRECTORY = By.id("bulkActions-2");
   public static final By GROUP_EVENTS_EVENT_DIRECTORY = By.id("bulkActions-7");
   public static final By GROUP_ID_COLUMN = By.xpath("(//td//a)[2]");
+  public static final By IMPORT_BUTTON = By.cssSelector("div#actionImport");
+  public static final By IMPORT_POPUP_BUTTON = By.cssSelector("[class='v-button']");
+  public static final By IMPORT_SUCCESS = By.xpath("//*[text()='Import successful!']");
+  public static final By IMPORT_POPUP_CLOSE_BUTTON = By.cssSelector(".popupContent #actionCancel");
+  public static final By IMPORT_WINDOW_CLOSE_BUTTON = By.cssSelector("[class='v-window-closebox']");
 
   public static By getByEventUuid(String eventUuid) {
     return By.xpath(String.format("//a[@title='%s']", eventUuid));

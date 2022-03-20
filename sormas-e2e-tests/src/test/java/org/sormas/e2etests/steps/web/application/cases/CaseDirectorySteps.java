@@ -82,7 +82,10 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SEAR
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHOW_MORE_LESS_FILTERS;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.TOTAL_CASES_COUNTER;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getCaseResultsUuidLocator;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getResultByIndex;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_CASES_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFERENCE_DEFINITION_TEXT;
 
 import com.github.javafaker.Faker;
 import com.google.common.truth.Truth;
@@ -103,18 +106,26 @@ import org.sormas.e2etests.enums.PresentCondition;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
 
 public class CaseDirectorySteps implements En {
   Faker faker = new Faker();
+  private final WebDriverHelpers webDriverHelpers;
+  private final BaseSteps baseSteps;
 
   @Inject
   public CaseDirectorySteps(
       WebDriverHelpers webDriverHelpers,
+      BaseSteps baseSteps,
       DataOperations dataOperations,
       ApiState apiState,
       AssertHelpers assertHelpers,
+      SoftAssert softly,
       Faker faker) {
+    this.webDriverHelpers = webDriverHelpers;
+    this.baseSteps = baseSteps;
 
     When(
         "^I click on the NEW CASE button$",
@@ -125,6 +136,12 @@ public class CaseDirectorySteps implements En {
     When(
         "^I click on Case Line Listing button$",
         () -> webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_BUTTON));
+
+    When(
+        "^I click Only cases with fulfilled reference definition checkbox in Cases directory additional filters$",
+        () ->
+            webDriverHelpers.clickOnWebElementBySelector(
+                CASES_WITH_FULFILLED_REFERENCE_DEFINITION_CHECKBOX));
 
     When(
         "^I open last created case",
@@ -704,6 +721,23 @@ public class CaseDirectorySteps implements En {
     And(
         "I apply Day filter {string} on Case directory page",
         (String day) -> webDriverHelpers.selectFromCombobox(CASE_DAY_FILTER, day));
+
+    And(
+        "I check that only cases with fulfilled reference definition are being shown in Cases directory",
+        () -> {
+          Integer totalResults =
+              Integer.parseInt(webDriverHelpers.getTextFromPresentWebElement(TOTAL_CASES_COUNTER));
+          for (int i = 0; totalResults > 0 && i < totalResults && i < 5; i++) {
+            By result = getResultByIndex(String.valueOf(i + 1));
+            webDriverHelpers.scrollToElement(result);
+            webDriverHelpers.clickOnWebElementBySelector(result);
+            String caseReference =
+                webDriverHelpers.getValueFromWebElement(REFERENCE_DEFINITION_TEXT);
+            softly.assertEquals(caseReference, "Erf\u00FCllt");
+            webDriverHelpers.clickOnWebElementBySelector(BACK_TO_CASES_BUTTON);
+          }
+          softly.assertAll();
+        });
   }
 
   private Number getRandomNumberForBirthDateDifferentThanCreated(Number created, int min, int max) {

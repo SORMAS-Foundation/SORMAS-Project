@@ -26,6 +26,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_FROM_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_TO_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
+import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_PARTICIPANTS_TAB;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_EVENT_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_TASK_BUTTON;
@@ -58,6 +59,11 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FI
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.GROUP_EVENTS_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.GROUP_ID_COLUMN;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.ID_FIELD_FILTER;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.IMPORT_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.IMPORT_POPUP_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.IMPORT_POPUP_CLOSE_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.IMPORT_SUCCESS;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.IMPORT_WINDOW_CLOSE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LINKED_EVENT_GROUP_ID;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LINK_EVENT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LINK_EVENT_BUTTON_EDIT_PAGE;
@@ -78,6 +84,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -110,6 +117,8 @@ import org.testng.asserts.SoftAssert;
 public class EventDirectorySteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   private final BaseSteps baseSteps;
+  public static final String userDirPath = System.getProperty("user.dir");
+  private final List<String> oldEventUUIDs = new ArrayList<>();
 
   @Inject
   public EventDirectorySteps(
@@ -624,6 +633,72 @@ public class EventDirectorySteps implements En {
                             webDriverHelpers.getTextFromPresentWebElement(TOTAL_EVENTS_COUNTER)),
                         number.intValue(),
                         "Number of displayed cases is not correct")));
+
+    When(
+        "I click on the Import button from Events directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(IMPORT_BUTTON);
+        });
+
+    When(
+        "I select the Event CSV file in the file picker",
+        () -> {
+          webDriverHelpers.sendFile(
+              FILE_PICKER, userDirPath + "/uploads/ImportTestData_Events_INT.csv");
+        });
+
+    When(
+        "I click on the Start Data Import button from Import Events popup",
+        () -> {
+          webDriverHelpers.clickWebElementByText(IMPORT_POPUP_BUTTON, "START DATA IMPORT");
+        });
+
+    When(
+        "I check that an import success notification appears in the Import Events popup",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(IMPORT_SUCCESS);
+        });
+
+    When(
+        "I close the Import Events popups",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(IMPORT_POPUP_CLOSE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(IMPORT_WINDOW_CLOSE_BUTTON);
+        });
+
+    When(
+        "I read the UUIDs of the first four events in Events directory",
+        () -> {
+          List<Map<String, String>> tableRowsData = getTableRowsData();
+          for (int i = 0; i < 4; i++) {
+            String eventUUID =
+                tableRowsData.get(i).get(EventsTableColumnsHeaders.EVENT_ID_HEADER.toString());
+            oldEventUUIDs.add(eventUUID);
+          }
+        });
+
+    When(
+        "I check that four new events have appeared in Events directory",
+        () -> {
+          List<String> eventUUIDs = new ArrayList<>();
+          List<String> eventTitles = new ArrayList<>();
+          List<Map<String, String>> tableRowsData = getTableRowsData();
+          for (int i = 0; i < 4; i++) {
+            String eventUUID =
+                tableRowsData.get(i).get(EventsTableColumnsHeaders.EVENT_ID_HEADER.toString());
+            eventUUIDs.add(eventUUID);
+            String eventTitle =
+                tableRowsData.get(i).get(EventsTableColumnsHeaders.TITLE_HEADER.toString());
+            eventTitles.add(eventTitle);
+          }
+          softly.assertTrue(
+              !eventUUIDs.equals(oldEventUUIDs)
+                  && eventTitles.containsAll(
+                      Arrays.asList(
+                          "ImportEvent1", "ImportEvent2", "ImportEvent3", "ImportEvent4")),
+              "The imported events did not show up correctly in Events directory.");
+          softly.assertAll();
+        });
   }
 
   private List<Map<String, String>> getTableRowsData() {
