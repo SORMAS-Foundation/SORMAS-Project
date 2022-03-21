@@ -13,6 +13,7 @@ import java.util.TimeZone;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
+import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -47,7 +48,7 @@ public class AuditLoggerInterceptor {
 	/**
 	 * Cache to track all classes annotated with @LocalBean. Contained Classes will be skipped for auditing.
 	 */
-	private final static Set<Class<?>> ignoreLocalAnnotatedClasses = ConcurrentHashMap.newKeySet();
+	private final static Set<Class<?>> ignoreLocalAnnotatedClasses = new HashSet<>();
 
 	/**
 	 * Cache to track all classes which should be completely ignored for audit.
@@ -78,16 +79,25 @@ public class AuditLoggerInterceptor {
 		}
 	}
 
+	private static boolean skip;
+
+	@PostConstruct
+	private void setup() {
+		if (configFacade.getAuditSourceSite().equals("")) {
+			skip = true;
+		}
+	}
+
 	@AroundInvoke
 	public Object logAudit(InvocationContext context) throws Exception {
+		if (skip) {
+			return context.proceed();
+		}
+
 		Class<?> target = context.getTarget().getClass();
 
 		if (ignoreAuditClasses.contains(target)) {
 			// ignore certain classes for audit altogether. Statically populated cache.
-			return context.proceed();
-		}
-		// todo change this later, but we need to make it NOP for now. This mus happen after the class check to avoid recursion
-		if (configFacade.getAuditSourceSite().equals("")) {
 			return context.proceed();
 		}
 
