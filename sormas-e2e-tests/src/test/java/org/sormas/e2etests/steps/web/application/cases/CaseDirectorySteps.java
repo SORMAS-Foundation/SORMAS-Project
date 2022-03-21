@@ -217,13 +217,13 @@ public class CaseDirectorySteps implements En {
               CASE_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON);
           TimeUnit.SECONDS.sleep(3); // needed for table refresh
         });
-      When(
-              "I filter by CaseID of last created UI Case on Case directory page",
-              () -> {
-                  webDriverHelpers.fillAndSubmitInWebElement(
-                          CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, EditCaseSteps.aCase.getUuid());
-                  webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_CASE_ID_BUTTON);
-              });
+    When(
+        "I filter by CaseID of last created UI Case on Case directory page",
+        () -> {
+          webDriverHelpers.fillAndSubmitInWebElement(
+              CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, EditCaseSteps.aCase.getUuid());
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_CASE_ID_BUTTON);
+        });
 
     When(
         "^I open the last created Case via API",
