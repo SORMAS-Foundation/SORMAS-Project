@@ -23,6 +23,7 @@ import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RELAT
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_COMMUNITY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_REGION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT;
@@ -33,11 +34,13 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.TYP
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
+import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -58,6 +61,7 @@ public class EditContactsSteps implements En {
   protected Contact contact;
   public static Contact collectedContact;
   protected String contactUUID;
+  public static final String userDirPath = System.getProperty("user.dir");
 
   @Inject
   public EditContactsSteps(
@@ -79,11 +83,68 @@ public class EditContactsSteps implements En {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NEW_CONTACT_BUTTON);
         });
+    When(
+        "I open the Case Contacts tab",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CONTACTS_TAB_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NEW_CONTACT_BUTTON);
+        });
 
     Then(
         "I click on new contact button from Case Contacts tab",
         () -> webDriverHelpers.clickOnWebElementBySelector(NEW_CONTACT_BUTTON));
-
+    And(
+        "I click Export button in Case Contacts Directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CASE_CONTACT_EXPORT));
+    And(
+        "I click on Detailed Export button in Case Contacts Directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DETAILED_EXPORT_CASE_CONTACT_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CLOSE_POPUP_BUTTON);
+          TimeUnit.SECONDS.sleep(5); // time for file to be downloaded
+        });
+    When(
+        "I close popup after export in Case Contacts directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CLOSE_POPUP_BUTTON);
+        });
+    When(
+        "I select the case contact CSV file in the file picker",
+        () -> {
+          TimeUnit.SECONDS.sleep(3);
+          webDriverHelpers.sendFile(
+              FILE_PICKER, userDirPath + "/downloads/sormas_kontakte_" + LocalDate.now() + "_.csv");
+        });
+    When(
+        "I click on the Import button from Case Contacts directory",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(IMPORT_CASE_CONTACTS_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(IMPORT_CASE_CONTACTS_BUTTON);
+        });
+    When(
+        "I click on the {string} button from the Import Case Contacts popup",
+        (String buttonName) -> {
+          webDriverHelpers.clickWebElementByText(IMPORT_POPUP_BUTTON, buttonName);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(COMMIT_BUTTON);
+        });
+    When(
+        "I confirm the save Case Contact Import popup",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(COMMIT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(COMMIT_BUTTON);
+        });
+    When(
+        "I check that an import success notification appears in the Import Case Contact popup",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(IMPORT_SUCCESS);
+        });
+    When(
+        "I delete exported file from Case Contact Directory",
+        () -> {
+          File toDelete =
+              new File(userDirPath + "/downloads/sormas_kontakte_" + LocalDate.now() + "_.csv");
+          toDelete.deleteOnExit();
+        });
     When(
         "^I create a new contact from Cases Contacts tab$",
         () -> {
@@ -109,6 +170,16 @@ public class EditContactsSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_CREATED_POPUP);
           contactUUID = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
+        });
+    When(
+        "^I create a new basic contact to export from Cases Contacts tab$",
+        () -> {
+          contact = contactService.buildGeneratedContact();
+          fillFirstName(contact.getFirstName());
+          fillLastName(contact.getLastName());
+          selectSex(contact.getSex());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_CREATED_POPUP);
         });
 
     Then(
