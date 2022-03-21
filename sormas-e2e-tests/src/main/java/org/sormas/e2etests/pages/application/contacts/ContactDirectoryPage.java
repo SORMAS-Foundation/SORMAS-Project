@@ -83,5 +83,5 @@ public class ContactDirectoryPage {
   public static final By BULK_ACTIONS_CONTACT_VALUES = By.id("bulkActions-9");
   public static final By NEW_ENTRY_EPIDEMIOLOGICAL_DATA = By.id("actionNewEntry");
   public static final By FIRST_PERSON_ID = By.xpath("//td[8]//a");
-  public static final By FIRST_ROW = By.xpath("//td[2]");
+  public static final By FIRST_ROW = By.xpath("//td[3]");
 }
