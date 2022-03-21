@@ -51,11 +51,11 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.EditPermissionType;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -1239,7 +1239,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 			Date earliestSampleDate = null;
 			for (Sample sample : caze.getSamples()) {
-				if (sample.getPathogenTestResult() == PathogenTestResultType.POSITIVE
+				if (!sample.isDeleted()
+					&& sample.getPathogenTestResult() == PathogenTestResultType.POSITIVE
 					&& (earliestSampleDate == null || sample.getSampleDateTime().before(earliestSampleDate))) {
 					earliestSampleDate = sample.getSampleDateTime();
 				}

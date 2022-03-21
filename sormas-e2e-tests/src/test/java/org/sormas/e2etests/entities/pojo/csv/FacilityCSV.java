@@ -16,29 +16,33 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.entities.pojo.web;
+package org.sormas.e2etests.entities.pojo.csv;
 
-import java.time.LocalDate;
-import lombok.AccessLevel;
-import lombok.AllArgsConstructor;
-import lombok.Builder;
-import lombok.NoArgsConstructor;
-import lombok.Value;
+import lombok.*;
 
 @Value
 @AllArgsConstructor
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true, builderClassName = "builder")
-public class TravelEntry {
+public class FacilityCSV {
+
   String uuid;
-  LocalDate reportDate;
-  String disease;
-  String responsibleRegion;
-  String responsibleDistrict;
-  String responsibleCommunity;
-  String pointOfEntry;
-  String pointOfEntryDetails;
-  String firstName;
-  String lastName;
-  String sex;
+  String name;
+  String type;
+  String region;
+  String district;
+  String community;
+  String city;
+  String postalCode;
+  String street;
+  String houseNumber;
+  String additionalInformation;
+  String areaType;
+  String contactPersonFirstName;
+  String contactPersonLastName;
+  String contactPersonPhone;
+  String contactPersonEmail;
+  String latitude;
+  String longitude;
+  String externalID;
 }

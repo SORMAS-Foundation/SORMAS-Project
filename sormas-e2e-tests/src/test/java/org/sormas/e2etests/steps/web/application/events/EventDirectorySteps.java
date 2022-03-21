@@ -26,15 +26,19 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_FROM_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_TO_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
+import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_PARTICIPANTS_TAB;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_EVENT_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.APPLY_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BULK_ACTIONS_EVENT_DIRECTORY;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CLOSE_POPUP_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.COMMIT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CREATED_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CREATE_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.DATE_TYPE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.DETAILED_EXPORT_PARTICIPANT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.ENTER_BULK_EDIT_MODE_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENTS_COLUMN_HEADERS;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENTS_RADIO_BUTTON;
@@ -55,6 +59,7 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EV
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_REGION_COMBOBOX_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_STATUS_FILTER_BUTTONS;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_STATUS_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EXPORT_PARTICIPANT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTERED_EVENT_LINK_EVENT_FORM;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTER_BY_DISEASE;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTER_BY_REPORTING_USER;
@@ -67,6 +72,9 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FI
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.GROUP_EVENTS_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.GROUP_ID_COLUMN;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.ID_FIELD_FILTER;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.IMPORT_PARTICIPANT_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.IMPORT_POPUP_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.IMPORT_SUCCESS;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LINKED_EVENT_GROUP_ID;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LINK_EVENT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LINK_EVENT_BUTTON_EDIT_PAGE;
@@ -83,6 +91,7 @@ import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
+import java.io.File;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
@@ -122,6 +131,7 @@ import org.testng.asserts.SoftAssert;
 public class EventDirectorySteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   private final BaseSteps baseSteps;
+  public static final String userDirPath = System.getProperty("user.dir");
 
   @Inject
   public EventDirectorySteps(
@@ -726,7 +736,63 @@ public class EventDirectorySteps implements En {
     And(
         "I click Create Case for Event Participant",
         () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_CASE_BUTTON));
+    And(
+        "I click Export button in Event Participant Directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(EXPORT_PARTICIPANT_BUTTON));
 
+    And(
+        "I click on Detailed Export button in Event Participant Directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DETAILED_EXPORT_PARTICIPANT_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CLOSE_POPUP_BUTTON);
+          TimeUnit.SECONDS.sleep(5); // time for file to be downloaded
+        });
+    When(
+        "I close popup after export in Event Participant directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CLOSE_POPUP_BUTTON);
+        });
+    When(
+        "I click on the Import button from Event Participants directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(IMPORT_PARTICIPANT_BUTTON);
+        });
+    When(
+        "I select the event participant CSV file in the file picker",
+        () -> {
+          TimeUnit.SECONDS.sleep(3);
+          webDriverHelpers.sendFile(
+              FILE_PICKER,
+              userDirPath + "/downloads/sormas_ereignisteilnehmer_" + LocalDate.now() + "_.csv");
+        });
+    When(
+        "I click on the {string} button from the Import Event Participant popup",
+        (String buttonName) -> {
+          webDriverHelpers.clickWebElementByText(IMPORT_POPUP_BUTTON, buttonName);
+        });
+    When(
+        "I delete exported file from Event Participant Directory",
+        () -> {
+          File toDelete =
+              new File(
+                  userDirPath
+                      + "/downloads/sormas_ereignisteilnehmer_"
+                      + LocalDate.now()
+                      + "_.csv");
+          toDelete.deleteOnExit();
+        });
+    When(
+        "I check that an import success notification appears in the Import Event Participant popup",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(IMPORT_SUCCESS);
+        });
+
+    When(
+        "I confirm the save Event Participant Import popup",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(COMMIT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(COMMIT_BUTTON);
+        });
     Then(
         "I check that number of displayed Event results is {int}",
         (Integer number) ->
