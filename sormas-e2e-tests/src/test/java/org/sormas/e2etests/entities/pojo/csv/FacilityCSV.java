@@ -15,18 +15,34 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
-package org.sormas.e2etests.entities.pojo.api;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
+package org.sormas.e2etests.entities.pojo.csv;
+
 import lombok.*;
-import lombok.extern.jackson.Jacksonized;
 
 @Value
 @AllArgsConstructor
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true, builderClassName = "builder")
-@Jacksonized
-@JsonInclude(JsonInclude.Include.NON_NULL)
-public class ClinicalCourse {
+public class FacilityCSV {
+
   String uuid;
+  String name;
+  String type;
+  String region;
+  String district;
+  String community;
+  String city;
+  String postalCode;
+  String street;
+  String houseNumber;
+  String additionalInformation;
+  String areaType;
+  String contactPersonFirstName;
+  String contactPersonLastName;
+  String contactPersonPhone;
+  String contactPersonEmail;
+  String latitude;
+  String longitude;
+  String externalID;
 }

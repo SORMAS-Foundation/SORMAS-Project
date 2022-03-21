@@ -1899,6 +1899,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		caze.setTherapy(new TherapyDto());
 		caze.setSymptoms(new SymptomsDto());
+		caze.setHealthConditions(new HealthConditionsDto());
 		EpiDataDto epiData = new EpiDataDto();
 		ExposureDto exposure = new ExposureDto();
 		exposure.setExposureType(ExposureType.WORK);

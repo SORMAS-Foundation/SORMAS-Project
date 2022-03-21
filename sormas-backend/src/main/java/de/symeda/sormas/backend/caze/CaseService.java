@@ -1309,7 +1309,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 			Date earliestSampleDate = null;
 			for (Sample sample : caze.getSamples()) {
-				if (sample.getPathogenTestResult() == PathogenTestResultType.POSITIVE
+				if (!sample.isDeleted()
+					&& sample.getPathogenTestResult() == PathogenTestResultType.POSITIVE
 					&& (earliestSampleDate == null || sample.getSampleDateTime().before(earliestSampleDate))) {
 					earliestSampleDate = sample.getSampleDateTime();
 				}

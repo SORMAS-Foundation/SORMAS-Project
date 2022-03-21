@@ -166,6 +166,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		cq.where(filter);
 		cq.select(from.get(Event.UUID));
+		cq.distinct(true);
 
 		return em.createQuery(cq).getResultList();
 	}
