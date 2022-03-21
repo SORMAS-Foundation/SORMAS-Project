@@ -48,9 +48,6 @@ public class EventDirectoryPage {
       By.cssSelector("[id='relevanceStatusFilter'] [class='v-filterselect-button']");
   public static final By FILTER_BY_DISEASE =
       By.cssSelector("[id='disease'] [class='v-filterselect-button']");
-  public static final By EVENT_DISEASE_COMBOBOX =
-      By.xpath(
-          "/html/body/div[1]/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div[1]/div/div/div/div/div/div[1]/div[4]");
   public static final By DISTRICT_COMBOBOX =
       By.cssSelector("[id='district'] [class='v-filterselect-button']");
   public static final By EVENT_SHOW_MORE_FILTERS = By.id("showHideMoreFilters");
