@@ -261,23 +261,6 @@ public class CreateNewTravelEntrySteps implements En {
         });
 
     When(
-        "^I check if pick or create person popup in travel entry is displayed$",
-        () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
-              PICK_OR_CREATE_PERSON_TITLE_DE); // wait for popup
-          String expectedTitle = "Person ausw\u00E4hlen oder erstellen";
-          String checkPopupTitle =
-              webDriverHelpers
-                  .getTextFromWebElement(PICK_OR_CREATE_PERSON_TITLE_DE)
-                  .toLowerCase(Locale.GERMAN);
-          softly.assertEquals(
-              checkPopupTitle,
-              expectedTitle.toLowerCase(Locale.GERMAN),
-              "Wrong popup title for Pick or create person");
-          softly.assertAll();
-        });
-
-    When(
         "^I check Pick an existing case in Pick or create person popup in travel entry$",
         () -> webDriverHelpers.clickOnWebElementBySelector(PICK_A_EXISTING_PERSON_LABEL_DE));
 
@@ -307,7 +290,7 @@ public class CreateNewTravelEntrySteps implements En {
         "^I check if created travel entries are listed in the epidemiological data tab$",
         () -> {
           webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
-              By.xpath("//div[text()='" + entryPoint + "']"));
+              By.xpath("//div[text()='" + travelEntry.getPointOfEntryDetails() + "']"));
           webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
               By.xpath("//div[text()='Automated test dummy description']"));
         });

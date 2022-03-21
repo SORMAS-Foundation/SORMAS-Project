@@ -54,7 +54,6 @@ Feature: Create travel entries
       And I click on the New Travel Entry button from Travel Entries directory
       When I fill the required fields in a new travel entry form for previous created person
       And I click on Save button from the new travel entry form
-      Then I check if pick or create person popup in travel entry is displayed
       Then I check Pick an existing case in Pick or create person popup in travel entry
       And I click confirm button in popup from travel entry
       When I click on new case button for travel entry

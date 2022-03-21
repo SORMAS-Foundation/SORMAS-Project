@@ -57,7 +57,7 @@ public class TravelEntryService {
         .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
         .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
         .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
-        .disease(getRandomDiseaseCaptionDE())
+        .disease("COVID-19")
         .pointOfEntry(getRandomPointOfEntryDE())
         .pointOfEntryDetails("Automated test dummy description")
         .build();
