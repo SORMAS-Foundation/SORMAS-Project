@@ -42,6 +42,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.DATE_RECE
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DATE_RECEIVED_AT_REGION_LEVEL_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DELETE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DELETE_POPUP_YES_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISCARD_BUTTON_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_VARIANT_INPUT;
@@ -54,6 +55,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.EPIDEMIOL
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXTERNAL_ID_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXTERNAL_TOKEN_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXTRA_COMMENT_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.FACILITY_ACTIVITY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.FACILITY_CATEGORY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.FACILITY_HEALTH_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.FACILITY_TYPE_COMBOBOX;

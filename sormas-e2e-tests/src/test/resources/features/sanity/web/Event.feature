@@ -429,6 +429,7 @@ Feature: Create events
     And I sort all rows by Group NAME in Event Group Directory
     And I click on a Export button in Event Group Directory
     And I click on a Basic Export button from Export options in Event Group Directory
+
   @issue=SORDEV-5481 @env_main
   Scenario: Export and import event participant
     Given I log in as a Admin User
