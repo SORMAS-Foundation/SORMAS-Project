@@ -374,7 +374,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	 */
 	public void testGetFollowUpEndDatesContactsOnly() {
 		RDCFEntities rdcfEntities = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcfEntities, UserRole.REST_EXTERNAL_VISITS_USER);
+		UserDto user = creator.createUser(rdcfEntities, UserRole.REST_USER);
 
 		creator.createPerson(); // Person without contact
 		final PersonDto person1 = creator.createPerson();
@@ -461,7 +461,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetFollowUpEndDatesCasesOnly() {
 		RDCFEntities rdcfEntities = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcfEntities, UserRole.REST_EXTERNAL_VISITS_USER);
+		UserDto user = creator.createUser(rdcfEntities, UserRole.REST_USER);
 
 		creator.createPerson(); // Person without contact
 		final PersonDto person1 = creator.createPerson();
@@ -502,7 +502,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetFollowUpEndDatesContactsAndCases() {
 		RDCFEntities rdcfEntities = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcfEntities, UserRole.REST_EXTERNAL_VISITS_USER);
+		UserDto user = creator.createUser(rdcfEntities, UserRole.REST_USER);
 		Date now = new Date();
 
 		final PersonDto person1 = creator.createPerson();
@@ -625,7 +625,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	public void testGetMostRelevantFollowUpStatusByUuid() {
 		RDCFEntities rdcfEntities = creator.createRDCFEntities();
 		PersonDto person = creator.createPerson();
-		UserDto user = creator.createUser(rdcfEntities, UserRole.REST_EXTERNAL_VISITS_USER);
+		UserDto user = creator.createUser(rdcfEntities, UserRole.REST_USER);
 
 		ContactDto contact1 = creator.createContact(user.toReference(), person.toReference());
 
@@ -723,7 +723,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetExportList() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, UserRole.REST_EXTERNAL_VISITS_USER);
+		UserDto user = creator.createUser(rdcf, UserRole.REST_USER);
 
 		PersonDto casePerson = creator.createPerson("Test Fname", "Test Lname", p -> {
 			p.setBirthdateYYYY(1999);

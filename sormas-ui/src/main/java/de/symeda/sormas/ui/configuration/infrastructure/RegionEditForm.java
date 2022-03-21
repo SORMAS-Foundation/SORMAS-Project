@@ -39,10 +39,10 @@ public class RegionEditForm extends AbstractEditForm<RegionDto> {
 
 	//@formatter:off
 	private static final String HTML_LAYOUT = 
-			fluidRowLocs(RegionDto.NAME, RegionDto.EPID_CODE) +
-					fluidRowLocs(RegionDto.COUNTRY) +
-					fluidRowLocs(RegionDto.AREA) +
-					fluidRowLocs(RegionDto.EXTERNAL_ID);
+			fluidRowLocs(RegionDto.NAME, RegionDto.EXTERNAL_ID) +
+			//		fluidRowLocs(RegionDto.COUNTRY) +
+					fluidRowLocs(RegionDto.AREA);
+				//	fluidRowLocs(RegionDto.EPID_CODEp);
 			//+ fluidRowLocs(RegionDto.GROWTH_RATE);
 	//@formatter:on
 
@@ -74,33 +74,34 @@ public class RegionEditForm extends AbstractEditForm<RegionDto> {
 		}
 
 		addField(RegionDto.NAME, TextField.class);
-		addField(RegionDto.EPID_CODE, TextField.class);
-		ComboBox country = addInfrastructureField(RegionDto.COUNTRY);
-		ComboBox area = addInfrastructureField(RegionDto.AREA);
 		addField(RegionDto.EXTERNAL_ID, TextField.class);
+		//addField(RegionDto.EPID_CODE, TextField.class);
+		//ComboBox country = addInfrastructureField(RegionDto.COUNTRY);
+		ComboBox area = addInfrastructureField(RegionDto.AREA);
+	//	addField(RegionDto.EXTERNAL_ID, TextField.class);
 //		TextField growthRate = addField(RegionDto.GROWTH_RATE, TextField.class);
 //		growthRate.setConverter(new StringToFloatConverter());
 //		growthRate.setConversionError(I18nProperties.getValidationError(Validations.onlyDecimalNumbersAllowed, growthRate.getCaption()));
 
 		initializeVisibilitiesAndAllowedVisibilities();
 
-		setRequired(true, RegionDto.NAME, RegionDto.EPID_CODE);
+		setRequired(true, RegionDto.NAME, RegionDto.EXTERNAL_ID);
 
-		country.addItems(FacadeProvider.getCountryFacade().getAllActiveAsReference());
+	//	country.addItems(FacadeProvider.getCountryFacade().getAllActiveAsReference());
 
 		area.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
-		FieldHelper.setVisibleWhen(
-			country,
-			Collections.singletonList(area),
-			Arrays.asList(null, FacadeProvider.getCountryFacade().getServerCountry()),
-			true);
+	//	FieldHelper.setVisibleWhen(
+		//	country,
+		//	Collections.singletonList(area),
+		//	Arrays.asList(null, FacadeProvider.getCountryFacade().getServerCountry()),
+		//	true);
 	}
 
 	@Override
 	public void setValue(RegionDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
 
-		getField(RegionDto.COUNTRY).setReadOnly(newFieldValue.getCountry() != null);
+	//	getField(RegionDto.COUNTRY).setReadOnly(newFieldValue.getCountry() != null);
 	}
 
 	@Override

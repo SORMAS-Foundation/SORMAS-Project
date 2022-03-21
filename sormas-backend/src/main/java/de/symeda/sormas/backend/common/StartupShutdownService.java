@@ -514,7 +514,7 @@ public class StartupShutdownService {
 			rnd.nextBytes(pwd);
 
 			createOrUpdateDefaultUser(
-				Collections.singleton(UserRole.SORMAS_TO_SORMAS_CLIENT),
+				Collections.singleton(UserRole.REST_USER),//, UserRole.REST_EXTERNAL_VISITS_USER
 				DefaultEntityHelper.SORMAS_TO_SORMAS_USER_NAME,
 				new String(pwd),
 				"Sormas to Sormas",
@@ -531,7 +531,7 @@ public class StartupShutdownService {
 		}
 
 		createOrUpdateDefaultUser(
-			new HashSet<>(Arrays.asList(UserRole.REST_USER, UserRole.REST_EXTERNAL_VISITS_USER)),
+			new HashSet<>(Arrays.asList(UserRole.REST_USER)),//, UserRole.REST_EXTERNAL_VISITS_USER
 			userConfig.getUsername(),
 			userConfig.getPassword(),
 			"Symptom",
@@ -547,7 +547,7 @@ public class StartupShutdownService {
 		}
 
 		createOrUpdateDefaultUser(
-			new HashSet<>(Arrays.asList(UserRole.REST_USER, UserRole.REST_EXTERNAL_VISITS_USER)),
+			new HashSet<>(Arrays.asList(UserRole.REST_USER)),//, UserRole.REST_EXTERNAL_VISITS_USER
 			userConfig.getUsername(),
 			userConfig.getPassword(),
 			"Patient",

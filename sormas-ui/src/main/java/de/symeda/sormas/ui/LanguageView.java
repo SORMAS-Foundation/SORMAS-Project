@@ -106,6 +106,7 @@ public class LanguageView extends VerticalLayout implements View {
 				.getUserSettingsComponent(() -> window.close());
 
 		window.setContent(component);
+		window.addCloseListener(event -> UI.getCurrent().getPage().setLocation("/sormas-ui"));
 		UI.getCurrent().addWindow(window);
 	}
 }

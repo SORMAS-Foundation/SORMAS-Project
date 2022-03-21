@@ -28,6 +28,7 @@ import com.vaadin.shared.data.sort.SortDirection;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.infrastructure.district.DistrictIndexDto;
 import de.symeda.sormas.api.infrastructure.region.RegionCriteria;
 import de.symeda.sormas.api.infrastructure.region.RegionIndexDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -36,6 +37,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class RegionsGrid extends FilteredGrid<RegionIndexDto, RegionCriteria> {
@@ -66,7 +68,7 @@ public class RegionsGrid extends FilteredGrid<RegionIndexDto, RegionCriteria> {
 		columns = ArrayUtils.addAll(
 			columns,
 			RegionIndexDto.AREA,
-			RegionIndexDto.EPID_CODE,
+			//RegionIndexDto.EPID_CODE,
 			RegionIndexDto.EXTERNAL_ID,
 			RegionIndexDto.POPULATION,
 			RegionIndexDto.GROWTH_RATE);
@@ -80,7 +82,13 @@ public class RegionsGrid extends FilteredGrid<RegionIndexDto, RegionCriteria> {
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			addEditColumn(e -> ControllerProvider.getInfrastructureController().editRegion(e.getUuid()));
+			addItemClickListener(new ShowDetailsListener<>(RegionIndexDto.NAME,e -> ControllerProvider.getInfrastructureController().editRegion(e.getUuid())));
+			addItemClickListener(new ShowDetailsListener<>(RegionIndexDto.AREA, e -> ControllerProvider.getInfrastructureController().editRegion(e.getUuid())));
+			addItemClickListener(new ShowDetailsListener<>(RegionIndexDto.EXTERNAL_ID, e -> ControllerProvider.getInfrastructureController().editRegion(e.getUuid())));
+			addItemClickListener(new ShowDetailsListener<>(RegionIndexDto.POPULATION, e -> ControllerProvider.getInfrastructureController().editRegion(e.getUuid())));
+			addItemClickListener(new ShowDetailsListener<>(RegionIndexDto.GROWTH_RATE, e -> ControllerProvider.getInfrastructureController().editRegion(e.getUuid())));
+			
+			//addEditColumn(e -> ControllerProvider.getInfrastructureController().editRegion(e.getUuid()));
 		}
 
 		for (Column<?, ?> column : getColumns()) {

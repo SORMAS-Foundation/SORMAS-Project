@@ -66,6 +66,7 @@ $editor-raised-background-color: lighten($editor-background-color, 10%) !default
 $editor-caption-font-color: valo-font-color($editor-background-color, 0.5) !default;
 
 @import "global.scss";
+
 @import "deprecated.scss";
 @import "bootstrap-grid.scss";
 

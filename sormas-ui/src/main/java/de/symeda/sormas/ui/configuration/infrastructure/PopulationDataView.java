@@ -34,8 +34,9 @@ public class PopulationDataView extends AbstractConfigurationView {
 		CssStyles.style(layout, CssStyles.VSPACE_TOP_1);
 
 		Label lblIntroduction = new Label(I18nProperties.getString(Strings.infoPopulationDataView));
-		CssStyles.style(lblIntroduction, CssStyles.VSPACE_2);
+		CssStyles.style(lblIntroduction, CssStyles.VSPACE_2, "v-wrapper-apmis");
 		layout.addComponent(lblIntroduction);
+		
 		layout.setComponentAlignment(lblIntroduction, Alignment.MIDDLE_CENTER);
 
 		Button btnImport = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {

@@ -110,6 +110,6 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 
 		return context.notifyContainerAboutLogin(
 			() -> DefaultEntityHelper.SORMAS_TO_SORMAS_USER_NAME,
-			new HashSet<>(Collections.singletonList(UserRole.SORMAS_TO_SORMAS_CLIENT.name())));
+			new HashSet<>(Collections.singletonList(UserRole.REST_USER.name())));
 	}
 }
