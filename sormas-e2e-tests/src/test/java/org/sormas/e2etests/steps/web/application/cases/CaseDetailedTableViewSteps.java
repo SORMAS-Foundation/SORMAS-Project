@@ -15,6 +15,7 @@ import java.time.LocalDate;
 import java.time.ZoneId;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
@@ -206,8 +207,9 @@ public class CaseDetailedTableViewSteps implements En {
         "I double-click on any field in the first row from Case Directory that is not Person ID",
         () -> {
           if (webDriverHelpers.isElementVisibleWithTimeout(
-              By.xpath("//*[contains(text(),'Confirm navigation')]"), 5)) {
+              By.xpath("[contains(text(),'Confirm navigation')]"), 5)) {
             webDriverHelpers.clickOnWebElementBySelector(By.id("actionCancel"));
+            TimeUnit.SECONDS.sleep(2);
           }
           webDriverHelpers.doubleClickOnWebElementBySelector(FIRST_ROW);
         });
