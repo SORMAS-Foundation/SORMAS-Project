@@ -56,6 +56,7 @@ import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
+import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditionsMapper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -512,6 +513,11 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 			Vaccination vaccination = new Vaccination();
 			vaccination.setUuid(DataHelper.createUuid());
 			vaccination = fillOrBuildEntity(vaccinationDto, vaccination, false);
+
+			HealthConditions healthConditions = new HealthConditions();
+			healthConditions.setUuid(DataHelper.createUuid());
+			healthConditions = healthConditionsMapper.fillOrBuildEntity(vaccinationDto.getHealthConditions(), healthConditions, false);
+			vaccination.setHealthConditions(healthConditions);
 
 			vaccination.setImmunization(newImmunization);
 			vaccinationEntities.add(vaccination);

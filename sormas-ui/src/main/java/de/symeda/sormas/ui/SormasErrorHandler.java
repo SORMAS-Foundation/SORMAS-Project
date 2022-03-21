@@ -22,6 +22,7 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.exception.ExceptionUtils;
+import org.omg.CORBA.NO_PERMISSION;
 import org.omg.CORBA.SystemException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -116,7 +117,6 @@ public class SormasErrorHandler implements ErrorHandler {
 	 */
 	public static ErrorMessage getErrorMessageForException(Throwable t) {
 
-		t.printStackTrace();
 		//return AbstractErrorMessage.getErrorMessageForException(t)
 		if (null == t) {
 			return null;
@@ -165,6 +165,9 @@ public class SormasErrorHandler implements ErrorHandler {
 				}
 
 				return error;
+
+			} else if(rootCause instanceof NO_PERMISSION){
+				return new LocalUserError(I18nProperties.getString(Strings.errorForbidden), ContentMode.TEXT, ErrorLevel.ERROR);
 			} else {
 				String message = t.getMessage();
 				if (message == null) {

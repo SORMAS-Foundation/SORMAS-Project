@@ -36,6 +36,7 @@ public class CaseDirectoryPage {
       By.cssSelector("div.v-grid-tablewrapper tbody tr");
   public static final By FIRST_CASE_ID_BUTTON = By.cssSelector(".v-grid-row-has-data a[title]");
   public static final By NAME_UUID_EPID_NUMBER_LIKE_INPUT = By.cssSelector("input#caseLike");
+  public static final By EPI_DATA_TAB = By.id("tab-cases-epidata");
   public static final By PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT =
       By.cssSelector("#personLike");
   public static final By CASE_OUTCOME_FILTER_COMBOBOX =
@@ -140,5 +141,6 @@ public class CaseDirectoryPage {
   public static final By FIRST_RESULT_IN_GRID =
       By.xpath("//div[contains(@class, 'popupContent')]//tr[@role='row']");
   public static final By SEARCH_BUTTON = By.id("search");
+  public static final By CASE_EPIDEMIOLOGICAL_DATA_TAB = By.cssSelector("#tab-cases-epidata");
   public static final By EPIDEMIOLOGICAL_DATA_TAB = By.cssSelector("#tab-cases-epidata");
 }
