@@ -121,6 +121,7 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
+import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -137,6 +138,7 @@ import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.TaskService;
@@ -191,6 +193,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	@EJB
 	private VisitFacadeEjb.VisitFacadeEjbLocal visitFacade;
 	@EJB
+	private SormasToSormasShareInfoFacadeEjbLocal sormasToSormasShareInfoFacade;
+	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
 	private SormasToSormasOriginInfoService sormasToSormasOriginInfoService;
@@ -204,6 +208,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	private SurveillanceReportService surveillanceReportService;
 	@EJB
 	private DocumentService documentService;
+	@EJB
+	private ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
 
 	public CaseService() {
 		super(Case.class);
@@ -923,19 +929,16 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		// Remove the case from any S2S share info referencing it
 		sormasToSormasShareInfoService.getByAssociatedEntity(SormasToSormasShareInfo.CAZE, caze.getUuid()).forEach(s -> {
 			s.setCaze(null);
-			sormasToSormasShareInfoService.ensurePersisted(s);
+			if (sormasToSormasShareInfoFacade.hasAnyEntityReference(s)) {
+				sormasToSormasShareInfoService.ensurePersisted(s);
+			} else {
+				sormasToSormasShareInfoService.deletePermanent(s);
+			}
 		});
 
 		// Remove the case from any external share info referencing it
 		externalShareInfoService.getShareInfoByCase(caze.getUuid()).forEach(e -> {
-			e.setCaze(null);
-			externalShareInfoService.ensurePersisted(e);
-		});
-
-		// Remove the case from its S2S origin info
-		Optional.ofNullable(caze.getSormasToSormasOriginInfo()).ifPresent(o -> {
-			o.getCases().remove(caze);
-			sormasToSormasOriginInfoService.ensurePersisted(o);
+			externalShareInfoService.deletePermanent(e);
 		});
 
 		// Remove the case from all cases in which it has been set as a duplicate
@@ -944,6 +947,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			ensurePersisted(c);
 		});
 
+		caseFacade.deleteCaseInExternalSurveillanceTool(caze);
 		deleteCaseLinks(caze);
 
 		super.deletePermanent(caze);
@@ -958,6 +962,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			.filter(sample -> sample.getAssociatedContact() == null && sample.getAssociatedEventParticipant() == null)
 			.forEach(sample -> sampleService.delete(sample));
 
+		caseFacade.deleteCaseInExternalSurveillanceTool(caze);
 		deleteCaseLinks(caze);
 
 		// Mark the case as deleted
