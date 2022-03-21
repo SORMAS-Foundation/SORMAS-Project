@@ -26,6 +26,7 @@ import com.vaadin.shared.data.sort.SortDirection;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.infrastructure.area.AreaDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityCriteria;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.api.user.UserRight;
@@ -34,6 +35,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class CommunitiesGrid extends FilteredGrid<CommunityDto, CommunityCriteria> {
@@ -60,7 +62,15 @@ public class CommunitiesGrid extends FilteredGrid<CommunityDto, CommunityCriteri
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			addEditColumn(e -> ControllerProvider.getInfrastructureController().editCommunity(e.getUuid()));
+			//addEditColumn();
+			addItemClickListener(new ShowDetailsListener<>(CommunityDto.NAME, e -> ControllerProvider.getInfrastructureController().editCommunity(e.getUuid())));
+			
+			addItemClickListener(new ShowDetailsListener<>(CommunityDto.REGION, e -> ControllerProvider.getInfrastructureController().editCommunity(e.getUuid())));
+			
+			addItemClickListener(new ShowDetailsListener<>(CommunityDto.DISTRICT, e -> ControllerProvider.getInfrastructureController().editCommunity(e.getUuid())));
+			
+			addItemClickListener(new ShowDetailsListener<>(CommunityDto.EXTERNAL_ID, e -> ControllerProvider.getInfrastructureController().editCommunity(e.getUuid())));
+			
 		}
 
 		for (Column<?, ?> column : getColumns()) {

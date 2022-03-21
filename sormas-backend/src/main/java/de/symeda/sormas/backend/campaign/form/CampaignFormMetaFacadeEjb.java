@@ -119,9 +119,19 @@ System.out.println("dssssssssssssssefaasdgasdgasdgasdfasdfasdfasfeasfdasdfs " +s
 	}
 	
 	@Override
+	public List<CampaignFormMetaReferenceDto> getCampaignFormMetasAsReferencesByCampaign(String uuid) {
+		return service.getCampaignFormMetasAsReferencesByCampaign(uuid);
+	}
+	
+	@Override
 	public List<CampaignFormMetaReferenceDto> getAllCampaignFormMetasAsReferencesByRound(String round) {
-		return service.getByRound(round).stream().map(CampaignFormMetaFacadeEjb::toReferenceDto)
+		return service.getByRound(round).stream().map(CampaignFormMetaFacadeEjb::toReferenceDto) 
 				.sorted(Comparator.comparing(ReferenceDto::toString)).collect(Collectors.toList());
+	}
+	
+	@Override
+	public List<CampaignFormMetaReferenceDto> getAllCampaignFormMetasAsReferencesByRoundandCampaign(String round, String campaignUUID) {
+		return service.getCampaignFormMetasAsReferencesByCampaignandRound(round, campaignUUID);
 	}
 
 	@Override
@@ -144,11 +154,6 @@ System.out.println("dssssssssssssssefaasdgasdgasdgasdfasdfasdfasfeasfdasdfs " +s
 	public List<CampaignFormMetaDto> getByUuids(List<String> uuids) {
 		return service.getByUuids(uuids).stream().map(campaignFormMeta -> toDto(campaignFormMeta))
 				.collect(Collectors.toList());
-	}
-
-	@Override
-	public List<CampaignFormMetaReferenceDto> getCampaignFormMetasAsReferencesByCampaign(String uuid) {
-		return service.getCampaignFormMetasAsReferencesByCampaign(uuid);
 	}
 
 	@Override

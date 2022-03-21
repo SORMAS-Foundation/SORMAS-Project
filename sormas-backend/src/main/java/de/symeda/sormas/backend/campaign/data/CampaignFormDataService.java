@@ -63,13 +63,21 @@ public class CampaignFormDataService extends AdoServiceWithUserFilter<CampaignFo
 		Join<CampaignFormData, District> districtJoin = root.join(CampaignFormData.DISTRICT, JoinType.LEFT);
 		Join<CampaignFormData, Community> communityJoin = root.join(CampaignFormData.COMMUNITY, JoinType.LEFT);
 		Predicate filter = null;
-
-		if (criteria.getCampaign() != null) {
+		
+		System.out.println(criteria.getCampaign()+"  ===========_++++++++++++++_================ "+criteria.getFormType());
+		
+		if (criteria.getCampaign() != null && "ALL PHASES".equals(criteria.getFormType())) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(campaignJoin.get(Campaign.UUID), criteria.getCampaign().getUuid()));
+		} else if (criteria.getCampaign() != null && !"ALL PHASES".equals(criteria.getFormType())) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.and(cb.equal(campaignFormJoin.get(CampaignFormMeta.FORM_TYPE), criteria.getFormType().toLowerCase())), cb.equal(campaignJoin.get(Campaign.UUID), criteria.getCampaign().getUuid()));
+		} else if (criteria.getCampaign() == null && !"ALL PHASES".equals(criteria.getFormType())) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(campaignFormJoin.get(CampaignFormMeta.FORM_TYPE), criteria.getFormType().toLowerCase()));
 		} else {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(campaignJoin.get(Campaign.ARCHIVED), false), cb.isNull(campaignJoin.get(Campaign.ARCHIVED))));
 		}
+		
 		if (criteria.getCampaignFormMeta() != null) {
+			System.out.println("=======%%%%%%%%%%%%%%%======= "+criteria.getCampaignFormMeta().getUuid());
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(campaignFormJoin.get(CampaignFormMeta.UUID), criteria.getCampaignFormMeta().getUuid()));
 		}
 		if (criteria.getArea() != null) {
@@ -91,6 +99,8 @@ public class CampaignFormDataService extends AdoServiceWithUserFilter<CampaignFo
 				cb.greaterThanOrEqualTo(root.get(CampaignFormData.FORM_DATE), DateHelper.getStartOfDay(criteria.getFormDate())),
 				cb.lessThanOrEqualTo(root.get(CampaignFormData.FORM_DATE), DateHelper.getEndOfDay(criteria.getFormDate())));
 		}
+		
+		System.out.println(filter);
 
 		return filter;
 	}

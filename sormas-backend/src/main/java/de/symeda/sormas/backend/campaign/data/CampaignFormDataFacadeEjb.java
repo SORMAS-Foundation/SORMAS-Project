@@ -298,7 +298,8 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 					regionJoin.get(Region.NAME),
 			districtJoin.get(District.NAME),
 			communityJoin.get(Community.NAME),
-			root.get(CampaignFormData.FORM_DATE));
+			root.get(CampaignFormData.FORM_DATE),
+			campaignFormMetaJoin.get(CampaignFormMeta.FORM_TYPE));
 
 		Predicate filter = CriteriaBuilderHelper
 			.and(cb, campaignFormDataService.createCriteriaFilter(criteria, cb, root), campaignFormDataService.createUserFilter(cb, cq, root));
@@ -335,6 +336,9 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 				case CampaignFormDataIndexDto.COMMUNITY:
 					expression = communityJoin.get(Community.NAME);
 					break;
+				case CampaignFormDataIndexDto.FORM_TYPE:
+					expression = campaignFormMetaJoin.get(CampaignFormMeta.FORM_TYPE);
+					break;
 				default:
 					throw new IllegalArgumentException(sortProperty.propertyName);
 				}
@@ -344,6 +348,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		} else {
 			cq.orderBy(cb.desc(root.get(CampaignFormData.CHANGE_DATE)));
 		}
+		
 		System.out.println("DEBUGGER r567ujhgty8ijyu8dfrf  "+SQLExtractor.from(em.createQuery(cq))); 
 		return QueryHelper.getResultList(em, cq, first, max);
 	}
@@ -523,7 +528,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 	@Override
 	public List<CampaignDiagramDataDto> getDiagramData(List<CampaignDiagramSeries> diagramSeries, CampaignDiagramCriteria campaignDiagramCriteria) {
-
+System.out.println("ddddddddddddddddddddddddddddd=============================================ddddddddddddddd");
 		List<CampaignDiagramDataDto> resultData = new ArrayList<>();
 		final AreaReferenceDto area = campaignDiagramCriteria.getArea();
 		final RegionReferenceDto region = campaignDiagramCriteria.getRegion();
@@ -540,7 +545,8 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 				//@formatter:on
 
 			// SELECT
-			StringBuilder selectBuilder = new StringBuilder("SELECT ").append(CampaignFormMeta.TABLE_NAME)
+			StringBuilder selectBuilder = new StringBuilder("SELECT ")
+				.append(CampaignFormMeta.TABLE_NAME)
 				.append(".")
 				.append(CampaignFormMeta.UUID)
 				.append(" as formUuid,")

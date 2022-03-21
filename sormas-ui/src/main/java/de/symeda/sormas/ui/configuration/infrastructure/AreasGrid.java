@@ -7,6 +7,7 @@ import com.vaadin.data.provider.ListDataProvider;
 import com.vaadin.shared.data.sort.SortDirection;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataIndexDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.area.AreaCriteria;
 import de.symeda.sormas.api.infrastructure.area.AreaDto;
@@ -16,6 +17,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.ShowDetailsListener;
 import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 @SuppressWarnings("serial")
@@ -37,11 +39,14 @@ public class AreasGrid extends FilteredGrid<AreaDto, AreaCriteria> {
 			setLazyDataProvider();
 			setCriteria(criteria);
 		}
+		
+		
 
 		setColumns(AreaDto.NAME, AreaDto.EXTERNAL_ID);
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_EDIT)) {
-			addEditColumn(e -> ControllerProvider.getInfrastructureController().editArea(e.getUuid()));
+			addItemClickListener(new ShowDetailsListener<>(AreaDto.NAME, e -> ControllerProvider.getInfrastructureController().editArea(e.getUuid())));
+			addItemClickListener(new ShowDetailsListener<>(AreaDto.EXTERNAL_ID, e -> ControllerProvider.getInfrastructureController().editArea(e.getUuid())));
 		}
 
 		for (Column<?, ?> column : getColumns()) {

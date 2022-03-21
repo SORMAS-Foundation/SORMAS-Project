@@ -55,6 +55,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
+import de.symeda.sormas.ui.campaign.components.CampaignFormPhaseSelector;
 import de.symeda.sormas.ui.campaign.components.CampaignSelector;
 import de.symeda.sormas.ui.campaign.components.importancefilterswitcher.ImportanceFilterSwitcher;
 import de.symeda.sormas.ui.campaign.importer.CampaignFormDataImportLayout;
@@ -76,6 +77,7 @@ public class CampaignDataView extends AbstractCampaignView {
 	private final CampaignDataGrid grid;
 	private CampaignFormDataFilterForm filterForm;
 	private ImportanceFilterSwitcher importanceFilterSwitcher;
+	private CampaignFormPhaseSelector campaignFormPhaseSelector;
 	private PopupButton newFormButton;
 	private PopupButton importCampaignButton;
 	
@@ -86,10 +88,16 @@ public class CampaignDataView extends AbstractCampaignView {
 		super(VIEW_NAME);
 
 		criteria = ViewModelProviders.of(getClass()).get(CampaignFormDataCriteria.class);
+		
 
 		campaignSelector = new CampaignSelector();
 		criteria.setCampaign(campaignSelector.getValue());
 		addHeaderComponent(campaignSelector);
+		
+		campaignFormPhaseSelector = new CampaignFormPhaseSelector();
+		criteria.setFormType(campaignFormPhaseSelector.getValue().toString());
+		addHeaderComponent(campaignFormPhaseSelector);
+		
 		grid = new CampaignDataGrid(criteria);
 		//grid.setStyleName(ValoTheme.LAYOUT_HORIZONTAL_WRAPPING);
 		
@@ -184,8 +192,11 @@ public class CampaignDataView extends AbstractCampaignView {
 		}
 
 		campaignSelector.addValueChangeListener(e -> {
+			System.out.println("@!@!@!@#!@!@!~!@!@!~!@!@!~!@!~!@!~@!~@!~@@!~");
+			//addHeaderComponent(new CampaignFormPhaseSelector());
+			campaignFormPhaseSelector.clear();
 			((VerticalLayout) importFormPanel.getContent()).removeAllComponents();
-			((VerticalLayout) newFormPanel.getContent()).removeAllComponents();
+			
 			if (!Objects.isNull(campaignSelector.getValue())) {
 				fillImportDropdown(importFormPanel);
 				fillNewFormDropdown(newFormPanel);
@@ -198,6 +209,29 @@ public class CampaignDataView extends AbstractCampaignView {
 			criteria.setCampaignFormMeta(null);
 			filterForm.setValue(criteria);
 		});
+		
+		
+		
+		campaignFormPhaseSelector.addValueChangeListener(e -> {
+			System.out.println("@!@!@-------------------------------------------!~@!~@@!~");
+			((VerticalLayout) newFormPanel.getContent()).removeAllComponents();
+			if (!Objects.isNull(campaignSelector.getValue())) {
+				fillNewFormDropdown(newFormPanel);
+				newFormButton.setEnabled(true);
+			} else {
+				newFormButton.setEnabled(false);
+			}
+			
+			criteria.setFormType(e.getValue().toString());
+			filterForm.setPhaseFilterContent(e.getValue().toString());
+			filterForm.setValue(criteria);
+			grid.reload();
+			System.out.println(filterForm.getPhaseFilterContent() +"   =  2222222222222222222222222@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@@");
+		});
+		
+		
+		
+		
 
 		if (campaignSelector.getValue() == null) {
 			importCampaignButton.setEnabled(false);
@@ -240,18 +274,23 @@ public class CampaignDataView extends AbstractCampaignView {
 
 	private void fillNewFormDropdown(Panel containerPanel) {
 
-		CampaignReferenceDto campaignReferenceDto = campaignSelector.getValue();
-		if (campaignReferenceDto != null) {
+		CampaignReferenceDto campaignReferenceDtx = campaignSelector.getValue();
+		String campaignReferenceDto = campaignFormPhaseSelector.getValue();
+		
+		if (campaignReferenceDto != null && campaignReferenceDtx != null) {
 			List<CampaignFormMetaReferenceDto> campagaignFormReferences =
-				FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetasAsReferencesByCampaign(campaignReferenceDto.getUuid());
+				FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferencesByRoundandCampaign(campaignReferenceDto.toLowerCase(),  campaignReferenceDtx.getUuid());
 			Collections.sort(campagaignFormReferences);
-			System.out.println(campaignReferenceDto.getUuid() + " >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>___________"+campaignReferenceDto+"____________>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  "+ campagaignFormReferences);
+			System.out.println(campaignReferenceDtx.getUuid() + " >>>>>>>>>>>>>>>>>>>>>>>>>>>>>>___________"+campaignReferenceDto+"____________>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  "+ campagaignFormReferences);
 			for (CampaignFormMetaReferenceDto campaignForm : campagaignFormReferences) {
-				Button campaignFormButton = ButtonHelper.createButton(campaignForm.toString(), e -> {
+				Button campaignFormButton = ButtonHelper.createButton(campaignForm.toString(), el -> {
 					ControllerProvider.getCampaignController().createCampaignDataForm(criteria.getCampaign(), campaignForm);
 					newFormButton.setPopupVisible(false);
 				});
 				campaignFormButton.setWidth(100, Unit.PERCENTAGE);
+				//campaignFormButton.removeStyleName(VIEW_NAME);
+				campaignFormButton.removeStyleName("v-button");  
+				campaignFormButton.setStyleName("nocapitalletter");
 				((VerticalLayout) containerPanel.getContent()).addComponent(campaignFormButton);
 			}
 			if (campagaignFormReferences.size() >= 10) {
@@ -285,13 +324,23 @@ public class CampaignDataView extends AbstractCampaignView {
 		//apply button action
 		filterForm.addApplyHandler(e -> {
 			criteria.setCampaign(campaignSelector.getValue());
-			System.out.println("sssssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyysssssssssssssssssssss"+campaignSelector.getValue());
+			criteria.setFormType(campaignFormPhaseSelector.getValue().toString());
+			System.out.println(campaignFormPhaseSelector.getValue().toString()+"    sssssssssssssssyyyyyyyyyy!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!sssssssssssssssssssss"+campaignSelector.getValue());
 			grid.reload();
 		});
 		campaignSelector.addValueChangeListener(e -> {
+			System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!");
 			criteria.setCampaign(campaignSelector.getValue());
 			grid.reload();
 		});
+		
+		campaignFormPhaseSelector.addValueChangeListener(e -> {
+			System.out.println("!!!!!-------------------!!!!!");
+			criteria.setFormType(e.getValue().toString());
+			grid.reload();
+		});
+		
+		
 		
 		filterForm.setFormMetaChangedCallback(createFormMetaChangedCallback());
 
@@ -341,6 +390,54 @@ public class CampaignDataView extends AbstractCampaignView {
 			}
 		};
 	}
+	
+	
+	
+	private Consumer<CampaignFormMetaReferenceDto> createFormMetaChangedCallbackPhase() {
+		
+		
+		System.out.println("ss@wwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwwsssssssssssssyyyyyyyyyyyyyyyyyyyyyyyyyyyyyysssssssssssssssssssss");
+		return formMetaReference -> {
+			grid.removeAllColumns();
+			grid.addDefaultColumns();
+			if (formMetaReference != null) {
+				CampaignFormMetaDto formMeta = FacadeProvider.getCampaignFormMetaFacade().getCampaignFormMetaByUuid(formMetaReference.getUuid());
+				Language userLanguage = UserProvider.getCurrent().getUser().getLanguage();
+				CampaignFormTranslations translations = null;
+				if (userLanguage != null) {
+					translations = formMeta.getCampaignFormTranslations()
+						.stream()
+						.filter(t -> t.getLanguageCode().equals(userLanguage.getLocale().toString()))
+						.findFirst()
+						.orElse(null);
+				}
+				final boolean onlyImportantFormElements = importanceFilterSwitcher.isImportantSelected();
+				final List<CampaignFormElement> campaignFormElements = formMeta.getCampaignFormElements();
+				for (CampaignFormElement element : campaignFormElements) {
+					if (element.isImportant() || !onlyImportantFormElements) {
+						String caption = null;
+						if (translations != null) {
+							caption = translations.getTranslations()
+								.stream()
+								.filter(t -> t.getElementId().equals(element.getId()))
+								.map(TranslationElement::getCaption)
+								.findFirst()
+								.orElse(null);
+						}
+						if (caption == null) {
+							caption = element.getCaption();
+						}
+
+						if (caption != null) {
+							grid.addCustomColumn(element.getId(), caption);
+						}
+					}
+				}
+			}
+		};
+	}
+	
+	
 
 	@Override
 	public void enter(ViewChangeEvent event) {

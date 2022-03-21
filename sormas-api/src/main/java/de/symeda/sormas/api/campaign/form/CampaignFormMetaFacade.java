@@ -27,6 +27,8 @@ public interface CampaignFormMetaFacade {
 	List<CampaignFormMetaReferenceDto> getAllCampaignFormMetasAsReferences();
 	
 	List<CampaignFormMetaReferenceDto> getAllCampaignFormMetasAsReferencesByRound(String round);
+	
+	List<CampaignFormMetaReferenceDto> getAllCampaignFormMetasAsReferencesByRoundandCampaign(String round, String campaignUUID);
 
 	CampaignFormMetaDto getCampaignFormMetaByUuid(String campaignFormUuid);
 

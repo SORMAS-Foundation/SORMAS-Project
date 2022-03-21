@@ -61,6 +61,7 @@ public class CampaignFormData extends AbstractDomainObject {
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
 	public static final String ARCHIVED = "archived";
+	//public static final String FORMTYPE = "formType";
 
 	private static final long serialVersionUID = -8021065433714419288L;
 
@@ -74,6 +75,7 @@ public class CampaignFormData extends AbstractDomainObject {
 	private Community community;
 	private User creatingUser;
 	private boolean archived;
+	//private CampaignFormMeta formType;
 
 	@AuditedIgnore
 	@Type(type = ModelConstants.HIBERNATE_TYPE_JSON)
@@ -169,6 +171,16 @@ public class CampaignFormData extends AbstractDomainObject {
 	public void setArchived(boolean archived) {
 		this.archived = archived;
 	}
+	
+	
+
+	/*public CampaignFormMeta getFormType() {
+		return formType;
+	}
+
+	public void setFormType(CampaignFormMeta formType) {
+		this.formType = formType;
+	}*/
 
 	public CampaignFormDataReferenceDto toReference() {
 		return new CampaignFormDataReferenceDto(getUuid());

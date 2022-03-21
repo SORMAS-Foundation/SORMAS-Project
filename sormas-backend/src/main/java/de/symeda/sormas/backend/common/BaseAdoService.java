@@ -167,6 +167,20 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		
 	}
 	
+	@Override
+	public List<ADO> getByRoundAndCampaign(String round, String uuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
+		Root<ADO> from = cq.from(getElementClass());
+		cq.where(cb.equal(from.get("formType"), round));
+		cq.orderBy(cb.desc(from.get(AbstractDomainObject.CHANGE_DATE)));
+		
+		System.out.println("DEBUGGER 5678ijhyuio"+SQLExtractor.from(em.createQuery(cq)));
+
+		return em.createQuery(cq).getResultList();
+		
+	}
+	
 	
 
 	public List<ADO> getAll(BiFunction<CriteriaBuilder, Root<ADO>, Predicate> filterBuilder) {
@@ -263,10 +277,10 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
 		Root<ADO> from = cq.from(getElementClass());
 		cq.where(cb.equal(from.get(AbstractDomainObject.UUID), uuidParam));
-		
-System.out.println("sssdeeeeegtyuhgyuyteeeeeSQL.>eewwwwwwwwwwwwwwwwwwwwwww"+SQLExtractor.from(em.createQuery(cq)));
-		TypedQuery<ADO> q = em.createQuery(cq).setParameter(uuidParam, uuid);
+		System.out.println(uuidParam+"         sssdeeeeegtyuhgyuyteeeeeSQL.>       "+uuid+ "             eewwwwwwwwwwwwwwwwwwwwwww"+SQLExtractor.from(em.createQuery(cq)));
 
+		TypedQuery<ADO> q = em.createQuery(cq).setParameter(uuidParam, uuid);
+		
 		return q.getResultList().stream().findFirst().orElse(null);
 	}
 

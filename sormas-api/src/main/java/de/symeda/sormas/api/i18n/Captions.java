@@ -216,6 +216,7 @@ public interface Captions {
 	String campaignAdditionalChart = "campaignAdditionalChart";
 	String campaignAdditionalForm = "campaignAdditionalForm";
 	String campaignAllCampaigns = "campaignAllCampaigns";
+	String campaignAllForms = "campaignAllForms";
 	String campaignArchivedCampaigns = "campaignArchivedCampaigns";
 	String campaignCampaignData = "campaignCampaignData";
 	String campaignCampaignDataForm = "campaignCampaignDataForm";
@@ -2252,6 +2253,7 @@ public interface Captions {
 	String unknown = "unknown";
 	String User = "User";
 	String User_active = "User.active";
+	String User_captionactive = "User.capactive";
 	String User_address = "User.address";
 	String User_associatedOfficer = "User.associatedOfficer";
 	String User_hasConsentedToGdpr = "User.hasConsentedToGdpr";

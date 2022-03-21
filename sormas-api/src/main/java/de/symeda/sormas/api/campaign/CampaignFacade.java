@@ -15,7 +15,7 @@ public interface CampaignFacade {
 	List<CampaignIndexDto> getIndexList(CampaignCriteria campaignCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
 	List<CampaignReferenceDto> getAllActiveCampaignsAsReference();
-
+	
 	CampaignReferenceDto getLastStartedCampaign();
 
 	long count(CampaignCriteria campaignCriteria);

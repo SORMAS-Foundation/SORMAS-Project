@@ -21,6 +21,7 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.user.User;
 
+
 @Stateless
 @LocalBean
 public class CampaignService extends AbstractCoreAdoService<Campaign> {
@@ -155,6 +156,7 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 		}
 		return em.createNativeQuery(cdv).executeUpdate();
 	}
+	
 	
 	public int cloneFormx1(Campaign uuidx, int unixd, int uuiss) {
 		

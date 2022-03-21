@@ -37,7 +37,7 @@ public class CommunityEditForm extends AbstractEditForm<CommunityDto> {
 	private static final long serialVersionUID = 6726008587163831260L;
 
 	private static final String HTML_LAYOUT =
-		loc(CommunityDto.NAME) + fluidRowLocs(CommunityDto.REGION, CommunityDto.DISTRICT) + fluidRowLocs(RegionDto.EXTERNAL_ID);
+			fluidRowLocs(CommunityDto.NAME, CommunityDto.EXTERNAL_ID) + fluidRowLocs(CommunityDto.REGION, CommunityDto.DISTRICT);
 
 	private boolean create;
 
@@ -58,11 +58,12 @@ public class CommunityEditForm extends AbstractEditForm<CommunityDto> {
 	protected void addFields() {
 
 		addField(CommunityDto.NAME, TextField.class);
+		addField(RegionDto.EXTERNAL_ID, TextField.class);
 		ComboBox region = addInfrastructureField(CommunityDto.REGION);
 		ComboBox district = addInfrastructureField(CommunityDto.DISTRICT);
-		addField(RegionDto.EXTERNAL_ID, TextField.class);
+		
 
-		setRequired(true, CommunityDto.NAME, CommunityDto.REGION, CommunityDto.DISTRICT);
+		setRequired(true, CommunityDto.NAME, CommunityDto.REGION, CommunityDto.DISTRICT, CommunityDto.EXTERNAL_ID);
 
 		region.addValueChangeListener(e -> {
 			RegionReferenceDto regionDto = (RegionReferenceDto) e.getProperty().getValue();

@@ -32,7 +32,7 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 	private static final long serialVersionUID = 7573666294384000190L;
 
 	private static final String HTML_LAYOUT =
-		fluidRowLocs(DistrictDto.NAME, DistrictDto.EPID_CODE) + fluidRowLocs(DistrictDto.REGION) + fluidRowLocs(RegionDto.EXTERNAL_ID); // ,DistrictDto.GROWTH_RATE);
+		fluidRowLocs(DistrictDto.NAME, DistrictDto.EXTERNAL_ID) + fluidRowLocs(DistrictDto.REGION); // ,DistrictDto.GROWTH_RATE,+ fluidRowLocs(RegionDto.EXTERNAL_ID);
 
 	private final boolean create;
 
@@ -53,14 +53,15 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 	protected void addFields() {
 
 		addField(DistrictDto.NAME, TextField.class);
-		addField(DistrictDto.EPID_CODE, TextField.class);
-		ComboBox region = addInfrastructureField(DistrictDto.REGION);
 		addField(RegionDto.EXTERNAL_ID, TextField.class);
+		//addField(DistrictDto.EPID_CODE, TextField.class);
+		ComboBox region = addInfrastructureField(DistrictDto.REGION);
+		
 //		TextField growthRate = addField(DistrictDto.GROWTH_RATE, TextField.class);
 //		growthRate.setConverter(new StringToFloatConverter());
 //		growthRate.setConversionError(I18nProperties.getValidationError(Validations.onlyDecimalNumbersAllowed, growthRate.getCaption()));
 
-		setRequired(true, DistrictDto.NAME, DistrictDto.EPID_CODE, DistrictDto.REGION);
+		setRequired(true, DistrictDto.NAME, DistrictDto.EXTERNAL_ID, DistrictDto.REGION);
 
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveAsReference());
 

@@ -77,7 +77,7 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		CssStyles.style(campaignPhaseSelector, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
 		campaignPhaseSelector.addItems(CampaignPhase.values());
 		campaignPhaseSelector.setValue(CampaignPhase.INTRA);
-		campaignPhaseSelector.setEnabled(false);
+		campaignPhaseSelector.setEnabled(true);
 		addComponent(campaignPhaseSelector);
 		setExpandRatio(campaignPhaseSelector, 1);
 		setComponentAlignment(campaignPhaseSelector, Alignment.MIDDLE_RIGHT);

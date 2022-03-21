@@ -25,18 +25,22 @@ import de.symeda.sormas.api.ReferenceDto;
 public class CampaignFormMetaReferenceDto extends ReferenceDto {
 
 	public CampaignFormMetaReferenceDto() {
+		System.out.println("00000000000000000000000000000000");
 	}
 
 	public CampaignFormMetaReferenceDto(String uuid) {
+		System.out.println("11111111111111");
 		setUuid(uuid);
 	}
 	
 	public CampaignFormMetaReferenceDto(String uuid, String caption) {
+		System.out.println("333333333333333333333333333333333");
 		setUuid(uuid);
 		setCaption(caption);
 	}
 
 	public CampaignFormMetaReferenceDto(String uuid, String caption, String type) {
+		System.out.println("555555555555555555555555555555555555555");
 		setUuid(uuid);
 		setCaption(caption);
 		setFormType(type);

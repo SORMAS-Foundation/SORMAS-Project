@@ -27,7 +27,7 @@ public class AreaEditForm extends AbstractEditForm<AreaDto> {
 		addField(AreaDto.NAME, TextField.class);
 		addField(AreaDto.EXTERNAL_ID, TextField.class);
 
-		setRequired(true, AreaDto.NAME);
+		setRequired(true, AreaDto.NAME, AreaDto.EXTERNAL_ID);
 	}
 
 	@Override

@@ -36,6 +36,7 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 	private static final int LAZY_BATCH_SIZE = 100;
 
 	private C criteria;
+	private C criteriaPhase;
 	private boolean inEagerMode;
 
 	public FilteredGrid(Class<T> beanType) {
@@ -58,6 +59,7 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 		}
 	}
 
+	
 	public boolean isInEagerMode() {
 		return inEagerMode;
 	}

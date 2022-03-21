@@ -163,6 +163,15 @@ public abstract class AbstractFilterForm<T> extends AbstractForm<T> {
 			}
 		});
 	}
+	
+	public void setValuePhase(T phaseValue) throws ReadOnlyException, Converter.ConversionException {
+
+		doWithoutChangeHandler(() -> {
+			super.setValue(phaseValue);
+
+			applyDependenciesOnNewValue(phaseValue);
+		});
+	}
 
 	@SuppressWarnings("rawtypes")
 	protected Stream<Field> streamFieldsForEmptyCheck(CustomLayout layout) {

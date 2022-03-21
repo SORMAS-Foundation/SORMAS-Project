@@ -147,7 +147,7 @@ public class CriteriaBuilderHelper {
 	public static Predicate buildFreeTextSearchPredicate(CriteriaBuilder cb, String searchTerm, Function<String, Predicate> createTextFilter) {
 		Predicate predicate = cb.conjunction();
 
-		String[] textFilters = searchTerm.split("\\s+");
+		String[] textFilters = searchTerm.split("\\s+");//language/
 		for (String textFilter : textFilters) {
 			if (DataHelper.isNullOrEmpty(textFilter)) {
 				continue;

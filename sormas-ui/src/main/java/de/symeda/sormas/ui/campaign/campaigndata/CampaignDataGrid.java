@@ -31,6 +31,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.campaign.components.importancefilterswitcher.CriteriaPhase;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FilteredGrid;
 import de.symeda.sormas.ui.utils.ShowDetailsListener;
@@ -40,6 +41,7 @@ public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, Cam
 	private static final long serialVersionUID = 8045806100043073638L;
 
 	public CampaignDataGrid(CampaignFormDataCriteria criteria) {
+		
 		super(CampaignFormDataIndexDto.class);
 		setSizeFull();
 
@@ -62,6 +64,7 @@ public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, Cam
 		addItemClickListener(new ShowDetailsListener<>(CampaignFormDataIndexDto.DISTRICT, e -> ControllerProvider.getCampaignController().navigateToFormDataView(e.getUuid())));
 		addItemClickListener(new ShowDetailsListener<>(CampaignFormDataIndexDto.COMMUNITY, e -> ControllerProvider.getCampaignController().navigateToFormDataView(e.getUuid())));
 		addItemClickListener(new ShowDetailsListener<>(CampaignFormDataIndexDto.FORM_DATE, e -> ControllerProvider.getCampaignController().navigateToFormDataView(e.getUuid())));
+		addItemClickListener(new ShowDetailsListener<>(CampaignFormDataIndexDto.FORM_TYPE, e -> ControllerProvider.getCampaignController().navigateToFormDataView(e.getUuid())));
 
 		setColumns(
 		//	EDIT_BTN_ID,
@@ -71,7 +74,8 @@ public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, Cam
 			CampaignFormDataIndexDto.REGION,
 			CampaignFormDataIndexDto.DISTRICT,
 			CampaignFormDataIndexDto.COMMUNITY,
-			CampaignFormDataIndexDto.FORM_DATE);
+			CampaignFormDataIndexDto.FORM_DATE,
+			CampaignFormDataIndexDto.FORM_TYPE);
 		//getColumn(EDIT_BTN_ID).setWidth(40).setStyleGenerator(item -> CssStyles.GRID_CELL_LINK);
 
 		((Column<CampaignFormDataIndexDto, Date>) getColumn(CampaignFormDataIndexDto.FORM_DATE))

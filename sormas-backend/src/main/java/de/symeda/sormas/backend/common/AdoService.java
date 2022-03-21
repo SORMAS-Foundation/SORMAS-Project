@@ -27,6 +27,8 @@ public interface AdoService<ADO extends AbstractDomainObject> {
 	List<ADO> getAll();
 	
 	List<ADO> getByRound(String round);
+	
+	List<ADO> getByRoundAndCampaign(String round, String uuid);
 
 	ADO getById(long id);
 

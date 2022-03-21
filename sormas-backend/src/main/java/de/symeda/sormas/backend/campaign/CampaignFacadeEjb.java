@@ -54,6 +54,7 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
+
 @Stateless(name = "CampaignFacade")
 public class CampaignFacadeEjb implements CampaignFacade {
 
@@ -122,6 +123,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 			.map(CampaignFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
 	}
+	
 
 	@Override
 	public CampaignReferenceDto getLastStartedCampaign() {
