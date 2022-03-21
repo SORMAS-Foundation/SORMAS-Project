@@ -186,6 +186,10 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private TextField tfExpectedFollowUpUntilDate;
 	private CheckBox cbOverwriteFollowUpUntil;
 	private DateField dfFollowUpUntil;
+	private CheckBox multiDayContact;
+	private DateField firstContactDate;
+	private DateField lastContactDate;
+	private DateField reportDate;
 
 	public ContactDataForm(Disease disease, ViewMode viewMode, boolean isPseudonymized) {
 		super(
@@ -228,15 +232,15 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 		addField(ContactDto.INTERNAL_TOKEN, TextField.class);
 		addField(ContactDto.REPORTING_USER, ComboBox.class);
-		CheckBox multiDayContact = addField(ContactDto.MULTI_DAY_CONTACT, CheckBox.class);
-		DateField firstContactDate = addDateField(ContactDto.FIRST_CONTACT_DATE, DateField.class, 0);
-		DateField lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
+		multiDayContact = addField(ContactDto.MULTI_DAY_CONTACT, CheckBox.class);
+		firstContactDate = addDateField(ContactDto.FIRST_CONTACT_DATE, DateField.class, 0);
+		lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
+		reportDate = addField(ContactDto.REPORT_DATE_TIME, DateField.class);
 
 		FieldHelper
 			.setVisibleWhen(getFieldGroup(), ContactDto.FIRST_CONTACT_DATE, ContactDto.MULTI_DAY_CONTACT, Collections.singletonList(true), true);
-		initContactDateValidation(firstContactDate, lastContactDate, multiDayContact);
+		initContactDateValidation();
 
-		DateField reportDate = addField(ContactDto.REPORT_DATE_TIME, DateField.class);
 		addInfrastructureField(ContactDto.REPORTING_DISTRICT).addItems(FacadeProvider.getDistrictFacade().getAllActiveAsReference());
 		addField(ContactDto.CONTACT_IDENTIFICATION_SOURCE, ComboBox.class);
 		TextField contactIdentificationSourceDetails = addField(ContactDto.CONTACT_IDENTIFICATION_SOURCE_DETAILS, TextField.class);
@@ -1012,32 +1016,21 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		}
 	}
 
-	private void initContactDateValidation(DateField startDate, DateField endDate, CheckBox multiDayCheckbox) {
-		DateComparisonValidator startDateValidator = new DateComparisonValidator(
-			startDate,
-			endDate,
-			true,
-			false,
-			I18nProperties.getValidationError(Validations.beforeDate, startDate.getCaption(), endDate.getCaption()));
+	private void initContactDateValidation() {
+		multiDayContact.addValueChangeListener(e -> updateDateComparison());
+	}
 
-		DateComparisonValidator endDateValidator = new DateComparisonValidator(
-			endDate,
-			startDate,
-			false,
-			false,
-			I18nProperties.getValidationError(Validations.afterDate, endDate.getCaption(), startDate.getCaption()));
+	private void updateDateComparison() {
+		DateComparisonValidator.removeDateComparisonValidators(firstContactDate);
+		DateComparisonValidator.removeDateComparisonValidators(lastContactDate);
+		DateComparisonValidator.removeDateComparisonValidators(reportDate);
 
-		startDate.addValueChangeListener(event -> endDate.setRequired(event.getProperty().getValue() != null));
+		DateComparisonValidator.addStartEndValidators(firstContactDate, reportDate);
 
-		multiDayCheckbox.addValueChangeListener(e -> {
-			if ((Boolean) e.getProperty().getValue()) {
-				startDate.addValidator(startDateValidator);
-				endDate.addValidator(endDateValidator);
-			} else {
-				startDate.removeValidator(startDateValidator);
-				endDate.removeValidator(endDateValidator);
-			}
-		});
+		if (lastContactDate.isVisible() || multiDayContact.getValue() == Boolean.TRUE) {
+			DateComparisonValidator.addStartEndValidators(firstContactDate, lastContactDate);
+			DateComparisonValidator.addStartEndValidators(lastContactDate, reportDate);
+		}
 	}
 
 	@Override

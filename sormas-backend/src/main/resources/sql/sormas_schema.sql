@@ -10527,6 +10527,12 @@ ALTER TABLE weeklyreportentry_history ADD COLUMN change_user_id BIGINT;
 
 INSERT INTO schema_version (version_number, comment) VALUES (447, 'Changed by user #7323');
 
+-- 2022-03-17 Index on externalshareinfo (caze_id, creationDate) #7656
+DROP INDEX IF EXISTS externalshareinfo_caze_id_creationdate_idx;
+CREATE INDEX externalshareinfo_caze_id_creationdate_idx ON externalshareinfo (caze_id, creationDate DESC);
+
+INSERT INTO schema_version (version_number, comment) VALUES (448, 'Index on externalshareinfo (caze_id, creationDate) #7656');
+
 -- 2022-03-08 Add dateOfArrival to travel entries #7845
 ALTER TABLE travelentry ADD COLUMN dateofarrival timestamp without time zone;
 ALTER TABLE travelentry_history ADD COLUMN dateofarrival timestamp without time zone;
@@ -10540,6 +10546,6 @@ UPDATE travelentry SET dateofarrival = creationdate where dateofarrival is null;
 
 ALTER TABLE travelentry ALTER COLUMN dateofarrival SET NOT NULL;
 
-INSERT INTO schema_version (version_number, comment) VALUES (448, 'Add dateOfArrival to travel entries #7845');
+INSERT INTO schema_version (version_number, comment) VALUES (449, 'Add dateOfArrival to travel entries #7845');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
