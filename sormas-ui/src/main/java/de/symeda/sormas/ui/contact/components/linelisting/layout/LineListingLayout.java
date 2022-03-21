@@ -2,6 +2,7 @@ package de.symeda.sormas.ui.contact.components.linelisting.layout;
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
@@ -27,6 +28,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.contact.components.linelisting.contactfield.ContactLineField;
 import de.symeda.sormas.ui.contact.components.linelisting.contactfield.ContactLineFieldDto;
 import de.symeda.sormas.ui.contact.components.linelisting.sharedinfo.SharedInfoField;
@@ -35,6 +37,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.components.linelisting.line.DeleteLineEvent;
 import de.symeda.sormas.ui.utils.components.linelisting.line.LineLayout;
+import de.symeda.sormas.ui.utils.components.linelisting.model.LineDto;
 import de.symeda.sormas.ui.utils.components.linelisting.person.PersonFieldDto;
 import de.symeda.sormas.ui.utils.components.linelisting.section.LineListingSection;
 
@@ -49,7 +52,7 @@ public class LineListingLayout extends VerticalLayout {
 	private final LineListingSection lineComponent;
 
 	private final Window window;
-	private Consumer<List<ContactLineDto>> saveCallback;
+	private Consumer<LinkedList<LineDto<ContactDto>>> saveCallback;
 
 	private LineListingLayout(Window window, SharedInfoField sharedInfoField) {
 
@@ -176,10 +179,10 @@ public class LineListingLayout extends VerticalLayout {
 		}
 	}
 
-	public List<ContactLineDto> getContactLineDtos() {
+	private LinkedList<LineDto<ContactDto>> getContactLineDtos() {
 		return lines.stream().map(line -> {
 			ContactLineLayoutDto layoutBean = line.getBean();
-			ContactLineDto result = new ContactLineDto();
+			LineDto<ContactDto> result = new LineDto<>();
 
 			final ContactDto contact = ContactDto.build();
 			contact.setCaze(sharedInfoField.getValue().getCaze());
@@ -192,8 +195,10 @@ public class LineListingLayout extends VerticalLayout {
 			contact.setLastContactDate(DateHelper8.toDate(layoutBean.getLineField().getMultiDaySelector().getEndDate()));
 			contact.setContactProximity(layoutBean.getLineField().getTypeOfContact());
 			contact.setRelationToCase(layoutBean.getLineField().getRelationToCase());
-
-			result.setContact(contact);
+			if (UserProvider.getCurrent() != null) {
+				contact.setReportingUser(UserProvider.getCurrent().getUserReference());
+			}
+			result.setEntity(contact);
 
 			final PersonDto person;
 			if (line.getPerson() != null) {
@@ -212,10 +217,10 @@ public class LineListingLayout extends VerticalLayout {
 			result.setPerson(person);
 
 			return result;
-		}).collect(Collectors.toList());
+		}).collect(Collectors.toCollection(LinkedList::new));
 	}
 
-	public void setSaveCallback(Consumer<List<ContactLineDto>> saveCallback) {
+	public void setSaveCallback(Consumer<LinkedList<LineDto<ContactDto>>> saveCallback) {
 		this.saveCallback = saveCallback;
 	}
 
@@ -323,30 +328,6 @@ public class LineListingLayout extends VerticalLayout {
 
 		public void setLineField(ContactLineFieldDto lineField) {
 			this.lineField = lineField;
-		}
-	}
-
-	public static class ContactLineDto implements Serializable {
-
-		private static final long serialVersionUID = -4356132050282062118L;
-
-		private ContactDto contact;
-		private PersonDto person;
-
-		public ContactDto getContact() {
-			return contact;
-		}
-
-		public void setContact(ContactDto contact) {
-			this.contact = contact;
-		}
-
-		public PersonDto getPerson() {
-			return person;
-		}
-
-		public void setPerson(PersonDto person) {
-			this.person = person;
 		}
 	}
 }
