@@ -1,9 +1,7 @@
-
 @mixin sormas-global {
-
   .v-caption {
     text-transform: uppercase;
-	/*display: block; #792 unclear why this was needed */
+    /*display: block; #792 unclear why this was needed */
     padding-bottom: 0.1em;
 
     &.v-caption-caption-hidden {
@@ -11,7 +9,7 @@
     }
 
     &.v-caption-caption-overflow {
-      margin-right : -1000px;
+      margin-right: -1000px;
     }
 
     &.v-caption-on-top {
@@ -19,7 +17,6 @@
     }
 
     &.v-caption-caption-fixed-width-100 {
-
       .v-captiontext {
         width: 100px;
         text-overflow: ellipsis;
@@ -27,18 +24,17 @@
         white-space: nowrap;
         display: block;
       }
-
     }
   }
 
   .force-caption {
-	margin-top: 1.5em;
-	margin-bottom: 16px;
+    margin-top: 1.5em;
+    margin-bottom: 16px;
   }
 
   .force-caption-checkbox {
-  	margin-top: 2.2em;
-	margin-bottom: 16px;
+    margin-top: 2.2em;
+    margin-bottom: 16px;
   }
 
   /* like bootstrap grid with free columns */
@@ -46,12 +42,12 @@
     margin-left: -15px;
     margin-right: -15px;
 
-  	> div {
-  	  padding-left: 15px;
-  	  padding-right: 15px;
-  	  display: inline-block;
-  	  vertical-align: top;
-  	}
+    > div {
+      padding-left: 15px;
+      padding-right: 15px;
+      display: inline-block;
+      vertical-align: top;
+    }
   }
 
   .filters-container {
@@ -73,9 +69,9 @@
   }
 
   .hide-errorindicator {
-  	.v-errorindicator {
-  	  display: none;
-  	}
+    .v-errorindicator {
+      display: none;
+    }
   }
 
   .v-widget.v-textfield,
@@ -105,154 +101,156 @@
   }
 
   .badge {
-  	padding: 2px 9px 2px;
-  	margin-left: 5px;
-  	font-weight: bold;
-  	white-space: nowrap;
-  	color: #ffffff;
-  	background-color: $s-primary-color;
-  	-webkit-border-radius: 9px;
-  	-moz-border-radius: 9px;
-  	border-radius: 9px;
+    padding: 2px 9px 2px;
+    margin-left: 5px;
+    font-weight: bold;
+    white-space: nowrap;
+    color: #ffffff;
+    background-color: $s-primary-color;
+    -webkit-border-radius: 9px;
+    -moz-border-radius: 9px;
+    border-radius: 9px;
   }
 
   /** HEADER STYLES **/
 
-  h1, .h1 {
+  h1,
+  .h1 {
     color: $s-primary-color;
     font-weight: 600;
   }
 
-  h2, .h2 {
+  h2,
+  .h2 {
     color: $s-secondary-color;
     font-weight: 600;
   }
 
-  h3, .h3 {
+  h3,
+  .h3 {
     color: $s-secondary-color;
     font-weight: 600;
   }
 
-  h4, .h4 {
+  h4,
+  .h4 {
     color: $s-secondary-color;
     font-weight: 600;
   }
-
-
 
   /** CUSTOM STYLES **/
 
   .vspace-0 {
-	margin-bottom: 64px;
+    margin-bottom: 64px;
   }
   .vspace-1 {
-	margin-bottom: 36px;
+    margin-bottom: 36px;
   }
   .vspace-2 {
-	margin-bottom: 24px;
+    margin-bottom: 24px;
   }
   .vspace-3 {
-	margin-bottom: 16px;
+    margin-bottom: 16px;
   }
   .vspace-4 {
-	margin-bottom: 6px;
+    margin-bottom: 6px;
   }
   .vspace-5 {
     margin-bottom: 2px;
   }
   .vspace-none {
-  	margin-bottom: 0 !important;
+    margin-bottom: 0 !important;
   }
 
   .vspace-top-0 {
     margin-top: 64px;
   }
   .vspace-top-1 {
-	margin-top: 36px;
+    margin-top: 36px;
   }
   .vspace-top-2 {
-	margin-top: 24px;
+    margin-top: 24px;
   }
   .vspace-top-3 {
-	margin-top: 16px;
+    margin-top: 16px;
   }
   .vspace-top-4 {
-	margin-top: 6px;
+    margin-top: 6px;
   }
   .vspace-top-5 {
-	margin-top: 2px;
+    margin-top: 2px;
   }
   .vspace-top-none {
-  	margin-top: 0 !important;
+    margin-top: 0 !important;
   }
 
   .hspace-left-0 {
-  	margin-left: 64px;
+    margin-left: 64px;
   }
   .hspace-left-1 {
-  	margin-left: 36px;
+    margin-left: 36px;
   }
   .hspace-left-2 {
-  	margin-left: 20px;
+    margin-left: 20px;
   }
   .hspace-left-3 {
-  	margin-left: 10px;
+    margin-left: 10px;
   }
   .hspace-left-4 {
-  	margin-left: 6px;
+    margin-left: 6px;
   }
   .hspace-left-5 {
-  	margin-left: 2px;
+    margin-left: 2px;
   }
   .hspace-left-none {
-  	margin-left: 0 !important;
+    margin-left: 0 !important;
   }
 
   .hspace-right-0 {
-  	margin-right: 64px;
+    margin-right: 64px;
   }
   .hspace-right-1 {
-  	margin-right: 36px;
+    margin-right: 36px;
   }
   .hspace-right-2 {
-  	margin-right: 20px;
+    margin-right: 20px;
   }
   .hspace-right-3 {
-  	margin-right: 10px;
+    margin-right: 10px;
   }
   .hspace-right-4 {
-  	margin-right: 6px;
+    margin-right: 6px;
   }
   .hspace-right-5 {
-  	margin-right: 2px;
+    margin-right: 2px;
   }
   .hspace-right-none {
-  	margin-right: 0 !important;
+    margin-right: 0 !important;
   }
 
   .indent-left-1 {
-  	margin-left: 15px;
+    margin-left: 15px;
   }
   .indent-left-2 {
-  	margin-left: 30px;
+    margin-left: 30px;
   }
   .indent-left-3 {
- 	margin-left: 45px;
+    margin-left: 45px;
   }
 
   .vertical-rule {
-	border-right: 1px solid #CDD8EC;
+    border-right: 1px solid #cdd8ec;
   }
 
   .rich-text-content-container {
-    box-shadow: inset 0 0 4px #CDD8EC;
+    box-shadow: inset 0 0 4px #cdd8ec;
     border-radius: 4px;
     padding: 10px;
-    background-color: #F7F8F8;
+    background-color: #f7f8f8;
     margin-top: 10px;
   }
   .rich-text-content-container .reply {
-    border-top: 2px dashed #CDD8EC;
+    border-top: 2px dashed #cdd8ec;
     margin-top: 10px;
     padding-top: 10px;
   }
@@ -262,25 +260,25 @@
   }
 
   .text-bold {
-  	font-weight: bold;
+    font-weight: bold;
   }
 
   // for aligning in bootstrap grid
   .align-right {
-  	text-align: right;
+    text-align: right;
   }
 
   .align-center {
-  	text-align: center;
+    text-align: center;
   }
 
   // classification criteria
   .background-criteria {
-	background: $s-highlight-subtle-color;
+    background: $s-highlight-subtle-color;
   }
 
   .background-sub-criteria {
-  	background: $s-highlight-slightly-subtle-color;
+    background: $s-highlight-slightly-subtle-color;
   }
 
   .background-suspect-criteria {
@@ -296,12 +294,12 @@
   }
 
   .background-not-a-case-criteria {
-  	background: $s-highlight-color;
+    background: $s-highlight-color;
   }
 
   .background-rounded-corners {
-	border-radius: 8px;
-	padding: 8px;
+    border-radius: 8px;
+    padding: 8px;
   }
 
   .geocode-button-highlight {
@@ -310,7 +308,7 @@
 
   .root-component {
     min-width: 640px;
-	max-width: 1280px;
+    max-width: 1280px;
   }
   .main-component {
     min-width: 640px;
@@ -325,13 +323,13 @@
   }
 
   .spacing-small {
-  	.v-spacing {
-  	  width: 4px;
-  	}
+    .v-spacing {
+      width: 4px;
+    }
   }
 
   .no-border {
-  	border: none;
+    border: none;
   }
 
   .float-right {
@@ -348,4 +346,15 @@
     font-style: italic;
     opacity: 0.5;
   }
+  .v-wrapper-apmis {
+    white-space: normal !important;
+    text-align: center !important;
+  }
+
+
+/*patch of campign form list*/
+  .v-button-nocapitalletter{
+	text-transform: initial !important;
+	text-align: left !important;
+}
 }
