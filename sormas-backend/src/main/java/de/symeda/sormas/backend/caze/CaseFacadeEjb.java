@@ -2415,20 +2415,32 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	@RolesAllowed(UserRight._CASE_ARCHIVE)
-	public void archive(String entityUuid, Date endOfProcessingDate) {
+	public void archive(String entityUuid, Date endOfProcessingDate, boolean includeContacts) {
 		super.archive(entityUuid, endOfProcessingDate);
+		if (includeContacts) {
+			List<String> caseContacts = contactService.getAllUuidsByCaseUuids(Collections.singletonList(entityUuid));
+			contactService.archive(caseContacts);
+		}
 	}
 
 	@Override
 	@RolesAllowed(UserRight._CASE_ARCHIVE)
-	public void archive(List<String> entityUuids) {
+	public void archive(List<String> entityUuids, boolean includeContacts) {
 		super.archive(entityUuids);
+		if (includeContacts) {
+			List<String> caseContacts = contactService.getAllUuidsByCaseUuids(entityUuids);
+			contactService.archive(caseContacts);
+		}
 	}
 
 	@Override
 	@RolesAllowed(UserRight._CASE_ARCHIVE)
-	public void dearchive(List<String> entityUuids, String dearchiveReason) {
+	public void dearchive(List<String> entityUuids, String dearchiveReason, boolean includeContacts) {
 		super.dearchive(entityUuids, dearchiveReason);
+		if (includeContacts) {
+			List<String> caseContacts = contactService.getAllUuidsByCaseUuids(entityUuids);
+			contactService.dearchive(caseContacts, dearchiveReason);
+		}
 	}
 
 	@Override
@@ -3548,7 +3560,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		List<String> caseUuids = em.createQuery(cq).getResultList();
 
 		if (!caseUuids.isEmpty()) {
-			archive(caseUuids);
+			archive(caseUuids, true);
 		}
 
 		logger.debug(

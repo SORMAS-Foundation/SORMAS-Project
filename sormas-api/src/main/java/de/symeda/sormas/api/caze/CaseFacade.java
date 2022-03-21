@@ -21,7 +21,6 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import javax.ejb.Remote;
@@ -222,4 +221,10 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 	int updateCompleteness();
 
 	PreviousCaseDto getMostRecentPreviousCase(PersonReferenceDto person, Disease disease, Date startDate);
+
+	void archive(String entityUuid, Date endOfProcessingDate, boolean includeContacts);
+
+	void archive(List<String> entityUuids, boolean includeContacts);
+
+	void dearchive(List<String> entityUuids, String dearchiveReason, boolean includeContacts);
 }

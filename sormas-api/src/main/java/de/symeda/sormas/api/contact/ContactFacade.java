@@ -106,6 +106,10 @@ public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, C
 
 	int getFollowUpUntilCount(ContactCriteria contactCriteria);
 
+	List<String> getArchivedUuidsSince(Date since);
+
+	void archiveAllArchivableContacts(int daysAfterContactsGetsArchived);
+
 	List<String> getDeletedUuidsSince(Date since);
 
 	boolean isDeleted(String contactUuid);

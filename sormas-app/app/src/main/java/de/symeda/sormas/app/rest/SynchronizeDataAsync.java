@@ -42,6 +42,7 @@ import de.symeda.sormas.app.backend.clinicalcourse.ClinicalVisitDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
+import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDtoHelper;
 import de.symeda.sormas.app.backend.customizableenum.CustomizableEnumValueDtoHelper;
 import de.symeda.sormas.app.backend.disease.DiseaseConfigurationDtoHelper;
@@ -125,7 +126,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 				}
 				// Pull and remove archived entities when the last time this has been done is more than 24 hours ago
 				if (ConfigProvider.getLastArchivedSyncDate() == null
-					|| DateHelper.getFullDaysBetween(ConfigProvider.getLastArchivedSyncDate(), new Date()) >= 1) {
+					|| DateHelper.getFullDaysBetween(ConfigProvider.getLastArchivedSyncDate(), new Date()) >= 0) {
 					pullAndRemoveArchivedUuidsSince(ConfigProvider.getLastArchivedSyncDate());
 				}
 				// Pull changed data and push existing data that has been changed on the mobile device
@@ -486,10 +487,23 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 				DatabaseHelper.getCaseDao().deleteCaseAndAllDependingEntities(caseUuid);
 			}
 
+			// Contacts
+			List<String> contactUuids = executeUuidCall(RetroProvider.getContactFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
+			for (String contactUuid : contactUuids) {
+				DatabaseHelper.getContactDao().deleteContactAndAllDependingEntities(contactUuid);
+			}
+
 			// Events
 			List<String> eventUuids = executeUuidCall(RetroProvider.getEventFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
 			for (String eventUuid : eventUuids) {
 				DatabaseHelper.getEventDao().deleteEventAndAllDependingEntities(eventUuid);
+			}
+
+			// EventParticipant
+			List<String> eventParticipantUuids =
+				executeUuidCall(RetroProvider.getEventParticipantFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
+			for (String eventParticipantUuid : eventParticipantUuids) {
+				DatabaseHelper.getEventParticipantDao().deleteEventParticipantAndAllDependingEntities(eventParticipantUuid);
 			}
 
 			// Tasks

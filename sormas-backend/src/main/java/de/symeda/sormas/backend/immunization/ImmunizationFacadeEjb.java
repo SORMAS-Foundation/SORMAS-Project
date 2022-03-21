@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.backend.immunization;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,22 +31,26 @@ import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.inject.Inject;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.EditPermissionType;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -77,7 +83,7 @@ import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
-import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
@@ -243,6 +249,29 @@ public class ImmunizationFacadeEjb
 		}
 
 		return service.getArchivedUuidsSince(since);
+	}
+
+	@Override
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public void archiveAllArchivableImmunizations(int daysAfterImmunizationsGetsArchived) {
+		archiveAllArchivableImmunizations(daysAfterImmunizationsGetsArchived, LocalDate.now());
+	}
+
+	private void archiveAllArchivableImmunizations(int daysAfterImmunizationGetsArchived, @NotNull LocalDate referenceDate) {
+		LocalDate notChangedSince = referenceDate.minusDays(daysAfterImmunizationGetsArchived);
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Immunization> from = cq.from(Immunization.class);
+
+		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
+		cq.where(cb.equal(from.get(Event.ARCHIVED), false), cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
+		cq.select(from.get(Immunization.UUID)).distinct(true);
+		List<String> immunizationUuids = em.createQuery(cq).getResultList();
+
+		if (!immunizationUuids.isEmpty()) {
+			archive(immunizationUuids);
+		}
 	}
 
 	@Override
@@ -433,7 +462,11 @@ public class ImmunizationFacadeEjb
 		return fillOrBuildEntity(source, target, checkChangeDate, true);
 	}
 
-	protected Immunization fillOrBuildEntity(@NotNull ImmunizationDto source, Immunization target, boolean checkChangeDate, boolean copyVaccinations) {
+	protected Immunization fillOrBuildEntity(
+		@NotNull ImmunizationDto source,
+		Immunization target,
+		boolean checkChangeDate,
+		boolean copyVaccinations) {
 		target = DtoHelper.fillOrBuildEntity(source, target, Immunization::new, checkChangeDate);
 
 		target.setDisease(source.getDisease());

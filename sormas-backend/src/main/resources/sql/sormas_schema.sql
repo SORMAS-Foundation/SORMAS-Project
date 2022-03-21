@@ -10533,4 +10533,17 @@ CREATE INDEX externalshareinfo_caze_id_creationdate_idx ON externalshareinfo (ca
 
 INSERT INTO schema_version (version_number, comment) VALUES (448, 'Index on externalshareinfo (caze_id, creationDate) #7656');
 
+-- 2022-03-14 - #7774 Automatic & manual archiving for all core entities
+UPDATE contact SET archived = TRUE
+    FROM contact ct
+INNER  JOIN cases cs ON cs.id = ct.caze_id
+WHERE cs.archived is TRUE;
+
+UPDATE eventparticipant SET archived = TRUE
+    FROM eventparticipant ep
+INNER JOIN events e on ep.event_id = e.id
+where e.archived is TRUE;
+
+INSERT INTO schema_version (version_number, comment) VALUES (449, 'Automatic & manual archiving for all core entities #7774 ');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

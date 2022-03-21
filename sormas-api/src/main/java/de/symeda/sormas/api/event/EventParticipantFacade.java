@@ -66,6 +66,10 @@ public interface EventParticipantFacade
 
 	List<EventParticipantDto> getAllActiveEventParticipantsAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
 
+	List<String> getArchivedUuidsSince(Date since);
+
+	void archiveAllArchivableEventParticipants(int daysAfterEventParticipantGetsArchived);
+
 	List<String> getDeletedUuidsSince(Date date);
 
 	EditPermissionType isEventParticipantEditAllowed(String uuid);
