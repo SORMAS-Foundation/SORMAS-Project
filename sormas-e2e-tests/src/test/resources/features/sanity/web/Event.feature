@@ -335,6 +335,29 @@ Feature: Create events
     And I create a new Contacts from Event Participants using Line Listing
     And I save the new contacts from Event Participants using line listing feature in Event Participant tab
 
+  @issue=SORDEV-5481 @env_main
+  Scenario: Export and import event participant
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with specific data
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    And I collect the UUID displayed on Edit event page
+    Then I add a participant to the event
+    Then I check if participant appears in the event participants list
+    And I click Export button in Event Participant Directory
+    And I click on Detailed Export button in Event Participant Directory
+    And I close popup after export in Event Participant directory
+    Then I click on the Import button from Event Participants directory
+    And I select the event participant CSV file in the file picker
+    And I click on the "START DATA IMPORT" button from the Import Event Participant popup
+    And I confirm the save Event Participant Import popup
+    And I check that an import success notification appears in the Import Event Participant popup
+    Then I delete exported file from Event Participant Directory
+
+
 
 
 
