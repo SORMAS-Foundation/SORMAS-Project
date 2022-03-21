@@ -29,7 +29,6 @@ import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThat;
 import static org.junit.Assert.assertTrue;
 
-import de.symeda.sormas.api.caze.Trimester;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.nio.charset.StandardCharsets;
@@ -1900,6 +1899,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		caze.setTherapy(new TherapyDto());
 		caze.setSymptoms(new SymptomsDto());
+		caze.setHealthConditions(new HealthConditionsDto());
 		EpiDataDto epiData = new EpiDataDto();
 		ExposureDto exposure = new ExposureDto();
 		exposure.setExposureType(ExposureType.WORK);
