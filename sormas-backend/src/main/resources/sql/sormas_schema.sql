@@ -10527,6 +10527,11 @@ ALTER TABLE weeklyreportentry_history ADD COLUMN change_user_id BIGINT;
 
 INSERT INTO schema_version (version_number, comment) VALUES (447, 'Changed by user #7323');
 
+-- 2022-03-17 Index on externalshareinfo (caze_id, creationDate) #7656
+DROP INDEX IF EXISTS externalshareinfo_caze_id_creationdate_idx;
+CREATE INDEX externalshareinfo_caze_id_creationdate_idx ON externalshareinfo (caze_id, creationDate DESC);
+
+INSERT INTO schema_version (version_number, comment) VALUES (448, 'Index on externalshareinfo (caze_id, creationDate) #7656');
 -- 2022-03-16 Delete history data on permanent deletion of entities #7713
 
 CREATE OR REPLACE FUNCTION delete_history_trigger()

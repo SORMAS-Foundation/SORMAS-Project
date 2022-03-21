@@ -18,6 +18,24 @@
 
 package org.sormas.e2etests.steps.web.application.entries;
 
+import cucumber.api.java8.En;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Case;
+import org.sormas.e2etests.entities.pojo.web.TravelEntry;
+import org.sormas.e2etests.entities.services.TravelEntryService;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage;
+import org.sormas.e2etests.pages.application.entries.EditTravelEntryPage;
+import org.sormas.e2etests.state.ApiState;
+import org.testng.asserts.SoftAssert;
+
+import javax.inject.Inject;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.COMMUNITY_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISTRICT_INPUT;
@@ -38,26 +56,9 @@ import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.SAVE_NEW_CASE_FOR_TRAVEL_ENTRY_POPUP;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.TRAVEL_ENTRY_PERSON_TAB;
 
-import cucumber.api.java8.En;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-import javax.inject.Inject;
-import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.entities.pojo.web.Case;
-import org.sormas.e2etests.entities.pojo.web.TravelEntry;
-import org.sormas.e2etests.entities.services.TravelEntryService;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage;
-import org.sormas.e2etests.pages.application.entries.EditTravelEntryPage;
-import org.sormas.e2etests.state.ApiState;
-import org.testng.asserts.SoftAssert;
-
 public class CreateNewTravelEntrySteps implements En {
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd.MM.yyyy");
-  public static final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
+  private final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
   private final WebDriverHelpers webDriverHelpers;
   public static TravelEntry travelEntry;
   public static TravelEntry aTravelEntry;
@@ -297,6 +298,7 @@ public class CreateNewTravelEntrySteps implements En {
         .firstName(webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT))
         .lastName(webDriverHelpers.getValueFromWebElement(LAST_NAME_INPUT))
         .sex(webDriverHelpers.getValueFromCombobox(EditTravelEntryPage.SEX_COMBOBOX))
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
         .build();
   }
 

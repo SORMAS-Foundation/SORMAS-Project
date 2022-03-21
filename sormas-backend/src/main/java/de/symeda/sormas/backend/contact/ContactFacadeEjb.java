@@ -479,6 +479,16 @@ public class ContactFacadeEjb
 		return new Page<>(contactIndexList, offset, size, totalElementCount);
 	}
 
+	public Page<ContactIndexDetailedDto> getIndexDetailedPage(
+		@NotNull ContactCriteria contactCriteria,
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties) {
+		List<ContactIndexDetailedDto> contactIndexDetailedList = getIndexDetailedList(contactCriteria, offset, size, sortProperties);
+		long totalElementCount = count(contactCriteria);
+		return new Page<>(contactIndexDetailedList, offset, size, totalElementCount);
+	}
+
 	@Override
 	@RolesAllowed(UserRight._CONTACT_DELETE)
 	public void delete(String contactUuid) {

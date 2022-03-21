@@ -120,9 +120,10 @@ public class BulkTaskDataForm extends AbstractEditForm<TaskBulkEditData> {
 		}
 
 		assigneeCheckbox.addValueChangeListener(e -> {
-			assignee.setEnabled((boolean) e.getProperty().getValue());
+			boolean changeAssignee = (boolean) e.getProperty().getValue();
+			assignee.setEnabled(changeAssignee);
+			assignee.setRequired(changeAssignee);
 		});
-
 	}
 
 	private List<UserReferenceDto> getUsers() {
