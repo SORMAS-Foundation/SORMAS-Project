@@ -80,9 +80,13 @@ public class AuditLogger {
 		if (sourceSite.equals("")) {
 			logger.warn("audit.source.site is empty! Please configure it for more expedient audit trail analysis.");
 			sourceSite = "NOT CONFIGURED";
-			loggingDisabled = true;
 		}
 		this.auditSourceSite = sourceSite;
+
+		if (configFacade.getAuditLoggerConfig().equals("")) {
+			loggingDisabled = true;
+		}
+
 		actionMap = new HashMap<>();
 	}
 

@@ -5,15 +5,15 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 import java.util.Set;
 import java.util.TimeZone;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 
-import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -21,7 +21,6 @@ import javax.ejb.SessionContext;
 import javax.interceptor.AroundInvoke;
 import javax.interceptor.InvocationContext;
 
-import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.backend.auditlog.AuditContextProducer;
 import de.symeda.sormas.backend.auditlog.AuditLogServiceBean;
@@ -31,6 +30,7 @@ import de.symeda.sormas.backend.infrastructure.continent.ContinentFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.subcontinent.SubcontinentFacadeEjb;
 import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserFacadeEjb;
 
 public class AuditLoggerInterceptor {
 
@@ -44,9 +44,9 @@ public class AuditLoggerInterceptor {
 	private SessionContext sessionContext;
 
 	/**
-	 * Cache to track all classes annotated with @LocalBean. Contained Classes will be skipped for auditing.
+	 * Cache to track all classes that should be ignored and those who must be audited. False indicates audit, True ignore
 	 */
-	private final static Set<Class<?>> ignoreLocalAnnotatedClasses = new HashSet<>();
+	private final static Map<Class<?>, Boolean> shouldIgnoreClassCache = new HashMap<>();
 
 	/**
 	 * Cache to track all classes which should be completely ignored for audit.
@@ -71,7 +71,8 @@ public class AuditLoggerInterceptor {
 				new HashSet<>(
 					Arrays.asList(
 						ContinentFacadeEjb.class.getMethod("getByDefaultName", String.class, boolean.class),
-						SubcontinentFacadeEjb.class.getMethod("getByDefaultName", String.class, boolean.class))));
+						SubcontinentFacadeEjb.class.getMethod("getByDefaultName", String.class, boolean.class),
+						UserFacadeEjb.class.getMethod("getCurrentUser"))));
 		} catch (NoSuchMethodException e) {
 			throw new RuntimeException(e);
 		}
@@ -91,18 +92,13 @@ public class AuditLoggerInterceptor {
 			return context.proceed();
 		}
 
-		if (ignoreLocalAnnotatedClasses.contains(target)) {
-			// ignore previously discovered local beans
-			return context.proceed();
-		}
+		// with this we ignore EJB calls which definitely originate from within the backend
+		// as they can never be called direct from outside (i.e., remote) of the backend
+		// expression yields true if it IS a local bean => should not be audited and ignored
+		Boolean shouldIgnoreAudit = shouldIgnoreClassCache.computeIfAbsent(target, k -> target.getAnnotationsByType(LocalBean.class).length > 0);
 
-		if (target.getAnnotationsByType(LocalBean.class).length > 0) {
-			// with this we ignore EJB calls which definitely originate from within the backend
-			// as they can never be called direct from outside (i.e., remote) of the backend
-
-			// cache that this class is local
-			ignoreLocalAnnotatedClasses.add(target);
-
+		if (shouldIgnoreAudit) {
+			// ignore local beans
 			return context.proceed();
 		}
 
