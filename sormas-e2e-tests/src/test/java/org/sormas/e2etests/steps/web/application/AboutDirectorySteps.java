@@ -39,14 +39,12 @@ public class AboutDirectorySteps implements En {
           language = chosenLanguage;
           webDriverHelpers.selectFromCombobox(LANGUAGE_COMBOBOX, chosenLanguage);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          TimeUnit.SECONDS.sleep(5);
         });
 
     When(
-        "I set on default language in User settings",
+        "I set on default language as English in User settings",
         () -> {
           String defaultLanguage = "";
-          System.out.println("Settingn language" + language);
           switch (language) {
             case "Fran\u00E7ais":
               defaultLanguage = "Anglais";
@@ -72,36 +70,24 @@ public class AboutDirectorySteps implements En {
               defaultLanguage = "English";
               webDriverHelpers.selectFromCombobox(LANGUAGE_COMBOBOX, defaultLanguage);
               break;
-            case "Italiano":
-              defaultLanguage = "Inglese";
-              webDriverHelpers.selectFromCombobox(LANGUAGE_COMBOBOX, defaultLanguage);
-              break;
-            case "Italiano (Svizzera)":
-              defaultLanguage = "Inglese";
-              webDriverHelpers.selectFromCombobox(LANGUAGE_COMBOBOX, defaultLanguage);
-              break;
-            case "Suomi":
-              defaultLanguage = "Englanti";
-              webDriverHelpers.selectFromCombobox(LANGUAGE_COMBOBOX, defaultLanguage);
-              break;
           }
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
+
     When(
         "I click on Data Dictionary hyperlink and download XLSX file in About directory",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
-
           webDriverHelpers.clickOnWebElementBySelector(DATA_DICTIONARY_BUTTON);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               DATA_DICTIONARY_BUTTON, 50);
-          TimeUnit.SECONDS.sleep(5);
+          TimeUnit.SECONDS.sleep(3); // waiting for DATA_DICTIONARY_BUTTON
         });
 
     When(
         "^I read data from downloaded XLSX file$",
         () -> {
-          ReadXMLFile();
+          ReadXlsxFile();
+          TimeUnit.SECONDS.sleep(5); // waiting for xlsx file is read
         });
 
     When(
@@ -109,12 +95,12 @@ public class AboutDirectorySteps implements En {
         () -> {
           DetectLanguage.apiKey = "5e184341083ac27cad1fd06d6e208302";
 
-          String[] receivedWordsArray = {xlsxFileContentList.get(16), xlsxFileContentList.get(17)};
-          for (String word : receivedWordsArray) {
+          String[] receivedWordsFromArray = {
+            xlsxFileContentList.get(16), xlsxFileContentList.get(17)
+          };
+          for (String word : receivedWordsFromArray) {
             String chosenUserLanguage = language.toLowerCase().substring(0, 2);
-            System.out.println("Choosen language: " + chosenUserLanguage);
             String detectedLanguage = DetectLanguage.simpleDetect(word);
-            System.out.println("Detected language: " + detectedLanguage);
             softly.assertEquals(
                 chosenUserLanguage,
                 detectedLanguage,
@@ -136,7 +122,7 @@ public class AboutDirectorySteps implements En {
         });
   }
 
-  public static void ReadXMLFile() {
+  public static void ReadXlsxFile() {
     try {
 
       FileInputStream excelFile =
@@ -164,7 +150,6 @@ public class AboutDirectorySteps implements En {
             xlsxFileContentList.add(currentCell.getNumericCellValue() + ",");
           }
         }
-        System.out.println();
       }
     } catch (FileNotFoundException e) {
       e.printStackTrace();

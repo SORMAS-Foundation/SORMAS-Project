@@ -2,7 +2,7 @@
 Feature: About end to end tests
 
   @issue=SORDEV-6474 @env_main
-  Scenario: Check language options in Data Dictionary
+  Scenario: Check language options in Data Dictionary depending on the user language setting
     Given I log in with National User
     And I click on the About button from navbar
     Then I click on the User Settings button from navbar
@@ -12,6 +12,4 @@ Feature: About end to end tests
     And I detect language for XLSX file content
     And I delete exported file from About Directory
     Then I click on the User Settings button from navbar
-#    And I select "English" language from Combobox in User settings
-
-    And I set on default language in User settings
+    And I set on default language as English in User settings
