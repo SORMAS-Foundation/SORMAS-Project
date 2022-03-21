@@ -728,7 +728,7 @@ public class EditCaseSteps implements En {
         () -> {
           String caseClassification =
               webDriverHelpers.getValueFromCombobox(CASE_CLASSIFICATION_COMBOBOX);
-          softly.assertEquals(caseClassification, "0. Nicht klassifiziert");
+          softly.assertEquals(caseClassification, "0. Nicht klassifiziert", "The case classification is incorrect!");
           softly.assertAll();
         });
 
@@ -737,7 +737,7 @@ public class EditCaseSteps implements En {
         () -> {
           String referenceReadOnlyAttribute =
               webDriverHelpers.getAttributeFromWebElement(REFERENCE_DEFINITION_TEXT, "readonly");
-          softly.assertNotNull(referenceReadOnlyAttribute);
+          softly.assertNotNull(referenceReadOnlyAttribute, "The case reference definition shouldn't be editable, but it is!");
           softly.assertAll();
         });
 
@@ -745,7 +745,7 @@ public class EditCaseSteps implements En {
         "I check that case reference definition is set to not fulfilled in German on Edit case page",
         () -> {
           String caseReference = webDriverHelpers.getValueFromWebElement(REFERENCE_DEFINITION_TEXT);
-          softly.assertEquals(caseReference, "Nicht erf\u00FCllt");
+          softly.assertEquals(caseReference, "Nicht erf\u00FCllt", "The case reference definition is incorrect!");
           softly.assertAll();
         });
 
@@ -753,7 +753,7 @@ public class EditCaseSteps implements En {
         "I check that case reference definition is set to fulfilled in German on Edit case page",
         () -> {
           String caseReference = webDriverHelpers.getValueFromWebElement(REFERENCE_DEFINITION_TEXT);
-          softly.assertEquals(caseReference, "Erf\u00FCllt");
+          softly.assertEquals(caseReference, "Erf\u00FCllt", "The case reference definition is incorrect!");
           softly.assertAll();
         });
 
@@ -772,7 +772,7 @@ public class EditCaseSteps implements En {
                       "C. Klinisch-labordiagnostisch best\u00E4tigt",
                       "D. Labordiagnostisch bei nicht erf\u00FCllter Klinik",
                       "E. Labordiagnostisch bei unbekannter Klinik")
-                  .contains(caseClassification));
+                  .contains(caseClassification), "The case classification is incorrect!");
           softly.assertAll();
         });
   }

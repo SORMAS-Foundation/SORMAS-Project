@@ -114,7 +114,7 @@ public class SurveillanceDashboardSteps implements En {
               Integer.parseInt(
                   webDriverHelpers.getTextFromWebElement(
                       REFERENCE_DEFINITION_FULFILLED_CASES_NUMBER));
-          softly.assertTrue(number > 0);
+          softly.assertTrue(number > 0, "The number of cases fulfilling the reference definition is incorrect!");
           softly.assertAll();
         });
   }
