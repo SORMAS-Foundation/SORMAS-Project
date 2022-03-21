@@ -118,7 +118,9 @@ public class EventDirectoryPage {
   public static final By IMPORT_POPUP_BUTTON = By.cssSelector("[class='v-button']");
   public static final By COMMIT_BUTTON = By.id("commit");
   public static final By IMPORT_SUCCESS = By.xpath("//*[text()='Import successful!']");
-
+  public static final By EXPORT_PARTICIPANT_BUTTON = By.id("export");
+  public static final By BASIC_EXPORT_PARTICIPANT_BUTTON = By.id("exportBasic");
+  public static final By CLOSE_POPUP_BUTTON = By.cssSelector(".v-window-closebox");
   public static By getByEventUuid(String eventUuid) {
     return By.xpath(String.format("//a[@title='%s']", eventUuid));
   }
