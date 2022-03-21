@@ -608,25 +608,25 @@ Feature: Case end to end tests
     And I check that case reference definition is set to not fulfilled in German on Edit case page
     When I click on New Sample in German
     And I create a new Sample with positive test result for DE version
-    And I select "Antigen-Nachweistest" as Type of Test in the Create New Sample popup
+    And I select the German words for Antigen Detection Test as Type of Test in the Create New Sample popup
     And I save the created sample
     Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
     And I check that case reference definition is set to not fulfilled in German on Edit case page
     When I click on New Sample in German
     And I create a new Sample with positive test result for DE version
-    And I select "Antigen Nachweistest (Schnelltest)" as Type of Test in the Create New Sample popup
+    And I select the German words for Rapid Antigen Detection Test as Type of Test in the Create New Sample popup
     And I save the created sample
     Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
     And I check that case reference definition is set to not fulfilled in German on Edit case page
     When I click on New Sample in German
     And I create a new Sample with positive test result for DE version
-    And I select "Isolation" as Type of Test in the Create New Sample popup
+    And I select the German words for Isolation as Type of Test in the Create New Sample popup
     And I save the created sample
     Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
     And I check that case reference definition is set to fulfilled in German on Edit case page
     When I click on New Sample in German
     And I create a new Sample with positive test result for DE version
-    And I select "Nukleinsäure-Nachweis (z.B. PCR)" as Type of Test in the Create New Sample popup
+    And I select the German words for PCR / RT-PCR as Type of Test in the Create New Sample popup
     And I save the created sample
     Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
     And I check that case reference definition is set to fulfilled in German on Edit case page

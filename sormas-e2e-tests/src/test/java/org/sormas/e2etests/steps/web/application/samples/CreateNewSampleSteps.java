@@ -105,9 +105,27 @@ public class CreateNewSampleSteps implements En {
         });
 
     When(
-        "I select {string} as Type of Test in the Create New Sample popup",
-        (String typeOfTest) -> {
-          selectTypeOfTest(typeOfTest);
+        "I select the German words for Antigen Detection Test as Type of Test in the Create New Sample popup",
+        () -> {
+          selectTypeOfTest("Antigen-Nachweistest");
+        });
+
+    When(
+        "I select the German words for Rapid Antigen Detection Test as Type of Test in the Create New Sample popup",
+        () -> {
+          selectTypeOfTest("Antigen Nachweistest (Schnelltest)");
+        });
+
+    When(
+        "I select the German words for Isolation as Type of Test in the Create New Sample popup",
+        () -> {
+          selectTypeOfTest("Isolation");
+        });
+
+    When(
+        "I select the German words for PCR / RT-PCR as Type of Test in the Create New Sample popup",
+        () -> {
+          selectTypeOfTest("Nukleins\u00E4ure-Nachweis (z.B. PCR)");
         });
 
     When(
