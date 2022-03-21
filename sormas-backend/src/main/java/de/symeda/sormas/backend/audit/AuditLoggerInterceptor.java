@@ -79,7 +79,7 @@ public class AuditLoggerInterceptor {
 		}
 	}
 
-	private static boolean skip;
+	private static boolean skip = false;
 
 	@PostConstruct
 	private void setup() {
