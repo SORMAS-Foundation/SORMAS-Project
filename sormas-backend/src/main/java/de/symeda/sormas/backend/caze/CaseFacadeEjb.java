@@ -2925,8 +2925,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return target;
 	}
 
-	@Override
-	public Map<ReinfectionDetail, Boolean> cleanupReinfectionDetails(Map<ReinfectionDetail, Boolean> reinfectionDetails) {
+
+	private Map<ReinfectionDetail, Boolean> cleanupReinfectionDetails(Map<ReinfectionDetail, Boolean> reinfectionDetails) {
 		if (reinfectionDetails != null && reinfectionDetails.containsValue(Boolean.FALSE)) {
 			Map<ReinfectionDetail, Boolean> onlyTrueReinfectionDetails = new HashMap<>();
 			onlyTrueReinfectionDetails =
