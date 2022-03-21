@@ -223,10 +223,7 @@ public class TravelEntryFacadeEjb
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validPointOfEntry));
 		}
 		if (travelEntryDto.getDateOfArrival() == null) {
-			throw new ValidationRuntimeException(
-				I18nProperties.getValidationError(
-					Validations.required,
-					I18nProperties.getPrefixCaption(TravelEntryDto.I18N_PREFIX, TravelEntryDto.DATE_OF_ARRIVAL)));
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDateOfArrival));
 		}
 	}
 

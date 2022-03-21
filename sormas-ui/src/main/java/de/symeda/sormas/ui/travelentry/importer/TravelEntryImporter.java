@@ -123,7 +123,7 @@ public class TravelEntryImporter extends DataImporter {
 					return ImportLineResult.ERROR;
 				}
 			}
-		} else if(importResult.getResult() == de.symeda.sormas.api.importexport.ImportLineResult.SKIPPED){
+		} else if (importResult.getResult() == de.symeda.sormas.api.importexport.ImportLineResult.SKIPPED) {
 			return ImportLineResult.SKIPPED;
 		}
 

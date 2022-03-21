@@ -203,6 +203,7 @@ public interface Validations {
 	String vaccineDosesFormat = "vaccineDosesFormat";
 	String validCaseContactOrEventParticipant = "validCaseContactOrEventParticipant";
 	String validCommunity = "validCommunity";
+	String validDateOfArrival = "validDateOfArrival";
 	String validDateRange = "validDateRange";
 	String validDisease = "validDisease";
 	String validDistrict = "validDistrict";

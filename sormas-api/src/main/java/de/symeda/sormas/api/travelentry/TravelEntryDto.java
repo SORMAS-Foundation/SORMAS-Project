@@ -136,7 +136,6 @@ public class TravelEntryDto extends PseudonymizableDto {
 	private boolean quarantineReduced;
 	private boolean quarantineOfficialOrderSent;
 	private Date quarantineOfficialOrderSentDate;
-	@NotNull(message = Validations.requiredField)
 	private Date dateOfArrival;
 
 	public static TravelEntryDto build(PersonReferenceDto person) {
