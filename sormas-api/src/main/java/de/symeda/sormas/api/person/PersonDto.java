@@ -272,6 +272,7 @@ public class PersonDto extends PseudonymizableDto {
 		Disease.UNSPECIFIED_VHF,
 		Disease.UNDEFINED,
 		Disease.OTHER })
+	@HideForCountries
 	private Date burialDate;
 	@Diseases({
 		Disease.AFP,
@@ -284,6 +285,7 @@ public class PersonDto extends PseudonymizableDto {
 		Disease.OTHER })
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@HideForCountries
 	private String burialPlaceDescription;
 	@Diseases({
 		Disease.AFP,
@@ -294,6 +296,7 @@ public class PersonDto extends PseudonymizableDto {
 		Disease.UNSPECIFIED_VHF,
 		Disease.UNDEFINED,
 		Disease.OTHER })
+	@HideForCountries
 	private BurialConductor burialConductor;
 	@EmbeddedPersonalData
 	@EmbeddedSensitiveData
