@@ -74,7 +74,7 @@ Feature: Epidemiological data coverage
     And I click on Exposure details known with YES option
     Then I click on New Entry in Exposure Details Known in Cases directory
     And I select from Combobox all options in Type of activity field in Exposure for Epidemiological data tab for Cases
-    Then  I select a Type of activity Other option in Exposure for Epidemiological data tab in Cases
+    Then I select a Type of activity Other option in Exposure for Epidemiological data tab in Cases
     And I fill a Type of activity details field in Exposure for Epidemiological data tab in Cases
     Then  I select a Type of activity Gathering option in Exposure for Epidemiological data tab in Cases
     And I select from Combobox all Type of gathering in Exposure for Epidemiological data tab in Cases
@@ -98,3 +98,21 @@ Feature: Epidemiological data coverage
     And I am checking all Location data in Exposure are saved and displayed
     And I click on save button in Exposure for Epidemiological data tab in Cases
     And I click on save button from Epidemiological Data
+
+  @issue=SORDEV-5523 @env_de
+  Scenario: Enter an exposure data in Case Directory for DE version
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data for DE version
+    And I navigate to epidemiological data tab in Edit case page
+    And I click on Exposure details known with NEIN option
+    And I click on Exposure details known with UNBEKANNT option
+    And I click on Exposure details known with JA option
+    Then I click on New Entry in Exposure Details Known in Cases directory
+    And I tick a Probable infection environmental box in Exposure for Epidemiological data tab in Cases
+    And I select from Combobox all options in Type of activity field in Exposure for Epidemiological data tab for Cases for DE version
+    Then I select a Type of activity Sonstiges option in Exposure for Epidemiological data tab in Cases
+    And I fill a Type of activity details field in Exposure for Epidemiological data tab in Cases
+    Then I select a Type of activity Versammlung option in Exposure for Epidemiological data tab in Cases
+    And I select from Combobox all Type of gathering in Exposure for Epidemiological data tab in Cases

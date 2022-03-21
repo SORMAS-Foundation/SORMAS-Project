@@ -46,6 +46,13 @@ public class EpidemiologicalDataCaseSteps implements En {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
+        "I tick a Probable infection environmental box in Exposure for Epidemiological data tab in Cases",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              EXPOSURE_PROBABLE_INFECTION_ENVIRONMENT_CHECKBOX);
+        });
+
+    When(
         "I am accessing via URL the Epidemiological data tab of the created case",
         () -> {
           String uuid = apiState.getCreatedCase().getUuid();
@@ -127,6 +134,16 @@ public class EpidemiologicalDataCaseSteps implements En {
         () -> {
           String[] ListOfTypeOfActivityExposure =
               TypeOfActivityExposure.ListOfTypeOfActivityExposure;
+          for (String value : ListOfTypeOfActivityExposure) {
+            webDriverHelpers.selectFromCombobox(TYPE_OF_ACTIVITY_COMBOBOX, value);
+          }
+        });
+
+    When(
+        "I select from Combobox all options in Type of activity field in Exposure for Epidemiological data tab for Cases for DE version",
+        () -> {
+          String[] ListOfTypeOfActivityExposure =
+              TypeOfActivityExposure.ListOfTypeOfActivityExposureDE;
           for (String value : ListOfTypeOfActivityExposure) {
             webDriverHelpers.selectFromCombobox(TYPE_OF_ACTIVITY_COMBOBOX, value);
           }
