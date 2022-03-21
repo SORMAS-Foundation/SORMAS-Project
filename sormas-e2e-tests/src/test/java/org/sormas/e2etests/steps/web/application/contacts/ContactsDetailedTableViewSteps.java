@@ -1,7 +1,6 @@
 package org.sormas.e2etests.steps.web.application.contacts;
 
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.*;
-import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.FIRST_ROW;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CONTACT_DATA_TITLE;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
@@ -22,6 +21,7 @@ import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
+import org.sormas.e2etests.steps.web.application.cases.CaseDetailedTableViewSteps;
 import org.testng.asserts.SoftAssert;
 
 public class ContactsDetailedTableViewSteps implements En {
@@ -143,7 +143,8 @@ public class ContactsDetailedTableViewSteps implements En {
             webDriverHelpers.clickOnWebElementBySelector(By.id("actionCancel"));
             webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
           }
-          webDriverHelpers.doubleClickOnWebElementBySelector(FIRST_ROW);
+          webDriverHelpers.doubleClickOnWebElementBySelector(
+              By.xpath("//*[contains(text(),'" + CaseDetailedTableViewSteps.name + "')]"));
         });
   }
 
