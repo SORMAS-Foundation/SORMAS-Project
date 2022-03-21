@@ -144,8 +144,8 @@ public class FieldVisibilityCheckers implements Serializable {
 		return withCheckers(new CountryFieldVisibilityChecker(countryLocale));
 	}
 
-	public static FieldVisibilityCheckers withFeatureTypes(Supplier<List<FeatureConfigurationDto>> featureConfigurationSupplier) {
-		return withCheckers(new FeatureTypeFieldVisibilityChecker(featureConfigurationSupplier));
+	public static FieldVisibilityCheckers withFeatureTypes(List<FeatureConfigurationDto> featureConfigurations) {
+		return withCheckers(new FeatureTypeFieldVisibilityChecker(featureConfigurations));
 	}
 
 	public static FieldVisibilityCheckers withCheckers(Checker... checkers) {

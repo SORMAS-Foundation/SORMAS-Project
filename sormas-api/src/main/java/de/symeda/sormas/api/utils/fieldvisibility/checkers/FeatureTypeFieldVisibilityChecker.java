@@ -3,7 +3,6 @@ package de.symeda.sormas.api.utils.fieldvisibility.checkers;
 import java.lang.reflect.AccessibleObject;
 import java.util.List;
 import java.util.Optional;
-import java.util.function.Supplier;
 import java.util.stream.Stream;
 
 import de.symeda.sormas.api.feature.FeatureConfigurationDto;
@@ -13,12 +12,10 @@ import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 
 public class FeatureTypeFieldVisibilityChecker implements FieldVisibilityCheckers.FieldBasedChecker {
 
-	private final Supplier<List<FeatureConfigurationDto>> featureConfigurationsSupplier;
+	private final List<FeatureConfigurationDto> featureConfigurations;
 
-	private List<FeatureConfigurationDto> featureConfigurations;
-
-	public FeatureTypeFieldVisibilityChecker(Supplier<List<FeatureConfigurationDto>> featureConfigurationsSupplier) {
-		this.featureConfigurationsSupplier = featureConfigurationsSupplier;
+	public FeatureTypeFieldVisibilityChecker(List<FeatureConfigurationDto> featureConfigurations) {
+		this.featureConfigurations = featureConfigurations;
 	}
 
 	@Override
@@ -28,7 +25,7 @@ public class FeatureTypeFieldVisibilityChecker implements FieldVisibilityChecker
 			FeatureType featureType = annotation.featureType();
 
 			Optional<FeatureConfigurationDto> featureConfiguration =
-				getFeatureConfigurations().stream().filter(c -> c.getFeatureType() == featureType).findFirst();
+				featureConfigurations.stream().filter(c -> c.getFeatureType() == featureType).findFirst();
 
 			return featureConfiguration.map(c -> {
 				DependingOnFeatureType.FeatureProperty[] properties = annotation.properties();
@@ -49,12 +46,5 @@ public class FeatureTypeFieldVisibilityChecker implements FieldVisibilityChecker
 		}
 
 		return true;
-	}
-
-	private List<FeatureConfigurationDto> getFeatureConfigurations() {
-		if (featureConfigurations == null) {
-			featureConfigurations = featureConfigurationsSupplier.get();
-		}
-		return featureConfigurations;
 	}
 }

@@ -54,7 +54,7 @@ public class RegionEditForm extends AbstractEditForm<RegionDto> {
 			RegionDto.class,
 			RegionDto.I18N_PREFIX,
 			false,
-			FieldVisibilityCheckers.withFeatureTypes(FacadeProvider.getFeatureConfigurationFacade()::getActiveServerFeatureConfigurations),
+			FieldVisibilityCheckers.withFeatureTypes(FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations()),
 			UiFieldAccessCheckers.getNoop());
 		this.create = create;
 
