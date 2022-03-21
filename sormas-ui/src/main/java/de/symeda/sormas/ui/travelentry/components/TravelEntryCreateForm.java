@@ -219,6 +219,7 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 			FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
 			diseaseVariantField
 				.setVisible(disease != null && isVisibleAllowed(TravelEntryDto.DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
+			personCreateForm.updatePresentConditionEnum(disease);
 		});
 		diseaseVariantField.addValueChangeListener(e -> {
 			DiseaseVariant diseaseVariant = (DiseaseVariant) e.getProperty().getValue();
