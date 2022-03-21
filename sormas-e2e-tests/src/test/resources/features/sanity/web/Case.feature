@@ -663,3 +663,14 @@ Feature: Case end to end tests
     And I set Facility Type to "Mobiler/Ambulanter Pflegedienst" from New Entry popup
     And I set Facility Type to "Aufsuchende ambulante Hilfen" from New Entry popup
     And And I click on Discard button from New Entry popup
+
+  @issue=SORQA-123 @env_main
+  Scenario: Import Documentation for Cases Test
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the import button for Cases in Case tab
+    Then I click on the detailed button from import Case tab
+    And I click on the Download Import Guide button in Import Cases
+    Then I check if Import Guide for cases was downloaded correctly
+    And And I click on the Download Data Dictionary button in Import Cases
+    Then I check if Data Dictionary for cases was downloaded correctly
