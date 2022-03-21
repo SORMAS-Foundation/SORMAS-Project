@@ -141,5 +141,6 @@ public class CaseDirectoryPage {
   public static final By FIRST_RESULT_IN_GRID =
       By.xpath("//div[contains(@class, 'popupContent')]//tr[@role='row']");
   public static final By SEARCH_BUTTON = By.id("search");
+  public static final By CASE_EPIDEMIOLOGICAL_DATA_TAB = By.cssSelector("#tab-cases-epidata");
   public static final By EPIDEMIOLOGICAL_DATA_TAB = By.cssSelector("#tab-cases-epidata");
 }

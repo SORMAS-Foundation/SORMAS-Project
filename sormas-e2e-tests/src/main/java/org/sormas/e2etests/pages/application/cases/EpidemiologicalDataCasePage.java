@@ -100,4 +100,5 @@ public class EpidemiologicalDataCasePage {
       By.xpath("//div[contains(@id, 'de.symeda.sormas.api.exposure')]");
   public static final By OPEN_SAVED_ACTIVITY_BUTTON =
       By.xpath("//div[contains(@id, 'de.symeda.sormas.api.activityascase')]");
+  public static final By CONTACT_TO_CASE_COMBOBOX = By.cssSelector(".v-window #contactToCase div");
 }
