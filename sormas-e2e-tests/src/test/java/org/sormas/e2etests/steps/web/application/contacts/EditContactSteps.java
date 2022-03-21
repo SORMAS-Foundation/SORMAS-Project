@@ -70,7 +70,7 @@ public class EditContactSteps implements En {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
-        "I open the last created contact by UI",
+        "I open the last created contact in Contact directory page",
         () -> {
           searchAfterContactByMultipleOptions(collectedContact.getUuid());
           openContactFromResultsByUUID(collectedContact.getUuid());
@@ -269,10 +269,10 @@ public class EditContactSteps implements En {
               120);
         });
     When(
-        "^I click on ([^\"]*) radio button Contact Person tab$",
-        (String buttonName) ->
+        "^I click on CONFIRMED CONTACT radio button Contact Data tab for DE version$",
+        () ->
             webDriverHelpers.clickWebElementByText(
-                CONTACT_CLASSIFICATION_RADIO_BUTTON, buttonName));
+                CONTACT_CLASSIFICATION_RADIO_BUTTON, "BEST\u00C4TIGTER KONTAKT"));
 
     When(
         "^I click SAVE button on Edit Contact Page$",
@@ -505,9 +505,6 @@ public class EditContactSteps implements En {
   private Contact collectContactDataDE() {
     String collectedDateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE);
     String collectedLastDateOfContact = webDriverHelpers.getValueFromWebElement(LAST_CONTACT_DATE);
-    //    collectedContact =
-    //        Contact.builder().uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT)).build();
-
     LocalDate parsedDateOfReport = LocalDate.parse(collectedDateOfReport, formatterDE);
     LocalDate parsedLastDateOfContact = LocalDate.parse(collectedLastDateOfContact, formatterDE);
     Contact contactInfo = getContactInformationDE();

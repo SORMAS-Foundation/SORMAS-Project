@@ -261,9 +261,11 @@ public class CreateNewCaseSteps implements En {
         });
 
     When(
-        "I search for the last case uuid in the CHOOSE SOURCE window for UI",
+        "I search for the last case uuid created by UI in the CHOOSE SOURCE Contact window",
         () -> {
           webDriverHelpers.fillInWebElement(SOURCE_CASE_WINDOW_CASE_INPUT, aCase.getUuid());
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
         });
     When(

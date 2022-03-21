@@ -125,16 +125,16 @@ Feature: Contact filter functionality
     And I fill a new contact form for DE version
     And I click SAVE button on Edit Contact Page
     Then I check the created data is correctly displayed on Edit Contact page for DE version
-    And I click on BESTÄTIGTER KONTAKT radio button Contact Person tab
+    And I click on CONFIRMED CONTACT radio button Contact Data tab for DE version
     Then I click SAVE button on Edit Contact Page
     And I click Create Case from Contact button
     When I create a new case for contact with specific data for DE
     Then I check case created from created contact is correctly displayed on Edit Case page for DE
     And I click on the Contacts button from navbar
-    And I open the last created contact by UI
+    And I open the last created contact in Contact directory page
     And I click on the CHOOSE SOURCE CASE button from CONTACT page
     And I click yes on the DISCARD UNSAVED CHANGES popup from CONTACT page
-    And I search for the last case uuid in the CHOOSE SOURCE window for UI
+    And I search for the last case uuid created by UI in the CHOOSE SOURCE Contact window
     And I open the first found result in the CHOOSE SOURCE window for DE version
     Then I click SAVE button on Edit Contact Page
     Then I click on the Contacts button from navbar
@@ -171,7 +171,7 @@ Feature: Contact filter functionality
     And I fill a new contact form for DE version
     And I click SAVE button on Edit Contact Page
     Then I check the created data is correctly displayed on Edit Contact page for DE version
-    And I click on BESTÄTIGTER KONTAKT radio button Contact Person tab
+    And I click on CONFIRMED CONTACT radio button Contact Data tab for DE version
     Then I click SAVE button on Edit Contact Page
     And I click Create Case from Contact button
     When I create a new case for contact with specific data for DE
