@@ -29,6 +29,8 @@ import javax.ejb.Stateless;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
@@ -72,6 +74,7 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.PatchHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless(name = "VaccinationFacade")
@@ -442,6 +445,12 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	@Override
 	public VaccinationDto getByUuid(String uuid) {
 		return toDto(vaccinationService.getByUuid(uuid));
+	}
+
+	public VaccinationDto postUpdate(String uuid, JsonNode vaccinationDtoJson) {
+		VaccinationDto existingVaccinationDto = toDto(vaccinationService.getByUuid(uuid));
+		PatchHelper.postUpdate(vaccinationDtoJson, existingVaccinationDto);
+		return this.save(existingVaccinationDto);
 	}
 
 	@Override
