@@ -108,7 +108,7 @@ public class CreateNewTravelEntrySteps implements En {
     When(
         "^I fill the required fields in a new travel entry form for previous created person$",
         () -> {
-          travelEntry = travelEntryService.buildGeneratedEntryWithPointOfEntryDetails(entryPoint);
+          travelEntry = travelEntryService.buildGeneratedEntryWithPointOfEntryDetailsDE(entryPoint);
           fillFirstName(firstName);
           fillLastName(lastName);
           selectSex(sex);
@@ -249,7 +249,7 @@ public class CreateNewTravelEntrySteps implements En {
         });
 
     When(
-        "I check if first and last user name for case in travel entry is correct",
+        "I check if first and last person name for case in travel entry is correct",
         () -> {
           softly.assertEquals(
               webDriverHelpers.getTextFromWebElement(CASE_PERSON_NAME).toLowerCase(Locale.GERMAN),

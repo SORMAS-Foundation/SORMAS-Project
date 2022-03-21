@@ -49,7 +49,7 @@ Feature: Create travel entries
       Then I navigate to epidemiological data tab in Edit case page
       And I click on edit travel entry button form case epidemiological tab
       Then I check the created data is correctly displayed on Edit travel entry page for DE version
-      And I check if first and last user name for case in travel entry is correct
+      And I check if first and last person name for case in travel entry is correct
       And I click on the Entries button from navbar
       And I click on the New Travel Entry button from Travel Entries directory
       When I fill the required fields in a new travel entry form for previous created person

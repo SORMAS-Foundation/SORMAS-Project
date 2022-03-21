@@ -63,7 +63,7 @@ public class TravelEntryService {
         .build();
   }
 
-  public TravelEntry buildGeneratedEntryWithPointOfEntryDetails(String pointOfEntry) {
+  public TravelEntry buildGeneratedEntryWithPointOfEntryDetailsDE(String pointOfEntry) {
     firstName = faker.name().firstName();
     lastName = faker.name().lastName();
 
