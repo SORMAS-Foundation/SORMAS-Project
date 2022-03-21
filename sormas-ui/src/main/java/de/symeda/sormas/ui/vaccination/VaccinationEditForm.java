@@ -111,18 +111,20 @@ public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 			Collections.singletonList(VaccineManufacturer.OTHER),
 			true);
 
-		if (!FacadeProvider.getFeatureConfigurationFacade().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+//		if (!FacadeProvider.getFeatureConfigurationFacade().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
 			addField(VaccinationDto.PREGNANT);
 			addField(VaccinationDto.TRIMESTER);
 			addField(VaccinationDto.HEALTH_CONDITIONS, HealthConditionsForm.class).setCaption(null);
 
-			FieldHelper.setVisibleWhen(
-				getFieldGroup(),
-				VaccinationDto.TRIMESTER,
-				VaccinationDto.PREGNANT,
-				Collections.singletonList(YesNoUnknown.YES),
-				true);
-		}
+			if(isVisibleAllowed(VaccinationDto.PREGNANT)) {
+				FieldHelper.setVisibleWhen(
+						getFieldGroup(),
+						VaccinationDto.TRIMESTER,
+						VaccinationDto.PREGNANT,
+						Collections.singletonList(YesNoUnknown.YES),
+						true);
+			}
+//		}
 
 	}
 }

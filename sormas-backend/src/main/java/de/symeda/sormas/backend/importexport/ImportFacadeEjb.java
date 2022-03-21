@@ -38,7 +38,7 @@ import static de.symeda.sormas.api.caze.CaseDataDto.RESPONSIBLE_DISTRICT;
 import static de.symeda.sormas.api.caze.CaseDataDto.RESPONSIBLE_REGION;
 import static de.symeda.sormas.api.caze.CaseDataDto.SYMPTOMS;
 
-import de.symeda.sormas.api.importexport.ImportErrorException;
+import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import java.beans.PropertyDescriptor;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -103,6 +103,7 @@ import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportColumn;
+import de.symeda.sormas.api.importexport.ImportErrorException;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.importexport.ImportFacade;
 import de.symeda.sormas.api.importexport.ImportLineResultDto;
@@ -136,8 +137,8 @@ import de.symeda.sormas.api.utils.CSVCommentLineValidator;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.api.utils.ConstrainValidationHelper;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DependingOnFeatureType;
-import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.FeatureTypeFieldVisibilityChecker;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb.CampaignFormMetaFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
@@ -356,8 +357,8 @@ public class ImportFacadeEjb implements ImportFacade {
 			ContactDto.CASE_ID_EXTERNAL_SYSTEM,
 			ContactDto.CASE_OR_EVENT_INFORMATION);
 		importColumns = importColumns.stream()
-				.filter(column -> keepColumn(column, "", columnsToRemove) && keepColumn(column, "", VACCINATION_COLUMNS_TO_REMOVE))
-				.collect(Collectors.toList());
+			.filter(column -> keepColumn(column, "", columnsToRemove) && keepColumn(column, "", VACCINATION_COLUMNS_TO_REMOVE))
+			.collect(Collectors.toList());
 
 		writeTemplate(Paths.get(getCaseContactImportTemplateFilePath()), importColumns, true);
 	}
@@ -378,8 +379,8 @@ public class ImportFacadeEjb implements ImportFacade {
 
 		List<String> columnsToRemove = Arrays.asList(ContactDto.CAZE, ContactDto.RESULTING_CASE);
 		importColumns = importColumns.stream()
-				.filter(column -> keepColumn(column, "", columnsToRemove) && keepColumn(column, "", VACCINATION_COLUMNS_TO_REMOVE))
-				.collect(Collectors.toList());
+			.filter(column -> keepColumn(column, "", columnsToRemove) && keepColumn(column, "", VACCINATION_COLUMNS_TO_REMOVE))
+			.collect(Collectors.toList());
 
 		writeTemplate(Paths.get(getContactImportTemplateFilePath()), importColumns, true);
 	}
@@ -723,16 +724,17 @@ public class ImportFacadeEjb implements ImportFacade {
 	 * fields in the order of declaration (which is what we need here), but that could change
 	 * in the future.
 	 */
-	private void appendListOfFields(List<ImportColumn> importColumns, Class<?> clazz, String prefix, char separator) {
+	private void appendListOfFields(List<ImportColumn> importColumns, Class<?> clazz, String prefix, char separator, List<FeatureConfigurationDto> featureConfigurations) {
+
+		FieldVisibilityCheckers visibilityChecker = FieldVisibilityCheckers.withCountry(configFacade.getCountryCode())
+				.add(new FeatureTypeFieldVisibilityChecker(featureConfigurationFacade::getActiveServerFeatureConfigurations));
 
 		for (Field field : clazz.getDeclaredFields()) {
 			if (Modifier.isStatic(field.getModifiers())) {
 				continue;
 			}
 
-			String currentCountry = configFacade.getCountryCode();
-			CountryFieldVisibilityChecker visibilityChecker = new CountryFieldVisibilityChecker(currentCountry);
-			if (!visibilityChecker.isVisible(field)) {
+			if (!visibilityChecker.isVisible(clazz, field)) {
 				continue;
 			}
 
@@ -754,14 +756,6 @@ public class ImportFacadeEjb implements ImportFacade {
 			// Fields with the @ImportIgnore annotation are ignored
 			if (readMethod.isAnnotationPresent(ImportIgnore.class)) {
 				continue;
-			}
-			// Fields that are depending on a certain feature type to be active may be ignored
-			if (readMethod.isAnnotationPresent(DependingOnFeatureType.class)) {
-				List<FeatureType> activeServerFeatures = featureConfigurationFacade.getActiveServerFeatureTypes();
-				if (!activeServerFeatures.isEmpty()
-					&& !activeServerFeatures.contains(readMethod.getAnnotation(DependingOnFeatureType.class).featureType())) {
-					continue;
-				}
 			}
 			// List types are ignored
 			if (Collection.class.isAssignableFrom(field.getType())) {

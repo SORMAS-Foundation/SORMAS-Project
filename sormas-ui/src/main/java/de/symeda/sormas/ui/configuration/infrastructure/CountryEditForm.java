@@ -29,7 +29,7 @@ public class CountryEditForm extends AbstractEditForm<CountryDto> {
 			CountryDto.class,
 			CountryDto.I18N_PREFIX,
 			false,
-			FieldVisibilityCheckers.withFeatureTypes(FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureTypes()),
+			FieldVisibilityCheckers.withFeatureTypes(FacadeProvider.getFeatureConfigurationFacade()::getActiveServerFeatureConfigurations),
 			UiFieldAccessCheckers.getNoop());
 		this.create = create;
 

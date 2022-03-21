@@ -27,7 +27,7 @@ public class SubcontinentEditForm extends AbstractEditForm<SubcontinentDto> {
 			SubcontinentDto.class,
 			SubcontinentDto.I18N_PREFIX,
 			false,
-			FieldVisibilityCheckers.withFeatureTypes(FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureTypes()),
+			FieldVisibilityCheckers.withFeatureTypes(FacadeProvider.getFeatureConfigurationFacade()::getActiveServerFeatureConfigurations),
 			UiFieldAccessCheckers.getNoop());
 		this.create = create;
 

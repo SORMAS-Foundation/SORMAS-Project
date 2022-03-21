@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.backend.common;
 
+import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.user.UserRight;
 import java.io.IOException;
 import java.io.InputStream;
@@ -217,12 +218,12 @@ public class StartupShutdownService {
 
 		upgrade();
 
-		createImportTemplateFiles();
-
 		createMissingDiseaseConfigurations();
 
 		featureConfigurationService.createMissingFeatureConfigurations();
 		featureConfigurationService.updateFeatureConfigurations();
+
+		createImportTemplateFiles();
 
 		deletionConfigurationService.createMissingDeletionConfiguration();
 
@@ -758,96 +759,96 @@ public class StartupShutdownService {
 		}
 	}
 
-	private void createImportTemplateFiles() {
+	private void createImportTemplateFiles(List<FeatureConfigurationDto> featureConfigurations) {
 
 		try {
-			importFacade.generateCaseImportTemplateFile();
+			importFacade.generateCaseImportTemplateFile(featureConfigurations);
 		} catch (IOException e) {
 			logger.error("Could not create case import template .csv file.");
 		}
 
 		try {
-			importFacade.generateCaseContactImportTemplateFile();
+			importFacade.generateCaseContactImportTemplateFile(featureConfigurations);
 		} catch (IOException e) {
 			logger.error("Could not create case contact import template .csv file.");
 		}
 
 		try {
-			importFacade.generateContactImportTemplateFile();
+			importFacade.generateContactImportTemplateFile(featureConfigurations);
 		} catch (IOException e) {
 			logger.error("Could not create contact import template .csv file.");
 		}
 
 		try {
-			importFacade.generateCaseLineListingImportTemplateFile();
+			importFacade.generateCaseLineListingImportTemplateFile(featureConfigurations);
 		} catch (IOException e) {
 			logger.error("Could not create line listing import template .csv file.");
 		}
 
 		try {
-			importFacade.generatePointOfEntryImportTemplateFile();
+			importFacade.generatePointOfEntryImportTemplateFile(featureConfigurations);
 		} catch (IOException e) {
 			logger.error("Could not create point of entry import template .csv file.");
 		}
 
 		try {
-			importFacade.generatePopulationDataImportTemplateFile();
+			importFacade.generatePopulationDataImportTemplateFile(featureConfigurations);
 		} catch (IOException e) {
 			logger.error("Could not create population data import template .csv file.");
 		}
 
 		try {
-			importFacade.generateAreaImportTemplateFile();
+			importFacade.generateAreaImportTemplateFile(featureConfigurations);
 		} catch (IOException e) {
 			logger.error("Could not create area import template .csv file.");
 		}
 
 		try {
-			importFacade.generateContinentImportTemplateFile();
+			importFacade.generateContinentImportTemplateFile(featureConfigurations);
 		} catch (IOException e) {
 			logger.error("Could not create continent import template .csv file.");
 		}
 
 		try {
-			importFacade.generateSubcontinentImportTemplateFile();
+			importFacade.generateSubcontinentImportTemplateFile(featureConfigurations);
 		} catch (IOException e) {
 			logger.error("Could not create subcontinent import template .csv file.");
 		}
 
 		try {
-			importFacade.generateCountryImportTemplateFile();
+			importFacade.generateCountryImportTemplateFile(featureConfigurations);
 		} catch (IOException e) {
 			logger.error("Could not create country import template .csv file.");
 		}
 		try {
-			importFacade.generateRegionImportTemplateFile();
+			importFacade.generateRegionImportTemplateFile(featureConfigurations);
 		} catch (IOException e) {
 			logger.error("Could not create region import template .csv file.");
 		}
 		try {
-			importFacade.generateDistrictImportTemplateFile();
+			importFacade.generateDistrictImportTemplateFile(featureConfigurations);
 		} catch (IOException e) {
 			logger.error("Could not create district import template .csv file.");
 		}
 		try {
-			importFacade.generateCommunityImportTemplateFile();
+			importFacade.generateCommunityImportTemplateFile(featureConfigurations);
 		} catch (IOException e) {
 			logger.error("Could not create community import template .csv file.");
 		}
 		try {
-			importFacade.generateFacilityImportTemplateFile();
+			importFacade.generateFacilityImportTemplateFile(featureConfigurations);
 		} catch (IOException e) {
 			logger.error("Could not create facility/laboratory import template .csv file.");
 		}
 
 		try {
-			importFacade.generateEventImportTemplateFile();
+			importFacade.generateEventImportTemplateFile(featureConfigurations);
 		} catch (IOException e) {
 			logger.error("Could not create event import template .csv file.");
 		}
 
 		try {
-			importFacade.generateEventParticipantImportTemplateFile();
+			importFacade.generateEventParticipantImportTemplateFile(featureConfigurations);
 		} catch (IOException e) {
 			logger.error("Could not create event participant import template .csv file.");
 		}

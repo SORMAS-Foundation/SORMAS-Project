@@ -25,10 +25,14 @@ import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.immunization.ImmunizationReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DependingOnFeatureType;
+import de.symeda.sormas.api.utils.DependingOnFeatureType.FeatureProperty;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
@@ -63,6 +67,8 @@ public class VaccinationDto extends PseudonymizableDto {
 	private ImmunizationReferenceDto immunization;
 	@Required
 	@Valid
+	@DependingOnFeatureType(featureType = FeatureType.IMMUNIZATION_MANAGEMENT,
+		properties = @FeatureProperty(property = FeatureTypeProperty.REDUCED, value = "true"))
 	private HealthConditionsDto healthConditions;
 	@Required
 	private Date reportDate;
@@ -95,7 +101,11 @@ public class VaccinationDto extends PseudonymizableDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_TEXT, message = Validations.textTooLong)
 	private String vaccineAtcCode;
 	private VaccinationInfoSource vaccinationInfoSource;
+	@DependingOnFeatureType(featureType = FeatureType.IMMUNIZATION_MANAGEMENT,
+		properties = @FeatureProperty(property = FeatureTypeProperty.REDUCED, value = "true"))
 	private YesNoUnknown pregnant;
+	@DependingOnFeatureType(featureType = FeatureType.IMMUNIZATION_MANAGEMENT,
+		properties = @FeatureProperty(property = FeatureTypeProperty.REDUCED, value = "true"))
 	private Trimester trimester;
 
 	public static VaccinationDto build(UserReferenceDto user) {
