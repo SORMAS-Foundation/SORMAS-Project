@@ -11230,5 +11230,5 @@ CREATE TRIGGER versioning_trigger
     BEFORE INSERT OR UPDATE ON events_eventgroups
     FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'events_eventgroups_history', true);
 
-INSERT INTO schema_version (version_number, comment) VALUES (448, 'Delete history data on permanent deletion of entities #7713');
+INSERT INTO schema_version (version_number, comment) VALUES (449, 'Delete history data on permanent deletion of entities #7713');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
