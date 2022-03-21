@@ -192,13 +192,13 @@ public class CaseDetailedTableViewSteps implements En {
     When(
         "I check that I get navigated to the Edit Person page",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(PERSON_INFORMATION_TITLE);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(PERSON_INFORMATION_TITLE);
         });
 
     When(
         "I check that I get navigated to the Edit Case page",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(CASE_DATA_TITLE);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CASE_DATA_TITLE);
         });
 
     When(
