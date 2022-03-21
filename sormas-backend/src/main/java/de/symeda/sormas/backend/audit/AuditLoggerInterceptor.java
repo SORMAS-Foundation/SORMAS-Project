@@ -39,8 +39,6 @@ public class AuditLoggerInterceptor {
 	@EJB
 	CurrentUserService currentUserService;
 
-	@EJB
-	ConfigFacade configFacade;
 	// todo we need the session context in addition to the UserService as SYSTEM/ANONYMOUS do return null in the currentUserService
 	@Resource
 	private SessionContext sessionContext;
@@ -79,18 +77,10 @@ public class AuditLoggerInterceptor {
 		}
 	}
 
-	private static boolean skip = false;
-
-	@PostConstruct
-	private void setup() {
-		if (configFacade.getAuditSourceSite().equals("")) {
-			skip = true;
-		}
-	}
-
 	@AroundInvoke
 	public Object logAudit(InvocationContext context) throws Exception {
-		if (skip) {
+
+		if (AuditLogger.isLoggingDisabled()) {
 			return context.proceed();
 		}
 

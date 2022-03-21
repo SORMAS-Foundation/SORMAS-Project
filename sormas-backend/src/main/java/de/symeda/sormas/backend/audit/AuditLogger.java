@@ -66,12 +66,21 @@ public class AuditLogger {
 	@EJB
 	private LogSink auditLogger;
 
+	private static boolean loggingDisabled = false;
+
+	public static boolean isLoggingDisabled() {
+		// using ConfigFacade in the interceptor is difficult,
+		// therefore we compute the value for the skip fast path here and forward it
+		return loggingDisabled;
+	}
+
 	@PostConstruct
 	private void setup() {
 		String sourceSite = configFacade.getAuditSourceSite();
 		if (sourceSite.equals("")) {
 			logger.warn("audit.source.site is empty! Please configure it for more expedient audit trail analysis.");
 			sourceSite = "NOT CONFIGURED";
+			loggingDisabled = true;
 		}
 		this.auditSourceSite = sourceSite;
 		actionMap = new HashMap<>();
