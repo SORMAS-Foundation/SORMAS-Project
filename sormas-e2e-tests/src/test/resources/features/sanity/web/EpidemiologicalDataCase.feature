@@ -80,6 +80,7 @@ Feature: Epidemiological data coverage
     And I select from Combobox all Type of gathering in Exposure for Epidemiological data tab in Cases
     And I select a type of gathering Other option from Combobox in Exposure for Epidemiological data tab in Cases
     And I fill a type of gathering details in Exposure for Epidemiological data tab in Cases
+
     Then I fill Location form for Type of place by chosen "HOME" options in Exposure for Epidemiological data
     And I click on save button in Exposure for Epidemiological data tab in Cases
     And I am checking all Location data in Exposure are saved and displayed
@@ -115,4 +116,8 @@ Feature: Epidemiological data coverage
     Then I select a Type of activity Sonstiges option in Exposure for Epidemiological data tab in Cases
     And I fill a Type of activity details field in Exposure for Epidemiological data tab in Cases
     Then I select a Type of activity Versammlung option in Exposure for Epidemiological data tab in Cases
-    And I select from Combobox all Type of gathering in Exposure for Epidemiological data tab in Cases
+    And I select from Combobox all Type of gathering in Exposure for Epidemiological data tab in Cases for DE version
+    And I select a type of gathering Sonstiges option from Combobox in Exposure for Epidemiological data tab in Cases
+    And I fill a type of gathering details in Exposure for Epidemiological data tab in Cases
+    And I fill Location form for Type of place field by "Unbekannt" options in Case directory for DE version
+

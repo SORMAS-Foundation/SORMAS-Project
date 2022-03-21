@@ -147,4 +147,13 @@ public class CaseDirectoryPage {
   public static final By DETAILED_IMPORT_BUTTON = By.id("importDetailed");
   public static final By DOWNLOAD_IMPORT_GUIDE_BUTTON = By.id("import-step-1");
   public static final By DOWNLOAD_DATA_DICTIONARY_BUTTON = By.id("importDownloadDataDictionary");
+  public static final By FACILITY_ACTIVITY_AS_CASE_COMBOBOX =
+          By.cssSelector(".v-window #typeOfPlace div");
+  public static final By CASE_MEANS_OF_TRANSPORT =
+          By.cssSelector(".v-window #meansOfTransport div");
+  public static final By CASE_MEANS_OF_TRANSPORT_DETAILS = By.id("meansOfTransportDetails");
+  public static final By CASE_CONNECTION_NUMBER = By.id("connectionNumber");
+  public static final By CASE_SEAT_NUMBER = By.id("seatNumber");
+  public static final By CASE_ACTION_CONFIRM = By.id("actionConfirm");
+  public static final By CASE_ACTION_CANCEL = By.id("actionCancel");
 }

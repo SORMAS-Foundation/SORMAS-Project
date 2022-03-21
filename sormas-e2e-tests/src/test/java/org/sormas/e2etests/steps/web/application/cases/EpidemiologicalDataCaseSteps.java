@@ -159,6 +159,17 @@ public class EpidemiologicalDataCaseSteps implements En {
         });
 
     When(
+        "I select from Combobox all Type of gathering in Exposure for Epidemiological data tab in Cases for DE version",
+        () -> {
+          for (TypeOfGathering value : TypeOfGathering.values()) {
+            if (value != TypeOfGathering.valueOf("OTHER")) {
+              webDriverHelpers.selectFromCombobox(
+                  TYPE_OF_GATHERING_COMBOBOX, TypeOfGathering.getNameForDE(value.toString()));
+            }
+          }
+        });
+
+    When(
         "I select a type of gathering ([^\"]*) option from Combobox in Exposure for Epidemiological data tab in Cases",
         (String option) -> {
           webDriverHelpers.selectFromCombobox(TYPE_OF_GATHERING_COMBOBOX, option);
