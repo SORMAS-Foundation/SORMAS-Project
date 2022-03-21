@@ -51,11 +51,11 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.EditPermissionType;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
@@ -1013,8 +1013,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Predicate filterResponsible = null;
 		Predicate filter = null;
 
-		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
-		if (jurisdictionLevel != JurisdictionLevel.NATION && !currentUser.hasAnyUserRole(UserRole.REST_USER, UserRole.REST_EXTERNAL_VISITS_USER)) {
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		if (jurisdictionLevel != JurisdictionLevel.NATION) {
 			// whoever created the case or is assigned to it is allowed to access it
 			if (userFilterCriteria == null || (userFilterCriteria.getIncludeCasesFromOtherJurisdictions())) {
 				filterResponsible = cb.equal(casePath.get(Case.REPORTING_USER).get(User.ID), currentUser.getId());
@@ -1239,7 +1239,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 			Date earliestSampleDate = null;
 			for (Sample sample : caze.getSamples()) {
-				if (sample.getPathogenTestResult() == PathogenTestResultType.POSITIVE
+				if (!sample.isDeleted()
+					&& sample.getPathogenTestResult() == PathogenTestResultType.POSITIVE
 					&& (earliestSampleDate == null || sample.getSampleDateTime().before(earliestSampleDate))) {
 					earliestSampleDate = sample.getSampleDateTime();
 				}
@@ -1726,7 +1727,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	public void updateCompleteness(Case caze) {
-
 		float completeness = calculateCompleteness(caze);
 
 		/*

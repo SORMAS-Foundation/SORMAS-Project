@@ -106,12 +106,8 @@ public class CaseApiService {
                 .pseudonymized(true)
                 .build())
         .portHealthInfo(PortHealthInfo.builder().uuid(UUID.randomUUID().toString()).build())
-        .clinicalCourse(
-            ClinicalCourse.builder()
-                .uuid(UUID.randomUUID().toString())
-                .healthConditions(
-                    HealthConditions.builder().uuid(UUID.randomUUID().toString()).build())
-                .build())
+        .clinicalCourse(ClinicalCourse.builder().uuid(UUID.randomUUID().toString()).build())
+        .healthConditions(HealthConditions.builder().uuid(UUID.randomUUID().toString()).build())
         .surveillanceOfficer(
             SurveillanceOfficer.builder()
                 .uuid(

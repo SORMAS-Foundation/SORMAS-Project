@@ -15,11 +15,13 @@
 
 package de.symeda.sormas.ui.utils;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.function.Supplier;
 
 import org.joda.time.DateTimeComparator;
 
+import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.validator.AbstractValidator;
 import com.vaadin.v7.ui.Field;
 
@@ -148,4 +150,12 @@ public class DateComparisonValidator extends AbstractValidator<Date> {
 		endDateValidator.setDateOnly(dateOnly);
 	}
 
+	public static void removeDateComparisonValidators(Field<Date> dateField) {
+		Collection<Validator> validators = dateField.getValidators();
+		for (Validator validator : validators) {
+			if (validator instanceof DateComparisonValidator) {
+				dateField.removeValidator(validator);
+			}
+		}
+	}
 }
