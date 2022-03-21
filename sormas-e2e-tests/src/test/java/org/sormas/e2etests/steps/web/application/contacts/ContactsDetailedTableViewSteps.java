@@ -11,9 +11,9 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.enums.ContactOutcome;
@@ -138,7 +138,10 @@ public class ContactsDetailedTableViewSteps implements En {
     When(
         "I double-click on any field in the first row from Contacts Directory that is not Person ID",
         () -> {
-          TimeUnit.SECONDS.sleep(2);
+          if (webDriverHelpers.isElementVisibleWithTimeout(
+              By.xpath("//*[contains(text(),'Confirm navigation')]"), 5)) {
+            webDriverHelpers.clickOnWebElementBySelector(By.id("actionCancel"));
+          }
           webDriverHelpers.doubleClickOnWebElementBySelector(FIRST_ROW);
         });
   }

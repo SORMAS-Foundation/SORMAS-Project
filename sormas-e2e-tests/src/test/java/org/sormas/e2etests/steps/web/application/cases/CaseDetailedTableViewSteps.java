@@ -18,6 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.enums.CaseOutcome;
 import org.sormas.e2etests.enums.ContactOutcome;
@@ -204,6 +205,10 @@ public class CaseDetailedTableViewSteps implements En {
     When(
         "I double-click on any field in the first row from Case Directory that is not Person ID",
         () -> {
+          if (webDriverHelpers.isElementVisibleWithTimeout(
+              By.xpath("//*[contains(text(),'Confirm navigation')]"), 5)) {
+            webDriverHelpers.clickOnWebElementBySelector(By.id("actionCancel"));
+          }
           webDriverHelpers.doubleClickOnWebElementBySelector(FIRST_ROW);
         });
   }
