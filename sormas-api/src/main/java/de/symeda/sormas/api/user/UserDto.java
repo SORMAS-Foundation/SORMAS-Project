@@ -46,6 +46,7 @@ public class UserDto extends EntityDto {
 	public static final String I18N_PREFIX = "User";
 
 	public static final String ACTIVE = "active";
+	public static final String USER_CAPTIONACTIVE = "capactive";
 	public static final String USER_NAME = "userName";
 	public static final String FIRST_NAME = "firstName";
 	public static final String LAST_NAME = "lastName";
@@ -59,10 +60,12 @@ public class UserDto extends EntityDto {
 	public static final String AREA = "area";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
+	
 	public static final String HEALTH_FACILITY = "healthFacility";
 	public static final String ASSOCIATED_OFFICER = "associatedOfficer";
 	public static final String LABORATORY = "laboratory";
 	public static final String POINT_OF_ENTRY = "pointOfEntry";
+	
 	public static final String LIMITED_DISEASE = "limitedDisease";
 	public static final String LANGUAGE = "language";
 	public static final String HAS_CONSENTED_TO_GDPR = "hasConsentedToGdpr";

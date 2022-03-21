@@ -79,7 +79,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
                     fluidRowLocs(UserDto.ACTIVE) +
                     fluidRowLocs(UserDto.USER_NAME, UserDto.USER_ROLES) +
                     fluidRowLocs(UserDto.AREA, UserDto.REGION, UserDto.DISTRICT, UserDto.COMMUNITY) +
-                    fluidRowLocs(UserDto.HEALTH_FACILITY, UserDto.POINT_OF_ENTRY, UserDto.ASSOCIATED_OFFICER, UserDto.LABORATORY) +
+                    //fluidRowLocs(UserDto.HEALTH_FACILITY, UserDto.POINT_OF_ENTRY, UserDto.ASSOCIATED_OFFICER, UserDto.LABORATORY) +
                     fluidRowLocs(UserDto.LIMITED_DISEASE, "", "");
     //@formatter:off
 

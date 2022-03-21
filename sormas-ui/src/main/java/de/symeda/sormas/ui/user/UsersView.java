@@ -199,6 +199,7 @@ public class UsersView extends AbstractView {
 		filterLayout.setSizeUndefined();
 
 		activeFilter = ComboBoxHelper.createComboBoxV7();
+		activeFilter.setCaption(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.USER_CAPTIONACTIVE));
 		activeFilter.setId(UserDto.ACTIVE);
 		activeFilter.setWidth(200, Unit.PIXELS);
 		activeFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.ACTIVE));
@@ -213,6 +214,7 @@ public class UsersView extends AbstractView {
 		filterLayout.addComponent(activeFilter);
 
 		userRolesFilter = ComboBoxHelper.createComboBoxV7();
+		userRolesFilter.setCaption(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.USER_ROLES));
 		userRolesFilter.setId(UserDto.USER_ROLES);
 		userRolesFilter.setWidth(200, Unit.PIXELS);
 		userRolesFilter.setInputPrompt(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.USER_ROLES));
@@ -230,6 +232,7 @@ public class UsersView extends AbstractView {
 
 		if (user.getArea() == null) {
 			areaFilter.setWidth(140, Unit.PIXELS);
+			areaFilter.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.AREA));
 			areaFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.AREA));
 			areaFilter.addItems(FacadeProvider.getAreaFacade().getAllActiveAsReference());
 			areaFilter.addValueChangeListener(e -> {
@@ -252,6 +255,7 @@ public class UsersView extends AbstractView {
 		if (user.getRegion() == null) {
 			regionFilter.setWidth(140, Unit.PIXELS);
 			regionFilter.setInputPrompt("Province");
+			regionFilter.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, "Province"));
 			regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByArea(areaFilter.getId()));
 			regionFilter.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
@@ -292,6 +296,7 @@ public class UsersView extends AbstractView {
 		
 		districtFilter = ComboBoxHelper.createComboBoxV7();
 		districtFilter.setId(CaseDataDto.DISTRICT);
+		districtFilter.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
 		districtFilter.setWidth(140, Unit.PIXELS);
 		districtFilter.setInputPrompt(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.DISTRICT));
 		districtFilter.setDescription(I18nProperties.getDescription(Descriptions.descDistrictFilter));
@@ -304,6 +309,7 @@ public class UsersView extends AbstractView {
 
 
 		searchField = new TextField();
+		searchField.setCaption(I18nProperties.getString(Strings.promptUserSearch));
 		searchField.setId("search");
 		searchField.setWidth(200, Unit.PIXELS);
 		searchField.setNullRepresentation("");

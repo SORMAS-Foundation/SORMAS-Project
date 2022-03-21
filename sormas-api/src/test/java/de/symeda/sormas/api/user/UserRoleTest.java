@@ -34,15 +34,15 @@ public class UserRoleTest {
 			UserRole.NATIONAL_USER,
 			UserRole.LAB_USER,
 			UserRole.REST_USER,
-			UserRole.REST_EXTERNAL_VISITS_USER,
+		//	UserRole.REST_EXTERNAL_VISITS_USER,
 			UserRole.IMPORT_USER);
 
 		assertValidRolesCombination(
 			UserRole.NATIONAL_USER,
 			UserRole.NATIONAL_OBSERVER,
 			UserRole.NATIONAL_CLINICIAN,
-			UserRole.POE_NATIONAL_USER,
-			UserRole.REST_EXTERNAL_VISITS_USER);
+			UserRole.POE_NATIONAL_USER);
+		//	UserRole.REST_EXTERNAL_VISITS_USER);
 
 		assertValidRolesCombination(
 			UserRole.NATIONAL_USER,
