@@ -583,14 +583,14 @@ public final class FieldHelper {
 		if (items != null) {
 			select.addItems(items);
 		}
-		if (value instanceof InfrastructureDataReferenceDto){
+		if (value instanceof InfrastructureDataReferenceDto) {
 			updateInactiveInfrastructureItem(select, (InfrastructureDataReferenceDto) value);
 		}
 		select.setValue(value);
 		select.setReadOnly(readOnly);
 	}
 
-	public static void updateInactiveInfrastructureItem(AbstractSelect infrastructureField, InfrastructureDataReferenceDto value){
+	public static void updateInactiveInfrastructureItem(AbstractSelect infrastructureField, InfrastructureDataReferenceDto value) {
 		if (value != null && !infrastructureField.containsId(value)) {
 			InfrastructureDataReferenceDto inactiveValue = value.clone();
 			inactiveValue.setCaption(value.getCaption() + " (" + I18nProperties.getString(Strings.inactive) + ")");

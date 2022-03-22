@@ -251,6 +251,9 @@ public class TravelEntryFacadeEjb
 		if (travelEntryDto.getPointOfEntry() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validPointOfEntry));
 		}
+		if (travelEntryDto.getDateOfArrival() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDateOfArrival));
+		}
 	}
 
 	public TravelEntryDto toDto(TravelEntry entity) {
@@ -301,6 +304,7 @@ public class TravelEntryFacadeEjb
 		dto.setQuarantineReduced(entity.isQuarantineReduced());
 		dto.setQuarantineOfficialOrderSent(entity.isQuarantineOfficialOrderSent());
 		dto.setQuarantineOfficialOrderSentDate(entity.getQuarantineOfficialOrderSentDate());
+		dto.setDateOfArrival(entity.getDateOfArrival());
 
 		return dto;
 	}
@@ -361,6 +365,7 @@ public class TravelEntryFacadeEjb
 		target.setQuarantineReduced(source.isQuarantineReduced());
 		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
 		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
+		target.setDateOfArrival(source.getDateOfArrival());
 
 		return target;
 	}
@@ -368,7 +373,7 @@ public class TravelEntryFacadeEjb
 	@Override
 	protected String getDeleteReferenceField(DeletionReference deletionReference) {
 		if (deletionReference.equals(DeletionReference.ORIGIN)) {
-			return TravelEntry.REPORT_DATE;
+			return TravelEntry.DATE_OF_ARRIVAL;
 		}
 		return super.getDeleteReferenceField(deletionReference);
 	}

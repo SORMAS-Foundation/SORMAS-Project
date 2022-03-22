@@ -120,7 +120,7 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		TextField externalIdField = addField(ImmunizationDto.EXTERNAL_ID, TextField.class);
 		style(externalIdField, ERROR_COLOR_PRIMARY);
 
-		addDiseaseField(ImmunizationDto.DISEASE, false, true);
+		ComboBox diseaseField = addDiseaseField(ImmunizationDto.DISEASE, false, true);
 		addField(ImmunizationDto.DISEASE_DETAILS, TextField.class);
 
 		ComboBox meansOfImmunizationField = addField(ImmunizationDto.MEANS_OF_IMMUNIZATION, ComboBox.class);
@@ -184,6 +184,9 @@ public class ImmunizationCreationForm extends AbstractEditForm<ImmunizationDto> 
 		personCreateForm = new PersonCreateForm(false, true, false);
 		personCreateForm.setWidth(100, Unit.PERCENTAGE);
 		personCreateForm.setValue(new PersonDto());
+		diseaseField.addValueChangeListener(
+			(ValueChangeListener) valueChangeEvent -> personCreateForm
+				.updatePresentConditionEnum((Disease) valueChangeEvent.getProperty().getValue()));
 		getContent().addComponent(personCreateForm, TravelEntryDto.PERSON);
 
 		// Set initial visibilities & accesses

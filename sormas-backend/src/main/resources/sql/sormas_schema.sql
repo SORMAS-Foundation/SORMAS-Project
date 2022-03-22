@@ -10533,6 +10533,21 @@ CREATE INDEX externalshareinfo_caze_id_creationdate_idx ON externalshareinfo (ca
 
 INSERT INTO schema_version (version_number, comment) VALUES (448, 'Index on externalshareinfo (caze_id, creationDate) #7656');
 
+-- 2022-03-08 Add dateOfArrival to travel entries #7845
+ALTER TABLE travelentry ADD COLUMN dateofarrival timestamp without time zone;
+ALTER TABLE travelentry_history ADD COLUMN dateofarrival timestamp without time zone;
+
+UPDATE travelentry SET dateofarrival = TO_TIMESTAMP(dea_entry->>'value', 'DD.MM.YYYY')
+    FROM travelentry t
+    CROSS JOIN LATERAL json_array_elements(t.deacontent) dea_entry
+    WHERE dea_entry->>'caption' ilike 'eingangsdatum' and t.id = travelentry.id;
+
+UPDATE travelentry SET dateofarrival = creationdate where dateofarrival is null;
+
+ALTER TABLE travelentry ALTER COLUMN dateofarrival SET NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (449, 'Add dateOfArrival to travel entries #7845');
+
 -- 2022-03-14 - #7774 Automatic & manual archiving for all core entities
 UPDATE contact SET archived = TRUE
     FROM contact ct
@@ -10544,6 +10559,6 @@ UPDATE eventparticipant SET archived = TRUE
 INNER JOIN events e on ep.event_id = e.id
 where e.archived is TRUE;
 
-INSERT INTO schema_version (version_number, comment) VALUES (449, 'Automatic & manual archiving for all core entities #7774 ');
+INSERT INTO schema_version (version_number, comment) VALUES (450, 'Automatic & manual archiving for all core entities #7774 ');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
