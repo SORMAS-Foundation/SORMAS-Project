@@ -238,7 +238,7 @@ public class CaseDetailedTableViewSteps implements En {
   */
 
   private String getDateOfReportDateTime(String dateTimeString) {
-    SimpleDateFormat outputFormat = new SimpleDateFormat("M/dd/yyyy h:mm a");
+    SimpleDateFormat outputFormat = new SimpleDateFormat("M/dd/yyyy h:mm a", Locale.ENGLISH);
     // because API request is sending local GMT and UI displays GMT+2 (server GMT)
     outputFormat.setTimeZone(TimeZone.getTimeZone("GMT+1"));
 
