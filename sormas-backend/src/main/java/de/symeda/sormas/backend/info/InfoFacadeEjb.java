@@ -147,10 +147,6 @@ public class InfoFacadeEjb implements InfoFacade {
 
 			List<ColumnData> dataProtectionColumns = getDataProtectionColumns(dataProtectionSheet);
 			Map<String, List<XSSFCell>> dataProtectionData = getDataProtectionCellData(dataProtectionSheet);
-			EnumSet<EntityColumn> entityColumns = EnumSet.allOf(EntityColumn.class);
-			entityColumns.remove(EntityColumn.IGNORED_COUNTRIES);
-			entityColumns.remove(EntityColumn.EXCLUSIVE_COUNTRIES);
-
 			return generateDataDictionary(filterColumnsForDataProtectionDictionaryWithEntityColumn(), fieldVisibilityCheckers, dataProtectionColumns, dataProtectionData, true);
 
 		} catch (InvalidFormatException e) {
@@ -639,7 +635,6 @@ public class InfoFacadeEjb implements InfoFacade {
 
 	}
 	private static class ColumnData {
-
 		private String header;
 		private int width;
 
@@ -650,8 +645,7 @@ public class InfoFacadeEjb implements InfoFacade {
 	}
 
 	@Getter
-	private class EntityInfo {
-
+	private static class EntityInfo {
 		private Class<? extends EntityDto> entityClass;
 		private String i18nPrefix;
 
