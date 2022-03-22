@@ -131,7 +131,7 @@ public class ContactsDetailedTableViewSteps implements En {
     When(
         "I check that I get navigated to the Edit Contact page",
         () -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(CONTACT_DATA_TITLE);
         });
 
@@ -141,7 +141,7 @@ public class ContactsDetailedTableViewSteps implements En {
           if (webDriverHelpers.isElementVisibleWithTimeout(
               By.xpath("//*[contains(text(),'Confirm navigation')]"), 5)) {
             webDriverHelpers.clickOnWebElementBySelector(By.id("actionCancel"));
-            webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+            webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
           }
           webDriverHelpers.clickOnWebElementBySelector(FIRST_CONTACT_ID);
         });

@@ -193,14 +193,14 @@ public class CaseDetailedTableViewSteps implements En {
     When(
         "I check that I get navigated to the Edit Person page",
         () -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(PERSON_INFORMATION_TITLE);
         });
 
     When(
         "I check that I get navigated to the Edit Case page",
         () -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(CASE_DATA_TITLE);
         });
 
@@ -210,7 +210,7 @@ public class CaseDetailedTableViewSteps implements En {
           if (webDriverHelpers.isElementVisibleWithTimeout(
               By.xpath("//*[contains(text(),'Confirm navigation')]"), 5)) {
             webDriverHelpers.clickOnWebElementBySelector(By.id("actionCancel"));
-            webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+            webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
           }
           webDriverHelpers.clickOnWebElementBySelector(FIRST_CASE_ID);
         });
