@@ -665,6 +665,25 @@ public class EditCaseSteps implements En {
         });
 
     When(
+        "I check case created from created contact is correctly displayed on Edit Case page for DE",
+        () -> {
+          aCase = collectCasePersonDataDE();
+          createdCase = CreateNewCaseSteps.caze;
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              aCase,
+              createdCase,
+              List.of(
+                  "dateOfReport",
+                  "disease",
+                  "externalId",
+                  "responsibleRegion",
+                  "responsibleDistrict",
+                  "responsibleCommunity",
+                  "placeOfStay",
+                  "placeDescription"));
+        });
+
+    When(
         "I am checking all Exposure data created by UI is saved and displayed in Cases",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(OPEN_SAVED_EXPOSURE_BUTTON);

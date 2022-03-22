@@ -118,6 +118,8 @@ public class EditContactPage {
   public static final By REMOVE_CASE_CTA_LINK = By.id("contactRemoveCase");
   public static final By CASE_CHANGE_POPUP_SUCCESS_MESSAGE =
       By.xpath("//*[contains(text(),'The source case of the contact has been changed')]");
+  public static final By CASE_CHANGE_POPUP_SUCCESS_MESSAGE_DE =
+      By.xpath("//*[contains(text(),'Der Indexfall des Kontakts wurde ge\u00E4ndert')]");
   public static final By CREATE_DOCUMENT_BUTTON = By.cssSelector("[id='Create']");
   public static final By CONTACT_SAVED_POPUP = By.cssSelector(".v-Notification-caption");
   public static final By CREATE_QUARANTINE_ORDER_BUTTON =

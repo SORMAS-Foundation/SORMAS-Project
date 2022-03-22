@@ -51,6 +51,8 @@ public class ContactDirectoryPage {
   public static final By EPIDEMIOLOGICAL_DATA_TAB = By.cssSelector("#tab-contacts-epidata");
   public static final By CONTACT_DISEASE_FILTER_COMBOBOX =
       By.cssSelector("[id='disease'] [class='v-filterselect-button']");
+  public static final By CONTACT_DISEASE_VARIANT_FILTER_COMBOBOX =
+      By.cssSelector("[id='diseaseVariant'] [class='v-filterselect-button']");
   public static final By CONTACT_CLASSIFICATION_FILTER_COMBOBOX =
       By.cssSelector("[id='contactClassification'] [class='v-filterselect-button']");
   public static final By CONTACT_CASE_CLASSIFICATION_FILTER_COMBOBOX =
