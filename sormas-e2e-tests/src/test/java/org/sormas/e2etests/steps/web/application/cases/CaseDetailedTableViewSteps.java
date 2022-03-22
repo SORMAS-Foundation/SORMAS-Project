@@ -206,15 +206,14 @@ public class CaseDetailedTableViewSteps implements En {
         });
 
     When(
-        "I double-click on any field in the first row from Case Directory that is not Person ID",
+        "I click on the first Case ID from Case Directory",
         () -> {
           if (webDriverHelpers.isElementVisibleWithTimeout(
               By.xpath("//*[contains(text(),'Confirm navigation')]"), 5)) {
             webDriverHelpers.clickOnWebElementBySelector(By.id("actionCancel"));
             webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
           }
-          webDriverHelpers.doubleClickOnWebElementBySelector(
-              By.xpath("//*[contains(text(),'" + name + "')]"));
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_CASE_ID);
         });
   }
 

@@ -33,5 +33,5 @@ Feature: Case view tests
     When I click on the first Person ID from Case Directory
     Then I check that I get navigated to the Edit Person page
     When I click on the Cases button from navbar
-    And I double-click on any field in the first row from Case Directory that is not Person ID
+    And I click on the first Case ID from Case Directory
     Then I check that I get navigated to the Edit Case page

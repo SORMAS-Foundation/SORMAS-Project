@@ -9,5 +9,5 @@ Feature: Contact view tests
     When I click on the first Person ID from Contacts Directory
     Then I check that I get navigated to the Edit Person page
     When I click on the Contacts button from navbar
-    And I double-click on any field in the first row from Contacts Directory that is not Person ID
+    And I click on the first Contact ID from Contacts Directory
     Then I check that I get navigated to the Edit Contact page

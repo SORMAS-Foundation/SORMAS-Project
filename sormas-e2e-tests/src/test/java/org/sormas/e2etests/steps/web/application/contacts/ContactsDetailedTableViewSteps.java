@@ -21,7 +21,6 @@ import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
-import org.sormas.e2etests.steps.web.application.cases.CaseDetailedTableViewSteps;
 import org.testng.asserts.SoftAssert;
 
 public class ContactsDetailedTableViewSteps implements En {
@@ -136,15 +135,14 @@ public class ContactsDetailedTableViewSteps implements En {
         });
 
     When(
-        "I double-click on any field in the first row from Contacts Directory that is not Person ID",
+        "I click on the first Contact ID from Contacts Directory",
         () -> {
           if (webDriverHelpers.isElementVisibleWithTimeout(
               By.xpath("//*[contains(text(),'Confirm navigation')]"), 5)) {
             webDriverHelpers.clickOnWebElementBySelector(By.id("actionCancel"));
             webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
           }
-          webDriverHelpers.doubleClickOnWebElementBySelector(
-              By.xpath("//*[contains(text(),'" + CaseDetailedTableViewSteps.name + "')]"));
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_CONTACT_ID);
         });
   }
 
