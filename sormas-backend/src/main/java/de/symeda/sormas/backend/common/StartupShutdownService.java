@@ -168,7 +168,8 @@ public class StartupShutdownService {
 	private Event<UserUpdateEvent> userUpdateEvent;
 	@EJB
 	private DeletionConfigurationService deletionConfigurationService;
-
+	@EJB
+	AuditLogger auditLogger;
 	@Inject
 	private Event<PasswordResetEvent> passwordResetEvent;
 
@@ -188,7 +189,7 @@ public class StartupShutdownService {
 
 	@PostConstruct
 	public void startup() {
-		AuditLogger.getInstance().logApplicationStart();
+		auditLogger.logApplicationStart();
 		checkDatabaseConfig(em);
 
 		logger.info("Initiating automatic database update of main database...");
@@ -864,7 +865,7 @@ public class StartupShutdownService {
 
 	@PreDestroy
 	public void shutdown() {
-		AuditLogger.getInstance().logApplicationStop();
+		auditLogger.logApplicationStop();
 	}
 
 	@LocalBean

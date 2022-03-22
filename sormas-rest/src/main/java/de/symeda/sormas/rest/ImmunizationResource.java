@@ -153,7 +153,7 @@ public class ImmunizationResource extends EntityDtoResource {
 	}
 
 	@POST
-	@Path("/push")
+	@Path("/vaccination/push")
 	public VaccinationDto postVaccination(@Valid VaccinationDto vaccination) {
 		return FacadeProvider.getVaccinationFacade().save(vaccination);
 	}
