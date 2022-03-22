@@ -29,6 +29,17 @@ public enum SourceTypeValues {
     }
     throw new Exception("Unable to find " + option + " value in SourceTypeValues Enum");
   }
+
+  @SneakyThrows
+  public static String getRandomSourceTypeDifferentThan(String excludedOption) {
+    SourceTypeValues[] sourceTypeValuesOptions = SourceTypeValues.values();
+    for (SourceTypeValues value : sourceTypeValuesOptions) {
+      if (!value.getSourceTypeCaption().equalsIgnoreCase(excludedOption)
+          && !value.getSourceTypeName().equalsIgnoreCase(excludedOption))
+        return value.getSourceTypeCaption();
+    }
+    throw new Exception("Unable to provide option different than: " + excludedOption);
+  }
   /** Returns values used for API tests */
   public static String getRandomSourceTypeName() {
     return String.valueOf(

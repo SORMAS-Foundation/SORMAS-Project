@@ -45,6 +45,15 @@ public enum TypeOfPlace {
     throw new Exception("Unable to find " + option + " value in TypeOfPlaceValues Enum");
   }
 
+  @SneakyThrows
+  public static String getRandomUITypeOfPlaceDifferentThan(String excludedOption) {
+    TypeOfPlace[] TypeOfPlaceOptions = TypeOfPlace.values();
+    for (TypeOfPlace value : TypeOfPlaceOptions) {
+      if (!value.getUiValue().equalsIgnoreCase(excludedOption)) return value.getUiValue();
+    }
+    throw new Exception("Unable to provide option different than: " + excludedOption);
+  }
+
   public static String getRandomUITypeOfPlace() {
     return String.valueOf(TypeOfPlace.values()[random.nextInt(values().length)]);
   }
