@@ -715,7 +715,7 @@ public class ContactDirectorySteps implements En {
         webDriverHelpers.fillInWebElement(POSTAL_CODE_INPUT, exposureData.getPostalCode());
         webDriverHelpers.fillInWebElement(CITY_INPUT, exposureData.getCity());
         webDriverHelpers.selectFromCombobox(
-                AREA_TYPE_COMBOBOX, AreaTypeValues.geUIValueForDE(exposureData.getAreaType()));
+                AREA_TYPE_COMBOBOX, AreaTypeValues.getNameForDE(exposureData.getAreaType()));
         webDriverHelpers.fillInWebElement(GPS_LATITUDE_INPUT, exposureData.getLatitude());
         webDriverHelpers.fillInWebElement(GPS_LONGITUDE_INPUT, exposureData.getLongitude());
         webDriverHelpers.fillInWebElement(GPS_ACCURACY_INPUT, exposureData.getLatLonAccuracy());

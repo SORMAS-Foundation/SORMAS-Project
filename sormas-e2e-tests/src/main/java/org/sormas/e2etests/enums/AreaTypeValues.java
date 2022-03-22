@@ -20,22 +20,34 @@ package org.sormas.e2etests.enums;
 
 import java.util.Random;
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 @Getter
 public enum AreaTypeValues {
-  URBAN("URBAN"),
-  RURAL("RURAL"),
-  UNKNOWN("UNKNOWN");
+  URBAN("Urban", "St\u00E4dtisch"),
+  RURAL("Rural", "L\u00E4ndlich"),
+  UNKNOWN("Unknown", "Unbekannt");
 
   private final String areaType;
+  private final String areaTypeDE;
 
   private static Random random = new Random();
 
-  AreaTypeValues(String areaType) {
+  AreaTypeValues(String areaType, String areaTypeDE) {
     this.areaType = areaType;
+    this.areaTypeDE = areaTypeDE;
   }
 
   public static String getRandomAreaType() {
     return String.valueOf(AreaTypeValues.values()[random.nextInt(values().length)].areaType);
+  }
+
+  @SneakyThrows
+  public static String getNameForDE(String option) {
+    AreaTypeValues[] areaTypeOption = AreaTypeValues.values();
+    for (AreaTypeValues value : areaTypeOption) {
+      if (value.areaType.equalsIgnoreCase(option)) return value.getAreaTypeDE();
+    }
+    throw new Exception("Unable to find " + option + " value in TypeOfGathering Enum");
   }
 }
