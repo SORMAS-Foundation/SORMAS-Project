@@ -31,6 +31,7 @@ import java.util.stream.Collectors;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
@@ -51,10 +52,12 @@ import de.symeda.sormas.ui.utils.NullableOptionGroup;
 
 public class BulkTaskDataForm extends AbstractEditForm<TaskBulkEditData> {
 
+	private static final long serialVersionUID = 1L;
+
 	public static final String ASSIGNEE_CHECKBOX = "assigneeCheckbox";
 	public static final String PRORITY_CHECKBOX = "prorityCheckbox";
 	public static final String STATUS_CHECKBOX = "statusCheckbox";
-	private static final long serialVersionUID = 1L;
+
 	private static final String HTML_LAYOUT = fluidRowLocsCss(VSPACE_4, ASSIGNEE_CHECKBOX)
 		+ fluidRowLocs(TaskBulkEditData.TASK_ASSIGNEE)
 		+ fluidRowLocsCss(VSPACE_4, PRORITY_CHECKBOX)
@@ -123,9 +126,10 @@ public class BulkTaskDataForm extends AbstractEditForm<TaskBulkEditData> {
 		}
 
 		assigneeCheckbox.addValueChangeListener(e -> {
-			assignee.setEnabled((boolean) e.getProperty().getValue());
+			boolean changeAssignee = (boolean) e.getProperty().getValue();
+			assignee.setEnabled(changeAssignee);
+			assignee.setRequired(changeAssignee);
 		});
-
 	}
 
 	private List<UserReferenceDto> getUsers() {
@@ -133,15 +137,8 @@ public class BulkTaskDataForm extends AbstractEditForm<TaskBulkEditData> {
 		UserDto userDto = UserProvider.getCurrent().getUser();
 
 		if (district != null) {
-			List<Disease> selectedDiseases = this.selectedTasks.stream().map(c -> c.getDisease()).collect(Collectors.toList());
-			List<UserReferenceDto> assignableUsers = null;
-			if (selectedDiseases.size() == 1) {
-				Disease selectedDisease = selectedDiseases.get(0);
-				assignableUsers = FacadeProvider.getUserFacade().getUserRefsByDistrict(district, true, selectedDisease);
-			} else {
-				assignableUsers = FacadeProvider.getUserFacade().getUserRefsByDistrict(district, true, true);
-			}
-			users.addAll(assignableUsers);
+			//TODO 8017
+			users.addAll(FacadeProvider.getUserFacade().getUserRefsByDistrict(district));
 		} else {
 			users.addAll(FacadeProvider.getUserFacade().getAllUserRefs(false));
 		}

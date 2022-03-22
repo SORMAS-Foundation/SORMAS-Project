@@ -44,6 +44,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserHelper;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -163,9 +164,10 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
             FieldHelper.updateItems(
                     healthFacility,
                     districtDto != null ? FacadeProvider.getFacilityFacade().getActiveHospitalsByDistrict(districtDto, false) : null);
+            //TODO 8017
             FieldHelper.updateItems(
                     associatedOfficer,
-                    districtDto != null ? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, null, UserRole.SURVEILLANCE_OFFICER) : null);
+                    districtDto != null ? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, UserRight.CASE_RESPONSIBLE, UserRight.WEEKLYREPORT_CREATE) : null);
             FieldHelper.updateItems(
                     cbPointOfEntry,
                     districtDto != null ? FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(districtDto.getUuid(), false) : null);
@@ -195,11 +197,11 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
 		final boolean hasAssociatedOfficer = UserRole.hasAssociatedOfficer(userRoles);
 		final boolean hasOptionalHealthFacility = UserRole.hasOptionalHealthFacility(userRoles);
-		final boolean isLabUser = UserRole.isLabUser(userRoles);
 		final boolean isPortHealthUser = UserRole.isPortHealthUser(userRoles);
 
 		final boolean usePointOfEntry = (isPortHealthUser && hasAssociatedOfficer) || jurisdictionLevel == JurisdictionLevel.POINT_OF_ENTRY;
 		final boolean useHealthFacility = jurisdictionLevel == JurisdictionLevel.HEALTH_FACILITY;
+        final boolean useLaboratory = jurisdictionLevel == JurisdictionLevel.LABORATORY;
 		final boolean useCommunity = jurisdictionLevel == JurisdictionLevel.COMMUNITY;
 		final boolean useDistrict = hasAssociatedOfficer || jurisdictionLevel == JurisdictionLevel.DISTRICT	|| useCommunity || useHealthFacility || usePointOfEntry;;
 		final boolean useRegion = jurisdictionLevel == JurisdictionLevel.REGION || useDistrict;
@@ -226,9 +228,9 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 		}
 
 		final ComboBox laboratory = (ComboBox) getFieldGroup().getField(UserDto.LABORATORY);
-		laboratory.setVisible(isLabUser);
-		setRequired(isLabUser, UserDto.LABORATORY);
-		if (!isLabUser) {
+		laboratory.setVisible(useLaboratory);
+		setRequired(useLaboratory, UserDto.LABORATORY);
+		if (!useLaboratory) {
 			laboratory.clear();
 		}
 
@@ -268,16 +270,6 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         return HTML_LAYOUT;
     }
 
-    @Override
-    public void setValue(UserDto userDto) throws com.vaadin.v7.data.Property.ReadOnlyException, Converter.ConversionException {
-
-        OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
-        userRoles.removeAllItems();
-        userRoles.addItems(UserUiHelper.getAssignableRoles(userDto.getUserRoles()));
-
-        super.setValue(userDto);
-    }
-
     class UserNameValidator implements Validator {
 
         private static final long serialVersionUID = 1L;
@@ -288,5 +280,15 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
             if (!(value instanceof String && ControllerProvider.getUserController().isLoginUnique(dto.getUuid(), (String) value)))
                 throw new InvalidValueException(I18nProperties.getValidationError(Validations.userNameNotUnique));
         }
+    }
+
+    @Override
+    public void setValue(UserDto userDto) throws com.vaadin.v7.data.Property.ReadOnlyException, Converter.ConversionException {
+
+        OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
+        userRoles.removeAllItems();
+        userRoles.addItems(UserUiHelper.getAssignableRoles(userDto.getUserRoles()));
+        
+        super.setValue(userDto);
     }
 }

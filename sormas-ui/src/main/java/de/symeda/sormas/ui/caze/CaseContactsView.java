@@ -22,6 +22,7 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.EditPermissionType;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.event.ShortcutAction;
@@ -56,7 +57,6 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ViewModelProviders;
@@ -77,8 +77,10 @@ import de.symeda.sormas.ui.utils.components.expandablebutton.ExpandableButton;
 
 public class CaseContactsView extends AbstractCaseView {
 
-	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/contacts";
 	private static final long serialVersionUID = -1L;
+
+	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/contacts";
+
 	private final ContactCriteria criteria;
 	private final ViewConfiguration viewConfiguration;
 
@@ -129,8 +131,8 @@ public class CaseContactsView extends AbstractCaseView {
 			regionFilter.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
 				if (region != null) {
-					officerFilter
-						.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, criteria.getDisease(), UserRole.CONTACT_OFFICER));
+					//TODO 8017
+					officerFilter.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(region, UserRight.CONTACT_RESPONSIBLE));
 				} else {
 					officerFilter.removeAllItems();
 				}
@@ -173,8 +175,8 @@ public class CaseContactsView extends AbstractCaseView {
 		officerFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER_UUID));
 		officerFilter.addValueChangeListener(e -> criteria.setContactOfficer((UserReferenceDto) e.getProperty().getValue()));
 		if (user.getRegion() != null) {
-			officerFilter
-				.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), criteria.getDisease(), UserRole.CONTACT_OFFICER));
+			//TODO 8017
+			officerFilter.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(user.getRegion(), UserRight.CONTACT_RESPONSIBLE));
 		}
 		topLayout.addComponent(officerFilter);
 

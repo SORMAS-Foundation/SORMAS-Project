@@ -38,7 +38,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
@@ -96,18 +96,10 @@ public class BulkContactDataForm extends AbstractEditForm<ContactBulkEditData> {
 				Arrays.asList(ContactBulkEditData.CONTACT_OFFICER),
 				Arrays.asList(true),
 				null);
-			List<Disease> selectedDiseases = this.selectedContacts.stream().map(c -> c.getDisease()).collect(Collectors.toList());
-			List<UserReferenceDto> assignableContactOfficers = null;
-			if (selectedDiseases.size() == 1) {
-				Disease selectedDisease = selectedDiseases.get(0);
-				assignableContactOfficers =
-					FacadeProvider.getUserFacade().getUserRefsByDistrict(singleSelectedDistrict, false, selectedDisease, UserRole.CONTACT_OFFICER);
-				FieldHelper.updateItems(contactOfficer, assignableContactOfficers);
-			} else {
-				assignableContactOfficers =
-					FacadeProvider.getUserFacade().getUserRefsByDistrict(singleSelectedDistrict, false, true, UserRole.CONTACT_OFFICER);
-				FieldHelper.updateItems(contactOfficer, assignableContactOfficers);
-			}
+			//TODO 8017
+			List<UserReferenceDto> assignableContactOfficers =
+				FacadeProvider.getUserFacade().getUserRefsByDistrict(singleSelectedDistrict, UserRight.CONTACT_RESPONSIBLE);
+			FieldHelper.updateItems(contactOfficer, assignableContactOfficers);
 
 			contactOfficerCheckBox.addValueChangeListener(e -> {
 				contactOfficer.setEnabled((boolean) e.getProperty().getValue());

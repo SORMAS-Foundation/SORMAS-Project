@@ -68,7 +68,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
@@ -591,14 +591,10 @@ public class EventsFilterForm extends AbstractFilterForm<EventCriteria> {
 
 	private void updateResponsibleUserFieldItems(DistrictReferenceDto district, RegionReferenceDto region) {
 		final List<UserReferenceDto> items = new ArrayList<>();
-		Disease selectedDisease = (Disease) getField(EventIndexDto.DISEASE).getValue();
+		//TODO 8017
+		items.addAll(FacadeProvider.getUserFacade().getUsersByRegionAndRights(region, UserRight.EVENT_RESPONSIBLE));
 		if (district != null) {
-			items.addAll(FacadeProvider.getUserFacade().getUserRefsByDistrict(district, false, selectedDisease, UserRole.SURVEILLANCE_OFFICER));
-			items.addAll(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, selectedDisease, UserRole.SURVEILLANCE_SUPERVISOR));
-		} else {
-			items.addAll(
-				FacadeProvider.getUserFacade()
-					.getUsersByRegionAndRoles(region, selectedDisease, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.SURVEILLANCE_OFFICER));
+			items.addAll(FacadeProvider.getUserFacade().getUserRefsByDistrict(district, UserRight.EVENT_RESPONSIBLE));
 		}
 		FieldHelper.updateItems((ComboBox) getField(EventCriteria.RESPONSIBLE_USER), items);
 	}

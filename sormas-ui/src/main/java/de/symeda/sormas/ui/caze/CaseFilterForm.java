@@ -208,11 +208,10 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			pointOfEntryField.setDescription(I18nProperties.getDescription(Descriptions.descPointOfEntryFilter));
 		}
 
-		ComboBox officerField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.SURVEILLANCE_OFFICER, 140));
 
-		Disease selectedDisease = (Disease) getField(CaseIndexDto.DISEASE).getValue();
-		officerField
-			.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), selectedDisease, UserRole.SURVEILLANCE_OFFICER));
+		ComboBox officerField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.SURVEILLANCE_OFFICER, 140));
+		//TODO 8017
+		officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(user.getRegion(), UserRight.CASE_RESPONSIBLE));
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP)) {
 			Field<?> followUpUntilTo = addField(
@@ -302,8 +301,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			CheckBox.class,
 			FieldConfiguration.withCaptionAndStyle(
 				CaseCriteria.WITHOUT_RESPONSIBLE_OFFICER,
-				I18nProperties.getCaption(Captions.caseFilterWithoutResponsibleOfficer),
-				I18nProperties.getDescription(Descriptions.descCaseFilterWithoutResponsibleOfficer),
+				I18nProperties.getCaption(Captions.caseFilterWithoutResponsibleUser),
+				I18nProperties.getDescription(Descriptions.descCaseFilterWithoutResponsibleUser),
 				CssStyles.CHECKBOX_FILTER_INLINE));
 
 		addField(
@@ -500,9 +499,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 							pointOfEntryField,
 							FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(newDistrict.getUuid(), true));
 					}
-					Disease selectedDisease = (Disease) getField(CaseIndexDto.DISEASE).getValue();
-					officerField.addItems(
-						FacadeProvider.getUserFacade().getUserRefsByDistrict(newDistrict, false, selectedDisease, UserRole.SURVEILLANCE_OFFICER));
+//TODO 8017
+					officerField.addItems(FacadeProvider.getUserFacade().getUserRefsByDistrict(newDistrict, UserRight.CASE_RESPONSIBLE));
 				} else {
 					clearAndDisableFields(communityField, pointOfEntryField, facilityField, facilityTypeField, facilityTypeGroupField);
 
@@ -619,8 +617,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 	}
 
 	private void addOfficers(ComboBox officerField, RegionReferenceDto region) {
-		Disease selectedDisease = (Disease) getField(CaseIndexDto.DISEASE).getValue();
-		officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, selectedDisease, UserRole.SURVEILLANCE_OFFICER));
+		//TODO 8017
+		officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(region, UserRight.CASE_RESPONSIBLE));
 	}
 
 	@SuppressWarnings("rawtypes")

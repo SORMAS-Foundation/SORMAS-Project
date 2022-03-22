@@ -58,7 +58,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -208,17 +208,18 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 				Arrays.asList(true),
 				null);
 			List<Disease> selectedDiseases = this.selectedCases.stream().map(c -> c.getDisease()).collect(Collectors.toList());
-			List<UserReferenceDto> assignableSurveillanceOfficers = null;
-			if (selectedDiseases.size() == 1) {
-				Disease selectedDisease = selectedDiseases.get(0);
-				assignableSurveillanceOfficers = FacadeProvider.getUserFacade()
-					.getUserRefsByDistrict(singleSelectedDistrict, false, selectedDisease, UserRole.SURVEILLANCE_OFFICER);
-				FieldHelper.updateItems(surveillanceOfficer, assignableSurveillanceOfficers);
-			} else {
-				assignableSurveillanceOfficers =
-					FacadeProvider.getUserFacade().getUserRefsByDistrict(singleSelectedDistrict, false, true, UserRole.SURVEILLANCE_OFFICER);
-				FieldHelper.updateItems(surveillanceOfficer, assignableSurveillanceOfficers);
-			}
+//			List<UserReferenceDto> assignableCaseResponsibles = null;
+//TODO 8017
+			//
+//			if (selectedDiseases.size() == 1) {
+//				Disease selectedDisease = selectedDiseases.get(0);
+//				assignableCaseResponsibles =
+//						FacadeProvider.getUserFacade().getUserRefsByDistrict(singleSelectedDistrict, UserRight.CASE_RESPONSIBLE);
+//
+//			}
+			List<UserReferenceDto> assignableCaseResponsibles =
+				FacadeProvider.getUserFacade().getUserRefsByDistrict(singleSelectedDistrict, UserRight.CASE_RESPONSIBLE);
+			FieldHelper.updateItems(surveillanceOfficer, assignableCaseResponsibles);
 
 			surveillanceOfficerCheckBox.addValueChangeListener(e -> {
 				surveillanceOfficer.setEnabled((boolean) e.getProperty().getValue());

@@ -105,7 +105,8 @@ public class PersonDataView extends AbstractDetailView<PersonReferenceDto> {
 			layout.addComponent(new SideComponentLayout(new CaseListComponent(getReference())), CASES_LOC);
 		}
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CONTACT_TRACING)) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CONTACT_TRACING)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
 			layout.addComponent(new SideComponentLayout(new ContactListComponent(getReference())), CONTACTS_LOC);
 		}
 

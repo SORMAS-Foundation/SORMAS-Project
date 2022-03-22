@@ -49,7 +49,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 
@@ -791,14 +791,13 @@ public final class FieldHelper {
 		}
 	}
 
-	public static void updateOfficersField(AbstractSelect officerField, CaseDataDto caze, UserRole role) {
+	public static void updateOfficersField(AbstractSelect officerField, CaseDataDto caze, UserRight right) {
 		List<DistrictReferenceDto> officerDistricts =
 			Stream.of(caze.getResponsibleDistrict(), caze.getDistrict()).filter(Objects::nonNull).collect(Collectors.toList());
+		//TODO 8017
 		FieldHelper.updateItems(
 			officerField,
-			officerDistricts.size() > 0
-				? FacadeProvider.getUserFacade().getUserRefsByDistricts(officerDistricts, false, caze.getDisease(), role)
-				: null);
+			officerDistricts.size() > 0 ? FacadeProvider.getUserFacade().getUserRefsByDistricts(officerDistricts, right) : null);
 
 	}
 }

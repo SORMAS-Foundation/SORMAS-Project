@@ -51,9 +51,7 @@ public interface UserFacade {
 
 	UserDto getByUserName(String userName);
 
-	List<UserReferenceDto> getUsersByRegionAndRoles(RegionReferenceDto regionRef, Disease limitedDisease, UserRole... assignableRoles);
-
-	List<UserReferenceDto> getUsersByRegionsAndRoles(List<RegionReferenceDto> regionRefs, UserRole... assignableRoles);
+	List<UserReferenceDto> getUsersByRegionAndRights(RegionReferenceDto regionRef, UserRight... userRights);
 
 	List<UserReferenceDto> getUsersWithSuperiorJurisdiction(UserDto user);
 
@@ -65,47 +63,19 @@ public interface UserFacade {
 
 	/**
 	 * @param district
-	 * @param includeSupervisors
-	 *            independent from the district
-	 * @param userRoles
-	 *            roles of the users by district
-	 * @param limitedDisease
-	 *            filter users with limited Disease. Users with no limitation are included in list . If null all limited users are also
-	 *            included in list.
+	 * @param userRights
+	 *            rights of the users by district
 	 * @return
 	 */
-	List<UserReferenceDto> getUserRefsByDistrict(
-		DistrictReferenceDto district,
-		boolean includeSupervisors,
-		Disease limitedDisease,
-		UserRole... userRoles);
+	//TODO 8017
+	List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto district, UserRight... userRights);
 
-	/**
-	 *
-	 * @param district
-	 * @param includeSupervisors
-	 *            independent from the district
-	 * @param userRoles
-	 *            roles of the users by district
-	 * @param excludeLimitedDiseaseUsers
-	 *            If true no uses with limited disease will be returned , if false all of them will be
-	 * @return
-	 */
-	List<UserReferenceDto> getUserRefsByDistrict(
-		DistrictReferenceDto district,
-		boolean includeSupervisors,
-		boolean excludeLimitedDiseaseUsers,
-		UserRole... userRoles);
-
-	List<UserReferenceDto> getUserRefsByDistricts(
-		List<DistrictReferenceDto> districts,
-		boolean includeSupervisors,
-		Disease limitedDisease,
-		UserRole... userRoles);
+	//TODO 8017
+	List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districts, UserRight... userRights);
 
 	List<UserReferenceDto> getAllUserRefs(boolean includeInactive);
 
-	List<UserDto> getUsersByAssociatedOfficer(UserReferenceDto associatedOfficer, UserRole... userRoles);
+	List<UserDto> getUsersByAssociatedOfficer(UserReferenceDto associatedOfficer, UserRight... userRights);
 
 	List<String> getAllUuids();
 
@@ -136,6 +106,4 @@ public interface UserFacade {
 	List<UserReferenceDto> getUsersHavingTravelEntryInJurisdiction(TravelEntryReferenceDto travelEntryReferenceDto);
 
 	List<UserReferenceWithTaskNumbersDto> getAssignableUsersWithTaskNumbers(@NotNull TaskContextIndex taskContextIndex);
-
-	List<UserReferenceDto> getUsersByRegionAndRight(RegionReferenceDto region, UserRight userRight);
 }

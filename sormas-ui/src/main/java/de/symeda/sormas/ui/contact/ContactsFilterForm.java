@@ -43,6 +43,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -199,7 +200,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 				ContactCriteria.CONTACT_OFFICER,
 				I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER_UUID),
 				140));
-		officerField.addItems(fetchSurveillanceOfficersByRegion(currentUserDto().getRegion()));
+		officerField.addItems(fetchContactResponsiblesByRegion(currentUserDto().getRegion()));
 		addField(
 			moreFiltersContainer,
 			FieldConfiguration.withCaptionAndPixelSized(ContactCriteria.REPORTING_USER_ROLE, I18nProperties.getString(Strings.reportedBy), 140));
@@ -362,7 +363,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			} else {
 				clearAndDisableFields(ContactCriteria.DISTRICT, ContactCriteria.COMMUNITY);
 			}
-			populateSurveillanceOfficersForRegion(region);
+			populateContactResponsiblesForRegion(region);
 			break;
 		}
 		case ContactCriteria.DISTRICT: {
@@ -372,7 +373,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 			} else {
 				clearAndDisableFields(ContactCriteria.COMMUNITY);
 			}
-			populateSurveillanceOfficersForDistrict(district);
+			populateContactResponsiblesForDistrict(district);
 			break;
 		}
 		case ContactIndexDto.DISEASE: {
@@ -428,10 +429,11 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 
 		ComboBox officerField = getField(ContactCriteria.CONTACT_OFFICER);
 		if (user.getRegion() != null) {
-			officerField
-				.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(user.getRegion(), newValue.getDisease(), UserRole.CONTACT_OFFICER));
+			//TODO 8017
+			officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(user.getRegion(), UserRight.CONTACT_RESPONSIBLE));
 		} else if (region != null) {
-			officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, newValue.getDisease(), UserRole.CONTACT_OFFICER));
+			//TODO 8017
+			officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(region, UserRight.CONTACT_RESPONSIBLE));
 		} else {
 			officerField.removeAllItems();
 		}
@@ -564,34 +566,33 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 		this.getField(ContactCriteria.EVENT_LIKE).setEnabled(enabled);
 	}
 
-	private void populateSurveillanceOfficersForRegion(RegionReferenceDto regionReferenceDto) {
+	private void populateContactResponsiblesForRegion(RegionReferenceDto regionReferenceDto) {
 		List<UserReferenceDto> items =
-			fetchSurveillanceOfficersByRegion(regionReferenceDto != null ? regionReferenceDto : currentUserDto().getRegion());
-		populateSurveillanceOfficers(items);
+			fetchContactResponsiblesByRegion(regionReferenceDto != null ? regionReferenceDto : currentUserDto().getRegion());
+		populateContactResponsibles(items);
 	}
 
-	private void populateSurveillanceOfficersForDistrict(DistrictReferenceDto districtReferenceDto) {
+	private void populateContactResponsiblesForDistrict(DistrictReferenceDto districtReferenceDto) {
 		if (districtReferenceDto != null) {
-			Disease selectedDisease = (Disease) getField(ContactIndexDto.DISEASE).getValue();
-			List<UserReferenceDto> items =
-				FacadeProvider.getUserFacade().getUserRefsByDistrict(districtReferenceDto, false, selectedDisease, UserRole.CONTACT_OFFICER);
-			populateSurveillanceOfficers(items);
+			//TODO 8017
+			List<UserReferenceDto> items = FacadeProvider.getUserFacade().getUserRefsByDistrict(districtReferenceDto, UserRight.CONTACT_RESPONSIBLE);
+			populateContactResponsibles(items);
 		} else {
 			final ComboBox regionField = getField(ContactCriteria.REGION);
 			if (regionField != null) {
-				populateSurveillanceOfficersForRegion((RegionReferenceDto) regionField.getValue());
+				populateContactResponsiblesForRegion((RegionReferenceDto) regionField.getValue());
 			}
 		}
 	}
 
-	private void populateSurveillanceOfficers(List<UserReferenceDto> items) {
+	private void populateContactResponsibles(List<UserReferenceDto> items) {
 		final ComboBox officerField = getField(ContactCriteria.CONTACT_OFFICER);
 		officerField.removeAllItems();
 		officerField.addItems(items);
 	}
 
-	private List<UserReferenceDto> fetchSurveillanceOfficersByRegion(RegionReferenceDto regionReferenceDto) {
-		Disease selectedDisease = (Disease) getField(ContactIndexDto.DISEASE).getValue();
-		return FacadeProvider.getUserFacade().getUsersByRegionAndRoles(regionReferenceDto, selectedDisease, UserRole.CONTACT_OFFICER);
+	private List<UserReferenceDto> fetchContactResponsiblesByRegion(RegionReferenceDto regionReferenceDto) {
+		//TODO 8017
+		return FacadeProvider.getUserFacade().getUsersByRegionAndRights(regionReferenceDto, UserRight.CONTACT_RESPONSIBLE);
 	}
 }
