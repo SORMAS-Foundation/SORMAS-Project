@@ -78,4 +78,6 @@ public class CreateNewSamplePage {
   public static final By PATHOGEN_LABORATORY_INPUT =
       By.cssSelector(
           "[location='lab'] [class='v-filterselect v-widget v-required v-filterselect-required v-has-width'] input");
+  public static final By ADD_PATHOGEN_TEST_BUTTON_DE =
+      By.xpath("/html/body/div[2]/div[3]/div/div/div[3]/div/div/div[2]/div/div/div[1]/div");
 }

@@ -145,6 +145,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -723,6 +724,10 @@ public class EditCaseSteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(NEW_SAMPLE_BUTTON));
 
     When(
+        "I click on New Sample in German",
+        () -> webDriverHelpers.clickOnWebElementBySelector(NEW_SAMPLE_BUTTON_DE));
+
+    When(
         "I click on edit Sample",
         () -> webDriverHelpers.clickOnWebElementBySelector(EDIT_SAMPLE_BUTTON));
 
@@ -899,6 +904,59 @@ public class EditCaseSteps implements En {
         "I click on edit travel entry button form case epidemiological tab",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EDIT_TRAVEL_ENTRY_FROM_CASE_BUTTON);
+        });
+
+    When(
+        "I check that case classification is set to not yet classified in German on Edit case page",
+        () -> {
+          String caseClassification =
+              webDriverHelpers.getValueFromCombobox(CASE_CLASSIFICATION_COMBOBOX);
+          softly.assertEquals(caseClassification, "0. Nicht klassifiziert", "The case classification is incorrect!");
+          softly.assertAll();
+        });
+
+    When(
+        "I check that case reference definition is not editable on Edit case page",
+        () -> {
+          String referenceReadOnlyAttribute =
+              webDriverHelpers.getAttributeFromWebElement(REFERENCE_DEFINITION_TEXT, "readonly");
+          softly.assertNotNull(referenceReadOnlyAttribute, "The case reference definition shouldn't be editable, but it is!");
+          softly.assertAll();
+        });
+
+    When(
+        "I check that case reference definition is set to not fulfilled in German on Edit case page",
+        () -> {
+          String caseReference = webDriverHelpers.getValueFromWebElement(REFERENCE_DEFINITION_TEXT);
+          softly.assertEquals(caseReference, "Nicht erf\u00FCllt", "The case reference definition is incorrect!");
+          softly.assertAll();
+        });
+
+    When(
+        "I check that case reference definition is set to fulfilled in German on Edit case page",
+        () -> {
+          String caseReference = webDriverHelpers.getValueFromWebElement(REFERENCE_DEFINITION_TEXT);
+          softly.assertEquals(caseReference, "Erf\u00FCllt", "The case reference definition is incorrect!");
+          softly.assertAll();
+        });
+
+    When(
+        "I check that case classification is set to one of the confirmed classifications in German on Edit case page",
+        () -> {
+          TimeUnit.SECONDS.sleep(
+              3); // Required to ensure that the value we're asserting is refreshed after saving
+          // sample
+          String caseClassification =
+              webDriverHelpers.getValueFromCombobox(CASE_CLASSIFICATION_COMBOBOX);
+          softly.assertTrue(
+              Arrays.asList(
+                      "A. Klinisch diagnostiziert",
+                      "B. Klinisch-epidemiologisch best\u00E4tigt",
+                      "C. Klinisch-labordiagnostisch best\u00E4tigt",
+                      "D. Labordiagnostisch bei nicht erf\u00FCllter Klinik",
+                      "E. Labordiagnostisch bei unbekannter Klinik")
+                  .contains(caseClassification), "The case classification is incorrect!");
+          softly.assertAll();
         });
   }
 

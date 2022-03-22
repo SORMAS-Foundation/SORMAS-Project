@@ -15,6 +15,10 @@
 
 package org.sormas.e2etests.steps.web.application.dashboard.surveillance;
 
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.REFERENCE_DEFINITION_FULFILLED_CASES_NUMBER;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.TIME_PERIOD_COMBOBOX;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.TIME_PERIOD_YESTERDAY_BUTTON;
+
 import cucumber.api.java8.En;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -89,6 +93,29 @@ public class SurveillanceDashboardSteps implements En {
           String newCasesCounterValue =
               webDriverHelpers.getTextFromWebElement(SurveillanceDashboardPage.CASE_COUNTER);
           newCasesCounterBefore = Integer.parseInt(newCasesCounterValue);
+        });
+
+    When(
+        "^I click on the Time Period combobox from Surveillance Dashboard$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(TIME_PERIOD_COMBOBOX);
+        });
+
+    When(
+        "^I choose yesterday from the Surveillance Dashboard Time Period combobox$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(TIME_PERIOD_YESTERDAY_BUTTON);
+        });
+
+    When(
+        "^I check that the number of cases fulfilling the reference definition is larger than 0$",
+        () -> {
+          Integer number =
+              Integer.parseInt(
+                  webDriverHelpers.getTextFromWebElement(
+                      REFERENCE_DEFINITION_FULFILLED_CASES_NUMBER));
+          softly.assertTrue(number > 0, "The number of cases fulfilling the reference definition is incorrect!");
+          softly.assertAll();
         });
   }
 }

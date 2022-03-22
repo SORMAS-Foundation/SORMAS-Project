@@ -149,4 +149,8 @@ public class CaseDirectoryPage {
   public static final By DETAILED_IMPORT_BUTTON = By.id("importDetailed");
   public static final By DOWNLOAD_IMPORT_GUIDE_BUTTON = By.id("import-step-1");
   public static final By DOWNLOAD_DATA_DICTIONARY_BUTTON = By.id("importDownloadDataDictionary");
+
+  public static By getResultByIndex(String rowNumber) {
+    return By.xpath(String.format("//tr[%s]//a", rowNumber));
+  }
 }
