@@ -66,7 +66,6 @@ public class SampleDto extends SormasToSormasShareableDto {
 	public static final String PATHOGEN_TESTING_REQUESTED = "pathogenTestingRequested";
 	public static final String ADDITIONAL_TESTING_REQUESTED = "additionalTestingRequested";
 	public static final String REQUESTED_PATHOGEN_TESTS = "requestedPathogenTests";
-	public static final String REQUESTED_PATHOGEN_TESTS_FILTERED = "requestedPathogenTestsFiltered";
 	public static final String REQUESTED_ADDITIONAL_TESTS = "requestedAdditionalTests";
 	public static final String PATHOGEN_TEST_RESULT = "pathogenTestResult";
 	public static final String REQUESTED_OTHER_PATHOGEN_TESTS = "requestedOtherPathogenTests";
@@ -132,7 +131,6 @@ public class SampleDto extends SormasToSormasShareableDto {
 	private Boolean pathogenTestingRequested;
 	private Boolean additionalTestingRequested;
 	private Set<PathogenTestType> requestedPathogenTests;
-	private PathogenTestType requestedPathogenTestsFiltered;
 	private Set<AdditionalTestType> requestedAdditionalTests;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String requestedOtherPathogenTests;
@@ -370,16 +368,6 @@ public class SampleDto extends SormasToSormasShareableDto {
 	}
 
 	@ImportIgnore
-	public PathogenTestType getRequestedPathogenTestsFiltered() {
-		return requestedPathogenTestsFiltered;
-	}
-
-	public void setRequestedPathogenTestsFiltered(PathogenTestType requestedPathogenTestsFiltered) {
-		this.requestedPathogenTestsFiltered = requestedPathogenTestsFiltered;
-	}
-
-
-	@ImportIgnore
 	public Set<AdditionalTestType> getRequestedAdditionalTests() {
 		return requestedAdditionalTests;
 	}
@@ -492,7 +480,6 @@ public class SampleDto extends SormasToSormasShareableDto {
 		target.setPathogenTestingRequested(source.getPathogenTestingRequested());
 		target.setAdditionalTestingRequested(source.getAdditionalTestingRequested());
 		target.setRequestedPathogenTests(source.getRequestedPathogenTests());
-		target.setRequestedPathogenTestsFiltered(source.getRequestedPathogenTestsFiltered());
 		target.setRequestedAdditionalTests(source.getRequestedAdditionalTests());
 		target.setFieldSampleID(source.getFieldSampleID());
 		target.setSamplingReason(source.getSamplingReason());
