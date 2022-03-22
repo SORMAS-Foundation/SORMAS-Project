@@ -73,13 +73,11 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.GR
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.GROUP_ID_COLUMN;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.ID_FIELD_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.IMPORT_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.IMPORT_PARTICIPANT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.IMPORT_POPUP_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.IMPORT_POPUP_CLOSE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.IMPORT_SUCCESS;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.IMPORT_WINDOW_CLOSE_BUTTON;
-import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.IMPORT_PARTICIPANT_BUTTON;
-import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.IMPORT_POPUP_BUTTON;
-import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.IMPORT_SUCCESS;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LINKED_EVENT_GROUP_ID;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LINK_EVENT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LINK_EVENT_BUTTON_EDIT_PAGE;
