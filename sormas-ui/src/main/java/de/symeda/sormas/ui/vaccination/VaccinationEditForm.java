@@ -27,8 +27,6 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
-import de.symeda.sormas.api.feature.FeatureType;
-import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -55,7 +53,9 @@ public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 			VaccinationDto.class,
 			VaccinationDto.I18N_PREFIX,
 			false,
-			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale()).andWithDisease(disease),
+			FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale())
+				.andWithDisease(disease)
+				.andWithFeatureType(FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations()),
 			fieldAccessCheckers);
 
 		setWidth(800, Unit.PIXELS);
@@ -112,18 +112,20 @@ public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 			true);
 
 //		if (!FacadeProvider.getFeatureConfigurationFacade().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
-			addField(VaccinationDto.PREGNANT);
-			addField(VaccinationDto.TRIMESTER);
-			addField(VaccinationDto.HEALTH_CONDITIONS, HealthConditionsForm.class).setCaption(null);
+		addField(VaccinationDto.PREGNANT);
+		addField(VaccinationDto.TRIMESTER);
+		addField(VaccinationDto.HEALTH_CONDITIONS, HealthConditionsForm.class).setCaption(null);
 
-			if(isVisibleAllowed(VaccinationDto.PREGNANT)) {
-				FieldHelper.setVisibleWhen(
-						getFieldGroup(),
-						VaccinationDto.TRIMESTER,
-						VaccinationDto.PREGNANT,
-						Collections.singletonList(YesNoUnknown.YES),
-						true);
-			}
+		initializeVisibilitiesAndAllowedVisibilities();
+
+		if (isVisibleAllowed(VaccinationDto.PREGNANT)) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				VaccinationDto.TRIMESTER,
+				VaccinationDto.PREGNANT,
+				Collections.singletonList(YesNoUnknown.YES),
+				true);
+		}
 //		}
 
 	}

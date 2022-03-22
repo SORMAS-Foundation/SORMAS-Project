@@ -28,10 +28,13 @@ public class FeatureTypeFieldVisibilityChecker implements FieldVisibilityChecker
 				featureConfigurations.stream().filter(c -> c.getFeatureType() == featureType).findFirst();
 
 			return featureConfiguration.map(c -> {
+				boolean show = !annotation.hide();
+				boolean isFeatureConfigured = true;
+
 				DependingOnFeatureType.FeatureProperty[] properties = annotation.properties();
 				if (properties.length > 0) {
 					// check if all properties are set as required by the annotation
-					return Stream.of(properties).allMatch(p -> {
+					isFeatureConfigured = Stream.of(properties).allMatch(p -> {
 						Object propertyValue = c.getProperties() != null ? c.getProperties().get(p.property()) : null;
 						if (propertyValue == null) {
 							return false;
@@ -41,7 +44,7 @@ public class FeatureTypeFieldVisibilityChecker implements FieldVisibilityChecker
 					});
 				}
 
-				return true;
+				return !isFeatureConfigured || show;
 			}).orElse(false);
 		}
 

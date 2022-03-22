@@ -522,7 +522,6 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		}
 
 		cq.where(cb.and(root.get(FeatureConfiguration.FEATURE_TYPE).in(serverFeatures), cb.isTrue(root.get(FeatureConfiguration.ENABLED))));
-		cq.select(root.get(FeatureConfiguration.FEATURE_TYPE));
 
 		return em.createQuery(cq).getResultList().stream().map(FeatureConfigurationFacadeEjb::toDto).collect(Collectors.toList());
 	}

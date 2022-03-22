@@ -68,7 +68,8 @@ public class VaccinationDto extends PseudonymizableDto {
 	@Required
 	@Valid
 	@DependingOnFeatureType(featureType = FeatureType.IMMUNIZATION_MANAGEMENT,
-		properties = @FeatureProperty(property = FeatureTypeProperty.REDUCED, value = "true"))
+		properties = @FeatureProperty(property = FeatureTypeProperty.REDUCED, value = "true"),
+		hide = true)
 	private HealthConditionsDto healthConditions;
 	@Required
 	private Date reportDate;
@@ -102,10 +103,12 @@ public class VaccinationDto extends PseudonymizableDto {
 	private String vaccineAtcCode;
 	private VaccinationInfoSource vaccinationInfoSource;
 	@DependingOnFeatureType(featureType = FeatureType.IMMUNIZATION_MANAGEMENT,
-		properties = @FeatureProperty(property = FeatureTypeProperty.REDUCED, value = "true"))
+		properties = @FeatureProperty(property = FeatureTypeProperty.REDUCED, value = "true"),
+		hide = true)
 	private YesNoUnknown pregnant;
 	@DependingOnFeatureType(featureType = FeatureType.IMMUNIZATION_MANAGEMENT,
-		properties = @FeatureProperty(property = FeatureTypeProperty.REDUCED, value = "true"))
+		properties = @FeatureProperty(property = FeatureTypeProperty.REDUCED, value = "true"),
+		hide = true)
 	private Trimester trimester;
 
 	public static VaccinationDto build(UserReferenceDto user) {

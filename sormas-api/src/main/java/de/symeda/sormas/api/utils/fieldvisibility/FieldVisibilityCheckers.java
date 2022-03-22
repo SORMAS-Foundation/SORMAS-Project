@@ -104,6 +104,10 @@ public class FieldVisibilityCheckers implements Serializable {
 		return add(new DiseaseFieldVisibilityChecker(disease));
 	}
 
+	public FieldVisibilityCheckers andWithFeatureType(List<FeatureConfigurationDto> featureConfigurations) {
+		return add(new FeatureTypeFieldVisibilityChecker(featureConfigurations));
+	}
+
 	private boolean isPropertyVisible(Class<?> parentType, String propertyId) {
 		for (FieldNameBaseChecker checker : fieldNameBasedCheckers) {
 			if (!checker.isVisible(parentType, propertyId)) {

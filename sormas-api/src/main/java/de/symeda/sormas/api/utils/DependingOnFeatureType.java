@@ -18,6 +18,8 @@ public @interface DependingOnFeatureType {
 
 	FeatureProperty[] properties() default {};
 
+	boolean hide() default false;
+
 	@interface FeatureProperty {
 
 		FeatureTypeProperty property();
