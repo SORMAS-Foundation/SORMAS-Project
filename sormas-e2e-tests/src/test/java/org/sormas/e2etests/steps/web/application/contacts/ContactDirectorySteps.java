@@ -76,6 +76,7 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DIRECTORY_DETAILED_RADIOBUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DISEASE_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DISEASE_VARIANT_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_FOLLOW_UP_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_RESULTS_UUID_LOCATOR;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONVERTED_TO_CASE_BUTTON;
@@ -110,6 +111,7 @@ import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPag
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_GATHERING_DETAILS;
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_PLACE_DETAILS;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
+import static org.sormas.e2etests.steps.web.application.contacts.EditContactSteps.collectedContact;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
@@ -121,6 +123,7 @@ import javax.inject.Inject;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Contact;
 import org.sormas.e2etests.entities.pojo.web.EpidemiologicalData;
 import org.sormas.e2etests.entities.pojo.web.epidemiologicalData.Exposure;
 import org.sormas.e2etests.entities.services.ContactService;
@@ -144,6 +147,7 @@ public class ContactDirectorySteps implements En {
   public static Exposure exposureData;
   public static EpidemiologicalData dataSavedFromCheckbox;
   public static EpidemiologicalData specificCaseData;
+  public static Contact contact;
 
   @Inject
   public ContactDirectorySteps(
@@ -165,6 +169,13 @@ public class ContactDirectorySteps implements En {
                   + apiState.getCreatedContact().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_CONTACT_URL);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
+        });
+    When(
+        "I apply Id of last created Contact on Contact Directory Page",
+        () -> {
+          String contactUuid = collectedContact.getUuid();
+          webDriverHelpers.fillAndSubmitInWebElement(
+              CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, contactUuid);
         });
 
     When(
@@ -388,6 +399,12 @@ public class ContactDirectorySteps implements En {
           webDriverHelpers.selectFromCombobox(
               CONTACT_CLASSIFICATION_FILTER_COMBOBOX, contactClassification);
         });
+    Then(
+        "I apply Disease variant filter to {string} on Contact Directory Page",
+        (String diseaseVariant) -> {
+          webDriverHelpers.selectFromCombobox(
+              CONTACT_DISEASE_VARIANT_FILTER_COMBOBOX, diseaseVariant);
+        });
     And(
         "I apply Classification of source case filter to {string} on Contact Directory Page",
         (String classification) -> {
@@ -439,6 +456,43 @@ public class ContactDirectorySteps implements En {
                   CONTACTS_WITH_REDUCED_QUARANTINE_CHECKBOX);
               break;
             case ("Only contacts from other instances"):
+              webDriverHelpers.clickOnWebElementBySelector(CONTACTS_FROM_OTHER_INSTANCES_CHECKBOX);
+              break;
+          }
+        });
+
+    And(
+        "I click {string} checkbox on Contact directory page for DE version",
+        (String checkboxDescription) -> {
+          switch (checkboxDescription) {
+            case ("Quarant\u00E4ne m\u00FCndlich verordnet?"):
+              webDriverHelpers.clickOnWebElementBySelector(
+                  CONTACTS_WITH_QUARANTINE_ORDERED_VERBALLY_CHECKBOX);
+              break;
+            case ("Quarant\u00E4ne schriftlich verordnet?"):
+              webDriverHelpers.clickOnWebElementBySelector(
+                  CONTACTS_WITH_QUARANTINE_ORDERED_BY_OFFICIAL_DOCUMENT_CHECKBOX);
+              break;
+            case ("Keine Quarant\u00E4ne verordnet"):
+              webDriverHelpers.clickOnWebElementBySelector(
+                  CONTACTS_WITH_NO_QUARANTINE_ORDERED_CHECKBOX);
+              break;
+            case ("Ma\u00DFnahmen zur Gew\u00E4hrleistung der Versorgung"):
+              webDriverHelpers.clickOnWebElementBySelector(
+                  CONTACTS_WITH_HELP_NEEDED_IN_QUARANTINE_ORDERED_CHECKBOX);
+              break;
+            case ("Nur Kontakte mit hoher Priorit\u00E4t"):
+              webDriverHelpers.clickOnWebElementBySelector(CONTACTS_ONLY_HIGH_PRIOROTY_CHECKBOX);
+              break;
+            case ("Nur Kontakte mit verl\u00E4ngerter Quarant\u00E4ne"):
+              webDriverHelpers.clickOnWebElementBySelector(
+                  CONTACTS_WITH_EXTENDED_QUARANTINE_CHECKBOX);
+              break;
+            case ("Nur Kontakte mit verk\u00FCrzter Quarant\u00E4ne"):
+              webDriverHelpers.clickOnWebElementBySelector(
+                  CONTACTS_WITH_REDUCED_QUARANTINE_CHECKBOX);
+              break;
+            case ("Nur Kontakte von anderen Instanzen"):
               webDriverHelpers.clickOnWebElementBySelector(CONTACTS_FROM_OTHER_INSTANCES_CHECKBOX);
               break;
           }
