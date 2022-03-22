@@ -30,6 +30,10 @@ public class EpidemiologicalDataCasePage {
   public static final By TYPE_OF_ACTIVITY_COMBOBOX = By.cssSelector(".v-window #exposureType div");
   public static final By EXPOSURE_DETAILS_ROLE_COMBOBOX =
       By.cssSelector(".v-window div#exposureRole div");
+  public static final By ACTIVITY_AS_CASE_OPTIONS =
+      By.cssSelector("[id='activityAsCaseDetailsKnown'] [class='v-checkbox v-select-option']");
+  public static final By NEW_ENTRY_POPUP = By.cssSelector(".v-window  .popupContent");
+  public static final By ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON = By.id("actionNewEntry");
   public static final By RISK_AREA_OPTIONS = By.cssSelector(".v-window #riskArea .v-select-option");
   public static final By INDOORS_OPTIONS = By.cssSelector(".v-window #indoors .v-select-option");
   public static final By OUTDOORS_OPTIONS = By.cssSelector(".v-window #outdoors .v-select-option");
@@ -96,4 +100,5 @@ public class EpidemiologicalDataCasePage {
       By.xpath("//div[contains(@id, 'de.symeda.sormas.api.exposure')]");
   public static final By OPEN_SAVED_ACTIVITY_BUTTON =
       By.xpath("//div[contains(@id, 'de.symeda.sormas.api.activityascase')]");
+  public static final By CONTACT_TO_CASE_COMBOBOX = By.cssSelector(".v-window #contactToCase div");
 }
