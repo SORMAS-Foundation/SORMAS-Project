@@ -16,15 +16,15 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
 import org.apache.poi.ss.usermodel.Sheet;
 import org.apache.poi.ss.usermodel.Workbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.sormas.e2etests.common.MoreResources;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.testng.asserts.SoftAssert;
 
@@ -32,8 +32,7 @@ public class AboutDirectorySteps implements En {
   public static final String userDirPath = System.getProperty("user.dir");
   public static final List<String> xlsxFileContentList = new ArrayList<>();
   public static String language;
-
-   private final static Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
+  private static final Logger log = LoggerFactory.getLogger(MoreResources.class);
 
   @Inject
   public AboutDirectorySteps(WebDriverHelpers webDriverHelpers, SoftAssert softly) {
@@ -92,7 +91,7 @@ public class AboutDirectorySteps implements En {
     When(
         "^I read data from downloaded XLSX Data Dictionary file$",
         () -> {
-            readXlsxFile();
+          readXlsxFile();
           TimeUnit.SECONDS.sleep(5); // waiting for xlsx file is read
         });
 
@@ -128,7 +127,6 @@ public class AboutDirectorySteps implements En {
   }
 
   private static void readXlsxFile() {
-      logger.setLevel(Level.INFO);
     try {
       FileInputStream excelFile =
           new FileInputStream(
@@ -156,10 +154,11 @@ public class AboutDirectorySteps implements En {
           }
         }
       }
+      log.info("All data is read properly from chosen xlsx file");
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     } catch (IOException e) {
-        System.out.println("The file couldn't be read" + e);
+      log.error("The exception occurred" + e + "The xlsx file couldn't be read");
       e.printStackTrace();
     }
   }
