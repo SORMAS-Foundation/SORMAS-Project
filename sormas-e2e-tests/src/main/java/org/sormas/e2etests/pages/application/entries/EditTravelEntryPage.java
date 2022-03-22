@@ -22,6 +22,7 @@ import org.openqa.selenium.By;
 
 public class EditTravelEntryPage {
 
+  public static final By UUID_INPUT = By.id("uuid");
   public static final By FIRST_NAME_INPUT = By.cssSelector("[location='firstName'] input");
   public static final By LAST_NAME_INPUT = By.cssSelector("[location='lastName'] input");
   public static final By SEX_COMBOBOX = By.cssSelector("[location='sex'] [role='combobox'] div");
@@ -29,6 +30,7 @@ public class EditTravelEntryPage {
   public static final By RESPONSIBLE_DISTRICT_COMBOBOX = By.cssSelector("#responsibleDistrict div");
   public static final By RESPONSIBLE_COMMUNITY_COMBOBOX =
       By.cssSelector("#responsibleCommunity div");
+  public static final By REPORT_DATE_INPUT = By.cssSelector("#reportDate input");
   public static final By DISEASE_COMBOBOX = By.cssSelector("#disease div");
   public static final By POINT_OF_ENTRY_COMBOBOX = By.cssSelector("#pointOfEntry div");
   public static final By POINT_OF_ENTRY_DETAILS_INPUT = By.cssSelector("#pointOfEntryDetails");
