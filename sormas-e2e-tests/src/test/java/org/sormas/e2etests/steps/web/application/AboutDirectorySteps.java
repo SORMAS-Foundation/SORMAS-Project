@@ -16,6 +16,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import org.apache.poi.ss.usermodel.Cell;
 import org.apache.poi.ss.usermodel.CellType;
 import org.apache.poi.ss.usermodel.Row;
@@ -29,6 +32,8 @@ public class AboutDirectorySteps implements En {
   public static final String userDirPath = System.getProperty("user.dir");
   public static final List<String> xlsxFileContentList = new ArrayList<>();
   public static String language;
+
+   private final static Logger logger = Logger.getLogger(Logger.GLOBAL_LOGGER_NAME);
 
   @Inject
   public AboutDirectorySteps(WebDriverHelpers webDriverHelpers, SoftAssert softly) {
@@ -44,8 +49,9 @@ public class AboutDirectorySteps implements En {
     When(
         "I set on default language as English in User settings",
         () -> {
+          String languageDerivedFromUserChoose = language;
           String defaultLanguage = "";
-          switch (language) {
+          switch (languageDerivedFromUserChoose) {
             case "Fran\u00E7ais":
               defaultLanguage = "Anglais";
               webDriverHelpers.selectFromCombobox(LANGUAGE_COMBOBOX, defaultLanguage);
@@ -84,17 +90,16 @@ public class AboutDirectorySteps implements En {
         });
 
     When(
-        "^I read data from downloaded XLSX file$",
+        "^I read data from downloaded XLSX Data Dictionary file$",
         () -> {
-          ReadXlsxFile();
+            readXlsxFile();
           TimeUnit.SECONDS.sleep(5); // waiting for xlsx file is read
         });
 
     When(
-        "I detect language for XLSX file content",
+        "I detect and check language that was defined in User Settings for XLSX file content",
         () -> {
           DetectLanguage.apiKey = "5e184341083ac27cad1fd06d6e208302";
-
           String[] receivedWordsFromArray = {
             xlsxFileContentList.get(16), xlsxFileContentList.get(17)
           };
@@ -122,9 +127,9 @@ public class AboutDirectorySteps implements En {
         });
   }
 
-  public static void ReadXlsxFile() {
+  private static void readXlsxFile() {
+      logger.setLevel(Level.INFO);
     try {
-
       FileInputStream excelFile =
           new FileInputStream(
               new File(
@@ -154,6 +159,7 @@ public class AboutDirectorySteps implements En {
     } catch (FileNotFoundException e) {
       e.printStackTrace();
     } catch (IOException e) {
+        System.out.println("The file couldn't be read" + e);
       e.printStackTrace();
     }
   }
