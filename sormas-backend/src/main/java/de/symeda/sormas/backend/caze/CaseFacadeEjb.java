@@ -2080,7 +2080,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		// On German systems, correct and clean up reinfection data
 		if (configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
-			newCase.setReinfectionDetails(cleanUpReinfectionDetails(newCase.getReinfectionDetails()));
+			newCase.setReinfectionDetails(cleanupReinfectionDetails(newCase.getReinfectionDetails()));
 			newCase.setReinfectionStatus(CaseLogic.calculateReinfectionStatus(newCase.getReinfectionDetails()));
 		}
 	}
@@ -2925,7 +2925,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return target;
 	}
 
-	private Map<ReinfectionDetail, Boolean> cleanUpReinfectionDetails(Map<ReinfectionDetail, Boolean> reinfectionDetails) {
+
+	private Map<ReinfectionDetail, Boolean> cleanupReinfectionDetails(Map<ReinfectionDetail, Boolean> reinfectionDetails) {
 		if (reinfectionDetails != null && reinfectionDetails.containsValue(Boolean.FALSE)) {
 			Map<ReinfectionDetail, Boolean> onlyTrueReinfectionDetails = new HashMap<>();
 			onlyTrueReinfectionDetails =
