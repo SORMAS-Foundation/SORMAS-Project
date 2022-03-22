@@ -43,6 +43,7 @@ import de.symeda.sormas.api.caze.CaseFollowUpDto;
 import de.symeda.sormas.api.caze.CaseIndexDetailedDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CasePersonDto;
+import de.symeda.sormas.api.caze.CoreAndPersonDto;
 import de.symeda.sormas.api.caze.CriteriaWithSorting;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
@@ -86,6 +87,12 @@ public class CaseResource extends EntityDtoResource {
 	@Path("/push")
 	public List<PushResult> postCases(@Valid List<CaseDataDto> dtos) {
 		return savePushedDto(dtos, FacadeProvider.getCaseFacade()::save);
+	}
+
+	@POST
+	@Path("/pushWithPerson")
+	public CoreAndPersonDto<CaseDataDto> postCase(@Valid CoreAndPersonDto<CaseDataDto> dto) {
+		return FacadeProvider.getCaseFacade().save(dto);
 	}
 
 	@POST
