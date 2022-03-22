@@ -15,6 +15,7 @@
 package de.symeda.sormas.backend.user;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashSet;
@@ -44,6 +45,7 @@ import javax.validation.ValidationException;
 
 import org.apache.commons.beanutils.BeanUtils;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -204,11 +206,9 @@ public class UserFacadeEjb implements UserFacade {
 		return Collections.singletonList(hasUuid == null ? null : hasUuid.getUuid());
 	}
 
-	//TODO 8017
 	@Override
-	public List<UserReferenceDto> getUsersByRegionAndRights(RegionReferenceDto regionRef, UserRight... userRights) {
-
-		return userService.getUserReferences(toUuidList(regionRef), null, true, true, userRights)
+	public List<UserReferenceDto> getUsersByRegionAndRights(RegionReferenceDto regionRef, Disease limitedDisease, UserRight... userRights) {
+		return userService.getUserReferences(toUuidList(regionRef), null, null, true, true, limitedDisease, userRights)
 			.stream()
 			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
@@ -254,14 +254,8 @@ public class UserFacadeEjb implements UserFacade {
 			}
 
 			if (community == null) {
-				superiorUsersList =
-					userService
-						.getUserReferencesByJurisdictions(
-							null,
-							Collections.singletonList(district.getUuid()),
-							null,
-							superordinateJurisdictions,
-							null);
+				superiorUsersList = userService
+					.getUserReferencesByJurisdictions(null, Collections.singletonList(district.getUuid()), null, superordinateJurisdictions, null);
 			} else if (district != null) {
 				superiorUsersList = userService.getUserReferencesByJurisdictions(
 					null,
@@ -277,21 +271,39 @@ public class UserFacadeEjb implements UserFacade {
 		return superiorUsersList.stream().map(UserFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
-	//TODO 8017
 	@Override
-	public List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto districtRef, UserRight... userRights) {
+	public List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto districtRef, Disease limitedDisease, UserRight... userRights) {
 
-		return userService.getUserReferences(null, toUuidList(districtRef), true, true, userRights)
+		return userService.getUserReferences(null, toUuidList(districtRef), null, true, true, limitedDisease, userRights)
 			.stream()
 			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
 	}
-	//TODO 8017
+
 	@Override
-	public List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districtRefs, UserRight... userRights) {
+	public List<UserReferenceDto> getUserRefsByDistrict(
+		DistrictReferenceDto districtRef,
+		boolean excludeLimitedDiseaseUsers,
+		UserRight... userRights) {
+		return userService
+			.getUserReferences(null, toUuidList(districtRef), null, true, true, null, excludeLimitedDiseaseUsers, Arrays.asList(userRights))
+			.stream()
+			.map(UserFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districtRefs, Disease limitedDisease, UserRight... userRights) {
 
 		return userService
-			.getUserReferences(null, districtRefs.stream().map(DistrictReferenceDto::getUuid).collect(Collectors.toList()), true, true, userRights)
+			.getUserReferences(
+				null,
+				districtRefs.stream().map(DistrictReferenceDto::getUuid).collect(Collectors.toList()),
+				null,
+				true,
+				true,
+				limitedDisease,
+				userRights)
 			.stream()
 			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
@@ -451,11 +463,6 @@ public class UserFacadeEjb implements UserFacade {
 		cq.orderBy(cb.asc(root.get(AbstractDomainObject.ID)));
 		List<User> resultList = em.createQuery(cq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
 		return resultList.stream().map(UserFacadeEjb::toReferenceDto).collect(Collectors.toList());
-	}
-
-	public interface JurisdictionOverEntitySubqueryBuilder<ADO extends AbstractDomainObject> {
-
-		Subquery<ADO> buildSubquery(CriteriaBuilder cb, CriteriaQuery<?> cq, Root<User> userRoot);
 	}
 
 	@Override
@@ -778,6 +785,11 @@ public class UserFacadeEjb implements UserFacade {
 
 			userUpdateEvent.fire(new UserUpdateEvent(oldUser, user));
 		}
+	}
+
+	public interface JurisdictionOverEntitySubqueryBuilder<ADO extends AbstractDomainObject> {
+
+		Subquery<ADO> buildSubquery(CriteriaBuilder cb, CriteriaQuery<?> cq, Root<User> userRoot);
 	}
 
 	@LocalBean

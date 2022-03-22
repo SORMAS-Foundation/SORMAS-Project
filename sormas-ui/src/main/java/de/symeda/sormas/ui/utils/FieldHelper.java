@@ -794,10 +794,9 @@ public final class FieldHelper {
 	public static void updateOfficersField(AbstractSelect officerField, CaseDataDto caze, UserRight right) {
 		List<DistrictReferenceDto> officerDistricts =
 			Stream.of(caze.getResponsibleDistrict(), caze.getDistrict()).filter(Objects::nonNull).collect(Collectors.toList());
-		//TODO 8017
 		FieldHelper.updateItems(
 			officerField,
-			officerDistricts.size() > 0 ? FacadeProvider.getUserFacade().getUserRefsByDistricts(officerDistricts, right) : null);
+			officerDistricts.size() > 0 ? FacadeProvider.getUserFacade().getUserRefsByDistricts(officerDistricts, caze.getDisease(), right) : null);
 
 	}
 }

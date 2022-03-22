@@ -96,9 +96,18 @@ public class BulkContactDataForm extends AbstractEditForm<ContactBulkEditData> {
 				Arrays.asList(ContactBulkEditData.CONTACT_OFFICER),
 				Arrays.asList(true),
 				null);
-			//TODO 8017
-			List<UserReferenceDto> assignableContactOfficers =
-				FacadeProvider.getUserFacade().getUserRefsByDistrict(singleSelectedDistrict, UserRight.CONTACT_RESPONSIBLE);
+
+			List<Disease> selectedDiseases = this.selectedContacts.stream().map(c -> c.getDisease()).collect(Collectors.toList());
+			List<UserReferenceDto> assignableContactOfficers = null;
+			if (selectedDiseases.size() == 1) {
+				Disease selectedDisease = selectedDiseases.get(0);
+				assignableContactOfficers =
+					FacadeProvider.getUserFacade().getUserRefsByDistrict(singleSelectedDistrict, selectedDisease, UserRight.CONTACT_RESPONSIBLE);
+			} else {
+				assignableContactOfficers =
+					FacadeProvider.getUserFacade().getUserRefsByDistrict(singleSelectedDistrict, true, UserRight.CONTACT_RESPONSIBLE);
+			}
+
 			FieldHelper.updateItems(contactOfficer, assignableContactOfficers);
 
 			contactOfficerCheckBox.addValueChangeListener(e -> {

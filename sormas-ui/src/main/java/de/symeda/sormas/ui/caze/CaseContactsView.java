@@ -22,7 +22,6 @@ import java.util.HashMap;
 import java.util.Set;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.EditPermissionType;
 import org.vaadin.hene.popupbutton.PopupButton;
 
 import com.vaadin.event.ShortcutAction;
@@ -77,10 +76,8 @@ import de.symeda.sormas.ui.utils.components.expandablebutton.ExpandableButton;
 
 public class CaseContactsView extends AbstractCaseView {
 
-	private static final long serialVersionUID = -1L;
-
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/contacts";
-
+	private static final long serialVersionUID = -1L;
 	private final ContactCriteria criteria;
 	private final ViewConfiguration viewConfiguration;
 
@@ -131,8 +128,8 @@ public class CaseContactsView extends AbstractCaseView {
 			regionFilter.addValueChangeListener(e -> {
 				RegionReferenceDto region = (RegionReferenceDto) e.getProperty().getValue();
 				if (region != null) {
-					//TODO 8017
-					officerFilter.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(region, UserRight.CONTACT_RESPONSIBLE));
+					officerFilter.addItems(
+						FacadeProvider.getUserFacade().getUsersByRegionAndRights(region, criteria.getDisease(), UserRight.CONTACT_RESPONSIBLE));
 				} else {
 					officerFilter.removeAllItems();
 				}
@@ -175,8 +172,8 @@ public class CaseContactsView extends AbstractCaseView {
 		officerFilter.setInputPrompt(I18nProperties.getPrefixCaption(ContactIndexDto.I18N_PREFIX, ContactIndexDto.CONTACT_OFFICER_UUID));
 		officerFilter.addValueChangeListener(e -> criteria.setContactOfficer((UserReferenceDto) e.getProperty().getValue()));
 		if (user.getRegion() != null) {
-			//TODO 8017
-			officerFilter.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(user.getRegion(), UserRight.CONTACT_RESPONSIBLE));
+			officerFilter.addItems(
+				FacadeProvider.getUserFacade().getUsersByRegionAndRights(user.getRegion(), criteria.getDisease(), UserRight.CONTACT_RESPONSIBLE));
 		}
 		topLayout.addComponent(officerFilter);
 

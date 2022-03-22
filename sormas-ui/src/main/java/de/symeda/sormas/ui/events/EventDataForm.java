@@ -558,8 +558,8 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		regionField.addValueChangeListener(e -> {
 			RegionReferenceDto region = (RegionReferenceDto) regionField.getValue();
 			if (region != null) {
-				//TODO 8017
-				regionEventResponsibles = FacadeProvider.getUserFacade().getUsersByRegionAndRights(region, UserRight.EVENT_RESPONSIBLE);
+				regionEventResponsibles =
+					FacadeProvider.getUserFacade().getUsersByRegionAndRights(region, getValue().getDisease(), UserRight.EVENT_RESPONSIBLE);
 			} else {
 				regionEventResponsibles.clear();
 			}
@@ -568,9 +568,8 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		districtField.addValueChangeListener(e -> {
 			DistrictReferenceDto district = (DistrictReferenceDto) districtField.getValue();
 			if (district != null) {
-				//TODO 8017
 				List<UserReferenceDto> districtEventResponsibles =
-					FacadeProvider.getUserFacade().getUserRefsByDistrict(district, UserRight.EVENT_RESPONSIBLE);
+					FacadeProvider.getUserFacade().getUserRefsByDistrict(district, getValue().getDisease(), UserRight.EVENT_RESPONSIBLE);
 
 				List<UserReferenceDto> responsibleUsers = new ArrayList<>();
 				responsibleUsers.addAll(districtEventResponsibles);

@@ -208,17 +208,17 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 				Arrays.asList(true),
 				null);
 			List<Disease> selectedDiseases = this.selectedCases.stream().map(c -> c.getDisease()).collect(Collectors.toList());
-//			List<UserReferenceDto> assignableCaseResponsibles = null;
-//TODO 8017
-			//
-//			if (selectedDiseases.size() == 1) {
-//				Disease selectedDisease = selectedDiseases.get(0);
-//				assignableCaseResponsibles =
-//						FacadeProvider.getUserFacade().getUserRefsByDistrict(singleSelectedDistrict, UserRight.CASE_RESPONSIBLE);
-//
-//			}
-			List<UserReferenceDto> assignableCaseResponsibles =
-				FacadeProvider.getUserFacade().getUserRefsByDistrict(singleSelectedDistrict, UserRight.CASE_RESPONSIBLE);
+			List<UserReferenceDto> assignableCaseResponsibles = null;
+
+			if (selectedDiseases.size() == 1) {
+				Disease selectedDisease = selectedDiseases.get(0);
+				assignableCaseResponsibles =
+					FacadeProvider.getUserFacade().getUserRefsByDistrict(singleSelectedDistrict, selectedDisease, UserRight.CASE_RESPONSIBLE);
+
+			} else {
+				assignableCaseResponsibles =
+					FacadeProvider.getUserFacade().getUserRefsByDistrict(singleSelectedDistrict, true, UserRight.CASE_RESPONSIBLE);
+			}
 			FieldHelper.updateItems(surveillanceOfficer, assignableCaseResponsibles);
 
 			surveillanceOfficerCheckBox.addValueChangeListener(e -> {

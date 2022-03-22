@@ -51,7 +51,7 @@ public interface UserFacade {
 
 	UserDto getByUserName(String userName);
 
-	List<UserReferenceDto> getUsersByRegionAndRights(RegionReferenceDto regionRef, UserRight... userRights);
+	List<UserReferenceDto> getUsersByRegionAndRights(RegionReferenceDto regionRef, Disease limitedDisease, UserRight... userRights);
 
 	List<UserReferenceDto> getUsersWithSuperiorJurisdiction(UserDto user);
 
@@ -67,11 +67,17 @@ public interface UserFacade {
 	 *            rights of the users by district
 	 * @return
 	 */
-	//TODO 8017
-	List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto district, UserRight... userRights);
+	List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto district, Disease limitedDisease, UserRight... userRights);
 
-	//TODO 8017
-	List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districts, UserRight... userRights);
+	/**
+	 * @param district
+	 * @param userRights
+	 *            rights of the users by district
+	 * @return
+	 */
+	List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto district, boolean excludeLimitedDiseaseUsers, UserRight... userRights);
+
+	List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districts, Disease limitedDisease, UserRight... userRights);
 
 	List<UserReferenceDto> getAllUserRefs(boolean includeInactive);
 

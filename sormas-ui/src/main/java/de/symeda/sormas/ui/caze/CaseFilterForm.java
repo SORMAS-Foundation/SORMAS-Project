@@ -208,10 +208,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			pointOfEntryField.setDescription(I18nProperties.getDescription(Descriptions.descPointOfEntryFilter));
 		}
 
-
 		ComboBox officerField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.SURVEILLANCE_OFFICER, 140));
-		//TODO 8017
-		officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(user.getRegion(), UserRight.CASE_RESPONSIBLE));
+		officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(user.getRegion(), null, UserRight.CASE_RESPONSIBLE));
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP)) {
 			Field<?> followUpUntilTo = addField(
@@ -499,8 +497,9 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 							pointOfEntryField,
 							FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(newDistrict.getUuid(), true));
 					}
-//TODO 8017
-					officerField.addItems(FacadeProvider.getUserFacade().getUserRefsByDistrict(newDistrict, UserRight.CASE_RESPONSIBLE));
+					Disease selectedDisease = (Disease) getField(CaseIndexDto.DISEASE).getValue();
+					officerField
+						.addItems(FacadeProvider.getUserFacade().getUserRefsByDistrict(newDistrict, selectedDisease, UserRight.CASE_RESPONSIBLE));
 				} else {
 					clearAndDisableFields(communityField, pointOfEntryField, facilityField, facilityTypeField, facilityTypeGroupField);
 
@@ -617,8 +616,8 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 	}
 
 	private void addOfficers(ComboBox officerField, RegionReferenceDto region) {
-		//TODO 8017
-		officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(region, UserRight.CASE_RESPONSIBLE));
+		Disease selectedDisease = (Disease) getField(CaseIndexDto.DISEASE).getValue();
+		officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(region, selectedDisease, UserRight.CASE_RESPONSIBLE));
 	}
 
 	@SuppressWarnings("rawtypes")

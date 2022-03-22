@@ -123,9 +123,9 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 					FacadeProvider.getFacilityFacade()
 						.getActiveFacilitiesByDistrictAndType(districtDto, (FacilityType) type.getValue(), true, false));
 			}
-//TODO 8017
+			Disease caseDisease = getValue().getDisease();
 			List<UserReferenceDto> assignableCaseResponsibles =
-				FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, UserRight.CASE_RESPONSIBLE);
+				FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, caseDisease, UserRight.CASE_RESPONSIBLE);
 			FieldHelper.updateItems(officer, assignableCaseResponsibles);
 			if (assignableCaseResponsibles.size() == 1) {
 				officer.setValue(assignableCaseResponsibles.get(0));
