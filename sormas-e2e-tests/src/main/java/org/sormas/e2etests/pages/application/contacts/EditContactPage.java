@@ -131,4 +131,5 @@ public class EditContactPage {
   public static final By QUARANTINE_ORDER_COMBOBOX =
       By.cssSelector(".popupContent div[role='combobox'] div");
   public static final By CREATE_CASE_FROM_CONTACT_BUTTON = By.id("contactCreateContactCase");
+  public static final By CONTACT_DATA_TITLE = By.cssSelector("[location='contactDataHeadingLoc']");
 }
