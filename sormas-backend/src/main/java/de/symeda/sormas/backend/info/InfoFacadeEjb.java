@@ -122,14 +122,12 @@ public class InfoFacadeEjb implements InfoFacade {
 
 	@Override
 	public String generateDataDictionary() throws IOException {
-		//TODO: here the first column should not be displayed
 		return generateDataDictionary(
-			EnumSet.allOf(EntityColumn.class),
+			filterColumnsForDataDictionary(),
 			FieldVisibilityCheckers.getNoop(),
 			Collections.emptyList(),
 			Collections.emptyMap(),
 			false);
-
 	}
 
 	@Override
@@ -241,10 +239,6 @@ public class InfoFacadeEjb implements InfoFacade {
 		CellStyle defaultCellStyle = workbook.createCellStyle();
 		defaultCellStyle.setWrapText(true);
 
-		//
-		List<Class<Enum<?>>> usedEnums = new ArrayList<>();
-		boolean usesFacilityReference = false;
-
 		for (EntityInfo entityInfo : entityInfoList) {
 			Class<? extends EntityDto> entityClass = entityInfo.getEntityClass();
 
@@ -267,23 +261,6 @@ public class InfoFacadeEjb implements InfoFacade {
 					if (c.hasDefaultStyle()) {
 						newCell.setCellStyle(defaultCellStyle);
 					}
-
-					Class<?> fieldType = field.getType();
-					if (fieldType.isEnum()) {
-						if (!usedEnums.contains(fieldType)) {
-							@SuppressWarnings("unchecked")
-							Class<Enum<?>> enumType = (Class<Enum<?>>) fieldType;
-							usedEnums.add(enumType);
-						}
-					} else if (Map.class.isAssignableFrom(fieldType)) {
-						getEnumGenericsOf(field, Map.class).filter(e -> !usedEnums.contains(e)).collect(Collectors.toCollection(() -> usedEnums));
-					} else if (Collection.class.isAssignableFrom(fieldType)) {
-						getEnumGenericsOf(field, Collection.class).filter(e -> !usedEnums.contains(e))
-							.collect(Collectors.toCollection(() -> usedEnums));
-					} else if (FacilityReferenceDto.class.isAssignableFrom(fieldType)) {
-						usesFacilityReference = true;
-					}
-
 				}
 
 				String fieldId = EntityColumn.FIELD_ID.getGetValueFromField(fieldData);
@@ -302,17 +279,6 @@ public class InfoFacadeEjb implements InfoFacade {
 		AreaReference reference =
 			workbook.getCreationHelper().createAreaReference(new CellReference(0, 0), new CellReference(rowNumber - 1, columnCount - 1));
 		XssfHelper.configureTable(reference, getSafeTableName(safeName), sheet, XssfHelper.TABLE_STYLE_PRIMARY);
-
-		/*
-		 * // constant facilities
-		 * if (usesFacilityReference) {
-		 * rowNumber = createFacilityTable(sheet, rowNumber + 1, defaultCellStyle);
-		 * }
-		 * // enums
-		 * for (Class<Enum<?>> usedEnum : usedEnums) {
-		 * rowNumber = createEnumTable(sheet, rowNumber + 1, usedEnum, fieldVisibilityCheckers);
-		 * }
-		 */
 	}
 
 	private void createEntitySheet(
@@ -411,7 +377,6 @@ public class InfoFacadeEjb implements InfoFacade {
 			workbook.getCreationHelper().createAreaReference(new CellReference(0, 0), new CellReference(rowNumber - 1, columnCount - 1));
 		XssfHelper.configureTable(reference, getSafeTableName(safeName), sheet, XssfHelper.TABLE_STYLE_PRIMARY);
 
-		/*---------------------------------------------------*/
 		// constant facilities
 		if (usesFacilityReference) {
 			rowNumber = createFacilityTable(sheet, rowNumber + 1, defaultCellStyle);
@@ -616,7 +581,6 @@ public class InfoFacadeEjb implements InfoFacade {
 		entityInfoList.add(new EntityInfo(SurveillanceReportDto.class, SurveillanceReportDto.I18N_PREFIX));
 		entityInfoList.add(new EntityInfo(SymptomsDto.class, SymptomsDto.I18N_PREFIX));
 		entityInfoList.add(new EntityInfo(EpiDataDto.class, EpiDataDto.I18N_PREFIX));
-
 		entityInfoList.add(new EntityInfo(ExposureDto.class, ExposureDto.I18N_PREFIX));
 		entityInfoList.add(new EntityInfo(HealthConditionsDto.class, HealthConditionsDto.I18N_PREFIX));
 		entityInfoList.add(new EntityInfo(PrescriptionDto.class, PrescriptionDto.I18N_PREFIX));
@@ -627,7 +591,6 @@ public class InfoFacadeEjb implements InfoFacade {
 		entityInfoList.add(new EntityInfo(SampleDto.class, SampleDto.I18N_PREFIX));
 		entityInfoList.add(new EntityInfo(PathogenTestDto.class, PathogenTestDto.I18N_PREFIX));
 		entityInfoList.add(new EntityInfo(AdditionalTestDto.class, AdditionalTestDto.I18N_PREFIX));
-
 		entityInfoList.add(new EntityInfo(TaskDto.class, TaskDto.I18N_PREFIX));
 		entityInfoList.add(new EntityInfo(EventDto.class, EventDto.I18N_PREFIX));
 		entityInfoList.add(new EntityInfo(EventParticipantDto.class, EventParticipantDto.I18N_PREFIX));
@@ -638,7 +601,6 @@ public class InfoFacadeEjb implements InfoFacade {
 		entityInfoList.add(new EntityInfo(ContinentDto.class, ContinentDto.I18N_PREFIX));
 		entityInfoList.add(new EntityInfo(SubcontinentDto.class, SubcontinentDto.I18N_PREFIX));
 		entityInfoList.add(new EntityInfo(CountryDto.class, CountryDto.I18N_PREFIX));
-
 		entityInfoList.add(new EntityInfo(RegionDto.class, RegionDto.I18N_PREFIX));
 		entityInfoList.add(new EntityInfo(DistrictDto.class, DistrictDto.I18N_PREFIX));
 		entityInfoList.add(new EntityInfo(CommunityDto.class, CommunityDto.I18N_PREFIX));
@@ -650,6 +612,13 @@ public class InfoFacadeEjb implements InfoFacade {
 
 		return entityInfoList;
 	}
+
+    private EnumSet<EntityColumn> filterColumnsForDataDictionary() {
+        EnumSet<EntityColumn> enumSet = EnumSet.allOf(EntityColumn.class);
+        return enumSet.stream()
+                .filter(column -> column.isExtraDataDictionaryColumn() || (!column.isExtraDataProtectionColumn() & !column.isExtraDataProtectionColumn()))
+                .collect(Collectors.toCollection(() -> EnumSet.noneOf(EntityColumn.class)));
+    }
 
 	@LocalBean
 	@Stateless
@@ -675,7 +644,6 @@ public class InfoFacadeEjb implements InfoFacade {
 
 		public EntityInfo(Class<? extends EntityDto> entityClass, String i18nPrefix) {
 			this.entityClass = entityClass;
-
 			this.i18nPrefix = i18nPrefix;
 		}
 	}

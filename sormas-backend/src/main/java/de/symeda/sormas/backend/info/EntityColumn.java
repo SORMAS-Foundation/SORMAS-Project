@@ -40,31 +40,42 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import org.apache.commons.lang3.reflect.TypeUtils;
 
 public enum EntityColumn {
-    ENTITY(256 * 30, EntityColumn::getEntity, false),
-	FIELD_ID(256 * 30, EntityColumn::getFieldId, false),
-	FIELD(256 * 30, EntityColumn::getFieldName, false),
-	TYPE(256 * 30, EntityColumn::getFieldType, true),
-	DATA_PROTECTION(256 * 30, EntityColumn::getDataProtection, false),
-	CAPTION(256 * 30, EntityColumn::getCaption, false),
-	DESCRIPTION(256 * 60, EntityColumn::getDescription, true),
-	REQUIRED(256 * 10, EntityColumn::getRequired, false),
-	NEW_DISEASE(256 * 8, EntityColumn::getNewDisease, false),
-	DISEASES(256 * 45, EntityColumn::getDiseases, true),
-	OUTBREAKS(256 * 10, EntityColumn::getOutbreaks, false),
-	IGNORED_COUNTRIES(256 * 20, EntityColumn::getIgnoredCountries, false),
-	EXCLUSIVE_COUNTRIES(256 * 20, EntityColumn::getExclusiveCountries, false);
+
+	ENTITY(256 * 30, EntityColumn::getEntity, false, false, true),
+	FIELD_ID(256 * 30, EntityColumn::getFieldId, false,false, false),
+	FIELD(256 * 30, EntityColumn::getFieldName, false, false, false),
+	TYPE(256 * 30, EntityColumn::getFieldType, true, false, false),
+	DATA_PROTECTION(256 * 30, EntityColumn::getDataProtection, false, false, false),
+	CAPTION(256 * 30, EntityColumn::getCaption, false, false, false),
+	DESCRIPTION(256 * 60, EntityColumn::getDescription, true, false, false),
+	REQUIRED(256 * 10, EntityColumn::getRequired, false,false, false),
+	NEW_DISEASE(256 * 8, EntityColumn::getNewDisease, false,false, false),
+	DISEASES(256 * 45, EntityColumn::getDiseases, true, false, false),
+	OUTBREAKS(256 * 10, EntityColumn::getOutbreaks, false, false, false),
+	IGNORED_COUNTRIES(256 * 20, EntityColumn::getIgnoredCountries, false, true, false),
+	EXCLUSIVE_COUNTRIES(256 * 20, EntityColumn::getExclusiveCountries, false, true, false);
 
 	private final int width;
 	private final Function<FieldData, String> getValueFromField;
 	private final boolean hasDefaultStyle;
+	private final boolean isExtraDataDictionaryColumn;
+	private final boolean isExtraDataProtectionColumn;
 
-	EntityColumn(int width, Function<FieldData, String> getValueFromField, boolean hasDefaultStyle) {
+	EntityColumn(
+		int width,
+		Function<FieldData, String> getValueFromField,
+		boolean hasDefaultStyle,
+		boolean isExtraDataDictionaryColumn,
+		boolean isExtraDataProtectionColumn) {
+
 		this.width = width;
 		this.getValueFromField = getValueFromField;
 		this.hasDefaultStyle = hasDefaultStyle;
+		this.isExtraDataDictionaryColumn = isExtraDataDictionaryColumn;
+		this.isExtraDataProtectionColumn = isExtraDataProtectionColumn;
 	}
 
-	public int getWidth() {
+    public int getWidth() {
 		return width;
 	}
 
@@ -76,13 +87,21 @@ public enum EntityColumn {
 		return hasDefaultStyle;
 	}
 
-	public String toString() {
+    public boolean isExtraDataDictionaryColumn() {
+        return isExtraDataDictionaryColumn;
+    }
+
+    public boolean isExtraDataProtectionColumn() {
+        return isExtraDataProtectionColumn;
+    }
+
+    public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
 
 	private static String getEntity(FieldData fieldData) {
-        return DataHelper.getHumanClassName(fieldData.getEntityClass());
-    }
+		return DataHelper.getHumanClassName(fieldData.getEntityClass());
+	}
 
 	private static String getFieldId(FieldData fieldData) {
 		return DataHelper.getHumanClassName(fieldData.getEntityClass()) + "." + fieldData.getField().getName();
