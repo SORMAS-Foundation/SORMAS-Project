@@ -29,6 +29,8 @@ import javax.ejb.Stateless;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
@@ -56,6 +58,7 @@ import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
+import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditionsMapper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -71,6 +74,7 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.PatchHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless(name = "VaccinationFacade")
@@ -443,6 +447,12 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		return toDto(vaccinationService.getByUuid(uuid));
 	}
 
+	public VaccinationDto postUpdate(String uuid, JsonNode vaccinationDtoJson) {
+		VaccinationDto existingVaccinationDto = toDto(vaccinationService.getByUuid(uuid));
+		PatchHelper.postUpdate(vaccinationDtoJson, existingVaccinationDto);
+		return this.save(existingVaccinationDto);
+	}
+
 	@Override
 	public Map<String, String> getLastVaccinationType() {
 		return vaccinationService.getLastVaccinationType();
@@ -512,6 +522,11 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 			Vaccination vaccination = new Vaccination();
 			vaccination.setUuid(DataHelper.createUuid());
 			vaccination = fillOrBuildEntity(vaccinationDto, vaccination, false);
+
+			HealthConditions healthConditions = new HealthConditions();
+			healthConditions.setUuid(DataHelper.createUuid());
+			healthConditions = healthConditionsMapper.fillOrBuildEntity(vaccinationDto.getHealthConditions(), healthConditions, false);
+			vaccination.setHealthConditions(healthConditions);
 
 			vaccination.setImmunization(newImmunization);
 			vaccinationEntities.add(vaccination);

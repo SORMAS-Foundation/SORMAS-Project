@@ -71,6 +71,7 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_WITH_REDUCED_QUARANTINE_CHECKBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_CASE_CLASSIFICATION_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_CLASSIFICATION_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DATA_TAB;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DIRECTORY_DETAILED_PAGE_APPLY_FILTER_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DIRECTORY_DETAILED_RADIOBUTTON;
@@ -446,12 +447,6 @@ public class ContactDirectorySteps implements En {
         "^I click on Line Listing button$",
         () -> webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING));
 
-    When(
-        "I click on the Epidemiological Data button",
-        () -> {
-          webDriverHelpers.clickOnWebElementBySelector(EPIDEMIOLOGICAL_DATA_TAB);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
-        });
     And(
         "I click on All button in Contact Directory Page",
         () -> {
@@ -485,6 +480,19 @@ public class ContactDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(EXPOSURE_DETAILS_NEW_ENTRY_BUTTON);
           exposureData = contactService.buildGeneratedExposureDataForContact();
           fillExposure(exposureData);
+        });
+    When(
+        "I click on the Epidemiological Data button tab in Contact form",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EPIDEMIOLOGICAL_DATA_TAB);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I click on the Contact tab in Contacts",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_DATA_TAB);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(
