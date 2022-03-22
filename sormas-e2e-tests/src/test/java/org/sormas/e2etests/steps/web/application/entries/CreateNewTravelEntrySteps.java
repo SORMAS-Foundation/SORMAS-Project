@@ -18,7 +18,6 @@
 
 package org.sormas.e2etests.steps.web.application.entries;
 
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.EPIDEMIOLOGICAL_DATA_TAB;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.COMMUNITY_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISTRICT_INPUT;
@@ -52,23 +51,6 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
-import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.entities.pojo.web.Case;
-import org.sormas.e2etests.entities.pojo.web.TravelEntry;
-import org.sormas.e2etests.entities.services.TravelEntryService;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage;
-import org.sormas.e2etests.pages.application.entries.EditTravelEntryPage;
-import org.sormas.e2etests.state.ApiState;
-import org.testng.asserts.SoftAssert;
-
-import cucumber.api.java8.En;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.List;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.entities.pojo.web.TravelEntry;
