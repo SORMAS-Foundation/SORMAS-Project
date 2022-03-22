@@ -209,7 +209,9 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 		}
 
 		ComboBox officerField = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.SURVEILLANCE_OFFICER, 140));
-		officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(user.getRegion(), null, UserRight.CASE_RESPONSIBLE));
+		Disease selectedDisease = (Disease) getField(CaseIndexDto.DISEASE).getValue();
+		officerField
+			.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(user.getRegion(), selectedDisease, UserRight.CASE_RESPONSIBLE));
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_FOLLOWUP)) {
 			Field<?> followUpUntilTo = addField(
