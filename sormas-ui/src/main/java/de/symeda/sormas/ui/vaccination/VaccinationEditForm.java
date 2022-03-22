@@ -111,7 +111,6 @@ public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 			Collections.singletonList(VaccineManufacturer.OTHER),
 			true);
 
-//		if (!FacadeProvider.getFeatureConfigurationFacade().isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
 		addField(VaccinationDto.PREGNANT);
 		addField(VaccinationDto.TRIMESTER);
 		addField(VaccinationDto.HEALTH_CONDITIONS, HealthConditionsForm.class).setCaption(null);
@@ -126,7 +125,5 @@ public class VaccinationEditForm extends AbstractEditForm<VaccinationDto> {
 				Collections.singletonList(YesNoUnknown.YES),
 				true);
 		}
-//		}
-
 	}
 }
