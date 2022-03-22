@@ -20,12 +20,15 @@ package de.symeda.auditlog.api;
 import java.io.Serializable;
 import java.util.Date;
 
+import javax.transaction.TransactionScoped;
+
 /**
  * Identifies the transaction in which a change has happened.
  * 
  * @author Oliver Milke
  * @since 15.01.2016
  */
+@TransactionScoped
 public class TransactionId implements Serializable {
 
 	private static final long serialVersionUID = 1L;

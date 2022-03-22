@@ -29,6 +29,7 @@ import java.util.Map;
 import java.util.SortedMap;
 
 import javax.persistence.Embedded;
+import javax.transaction.TransactionScoped;
 
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -50,17 +51,22 @@ import de.symeda.sormas.api.HasUuid;
  * @author Oliver Milke
  * @since 13.01.2016
  */
+@TransactionScoped
 public class Auditor implements Serializable {
 
 	private static final long serialVersionUID = 1L;
 
-	private final boolean auditorAttributeLoggingEnabled;
+	private boolean auditorAttributeLoggingEnabled;
 
 	public Auditor() {
 		this.auditorAttributeLoggingEnabled = true;
 	}
 
-	public Auditor(boolean auditorAttributeLoggingEnabled) {
+	public boolean isAuditorAttributeLoggingEnabled() {
+		return auditorAttributeLoggingEnabled;
+	}
+
+	public void setAuditorAttributeLoggingEnabled(boolean auditorAttributeLoggingEnabled) {
 		this.auditorAttributeLoggingEnabled = auditorAttributeLoggingEnabled;
 	}
 

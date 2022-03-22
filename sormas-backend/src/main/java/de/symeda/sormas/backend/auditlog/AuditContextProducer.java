@@ -23,7 +23,7 @@ import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.enterprise.context.Dependent;
 import javax.enterprise.inject.Produces;
-import javax.transaction.TransactionScoped;
+import javax.inject.Inject;
 
 import de.symeda.auditlog.api.Auditor;
 import de.symeda.auditlog.api.Current;
@@ -46,6 +46,12 @@ public class AuditContextProducer {
 	@Resource
 	private SessionContext context;
 
+	@Inject
+	private Auditor auditor;
+
+	@Inject
+	private TransactionId transactionId;
+
 	/**
 	 * Returns the information which user a change should be associated with according to the EJB context.
 	 */
@@ -60,16 +66,18 @@ public class AuditContextProducer {
 
 	@Produces
 	@Current
-	@TransactionScoped
+	@Dependent
 	public Auditor provideAuditor() {
-		return new Auditor(configFacade.isAuditorAttributeLoggingEnabled());
+
+		auditor.setAuditorAttributeLoggingEnabled(configFacade.isAuditorAttributeLoggingEnabled());
+		return auditor;
 	}
 
 	@Produces
 	@Current
-	@TransactionScoped
+	@Dependent
 	public TransactionId provideTransactionId() {
 
-		return new TransactionId();
+		return transactionId;
 	}
 }
