@@ -122,7 +122,7 @@ Feature: Case end to end tests
     And I open the Case Contacts tab of the created case via api
     And I verify that created contact from Case Contacts tab is correctly displayed
 
-  @env_main @ignore
+  @issue=SORQA-100 @env_main
   Scenario: Edit all fields from Symptoms tab
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
