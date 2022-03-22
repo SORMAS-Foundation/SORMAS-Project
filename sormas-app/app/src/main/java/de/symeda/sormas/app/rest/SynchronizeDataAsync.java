@@ -126,7 +126,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 				}
 				// Pull and remove archived entities when the last time this has been done is more than 24 hours ago
 				if (ConfigProvider.getLastArchivedSyncDate() == null
-					|| DateHelper.getFullDaysBetween(ConfigProvider.getLastArchivedSyncDate(), new Date()) >= 0) {
+					|| DateHelper.getFullDaysBetween(ConfigProvider.getLastArchivedSyncDate(), new Date()) >= 1) {
 					pullAndRemoveArchivedUuidsSince(ConfigProvider.getLastArchivedSyncDate());
 				}
 				// Pull changed data and push existing data that has been changed on the mobile device

@@ -187,7 +187,7 @@ public class TravelEntryFacadeEjb
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public void archiveAllArchivableImmunizations(int daysAfterTravelEntryGetsArchived) {
+	public void archiveAllArchivableTravelEntry(int daysAfterTravelEntryGetsArchived) {
 		archiveAllArchivableTravelEntry(daysAfterTravelEntryGetsArchived, LocalDate.now());
 	}
 
@@ -201,10 +201,10 @@ public class TravelEntryFacadeEjb
 		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
 		cq.where(cb.equal(from.get(Event.ARCHIVED), false), cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
 		cq.select(from.get(TravelEntry.UUID)).distinct(true);
-		List<String> immunizationUuids = em.createQuery(cq).getResultList();
+		List<String> travelEntryUuids = em.createQuery(cq).getResultList();
 
-		if (!immunizationUuids.isEmpty()) {
-			archive(immunizationUuids);
+		if (!travelEntryUuids.isEmpty()) {
+			archive(travelEntryUuids);
 		}
 	}
 

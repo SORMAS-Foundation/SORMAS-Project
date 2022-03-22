@@ -1452,8 +1452,8 @@ public class ContactFacadeEjb
 		Root<Contact> from = cq.from(Contact.class);
 
 		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
-		cq.where(cb.equal(from.get(Event.ARCHIVED), false), cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
-		cq.select(from.get(Event.UUID)).distinct(true);
+		cq.where(cb.equal(from.get(Contact.ARCHIVED), false), cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
+		cq.select(from.get(Contact.UUID)).distinct(true);
 		List<String> contactUuids = em.createQuery(cq).getResultList();
 
 		if (!contactUuids.isEmpty()) {
