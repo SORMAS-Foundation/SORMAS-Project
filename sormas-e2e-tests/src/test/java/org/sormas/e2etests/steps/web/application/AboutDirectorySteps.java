@@ -9,7 +9,6 @@ import com.google.inject.Inject;
 import cucumber.api.java8.En;
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -155,11 +154,8 @@ public class AboutDirectorySteps implements En {
         }
       }
       log.info("All data is read properly from chosen xlsx file");
-    } catch (FileNotFoundException e) {
-      e.printStackTrace();
     } catch (IOException e) {
       log.error("The exception occurred" + e + "The xlsx file couldn't be read");
-      e.printStackTrace();
     }
   }
 }
