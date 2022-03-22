@@ -356,10 +356,11 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		additionalTestingRequestedField.addValueChangeListener(e -> updateRequestedTestFields());
 
 		// CheckBox groups to select the requested pathogen/additional tests
+		ComboBox comboBox = addField(SampleDto.REQUESTED_PATHOGEN_TESTS_FILTERED, ComboBox.class);
 		OptionGroup requestedPathogenTestsField = addField(SampleDto.REQUESTED_PATHOGEN_TESTS, OptionGroup.class);
 		CssStyles.style(requestedPathogenTestsField, CssStyles.OPTIONGROUP_CHECKBOXES_HORIZONTAL);
 		requestedPathogenTestsField.setMultiSelect(true);
-		requestedPathogenTestsField.addItems((Object[]) PathogenTestType.values());
+		requestedPathogenTestsField.addItems(comboBox.getItemIds());
 		requestedPathogenTestsField.removeItem(PathogenTestType.OTHER);
 		requestedPathogenTestsField.setCaption(null);
 
