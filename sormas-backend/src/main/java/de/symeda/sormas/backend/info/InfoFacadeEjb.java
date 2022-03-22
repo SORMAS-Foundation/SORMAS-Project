@@ -39,6 +39,7 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
+import lombok.Getter;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.SpreadsheetVersion;
@@ -121,6 +122,7 @@ public class InfoFacadeEjb implements InfoFacade {
 
 	@Override
 	public String generateDataDictionary() throws IOException {
+		//TODO: here the first column should not be displayed
 		return generateDataDictionary(
 			EnumSet.allOf(EntityColumn.class),
 			FieldVisibilityCheckers.getNoop(),
@@ -167,13 +169,10 @@ public class InfoFacadeEjb implements InfoFacade {
 		throws IOException {
 		XSSFWorkbook workbook = new XSSFWorkbook();
 
-		List<Class<? extends EntityDto>> listOfEntities = getEntitiesList();
-		List<String> listOfPrefixes = getPrefixesList();
 		if (isDataProtectionDictionary) {
 			createEntitySheetWithAllFields(
 				workbook,
-				listOfEntities,
-				listOfPrefixes,
+				getEntityInfoList(),
 				entityColumns,
 				fieldVisibilityCheckers,
 				extraColumns,
@@ -548,8 +547,7 @@ public class InfoFacadeEjb implements InfoFacade {
 
 	private void createEntitySheetWithAllFields(
 		XSSFWorkbook workbook,
-		List<Class<? extends EntityDto>> entityClassesList,
-		List<String> i18nPrefixesList,
+		List<EntityInfo> entityInfoList,
 		EnumSet<EntityColumn> entityColumns,
 		FieldVisibilityCheckers fieldVisibilityCheckers,
 		List<ColumnData> extraColumns,
@@ -583,17 +581,15 @@ public class InfoFacadeEjb implements InfoFacade {
 		List<Class<Enum<?>>> usedEnums = new ArrayList<>();
 		boolean usesFacilityReference = false;
 
-//		for (Class<? extends EntityDto> entityClass : entityClassesList) {
-		for (int i = 0; i < entityClassesList.size(); i++) {
-			Class<? extends EntityDto> entityClass = entityClassesList.get(i);
-			System.out.println(rowNumber);
+		for (EntityInfo entityInfo : entityInfoList) {
+			Class<? extends EntityDto> entityClass = entityInfo.getEntityClass();
+
 			for (Field field : entityClass.getDeclaredFields()) {
 				if (java.lang.reflect.Modifier.isStatic(field.getModifiers()) || !fieldVisibilityCheckers.isVisible(entityClass, field.getName())) {
 					continue;
 				}
 
-				//		FieldData fieldData = new FieldData(field, entityClass, getI18nPrefixForEntityClass(entityClass));
-				FieldData fieldData = new FieldData(field, entityClass, i18nPrefixesList.get(i));
+				FieldData fieldData = new FieldData(field, entityClass, entityInfo.getI18nPrefix());
 				XSSFRow row = sheet.createRow(rowNumber++);
 
 				for (EntityColumn c : entityColumns) {
@@ -639,10 +635,10 @@ public class InfoFacadeEjb implements InfoFacade {
 
 		}
 
-        // Configure table
-        AreaReference reference =
-                workbook.getCreationHelper().createAreaReference(new CellReference(0, 0), new CellReference(rowNumber - 1, columnCount - 1));
-        XssfHelper.configureTable(reference, getSafeTableName(safeName), sheet, XssfHelper.TABLE_STYLE_PRIMARY);
+		// Configure table
+		AreaReference reference =
+			workbook.getCreationHelper().createAreaReference(new CellReference(0, 0), new CellReference(rowNumber - 1, columnCount - 1));
+		XssfHelper.configureTable(reference, getSafeTableName(safeName), sheet, XssfHelper.TABLE_STYLE_PRIMARY);
 
 		/*
 		 * // constant facilities
@@ -944,91 +940,52 @@ public class InfoFacadeEjb implements InfoFacade {
 		return name.replaceAll("\\s|\\p{Punct}", "_");
 	}
 
-	private List<String> getPrefixesList() {
-		List<String> prefixesList = new ArrayList<>();
-		prefixesList.add(PersonDto.I18N_PREFIX);
-		prefixesList.add(PersonContactDetailDto.I18N_PREFIX);
-		prefixesList.add(LocationDto.I18N_PREFIX);
-		prefixesList.add(CaseDataDto.I18N_PREFIX);
-		prefixesList.add(ActivityAsCaseDto.I18N_PREFIX);
-		prefixesList.add(HospitalizationDto.I18N_PREFIX);
-		prefixesList.add(PreviousHospitalizationDto.I18N_PREFIX);
-		prefixesList.add(SurveillanceReportDto.I18N_PREFIX);
-		prefixesList.add(SymptomsDto.I18N_PREFIX);
-		prefixesList.add(EpiDataDto.I18N_PREFIX);
-		prefixesList.add(ExposureDto.I18N_PREFIX);
-		prefixesList.add(HealthConditionsDto.I18N_PREFIX);
-		prefixesList.add(PrescriptionDto.I18N_PREFIX);
-		prefixesList.add(TreatmentDto.I18N_PREFIX);
-		prefixesList.add(ClinicalVisitDto.I18N_PREFIX);
-		prefixesList.add(ContactDto.I18N_PREFIX);
-		prefixesList.add(VisitDto.I18N_PREFIX);
-		prefixesList.add(SampleDto.I18N_PREFIX);
-		prefixesList.add(PathogenTestDto.I18N_PREFIX);
-		prefixesList.add(AdditionalTestDto.I18N_PREFIX);
-		prefixesList.add(TaskDto.I18N_PREFIX);
-		prefixesList.add(EventDto.I18N_PREFIX);
-		prefixesList.add(EventParticipantDto.I18N_PREFIX);
-		prefixesList.add(ActionDto.I18N_PREFIX);
-		prefixesList.add(ImmunizationDto.I18N_PREFIX);
-		prefixesList.add(VaccinationDto.I18N_PREFIX);
-		prefixesList.add(TravelEntryDto.I18N_PREFIX);
-		prefixesList.add(ContinentDto.I18N_PREFIX);
-		prefixesList.add(SubcontinentDto.I18N_PREFIX);
-		prefixesList.add(CountryDto.I18N_PREFIX);
-		prefixesList.add(RegionDto.I18N_PREFIX);
-		prefixesList.add(DistrictDto.I18N_PREFIX);
-		prefixesList.add(CommunityDto.I18N_PREFIX);
-		prefixesList.add(FacilityDto.I18N_PREFIX);
-		prefixesList.add(PointOfEntryDto.I18N_PREFIX);
-		prefixesList.add(UserDto.I18N_PREFIX);
-		prefixesList.add(LabMessageDto.I18N_PREFIX);
-		prefixesList.add(TestReportDto.I18N_PREFIX);
-		return prefixesList;
-	}
+	private List<EntityInfo> getEntityInfoList() {
+		List<EntityInfo> entityInfoList = new ArrayList<>();
 
-	private List<Class<? extends EntityDto>> getEntitiesList() {
-		List<Class<? extends EntityDto>> entityClassesList = new ArrayList<>();
-		entityClassesList.add(PersonDto.class);
-		entityClassesList.add(PersonContactDetailDto.class);
-		entityClassesList.add(LocationDto.class);
-		entityClassesList.add(CaseDataDto.class);
-		entityClassesList.add(ActivityAsCaseDto.class);
-		entityClassesList.add(HospitalizationDto.class);
-		entityClassesList.add(PreviousHospitalizationDto.class);
-		entityClassesList.add(SurveillanceReportDto.class);
-		entityClassesList.add(SymptomsDto.class);
-		entityClassesList.add(EpiDataDto.class);
-		entityClassesList.add(ExposureDto.class);
-		entityClassesList.add(HealthConditionsDto.class);
-		entityClassesList.add(PrescriptionDto.class);
-		entityClassesList.add(TreatmentDto.class);
-		entityClassesList.add(ClinicalVisitDto.class);
-		entityClassesList.add(ContactDto.class);
-		entityClassesList.add(VisitDto.class);
-		entityClassesList.add(SampleDto.class);
-		entityClassesList.add(PathogenTestDto.class);
-		entityClassesList.add(AdditionalTestDto.class);
-		entityClassesList.add(TaskDto.class);
-		entityClassesList.add(EventDto.class);
-		entityClassesList.add(EventParticipantDto.class);
-		entityClassesList.add(ActionDto.class);
-		entityClassesList.add(ImmunizationDto.class);
-		entityClassesList.add(VaccinationDto.class);
-		entityClassesList.add(TravelEntryDto.class);
-		entityClassesList.add(ContinentDto.class);
-		entityClassesList.add(SubcontinentDto.class);
-		entityClassesList.add(CountryDto.class);
-		entityClassesList.add(RegionDto.class);
-		entityClassesList.add(DistrictDto.class);
-		entityClassesList.add(CommunityDto.class);
-		entityClassesList.add(FacilityDto.class);
-		entityClassesList.add(PointOfEntryDto.class);
-		entityClassesList.add(UserDto.class);
-		entityClassesList.add(LabMessageDto.class);
-		entityClassesList.add(TestReportDto.class);
+		entityInfoList.add(new EntityInfo(PersonDto.class, PersonDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(PersonContactDetailDto.class, PersonContactDetailDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(LocationDto.class, LocationDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(CaseDataDto.class, CaseDataDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(ActivityAsCaseDto.class, ActivityAsCaseDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(HospitalizationDto.class, HospitalizationDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(PreviousHospitalizationDto.class, PreviousHospitalizationDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(SurveillanceReportDto.class, SurveillanceReportDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(SymptomsDto.class, SymptomsDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(EpiDataDto.class, EpiDataDto.I18N_PREFIX));
 
-		return entityClassesList;
+		entityInfoList.add(new EntityInfo(ExposureDto.class, ExposureDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(HealthConditionsDto.class, HealthConditionsDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(PrescriptionDto.class, PrescriptionDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(TreatmentDto.class, TreatmentDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(ClinicalVisitDto.class, ClinicalVisitDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(ContactDto.class, ContactDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(VisitDto.class, VisitDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(SampleDto.class, SampleDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(PathogenTestDto.class, PathogenTestDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(AdditionalTestDto.class, AdditionalTestDto.I18N_PREFIX));
+
+		entityInfoList.add(new EntityInfo(TaskDto.class, TaskDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(EventDto.class, EventDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(EventParticipantDto.class, EventParticipantDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(ActionDto.class, ActionDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(ImmunizationDto.class, ImmunizationDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(VaccinationDto.class, VaccinationDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(TravelEntryDto.class, TravelEntryDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(ContinentDto.class, ContinentDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(SubcontinentDto.class, SubcontinentDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(CountryDto.class, CountryDto.I18N_PREFIX));
+
+		entityInfoList.add(new EntityInfo(RegionDto.class, RegionDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(DistrictDto.class, DistrictDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(CommunityDto.class, CommunityDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(FacilityDto.class, FacilityDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(PointOfEntryDto.class, PointOfEntryDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(UserDto.class, UserDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(LabMessageDto.class, LabMessageDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(TestReportDto.class, TestReportDto.I18N_PREFIX));
+
+		return entityInfoList;
 	}
 
 	@LocalBean
@@ -1044,6 +1001,18 @@ public class InfoFacadeEjb implements InfoFacade {
 		public ColumnData(String header, int width) {
 			this.header = header;
 			this.width = width;
+		}
+	}
+
+	@Getter
+	private class EntityInfo {
+		private Class<? extends EntityDto> entityClass;
+		private String i18nPrefix;
+
+		public EntityInfo(Class<? extends EntityDto> entityClass, String i18nPrefix) {
+			this.entityClass = entityClass;
+
+			this.i18nPrefix = i18nPrefix;
 		}
 	}
 }

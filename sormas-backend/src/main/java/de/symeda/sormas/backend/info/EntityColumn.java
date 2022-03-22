@@ -40,7 +40,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import org.apache.commons.lang3.reflect.TypeUtils;
 
 public enum EntityColumn {
-
+    ENTITY(256 * 30, EntityColumn::getEntity, false),
 	FIELD_ID(256 * 30, EntityColumn::getFieldId, false),
 	FIELD(256 * 30, EntityColumn::getFieldName, false),
 	TYPE(256 * 30, EntityColumn::getFieldType, true),
@@ -79,6 +79,10 @@ public enum EntityColumn {
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
+
+	private static String getEntity(FieldData fieldData) {
+        return DataHelper.getHumanClassName(fieldData.getEntityClass());
+    }
 
 	private static String getFieldId(FieldData fieldData) {
 		return DataHelper.getHumanClassName(fieldData.getEntityClass()) + "." + fieldData.getField().getName();
