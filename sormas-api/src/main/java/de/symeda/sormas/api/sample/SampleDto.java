@@ -369,11 +369,11 @@ public class SampleDto extends SormasToSormasShareableDto {
 		this.requestedPathogenTests = requestedPathogenTests;
 	}
 
+	@ImportIgnore
 	public PathogenTestType getRequestedPathogenTestsFiltered() {
 		return requestedPathogenTestsFiltered;
 	}
 
-	@ImportIgnore
 	public void setRequestedPathogenTestsFiltered(PathogenTestType requestedPathogenTestsFiltered) {
 		this.requestedPathogenTestsFiltered = requestedPathogenTestsFiltered;
 	}
