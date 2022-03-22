@@ -39,6 +39,7 @@ public class CreateNewContactSteps implements En {
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
   private final WebDriverHelpers webDriverHelpers;
   public static Contact contact;
+  public static Contact collectedContactUUID;
 
   @Inject
   public CreateNewContactSteps(
@@ -147,6 +148,16 @@ public class CreateNewContactSteps implements En {
         DATE_OF_BIRTH_YEAR_COMBOBOX, String.valueOf(localDate.getYear()));
     webDriverHelpers.selectFromCombobox(
         DATE_OF_BIRTH_MONTH_COMBOBOX, localDate.getMonth().getDisplayName(TextStyle.FULL, locale));
+    webDriverHelpers.selectFromCombobox(
+        DATE_OF_BIRTH_DAY_COMBOBOX, String.valueOf(localDate.getDayOfMonth()));
+  }
+
+  private void fillDateOfDateOfBirthDE(LocalDate localDate) {
+    webDriverHelpers.selectFromCombobox(
+        DATE_OF_BIRTH_YEAR_COMBOBOX, String.valueOf(localDate.getYear()));
+    webDriverHelpers.selectFromCombobox(
+        DATE_OF_BIRTH_MONTH_COMBOBOX,
+        localDate.getMonth().getDisplayName(TextStyle.FULL, Locale.GERMAN));
     webDriverHelpers.selectFromCombobox(
         DATE_OF_BIRTH_DAY_COMBOBOX, String.valueOf(localDate.getDayOfMonth()));
   }
