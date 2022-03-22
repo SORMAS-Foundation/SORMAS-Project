@@ -3,7 +3,7 @@ Feature: About end to end tests
 
   @issue=SORDEV-6474 @env_main
   Scenario: Check language options in Data Dictionary depending on the user language setting
-    Given I log in with National User
+    Given  I log in as a National Language User
     And I click on the About button from navbar
     Then I click on the User Settings button from navbar
     And I select "Deutsch" language from Combobox in User settings
