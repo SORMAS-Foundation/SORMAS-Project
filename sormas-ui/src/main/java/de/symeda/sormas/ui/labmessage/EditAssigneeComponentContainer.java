@@ -46,7 +46,6 @@ public class EditAssigneeComponentContainer {
 
 		assigneeComboBox = new ComboBoxWithPlaceholder();
 		assigneeComboBox.setCaption(I18nProperties.getCaption(Captions.LabMessage_assignee));
-		//TODO 8017
 		assigneeComboBox.addItems(
 			FacadeProvider.getUserFacade().getUsersByRegionAndRights(UserProvider.getCurrent().getUser().getRegion(), null, UserRight.LAB_MESSAGES));
 		assigneeComboBox.setNullSelectionAllowed(true);
