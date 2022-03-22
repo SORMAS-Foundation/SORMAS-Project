@@ -151,7 +151,7 @@ public class InfoFacadeEjb implements InfoFacade {
 			entityColumns.remove(EntityColumn.IGNORED_COUNTRIES);
 			entityColumns.remove(EntityColumn.EXCLUSIVE_COUNTRIES);
 
-			return generateDataDictionary(entityColumns, fieldVisibilityCheckers, dataProtectionColumns, dataProtectionData, true);
+			return generateDataDictionary(filterColumnsForDataProtectionDictionaryWithEntityColumn(), fieldVisibilityCheckers, dataProtectionColumns, dataProtectionData, true);
 
 		} catch (InvalidFormatException e) {
 			throw new IOException(e);
@@ -174,7 +174,7 @@ public class InfoFacadeEjb implements InfoFacade {
 		createEntitySheetsForDataDictionary(
 			workbook,
 			getEntityInfoList(),
-			entityColumns,
+			filterColumnsForDataProtectionDictionaryWithoutEntityColumn(entityColumns),
 			fieldVisibilityCheckers,
 			extraColumns,
 			extraCells,
@@ -616,7 +616,20 @@ public class InfoFacadeEjb implements InfoFacade {
     private EnumSet<EntityColumn> filterColumnsForDataDictionary() {
         EnumSet<EntityColumn> enumSet = EnumSet.allOf(EntityColumn.class);
         return enumSet.stream()
-                .filter(column -> column.isExtraDataDictionaryColumn() || (!column.isExtraDataProtectionColumn() & !column.isExtraDataProtectionColumn()))
+                .filter(column -> column.isExtraDataDictionaryColumn() | (!column.isExtraDataProtectionColumn() & !column.isExtraDataDictionaryColumn()))
+                .collect(Collectors.toCollection(() -> EnumSet.noneOf(EntityColumn.class)));
+    }
+
+    private EnumSet<EntityColumn> filterColumnsForDataProtectionDictionaryWithEntityColumn() {
+        EnumSet<EntityColumn> enumSet = EnumSet.allOf(EntityColumn.class);
+        return enumSet.stream()
+                .filter(column -> column.isExtraDataProtectionColumn() | (!column.isExtraDataProtectionColumn() & !column.isExtraDataDictionaryColumn()))
+                .collect(Collectors.toCollection(() -> EnumSet.noneOf(EntityColumn.class)));
+    }
+
+    private EnumSet<EntityColumn> filterColumnsForDataProtectionDictionaryWithoutEntityColumn(EnumSet<EntityColumn> enumSet) {
+        return enumSet.stream()
+                .filter(column -> !column.isExtraDataProtectionColumn())
                 .collect(Collectors.toCollection(() -> EnumSet.noneOf(EntityColumn.class)));
     }
 
