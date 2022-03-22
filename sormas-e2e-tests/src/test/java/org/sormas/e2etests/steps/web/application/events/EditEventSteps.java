@@ -58,6 +58,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.UNLINK_
 import static org.sormas.e2etests.pages.application.events.EditEventPage.getGroupEventName;
 import static org.sormas.e2etests.pages.application.events.EventActionsPage.CREATE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BULK_ACTIONS_EVENT_DIRECTORY;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_GROUP_ID_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.TOTAL_EVENTS_COUNTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.ADD_PARTICIPANT_BUTTON;
@@ -497,6 +498,21 @@ public class EditEventSteps implements En {
           selectEventHandoutTemplate(aEventHandout.getDocumentTemplate());
           webDriverHelpers.clickOnWebElementBySelector(EditEventPage.CREATE_EVENT_HANDOUT_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(EditEventPage.CANCEL_EVENT_HANDOUT_BUTTON);
+        });
+
+    When(
+        "I search last created groups Event by {string} option filter in Event Group Directory",
+        (String searchCriteria) -> {
+          String searchText = "";
+          switch (searchCriteria) {
+            case "GROUP_ID":
+              searchText = groupEvent.getUuid();
+              break;
+            case "GROUP_TITLE":
+              searchText = groupEvent.getName();
+              break;
+          }
+          webDriverHelpers.fillInWebElement(EVENT_GROUP_ID_NAME_INPUT, searchText);
         });
     And(
         "I check that number of displayed Event Participants is {int}",
