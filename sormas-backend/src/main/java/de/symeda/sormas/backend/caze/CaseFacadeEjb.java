@@ -107,6 +107,7 @@ import de.symeda.sormas.api.caze.CaseReferenceDefinition;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
+import de.symeda.sormas.api.caze.CoreAndPersonDto;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.caze.MapCaseDto;
@@ -1380,6 +1381,20 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return save(dto, true, true, true, systemSave);
 	}
 
+	@Override
+	public CoreAndPersonDto<CaseDataDto> save(@Valid @NotNull CoreAndPersonDto<CaseDataDto> coreAndPersonDto) throws ValidationRuntimeException {
+		CaseDataDto caseDto = coreAndPersonDto.getCoreData();
+		CoreAndPersonDto savedCoreAndPersonDto = new CoreAndPersonDto();
+		if (coreAndPersonDto.getPerson() != null) {
+			PersonDto newlyCreatedPersonDto = personFacade.savePerson(coreAndPersonDto.getPerson());
+			caseDto.setPerson(newlyCreatedPersonDto.toReference());
+			savedCoreAndPersonDto.setPerson(newlyCreatedPersonDto);
+		}
+		CaseDataDto savedCaseData = save(caseDto, true, true, true, false);
+		savedCoreAndPersonDto.setCoreData(savedCaseData);
+		return savedCoreAndPersonDto;
+	}
+
 	@RolesAllowed({
 		UserRight._CASE_EDIT })
 	public Integer saveBulkCase(
@@ -2065,7 +2080,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		// On German systems, correct and clean up reinfection data
 		if (configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
-			newCase.setReinfectionDetails(cleanUpReinfectionDetails(newCase.getReinfectionDetails()));
+			newCase.setReinfectionDetails(cleanupReinfectionDetails(newCase.getReinfectionDetails()));
 			newCase.setReinfectionStatus(CaseLogic.calculateReinfectionStatus(newCase.getReinfectionDetails()));
 		}
 	}
@@ -2910,7 +2925,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return target;
 	}
 
-	private Map<ReinfectionDetail, Boolean> cleanUpReinfectionDetails(Map<ReinfectionDetail, Boolean> reinfectionDetails) {
+
+	private Map<ReinfectionDetail, Boolean> cleanupReinfectionDetails(Map<ReinfectionDetail, Boolean> reinfectionDetails) {
 		if (reinfectionDetails != null && reinfectionDetails.containsValue(Boolean.FALSE)) {
 			Map<ReinfectionDetail, Boolean> onlyTrueReinfectionDetails = new HashMap<>();
 			onlyTrueReinfectionDetails =

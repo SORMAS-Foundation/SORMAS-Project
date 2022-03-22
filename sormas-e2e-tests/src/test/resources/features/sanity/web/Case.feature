@@ -597,6 +597,50 @@ Feature: Case end to end tests
     Then I check the created data is correctly displayed on Edit case page
     And I check the created data is correctly displayed on Edit case person page
 
+  @issue=SORDEV-7466 @env_de
+  Scenario: Check reference definition for cases
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with only the required data for DE version
+    Then I check that case classification is set to not yet classified in German on Edit case page
+    And I check that case reference definition is not editable on Edit case page
+    And I check that case reference definition is set to not fulfilled in German on Edit case page
+    When I click on New Sample in German
+    And I create a new Sample with positive test result for DE version
+    And I select the German words for Antigen Detection Test as Type of Test in the Create New Sample popup
+    And I save the created sample
+    Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
+    And I check that case reference definition is set to not fulfilled in German on Edit case page
+    When I click on New Sample in German
+    And I create a new Sample with positive test result for DE version
+    And I select the German words for Rapid Antigen Detection Test as Type of Test in the Create New Sample popup
+    And I save the created sample
+    Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
+    And I check that case reference definition is set to not fulfilled in German on Edit case page
+    When I click on New Sample in German
+    And I create a new Sample with positive test result for DE version
+    And I select the German words for Isolation as Type of Test in the Create New Sample popup
+    And I save the created sample
+    Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
+    And I check that case reference definition is set to fulfilled in German on Edit case page
+    When I click on New Sample in German
+    And I create a new Sample with positive test result for DE version
+    And I select the German words for PCR / RT-PCR as Type of Test in the Create New Sample popup
+    And I save the created sample
+    Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
+    And I check that case reference definition is set to fulfilled in German on Edit case page
+    When I click on the Cases button from navbar
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I click Only cases with fulfilled reference definition checkbox in Cases directory additional filters
+    And I click APPLY BUTTON in Case Directory Page
+    Then I check that only cases with fulfilled reference definition are being shown in Cases directory
+    When I click on the Dashboard button from navbar and access Surveillance Dashboard
+    And I click on the Time Period combobox from Surveillance Dashboard
+    And I choose yesterday from the Surveillance Dashboard Time Period combobox
+    And I click on the APPLY FILTERS button
+    Then I check that the number of cases fulfilling the reference definition is larger than 0
+
   @issue=SORDEV-5479 @env_main
   Scenario: Test for exporting and importing case contact
     Given I log in as a Admin User
