@@ -45,11 +45,12 @@ public class TravelEntryService {
   }
 
   public TravelEntry buildGeneratedEntryDE() {
-    firstName = faker.name().firstName();
-    lastName = faker.name().lastName();
+    firstName = faker.name().firstName() + "a";
+    lastName = faker.name().lastName() + "b";
 
     return TravelEntry.builder()
         .reportDate(LocalDate.now())
+        .dateOfArrival(LocalDate.now())
         .firstName(firstName)
         .lastName(lastName)
         .sex(GenderValues.getRandomGenderDE())
@@ -69,6 +70,7 @@ public class TravelEntryService {
 
     return TravelEntry.builder()
         .reportDate(LocalDate.now())
+        .dateOfArrival(LocalDate.now())
         .firstName(firstName)
         .lastName(lastName)
         .sex(GenderValues.getRandomGenderDE())

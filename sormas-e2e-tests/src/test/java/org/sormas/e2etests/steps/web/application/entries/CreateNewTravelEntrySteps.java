@@ -27,6 +27,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.REGION_IN
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REPORT_DATE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFORMATION;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.ARRIVAL_DATE;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.FIRST_NAME_OF_CONTACT_PERSON_INPUT;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.LAST_NAME_OF_CONTACT_PERSON_INPUT;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.PICK_A_EXISTING_CASE_LABEL_DE;
@@ -93,6 +94,7 @@ public class CreateNewTravelEntrySteps implements En {
           lastName = travelEntry.getLastName();
           selectSex(travelEntry.getSex());
           sex = travelEntry.getSex();
+          fillDateOfArrival(travelEntry.getDateOfArrival(), Locale.GERMAN);
           selectResponsibleRegion(travelEntry.getResponsibleRegion());
           selectResponsibleDistrict(travelEntry.getResponsibleDistrict());
           selectResponsibleCommunity(travelEntry.getResponsibleCommunity());
@@ -113,6 +115,7 @@ public class CreateNewTravelEntrySteps implements En {
           fillLastName(lastName);
           selectSex(sex);
           selectResponsibleRegion(travelEntry.getResponsibleRegion());
+          fillDateOfArrival(travelEntry.getDateOfArrival(), Locale.GERMAN);
           selectResponsibleDistrict(travelEntry.getResponsibleDistrict());
           selectResponsibleCommunity(travelEntry.getResponsibleCommunity());
           fillDisease(disease);
@@ -302,6 +305,13 @@ public class CreateNewTravelEntrySteps implements En {
 
   private void fillLastName(String lastName) {
     webDriverHelpers.fillInWebElement(LAST_NAME_OF_CONTACT_PERSON_INPUT, lastName);
+  }
+
+  private void fillDateOfArrival(LocalDate dateOfArrival, Locale locale) {
+    if (locale.equals(Locale.GERMAN))
+      webDriverHelpers.clearAndFillInWebElement(
+          ARRIVAL_DATE, DATE_FORMATTER_DE.format(dateOfArrival));
+    else webDriverHelpers.clearAndFillInWebElement(ARRIVAL_DATE, formatter.format(dateOfArrival));
   }
 
   private void selectSex(String sex) {

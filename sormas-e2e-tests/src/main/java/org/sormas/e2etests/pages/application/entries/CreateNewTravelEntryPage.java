@@ -46,4 +46,5 @@ public class CreateNewTravelEntryPage {
       By.xpath("//*[text()='W\u00E4hlen Sie eine passende Person']");
   public static final By PICK_A_EXISTING_CASE_LABEL_DE =
       By.xpath("//*[text()='Einen vorhandenen Fall w\u00E4hlen']");
+  public static final By ARRIVAL_DATE = By.cssSelector("#dateOfArrival input");
 }
