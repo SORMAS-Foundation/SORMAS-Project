@@ -81,17 +81,22 @@ public class InfoFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testFieldsAddedBasedOnServerCountry() throws IOException, InvalidFormatException {
+	public void testFieldsAddedBasedOnServerCountryForDataProtectionDictionary() throws IOException, InvalidFormatException {
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "en");
 		XSSFWorkbook workbook = new XSSFWorkbook(new File(getInfoFacade().generateDataProtectionDictionary()));
 
 		assertThat(isFieldAdded(workbook, "Person", "Person.nickname"), is(true));
 		assertThat(isFieldAdded(workbook, "CaseData", "CaseData.epidNumber"), is(true));
+        assertThat(isFieldAdded(workbook, "CaseData", "Entity"), is(false));
+        assertThat(isFieldAdded(workbook, "All fields", "Entity"), is(true));
+        assertThat(isFieldAdded(workbook, "All fields", "Person"), is(true));
 
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.COUNTRY_LOCALE, "de");
 		workbook = new XSSFWorkbook(new File(getInfoFacade().generateDataProtectionDictionary()));
 		assertThat(isFieldAdded(workbook, "Person", "Person.nickname"), is(false));
 		assertThat(isFieldAdded(workbook, "CaseData", "CaseData.epidNumber"), is(false));
+        assertThat(isFieldAdded(workbook, "All fields", "Entity"), is(true));
+        assertThat(isFieldAdded(workbook, "All fields", "Person"), is(true));
 	}
 
 	private boolean isFieldAdded(XSSFWorkbook dataDictionaryWb, String sheetName, String fieldId) throws IOException, InvalidFormatException {
