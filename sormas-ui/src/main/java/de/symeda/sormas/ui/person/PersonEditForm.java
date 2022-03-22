@@ -619,7 +619,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		 * It may happen that the person currently has a present condition that usually shall not be shows for the form's disease.
 		 * In that case, the present condition is added as selectable item here.
 		 */
-		if (presentConditionField.getItem(presentCondition) == null) {
+		if (presentCondition != null && presentConditionField.getItem(presentCondition) == null) {
 			Item currentItem = presentConditionField.addItem(presentCondition);
 			currentItem.getItemProperty(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID).setValue(presentCondition.toString());
 		}
