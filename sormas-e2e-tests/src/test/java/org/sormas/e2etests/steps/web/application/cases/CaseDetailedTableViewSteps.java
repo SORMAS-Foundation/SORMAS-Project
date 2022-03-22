@@ -3,7 +3,6 @@ package org.sormas.e2etests.steps.web.application.cases;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.*;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_CASES_LIST_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_DATA_TITLE;
-import static org.sormas.e2etests.pages.application.persons.EditPersonPage.FIRST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PERSON_INFORMATION_TITLE;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static recorders.StepsLogger.PROCESS_ID_STRING;
@@ -40,7 +39,6 @@ public class CaseDetailedTableViewSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   private static BaseSteps baseSteps;
   static final String DATE_FORMAT_DE = "dd.MM.yyyy";
-  public static String name;
 
   @Inject
   public CaseDetailedTableViewSteps(
@@ -195,13 +193,14 @@ public class CaseDetailedTableViewSteps implements En {
     When(
         "I check that I get navigated to the Edit Person page",
         () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(PERSON_INFORMATION_TITLE);
-          name = webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT);
         });
 
     When(
         "I check that I get navigated to the Edit Case page",
         () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(CASE_DATA_TITLE);
         });
 

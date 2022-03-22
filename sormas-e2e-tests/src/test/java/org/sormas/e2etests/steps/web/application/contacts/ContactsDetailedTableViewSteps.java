@@ -131,6 +131,7 @@ public class ContactsDetailedTableViewSteps implements En {
     When(
         "I check that I get navigated to the Edit Contact page",
         () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(CONTACT_DATA_TITLE);
         });
 
