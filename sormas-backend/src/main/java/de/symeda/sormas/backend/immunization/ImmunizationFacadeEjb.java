@@ -466,7 +466,8 @@ public class ImmunizationFacadeEjb
 		@NotNull ImmunizationDto source,
 		Immunization target,
 		boolean checkChangeDate,
-		boolean copyVaccinations) {
+		boolean includeVaccinations) {
+
 		target = DtoHelper.fillOrBuildEntity(source, target, Immunization::new, checkChangeDate);
 
 		target.setDisease(source.getDisease());
@@ -500,8 +501,15 @@ public class ImmunizationFacadeEjb
 		target.setValidUntil(source.getValidUntil());
 		target.setRelatedCase(caseService.getByReferenceDto(source.getRelatedCase()));
 
-		if (copyVaccinations) {
-			copyVaccinations(source, target, checkChangeDate);
+		if (includeVaccinations) {
+			List<Vaccination> vaccinationEntities = new ArrayList<>();
+			for (VaccinationDto vaccinationDto : source.getVaccinations()) {
+				Vaccination vaccination = vaccinationFacade.fromDto(vaccinationDto, checkChangeDate);
+				vaccination.setImmunization(target);
+				vaccinationEntities.add(vaccination);
+			}
+			target.getVaccinations().clear();
+			target.getVaccinations().addAll(vaccinationEntities);
 		}
 
 		if (source.getSormasToSormasOriginInfo() != null) {
@@ -509,17 +517,6 @@ public class ImmunizationFacadeEjb
 		}
 
 		return target;
-	}
-
-	public void copyVaccinations(ImmunizationDto source, Immunization target, boolean checkChangeDate) {
-		List<Vaccination> vaccinationEntities = new ArrayList<>();
-		for (VaccinationDto vaccinationDto : source.getVaccinations()) {
-			Vaccination vaccination = vaccinationFacade.fromDto(vaccinationDto, checkChangeDate);
-			vaccination.setImmunization(target);
-			vaccinationEntities.add(vaccination);
-		}
-		target.getVaccinations().clear();
-		target.getVaccinations().addAll(vaccinationEntities);
 	}
 
 	@Override
@@ -636,8 +633,6 @@ public class ImmunizationFacadeEjb
 
 		newImmunization.setPerson(personService.getByReferenceDto(leadPerson.toReference()));
 		service.persist(newImmunization);
-
-		copyVaccinations(immunizationDto, newImmunization, false);
 
 		vaccinationFacade.copyExistingVaccinationsToNewImmunization(immunizationDto, newImmunization);
 		service.ensurePersisted(newImmunization);

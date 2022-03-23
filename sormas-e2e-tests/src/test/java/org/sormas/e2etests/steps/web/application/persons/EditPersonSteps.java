@@ -469,7 +469,8 @@ public class EditPersonSteps implements En {
   }
 
   private Person getPersonInformation() {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+    DateTimeFormatter formatter =
+        DateTimeFormatter.ofPattern("M/d/yyyy").localizedBy(Locale.ENGLISH);
     webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(USER_INFORMATION, 60);
     String contactInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
     webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
