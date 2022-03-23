@@ -223,8 +223,17 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		contentBinding.personOccupationType.initializeSpinner(DataUtils.getEnumItems(OccupationType.class, true, countryVisibilityChecker));
 		contentBinding.personArmedForcesRelationType.initializeSpinner(DataUtils.getEnumItems(ArmedForcesRelationType.class, true));
 		contentBinding.personEducationType.initializeSpinner(DataUtils.getEnumItems(EducationType.class, true));
-		contentBinding.personPresentCondition.initializeSpinner(DataUtils.getEnumItems(PresentCondition.class, true));
-
+		// Determine which values should show as personPresentCondition (the person may have a value that by default is not shown for the current disease)
+		List<Item> items = DataUtils.getEnumItems(PresentCondition.class, true, getFieldVisibilityCheckers());
+		PresentCondition currentValue = record.getPresentCondition();
+		if (currentValue != null) {
+			Item currentValueItem = new Item(currentValue.toString(), currentValue);
+			if (!items.contains(currentValueItem)) {
+				items.add(currentValueItem);
+			}
+		}
+		contentBinding.personPresentCondition.initializeSpinner(items);
+		contentBinding.personPresentCondition.addValueChangedListener(field -> setBurialFieldVisibilities(contentBinding));
 		contentBinding.personApproximateAge.addValueChangedListener(field -> {
 			if (DataHelper.isNullOrEmpty((String) field.getValue())) {
 				contentBinding.personApproximateAgeType.setRequired(false);
@@ -408,8 +417,31 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		return personContactDetails;
 	}
 
-	private void setFieldVisibilitiesAndAccesses(View view) {
+	private void setLocationFieldVisibilitiesAndAccesses(View view) {
 		setFieldVisibilitiesAndAccesses(LocationDto.class, (ViewGroup) view);
+	}
+
+	private void setBurialFieldVisibilities(final FragmentPersonEditLayoutBinding contentBinding) {
+		if (PresentCondition.BURIED.equals(contentBinding.personPresentCondition.getValue())) {
+			if (isVisibleAllowed(PersonDto.class, contentBinding.personBurialDate)) {
+				contentBinding.personBurialDate.setVisibility(VISIBLE);
+			} else {
+				contentBinding.personBurialDate.setVisibility(GONE);
+			}
+
+			if (isVisibleAllowed(PersonDto.class, contentBinding.personBurialPlaceDescription)) {
+				contentBinding.personBurialPlaceDescription.setVisibility(VISIBLE);
+			} else {
+				contentBinding.personBurialPlaceDescription.setVisibility(GONE);
+			}
+
+			if (isVisibleAllowed(PersonDto.class, contentBinding.personBurialConductor)) {
+				contentBinding.personBurialConductor.setVisibility(VISIBLE);
+			} else {
+				contentBinding.personBurialConductor.setVisibility(GONE);
+			}
+		}
+
 	}
 
 	private void setUpControlListeners() {
@@ -478,7 +510,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 
 	private void updateAddresses() {
 		getContentBinding().setAddressList(getAddresses());
-		getContentBinding().setAddressBindCallback(this::setFieldVisibilitiesAndAccesses);
+		getContentBinding().setAddressBindCallback(this::setLocationFieldVisibilitiesAndAccesses);
 	}
 
 	private void removeAddress(Location item) {
@@ -493,7 +525,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 
 	private void updatePersonContactDetails() {
 		getContentBinding().setPersonContactDetailList(getPersonContactDetails());
-		getContentBinding().setPersonContactDetailBindCallback(this::setFieldVisibilitiesAndAccesses);
+		getContentBinding().setPersonContactDetailBindCallback(this::setLocationFieldVisibilitiesAndAccesses);
 	}
 
 	private void removePersonContactDetail(PersonContactDetail item) {
@@ -585,11 +617,11 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 
 		contentBinding.setAddressList(getAddresses());
 		contentBinding.setAddressItemClickCallback(onAddressItemClickListener);
-		getContentBinding().setAddressBindCallback(this::setFieldVisibilitiesAndAccesses);
+		getContentBinding().setAddressBindCallback(this::setLocationFieldVisibilitiesAndAccesses);
 
 		contentBinding.setPersonContactDetailList(getPersonContactDetails());
 		contentBinding.setPersonContactDetailItemClickCallback(onPersonContactDetailItemClickListener);
-		getContentBinding().setPersonContactDetailBindCallback(this::setFieldVisibilitiesAndAccesses);
+		getContentBinding().setPersonContactDetailBindCallback(this::setLocationFieldVisibilitiesAndAccesses);
 	}
 
 	@Override

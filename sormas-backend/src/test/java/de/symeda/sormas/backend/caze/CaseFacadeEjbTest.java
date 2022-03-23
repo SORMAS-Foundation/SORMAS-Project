@@ -1291,7 +1291,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				c.setAdditionalDetails("Test additional details");
 				c.setFollowUpComment("Test followup comment");
 			});
-		leadCase.setClinicianEmail("mail");
+		leadCase.setPregnant(YesNoUnknown.UNKNOWN);
 		leadCase.getEpiData().setActivityAsCaseDetailsKnown(YesNoUnknown.NO);
 		getCaseFacade().save(leadCase);
 		VisitDto leadVisit = creator.createVisit(leadCase.getDisease(), leadCase.getPerson(), leadCase.getReportDate());
@@ -1318,7 +1318,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				c.setAdditionalDetails("Test other additional details");
 				c.setFollowUpComment("Test other followup comment");
 			});
-		otherCase.setClinicianName("name");
+		otherCase.setCaseIdIsm(12345);
 		CaseReferenceDto otherCaseReference = getCaseFacade().getReferenceByUuid(otherCase.getUuid());
 		ContactDto contact =
 			creator.createContact(otherUserReference, otherUserReference, otherPersonReference, otherCase, new Date(), new Date(), null);
@@ -1402,10 +1402,10 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(leadCase.getDisease(), mergedCase.getDisease());
 
 		// Check 'lead has value, other has not'
-		assertEquals(leadCase.getClinicianEmail(), mergedCase.getClinicianEmail());
+		assertEquals(leadCase.getPregnant(), mergedCase.getPregnant());
 
 		// Check 'lead has no value, other has'
-		assertEquals(otherCase.getClinicianName(), mergedCase.getClinicianName());
+		assertEquals(otherCase.getCaseIdIsm(), mergedCase.getCaseIdIsm());
 
 		PersonDto mergedPerson = getPersonFacade().getPersonByUuid(mergedCase.getPerson().getUuid());
 
@@ -1523,7 +1523,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				c.setAdditionalDetails("Test other additional details");
 				c.setFollowUpComment("Test other followup comment");
 			});
-		aCase.setClinicianName("name");
 
 		aCase.getEpiData().setActivityAsCaseDetailsKnown(YesNoUnknown.YES);
 		final ArrayList<ActivityAsCaseDto> otherActivitiesAsCase = new ArrayList<>();
@@ -1645,14 +1644,15 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testCreateInvestigationTask() {
 		RDCF rdcf = creator.createRDCF();
-		UserReferenceDto user = creator.createUser(rdcf, "First", "User", UserRole.SURVEILLANCE_SUPERVISOR).toReference();
-		UserReferenceDto surveillanceOfficer = creator.createUser(rdcf, "Second", "User", UserRole.SURVEILLANCE_OFFICER).toReference();
+		UserReferenceDto supervisor = creator.createUser(rdcf, "First", "User", UserRole.SURVEILLANCE_SUPERVISOR).toReference();
+		UserReferenceDto officer = creator.createUser(rdcf, "Second", "User", UserRole.SURVEILLANCE_OFFICER).toReference();
+		UserReferenceDto informant = creator.createUser(rdcf, "Third", "User", UserRole.COMMUNITY_INFORMANT).toReference();
 		PersonReferenceDto person = creator.createPerson("Case", "Person").toReference();
 
-		CaseDataDto caze = creator.createCase(user, person, rdcf);
+		CaseDataDto caze = creator.createCase(informant, person, rdcf);
 
 		List<TaskDto> caseTasks = getTaskFacade().getAllPendingByCase(caze.toReference());
-		assertEquals(surveillanceOfficer, caseTasks.get(0).getAssigneeUser());
+		assertEquals(officer, caseTasks.get(0).getAssigneeUser());
 	}
 
 	@Test
@@ -1899,6 +1899,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		caze.setTherapy(new TherapyDto());
 		caze.setSymptoms(new SymptomsDto());
+		caze.setHealthConditions(new HealthConditionsDto());
 		EpiDataDto epiData = new EpiDataDto();
 		ExposureDto exposure = new ExposureDto();
 		exposure.setExposureType(ExposureType.WORK);

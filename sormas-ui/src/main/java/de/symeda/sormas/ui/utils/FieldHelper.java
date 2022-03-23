@@ -51,7 +51,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.Diseases;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 
@@ -583,14 +583,14 @@ public final class FieldHelper {
 		if (items != null) {
 			select.addItems(items);
 		}
-		if (value instanceof InfrastructureDataReferenceDto){
+		if (value instanceof InfrastructureDataReferenceDto) {
 			updateInactiveInfrastructureItem(select, (InfrastructureDataReferenceDto) value);
 		}
 		select.setValue(value);
 		select.setReadOnly(readOnly);
 	}
 
-	public static void updateInactiveInfrastructureItem(AbstractSelect infrastructureField, InfrastructureDataReferenceDto value){
+	public static void updateInactiveInfrastructureItem(AbstractSelect infrastructureField, InfrastructureDataReferenceDto value) {
 		if (value != null && !infrastructureField.containsId(value)) {
 			InfrastructureDataReferenceDto inactiveValue = value.clone();
 			inactiveValue.setCaption(value.getCaption() + " (" + I18nProperties.getString(Strings.inactive) + ")");
@@ -793,12 +793,12 @@ public final class FieldHelper {
 		}
 	}
 
-	public static void updateOfficersField(AbstractSelect officerField, CaseDataDto caze, UserRole role) {
+	public static void updateOfficersField(AbstractSelect officerField, CaseDataDto caze, UserRight right) {
 		List<DistrictReferenceDto> officerDistricts =
 			Stream.of(caze.getResponsibleDistrict(), caze.getDistrict()).filter(Objects::nonNull).collect(Collectors.toList());
 		FieldHelper.updateItems(
 			officerField,
-			officerDistricts.size() > 0 ? FacadeProvider.getUserFacade().getUserRefsByDistricts(officerDistricts, false, role) : null);
+			officerDistricts.size() > 0 ? FacadeProvider.getUserFacade().getUserRefsByDistricts(officerDistricts, right) : null);
 
 	}
 }

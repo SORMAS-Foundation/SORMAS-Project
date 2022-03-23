@@ -115,7 +115,6 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 		assertContinuousSchemaVersions(StartupShutdownService.AUDIT_SCHEMA);
 	}
 
-	@Ignore
 	@Test
 	public void testHistoryTablesMatch() throws IOException, URISyntaxException {
 

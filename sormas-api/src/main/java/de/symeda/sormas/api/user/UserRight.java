@@ -40,7 +40,6 @@ import static de.symeda.sormas.api.user.UserRole.POE_NATIONAL_USER;
 import static de.symeda.sormas.api.user.UserRole.POE_SUPERVISOR;
 import static de.symeda.sormas.api.user.UserRole.REST_EXTERNAL_VISITS_USER;
 import static de.symeda.sormas.api.user.UserRole.REST_USER;
-import static de.symeda.sormas.api.user.UserRole.SORMAS_TO_SORMAS_CLIENT;
 import static de.symeda.sormas.api.user.UserRole.STATE_OBSERVER;
 import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_OFFICER;
 import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_SUPERVISOR;
@@ -230,6 +229,11 @@ public enum UserRight {
 	CASE_MERGE(
 			ADMIN,
 			ADMIN_SUPERVISOR
+	),
+	CASE_RESPONSIBLE(
+			SURVEILLANCE_SUPERVISOR,
+			ADMIN_SUPERVISOR,
+			SURVEILLANCE_OFFICER
 	),
 	IMMUNIZATION_VIEW(
 			ADMIN,
@@ -592,6 +596,9 @@ public enum UserRight {
 		ADMIN,
 		ADMIN_SUPERVISOR
 	),
+	CONTACT_RESPONSIBLE(
+			CONTACT_OFFICER
+	),
 	MANAGE_EXTERNAL_SYMPTOM_JOURNAL(
 			NATIONAL_USER,
 			CONTACT_SUPERVISOR,
@@ -816,6 +823,10 @@ public enum UserRight {
 			NATIONAL_USER,
 			ADMIN_SUPERVISOR
 	),
+	EVENT_RESPONSIBLE(
+			SURVEILLANCE_SUPERVISOR,
+			SURVEILLANCE_OFFICER
+	),
 	EVENTPARTICIPANT_ARCHIVE(
 			ADMIN
 	),
@@ -1008,6 +1019,11 @@ public enum UserRight {
 		SURVEILLANCE_SUPERVISOR,
 		CONTACT_SUPERVISOR
 	),
+	PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT(
+		ADMIN,
+		SURVEILLANCE_SUPERVISOR,
+		CONTACT_SUPERVISOR
+	),
 	MANAGE_PUBLIC_EXPORT_CONFIGURATION(
 			ADMIN,
 			ADMIN_SUPERVISOR,
@@ -1016,6 +1032,9 @@ public enum UserRight {
 	PERFORM_BULK_OPERATIONS_CASE_SAMPLES(
 			ADMIN,
 			ADMIN_SUPERVISOR
+	),
+	PERFORM_BULK_OPERATIONS_PSEUDONYM(
+			ADMIN
 	),
 	INFRASTRUCTURE_CREATE(
 			ADMIN
@@ -1568,6 +1587,9 @@ public enum UserRight {
 	),
 	EXTERNAL_VISITS(
 			REST_EXTERNAL_VISITS_USER
+	),
+	DEV_MODE(
+			ADMIN
 	);
 	//@formatter:on
 
@@ -1672,6 +1694,8 @@ public enum UserRight {
 	public static final String _PERFORM_BULK_OPERATIONS_EVENT = "PERFORM_BULK_OPERATIONS_EVENT";
 	public static final String _MANAGE_PUBLIC_EXPORT_CONFIGURATION = "MANAGE_PUBLIC_EXPORT_CONFIGURATION";
 	public static final String _PERFORM_BULK_OPERATIONS_CASE_SAMPLES = "PERFORM_BULK_OPERATIONS_CASE_SAMPLES";
+	public static final String _PERFORM_BULK_OPERATIONS_LAB_MESSAGES = "PERFORM_BULK_OPERATIONS_LAB_MESSAGES";
+	public static final String _PERFORM_BULK_OPERATIONS_PSEUDONYM = "PERFORM_BULK_OPERATIONS_PSEUDONYM";
 	public static final String _INFRASTRUCTURE_CREATE = "INFRASTRUCTURE_CREATE";
 	public static final String _INFRASTRUCTURE_EDIT = "INFRASTRUCTURE_EDIT";
 	public static final String _INFRASTRUCTURE_VIEW = "INFRASTRUCTURE_VIEW";
@@ -1720,7 +1744,6 @@ public enum UserRight {
 	public static final String _BAG_EXPORT = "BAG_EXPORT";
 	public static final String _SORMAS_TO_SORMAS_SHARE = "SORMAS_TO_SORMAS_SHARE";
 	public static final String _LAB_MESSAGES = "LAB_MESSAGES";
-	public static final String _PERFORM_BULK_OPERATIONS_LAB_MESSAGES = "PERFORM_BULK_OPERATIONS_LAB_MESSAGES";
 	public static final String _TRAVEL_ENTRY_MANAGEMENT_ACCESS = "TRAVEL_ENTRY_MANAGEMENT_ACCESS";
 	public static final String _TRAVEL_ENTRY_VIEW = "TRAVEL_ENTRY_VIEW";
 	public static final String _TRAVEL_ENTRY_CREATE = "TRAVEL_ENTRY_CREATE";

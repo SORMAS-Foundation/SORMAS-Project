@@ -44,6 +44,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserHelper;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -165,7 +166,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
                     districtDto != null ? FacadeProvider.getFacilityFacade().getActiveHospitalsByDistrict(districtDto, false) : null);
             FieldHelper.updateItems(
                     associatedOfficer,
-                    districtDto != null ? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, false, UserRole.SURVEILLANCE_OFFICER) : null);
+                    districtDto != null ? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, UserRight.CASE_RESPONSIBLE, UserRight.WEEKLYREPORT_CREATE) : null);
             FieldHelper.updateItems(
                     cbPointOfEntry,
                     districtDto != null ? FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(districtDto.getUuid(), false) : null);
@@ -195,11 +196,11 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
 		final boolean hasAssociatedOfficer = UserRole.hasAssociatedOfficer(userRoles);
 		final boolean hasOptionalHealthFacility = UserRole.hasOptionalHealthFacility(userRoles);
-		final boolean isLabUser = UserRole.isLabUser(userRoles);
 		final boolean isPortHealthUser = UserRole.isPortHealthUser(userRoles);
 
 		final boolean usePointOfEntry = (isPortHealthUser && hasAssociatedOfficer) || jurisdictionLevel == JurisdictionLevel.POINT_OF_ENTRY;
 		final boolean useHealthFacility = jurisdictionLevel == JurisdictionLevel.HEALTH_FACILITY;
+        final boolean useLaboratory = jurisdictionLevel == JurisdictionLevel.LABORATORY;
 		final boolean useCommunity = jurisdictionLevel == JurisdictionLevel.COMMUNITY;
 		final boolean useDistrict = hasAssociatedOfficer || jurisdictionLevel == JurisdictionLevel.DISTRICT	|| useCommunity || useHealthFacility || usePointOfEntry;;
 		final boolean useRegion = jurisdictionLevel == JurisdictionLevel.REGION || useDistrict;
@@ -226,9 +227,9 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 		}
 
 		final ComboBox laboratory = (ComboBox) getFieldGroup().getField(UserDto.LABORATORY);
-		laboratory.setVisible(isLabUser);
-		setRequired(isLabUser, UserDto.LABORATORY);
-		if (!isLabUser) {
+		laboratory.setVisible(useLaboratory);
+		setRequired(useLaboratory, UserDto.LABORATORY);
+		if (!useLaboratory) {
 			laboratory.clear();
 		}
 

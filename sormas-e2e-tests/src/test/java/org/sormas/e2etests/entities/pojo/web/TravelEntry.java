@@ -30,8 +30,9 @@ import lombok.Value;
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true, builderClassName = "builder")
 public class TravelEntry {
-
+  String uuid;
   LocalDate reportDate;
+  LocalDate dateOfArrival;
   String disease;
   String responsibleRegion;
   String responsibleDistrict;
