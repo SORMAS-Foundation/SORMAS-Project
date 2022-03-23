@@ -479,7 +479,7 @@ Feature: Create events
     And I click Export button in Event Participant Directory
     And I click on Basic Export button in Event Participant Directory
 
-  @issue=SORDEV-10049  @env_main
+  @issue=SORDEV-10051  @env_main
   Scenario: Test custom export of event participant
     Given I log in as a Admin User
     And I click on the Events button from navbar
