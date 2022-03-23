@@ -34,8 +34,6 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_IN
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.APPLY_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BASIC_EXPORT_PARTICIPANT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BULK_ACTIONS_EVENT_DIRECTORY;
-import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CLOSE_POPUP_BUTTON;
-import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.COMMIT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CREATED_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CREATE_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CUSTOM_EXPORT_PARTICIPANT_BUTTON;
@@ -60,8 +58,6 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EV
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_MANAGEMENT_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_REGION_COMBOBOX_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_STATUS_FILTER_BUTTONS;
-import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_STATUS_FILTER_COMBOBOX;
-import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EXPORT_PARTICIPANT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTERED_EVENT_LINK_EVENT_FORM;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTER_BY_DISEASE;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTER_BY_REPORTING_USER;
@@ -743,6 +739,16 @@ public class EventDirectorySteps implements En {
     And(
         "I click Create Case for Event Participant",
         () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_CASE_BUTTON));
+      And(
+              "I click Export button in Event Participant Directory",
+              () -> webDriverHelpers.clickOnWebElementBySelector(EXPORT_PARTICIPANT_BUTTON));
+      And(
+              "I click on Basic Export button in Event Participant Directory",
+              () -> {
+                  webDriverHelpers.clickOnWebElementBySelector(BASIC_EXPORT_PARTICIPANT_BUTTON);
+                  webDriverHelpers.waitUntilElementIsVisibleAndClickable(CLOSE_POPUP_BUTTON);
+                  TimeUnit.SECONDS.sleep(5); // time for file to be downloaded
+              });
     And(
         "I click Export button in Event Participant Directory",
         () -> webDriverHelpers.clickOnWebElementBySelector(EXPORT_PARTICIPANT_BUTTON));
