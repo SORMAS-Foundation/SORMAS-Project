@@ -34,12 +34,11 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import com.vaadin.v7.data.Item;
-import de.symeda.sormas.ui.utils.SormasFieldGroupFieldFactory;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.v7.data.Item;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
@@ -86,6 +85,7 @@ import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
 import de.symeda.sormas.ui.utils.ResizableTextAreaWrapper;
+import de.symeda.sormas.ui.utils.SormasFieldGroupFieldFactory;
 import de.symeda.sormas.ui.utils.ValidationUtils;
 import de.symeda.sormas.ui.utils.ViewMode;
 
@@ -767,6 +767,11 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				causeOfDeathField.setValue(CauseOfDeath.EPIDEMIC_DISEASE);
 				toggleCauseOfDeathFields(true);
 				setVisible(false, PersonDto.BURIAL_DATE, PersonDto.BURIAL_PLACE_DESCRIPTION, PersonDto.BURIAL_CONDUCTOR);
+
+				getField(PersonDto.BURIAL_DATE).setValue(null);
+				getField(PersonDto.BURIAL_PLACE_DESCRIPTION).setValue(null);
+				getField(PersonDto.BURIAL_CONDUCTOR).setValue(null);
+
 				break;
 			case BURIED:
 				setVisible(true, PersonDto.DEATH_DATE, PersonDto.DEATH_PLACE_TYPE, PersonDto.DEATH_PLACE_DESCRIPTION);
@@ -813,6 +818,13 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			causeOfDeathField.setVisible(false);
 			causeOfDeathDiseaseField.setVisible(false);
 			causeOfDeathDetailsField.setVisible(false);
+
+			causeOfDeathField.setValue(null);
+			causeOfDeathDiseaseField.setValue(null);
+			causeOfDeathDetailsField.setValue(null);
+			getField(PersonDto.DEATH_PLACE_TYPE).setValue(null);
+			getField(PersonDto.DEATH_PLACE_DESCRIPTION).setValue(null);
+
 		} else {
 			if (isVisibleAllowed(causeOfDeathField)) {
 				causeOfDeathField.setVisible(true);
