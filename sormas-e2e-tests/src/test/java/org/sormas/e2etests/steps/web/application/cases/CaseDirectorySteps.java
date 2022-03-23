@@ -771,6 +771,7 @@ public class CaseDirectorySteps implements En {
           }
           softly.assertAll();
         });
+
     When(
         "I click on the import button for Cases in Case tab",
         () -> webDriverHelpers.clickOnWebElementBySelector(IMPORT_BUTTON));
