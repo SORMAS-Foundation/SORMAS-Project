@@ -582,15 +582,14 @@ public class ConfigFacadeEjb implements ConfigFacade {
 				"https" },
 			UrlValidator.ALLOW_LOCAL_URLS);
 
-		urls.forEach(url -> {
-			if (StringUtils.isBlank(url)) {
-				return;
-			}
+		List<String> invalidUrls =
+			urls.stream().filter(u -> !StringUtils.isBlank(u)).filter(u -> !urlValidator.isValid(u)).collect(Collectors.toList());
 
-			if (!urlValidator.isValid(url)) {
-				throw new IllegalArgumentException(String.format("'%s' is not a valid URL", url));
-			}
-		});
+		if (!invalidUrls.isEmpty()) {
+			String invalid = String.join(",\n\t", invalidUrls);
+			throw new IllegalArgumentException(String.format("Invalid URLs in property file:\n\t%s", invalid));
+		}
+
 	}
 
 	@Override
