@@ -555,13 +555,16 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public void validateConfigUrls() {
 		SormasToSormasConfig s2sConfig = getS2SConfig();
+		SymptomJournalConfig symptomJournalConfig = getSymptomJournalConfig();
+		PatientDiaryConfig patientDiaryConfig = getPatientDiaryConfig();
+
 		List<String> urls = Lists.newArrayList(
-			getSymptomJournalConfig().getUrl(),
-			getSymptomJournalConfig().getAuthUrl(),
-			getPatientDiaryConfig().getUrl(),
-			getPatientDiaryConfig().getProbandsUrl(),
-			getPatientDiaryConfig().getAuthUrl(),
-			getPatientDiaryConfig().getFrontendAuthUrl(),
+			symptomJournalConfig.getUrl(),
+			symptomJournalConfig.getAuthUrl(),
+			patientDiaryConfig.getUrl(),
+			patientDiaryConfig.getProbandsUrl(),
+			patientDiaryConfig.getAuthUrl(),
+			patientDiaryConfig.getFrontendAuthUrl(),
 			getSormasStatsUrl(),
 			s2sConfig.getOidcRealmCertEndpoint(),
 			s2sConfig.getOidcRealmTokenEndpoint(),
