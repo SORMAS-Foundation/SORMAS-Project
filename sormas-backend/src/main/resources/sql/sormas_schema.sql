@@ -11190,45 +11190,7 @@ CREATE TRIGGER delete_history_trigger_person_locations
     AFTER DELETE ON person
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('person_locations_history', 'person_id');
 
-DROP TRIGGER IF EXISTS versioning_trigger ON users_userroles;
-CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE ON users_userroles
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'users_userroles_history', true);
-
-DROP TRIGGER IF EXISTS versioning_trigger ON sharerequestinfo_shareinfo;
-CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE ON sharerequestinfo_shareinfo
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'sharerequestinfo_shareinfo_history', true);
-
-DROP TRIGGER IF EXISTS versioning_trigger ON task_observer;
-CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE ON task_observer
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'task_observer_history', true);
-
-DROP TRIGGER IF EXISTS versioning_trigger ON userroles_userrights;
-CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE ON userroles_userrights
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'userroles_userrights_history', true);
-
-DROP TRIGGER IF EXISTS versioning_trigger ON contacts_visits;
-CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE ON contacts_visits
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'contacts_visits_history', true);
-
-DROP TRIGGER IF EXISTS versioning_trigger ON person_locations;
-CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE ON person_locations
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'person_locations_history', true);
-
-DROP TRIGGER IF EXISTS versioning_trigger ON campaign_campaignformmeta;
-CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE ON campaign_campaignformmeta
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaign_campaignformmeta_history', true);
-
-DROP TRIGGER IF EXISTS versioning_trigger ON events_eventgroups;
-CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE ON events_eventgroups
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'events_eventgroups_history', true);
+ALTER TABLE immunization_history ADD COLUMN deleted boolean;
 
 INSERT INTO schema_version (version_number, comment) VALUES (449, 'Delete history data on permanent deletion of entities #7713');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
