@@ -43,6 +43,8 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.importexport.ImportCellData;
+import de.symeda.sormas.api.importexport.ImportErrorException;
 import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.infrastructure.InfrastructureHelper;
@@ -62,8 +64,6 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.EnumService;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
-import de.symeda.sormas.api.importexport.ImportCellData;
-import de.symeda.sormas.api.importexport.ImportErrorException;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
 import de.symeda.sormas.backend.importexport.ImportHelper;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -88,6 +88,7 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 	private static final String PHONE_PRIVATE = "phonePrivate";
 	private static final String PHONE_ADDITIONAL = "phoneAdditional";
 	private static final String EMAIL = "email";
+	private static final String DATE_OF_ARRIVAL = "einreisedatum";
 
 	@EJB
 	private TravelEntryFacadeEjbLocal travelEntryFacade;
@@ -233,21 +234,22 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 		boolean ignoreEmptyEntries,
 		TravelEntryImportEntities entities) {
 
-		ImportLineResultDto<TravelEntryImportEntities> importResult = insertRowIntoData(values, entityClasses, entityPropertyPaths, ignoreEmptyEntries, cellData -> {
-			try {
-				TravelEntryDto travelEntry = entities.getTravelEntry();
-				if (StringUtils.isNotEmpty(cellData.getValue())) {
-					// If the cell entry is not empty, try to insert it into the current travel entry or its person
-					insertColumnEntryIntoData(travelEntry, entities.getPerson(), cellData.getValue(), cellData.getEntityPropertyPath());
+		ImportLineResultDto<TravelEntryImportEntities> importResult =
+			insertRowIntoData(values, entityClasses, entityPropertyPaths, ignoreEmptyEntries, cellData -> {
+				try {
+					TravelEntryDto travelEntry = entities.getTravelEntry();
+					if (StringUtils.isNotEmpty(cellData.getValue())) {
+						// If the cell entry is not empty, try to insert it into the current travel entry or its person
+						insertColumnEntryIntoData(travelEntry, entities.getPerson(), cellData.getValue(), cellData.getEntityPropertyPath());
+					}
+				} catch (ImportErrorException | InvalidColumnException e) {
+					return e;
 				}
-			} catch (ImportErrorException | InvalidColumnException e) {
-				return e;
-			}
 
-			return null;
-		});
+				return null;
+			});
 
-		if(!importResult.isError()) {
+		if (!importResult.isError()) {
 			TravelEntryDto travelEntry = entities.getTravelEntry();
 			if (travelEntry.getPointOfEntry() == null && configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 				travelEntry.setPointOfEntry(pointOfEntryFacade.getByUuid(PointOfEntryDto.OTHER_POE_UUID).toReference());
@@ -341,6 +343,8 @@ public class TravelEntryImportFacadeEjb implements TravelEntryImportFacade {
 			} else if (EMAIL.equals(personProperty)) {
 				person.setEmailAddress(entry);
 				return;
+			} else if (DATE_OF_ARRIVAL.equalsIgnoreCase(propertyCaption)) {
+				travelEntry.setDateOfArrival(DateHelper.parseDateWithException(entry, I18nProperties.getUserLanguage().getDateFormat()));
 			}
 
 			String relevantProperty = personProperty != null ? personProperty : propertyCaption;

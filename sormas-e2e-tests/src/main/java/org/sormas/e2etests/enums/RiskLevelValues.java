@@ -28,6 +28,17 @@ public enum RiskLevelValues {
     }
     throw new Exception("Unable to find " + option + " value in RiskLevelValues Enum");
   }
+
+  @SneakyThrows
+  public static String getRandomUIRiskLevelDifferentThan(String excludedOption) {
+    RiskLevelValues[] riskLevelValueOptions = RiskLevelValues.values();
+    for (RiskLevelValues value : riskLevelValueOptions) {
+      if (!value.getRiskLevelCaption().equalsIgnoreCase(excludedOption)
+          && !value.getRiskLevelName().equalsIgnoreCase(excludedOption))
+        return value.getRiskLevelCaption();
+    }
+    throw new Exception("Unable to provide option different than: " + excludedOption);
+  }
   /** Returns values used for API tests */
   public static String getRandomRiskLevelName() {
     return String.valueOf(RiskLevelValues.values()[random.nextInt(values().length)].riskLevelName);

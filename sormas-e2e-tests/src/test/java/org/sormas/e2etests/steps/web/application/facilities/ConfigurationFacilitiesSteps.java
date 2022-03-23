@@ -52,7 +52,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -151,8 +150,8 @@ public class ConfigurationFacilitiesSteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(CLOSE_POPUP_FACILITIES_BUTTON));
 
     When(
-            "I close facilities popup window",
-            () -> webDriverHelpers.clickOnWebElementBySelector(CLOSE_FACILITIES_IMPORT_BUTTON));
+        "I close facilities popup window",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CLOSE_FACILITIES_IMPORT_BUTTON));
 
     When(
         "I check if data from csv is correctly displayed in facilities tab",
@@ -231,7 +230,7 @@ public class ConfigurationFacilitiesSteps implements En {
 
   public static void writeCSVFromPOJOFacilityTab(FacilityCSV facilityData) {
 
-    uploadFileDirectoryAndName = userDirPath+"/uploads/testFile.csv";
+    uploadFileDirectoryAndName = userDirPath + "/uploads/testFile.csv";
     cityName = faker.harryPotter().location();
     aFacilityName = faker.harryPotter().location() + randomNr;
 
