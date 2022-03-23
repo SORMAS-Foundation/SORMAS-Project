@@ -315,7 +315,7 @@ Feature: Case filter functionality
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
 
-  @issue=SORQA-83 @env_de
+  @issue=SORQA-83 @env_de @dev
   Scenario: Check Case basic filters on Case directory page for DE version
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -330,10 +330,6 @@ Feature: Case filter functionality
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 1
     And I apply Case origin "Einreiseort" on Case directory page
-    And I click APPLY BUTTON in Case Directory Page
-    And I check that number of displayed cases results is 0
-    And I apply Case origin "Im Land" on Case directory page
-    And I apply Disease filter "Cholera" on Case directory page
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
     And I apply Disease filter "COVID-19" on Case directory page
