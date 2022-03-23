@@ -32,6 +32,7 @@ import lombok.Value;
 public class TravelEntry {
   String uuid;
   LocalDate reportDate;
+  LocalDate dateOfArrival;
   String disease;
   String responsibleRegion;
   String responsibleDistrict;

@@ -10532,6 +10532,22 @@ DROP INDEX IF EXISTS externalshareinfo_caze_id_creationdate_idx;
 CREATE INDEX externalshareinfo_caze_id_creationdate_idx ON externalshareinfo (caze_id, creationDate DESC);
 
 INSERT INTO schema_version (version_number, comment) VALUES (448, 'Index on externalshareinfo (caze_id, creationDate) #7656');
+
+-- 2022-03-08 Add dateOfArrival to travel entries #7845
+ALTER TABLE travelentry ADD COLUMN dateofarrival timestamp without time zone;
+ALTER TABLE travelentry_history ADD COLUMN dateofarrival timestamp without time zone;
+
+UPDATE travelentry SET dateofarrival = TO_TIMESTAMP(dea_entry->>'value', 'DD.MM.YYYY')
+FROM travelentry t
+         CROSS JOIN LATERAL json_array_elements(t.deacontent) dea_entry
+WHERE dea_entry->>'caption' ilike 'eingangsdatum' and t.id = travelentry.id;
+
+UPDATE travelentry SET dateofarrival = creationdate where dateofarrival is null;
+
+ALTER TABLE travelentry ALTER COLUMN dateofarrival SET NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (449, 'Add dateOfArrival to travel entries #7845');
+
 -- 2022-03-16 Delete history data on permanent deletion of entities #7713
 
 CREATE OR REPLACE FUNCTION delete_history_trigger()
@@ -11192,5 +11208,5 @@ CREATE TRIGGER delete_history_trigger_person_locations
 
 ALTER TABLE immunization_history ADD COLUMN deleted boolean;
 
-INSERT INTO schema_version (version_number, comment) VALUES (449, 'Delete history data on permanent deletion of entities #7713');
+INSERT INTO schema_version (version_number, comment) VALUES (450, 'Delete history data on permanent deletion of entities #7713');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

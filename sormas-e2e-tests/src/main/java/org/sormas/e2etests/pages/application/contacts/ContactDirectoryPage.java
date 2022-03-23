@@ -51,6 +51,8 @@ public class ContactDirectoryPage {
   public static final By EPIDEMIOLOGICAL_DATA_TAB = By.cssSelector("#tab-contacts-epidata");
   public static final By CONTACT_DISEASE_FILTER_COMBOBOX =
       By.cssSelector("[id='disease'] [class='v-filterselect-button']");
+  public static final By CONTACT_DISEASE_VARIANT_FILTER_COMBOBOX =
+      By.cssSelector("[id='diseaseVariant'] [class='v-filterselect-button']");
   public static final By CONTACT_CLASSIFICATION_FILTER_COMBOBOX =
       By.cssSelector("[id='contactClassification'] [class='v-filterselect-button']");
   public static final By CONTACT_CASE_CLASSIFICATION_FILTER_COMBOBOX =
@@ -83,4 +85,6 @@ public class ContactDirectoryPage {
   public static final By BULK_ACTIONS_CONTACT_VALUES = By.id("bulkActions-9");
   public static final By CONTACT_DATA_TAB = By.cssSelector("#tab-contacts-data");
   public static final By NEW_ENTRY_EPIDEMIOLOGICAL_DATA = By.id("actionNewEntry");
+  public static final By FIRST_PERSON_ID = By.xpath("//td[8]//a");
+  public static final By FIRST_CONTACT_ID = By.xpath("//td[1]//a");
 }
