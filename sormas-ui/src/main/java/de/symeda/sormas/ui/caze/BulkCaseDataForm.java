@@ -30,6 +30,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.vaadin.ui.HorizontalLayout;
@@ -207,11 +208,11 @@ public class BulkCaseDataForm extends AbstractEditForm<CaseBulkEditData> {
 				Arrays.asList(CaseBulkEditData.SURVEILLANCE_OFFICER),
 				Arrays.asList(true),
 				null);
-			List<Disease> selectedDiseases = this.selectedCases.stream().map(c -> c.getDisease()).collect(Collectors.toList());
+			Set<Disease> selectedDiseases = this.selectedCases.stream().map(c -> c.getDisease()).collect(Collectors.toSet());
 			List<UserReferenceDto> assignableCaseResponsibles = null;
 
 			if (selectedDiseases.size() == 1) {
-				Disease selectedDisease = selectedDiseases.get(0);
+				Disease selectedDisease = selectedDiseases.iterator().next();
 				assignableCaseResponsibles =
 					FacadeProvider.getUserFacade().getUserRefsByDistrict(singleSelectedDistrict, selectedDisease, UserRight.CASE_RESPONSIBLE);
 

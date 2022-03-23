@@ -24,6 +24,7 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.vaadin.v7.ui.CheckBox;
@@ -97,10 +98,10 @@ public class BulkContactDataForm extends AbstractEditForm<ContactBulkEditData> {
 				Arrays.asList(true),
 				null);
 
-			List<Disease> selectedDiseases = this.selectedContacts.stream().map(c -> c.getDisease()).collect(Collectors.toList());
+			Set<Disease> selectedDiseases = this.selectedContacts.stream().map(c -> c.getDisease()).collect(Collectors.toSet());
 			List<UserReferenceDto> assignableContactOfficers = null;
 			if (selectedDiseases.size() == 1) {
-				Disease selectedDisease = selectedDiseases.get(0);
+				Disease selectedDisease = selectedDiseases.iterator().next();
 				assignableContactOfficers =
 					FacadeProvider.getUserFacade().getUserRefsByDistrict(singleSelectedDistrict, selectedDisease, UserRight.CONTACT_RESPONSIBLE);
 			} else {

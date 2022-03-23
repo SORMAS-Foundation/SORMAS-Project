@@ -26,6 +26,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.vaadin.v7.ui.CheckBox;
@@ -134,10 +135,10 @@ public class BulkTaskDataForm extends AbstractEditForm<TaskBulkEditData> {
 		UserDto userDto = UserProvider.getCurrent().getUser();
 
 		if (district != null) {
-			List<Disease> selectedDiseases = this.selectedTasks.stream().map(c -> c.getDisease()).collect(Collectors.toList());
+			Set<Disease> selectedDiseases = this.selectedTasks.stream().map(c -> c.getDisease()).collect(Collectors.toSet());
 			List<UserReferenceDto> assignableUsers = null;
 			if (selectedDiseases.size() == 1) {
-				Disease selectedDisease = selectedDiseases.get(0);
+				Disease selectedDisease = selectedDiseases.iterator().next();
 				assignableUsers = FacadeProvider.getUserFacade().getUserRefsByDistrict(district, selectedDisease);
 			} else {
 				assignableUsers = FacadeProvider.getUserFacade().getUserRefsByDistrict(district, true);
