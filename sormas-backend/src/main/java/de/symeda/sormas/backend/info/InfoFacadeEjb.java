@@ -166,13 +166,22 @@ public class InfoFacadeEjb implements InfoFacade {
 		boolean isDataProtectionDictionary)
 		throws IOException {
 		XSSFWorkbook workbook = new XSSFWorkbook();
+		CellStyle defaultCellStyle = getDefaultCellStyle(workbook);
 
 		if (isDataProtectionDictionary) {
-			createEntitySheetWithAllFields(workbook, getEntityInfoList(), entityColumns, fieldVisibilityCheckers, extraColumns, extraCells);
+			createEntitySheetWithAllFields(
+				workbook,
+				defaultCellStyle,
+				getEntityInfoList(),
+				entityColumns,
+				fieldVisibilityCheckers,
+				extraColumns,
+				extraCells);
 		}
 
 		createEntitySheetsForDataDictionary(
 			workbook,
+			defaultCellStyle,
 			getEntityInfoList(),
 			filterColumnsForDataProtectionDictionaryWithoutEntityColumn(entityColumns),
 			fieldVisibilityCheckers,
@@ -195,6 +204,7 @@ public class InfoFacadeEjb implements InfoFacade {
 
 	private void createEntitySheetsForDataDictionary(
 		XSSFWorkbook workbook,
+		CellStyle defaultCellStyle,
 		List<EntityInfo> entityInfoList,
 		EnumSet<EntityColumn> entityColumns,
 		FieldVisibilityCheckers fieldVisibilityCheckers,
@@ -203,12 +213,21 @@ public class InfoFacadeEjb implements InfoFacade {
 		boolean isDataProtectionDictionary) {
 
 		for (EntityInfo entityInfo : entityInfoList) {
-			createEntitySheet(workbook, entityInfo, entityColumns, fieldVisibilityCheckers, extraColumns, extraCells, isDataProtectionDictionary);
+			createEntitySheet(
+				workbook,
+				defaultCellStyle,
+				entityInfo,
+				entityColumns,
+				fieldVisibilityCheckers,
+				extraColumns,
+				extraCells,
+				isDataProtectionDictionary);
 		}
 	}
 
 	private void createEntitySheetWithAllFields(
 		XSSFWorkbook workbook,
+		CellStyle defaultCellStyle,
 		List<EntityInfo> entityInfoList,
 		EnumSet<EntityColumn> entityColumns,
 		FieldVisibilityCheckers fieldVisibilityCheckers,
@@ -219,26 +238,9 @@ public class InfoFacadeEjb implements InfoFacade {
 		String safeName = WorkbookUtil.createSafeSheetName(name);
 		XSSFSheet sheet = workbook.createSheet(safeName);
 
+		buildHeader(sheet, entityColumns, extraColumns);
+		int rowNumber = 1;
 		int columnCount = entityColumns.size() + extraColumns.size();
-		int rowNumber = 0;
-
-		// header
-		XSSFRow headerRow = sheet.createRow(rowNumber++);
-		entityColumns.forEach(column -> {
-			int colIndex = Math.max(headerRow.getLastCellNum(), 0);
-			headerRow.createCell(colIndex).setCellValue(column.toString());
-			sheet.setColumnWidth(colIndex, column.getWidth());
-		});
-
-		extraColumns.forEach(c -> {
-			short colIndex = headerRow.getLastCellNum();
-			headerRow.createCell(colIndex).setCellValue(c.header);
-			sheet.setColumnWidth(colIndex, c.width);
-		});
-
-		CellStyle defaultCellStyle = workbook.createCellStyle();
-		defaultCellStyle.setWrapText(true);
-
 		for (EntityInfo entityInfo : entityInfoList) {
 			Class<? extends EntityDto> entityClass = entityInfo.getEntityClass();
 
@@ -246,32 +248,12 @@ public class InfoFacadeEjb implements InfoFacade {
 				if (java.lang.reflect.Modifier.isStatic(field.getModifiers()) || !fieldVisibilityCheckers.isVisible(entityClass, field.getName())) {
 					continue;
 				}
-
 				FieldData fieldData = new FieldData(field, entityClass, entityInfo.getI18nPrefix());
 				XSSFRow row = sheet.createRow(rowNumber++);
-
 				for (EntityColumn c : entityColumns) {
-					XSSFCell newCell = row.createCell(Math.max(row.getLastCellNum(), 0));
-
-					String fieldValue = c.getGetValueFromField(fieldData);
-					if (fieldValue != null) {
-						newCell.setCellValue(fieldValue);
-					}
-
-					if (c.hasDefaultStyle()) {
-						newCell.setCellStyle(defaultCellStyle);
-					}
+					createCellsForRow(c, row, fieldData, defaultCellStyle);
 				}
-
-				String fieldId = EntityColumn.FIELD_ID.getGetValueFromField(fieldData);
-				if (extraCells.containsKey(fieldId)) {
-					extraCells.get(fieldId).forEach((extraCell) -> {
-						XSSFCell newCell = row.createCell(row.getLastCellNum());
-						if (extraCell != null) {
-							newCell.copyCellFrom(extraCell, new CellCopyPolicy.Builder().cellValue(true).cellStyle(false).cellFormula(false).build());
-						}
-					});
-				}
+				copyCellsFromExtraCells(row, fieldData, extraCells);
 			}
 		}
 
@@ -283,6 +265,7 @@ public class InfoFacadeEjb implements InfoFacade {
 
 	private void createEntitySheet(
 		XSSFWorkbook workbook,
+		CellStyle defaultCellStyle,
 		EntityInfo entityInfo,
 		EnumSet<EntityColumn> entityColumns,
 		FieldVisibilityCheckers fieldVisibilityCheckers,
@@ -301,25 +284,9 @@ public class InfoFacadeEjb implements InfoFacade {
 		String safeName = WorkbookUtil.createSafeSheetName(name);
 		XSSFSheet sheet = workbook.createSheet(safeName);
 
+		buildHeader(sheet, entityColumns, extraColumns);
+		int rowNumber = 1;
 		int columnCount = entityColumns.size() + extraColumns.size();
-		int rowNumber = 0;
-
-		// header
-		XSSFRow headerRow = sheet.createRow(rowNumber++);
-		entityColumns.forEach(column -> {
-			int colIndex = Math.max(headerRow.getLastCellNum(), 0);
-			headerRow.createCell(colIndex).setCellValue(column.toString());
-			sheet.setColumnWidth(colIndex, column.getWidth());
-		});
-
-		extraColumns.forEach(c -> {
-			short colIndex = headerRow.getLastCellNum();
-			headerRow.createCell(colIndex).setCellValue(c.header);
-			sheet.setColumnWidth(colIndex, c.width);
-		});
-
-		CellStyle defaultCellStyle = workbook.createCellStyle();
-		defaultCellStyle.setWrapText(true);
 
 		List<Class<Enum<?>>> usedEnums = new ArrayList<>();
 		boolean usesFacilityReference = false;
@@ -328,22 +295,10 @@ public class InfoFacadeEjb implements InfoFacade {
 			if (java.lang.reflect.Modifier.isStatic(field.getModifiers()) || !fieldVisibilityCheckers.isVisible(entityClass, field.getName())) {
 				continue;
 			}
-
 			FieldData fieldData = new FieldData(field, entityClass, entityInfo.getI18nPrefix());
-
 			XSSFRow row = sheet.createRow(rowNumber++);
-
 			for (EntityColumn c : entityColumns) {
-				XSSFCell newCell = row.createCell(Math.max(row.getLastCellNum(), 0));
-
-				String fieldValue = c.getGetValueFromField(fieldData);
-				if (fieldValue != null) {
-					newCell.setCellValue(fieldValue);
-				}
-
-				if (c.hasDefaultStyle()) {
-					newCell.setCellStyle(defaultCellStyle);
-				}
+				createCellsForRow(c, row, fieldData, defaultCellStyle);
 
 				Class<?> fieldType = field.getType();
 				if (fieldType.isEnum()) {
@@ -361,15 +316,7 @@ public class InfoFacadeEjb implements InfoFacade {
 				}
 			}
 
-			String fieldId = EntityColumn.FIELD_ID.getGetValueFromField(fieldData);
-			if (extraCells.containsKey(fieldId)) {
-				extraCells.get(fieldId).forEach((extraCell) -> {
-					XSSFCell newCell = row.createCell(row.getLastCellNum());
-					if (extraCell != null) {
-						newCell.copyCellFrom(extraCell, new CellCopyPolicy.Builder().cellValue(true).cellStyle(false).cellFormula(false).build());
-					}
-				});
-			}
+			copyCellsFromExtraCells(row, fieldData, extraCells);
 		}
 
 		// Configure table
@@ -630,6 +577,54 @@ public class InfoFacadeEjb implements InfoFacade {
 		return enumSet.stream()
 			.filter(column -> !column.isColumnForAllFieldsSheet())
 			.collect(Collectors.toCollection(() -> EnumSet.noneOf(EntityColumn.class)));
+	}
+
+	private CellStyle getDefaultCellStyle(XSSFWorkbook workbook) {
+		CellStyle defaultCellStyle = workbook.createCellStyle();
+		defaultCellStyle.setWrapText(true);
+
+		return defaultCellStyle;
+	}
+
+	private XSSFCell createCellsForRow(EntityColumn c, XSSFRow row, FieldData fieldData, CellStyle defaultCellStyle) {
+		XSSFCell newCell = row.createCell(Math.max(row.getLastCellNum(), 0));
+
+		String fieldValue = c.getGetValueFromField(fieldData);
+		if (fieldValue != null) {
+			newCell.setCellValue(fieldValue);
+		}
+
+		if (c.hasDefaultStyle()) {
+			newCell.setCellStyle(defaultCellStyle);
+		}
+		return newCell;
+	}
+
+	private void copyCellsFromExtraCells(XSSFRow row, FieldData fieldData, Map<String, List<XSSFCell>> extraCells) {
+		String fieldId = EntityColumn.FIELD_ID.getGetValueFromField(fieldData);
+		if (extraCells.containsKey(fieldId)) {
+			extraCells.get(fieldId).forEach((extraCell) -> {
+				XSSFCell newCell = row.createCell(row.getLastCellNum());
+				if (extraCell != null) {
+					newCell.copyCellFrom(extraCell, new CellCopyPolicy.Builder().cellValue(true).cellStyle(false).cellFormula(false).build());
+				}
+			});
+		}
+	}
+
+	private void buildHeader(XSSFSheet sheet, EnumSet<EntityColumn> entityColumns, List<ColumnData> extraColumns) {
+		XSSFRow headerRow = sheet.createRow(0);
+		entityColumns.forEach(column -> {
+			int colIndex = Math.max(headerRow.getLastCellNum(), 0);
+			headerRow.createCell(colIndex).setCellValue(column.toString());
+			sheet.setColumnWidth(colIndex, column.getWidth());
+		});
+
+		extraColumns.forEach(c -> {
+			short colIndex = headerRow.getLastCellNum();
+			headerRow.createCell(colIndex).setCellValue(c.header);
+			sheet.setColumnWidth(colIndex, c.width);
+		});
 	}
 
 	@LocalBean
