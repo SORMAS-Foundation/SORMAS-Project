@@ -73,5 +73,17 @@ WHERE t.table_schema = 'public'
                  WHERE trigger_name = 'versioning_trigger'
                    AND (event_manipulation = 'DELETE')
                    AND event_object_table = t.table_name)
+UNION
+SELECT 'invalid versioning trigger' as remark, t.table_name, null as column_name, 'DELETE' as data_type FROM information_schema."tables" t
+WHERE t.table_schema = 'public'
+  AND NOT (t.table_name ~* '_')
+  AND t.table_name NOT LIKE '%_history'
+  AND t.table_name NOT IN ('schema_version', 'systemevent')
+  AND t.table_name NOT like 'pg_%'
+  AND exists(SELECT trigger_name
+                 FROM information_schema.triggers
+                 WHERE trigger_name = 'versioning_trigger'
+                   AND (event_manipulation = 'DELETE')
+                   AND event_object_table = t.table_name)
 ORDER BY remark, table_name , column_name;
 
