@@ -39,7 +39,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 
-import lombok.Getter;
 import org.apache.commons.lang3.reflect.TypeUtils;
 import org.apache.poi.openxml4j.exceptions.InvalidFormatException;
 import org.apache.poi.ss.SpreadsheetVersion;
@@ -612,20 +611,20 @@ public class InfoFacadeEjb implements InfoFacade {
     private EnumSet<EntityColumn> filterColumnsForDataDictionary() {
         EnumSet<EntityColumn> enumSet = EnumSet.allOf(EntityColumn.class);
         return enumSet.stream()
-                .filter(column -> column.isExtraDataDictionaryColumn() | (!column.isExtraDataProtectionColumn() & !column.isExtraDataDictionaryColumn()))
+                .filter(column -> column.isDataDictionaryColumn() | (!column.isDataProtectionColumn() & !column.isDataDictionaryColumn()))
                 .collect(Collectors.toCollection(() -> EnumSet.noneOf(EntityColumn.class)));
     }
 
     private EnumSet<EntityColumn> filterColumnsForDataProtectionDictionaryWithEntityColumn() {
         EnumSet<EntityColumn> enumSet = EnumSet.allOf(EntityColumn.class);
         return enumSet.stream()
-                .filter(column -> column.isExtraDataProtectionColumn() | (!column.isExtraDataProtectionColumn() & !column.isExtraDataDictionaryColumn()))
+                .filter(column -> column.isDataProtectionColumn() | (!column.isDataProtectionColumn() & !column.isDataDictionaryColumn()))
                 .collect(Collectors.toCollection(() -> EnumSet.noneOf(EntityColumn.class)));
     }
 
     private EnumSet<EntityColumn> filterColumnsForDataProtectionDictionaryWithoutEntityColumn(EnumSet<EntityColumn> enumSet) {
         return enumSet.stream()
-                .filter(column -> !column.isExtraDataProtectionColumn())
+                .filter(column -> !column.isDataProtectionColumn())
                 .collect(Collectors.toCollection(() -> EnumSet.noneOf(EntityColumn.class)));
     }
 
@@ -644,7 +643,6 @@ public class InfoFacadeEjb implements InfoFacade {
 		}
 	}
 
-	@Getter
 	private static class EntityInfo {
 		private Class<? extends EntityDto> entityClass;
 		private String i18nPrefix;
@@ -653,5 +651,13 @@ public class InfoFacadeEjb implements InfoFacade {
 			this.entityClass = entityClass;
 			this.i18nPrefix = i18nPrefix;
 		}
-	}
+
+        public Class<? extends EntityDto> getEntityClass() {
+            return entityClass;
+        }
+
+        public String getI18nPrefix() {
+            return i18nPrefix;
+        }
+    }
 }

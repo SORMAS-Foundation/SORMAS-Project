@@ -58,24 +58,24 @@ public enum EntityColumn {
 	private final int width;
 	private final Function<FieldData, String> getValueFromField;
 	private final boolean hasDefaultStyle;
-	private final boolean isExtraDataDictionaryColumn;
-	private final boolean isExtraDataProtectionColumn;
-	private final boolean isExtraColumnForAllFieldsSheet;
+	private final boolean isDataDictionaryColumn;
+	private final boolean isDataProtectionColumn;
+	private final boolean isColumnForAllFieldsSheet;
 
 	EntityColumn(
 		int width,
 		Function<FieldData, String> getValueFromField,
 		boolean hasDefaultStyle,
-		boolean isExtraDataDictionaryColumn,
-		boolean isExtraDataProtectionColumn,
-		boolean isExtraColumnForAllFieldsSheet) {
+		boolean isDataDictionaryColumn,
+		boolean isDataProtectionColumn,
+		boolean isColumnForAllFieldsSheet) {
 
 		this.width = width;
 		this.getValueFromField = getValueFromField;
 		this.hasDefaultStyle = hasDefaultStyle;
-		this.isExtraDataDictionaryColumn = isExtraDataDictionaryColumn;
-		this.isExtraDataProtectionColumn = isExtraDataProtectionColumn;
-		this.isExtraColumnForAllFieldsSheet = isExtraColumnForAllFieldsSheet;
+		this.isDataDictionaryColumn = isDataDictionaryColumn;
+		this.isDataProtectionColumn = isDataProtectionColumn;
+		this.isColumnForAllFieldsSheet = isColumnForAllFieldsSheet;
 	}
 
 	public int getWidth() {
@@ -90,16 +90,16 @@ public enum EntityColumn {
 		return hasDefaultStyle;
 	}
 
-	public boolean isExtraDataDictionaryColumn() {
-		return isExtraDataDictionaryColumn;
+	public boolean isDataDictionaryColumn() {
+		return isDataDictionaryColumn;
 	}
 
-	public boolean isExtraDataProtectionColumn() {
-		return isExtraDataProtectionColumn;
+	public boolean isDataProtectionColumn() {
+		return isDataProtectionColumn;
 	}
 
-	public boolean isExtraColumnForAllFieldsSheet() {
-		return isExtraColumnForAllFieldsSheet;
+	public boolean isColumnForAllFieldsSheet() {
+		return isColumnForAllFieldsSheet;
 	}
 
 	public String toString() {
