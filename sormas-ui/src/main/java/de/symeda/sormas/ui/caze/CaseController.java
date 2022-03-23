@@ -648,9 +648,6 @@ public class CaseController {
 				}
 
 				if (convertedContact != null) {
-					transferDataToPerson(createForm, person);
-					FacadeProvider.getPersonFacade().savePerson(person);
-
 					int incubationPeriod = FacadeProvider.getDiseaseConfigurationFacade().getCaseFollowUpDuration(dto.getDisease());
 					List<VisitDto> visits = FacadeProvider.getVisitFacade()
 						.getVisitsByContactAndPeriod(
@@ -688,8 +685,8 @@ public class CaseController {
 					}
 					FacadeProvider.getContactFacade().save(updatedContact);
 					FacadeProvider.getCaseFacade().setSampleAssociations(updatedContact.toReference(), dto.toReference());
-					CaseDataDto caseByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getUuid());
-					saveCase(caseByUuid);
+					CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getUuid());
+					FacadeProvider.getCaseFacade().save(caseDataByUuid);
 					Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
 					if (!createdFromLabMessage) {
 						navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
