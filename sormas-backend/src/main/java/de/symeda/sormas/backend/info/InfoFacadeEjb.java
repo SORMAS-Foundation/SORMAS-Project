@@ -146,7 +146,12 @@ public class InfoFacadeEjb implements InfoFacade {
 
 			List<ColumnData> dataProtectionColumns = getDataProtectionColumns(dataProtectionSheet);
 			Map<String, List<XSSFCell>> dataProtectionData = getDataProtectionCellData(dataProtectionSheet);
-			return generateDataDictionary(filterColumnsForDataProtectionDictionaryWithEntityColumn(), fieldVisibilityCheckers, dataProtectionColumns, dataProtectionData, true);
+			return generateDataDictionary(
+				filterColumnsForDataProtectionDictionaryWithEntityColumn(),
+				fieldVisibilityCheckers,
+				dataProtectionColumns,
+				dataProtectionData,
+				true);
 
 		} catch (InvalidFormatException e) {
 			throw new IOException(e);
@@ -608,25 +613,24 @@ public class InfoFacadeEjb implements InfoFacade {
 		return entityInfoList;
 	}
 
-    private EnumSet<EntityColumn> filterColumnsForDataDictionary() {
-        EnumSet<EntityColumn> enumSet = EnumSet.allOf(EntityColumn.class);
-        return enumSet.stream()
-                .filter(column -> column.isDataDictionaryColumn() | (!column.isDataProtectionColumn() & !column.isDataDictionaryColumn()))
-                .collect(Collectors.toCollection(() -> EnumSet.noneOf(EntityColumn.class)));
-    }
+	private EnumSet<EntityColumn> filterColumnsForDataDictionary() {
+		EnumSet<EntityColumn> enumSet = EnumSet.allOf(EntityColumn.class);
+		enumSet.remove(EntityColumn.ENTITY);
+		return enumSet;
+	}
 
-    private EnumSet<EntityColumn> filterColumnsForDataProtectionDictionaryWithEntityColumn() {
-        EnumSet<EntityColumn> enumSet = EnumSet.allOf(EntityColumn.class);
-        return enumSet.stream()
-                .filter(column -> column.isDataProtectionColumn() | (!column.isDataProtectionColumn() & !column.isDataDictionaryColumn()))
-                .collect(Collectors.toCollection(() -> EnumSet.noneOf(EntityColumn.class)));
-    }
+	private EnumSet<EntityColumn> filterColumnsForDataProtectionDictionaryWithEntityColumn() {
+		EnumSet<EntityColumn> enumSet = EnumSet.allOf(EntityColumn.class);
+		return enumSet.stream()
+			.filter(EntityColumn::isDataProtectionColumn)
+			.collect(Collectors.toCollection(() -> EnumSet.noneOf(EntityColumn.class)));
+	}
 
-    private EnumSet<EntityColumn> filterColumnsForDataProtectionDictionaryWithoutEntityColumn(EnumSet<EntityColumn> enumSet) {
-        return enumSet.stream()
-                .filter(column -> !column.isDataProtectionColumn())
-                .collect(Collectors.toCollection(() -> EnumSet.noneOf(EntityColumn.class)));
-    }
+	private EnumSet<EntityColumn> filterColumnsForDataProtectionDictionaryWithoutEntityColumn(EnumSet<EntityColumn> enumSet) {
+		return enumSet.stream()
+			.filter(column -> !column.isColumnForAllFieldsSheet())
+			.collect(Collectors.toCollection(() -> EnumSet.noneOf(EntityColumn.class)));
+	}
 
 	@LocalBean
 	@Stateless
@@ -634,6 +638,7 @@ public class InfoFacadeEjb implements InfoFacade {
 
 	}
 	private static class ColumnData {
+
 		private String header;
 		private int width;
 
@@ -644,6 +649,7 @@ public class InfoFacadeEjb implements InfoFacade {
 	}
 
 	private static class EntityInfo {
+
 		private Class<? extends EntityDto> entityClass;
 		private String i18nPrefix;
 
@@ -652,12 +658,12 @@ public class InfoFacadeEjb implements InfoFacade {
 			this.i18nPrefix = i18nPrefix;
 		}
 
-        public Class<? extends EntityDto> getEntityClass() {
-            return entityClass;
-        }
+		public Class<? extends EntityDto> getEntityClass() {
+			return entityClass;
+		}
 
-        public String getI18nPrefix() {
-            return i18nPrefix;
-        }
-    }
+		public String getI18nPrefix() {
+			return i18nPrefix;
+		}
+	}
 }
