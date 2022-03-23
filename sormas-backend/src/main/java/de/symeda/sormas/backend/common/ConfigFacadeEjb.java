@@ -566,15 +566,23 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			patientDiaryConfig.getAuthUrl(),
 			patientDiaryConfig.getFrontendAuthUrl(),
 			getSormasStatsUrl(),
-			s2sConfig.getOidcRealmCertEndpoint(),
-			s2sConfig.getOidcRealmTokenEndpoint(),
-			s2sConfig.getOidcRealmUrl(),
 			s2sConfig.getOidcServer(),
 			getExternalSurveillanceToolGatewayUrl(),
 			getMapTilersUrl(),
 			getAppUrl(),
 			getUiUrl(),
 			getGeocodingServiceUrlTemplate());
+
+		// separately as they are interpolated
+		if (!StringUtils.isBlank(s2sConfig.getOidcServer())) {
+
+			urls.add(s2sConfig.getOidcRealmCertEndpoint());
+			urls.add(s2sConfig.getOidcRealmTokenEndpoint());
+
+			if (!StringUtils.isBlank(s2sConfig.getOidcRealm())) {
+				urls.add(s2sConfig.getOidcRealmUrl());
+			}
+		}
 
 		UrlValidator urlValidator = new UrlValidator(
 			new String[] {
