@@ -315,7 +315,7 @@ Feature: Case filter functionality
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
 
-  @issue=SORQA-83 @env_de @dev
+  @issue=SORQA-83 @env_de
   Scenario: Check Case basic filters on Case directory page for DE version
     Given I log in with National User
     And I click on the Cases button from navbar
