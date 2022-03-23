@@ -186,7 +186,8 @@ public class CampaignFacadeEjb implements CampaignFacade {
 					.map(campaignFormMetaReferenceDto -> campaignFormMetaService.getByUuid(campaignFormMetaReferenceDto.getUuid()))
 					.collect(Collectors.toSet()));
 		}
-		target.setDashboardElements(source.getCampaignDashboardElements());
+		System.out.println("))))))))))))))(((((((((((((( "+source.getCampaignDashboardElements());
+		target.setDashboardElements(source.getCampaignDashboardElements());// .stream().filter(e -> e.getDiagramId().equals("")));
 		return target;
 	}
 

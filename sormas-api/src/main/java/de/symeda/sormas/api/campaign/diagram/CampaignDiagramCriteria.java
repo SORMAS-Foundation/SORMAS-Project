@@ -16,18 +16,21 @@ public class CampaignDiagramCriteria extends BaseCriteria implements Serializabl
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private CampaignJurisdictionLevel campaignJurisdictionLevelGroupBy;
+	private String formType;
 
 	public CampaignDiagramCriteria(
 		CampaignReferenceDto campaign,
 		AreaReferenceDto area,
 		RegionReferenceDto region,
 		DistrictReferenceDto district,
-		CampaignJurisdictionLevel campaignJurisdictionLevelGroupBy) {
+		CampaignJurisdictionLevel campaignJurisdictionLevelGroupBy,
+		String formType) {
 		this.campaign = campaign;
 		this.area = area;
 		this.region = region;
 		this.district = district;
 		this.campaignJurisdictionLevelGroupBy = campaignJurisdictionLevelGroupBy;
+		this.formType = formType;
 	}
 
 	public CampaignReferenceDto getCampaign() {
@@ -69,4 +72,14 @@ public class CampaignDiagramCriteria extends BaseCriteria implements Serializabl
 	public void setCampaignJurisdictionLevelGroupBy(CampaignJurisdictionLevel campaignJurisdictionLevelGroupBy) {
 		this.campaignJurisdictionLevelGroupBy = campaignJurisdictionLevelGroupBy;
 	}
+
+	public String getFormType() {
+		return formType;
+	}
+
+	public void setFormType(String formType) {
+		this.formType = formType;
+	}
+	
+	
 }

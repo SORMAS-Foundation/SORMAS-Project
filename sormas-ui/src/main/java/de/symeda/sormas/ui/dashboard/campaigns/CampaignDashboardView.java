@@ -14,6 +14,7 @@ import com.vaadin.server.Page;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Component;
 import com.vaadin.ui.CssLayout;
+import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.OptionGroup;
@@ -51,6 +52,20 @@ public class CampaignDashboardView extends AbstractDashboardView {
 
 		dataProvider = new CampaignDashboardDataProvider();
 		filterLayout = new CampaignDashboardFilterLayout(this, dataProvider);
+		
+		setSizeFull();
+		setMargin(false);
+		setSpacing(false);
+		addStyleName("setwith-700px");
+
+		
+		filterLayout.addStyleName("view-headerxxxx");
+		filterLayout.setHeightUndefined();
+		filterLayout.setMargin(new MarginInfo(false, true));
+		filterLayout.setSpacing(true);
+		
+		
+		
 		dashboardLayout.addComponent(filterLayout);
 		dashboardLayout.setMargin(false);
 
@@ -183,7 +198,7 @@ public class CampaignDashboardView extends AbstractDashboardView {
 
 			final CssLayout diagramsLayout = new CssLayout();
 			diagramsLayout.setSizeFull();
-			final String gridCssClass = (tabId + subTabId).replaceAll("[^a-zA-Z]+", "") + generateRandomString() + GRID_CONTAINER;
+			final String gridCssClass = (tabId + subTabId).replaceAll("[^a-zA-Z]+", "") + generateRandomString() + GRID_CONTAINER+" default-height-720px";
 
 			styles.add(
 				createDiagramGridStyle(

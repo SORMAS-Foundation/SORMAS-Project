@@ -16,6 +16,14 @@ $v-grid-cell-focused-border: none !default;
 
 	}
 	
+	.v-grid-rowx:hover{
+		background-color: rgb(0,200,0);opacity:0.0 !important;
+		cursor: default !important;
+		text-decoration: none !important;
+		
+
+	}
+	
   .v-grid,
   .v-treegrid {
   

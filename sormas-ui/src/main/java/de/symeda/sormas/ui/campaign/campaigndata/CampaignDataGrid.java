@@ -83,6 +83,7 @@ public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, Cam
 
 		for (Column<?, ?> column : getColumns()) {
 			column.setCaption(I18nProperties.getPrefixCaption(CampaignFormDataIndexDto.I18N_PREFIX, column.getId(), column.getCaption()));
+			column.setDescriptionGenerator(CampaignFormDataIndexDto -> column.getCaption()); //set the description of default columns #94-iyanuu
 			
 		}
 	}
@@ -117,6 +118,7 @@ public class CampaignDataGrid extends FilteredGrid<CampaignFormDataIndexDto, Cam
 		newColumn.setCaption(caption);
 		newColumn.setId(property);
 		newColumn.setWidth(240.0);
+		newColumn.setDescriptionGenerator(CampaignFormDataIndexDto -> newColumn.getCaption());//set the description of default columns #94-iyanuu
 		
 		}
 	}

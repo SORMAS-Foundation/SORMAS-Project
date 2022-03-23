@@ -8311,12 +8311,9 @@ ALTER TABLE campaigns_history ALTER COLUMN uuid TYPE varchar(255);
 ALTER TABLE campaigns ALTER COLUMN uuid TYPE varchar(255);
 
 CREATE TABLE campaign_types(id bigint PRIMARY KEY NOT NULL,type character varying UNIQUE);
-<<<<<<< HEAD
+
 INSERT INTO campaign_types(id, type) VALUES('1'::bigint, 'pre-campaign'::character varying),('2'::bigint, 'intra-campaign'::character varying),('3'::bigint, 'post-campaign'::character varying);
-=======
->>>>>>> f459606ee9 (fix for #106, #93 #84 #63 #36 #1 #116 #108)
-=======
-I>>>>>>> f459606ee9 (fix for #106, #93 #84 #63 #36 #1 #116 #108)
+
 
 ALTER TABLE campaignformmeta ADD COLUMN formtype character varying;
 ALTER TABLE campaignformmeta ADD CONSTRAINT fk_campaignformtype FOREIGN KEY(formtype) REFERENCES campaign_types(type);
@@ -8351,6 +8348,39 @@ ALTER TABLE campaignformmeta_history ADD CONSTRAINT fk_campaignformtype FOREIGN 
 
 INSERT INTO schema_version (version_number, comment) VALUES (413, 'adding area_id to requried tables');
 
+
+-- Add FormType to Dashboard Elements
+
+ALTER TABLE campaigndiagramdefinition ADD COLUMN formtype character varying;
+ALTER TABLE campaigndiagramdefinition ADD CONSTRAINT fk_campaignformtype FOREIGN KEY(formtype) REFERENCES campaign_types(type);
+
+ALTER TABLE campaigndiagramdefinition_history ADD COLUMN formtype character varying;
+ALTER TABLE campaigndiagramdefinition_history ADD CONSTRAINT fk_campaignformtype FOREIGN KEY(formtype) REFERENCES campaign_types(type);
+
+INSERT INTO schema_version (version_number, comment) VALUES (414, 'adding formType to campaigndiagramdefinition table');
+
+--adding FormType Logic to Db
+
+ALTER TABLE campaignformdata ADD COLUMN formtype varchar;
+ALTER TABLE campaignformdata_history ADD COLUMN formtype varchar;
+
+CREATE OR REPLACE FUNCTION function_update_Types_FormData() RETURNS TRIGGER AS
+$BODY$
+BEGIN
+    UPDATE campaignformdata SET formtype = (select formtype from campaignformmeta where campaignformmeta_id = new.campaignformmeta_id) where campaignformmeta_id = new.campaignformmeta_id;
+           RETURN new;
+END;
+$BODY$
+language plpgsql;
+
+
+
+CREATE TRIGGER update_formType
+     AFTER INSERT ON campaignformdata
+     FOR EACH ROW
+     EXECUTE PROCEDURE function_update_Types_FormData();
+     
+INSERT INTO schema_version (version_number, comment) VALUES (415, 'adding formType to campaignformdata table');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
 
 

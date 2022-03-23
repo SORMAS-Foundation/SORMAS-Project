@@ -99,6 +99,8 @@ public class CampaignDataView extends AbstractCampaignView {
 		addHeaderComponent(campaignFormPhaseSelector);
 		
 		grid = new CampaignDataGrid(criteria);
+		grid.setDescriptionGenerator(CampaignFormMetaReferenceDto -> grid.getCaption() );
+		
 		//grid.setStyleName(ValoTheme.LAYOUT_HORIZONTAL_WRAPPING);
 		
 		
@@ -384,6 +386,8 @@ public class CampaignDataView extends AbstractCampaignView {
 
 						if (caption != null) {
 							grid.addCustomColumn(element.getId(), caption);
+							 
+							
 						}
 					}
 				}
@@ -430,6 +434,7 @@ public class CampaignDataView extends AbstractCampaignView {
 
 						if (caption != null) {
 							grid.addCustomColumn(element.getId(), caption);
+							
 						}
 					}
 				}

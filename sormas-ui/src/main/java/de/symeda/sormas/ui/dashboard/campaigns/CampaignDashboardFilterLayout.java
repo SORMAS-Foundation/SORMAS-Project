@@ -29,6 +29,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.campaign.components.CampaignFormPhaseSelector;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 
@@ -40,10 +41,13 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 	private Label infoLabel;
 
 	private ComboBox campaignFilter;
+	private ComboBox campaignPhaseFilter;
 	private ComboBox areaFilter;
 	private ComboBox regionFilter;
 	private ComboBox districtFilter;
 	private ComboBox campaignJurisdictionGroupByFilter;
+	
+	private CampaignFormPhaseSelector campaignFormPhaseSelector;
 
 	private OptionGroup campaignPhaseSelector;
 
@@ -52,14 +56,17 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		this.dashboardView = dashboardView;
 		this.dashboardDataProvider = dashboardDataProvider;
 		this.campaignFilter = ComboBoxHelper.createComboBoxV7();
+		this.campaignPhaseFilter = ComboBoxHelper.createComboBoxV7();
 		this.regionFilter = ComboBoxHelper.createComboBoxV7();
 		this.districtFilter = ComboBoxHelper.createComboBoxV7();
 		this.areaFilter = ComboBoxHelper.createComboBoxV7();
 		this.campaignJurisdictionGroupByFilter = ComboBoxHelper.createComboBoxV7();
+		
+		setStyleName(CssStyles.FORCE_CAPTION);
 
 		setSpacing(true);
-		setWidthFull();
-		setMargin(new MarginInfo(true, true, false, true));
+		//setWidthFull();
+		setMargin(new MarginInfo(false, false, false, true));
 
 		infoLabel = new Label(VaadinIcons.INFO_CIRCLE.getHtml(), ContentMode.HTML);
 		infoLabel.setSizeUndefined();
@@ -70,8 +77,9 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		dashboardDataProvider.setCampaignJurisdictionLevelGroupBy(getJurisdictionBelow(campaignJurisdictionLevel));
 
 		createCampaignFilter();
+		createCampaignPhaseFilter();
 		createJurisdictionFilters(campaignJurisdictionLevel);
-
+/*
 		campaignPhaseSelector = new OptionGroup();
 		campaignPhaseSelector.setDescription(I18nProperties.getPrefixDescription(CampaignDto.I18N_PREFIX, "campaignPhase"));
 		CssStyles.style(campaignPhaseSelector, ValoTheme.OPTIONGROUP_HORIZONTAL, CssStyles.OPTIONGROUP_HORIZONTAL_PRIMARY);
@@ -81,6 +89,7 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 		addComponent(campaignPhaseSelector);
 		setExpandRatio(campaignPhaseSelector, 1);
 		setComponentAlignment(campaignPhaseSelector, Alignment.MIDDLE_RIGHT);
+		*/
 	}
 
 	private void createCampaignFilter() {
@@ -98,9 +107,22 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 
 		final CampaignReferenceDto lastStartedCampaign = dashboardDataProvider.getLastStartedCampaign();
 		if (lastStartedCampaign != null) {
+			System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>.  "+lastStartedCampaign);
 			campaignFilter.setValue(lastStartedCampaign);
 		}
 		dashboardDataProvider.setCampaign((CampaignReferenceDto) campaignFilter.getValue());
+	}
+	
+	
+	private void createCampaignPhaseFilter() {
+		campaignFormPhaseSelector = new CampaignFormPhaseSelector(null);
+		campaignFormPhaseSelector.addValueChangeListener(e -> {
+			dashboardDataProvider.setCampaignFormPhase(campaignFormPhaseSelector.getValue().toLowerCase());
+			dashboardView.refreshDashboard();
+		});
+		addComponent(campaignFormPhaseSelector);
+		
+		dashboardDataProvider.setCampaignFormPhase(campaignFormPhaseSelector.getValue().toLowerCase());
 	}
 
 	@SuppressWarnings("deprecation")

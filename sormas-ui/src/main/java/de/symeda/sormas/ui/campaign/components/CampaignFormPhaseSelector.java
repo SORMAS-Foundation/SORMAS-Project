@@ -61,6 +61,43 @@ public class CampaignFormPhaseSelector extends HorizontalLayout {
 			addComponent(phaseComboBox);
 		}
 		
+		
+		public CampaignFormPhaseSelector(String seperator) {
+			setMargin(false);
+			setSpacing(false);
+
+			Label formPhaseLabel = new Label("");
+			formPhaseLabel.addStyleName("v-caption");
+			formPhaseLabel.addStyleName(CssStyles.HSPACE_RIGHT_4);
+			addComponent(formPhaseLabel);
+			setComponentAlignment(formPhaseLabel, Alignment.MIDDLE_CENTER);
+
+			phaseComboBox = new ComboBox<>("CAMPAIGN PHASE");
+
+           // phaseComboBox.setItems(CampaignPhase.values());
+			
+			List<String> phases = new ArrayList();
+			phases.add("ALL PHASES");
+			phases.add(CampaignPhase.PRE.toString());
+			phases.add(CampaignPhase.INTRA.toString());
+			phases.add(CampaignPhase.POST.toString());
+			
+			
+			phaseComboBox.setItems(phases);
+			phaseComboBox.setValue("ALL PHASES");
+			phaseComboBox.setEmptySelectionAllowed(false);
+			//phaseComboBox.setEmptySelectionCaption(I18nProperties.getCaption(Captions.campaignAllCampaigns));
+			//final CampaignReferenceDto lastStartedCampaign = FacadeProvider.getCampaignFacade().getLastStartedCampaign();
+		//	phaseComboBox.setItems(CampaignPhase.values());
+			//phaseComboBox.setEmptySelectionCaption(I18nProperties.getCaption(Captions.campaignAllForms));
+			
+		
+			System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>> ");
+		
+			CssStyles.style(phaseComboBox, CssStyles.SOFT_REQUIRED);
+			addComponent(phaseComboBox);
+		}
+		
 		public String getValue() {
 			return (String) phaseComboBox.getValue();
 		}
