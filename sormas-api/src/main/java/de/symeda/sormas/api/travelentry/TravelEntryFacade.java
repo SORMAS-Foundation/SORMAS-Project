@@ -26,5 +26,5 @@ public interface TravelEntryFacade extends CoreFacade<TravelEntryDto, TravelEntr
 
 	Page<TravelEntryIndexDto> getIndexPage(TravelEntryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties);
 
-	void archiveAllArchivableTravelEntry(int daysAfterTravelEntryGetsArchived);
+	void archiveAllArchivableTravelEntries(int daysAfterTravelEntryGetsArchived);
 }

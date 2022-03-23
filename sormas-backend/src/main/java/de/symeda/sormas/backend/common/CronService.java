@@ -263,7 +263,7 @@ public class CronService {
 			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.TRAVEL_ENTRY, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
 
 		if (daysAfterTravelEntryGetsArchived >= 1) {
-			travelEntryFacade.archiveAllArchivableTravelEntry(daysAfterTravelEntryGetsArchived);
+			travelEntryFacade.archiveAllArchivableTravelEntries(daysAfterTravelEntryGetsArchived);
 		}
 	}
 

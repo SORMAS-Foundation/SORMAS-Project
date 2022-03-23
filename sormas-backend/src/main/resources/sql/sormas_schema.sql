@@ -10552,12 +10552,12 @@ INSERT INTO schema_version (version_number, comment) VALUES (449, 'Add dateOfArr
 UPDATE contact SET archived = TRUE
     FROM contact ct
 INNER  JOIN cases cs ON cs.id = ct.caze_id
-WHERE cs.archived is TRUE;
+WHERE cs.archived is TRUE and ct.archived is FALSE;
 
 UPDATE eventparticipant SET archived = TRUE
     FROM eventparticipant ep
 INNER JOIN events e on ep.event_id = e.id
-where e.archived is TRUE;
+where e.archived is TRUE and ep.archived is FALSE;
 
 INSERT INTO schema_version (version_number, comment) VALUES (450, 'Automatic & manual archiving for all core entities #7774 ');
 

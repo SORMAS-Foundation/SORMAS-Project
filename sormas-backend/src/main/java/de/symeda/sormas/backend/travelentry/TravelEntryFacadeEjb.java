@@ -187,7 +187,7 @@ public class TravelEntryFacadeEjb
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public void archiveAllArchivableTravelEntry(int daysAfterTravelEntryGetsArchived) {
+	public void archiveAllArchivableTravelEntries(int daysAfterTravelEntryGetsArchived) {
 		archiveAllArchivableTravelEntry(daysAfterTravelEntryGetsArchived, LocalDate.now());
 	}
 
