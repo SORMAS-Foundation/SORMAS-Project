@@ -114,9 +114,7 @@ public class EventDirectoryPage {
   public static final By EVENT_GROUP_NAME_SORT = By.xpath("//div[text()='Group name']");
   public static final By EVENT_EXPORT_BUTTON = By.id("export");
   public static final By EVENT_EXPORT_BASIC_BUTTON = By.id("exportBasic");
-  public static final By EXPORT_PARTICIPANT_BUTTON = By.id("export");
   public static final By DETAILED_EXPORT_PARTICIPANT_BUTTON = By.id("exportDetailed");
-  public static final By CLOSE_POPUP_BUTTON = By.cssSelector(".v-window-closebox");
   public static final By IMPORT_PARTICIPANT_BUTTON = By.id("actionImport");
   public static final By COMMIT_BUTTON = By.id("commit");
   public static final By CUSTOM_EXPORT_PARTICIPANT_BUTTON = By.id("exportCustom");
