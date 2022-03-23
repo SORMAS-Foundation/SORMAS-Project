@@ -34,8 +34,11 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_IN
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.APPLY_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BASIC_EXPORT_PARTICIPANT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BULK_ACTIONS_EVENT_DIRECTORY;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CLOSE_POPUP_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.COMMIT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CREATED_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CREATE_CASE_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CUSTOM_EXPORT_PARTICIPANT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.DATE_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.DETAILED_EXPORT_PARTICIPANT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.ENTER_BULK_EDIT_MODE_EVENT_DIRECTORY;
@@ -72,13 +75,11 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.GR
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.GROUP_ID_COLUMN;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.ID_FIELD_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.IMPORT_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.IMPORT_PARTICIPANT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.IMPORT_POPUP_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.IMPORT_POPUP_CLOSE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.IMPORT_SUCCESS;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.IMPORT_WINDOW_CLOSE_BUTTON;
-import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.IMPORT_PARTICIPANT_BUTTON;
-import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.IMPORT_POPUP_BUTTON;
-import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.IMPORT_SUCCESS;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LINKED_EVENT_GROUP_ID;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LINK_EVENT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LINK_EVENT_BUTTON_EDIT_PAGE;
@@ -742,16 +743,21 @@ public class EventDirectorySteps implements En {
     And(
         "I click Create Case for Event Participant",
         () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_CASE_BUTTON));
-      And(
-              "I click Export button in Event Participant Directory",
-              () -> webDriverHelpers.clickOnWebElementBySelector(EXPORT_PARTICIPANT_BUTTON));
-      And(
-              "I click on Basic Export button in Event Participant Directory",
-              () -> {
-                  webDriverHelpers.clickOnWebElementBySelector(BASIC_EXPORT_PARTICIPANT_BUTTON);
-                  webDriverHelpers.waitUntilElementIsVisibleAndClickable(CLOSE_POPUP_BUTTON);
-                  TimeUnit.SECONDS.sleep(5); // time for file to be downloaded
-              });
+    And(
+        "I click Export button in Event Participant Directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(EXPORT_PARTICIPANT_BUTTON));
+    And(
+        "I click on Basic Export button in Event Participant Directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(BASIC_EXPORT_PARTICIPANT_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CLOSE_POPUP_BUTTON);
+          TimeUnit.SECONDS.sleep(5); // time for file to be downloaded
+        });
+    And(
+        "I click on Custom Export button in Event Participant Directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CUSTOM_EXPORT_PARTICIPANT_BUTTON);
+        });
 
     And(
         "I click on Detailed Export button in Event Participant Directory",
