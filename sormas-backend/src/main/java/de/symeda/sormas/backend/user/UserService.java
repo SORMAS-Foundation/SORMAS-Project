@@ -523,7 +523,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 			// TODO #4461: Replace by joinging rights of roles
 			Set<UserRole> userRoles = userRoleConfigFacade.getEffectiveUserRoles(userRights);
 			if (!userRoles.isEmpty()) {
-				Join<User, UserRight> rolesJoin = from.join(User.USER_ROLES, JoinType.LEFT);
+				Join<User, UserRole> rolesJoin = from.join(User.USER_ROLES, JoinType.LEFT);
 				return rolesJoin.in(Collections.singletonList(userRoles));
 			}
 		}
