@@ -63,6 +63,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -496,7 +497,10 @@ public class ContactController {
 		createComponent.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
 				final ContactDto dto = createForm.getValue();
-				PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(dto.getPerson().getUuid());
+				PersonFacade personFacade = FacadeProvider.getPersonFacade();
+				PersonDto personDto = personFacade.getPersonByUuid(dto.getPerson().getUuid());
+				transferDataToPerson(createForm, personDto);
+				personFacade.savePerson(personDto);
 
 				fillPersonAddressIfEmpty(dto, () -> personDto);
 
