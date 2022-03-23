@@ -15,23 +15,26 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities.caze;
 
-import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCaseValidationGroupName;
-import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.handleValidationError;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedDataPersister;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
+import java.util.List;
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+
+import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildCaseValidationGroupName;
+import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.handleValidationError;
 
 @Stateless
 @LocalBean
@@ -43,6 +46,10 @@ public class ProcessedCaseDataPersister extends ProcessedDataPersister<CaseDataD
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
 	@EJB
 	private SormasToSormasShareInfoService shareInfoService;
+	@EJB
+	private ConfigFacadeEjbLocal configFacade;
+	@EJB
+	private DistrictFacadeEjbLocal districtFacade;
 
 	@Override
 	protected SormasToSormasShareInfoService getShareInfoService() {
@@ -69,6 +76,10 @@ public class ProcessedCaseDataPersister extends ProcessedDataPersister<CaseDataD
 				Captions.Person,
 				buildCaseValidationGroupName(caze));
 
+			if(caze.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
+				setResponsibleDistrict(caze);
+			}
+
 			handleValidationError(() -> caseFacade.save(caze, true, false, false, false), Captions.CaseData, buildCaseValidationGroupName(caze));
 		} else {
 			//save case first during update
@@ -78,6 +89,26 @@ public class ProcessedCaseDataPersister extends ProcessedDataPersister<CaseDataD
 				() -> personFacade.savePerson(caseData.getPerson(), false, false, false),
 				Captions.Person,
 				buildCaseValidationGroupName(caze));
+		}
+	}
+
+	private void setResponsibleDistrict(CaseDataDto caze) {
+		String districtExternalId = configFacade.getS2SConfig().getDistrictExternalId();
+		if (districtExternalId != null) {
+			List<DistrictDto> districts = districtFacade.getByExternalId(districtExternalId, false);
+			if (!districts.isEmpty()) {
+				DistrictDto district = districts.get(0);
+
+				if (caze.getRegion() == null) {
+					caze.setRegion(caze.getResponsibleRegion());
+					caze.setDistrict(caze.getResponsibleDistrict());
+					caze.setCommunity(caze.getResponsibleCommunity());
+				}
+
+				caze.setResponsibleRegion(district.getRegion());
+				caze.setResponsibleDistrict(district.toReference());
+				caze.setResponsibleCommunity(null);
+			}
 		}
 	}
 }

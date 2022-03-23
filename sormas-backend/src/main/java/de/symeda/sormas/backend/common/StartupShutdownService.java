@@ -14,7 +14,6 @@
  */
 package de.symeda.sormas.backend.common;
 
-import de.symeda.sormas.api.user.UserRight;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -24,8 +23,8 @@ import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -55,7 +54,6 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import de.symeda.sormas.backend.audit.AuditLogger;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,10 +68,12 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityCriteria;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DefaultEntityHelper;
 import de.symeda.sormas.api.utils.PasswordHelper;
+import de.symeda.sormas.backend.audit.AuditLogger;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -502,7 +502,7 @@ public class StartupShutdownService {
 			rnd.nextBytes(pwd);
 
 			createOrUpdateDefaultUser(
-				Collections.singleton(UserRole.SORMAS_TO_SORMAS_CLIENT),
+				EnumSet.of(UserRole.SORMAS_TO_SORMAS_CLIENT, UserRole.NATIONAL_USER),
 				DefaultEntityHelper.SORMAS_TO_SORMAS_USER_NAME,
 				new String(pwd),
 				"Sormas to Sormas",
@@ -565,6 +565,10 @@ public class StartupShutdownService {
 
 			userService.persist(existingUser);
 			passwordResetEvent.fire(new PasswordResetEvent(existingUser));
+		} else if (userRoles.stream().anyMatch(r -> !existingUser.getUserRoles().contains(r))
+			|| existingUser.getUserRoles().stream().anyMatch(r -> !userRoles.contains(r))) {
+			existingUser.setUserRoles(userRoles);
+			userService.ensurePersisted(existingUser);
 		}
 
 	}
