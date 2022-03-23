@@ -90,6 +90,45 @@ public class CreateNewSampleSteps implements En {
         });
 
     When(
+        "^I create a new Sample with positive test result for DE version$",
+        () -> {
+          sample = sampleService.buildGeneratedPositiveSampleDE();
+          selectPurposeOfSample(sample.getPurposeOfTheSample(), SAMPLE_PURPOSE_OPTIONS);
+          fillDateOfCollectionDE(sample.getDateOfCollection());
+          selectSampleType(sample.getSampleType());
+          webDriverHelpers.clickOnWebElementBySelector(ADD_PATHOGEN_TEST_BUTTON_DE);
+          selectTestedDisease(sample.getTestedDisease());
+          selectTestResult(sample.getSampleTestResults());
+          selectLaboratory(sample.getLaboratory());
+          selectResultVerifiedByLabSupervisor(
+              sample.getResultVerifiedByLabSupervisor(), RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
+        });
+
+    When(
+        "I select the German words for Antigen Detection Test as Type of Test in the Create New Sample popup",
+        () -> {
+          selectTypeOfTest("Antigen-Nachweistest");
+        });
+
+    When(
+        "I select the German words for Rapid Antigen Detection Test as Type of Test in the Create New Sample popup",
+        () -> {
+          selectTypeOfTest("Antigen Nachweistest (Schnelltest)");
+        });
+
+    When(
+        "I select the German words for Isolation as Type of Test in the Create New Sample popup",
+        () -> {
+          selectTypeOfTest("Isolation");
+        });
+
+    When(
+        "I select the German words for PCR / RT-PCR as Type of Test in the Create New Sample popup",
+        () -> {
+          selectTypeOfTest("Nukleins\u00E4ure-Nachweis (z.B. PCR)");
+        });
+
+    When(
         "^I save the created sample",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
@@ -272,6 +311,11 @@ public class CreateNewSampleSteps implements En {
   private void fillDateOfCollection(LocalDate dateOfCollection) {
     webDriverHelpers.clearAndFillInWebElement(
         DATE_SAMPLE_COLLECTED, DATE_FORMATTER.format(dateOfCollection));
+  }
+
+  private void fillDateOfCollectionDE(LocalDate dateOfCollection) {
+    webDriverHelpers.clearAndFillInWebElement(
+        DATE_SAMPLE_COLLECTED, DATE_FORMATTER_DE.format(dateOfCollection));
   }
 
   private void fillTimeOfCollection(LocalTime timeOfCollection) {

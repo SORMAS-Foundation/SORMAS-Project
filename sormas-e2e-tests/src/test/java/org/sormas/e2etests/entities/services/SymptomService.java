@@ -32,7 +32,7 @@ public class SymptomService {
 
   public Symptoms buildEditGeneratedSymptoms() {
     return Symptoms.builder()
-        .maximumBodyTemperatureInC("35.2")
+        .maximumBodyTemperatureInC("35,2")
         .sourceOfBodyTemperature("rectal")
         .chillsOrSweats(YES.toString())
         .headache(YES.toString())

@@ -1425,6 +1425,7 @@ public class CaseExportDto implements Serializable {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(BURIAL_INFO)
 	@ExportGroup(ExportGroupType.SENSITIVE)
+	@HideForCountries
 	public BurialInfoDto getBurialInfo() {
 		return burialInfo;
 	}

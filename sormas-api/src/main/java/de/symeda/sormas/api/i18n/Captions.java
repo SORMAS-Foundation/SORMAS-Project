@@ -2249,6 +2249,7 @@ public interface Captions {
 	String total = "total";
 	String travelEntriesNoTravelEntriesForPerson = "travelEntriesNoTravelEntriesForPerson";
 	String TravelEntry = "TravelEntry";
+	String TravelEntry_dateOfArrival = "TravelEntry.dateOfArrival";
 	String TravelEntry_differentPointOfEntryJurisdiction = "TravelEntry.differentPointOfEntryJurisdiction";
 	String TravelEntry_diseaseVariant = "TravelEntry.diseaseVariant";
 	String TravelEntry_externalId = "TravelEntry.externalId";
