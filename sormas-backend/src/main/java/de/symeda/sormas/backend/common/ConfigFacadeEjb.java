@@ -553,8 +553,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
-	public void validateExternalUrls() {
-
+	public void validateConfigUrls() {
+		SormasToSormasConfig s2sConfig = getS2SConfig();
 		List<String> urls = Lists.newArrayList(
 			getSymptomJournalConfig().getUrl(),
 			getSymptomJournalConfig().getAuthUrl(),
@@ -562,16 +562,16 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			getPatientDiaryConfig().getProbandsUrl(),
 			getPatientDiaryConfig().getAuthUrl(),
 			getPatientDiaryConfig().getFrontendAuthUrl(),
-			getSormasStatsUrl());
-
-		SormasToSormasConfig s2sConfig = getS2SConfig();
-
-		if (s2sConfig.getOidcServer() != null && s2sConfig.getOidcRealm() != null) {
-			urls.add(s2sConfig.getOidcRealmCertEndpoint());
-			urls.add(s2sConfig.getOidcRealmTokenEndpoint());
-			urls.add(s2sConfig.getOidcRealmUrl());
-			urls.add(s2sConfig.getOidcServer());
-		}
+			getSormasStatsUrl(),
+			s2sConfig.getOidcRealmCertEndpoint(),
+			s2sConfig.getOidcRealmTokenEndpoint(),
+			s2sConfig.getOidcRealmUrl(),
+			s2sConfig.getOidcServer(),
+			getExternalSurveillanceToolGatewayUrl(),
+			getMapTilersUrl(),
+			getAppUrl(),
+			getUiUrl(),
+			getGeocodingServiceUrlTemplate());
 
 		UrlValidator urlValidator = new UrlValidator(
 			new String[] {
@@ -585,7 +585,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			}
 
 			if (!urlValidator.isValid(url)) {
-				throw new IllegalArgumentException("'" + url + "' is not a valid URL");
+				throw new IllegalArgumentException(String.format("'%s' is not a valid URL", url));
 			}
 		});
 	}
@@ -688,13 +688,13 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
-	public String getAuditLoggerConfig(){
-		return getProperty(AUDIT_LOGGER_CONFIG,"");
+	public String getAuditLoggerConfig() {
+		return getProperty(AUDIT_LOGGER_CONFIG, "");
 	}
 
 	@Override
-	public String getAuditSourceSite(){
-		return getProperty(AUDIT_SOURCE_SITE,"");
+	public String getAuditSourceSite() {
+		return getProperty(AUDIT_SOURCE_SITE, "");
 	}
 
 	@Override
