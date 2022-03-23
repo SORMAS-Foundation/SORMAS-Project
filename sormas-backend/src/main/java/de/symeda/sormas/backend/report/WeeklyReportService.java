@@ -35,7 +35,6 @@ import javax.persistence.criteria.Root;
 
 import de.symeda.sormas.api.report.WeeklyReportCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
@@ -122,9 +121,14 @@ public class WeeklyReportService extends AdoServiceWithUserFilter<WeeklyReport> 
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, WeeklyReport> from) {
 
 		User currentUser = getCurrentUser();
+		if (currentUser == null) {
+			return null;
+		}
+
 		// National users can access all reports in the system
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-		if (currentUser == null || (jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))) {
+		if ((jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
+			|| currentUser.hasUserRole(UserRole.REST_USER)) {
 			return null;
 		}
 
