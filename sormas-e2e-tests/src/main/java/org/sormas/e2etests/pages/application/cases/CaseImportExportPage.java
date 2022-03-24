@@ -33,6 +33,10 @@ public class CaseImportExportPage {
       By.xpath("//label[text()='First name']");
   public static final By EXPORT_CONFIGURATION_DATA_LAST_NAME_CHECKBOX =
       By.xpath("//label[text()='Last name']");
+  public static final By EXPORT_CONFIGURATION_DATA_REGION_CHECKBOX =
+      By.xpath("//label[text()='region']");
+  public static final By EXPORT_CONFIGURATION_DATA_DISTRICT_CHECKBOX =
+      By.xpath("//label[text()='District']");
   public static final By NEW_EXPORT_CONFIGURATION_SAVE_BUTTON = By.id("actionSave");
   public static final By CUSTOM_CASE_EXPORT_DOWNLOAD_BUTTON =
       By.xpath("//div[@class='popupContent']//div[@class='v-slot v-slot-primary']");

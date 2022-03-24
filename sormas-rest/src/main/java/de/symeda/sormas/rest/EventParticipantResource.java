@@ -120,6 +120,12 @@ public class EventParticipantResource extends EntityDtoResource {
 	}
 
 	@GET
+	@Path("/archived/{since}")
+	public List<String> getArchivedUuidsSince(@PathParam("since") long since) {
+		return FacadeProvider.getEventParticipantFacade().getArchivedUuidsSince(new Date(since));
+	}
+
+	@GET
 	@Path("/deleted/{since}")
 	public List<String> getDeletedUuidsSince(@PathParam("since") long since) {
 		return FacadeProvider.getEventParticipantFacade().getDeletedUuidsSince(new Date(since));
