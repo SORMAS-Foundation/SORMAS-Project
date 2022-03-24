@@ -385,7 +385,7 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 
 		// fixme: Remove when the shapefiles are no longer part of the resources.
 		// fixme: In this case the logic to build country shapes will have to be checked again to fix the problem this is a workaround for.
-		if (configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+		if (configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY) && !polygons.isEmpty()) {
 			polygons.add(getRegionPolygon(factory, "Bayern"));
 			polygons.add(getRegionPolygon(factory, "Berlin"));
 			polygons.add(getRegionPolygon(factory, "Bremen"));
