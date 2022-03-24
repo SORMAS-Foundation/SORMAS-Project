@@ -86,4 +86,3 @@ WHERE t.table_schema = 'public'
                    AND (event_manipulation = 'DELETE')
                    AND event_object_table = t.table_name)
 ORDER BY remark, table_name , column_name;
-
