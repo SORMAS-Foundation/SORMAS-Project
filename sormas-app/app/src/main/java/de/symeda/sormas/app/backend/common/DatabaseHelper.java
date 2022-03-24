@@ -20,6 +20,7 @@ import java.math.BigInteger;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -58,6 +59,8 @@ import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.person.PersonContactDetailType;
+import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.activityascase.ActivityAsCase;
@@ -2980,15 +2983,35 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 	}
 
-	private void fillJurisdictionLevels() {
-		getUserDao().queryForAll().forEach(user -> {
-			user.setJurisdictionLevel(getUserDao().getJurisdictionLevel(user.getUserRoles()));
+	private void fillJurisdictionLevels() throws SQLException {
+		getDao(User.class).queryForAll().forEach(user -> {
 			try {
-				getUserDao().saveAndSnapshot(user);
-			} catch (DaoException e) {
+				getDao(User.class).executeRaw(
+					"UPDATE users SET jurisdictionLevel = '" + getJurisdictionLevel(user.getUserRoles()).name() + "' WHERE id = " + user.getId()
+						+ ";");
+			} catch (SQLException e) {
 				throw new RuntimeException(e);
 			}
 		});
+	}
+
+	/**
+	 * Returns the jurisdiction level of a user based on its user roles; has to be replicated here
+	 * because UserDao can't be properly accessed while setting up the database.
+	 */
+	private JurisdictionLevel getJurisdictionLevel(Collection<UserRole> roles) {
+
+		boolean laboratoryJurisdictionPresent = false;
+		for (UserRole role : roles) {
+			final JurisdictionLevel jurisdictionLevel = role.getJurisdictionLevel();
+			if (roles.size() == 1 || (jurisdictionLevel != JurisdictionLevel.NONE && jurisdictionLevel != JurisdictionLevel.LABORATORY)) {
+				return jurisdictionLevel;
+			} else if (jurisdictionLevel == JurisdictionLevel.LABORATORY) {
+				laboratoryJurisdictionPresent = true;
+			}
+		}
+
+		return laboratoryJurisdictionPresent ? JurisdictionLevel.LABORATORY : JurisdictionLevel.NONE;
 	}
 
 	private boolean columnDoesNotExist(String tableName, String columnName) throws SQLException {

@@ -119,7 +119,8 @@ public class ReportOverviewFragment extends ReportFragment {
 				Disease disease = (Disease) getContentBinding().weeklyReportEntryDisease.getValue();
 
 				// confirmed reports
-				List<User> informants = DatabaseHelper.getUserDao().getInformantsByAssociatedOfficer(ConfigProvider.getUser());
+				List<User> informants =
+					DatabaseHelper.getUserDao().getUsersByAssociatedOfficer(ConfigProvider.getUser(), UserRight.WEEKLYREPORT_CREATE);
 				for (User informant : informants) {
 					WeeklyReport report = DatabaseHelper.getWeeklyReportDao().queryByEpiWeekAndUser(getEpiWeek(), informant);
 					if (report != null) {

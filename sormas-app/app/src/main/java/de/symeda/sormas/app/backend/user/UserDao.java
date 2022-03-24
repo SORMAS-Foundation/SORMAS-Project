@@ -153,17 +153,15 @@ public class UserDao extends AbstractAdoDao<User> {
 		}
 	}
 
-	public List<User> getInformantsByAssociatedOfficer(User officer) {
+	public List<User> getUsersByAssociatedOfficer(User officer, UserRight userRight) {
 		try {
-			QueryBuilder builder = queryBuilder();
-			Where where = builder.where();
-			where.and(
-				where.eq(User.ASSOCIATED_OFFICER + "_id", officer),
-				where.or(createRoleFilter(UserRole.HOSPITAL_INFORMANT, where), createRoleFilter(UserRole.COMMUNITY_INFORMANT, where)));
-
-			return (List<User>) builder.query();
+			QueryBuilder<User, Long> builder = queryBuilder();
+			Where<User, Long> where = builder.where();
+			where.eq(User.ASSOCIATED_OFFICER + "_id", officer);
+			addUserRightFilters(where, userRight);
+			return builder.query();
 		} catch (SQLException e) {
-			Log.e(getTableName(), "Could not perform getInformantsByAssociatedOfficer");
+			Log.e(getTableName(), "Could not perform getUsersByAssociatedOfficer");
 			throw new RuntimeException(e);
 		}
 	}
@@ -200,26 +198,7 @@ public class UserDao extends AbstractAdoDao<User> {
 			QueryBuilder<User, Long> builder = queryBuilder();
 			Where<User, Long> where = builder.where();
 			where.eq(User.JURISDICTION_LEVEL, jurisdictionLevel);
-			List<UserRole> userRoles = new ArrayList<>();
-			if (userRights != null) {
-				userRights.forEach(right -> userRoles.addAll(right.getDefaultUserRoles()));
-			}
-
-			if (userRoles.size() == 1) {
-				where.and();
-				createRoleFilter(userRoles.get(0), where);
-			} else if (userRoles.size() > 1) {
-				where.and();
-				userRoles.forEach(role -> {
-					try {
-						createRoleFilter(role, where);
-					} catch (SQLException e) {
-						throw new RuntimeException(e);
-					}
-				});
-				where.or(userRoles.size());
-			}
-
+			addUserRightFilters(where, (UserRight[]) userRights.toArray());
 			return builder.query();
 		} catch (SQLException e) {
 			Log.e(getTableName(), "Could not perform getInformantsByAssociatedOfficer");
@@ -234,6 +213,28 @@ public class UserDao extends AbstractAdoDao<User> {
 		}
 
 		return candidates.get(new Random().nextInt(candidates.size()));
+	}
+
+	private void addUserRightFilters(Where where, UserRight... userRights) throws SQLException {
+		List<UserRole> userRoles = new ArrayList<>();
+		if (userRights != null) {
+			Arrays.asList(userRights).forEach(right -> userRoles.addAll(right.getDefaultUserRoles()));
+		}
+
+		if (userRoles.size() == 1) {
+			where.and();
+			createRoleFilter(userRoles.get(0), where);
+		} else if (userRoles.size() > 1) {
+			where.and();
+			userRoles.forEach(role -> {
+				try {
+					createRoleFilter(role, where);
+				} catch (SQLException e) {
+					throw new RuntimeException(e);
+				}
+			});
+			where.or(userRoles.size());
+		}
 	}
 
 	private Where createRoleFilter(UserRole role, Where where) throws SQLException {
