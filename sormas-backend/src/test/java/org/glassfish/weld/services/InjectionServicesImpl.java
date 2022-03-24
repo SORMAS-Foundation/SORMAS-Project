@@ -140,7 +140,8 @@ public class InjectionServicesImpl implements InjectionServices {
             } else {
               if( componentEnv == null ) {
                 //throw new IllegalStateException("No valid EE environment for injection of " + targetClassName);
-				System.err.println("No valid EE environment for injection of " + targetClassName);
+				// XXX Avoid err message on invocation of AuditLog (Auditor, TransactionId)
+//                System.err.println("No valid EE environment for injection of " + targetClass);
                 injectionContext.proceed();
                 return;
               }
