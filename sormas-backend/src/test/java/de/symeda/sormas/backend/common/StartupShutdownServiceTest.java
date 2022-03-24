@@ -30,7 +30,6 @@ import javax.persistence.Persistence;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.hamcrest.Matchers;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
@@ -140,7 +139,10 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 		@SuppressWarnings("unchecked")
 		List<Object[]> results = (List<Object[]>) em.createNativeQuery(checkHistoryTablesSql).getResultList();
 		StringBuilder result = new StringBuilder();
-		results.forEach(objects -> result.append(objects.toString() + "\n"));
+		results.forEach(objects -> {
+			Arrays.stream(objects).forEach(o -> result.append(o.toString() + " "));
+			result.append("\n");
+		});
 		assertTrue(result.toString(), CollectionUtils.isEmpty(results));
 	}
 
