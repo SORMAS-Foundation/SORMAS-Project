@@ -427,7 +427,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addFieldListeners(PersonDto.DEATH_DATE, e -> updateApproximateAge());
 		addFieldListeners(PersonDto.OCCUPATION_TYPE, e -> {
 			updateOccupationFieldCaptions();
-			toogleOccupationMetaFields();
+			toggleOccupationMetaFields();
 		});
 
 		addListenersToInfrastructureFields(
@@ -440,7 +440,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			true);
 		cbPlaceOfBirthRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
-		addFieldListeners(PersonDto.PRESENT_CONDITION, e -> toogleDeathAndBurialFields());
+		addFieldListeners(PersonDto.PRESENT_CONDITION, e -> toggleDeathAndBurialFields());
 
 		causeOfDeathField.addValueChangeListener(e -> {
 			toggleCauseOfDeathFields(presentCondition.getValue() != PresentCondition.ALIVE && presentCondition.getValue() != null);
@@ -629,7 +629,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		}
 	}
 
-	private void initializePresentConditionField() {
+	protected void initializePresentConditionField() {
 		PresentCondition presentCondition = getValue().getPresentCondition();
 		ComboBox presentConditionField = getField(PersonDto.PRESENT_CONDITION);
 
@@ -699,7 +699,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		approximateAgeTypeSelect.setReadOnly(true);
 	}
 
-	private void toogleOccupationMetaFields() {
+	private void toggleOccupationMetaFields() {
 		OccupationType type = (OccupationType) ((AbstractSelect) getFieldGroup().getField(PersonDto.OCCUPATION_TYPE)).getValue();
 		if (type != null) {
 			switch (type) {
@@ -744,7 +744,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		}
 	}
 
-	private void toogleDeathAndBurialFields() {
+	private void toggleDeathAndBurialFields() {
 		//		List<Object> diseaseSpecificFields = Arrays.asList(PersonDto.DEATH_PLACE_TYPE, PersonDto.DEATH_PLACE_DESCRIPTION, PersonDto.BURIAL_DATE,
 		//				PersonDto.BURIAL_PLACE_DESCRIPTION, PersonDto.BURIAL_CONDUCTOR);
 		PresentCondition type = (PresentCondition) ((AbstractSelect) getFieldGroup().getField(PersonDto.PRESENT_CONDITION)).getValue();
