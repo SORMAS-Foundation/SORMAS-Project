@@ -10,6 +10,6 @@ Feature: About end to end tests
     And I click on Data Dictionary hyperlink and download XLSX file in About directory
     And I read data from downloaded XLSX Data Dictionary file
     And I detect and check language that was defined in User Settings for XLSX file content
-    And I delete exported file from About Directory
+    And I delete exported xlsx file from user downloads directory
     Then I click on the User Settings button from navbar
     And I set on default language as English in User settings

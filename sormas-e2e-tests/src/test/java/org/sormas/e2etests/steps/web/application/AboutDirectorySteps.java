@@ -114,7 +114,7 @@ public class AboutDirectorySteps implements En {
         });
 
     When(
-        "I delete exported file from About Directory",
+        "I delete exported xlsx file from user downloads directory",
         () -> {
           File toDelete =
               new File(
@@ -156,7 +156,7 @@ public class AboutDirectorySteps implements En {
       }
       log.info("All data is read properly from chosen xlsx file");
     } catch (IOException e) {
-      log.error("The exception occurred" + e + "The xlsx file couldn't be read");
+      log.error("Exception caught: File not found", e);
     }
   }
 }
