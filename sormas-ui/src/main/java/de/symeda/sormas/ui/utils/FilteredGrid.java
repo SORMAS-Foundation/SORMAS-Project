@@ -17,7 +17,7 @@ import com.vaadin.ui.renderers.HtmlRenderer;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.api.utils.pseudonymization.PseudonymizableIndexDto;
 import de.symeda.sormas.ui.UserProvider;
@@ -114,7 +114,7 @@ public class FilteredGrid<T, C extends BaseCriteria> extends Grid<T> {
 	 *            allow admins to perform this action even on pseudonymized entries
 	 */
 	public void bulkActionHandler(Consumer<Set> callback, boolean allowAdminOverride) {
-		if (allowAdminOverride && UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
+		if (allowAdminOverride && UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_PSEUDONYM)) {
 			callback.accept(getSelectedItems());
 		} else {
 			bulkActionHandler(callback);

@@ -34,6 +34,8 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import com.vaadin.v7.data.Item;
+import de.symeda.sormas.ui.utils.SormasFieldGroupFieldFactory;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.ui.CustomLayout;
@@ -298,11 +300,10 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addField(PersonDto.ADDRESS, LocationEditForm.class).setCaption(null);
 		addField(PersonDto.ADDRESSES, LocationsField.class).setCaption(null);
 
-		PersonContactDetailsField personContactDetailsField = new PersonContactDetailsField(getValue(), fieldVisibilityCheckers, fieldAccessCheckers);
-		personContactDetailsField.setId(PersonDto.PERSON_CONTACT_DETAILS);
+		PersonContactDetailsField personContactDetailsField = addField(PersonDto.PERSON_CONTACT_DETAILS, PersonContactDetailsField.class);
+		personContactDetailsField.setThisPerson(getValue());
+		personContactDetailsField.setCaption(null);
 		personContactDetailsField.setPseudonymized(isPseudonymized);
-		getFieldGroup().bind(personContactDetailsField, PersonDto.PERSON_CONTACT_DETAILS);
-		getContent().addComponent(personContactDetailsField, PersonDto.PERSON_CONTACT_DETAILS);
 
 		addFields(
 			PersonDto.OCCUPATION_TYPE,
@@ -517,6 +518,11 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		CssStyles.style(additionalDetails, CssStyles.CAPTION_HIDDEN);
 	}
 
+	public void setValue(PersonDto newFieldValue) {
+		super.setValue(newFieldValue);
+		initializePresentConditionField();
+	}
+
 	private void addListenersToInfrastructureFields(
 		ComboBox regionField,
 		ComboBox districtField,
@@ -602,6 +608,20 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			if (birthDateDay.containsId(currentlySelected)) {
 				birthDateDay.setValue(currentlySelected);
 			}
+		}
+	}
+
+	private void initializePresentConditionField() {
+		PresentCondition presentCondition = getValue().getPresentCondition();
+		ComboBox presentConditionField = getField(PersonDto.PRESENT_CONDITION);
+
+		/*
+		 * It may happen that the person currently has a present condition that usually shall not be shows for the form's disease.
+		 * In that case, the present condition is added as selectable item here.
+		 */
+		if (presentCondition != null && presentConditionField.getItem(presentCondition) == null) {
+			Item currentItem = presentConditionField.addItem(presentCondition);
+			currentItem.getItemProperty(SormasFieldGroupFieldFactory.CAPTION_PROPERTY_ID).setValue(presentCondition.toString());
 		}
 	}
 
@@ -726,15 +746,13 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				setVisible(false, PersonDto.BURIAL_DATE, PersonDto.BURIAL_PLACE_DESCRIPTION, PersonDto.BURIAL_CONDUCTOR);
 				break;
 			case BURIED:
-				setVisible(
-					true,
-					PersonDto.DEATH_DATE,
-					PersonDto.DEATH_PLACE_TYPE,
-					PersonDto.DEATH_PLACE_DESCRIPTION,
-					PersonDto.BURIAL_DATE,
-					PersonDto.BURIAL_PLACE_DESCRIPTION,
-					PersonDto.BURIAL_CONDUCTOR);
+				setVisible(true, PersonDto.DEATH_DATE, PersonDto.DEATH_PLACE_TYPE, PersonDto.DEATH_PLACE_DESCRIPTION);
 				causeOfDeathField.setValue(CauseOfDeath.EPIDEMIC_DISEASE);
+				//@formatter:off
+				setVisible(fieldVisibilityCheckers.isVisible(PersonDto.class, PersonDto.BURIAL_DATE), PersonDto.BURIAL_DATE);
+				setVisible(fieldVisibilityCheckers.isVisible(PersonDto.class, PersonDto.BURIAL_PLACE_DESCRIPTION), PersonDto.BURIAL_PLACE_DESCRIPTION);
+				setVisible(fieldVisibilityCheckers.isVisible(PersonDto.class, PersonDto.BURIAL_CONDUCTOR), PersonDto.BURIAL_CONDUCTOR);
+				//@formatter:on
 				toggleCauseOfDeathFields(true);
 				break;
 			default:

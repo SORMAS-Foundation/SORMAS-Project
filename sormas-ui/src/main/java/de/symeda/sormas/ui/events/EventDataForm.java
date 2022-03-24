@@ -74,7 +74,7 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -157,7 +157,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 	private final Boolean isCreateForm;
 	private final boolean isPseudonymized;
-	private List<UserReferenceDto> responsibleUserSurveillanceSupervisors;
+	private List<UserReferenceDto> regionEventResponsibles;
 	private EpidemiologicalEvidenceCheckBoxTree epidemiologicalEvidenceCheckBoxTree;
 	private LaboratoryDiagnosticEvidenceCheckBoxTree laboratoryDiagnosticEvidenceCheckBoxTree;
 	private LocationEditForm locationForm;
@@ -454,6 +454,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 				false,
 				I18nProperties.getValidationError(Validations.beforeDate, startDate.getCaption(), reportDate.getCaption())));
 
+		reportDate.addValueChangeListener(e -> startDate.setValidationVisible(!startDate.isValid()));
+		startDate.addValueChangeListener(e -> reportDate.setValidationVisible(!reportDate.isValid()));
+
 		FieldHelper.setVisibleWhen(getFieldGroup(), EventDto.END_DATE, EventDto.MULTI_DAY_EVENT, Collections.singletonList(true), true);
 		FieldHelper.setCaptionWhen(
 			multiDayCheckbox,
@@ -555,22 +558,22 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		regionField.addValueChangeListener(e -> {
 			RegionReferenceDto region = (RegionReferenceDto) regionField.getValue();
 			if (region != null) {
-				responsibleUserSurveillanceSupervisors =
-					FacadeProvider.getUserFacade().getUsersByRegionAndRoles(region, UserRole.SURVEILLANCE_SUPERVISOR);
+				regionEventResponsibles =
+					FacadeProvider.getUserFacade().getUsersByRegionAndRights(region, getValue().getDisease(), UserRight.EVENT_RESPONSIBLE);
 			} else {
-				responsibleUserSurveillanceSupervisors.clear();
+				regionEventResponsibles.clear();
 			}
 		});
 
 		districtField.addValueChangeListener(e -> {
 			DistrictReferenceDto district = (DistrictReferenceDto) districtField.getValue();
 			if (district != null) {
-				List<UserReferenceDto> currentDistrictSurveillanceOfficers =
-					FacadeProvider.getUserFacade().getUserRefsByDistrict(district, false, UserRole.SURVEILLANCE_OFFICER);
+				List<UserReferenceDto> districtEventResponsibles =
+					FacadeProvider.getUserFacade().getUserRefsByDistrict(district, getValue().getDisease(), UserRight.EVENT_RESPONSIBLE);
 
 				List<UserReferenceDto> responsibleUsers = new ArrayList<>();
-				responsibleUsers.addAll(currentDistrictSurveillanceOfficers);
-				responsibleUsers.addAll(responsibleUserSurveillanceSupervisors);
+				responsibleUsers.addAll(districtEventResponsibles);
+				responsibleUsers.addAll(regionEventResponsibles);
 
 				FieldHelper.updateItems(responsibleUserField, responsibleUsers);
 			} else {

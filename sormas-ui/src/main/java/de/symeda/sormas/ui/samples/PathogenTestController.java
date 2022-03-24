@@ -367,6 +367,9 @@ public class PathogenTestController {
 			showCaseUpdateWithNewDiseaseVariantDialog(caze, test.getTestedDiseaseVariant(), test.getTestedDiseaseVariantDetails(), yes -> {
 				if (yes && !suppressNavigateToCase) {
 					ControllerProvider.getCaseController().navigateToCase(caze.getUuid());
+				} else if (yes) {
+					// Refresh view because it might already show the case
+					SormasUI.refreshView();
 				}
 				// Retrieve the case again because it might have changed
 				callback.accept(FacadeProvider.getCaseFacade().getByUuid(caze.getUuid()));

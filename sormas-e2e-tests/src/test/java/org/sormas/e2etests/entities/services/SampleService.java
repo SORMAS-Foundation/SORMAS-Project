@@ -181,4 +181,16 @@ public class SampleService {
         .testResultsComment("Comment on Edit Pathogen requests or received " + currentTimeMillis)
         .build();
   }
+
+  public Sample buildGeneratedPositiveSampleDE() {
+    return Sample.builder()
+        .purposeOfTheSample("INTERNER /IN-HOUSE TEST")
+        .dateOfCollection(LocalDate.now().minusDays(10))
+        .laboratory("Labor")
+        .testedDisease("COVID-19")
+        .sampleTestResults("Positiv")
+        .resultVerifiedByLabSupervisor("JA")
+        .sampleType("Nasen-Abstrich")
+        .build();
+  }
 }

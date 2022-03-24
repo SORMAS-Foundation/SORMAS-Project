@@ -19,6 +19,7 @@ package de.symeda.sormas.ui;
 
 import static de.symeda.sormas.ui.UiUtil.enabled;
 import static de.symeda.sormas.ui.UiUtil.permitted;
+import static java.util.Objects.nonNull;
 
 import java.util.Arrays;
 import java.util.Collection;
@@ -49,7 +50,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 import de.symeda.sormas.ui.campaign.AbstractCampaignView;
@@ -397,7 +397,7 @@ public class MainScreen extends HorizontalLayout {
 					defaultView = ContactsDashboardView.VIEW_NAME;
 				} else if (enabled(FeatureType.DASHBOARD) && permitted(FeatureType.CAMPAIGNS, UserRight.DASHBOARD_CAMPAIGNS_VIEW)) {
 					defaultView = CampaignDashboardView.VIEW_NAME;
-				} else if (UserProvider.getCurrent().hasUserRole(UserRole.EXTERNAL_LAB_USER)) {
+				} else if (nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasExternalLaboratoryJurisdictionLevel()) {
 					defaultView = SamplesView.VIEW_NAME;
 				} else if (permitted(FeatureType.TASK_MANAGEMENT, UserRight.TASK_VIEW)) {
 					defaultView = TasksView.VIEW_NAME;

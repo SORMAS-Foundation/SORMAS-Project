@@ -86,6 +86,7 @@ public class User extends AbstractDomainObject {
 	public static final String LANGUAGE = "language";
 	public static final String HAS_CONSENTED_TO_GDPR = "hasConsentedToGdpr";
 	public static final String JURISDICTION_LEVEL = "jurisdictionLevel";
+	public static final String LIMITED_DISEASE = "limitedDisease";
 
 	private String userName;
 	private String password;
@@ -355,6 +356,13 @@ public class User extends AbstractDomainObject {
 	 */
 	public boolean hasAnyUserRole(UserRole... userRoles) {
 		return Arrays.stream(userRoles).anyMatch(getUserRoles()::contains);
+	}
+
+	/**
+	 * Checks if the User possesses the specified userRole
+	 */
+	public boolean hasUserRole(UserRole userRole) {
+		return getUserRoles().contains(userRole);
 	}
 
 	/**

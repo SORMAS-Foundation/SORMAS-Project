@@ -122,7 +122,7 @@ Feature: Case end to end tests
     And I open the Case Contacts tab of the created case via api
     And I verify that created contact from Case Contacts tab is correctly displayed
 
-  @env_main @ignore
+  @issue=SORQA-100 @env_main
   Scenario: Edit all fields from Symptoms tab
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -689,3 +689,125 @@ Feature: Case end to end tests
     Then I click on save case button
     Then I check the created data is correctly displayed on Edit case page
     And I check the created data is correctly displayed on Edit case person page
+
+  @issue=SORDEV-7466 @env_de
+  Scenario: Check reference definition for cases
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with only the required data for DE version
+    Then I check that case classification is set to not yet classified in German on Edit case page
+    And I check that case reference definition is not editable on Edit case page
+    And I check that case reference definition is set to not fulfilled in German on Edit case page
+    When I click on New Sample in German
+    And I create a new Sample with positive test result for DE version
+    And I select the German words for Antigen Detection Test as Type of Test in the Create New Sample popup
+    And I save the created sample
+    Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
+    And I check that case reference definition is set to not fulfilled in German on Edit case page
+    When I click on New Sample in German
+    And I create a new Sample with positive test result for DE version
+    And I select the German words for Rapid Antigen Detection Test as Type of Test in the Create New Sample popup
+    And I save the created sample
+    Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
+    And I check that case reference definition is set to not fulfilled in German on Edit case page
+    When I click on New Sample in German
+    And I create a new Sample with positive test result for DE version
+    And I select the German words for Isolation as Type of Test in the Create New Sample popup
+    And I save the created sample
+    Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
+    And I check that case reference definition is set to fulfilled in German on Edit case page
+    When I click on New Sample in German
+    And I create a new Sample with positive test result for DE version
+    And I select the German words for PCR / RT-PCR as Type of Test in the Create New Sample popup
+    And I save the created sample
+    Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
+    And I check that case reference definition is set to fulfilled in German on Edit case page
+    When I click on the Cases button from navbar
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I click Only cases with fulfilled reference definition checkbox in Cases directory additional filters
+    And I click APPLY BUTTON in Case Directory Page
+    Then I check that only cases with fulfilled reference definition are being shown in Cases directory
+    When I click on the Dashboard button from navbar and access Surveillance Dashboard
+    And I click on the Time Period combobox from Surveillance Dashboard
+    And I choose yesterday from the Surveillance Dashboard Time Period combobox
+    And I click on the APPLY FILTERS button
+    Then I check that the number of cases fulfilling the reference definition is larger than 0
+
+  @issue=SORDEV-5479 @env_main
+  Scenario: Test for exporting and importing case contact
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data
+    Then I check the created data is correctly displayed on Edit case page
+    When I open the Case Contacts tab
+    Then I click on new contact button from Case Contacts tab
+    And I create a new basic contact to export from Cases Contacts tab
+    And I open the Case Contacts tab
+    And I click Export button in Case Contacts Directory
+    And I click on Detailed Export button in Case Contacts Directory
+    And I close popup after export in Case Contacts directory
+    Then I click on the Import button from Case Contacts directory
+    And I select the case contact CSV file in the file picker
+    And I click on the "START DATA IMPORT" button from the Import Case Contacts popup
+    And I confirm the save Case Contact Import popup
+    And I confirm the save Case Contact Import popup
+    And I check that an import success notification appears in the Import Case Contact popup
+    Then I delete exported file from Case Contact Directory
+
+
+  @issue=SORDEV-7456 @env_de
+  Scenario: Check different facility types depending on type of place in Epidemiological Tab
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data for DE version
+    And I navigate to Epidemiological Data tab on Edit Case Page
+    And I click on JA Radiobutton on Epidemiological Data Page
+    And I click on new entry button from Epidemiological Data tab
+    And I set Facility to "Einrichtung (§ 23 IfSG)" from New Entry popup
+    And I set Facility Type to "Krankenhaus" from New Entry popup
+    And I set Facility Type to "Einrichtung für ambulantes Operieren" from New Entry popup
+    And I set Facility Type to "Reha Einrichtung" from New Entry popup
+    And I set Facility Type to "Dialyseeinrichtung" from New Entry popup
+    And I set Facility Type to "Tagesklinik" from New Entry popup
+    And I set Facility Type to "Entbindungseinrichtung" from New Entry popup
+    And I set Facility Type to "Andere medizinische Einrichtung" from New Entry popup
+    And I set Facility Type to "Arztpraxis" from New Entry popup
+    And I set Facility Type to "Zahnarztpraxis" from New Entry popup
+    And I set Facility Type to "Praxis sonstiger humanmedizinischer Heilberufe" from New Entry popup
+    And I set Facility Type to "Einrichtung des ÖGD zur Diagnostik, Prävention, Therapie" from New Entry popup
+    And I set Facility Type to "Mobiler/Ambulanter Pflegedienst" from New Entry popup
+    And I set Facility Type to "Rettungsdienst" from New Entry popup
+    And I set Facility to "Gemeinschaftseinrichtung (§ 33 IfSG)" from New Entry popup
+    And I set Facility Type to "Kindertageseinrichtung" from New Entry popup
+    And I set Facility Type to "Kindertagespflege" from New Entry popup
+    And I set Facility Type to "Schule" from New Entry popup
+    And I set Facility Type to "Kinderheim" from New Entry popup
+    And I set Facility Type to "Ferienlager" from New Entry popup
+    And I set Facility Type to "Kinderhort" from New Entry popup
+    And I set Facility Type to "Andere Betreuungs- und Bildungseinrichtung" from New Entry popup
+    And I set Facility to "Einrichtung (§ 36 IfSG)" from New Entry popup
+    And I set Facility Type to "Andere Pflegeeinrichtung" from New Entry popup
+    And I set Facility Type to "Pflegeeinrichtung für ältere Menschen" from New Entry popup
+    And I set Facility Type to "Pflegeeinrichtung für Menschen mit Behinderung" from New Entry popup
+    And I set Facility Type to "Pflegeeinrichtung für pflegebedürftige Menschen" from New Entry popup
+    And I set Facility Type to "Obdachlosenunterkunft" from New Entry popup
+    And I set Facility Type to "Flüchtlingsunterkunft/Erstaufnahmeeinrichtung" from New Entry popup
+    And I set Facility Type to "Massenunterkunft (z.B. Gast- und Erntearbeiter)" from New Entry popup
+    And I set Facility Type to "Justizvollzugsanstalt" from New Entry popup
+    And I set Facility Type to "Mobiler/Ambulanter Pflegedienst" from New Entry popup
+    And I set Facility Type to "Aufsuchende ambulante Hilfen" from New Entry popup
+    And And I click on Discard button from New Entry popup
+
+  @issue=SORQA-123 @env_main
+  Scenario: Import Documentation for Cases Test
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the import button for Cases in Case tab
+    Then I click on the detailed button from import Case tab
+    And I click on the Download Import Guide button in Import Cases
+    Then I check if Import Guide for cases was downloaded correctly
+    And And I click on the Download Data Dictionary button in Import Cases
+    Then I check if Data Dictionary for cases was downloaded correctly

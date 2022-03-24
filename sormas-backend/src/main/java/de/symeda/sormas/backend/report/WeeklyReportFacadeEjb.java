@@ -39,6 +39,7 @@ import javax.validation.constraints.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.report.WeeklyReportCriteria;
 import de.symeda.sormas.api.report.WeeklyReportDto;
@@ -54,7 +55,6 @@ import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
@@ -63,8 +63,8 @@ import de.symeda.sormas.backend.infrastructure.community.CommunityService;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryService;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
@@ -72,7 +72,6 @@ import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
-import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -99,9 +98,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	@EJB
 	private TaskService taskService;
 	@EJB
-	private FacilityFacadeEjbLocal facilityFacade;
-	@EJB
-	private UserFacadeEjbLocal userFacade;
+	private PointOfEntryService poeService;
 
 	@Override
 	public List<WeeklyReportDto> getAllWeeklyReportsAfter(Date date) {
@@ -157,7 +154,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	@Override
 	public List<WeeklyReportRegionSummaryDto> getSummariesPerRegion(EpiWeek epiWeek) {
 
-		if (userService.getCurrentUser().getCalculatedJurisdictionLevel() != JurisdictionLevel.NATION) {
+		if (userService.getCurrentUser().getJurisdictionLevel() != JurisdictionLevel.NATION) {
 			return new ArrayList<>();
 		}
 
@@ -172,13 +169,15 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 			WeeklyReportRegionSummaryDto summaryDto = new WeeklyReportRegionSummaryDto();
 			summaryDto.setRegion(RegionFacadeEjb.toReferenceDto(region));
 
-			Long officers = userService.countByRegion(region, UserRole.SURVEILLANCE_OFFICER);
+			Long officers = userService.countByDistricts(region.getDistricts(), UserRight.WEEKLYREPORT_CREATE);
 			if (officers.intValue() == 0) {
 				continue; // summarize only regions that do have officers
 			}
 
 			summaryDto.setOfficers(officers.intValue());
-			Long informants = userService.countByRegion(region, UserRole.HOSPITAL_INFORMANT, UserRole.COMMUNITY_INFORMANT);
+			Long informants = userService.countByCommunities(region.getDistricts(), UserRight.WEEKLYREPORT_CREATE);
+			informants += userService.countByHealthFacilities(region.getDistricts(), UserRight.WEEKLYREPORT_CREATE);
+			informants += userService.countByPointOfEntries(region.getDistricts(), UserRight.WEEKLYREPORT_CREATE);
 			summaryDto.setInformants(informants.intValue());
 
 			regionReportCriteria.reportingUserRegion(summaryDto.getRegion());
@@ -212,7 +211,8 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 
 		Region region = regionService.getByReferenceDto(regionRef);
 
-		Stream<User> officers = userService.getAllByRegionAndUserRolesInJurisdiction(region, UserRole.SURVEILLANCE_OFFICER).stream();
+		Stream<User> officers =
+			userService.getAllByDistrictsAndUserRights(region.getDistricts(), Collections.singletonList(UserRight.WEEKLYREPORT_CREATE)).stream();
 		officers = weeklyReportService.filterWeeklyReportUsers(userService.getCurrentUser(), officers);
 
 		List<WeeklyReportOfficerSummaryDto> summaryDtos = officers.sorted(Comparator.comparing(a -> a.getDistrict().getName())).map(officer -> {
@@ -230,7 +230,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 			}
 
 			{
-				Long informants = userService.countByAssignedOfficer(officer, UserRole.HOSPITAL_INFORMANT, UserRole.COMMUNITY_INFORMANT);
+				Long informants = userService.countByAssignedOfficer(officer, UserRight.WEEKLYREPORT_CREATE);
 				summaryDto.setInformants(informants.intValue());
 			}
 
@@ -363,7 +363,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void generateSubmitWeeklyReportTasks() {
 
-		List<User> informants = userService.getAllByRegionAndUserRoles(null, UserRole.HOSPITAL_INFORMANT);
+		List<User> informants = userService.getAllByFacilityType(FacilityType.HOSPITAL);
 		EpiWeek prevEpiWeek = DateHelper.getPreviousEpiWeek(new Date());
 
 		for (User user : informants) {

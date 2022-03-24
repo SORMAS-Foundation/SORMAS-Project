@@ -17,9 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.api.importexport;
 
+import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import java.io.IOException;
 import java.net.URI;
 
+import java.util.List;
 import javax.ejb.Remote;
 
 @Remote
@@ -32,39 +34,39 @@ public interface ImportFacade {
 	 * and its sub-entities and returns the path to the .csv file that can then be used to offer
 	 * it as a download.
 	 */
-	void generateCaseImportTemplateFile() throws IOException;
+	void generateCaseImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException;
 
-	void generateEventImportTemplateFile() throws IOException;
+	void generateEventImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException;
 
-	void generateEventParticipantImportTemplateFile() throws IOException;
+	void generateEventParticipantImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException;
 
 	void generateCampaignFormImportTemplateFile(String campaignFormUuid) throws IOException;
 
-	void generateCaseContactImportTemplateFile() throws IOException;
+	void generateCaseContactImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException;
 
 	void generateCaseLineListingImportTemplateFile() throws IOException;
 
-	void generatePointOfEntryImportTemplateFile() throws IOException;
+	void generatePointOfEntryImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException;
 
 	void generatePopulationDataImportTemplateFile() throws IOException;
 
-	void generateAreaImportTemplateFile() throws IOException;
+	void generateAreaImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException;
 
-	void generateContinentImportTemplateFile() throws IOException;
+	void generateContinentImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException;
 
-	void generateSubcontinentImportTemplateFile() throws IOException;
+	void generateSubcontinentImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException;
 
-	void generateCountryImportTemplateFile() throws IOException;
+	void generateCountryImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException;
 
-	void generateRegionImportTemplateFile() throws IOException;
+	void generateRegionImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException;
 
-	void generateDistrictImportTemplateFile() throws IOException;
+	void generateDistrictImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException;
 
-	void generateCommunityImportTemplateFile() throws IOException;
+	void generateCommunityImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException;
 
-	void generateFacilityImportTemplateFile() throws IOException;
+	void generateFacilityImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException;
 
-	void generateContactImportTemplateFile() throws IOException;
+	void generateContactImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException;
 
 	String getCaseImportTemplateFileName();
 

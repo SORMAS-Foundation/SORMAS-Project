@@ -61,6 +61,7 @@ public class TravelEntry extends CoreAdo {
 	public static final String VACCINATED = "vaccinated";
 	public static final String TESTED_NEGATIVE = "testedNegative";
 	public static final String QUARANTINE_TO = "quarantineTo";
+	public static final String DATE_OF_ARRIVAL = "dateOfArrival";
 
 	private Person person;
 	private Date reportDate;
@@ -101,6 +102,7 @@ public class TravelEntry extends CoreAdo {
 	private boolean quarantineReduced;
 	private boolean quarantineOfficialOrderSent;
 	private Date quarantineOfficialOrderSentDate;
+	private Date dateOfArrival;
 
 	private Long personId;
 	private Long resultingCaseId;
@@ -472,4 +474,12 @@ public class TravelEntry extends CoreAdo {
 		this.quarantineOfficialOrderSentDate = quarantineOfficialOrderSentDate;
 	}
 
+	@Temporal(TemporalType.TIMESTAMP)
+	public Date getDateOfArrival() {
+		return dateOfArrival;
+	}
+
+	public void setDateOfArrival(Date dateOfArrival) {
+		this.dateOfArrival = dateOfArrival;
+	}
 }

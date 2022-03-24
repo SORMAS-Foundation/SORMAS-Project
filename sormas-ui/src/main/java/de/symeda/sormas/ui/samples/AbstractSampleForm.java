@@ -12,6 +12,7 @@ import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import com.vaadin.ui.CssLayout;
 import com.vaadin.ui.Label;
@@ -359,7 +360,10 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 		OptionGroup requestedPathogenTestsField = addField(SampleDto.REQUESTED_PATHOGEN_TESTS, OptionGroup.class);
 		CssStyles.style(requestedPathogenTestsField, CssStyles.OPTIONGROUP_CHECKBOXES_HORIZONTAL);
 		requestedPathogenTestsField.setMultiSelect(true);
-		requestedPathogenTestsField.addItems((Object[]) PathogenTestType.values());
+		requestedPathogenTestsField.addItems(
+				Arrays.stream(PathogenTestType.values())
+						.filter( c -> fieldVisibilityCheckers.isVisible(PathogenTestType.class, c.name()))
+						.collect(Collectors.toList()));
 		requestedPathogenTestsField.removeItem(PathogenTestType.OTHER);
 		requestedPathogenTestsField.setCaption(null);
 

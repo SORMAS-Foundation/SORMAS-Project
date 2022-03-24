@@ -88,4 +88,6 @@ public class CreateNewSamplePage {
       By.xpath("//*[@id=\"requestedPathogenTests\"]/span[15]/label");
   public static final By FINAL_LABORATORY_RESULT_COMBOBOX =
       By.cssSelector("[id='pathogenTestResult'] [class='v-filterselect-button']");
+  public static final By ADD_PATHOGEN_TEST_BUTTON_DE =
+      By.xpath("/html/body/div[2]/div[3]/div/div/div[3]/div/div/div[2]/div/div/div[1]/div");
 }

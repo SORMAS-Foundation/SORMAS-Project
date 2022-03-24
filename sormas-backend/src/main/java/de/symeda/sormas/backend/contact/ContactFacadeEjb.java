@@ -62,16 +62,19 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.clinicalcourse.HealthConditionsMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.VisitOrigin;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.caze.CoreAndPersonDto;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.contact.ContactBulkEditData;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -122,7 +125,6 @@ import de.symeda.sormas.api.task.TaskPriority;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -138,12 +140,12 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.clinicalcourse.HealthConditionsMapper;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.TaskCreationException;
-import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.document.Document;
 import de.symeda.sormas.backend.document.DocumentService;
@@ -203,6 +205,7 @@ import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless(name = "ContactFacade")
+@RolesAllowed(UserRight._CONTACT_VIEW)
 public class ContactFacadeEjb
 	extends AbstractCoreFacadeEjb<Contact, ContactDto, ContactIndexDto, ContactReferenceDto, ContactService, ContactCriteria>
 	implements ContactFacade {
@@ -307,19 +310,34 @@ public class ContactFacadeEjb
 	}
 
 	@Override
+	@RolesAllowed({UserRight._CONTACT_CREATE, UserRight._CONTACT_EDIT})
 	public ContactDto save(@Valid @NotNull ContactDto dto) {
 		return save(dto, true, true);
 	}
 
 	@Override
+	@RolesAllowed({UserRight._CONTACT_CREATE, UserRight._CONTACT_EDIT})
 	public ContactDto save(@Valid ContactDto dto, boolean handleChanges, boolean handleCaseChanges) {
 		return save(dto, handleChanges, handleCaseChanges, true, true);
+	}
+
+	public CoreAndPersonDto<ContactDto> save(@Valid @NotNull CoreAndPersonDto<ContactDto> coreAndPersonDto) throws ValidationRuntimeException {
+		ContactDto contactDto = coreAndPersonDto.getCoreData();
+		CoreAndPersonDto savedCoreAndPersonDto = new CoreAndPersonDto();
+		if (coreAndPersonDto.getPerson() != null) {
+			PersonDto newlyCreatedPersonDto = personFacade.savePerson(coreAndPersonDto.getPerson());
+			contactDto.setPerson(newlyCreatedPersonDto.toReference());
+			savedCoreAndPersonDto.setPerson(newlyCreatedPersonDto);
+		}
+		ContactDto savedContactData = save(contactDto, true, true, true, false);
+		savedCoreAndPersonDto.setCoreData(savedContactData);
+		return savedCoreAndPersonDto;
 	}
 
 	public ContactDto save(ContactDto dto, boolean handleChanges, boolean handleCaseChanges, boolean checkChangeDate, boolean internal) {
 		final Contact existingContact = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 
-		if (internal && existingContact != null && !service.isContactEditAllowed(existingContact)) {
+		if (internal && existingContact != null && !service.isContactEditAllowed(existingContact).equals(EditPermissionType.ALLOWED)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorContactNotEditable));
 		}
 
@@ -475,7 +493,18 @@ public class ContactFacadeEjb
 		return new Page<>(contactIndexList, offset, size, totalElementCount);
 	}
 
+	public Page<ContactIndexDetailedDto> getIndexDetailedPage(
+		@NotNull ContactCriteria contactCriteria,
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties) {
+		List<ContactIndexDetailedDto> contactIndexDetailedList = getIndexDetailedList(contactCriteria, offset, size, sortProperties);
+		long totalElementCount = count(contactCriteria);
+		return new Page<>(contactIndexDetailedList, offset, size, totalElementCount);
+	}
+
 	@Override
+	@RolesAllowed(UserRight._CONTACT_DELETE)
 	public void delete(String contactUuid) {
 
 		if (!userService.hasRight(UserRight.CONTACT_DELETE)) {
@@ -494,6 +523,7 @@ public class ContactFacadeEjb
 		}
 	}
 
+	@RolesAllowed(UserRight._CONTACT_DELETE)
 	public List<String> deleteContacts(List<String> contactUuids) {
 		if (!userService.hasRight(UserRight.CONTACT_DELETE)) {
 			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete contacts.");
@@ -513,6 +543,25 @@ public class ContactFacadeEjb
 	}
 
 	@Override
+	@RolesAllowed(UserRight._CONTACT_ARCHIVE)
+	public void archive(String entityUuid, Date endOfProcessingDate) {
+		super.archive(entityUuid, endOfProcessingDate);
+	}
+
+	@Override
+	@RolesAllowed(UserRight._CONTACT_ARCHIVE)
+	public void archive(List<String> entityUuids) {
+		super.archive(entityUuids);
+	}
+
+	@Override
+	@RolesAllowed(UserRight._CONTACT_ARCHIVE)
+	public void dearchive(List<String> entityUuids, String dearchiveReason) {
+		super.dearchive(entityUuids, dearchiveReason);
+	}
+
+	@Override
+	@RolesAllowed(UserRight._CONTACT_EXPORT)
 	public List<ContactExportDto> getExportList(
 		ContactCriteria contactCriteria,
 		Collection<String> selectedRows,
@@ -853,6 +902,7 @@ public class ContactFacadeEjb
 	}
 
 	@Override
+	@RolesAllowed(UserRight._VISIT_EXPORT)
 	public List<VisitSummaryExportDto> getVisitSummaryExportList(
 		ContactCriteria contactCriteria,
 		Collection<String> selectedRows,
@@ -1624,8 +1674,8 @@ public class ContactFacadeEjb
 		return convertToReferenceDto(contact);
 	}
 
-	@RolesAllowed(UserRight._SYSTEM)
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	@RolesAllowed(UserRight._SYSTEM)
 	public void generateContactFollowUpTasks() {
 
 		// get all contacts that are followed up
@@ -1816,13 +1866,14 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	public boolean isContactEditAllowed(String contactUuid) {
+	public EditPermissionType isContactEditAllowed(String contactUuid) {
 		Contact contact = service.getByUuid(contactUuid);
 
 		return service.isContactEditAllowed(contact);
 	}
 
 	@Override
+	@RolesAllowed(UserRight._CONTACT_MERGE)
 	public void mergeContact(String leadUuid, String otherUuid) {
 		ContactDto leadContactDto = getContactWithoutPseudonyimizationByUuid(leadUuid);
 		ContactDto otherContactDto = getContactWithoutPseudonyimizationByUuid(otherUuid);
@@ -1887,6 +1938,7 @@ public class ContactFacadeEjb
 	}
 
 	@Override
+	@RolesAllowed(UserRight._CONTACT_MERGE)
 	public void deleteContactAsDuplicate(String uuid, String duplicateOfUuid) {
 		Contact contact = service.getByUuid(uuid);
 		Contact duplicateOfContact = service.getByUuid(duplicateOfUuid);
@@ -2057,6 +2109,7 @@ public class ContactFacadeEjb
 	}
 
 	@Override
+	@RolesAllowed(UserRight._CONTACT_EDIT)
 	public void updateCompleteness(String uuid) {
 		Contact contact = service.getByUuid(uuid);
 		contact.setCompleteness(calculateCompleteness(contact));
@@ -2064,8 +2117,38 @@ public class ContactFacadeEjb
 	}
 
 	@Override
+	@RolesAllowed(UserRight._CONTACT_EDIT)
 	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		service.updateExternalData(externalData);
+	}
+
+	@Override
+	public int saveBulkContacts(
+		List<String> contactUuidlist,
+		ContactBulkEditData updatedContactBulkEditData,
+		boolean classificationChange,
+		boolean contactOfficerChange)
+		throws ValidationRuntimeException {
+
+		int changedContacts = 0;
+		for (String contactUuid : contactUuidlist) {
+			Contact contact = service.getByUuid(contactUuid);
+
+			if (service.isContactEditAllowed(contact).equals(EditPermissionType.ALLOWED)) {
+				ContactDto existingContactDto = toDto(contact);
+				if (classificationChange) {
+					existingContactDto.setContactClassification(updatedContactBulkEditData.getContactClassification());
+				}
+				// Setting the contact officer is only allowed if all selected contacts are in the same district
+				if (contactOfficerChange) {
+					existingContactDto.setContactOfficer(updatedContactBulkEditData.getContactOfficer());
+				}
+
+				save(existingContactDto);
+				changedContacts++;
+			}
+		}
+		return changedContacts;
 	}
 
 	@Override
@@ -2107,6 +2190,16 @@ public class ContactFacadeEjb
 		}
 
 		return completeness;
+	}
+
+	private User getRandomDistrictContactResponsible(District district) {
+
+		return userService.getRandomDistrictUser(district, UserRight.CONTACT_RESPONSIBLE);
+	}
+
+	public User getRandomRegionContactResponsible(Region region) {
+
+		return userService.getRandomRegionUser(region, UserRight.CONTACT_RESPONSIBLE);
 	}
 
 	@LocalBean

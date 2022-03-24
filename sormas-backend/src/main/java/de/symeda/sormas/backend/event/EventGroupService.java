@@ -29,23 +29,23 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
+import de.symeda.sormas.api.user.UserRole;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.event.EventGroupCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.user.User;
 
 @Stateless
@@ -73,8 +73,8 @@ public class EventGroupService extends AdoServiceWithUserFilter<EventGroup> {
 		EventUserFilterCriteria eventUserFilterCriteria) {
 
 		final User currentUser = getCurrentUser();
-		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
-		if (jurisdictionLevel == JurisdictionLevel.NATION || currentUser.hasAnyUserRole(UserRole.REST_USER)) {
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
+		if (jurisdictionLevel == JurisdictionLevel.NATION || currentUser.hasUserRole(UserRole.REST_USER)) {
 			return null;
 		}
 
@@ -136,7 +136,7 @@ public class EventGroupService extends AdoServiceWithUserFilter<EventGroup> {
 		Predicate filter = cb.in(caseJoin.get(Case.ID)).value(caseSubquery);
 
 		final User currentUser = getCurrentUser();
-		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (jurisdictionLevel == JurisdictionLevel.REGION || jurisdictionLevel == JurisdictionLevel.DISTRICT) {
 			Subquery<Long> eventParticipantSubquery = cq.subquery(Long.class);
 			Root<EventParticipant> epRoot = eventParticipantSubquery.from(EventParticipant.class);
