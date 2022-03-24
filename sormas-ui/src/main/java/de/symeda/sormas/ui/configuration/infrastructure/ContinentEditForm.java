@@ -25,7 +25,7 @@ public class ContinentEditForm extends AbstractEditForm<ContinentDto> {
 			ContinentDto.class,
 			ContinentDto.I18N_PREFIX,
 			false,
-			FieldVisibilityCheckers.withFeatureTypes(FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureTypes()),
+			FieldVisibilityCheckers.withFeatureTypes(FacadeProvider.getFeatureConfigurationFacade().getActiveServerFeatureConfigurations()),
 			UiFieldAccessCheckers.getNoop());
 		this.create = create;
 
