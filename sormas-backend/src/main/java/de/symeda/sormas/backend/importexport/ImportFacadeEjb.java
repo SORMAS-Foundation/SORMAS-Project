@@ -38,7 +38,7 @@ import static de.symeda.sormas.api.caze.CaseDataDto.RESPONSIBLE_DISTRICT;
 import static de.symeda.sormas.api.caze.CaseDataDto.RESPONSIBLE_REGION;
 import static de.symeda.sormas.api.caze.CaseDataDto.SYMPTOMS;
 
-import de.symeda.sormas.api.importexport.ImportErrorException;
+import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import java.beans.PropertyDescriptor;
 import java.io.FileOutputStream;
 import java.io.IOException;
@@ -103,6 +103,7 @@ import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ImportColumn;
+import de.symeda.sormas.api.importexport.ImportErrorException;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.importexport.ImportFacade;
 import de.symeda.sormas.api.importexport.ImportLineResultDto;
@@ -136,8 +137,8 @@ import de.symeda.sormas.api.utils.CSVCommentLineValidator;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.api.utils.ConstrainValidationHelper;
 import de.symeda.sormas.api.utils.DataHelper;
-import de.symeda.sormas.api.utils.DependingOnFeatureType;
-import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.FeatureTypeFieldVisibilityChecker;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaFacadeEjb.CampaignFormMetaFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
@@ -229,18 +230,18 @@ public class ImportFacadeEjb implements ImportFacade {
 	private static final String ALL_CONTINENTS_IMPORT_FILE_NAME = "sormas_import_all_continents.csv";
 
 	@Override
-	public void generateCaseImportTemplateFile() throws IOException {
+	public void generateCaseImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException {
 
 		createExportDirectoryIfNecessary();
 
 		char separator = configFacade.getCsvSeparator();
 
 		List<ImportColumn> importColumns = new ArrayList<>();
-		appendListOfFields(importColumns, CaseDataDto.class, "", separator);
-		appendListOfFields(importColumns, SampleDto.class, "", separator);
-		appendListOfFields(importColumns, PathogenTestDto.class, "", separator);
+		appendListOfFields(importColumns, CaseDataDto.class, "", separator, featureConfigurations);
+		appendListOfFields(importColumns, SampleDto.class, "", separator, featureConfigurations);
+		appendListOfFields(importColumns, PathogenTestDto.class, "", separator, featureConfigurations);
 		if (featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
-			appendListOfFields(importColumns, VaccinationDto.class, "", separator);
+			appendListOfFields(importColumns, VaccinationDto.class, "", separator, featureConfigurations);
 		}
 
 		importColumns = importColumns.stream().filter(column -> keepColumn(column, "", VACCINATION_COLUMNS_TO_REMOVE)).collect(Collectors.toList());
@@ -254,7 +255,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	}
 
 	@Override
-	public void generateEventImportTemplateFile() throws IOException {
+	public void generateEventImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException {
 
 		createExportDirectoryIfNecessary();
 
@@ -266,7 +267,7 @@ public class ImportFacadeEjb implements ImportFacade {
 		}
 
 		List<ImportColumn> importColumns = new ArrayList<>();
-		appendListOfFields(importColumns, EventDto.class, "", separator);
+		appendListOfFields(importColumns, EventDto.class, "", separator, featureConfigurations);
 		importColumns = importColumns.stream().filter(column -> keepColumn(column, "", columnsToRemove)).collect(Collectors.toList());
 		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.EVENT_GROUPS)) {
 			importColumns.add(ImportColumn.from(EventGroupReferenceDto.class, EventDto.EVENT_GROUP, String.class, separator));
@@ -276,7 +277,7 @@ public class ImportFacadeEjb implements ImportFacade {
 		importColumns.add(ImportColumn.from(EventParticipantDto.class, EventParticipantDto.REGION, String.class, separator));
 		importColumns.add(ImportColumn.from(EventParticipantDto.class, EventParticipantDto.DISTRICT, String.class, separator));
 
-		appendListOfFields(importColumns, PersonDto.class, PERSON_PREFIX, separator);
+		appendListOfFields(importColumns, PersonDto.class, PERSON_PREFIX, separator, featureConfigurations);
 		importColumns =
 			importColumns.stream().filter(column -> keepColumn(column, PERSON_PREFIX, PERSON_COLUMNS_TO_REMOVE)).collect(Collectors.toList());
 
@@ -284,7 +285,7 @@ public class ImportFacadeEjb implements ImportFacade {
 	}
 
 	@Override
-	public void generateEventParticipantImportTemplateFile() throws IOException {
+	public void generateEventParticipantImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException {
 
 		createExportDirectoryIfNecessary();
 
@@ -295,11 +296,11 @@ public class ImportFacadeEjb implements ImportFacade {
 		importColumns.add(ImportColumn.from(EventParticipantDto.class, EventParticipantDto.REGION, String.class, separator));
 		importColumns.add(ImportColumn.from(EventParticipantDto.class, EventParticipantDto.DISTRICT, String.class, separator));
 
-		appendListOfFields(importColumns, PersonDto.class, PERSON_PREFIX, separator);
+		appendListOfFields(importColumns, PersonDto.class, PERSON_PREFIX, separator, featureConfigurations);
 		addPrimaryPhoneAndEmail(separator, importColumns);
 
 		if (featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
-			appendListOfFields(importColumns, VaccinationDto.class, "", separator);
+			appendListOfFields(importColumns, VaccinationDto.class, "", separator, featureConfigurations);
 		}
 
 		importColumns = importColumns.stream()
@@ -335,17 +336,17 @@ public class ImportFacadeEjb implements ImportFacade {
 	}
 
 	@Override
-	public void generateCaseContactImportTemplateFile() throws IOException {
+	public void generateCaseContactImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException {
 
 		createExportDirectoryIfNecessary();
 
 		char separator = configFacade.getCsvSeparator();
 
 		List<ImportColumn> importColumns = new ArrayList<>();
-		appendListOfFields(importColumns, ContactDto.class, "", separator);
+		appendListOfFields(importColumns, ContactDto.class, "", separator, featureConfigurations);
 
 		if (featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
-			appendListOfFields(importColumns, VaccinationDto.class, "", separator);
+			appendListOfFields(importColumns, VaccinationDto.class, "", separator, featureConfigurations);
 		}
 
 		List<String> columnsToRemove = Arrays.asList(
@@ -356,30 +357,30 @@ public class ImportFacadeEjb implements ImportFacade {
 			ContactDto.CASE_ID_EXTERNAL_SYSTEM,
 			ContactDto.CASE_OR_EVENT_INFORMATION);
 		importColumns = importColumns.stream()
-				.filter(column -> keepColumn(column, "", columnsToRemove) && keepColumn(column, "", VACCINATION_COLUMNS_TO_REMOVE))
-				.collect(Collectors.toList());
+			.filter(column -> keepColumn(column, "", columnsToRemove) && keepColumn(column, "", VACCINATION_COLUMNS_TO_REMOVE))
+			.collect(Collectors.toList());
 
 		writeTemplate(Paths.get(getCaseContactImportTemplateFilePath()), importColumns, true);
 	}
 
 	@Override
-	public void generateContactImportTemplateFile() throws IOException {
+	public void generateContactImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException {
 
 		createExportDirectoryIfNecessary();
 
 		char separator = configFacade.getCsvSeparator();
 
 		List<ImportColumn> importColumns = new ArrayList<>();
-		appendListOfFields(importColumns, ContactDto.class, "", separator);
+		appendListOfFields(importColumns, ContactDto.class, "", separator, featureConfigurations);
 
 		if (featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
-			appendListOfFields(importColumns, VaccinationDto.class, "", separator);
+			appendListOfFields(importColumns, VaccinationDto.class, "", separator, featureConfigurations);
 		}
 
 		List<String> columnsToRemove = Arrays.asList(ContactDto.CAZE, ContactDto.RESULTING_CASE);
 		importColumns = importColumns.stream()
-				.filter(column -> keepColumn(column, "", columnsToRemove) && keepColumn(column, "", VACCINATION_COLUMNS_TO_REMOVE))
-				.collect(Collectors.toList());
+			.filter(column -> keepColumn(column, "", columnsToRemove) && keepColumn(column, "", VACCINATION_COLUMNS_TO_REMOVE))
+			.collect(Collectors.toList());
 
 		writeTemplate(Paths.get(getContactImportTemplateFilePath()), importColumns, true);
 	}
@@ -420,8 +421,8 @@ public class ImportFacadeEjb implements ImportFacade {
 	}
 
 	@Override
-	public void generatePointOfEntryImportTemplateFile() throws IOException {
-		generateImportTemplateFile(PointOfEntryDto.class, Paths.get(getPointOfEntryImportTemplateFilePath()));
+	public void generatePointOfEntryImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException {
+		generateImportTemplateFile(PointOfEntryDto.class, Paths.get(getPointOfEntryImportTemplateFilePath()), featureConfigurations);
 	}
 
 	@Override
@@ -461,53 +462,53 @@ public class ImportFacadeEjb implements ImportFacade {
 	}
 
 	@Override
-	public void generateAreaImportTemplateFile() throws IOException {
-		generateImportTemplateFile(AreaDto.class, Paths.get(getAreaImportTemplateFilePath()));
+	public void generateAreaImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException {
+		generateImportTemplateFile(AreaDto.class, Paths.get(getAreaImportTemplateFilePath()), featureConfigurations);
 	}
 
 	@Override
-	public void generateContinentImportTemplateFile() throws IOException {
-		generateImportTemplateFile(ContinentDto.class, Paths.get(getContinentImportTemplateFilePath()));
+	public void generateContinentImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException {
+		generateImportTemplateFile(ContinentDto.class, Paths.get(getContinentImportTemplateFilePath()), featureConfigurations);
 	}
 
 	@Override
-	public void generateSubcontinentImportTemplateFile() throws IOException {
-		generateImportTemplateFile(SubcontinentDto.class, Paths.get(getSubcontinentImportTemplateFilePath()));
+	public void generateSubcontinentImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException {
+		generateImportTemplateFile(SubcontinentDto.class, Paths.get(getSubcontinentImportTemplateFilePath()), featureConfigurations);
 	}
 
 	@Override
-	public void generateCountryImportTemplateFile() throws IOException {
-		generateImportTemplateFile(CountryDto.class, Paths.get(getCountryImportTemplateFilePath()));
+	public void generateCountryImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException {
+		generateImportTemplateFile(CountryDto.class, Paths.get(getCountryImportTemplateFilePath()), featureConfigurations);
 	}
 
 	@Override
-	public void generateRegionImportTemplateFile() throws IOException {
-		generateImportTemplateFile(RegionDto.class, Paths.get(getRegionImportTemplateFilePath()));
+	public void generateRegionImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException {
+		generateImportTemplateFile(RegionDto.class, Paths.get(getRegionImportTemplateFilePath()), featureConfigurations);
 	}
 
 	@Override
-	public void generateDistrictImportTemplateFile() throws IOException {
-		generateImportTemplateFile(DistrictDto.class, Paths.get(getDistrictImportTemplateFilePath()));
+	public void generateDistrictImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException {
+		generateImportTemplateFile(DistrictDto.class, Paths.get(getDistrictImportTemplateFilePath()), featureConfigurations);
 	}
 
 	@Override
-	public void generateCommunityImportTemplateFile() throws IOException {
-		generateImportTemplateFile(CommunityDto.class, Paths.get(getCommunityImportTemplateFilePath()));
+	public void generateCommunityImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException {
+		generateImportTemplateFile(CommunityDto.class, Paths.get(getCommunityImportTemplateFilePath()), featureConfigurations);
 	}
 
 	@Override
-	public void generateFacilityImportTemplateFile() throws IOException {
-		generateImportTemplateFile(FacilityDto.class, Paths.get(getFacilityImportTemplateFilePath()));
+	public void generateFacilityImportTemplateFile(List<FeatureConfigurationDto> featureConfigurations) throws IOException {
+		generateImportTemplateFile(FacilityDto.class, Paths.get(getFacilityImportTemplateFilePath()), featureConfigurations);
 	}
 
-	private <T extends EntityDto> void generateImportTemplateFile(Class<T> clazz, Path filePath) throws IOException {
+	private <T extends EntityDto> void generateImportTemplateFile(Class<T> clazz, Path filePath, List<FeatureConfigurationDto> featureConfigurations) throws IOException {
 
 		createExportDirectoryIfNecessary();
 
 		char separator = configFacade.getCsvSeparator();
 
 		List<ImportColumn> importColumns = new ArrayList<>();
-		appendListOfFields(importColumns, clazz, "", separator);
+		appendListOfFields(importColumns, clazz, "", separator, featureConfigurations);
 
 		writeTemplate(filePath, importColumns, false);
 	}
@@ -723,16 +724,17 @@ public class ImportFacadeEjb implements ImportFacade {
 	 * fields in the order of declaration (which is what we need here), but that could change
 	 * in the future.
 	 */
-	private void appendListOfFields(List<ImportColumn> importColumns, Class<?> clazz, String prefix, char separator) {
+	private void appendListOfFields(List<ImportColumn> importColumns, Class<?> clazz, String prefix, char separator, List<FeatureConfigurationDto> featureConfigurations) {
+
+		FieldVisibilityCheckers visibilityChecker = FieldVisibilityCheckers.withCountry(configFacade.getCountryCode())
+				.add(new FeatureTypeFieldVisibilityChecker(featureConfigurations));
 
 		for (Field field : clazz.getDeclaredFields()) {
 			if (Modifier.isStatic(field.getModifiers())) {
 				continue;
 			}
 
-			String currentCountry = configFacade.getCountryCode();
-			CountryFieldVisibilityChecker visibilityChecker = new CountryFieldVisibilityChecker(currentCountry);
-			if (!visibilityChecker.isVisible(field)) {
+			if (!visibilityChecker.isVisible(clazz, field)) {
 				continue;
 			}
 
@@ -755,14 +757,6 @@ public class ImportFacadeEjb implements ImportFacade {
 			if (readMethod.isAnnotationPresent(ImportIgnore.class)) {
 				continue;
 			}
-			// Fields that are depending on a certain feature type to be active may be ignored
-			if (readMethod.isAnnotationPresent(DependingOnFeatureType.class)) {
-				List<FeatureType> activeServerFeatures = featureConfigurationFacade.getActiveServerFeatureTypes();
-				if (!activeServerFeatures.isEmpty()
-					&& !activeServerFeatures.contains(readMethod.getAnnotation(DependingOnFeatureType.class).featureType())) {
-					continue;
-				}
-			}
 			// List types are ignored
 			if (Collection.class.isAssignableFrom(field.getType())) {
 				continue;
@@ -777,13 +771,13 @@ public class ImportFacadeEjb implements ImportFacade {
 					importColumns,
 					field.getType(),
 					StringUtils.isEmpty(prefix) ? field.getName() + "." : prefix + field.getName() + ".",
-					separator);
+					separator, featureConfigurations);
 			} else if (PersonReferenceDto.class.isAssignableFrom(field.getType()) && !isInfrastructureClass(field.getType())) {
 				appendListOfFields(
 					importColumns,
 					PersonDto.class,
 					StringUtils.isEmpty(prefix) ? field.getName() + "." : prefix + field.getName() + ".",
-					separator);
+					separator, featureConfigurations);
 				addPrimaryPhoneAndEmail(separator, importColumns);
 			} else {
 				importColumns.add(ImportColumn.from(clazz, prefix + field.getName(), field.getType(), separator));

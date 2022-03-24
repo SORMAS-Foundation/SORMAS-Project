@@ -1286,7 +1286,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, getVisitFacade().getAllActiveVisitsAfter(null).size());
 		assertEquals(1, getVisitFacade().getAllActiveUuids().size());
 
-		getCaseFacade().archive(caze.getUuid(), null);
+		getCaseFacade().archive(caze.getUuid(), null, true);
 
 		// getAllActiveContacts and getAllUuids should return length 0
 		assertEquals(0, getContactFacade().getAllAfter(null).size());
@@ -1294,7 +1294,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(0, getVisitFacade().getAllActiveVisitsAfter(null).size());
 		assertEquals(0, getVisitFacade().getAllActiveUuids().size());
 
-		getCaseFacade().dearchive(Collections.singletonList(caze.getUuid()), null);
+		getCaseFacade().dearchive(Collections.singletonList(caze.getUuid()), null, true);
 
 		// getAllActiveContacts and getAllUuids should return length 1
 		assertEquals(1, getContactFacade().getAllAfter(null).size());
@@ -1598,5 +1598,36 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(documentUuids.contains(document.getUuid()));
 		assertTrue(documentUuids.contains(otherDocument.getUuid()));
 
+	}
+
+	@Test
+	public void testGetContactUsersWithoutUsersLimitedToOthersDiseses() {
+		RDCF rdcf = creator.createRDCF();
+		useNationalUserLogin();
+
+		UserDto userDto = creator.createUser(rdcf, UserRole.NATIONAL_USER);
+		PersonDto personDto = creator.createPerson();
+		CaseDataDto caze = creator.createCase(
+			userDto.toReference(),
+			personDto.toReference(),
+			Disease.CORONAVIRUS,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf,
+			null);
+		ContactDto contact = creator
+			.createContact(userDto.toReference(), userDto.toReference(), personDto.toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS);
+
+		UserDto limitedCovidNationalUser =
+			creator.createUser(rdcf, "Limited Disease Covid", "National User", Disease.CORONAVIRUS, UserRole.NATIONAL_USER);
+		UserDto limitedDengueNationalUser =
+			creator.createUser(rdcf, "Limited Disease Dengue", "National User", Disease.DENGUE, UserRole.NATIONAL_USER);
+
+		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUsersHavingContactInJurisdiction(contact.toReference());
+		Assert.assertNotNull(userReferenceDtos);
+		Assert.assertTrue(userReferenceDtos.contains(userDto));
+		Assert.assertTrue(userReferenceDtos.contains(limitedCovidNationalUser));
+		Assert.assertFalse(userReferenceDtos.contains(limitedDengueNationalUser));
 	}
 }

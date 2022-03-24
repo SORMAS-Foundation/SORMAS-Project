@@ -2,19 +2,11 @@ package de.symeda.sormas.backend.user;
 
 import static de.symeda.sormas.api.user.UserRole.ADMIN;
 import static de.symeda.sormas.api.user.UserRole.CASE_OFFICER;
-import static de.symeda.sormas.api.user.UserRole.CASE_SUPERVISOR;
-import static de.symeda.sormas.api.user.UserRole.COMMUNITY_INFORMANT;
-import static de.symeda.sormas.api.user.UserRole.COMMUNITY_OFFICER;
 import static de.symeda.sormas.api.user.UserRole.CONTACT_OFFICER;
 import static de.symeda.sormas.api.user.UserRole.CONTACT_SUPERVISOR;
 import static de.symeda.sormas.api.user.UserRole.DISTRICT_OBSERVER;
-import static de.symeda.sormas.api.user.UserRole.EVENT_OFFICER;
-import static de.symeda.sormas.api.user.UserRole.HOSPITAL_INFORMANT;
-import static de.symeda.sormas.api.user.UserRole.NATIONAL_OBSERVER;
 import static de.symeda.sormas.api.user.UserRole.NATIONAL_USER;
 import static de.symeda.sormas.api.user.UserRole.POE_INFORMANT;
-import static de.symeda.sormas.api.user.UserRole.POE_SUPERVISOR;
-import static de.symeda.sormas.api.user.UserRole.STATE_OBSERVER;
 import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_OFFICER;
 import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_SUPERVISOR;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -26,6 +18,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -43,9 +36,6 @@ import java.util.stream.Collectors;
 
 import javax.validation.ValidationException;
 
-import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -55,6 +45,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import de.symeda.sormas.api.AuthProvider;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserCriteria;
@@ -88,7 +79,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		RegionReferenceDto region = rdcf.region;
 		RegionFacadeEjb.RegionFacadeEjbLocal regionFacade = (RegionFacadeEjb.RegionFacadeEjbLocal) getRegionFacade();
 
-		List<UserReferenceDto> result = getUserFacade().getUsersByRegionAndRights(region, UserRight.LAB_MESSAGES);
+		List<UserReferenceDto> result = getUserFacade().getUsersByRegionAndRights(region, null, UserRight.LAB_MESSAGES);
 
 		assertTrue(result.isEmpty());
 
@@ -96,12 +87,12 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		UserDto natUser = creator.createUser(rdcf, NATIONAL_USER);
 		// Does not have LAB_MASSAGES right
 		creator.createUser(rdcf, "Some", "User", POE_INFORMANT);
-		result = getUserFacade().getUsersByRegionAndRights(region, UserRight.LAB_MESSAGES);
+		result = getUserFacade().getUsersByRegionAndRights(region, null, UserRight.LAB_MESSAGES);
 
 		assertThat(result, contains(equalTo(natUser.toReference())));
 
 		UserDto natUser2 = creator.createUser(rdcf, "Nat", "User2", NATIONAL_USER);
-		result = getUserFacade().getUsersByRegionAndRights(region, UserRight.LAB_MESSAGES);
+		result = getUserFacade().getUsersByRegionAndRights(region, null, UserRight.LAB_MESSAGES);
 
 		assertThat(result, hasSize(2));
 		assertThat(result, hasItems(equalTo(natUser.toReference()), equalTo(natUser2.toReference())));
@@ -263,5 +254,37 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		assertThrows("User name is not unique!", ValidationException.class, () -> creator.createUser(rdcf, "Hans", "Peter", SURVEILLANCE_OFFICER));
 		assertThrows("User name is not unique!", ValidationException.class, () -> creator.createUser(rdcf, "hans", "peter", SURVEILLANCE_OFFICER));
 		assertThrows("User name is not unique!", ValidationException.class, () -> creator.createUser(rdcf, "HANS", "PETER", SURVEILLANCE_OFFICER));
+	}
+
+	@Test
+	public void testGetUserRefsByDistrictsWithLimitedDiseaseUsers() {
+
+		RDCF rdcf = creator.createRDCF();
+
+		UserDto generalSurveillanceOfficer = creator.createUser(rdcf, "General ", "SURVEILLANCE_OFFICER", SURVEILLANCE_OFFICER);
+		UserDto limitedSurveillanceOfficer = creator.createUser(rdcf, "Limited Dengue", "SURVEILLANCE_OFFICER", Disease.DENGUE, SURVEILLANCE_OFFICER);
+
+		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUserRefsByDistricts(Arrays.asList(rdcf.district), Disease.CORONAVIRUS);
+
+		assertNotNull(userReferenceDtos);
+		assertTrue(userReferenceDtos.contains(generalSurveillanceOfficer));
+		assertFalse(userReferenceDtos.contains(limitedSurveillanceOfficer));
+
+	}
+
+	@Test
+	public void testGetUserRefsByDistrictsWithLimitedDiseaseUsersSingleDistrict() {
+
+		RDCF rdcf = creator.createRDCF();
+
+		UserDto generalSurveillanceOfficer = creator.createUser(rdcf, "General ", "SURVEILLANCE_OFFICER", SURVEILLANCE_OFFICER);
+		UserDto limitedSurveillanceOfficer = creator.createUser(rdcf, "Limited Dengue", "SURVEILLANCE_OFFICER", Disease.DENGUE, SURVEILLANCE_OFFICER);
+
+		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUserRefsByDistrict(rdcf.district, Disease.CORONAVIRUS);
+
+		assertNotNull(userReferenceDtos);
+		assertTrue(userReferenceDtos.contains(generalSurveillanceOfficer));
+		assertFalse(userReferenceDtos.contains(limitedSurveillanceOfficer));
+
 	}
 }

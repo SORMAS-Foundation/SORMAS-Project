@@ -166,7 +166,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
                     districtDto != null ? FacadeProvider.getFacilityFacade().getActiveHospitalsByDistrict(districtDto, false) : null);
             FieldHelper.updateItems(
                     associatedOfficer,
-                    districtDto != null ? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, UserRight.CASE_RESPONSIBLE, UserRight.WEEKLYREPORT_CREATE) : null);
+                    districtDto != null ? FacadeProvider.getUserFacade().getUserRefsByDistrict(districtDto, null, UserRight.CASE_RESPONSIBLE, UserRight.WEEKLYREPORT_CREATE) : null);
             FieldHelper.updateItems(
                     cbPointOfEntry,
                     districtDto != null ? FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(districtDto.getUuid(), false) : null);
@@ -269,6 +269,16 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         return HTML_LAYOUT;
     }
 
+    @Override
+    public void setValue(UserDto userDto) throws com.vaadin.v7.data.Property.ReadOnlyException, Converter.ConversionException {
+
+        OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
+        userRoles.removeAllItems();
+        userRoles.addItems(UserUiHelper.getAssignableRoles(userDto.getUserRoles()));
+
+        super.setValue(userDto);
+    }
+
     class UserNameValidator implements Validator {
 
         private static final long serialVersionUID = 1L;
@@ -279,15 +289,5 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
             if (!(value instanceof String && ControllerProvider.getUserController().isLoginUnique(dto.getUuid(), (String) value)))
                 throw new InvalidValueException(I18nProperties.getValidationError(Validations.userNameNotUnique));
         }
-    }
-
-    @Override
-    public void setValue(UserDto userDto) throws com.vaadin.v7.data.Property.ReadOnlyException, Converter.ConversionException {
-
-        OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
-        userRoles.removeAllItems();
-        userRoles.addItems(UserUiHelper.getAssignableRoles(userDto.getUserRoles()));
-        
-        super.setValue(userDto);
     }
 }
