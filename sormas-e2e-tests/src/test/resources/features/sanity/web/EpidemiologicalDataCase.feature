@@ -154,7 +154,7 @@ Feature: Epidemiological data coverage
     And I tick a Probable infection environmental box in Exposure for Epidemiological data tab in Cases
     Then I select a Type of activity Arbeit option in Exposure for Epidemiological data tab in Cases
     And I click on save button in Exposure for Epidemiological data tab in Cases
-    And I click on "NEIN" option to close Exposure as the probable infection environment case Popup
+    And I click on "NO" option to close Exposure as the probable infection environment case Popup
     Then I click on Contacts with source case known with NEIN option for DE
     And I click on Contacts with source case known with UNBEKANNT option for DE
     And I click on Contacts with source case known with JA option for DE

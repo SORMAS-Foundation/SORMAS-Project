@@ -152,27 +152,6 @@ public class EpidemiologicalDataCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON);
         });
 
-    //    When(
-    //        "I search and chose the last case uuid created via UI in the CHOOSE CASE Contact
-    // window",
-    //        () -> {
-    //          System.out.println(caze.getUuid());
-    //          webDriverHelpers.fillInWebElement(SOURCE_CASE_WINDOW_CONTACT, caze.getUuid());
-    //          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-    //              SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
-    //          webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
-    //          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-    //              SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION);
-    //          webDriverHelpers.clickOnWebElementBySelector(
-    //              SOURCE_CASE_CONTACT_WINDOW_FIRST_RESULT_OPTION);
-    //
-    // webDriverHelpers.waitForRowToBeSelected(SOURCE_CASE_CONTACT_WINDOW_FIRST_RESULT_OPTION);
-    //          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
-    //              SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON);
-    //
-    // webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON);
-    //        });
-
     When(
         "I am checking if options in checkbox are displayed correctly",
         () -> {
@@ -253,11 +232,11 @@ public class EpidemiologicalDataCaseSteps implements En {
         "I click on {string} option to close Exposure as the probable infection environment case Popup",
         (String option) -> {
           switch (option) {
-            case "NEIN":
+            case "NO":
               webDriverHelpers.waitUntilElementIsVisibleAndClickable(EXPOSURE_ACTION_CANCEL);
               webDriverHelpers.clickOnWebElementBySelector(EXPOSURE_ACTION_CANCEL);
               break;
-            case "JA":
+            case "YES":
               webDriverHelpers.waitUntilElementIsVisibleAndClickable(EXPOSURE_ACTION_CONFIRM);
               webDriverHelpers.clickOnWebElementBySelector(EXPOSURE_ACTION_CONFIRM);
               break;
