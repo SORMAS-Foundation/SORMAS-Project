@@ -38,14 +38,15 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictFacade;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionFacade;
-import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.user.UserRoleFacade;
+import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 
@@ -66,7 +67,8 @@ public final class StatisticsHelper {
 		Function<Integer, RegionReferenceDto> regionProvider,
 		Function<Integer, DistrictReferenceDto> districtProvider,
 		Function<Integer, CommunityReferenceDto> communityProvider,
-		Function<Integer, FacilityReferenceDto> facilityProvider) {
+		Function<Integer, FacilityReferenceDto> facilityProvider,
+		Function<Integer, UserRoleReferenceDto> userRoleprovider) {
 
 		if (isNullOrUnknown(attributeValue)) {
 			return null;
@@ -144,7 +146,7 @@ public final class StatisticsHelper {
 					return new IntegerRange(Integer.valueOf(entryAsString), Integer.valueOf(entryAsString));
 				}
 			case REPORTING_USER_ROLE:
-				return UserRole.valueOf(attributeValue.toString());
+				return userRoleprovider.apply(((Number) attributeValue).intValue());
 			default:
 				throw new IllegalArgumentException(attribute.toString());
 			}
@@ -214,10 +216,14 @@ public final class StatisticsHelper {
 	 *
 	 * @param attribute
 	 * @param subAttribute
-	 * @param caseFacade Needed for StatisticsCaseAttribute.ONSET_TIME, REPORT_TIME, OUTCOME_TIME
+	 * @param caseFacade
+	 *            Needed for StatisticsCaseAttribute.ONSET_TIME, REPORT_TIME, OUTCOME_TIME
 	 * @return
 	 */
-	public static List<StatisticsGroupingKey> getTimeGroupingKeys(StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute, CaseFacade caseFacade) {
+	public static List<StatisticsGroupingKey> getTimeGroupingKeys(
+		StatisticsCaseAttribute attribute,
+		StatisticsCaseSubAttribute subAttribute,
+		CaseFacade caseFacade) {
 
 		Date oldestCaseDate = null;
 		switch (attribute) {
@@ -290,14 +296,25 @@ public final class StatisticsHelper {
 	 *
 	 * @param attribute
 	 * @param subAttribute
-	 * @param diseaseConfigurationFacade Needed for StatisticsCaseAttribute.DISEASE
-	 * @param caseFacade Needed for StatisticsCaseAttribute.ONSET_TIME, REPORT_TIME, OUTCOME_TIME
-	 * @param regionFacade Needed for StatisticsCaseSubAttribute.REGION
-	 * @param districtFacade Needed for StatisticsCaseSubAttribute.DISTRICT
+	 * @param diseaseConfigurationFacade
+	 *            Needed for StatisticsCaseAttribute.DISEASE
+	 * @param caseFacade
+	 *            Needed for StatisticsCaseAttribute.ONSET_TIME, REPORT_TIME, OUTCOME_TIME
+	 * @param regionFacade
+	 *            Needed for StatisticsCaseSubAttribute.REGION
+	 * @param districtFacade
+	 *            Needed for StatisticsCaseSubAttribute.DISTRICT
 	 * @return
 	 */
 	@SuppressWarnings("unchecked")
-	public static List<StatisticsGroupingKey> getAttributeGroupingKeys(StatisticsCaseAttribute attribute, StatisticsCaseSubAttribute subAttribute, DiseaseConfigurationFacade diseaseConfigurationFacade, CaseFacade caseFacade, RegionFacade regionFacade, DistrictFacade districtFacade) {
+	public static List<StatisticsGroupingKey> getAttributeGroupingKeys(
+		StatisticsCaseAttribute attribute,
+		StatisticsCaseSubAttribute subAttribute,
+		DiseaseConfigurationFacade diseaseConfigurationFacade,
+		CaseFacade caseFacade,
+		RegionFacade regionFacade,
+		DistrictFacade districtFacade,
+		UserRoleFacade userRoleFacade) {
 
 		if (subAttribute != null) {
 			switch (subAttribute) {
@@ -337,7 +354,7 @@ public final class StatisticsHelper {
 			case AGE_INTERVAL_BASIC:
 				return StatisticsHelper.getAgeIntervalGroupingKeys(attribute);
 			case REPORTING_USER_ROLE:
-				return toGroupingKeys(UserRole.values());
+				return (List<StatisticsGroupingKey>) (List<? extends StatisticsGroupingKey>) userRoleFacade.getAllAsReference();
 			default:
 				throw new IllegalArgumentException(attribute.toString());
 			}

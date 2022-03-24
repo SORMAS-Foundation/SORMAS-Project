@@ -14,7 +14,6 @@ import static org.junit.Assert.assertNotEquals;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 
-import de.symeda.sormas.api.utils.SortProperty;
 import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
@@ -36,13 +35,13 @@ import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.user.DefaultUserRole;
 import de.symeda.sormas.backend.util.DateHelper8;
 
 public class VaccinationFacadeEjbTest extends AbstractBeanTest {
@@ -62,7 +61,7 @@ public class VaccinationFacadeEjbTest extends AbstractBeanTest {
 			rdcf1.facility.getUuid(),
 			"Nat",
 			"User",
-			UserRole.NATIONAL_USER);
+			creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
 	}
 
 	@Test

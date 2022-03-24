@@ -27,7 +27,7 @@ import de.symeda.sormas.backend.common.messaging.ManualMessageLog;
 import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
 import de.symeda.sormas.backend.systemevent.SystemEvent;
 import de.symeda.sormas.backend.user.UserReference;
-import de.symeda.sormas.backend.user.UserRoleConfig;
+import de.symeda.sormas.backend.user.UserRole;
 import de.symeda.sormas.backend.vaccination.FirstVaccinationDate;
 import de.symeda.sormas.backend.vaccination.LastVaccinationDate;
 import de.symeda.sormas.backend.vaccination.LastVaccineType;
@@ -69,7 +69,7 @@ public class DatabaseExportServiceTest {
 		SystemEvent.class,
 		FirstVaccinationDate.class,
 		AuditLogEntry.class,
-		UserRoleConfig.class);
+		UserRole.class);
 
 	@Test
 	public void test_all_entities_have_export_configuration() {

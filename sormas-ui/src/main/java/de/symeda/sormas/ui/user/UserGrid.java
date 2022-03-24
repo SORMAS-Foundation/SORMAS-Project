@@ -31,7 +31,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -75,9 +75,8 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 			UserDto.HEALTH_FACILITY);
 
 		((Column<UserDto, String>) getColumn(UserDto.UUID)).setRenderer(new UuidRenderer());
-		((Column<UserDto, Set<UserRole>>) getColumn(UserDto.USER_ROLES))
-			.setRenderer(new CollectionValueProvider<Set<UserRole>>(), new HtmlRenderer());
-		((Column<UserDto, Set<UserRole>>) getColumn(UserDto.USER_ROLES)).setSortable(false);
+		((Column<UserDto, Set<UserRoleDto>>) getColumn(UserDto.USER_ROLES)).setRenderer(new CollectionValueProvider<>(), new HtmlRenderer());
+		((Column<UserDto, Set<UserRoleDto>>) getColumn(UserDto.USER_ROLES)).setSortable(false);
 		((Column<UserDto, Boolean>) getColumn(UserDto.ACTIVE)).setRenderer(value -> String.valueOf(value), new ActiveRenderer());
 
 		for (Column<?, ?> column : getColumns()) {
@@ -116,7 +115,6 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 		if (getSelectionModel().isUserSelectionAllowed()) {
 			deselectAll();
 		}
-
 
 		ViewConfiguration viewConfiguration = ViewModelProviders.of(UsersView.class).get(ViewConfiguration.class);
 		if (viewConfiguration.isInEagerMode()) {

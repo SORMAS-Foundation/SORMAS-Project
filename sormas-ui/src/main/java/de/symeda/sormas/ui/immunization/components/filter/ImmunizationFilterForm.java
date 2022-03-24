@@ -31,7 +31,6 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -287,8 +286,7 @@ public class ImmunizationFilterForm extends AbstractFilterForm<ImmunizationCrite
 		final UserDto user = currentUserDto();
 
 		UserProvider currentUserProvider = UserProvider.getCurrent();
-		final JurisdictionLevel userJurisdictionLevel =
-			currentUserProvider != null ? UserRole.getJurisdictionLevel(currentUserProvider.getUserRoles()) : null;
+		final JurisdictionLevel userJurisdictionLevel = currentUserProvider != null ? UserProvider.getCurrent().getJurisdictionLevel() : null;
 
 		final ComboBox districtField = getField(ImmunizationCriteria.DISTRICT);
 		final ComboBox communityField = getField(ImmunizationCriteria.COMMUNITY);

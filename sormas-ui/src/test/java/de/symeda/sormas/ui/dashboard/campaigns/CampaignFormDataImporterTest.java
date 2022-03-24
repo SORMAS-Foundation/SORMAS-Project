@@ -25,7 +25,7 @@ import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.backend.user.DefaultUserRole;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
 import de.symeda.sormas.ui.campaign.importer.CampaignFormDataImporter;
@@ -38,8 +38,13 @@ public class CampaignFormDataImporterTest extends AbstractBeanTest {
 		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user =
-			creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Nat", "User", UserRole.NATIONAL_USER);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Nat",
+			"User",
+			creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
 
 		final CampaignDto campaign = creator.createCampaign(user);
 
@@ -59,8 +64,13 @@ public class CampaignFormDataImporterTest extends AbstractBeanTest {
 		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user =
-			creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Nat", "User", UserRole.NATIONAL_USER);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Nat",
+			"User",
+			creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
 
 		final CampaignDto campaign = creator.createCampaign(user);
 
@@ -80,8 +90,13 @@ public class CampaignFormDataImporterTest extends AbstractBeanTest {
 		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user =
-			creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Nat", "User", UserRole.NATIONAL_USER);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Nat",
+			"User",
+			creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
 
 		final CampaignDto campaign = creator.createCampaign(user);
 

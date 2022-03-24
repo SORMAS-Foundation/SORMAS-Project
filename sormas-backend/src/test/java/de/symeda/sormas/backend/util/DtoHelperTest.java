@@ -25,11 +25,11 @@ import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
+import de.symeda.sormas.backend.user.DefaultUserRole;
 
 public class DtoHelperTest extends AbstractBeanTest {
 
@@ -40,7 +40,7 @@ public class DtoHelperTest extends AbstractBeanTest {
 		RDCFEntities rdcf2 = creator.createRDCFEntities();
 		rdcf2.facility.setType(FacilityType.LABORATORY);
 
-		UserDto user = creator.createUser(rdcf, UserRole.ADMIN);
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.ADMIN));
 
 		// Test simple values
 		{

@@ -49,7 +49,6 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -139,7 +138,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 	@Override
 	protected void addFields() {
 
-		if (!UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+		if (!UserProvider.getCurrent().isPortHealthUser()) {
 			addField(getContent(), FieldConfiguration.pixelSized(CaseDataDto.CASE_ORIGIN, 140));
 		}
 		addFields(FieldConfiguration.pixelSized(CaseDataDto.OUTCOME, 140), FieldConfiguration.pixelSized(CaseDataDto.DISEASE, 140));
@@ -187,7 +186,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 
 		addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseDataDto.COMMUNITY, 140));
 
-		if (!UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+		if (!UserProvider.getCurrent().isPortHealthUser()) {
 
 			ComboBox typeGroup = addField(moreFiltersContainer, FieldConfiguration.pixelSized(CaseCriteria.FACILITY_TYPE_GROUP, 140));
 			typeGroup.setInputPrompt(I18nProperties.getCaption(Captions.Facility_typeGroup));
@@ -367,7 +366,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 					CssStyles.CHECKBOX_FILTER_INLINE));
 		}
 
-		final JurisdictionLevel userJurisdictionLevel = UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles());
+		final JurisdictionLevel userJurisdictionLevel = UserProvider.getCurrent().getJurisdictionLevel();
 		if (userJurisdictionLevel != JurisdictionLevel.NATION && userJurisdictionLevel != JurisdictionLevel.NONE) {
 			addField(
 				moreFiltersContainer,
@@ -632,7 +631,7 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 	protected void applyDependenciesOnNewValue(CaseCriteria criteria) {
 
 		final UserDto user = currentUserDto();
-		final JurisdictionLevel userJurisdictionLevel = UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles());
+		final JurisdictionLevel userJurisdictionLevel = UserProvider.getCurrent().getJurisdictionLevel();
 
 		final ComboBox districtField = getField(CaseDataDto.DISTRICT);
 		final ComboBox communityField = getField(CaseDataDto.COMMUNITY);

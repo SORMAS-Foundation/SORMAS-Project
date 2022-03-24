@@ -30,7 +30,7 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRoleDto;
 
 public class UserProvider {
 
@@ -45,6 +45,9 @@ public class UserProvider {
 	private UserReferenceDto userReference;
 	private Set<UserRight> userRights;
 	private JurisdictionLevel jurisdictionLevel;
+	private Boolean portHealthUser;
+	private Boolean hasAssociatedOfficer;
+	private Boolean hasOptionalHealthFacility;
 
 	public UserDto getUser() {
 
@@ -57,18 +60,18 @@ public class UserProvider {
 	public Set<UserRight> getUserRights() {
 
 		if (userRights == null) {
-			userRights = FacadeProvider.getUserRoleConfigFacade().getEffectiveUserRights(getUser().getUserRoles());
+			userRights = UserRoleDto.getUserRights(getUser().getUserRoles());
 		}
 		return userRights;
 	}
 
-	public Set<UserRole> getUserRoles() {
+	public Set<UserRoleDto> getUserRoles() {
 		return getUser().getUserRoles();
 	}
 
 	public JurisdictionLevel getJurisdictionLevel() {
 		if (jurisdictionLevel == null) {
-			jurisdictionLevel = UserRole.getJurisdictionLevel(getUser().getUserRoles());
+			jurisdictionLevel = FacadeProvider.getUserRoleFacade().getJurisdictionLevel(getUser().getUserRoles());
 		}
 		return jurisdictionLevel;
 	}
@@ -148,6 +151,27 @@ public class UserProvider {
 			return ((HasUserProvider) currentUI).getUserProvider();
 		}
 		return null;
+	}
+
+	public boolean isPortHealthUser() {
+		if (portHealthUser == null) {
+			portHealthUser = FacadeProvider.getUserRoleFacade().isPortHealthUser(getUser().getUserRoles());
+		}
+		return portHealthUser;
+	}
+
+	public boolean hasAssociatedOfficer() {
+		if (hasAssociatedOfficer == null) {
+			hasAssociatedOfficer = FacadeProvider.getUserRoleFacade().hasAssociatedOfficer(getUser().getUserRoles());
+		}
+		return hasAssociatedOfficer;
+	}
+
+	public boolean hasOptionalHealthFacility() {
+		if (hasOptionalHealthFacility == null) {
+			hasOptionalHealthFacility = FacadeProvider.getUserRoleFacade().hasOptionalHealthFacility(getUser().getUserRoles());
+		}
+		return hasOptionalHealthFacility;
 	}
 
 	public interface HasUserProvider {

@@ -7,18 +7,18 @@ import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.disease.DiseaseConfigurationDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.infrastructure.area.AreaDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
 import de.symeda.sormas.api.infrastructure.continent.ContinentDto;
 import de.symeda.sormas.api.infrastructure.country.CountryDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRoleConfigDto;
+import de.symeda.sormas.api.user.UserRoleDto;
 
 public class InfrastructureSyncDto implements Serializable {
 
@@ -37,8 +37,8 @@ public class InfrastructureSyncDto implements Serializable {
 	private List<UserDto> users;
 	private List<DiseaseClassificationCriteriaDto> diseaseClassifications;
 	private List<DiseaseConfigurationDto> diseaseConfigurations;
-	private List<UserRoleConfigDto> userRoleConfigurations;
-	private List<String> deletedUserRoleConfigurationUuids;
+	private List<UserRoleDto> userRoles;
+	private List<String> deletedUserRoleUuids;
 	private List<FeatureConfigurationDto> featureConfigurations;
 	private List<String> deletedFeatureConfigurationUuids;
 	private List<CampaignDto> campaigns;
@@ -148,20 +148,20 @@ public class InfrastructureSyncDto implements Serializable {
 		this.diseaseConfigurations = diseaseConfigurations;
 	}
 
-	public List<UserRoleConfigDto> getUserRoleConfigurations() {
-		return userRoleConfigurations;
+	public List<UserRoleDto> getUserRoles() {
+		return userRoles;
 	}
 
-	public void setUserRoleConfigurations(List<UserRoleConfigDto> userRoleConfigurations) {
-		this.userRoleConfigurations = userRoleConfigurations;
+	public void setUserRoles(List<UserRoleDto> userRoles) {
+		this.userRoles = userRoles;
 	}
 
-	public List<String> getDeletedUserRoleConfigurationUuids() {
-		return deletedUserRoleConfigurationUuids;
+	public List<String> getDeletedUserRoleUuids() {
+		return deletedUserRoleUuids;
 	}
 
-	public void setDeletedUserRoleConfigurationUuids(List<String> deletedUserRoleConfigurationUuids) {
-		this.deletedUserRoleConfigurationUuids = deletedUserRoleConfigurationUuids;
+	public void setDeletedUserRoleUuids(List<String> deletedUserRoleUuids) {
+		this.deletedUserRoleUuids = deletedUserRoleUuids;
 	}
 
 	public List<FeatureConfigurationDto> getFeatureConfigurations() {

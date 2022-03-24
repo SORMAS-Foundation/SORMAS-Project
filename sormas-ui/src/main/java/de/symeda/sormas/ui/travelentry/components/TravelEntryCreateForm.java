@@ -40,7 +40,6 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.travelentry.DeaContentEntry;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.person.PersonCreateForm;
@@ -300,7 +299,7 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 
 		UserProvider currentUserProvider = UserProvider.getCurrent();
 		JurisdictionLevel userJurisditionLevel =
-			currentUserProvider != null ? UserRole.getJurisdictionLevel(currentUserProvider.getUserRoles()) : JurisdictionLevel.NONE;
+			currentUserProvider != null ? UserProvider.getCurrent().getJurisdictionLevel() : JurisdictionLevel.NONE;
 
 		if (userJurisditionLevel == JurisdictionLevel.HEALTH_FACILITY) {
 			FacilityDto facility = FacadeProvider.getFacilityFacade().getByUuid(currentUserProvider.getUser().getHealthFacility().getUuid());

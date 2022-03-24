@@ -44,9 +44,9 @@ public class UserReferenceDto extends ReferenceDto {
 		setUuid(uuid);
 	}
 
-	public UserReferenceDto(String uuid, String firstName, String lastName, Set<UserRole> userRoles) {
+	public UserReferenceDto(String uuid, String firstName, String lastName, Set<String> userRoleCaptions) {
 		setUuid(uuid);
-		setCaption(buildCaption(firstName, lastName, userRoles));
+		setCaption(buildCaption(firstName, lastName, userRoleCaptions));
 		this.firstName = firstName;
 		this.lastName = lastName;
 	}
@@ -58,20 +58,20 @@ public class UserReferenceDto extends ReferenceDto {
 		setCaption(caption);
 	}
 
-	public static String buildCaption(String firstName, String lastName, Set<UserRole> userRoles) {
+	public static String buildCaption(String firstName, String lastName, Set<String> userRoleCaptions) {
 
 		StringBuilder result = new StringBuilder();
 		result.append(DataHelper.toStringNullable(firstName)).append(" ").append(DataHelper.toStringNullable(lastName).toUpperCase());
 		boolean first = true;
-		if (userRoles != null) {
-			for (UserRole userRole : userRoles) {
+		if (userRoleCaptions != null) {
+			for (String caption : userRoleCaptions) {
 				if (first) {
 					result.append(" - ");
 					first = false;
 				} else {
 					result.append(", ");
 				}
-				result.append(userRole.toString());
+				result.append(caption);
 			}
 		}
 		return result.toString();

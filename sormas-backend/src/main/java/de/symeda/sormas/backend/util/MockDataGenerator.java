@@ -24,9 +24,9 @@ import java.util.Set;
 import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.user.UserHelper;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserRole;
 
 public final class MockDataGenerator {
 

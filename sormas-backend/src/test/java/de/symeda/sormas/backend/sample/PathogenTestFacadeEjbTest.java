@@ -17,19 +17,19 @@ import org.junit.Test;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
+import de.symeda.sormas.backend.user.DefaultUserRole;
 
 public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 
@@ -39,7 +39,7 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 	public void testGetBySampleUuids() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 
@@ -62,7 +62,7 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 	public void testSaveAndUpdatePathogenTestAssociatedToCase() {
 
 		final RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		final UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+		final UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		final PersonDto person = creator.createPerson();
 		final CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 		final SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
@@ -76,7 +76,7 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 	public void testSaveAndUpdatePathogenTestAssociatedToContact() {
 
 		final RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		final UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+		final UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		final PersonDto person = creator.createPerson();
 		final CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 		final ContactDto contact = creator.createContact(user.toReference(), person.toReference(), caze);
@@ -92,7 +92,7 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 	public void testSaveAndUpdatePathogenTestAssociatedToBothCaseAndContact() {
 
 		final RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		final UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+		final UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		final PersonDto person = creator.createPerson();
 		final CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 		final ContactDto contact = creator.createContact(user.toReference(), person.toReference(), caze);

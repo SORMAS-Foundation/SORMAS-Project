@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.user;
 
+import java.util.Collection;
 import java.util.Date;
 import java.util.List;
 
@@ -25,60 +26,82 @@ import javax.ejb.LocalBean;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.persistence.Query;
-import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.From;
-import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 
 @Stateless
 @LocalBean
-public class UserRoleConfigService extends AdoServiceWithUserFilter<UserRoleConfig> {
+public class UserRoleService extends AdoServiceWithUserFilter<UserRole> {
 
 	@Resource
 	private SessionContext sessionContext;
 
-	public UserRoleConfigService() {
-		super(UserRoleConfig.class);
+	public UserRoleService() {
+		super(UserRole.class);
 	}
 
 	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, UserRoleConfig> from) {
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, UserRole> from) {
 		// a user can read all user role configurations
 		return null;
 	}
 
-	public UserRoleConfig getByUserRole(UserRole userRole) {
+	public UserRole getByCaption(String caption) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		ParameterExpression<UserRole> userRoleParam = cb.parameter(UserRole.class, UserRoleConfig.USER_ROLE);
-		CriteriaQuery<UserRoleConfig> cq = cb.createQuery(UserRoleConfig.class);
-		Root<UserRoleConfig> from = cq.from(UserRoleConfig.class);
-		cq.where(cb.equal(from.get(UserRoleConfig.USER_ROLE), userRoleParam));
+		CriteriaQuery<UserRole> cq = cb.createQuery(UserRole.class);
+		Root<UserRole> from = cq.from(UserRole.class);
+		cq.where(cb.equal(from.get(UserRole.CAPTION), caption));
 
-		TypedQuery<UserRoleConfig> q = em.createQuery(cq).setParameter(userRoleParam, userRole);
-
-		UserRoleConfig entity = q.getResultList().stream().findFirst().orElse(null);
+		UserRole entity = em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
 
 		return entity;
 	}
 
 	public List<String> getDeletedUuids(Date since) {
 
-		String queryString = "SELECT " + AbstractDomainObject.UUID + " FROM " + UserRoleConfig.TABLE_NAME + AbstractDomainObject.HISTORY_TABLE_SUFFIX
-			+ " h" + " WHERE sys_period @> CAST (?1 AS timestamptz)" + " AND NOT EXISTS (SELECT FROM " + UserRoleConfig.TABLE_NAME + " WHERE "
+		String queryString = "SELECT " + AbstractDomainObject.UUID + " FROM " + UserRole.TABLE_NAME + AbstractDomainObject.HISTORY_TABLE_SUFFIX + " h"
+			+ " WHERE sys_period @> CAST (?1 AS timestamptz)" + " AND NOT EXISTS (SELECT FROM " + UserRole.TABLE_NAME + " WHERE "
 			+ AbstractDomainObject.ID + " = h." + AbstractDomainObject.ID + ")";
 		Query nativeQuery = em.createNativeQuery(queryString);
 		nativeQuery.setParameter(1, since);
 		@SuppressWarnings("unchecked")
 		List<String> results = (List<String>) nativeQuery.getResultList();
 		return results;
+	}
+
+	public List<UserRole> getAllActive() {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<UserRole> cq = cb.createQuery(UserRole.class);
+		Root<UserRole> from = cq.from(UserRole.class);
+		cq.where(cb.isTrue(from.get(UserRole.ENABLED)));
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	public boolean hasUserRight(Collection<UserRole> userRoles, UserRight userRight) {
+		for (UserRole userRole : userRoles) {
+			if (userRole.getUserRights().contains(userRight))
+				return true;
+		}
+		return false;
+	}
+
+	public boolean hasAnyUserRight(Collection<UserRole> userRoles, Collection<UserRight> userRights) {
+		for (UserRole userRole : userRoles) {
+			for (UserRight userRight : userRights) {
+				if (userRole.getUserRights().contains(userRight))
+					return true;
+			}
+		}
+		return false;
 	}
 }

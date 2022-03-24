@@ -18,8 +18,10 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
@@ -116,7 +118,8 @@ import de.symeda.sormas.api.therapy.TreatmentType;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.visit.VisitDto;
@@ -130,22 +133,58 @@ import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
+import de.symeda.sormas.backend.user.DefaultUserRole;
+import de.symeda.sormas.backend.user.UserRole;
 
 public class TestDataCreator {
 
 	private final AbstractBeanTest beanTest;
+	public final Map<DefaultUserRole, UserRoleDto> userRoleDtoMap = new HashMap<>();
+	public final Map<DefaultUserRole, UserRole> userRoleMap = new HashMap<>();
 
 	public TestDataCreator(AbstractBeanTest beanTest) {
 		this.beanTest = beanTest;
 	}
 
-	public UserDto createUser(RDCF rdcf, UserRole userRole, Consumer<UserDto> customConfig) {
+	private void createUserRoles() {
+		Arrays.stream(DefaultUserRole.values()).forEach(defaultUserRole -> {
+			UserRoleDto userRoleDto =
+				UserRoleDto.build(defaultUserRole.getDefaultUserRights().toArray(new UserRight[defaultUserRole.getDefaultUserRights().size()]));
+			userRoleDto.setCaption(defaultUserRole.toString());
+			userRoleDto.setPortHealthUser(defaultUserRole.isPortHealthUser());
+			userRoleDto.setHasAssociatedOfficer(defaultUserRole.hasAssociatedOfficer());
+			userRoleDto.setHasOptionalHealthFacility(defaultUserRole.hasOptionalHealthFacility());
+			userRoleDto.setEmailNotifications(defaultUserRole.getEmailNotifications());
+			userRoleDto.setSmsNotifications(defaultUserRole.getSmsNotifications());
+			userRoleDto.setJurisdictionLevel(defaultUserRole.getJurisdictionLevel());
+			userRoleDto = beanTest.getUserRoleFacade().saveUserRole(userRoleDto);
+			userRoleDtoMap.put(defaultUserRole, userRoleDto);
+			UserRole userRole = beanTest.getUserRoleService().getByUuid(userRoleDto.getUuid());
+			userRoleMap.put(defaultUserRole, userRole);
+		});
+	}
+
+	public Map<DefaultUserRole, UserRoleDto> getUserRoleDtoMap() {
+		if (userRoleDtoMap.isEmpty()) {
+			createUserRoles();
+		}
+		return userRoleDtoMap;
+	}
+
+	public Map<DefaultUserRole, UserRole> getUserRoleMap() {
+		if (userRoleMap.isEmpty()) {
+			createUserRoles();
+		}
+		return userRoleMap;
+	}
+
+	public UserDto createUser(RDCF rdcf, UserRoleDto userRole, Consumer<UserDto> customConfig) {
 
 		UserDto user = UserDto.build();
 		user.setFirstName("User");
-		user.setLastName(userRole.toShortString());
+		user.setLastName(userRole.getCaption());
 		user.setUserName(userRole.toString());
-		user.setUserRoles(new HashSet<>(Arrays.asList(userRole)));
+		user.setUserRoles(new HashSet(Arrays.asList(userRole)));
 		user.setRegion(rdcf.region);
 		user.setDistrict(rdcf.district);
 		user.setCommunity(rdcf.community);
@@ -158,31 +197,31 @@ public class TestDataCreator {
 		return beanTest.getUserFacade().saveUser(user);
 	}
 
-	public UserDto createUser(RDCFEntities rdcf, UserRole... roles) {
+	public UserDto createUser(RDCFEntities rdcf, UserRoleDto... roles) {
 		return createUser(
 			rdcf.region.getUuid(),
 			rdcf.district.getUuid(),
 			rdcf.facility.getUuid(),
-			roles.length > 0 ? roles[0].toShortString() : "First",
+			roles.length > 0 ? roles[0].getCaption() : "First",
 			"User",
 			roles);
 	}
 
-	public UserDto createUser(RDCF rdcf, UserRole... roles) {
+	public UserDto createUser(RDCF rdcf, UserRoleDto... roles) {
 		return createUser(
 			rdcf.region.getUuid(),
 			rdcf.district.getUuid(),
 			rdcf.facility.getUuid(),
-			roles.length > 0 ? roles[0].toShortString() : "First",
+			roles.length > 0 ? roles[0].getCaption() : "First",
 			"User",
 			roles);
 	}
 
-	public UserDto createUser(RDCF rdcf, String firstName, String lastName, UserRole... roles) {
+	public UserDto createUser(RDCF rdcf, String firstName, String lastName, UserRoleDto... roles) {
 		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), firstName, lastName, roles);
 	}
 
-	public UserDto createUser(String regionUuid, String districtUuid, String facilityUuid, String firstName, String lastName, UserRole... roles) {
+	public UserDto createUser(String regionUuid, String districtUuid, String facilityUuid, String firstName, String lastName, UserRoleDto... roles) {
 		return createUser(regionUuid, districtUuid, null, facilityUuid, firstName, lastName, roles);
 	}
 
@@ -193,11 +232,11 @@ public class TestDataCreator {
 		String facilityUuid,
 		String firstName,
 		String lastName,
-		UserRole... roles) {
+		UserRoleDto... roles) {
 		return createUser(regionUuid, districtUuid, communityUuid, facilityUuid, firstName, lastName, null, roles);
 	}
 
-	public UserDto createUser(RDCF rdcf, String firstName, String lastName, Disease limitedDisease, UserRole... roles) {
+	public UserDto createUser(RDCF rdcf, String firstName, String lastName, Disease limitedDisease, UserRoleDto... roles) {
 		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), null, rdcf.facility.getUuid(), firstName, lastName, limitedDisease, roles);
 	}
 
@@ -209,23 +248,19 @@ public class TestDataCreator {
 		String firstName,
 		String lastName,
 		Disease limitedDisease,
-		UserRole... roles) {
+		UserRoleDto... roles) {
 
-		UserDto user1 = UserDto.build();
-		user1.setFirstName(firstName);
-		user1.setLastName(lastName);
-		user1.setUserName(firstName + lastName);
-		user1.setUserRoles(new HashSet<UserRole>(Arrays.asList(roles)));
-
-		user1.setLimitedDisease(limitedDisease);
-		UserDto user = user1;
+		UserDto user = UserDto.build();
+		user.setFirstName(firstName);
+		user.setLastName(lastName);
+		user.setUserName(firstName + lastName);
+		user.setUserRoles(new HashSet<>(Arrays.asList(roles)));
+		user.setLimitedDisease(limitedDisease);
 		user.setRegion(beanTest.getRegionFacade().getReferenceByUuid(regionUuid));
 		user.setDistrict(beanTest.getDistrictFacade().getReferenceByUuid(districtUuid));
 		user.setCommunity(beanTest.getCommunityFacade().getReferenceByUuid(communityUuid));
 		user.setHealthFacility(beanTest.getFacilityFacade().getReferenceByUuid(facilityUuid));
-		user = beanTest.getUserFacade().saveUser(user);
-
-		return user;
+		return beanTest.getUserFacade().saveUser(user);
 	}
 
 	public UserReferenceDto createUserRef(
@@ -235,7 +270,7 @@ public class TestDataCreator {
 		String facilityUuid,
 		String firstName,
 		String lastName,
-		UserRole... roles) {
+		UserRoleDto... roles) {
 		return createUser(regionUuid, districtUuid, communityUuid, facilityUuid, firstName, lastName, roles).toReference();
 	}
 
@@ -370,8 +405,13 @@ public class TestDataCreator {
 		RDCFEntities rdcf = createRDCFEntities("Region", "District", "Community", "Facility");
 		UserDto user = beanTest.getUserFacade().getByUserName("SurvSup");
 		if (user == null) {
-			user =
-				createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+			user = createUser(
+				rdcf.region.getUuid(),
+				rdcf.district.getUuid(),
+				rdcf.facility.getUuid(),
+				"Surv",
+				"Sup",
+				getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		}
 
 		PersonDto cazePerson = createPerson("Case", "Person", Sex.UNKNOWN);

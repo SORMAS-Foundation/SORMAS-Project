@@ -40,9 +40,7 @@ import com.opencsv.CSVReader;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
-import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.caseimport.CaseImportFacade;
-import de.symeda.sormas.api.contact.ContactFacade;
 import de.symeda.sormas.api.event.EventFacade;
 import de.symeda.sormas.api.event.EventParticipantFacade;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -58,7 +56,6 @@ import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.SampleFacade;
 import de.symeda.sormas.api.travelentry.TravelEntryFacade;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.CSVUtils;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.caseimport.CaseImportFacadeEjb.CaseImportFacadeEjbLocal;
@@ -79,6 +76,7 @@ import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
 import de.symeda.sormas.backend.user.CurrentUserService;
+import de.symeda.sormas.backend.user.DefaultUserRole;
 import de.symeda.sormas.backend.user.UserService;
 import info.novatec.beantest.api.BaseBeanTest;
 
@@ -97,7 +95,16 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		// this is used to provide the current user to the ADO Listener taking care of updating the last change user
 		System.setProperty("java.naming.factory.initial", MockProducer.class.getCanonicalName());
 		I18nProperties.setUserLanguage(Language.EN);
-		UserDto user = creator.createUser(null, null, null, null, "ad", "min", Language.EN, UserRole.ADMIN, UserRole.NATIONAL_USER);
+		UserDto user = creator.createUser(
+			null,
+			null,
+			null,
+			null,
+			"ad",
+			"min",
+			Language.EN,
+			creator.userRoleDtoMap.get(DefaultUserRole.ADMIN),
+			creator.userRoleDtoMap.get(DefaultUserRole.NATIONAL_USER));
 		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
 	}
 

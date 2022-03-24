@@ -28,7 +28,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.user.UserRoleConfigDto;
+import de.symeda.sormas.api.user.UserRoleDto;
 
 /**
  * @see <a href="https://jersey.java.net/documentation/latest/">Jersey
@@ -41,23 +41,23 @@ import de.symeda.sormas.api.user.UserRoleConfigDto;
 @Path("/userroles")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
-public class UserRoleConfigResource {
+public class UserRoleResource {
 
 	@GET
 	@Path("/all/{since}")
-	public List<UserRoleConfigDto> getAll(@PathParam("since") long since) {
-		return FacadeProvider.getUserRoleConfigFacade().getAllAfter(new Date(since));
+	public List<UserRoleDto> getAll(@PathParam("since") long since) {
+		return FacadeProvider.getUserRoleFacade().getAllAfter(new Date(since));
 	}
 
 	@GET
 	@Path("/uuids")
 	public List<String> getAllUuids() {
-		return FacadeProvider.getUserRoleConfigFacade().getAllUuids();
+		return FacadeProvider.getUserRoleFacade().getAllUuids();
 	}
 
 	@GET
 	@Path("/deleted/{since}")
 	public List<String> getDeletedUuids(@PathParam("since") long since) {
-		return FacadeProvider.getUserRoleConfigFacade().getDeletedUuids(new Date(since));
+		return FacadeProvider.getUserRoleFacade().getDeletedUuids(new Date(since));
 	}
 }

@@ -35,7 +35,7 @@
 		<class>de.symeda.sormas.backend.task.Task</class>
 		<class>de.symeda.sormas.backend.user.User</class>
 		<class>de.symeda.sormas.backend.user.UserReference</class>
-		<class>de.symeda.sormas.backend.user.UserRoleConfig</class>
+		<class>de.symeda.sormas.backend.user.UserRole</class>
 		<class>de.symeda.sormas.backend.visit.Visit</class>
 		<class>de.symeda.sormas.backend.therapy.Therapy</class>
 		<class>de.symeda.sormas.backend.therapy.Treatment</class>
@@ -102,6 +102,7 @@
 			<property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
 			<property name="hibernate.show_sql" value="false" />
 			<property name="hibernate.format_sql" value="false" />
+			<property name="hibernate.enable_lazy_load_no_trans" value="true" />
 
 			<!-- 			
 			<property name="eclipselink.ddl-generation" value="drop-and-create-tables" /> 

@@ -35,9 +35,9 @@ import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.data.CampaignFormDataEntry;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.user.DefaultUserRole;
 
 public class CampaignFormMetaDataFacadeEjbTest extends AbstractBeanTest {
 
@@ -45,7 +45,7 @@ public class CampaignFormMetaDataFacadeEjbTest extends AbstractBeanTest {
 	public void testSaveCampaignFormData() throws Exception {
 
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		final UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+		final UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		ObjectMapper mapper = new ObjectMapper();
 
 		final CampaignDto campaign = creator.createCampaign(user);
@@ -73,13 +73,15 @@ public class CampaignFormMetaDataFacadeEjbTest extends AbstractBeanTest {
 		CampaignFormDataDto updatedCampaignFormData = getCampaignFormDataFacade().saveCampaignFormData(newCampaignFormDataDto);
 
 		assertNotNull(updatedCampaignFormData);
-		assertEquals(Arrays.asList(mapper.readValue(newFormDataWithoutNullValue, CampaignFormDataEntry[].class)), updatedCampaignFormData.getFormValues());
+		assertEquals(
+			Arrays.asList(mapper.readValue(newFormDataWithoutNullValue, CampaignFormDataEntry[].class)),
+			updatedCampaignFormData.getFormValues());
 	}
 
 	@Test
 	public void testGetCampaignFormDataByUuid() throws Exception {
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		final UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+		final UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		ObjectMapper mapper = new ObjectMapper();
 
 		final CampaignDto campaign = creator.createCampaign(user);
@@ -100,7 +102,7 @@ public class CampaignFormMetaDataFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testDeleteCampaignFormData() throws Exception {
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		final UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+		final UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		ObjectMapper mapper = new ObjectMapper();
 
 		final CampaignDto campaign = creator.createCampaign(user);

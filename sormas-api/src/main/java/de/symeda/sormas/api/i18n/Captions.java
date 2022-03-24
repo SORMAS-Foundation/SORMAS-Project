@@ -2339,6 +2339,16 @@ public interface Captions {
 	String UserRight_jurisdiction = "UserRight.jurisdiction";
 	String UserRight_jurisdictionOfRole = "UserRight.jurisdictionOfRole";
 	String userRights = "userRights";
+	String UserRole_caption = "UserRole.caption";
+	String UserRole_description = "UserRole.description";
+	String UserRole_emailNotifications = "UserRole.emailNotifications";
+	String UserRole_enabled = "UserRole.enabled";
+	String UserRole_hasAssociatedOfficer = "UserRole.hasAssociatedOfficer";
+	String UserRole_hasOptionalHealthFacility = "UserRole.hasOptionalHealthFacility";
+	String UserRole_jurisdictionLevel = "UserRole.jurisdictionLevel";
+	String UserRole_portHealthUser = "UserRole.portHealthUser";
+	String UserRole_smsNotifications = "UserRole.smsNotifications";
+	String UserRole_userRights = "UserRole.userRights";
 	String userUpdatePasswordConfirmation = "userUpdatePasswordConfirmation";
 	String Vaccination = "Vaccination";
 	String Vaccination_otherVaccineManufacturer = "Vaccination.otherVaccineManufacturer";

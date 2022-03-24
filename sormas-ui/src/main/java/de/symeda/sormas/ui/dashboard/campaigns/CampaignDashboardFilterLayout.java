@@ -27,7 +27,6 @@ import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
@@ -66,7 +65,7 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 
 		final UserDto user = UserProvider.getCurrent().getUser();
 		final CampaignJurisdictionLevel campaignJurisdictionLevel =
-			CampaignJurisdictionLevel.getByJurisdictionLevel(UserRole.getJurisdictionLevel(user.getUserRoles()));
+			CampaignJurisdictionLevel.getByJurisdictionLevel(UserProvider.getCurrent().getJurisdictionLevel());
 		dashboardDataProvider.setCampaignJurisdictionLevelGroupBy(getJurisdictionBelow(campaignJurisdictionLevel));
 
 		createCampaignFilter();
@@ -107,8 +106,7 @@ public class CampaignDashboardFilterLayout extends HorizontalLayout {
 	private void createJurisdictionFilters(CampaignJurisdictionLevel campaignJurisdictionLevel) {
 		final UserDto user = UserProvider.getCurrent().getUser();
 		final RegionReferenceDto userRegion = user.getRegion();
-		final AreaReferenceDto userArea =
-			userRegion != null ? FacadeProvider.getRegionFacade().getByUuid(userRegion.getUuid()).getArea() : null;
+		final AreaReferenceDto userArea = userRegion != null ? FacadeProvider.getRegionFacade().getByUuid(userRegion.getUuid()).getArea() : null;
 		final DistrictReferenceDto userDistrict = user.getDistrict();
 
 		dashboardDataProvider.setArea(userArea);

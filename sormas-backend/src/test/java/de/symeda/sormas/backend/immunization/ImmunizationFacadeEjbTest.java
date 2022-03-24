@@ -17,7 +17,6 @@ package de.symeda.sormas.backend.immunization;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertTrue;
 
 import java.sql.Timestamp;
@@ -41,11 +40,11 @@ import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
+import de.symeda.sormas.backend.user.DefaultUserRole;
 
 public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 
@@ -69,16 +68,31 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 			rdcf1.facility.getUuid(),
 			"Nat",
 			"User",
-			UserRole.NATIONAL_USER);
+			creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
 
-		districtUser1 = creator
-			.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(), "Surv", "Off1", UserRole.SURVEILLANCE_OFFICER);
+		districtUser1 = creator.createUser(
+			rdcf1.region.getUuid(),
+			rdcf1.district.getUuid(),
+			rdcf1.facility.getUuid(),
+			"Surv",
+			"Off1",
+			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
 
-		districtUser2 = creator
-			.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "Surv", "Off2", UserRole.SURVEILLANCE_OFFICER);
+		districtUser2 = creator.createUser(
+			rdcf2.region.getUuid(),
+			rdcf2.district.getUuid(),
+			rdcf2.facility.getUuid(),
+			"Surv",
+			"Off2",
+			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
 
-		covidLimitedDistrictUser = creator
-			.createUser(rdcf1.region.getUuid(), rdcf1.district.getUuid(), rdcf1.facility.getUuid(), "Surv", "OffCovid", UserRole.SURVEILLANCE_OFFICER);
+		covidLimitedDistrictUser = creator.createUser(
+			rdcf1.region.getUuid(),
+			rdcf1.district.getUuid(),
+			rdcf1.facility.getUuid(),
+			"Surv",
+			"OffCovid",
+			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
 		covidLimitedDistrictUser.setLimitedDisease(Disease.CORONAVIRUS);
 		getUserFacade().saveUser(covidLimitedDistrictUser);
 	}
@@ -576,7 +590,8 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 
 		final PersonDto person = creator.createPerson("John", "Doe");
 
-		ImmunizationDto immunization = getImmunizationFacade().save(creator.createImmunizationDto(
+		ImmunizationDto immunization = getImmunizationFacade().save(
+			creator.createImmunizationDto(
 				Disease.DENGUE,
 				person.toReference(),
 				nationalUser.toReference(),
@@ -664,22 +679,22 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		final PersonDto person = creator.createPerson("John", "Doe");
 
 		creator.createImmunization(
-				Disease.ANTHRAX,
-				person.toReference(),
-				nationalUser.toReference(),
-				ImmunizationStatus.ACQUIRED,
-				MeansOfImmunization.VACCINATION,
-				ImmunizationManagementStatus.COMPLETED,
-				rdcf1);
+			Disease.ANTHRAX,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf1);
 
 		creator.createImmunization(
-				Disease.CORONAVIRUS,
-				person.toReference(),
-				nationalUser.toReference(),
-				ImmunizationStatus.ACQUIRED,
-				MeansOfImmunization.VACCINATION,
-				ImmunizationManagementStatus.COMPLETED,
-				rdcf1);
+			Disease.CORONAVIRUS,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf1);
 
 		loginWith(districtUser1);
 		Assert.assertEquals(2, getImmunizationFacade().getIndexList(new ImmunizationCriteria(), 0, 100, null).size());

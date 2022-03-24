@@ -34,8 +34,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.Query;
 
-import de.symeda.sormas.api.disease.DiseaseConfigurationFacade;
-import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.ImmutablePair;
@@ -44,9 +42,9 @@ import org.apache.commons.lang3.tuple.Pair;
 import de.symeda.sormas.api.AgeGroup;
 import de.symeda.sormas.api.IntegerRange;
 import de.symeda.sormas.api.caze.CaseStatisticsFacade;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.statistics.StatisticsCaseAttribute;
 import de.symeda.sormas.api.statistics.StatisticsCaseCountDto;
@@ -55,23 +53,26 @@ import de.symeda.sormas.api.statistics.StatisticsCaseSubAttribute;
 import de.symeda.sormas.api.statistics.StatisticsGroupingKey;
 import de.symeda.sormas.api.statistics.StatisticsHelper;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
+import de.symeda.sormas.api.user.UserRoleReferenceDto;
+import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.PopulationData;
-import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb.CommunityFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb.FacilityFacadeEjbLocal;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb.RegionFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
+import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserRoleFacadeEjb;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
@@ -102,6 +103,8 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 	private CommunityFacadeEjbLocal communityFacade;
 	@EJB
 	private FacilityFacadeEjbLocal facilityFacade;
+	@EJB
+	private UserRoleFacadeEjb.UserRoleFacadeEjbLocal userRoleFacade;
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -128,6 +131,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 		Function<Integer, DistrictReferenceDto> districtProvider = id -> districtFacade.getDistrictReferenceById(id);
 		Function<Integer, CommunityReferenceDto> communityProvider = id -> communityFacade.getCommunityReferenceById(id);
 		Function<Integer, FacilityReferenceDto> healthFacilityProvider = id -> facilityFacade.getFacilityReferenceById(id);
+		Function<Integer, UserRoleReferenceDto> userRoleProvider = id -> userRoleFacade.getUserRoleReferenceById(id);
 
 		List<StatisticsCaseCountDto> caseCountResults = ((Stream<Object[]>) caseCountQuery.getResultStream()).map(result -> {
 			Object rowKey = "".equals(result[1]) ? null : result[1];
@@ -142,7 +146,8 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 					regionProvider,
 					districtProvider,
 					communityProvider,
-					healthFacilityProvider),
+					healthFacilityProvider,
+					userRoleProvider),
 				StatisticsHelper.buildGroupingKey(
 					columnKey,
 					columnGrouping,
@@ -150,7 +155,8 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 					regionProvider,
 					districtProvider,
 					communityProvider,
-					healthFacilityProvider));
+					healthFacilityProvider,
+					userRoleProvider));
 		}).collect(Collectors.toList());
 
 		if (includeZeroValues) {
@@ -158,7 +164,14 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			if (rowGrouping != null) {
 				allRowKeys = (List<StatisticsGroupingKey>) caseCriteria.getFilterValuesForGrouping(rowGrouping, rowSubGrouping);
 				if (allRowKeys == null) {
-					allRowKeys = StatisticsHelper.getAttributeGroupingKeys(rowGrouping, rowSubGrouping, diseaseConfigurationFacade, caseFacade, regionFacade, districtFacade);
+					allRowKeys = StatisticsHelper.getAttributeGroupingKeys(
+						rowGrouping,
+						rowSubGrouping,
+						diseaseConfigurationFacade,
+						caseFacade,
+						regionFacade,
+						districtFacade,
+						userRoleFacade);
 				}
 			} else {
 				allRowKeys = Arrays.asList((StatisticsGroupingKey) null);
@@ -167,7 +180,14 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 			if (columnGrouping != null) {
 				allColumnKeys = (List<StatisticsGroupingKey>) caseCriteria.getFilterValuesForGrouping(columnGrouping, columnSubGrouping);
 				if (allColumnKeys == null) {
-					allColumnKeys = StatisticsHelper.getAttributeGroupingKeys(columnGrouping, columnSubGrouping, diseaseConfigurationFacade, caseFacade, regionFacade, districtFacade);
+					allColumnKeys = StatisticsHelper.getAttributeGroupingKeys(
+						columnGrouping,
+						columnSubGrouping,
+						diseaseConfigurationFacade,
+						caseFacade,
+						regionFacade,
+						districtFacade,
+						userRoleFacade);
 				}
 			} else {
 				allColumnKeys = Arrays.asList((StatisticsGroupingKey) null);
@@ -206,7 +226,8 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 						regionProvider,
 						districtProvider,
 						communityProvider,
-						healthFacilityProvider),
+						healthFacilityProvider,
+						userRoleProvider),
 					StatisticsHelper.buildGroupingKey(
 						columnKey,
 						columnGrouping,
@@ -214,7 +235,8 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 						regionProvider,
 						districtProvider,
 						communityProvider,
-						healthFacilityProvider));
+						healthFacilityProvider,
+						userRoleProvider));
 			}).collect(Collectors.toList());
 
 			boolean rowIsPopulation = rowGrouping != null && rowGrouping.isPopulationData();
@@ -865,7 +887,7 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 				User.TABLE_NAME_USERROLES,
 				UserDto.COLUMN_NAME_USERROLE,
 				caseCriteria.getReportingUserRoles(),
-				entry -> entry.name());
+				entry -> entry.getCaption());
 		}
 
 		//////////////
@@ -1004,12 +1026,12 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 
 			communityIds = communityService.getIdsByReferenceDtos(caseCriteria.getCommunities());
 			extendFilterBuilderWithSimpleValue(
-					whereBuilder,
-					filterBuilderParameters,
-					PopulationData.TABLE_NAME,
-					PopulationData.COMMUNITY + "_id",
-					communityIds,
-					entry -> entry);
+				whereBuilder,
+				filterBuilderParameters,
+				PopulationData.TABLE_NAME,
+				PopulationData.COMMUNITY + "_id",
+				communityIds,
+				entry -> entry);
 			usesCommunitys = true;
 		} else {
 			// limit either to entries with community or to entries without community

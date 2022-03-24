@@ -20,6 +20,7 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -64,8 +65,7 @@ import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceWithTaskNumbersDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.user.UserRole.UserRoleValidationException;
+import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.user.UserSyncResult;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DefaultEntityHelper;
@@ -104,7 +104,7 @@ import de.symeda.sormas.backend.task.TaskFacadeEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.TravelEntryJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
-import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.user.UserRoleFacadeEjb.UserRoleFacadeEjbLocal;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.UserCreateEvent;
 import de.symeda.sormas.backend.user.event.UserUpdateEvent;
@@ -142,7 +142,7 @@ public class UserFacadeEjb implements UserFacade {
 	@EJB
 	private PointOfEntryService pointOfEntryService;
 	@EJB
-	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+	private UserRoleFacadeEjbLocal userRoleFacade;
 	@Inject
 	private Event<UserCreateEvent> userCreateEvent;
 	@Inject
@@ -178,7 +178,7 @@ public class UserFacadeEjb implements UserFacade {
 		target.setLanguage(source.getLanguage());
 		target.setHasConsentedToGdpr(source.isHasConsentedToGdpr());
 
-		target.setUserRoles(new HashSet<>(source.getUserRoles()));
+		target.setUserRoles(source.getUserRoles().stream().map(UserRoleFacadeEjb::toDto).collect(Collectors.toSet()));
 		return target;
 	}
 
@@ -186,14 +186,22 @@ public class UserFacadeEjb implements UserFacade {
 		if (entity == null) {
 			return null;
 		}
-		return new UserReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName(), entity.getUserRoles());
+		return new UserReferenceDto(
+			entity.getUuid(),
+			entity.getFirstName(),
+			entity.getLastName(),
+			entity.getUserRoles().stream().map(UserRole::getCaption).collect(Collectors.toSet()));
 	}
 
 	public static UserReferenceDto toReferenceDto(UserReference entity) {
 		if (entity == null) {
 			return null;
 		}
-		return new UserReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName(), entity.getUserRoles());
+		return new UserReferenceDto(
+			entity.getUuid(),
+			entity.getFirstName(),
+			entity.getLastName(),
+			entity.getUserRoles().stream().map(UserRole::getCaption).collect(Collectors.toSet()));
 	}
 
 	private List<String> toUuidList(HasUuid hasUuid) {
@@ -220,7 +228,7 @@ public class UserFacadeEjb implements UserFacade {
 	 */
 	public List<UserReferenceDto> getUsersWithSuperiorJurisdiction(UserDto user) {
 		JurisdictionLevel superordinateJurisdiction =
-			JurisdictionHelper.getSuperordinateJurisdiction(UserRole.getJurisdictionLevel(user.getUserRoles()));
+			JurisdictionHelper.getSuperordinateJurisdiction(UserRoleDto.getJurisdictionLevel(user.getUserRoles()));
 
 		List<UserReference> superiorUsersList = Collections.emptyList();
 		switch (superordinateJurisdiction) {
@@ -253,14 +261,8 @@ public class UserFacadeEjb implements UserFacade {
 			}
 
 			if (community == null) {
-				superiorUsersList =
-					userService
-						.getUserReferencesByJurisdictions(
-							null,
-							Collections.singletonList(district.getUuid()),
-							null,
-							superordinateJurisdictions,
-							null);
+				superiorUsersList = userService
+					.getUserReferencesByJurisdictions(null, Collections.singletonList(district.getUuid()), null, superordinateJurisdictions, null);
 			} else if (district != null) {
 				superiorUsersList = userService.getUserReferencesByJurisdictions(
 					null,
@@ -496,8 +498,9 @@ public class UserFacadeEjb implements UserFacade {
 		User user = fromDto(dto, true);
 
 		try {
-			UserRole.validate(user.getUserRoles());
-		} catch (UserRoleValidationException e) {
+			userRoleFacade.validateUserRoleCombination(
+				user.getUserRoles().stream().map(userRole -> UserRoleFacadeEjb.toDto(userRole)).collect(Collectors.toSet()));
+		} catch (UserRoleDto.UserRoleValidationException e) {
 			throw new ValidationException(e);
 		}
 
@@ -628,7 +631,11 @@ public class UserFacadeEjb implements UserFacade {
 		target.setLanguage(source.getLanguage());
 		target.setHasConsentedToGdpr(source.isHasConsentedToGdpr());
 
-		target.setUserRoles(new HashSet<>(source.getUserRoles()));
+		Set<UserRole> userRoles = Optional.of(target).map(User::getUserRoles).orElseGet(HashSet::new);
+		target.setUserRoles(userRoles);
+		userRoles.clear();
+		source.getUserRoles().stream().map(userRoleDto -> userRoleFacade.fromDto(userRoleDto, true)).forEach(userRoles::add);
+
 		target.updateJurisdictionLevel();
 
 		return target;
@@ -662,7 +669,7 @@ public class UserFacadeEjb implements UserFacade {
 		User user = userService.getByUserName(userName);
 		if (user != null && user.isActive()) {
 			if (DataHelper.equal(user.getPassword(), PasswordHelper.encodePassword(password, user.getSeed()))) {
-				return new HashSet<>(userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[] {})));
+				return new HashSet<>(UserRole.getUserRights(user.getUserRoles()));
 			}
 		}
 		return null;
@@ -717,7 +724,9 @@ public class UserFacadeEjb implements UserFacade {
 	@Override
 	public List<UserDto> getUsersWithDefaultPassword() {
 		User currentUser = userService.getCurrentUser();
-		if (currentUser.getUserRoles().stream().anyMatch(r -> r.hasDefaultRight(UserRight.USER_EDIT))) {
+		if (userRoleFacade.hasUserRight(
+			currentUser.getUserRoles().stream().map(userRole -> UserRoleFacadeEjb.toDto(userRole)).collect(Collectors.toSet()),
+			UserRight.USER_EDIT)) {
 			// user is allowed to change all passwords
 			// a list of all users with a default password is returned
 			return userService.getAllDefaultUsers()

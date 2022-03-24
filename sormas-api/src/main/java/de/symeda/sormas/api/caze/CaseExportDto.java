@@ -23,6 +23,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -59,7 +60,7 @@ import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
@@ -2321,8 +2322,8 @@ public class CaseExportDto implements Serializable {
 		return reportingUserRoles;
 	}
 
-	public void setReportingUserRoles(Set<UserRole> roles) {
-		this.reportingUserRoles = StringUtils.join(roles, ", ");
+	public void setReportingUserRoles(Set<UserRoleDto> roles) {
+		this.reportingUserRoles = StringUtils.join(roles.stream().map(role -> role.getCaption()).collect(Collectors.toList()), ", ");
 	}
 
 	@Order(177)
@@ -2349,8 +2350,8 @@ public class CaseExportDto implements Serializable {
 		return followUpStatusChangeUserRoles;
 	}
 
-	public void setFollowUpStatusChangeUserRoles(Set<UserRole> roles) {
-		this.followUpStatusChangeUserRoles = StringUtils.join(roles, ", ");
+	public void setFollowUpStatusChangeUserRoles(Set<UserRoleDto> roles) {
+		this.followUpStatusChangeUserRoles = StringUtils.join(roles.stream().map(role -> role.getCaption()).collect(Collectors.toList()), ", ");
 	}
 
 	public void setCountry(String country) {

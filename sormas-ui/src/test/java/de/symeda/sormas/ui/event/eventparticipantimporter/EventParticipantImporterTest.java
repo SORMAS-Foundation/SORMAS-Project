@@ -61,11 +61,11 @@ import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
+import de.symeda.sormas.backend.user.DefaultUserRole;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator.RDCF;
 import de.symeda.sormas.ui.events.eventparticipantimporter.EventParticipantImporter;
@@ -82,8 +82,13 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		EventParticipantFacadeEjbLocal eventParticipantFacade = getBean(EventParticipantFacadeEjbLocal.class);
 
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		EventDto event = creator.createEvent(
 			EventStatus.SIGNAL,
 			"Title",
@@ -121,8 +126,13 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		EventParticipantFacadeEjbLocal eventParticipantFacade = getBean(EventParticipantFacadeEjbLocal.class);
 
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		EventDto event = creator.createEvent(
 			EventStatus.SIGNAL,
 			"Title",
@@ -192,8 +202,13 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		EventParticipantFacadeEjbLocal eventParticipantFacade = getBean(EventParticipantFacadeEjbLocal.class);
 
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		EventDto event = creator.createEvent(
 			EventStatus.SIGNAL,
 			"Title",
@@ -254,8 +269,13 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		EventParticipantFacadeEjbLocal eventParticipantFacade = getBean(EventParticipantFacadeEjbLocal.class);
 
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		EventDto event = creator.createEvent(
 			EventStatus.SIGNAL,
 			"Title",
@@ -301,8 +321,13 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		EventParticipantFacadeEjbLocal eventParticipantFacade = getBean(EventParticipantFacadeEjbLocal.class);
 
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		EventDto event = creator.createEvent(
 			EventStatus.SIGNAL,
 			"Title",
@@ -346,8 +371,13 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		EventParticipantFacadeEjbLocal eventParticipantFacade = getBean(EventParticipantFacadeEjbLocal.class);
 
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		EventDto event = creator.createEvent(
 			EventStatus.SIGNAL,
 			"Title",
@@ -379,8 +409,13 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 		EventParticipantFacadeEjbLocal eventParticipantFacade = getBean(EventParticipantFacadeEjbLocal.class);
 
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		EventDto event = creator.createEvent(
 			EventStatus.SIGNAL,
 			"Title",
@@ -437,8 +472,13 @@ public class EventParticipantImporterTest extends AbstractBeanTest {
 	public void testImportWithVaccinations()
 		throws URISyntaxException, IOException, InterruptedException, CsvValidationException, InvalidColumnException {
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		EventDto event = creator.createEvent(
 			EventStatus.SIGNAL,
 			"Title",

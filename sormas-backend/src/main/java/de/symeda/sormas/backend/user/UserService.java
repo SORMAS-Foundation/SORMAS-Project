@@ -21,7 +21,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Random;
-import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -47,7 +46,6 @@ import de.symeda.sormas.api.user.NotificationProtocol;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DefaultEntityHelper;
 import de.symeda.sormas.api.utils.PasswordHelper;
@@ -69,7 +67,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 public class UserService extends AdoServiceWithUserFilter<User> {
 
 	@EJB
-	private UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+	private UserRoleFacadeEjb.UserRoleFacadeEjbLocal userRoleFacade;
 
 	public UserService() {
 		super(User.class);
@@ -120,11 +118,12 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 
 		Predicate filter = from.get(User.REGION).in(regions);
 		if (!notificationTypes.isEmpty()) {
-			// TODO #4461 replace with direct join to notification types
-			UserRole[] userRoles = UserRole.getWithNotificationTypes(notificationProtocol, notificationTypes);
-			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
-			Predicate rolesFilter = joinRoles.in(userRoles);
-			filter = CriteriaBuilderHelper.and(cb, filter, rolesFilter);
+			Join<User, UserRole> rolesJoin = from.join(User.USER_ROLES, JoinType.LEFT);
+			Join<UserRole, NotificationType> notificationsJoin = rolesJoin.join(
+				NotificationProtocol.EMAIL.equals(notificationProtocol) ? UserRole.EMAIL_NOTIFICATIONS : UserRole.SMS_NOTIFICATIONS,
+				JoinType.LEFT);
+			Predicate notificationsFilter = notificationsJoin.in(notificationTypes);
+			filter = CriteriaBuilderHelper.and(cb, filter, notificationsFilter);
 		}
 		cq.where(CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, from)));
 
@@ -449,7 +448,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(User.ACTIVE), userCriteria.getActive()));
 		}
 		if (userCriteria.getUserRole() != null) {
-			Join<User, UserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
+			Join<User, DefaultUserRole> joinRoles = from.join(User.USER_ROLES, JoinType.LEFT);
 			filter = CriteriaBuilderHelper.and(cb, filter, joinRoles.in(Collections.singletonList(userCriteria.getUserRole())));
 		}
 		if (userCriteria.getRegion() != null) {
@@ -520,12 +519,9 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 	public Predicate buildUserRightsFilter(Root<User> from, Collection<UserRight> userRights) {
 
 		if (userRights != null && !userRights.isEmpty()) {
-			// TODO #4461: Replace by joinging rights of roles
-			Set<UserRole> userRoles = userRoleConfigFacade.getEffectiveUserRoles(userRights);
-			if (!userRoles.isEmpty()) {
-				Join<User, UserRight> rolesJoin = from.join(User.USER_ROLES, JoinType.LEFT);
-				return rolesJoin.in(Collections.singletonList(userRoles));
-			}
+			Join<User, UserRole> rolesJoin = from.join(User.USER_ROLES, JoinType.LEFT);
+			Join<UserRole, UserRight> rightsJoin = rolesJoin.join(UserRole.USER_RIGHTS, JoinType.LEFT);
+			return rightsJoin.in(Collections.singletonList(userRights));
 		}
 
 		return null;
@@ -616,13 +612,12 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		return em.createQuery(cq).getSingleResult();
 	}
 
-	public boolean hasRole(UserRole userRoleName) {
-		return getCurrentUser().getUserRoles().contains(userRoleName);
+	public boolean hasRole(UserRole userRole) {
+		return getCurrentUser().getUserRoles().contains(userRole);
 	}
 
 	public boolean hasRight(UserRight right) {
-		User currentUser = getCurrentUser();
-		return userRoleConfigFacade.getEffectiveUserRights(currentUser.getUserRoles().toArray(new UserRole[0])).contains(right);
+		return getCurrentUser().getUserRoles().stream().flatMap(role -> role.getUserRights().stream()).collect(Collectors.toSet()).contains(right);
 	}
 
 	public boolean hasRegion(RegionReferenceDto regionReference) {

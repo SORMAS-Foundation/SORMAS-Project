@@ -18,6 +18,7 @@
 package de.symeda.sormas.api.user;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
@@ -39,7 +40,7 @@ public class UserDto extends EntityDto {
 
 	private static final long serialVersionUID = -8558187171374254398L;
 
-	public static final String COLUMN_NAME_USERROLE = "userrole";
+	public static final String COLUMN_NAME_USERROLE = "userrole_id";
 	public static final String COLUMN_NAME_USER_ID = "user_id";
 
 	public static final String I18N_PREFIX = "User";
@@ -80,7 +81,7 @@ public class UserDto extends EntityDto {
 	@Valid
 	private LocationDto address;
 
-	private Set<UserRole> userRoles;
+	private Set<UserRoleDto> userRoles;
 
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
@@ -168,17 +169,17 @@ public class UserDto extends EntityDto {
 		this.address = address;
 	}
 
-	public Set<UserRole> getUserRoles() {
+	public Set<UserRoleDto> getUserRoles() {
 		return userRoles;
 	}
 
-	public void setUserRoles(Set<UserRole> userRoles) {
+	public void setUserRoles(Set<UserRoleDto> userRoles) {
 		this.userRoles = userRoles;
 	}
 
 	@Override
 	public String toString() {
-		return UserReferenceDto.buildCaption(firstName, lastName, userRoles);
+		return UserReferenceDto.buildCaption(firstName, lastName, userRoles.stream().map(role -> role.getCaption()).collect(Collectors.toSet()));
 	}
 
 	public UserReferenceDto getAssociatedOfficer() {
@@ -238,7 +239,11 @@ public class UserDto extends EntityDto {
 	}
 
 	public UserReferenceDto toReference() {
-		return new UserReferenceDto(getUuid(), getFirstName(), getLastName(), getUserRoles());
+		return new UserReferenceDto(
+			getUuid(),
+			getFirstName(),
+			getLastName(),
+			getUserRoles() != null ? getUserRoles().stream().map(UserRoleDto::getCaption).collect(Collectors.toSet()) : null);
 	}
 
 	public Disease getLimitedDisease() {

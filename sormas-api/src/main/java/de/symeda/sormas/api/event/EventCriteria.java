@@ -26,15 +26,15 @@ import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.action.ActionStatus;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.disease.DiseaseVariant;
-import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
-import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.share.ExternalShareCriteria;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.IgnoreForUrl;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
@@ -68,7 +68,7 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 	private EventInvestigationStatus eventInvestigationStatus;
 	private Disease disease;
 	private DiseaseVariant diseaseVariant;
-	private UserRole reportingUserRole;
+	private UserRoleDto reportingUserRole;
 	private Boolean deleted = Boolean.FALSE;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
@@ -205,11 +205,11 @@ public class EventCriteria extends CriteriaWithDateType implements ExternalShare
 		this.userFilterIncluded = userFilterIncluded;
 	}
 
-	public UserRole getReportingUserRole() {
+	public UserRoleDto getReportingUserRole() {
 		return reportingUserRole;
 	}
 
-	public void setReportingUserRole(UserRole reportingUserRole) {
+	public void setReportingUserRole(UserRoleDto reportingUserRole) {
 		this.reportingUserRole = reportingUserRole;
 	}
 

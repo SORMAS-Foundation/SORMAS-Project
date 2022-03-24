@@ -12,7 +12,7 @@ public class UserCriteria extends BaseCriteria implements Serializable {
 	private static final long serialVersionUID = 1702083604616047628L;
 
 	private Boolean active;
-	private UserRole userRole;
+	private UserRoleReferenceDto userRole;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private String freeText;
@@ -26,12 +26,12 @@ public class UserCriteria extends BaseCriteria implements Serializable {
 		return active;
 	}
 
-	public UserCriteria userRole(UserRole userRole) {
+	public UserCriteria userRole(UserRoleReferenceDto userRole) {
 		this.userRole = userRole;
 		return this;
 	}
 
-	public UserRole getUserRole() {
+	public UserRoleReferenceDto getUserRole() {
 		return userRole;
 	}
 

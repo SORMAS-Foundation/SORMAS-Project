@@ -16,7 +16,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.util.CurrentInstance;
 import com.vaadin.v7.data.util.converter.ConverterFactory;
 
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.backend.user.DefaultUserRole;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.SormasDefaultConverterFactory;
@@ -28,7 +28,14 @@ public class CaseControllerTest extends AbstractBeanTest {
 	@Before
 	public void initUI() throws Exception {
 
-		creator.createUser(null, null, null, "ad", "min", UserRole.ADMIN, UserRole.NATIONAL_USER);
+		creator.createUser(
+			null,
+			null,
+			null,
+			"ad",
+			"min",
+			creator.userRoleDtoMap.get(DefaultUserRole.ADMIN),
+			creator.userRoleDtoMap.get(DefaultUserRole.NATIONAL_USER));
 
 		VaadinRequest request = Mockito.mock(VaadinServletRequest.class);
 		when(request.getUserPrincipal()).thenReturn((Principal) () -> "admin");

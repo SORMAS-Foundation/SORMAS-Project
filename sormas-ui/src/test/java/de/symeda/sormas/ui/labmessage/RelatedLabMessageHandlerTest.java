@@ -35,7 +35,6 @@ import java.util.function.BiFunction;
 import java.util.function.Function;
 import java.util.function.Supplier;
 
-import de.symeda.sormas.api.sample.SampleReferenceDto;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -56,10 +55,11 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.user.DefaultUserRole;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
 import de.symeda.sormas.ui.labmessage.RelatedLabMessageHandler.CorrectedEntityHandler;
@@ -103,7 +103,7 @@ public class RelatedLabMessageHandlerTest extends AbstractBeanTest {
 		lab.setDistrict(rdcf.district.toReference());
 		getFacilityFacade().save(lab);
 
-		userRef = creator.createUser(rdcf, UserRole.NATIONAL_USER).toReference();
+		userRef = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER)).toReference();
 		person = creator.createPerson("James", "Smith", Sex.MALE);
 
 		personChangesHandler = Mockito.mock(CorrectedEntityHandler.class);

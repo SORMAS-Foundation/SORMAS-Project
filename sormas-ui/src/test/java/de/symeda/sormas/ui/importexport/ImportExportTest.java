@@ -58,10 +58,10 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.backend.user.DefaultUserRole;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
 import de.symeda.sormas.ui.caze.importer.CaseImporterTest.CaseImporterExtension;
@@ -74,7 +74,7 @@ public class ImportExportTest extends AbstractBeanTest {
 	@Test
 	public void testImportExportedCase() throws IOException, CsvException, InvalidColumnException, InterruptedException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Health facility");
-		UserDto user = creator.createUser(null, null, null, "james", "Smith", UserRole.NATIONAL_USER);
+		UserDto user = creator.createUser(null, null, null, "james", "Smith", creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson("John", "Doe");
 
 		Date dateNow = new Date();
@@ -230,7 +230,7 @@ public class ImportExportTest extends AbstractBeanTest {
 	@Test
 	public void testImportExportedContact() throws IOException, CsvException, InvalidColumnException, InterruptedException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Health facility");
-		UserDto user = creator.createUser(null, null, null, "james", "Smith", UserRole.NATIONAL_USER);
+		UserDto user = creator.createUser(null, null, null, "james", "Smith", creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson("John", "Doe");
 
 		Date dateNow = new Date();
@@ -324,7 +324,6 @@ public class ImportExportTest extends AbstractBeanTest {
 		if (errorRows.size() > 1) {
 			assertThat("Error during import: " + StringUtils.join(errorRows.get(1), ", "), errorRows, hasSize(0));
 		}
-
 
 		PersonCriteria importPersonCriteria = new PersonCriteria();
 		importPersonCriteria.setNameAddressPhoneEmailLike("Import John");

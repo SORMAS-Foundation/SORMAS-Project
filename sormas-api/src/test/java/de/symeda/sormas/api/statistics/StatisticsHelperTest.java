@@ -16,17 +16,17 @@ public class StatisticsHelperTest {
 	public void testBuildGroupingKey() {
 
 		EpiWeek epiWeek = (EpiWeek) StatisticsHelper
-			.buildGroupingKey(1803, StatisticsCaseAttribute.REPORT_TIME, StatisticsCaseSubAttribute.EPI_WEEK_OF_YEAR, null, null, null, null);
+			.buildGroupingKey(1803, StatisticsCaseAttribute.REPORT_TIME, StatisticsCaseSubAttribute.EPI_WEEK_OF_YEAR, null, null, null, null, null);
 		assertThat(epiWeek.getYear(), equalTo(18));
 		assertThat(epiWeek.getWeek(), equalTo(3));
 
 		MonthOfYear monthOfYear = (MonthOfYear) StatisticsHelper
-			.buildGroupingKey(1811, StatisticsCaseAttribute.REPORT_TIME, StatisticsCaseSubAttribute.MONTH_OF_YEAR, null, null, null, null);
+			.buildGroupingKey(1811, StatisticsCaseAttribute.REPORT_TIME, StatisticsCaseSubAttribute.MONTH_OF_YEAR, null, null, null, null, null);
 		assertThat(monthOfYear.getYear().getValue(), equalTo(18));
 		assertThat(monthOfYear.getMonth(), equalTo(Month.NOVEMBER));
 
 		QuarterOfYear quarterOfYear = (QuarterOfYear) StatisticsHelper
-			.buildGroupingKey(182, StatisticsCaseAttribute.REPORT_TIME, StatisticsCaseSubAttribute.QUARTER_OF_YEAR, null, null, null, null);
+			.buildGroupingKey(182, StatisticsCaseAttribute.REPORT_TIME, StatisticsCaseSubAttribute.QUARTER_OF_YEAR, null, null, null, null, null);
 		assertThat(quarterOfYear.getYear().getValue(), equalTo(18));
 		assertThat(quarterOfYear.getQuarter().getValue(), equalTo(2));
 	}

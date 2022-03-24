@@ -22,7 +22,7 @@ import de.symeda.sormas.api.importexport.ValueSeparator;
 import de.symeda.sormas.api.infrastructure.country.CountryCriteria;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.backend.user.DefaultUserRole;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
 import de.symeda.sormas.ui.caze.importer.CountryImporter;
@@ -36,7 +36,13 @@ public class CountryImporterTest extends AbstractBeanTest {
 	public void testUmlautsInCountryImport()
 		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 		TestDataCreator.RDCF rdcf = new TestDataCreator().createRDCF("Default Region", "Default District", "Default Community", "Default Facility");
-		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Default", "User", UserRole.ADMIN);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Default",
+			"User",
+			creator.getUserRoleDtoMap().get(DefaultUserRole.ADMIN));
 
 		File countryCsvFile = new File(getClass().getClassLoader().getResource("sormas_country_import_test.csv").toURI());
 		InfrastructureImporter importer = new CountryImporterExtension(countryCsvFile, user);
@@ -49,7 +55,13 @@ public class CountryImporterTest extends AbstractBeanTest {
 	public void testDontImportDuplicateCountry()
 		throws IOException, InvalidColumnException, InterruptedException, CsvValidationException, URISyntaxException {
 		TestDataCreator.RDCF rdcf = new TestDataCreator().createRDCF("Default Region", "Default District", "Default Community", "Default Facility");
-		UserDto user = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Default", "User", UserRole.ADMIN);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Default",
+			"User",
+			creator.getUserRoleDtoMap().get(DefaultUserRole.ADMIN));
 
 		File countryCsvFile = new File(getClass().getClassLoader().getResource("sormas_country_import_test.csv").toURI());
 		InfrastructureImporter importer = new CountryImporterExtension(countryCsvFile, user);

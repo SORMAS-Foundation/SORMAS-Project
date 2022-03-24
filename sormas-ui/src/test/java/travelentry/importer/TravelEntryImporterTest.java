@@ -24,10 +24,10 @@ import java.io.File;
 import java.io.IOException;
 import java.io.Writer;
 import java.net.URISyntaxException;
-import java.util.Date;
-import java.util.List;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.io.output.StringBuilderWriter;
 import org.junit.Test;
@@ -42,8 +42,8 @@ import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryDto;
 import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryType;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.user.DefaultUserRole;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.MockProducer;
 import de.symeda.sormas.ui.TestDataCreator;
@@ -122,7 +122,13 @@ public class TravelEntryImporterTest extends AbstractBeanTest {
 		otherPoe.setDistrict(rdp.district.toReference());
 		getPointOfEntryFacade().save(otherPoe);
 
-		UserDto user = creator.createUser(rdp.region.getUuid(), rdp.district.getUuid(), null, "James", "Smith", UserRole.SURVEILLANCE_OFFICER);
+		UserDto user = creator.createUser(
+			rdp.region.getUuid(),
+			rdp.district.getUuid(),
+			null,
+			"James",
+			"Smith",
+			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		loginWith(user);
 
@@ -160,7 +166,13 @@ public class TravelEntryImporterTest extends AbstractBeanTest {
 		TestDataCreator tdc = new TestDataCreator();
 		TestDataCreator.RDP rdp = tdc.createRDP();
 
-		UserDto user = creator.createUser(rdp.region.getUuid(), rdp.district.getUuid(), null, "James", "Smith", UserRole.SURVEILLANCE_OFFICER);
+		UserDto user = creator.createUser(
+			rdp.region.getUuid(),
+			rdp.district.getUuid(),
+			null,
+			"James",
+			"Smith",
+			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		loginWith(user);
 

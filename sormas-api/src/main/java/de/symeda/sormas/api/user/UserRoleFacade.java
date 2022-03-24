@@ -27,47 +27,43 @@ import javax.ejb.Remote;
 import javax.validation.Valid;
 
 @Remote
-public interface UserRoleConfigFacade {
+public interface UserRoleFacade {
 
-	List<UserRoleConfigDto> getAllAfter(Date date);
+	JurisdictionLevel getJurisdictionLevel(Collection<UserRoleDto> roles);
 
-	List<UserRoleConfigDto> getAll();
+	List<UserRoleDto> getAllAfter(Date date);
+
+	List<UserRoleDto> getAll();
 
 	List<String> getAllUuids();
 
 	List<String> getDeletedUuids(Date date);
 
-	UserRoleConfigDto getByUuid(String uuid);
+	UserRoleDto getByUuid(String uuid);
 
-	UserRoleConfigDto saveUserRoleConfig(@Valid UserRoleConfigDto dto);
+	UserRoleDto saveUserRole(@Valid UserRoleDto dto);
 
-	void deleteUserRoleConfig(UserRoleConfigDto dto);
+	void deleteUserRole(UserRoleDto dto);
 
-	/**
-	 * Will fallback to default user rights for each role that has no configuration defined
-	 */
-	Set<UserRight> getEffectiveUserRights(UserRole... userRoles);
+	boolean hasUserRight(Collection<UserRoleDto> userRoles, UserRight userRight);
 
-	/**
-	 * Will fallback to default user rights for each role that has no configuration defined
-	 */
-	Set<UserRight> getEffectiveUserRights(Collection<UserRole> userRoles);
+	boolean hasAnyUserRight(Collection<UserRoleDto> userRoles, Collection<UserRight> userRights);
 
-	/**
-	 * Will fallback to default user rights for each role that has no configuration defined
-	 */
-	Set<UserRole> getEffectiveUserRoles(UserRight... userRights);
+	Set<UserRoleDto> getEnabledUserRoles();
 
-	boolean hasUserRight(Collection<UserRole> userRoles, UserRight userRight);
+	Set<UserRoleReferenceDto> getAllAsReference();
 
-	boolean hasAnyUserRight(Collection<UserRole> userRoles, Collection<UserRight> userRights);
+	List<UserRoleReferenceDto> getAllActiveAsReference();
 
-	/**
-	 * Will fallback to default user rights for each role that has no configuration defined
-	 */
-	Set<UserRole> getEffectiveUserRoles(Collection<UserRight> userRights);
+	boolean isPortHealthUser(Set<UserRoleDto> userRoles);
 
-	Set<UserRole> getEnabledUserRoles();
+	boolean hasAssociatedOfficer(Set<UserRoleDto> userRoles);
 
-	Map<UserRole, Set<UserRight>> getUserRoleRights();
+	boolean hasOptionalHealthFacility(Set<UserRoleDto> userRoles);
+
+	void validateUserRoleCombination(Collection<UserRoleDto> roles) throws UserRoleDto.UserRoleValidationException;
+
+	UserRoleReferenceDto getUserRoleReferenceById(long id);
+
+	Map<UserRoleDto, Set<UserRight>> getUserRoleRights();
 }

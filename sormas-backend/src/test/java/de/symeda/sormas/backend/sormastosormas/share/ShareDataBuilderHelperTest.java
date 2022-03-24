@@ -22,12 +22,6 @@ import static org.hamcrest.Matchers.nullValue;
 
 import java.util.Date;
 
-import de.symeda.sormas.api.sample.PathogenTestDto;
-import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.backend.infrastructure.district.District;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.region.Region;
-import de.symeda.sormas.backend.sormastosormas.SormasToSormasTest;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -42,11 +36,17 @@ import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasConfig;
 import de.symeda.sormas.api.user.UserReferenceDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.MockProducer;
+import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.sormastosormas.SormasToSormasTest;
+import de.symeda.sormas.backend.user.DefaultUserRole;
 
 /**
  * @author Alex Vidrean
@@ -59,7 +59,8 @@ public class ShareDataBuilderHelperTest extends SormasToSormasTest {
 	@Test
 	public void testClearIgnoredPropertiesForCase() {
 		PersonDto personDto = creator.createPerson();
-		UserReferenceDto officerReferenceDto = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+		UserReferenceDto officerReferenceDto =
+			creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		CaseDataDto caseDataDto = creator.createCase(officerReferenceDto, rdcf, dto -> {
 			dto.setPerson(personDto.toReference());
 			dto.setSurveillanceOfficer(officerReferenceDto);
@@ -88,7 +89,8 @@ public class ShareDataBuilderHelperTest extends SormasToSormasTest {
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
 
 		PersonDto personDto = creator.createPerson();
-		UserReferenceDto officerReferenceDto = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+		UserReferenceDto officerReferenceDto =
+			creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		CaseDataDto caseDataDto = creator.createCase(officerReferenceDto, rdcf, dto -> {
 			dto.setPerson(personDto.toReference());
 			dto.setSurveillanceOfficer(officerReferenceDto);
@@ -112,7 +114,8 @@ public class ShareDataBuilderHelperTest extends SormasToSormasTest {
 	public void testClearIgnoredPropertiesForContact() {
 
 		PersonReferenceDto personReferenceDto = creator.createPerson().toReference();
-		UserReferenceDto officerReferenceDto = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+		UserReferenceDto officerReferenceDto =
+			creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		ContactDto contactDto = creator.createContact(officerReferenceDto, personReferenceDto);
 		contactDto.setAdditionalDetails("additionalDetails");
 		contactDto.setExternalID("externalId");
@@ -137,7 +140,8 @@ public class ShareDataBuilderHelperTest extends SormasToSormasTest {
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
 
 		PersonReferenceDto personReferenceDto = creator.createPerson().toReference();
-		UserReferenceDto officerReferenceDto = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+		UserReferenceDto officerReferenceDto =
+			creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		ContactDto contactDto = creator.createContact(officerReferenceDto, personReferenceDto);
 		contactDto.setAdditionalDetails("additionalDetails");
 		contactDto.setExternalID("externalId");
@@ -156,7 +160,8 @@ public class ShareDataBuilderHelperTest extends SormasToSormasTest {
 	@Test
 	public void testClearIgnoredPropertiesForEvent() {
 
-		UserReferenceDto officerReferenceDto = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+		UserReferenceDto officerReferenceDto =
+			creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		EventDto eventDto = creator.createEvent(officerReferenceDto);
 		eventDto.setDisease(Disease.CORONAVIRUS);
 		eventDto.setExternalId("externalId");
@@ -179,7 +184,8 @@ public class ShareDataBuilderHelperTest extends SormasToSormasTest {
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_EXTERNAL_TOKEN, Boolean.FALSE.toString());
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
 
-		UserReferenceDto officerReferenceDto = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+		UserReferenceDto officerReferenceDto =
+			creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		EventDto eventDto = creator.createEvent(officerReferenceDto);
 		eventDto.setDisease(Disease.CORONAVIRUS);
 		eventDto.setExternalId("externalId");
@@ -238,7 +244,8 @@ public class ShareDataBuilderHelperTest extends SormasToSormasTest {
 	public void testClearIgnoredPropertiesForImmunization() {
 
 		PersonReferenceDto personReferenceDto = creator.createPerson().toReference();
-		UserReferenceDto officerReferenceDto = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+		UserReferenceDto officerReferenceDto =
+			creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		ImmunizationDto immunizationDto = creator.createImmunization(
 			Disease.CORONAVIRUS,
 			personReferenceDto,
@@ -271,7 +278,8 @@ public class ShareDataBuilderHelperTest extends SormasToSormasTest {
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
 
 		PersonReferenceDto personReferenceDto = creator.createPerson().toReference();
-		UserReferenceDto officerReferenceDto = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+		UserReferenceDto officerReferenceDto =
+			creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		ImmunizationDto immunizationDto = creator.createImmunization(
 			Disease.CORONAVIRUS,
 			personReferenceDto,
@@ -299,7 +307,8 @@ public class ShareDataBuilderHelperTest extends SormasToSormasTest {
 	public void testClearIgnoredPropertiesForPathogenTest() {
 
 		PersonDto personDto = creator.createPerson();
-		UserReferenceDto officerReferenceDto = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+		UserReferenceDto officerReferenceDto =
+			creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		CaseDataDto caseDataDto = creator.createCase(officerReferenceDto, rdcf, dto -> {
 			dto.setPerson(personDto.toReference());
 			dto.setSurveillanceOfficer(officerReferenceDto);
@@ -330,7 +339,8 @@ public class ShareDataBuilderHelperTest extends SormasToSormasTest {
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
 
 		PersonDto personDto = creator.createPerson();
-		UserReferenceDto officerReferenceDto = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER).toReference();
+		UserReferenceDto officerReferenceDto =
+			creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		CaseDataDto caseDataDto = creator.createCase(officerReferenceDto, rdcf, dto -> {
 			dto.setPerson(personDto.toReference());
 			dto.setSurveillanceOfficer(officerReferenceDto);

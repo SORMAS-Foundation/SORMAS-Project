@@ -32,7 +32,7 @@ import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.backend.user.DefaultUserRole;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.TestDataCreator;
 
@@ -46,8 +46,13 @@ public class GermanCaseClassificationValidatorTest extends AbstractBeanTest {
 
 		final TestDataCreator creator = new TestDataCreator();
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("region", "district", "community", "facility");
-		final UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		final UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.userRoleDtoMap.get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		final PersonDto cazePerson = creator.createPerson("Case", "Person");
 		final CaseDataDto caze = creator.createCase(
 			user.toReference(),

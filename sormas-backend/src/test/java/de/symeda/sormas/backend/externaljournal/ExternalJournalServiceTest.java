@@ -68,7 +68,6 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.MockProducer;
@@ -77,6 +76,7 @@ import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.user.DefaultUserRole;
 
 public class ExternalJournalServiceTest extends AbstractBeanTest {
 
@@ -90,7 +90,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	@Before
 	public void init() {
 		super.init();
-		natUser = creator.createUser("", "", "", "Nat", "Usr", UserRole.NATIONAL_USER);
+		natUser = creator.createUser("", "", "", "Nat", "Usr", creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
 		rdcf = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1");
 		when(MockProducer.getPrincipal().getName()).thenReturn("NatUsr");
 

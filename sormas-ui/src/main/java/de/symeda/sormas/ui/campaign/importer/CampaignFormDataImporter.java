@@ -1,6 +1,5 @@
 package de.symeda.sormas.ui.campaign.importer;
 
-import de.symeda.sormas.api.importexport.ImportErrorException;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.io.File;
@@ -39,6 +38,7 @@ import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
+import de.symeda.sormas.api.importexport.ImportErrorException;
 import de.symeda.sormas.api.importexport.ImportLineResultDto;
 import de.symeda.sormas.api.importexport.InvalidColumnException;
 import de.symeda.sormas.api.importexport.ValueSeparator;
@@ -48,8 +48,8 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
+import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.campaign.campaigndata.CampaignFormDataSelectionField;
 import de.symeda.sormas.ui.importer.DataImporter;
 import de.symeda.sormas.ui.importer.ImportLineResult;
@@ -181,7 +181,8 @@ public class CampaignFormDataImporter extends DataImporter {
 						new String[] {
 							propertyPath })) {
 						final UserDto currentUserDto = userFacade.getByUuid(currentUser.getUuid());
-						final JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(currentUserDto.getUserRoles());
+						final JurisdictionLevel jurisdictionLevel =
+							FacadeProvider.getUserRoleFacade().getJurisdictionLevel(currentUserDto.getUserRoles());
 
 						if (propertyType.isAssignableFrom(DistrictReferenceDto.class)) {
 							if (jurisdictionLevel == JurisdictionLevel.DISTRICT && !currentUserDto.getDistrict().getCaption().equals(entry[i])) {
@@ -282,7 +283,7 @@ public class CampaignFormDataImporter extends DataImporter {
 		final Class<?> propertyType = pd.getPropertyType();
 		if (propertyType.isAssignableFrom(RegionReferenceDto.class)) {
 			final UserDto currentUserDto = userFacade.getByUuid(currentUser.getUuid());
-			final JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(currentUserDto.getUserRoles());
+			final JurisdictionLevel jurisdictionLevel = UserProvider.getCurrent().getJurisdictionLevel();
 			if (jurisdictionLevel == JurisdictionLevel.REGION && !currentUserDto.getRegion().getCaption().equals(entry)) {
 				throw new ImportErrorException(
 					I18nProperties

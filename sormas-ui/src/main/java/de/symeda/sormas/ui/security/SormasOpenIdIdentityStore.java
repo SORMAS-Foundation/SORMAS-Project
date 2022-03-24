@@ -31,7 +31,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRoleDto;
 import fish.payara.security.openid.OpenIdCredential;
 import fish.payara.security.openid.OpenIdIdentityStore;
 import fish.payara.security.openid.api.AccessToken;
@@ -80,8 +80,7 @@ public class SormasOpenIdIdentityStore implements IdentityStore {
 	private Set<String> getCallerGroups(UserDto user) {
 
 		if (user != null) {
-			Set<UserRight> userRights =
-				FacadeProvider.getUserRoleConfigFacade().getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[] {}));
+			Set<UserRight> userRights = UserRoleDto.getUserRights(user.getUserRoles());
 
 			return userRights.stream().map(Enum::name).collect(Collectors.toSet());
 		}

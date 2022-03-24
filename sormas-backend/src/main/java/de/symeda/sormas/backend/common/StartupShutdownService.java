@@ -14,7 +14,6 @@
  */
 package de.symeda.sormas.backend.common;
 
-import de.symeda.sormas.api.user.UserRight;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -55,7 +54,6 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
-import de.symeda.sormas.backend.audit.AuditLogger;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -70,10 +68,11 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityCriteria;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DefaultEntityHelper;
 import de.symeda.sormas.api.utils.PasswordHelper;
+import de.symeda.sormas.backend.audit.AuditLogger;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -98,7 +97,10 @@ import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntryService;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb;
+import de.symeda.sormas.backend.user.DefaultUserRole;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserRole;
+import de.symeda.sormas.backend.user.UserRoleService;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.user.event.PasswordResetEvent;
 import de.symeda.sormas.backend.user.event.UserUpdateEvent;
@@ -168,6 +170,8 @@ public class StartupShutdownService {
 	private Event<UserUpdateEvent> userUpdateEvent;
 	@EJB
 	private DeletionConfigurationService deletionConfigurationService;
+	@EJB
+	private UserRoleService userRoleService;
 
 	@Inject
 	private Event<PasswordResetEvent> passwordResetEvent;
@@ -205,6 +209,8 @@ public class StartupShutdownService {
 
 		pointOfEntryService.createConstantPointsOfEntry();
 
+		upgrade(); // Has to be called before createDefaultUsers.
+
 		createDefaultUsers();
 
 		createOrUpdateSormasToSormasUser();
@@ -214,8 +220,6 @@ public class StartupShutdownService {
 		createOrUpdatePatientDiaryUser();
 
 		syncUsers();
-
-		upgrade();
 
 		createImportTemplateFiles();
 
@@ -316,20 +320,23 @@ public class StartupShutdownService {
 		}
 	}
 
+	// UserRoles are created via SQL
+	private void editDefaultUserRoles() {
+		Arrays.stream(DefaultUserRole.values()).forEach(role -> editAndPersistDefaultUserRole(role));
+	}
+
 	private void createDefaultUsers() {
 
 		if (userService.count() == 0) {
 
 			// Create Admin
-			//@formatter:off
-            createAndPersistDefaultUser(
-                    UserRole.ADMIN,
-                    "ad",
-                    "min",
-                    DefaultEntityHelper.ADMIN_USERNAME_AND_PASSWORD,
-                    u -> {
-                    });
-            //@formatter:on
+			createAndPersistDefaultUser(
+				userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.ADMIN)),
+				"ad",
+				"min",
+				DefaultEntityHelper.ADMIN_USERNAME_AND_PASSWORD,
+				u -> {
+				});
 
 			if (!configFacade.isCreateDefaultEntities()) {
 				// return if isCreateDefaultEntities() is false
@@ -350,7 +357,7 @@ public class StartupShutdownService {
 
 			// Create Surveillance Supervisor
 			createAndPersistDefaultUser(
-				UserRole.SURVEILLANCE_SUPERVISOR,
+				userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.SURVEILLANCE_SUPERVISOR)),
 				"Surveillance",
 				"Supervisor",
 				DefaultEntityHelper.SURV_SUP_USERNAME_AND_PASSWORD,
@@ -358,7 +365,7 @@ public class StartupShutdownService {
 
 			// Create Case Supervisor
 			createAndPersistDefaultUser(
-				UserRole.CASE_SUPERVISOR,
+				userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.CASE_SUPERVISOR)),
 				"Case",
 				"Supervisor",
 				DefaultEntityHelper.CASE_SUP_USERNAME_AND_PASSWORD,
@@ -366,7 +373,7 @@ public class StartupShutdownService {
 
 			// Create Contact Supervisor
 			createAndPersistDefaultUser(
-				UserRole.CONTACT_SUPERVISOR,
+				userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.CONTACT_SUPERVISOR)),
 				"Contact",
 				"Supervisor",
 				DefaultEntityHelper.CONT_SUP_USERNAME_AND_PASSWORD,
@@ -374,7 +381,7 @@ public class StartupShutdownService {
 
 			// Create Point of Entry Supervisor
 			createAndPersistDefaultUser(
-				UserRole.POE_SUPERVISOR,
+				userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.POE_SUPERVISOR)),
 				"Point of Entry",
 				"Supervisor",
 				DefaultEntityHelper.POE_SUP_USERNAME_AND_PASSWORD,
@@ -382,7 +389,7 @@ public class StartupShutdownService {
 
 			// Create Laboratory Officer
 			createAndPersistDefaultUser(
-				UserRole.LAB_USER,
+				userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.LAB_USER)),
 				"Laboratory",
 				"Officer",
 				DefaultEntityHelper.LAB_OFF_USERNAME_AND_PASSWORD,
@@ -390,92 +397,79 @@ public class StartupShutdownService {
 
 			// Create Event Officer
 			createAndPersistDefaultUser(
-				UserRole.EVENT_OFFICER,
+				userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.EVENT_OFFICER)),
 				"Event",
 				"Officer",
 				DefaultEntityHelper.EVE_OFF_USERNAME_AND_PASSWORD,
 				u -> u.setRegion(region));
 
 			// Create National User
-			//@formatter:off
-            createAndPersistDefaultUser(
-                    UserRole.NATIONAL_USER,
-                    "National",
-                    "User",
-                    DefaultEntityHelper.NAT_USER_USERNAME_AND_PASSWORD,
-                    u -> {
-                    });
-            //@formatter:on
+			createAndPersistDefaultUser(
+				userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.NATIONAL_USER)),
+				"National",
+				"User",
+				DefaultEntityHelper.NAT_USER_USERNAME_AND_PASSWORD,
+				u -> {
+				});
 
 			// Create National Clinician
-			//@formatter:off
-            createAndPersistDefaultUser(
-                    UserRole.NATIONAL_CLINICIAN,
-                    "National",
-                    "Clinician",
-                    DefaultEntityHelper.NAT_CLIN_USERNAME_AND_PASSWORD,
-                    u -> {
-                    });
-            //@formatter:on
+			createAndPersistDefaultUser(
+				userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.NATIONAL_CLINICIAN)),
+				"National",
+				"Clinician",
+				DefaultEntityHelper.NAT_CLIN_USERNAME_AND_PASSWORD,
+				u -> {
+				});
 
 			// Create Surveillance Officer
-			//@formatter:off
-            User surveillanceOfficer = createAndPersistDefaultUser(
-                    UserRole.SURVEILLANCE_OFFICER,
-                    "Surveillance",
-                    "Officer",
-                    DefaultEntityHelper.SURV_OFF_USERNAME_AND_PASSWORD,
-                    u -> {
-                        u.setRegion(region);
-                        u.setDistrict(district);
-                    });
-            //@formatter:on
+			User surveillanceOfficer = createAndPersistDefaultUser(
+				userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.SURVEILLANCE_OFFICER)),
+				"Surveillance",
+				"Officer",
+				DefaultEntityHelper.SURV_OFF_USERNAME_AND_PASSWORD,
+				u -> {
+					u.setRegion(region);
+					u.setDistrict(district);
+				});
 
 			// Create Hospital Informant
-			//@formatter:off
-            createAndPersistDefaultUser(
-                    UserRole.HOSPITAL_INFORMANT,
-                    "Hospital",
-                    "Informant",
-                    DefaultEntityHelper.HOSP_INF_USERNAME_AND_PASSWORD,
-                    u -> {
-                        u.setRegion(region);
-                        u.setDistrict(district);
-                        u.setHealthFacility(facility);
-                        u.setAssociatedOfficer(surveillanceOfficer);
-                    });
-            //@formatter:on
+			createAndPersistDefaultUser(
+				userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.HOSPITAL_INFORMANT)),
+				"Hospital",
+				"Informant",
+				DefaultEntityHelper.HOSP_INF_USERNAME_AND_PASSWORD,
+				u -> {
+					u.setRegion(region);
+					u.setDistrict(district);
+					u.setHealthFacility(facility);
+					u.setAssociatedOfficer(surveillanceOfficer);
+				});
 
 			// Create Community Officer
-			//@formatter:off
-            createAndPersistDefaultUser(
-                    UserRole.COMMUNITY_OFFICER,
-                    "Community",
-                    "Officer",
-                    DefaultEntityHelper.COMM_OFF_USERNAME_AND_PASSWORD,
-                    u -> {
-                        u.setRegion(region);
-                        u.setDistrict(district);
-                        u.setCommunity(community);
-                    });
-            //@formatter:on
+			createAndPersistDefaultUser(
+				userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.COMMUNITY_OFFICER)),
+				"Community",
+				"Officer",
+				DefaultEntityHelper.COMM_OFF_USERNAME_AND_PASSWORD,
+				u -> {
+					u.setRegion(region);
+					u.setDistrict(district);
+					u.setCommunity(community);
+				});
 
 			// Create Poe Informant
-			//@formatter:off
-            createAndPersistDefaultUser(
-                    UserRole.POE_INFORMANT,
-                    "Poe",
-                    "Informant",
-                    DefaultEntityHelper.POE_INF_USERNAME_AND_PASSWORD,
-                    u -> {
-                        u.setUserName("PoeInf");
-                        u.setRegion(region);
-                        u.setDistrict(district);
-                        u.setPointOfEntry(pointOfEntry);
-                        u.setAssociatedOfficer(surveillanceOfficer);
-                    });
-            //@formatter:on
-
+			createAndPersistDefaultUser(
+				userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.POE_INFORMANT)),
+				"Poe",
+				"Informant",
+				DefaultEntityHelper.POE_INF_USERNAME_AND_PASSWORD,
+				u -> {
+					u.setUserName("PoeInf");
+					u.setRegion(region);
+					u.setDistrict(district);
+					u.setPointOfEntry(pointOfEntry);
+					u.setAssociatedOfficer(surveillanceOfficer);
+				});
 		}
 	}
 
@@ -493,6 +487,21 @@ public class StartupShutdownService {
 		return user;
 	}
 
+	private UserRole editAndPersistDefaultUserRole(DefaultUserRole defaultUserRole) {
+		UserRole userRole = userRoleService.getByCaption(defaultUserRole.name());
+		userRole.setCaption(I18nProperties.getEnumCaption(defaultUserRole));
+		userRole.setPortHealthUser(defaultUserRole.isPortHealthUser());
+		userRole.setHasAssociatedOfficer(defaultUserRole.hasAssociatedOfficer());
+		userRole.setHasOptionalHealthFacility(DefaultUserRole.hasOptionalHealthFacility(Collections.singleton(defaultUserRole)));
+		userRole.setEnabled(true);
+		userRole.setJurisdictionLevel(defaultUserRole.getJurisdictionLevel());
+		userRole.setSmsNotifications(defaultUserRole.getSmsNotifications());
+		userRole.setEmailNotifications(defaultUserRole.getEmailNotifications());
+		userRole.setUserRights(defaultUserRole.getDefaultUserRights());
+		userRoleService.persist(userRole);
+		return userRole;
+	}
+
 	private void createOrUpdateSormasToSormasUser() {
 		if (sormasToSormasFacadeEjb.isFeatureConfigured()) {
 			// password is never used, just to prevent login as this user
@@ -501,7 +510,7 @@ public class StartupShutdownService {
 			rnd.nextBytes(pwd);
 
 			createOrUpdateDefaultUser(
-				Collections.singleton(UserRole.SORMAS_TO_SORMAS_CLIENT),
+				Collections.singleton(userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.SORMAS_TO_SORMAS_CLIENT))),
 				DefaultEntityHelper.SORMAS_TO_SORMAS_USER_NAME,
 				new String(pwd),
 				"Sormas to Sormas",
@@ -518,7 +527,10 @@ public class StartupShutdownService {
 		}
 
 		createOrUpdateDefaultUser(
-			new HashSet<>(Arrays.asList(UserRole.REST_USER, UserRole.REST_EXTERNAL_VISITS_USER)),
+			new HashSet<>(
+				Arrays.asList(
+					userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.REST_USER)),
+					userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.REST_EXTERNAL_VISITS_USER)))),
 			userConfig.getUsername(),
 			userConfig.getPassword(),
 			"Symptom",
@@ -534,7 +546,10 @@ public class StartupShutdownService {
 		}
 
 		createOrUpdateDefaultUser(
-			new HashSet<>(Arrays.asList(UserRole.REST_USER, UserRole.REST_EXTERNAL_VISITS_USER)),
+			new HashSet<>(
+				Arrays.asList(
+					userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.REST_USER)),
+					userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.REST_EXTERNAL_VISITS_USER)))),
 			userConfig.getUsername(),
 			userConfig.getPassword(),
 			"Patient",
@@ -743,6 +758,9 @@ public class StartupShutdownService {
 						.setParameter("change_date", new Timestamp(new Date().getTime()))
 						.executeUpdate();
 				}
+				break;
+			case 448:
+				editDefaultUserRoles();
 				break;
 
 			default:

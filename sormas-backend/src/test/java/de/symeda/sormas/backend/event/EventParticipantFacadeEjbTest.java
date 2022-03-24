@@ -55,12 +55,12 @@ import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
+import de.symeda.sormas.backend.user.DefaultUserRole;
 
 public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 
@@ -68,8 +68,13 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	public void testGetExportList() {
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		EventDto event = creator.createEvent(
 			EventStatus.SIGNAL,
 			EventInvestigationStatus.PENDING,
@@ -154,7 +159,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testCreateWithoutUuid() {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_OFFICER);
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
 		EventParticipantDto eventParticipant = new EventParticipantDto();
 		eventParticipant.setEvent(creator.createEvent(user.toReference()).toReference());
 		eventParticipant.setPerson(creator.createPerson());
@@ -169,7 +174,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	public void testGetByEventUuids() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		EventDto event1 = creator.createEvent(user.toReference());
 		EventDto event2 = creator.createEvent(user.toReference());
@@ -190,7 +195,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	public void testGetByPersonUuids() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		EventDto event1 = creator.createEvent(user.toReference());
 		EventDto event2 = creator.createEvent(user.toReference());
@@ -208,9 +213,9 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testExistEventParticipantWithDeletedFalse(){
+	public void testExistEventParticipantWithDeletedFalse() {
 		RDCFEntities rdcf = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		EventDto event = creator.createEvent(user.toReference());
 		PersonDto person = creator.createPerson();
 
@@ -221,9 +226,9 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testExistEventParticipantWithDeletedTrue(){
+	public void testExistEventParticipantWithDeletedTrue() {
 		RDCFEntities rdcf = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		EventDto event = creator.createEvent(user.toReference());
 		PersonDto person = creator.createPerson();
 

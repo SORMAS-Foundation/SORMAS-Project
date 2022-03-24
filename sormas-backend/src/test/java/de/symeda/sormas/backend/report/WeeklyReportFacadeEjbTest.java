@@ -32,14 +32,14 @@ import de.symeda.sormas.api.report.WeeklyReportDto;
 import de.symeda.sormas.api.report.WeeklyReportOfficerSummaryDto;
 import de.symeda.sormas.api.report.WeeklyReportRegionSummaryDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.user.DefaultUserRole;
 
 public class WeeklyReportFacadeEjbTest extends AbstractBeanTest {
 
@@ -53,15 +53,31 @@ public class WeeklyReportFacadeEjbTest extends AbstractBeanTest {
 	public void setupData() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		officer = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), null, "Off", "One", UserRole.SURVEILLANCE_OFFICER);
+		officer = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			null,
+			"Off",
+			"One",
+			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
 
-		informant1 =
-			creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Info", "One", UserRole.HOSPITAL_INFORMANT);
+		informant1 = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Info",
+			"One",
+			creator.getUserRoleDtoMap().get(DefaultUserRole.HOSPITAL_INFORMANT));
 		informant1.setAssociatedOfficer(officer.toReference());
 		getUserFacade().saveUser(informant1);
 
-		informant2 =
-			creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Info", "Two", UserRole.HOSPITAL_INFORMANT);
+		informant2 = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Info",
+			"Two",
+			creator.getUserRoleDtoMap().get(DefaultUserRole.HOSPITAL_INFORMANT));
 		informant2.setAssociatedOfficer(officer.toReference());
 		getUserFacade().saveUser(informant2);
 
@@ -70,8 +86,13 @@ public class WeeklyReportFacadeEjbTest extends AbstractBeanTest {
 			rdcf.district,
 			rdcf.community,
 			creator.createFacility("Facility2", rdcf.region, rdcf.district, rdcf.community));
-		informant3 = creator
-			.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "Info", "Three", UserRole.COMMUNITY_INFORMANT);
+		informant3 = creator.createUser(
+			rdcf2.region.getUuid(),
+			rdcf2.district.getUuid(),
+			rdcf2.facility.getUuid(),
+			"Info",
+			"Three",
+			creator.getUserRoleDtoMap().get(DefaultUserRole.COMMUNITY_INFORMANT));
 		informant3.setCommunity(new CommunityReferenceDto(rdcf.community.getUuid(), null, null));
 		informant3.setAssociatedOfficer(officer.toReference());
 		getUserFacade().saveUser(informant3);
@@ -80,8 +101,13 @@ public class WeeklyReportFacadeEjbTest extends AbstractBeanTest {
 		Community community2 = creator.createCommunity("Community2", district2);
 		Facility facility3 = creator.createFacility("Facility3", rdcf.region, district2, community2);
 		RDCFEntities rdcf3 = new RDCFEntities(rdcf.region, district2, community2, facility3);
-		informant4 = creator
-			.createUser(rdcf3.region.getUuid(), rdcf3.district.getUuid(), rdcf3.facility.getUuid(), "Info", "Four", UserRole.HOSPITAL_INFORMANT);
+		informant4 = creator.createUser(
+			rdcf3.region.getUuid(),
+			rdcf3.district.getUuid(),
+			rdcf3.facility.getUuid(),
+			"Info",
+			"Four",
+			creator.getUserRoleDtoMap().get(DefaultUserRole.HOSPITAL_INFORMANT));
 		informant4.setAssociatedOfficer(officer.toReference());
 		getUserFacade().saveUser(informant4);
 

@@ -10527,5 +10527,83 @@ ALTER TABLE weeklyreportentry_history ADD COLUMN change_user_id BIGINT;
 
 INSERT INTO schema_version (version_number, comment) VALUES (447, 'Changed by user #7323');
 
+-- 2022-03-18 Replace hard-coded user roles with fully configurable user roles #4461
+
+ALTER TABLE userrolesconfig DROP COLUMN userrole;
+ALTER TABLE userrolesconfig_history DROP COLUMN userrole;
+ALTER TABLE userrolesconfig RENAME TO userroles;
+ALTER TABLE userrolesconfig_history RENAME TO userroles_history;
+DROP TRIGGER IF EXISTS versioning_trigger ON userroles;
+CREATE TRIGGER versioning_trigger BEFORE INSERT OR UPDATE OR DELETE ON userroles
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'userroles_history', true);
+
+TRUNCATE TABLE userroles CASCADE;
+TRUNCATE TABLE userroles_history CASCADE;
+
+ALTER TABLE userroles ADD COLUMN caption varchar(512);
+ALTER TABLE userroles_history ADD COLUMN caption varchar(512);
+ALTER TABLE userroles ADD COLUMN description varchar(4096);
+ALTER TABLE userroles_history ADD COLUMN description varchar(4096);
+ALTER TABLE userroles ADD COLUMN hasoptionalhealthfacility boolean default false;
+ALTER TABLE userroles_history ADD COLUMN hasoptionalhealthfacility boolean default false;
+ALTER TABLE userroles ADD COLUMN hasassociatedofficer boolean default false;
+ALTER TABLE userroles_history ADD COLUMN hasassociatedofficer boolean default false;
+ALTER TABLE userroles ADD COLUMN porthealthuser boolean default false;
+ALTER TABLE userroles_history ADD COLUMN porthealthuser boolean default false;
+ALTER TABLE userroles ADD COLUMN jurisdictionlevel varchar(255);
+ALTER TABLE userroles_history ADD COLUMN jurisdictionlevel varchar(255);
+
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'ADMIN');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'NATIONAL_USER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'SURVEILLANCE_SUPERVISOR');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'ADMIN_SUPERVISOR');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'SURVEILLANCE_OFFICER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'HOSPITAL_INFORMANT');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'COMMUNITY_OFFICER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'COMMUNITY_INFORMANT');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'CASE_SUPERVISOR');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'CASE_OFFICER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'CONTACT_SUPERVISOR');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'CONTACT_OFFICER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'EVENT_OFFICER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'LAB_USER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'EXTERNAL_LAB_USER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'NATIONAL_OBSERVER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'STATE_OBSERVER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'DISTRICT_OBSERVER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'NATIONAL_CLINICIAN');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'POE_INFORMANT');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'POE_SUPERVISOR');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'POE_NATIONAL_USER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'IMPORT_USER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'REST_EXTERNAL_VISITS_USER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'REST_USER');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'SORMAS_TO_SORMAS_CLIENT');
+INSERT INTO userroles (id, uuid, creationdate, changedate, caption) VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now(), 'BAG_USER');
+
+ALTER TABLE users_userroles ADD COLUMN userrole_id bigint;
+ALTER TABLE ONLY users_userroles RENAME CONSTRAINT fk_userroles_user_id TO fk_users_userroles_user_id;
+ALTER TABLE ONLY users_userroles ADD CONSTRAINT fk_users_userroles_userrole_id FOREIGN KEY (userrole_id) REFERENCES userroles(id);
+
+UPDATE users_userroles SET userrole_id = (SELECT userroles.id FROM userroles WHERE userroles.caption = users_userroles.userrole);
+
+ALTER TABLE users_userroles DROP COLUMN userrole;
+ALTER TABLE users_userroles ALTER COLUMN userrole_id SET NOT NULL;
+
+CREATE TABLE userroles_emailnotifications (
+    userrole_id bigint NOT NULL,
+    notificationtype character varying(255) NOT NULL
+);
+ALTER TABLE userroles_emailnotifications ADD CONSTRAINT fk_userrole_id FOREIGN KEY (userrole_id) REFERENCES userroles (id);
+ALTER TABLE userroles_emailnotifications OWNER TO sormas_user;
+
+CREATE TABLE userroles_smsnotifications (
+    userrole_id bigint NOT NULL,
+    notificationtype character varying(255) NOT NULL
+);
+ALTER TABLE userroles_smsnotifications ADD CONSTRAINT fk_userrole_id FOREIGN KEY (userrole_id) REFERENCES userroles (id);
+ALTER TABLE userroles_smsnotifications OWNER TO sormas_user;
+
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (448, 'Replace hard-coded user roles with fully configurable user roles #4461', true);
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

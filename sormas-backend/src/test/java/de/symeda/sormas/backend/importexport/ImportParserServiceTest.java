@@ -18,7 +18,6 @@ package de.symeda.sormas.backend.importexport;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.is;
 
-import de.symeda.sormas.api.importexport.ImportErrorException;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.text.ParseException;
@@ -32,15 +31,16 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.importexport.ImportErrorException;
 import de.symeda.sormas.api.infrastructure.area.AreaDto;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
+import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.infrastructure.country.Country;
+import de.symeda.sormas.backend.user.DefaultUserRole;
 
 public class ImportParserServiceTest extends AbstractBeanTest {
 
@@ -93,7 +93,7 @@ public class ImportParserServiceTest extends AbstractBeanTest {
 			new String[] {
 				EventDto.START_DATE });
 
-		assertThat(parsed, is(DateHelper.parseDateTimeWithException("30/07/2021 3:30 pm", "dd/MM/yyyy h:mm a")));
+		assertThat(parsed, is(DateHelper.parseDateTimeWithException("30.07.2021 15:30", "dd.MM.yyyy H:mm")));
 	}
 
 	@Test
@@ -191,7 +191,7 @@ public class ImportParserServiceTest extends AbstractBeanTest {
 
 	@Test
 	public void testParseUserFieldValue() throws IntrospectionException, ImportErrorException {
-		UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
 
 		Object parsed = getImportParserService().parseValue(
 			new PropertyDescriptor(EventDto.REPORTING_USER, EventDto.class),

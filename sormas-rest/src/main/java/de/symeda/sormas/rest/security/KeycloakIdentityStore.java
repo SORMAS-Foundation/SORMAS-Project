@@ -27,7 +27,7 @@ import org.apache.commons.collections.CollectionUtils;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRoleDto;
 
 /**
  * @author Alex Vidrean
@@ -41,8 +41,7 @@ public class KeycloakIdentityStore implements IdentityStore {
 		UserDto user = FacadeProvider.getUserFacade().getByUserName(credential.getCaller());
 
 		if (user != null) {
-			Set<UserRight> userRights =
-				FacadeProvider.getUserRoleConfigFacade().getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[] {}));
+			Set<UserRight> userRights = UserRoleDto.getUserRights(user.getUserRoles());
 
 			if (CollectionUtils.isNotEmpty(userRights) && userRights.contains(UserRight.SORMAS_REST)) {
 				return new CredentialValidationResult(credential.getCaller(), userRights.stream().map(Enum::name).collect(Collectors.toSet()));

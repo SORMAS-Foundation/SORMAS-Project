@@ -24,10 +24,10 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.EditPermissionType;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.campaign.CampaignCriteria;
 import de.symeda.sormas.api.campaign.CampaignDto;
 import de.symeda.sormas.api.campaign.CampaignFacade;
@@ -35,12 +35,12 @@ import de.symeda.sormas.api.campaign.CampaignIndexDto;
 import de.symeda.sormas.api.campaign.CampaignReferenceDto;
 import de.symeda.sormas.api.campaign.diagram.CampaignDashboardElement;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaReferenceDto;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -48,10 +48,10 @@ import de.symeda.sormas.backend.campaign.diagram.CampaignDiagramDefinitionFacade
 import de.symeda.sormas.backend.campaign.form.CampaignFormMetaService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
-import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
-import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.user.UserRole;
+import de.symeda.sormas.backend.user.UserRoleFacadeEjb.UserRoleFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
@@ -65,7 +65,7 @@ public class CampaignFacadeEjb
 	@EJB
 	private CampaignFormMetaService campaignFormMetaService;
 	@EJB
-	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
+	private UserRoleFacadeEjbLocal userRoleFacade;
 	@EJB
 	private CampaignDiagramDefinitionFacadeEjb.CampaignDiagramDefinitionFacadeEjbLocal campaignDiagramDefinitionFacade;
 
@@ -347,8 +347,7 @@ public class CampaignFacadeEjb
 	public void delete(String campaignUuid) {
 
 		User user = userService.getCurrentUser();
-		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
-			.contains(UserRight.CAMPAIGN_DELETE)) {
+		if (!UserRole.getUserRights(user.getUserRoles()).contains(UserRight.CAMPAIGN_DELETE)) {
 			throw new UnsupportedOperationException(
 				I18nProperties.getString(Strings.entityUser) + " " + user.getUuid() + " is not allowed to delete "
 					+ I18nProperties.getString(Strings.entityCampaigns).toLowerCase() + ".");

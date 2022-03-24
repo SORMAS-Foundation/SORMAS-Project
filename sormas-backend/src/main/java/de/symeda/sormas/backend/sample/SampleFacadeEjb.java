@@ -67,7 +67,6 @@ import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -110,7 +109,7 @@ import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFa
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
-import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.user.UserRole;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -163,8 +162,6 @@ public class SampleFacadeEjb implements SampleFacade {
 	private EventFacadeEjb.EventFacadeEjbLocal eventFacade;
 	@EJB
 	private NotificationService notificationService;
-	@EJB
-	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 	@EJB
 	private PathogenTestFacadeEjbLocal pathogenTestFacade;
 	@EJB
@@ -700,8 +697,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	public void deleteSample(SampleReferenceDto sampleRef) {
 
 		User user = userService.getCurrentUser();
-		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
-			.contains(UserRight.SAMPLE_DELETE)) {
+		if (!UserRole.getUserRights(user.getUserRoles()).contains(UserRight.SAMPLE_DELETE)) {
 			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete samples.");
 		}
 
@@ -714,8 +710,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	@Override
 	public void deleteAllSamples(List<String> sampleUuids) {
 		User user = userService.getCurrentUser();
-		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
-			.contains(UserRight.SAMPLE_DELETE)) {
+		if (!UserRole.getUserRights(user.getUserRoles()).contains(UserRight.SAMPLE_DELETE)) {
 			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete samples.");
 		}
 		long startTime = DateHelper.startTime();
@@ -726,8 +721,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	public List<String> deleteSamples(List<String> sampleUuids) {
 		User user = userService.getCurrentUser();
-		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
-			.contains(UserRight.SAMPLE_DELETE)) {
+		if (!UserRole.getUserRights(user.getUserRoles()).contains(UserRight.SAMPLE_DELETE)) {
 			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete samples.");
 		}
 		List<String> deletedSampleUuids = new ArrayList<>();

@@ -13,9 +13,9 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.therapy.TreatmentIndexDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
+import de.symeda.sormas.backend.user.DefaultUserRole;
 
 public class TreatmentFacadeEjbTest extends AbstractBeanTest {
 
@@ -23,7 +23,10 @@ public class TreatmentFacadeEjbTest extends AbstractBeanTest {
 	public void testTreatmentDeletion() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf,
+			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR),
+			creator.getUserRoleDtoMap().get(DefaultUserRole.CASE_SUPERVISOR));
 		UserDto admin = getUserFacade().getByUserName("admin");
 		PersonDto casePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(user.toReference(), casePerson.toReference(), rdcf);
@@ -42,7 +45,10 @@ public class TreatmentFacadeEjbTest extends AbstractBeanTest {
 	public void testTreatmentIndexListGeneration() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.CASE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf,
+			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR),
+			creator.getUserRoleDtoMap().get(DefaultUserRole.CASE_SUPERVISOR));
 		PersonDto casePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(user.toReference(), casePerson.toReference(), rdcf);
 		creator.createTreatment(caze);

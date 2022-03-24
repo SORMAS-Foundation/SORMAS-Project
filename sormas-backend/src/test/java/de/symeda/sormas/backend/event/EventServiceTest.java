@@ -24,9 +24,9 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.user.DefaultUserRole;
 
 public class EventServiceTest extends AbstractBeanTest {
 
@@ -45,7 +45,7 @@ public class EventServiceTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Nat",
 			"User",
-			UserRole.NATIONAL_USER);
+			creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
 	}
 
 	@Test

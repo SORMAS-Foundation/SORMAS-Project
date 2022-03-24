@@ -66,7 +66,6 @@ import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
@@ -367,7 +366,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		facilityType.addValueChangeListener(e -> updateFacility());
 		region.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
-		JurisdictionLevel userJurisdictionLevel = UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles());
+		JurisdictionLevel userJurisdictionLevel = UserProvider.getCurrent().getJurisdictionLevel();
 		if (userJurisdictionLevel == JurisdictionLevel.HEALTH_FACILITY) {
 			region.setReadOnly(true);
 			responsibleRegion.setReadOnly(true);
@@ -389,7 +388,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 			facilityCombo.setReadOnly(true);
 		}
 
-		if (!UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+		if (!UserProvider.getCurrent().isPortHealthUser()) {
 			ogCaseOrigin.addValueChangeListener(ev -> {
 				if (ev.getProperty().getValue() == CaseOrigin.IN_COUNTRY) {
 					setVisible(false, CaseDataDto.POINT_OF_ENTRY, CaseDataDto.POINT_OF_ENTRY_DETAILS);
@@ -479,12 +478,13 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		});
 
 		addValueChangeListener(e -> {
-			if (UserRole.isPortHealthUser(UserProvider.getCurrent().getUserRoles())) {
+			if (UserProvider.getCurrent().isPortHealthUser()) {
 				setVisible(false, CaseDataDto.CASE_ORIGIN, CaseDataDto.DISEASE, CaseDataDto.COMMUNITY, CaseDataDto.HEALTH_FACILITY);
 				setVisible(true, CaseDataDto.POINT_OF_ENTRY);
 			}
 		});
-		diseaseField.addValueChangeListener((ValueChangeListener) valueChangeEvent -> updateDiseaseVariant((Disease) valueChangeEvent.getProperty().getValue()));
+		diseaseField.addValueChangeListener(
+			(ValueChangeListener) valueChangeEvent -> updateDiseaseVariant((Disease) valueChangeEvent.getProperty().getValue()));
 
 		diseaseVariantField.addValueChangeListener(e -> {
 			DiseaseVariant diseaseVariant = (DiseaseVariant) e.getProperty().getValue();
@@ -498,9 +498,10 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 	private void updateDiseaseVariant(Disease disease) {
 		List<DiseaseVariant> diseaseVariants =
-				FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
+			FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
 		FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
-		diseaseVariantField.setVisible(disease != null && isVisibleAllowed(CaseDataDto.DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
+		diseaseVariantField
+			.setVisible(disease != null && isVisibleAllowed(CaseDataDto.DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
 	}
 
 	private void setNoneFacility() {
@@ -511,7 +512,7 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 
 	private void updateFacility() {
 
-		if (UserRole.getJurisdictionLevel(UserProvider.getCurrent().getUserRoles()) == JurisdictionLevel.HEALTH_FACILITY) {
+		if (UserProvider.getCurrent().getJurisdictionLevel() == JurisdictionLevel.HEALTH_FACILITY) {
 			return;
 		}
 

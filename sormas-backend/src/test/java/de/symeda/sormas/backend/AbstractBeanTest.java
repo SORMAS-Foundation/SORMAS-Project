@@ -86,10 +86,7 @@ import de.symeda.sormas.api.therapy.TherapyFacade;
 import de.symeda.sormas.api.therapy.TreatmentFacade;
 import de.symeda.sormas.api.travelentry.TravelEntryFacade;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserRightsFacade;
-import de.symeda.sormas.api.user.UserRole;
-import de.symeda.sormas.api.user.UserRoleConfigFacade;
 import de.symeda.sormas.api.vaccination.VaccinationFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.backend.action.ActionFacadeEjb;
@@ -208,9 +205,11 @@ import de.symeda.sormas.backend.therapy.TreatmentFacadeEjb.TreatmentFacadeEjbLoc
 import de.symeda.sormas.backend.therapy.TreatmentService;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
 import de.symeda.sormas.backend.user.CurrentUserService;
+import de.symeda.sormas.backend.user.DefaultUserRole;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserRightsFacadeEjb.UserRightsFacadeEjbLocal;
-import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.user.UserRoleFacadeEjb.UserRoleFacadeEjbLocal;
+import de.symeda.sormas.backend.user.UserRoleService;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 import de.symeda.sormas.backend.vaccination.VaccinationService;
@@ -233,7 +232,14 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		initH2Functions();
 		// this is used to provide the current user to the ADO Listener taking care of updating the last change user
 		System.setProperty("java.naming.factory.initial", MockProducer.class.getCanonicalName());
-		creator.createUser(null, null, null, "ad", "min", UserRole.ADMIN, UserRole.NATIONAL_USER);
+		creator.createUser(
+			null,
+			null,
+			null,
+			"ad",
+			"min",
+			creator.getUserRoleDtoMap().get(DefaultUserRole.ADMIN),
+			creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
 		when(MockProducer.getPrincipal().getName()).thenReturn("admin");
 
 		I18nProperties.setUserLanguage(Language.EN);
@@ -435,7 +441,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(CommunityFacadeEjbLocal.class);
 	}
 
-	public UserFacade getUserFacade() {
+	public UserFacadeEjbLocal getUserFacade() {
 		return getBean(UserFacadeEjbLocal.class);
 	}
 
@@ -443,8 +449,12 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		return getBean(UserService.class);
 	}
 
-	public UserRoleConfigFacade getUserRoleConfigFacade() {
-		return getBean(UserRoleConfigFacadeEjbLocal.class);
+	public UserRoleFacadeEjbLocal getUserRoleFacade() {
+		return getBean(UserRoleFacadeEjbLocal.class);
+	}
+
+	public UserRoleService getUserRoleService() {
+		return getBean(UserRoleService.class);
 	}
 
 	public HospitalizationFacade getHospitalizationFacade() {
@@ -648,8 +658,13 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 			rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		}
 
-		UserDto survOff =
-			creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Off", UserRole.SURVEILLANCE_OFFICER);
+		UserDto survOff = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Off",
+			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff");
 
 		return survOff;
@@ -668,7 +683,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 	}
 
 	protected UserDto useNationalUserLogin() {
-		UserDto natUser = creator.createUser("", "", "", "Nat", "Usr", UserRole.NATIONAL_USER);
+		UserDto natUser = creator.createUser("", "", "", "Nat", "Usr", creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
 		when(MockProducer.getPrincipal().getName()).thenReturn("NatUsr");
 
 		return natUser;

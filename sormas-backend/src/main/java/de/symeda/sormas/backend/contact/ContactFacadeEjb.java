@@ -188,6 +188,7 @@ import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserReference;
+import de.symeda.sormas.backend.user.UserRoleFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
@@ -262,6 +263,8 @@ public class ContactFacadeEjb
 	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
 	@EJB
 	private HealthConditionsMapper healthConditionsMapper;
+	@EJB
+	private UserRoleFacadeEjb.UserRoleFacadeEjbLocal userRoleFacadeEjb;
 
 	@Resource
 	private ManagedScheduledExecutorService executorService;
@@ -818,14 +821,16 @@ public class ContactFacadeEjb
 						UserReference user = contactUsers.get(exportContact.getReportingUserId());
 
 						exportContact.setReportingUserName(user.getName());
-						exportContact.setReportingUserRoles(user.getUserRoles());
+						exportContact.setReportingUserRoles(
+							user.getUserRoles().stream().map(userRole -> UserRoleFacadeEjb.toDto(userRole)).collect(Collectors.toSet()));
 					}
 
 					if (exportContact.getFollowUpStatusChangeUserId() != null) {
 						UserReference user = contactUsers.get(exportContact.getFollowUpStatusChangeUserId());
 
 						exportContact.setFollowUpStatusChangeUserName(user.getName());
-						exportContact.setFollowUpStatusChangeUserRoles(user.getUserRoles());
+						exportContact.setFollowUpStatusChangeUserRoles(
+							user.getUserRoles().stream().map(userRole -> UserRoleFacadeEjb.toDto(userRole)).collect(Collectors.toSet()));
 					}
 				}
 

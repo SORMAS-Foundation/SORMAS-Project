@@ -6,8 +6,6 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import de.symeda.sormas.api.person.PresentCondition;
-import de.symeda.sormas.api.user.UserReferenceDto;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -23,13 +21,15 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator;
+import de.symeda.sormas.backend.user.DefaultUserRole;
 
 public class DashboardFacadeEjbTest extends AbstractBeanTest {
 
@@ -38,8 +38,13 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 
 		TestDataCreator.RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		TestDataCreator.RDCFEntities rdcf2 = creator.createRDCFEntities("Region2", "District2", "Community2", "Facility2");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -76,8 +81,13 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 	public void testDashboardEventListCreation() {
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		EventDto event = creator.createEvent(
 			EventStatus.SIGNAL,
 			EventInvestigationStatus.PENDING,
@@ -117,8 +127,13 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 			community2.toReference(),
 			creator.createFacility("Facility2", rdcf.region, rdcf.district, community2.toReference()).toReference());
 
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
@@ -179,13 +194,25 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 	public void testGetCasesForDashboardPerPerson() {
 
 		TestDataCreator.RDCFEntities rdcf = creator.createRDCFEntities();
-		UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
 
 		PersonDto undefinedPerson = creator.createPerson();
-		CaseDataDto caze = creator.createCase(user.toReference(), undefinedPerson.toReference(), Disease.CORONAVIRUS, CaseClassification.PROBABLE,
-			InvestigationStatus.PENDING, new Date(), rdcf);
-		creator.createCase(user.toReference(), undefinedPerson.toReference(), Disease.CORONAVIRUS, CaseClassification.SUSPECT,
-			InvestigationStatus.PENDING, new Date(), rdcf);
+		CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			undefinedPerson.toReference(),
+			Disease.CORONAVIRUS,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		creator.createCase(
+			user.toReference(),
+			undefinedPerson.toReference(),
+			Disease.CORONAVIRUS,
+			CaseClassification.SUSPECT,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
 
 		createCasesForPersonWithCondition(PresentCondition.ALIVE, user.toReference(), rdcf, 2);
 		createCasesForPersonWithCondition(PresentCondition.DEAD, user.toReference(), rdcf, 3);
@@ -206,15 +233,24 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(6, dashboardCaseDtos.get(PresentCondition.UNKNOWN).intValue());
 	}
 
-	private void createCasesForPersonWithCondition(PresentCondition presentCondition, UserReferenceDto userReferenceDto,
-		TestDataCreator.RDCFEntities rdcf, int nrOfCases){
+	private void createCasesForPersonWithCondition(
+		PresentCondition presentCondition,
+		UserReferenceDto userReferenceDto,
+		TestDataCreator.RDCFEntities rdcf,
+		int nrOfCases) {
 		PersonDto personDto = creator.createPerson("James Smith", presentCondition.name(), p -> {
 			p.setPresentCondition(presentCondition);
 		});
 
-		for(int i=0 ; i<nrOfCases; i++){
-			creator.createCase(userReferenceDto, personDto.toReference(), Disease.CORONAVIRUS, CaseClassification.NOT_CLASSIFIED,
-				InvestigationStatus.PENDING, new Date(), rdcf);
+		for (int i = 0; i < nrOfCases; i++) {
+			creator.createCase(
+				userReferenceDto,
+				personDto.toReference(),
+				Disease.CORONAVIRUS,
+				CaseClassification.NOT_CLASSIFIED,
+				InvestigationStatus.PENDING,
+				new Date(),
+				rdcf);
 		}
 	}
 }

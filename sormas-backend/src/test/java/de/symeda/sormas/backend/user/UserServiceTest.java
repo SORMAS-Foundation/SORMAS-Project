@@ -16,13 +16,10 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
-import de.symeda.sormas.api.user.JurisdictionLevel;
-import de.symeda.sormas.api.user.UserRight;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -30,8 +27,9 @@ import org.mockito.MockedStatic;
 import org.mockito.Mockito;
 
 import de.symeda.sormas.api.AuthProvider;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.PasswordHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
@@ -64,11 +62,12 @@ public class UserServiceTest extends AbstractBeanTest {
 		List<JurisdictionLevel> jurisdictionLevels = null;
 
 		// 0. No conditions, test signature with userRoles varArg parameter
-		List<UserReference> result =
-			getUserService().getUserReferencesByJurisdictions(regionUuids, districtUuids, null,  null, null);
+		List<UserReference> result = getUserService().getUserReferencesByJurisdictions(regionUuids, districtUuids, null, null, null);
 		assertThat(result, hasSize(1));
 		UserReference admin = result.get(0);
-		assertThat(admin.getUserRoles(), containsInAnyOrder(UserRole.ADMIN, UserRole.NATIONAL_USER));
+		assertThat(
+			admin.getUserRoles(),
+			containsInAnyOrder(creator.getUserRoleMap().get(DefaultUserRole.ADMIN), creator.getUserRoleMap().get(DefaultUserRole.NATIONAL_USER)));
 
 		// 1a. Find admin with several conditions
 		jurisdictionLevels = Arrays.asList(JurisdictionLevel.NATION);
@@ -85,7 +84,7 @@ public class UserServiceTest extends AbstractBeanTest {
 
 		// 2. Exclude inactive user as overall condition
 		RDCF rdcf = creator.createRDCF();
-		UserDto supervisor = creator.createUser(rdcf, UserRole.CONTACT_SUPERVISOR);
+		UserDto supervisor = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.CONTACT_SUPERVISOR));
 		jurisdictionLevels = Arrays.asList(JurisdictionLevel.REGION);
 		result = getUserService().getUserReferencesByJurisdictions(regionUuids, districtUuids, communityUuids, jurisdictionLevels, null);
 		assertThat(result.get(0).getUuid(), equalTo(supervisor.getUuid()));
@@ -99,7 +98,7 @@ public class UserServiceTest extends AbstractBeanTest {
 		assertThat(result, hasSize(1));
 		assertThat(result.get(0).getUuid(), equalTo(supervisor.getUuid()));
 
-		UserDto officer = creator.createUser(rdcf, UserRole.CONTACT_OFFICER);
+		UserDto officer = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.CONTACT_OFFICER));
 		result = getUserService().getUserReferencesByJurisdictions(Arrays.asList(rdcf.region.getUuid()), null, null, null, null);
 		assertThat(result, hasSize(2));
 
@@ -109,7 +108,8 @@ public class UserServiceTest extends AbstractBeanTest {
 		assertThat(result.get(0).getUuid(), equalTo(supervisor.getUuid()));
 
 		// 5. user rights
-		result = getUserService().getUserReferencesByJurisdictions(null, Arrays.asList(rdcf.district.getUuid()), null, null, Arrays.asList(UserRight.CONTACT_RESPONSIBLE));
+		result = getUserService()
+			.getUserReferencesByJurisdictions(null, Arrays.asList(rdcf.district.getUuid()), null, null, Arrays.asList(UserRight.CONTACT_RESPONSIBLE));
 		assertThat(result, hasSize(1));
 		assertThat(result.get(0).getUuid(), equalTo(officer.getUuid()));
 	}
@@ -131,8 +131,8 @@ public class UserServiceTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetAllDefaultUsersWithExistingUsers() {
-		Set<User> defaultUsers = UserTestHelper.generateDefaultUsers(false);
-		Set<User> randomUsers = UserTestHelper.generateRandomUsers(10);
+		Set<User> defaultUsers = UserTestHelper.generateDefaultUsers(false, creator);
+		Set<User> randomUsers = UserTestHelper.generateRandomUsers(10, creator);
 		Set<User> testUsers = new HashSet<>();
 		testUsers.addAll(defaultUsers);
 		testUsers.addAll(randomUsers);
