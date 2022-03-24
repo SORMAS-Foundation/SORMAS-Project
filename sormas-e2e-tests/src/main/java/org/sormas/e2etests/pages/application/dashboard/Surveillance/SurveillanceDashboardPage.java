@@ -354,4 +354,52 @@ public class SurveillanceDashboardPage {
       By.xpath("//*/text()[normalize-space(.)='Dead']/parent::*");
   public static final By LEGEND_CHART_ALIVE_OR_DEAD_ALIVE =
       By.xpath("//*/text()[normalize-space(.)='Alive']/parent::*");
+  public static final By ZOOM_IN_BUTTON_ON_MAP = By.cssSelector("[title='Zoom in']");
+  public static final By ZOOM_OUT_BUTTON_ON_MAP = By.cssSelector("[title='Zoom out']");
+  public static final By FULL_SCREEN_BUTTON_ON_MAP = By.cssSelector("[title='View Fullscreen']");
+  public static final By EXIT_FULL_SCREEN_BUTTON_ON_MAP =
+      By.cssSelector("[title='Exit Fullscreen']");
+  public static final By EXPAND_MAP_BUTTON = By.cssSelector("#expandMap");
+  public static final By COLLAPSE_MAP_BUTTON = By.cssSelector("#collapseMap");
+  public static final By DASHBOARD_MAP_KEY_BUTTON = By.cssSelector("#dashboardMapKey");
+  public static final By DASHBOARD_MAP_KEY_ONLY_NOT_YET_CLASSIFIED_CASES =
+      By.xpath("//div[contains(text(),'Only Not Yet Classified Cases')]");
+  public static final By DASHBOARD_MAP_KEY_SUSPECT_CASES =
+      By.xpath("//div[contains(text(),'> 1 Suspect Cases')]");
+  public static final By DASHBOARD_MAP_KEY_PROBABLE_CASES =
+      By.xpath("//div[contains(text(),'> 1 Probable Cases')]");
+  public static final By DASHBOARD_MAP_KEY_CONFIRMED_CASES =
+      By.xpath("//div[contains(text(),'> 1 Confirmed Cases')]");
+  public static final By DASHBOARD_MAP_KEY_NOT_YET_CLASSIFIED =
+      By.xpath(
+          "//body/div[2]/div[2]/div[@class='popupContent']/div/div[4]/div/div[1]/div/div[@class='v-slot v-slot-small']/div[.='Not Yet Classified']");
+  public static final By DASHBOARD_MAP_KEY_SUSPECT =
+      By.xpath(
+          "//body/div[2]/div[2]/div[@class='popupContent']/div/div[4]/div/div[2]/div/div[@class='v-slot v-slot-small']/div[.='Suspect']");
+  public static final By DASHBOARD_MAP_KEY_PROBABLE =
+      By.xpath(
+          "//body/div[2]/div[2]/div[@class='popupContent']/div/div[4]/div/div[3]/div/div[@class='v-slot v-slot-small']/div[.='Probable']");
+  public static final By DASHBOARD_MAP_KEY_CONFIRMED =
+      By.xpath(
+          "//body/div[2]/div[2]/div[@class='popupContent']/div/div[4]/div/div[@class='v-slot']/div/div[@class='v-slot v-slot-small']/div[.='Confirmed']");
+  public static final By DASHBOARD_LAYERS_BUTTON = By.cssSelector("#dashboardMapLayers");
+  public static final By DASHBOARD_LAYERS_SHOW_CASES =
+      By.xpath("//span[@id='dashboardShowCases']/label[.='Show cases']");
+  public static final By DASHBOARD_LAYERS_SHOW_ALL_CASES =
+      By.xpath(
+          "//body/div[2]/div[2]/div/div/div[3]/div[@role='radiogroup']//label[.='Show all cases']");
+  public static final By DASHBOARD_LAYERS_SHOW_CONFIRMED_CASES_ONLY =
+      By.xpath(
+          "//body/div[2]/div[2]/div/div/div[3]/div[@role='radiogroup']//label[.='Show confirmed cases only']");
+  public static final By DASHBOARD_LAYERS_SHOW_CONTACTS =
+      By.xpath("//span[@id='dashboardShowContacts']/label[.='Show contacts']");
+  public static final By DASHBOARD_LAYERS_SHOW_EVENTS =
+      By.xpath("//span[@id='dashboardShowEvents']/label[.='Show events']");
+  public static final By DASHBOARD_LAYERS_SHOW_REGIONS =
+      By.xpath("//span[@id='dashboardShowRegions']/label[.='Show regions']");
+  public static final By DASHBOARD_LAYERS_HIDE_OTHER_COUNTRIES =
+      By.xpath("//span[@id='dashboardHideOtherCountries']/label[.='Hide other countries']");
+  public static final By DASHBOARD_LAYERS_SHOW_EPIDEMIOLOGICAL_SITUATION =
+      By.xpath(
+          "//span[@id='dashboardMapShowEpiSituation']/label[.='Show epidemiological situation']");
 }

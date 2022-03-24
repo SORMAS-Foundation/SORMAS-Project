@@ -105,11 +105,11 @@ Feature: Dashboard counters
     Then I validate chart download options
     Then I validate presence of chart buttons
 
-  @env_main
+  @env_local
   Scenario: Check Case status map
     Given I log in with National User
     When I click on the Dashboard button from navbar and access Surveillance Dashboard
-    Then I validate presence of map
+    Then I validate presence of maps
     Then I validate presence of map options
     Then I validate presence of Map key options
     Then I validate presence of Layers options

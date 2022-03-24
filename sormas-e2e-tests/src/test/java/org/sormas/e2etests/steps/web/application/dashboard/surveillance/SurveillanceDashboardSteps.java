@@ -15,10 +15,6 @@
 
 package org.sormas.e2etests.steps.web.application.dashboard.surveillance;
 
-import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.REFERENCE_DEFINITION_FULFILLED_CASES_NUMBER;
-import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.TIME_PERIOD_COMBOBOX;
-import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.TIME_PERIOD_YESTERDAY_BUTTON;
-
 import cucumber.api.java8.En;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
@@ -28,6 +24,10 @@ import org.testng.asserts.SoftAssert;
 
 import javax.inject.Inject;
 import java.util.concurrent.TimeUnit;
+
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.REFERENCE_DEFINITION_FULFILLED_CASES_NUMBER;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.TIME_PERIOD_COMBOBOX;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.TIME_PERIOD_YESTERDAY_BUTTON;
 
 public class SurveillanceDashboardSteps implements En {
 
@@ -784,6 +784,80 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.LEGEND_CHART_ALIVE_OR_DEAD_ALIVE);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.LEGEND_CHART_ALIVE_OR_DEAD_UNKNOWN);
+        });
+    Then(
+        "^I validate presence of map options$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.ZOOM_IN_BUTTON_ON_MAP);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.ZOOM_OUT_BUTTON_ON_MAP);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.FULL_SCREEN_BUTTON_ON_MAP);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.EXPAND_MAP_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(
+              SurveillanceDashboardPage.ZOOM_IN_BUTTON_ON_MAP);
+          webDriverHelpers.clickOnWebElementBySelector(
+              SurveillanceDashboardPage.ZOOM_OUT_BUTTON_ON_MAP);
+          webDriverHelpers.clickOnWebElementBySelector(
+              SurveillanceDashboardPage.FULL_SCREEN_BUTTON_ON_MAP);
+          webDriverHelpers.clickOnWebElementBySelector(
+              SurveillanceDashboardPage.EXIT_FULL_SCREEN_BUTTON_ON_MAP);
+          webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.EXPAND_MAP_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(
+              SurveillanceDashboardPage.COLLAPSE_MAP_BUTTON);
+        });
+    Then(
+        "^I validate presence of Map key options$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.DASHBOARD_MAP_KEY_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(
+              SurveillanceDashboardPage.DASHBOARD_MAP_KEY_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.DASHBOARD_MAP_KEY_ONLY_NOT_YET_CLASSIFIED_CASES);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.DASHBOARD_MAP_KEY_SUSPECT_CASES);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.DASHBOARD_MAP_KEY_PROBABLE_CASES);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.DASHBOARD_MAP_KEY_CONFIRMED_CASES);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.DASHBOARD_MAP_KEY_NOT_YET_CLASSIFIED);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.DASHBOARD_MAP_KEY_SUSPECT);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.DASHBOARD_MAP_KEY_PROBABLE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.DASHBOARD_MAP_KEY_CONFIRMED);
+        });
+    Then(
+        "I validate presence of Layers options$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.DASHBOARD_LAYERS_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(
+              SurveillanceDashboardPage.DASHBOARD_LAYERS_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.DASHBOARD_LAYERS_SHOW_CASES);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.DASHBOARD_LAYERS_SHOW_ALL_CASES);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.DASHBOARD_LAYERS_SHOW_CONFIRMED_CASES_ONLY);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.DASHBOARD_LAYERS_SHOW_CONTACTS);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.DASHBOARD_LAYERS_SHOW_EVENTS);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.DASHBOARD_LAYERS_SHOW_REGIONS);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.DASHBOARD_LAYERS_SHOW_EPIDEMIOLOGICAL_SITUATION);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.DASHBOARD_LAYERS_HIDE_OTHER_COUNTRIES);
         });
   }
 }
