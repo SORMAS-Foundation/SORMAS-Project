@@ -245,7 +245,6 @@ public class EventParticipantFacadeEjb
 		return service.getArchivedUuidsSince(since);
 	}
 
-	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void archiveAllArchivableEventParticipants(int daysAfterEventParticipantGetsArchived) {
 		archiveAllArchivableEventParticipants(daysAfterEventParticipantGetsArchived, LocalDate.now());

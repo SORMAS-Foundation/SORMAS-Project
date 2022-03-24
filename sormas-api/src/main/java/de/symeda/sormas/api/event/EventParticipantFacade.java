@@ -68,8 +68,6 @@ public interface EventParticipantFacade
 
 	List<String> getArchivedUuidsSince(Date since);
 
-	void archiveAllArchivableEventParticipants(int daysAfterEventParticipantGetsArchived);
-
 	List<String> getDeletedUuidsSince(Date date);
 
 	EditPermissionType isEventParticipantEditAllowed(String uuid);
