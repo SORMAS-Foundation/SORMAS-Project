@@ -289,5 +289,74 @@
 
 	<build>
 		<finalName>${project.artifactId}</finalName>
+
+		<plugins>
+			<plugin>
+				<artifactId>maven-compiler-plugin</artifactId>
+				<executions>
+					<execution>
+						<!-- For payara module: Force compiling test classes even with skipped tests -->
+						<id>testCompile</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>testCompile</goal>
+						</goals>
+						<configuration>
+							<skip>false</skip>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-dependency-plugin</artifactId>
+				<executions>
+					<execution>
+						<!-- Get payara module to be patched -->
+						<id>unpack</id>
+						<phase>prepare-package</phase>
+						<goals>
+							<goal>unpack</goal>
+						</goals>
+						<configuration>
+							<artifactItems>
+								<artifactItem>
+									<groupId>fish.payara.distributions</groupId>
+									<artifactId>payara</artifactId>
+									<type>zip</type>
+									<overWrite>true</overWrite>
+									<outputDirectory>${project.build.directory}</outputDirectory>
+									<includes>
+										**/weld-integration.jar
+									</includes>
+								</artifactItem>
+							</artifactItems>
+						</configuration>
+					</execution>
+				</executions>
+			</plugin>
+			<plugin>
+				<artifactId>maven-antrun-plugin</artifactId>
+				<executions>
+					<execution>
+						<!-- Patch payara module -->
+						<id>copy</id>
+						<phase>package</phase>
+						<configuration>
+							<target>
+								<copy todir="${project.build.directory}/glassfish-modules" overwrite="true">
+									<fileset dir="${project.build.directory}/payara5/glassfish/modules/" includes="*.jar" />
+								</copy>
+								<zip destfile="${project.build.directory}/glassfish-modules/weld-integration.jar" update="true">
+									<zipfileset dir="${project.build.directory}/test-classes" includes="**/InjectionServicesImpl.class" />
+								</zip>
+							</target>
+						</configuration>
+						<goals>
+							<goal>run</goal>
+						</goals>
+					</execution>
+				</executions>
+			</plugin>
+		</plugins>
 	</build>
 </project>

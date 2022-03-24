@@ -171,6 +171,11 @@ fi
 # Wait for undeployment and shutdown of the domain
 sleep 10s
 
+if [ -d $DEPLOY_PATH/glassfish-modules ]; then
+	echo "Patching glassfish modules..."
+	cp $DEPLOY_PATH/glassfish-modules/* $GLASSFISH_PATH/modules/
+fi
+
 rm $DOMAIN_PATH/$DOMAIN_NAME/lib/*.jar
 
 echo "Copying server libs..."

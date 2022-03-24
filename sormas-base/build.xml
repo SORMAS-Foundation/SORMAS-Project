@@ -6,6 +6,7 @@
 	<property name="deploy.path" value="${glassfish.domain.root}/autodeploy" />
 	<property name="deploy.serverlibs.path" value="${glassfish.domain.root}/lib" />
 	<property name="collect.root.path" value="../deploy" />
+	<property name="collect.glassfishmodules.path" value="${collect.root.path}/glassfish-modules" />
 	<property name="collect.serverlibs.path" value="${collect.root.path}/serverlibs" />
 
 	<property environment="env" />
@@ -80,6 +81,21 @@
 		</copy>
 	</target>
 
+	<target name="collect-glassfish-modules" description="Collects patched glassfish modules">
+
+		<delete failonerror="false" includeemptydirs="true">
+			<fileset dir="${collect.glassfishmodules.path}" casesensitive="false">
+				<include name="*.jar" />
+			</fileset>
+		</delete>
+
+		<copy todir="${collect.glassfishmodules.path}">
+			<fileset dir="../sormas-backend/target/glassfish-modules">
+				<include name="*.jar" />
+			</fileset>
+		</copy>
+	</target>
+
 	<target name="collect-serverlibs" description="serverlibs für server setup bereitstellen">
 
 		<artifact:pom id="serverlibsPom" file="dependencies/serverlibs.pom">
@@ -108,7 +124,10 @@
 		<ant dir="../sormas-keycloak-service-provider" target="3-collect" />
 	</target>
 
-	<target name="collect-all" description="collects all serverlibs, bundles and so on for the setup-script.">
+	<target name="collect-all" description="collects all glassfish modules, serverlibs and so on for the setup-script.">
+
+		<echo>Collecting glassfish modules</echo>
+		<antcall target="collect-glassfish-modules" />
 
 		<echo>Collecting serverlibs</echo>
 		<antcall target="collect-serverlibs" />
