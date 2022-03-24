@@ -2386,10 +2386,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@RolesAllowed(UserRight._CASE_DELETE)
 	public void deleteWithContacts(String caseUuid) {
 
-		if (!userService.hasRight(UserRight.CASE_DELETE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete cases.");
-		}
-
 		Case caze = service.getByUuid(caseUuid);
 		deleteCase(caze);
 
@@ -2405,10 +2401,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@RolesAllowed(UserRight._CASE_DELETE)
 	@Override
 	public List<String> deleteCases(List<String> caseUuids) {
-
-		if (!userService.hasRight(UserRight.CASE_DELETE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete cases.");
-		}
 
 		List<String> deletedCasesUuids = new ArrayList<>();
 		List<Case> casesToBeDeleted = service.getByUuids(caseUuids);
@@ -2946,7 +2938,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		return target;
 	}
-
 
 	private Map<ReinfectionDetail, Boolean> cleanupReinfectionDetails(Map<ReinfectionDetail, Boolean> reinfectionDetails) {
 		if (reinfectionDetails != null && reinfectionDetails.containsValue(Boolean.FALSE)) {
