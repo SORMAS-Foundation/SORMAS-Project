@@ -18,11 +18,13 @@
 		<pushHotfixes>true</pushHotfixes>
 
 		<!-- *** Payara module versions *** -->
+		<glassfish.version>5.1.0</glassfish.version>
 		<jackson.version>2.12.4</jackson.version>
 		<jakarta.activation.version>1.2.1</jakarta.activation.version>
 		<javaee.version>8.0.1</javaee.version>
 		<jersey.version>2.34</jersey.version>
 		<!-- Payara version used for release. Overwrite them in settings.xml for local development with different versions -->
+		<!-- Copied from Payara on the respective version and locally fixed: InjectionServicesImpl -->
 		<payara.version>5.2021.10</payara.version>
 
 		<!-- *** Other dependency versions *** -->
@@ -216,6 +218,12 @@
 				<version>2.3.2</version>
 				<scope>provided</scope>
 			</dependency>
+			<dependency>
+				<groupId>jakarta.xml.ws</groupId>
+				<artifactId>jakarta.xml.ws-api</artifactId>
+				<version>2.3.2</version>
+				<scope>provided</scope>
+			</dependency>
 
 			<dependency>
 				<groupId>org.eclipse.microprofile.config</groupId>
@@ -264,6 +272,19 @@
 			</dependency>
 
 			<dependency>
+				<groupId>org.glassfish.main.common</groupId>
+				<artifactId>container-common</artifactId>
+				<version>${glassfish.version}</version>
+				<scope>provided</scope>
+			</dependency>
+			<dependency>
+				<groupId>org.glassfish.main.web</groupId>
+				<artifactId>weld-integration</artifactId>
+				<version>${glassfish.version}</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
 				<groupId>org.glassfish.soteria</groupId>
 				<artifactId>javax.security.enterprise</artifactId>
 				<version>1.1-b01.payara-p4</version>
@@ -281,6 +302,13 @@
 				<groupId>org.jboss.logging</groupId>
 				<artifactId>jboss-logging</artifactId>
 				<version>3.4.2.Final</version>
+				<scope>provided</scope>
+			</dependency>
+
+			<dependency>
+				<groupId>org.jboss.weld</groupId>
+				<artifactId>weld-osgi-bundle</artifactId>
+				<version>3.1.8.Final</version>
 				<scope>provided</scope>
 			</dependency>
 
