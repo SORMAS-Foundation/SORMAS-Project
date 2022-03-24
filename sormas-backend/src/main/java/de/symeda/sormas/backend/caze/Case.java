@@ -76,6 +76,7 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory;
 import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfo;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.CoreAdo;
@@ -205,6 +206,7 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String OVERWRITE_FOLLOW_UP_UNTIL = "overwriteFollowUpUntil";
 	public static final String VISITS = "visits";
+	public static final String SURVEILLANCE_REPORTS = "surveillanceReports";
 	public static final String FACILITY_TYPE = "facilityType";
 	public static final String CONTACTS = "contacts";
 	public static final String CONVERTED_FROM_CONTACT = "convertedContact";
@@ -365,6 +367,7 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	private List<Task> tasks;
 	private Set<Sample> samples = new HashSet<>();
 	private Set<Visit> visits = new HashSet<>();
+	private Set<SurveillanceReport> surveillanceReports = new HashSet<>();
 	private Set<EventParticipant> eventParticipants;
 	private List<Contact> contacts;
 	private List<Contact> convertedContact;
@@ -969,6 +972,16 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 
 	public void setVisits(Set<Visit> visits) {
 		this.visits = visits;
+	}
+
+	@AuditedIgnore
+	@OneToMany(mappedBy = SurveillanceReport.CAZE, fetch = FetchType.LAZY)
+	public Set<SurveillanceReport> getSurveillanceReports() {
+		return surveillanceReports;
+	}
+
+	public void setSurveillanceReports(Set<SurveillanceReport> surveillanceReports) {
+		this.surveillanceReports = surveillanceReports;
 	}
 
 	@OneToMany(mappedBy = Sample.ASSOCIATED_CASE, fetch = FetchType.LAZY)

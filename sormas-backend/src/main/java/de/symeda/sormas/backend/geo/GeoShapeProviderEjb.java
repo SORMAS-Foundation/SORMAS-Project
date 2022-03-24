@@ -46,9 +46,10 @@ import org.opengis.referencing.operation.MathTransform;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.geo.GeoLatLon;
 import de.symeda.sormas.api.geo.GeoShapeProvider;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.DistrictFacadeEjbLocal;
@@ -176,8 +177,8 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 		} else {
 			loadRegionData(countryName, wkt);
 			loadDistrictData(countryName, wkt);
+			buildCountryShape();
 		}
-		buildCountryShape();
 	}
 
 	private void loadRegionData(String countryName, String wkt) {
@@ -382,12 +383,40 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 			}
 		}
 
+		// fixme: Remove when the shapefiles are no longer part of the resources.
+		// fixme: In this case the logic to build country shapes will have to be checked again to fix the problem this is a workaround for.
+		if (configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
+			polygons.add(getRegionPolygon(factory, "Bayern"));
+			polygons.add(getRegionPolygon(factory, "Berlin"));
+			polygons.add(getRegionPolygon(factory, "Bremen"));
+		}
+
 		countryShape = polygons.stream()
 			.map(
 				polygon -> Arrays.stream(polygon.getCoordinates())
 					.map(coordinate -> new GeoLatLon(coordinate.y, coordinate.x))
 					.toArray(GeoLatLon[]::new))
 			.toArray(GeoLatLon[][]::new);
+	}
+
+	private Polygon getRegionPolygon(GeometryFactory factory, String regionCaption) {
+		Polygon polygon = null;
+		for (Entry<RegionReferenceDto, GeoLatLon[][]> entry : regionShapes.entrySet()) {
+			RegionReferenceDto regionReferenceDto = entry.getKey();
+			GeoLatLon[][] geoLatLons = entry.getValue();
+			if (regionReferenceDto.getCaption().contains(regionCaption)) {
+				try {
+					polygon = factory.createPolygon(
+							Arrays.stream(geoLatLons[0])
+									.map(regionPoint -> new Coordinate(regionPoint.getLon(), regionPoint.getLat()))
+									.toArray(Coordinate[]::new));
+					break;
+				} catch (TopologyException e) {
+					logger.error(e.toString());
+				}
+			}
+		}
+		return polygon;
 	}
 
 	/**

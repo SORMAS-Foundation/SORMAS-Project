@@ -99,6 +99,7 @@ import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 import de.symeda.sormas.api.utils.criteria.ExternalShareDateType;
 import de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
 import de.symeda.sormas.backend.caze.transformers.CaseListEntryDtoResultTransformer;
 import de.symeda.sormas.backend.caze.transformers.CaseSelectionDtoResultTransformer;
@@ -1065,8 +1066,15 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (includeExtendedChangeDateFilters) {
 			Join<Case, Sample> caseSampleJoin = caseFrom.join(Case.SAMPLES, JoinType.LEFT);
 			Join<Case, Person> casePersonJoin = caseFrom.join(Case.PERSON, JoinType.LEFT);
+			Join<Case, Visit> caseVisitJoin = caseFrom.join(Case.VISITS, JoinType.LEFT);
+			Join<Case, SurveillanceReport> caseSurveillanceReportJoin = caseFrom.join(Case.SURVEILLANCE_REPORTS, JoinType.LEFT);
 
-			builder = builder.add(caseSampleJoin).add(caseSampleJoin, Sample.PATHOGENTESTS).add(casePersonJoin).add(casePersonJoin, Person.ADDRESS);
+			builder = builder.add(caseSampleJoin)
+				.add(caseSampleJoin, Sample.PATHOGENTESTS)
+				.add(casePersonJoin)
+				.add(casePersonJoin, Person.ADDRESS)
+				.add(caseVisitJoin)
+				.add(caseSurveillanceReportJoin);
 		}
 
 		return builder;

@@ -55,6 +55,7 @@ public interface Strings {
 	String confirmationArchiveCampaign = "confirmationArchiveCampaign";
 	String confirmationArchiveCase = "confirmationArchiveCase";
 	String confirmationArchiveCases = "confirmationArchiveCases";
+	String confirmationArchiveCaseWithContacts = "confirmationArchiveCaseWithContacts";
 	String confirmationArchiveCommunities = "confirmationArchiveCommunities";
 	String confirmationArchiveCommunity = "confirmationArchiveCommunity";
 	String confirmationArchiveContact = "confirmationArchiveContact";
@@ -91,6 +92,7 @@ public interface Strings {
 	String confirmationDearchiveCampaign = "confirmationDearchiveCampaign";
 	String confirmationDearchiveCase = "confirmationDearchiveCase";
 	String confirmationDearchiveCases = "confirmationDearchiveCases";
+	String confirmationDearchiveCaseWithContacts = "confirmationDearchiveCaseWithContacts";
 	String confirmationDearchiveCommunities = "confirmationDearchiveCommunities";
 	String confirmationDearchiveCommunity = "confirmationDearchiveCommunity";
 	String confirmationDearchiveContact = "confirmationDearchiveContact";
