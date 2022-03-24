@@ -140,7 +140,7 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 		List<Object[]> results = (List<Object[]>) em.createNativeQuery(checkHistoryTablesSql).getResultList();
 		StringBuilder result = new StringBuilder();
 		results.forEach(objects -> {
-			Arrays.stream(objects).forEach(o -> result.append(o.toString() + " "));
+			Arrays.stream(objects).forEach(o -> result.append(o != null ? o.toString() : "" + " "));
 			result.append("\n");
 		});
 		assertTrue(result.toString(), CollectionUtils.isEmpty(results));
