@@ -45,11 +45,11 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.EditPermissionType;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.contact.ContactClassification;
@@ -816,7 +816,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 			Date earliestSampleDate = null;
 			for (Sample sample : contact.getSamples()) {
-				if (sample.getPathogenTestResult() == PathogenTestResultType.POSITIVE
+				if (!sample.isDeleted()
+					&& sample.getPathogenTestResult() == PathogenTestResultType.POSITIVE
 					&& (earliestSampleDate == null || sample.getSampleDateTime().before(earliestSampleDate))) {
 					earliestSampleDate = sample.getSampleDateTime();
 				}
