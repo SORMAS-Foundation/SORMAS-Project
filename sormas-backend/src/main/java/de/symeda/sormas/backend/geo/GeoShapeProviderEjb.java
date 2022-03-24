@@ -383,8 +383,8 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 			}
 		}
 
-		// fixme: this should be removed if the above logic is rewritten/fixed
-		// fixme: needed due to problem within shapefiles and/or logic that merges the shapes of regions
+		// fixme: Remove when the shapefiles are no longer part of the resources.
+		// fixme: In this case the logic to build country shapes will have to be checked again to fix the problem this is a workaround for.
 		if (configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			polygons.add(getRegionPolygon(factory, "Bayern"));
 			polygons.add(getRegionPolygon(factory, "Berlin"));
