@@ -33,6 +33,7 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
@@ -629,9 +630,22 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		}
 	}
 
-	protected void initializePresentConditionField() {
+	private void initializePresentConditionField() {
 		PresentCondition presentCondition = getValue().getPresentCondition();
 		ComboBox presentConditionField = getField(PersonDto.PRESENT_CONDITION);
+
+		if (this.disease != null || FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease() != null) {
+			Disease disease = this.disease != null ? this.disease : FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease();
+			FieldVisibilityCheckers fieldVisibilityCheckers = FieldVisibilityCheckers.withDisease(disease);
+			List<PresentCondition> validValues = Arrays.stream(PresentCondition.values())
+					.filter(c -> fieldVisibilityCheckers.isVisible(PresentCondition.class, c.name()))
+					.collect(Collectors.toList());
+			PresentCondition currentValue = (PresentCondition) presentConditionField.getValue();
+			if (currentValue != null && !validValues.contains(currentValue)) {
+				validValues.add(currentValue);
+			}
+			FieldHelper.updateEnumData(presentConditionField, validValues);
+		}
 
 		/*
 		 * It may happen that the person currently has a present condition that usually shall not be shows for the form's disease.
