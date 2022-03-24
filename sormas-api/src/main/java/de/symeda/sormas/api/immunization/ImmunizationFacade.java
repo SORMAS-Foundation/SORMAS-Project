@@ -32,6 +32,8 @@ public interface ImmunizationFacade extends CoreFacade<ImmunizationDto, Immuniza
 
 	List<String> getArchivedUuidsSince(Date since);
 
+	void archiveAllArchivableImmunizations(int daysAfterImmunizationsGetsArchived);
+
 	List<String> getDeletedUuidsSince(Date since);
 
 	List<String> deleteImmunizations(List<String> immunizationUuids);

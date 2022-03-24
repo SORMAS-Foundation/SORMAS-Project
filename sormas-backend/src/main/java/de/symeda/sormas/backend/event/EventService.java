@@ -294,7 +294,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		cq.where(filter);
 		cq.select(event.get(Event.UUID));
 
-		return em.createQuery(cq).getResultList();
+		List<String> resultList = em.createQuery(cq).getResultList();
+		return resultList;
 	}
 
 	public List<String> getDeletedUuidsSince(Date since) {
@@ -494,9 +495,18 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 	@Override
 	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, From<?, Event> eventFrom, boolean includeExtendedChangeDateFilters) {
-		return super.addChangeDates(builder, eventFrom, includeExtendedChangeDateFilters).add(eventFrom, Event.EVENT_LOCATION)
+		Join<Event, Action> eventActionJoin = eventFrom.join(Event.ACTIONS, JoinType.LEFT);
+		Join<Event, EventParticipant> eventParticipantJoin = eventFrom.join(Event.EVENT_PERSONS, JoinType.LEFT);
+		Join<EventParticipant, Sample> eventParticipantSampleJoin = eventParticipantJoin.join(EventParticipant.SAMPLES, JoinType.LEFT);
+
+		builder = super.addChangeDates(builder, eventFrom, includeExtendedChangeDateFilters).add(eventFrom, Event.EVENT_LOCATION)
 			.add(eventFrom, Event.SORMAS_TO_SORMAS_ORIGIN_INFO)
-			.add(eventFrom, Event.SORMAS_TO_SORMAS_SHARES);
+			.add(eventFrom, Event.SORMAS_TO_SORMAS_SHARES)
+			.add(eventActionJoin)
+			.add(eventParticipantJoin)
+			.add(eventParticipantSampleJoin);
+
+		return builder;
 	}
 
 	@Override

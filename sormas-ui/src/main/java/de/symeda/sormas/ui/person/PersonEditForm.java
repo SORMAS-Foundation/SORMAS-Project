@@ -34,12 +34,11 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
-import com.vaadin.v7.data.Item;
-import de.symeda.sormas.ui.utils.SormasFieldGroupFieldFactory;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.v7.data.Item;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
@@ -86,6 +85,7 @@ import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.OutbreakFieldVisibilityChecker;
 import de.symeda.sormas.ui.utils.ResizableTextAreaWrapper;
+import de.symeda.sormas.ui.utils.SormasFieldGroupFieldFactory;
 import de.symeda.sormas.ui.utils.ValidationUtils;
 import de.symeda.sormas.ui.utils.ViewMode;
 
@@ -100,25 +100,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private static final String CONTACT_INFORMATION_HEADER = "contactInformationHeader";
 	private static final String EXTERNAL_TOKEN_WARNING_LOC = "externalTokenWarningLoc";
 	private static final String GENERAL_COMMENT_LOC = "generalCommentLoc";
-
-	private final Label occupationHeader = new Label(I18nProperties.getString(Strings.headingPersonOccupation));
-	private final Label addressHeader = new Label(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESS));
-	private final Label addressesHeader = new Label(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESSES));
-	private final Label contactInformationHeader = new Label(I18nProperties.getString(Strings.headingContactInformation));
-
-	private Label personInformationHeadingLabel;
-	private TextField firstNameField;
-	private TextField lastNameField;
-	private Disease disease;
-	private String diseaseDetails;
-	private ComboBox causeOfDeathField;
-	private ComboBox causeOfDeathDiseaseField;
-	private TextField causeOfDeathDetailsField;
-	private ComboBox birthDateDay;
-	private ComboBox cbPlaceOfBirthFacility;
-	private PersonContext personContext;
-	private boolean isPseudonymized;
-
 	//@formatter:off
     private static final String HTML_LAYOUT =
             loc(PERSON_INFORMATION_HEADING_LOC) +
@@ -177,6 +158,22 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
                                     fluidRowLocs(PersonDto.BIRTH_COUNTRY, PersonDto.CITIZENSHIP) +
 					fluidRowLocs(PersonDto.PERSON_CONTACT_DETAILS)) +
 					loc(GENERAL_COMMENT_LOC) + fluidRowLocs(CaseDataDto.ADDITIONAL_DETAILS);
+	private final Label occupationHeader = new Label(I18nProperties.getString(Strings.headingPersonOccupation));
+	private final Label addressHeader = new Label(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESS));
+	private final Label addressesHeader = new Label(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.ADDRESSES));
+	private final Label contactInformationHeader = new Label(I18nProperties.getString(Strings.headingContactInformation));
+	private Label personInformationHeadingLabel;
+	private TextField firstNameField;
+	private TextField lastNameField;
+	private Disease disease;
+	private String diseaseDetails;
+	private ComboBox causeOfDeathField;
+	private ComboBox causeOfDeathDiseaseField;
+	private TextField causeOfDeathDetailsField;
+	private ComboBox birthDateDay;
+	private ComboBox cbPlaceOfBirthFacility;
+	private PersonContext personContext;
+	private boolean isPseudonymized;
 	//@formatter:on
 
 	public PersonEditForm(PersonContext personContext, Disease disease, String diseaseDetails, ViewMode viewMode, boolean isPseudonymized) {
@@ -464,6 +461,17 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				false,
 				false,
 				I18nProperties.getValidationError(Validations.afterDate, deathDate.getCaption(), birthDateYear.getCaption())));
+		deathDate.addValidator(
+			new DateComparisonValidator(
+				deathDate,
+				burialDate,
+				true,
+				false,
+				I18nProperties.getValidationError(Validations.beforeDate, deathDate.getCaption(), burialDate.getCaption())));
+		deathDate.addValueChangeListener(value -> {
+			deathDate.setValidationVisible(!deathDate.isValid());
+			burialDate.setValidationVisible(!burialDate.isValid());
+		});
 		burialDate.addValidator(
 			new DateComparisonValidator(
 				burialDate,
@@ -478,21 +486,31 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				false,
 				false,
 				I18nProperties.getValidationError(Validations.afterDate, burialDate.getCaption(), deathDate.getCaption())));
+		burialDate.addValueChangeListener(b -> {
+			deathDate.setValidationVisible(!deathDate.isValid());
+			burialDate.setValidationVisible(!burialDate.isValid());
+		});
 
 		// Update the list of days according to the selected month and year
 		birthDateYear.addValueChangeListener(e -> {
 			updateListOfDays((Integer) e.getProperty().getValue(), (Integer) birthDateMonth.getValue());
 			birthDateMonth.markAsDirty();
 			birthDateDay.markAsDirty();
+			deathDate.setValidationVisible(!deathDate.isValid());
+			burialDate.setValidationVisible(!burialDate.isValid());
 		});
 		birthDateMonth.addValueChangeListener(e -> {
 			updateListOfDays((Integer) birthDateYear.getValue(), (Integer) e.getProperty().getValue());
 			birthDateYear.markAsDirty();
 			birthDateDay.markAsDirty();
+			deathDate.setValidationVisible(!deathDate.isValid());
+			burialDate.setValidationVisible(!burialDate.isValid());
 		});
 		birthDateDay.addValueChangeListener(e -> {
 			birthDateYear.markAsDirty();
 			birthDateMonth.markAsDirty();
+			deathDate.setValidationVisible(!deathDate.isValid());
+			burialDate.setValidationVisible(!burialDate.isValid());
 		});
 
 		addValueChangeListener((e) -> {
@@ -657,23 +675,28 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	}
 
 	private void updateApproximateAge() {
+		String approximateAge = null;
+		ApproximateAgeType approximateAgeType = null;
 
 		Date birthDate = calcBirthDateValue();
-
 		if (birthDate != null) {
 			Pair<Integer, ApproximateAgeType> pair =
 				ApproximateAgeHelper.getApproximateAge(birthDate, (Date) getFieldGroup().getField(PersonDto.DEATH_DATE).getValue());
-
-			TextField approximateAgeField = (TextField) getFieldGroup().getField(PersonDto.APPROXIMATE_AGE);
-			approximateAgeField.setReadOnly(false);
-			approximateAgeField.setValue(pair.getElement0() != null ? String.valueOf(pair.getElement0()) : null);
-			approximateAgeField.setReadOnly(true);
-
-			AbstractSelect approximateAgeTypeSelect = (AbstractSelect) getFieldGroup().getField(PersonDto.APPROXIMATE_AGE_TYPE);
-			approximateAgeTypeSelect.setReadOnly(false);
-			approximateAgeTypeSelect.setValue(pair.getElement1());
-			approximateAgeTypeSelect.setReadOnly(true);
+			if (pair.getElement0() != null) {
+				approximateAge = String.valueOf(pair.getElement0());
+			}
+			approximateAgeType = pair.getElement1();
 		}
+
+		TextField approximateAgeField = (TextField) getFieldGroup().getField(PersonDto.APPROXIMATE_AGE);
+		approximateAgeField.setReadOnly(false);
+		approximateAgeField.setValue(approximateAge);
+		approximateAgeField.setReadOnly(true);
+
+		AbstractSelect approximateAgeTypeSelect = (AbstractSelect) getFieldGroup().getField(PersonDto.APPROXIMATE_AGE_TYPE);
+		approximateAgeTypeSelect.setReadOnly(false);
+		approximateAgeTypeSelect.setValue(approximateAgeType);
+		approximateAgeTypeSelect.setReadOnly(true);
 	}
 
 	private void toogleOccupationMetaFields() {
@@ -744,6 +767,11 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				causeOfDeathField.setValue(CauseOfDeath.EPIDEMIC_DISEASE);
 				toggleCauseOfDeathFields(true);
 				setVisible(false, PersonDto.BURIAL_DATE, PersonDto.BURIAL_PLACE_DESCRIPTION, PersonDto.BURIAL_CONDUCTOR);
+
+				getField(PersonDto.BURIAL_DATE).setValue(null);
+				getField(PersonDto.BURIAL_PLACE_DESCRIPTION).setValue(null);
+				getField(PersonDto.BURIAL_CONDUCTOR).setValue(null);
+
 				break;
 			case BURIED:
 				setVisible(true, PersonDto.DEATH_DATE, PersonDto.DEATH_PLACE_TYPE, PersonDto.DEATH_PLACE_DESCRIPTION);
@@ -790,6 +818,13 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			causeOfDeathField.setVisible(false);
 			causeOfDeathDiseaseField.setVisible(false);
 			causeOfDeathDetailsField.setVisible(false);
+
+			causeOfDeathField.setValue(null);
+			causeOfDeathDiseaseField.setValue(null);
+			causeOfDeathDetailsField.setValue(null);
+			getField(PersonDto.DEATH_PLACE_TYPE).setValue(null);
+			getField(PersonDto.DEATH_PLACE_DESCRIPTION).setValue(null);
+
 		} else {
 			if (isVisibleAllowed(causeOfDeathField)) {
 				causeOfDeathField.setVisible(true);
