@@ -332,10 +332,6 @@ Feature: Case filter functionality
     And I apply Case origin "Einreiseort" on Case directory page
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
-    And I apply Case origin "Im Land" on Case directory page
-    And I apply Disease filter "Cholera" on Case directory page
-    And I click APPLY BUTTON in Case Directory Page
-    And I check that number of displayed cases results is 0
     And I apply Disease filter "COVID-19" on Case directory page
     And I apply Disease Variant filter "B.1.526.1" on Case directory page
     And I click APPLY BUTTON in Case Directory Page

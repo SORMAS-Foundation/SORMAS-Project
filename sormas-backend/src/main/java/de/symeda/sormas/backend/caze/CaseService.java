@@ -100,6 +100,7 @@ import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 import de.symeda.sormas.api.utils.criteria.ExternalShareDateType;
 import de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.caze.transformers.CaseListEntryDtoResultTransformer;
 import de.symeda.sormas.backend.caze.transformers.CaseSelectionDtoResultTransformer;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
@@ -995,8 +996,15 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		if (includeExtendedChangeDateFilters) {
 			Join<Case, Sample> caseSampleJoin = caseFrom.join(Case.SAMPLES, JoinType.LEFT);
 			Join<Case, Person> casePersonJoin = caseFrom.join(Case.PERSON, JoinType.LEFT);
+			Join<Case, Visit> caseVisitJoin = caseFrom.join(Case.VISITS, JoinType.LEFT);
+			Join<Case, SurveillanceReport> caseSurveillanceReportJoin = caseFrom.join(Case.SURVEILLANCE_REPORTS, JoinType.LEFT);
 
-			builder = builder.add(caseSampleJoin).add(caseSampleJoin, Sample.PATHOGENTESTS).add(casePersonJoin).add(casePersonJoin, Person.ADDRESS);
+			builder = builder.add(caseSampleJoin)
+				.add(caseSampleJoin, Sample.PATHOGENTESTS)
+				.add(casePersonJoin)
+				.add(casePersonJoin, Person.ADDRESS)
+				.add(caseVisitJoin)
+				.add(caseSurveillanceReportJoin);
 		}
 
 		return builder;
@@ -1014,12 +1022,16 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Predicate filter = null;
 
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-		if (jurisdictionLevel != JurisdictionLevel.NATION) {
+		if (jurisdictionLevel != JurisdictionLevel.NATION && !currentUser.hasUserRole(UserRole.REST_USER)) {
 			// whoever created the case or is assigned to it is allowed to access it
 			if (userFilterCriteria == null || (userFilterCriteria.getIncludeCasesFromOtherJurisdictions())) {
 				filterResponsible = cb.equal(casePath.get(Case.REPORTING_USER).get(User.ID), currentUser.getId());
 				filterResponsible = cb.or(filterResponsible, cb.equal(casePath.get(Case.SURVEILLANCE_OFFICER).get(User.ID), currentUser.getId()));
 				filterResponsible = cb.or(filterResponsible, cb.equal(casePath.get(Case.CASE_OFFICER).get(User.ID), currentUser.getId()));
+			}
+			else {
+				// make sure we don't see all cases just because no filter is defined at all
+				filterResponsible = cb.disjunction();
 			}
 
 			switch (jurisdictionLevel) {

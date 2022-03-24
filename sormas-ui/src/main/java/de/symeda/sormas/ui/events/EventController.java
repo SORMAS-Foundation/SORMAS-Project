@@ -551,6 +551,13 @@ public class EventController {
 	}
 
 	public void navigateTo(EventCriteria eventCriteria) {
+		navigateTo(eventCriteria, false);
+	}
+
+	public void navigateTo(EventCriteria eventCriteria, boolean changeToDefaultViewType) {
+		if (changeToDefaultViewType) {
+			ViewModelProviders.of(EventsView.class).remove(EventsViewConfiguration.class);
+		}
 		ViewModelProviders.of(EventsView.class).remove(EventCriteria.class);
 		String navigationState = AbstractView.buildNavigationState(EventsView.VIEW_NAME, eventCriteria);
 		SormasUI.get().getNavigator().navigateTo(navigationState);
