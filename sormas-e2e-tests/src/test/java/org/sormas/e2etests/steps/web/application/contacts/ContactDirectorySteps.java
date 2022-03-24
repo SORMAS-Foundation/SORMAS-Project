@@ -120,7 +120,7 @@ import static org.sormas.e2etests.steps.web.application.contacts.EditContactStep
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
-import java.text.DecimalFormat;
+import java.text.Normalizer;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -150,7 +150,6 @@ public class ContactDirectorySteps implements En {
 
   protected WebDriverHelpers webDriverHelpers;
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
-  private final DecimalFormat cf = new DecimalFormat("#.######");
   public static Exposure exposureData;
   public static EpidemiologicalData dataSavedFromCheckbox;
   public static EpidemiologicalData specificCaseData;
@@ -338,8 +337,11 @@ public class ContactDirectorySteps implements En {
                   CONTACT_PERSON_LAST_NAME, exposureData.getContactPersonLastName());
               webDriverHelpers.fillInWebElement(
                   CONTACT_PERSON_PHONE_NUMBER, exposureData.getContactPersonPhone());
+              String emailAddress = exposureData.getContactPersonEmail();
               webDriverHelpers.fillInWebElement(
-                  CONTACT_PERSON_EMAIL_ADRESS, exposureData.getContactPersonEmail());
+                  CONTACT_PERSON_EMAIL_ADRESS,
+                  Normalizer.normalize(emailAddress, Normalizer.Form.NFD)
+                      .replaceAll("[^\\p{ASCII}]", ""));
               break;
           }
         });
@@ -348,14 +350,12 @@ public class ContactDirectorySteps implements En {
         "I fill Location form for Type of place field by {string} options in Case directory for DE version",
         (String searchCriteria) -> {
           switch (searchCriteria) {
-              // ok
             case "Unbekannt":
               webDriverHelpers.selectFromCombobox(
                   FACILITY_ACTIVITY_AS_CASE_COMBOBOX, searchCriteria);
               exposureData = contactService.buildGeneratedExposureDataContactForRandomInputsDE();
               fillLocationDE(exposureData);
               break;
-              // ok
             case "Sonstiges":
               webDriverHelpers.selectFromCombobox(
                   FACILITY_ACTIVITY_AS_CASE_COMBOBOX, searchCriteria);
@@ -385,7 +385,8 @@ public class ContactDirectorySteps implements En {
                   FACILITY_CATEGORY_COMBOBOX, exposureData.getFacilityCategory());
               webDriverHelpers.selectFromCombobox(
                   FACILITY_TYPE_COMBOBOX, exposureData.getFacilityType());
-              webDriverHelpers.selectFromCombobox(FACILITY_DETAILS_COMBOBOX, "Andere Einrichtung");
+              webDriverHelpers.selectFromCombobox(
+                  FACILITY_DETAILS_COMBOBOX, exposureData.getFacilityDetails());
               webDriverHelpers.fillInWebElement(
                   FACILITY_NAME_AND_DESCRIPTION, exposureData.getFacilityDetails());
               webDriverHelpers.fillInWebElement(
@@ -394,8 +395,11 @@ public class ContactDirectorySteps implements En {
                   CONTACT_PERSON_LAST_NAME, exposureData.getContactPersonLastName());
               webDriverHelpers.fillInWebElement(
                   CONTACT_PERSON_PHONE_NUMBER, exposureData.getContactPersonPhone());
+              String emailAddress = exposureData.getContactPersonEmail();
               webDriverHelpers.fillInWebElement(
-                  CONTACT_PERSON_EMAIL_ADRESS, exposureData.getContactPersonEmail());
+                  CONTACT_PERSON_EMAIL_ADRESS,
+                  Normalizer.normalize(emailAddress, Normalizer.Form.NFD)
+                      .replaceAll("[^\\p{ASCII}]", ""));
               break;
           }
         });

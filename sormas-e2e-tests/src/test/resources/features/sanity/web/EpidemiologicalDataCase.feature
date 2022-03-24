@@ -164,6 +164,3 @@ Feature: Epidemiological data coverage
     And I click on the CHOOSE CASE button in Create new contact form in Exposure for Epidemiological data tab in Cases
     And I search and chose the last case uuid created via UI in the CHOOSE CASE Contact window
     And I click on SAVE button in create contact form
-
-
-
