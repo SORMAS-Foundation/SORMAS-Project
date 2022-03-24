@@ -36,7 +36,6 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.JurisdictionLevel;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseEditFragment;
@@ -248,9 +247,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 				contentBinding.facilityTypeGroup.setValue(FacilityTypeGroup.MEDICAL_FACILITY);
 				contentBinding.caseDataFacilityType.setValue(FacilityType.HOSPITAL);
 				User user = ConfigProvider.getUser();
-				boolean userHasFacilityJurisdictionLevel =
-					user.getUserRoles().stream().anyMatch(userRole -> userRole.getJurisdictionLevel().equals(JurisdictionLevel.HEALTH_FACILITY));
-				if (!userHasFacilityJurisdictionLevel) {
+				if (!user.hasJurisdictionLevel(JurisdictionLevel.HEALTH_FACILITY)) {
 					contentBinding.caseDataHealthFacility.setValue(null);
 				}
 			}
@@ -289,7 +286,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 			contentBinding.facilityOrHome.setValue(TypeOfPlace.FACILITY);
 		}
 
-		if (user.hasUserRole(UserRole.HOSPITAL_INFORMANT) && user.getHealthFacility() != null) {
+		if (user.hasJurisdictionLevel(JurisdictionLevel.HEALTH_FACILITY)) {
 			// Hospital Informants are not allowed to create cases in another health facility
 			contentBinding.caseDataCommunity.setEnabled(false);
 			contentBinding.caseDataCommunity.setRequired(false);
@@ -302,12 +299,12 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 			contentBinding.caseDataDifferentPlaceOfStayJurisdiction.setVisibility(GONE);
 		}
 
-		if (user.hasUserRole(UserRole.POE_INFORMANT) && user.getPointOfEntry() != null) {
+		if (user.getPointOfEntry() != null) {
 			contentBinding.caseDataPointOfEntry.setEnabled(false);
 			contentBinding.caseDataPointOfEntry.setRequired(false);
 		}
 
-		if (user.hasUserRole(UserRole.COMMUNITY_INFORMANT) && user.getCommunity() != null) {
+		if (user.hasJurisdictionLevel(JurisdictionLevel.COMMUNITY)) {
 			// Community Informants are not allowed to create cases in another community
 			contentBinding.caseDataCommunity.setEnabled(false);
 			contentBinding.caseDataCommunity.setRequired(false);
@@ -331,7 +328,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		}
 
 		// Set up port health visibilities
-		if (UserRole.isPortHealthUser(ConfigProvider.getUser().getUserRoles())) {
+		if (user.getPointOfEntry() != null) {
 			contentBinding.caseDataCaseOrigin.setVisibility(GONE);
 			contentBinding.caseDataDisease.setVisibility(GONE);
 			contentBinding.facilityOrHome.setVisibility(GONE);

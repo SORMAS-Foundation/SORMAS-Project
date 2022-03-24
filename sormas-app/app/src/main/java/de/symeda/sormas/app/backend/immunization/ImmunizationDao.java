@@ -30,7 +30,6 @@ import android.util.Log;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.common.AbstractAdoDao;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.common.DaoException;
@@ -186,7 +185,7 @@ public class ImmunizationDao extends AbstractAdoDao<Immunization> {
 			immunization.setDisease(defaultDisease);
 		}
 
-		if (UserRole.isPortHealthUser(currentUser.getUserRoles())) {
+		if (currentUser.getPointOfEntry() != null) {
 			immunization.setResponsibleRegion(currentUser.getRegion());
 			immunization.setResponsibleDistrict(currentUser.getDistrict());
 			immunization.setDisease(Disease.UNDEFINED);

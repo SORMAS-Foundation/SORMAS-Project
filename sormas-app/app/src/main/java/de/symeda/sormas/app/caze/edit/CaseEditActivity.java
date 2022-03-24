@@ -31,7 +31,6 @@ import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.ValidationException;
 import de.symeda.sormas.app.BaseActivity;
@@ -150,7 +149,7 @@ public class CaseEditActivity extends BaseEditActivity<Case> {
 		}
 		if (caze != null
 			&& (caze.isUnreferredPortHealthCase()
-				|| UserRole.isPortHealthUser(ConfigProvider.getUser().getUserRoles())
+				|| ConfigProvider.getUser().getPointOfEntry() != null
 				|| DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.VIEW_TAB_CASES_HOSPITALIZATION))) {
 			menuItems.set(CaseSection.HOSPITALIZATION.ordinal(), null);
 		}

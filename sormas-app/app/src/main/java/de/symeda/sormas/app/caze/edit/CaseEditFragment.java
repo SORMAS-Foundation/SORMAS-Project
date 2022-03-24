@@ -21,12 +21,13 @@ import static de.symeda.sormas.api.caze.CaseConfirmationBasis.CLINICAL_CONFIRMAT
 import static de.symeda.sormas.api.caze.CaseConfirmationBasis.EPIDEMIOLOGICAL_CONFIRMATION;
 import static de.symeda.sormas.api.caze.CaseConfirmationBasis.LABORATORY_DIAGNOSTIC_CONFIRMATION;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
 import android.webkit.WebView;
+
 import androidx.fragment.app.FragmentActivity;
+
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -52,9 +53,8 @@ import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
-import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -154,7 +154,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 				() -> contentBinding.smallpoxVaccinationScarImg.setVisibility(contentBinding.caseDataSmallpoxVaccinationScar.getVisibility()));
 
 		// Port Health fields
-		if (UserRole.isPortHealthUser(ConfigProvider.getUser().getUserRoles())) {
+		if (ConfigProvider.getUser().getPointOfEntry() != null) {
 			contentBinding.caseDataCaseOrigin.setVisibility(GONE);
 			contentBinding.facilityOrHome.setVisibility(GONE);
 			contentBinding.caseDataCommunity.setVisibility(GONE);
@@ -201,7 +201,7 @@ public class CaseEditFragment extends BaseEditFragment<FragmentCaseEditLayoutBin
 		contentBinding.caseDataQuarantineReduced.setVisibility(record.isQuarantineReduced() ? VISIBLE : GONE);
 
 		User user = ConfigProvider.getUser();
-		if (user.hasUserRole(UserRole.HOSPITAL_INFORMANT)) {
+		if (user.hasJurisdictionLevel(JurisdictionLevel.HEALTH_FACILITY)) {
 			// Hospital Informants are not allowed to change place of stay
 			contentBinding.caseDataDifferentPlaceOfStayJurisdiction.setEnabled(false);
 			contentBinding.caseDataDifferentPlaceOfStayJurisdiction.setVisibility(GONE);
