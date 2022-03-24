@@ -627,6 +627,7 @@ public class TestDataCreator {
 		travelEntry.setResponsibleRegion(rdcf.region);
 		travelEntry.setResponsibleDistrict(rdcf.district);
 		travelEntry.setPointOfEntry(rdcf.pointOfEntry);
+		travelEntry.setDateOfArrival(new Date());
 
 		if (config != null) {
 			config.accept(travelEntry);
