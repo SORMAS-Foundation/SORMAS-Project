@@ -562,13 +562,14 @@ public class StartupShutdownService {
 		} else if (!DataHelper.equal(existingUser.getPassword(), PasswordHelper.encodePassword(password, existingUser.getSeed()))) {
 			existingUser.setSeed(PasswordHelper.createPass(16));
 			existingUser.setPassword(PasswordHelper.encodePassword(password, existingUser.getSeed()));
-
+			existingUser.setUserRoles(userRoles);
+			
 			userService.persist(existingUser);
 			passwordResetEvent.fire(new PasswordResetEvent(existingUser));
 		} else if (userRoles.stream().anyMatch(r -> !existingUser.getUserRoles().contains(r))
 			|| existingUser.getUserRoles().stream().anyMatch(r -> !userRoles.contains(r))) {
 			existingUser.setUserRoles(userRoles);
-			userService.ensurePersisted(existingUser);
+			userService.persist(existingUser);
 		}
 
 	}

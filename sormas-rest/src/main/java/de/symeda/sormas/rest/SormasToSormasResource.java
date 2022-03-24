@@ -145,8 +145,8 @@ public class SormasToSormasResource {
 
 	@POST
 	@Path(SormasToSormasApiConstants.REQUEST_ACCEPTED_ENDPOINT)
-	public Response acceptedShareRequests(@Valid SormasToSormasEncryptedDataDto requestUuid) {
-		return handleVoidRequest(() -> FacadeProvider.getSormasToSormasFacade().requestAccepted(requestUuid));
+	public Response acceptedShareRequests(@Valid SormasToSormasEncryptedDataDto acceptData) {
+		return handleVoidRequest(() -> FacadeProvider.getSormasToSormasFacade().requestAccepted(acceptData));
 	}
 
 	@GET

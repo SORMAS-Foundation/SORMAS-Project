@@ -17,7 +17,6 @@ package de.symeda.sormas.backend.sormastosormas.entities.contact;
 
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
@@ -29,7 +28,6 @@ import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedDataPersister;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
-import java.util.List;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -47,10 +45,6 @@ public class ProcessedContactDataPersister extends ProcessedDataPersister<Contac
 	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
 	@EJB
 	private SormasToSormasShareInfoService shareInfoService;
-	@EJB
-	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
-	@EJB
-	private DistrictFacadeEjb.DistrictFacadeEjbLocal districtFacade;
 
 	@Override
 	protected SormasToSormasShareInfoService getShareInfoService() {
@@ -79,10 +73,6 @@ public class ProcessedContactDataPersister extends ProcessedDataPersister<Contac
 				Captions.Person,
 				contactValidationGroupName);
 
-			if (contact.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
-				setResponsibleDistrict(contact);
-			}
-
 			handleValidationError(() -> contactFacade.save(contact, true, true, false, false), Captions.Contact, contactValidationGroupName);
 		} else {
 			//save contact first during update
@@ -91,20 +81,6 @@ public class ProcessedContactDataPersister extends ProcessedDataPersister<Contac
 				() -> personFacade.savePerson(processedData.getPerson(), false, false, false),
 				Captions.Person,
 				contactValidationGroupName);
-		}
-	}
-
-	private void setResponsibleDistrict(ContactDto contact) {
-		String districtExternalId = configFacade.getS2SConfig().getDistrictExternalId();
-		if (districtExternalId != null) {
-			List<DistrictDto> districts = districtFacade.getByExternalId(districtExternalId, false);
-			if (!districts.isEmpty()) {
-				DistrictDto district = districts.get(0);
-
-				contact.setRegion(district.getRegion());
-				contact.setDistrict(district.toReference());
-				contact.setCommunity(null);
-			}
 		}
 	}
 }
