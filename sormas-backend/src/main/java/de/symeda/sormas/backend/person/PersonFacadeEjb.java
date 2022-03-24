@@ -1041,7 +1041,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	 * Makes sure that there is no invalid data associated with this person. For example, when the present condition
 	 * is set to "Alive", all fields depending on the status being "Dead" or "Buried" are cleared.
 	 */
-	private void cleanUp(Person person) {
+	private void cleanup(Person person) {
 
 		if (person.getPresentCondition() == null
 			|| person.getPresentCondition() == PresentCondition.ALIVE
@@ -1199,7 +1199,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			newPerson.setSymptomJournalStatus(SymptomJournalStatus.UNREGISTERED);
 		}
 
-		cleanUp(newPerson);
+		cleanup(newPerson);
 	}
 
 	private List<String> getAllUuidsBatched(Integer batchSize, boolean allowPersonsWithCoordinates) {

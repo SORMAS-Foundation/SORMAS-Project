@@ -58,6 +58,19 @@ public class ChooseSourceCaseSteps implements En {
         });
 
     When(
+        "^I open the first found result in the CHOOSE SOURCE window for DE version$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION);
+          webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION);
+          webDriverHelpers.waitForRowToBeSelected(SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SOURCE_CASE_WINDOW_CONFIRM_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_CONFIRM_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              CASE_CHANGE_POPUP_SUCCESS_MESSAGE_DE);
+        });
+
+    When(
         "I click on the CHOOSE SOURCE CASE button from CONTACT page",
         () ->
             webDriverHelpers.clickWhileOtherButtonIsDisplayed(

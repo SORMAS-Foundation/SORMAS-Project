@@ -42,6 +42,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.DATE_RECE
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DATE_RECEIVED_AT_REGION_LEVEL_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DELETE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DELETE_POPUP_YES_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISCARD_BUTTON_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_VARIANT_INPUT;
@@ -54,6 +55,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.EPIDEMIOL
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXTERNAL_ID_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXTERNAL_TOKEN_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.EXTRA_COMMENT_INPUT;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.FACILITY_ACTIVITY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.FACILITY_CATEGORY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.FACILITY_HEALTH_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.FACILITY_TYPE_COMBOBOX;
@@ -65,6 +67,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.INVESTIGA
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.INVESTIGATION_STATUS_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.LABORATORY_DIAGNOSTIC_CONFIRMATION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_SAMPLE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_SAMPLE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.NEW_TRAVEL_ENTRY_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.OFFICIAL_QUARANTINE_ORDER_SENT_CHECKBOX_INPUT;
@@ -93,6 +96,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTIN
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_POPUP_MESSAGE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_POPUP_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_TYPE_DETAILS;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFERENCE_DEFINITION_TEXT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REGION_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REINFECTION_OPTIONS;
@@ -143,6 +147,7 @@ import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Arrays;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -663,6 +668,25 @@ public class EditCaseSteps implements En {
         });
 
     When(
+        "I check case created from created contact is correctly displayed on Edit Case page for DE",
+        () -> {
+          aCase = collectCasePersonDataDE();
+          createdCase = CreateNewCaseSteps.caze;
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              aCase,
+              createdCase,
+              List.of(
+                  "dateOfReport",
+                  "disease",
+                  "externalId",
+                  "responsibleRegion",
+                  "responsibleDistrict",
+                  "responsibleCommunity",
+                  "placeOfStay",
+                  "placeDescription"));
+        });
+
+    When(
         "I am checking all Exposure data created by UI is saved and displayed in Cases",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(OPEN_SAVED_EXPOSURE_BUTTON);
@@ -700,6 +724,10 @@ public class EditCaseSteps implements En {
     When(
         "I click on New Sample",
         () -> webDriverHelpers.clickOnWebElementBySelector(NEW_SAMPLE_BUTTON));
+
+    When(
+        "I click on New Sample in German",
+        () -> webDriverHelpers.clickOnWebElementBySelector(NEW_SAMPLE_BUTTON_DE));
 
     When(
         "I click on edit Sample",
@@ -878,6 +906,67 @@ public class EditCaseSteps implements En {
         "I click on edit travel entry button form case epidemiological tab",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EDIT_TRAVEL_ENTRY_FROM_CASE_BUTTON);
+        });
+
+    When(
+        "I check that case classification is set to not yet classified in German on Edit case page",
+        () -> {
+          String caseClassification =
+              webDriverHelpers.getValueFromCombobox(CASE_CLASSIFICATION_COMBOBOX);
+          softly.assertEquals(
+              caseClassification,
+              "0. Nicht klassifiziert",
+              "The case classification is incorrect!");
+          softly.assertAll();
+        });
+
+    When(
+        "I check that case reference definition is not editable on Edit case page",
+        () -> {
+          String referenceReadOnlyAttribute =
+              webDriverHelpers.getAttributeFromWebElement(REFERENCE_DEFINITION_TEXT, "readonly");
+          softly.assertNotNull(
+              referenceReadOnlyAttribute,
+              "The case reference definition shouldn't be editable, but it is!");
+          softly.assertAll();
+        });
+
+    When(
+        "I check that case reference definition is set to not fulfilled in German on Edit case page",
+        () -> {
+          String caseReference = webDriverHelpers.getValueFromWebElement(REFERENCE_DEFINITION_TEXT);
+          softly.assertEquals(
+              caseReference, "Nicht erf\u00FCllt", "The case reference definition is incorrect!");
+          softly.assertAll();
+        });
+
+    When(
+        "I check that case reference definition is set to fulfilled in German on Edit case page",
+        () -> {
+          String caseReference = webDriverHelpers.getValueFromWebElement(REFERENCE_DEFINITION_TEXT);
+          softly.assertEquals(
+              caseReference, "Erf\u00FCllt", "The case reference definition is incorrect!");
+          softly.assertAll();
+        });
+
+    When(
+        "I check that case classification is set to one of the confirmed classifications in German on Edit case page",
+        () -> {
+          TimeUnit.SECONDS.sleep(
+              3); // Required to ensure that the value we're asserting is refreshed after saving
+          // sample
+          String caseClassification =
+              webDriverHelpers.getValueFromCombobox(CASE_CLASSIFICATION_COMBOBOX);
+          softly.assertTrue(
+              Arrays.asList(
+                      "A. Klinisch diagnostiziert",
+                      "B. Klinisch-epidemiologisch best\u00E4tigt",
+                      "C. Klinisch-labordiagnostisch best\u00E4tigt",
+                      "D. Labordiagnostisch bei nicht erf\u00FCllter Klinik",
+                      "E. Labordiagnostisch bei unbekannter Klinik")
+                  .contains(caseClassification),
+              "The case classification is incorrect!");
+          softly.assertAll();
         });
   }
 

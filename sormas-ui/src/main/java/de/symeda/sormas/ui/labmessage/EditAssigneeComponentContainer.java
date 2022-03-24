@@ -47,7 +47,7 @@ public class EditAssigneeComponentContainer {
 		assigneeComboBox = new ComboBoxWithPlaceholder();
 		assigneeComboBox.setCaption(I18nProperties.getCaption(Captions.LabMessage_assignee));
 		assigneeComboBox.addItems(
-			FacadeProvider.getUserFacade().getUsersByRegionAndRights(UserProvider.getCurrent().getUser().getRegion(), UserRight.LAB_MESSAGES));
+			FacadeProvider.getUserFacade().getUsersByRegionAndRights(UserProvider.getCurrent().getUser().getRegion(), null, UserRight.LAB_MESSAGES));
 		assigneeComboBox.setNullSelectionAllowed(true);
 		assigneeComboBox.setWidth(300, Sizeable.Unit.PIXELS);
 

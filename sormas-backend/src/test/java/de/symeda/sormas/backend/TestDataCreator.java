@@ -646,6 +646,7 @@ public class TestDataCreator {
 		TravelEntryDto travelEntry = TravelEntryDto.build(person);
 		travelEntry.setDisease(disease);
 		travelEntry.setReportingUser(reportingUser);
+		travelEntry.setDateOfArrival(new Date());
 		travelEntry.setResponsibleRegion(responsibleRegion);
 		travelEntry.setResponsibleDistrict(responsibleDistrict);
 		travelEntry.setPointOfEntry(pointOfEntry);
