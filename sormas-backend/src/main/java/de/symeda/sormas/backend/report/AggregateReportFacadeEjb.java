@@ -202,7 +202,7 @@ public class AggregateReportFacadeEjb implements AggregateReportFacade {
 		}
 
 		AggregateReport aggregateReport = service.getByUuid(reportUuid);
-		service.delete(aggregateReport);
+		service.deletePermanent(aggregateReport);
 	}
 
 	@Override

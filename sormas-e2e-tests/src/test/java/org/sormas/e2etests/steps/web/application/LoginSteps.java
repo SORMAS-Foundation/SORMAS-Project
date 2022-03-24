@@ -23,30 +23,26 @@ import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.google.inject.Inject;
 import cucumber.api.java8.En;
-import org.openqa.selenium.NoSuchElementException;
+import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.enums.UserRoles;
 import org.sormas.e2etests.envconfig.dto.EnvUser;
 import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.LoginPage;
+import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage;
-import org.sormas.e2etests.steps.BaseSteps;
 
+@Slf4j
 public class LoginSteps implements En {
 
   @Inject
-  public LoginSteps(
-      WebDriverHelpers webDriverHelpers,
-      BaseSteps baseSteps,
-      EnvironmentManager environmentManager) {
+  public LoginSteps(WebDriverHelpers webDriverHelpers, EnvironmentManager environmentManager) {
 
     Given(
         "^I am logged in with name ([^\"]*)$",
         (String name) -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              SurveillanceDashboardPage.LOGOUT_BUTTON, 40);
-          webDriverHelpers.checkWebElementContainsText(
-              SurveillanceDashboardPage.LOGOUT_BUTTON, name);
+              SurveillanceDashboardPage.LOGOUT_BUTTON, 60);
         });
 
     Given(
@@ -66,27 +62,15 @@ public class LoginSteps implements En {
           webDriverHelpers.accessWebSite(environmentManager.getEnvironmentUrlForMarket(locale));
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(LoginPage.USER_NAME_INPUT);
-          int attempts = 1;
-          LOOP:
-          while (attempts <= 3) {
-            webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, user.getUsername());
-            webDriverHelpers.fillInWebElement(LoginPage.USER_PASSWORD_INPUT, user.getPassword());
-            webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
-            webDriverHelpers.waitForPageLoaded();
-            boolean wasUserLoggedIn;
-            try {
-              wasUserLoggedIn =
-                  webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
-                      SurveillanceDashboardPage.LOGOUT_BUTTON);
-            } catch (NoSuchElementException e) {
-              wasUserLoggedIn = false;
-            }
-            if (wasUserLoggedIn) {
-              break LOOP;
-            } else {
-              attempts++;
-            }
-          }
+          log.info("Filling username");
+          webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, user.getUsername());
+          log.info("Filling password");
+          webDriverHelpers.fillInWebElement(LoginPage.USER_PASSWORD_INPUT, user.getPassword());
+          log.info("Click on Login button");
+          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.LOGOUT_BUTTON);
         });
 
     Given(
@@ -95,11 +79,21 @@ public class LoginSteps implements En {
           webDriverHelpers.accessWebSite(environmentManager.getEnvironmentUrlForMarket(locale));
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(LoginPage.USER_NAME_INPUT);
           EnvUser user = environmentManager.getUserByRole(locale, userRole);
+          log.info("Filling username");
           webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, user.getUsername());
+          log.info("Filling password");
           webDriverHelpers.fillInWebElement(LoginPage.USER_PASSWORD_INPUT, user.getPassword());
+          log.info("Clicking on login button");
           webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOGOUT_BUTTON, 50);
+        });
+
+    When(
+        "I check that German word for Configuration is present in the left main menu",
+        () -> {
+          webDriverHelpers.checkWebElementContainsText(
+              NavBarPage.CONFIGURATION_BUTTON, "Einstellungen");
         });
   }
 }

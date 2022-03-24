@@ -4,54 +4,825 @@
 "http://glassfish.org/dtds/glassfish-web-app_3_0-1.dtd">
 <glassfish-web-app>
 	<!-- @see https://docs.oracle.com/cd/E18930_01/html/821-2418/beacr.html -->
+
     <security-role-mapping>
-    	<!-- user roles that have access map to USER -->
-        <role-name>USER</role-name>
-        <group-name>SURVEILLANCE_OFFICER</group-name>
-        <group-name>HOSPITAL_INFORMANT</group-name>
-        <group-name>COMMUNITY_INFORMANT</group-name>
-        <group-name>CASE_OFFICER</group-name>
-        <group-name>CONTACT_OFFICER</group-name>
-        <group-name>POE_INFORMANT</group-name>
+        <role-name>CASE_CREATE</role-name>
+        <group-name>CASE_CREATE</group-name>
     </security-role-mapping>
+
     <security-role-mapping>
-        <role-name>REST_EXTERNAL_VISITS_USER</role-name>
-        <group-name>REST_EXTERNAL_VISITS_USER</group-name>
+        <role-name>CASE_VIEW</role-name>
+        <group-name>CASE_VIEW</group-name>
     </security-role-mapping>
+
     <security-role-mapping>
-    	<role-name>REST_USER</role-name>
-    	<group-name>REST_USER</group-name>
+        <role-name>CASE_EDIT</role-name>
+        <group-name>CASE_EDIT</group-name>
     </security-role-mapping>
+
     <security-role-mapping>
-        <role-name>SURVEILLANCE_OFFICER</role-name>
-        <group-name>SURVEILLANCE_OFFICER</group-name>
+        <role-name>CASE_TRANSFER</role-name>
+        <group-name>CASE_TRANSFER</group-name>
     </security-role-mapping>
+
     <security-role-mapping>
-        <role-name>HOSPITAL_INFORMANT</role-name>
-        <group-name>HOSPITAL_INFORMANT</group-name>
+        <role-name>CASE_REFER_FROM_POE</role-name>
+        <group-name>CASE_REFER_FROM_POE</group-name>
     </security-role-mapping>
+
     <security-role-mapping>
-        <role-name>COMMUNITY_INFORMANT</role-name>
-        <group-name>COMMUNITY_INFORMANT</group-name>
+        <role-name>CASE_INVESTIGATE</role-name>
+        <group-name>CASE_INVESTIGATE</group-name>
     </security-role-mapping>
+
     <security-role-mapping>
-        <role-name>CASE_OFFICER</role-name>
-        <group-name>CASE_OFFICER</group-name>
+        <role-name>CASE_CLASSIFY</role-name>
+        <group-name>CASE_CLASSIFY</group-name>
     </security-role-mapping>
+
     <security-role-mapping>
-        <role-name>CONTACT_OFFICER</role-name>
-        <group-name>CONTACT_OFFICER</group-name>
+        <role-name>CASE_CHANGE_DISEASE</role-name>
+        <group-name>CASE_CHANGE_DISEASE</group-name>
     </security-role-mapping>
+
     <security-role-mapping>
-        <role-name>POE_INFORMANT</role-name>
-        <group-name>POE_INFORMANT</group-name>
+        <role-name>CASE_CHANGE_EPID_NUMBER</role-name>
+        <group-name>CASE_CHANGE_EPID_NUMBER</group-name>
     </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CASE_DELETE</role-name>
+        <group-name>CASE_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CASE_IMPORT</role-name>
+        <group-name>CASE_IMPORT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CASE_EXPORT</role-name>
+        <group-name>CASE_EXPORT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CASE_SHARE</role-name>
+        <group-name>CASE_SHARE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CASE_ARCHIVE</role-name>
+        <group-name>CASE_ARCHIVE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CASE_MERGE</role-name>
+        <group-name>CASE_MERGE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>IMMUNIZATION_VIEW</role-name>
+        <group-name>IMMUNIZATION_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>IMMUNIZATION_CREATE</role-name>
+        <group-name>IMMUNIZATION_CREATE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>IMMUNIZATION_EDIT</role-name>
+        <group-name>IMMUNIZATION_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>IMMUNIZATION_DELETE</role-name>
+        <group-name>IMMUNIZATION_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>IMMUNIZATION_ARCHIVE</role-name>
+        <group-name>IMMUNIZATION_ARCHIVE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>PERSON_VIEW</role-name>
+        <group-name>PERSON_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>PERSON_EDIT</role-name>
+        <group-name>PERSON_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>PERSON_DELETE</role-name>
+        <group-name>PERSON_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>PERSON_CONTACT_DETAILS_DELETE</role-name>
+        <group-name>PERSON_CONTACT_DETAILS_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>PERSON_EXPORT</role-name>
+        <group-name>PERSON_EXPORT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SAMPLE_CREATE</role-name>
+        <group-name>SAMPLE_CREATE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SAMPLE_VIEW</role-name>
+        <group-name>SAMPLE_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SAMPLE_EDIT</role-name>
+        <group-name>SAMPLE_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SAMPLE_EDIT_NOT_OWNED</role-name>
+        <group-name>SAMPLE_EDIT_NOT_OWNED</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SAMPLE_DELETE</role-name>
+        <group-name>SAMPLE_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SAMPLE_TRANSFER</role-name>
+        <group-name>SAMPLE_TRANSFER</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SAMPLE_EXPORT</role-name>
+        <group-name>SAMPLE_EXPORT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>PATHOGEN_TEST_CREATE</role-name>
+        <group-name>PATHOGEN_TEST_CREATE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>PATHOGEN_TEST_EDIT</role-name>
+        <group-name>PATHOGEN_TEST_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>PATHOGEN_TEST_DELETE</role-name>
+        <group-name>PATHOGEN_TEST_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ADDITIONAL_TEST_VIEW</role-name>
+        <group-name>ADDITIONAL_TEST_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ADDITIONAL_TEST_CREATE</role-name>
+        <group-name>ADDITIONAL_TEST_CREATE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ADDITIONAL_TEST_EDIT</role-name>
+        <group-name>ADDITIONAL_TEST_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ADDITIONAL_TEST_DELETE</role-name>
+        <group-name>ADDITIONAL_TEST_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CONTACT_CREATE</role-name>
+        <group-name>CONTACT_CREATE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CONTACT_IMPORT</role-name>
+        <group-name>CONTACT_IMPORT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CONTACT_VIEW</role-name>
+        <group-name>CONTACT_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CONTACT_ARCHIVE</role-name>
+        <group-name>CONTACT_ARCHIVE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CONTACT_ASSIGN</role-name>
+        <group-name>CONTACT_ASSIGN</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CONTACT_EDIT</role-name>
+        <group-name>CONTACT_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CONTACT_DELETE</role-name>
+        <group-name>CONTACT_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CONTACT_CLASSIFY</role-name>
+        <group-name>CONTACT_CLASSIFY</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CONTACT_CONVERT</role-name>
+        <group-name>CONTACT_CONVERT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CONTACT_EXPORT</role-name>
+        <group-name>CONTACT_EXPORT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CONTACT_REASSIGN_CASE</role-name>
+        <group-name>CONTACT_REASSIGN_CASE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CONTACT_MERGE</role-name>
+        <group-name>CONTACT_MERGE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>MANAGE_EXTERNAL_SYMPTOM_JOURNAL</role-name>
+        <group-name>MANAGE_EXTERNAL_SYMPTOM_JOURNAL</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>VISIT_CREATE</role-name>
+        <group-name>VISIT_CREATE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>VISIT_EDIT</role-name>
+        <group-name>VISIT_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>VISIT_DELETE</role-name>
+        <group-name>VISIT_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>VISIT_EXPORT</role-name>
+        <group-name>VISIT_EXPORT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>TASK_CREATE</role-name>
+        <group-name>TASK_CREATE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>TASK_VIEW</role-name>
+        <group-name>TASK_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>TASK_EDIT</role-name>
+        <group-name>TASK_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>TASK_ASSIGN</role-name>
+        <group-name>TASK_ASSIGN</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>TASK_DELETE</role-name>
+        <group-name>TASK_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>TASK_EXPORT</role-name>
+        <group-name>TASK_EXPORT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ACTION_CREATE</role-name>
+        <group-name>ACTION_CREATE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ACTION_DELETE</role-name>
+        <group-name>ACTION_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>ACTION_EDIT</role-name>
+        <group-name>ACTION_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EVENT_CREATE</role-name>
+        <group-name>EVENT_CREATE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EVENT_VIEW</role-name>
+        <group-name>EVENT_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EVENT_EDIT</role-name>
+        <group-name>EVENT_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EVENT_IMPORT</role-name>
+        <group-name>EVENT_IMPORT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EVENT_EXPORT</role-name>
+        <group-name>EVENT_EXPORT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EVENT_ARCHIVE</role-name>
+        <group-name>EVENT_ARCHIVE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EVENT_DELETE</role-name>
+        <group-name>EVENT_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EVENTPARTICIPANT_ARCHIVE</role-name>
+        <group-name>EVENTPARTICIPANT_ARCHIVE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EVENTPARTICIPANT_CREATE</role-name>
+        <group-name>EVENTPARTICIPANT_CREATE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EVENTPARTICIPANT_EDIT</role-name>
+        <group-name>EVENTPARTICIPANT_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EVENTPARTICIPANT_DELETE</role-name>
+        <group-name>EVENTPARTICIPANT_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EVENTPARTICIPANT_IMPORT</role-name>
+        <group-name>EVENTPARTICIPANT_IMPORT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EVENTPARTICIPANT_VIEW</role-name>
+        <group-name>EVENTPARTICIPANT_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EVENTGROUP_CREATE</role-name>
+        <group-name>EVENTGROUP_CREATE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EVENTGROUP_EDIT</role-name>
+        <group-name>EVENTGROUP_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EVENTGROUP_LINK</role-name>
+        <group-name>EVENTGROUP_LINK</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EVENTGROUP_ARCHIVE</role-name>
+        <group-name>EVENTGROUP_ARCHIVE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EVENTGROUP_DELETE</role-name>
+        <group-name>EVENTGROUP_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>WEEKLYREPORT_CREATE</role-name>
+        <group-name>WEEKLYREPORT_CREATE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>WEEKLYREPORT_VIEW</role-name>
+        <group-name>WEEKLYREPORT_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>USER_CREATE</role-name>
+        <group-name>USER_CREATE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>USER_EDIT</role-name>
+        <group-name>USER_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>USER_VIEW</role-name>
+        <group-name>USER_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SEND_MANUAL_EXTERNAL_MESSAGES</role-name>
+        <group-name>SEND_MANUAL_EXTERNAL_MESSAGES</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>STATISTICS_ACCESS</role-name>
+        <group-name>STATISTICS_ACCESS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>STATISTICS_EXPORT</role-name>
+        <group-name>STATISTICS_EXPORT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>DATABASE_EXPORT_ACCESS</role-name>
+        <group-name>DATABASE_EXPORT_ACCESS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>PERFORM_BULK_OPERATIONS</role-name>
+        <group-name>PERFORM_BULK_OPERATIONS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>PERFORM_BULK_OPERATIONS_EVENT</role-name>
+        <group-name>PERFORM_BULK_OPERATIONS_EVENT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT</role-name>
+        <group-name>PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>MANAGE_PUBLIC_EXPORT_CONFIGURATION</role-name>
+        <group-name>MANAGE_PUBLIC_EXPORT_CONFIGURATION</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>PERFORM_BULK_OPERATIONS_CASE_SAMPLES</role-name>
+        <group-name>PERFORM_BULK_OPERATIONS_CASE_SAMPLES</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>PERFORM_BULK_OPERATIONS_LAB_MESSAGES</role-name>
+        <group-name>PERFORM_BULK_OPERATIONS_LAB_MESSAGES</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>PERFORM_BULK_OPERATIONS_PSEUDONYM</role-name>
+        <group-name>PERFORM_BULK_OPERATIONS_PSEUDONYM</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>INFRASTRUCTURE_CREATE</role-name>
+        <group-name>INFRASTRUCTURE_CREATE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>INFRASTRUCTURE_EDIT</role-name>
+        <group-name>INFRASTRUCTURE_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>INFRASTRUCTURE_VIEW</role-name>
+        <group-name>INFRASTRUCTURE_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>INFRASTRUCTURE_EXPORT</role-name>
+        <group-name>INFRASTRUCTURE_EXPORT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>INFRASTRUCTURE_IMPORT</role-name>
+        <group-name>INFRASTRUCTURE_IMPORT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>INFRASTRUCTURE_ARCHIVE</role-name>
+        <group-name>INFRASTRUCTURE_ARCHIVE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>DASHBOARD_SURVEILLANCE_VIEW</role-name>
+        <group-name>DASHBOARD_SURVEILLANCE_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>DASHBOARD_CONTACT_VIEW</role-name>
+        <group-name>DASHBOARD_CONTACT_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS</role-name>
+        <group-name>DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>DASHBOARD_CAMPAIGNS_VIEW</role-name>
+        <group-name>DASHBOARD_CAMPAIGNS_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CASE_CLINICIAN_VIEW</role-name>
+        <group-name>CASE_CLINICIAN_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>THERAPY_VIEW</role-name>
+        <group-name>THERAPY_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>PRESCRIPTION_CREATE</role-name>
+        <group-name>PRESCRIPTION_CREATE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>PRESCRIPTION_EDIT</role-name>
+        <group-name>PRESCRIPTION_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>PRESCRIPTION_DELETE</role-name>
+        <group-name>PRESCRIPTION_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>TREATMENT_CREATE</role-name>
+        <group-name>TREATMENT_CREATE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>TREATMENT_EDIT</role-name>
+        <group-name>TREATMENT_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>TREATMENT_DELETE</role-name>
+        <group-name>TREATMENT_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CLINICAL_COURSE_VIEW</role-name>
+        <group-name>CLINICAL_COURSE_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CLINICAL_COURSE_EDIT</role-name>
+        <group-name>CLINICAL_COURSE_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CLINICAL_VISIT_CREATE</role-name>
+        <group-name>CLINICAL_VISIT_CREATE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CLINICAL_VISIT_EDIT</role-name>
+        <group-name>CLINICAL_VISIT_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CLINICAL_VISIT_DELETE</role-name>
+        <group-name>CLINICAL_VISIT_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>PORT_HEALTH_INFO_VIEW</role-name>
+        <group-name>PORT_HEALTH_INFO_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>PORT_HEALTH_INFO_EDIT</role-name>
+        <group-name>PORT_HEALTH_INFO_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>POPULATION_MANAGE</role-name>
+        <group-name>POPULATION_MANAGE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>DOCUMENT_TEMPLATE_MANAGEMENT</role-name>
+        <group-name>DOCUMENT_TEMPLATE_MANAGEMENT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>QUARANTINE_ORDER_CREATE</role-name>
+        <group-name>QUARANTINE_ORDER_CREATE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>LINE_LISTING_CONFIGURE</role-name>
+        <group-name>LINE_LISTING_CONFIGURE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>AGGREGATE_REPORT_VIEW</role-name>
+        <group-name>AGGREGATE_REPORT_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>AGGREGATE_REPORT_EXPORT</role-name>
+        <group-name>AGGREGATE_REPORT_EXPORT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>AGGREGATE_REPORT_EDIT</role-name>
+        <group-name>AGGREGATE_REPORT_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SEE_PERSONAL_DATA_IN_JURISDICTION</role-name>
+        <group-name>SEE_PERSONAL_DATA_IN_JURISDICTION</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION</role-name>
+        <group-name>SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SEE_SENSITIVE_DATA_IN_JURISDICTION</role-name>
+        <group-name>SEE_SENSITIVE_DATA_IN_JURISDICTION</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION</role-name>
+        <group-name>SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CAMPAIGN_VIEW</role-name>
+        <group-name>CAMPAIGN_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CAMPAIGN_EDIT</role-name>
+        <group-name>CAMPAIGN_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CAMPAIGN_ARCHIVE</role-name>
+        <group-name>CAMPAIGN_ARCHIVE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CAMPAIGN_DELETE</role-name>
+        <group-name>CAMPAIGN_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CAMPAIGN_FORM_DATA_VIEW</role-name>
+        <group-name>CAMPAIGN_FORM_DATA_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CAMPAIGN_FORM_DATA_EDIT</role-name>
+        <group-name>CAMPAIGN_FORM_DATA_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CAMPAIGN_FORM_DATA_ARCHIVE</role-name>
+        <group-name>CAMPAIGN_FORM_DATA_ARCHIVE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CAMPAIGN_FORM_DATA_DELETE</role-name>
+        <group-name>CAMPAIGN_FORM_DATA_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CAMPAIGN_FORM_DATA_EXPORT</role-name>
+        <group-name>CAMPAIGN_FORM_DATA_EXPORT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>BAG_EXPORT</role-name>
+        <group-name>BAG_EXPORT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SORMAS_TO_SORMAS_SHARE</role-name>
+        <group-name>SORMAS_TO_SORMAS_SHARE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>LAB_MESSAGES</role-name>
+        <group-name>LAB_MESSAGES</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>TRAVEL_ENTRY_MANAGEMENT_ACCESS</role-name>
+        <group-name>TRAVEL_ENTRY_MANAGEMENT_ACCESS</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>TRAVEL_ENTRY_VIEW</role-name>
+        <group-name>TRAVEL_ENTRY_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>TRAVEL_ENTRY_CREATE</role-name>
+        <group-name>TRAVEL_ENTRY_CREATE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>TRAVEL_ENTRY_EDIT</role-name>
+        <group-name>TRAVEL_ENTRY_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>TRAVEL_ENTRY_DELETE</role-name>
+        <group-name>TRAVEL_ENTRY_DELETE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>TRAVEL_ENTRY_ARCHIVE</role-name>
+        <group-name>TRAVEL_ENTRY_ARCHIVE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EXPORT_DATA_PROTECTION_DATA</role-name>
+        <group-name>EXPORT_DATA_PROTECTION_DATA</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>OUTBREAK_VIEW</role-name>
+        <group-name>OUTBREAK_VIEW</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>OUTBREAK_EDIT</role-name>
+        <group-name>OUTBREAK_EDIT</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SORMAS_REST</role-name>
+        <group-name>SORMAS_REST</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>SORMAS_UI</role-name>
+        <group-name>SORMAS_UI</group-name>
+    </security-role-mapping>
+
     <security-role-mapping>
         <role-name>SORMAS_TO_SORMAS_CLIENT</role-name>
         <group-name>SORMAS_TO_SORMAS_CLIENT</group-name>
     </security-role-mapping>
+
     <security-role-mapping>
-        <role-name>BAG_USER</role-name>
-        <group-name>BAG_USER</group-name>
+        <role-name>EXTERNAL_VISITS</role-name>
+        <group-name>EXTERNAL_VISITS</group-name>
     </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CASE_RESPONSIBLE</role-name>
+        <group-name>CASE_RESPONSIBLE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>CONTACT_RESPONSIBLE</role-name>
+        <group-name>CONTACT_RESPONSIBLE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>EVENT_RESPONSIBLE</role-name>
+        <group-name>EVENT_RESPONSIBLE</group-name>
+    </security-role-mapping>
+
+    <security-role-mapping>
+        <role-name>DEV_MODE</role-name>
+        <group-name>DEV_MODE</group-name>
+    </security-role-mapping>
+
 </glassfish-web-app>

@@ -59,7 +59,7 @@ public class CaseSteps implements En {
             casesList.add(
                 caseApiService.buildGeneratedCase(apiState.getLastCreatedPersonsList().get(i)));
           }
-          log.info("Pushing %s Cases", numberOfCases);
+          log.info("Pushing {} Cases", numberOfCases);
           caseHelper.createMultipleCases(casesList);
           apiState.setCreatedCases(casesList);
         });

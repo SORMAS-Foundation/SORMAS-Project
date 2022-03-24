@@ -227,11 +227,15 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 
 				if (SELECT_PERSON.equals(value)) {
 					filterForm.setVisible(false);
-					personGrid.loadData(defaultCriteria);
+					if (filterForm.validateFields()) {
+						personGrid.loadData(defaultCriteria);
+					}
 					selectBestMatch();
 				} else {
 					filterForm.setVisible(true);
-					personGrid.loadData(filterForm.getValue());
+					if (filterForm.validateFields()) {
+						personGrid.loadData(filterForm.getValue());
+					}
 					setValue(null);
 				}
 			}
@@ -254,7 +258,10 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 				personGrid.loadData(filterForm.getValue());
 			}
 		});
-		filterForm.addResetHandler((e) -> filterForm.setValue(new PersonSimilarityCriteria()));
+		filterForm.addResetHandler((e) -> {
+			filterForm.setValue(new PersonSimilarityCriteria());
+			filterForm.clearValidation();
+		});
 
 		mainLayout.addComponent(filterForm);
 	}
@@ -298,6 +305,9 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 					selectionChangeCallback.accept(true);
 				}
 			}
+		});
+		rbCreatePerson.addValueChangeListener(e -> {
+			filterForm.setVisible(!CREATE_PERSON.equals(e.getValue()));
 		});
 
 		mainLayout.addComponent(rbCreatePerson);

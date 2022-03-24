@@ -295,7 +295,8 @@ public class DashboardService {
 		List<Object[]> results = em.createQuery(cq).getResultList();
 
 		Map<PresentCondition, Integer> resultMap = results.stream()
-			.collect(Collectors.toMap(e -> e[0] != null ? (PresentCondition) e[0] : PresentCondition.UNKNOWN, e -> ((Number) e[1]).intValue()));
+			.collect(Collectors.toMap(e -> e[0] != null ? (PresentCondition) e[0] : PresentCondition.UNKNOWN,
+				e -> ((Number) e[1]).intValue(), (v1, v2) -> v1 + v2));
 		return resultMap;
 	}
 

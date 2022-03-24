@@ -15,6 +15,10 @@
 
 package org.sormas.e2etests.steps.web.application.dashboard.surveillance;
 
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.REFERENCE_DEFINITION_FULFILLED_CASES_NUMBER;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.TIME_PERIOD_COMBOBOX;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.TIME_PERIOD_YESTERDAY_BUTTON;
+
 import cucumber.api.java8.En;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
@@ -42,8 +46,7 @@ public class SurveillanceDashboardSteps implements En {
     When(
         "^I save value for COVID disease counter in Surveillance Dashboard$",
         () -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
-
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(15);
           covid19DiseaseCounterBefore =
               Integer.parseInt(
                   webDriverHelpers.getTextFromWebElement(
@@ -53,7 +56,7 @@ public class SurveillanceDashboardSteps implements En {
     Then(
         "^I check that previous saved Surveillance Dashboard counters for COVID-19 have been increment$",
         () -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
 
           newCasesCounterAfter =
               Integer.parseInt(
@@ -80,10 +83,10 @@ public class SurveillanceDashboardSteps implements En {
     When(
         "I select {string} in TabSheet of Surveillance Dashboard",
         (String tabSheetValue) -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.clickWebElementByText(
               SurveillanceDashboardPage.TAB_SHEET_CAPTION, tabSheetValue);
-          TimeUnit.SECONDS.sleep(5);
+          TimeUnit.SECONDS.sleep(10);
         });
 
     When(
@@ -93,6 +96,30 @@ public class SurveillanceDashboardSteps implements En {
           String newCasesCounterValue =
               webDriverHelpers.getTextFromWebElement(SurveillanceDashboardPage.CASE_COUNTER);
           newCasesCounterBefore = Integer.parseInt(newCasesCounterValue);
+        });
+
+    When(
+        "^I click on the Time Period combobox from Surveillance Dashboard$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(TIME_PERIOD_COMBOBOX);
+        });
+
+    When(
+        "^I choose yesterday from the Surveillance Dashboard Time Period combobox$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(TIME_PERIOD_YESTERDAY_BUTTON);
+        });
+
+    When(
+        "^I check that the number of cases fulfilling the reference definition is larger than 0$",
+        () -> {
+          Integer number =
+              Integer.parseInt(
+                  webDriverHelpers.getTextFromWebElement(
+                      REFERENCE_DEFINITION_FULFILLED_CASES_NUMBER));
+          softly.assertTrue(
+              number > 0, "The number of cases fulfilling the reference definition is incorrect!");
+          softly.assertAll();
         });
 
     Then(

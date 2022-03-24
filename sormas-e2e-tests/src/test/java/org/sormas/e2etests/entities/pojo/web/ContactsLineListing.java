@@ -26,6 +26,7 @@ import lombok.*;
 @NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
 @Builder(toBuilder = true, builderClassName = "builder")
 public class ContactsLineListing {
+  LocalDate dateOfBirth;
   String disease;
   String region;
   String district;

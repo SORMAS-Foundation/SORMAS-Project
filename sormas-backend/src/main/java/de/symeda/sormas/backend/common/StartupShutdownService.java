@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.backend.common;
 
+import de.symeda.sormas.api.user.UserRight;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.UncheckedIOException;
@@ -54,6 +55,7 @@ import javax.inject.Inject;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 
+import de.symeda.sormas.backend.audit.AuditLogger;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -105,7 +107,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 
 @Singleton(name = "StartupShutdownService")
 @Startup
-@RunAs(UserRole._SYSTEM)
+@RunAs(UserRight._SYSTEM)
 @TransactionManagement(TransactionManagementType.CONTAINER)
 public class StartupShutdownService {
 
@@ -166,7 +168,8 @@ public class StartupShutdownService {
 	private Event<UserUpdateEvent> userUpdateEvent;
 	@EJB
 	private DeletionConfigurationService deletionConfigurationService;
-
+	@EJB
+	AuditLogger auditLogger;
 	@Inject
 	private Event<PasswordResetEvent> passwordResetEvent;
 
@@ -186,7 +189,7 @@ public class StartupShutdownService {
 
 	@PostConstruct
 	public void startup() {
-
+		auditLogger.logApplicationStart();
 		checkDatabaseConfig(em);
 
 		logger.info("Initiating automatic database update of main database...");
@@ -862,7 +865,7 @@ public class StartupShutdownService {
 
 	@PreDestroy
 	public void shutdown() {
-
+		auditLogger.logApplicationStop();
 	}
 
 	@LocalBean

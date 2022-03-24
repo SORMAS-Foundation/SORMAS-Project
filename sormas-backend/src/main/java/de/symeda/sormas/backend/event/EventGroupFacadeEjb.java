@@ -266,7 +266,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 
 		EventGroup eventGroup = fromDto(dto, checkChangeDate);
 
-		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (jurisdictionLevel != JurisdictionLevel.NATION) {
 			List<RegionReferenceDto> regions = getEventGroupRelatedRegions(eventGroup.getUuid());
 			for (RegionReferenceDto region : regions) {
@@ -315,7 +315,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 		List<EventGroup> eventGroups = eventGroupService.getByUuids(eventGroupUuids);
 
 		for (Event event : events) {
-			final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
+			final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 			if (jurisdictionLevel != JurisdictionLevel.NATION) {
 				Region region = event.getEventLocation().getRegion();
 				if (!userService.hasRegion(new RegionReferenceDto(region.getUuid()))) {
@@ -361,7 +361,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 
 		Event event = eventService.getByUuid(eventReference.getUuid());
 
-		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (jurisdictionLevel != JurisdictionLevel.NATION) {
 			Region region = event.getEventLocation().getRegion();
 			if (!userService.hasRegion(new RegionReferenceDto(region.getUuid()))) {
@@ -398,7 +398,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 
 		EventGroup eventGroup = eventGroupService.getByUuid(uuid);
 
-		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (jurisdictionLevel != JurisdictionLevel.NATION) {
 			List<RegionReferenceDto> regions = getEventGroupRelatedRegions(eventGroup.getUuid());
 			for (RegionReferenceDto region : regions) {
@@ -414,7 +414,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 			eventService.ensurePersisted(event);
 		}
 
-		eventGroupService.delete(eventGroup);
+		eventGroupService.deletePermanent(eventGroup);
 	}
 
 	@Override
@@ -427,7 +427,7 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 
 		EventGroup eventGroup = eventGroupService.getByUuid(uuid);
 
-		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (jurisdictionLevel != JurisdictionLevel.NATION) {
 			List<RegionReferenceDto> regions = getEventGroupRelatedRegions(eventGroup.getUuid());
 			for (RegionReferenceDto region : regions) {

@@ -25,18 +25,20 @@ import javax.ejb.EJB;
 import javax.ejb.Schedule;
 import javax.ejb.Singleton;
 
-import de.symeda.sormas.backend.deletionconfiguration.CoreEntityDeletionService;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.task.TaskType;
-import de.symeda.sormas.api.user.UserRole;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
+import de.symeda.sormas.backend.deletionconfiguration.CoreEntityDeletionService;
 import de.symeda.sormas.backend.document.DocumentFacadeEjb.DocumentFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
@@ -48,7 +50,7 @@ import de.symeda.sormas.backend.systemevent.SystemEventFacadeEjb.SystemEventFaca
 import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
 
 @Singleton
-@RunAs(UserRole._SYSTEM)
+@RunAs(UserRight._SYSTEM)
 public class CronService {
 
 	public static final int TASK_UPDATE_INTERVAL = 10;
@@ -142,7 +144,17 @@ public class CronService {
 	@Schedule(hour = "1", minute = "15", second = "0", persistent = false)
 	public void archiveCases() {
 
-		int daysAfterCaseGetsArchived = configFacade.getDaysAfterCaseGetsArchived();
+		final int daysAfterCaseGetsArchived = featureConfigurationFacade
+			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CASE, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
+		final int daysAfterContactsGetsArchived = featureConfigurationFacade
+			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.CONTACT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
+		if (daysAfterCaseGetsArchived < daysAfterContactsGetsArchived) {
+			logger.warn(
+				FeatureTypeProperty.THRESHOLD_IN_DAYS + " for " + CoreEntityType.CONTACT + " [{}] should be <= the one for " + CoreEntityType.CASE
+					+ " [{}]",
+				daysAfterContactsGetsArchived,
+				daysAfterCaseGetsArchived);
+		}
 		if (daysAfterCaseGetsArchived >= 1) {
 			caseFacade.archiveAllArchivableCases(daysAfterCaseGetsArchived);
 		}
@@ -151,7 +163,17 @@ public class CronService {
 	@Schedule(hour = "1", minute = "20", second = "0", persistent = false)
 	public void archiveEvents() {
 
-		int daysAfterEventsGetsArchived = configFacade.getDaysAfterEventGetsArchived();
+		final int daysAfterEventsGetsArchived = featureConfigurationFacade
+			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.EVENT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
+		final int daysAfterEventParticipantsGetsArchived = featureConfigurationFacade
+			.getProperty(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.EVENT_PARTICIPANT, FeatureTypeProperty.THRESHOLD_IN_DAYS, Integer.class);
+		if (daysAfterEventsGetsArchived < daysAfterEventParticipantsGetsArchived) {
+			logger.warn(
+				FeatureTypeProperty.THRESHOLD_IN_DAYS + " for " + CoreEntityType.EVENT_PARTICIPANT + " [{}] should be <= the one for "
+					+ CoreEntityType.EVENT + " [{}]",
+				daysAfterEventParticipantsGetsArchived,
+				daysAfterEventsGetsArchived);
+		}
 		if (daysAfterEventsGetsArchived >= 1) {
 			eventFacade.archiveAllArchivableEvents(daysAfterEventsGetsArchived);
 		}
@@ -189,8 +211,13 @@ public class CronService {
 		centralInfraSyncFacade.syncAll();
 	}
 
-	@Schedule(hour = "1", minute =  "55", persistent = false)
-	public void deleteExpiredEntities(){
+	@Schedule(hour = "1", minute = "55", persistent = false)
+	public void deleteExpiredEntities() {
 		coreEntityDeletionService.executeAutomaticDeletion();
+	}
+
+	@Schedule(hour = "2", minute = "10", persistent = false)
+	public void permanentDeleteEntities() {
+		coreEntityDeletionService.executePermanentDeletion();
 	}
 }

@@ -332,7 +332,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 			JurisdictionLevel jurisdictionLevel = UserRole.getJurisdictionLevel(user.getUserRoles());
 			boolean creator = value.getCreatorUser() != null && user.getUuid().equals(value.getCreatorUser().getUuid());
 			boolean nationalOrAdmin = jurisdictionLevel == null || jurisdictionLevel == JurisdictionLevel.NATION;
-			boolean supervisor = UserRole.isSupervisor(user.getUserRoles());
+			boolean regional = jurisdictionLevel == JurisdictionLevel.REGION;
 			boolean assignee = user.equals(getFieldGroup().getField(TaskDto.ASSIGNEE_USER).getValue());
 			boolean freeEditingAllowed = FacadeProvider.getFeatureConfigurationFacade()
 				.isPropertyValueTrue(FeatureType.TASK_MANAGEMENT, FeatureTypeProperty.ALLOW_FREE_EDITING);
@@ -355,7 +355,7 @@ public class TaskEditForm extends AbstractEditForm<TaskDto> {
 					TaskDto.CREATOR_COMMENT,
 					TaskDto.OBSERVER_USERS);
 				setReadOnly(
-					!(freeEditingAllowed || creator || supervisor || nationalOrAdmin),
+					!(freeEditingAllowed || creator || regional || nationalOrAdmin),
 					TaskDto.PRIORITY,
 					TaskDto.SUGGESTED_START,
 					TaskDto.DUE_DATE,

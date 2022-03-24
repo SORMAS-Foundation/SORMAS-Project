@@ -15,11 +15,8 @@
 
 package de.symeda.sormas.app.person.edit;
 
-import android.view.View;
-import android.view.ViewGroup;
-
-import androidx.databinding.ObservableArrayList;
-import androidx.databinding.ObservableList;
+import static android.view.View.GONE;
+import static android.view.View.VISIBLE;
 
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -27,12 +24,18 @@ import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
 
+import android.view.View;
+import android.view.ViewGroup;
+
+import androidx.databinding.ObservableArrayList;
+import androidx.databinding.ObservableList;
+
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
-import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.ApproximateAgeType;
 import de.symeda.sormas.api.person.ArmedForcesRelationType;
@@ -59,6 +62,7 @@ import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.common.PseudonymizableAdo;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.contact.Contact;
+import de.symeda.sormas.app.backend.event.EventParticipant;
 import de.symeda.sormas.app.backend.immunization.Immunization;
 import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.person.Person;
@@ -76,9 +80,6 @@ import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.InfrastructureDaoHelper;
 import de.symeda.sormas.app.util.InfrastructureFieldsDependencyHandler;
-
-import static android.view.View.GONE;
-import static android.view.View.VISIBLE;
 
 public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayoutBinding, Person, PseudonymizableAdo> {
 
@@ -122,11 +123,18 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
 	}
 
-	public static void setUpLayoutBinding(
-		final BaseEditFragment fragment,
-		final Person record,
-		final FragmentPersonEditLayoutBinding contentBinding,
-		AbstractDomainObject rootData) {
+	public static PersonEditFragment newInstance(EventParticipant activityRootData) {
+
+		return newInstanceWithFieldCheckers(
+			PersonEditFragment.class,
+			null,
+			activityRootData,
+			FieldVisibilityCheckers.withDisease(activityRootData.getEvent().getDisease()),
+			UiFieldAccessCheckers.getDefault(activityRootData.isPseudonymized()));
+	}
+
+	private void setUpLayoutBinding(final BaseEditFragment fragment, final Person record, final FragmentPersonEditLayoutBinding contentBinding) {
+
 		setUpControlListeners(record, fragment, contentBinding);
 
 		fragment.setFieldVisibilitiesAndAccesses(PersonDto.class, contentBinding.mainContent);
@@ -215,8 +223,17 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		contentBinding.personOccupationType.initializeSpinner(DataUtils.getEnumItems(OccupationType.class, true, countryVisibilityChecker));
 		contentBinding.personArmedForcesRelationType.initializeSpinner(DataUtils.getEnumItems(ArmedForcesRelationType.class, true));
 		contentBinding.personEducationType.initializeSpinner(DataUtils.getEnumItems(EducationType.class, true));
-		contentBinding.personPresentCondition.initializeSpinner(DataUtils.getEnumItems(PresentCondition.class, true));
-
+		// Determine which values should show as personPresentCondition (the person may have a value that by default is not shown for the current disease)
+		List<Item> items = DataUtils.getEnumItems(PresentCondition.class, true, getFieldVisibilityCheckers());
+		PresentCondition currentValue = record.getPresentCondition();
+		if (currentValue != null) {
+			Item currentValueItem = new Item(currentValue.toString(), currentValue);
+			if (!items.contains(currentValueItem)) {
+				items.add(currentValueItem);
+			}
+		}
+		contentBinding.personPresentCondition.initializeSpinner(items);
+		contentBinding.personPresentCondition.addValueChangedListener(field -> setBurialFieldVisibilities(contentBinding));
 		contentBinding.personApproximateAge.addValueChangedListener(field -> {
 			if (DataHelper.isNullOrEmpty((String) field.getValue())) {
 				contentBinding.personApproximateAgeType.setRequired(false);
@@ -396,8 +413,31 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		return personContactDetails;
 	}
 
-	private void setFieldVisibilitiesAndAccesses(View view) {
+	private void setLocationFieldVisibilitiesAndAccesses(View view) {
 		setFieldVisibilitiesAndAccesses(LocationDto.class, (ViewGroup) view);
+	}
+
+	private void setBurialFieldVisibilities(final FragmentPersonEditLayoutBinding contentBinding) {
+		if (PresentCondition.BURIED.equals(contentBinding.personPresentCondition.getValue())) {
+			if (isVisibleAllowed(PersonDto.class, contentBinding.personBurialDate)) {
+				contentBinding.personBurialDate.setVisibility(VISIBLE);
+			} else {
+				contentBinding.personBurialDate.setVisibility(GONE);
+			}
+
+			if (isVisibleAllowed(PersonDto.class, contentBinding.personBurialPlaceDescription)) {
+				contentBinding.personBurialPlaceDescription.setVisibility(VISIBLE);
+			} else {
+				contentBinding.personBurialPlaceDescription.setVisibility(GONE);
+			}
+
+			if (isVisibleAllowed(PersonDto.class, contentBinding.personBurialConductor)) {
+				contentBinding.personBurialConductor.setVisibility(VISIBLE);
+			} else {
+				contentBinding.personBurialConductor.setVisibility(GONE);
+			}
+		}
+
 	}
 
 	private void setUpControlListeners() {
@@ -466,7 +506,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 
 	private void updateAddresses() {
 		getContentBinding().setAddressList(getAddresses());
-		getContentBinding().setAddressBindCallback(this::setFieldVisibilitiesAndAccesses);
+		getContentBinding().setAddressBindCallback(this::setLocationFieldVisibilitiesAndAccesses);
 	}
 
 	private void removeAddress(Location item) {
@@ -481,7 +521,7 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 
 	private void updatePersonContactDetails() {
 		getContentBinding().setPersonContactDetailList(getPersonContactDetails());
-		getContentBinding().setPersonContactDetailBindCallback(this::setFieldVisibilitiesAndAccesses);
+		getContentBinding().setPersonContactDetailBindCallback(this::setLocationFieldVisibilitiesAndAccesses);
 	}
 
 	private void removePersonContactDetail(PersonContactDetail item) {
@@ -545,6 +585,9 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 		} else if (ado instanceof Contact) {
 			record = ((Contact) ado).getPerson();
 			rootData = ado;
+		} else if (ado instanceof EventParticipant) {
+			record = ((EventParticipant) ado).getPerson();
+			rootData = ado;
 		} else if (ado instanceof Immunization) {
 			record = ((Immunization) ado).getPerson();
 			rootData = ado;
@@ -570,16 +613,16 @@ public class PersonEditFragment extends BaseEditFragment<FragmentPersonEditLayou
 
 		contentBinding.setAddressList(getAddresses());
 		contentBinding.setAddressItemClickCallback(onAddressItemClickListener);
-		getContentBinding().setAddressBindCallback(this::setFieldVisibilitiesAndAccesses);
+		getContentBinding().setAddressBindCallback(this::setLocationFieldVisibilitiesAndAccesses);
 
 		contentBinding.setPersonContactDetailList(getPersonContactDetails());
 		contentBinding.setPersonContactDetailItemClickCallback(onPersonContactDetailItemClickListener);
-		getContentBinding().setPersonContactDetailBindCallback(this::setFieldVisibilitiesAndAccesses);
+		getContentBinding().setPersonContactDetailBindCallback(this::setLocationFieldVisibilitiesAndAccesses);
 	}
 
 	@Override
 	public void onAfterLayoutBinding(final FragmentPersonEditLayoutBinding contentBinding) {
-		PersonEditFragment.setUpLayoutBinding(this, record, contentBinding, rootData);
+		setUpLayoutBinding(this, record, contentBinding);
 		if (!ConfigProvider.isConfiguredServer(CountryHelper.COUNTRY_CODE_GERMANY)) {
 			contentBinding.personArmedForcesRelationType.setVisibility(GONE);
 		}

@@ -34,6 +34,7 @@ public class TaskService {
   }
 
   public Task buildGeneratedTask() {
+    long timeStamp = System.currentTimeMillis();
     return Task.builder()
         .taskContext("GENERAL")
         .taskType("other task as described in comments")
@@ -43,23 +44,25 @@ public class TaskService {
         .dueDateTime(LocalTime.of(11, 30))
         .assignedTo("Surveillance OFFICER - Surveillance Officer")
         .priority("Normal")
-        .commentsOnTask(faker.beer().name() + LocalDate.now().getDayOfWeek())
+        .commentsOnTask("Task comment-" + timeStamp)
+        .commentsOnExecution("Execution comment-" + timeStamp)
         .taskStatus(StatusValues.PENDING.getValue())
         .build();
   }
 
   public Task buildEditTask(String currentTaskContext, String currentStatus) {
-    long currentTimeMillis = System.currentTimeMillis();
+    long timeStamp = System.currentTimeMillis();
     return Task.builder()
         .taskContext(currentTaskContext)
         .taskType("contact tracing")
-        .suggestedStartDate(LocalDate.now().plusDays(3))
+        .suggestedStartDate(LocalDate.now().plusDays(1))
         .suggestedStartTime(LocalTime.of(12, 30))
-        .dueDateDate(LocalDate.now().plusDays(5))
+        .dueDateDate(LocalDate.now().plusDays(2))
         .dueDateTime(LocalTime.of(13, 30))
         .assignedTo("Surveillance OFFICER - Surveillance Officer")
         .priority("High")
-        .commentsOnTask("Comment on task" + currentTimeMillis)
+        .commentsOnTask("Task comment-" + timeStamp)
+        .commentsOnExecution("Execution comment-" + timeStamp)
         .taskStatus(currentStatus)
         .build();
   }

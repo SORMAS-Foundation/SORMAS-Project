@@ -136,6 +136,7 @@ import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.therapy.PrescriptionDto;
 import de.symeda.sormas.api.therapy.TherapyDto;
 import de.symeda.sormas.api.therapy.TreatmentDto;
+import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -890,7 +891,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
 		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
 
-		getCaseFacade().deleteCase(caze.getUuid());
+		getCaseFacade().delete(caze.getUuid());
 
 		// Deleted flag should be set for case, contact, sample and pathogen test; Task and additional test should be deleted
 		assertTrue(getCaseFacade().getDeletedUuidsSince(since).contains(caze.getUuid()));
@@ -1258,7 +1259,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals("COU-REG-DIS-" + year + "-005", fourthCaze.getEpidNumber());
 
 		// Make sure that deleted cases are ignored when searching for the highest existing epid nummber
-		getCaseFacade().deleteCase(fourthCaze.getUuid());
+		getCaseFacade().delete(fourthCaze.getUuid());
 
 		CaseDataDto fifthCaze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf);
 
@@ -1290,7 +1291,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				c.setAdditionalDetails("Test additional details");
 				c.setFollowUpComment("Test followup comment");
 			});
-		leadCase.setClinicianEmail("mail");
+		leadCase.setPregnant(YesNoUnknown.UNKNOWN);
 		leadCase.getEpiData().setActivityAsCaseDetailsKnown(YesNoUnknown.NO);
 		getCaseFacade().save(leadCase);
 		VisitDto leadVisit = creator.createVisit(leadCase.getDisease(), leadCase.getPerson(), leadCase.getReportDate());
@@ -1304,7 +1305,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		otherPerson.setBirthWeight(2);
 		getPersonFacade().savePerson(otherPerson);
 		PersonReferenceDto otherPersonReference = new PersonReferenceDto(otherPerson.getUuid());
-		RDCF otherRdcf = creator.createRDCF();
+		RDCF otherRdcf = creator.createRDCF("Reg2", "Dis2", "Comm2", "Fac2", "Poe2");
 		CaseDataDto otherCase = creator.createCase(
 			otherUserReference,
 			otherPersonReference,
@@ -1317,7 +1318,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				c.setAdditionalDetails("Test other additional details");
 				c.setFollowUpComment("Test other followup comment");
 			});
-		otherCase.setClinicianName("name");
+		otherCase.setCaseIdIsm(12345);
 		CaseReferenceDto otherCaseReference = getCaseFacade().getReferenceByUuid(otherCase.getUuid());
 		ContactDto contact =
 			creator.createContact(otherUserReference, otherUserReference, otherPersonReference, otherCase, new Date(), new Date(), null);
@@ -1359,6 +1360,15 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		getEventParticipantFacade().saveEventParticipant(otherCaseEventParticipant);
 
 		creator.createSurveillanceReport(otherUserReference, otherCaseReference);
+		TravelEntryDto travelEntry = creator.createTravelEntry(
+			otherPersonReference,
+			otherUserReference,
+			otherCase.getDisease(),
+			otherRdcf.region,
+			otherRdcf.district,
+			otherRdcf.pointOfEntry);
+		travelEntry.setResultingCase(otherCaseReference);
+		travelEntry = getTravelEntryFacade().save(travelEntry);
 
 		DocumentDto document = creator.createDocument(
 			leadUserReference,
@@ -1392,10 +1402,10 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(leadCase.getDisease(), mergedCase.getDisease());
 
 		// Check 'lead has value, other has not'
-		assertEquals(leadCase.getClinicianEmail(), mergedCase.getClinicianEmail());
+		assertEquals(leadCase.getPregnant(), mergedCase.getPregnant());
 
 		// Check 'lead has no value, other has'
-		assertEquals(otherCase.getClinicianName(), mergedCase.getClinicianName());
+		assertEquals(otherCase.getCaseIdIsm(), mergedCase.getCaseIdIsm());
 
 		PersonDto mergedPerson = getPersonFacade().getPersonByUuid(mergedCase.getPerson().getUuid());
 
@@ -1481,6 +1491,10 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		final List<ActivityAsCaseDto> activitiesAsCase = epiData.getActivitiesAsCase();
 		assertEquals(1, activitiesAsCase.size());
 		assertEquals(ActivityAsCaseType.GATHERING, activitiesAsCase.get(0).getActivityAsCaseType());
+
+		// Travel entry
+		travelEntry = getTravelEntryFacade().getByUuid(travelEntry.getUuid());
+		assertEquals(mergedCase.toReference(), travelEntry.getResultingCase());
 	}
 
 	@Test
@@ -1509,7 +1523,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 				c.setAdditionalDetails("Test other additional details");
 				c.setFollowUpComment("Test other followup comment");
 			});
-		aCase.setClinicianName("name");
 
 		aCase.getEpiData().setActivityAsCaseDetailsKnown(YesNoUnknown.YES);
 		final ArrayList<ActivityAsCaseDto> otherActivitiesAsCase = new ArrayList<>();
@@ -1631,14 +1644,15 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testCreateInvestigationTask() {
 		RDCF rdcf = creator.createRDCF();
-		UserReferenceDto user = creator.createUser(rdcf, "First", "User", UserRole.SURVEILLANCE_SUPERVISOR).toReference();
-		UserReferenceDto surveillanceOfficer = creator.createUser(rdcf, "Second", "User", UserRole.SURVEILLANCE_OFFICER).toReference();
+		UserReferenceDto supervisor = creator.createUser(rdcf, "First", "User", UserRole.SURVEILLANCE_SUPERVISOR).toReference();
+		UserReferenceDto officer = creator.createUser(rdcf, "Second", "User", UserRole.SURVEILLANCE_OFFICER).toReference();
+		UserReferenceDto informant = creator.createUser(rdcf, "Third", "User", UserRole.COMMUNITY_INFORMANT).toReference();
 		PersonReferenceDto person = creator.createPerson("Case", "Person").toReference();
 
-		CaseDataDto caze = creator.createCase(user, person, rdcf);
+		CaseDataDto caze = creator.createCase(informant, person, rdcf);
 
 		List<TaskDto> caseTasks = getTaskFacade().getAllPendingByCase(caze.toReference());
-		assertEquals(surveillanceOfficer, caseTasks.get(0).getAssigneeUser());
+		assertEquals(officer, caseTasks.get(0).getAssigneeUser());
 	}
 
 	@Test
@@ -1885,6 +1899,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		caze.setTherapy(new TherapyDto());
 		caze.setSymptoms(new SymptomsDto());
+		caze.setHealthConditions(new HealthConditionsDto());
 		EpiDataDto epiData = new EpiDataDto();
 		ExposureDto exposure = new ExposureDto();
 		exposure.setExposureType(ExposureType.WORK);

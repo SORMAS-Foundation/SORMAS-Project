@@ -34,7 +34,10 @@ import de.symeda.sormas.api.utils.ValidationException;
 
 /**
  * These are also used as user groups in the server realm
+ * 
+ * @Deprected until this is moved to DefaultUserRole in #4461
  */
+@Deprecated
 public enum UserRole
 	implements
 	StatisticsGroupingKey {
@@ -209,7 +212,7 @@ public enum UserRole
 	POE_NATIONAL_USER(false, false, false, true, JurisdictionLevel.NATION, Collections.emptyList(), Collections.emptyList()),
 	IMPORT_USER(false, false, false, false, JurisdictionLevel.NONE, Collections.emptyList(), Collections.emptyList()),
 	REST_EXTERNAL_VISITS_USER(false, false, false, false, JurisdictionLevel.NATION, Collections.emptyList(), Collections.emptyList()),
-	REST_USER(false, false, false, false, JurisdictionLevel.NONE, Collections.emptyList(), Collections.emptyList()),
+	REST_USER(false, false, false, false, JurisdictionLevel.NATION, Collections.emptyList(), Collections.emptyList()),
 	SORMAS_TO_SORMAS_CLIENT(false, false, false, false, JurisdictionLevel.NATION, Collections.emptyList(), Collections.emptyList()),
 	BAG_USER(false, false, false, false, JurisdictionLevel.NONE, Collections.emptyList(), Collections.emptyList());
 
@@ -218,7 +221,6 @@ public enum UserRole
 	 * 1. java:S115: Violation of name convention for String constants of this class is accepted: Close as false positive.
 	 */
 
-	public static final String _SYSTEM = "SYSTEM";
 	public static final String _USER = "USER";
 	public static final String _ADMIN = ADMIN.name();
 	public static final String _NATIONAL_USER = NATIONAL_USER.name();
@@ -283,14 +285,17 @@ public enum UserRole
 		return I18nProperties.getEnumCaptionShort(this);
 	}
 
+	@Deprecated
 	public boolean isSupervisor() {
 		return supervisor;
 	}
 
+	@Deprecated
 	public boolean hasAssociatedOfficer() {
 		return hasAssociatedOfficer;
 	}
 
+	@Deprecated
 	public boolean isPortHealthUser() {
 		return portHealthUser;
 	}
@@ -428,16 +433,6 @@ public enum UserRole
 		return laboratoryJurisdictionPresent ? JurisdictionLevel.LABORATORY : JurisdictionLevel.NONE;
 	}
 
-	public static boolean isSupervisor(Collection<UserRole> roles) {
-
-		for (UserRole role : roles) {
-			if (role.isSupervisor()) {
-				return true;
-			}
-		}
-		return false;
-	}
-
 	public static boolean hasAssociatedOfficer(Collection<UserRole> roles) {
 
 		for (UserRole role : roles) {
@@ -466,10 +461,6 @@ public enum UserRole
 			}
 		}
 		return false;
-	}
-
-	public static boolean isLabUser(Collection<UserRole> roles) {
-		return roles.contains(UserRole.LAB_USER) || roles.contains(UserRole.EXTERNAL_LAB_USER);
 	}
 
 	public static void validate(Collection<UserRole> roles) throws UserRoleValidationException {
@@ -533,24 +524,20 @@ public enum UserRole
 		return ret;
 	}
 
-	public static UserRole[] getWithEmailNotificationTypes(Set<NotificationType> notificationTypes) {
+	public static UserRole[] getWithNotificationTypes(NotificationProtocol notificationProtocol, Collection<NotificationType> notificationTypes) {
 		List<UserRole> ret = new ArrayList<>();
 
-		for (UserRole role : UserRole.values()) {
-			if (role.emailNotifications.stream().anyMatch(notificationTypes::contains)) {
-				ret.add(role);
+		if (notificationProtocol == NotificationProtocol.EMAIL) {
+			for (UserRole role : UserRole.values()) {
+				if (role.emailNotifications.stream().anyMatch(notificationTypes::contains)) {
+					ret.add(role);
+				}
 			}
-		}
-
-		return ret.toArray(new UserRole[] {});
-	}
-
-	public static UserRole[] getWithSmsNotificationTypes(Set<NotificationType> notificationTypes) {
-		List<UserRole> ret = new ArrayList<>();
-
-		for (UserRole role : UserRole.values()) {
-			if (role.emailNotifications.stream().anyMatch(notificationTypes::contains)) {
-				ret.add(role);
+		} else if (notificationProtocol == NotificationProtocol.SMS) {
+			for (UserRole role : UserRole.values()) {
+				if (role.smsNotifications.stream().anyMatch(notificationTypes::contains)) {
+					ret.add(role);
+				}
 			}
 		}
 

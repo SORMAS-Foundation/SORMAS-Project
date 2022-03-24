@@ -144,7 +144,7 @@ public class SampleListEntry extends SideComponentField {
 				PathogenTestDto latestTest = FacadeProvider.getPathogenTestFacade().getLatestPathogenTest(sampleListEntryDto.getUuid());
 				Label testDate = new Label(
 					I18nProperties.getPrefixCaption(PathogenTestDto.I18N_PREFIX, PathogenTestDto.TEST_DATE_TIME) + ": "
-						+ DateFormatHelper.formatDate(latestTest.getTestDateTime()));
+						+ DateFormatHelper.formatLocalDateTime(latestTest.getTestDateTime()));
 				HorizontalLayout bottomLayout = new HorizontalLayout();
 				Label testType = new Label(latestTest.getTestType().toString());
 				bottomLayout.addComponent(testType);

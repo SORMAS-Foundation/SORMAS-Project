@@ -3,7 +3,7 @@
 	<parent>
 		<groupId>de.symeda.sormas</groupId>
 		<artifactId>sormas-base</artifactId>
-		<version>1.69.0-SNAPSHOT</version>
+		<version>1.70.0-SNAPSHOT</version>
 		<relativePath>../sormas-base</relativePath>
 	</parent>
 
@@ -88,6 +88,14 @@
 			<groupId>org.glassfish.soteria</groupId>
 			<artifactId>javax.security.enterprise</artifactId>
 		</dependency>
+
+		<dependency>
+			<groupId>com.google.guava</groupId>
+			<artifactId>guava</artifactId>
+			<version>31.0.1-jre</version>
+			<scope>test</scope>
+		</dependency>
+
 
 	</dependencies>
 

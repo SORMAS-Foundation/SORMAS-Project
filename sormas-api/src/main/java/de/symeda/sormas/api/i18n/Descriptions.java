@@ -42,7 +42,7 @@ public interface Descriptions {
 	String descCaseFilterRelatedToEvent = "descCaseFilterRelatedToEvent";
 	String descCaseFilterWithExtendedQuarantine = "descCaseFilterWithExtendedQuarantine";
 	String descCaseFilterWithoutGeo = "descCaseFilterWithoutGeo";
-	String descCaseFilterWithoutResponsibleOfficer = "descCaseFilterWithoutResponsibleOfficer";
+	String descCaseFilterWithoutResponsibleUser = "descCaseFilterWithoutResponsibleUser";
 	String descCaseFilterWithReducedQuarantine = "descCaseFilterWithReducedQuarantine";
 	String descCommunityFilter = "descCommunityFilter";
 	String descContactIncludeContactsFromOtherJurisdictions = "descContactIncludeContactsFromOtherJurisdictions";

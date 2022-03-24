@@ -15,18 +15,6 @@
 
 package org.sormas.e2etests.steps.web.application;
 
-import cucumber.api.java8.En;
-import customreport.data.TableDataManager;
-import lombok.extern.slf4j.Slf4j;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pages.application.NavBarPage;
-import org.sormas.e2etests.pages.application.events.EventDirectoryPage;
-
-import javax.inject.Inject;
-import java.text.SimpleDateFormat;
-import java.time.ZonedDateTime;
-import java.util.concurrent.TimeUnit;
-
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NEW_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.NEW_CONTACT_PAGE_BUTTON;
 import static org.sormas.e2etests.pages.application.dashboard.Contacts.ContactsDashboardPage.CONTACTS_DASHBOARD_NAME;
@@ -37,6 +25,17 @@ import static org.sormas.e2etests.pages.application.immunizations.ImmunizationsD
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.SEARCH_PERSON_BY_FREE_TEXT;
 import static org.sormas.e2etests.pages.application.samples.SamplesDirectoryPage.SAMPLE_SEARCH_INPUT;
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.GENERAL_SEARCH_INPUT;
+
+import cucumber.api.java8.En;
+import customreport.data.TableDataManager;
+import java.text.SimpleDateFormat;
+import java.time.ZonedDateTime;
+import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
+import lombok.extern.slf4j.Slf4j;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.NavBarPage;
+import org.sormas.e2etests.pages.application.events.EventDirectoryPage;
 
 @Slf4j
 public class NavBarSteps implements En {
@@ -112,8 +111,16 @@ public class NavBarSteps implements En {
     When(
         "^I click on the Dashboard button from navbar and access Surveillance Dashboard$",
         () -> {
-          // webDriverHelpers.waitForPageLoaded();
-          // webDriverHelpers.clickOnWebElementBySelector(NavBarPage.PERSONS_BUTTON);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
+          startTime = ZonedDateTime.now().toInstant().toEpochMilli();
+        });
+
+    When(
+        "^I click on the Persons button then Dashboard button from navbar and access Surveillance Dashboard$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.PERSONS_BUTTON);
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
           startTime = ZonedDateTime.now().toInstant().toEpochMilli();
@@ -128,7 +135,6 @@ public class NavBarSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CONTACTS_BUTTON);
           TimeUnit.SECONDS.sleep(10); // mandatory due to loading time issue
           webDriverHelpers.clickOnWebElementBySelector(CONTACTS_BUTTON);
-
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               CONTACTS_DASHBOARD_NAME, 10);
@@ -172,6 +178,13 @@ public class NavBarSteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.LOGOUT_BUTTON);
+        });
+
+    When(
+        "^I click on the Entries button from navbar$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.ENTRIES_BUTTON);
         });
 
     Then(

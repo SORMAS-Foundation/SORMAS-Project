@@ -6,17 +6,13 @@ import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
-import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
-import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.person.PersonDto;
@@ -30,8 +26,8 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.travelentry.components.TravelEntryCreateForm;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.automaticdeletion.AutomaticDeletionLabel;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
@@ -158,44 +154,20 @@ public class TravelEntryController {
 		// Initialize 'Delete' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_DELETE)) {
 			editComponent.addDeleteListener(() -> {
-				FacadeProvider.getTravelEntryFacade().deleteTravelEntry(travelEntry.getUuid());
+				FacadeProvider.getTravelEntryFacade().delete(travelEntry.getUuid());
 				UI.getCurrent().getNavigator().navigateTo(TravelEntriesView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entityTravel));
 		}
 
 		// Initialize 'Archive' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_ARCHIVE)) {
-			boolean archived = FacadeProvider.getTravelEntryFacade().isArchived(travelEntryUuid);
-			Button archiveTravelEntryButton = ButtonHelper.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {
-				if (editComponent.isModified()) {
-					editComponent.commit();
-				}
-
-				if (archived) {
-					ControllerProvider.getArchiveController()
-						.dearchiveEntity(
-							travelEntry,
-							FacadeProvider.getTravelEntryFacade(),
-							Strings.headingDearchiveTravelEntry,
-							Strings.confirmationDearchiveTravelEntry,
-							Strings.entityTravel,
-							Strings.messageTravelEntryDearchived,
-							() -> navigateToTravelEntry(travelEntry.getUuid()));
-				} else {
-					ControllerProvider.getArchiveController()
-						.archiveEntity(
-							travelEntry,
-							FacadeProvider.getTravelEntryFacade(),
-							Strings.headingArchiveTravelEntry,
-							Strings.confirmationArchiveTravelEntry,
-							Strings.entityTravel,
-							Strings.messageTravelEntryArchived,
-							() -> navigateToTravelEntry(travelEntry.getUuid()));
-				}
-			}, ValoTheme.BUTTON_LINK);
-
-			editComponent.getButtonsPanel().addComponentAsFirst(archiveTravelEntryButton);
-			editComponent.getButtonsPanel().setComponentAlignment(archiveTravelEntryButton, Alignment.BOTTOM_LEFT);
+			ControllerProvider.getArchiveController()
+				.addArchivingButton(
+					travelEntry,
+					FacadeProvider.getTravelEntryFacade(),
+					CoreEntityArchiveMessages.TRAVEL_ENTRY,
+					editComponent,
+					() -> navigateToTravelEntry(travelEntry.getUuid()));
 		}
 
 		return editComponent;
@@ -237,7 +209,7 @@ public class TravelEntryController {
 				String.format(I18nProperties.getString(Strings.confirmationDeleteTravelEntries), selectedRows.size()),
 				() -> {
 					for (TravelEntryIndexDto selectedRow : selectedRows) {
-						FacadeProvider.getTravelEntryFacade().deleteTravelEntry(selectedRow.getUuid());
+						FacadeProvider.getTravelEntryFacade().delete(selectedRow.getUuid());
 					}
 					callback.run();
 					new Notification(

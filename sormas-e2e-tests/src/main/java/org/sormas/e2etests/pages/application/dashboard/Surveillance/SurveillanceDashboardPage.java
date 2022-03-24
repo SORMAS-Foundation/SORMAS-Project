@@ -32,6 +32,11 @@ public class SurveillanceDashboardPage {
   public static final By CASE_COUNTER =
       By.cssSelector("[location='case'] > div > div > div > div > div");
   public static final By TAB_SHEET_CAPTION = By.cssSelector(".v-tabsheet > div > div > div > div");
+  public static final By TIME_PERIOD_COMBOBOX = By.id("currentPeriod");
+  public static final By TIME_PERIOD_YESTERDAY_BUTTON = By.id("dashboardYesterday");
+  public static final By REFERENCE_DEFINITION_FULFILLED_CASES_NUMBER =
+      By.xpath(
+          "/html/body/div[1]/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div[3]/div/div[2]/div/div/div[2]/div/div/div/div[7]/div/div[2]/div");
   public static final By CURRENT_PERIOD = By.id("currentPeriod");
   public static final By COMPARISON_PERIOD = By.id("comparisonPeriod");
   public static final By DATE_TYPE = By.id("dateType");

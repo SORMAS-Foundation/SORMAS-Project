@@ -20,6 +20,7 @@ package org.sormas.e2etests.enums;
 
 import java.util.Random;
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 @Getter
 public enum PathogenTestResults {
@@ -44,5 +45,15 @@ public enum PathogenTestResults {
     Random random = new Random();
     return String.valueOf(
         PathogenTestResults.values()[random.nextInt(values().length)].pathogenResults);
+  }
+
+  @SneakyThrows
+  public static String geRandomResultNameDifferentThan(String excludedOption) {
+    PathogenTestResults[] pathogenTestResults = PathogenTestResults.values();
+    for (PathogenTestResults value : pathogenTestResults) {
+      if (!value.getPathogenResults().equalsIgnoreCase(excludedOption))
+        return value.getPathogenResults();
+    }
+    throw new Exception("Unable to provide option different than: " + excludedOption);
   }
 }

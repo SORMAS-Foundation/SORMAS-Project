@@ -47,6 +47,7 @@ import javax.validation.constraints.NotNull;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.feature.FeatureConfigurationCriteria;
 import de.symeda.sormas.api.feature.FeatureConfigurationDto;
@@ -313,7 +314,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		if (!featureType.isServerFeature() && Boolean.FALSE.equals(configuration.isEnabled())) {
 			FeatureConfiguration existingConfiguration = service.getByUuid(configuration.getUuid());
 			if (existingConfiguration != null) {
-				service.delete(existingConfiguration);
+				service.deletePermanent(existingConfiguration);
 			}
 
 			return;
@@ -355,7 +356,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		}
 
 		List<FeatureConfiguration> resultList = em.createQuery(cq).getResultList();
-		resultList.forEach(result -> service.delete(result));
+		resultList.forEach(result -> service.deletePermanent(result));
 	}
 
 	@Override
@@ -368,7 +369,7 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 
 		cq.where(cb.lessThan(root.get(FeatureConfiguration.END_DATE), date));
 		List<FeatureConfiguration> resultList = em.createQuery(cq).getResultList();
-		resultList.forEach(result -> service.delete(result));
+		resultList.forEach(result -> service.deletePermanent(result));
 	}
 
 	@Override
@@ -382,6 +383,64 @@ public class FeatureConfigurationFacadeEjb implements FeatureConfigurationFacade
 		cq.select(cb.count(root));
 
 		return em.createQuery(cq).getSingleResult() > 0;
+	}
+	
+	@Override
+	public boolean isFeatureEnabled(FeatureType featureType, CoreEntityType entityType) {
+
+		if (entityType == null) {
+			throw new IllegalArgumentException("Entity type must be specified!");
+		}
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		Root<FeatureConfiguration> root = cq.from(FeatureConfiguration.class);
+
+		cq.where(
+			cb.and(
+				cb.equal(root.get(FeatureConfiguration.FEATURE_TYPE), featureType),
+				cb.and(cb.isNotNull(root.get(FeatureConfiguration.ENTITY_TYPE)), cb.equal(root.get(FeatureConfiguration.ENTITY_TYPE), entityType)),
+				cb.isTrue(root.get(FeatureConfiguration.ENABLED))));
+		cq.select(cb.count(root));
+
+		return em.createQuery(cq).getSingleResult() > 0;
+	}
+
+	public <T extends Object> T getProperty(FeatureType featureType, CoreEntityType entityType, FeatureTypeProperty property, Class<T> returnType) {
+
+		if (!featureType.getSupportedProperties().contains(property)) {
+			throw new IllegalArgumentException("Feature type " + featureType + " does not support property " + property + ".");
+		}
+
+		if (!returnType.isAssignableFrom(property.getReturnType())) {
+			throw new IllegalArgumentException(
+				"Feature type property " + property + " does not have specified return type " + returnType.getSimpleName() + ".");
+		}
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<T> cq = cb.createQuery(returnType);
+		final Root<FeatureConfiguration> root = cq.from(FeatureConfiguration.class);
+
+		Predicate predicate = cb.equal(root.get(FeatureConfiguration.FEATURE_TYPE), featureType);
+		if (entityType != null) {
+			predicate = cb.and(predicate, cb.equal(root.get(FeatureConfiguration.ENTITY_TYPE), entityType));
+		}
+		cq.where(predicate);
+		cq.select(root.get(FeatureConfiguration.PROPERTIES));
+
+		Map<FeatureTypeProperty, Object> properties = null;
+		try {
+			properties = (Map<FeatureTypeProperty, Object>) em.createQuery(cq).getSingleResult();
+		} catch (NoResultException e) {
+			// NOOP
+		}
+
+		if (properties != null && properties.containsKey(property)) {
+			return (T) properties.get(property);
+		} else {
+			// Compare the expected property value with the default value
+			return (T) featureType.getSupportedPropertyDefaults().get(property);
+		}
 	}
 
 	@Override
