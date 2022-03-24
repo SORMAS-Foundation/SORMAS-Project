@@ -1082,7 +1082,7 @@ public class CaseController {
 
 		// Initialize 'Archive' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_ARCHIVE)) {
-			ControllerProvider.getArchiveController()
+			ControllerProvider.getCaseArchivingController()
 				.addArchivingButton(
 					caze,
 					FacadeProvider.getCaseFacade(),
@@ -1107,7 +1107,7 @@ public class CaseController {
 
 		List<String> caseUuids = selectedRows.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList());
 
-		ControllerProvider.getArchiveController()
+		ControllerProvider.getCaseArchivingController()
 			.archiveSelectedItems(
 				caseUuids,
 				FacadeProvider.getCaseFacade(),
@@ -1122,7 +1122,7 @@ public class CaseController {
 
 		List<String> caseUuids = selectedRows.stream().map(CaseIndexDto::getUuid).collect(Collectors.toList());
 
-		ControllerProvider.getArchiveController()
+		ControllerProvider.getCaseArchivingController()
 			.dearchiveSelectedItems(
 				caseUuids,
 				FacadeProvider.getCaseFacade(),
