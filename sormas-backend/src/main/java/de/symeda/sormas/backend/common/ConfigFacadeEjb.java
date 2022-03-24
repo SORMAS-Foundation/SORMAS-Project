@@ -570,8 +570,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			getExternalSurveillanceToolGatewayUrl(),
 			getMapTilersUrl(),
 			getAppUrl(),
-			getUiUrl(),
-			getGeocodingServiceUrlTemplate());
+			getUiUrl());
 
 		// separately as they are interpolated
 		if (!StringUtils.isBlank(s2sConfig.getOidcServer())) {
