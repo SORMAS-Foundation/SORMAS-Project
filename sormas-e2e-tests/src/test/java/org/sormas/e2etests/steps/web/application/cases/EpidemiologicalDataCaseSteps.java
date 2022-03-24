@@ -2,6 +2,11 @@ package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.*;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_CONTACT_WINDOW_FIRST_RESULT_OPTION;
+import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_WINDOW_CONTACT;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_ACTIVITY_DETAILS;
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_GATHERING_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_GATHERING_DETAILS;
@@ -12,6 +17,7 @@ import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.EpidemiologicalData;
@@ -70,6 +76,12 @@ public class EpidemiologicalDataCaseSteps implements En {
         });
 
     When(
+        "I click on Contacts with source case known with ([^\"]*) option for DE",
+        (String option) -> {
+          webDriverHelpers.clickWebElementByText(CONTACT_WITH_SOURCE_CASE_KNOWN, option);
+        });
+
+    When(
         "I click on Activity details known with ([^\"]*) option",
         (String option) ->
             webDriverHelpers.clickWebElementByText(ACTIVITY_DETAILS_KNOWN_OPTIONS, option));
@@ -108,6 +120,58 @@ public class EpidemiologicalDataCaseSteps implements En {
     When(
         "I check if Contacts of Source filed is available",
         () -> webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEW_CONTACT_BUTTON));
+    When(
+        "I click on the NEW CONTACT button in in Exposure for Epidemiological data tab in Cases",
+        () -> webDriverHelpers.clickOnWebElementBySelector(NEW_CONTACT_BUTTON));
+
+    When(
+        "I click on the CHOOSE CASE button in Create new contact form in Exposure for Epidemiological data tab in Cases",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EXPOSURE_CHOOSE_CASE_BUTTON);
+          TimeUnit.SECONDS.sleep(5);
+        });
+    When(
+        "I click on SAVE button in create contact form",
+        () -> webDriverHelpers.clickOnWebElementBySelector(ACTIVITY_DONE_BUTTON));
+
+    When(
+        "I search and chose the last case uuid created via API in the CHOOSE CASE Contact window",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              SOURCE_CASE_WINDOW_CONTACT, apiState.getCreatedCase().getUuid());
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION);
+          webDriverHelpers.clickOnWebElementBySelector(
+              SOURCE_CASE_CONTACT_WINDOW_FIRST_RESULT_OPTION);
+          webDriverHelpers.waitForRowToBeSelected(SOURCE_CASE_CONTACT_WINDOW_FIRST_RESULT_OPTION);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON);
+        });
+
+    //    When(
+    //        "I search and chose the last case uuid created via UI in the CHOOSE CASE Contact
+    // window",
+    //        () -> {
+    //          System.out.println(caze.getUuid());
+    //          webDriverHelpers.fillInWebElement(SOURCE_CASE_WINDOW_CONTACT, caze.getUuid());
+    //          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+    //              SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
+    //          webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
+    //          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+    //              SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION);
+    //          webDriverHelpers.clickOnWebElementBySelector(
+    //              SOURCE_CASE_CONTACT_WINDOW_FIRST_RESULT_OPTION);
+    //
+    // webDriverHelpers.waitForRowToBeSelected(SOURCE_CASE_CONTACT_WINDOW_FIRST_RESULT_OPTION);
+    //          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+    //              SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON);
+    //
+    // webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON);
+    //        });
 
     When(
         "I am checking if options in checkbox are displayed correctly",
@@ -185,6 +249,20 @@ public class EpidemiologicalDataCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
         });
 
+    When(
+        "I click on {string} option to close Exposure as the probable infection environment case Popup",
+        (String option) -> {
+          switch (option) {
+            case "NEIN":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(EXPOSURE_ACTION_CANCEL);
+              webDriverHelpers.clickOnWebElementBySelector(EXPOSURE_ACTION_CANCEL);
+              break;
+            case "JA":
+              webDriverHelpers.waitUntilElementIsVisibleAndClickable(EXPOSURE_ACTION_CONFIRM);
+              webDriverHelpers.clickOnWebElementBySelector(EXPOSURE_ACTION_CONFIRM);
+              break;
+          }
+        });
     When(
         "I select a Type of activity ([^\"]*) option in Exposure for Epidemiological data tab in Cases",
         (String option) -> {

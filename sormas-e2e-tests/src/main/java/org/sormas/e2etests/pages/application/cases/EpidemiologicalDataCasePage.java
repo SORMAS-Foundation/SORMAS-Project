@@ -103,4 +103,7 @@ public class EpidemiologicalDataCasePage {
   public static final By CONTACT_TO_CASE_COMBOBOX = By.cssSelector(".v-window #contactToCase div");
   public static final By EXPOSURE_PROBABLE_INFECTION_ENVIRONMENT_CHECKBOX =
       By.cssSelector(".v-window #probableInfectionEnvironment label");
+  public static final By EXPOSURE_ACTION_CANCEL = By.id("actionCancel");
+  public static final By EXPOSURE_ACTION_CONFIRM = By.id("actionConfirm");
+  public static final By EXPOSURE_CHOOSE_CASE_BUTTON = By.id("contactChooseCase");
 }

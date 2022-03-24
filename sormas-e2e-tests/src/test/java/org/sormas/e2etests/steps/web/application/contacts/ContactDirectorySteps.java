@@ -133,7 +133,6 @@ import org.sormas.e2etests.entities.pojo.web.Contact;
 import org.sormas.e2etests.entities.pojo.web.EpidemiologicalData;
 import org.sormas.e2etests.entities.pojo.web.epidemiologicalData.Exposure;
 import org.sormas.e2etests.entities.services.ContactService;
-import org.sormas.e2etests.enums.AreaTypeValues;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.YesNoUnknownOptions;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.ExposureDetailsRole;
@@ -345,62 +344,61 @@ public class ContactDirectorySteps implements En {
           }
         });
 
-      When(
-              "I fill Location form for Type of place field by {string} options in Case directory for DE version",
-              (String searchCriteria) -> {
-                  switch (searchCriteria) {
-                      // ok
-                      case "Unbekannt":
-                          webDriverHelpers.selectFromCombobox(
-                                  FACILITY_ACTIVITY_AS_CASE_COMBOBOX, searchCriteria);
-                          exposureData = contactService.buildGeneratedExposureDataContactForRandomInputsDE();
-                          fillLocationDE(exposureData);
-                          break;
-                      // ok
-                      case "Sonstiges":
-                          webDriverHelpers.selectFromCombobox(
-                                  FACILITY_ACTIVITY_AS_CASE_COMBOBOX, searchCriteria);
-                          webDriverHelpers.fillInWebElement(TYPE_OF_PLACE_DETAILS, faker.book().title());
-                          exposureData = contactService.buildGeneratedExposureDataContactForRandomInputsDE();
-                          fillLocationDE(exposureData);
-                          break;
-                      case "Transportmittel":
-                          webDriverHelpers.selectFromCombobox(
-                                  FACILITY_ACTIVITY_AS_CASE_COMBOBOX, searchCriteria);
-                          webDriverHelpers.selectFromCombobox(CASE_MEANS_OF_TRANSPORT, "Sonstiges");
-                          webDriverHelpers.fillInWebElement(
-                                  CASE_MEANS_OF_TRANSPORT_DETAILS, faker.book().publisher());
-                          webDriverHelpers.fillInWebElement(
-                                  CASE_CONNECTION_NUMBER, String.valueOf(faker.number().numberBetween(1, 200)));
-                          webDriverHelpers.fillInWebElement(
-                                  CASE_SEAT_NUMBER, String.valueOf(faker.number().numberBetween(1, 200)));
-                          exposureData = contactService.buildGeneratedExposureDataContactForRandomInputsDE();
-                          fillLocationDE(exposureData);
-                          break;
-                      case "Einrichtung":
-                          webDriverHelpers.selectFromCombobox(
-                                  FACILITY_ACTIVITY_AS_CASE_COMBOBOX, searchCriteria);
-                          exposureData = contactService.buildGeneratedExposureDataContactForRandomInputsDE();
-                          fillLocationDE(exposureData);
-                          webDriverHelpers.selectFromCombobox(
-                                  FACILITY_CATEGORY_COMBOBOX, exposureData.getFacilityCategory());
-                          webDriverHelpers.selectFromCombobox(
-                                  FACILITY_TYPE_COMBOBOX, exposureData.getFacilityType());
-                          webDriverHelpers.selectFromCombobox(FACILITY_DETAILS_COMBOBOX, "Andere Einrichtung");
-                          webDriverHelpers.fillInWebElement(
-                                  FACILITY_NAME_AND_DESCRIPTION, exposureData.getFacilityDetails());
-                          webDriverHelpers.fillInWebElement(
-                                  CONTACT_PERSON_FIRST_NAME, exposureData.getContactPersonFirstName());
-                          webDriverHelpers.fillInWebElement(
-                                  CONTACT_PERSON_LAST_NAME, exposureData.getContactPersonLastName());
-                          webDriverHelpers.fillInWebElement(
-                                  CONTACT_PERSON_PHONE_NUMBER, exposureData.getContactPersonPhone());
-                          webDriverHelpers.fillInWebElement(
-                                  CONTACT_PERSON_EMAIL_ADRESS, exposureData.getContactPersonEmail());
-                          break;
-                  }
-                  webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
-              });
+    When(
+        "I fill Location form for Type of place field by {string} options in Case directory for DE version",
+        (String searchCriteria) -> {
+          switch (searchCriteria) {
+              // ok
+            case "Unbekannt":
+              webDriverHelpers.selectFromCombobox(
+                  FACILITY_ACTIVITY_AS_CASE_COMBOBOX, searchCriteria);
+              exposureData = contactService.buildGeneratedExposureDataContactForRandomInputsDE();
+              fillLocationDE(exposureData);
+              break;
+              // ok
+            case "Sonstiges":
+              webDriverHelpers.selectFromCombobox(
+                  FACILITY_ACTIVITY_AS_CASE_COMBOBOX, searchCriteria);
+              webDriverHelpers.fillInWebElement(TYPE_OF_PLACE_DETAILS, faker.book().title());
+              exposureData = contactService.buildGeneratedExposureDataContactForRandomInputsDE();
+              fillLocationDE(exposureData);
+              break;
+            case "Transportmittel":
+              webDriverHelpers.selectFromCombobox(
+                  FACILITY_ACTIVITY_AS_CASE_COMBOBOX, searchCriteria);
+              webDriverHelpers.selectFromCombobox(CASE_MEANS_OF_TRANSPORT, "Sonstiges");
+              webDriverHelpers.fillInWebElement(
+                  CASE_MEANS_OF_TRANSPORT_DETAILS, faker.book().publisher());
+              webDriverHelpers.fillInWebElement(
+                  CASE_CONNECTION_NUMBER, String.valueOf(faker.number().numberBetween(1, 200)));
+              webDriverHelpers.fillInWebElement(
+                  CASE_SEAT_NUMBER, String.valueOf(faker.number().numberBetween(1, 200)));
+              exposureData = contactService.buildGeneratedExposureDataContactForRandomInputsDE();
+              fillLocationDE(exposureData);
+              break;
+            case "Einrichtung":
+              webDriverHelpers.selectFromCombobox(
+                  FACILITY_ACTIVITY_AS_CASE_COMBOBOX, searchCriteria);
+              exposureData = contactService.buildGeneratedExposureDataContactForRandomInputsDE();
+              fillLocationDE(exposureData);
+              webDriverHelpers.selectFromCombobox(
+                  FACILITY_CATEGORY_COMBOBOX, exposureData.getFacilityCategory());
+              webDriverHelpers.selectFromCombobox(
+                  FACILITY_TYPE_COMBOBOX, exposureData.getFacilityType());
+              webDriverHelpers.selectFromCombobox(FACILITY_DETAILS_COMBOBOX, "Andere Einrichtung");
+              webDriverHelpers.fillInWebElement(
+                  FACILITY_NAME_AND_DESCRIPTION, exposureData.getFacilityDetails());
+              webDriverHelpers.fillInWebElement(
+                  CONTACT_PERSON_FIRST_NAME, exposureData.getContactPersonFirstName());
+              webDriverHelpers.fillInWebElement(
+                  CONTACT_PERSON_LAST_NAME, exposureData.getContactPersonLastName());
+              webDriverHelpers.fillInWebElement(
+                  CONTACT_PERSON_PHONE_NUMBER, exposureData.getContactPersonPhone());
+              webDriverHelpers.fillInWebElement(
+                  CONTACT_PERSON_EMAIL_ADRESS, exposureData.getContactPersonEmail());
+              break;
+          }
+        });
 
     When(
         "I click on save button in Exposure for Epidemiological data tab in Contacts",
@@ -754,26 +752,25 @@ public class ContactDirectorySteps implements En {
     webDriverHelpers.fillInWebElement(GPS_ACCURACY_INPUT, exposureData.getLatLonAccuracy());
   }
 
-    private void fillLocationDE(Exposure exposureData) {
-        webDriverHelpers.waitForPageLoaded();
-        webDriverHelpers.selectFromCombobox(CONTINENT_COMBOBOX, exposureData.getContinent());
-        webDriverHelpers.selectFromCombobox(SUBCONTINENT_COMBOBOX, exposureData.getSubcontinent());
-        webDriverHelpers.selectFromCombobox(COUNTRY_COMBOBOX, exposureData.getCountry());
-        webDriverHelpers.selectFromCombobox(EXPOSURE_REGION_COMBOBOX, exposureData.getExposureRegion());
-        webDriverHelpers.selectFromCombobox(DISTRICT_COMBOBOX, exposureData.getDistrict());
-        webDriverHelpers.selectFromCombobox(COMMUNITY_COMBOBOX, exposureData.getCommunity());
-        webDriverHelpers.fillInWebElement(STREET_INPUT, exposureData.getStreet());
-        webDriverHelpers.fillInWebElement(HOUSE_NUMBER_INPUT, exposureData.getHouseNumber());
-        webDriverHelpers.fillInWebElement(
-                ADDITIONAL_INFORMATION_INPUT, exposureData.getAdditionalInformation());
-        webDriverHelpers.fillInWebElement(POSTAL_CODE_INPUT, exposureData.getPostalCode());
-        webDriverHelpers.fillInWebElement(CITY_INPUT, exposureData.getCity());
-        webDriverHelpers.selectFromCombobox(
-                AREA_TYPE_COMBOBOX, AreaTypeValues.getNameForDE(exposureData.getAreaType()));
-        webDriverHelpers.fillInWebElement(GPS_LATITUDE_INPUT, exposureData.getLatitude());
-        webDriverHelpers.fillInWebElement(GPS_LONGITUDE_INPUT, exposureData.getLongitude());
-        webDriverHelpers.fillInWebElement(GPS_ACCURACY_INPUT, exposureData.getLatLonAccuracy());
-    }
+  private void fillLocationDE(Exposure exposureData) {
+    webDriverHelpers.waitForPageLoaded();
+    webDriverHelpers.selectFromCombobox(CONTINENT_COMBOBOX, exposureData.getContinent());
+    webDriverHelpers.selectFromCombobox(SUBCONTINENT_COMBOBOX, exposureData.getSubcontinent());
+    webDriverHelpers.selectFromCombobox(COUNTRY_COMBOBOX, exposureData.getCountry());
+    webDriverHelpers.selectFromCombobox(EXPOSURE_REGION_COMBOBOX, exposureData.getExposureRegion());
+    webDriverHelpers.selectFromCombobox(DISTRICT_COMBOBOX, exposureData.getDistrict());
+    webDriverHelpers.selectFromCombobox(COMMUNITY_COMBOBOX, exposureData.getCommunity());
+    webDriverHelpers.fillInWebElement(STREET_INPUT, exposureData.getStreet());
+    webDriverHelpers.fillInWebElement(HOUSE_NUMBER_INPUT, exposureData.getHouseNumber());
+    webDriverHelpers.fillInWebElement(
+        ADDITIONAL_INFORMATION_INPUT, exposureData.getAdditionalInformation());
+    webDriverHelpers.fillInWebElement(POSTAL_CODE_INPUT, exposureData.getPostalCode());
+    webDriverHelpers.fillInWebElement(CITY_INPUT, exposureData.getCity());
+    webDriverHelpers.selectFromCombobox(AREA_TYPE_COMBOBOX, exposureData.getAreaType());
+    webDriverHelpers.fillInWebElement(GPS_LATITUDE_INPUT, exposureData.getLatitude());
+    webDriverHelpers.fillInWebElement(GPS_LONGITUDE_INPUT, exposureData.getLongitude());
+    webDriverHelpers.fillInWebElement(GPS_ACCURACY_INPUT, exposureData.getLatLonAccuracy());
+  }
 
   private Exposure collectLocationData() {
     return Exposure.builder()
