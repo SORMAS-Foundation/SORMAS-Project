@@ -359,6 +359,13 @@ public class User extends AbstractDomainObject {
 	}
 
 	/**
+	 * Checks if the User possesses the specified userRole
+	 */
+	public boolean hasUserRole(UserRole userRole) {
+		return getUserRoles().contains(userRole);
+	}
+
+	/**
 	 * Deprecated: Use getJurisdictionLevel instead
 	 * 
 	 * @return

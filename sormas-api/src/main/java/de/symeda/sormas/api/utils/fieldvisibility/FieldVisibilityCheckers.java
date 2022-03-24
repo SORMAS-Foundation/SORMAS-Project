@@ -15,11 +15,13 @@
 
 package de.symeda.sormas.api.utils.fieldvisibility;
 
+import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import java.io.Serializable;
 import java.lang.reflect.AccessibleObject;
 import java.lang.reflect.Field;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.function.Supplier;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -35,6 +37,16 @@ public class FieldVisibilityCheckers implements Serializable {
 	public FieldVisibilityCheckers() {
 	}
 
+	/**
+	 * Checks visibility of a class property based on it's name
+	 * !!KEEP IN SYNC WITH `isVisible(Class<?> parentType, Field field)`!!
+	 *
+	 * @param parentType
+	 *            - class the property belongs to
+	 * @param propertyId
+	 *            - the name of the property
+	 * @return whether the property is visible or not
+	 */
 	public boolean isVisible(Class<?> parentType, String propertyId) {
 		if (!isPropertyVisible(parentType, propertyId)) {
 			return false;
@@ -46,6 +58,20 @@ public class FieldVisibilityCheckers implements Serializable {
 		}
 
 		return isFieldVisible(declaredField);
+	}
+
+	/**
+	 * Checks visibility of a field
+	 * !!KEEP IN SYNC WITH `isVisible(Class<?> parentType, String propertyId)`!!
+	 *
+	 * @param parentType
+	 *            - class the field belongs to
+	 * @param field
+	 *            - the field to be checked
+	 * @return whether the field is visible or not
+	 */
+	public boolean isVisible(Class<?> parentType, Field field) {
+		return isPropertyVisible(parentType, field.getName()) && isFieldVisible(field);
 	}
 
 	public FieldVisibilityCheckers add(Checker checker) {
@@ -76,6 +102,10 @@ public class FieldVisibilityCheckers implements Serializable {
 
 	public FieldVisibilityCheckers andWithDisease(Disease disease) {
 		return add(new DiseaseFieldVisibilityChecker(disease));
+	}
+
+	public FieldVisibilityCheckers andWithFeatureType(List<FeatureConfigurationDto> featureConfigurations) {
+		return add(new FeatureTypeFieldVisibilityChecker(featureConfigurations));
 	}
 
 	private boolean isPropertyVisible(Class<?> parentType, String propertyId) {
@@ -118,8 +148,8 @@ public class FieldVisibilityCheckers implements Serializable {
 		return withCheckers(new CountryFieldVisibilityChecker(countryLocale));
 	}
 
-	public static FieldVisibilityCheckers withFeatureTypes(List<FeatureType> featureTypes) {
-		return withCheckers(new FeatureTypeFieldVisibilityChecker(featureTypes));
+	public static FieldVisibilityCheckers withFeatureTypes(List<FeatureConfigurationDto> featureConfigurations) {
+		return withCheckers(new FeatureTypeFieldVisibilityChecker(featureConfigurations));
 	}
 
 	public static FieldVisibilityCheckers withCheckers(Checker... checkers) {
