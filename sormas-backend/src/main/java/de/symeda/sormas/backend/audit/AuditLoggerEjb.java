@@ -36,7 +36,9 @@ import javax.annotation.PostConstruct;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
+import javax.ejb.Stateless;
 
+import de.symeda.sormas.api.audit.AuditLoggerFacade;
 import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
@@ -53,11 +55,10 @@ import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
-@Singleton
-@LocalBean
-public class AuditLogger {
+@Singleton(name = "AuditLoggerFacade")
+public class AuditLoggerEjb implements AuditLoggerFacade {
 
-	private static final Logger logger = LoggerFactory.getLogger(AuditLogger.class);
+	private static final Logger logger = LoggerFactory.getLogger(AuditLoggerEjb.class);
 	private String auditSourceSite;
 	private Map<String, AuditEvent.AuditEventAction> actionMap;
 
@@ -241,6 +242,19 @@ public class AuditLogger {
 
 	private boolean methodsStartsWith(String methodName, Set<String> prefixes) {
 		return prefixes.stream().anyMatch(methodName::startsWith);
+	}
+
+	@Override
+	public void logRestCall() {
+		AuditEvent backendCall = new AuditEvent();
+		backendCall.setRecorded(Calendar.getInstance(TimeZone.getDefault()).getTime());
+		accept(backendCall);
+	}
+
+	@LocalBean
+	@Stateless
+	public static class AuditLoggerEjbLocal extends AuditLoggerEjb {
+
 	}
 
 }

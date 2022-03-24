@@ -35,7 +35,7 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 public class AuditLoggerInterceptor {
 
 	@EJB
-	AuditLogger auditLogger;
+	AuditLoggerEjb.AuditLoggerEjbLocal auditLogger;
 	@EJB
 	CurrentUserService currentUserService;
 
@@ -81,7 +81,7 @@ public class AuditLoggerInterceptor {
 	@AroundInvoke
 	public Object logAudit(InvocationContext context) throws Exception {
 
-		if (AuditLogger.isLoggingDisabled()) {
+		if (AuditLoggerEjb.isLoggingDisabled()) {
 			return context.proceed();
 		}
 
