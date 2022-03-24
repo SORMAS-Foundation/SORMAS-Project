@@ -139,8 +139,9 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 			Files.readAllBytes(Paths.get(Objects.requireNonNull(getClass().getClassLoader().getResource("checkHistoryTables.sql")).toURI())));
 		@SuppressWarnings("unchecked")
 		List<Object[]> results = (List<Object[]>) em.createNativeQuery(checkHistoryTablesSql).getResultList();
-		assertTrue(CollectionUtils.isEmpty(results));
-
+		StringBuilder result = new StringBuilder();
+		results.forEach(objects -> result.append(objects.toString() + "\n"));
+		assertTrue(result.toString(), CollectionUtils.isEmpty(results));
 	}
 
 	/**
