@@ -11219,5 +11219,5 @@ CREATE TRIGGER delete_history_trigger_person_locations
     AFTER DELETE ON person
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('person_locations_history', 'person_id');
 
-INSERT INTO schema_version (version_number, comment) VALUES (450, 'Delete history data on permanent deletion of entities #7713');
+INSERT INTO schema_version (version_number, comment) VALUES (451, 'Delete history data on permanent deletion of entities #7713');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
