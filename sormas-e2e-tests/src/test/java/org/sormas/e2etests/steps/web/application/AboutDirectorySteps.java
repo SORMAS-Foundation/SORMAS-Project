@@ -76,6 +76,7 @@ public class AboutDirectorySteps implements En {
               break;
           }
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(5);
         });
 
     When(
