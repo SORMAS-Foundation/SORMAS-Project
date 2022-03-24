@@ -10549,15 +10549,15 @@ ALTER TABLE travelentry ALTER COLUMN dateofarrival SET NOT NULL;
 INSERT INTO schema_version (version_number, comment) VALUES (449, 'Add dateOfArrival to travel entries #7845');
 
 -- 2022-03-14 - #7774 Automatic & manual archiving for all core entities
-UPDATE contact SET archived = TRUE
-    FROM contact ct
-INNER  JOIN cases cs ON cs.id = ct.caze_id
-WHERE cs.archived is TRUE and ct.archived is FALSE;
+UPDATE contact ct
+SET archived = TRUE
+FROM cases cs
+WHERE ct.caze_id = cs.id AND cs.archived IS TRUE AND ct.archived IS FALSE;
 
-UPDATE eventparticipant SET archived = TRUE
-    FROM eventparticipant ep
-INNER JOIN events e on ep.event_id = e.id
-where e.archived is TRUE and ep.archived is FALSE;
+UPDATE eventparticipant ep
+SET archived = TRUE
+FROM events ev
+WHERE ep.event_id = ev.id AND ev.archived IS TRUE AND ep.archived IS FALSE;
 
 INSERT INTO schema_version (version_number, comment) VALUES (450, 'Automatic & manual archiving for all core entities #7774 ');
 
