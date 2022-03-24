@@ -69,7 +69,7 @@ public class LabMessageGridFilterForm extends AbstractFilterForm<LabMessageCrite
 
 		ComboBoxWithPlaceholder assignee = addField(LabMessageCriteria.ASSIGNEE, ComboBoxWithPlaceholder.class);
 		assignee.addItem(new UserReferenceDto(ReferenceDto.NO_REFERENCE_UUID, I18nProperties.getCaption(Captions.unassigned), "", null));
-		assignee.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(user.getRegion(), UserRight.LAB_MESSAGES));
+		assignee.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(user.getRegion(), null, UserRight.LAB_MESSAGES));
 		assignee.setNullSelectionAllowed(true);
 
 		DateTimeField messageDateFrom = addField(LabMessageCriteria.MESSAGE_DATE_FROM, DateTimeField.class);

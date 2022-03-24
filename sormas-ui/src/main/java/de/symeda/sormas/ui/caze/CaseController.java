@@ -648,9 +648,6 @@ public class CaseController {
 				}
 
 				if (convertedContact != null) {
-					transferDataToPerson(createForm, person);
-					FacadeProvider.getPersonFacade().savePerson(person);
-
 					int incubationPeriod = FacadeProvider.getDiseaseConfigurationFacade().getCaseFollowUpDuration(dto.getDisease());
 					List<VisitDto> visits = FacadeProvider.getVisitFacade()
 						.getVisitsByContactAndPeriod(

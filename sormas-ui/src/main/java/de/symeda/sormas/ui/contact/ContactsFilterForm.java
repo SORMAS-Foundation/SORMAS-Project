@@ -429,9 +429,11 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 
 		ComboBox officerField = getField(ContactCriteria.CONTACT_OFFICER);
 		if (user.getRegion() != null) {
-			officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(user.getRegion(), UserRight.CONTACT_RESPONSIBLE));
+			officerField.addItems(
+				FacadeProvider.getUserFacade().getUsersByRegionAndRights(user.getRegion(), newValue.getDisease(), UserRight.CONTACT_RESPONSIBLE));
 		} else if (region != null) {
-			officerField.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(region, UserRight.CONTACT_RESPONSIBLE));
+			officerField
+				.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(region, newValue.getDisease(), UserRight.CONTACT_RESPONSIBLE));
 		} else {
 			officerField.removeAllItems();
 		}
@@ -572,7 +574,9 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 
 	private void populateContactResponsiblesForDistrict(DistrictReferenceDto districtReferenceDto) {
 		if (districtReferenceDto != null) {
-			List<UserReferenceDto> items = FacadeProvider.getUserFacade().getUserRefsByDistrict(districtReferenceDto, UserRight.CONTACT_RESPONSIBLE);
+			Disease selectedDisease = (Disease) getField(ContactIndexDto.DISEASE).getValue();
+			List<UserReferenceDto> items =
+				FacadeProvider.getUserFacade().getUserRefsByDistrict(districtReferenceDto, selectedDisease, UserRight.CONTACT_RESPONSIBLE);
 			populateContactResponsibles(items);
 		} else {
 			final ComboBox regionField = getField(ContactCriteria.REGION);
@@ -589,6 +593,7 @@ public class ContactsFilterForm extends AbstractFilterForm<ContactCriteria> {
 	}
 
 	private List<UserReferenceDto> fetchContactResponsiblesByRegion(RegionReferenceDto regionReferenceDto) {
-		return FacadeProvider.getUserFacade().getUsersByRegionAndRights(regionReferenceDto, UserRight.CONTACT_RESPONSIBLE);
+		Disease selectedDisease = (Disease) getField(ContactIndexDto.DISEASE).getValue();
+		return FacadeProvider.getUserFacade().getUsersByRegionAndRights(regionReferenceDto, selectedDisease, UserRight.CONTACT_RESPONSIBLE);
 	}
 }
