@@ -70,6 +70,7 @@ import de.symeda.sormas.backend.sormastosormas.entities.ProcessedEntitiesPersist
 import de.symeda.sormas.backend.sormastosormas.entities.ReceivedEntitiesProcessor;
 import de.symeda.sormas.backend.sormastosormas.entities.ShareDataBuilder;
 import de.symeda.sormas.backend.sormastosormas.entities.ShareDataExistingEntities;
+import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntitiesHelper;
 import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasShareable;
 import de.symeda.sormas.backend.sormastosormas.entities.SyncDataDto;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfo;
@@ -157,6 +158,8 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	private SampleService sampleService;
 	@EJB
 	private ImmunizationService immunizationService;
+	@EJB
+	private SormasToSormasEntitiesHelper sormasToSormasEntitiesHelper;
 
 	private final String requestEndpoint;
 	private final String requestGetDataEndpoint;
@@ -275,7 +278,11 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 			(data, existingData) -> processedEntitiesPersister.persistSharedData(data, shareRequest.getOriginInfo(), existingData));
 
 		// notify the sender that the request has been accepted
-		sormasToSormasRestClient.post(organizationId, REQUEST_ACCEPTED_ENDPOINT, new ShareRequestAcceptData(requestUuid, configFacadeEjb.getS2SConfig().getDistrictExternalId()), null);
+		sormasToSormasRestClient.post(
+			organizationId,
+			REQUEST_ACCEPTED_ENDPOINT,
+			new ShareRequestAcceptData(requestUuid, configFacadeEjb.getS2SConfig().getDistrictExternalId()),
+			null);
 
 		shareRequest.setChangeDate(new Date());
 		shareRequest.setStatus(ShareRequestStatus.ACCEPTED);
@@ -307,10 +314,21 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 			createShareRequestInfoForEntities(requestUuid, ShareRequestStatus.ACCEPTED, options, entities, currentUser, false);
 		SormasToSormasDto dataToSend = shareDataBuilder.buildShareDataForRequest(requestInfo, currentUser);
 
-		sormasToSormasRestClient.post(options.getOrganization().getId(), saveEndpoint, dataToSend, null);
+		SormasToSormasEncryptedDataDto encryptedResponse =
+			sormasToSormasRestClient.post(options.getOrganization().getId(), saveEndpoint, dataToSend, SormasToSormasEncryptedDataDto.class);
+
+		ShareRequestAcceptData responseData = sormasToSormasEncryptionEjb.decryptAndVerify(encryptedResponse, ShareRequestAcceptData.class);
 
 		shareRequestInfoService.ensurePersisted(requestInfo);
 
+		requestInfo.getShares().forEach(s -> {
+			if (s.getCaze() != null) {
+				sormasToSormasEntitiesHelper.updateCaseResponsibleDistrict(s.getCaze(), responseData.getDistrictExternalId());
+			}
+			if (s.getContact() != null) {
+				sormasToSormasEntitiesHelper.updateContactResponsibleDistrict(s.getContact(), responseData.getDistrictExternalId());
+			}
+		});
 		entities.forEach(e -> {
 			SormasToSormasOriginInfo entityOriginInfo = e.getSormasToSormasOriginInfo();
 			if (entityOriginInfo != null) {
@@ -329,10 +347,14 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	}
 
 	@Override
-	public void saveSharedEntities(SormasToSormasEncryptedDataDto encryptedData) throws SormasToSormasException, SormasToSormasValidationException {
+	public SormasToSormasEncryptedDataDto saveSharedEntities(SormasToSormasEncryptedDataDto encryptedData)
+		throws SormasToSormasException, SormasToSormasValidationException {
 		decryptAndPersist(
 			encryptedData,
 			(data, existingData) -> processedEntitiesPersister.persistSharedData(data, data.getOriginInfo(), existingData));
+
+		return sormasToSormasEncryptionEjb
+			.signAndEncrypt(new ShareRequestAcceptData(null, configFacadeEjb.getS2SConfig().getDistrictExternalId()), encryptedData.getSenderId());
 	}
 
 	@Override
