@@ -71,7 +71,7 @@ public class EventActionsTableSteps implements En {
               "Event ID is not correct");
           softly.assertEquals(
               eventActionTableEntry.getActionTitle(),
-              apiState.getCreatedAction().getTitle(),
+              apiState.getCreatedAction().getMeasure(),
               "Action title is not correct");
           softly.assertEquals(
               eventActionTableEntry.getActionCreationDate().toString().substring(0, 10),
@@ -90,8 +90,8 @@ public class EventActionsTableSteps implements En {
               apiState.getCreatedAction().getPriority(),
               "Priority is not correct");
           softly.assertEquals(
-              eventActionTableEntry.getActionLastModifiedBy(),
-              UserRoles.NationalUser.getRole(),
+              eventActionTableEntry.getActionLastModifiedBy().toUpperCase(),
+              UserRoles.NationalUser.getRole().toUpperCase(),
               "Last modified by user is not correct");
           softly.assertAll();
         });

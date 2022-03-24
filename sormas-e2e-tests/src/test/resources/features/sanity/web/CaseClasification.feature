@@ -1,8 +1,8 @@
 @UI @Sanity @Case @Classification
 Feature: Case Classification functionality
 
-  @env_main @ignore
-  Scenario: Case Classification change from Not Yet Classified to Suspect Case by confirming Sore Throat
+  @env_main @check
+  Scenario: Change Case classification from Not Yet Classified to Suspect Case by confirming Sore Throat
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
@@ -22,7 +22,7 @@ Feature: Case Classification functionality
     Then For the current Case the Case Classification value should be "Suspect case"
 
   @env_main
-  Scenario: Case Classification change from Suspect Case to Not Yet Classified
+  Scenario: Change Case classification from Suspect Case to Not Yet Classified
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200

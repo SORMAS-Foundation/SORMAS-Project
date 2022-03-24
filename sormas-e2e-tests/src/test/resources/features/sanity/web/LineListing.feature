@@ -1,4 +1,4 @@
-@UI @Sanity @Case
+@UI @Sanity @Case @LineListing
 Feature: Cases using Line Listing feature
 
   @env_main @check
