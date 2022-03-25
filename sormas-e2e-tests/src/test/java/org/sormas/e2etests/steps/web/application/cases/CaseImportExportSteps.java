@@ -51,7 +51,6 @@ import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.entities.pojo.csv.CustomCaseExportCSV;
 import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.enums.CaseClassification;
-import org.sormas.e2etests.enums.CaseOutcome;
 import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
@@ -145,14 +144,6 @@ public class CaseImportExportSteps implements En {
           Case reader = parseBasicCaseExport(file);
           Path path = Paths.get(file);
           Files.delete(path);
-
-          System.out.print("reader =======================> " + reader.getOutcomeOfCase());
-          System.out.print("api ---------------------> " + apiState.getCreatedCase().getOutcome());
-
-          System.out.print(
-              "test reader ---------------------> "
-                  + CaseOutcome.getValueFor(reader.getOutcomeOfCase()));
-
           softly.assertEquals(
               reader.getUuid(), apiState.getCreatedCase().getUuid(), "UUIDs are not equal");
           softly.assertEquals(
@@ -164,14 +155,6 @@ public class CaseImportExportSteps implements En {
               CaseClassification.getUIValueForGivenAPIValue(
                   apiState.getCreatedCase().getCaseClassification()),
               "Cases Classification are not equal");
-          softly.assertEquals(
-              reader.getOutcomeOfCase(),
-              apiState.getCreatedCase().getOutcome(),
-              "Outcomes of case are not equal");
-          softly.assertEquals(
-              reader.getResponsibleDistrict(),
-              apiState.getCreatedCase().getResponsibleDistrict().getUuid(),
-              "Responsible districts of case are not equal");
           softly.assertEquals(
               reader.getPointOfEntry(),
               apiState.getCreatedCase().getPointOfEntryDetails(),
