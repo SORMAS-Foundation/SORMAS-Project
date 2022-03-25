@@ -711,6 +711,6 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 
 		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
 		// this hopefully resets everything to its correct value
-		discard();
+		locationForm.discard();
 	}
 }
