@@ -551,6 +551,8 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		super.setValue(newFieldValue);
 		ignoreMeansOfImmunizationChange = false;
 		previousMeansOfImmunization = newFieldValue.getMeansOfImmunization();
+
+		discard();
 	}
 
 	@Override

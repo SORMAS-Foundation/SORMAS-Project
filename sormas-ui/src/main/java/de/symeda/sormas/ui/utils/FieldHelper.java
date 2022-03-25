@@ -48,6 +48,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.Diseases;
@@ -581,8 +582,19 @@ public final class FieldHelper {
 		if (items != null) {
 			select.addItems(items);
 		}
-		if (value instanceof InfrastructureDataReferenceDto) {
-			updateInactiveInfrastructureItem(select, (InfrastructureDataReferenceDto) value);
+		if (value instanceof InfrastructureDataReferenceDto && items != null) {
+			boolean isInactive = false;
+			if (value instanceof RegionReferenceDto
+				&& FacadeProvider.getRegionFacade().getByUuid(((RegionReferenceDto) value).getUuid()).isArchived()) {
+				isInactive = true;
+			}
+			if (value instanceof DistrictReferenceDto
+				&& FacadeProvider.getDistrictFacade().getByUuid(((DistrictReferenceDto) value).getUuid()).isArchived()) {
+				isInactive = true;
+			}
+			if (isInactive) {
+				updateInactiveInfrastructureItem(select, (InfrastructureDataReferenceDto) value);
+			}
 		}
 		select.setValue(value);
 		select.setReadOnly(readOnly);
