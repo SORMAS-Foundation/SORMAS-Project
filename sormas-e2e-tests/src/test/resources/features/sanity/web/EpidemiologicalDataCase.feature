@@ -57,6 +57,17 @@ Feature: Epidemiological data coverage
     And I open saved activity from Epidemiological Data
     Then I am checking all Activity data is saved and displayed
 
-
-
-
+  @issue=SORDEV-5525 @env_de
+  Scenario: Enter an activity as case for DE version
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data for DE version
+    And I check case created from created contact is correctly displayed on Edit Case page for DE
+    And I navigate to case person tab
+    And I navigate to epidemiological data tab in Edit case page
+    Then I click on Activity details known with UNBEKANNT option
+    And I click on Activity details known with NEIN option
+    And I click on Activity details known with JA option
+    And I click on New Entry in Action as Case Details Known
+    And I select from Combobox all options in Type of activity field in Activity as Case for Epidemiological data tab for Cases for DE version

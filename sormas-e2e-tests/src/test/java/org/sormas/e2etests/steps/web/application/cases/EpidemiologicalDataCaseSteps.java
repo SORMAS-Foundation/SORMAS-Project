@@ -2,12 +2,14 @@ package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.*;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.NEW_ENTRY_EPIDEMIOLOGICAL_DATA;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.EpidemiologicalData;
@@ -63,6 +65,13 @@ public class EpidemiologicalDataCaseSteps implements En {
             webDriverHelpers.clickWebElementByText(ACTIVITY_DETAILS_KNOWN_OPTIONS, option));
 
     When(
+        "I click on New Entry in Action as Case Details Known",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(NEW_ENTRY_EPIDEMIOLOGICAL_DATA);
+          TimeUnit.SECONDS.sleep(5);
+        });
+
+    When(
         "I click on Residing or working in an area with high risk of transmission of the disease with ([^\"]*) option",
         (String option) -> {
           epidemiologialDataSavedFromFields =
@@ -72,6 +81,15 @@ public class EpidemiologicalDataCaseSteps implements En {
           webDriverHelpers.clickWebElementByText(RESIDING_OR_WORKING_DETAILS_KNOWN_OPTIONS, option);
         });
 
+    When(
+        "I select from Combobox all options in Type of activity field in Activity as Case for Epidemiological data tab for Cases for DE version",
+        () -> {
+          for (ActivityAsCaseType value : ActivityAsCaseType.values()) {
+            webDriverHelpers.selectFromCombobox(
+                ACTIVITY_TYPE_OF_ACTIVITY_COMBOBOX,
+                ActivityAsCaseType.getForNameDE(value.toString()));
+          }
+        });
     When(
         "I click on Residing or travelling to countries, territories, areas experiencing larger outbreaks of local transmission with ([^\"]*) option",
         (String option) -> {
