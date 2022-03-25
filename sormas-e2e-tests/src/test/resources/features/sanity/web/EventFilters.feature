@@ -43,6 +43,45 @@ Feature: Event Directory filters check
     And I check the number of displayed Event results from All button is 0
     And I click on the RESET FILTERS button from Event
 
+  @issue=SORDEV-5917 @env_de
+  Scenario: Check all filters are working properly in Event directory for DE version
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    When I log in with National User
+    And I click on the Events button from navbar
+    Then I select random German Risk level filter among the filter options from API
+    And I fill EVENT ID filter by API
+    And I apply on the APPLY FILTERS button from Event
+    And I check that number of displayed Event results is 1
+    Then I select random German risk level value different than risk level value of last created via API Event in Event Directory
+    And I apply on the APPLY FILTERS button from Event
+    And I check that number of displayed Event results is 0
+    And I click on the RESET FILTERS button from Event
+    Then I select random Disease filter among the filter options from API
+    And I fill EVENT ID filter by API
+    And I apply on the APPLY FILTERS button from Event
+    And I check that number of displayed Event results is 1
+    And I click on the RESET FILTERS button from Event
+    Then I click on Show more filters in Events
+    Then I select German Source Type among the filter options from API
+    And I fill EVENT ID filter by API
+    And I apply on the APPLY FILTERS button from Event
+    And I check that number of displayed Event results is 1
+    Then I select German source Type filter value different than the source type value of the last created via API case in Event Directory
+    And I apply on the APPLY FILTERS button from Event
+    And I check the number of displayed Event results from All button is 0
+    And I click on the RESET FILTERS button from Event
+    Then I click on Show more filters in Events
+    Then I select German Type of Place field among the filter options from API
+    And I fill EVENT ID filter by API
+    And I apply on the APPLY FILTERS button from Event
+    And I check that number of displayed Event results is 1
+    Then I select German type of place filter value different than the type of place value of the last created via API case in Event Directory
+    And I apply on the APPLY FILTERS button from Event
+    And I check the number of displayed Event results from All button is 0
+    And I click on the RESET FILTERS button from Event
+
   @issue=SORQA-77 @env_main
   Scenario: Filters for Region, District, Community, Reporting user and Event statuses on Event Directory Page
     Given API: I create a new person
