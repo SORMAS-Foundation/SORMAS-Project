@@ -145,6 +145,7 @@ public class EventParticipantEditForm extends PersonDependentEditForm<EventParti
 	public void setValue(EventParticipantDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
 		this.originalPerson = newFieldValue.getPerson();
+		this.pef.setValue(newFieldValue.getPerson());
 	}
 
 	@Override

@@ -247,7 +247,7 @@ public class SubcontinentFacadeEjb
 	}
 
 	@Override
-	public List<SubcontinentReferenceDto> getByExternalId(String externalId, boolean includeArchived) {
+	public List<SubcontinentReferenceDto> getReferencesByExternalId(String externalId, boolean includeArchived) {
 		return service.getByExternalId(externalId, includeArchived).stream().map(SubcontinentFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
