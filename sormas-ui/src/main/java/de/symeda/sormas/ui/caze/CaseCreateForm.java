@@ -495,7 +495,9 @@ public class CaseCreateForm extends AbstractEditForm<CaseDataDto> {
 		});
 
 		if (diseaseField.getValue() != null) {
-			updateDiseaseVariant((Disease) diseaseField.getValue());
+			Disease disease = (Disease) diseaseField.getValue();
+			updateDiseaseVariant(disease);
+			personCreateForm.updatePresentConditionEnum(disease);
 		}
 	}
 

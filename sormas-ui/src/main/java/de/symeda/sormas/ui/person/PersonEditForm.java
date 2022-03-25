@@ -33,12 +33,14 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.GregorianCalendar;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.Item;
+import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.ui.AbstractSelect;
 import com.vaadin.v7.ui.AbstractSelect.ItemCaptionMode;
 import com.vaadin.v7.ui.ComboBox;
@@ -174,6 +176,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private ComboBox cbPlaceOfBirthFacility;
 	private PersonContext personContext;
 	private boolean isPseudonymized;
+	private LocationEditForm addressForm;
 	//@formatter:on
 
 	public PersonEditForm(PersonContext personContext, Disease disease, String diseaseDetails, ViewMode viewMode, boolean isPseudonymized) {
@@ -294,7 +297,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		DateField burialDate = addField(PersonDto.BURIAL_DATE, DateField.class);
 		TextField burialPlaceDesc = addField(PersonDto.BURIAL_PLACE_DESCRIPTION, TextField.class);
 		ComboBox burialConductor = addField(PersonDto.BURIAL_CONDUCTOR, ComboBox.class);
-		addField(PersonDto.ADDRESS, LocationEditForm.class).setCaption(null);
+		addressForm = addField(PersonDto.ADDRESS, LocationEditForm.class);
+		addressForm.setCaption(null);
 		addField(PersonDto.ADDRESSES, LocationsField.class).setCaption(null);
 
 		PersonContactDetailsField personContactDetailsField = addField(PersonDto.PERSON_CONTACT_DETAILS, PersonContactDetailsField.class);
@@ -427,7 +431,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addFieldListeners(PersonDto.DEATH_DATE, e -> updateApproximateAge());
 		addFieldListeners(PersonDto.OCCUPATION_TYPE, e -> {
 			updateOccupationFieldCaptions();
-			toogleOccupationMetaFields();
+			toggleOccupationMetaFields();
 		});
 
 		addListenersToInfrastructureFields(
@@ -440,7 +444,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			true);
 		cbPlaceOfBirthRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
-		addFieldListeners(PersonDto.PRESENT_CONDITION, e -> toogleDeathAndBurialFields());
+		addFieldListeners(PersonDto.PRESENT_CONDITION, e -> toggleDeathAndBurialFields());
 
 		causeOfDeathField.addValueChangeListener(e -> {
 			toggleCauseOfDeathFields(presentCondition.getValue() != PresentCondition.ALIVE && presentCondition.getValue() != null);
@@ -539,6 +543,10 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	public void setValue(PersonDto newFieldValue) {
 		super.setValue(newFieldValue);
 		initializePresentConditionField();
+
+		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
+		// this hopefully resets everything to its correct value
+		addressForm.discard();
 	}
 
 	private void addListenersToInfrastructureFields(
@@ -633,6 +641,19 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		PresentCondition presentCondition = getValue().getPresentCondition();
 		ComboBox presentConditionField = getField(PersonDto.PRESENT_CONDITION);
 
+		if (this.disease != null || FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease() != null) {
+			Disease disease = this.disease != null ? this.disease : FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease();
+			FieldVisibilityCheckers fieldVisibilityCheckers = FieldVisibilityCheckers.withDisease(disease);
+			List<PresentCondition> validValues = Arrays.stream(PresentCondition.values())
+				.filter(c -> fieldVisibilityCheckers.isVisible(PresentCondition.class, c.name()))
+				.collect(Collectors.toList());
+			PresentCondition currentValue = (PresentCondition) presentConditionField.getValue();
+			if (currentValue != null && !validValues.contains(currentValue)) {
+				validValues.add(currentValue);
+			}
+			FieldHelper.updateEnumData(presentConditionField, validValues);
+		}
+
 		/*
 		 * It may happen that the person currently has a present condition that usually shall not be shows for the form's disease.
 		 * In that case, the present condition is added as selectable item here.
@@ -699,7 +720,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		approximateAgeTypeSelect.setReadOnly(true);
 	}
 
-	private void toogleOccupationMetaFields() {
+	private void toggleOccupationMetaFields() {
 		OccupationType type = (OccupationType) ((AbstractSelect) getFieldGroup().getField(PersonDto.OCCUPATION_TYPE)).getValue();
 		if (type != null) {
 			switch (type) {
@@ -744,7 +765,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		}
 	}
 
-	private void toogleDeathAndBurialFields() {
+	private void toggleDeathAndBurialFields() {
 		//		List<Object> diseaseSpecificFields = Arrays.asList(PersonDto.DEATH_PLACE_TYPE, PersonDto.DEATH_PLACE_DESCRIPTION, PersonDto.BURIAL_DATE,
 		//				PersonDto.BURIAL_PLACE_DESCRIPTION, PersonDto.BURIAL_CONDUCTOR);
 		PresentCondition type = (PresentCondition) ((AbstractSelect) getFieldGroup().getField(PersonDto.PRESENT_CONDITION)).getValue();
@@ -759,6 +780,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				PersonDto.BURIAL_CONDUCTOR);
 			getField(PersonDto.DEATH_DATE).setValue(null);
 			getField(PersonDto.BURIAL_DATE).setValue(null);
+			getField(PersonDto.BURIAL_PLACE_DESCRIPTION).setValue(null);
+			getField(PersonDto.BURIAL_CONDUCTOR).setValue(null);
 			toggleCauseOfDeathFields(false);
 		} else {
 			switch (type) {
@@ -794,6 +817,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 					PersonDto.BURIAL_CONDUCTOR);
 				getField(PersonDto.DEATH_DATE).setValue(null);
 				getField(PersonDto.BURIAL_DATE).setValue(null);
+				getField(PersonDto.BURIAL_PLACE_DESCRIPTION).setValue(null);
+				getField(PersonDto.BURIAL_CONDUCTOR).setValue(null);
 				toggleCauseOfDeathFields(false);
 				break;
 			}

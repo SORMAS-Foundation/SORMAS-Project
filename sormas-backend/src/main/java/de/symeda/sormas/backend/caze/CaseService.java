@@ -27,6 +27,7 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -66,7 +67,6 @@ import de.symeda.sormas.api.caze.CaseLogic;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.CaseReferenceDefinition;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
 import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.caze.InvestigationStatus;
@@ -76,8 +76,8 @@ import de.symeda.sormas.api.caze.PreviousCaseDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
-import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.FollowUpStatus;
+import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -87,7 +87,6 @@ import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
-import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
 import de.symeda.sormas.api.therapy.TherapyReferenceDto;
 import de.symeda.sormas.api.therapy.TreatmentCriteria;
@@ -101,6 +100,7 @@ import de.symeda.sormas.api.utils.criteria.ExternalShareDateType;
 import de.symeda.sormas.backend.ExtendedPostgreSQL94Dialect;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
 import de.symeda.sormas.backend.caze.transformers.CaseListEntryDtoResultTransformer;
 import de.symeda.sormas.backend.caze.transformers.CaseSelectionDtoResultTransformer;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
@@ -116,10 +116,13 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb;
+import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
+import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -134,16 +137,16 @@ import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
+import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
-import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.task.TaskService;
 import de.symeda.sormas.backend.therapy.Prescription;
 import de.symeda.sormas.backend.therapy.PrescriptionService;
 import de.symeda.sormas.backend.therapy.Treatment;
 import de.symeda.sormas.backend.therapy.TreatmentService;
-import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -190,13 +193,24 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	private CaseFacadeEjbLocal caseFacade;
 	@EJB
 	private VisitFacadeEjb.VisitFacadeEjbLocal visitFacade;
-
+	@EJB
+	private SormasToSormasShareInfoFacadeEjbLocal sormasToSormasShareInfoFacade;
 	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
+	@EJB
+	private SormasToSormasOriginInfoService sormasToSormasOriginInfoService;
 	@EJB
 	private ExternalShareInfoService externalShareInfoService;
 	@EJB
 	private ExternalJournalService externalJournalService;
+	@EJB
+	private EventParticipantService eventParticipantService;
+	@EJB
+	private SurveillanceReportService surveillanceReportService;
+	@EJB
+	private DocumentService documentService;
+	@EJB
+	private ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
 
 	public CaseService() {
 		super(Case.class);
@@ -881,60 +895,116 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	@Override
+	public void deletePermanent(Case caze) {
+
+		// Delete all tasks associated with this case
+		Optional.ofNullable(caze.getTasks()).ifPresent(tl -> tl.forEach(t -> taskService.deletePermanent(t)));
+
+		// Delete all samples that are only associated with this case
+		caze.getSamples()
+			.stream()
+			.filter(sample -> sample.getAssociatedContact() == null && sample.getAssociatedEventParticipant() == null)
+			.forEach(sample -> sampleService.deletePermanent(sample));
+
+		// Delete surveillance reports related to this case
+		surveillanceReportService.getByCaseUuids(Collections.singletonList(caze.getUuid()))
+			.forEach(s -> surveillanceReportService.deletePermanent(s));
+
+		// Delete documents related to this case
+		documentService.getRelatedToEntity(DocumentRelatedEntityType.CASE, caze.getUuid()).forEach(d -> documentService.markAsDeleted(d));
+
+		// Delete clinical management data
+		if (caze.getTherapy() != null) {
+			TherapyReferenceDto therapy = new TherapyReferenceDto(caze.getTherapy().getUuid());
+			List<Treatment> treatments = treatmentService.findBy(new TreatmentCriteria().therapy(therapy));
+			treatments.forEach(t -> treatmentService.deletePermanent(t));
+			prescriptionService.findBy(new PrescriptionCriteria().therapy(therapy)).forEach(p -> prescriptionService.deletePermanent(p));
+		}
+
+		if (caze.getClinicalCourse() != null) {
+			ClinicalCourseReferenceDto clinicalCourse = new ClinicalCourseReferenceDto(caze.getClinicalCourse().getUuid());
+			List<ClinicalVisit> cvs = clinicalVisitService.findBy(new ClinicalVisitCriteria().clinicalCourse(clinicalCourse));
+			cvs.forEach(c -> clinicalVisitService.deletePermanent(c));
+		}
+
+		// Remove the case from any S2S share info referencing it
+		sormasToSormasShareInfoService.getByAssociatedEntity(SormasToSormasShareInfo.CAZE, caze.getUuid()).forEach(s -> {
+			s.setCaze(null);
+			if (sormasToSormasShareInfoFacade.hasAnyEntityReference(s)) {
+				sormasToSormasShareInfoService.ensurePersisted(s);
+			} else {
+				sormasToSormasShareInfoService.deletePermanent(s);
+			}
+		});
+
+		// Remove the case from any external share info referencing it
+		externalShareInfoService.getShareInfoByCase(caze.getUuid()).forEach(e -> {
+			externalShareInfoService.deletePermanent(e);
+		});
+
+		// Remove the case from all cases in which it has been set as a duplicate
+		getCasesSetAsDuplicate(caze.getId()).forEach(c -> {
+			c.setDuplicateOf(null);
+			ensurePersisted(c);
+		});
+
+		caseFacade.deleteCaseInExternalSurveillanceTool(caze);
+		deleteCaseLinks(caze);
+
+		super.deletePermanent(caze);
+	}
+
+	@Override
 	public void delete(Case caze) {
 
-		// Mark all contacts associated with this case as deleted and remove this case
-		// from any contacts where it is set as the resulting case
-		List<Contact> contacts = contactService.findBy(new ContactCriteria().caze(caze.toReference()), null);
-		for (Contact contact : contacts) {
-			contactService.delete(contact);
-		}
-		contacts = contactService.getAllByResultingCase(caze);
-		for (Contact contact : contacts) {
-			contact.setResultingCase(null);
-			externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
-			contactService.ensurePersisted(contact);
-		}
-
+		// Soft-delete all samples that are only associated with this case
 		caze.getSamples()
 			.stream()
 			.filter(sample -> sample.getAssociatedContact() == null && sample.getAssociatedEventParticipant() == null)
 			.forEach(sample -> sampleService.delete(sample));
 
-		// Delete all tasks associated with this case
-		List<Task> tasks = taskService.findBy(new TaskCriteria().caze(new CaseReferenceDto(caze.getUuid())), true);
-		for (Task task : tasks) {
-			taskService.deletePermanent(task);
-		}
-
-		// Delete all prescriptions/treatments/clinical visits
-		if (caze.getTherapy() != null) {
-			TherapyReferenceDto therapy = new TherapyReferenceDto(caze.getTherapy().getUuid());
-			treatmentService.findBy(new TreatmentCriteria().therapy(therapy)).stream().forEach(t -> treatmentService.deletePermanent(t));
-			prescriptionService.findBy(new PrescriptionCriteria().therapy(therapy)).stream().forEach(p -> prescriptionService.deletePermanent(p));
-		}
-		if (caze.getClinicalCourse() != null) {
-			ClinicalCourseReferenceDto clinicalCourse = new ClinicalCourseReferenceDto(caze.getClinicalCourse().getUuid());
-			clinicalVisitService.findBy(new ClinicalVisitCriteria().clinicalCourse(clinicalCourse))
-				.stream()
-				.forEach(c -> clinicalVisitService.deletePermanent(c));
-		}
-
-		// Remove all events linked to case by removing the case_id from event participant
-		caze.getEventParticipants().stream().forEach(eventParticipant -> eventParticipant.setResultingCase(null));
-
-		// Unlink TravelEntries where this case is set as the resulting case
-		List<TravelEntry> travelEntries = travelEntryService.getAllByResultingCase(caze);
-		for (TravelEntry travelEntry : travelEntries) {
-			travelEntry.setResultingCase(null);
-			travelEntryService.ensurePersisted(travelEntry);
-		}
-
-		// Unlink Immunizations where this case is set as the related case
-		immunizationService.unlinkRelatedCase(caze);
+		caseFacade.deleteCaseInExternalSurveillanceTool(caze);
+		deleteCaseLinks(caze);
 
 		// Mark the case as deleted
 		super.delete(caze);
+	}
+
+	private void deleteCaseLinks(Case caze) {
+
+		// Remove the case as the resulting case and source case from all contacts
+		Optional.ofNullable(caze.getContacts()).ifPresent(cl -> cl.forEach(c -> {
+			c.setCaze(null);
+			externalJournalService.handleExternalJournalPersonUpdateAsync(c.getPerson().toReference());
+			contactService.ensurePersisted(c);
+		}));
+
+		contactService.getAllByResultingCase(caze).forEach(c -> {
+			c.setResultingCase(null);
+			externalJournalService.handleExternalJournalPersonUpdateAsync(c.getPerson().toReference());
+			contactService.ensurePersisted(c);
+		});
+
+		// Remove the case from any sample that is also connected to other entities
+		caze.getSamples().stream().filter(s -> s.getAssociatedContact() != null || s.getAssociatedEventParticipant() != null).forEach(s -> {
+			s.setAssociatedCase(null);
+			sampleService.ensurePersisted(s);
+		});
+
+		// Remove the case as the resulting case of event participants
+		Optional.ofNullable(caze.getEventParticipants()).ifPresent(es -> es.forEach(ep -> {
+			ep.setResultingCase(null);
+			eventParticipantService.ensurePersisted(ep);
+		}));
+
+		// Remove the case as the resulting case of travel entries
+		travelEntryService.getAllByResultingCase(caze).forEach(t -> {
+			t.setResultingCase(null);
+			travelEntryService.ensurePersisted(t);
+		});
+
+		// Remove the case as the related case of immunizations
+		immunizationService.unlinkRelatedCase(caze);
 	}
 
 	@Override
@@ -1785,6 +1855,16 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		} catch (NoResultException e) {
 			return null;
 		}
+	}
+
+	private List<Case> getCasesSetAsDuplicate(Long caseId) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Case> cq = cb.createQuery(Case.class);
+		Root<Case> root = cq.from(Case.class);
+
+		cq.where(cb.equal(root.get(Case.DUPLICATE_OF), caseId));
+		return em.createQuery(cq).getResultList();
 	}
 
 	/**

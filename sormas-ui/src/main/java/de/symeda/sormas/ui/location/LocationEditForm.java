@@ -43,6 +43,7 @@ import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.PopupView;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.data.validator.EmailValidator;
 import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.AbstractSelect;
@@ -557,6 +558,15 @@ public class LocationEditForm extends AbstractEditForm<LocationDto> {
 
 		// Set initial visiblity of facility-contactperson-details (should only be visible if at least a facilityType has been selected)
 		setFacilityContactPersonFieldsVisible(facilityType.getValue() != null, true);
+	}
+
+	@Override
+	public void setValue(LocationDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
+		super.setValue(newFieldValue);
+
+		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
+		// this hopefully resets everything to its correct value
+		discard();
 	}
 
 	@Override
