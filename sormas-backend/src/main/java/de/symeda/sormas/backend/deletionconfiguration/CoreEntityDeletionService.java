@@ -64,7 +64,8 @@ public class CoreEntityDeletionService {
 	public void executePermanentDeletion() {
 		coreEntityFacades.forEach(entityTypeFacadePair -> {
 			if (entityTypeFacadePair.coreEntityType == CoreEntityType.IMMUNIZATION
-				|| entityTypeFacadePair.coreEntityType == CoreEntityType.TRAVEL_ENTRY) {
+				|| entityTypeFacadePair.coreEntityType == CoreEntityType.TRAVEL_ENTRY
+				|| entityTypeFacadePair.coreEntityType == CoreEntityType.CASE) {
 				entityTypeFacadePair.entityFacade.executePermanentDeletion(DELETE_BATCH_SIZE);
 			}
 		});
