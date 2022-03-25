@@ -28,6 +28,8 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import com.fasterxml.jackson.databind.JsonNode;
+
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
@@ -39,6 +41,7 @@ import de.symeda.sormas.api.immunization.ImmunizationIndexDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.utils.Experimental;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
@@ -141,6 +144,36 @@ public class ImmunizationResource extends EntityDtoResource {
 	@Path("/vaccinations")
 	public List<VaccinationDto> getAllVaccinations(@QueryParam("personUuid") String personUuid, @QueryParam("disease") Disease disease) {
 		return FacadeProvider.getVaccinationFacade().getAllVaccinations(personUuid, disease);
+	}
+
+	@GET
+	@Path("/vaccination/{uuid}")
+	public VaccinationDto getVaccinationByUuid(@PathParam("uuid") String uuid) {
+		return FacadeProvider.getVaccinationFacade().getByUuid(uuid);
+	}
+
+	@POST
+	@Path("/vaccination/push")
+	public VaccinationDto postVaccination(@Valid VaccinationDto vaccination) {
+		return FacadeProvider.getVaccinationFacade().save(vaccination);
+	}
+
+	/**
+	 * This endpoint is used to partially update the VaccinationData.
+	 * For allowing only a subset of the fields of the caseDataDto to be updated
+	 * THIS METHOD IS EXPERIMENTAL!!!
+	 * 
+	 * @param uuid
+	 * @param vaccinationDataDtoJson
+	 *            - a subset of caseDataDto fields, same structure as vaccinationDataDtoJson
+	 * @return - the updated caseDataDto
+	 * @throws Exception
+	 */
+	@POST
+	@Path("/vaccination/postUpdate/{uuid}")
+	@Experimental
+	public VaccinationDto postUpdate(@PathParam("uuid") String uuid, JsonNode vaccinationDataDtoJson) throws Exception {
+		return FacadeProvider.getVaccinationFacade().postUpdate(uuid, vaccinationDataDtoJson);
 	}
 
 }

@@ -319,9 +319,7 @@ public class SampleController {
 				FacadeProvider.getSampleFacade().saveSample(changedDto);
 				SormasUI.refreshView();
 
-				final CaseReferenceDto associatedCase = changedDto.getAssociatedCase();
-				final CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
-				FacadeProvider.getCaseFacade().save(caseDataByUuid);
+				updateAssociationsForSample(changedDto);
 
 				if (changedDto.getSpecimenCondition() != originalDto.getSpecimenCondition()
 					&& changedDto.getSpecimenCondition() == SpecimenCondition.NOT_ADEQUATE
@@ -336,6 +334,7 @@ public class SampleController {
 		if (showDeleteButton && UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_DELETE)) {
 			editView.addDeleteListener(() -> {
 				FacadeProvider.getSampleFacade().deleteSample(dto.toReference());
+				updateAssociationsForSample(dto);
 				UI.getCurrent().getNavigator().navigateTo(SamplesView.VIEW_NAME);
 			}, I18nProperties.getString(Strings.entitySample));
 		}
@@ -345,6 +344,20 @@ public class SampleController {
 		}
 
 		return editView;
+	}
+
+	private void updateAssociationsForSample(SampleDto sampleDto) {
+		final CaseReferenceDto associatedCase = sampleDto.getAssociatedCase();
+		if (associatedCase != null) {
+			final CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid());
+			FacadeProvider.getCaseFacade().save(caseDataByUuid);
+		}
+
+		final ContactReferenceDto associatedContact = sampleDto.getAssociatedContact();
+		if (associatedContact != null) {
+			final ContactDto contactDataByUuid = FacadeProvider.getContactFacade().getByUuid(associatedContact.getUuid());
+			FacadeProvider.getContactFacade().save(contactDataByUuid);
+		}
 	}
 
 	/**

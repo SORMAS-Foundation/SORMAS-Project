@@ -34,7 +34,7 @@ public class InfoProvider {
 	InfoProvider() {
 
 		try (InputStream fis = InfoProvider.class.getResourceAsStream("/git.properties")) {
-
+			// in case you run test from the IDE and this errors, please run `mvn verify -DskipTests` from sormas-base first
 			Properties prop = new Properties();
 			prop.load(fis);
 			this.version = prop.getProperty("git.build.version");
@@ -77,7 +77,7 @@ public class InfoProvider {
 	 * @return
 	 */
 	public String getMinimumRequiredVersion() {
-		return "1.67.0";
+		return "1.70.0";
 	}
 
 	/**

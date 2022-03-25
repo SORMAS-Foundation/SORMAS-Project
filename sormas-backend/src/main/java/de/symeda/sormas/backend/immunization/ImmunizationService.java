@@ -37,10 +37,10 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.immunization.ImmunizationListEntryDto;
@@ -53,10 +53,10 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.immunization.joins.ImmunizationJoins;
@@ -83,8 +83,6 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 	private UserService userService;
 	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
-	@EJB
-	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	public ImmunizationService() {
 		super(Immunization.class);
@@ -170,9 +168,11 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 		Join<Immunization, Vaccination> vaccinations = immunizationFrom.join(Immunization.VACCINATIONS, JoinType.LEFT);
 
-		return super.addChangeDates(builder, immunizationFrom, includeExtendedChangeDateFilters).add(vaccinations)
+		builder = super.addChangeDates(builder, immunizationFrom, includeExtendedChangeDateFilters).add(vaccinations)
 			.add(immunizationFrom, Immunization.SORMAS_TO_SORMAS_ORIGIN_INFO)
 			.add(immunizationFrom, Immunization.SORMAS_TO_SORMAS_SHARES);
+
+		return builder;
 	}
 
 	private Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Immunization> immunization, Timestamp date, String lastSynchronizedUuid) {
@@ -538,15 +538,20 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		return filter;
 	}
 
-	public boolean isImmunizationEditAllowed(Immunization immunization) {
+	public EditPermissionType isImmunizationEditAllowed(Immunization immunization) {
+
 		if (!userService.hasRight(UserRight.IMMUNIZATION_EDIT)) {
-			return false;
+			return EditPermissionType.REFUSED;
 		}
 
 		if (immunization.getSormasToSormasOriginInfo() != null && !immunization.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
-			return false;
+			return EditPermissionType.REFUSED;
 		}
 
-		return inJurisdictionOrOwned(immunization) && !sormasToSormasShareInfoService.isImmunizationsOwnershipHandedOver(immunization);
+		if (!inJurisdictionOrOwned(immunization) || sormasToSormasShareInfoService.isImmunizationsOwnershipHandedOver(immunization)) {
+			return EditPermissionType.REFUSED;
+		}
+
+		return super.getEditPermissionType(immunization);
 	}
 }

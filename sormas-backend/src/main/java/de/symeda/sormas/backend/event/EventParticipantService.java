@@ -42,6 +42,7 @@ import javax.persistence.criteria.Subquery;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
@@ -92,7 +93,8 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		Root<EventParticipant> from = cq.from(getElementClass());
 		Join<EventParticipant, Event> event = from.join(EventParticipant.EVENT, JoinType.LEFT);
 
-		Predicate filter = cb.or(cb.equal(event.get(Event.ARCHIVED), false), cb.isNull(event.get(Event.ARCHIVED)));
+		Predicate filter = cb
+			.and(cb.or(cb.isFalse(event.get(Event.ARCHIVED)), cb.isNull(event.get(Event.ARCHIVED))), cb.isFalse(from.get(EventParticipant.ARCHIVED)));
 
 		filter = cb.and(filter, createDefaultFilter(cb, from));
 
@@ -224,10 +226,15 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 
 		if (criteria.getRelevanceStatus() != null) {
 			if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
-				filter = CriteriaBuilderHelper
-					.and(cb, filter, cb.or(cb.equal(from.get(EventParticipant.ARCHIVED), false), cb.isNull(from.get(EventParticipant.ARCHIVED))));
+				filter = CriteriaBuilderHelper.and(
+					cb,
+					filter,
+					cb.and(
+						cb.or(cb.equal(event.get(Event.ARCHIVED), false), cb.isNull(event.get(Event.ARCHIVED))),
+						cb.or(cb.equal(from.get(EventParticipant.ARCHIVED), false), cb.isNull(from.get(EventParticipant.ARCHIVED)))));
 			} else if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(EventParticipant.ARCHIVED), true));
+				filter = CriteriaBuilderHelper
+					.and(cb, filter, cb.or(cb.equal(event.get(Event.ARCHIVED), true), cb.equal(from.get(EventParticipant.ARCHIVED), true)));
 			}
 		}
 
@@ -321,6 +328,49 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 			.forEach(sample -> sampleService.delete(sample));
 
 		super.delete(eventParticipant);
+	}
+
+	public List<String> getAllUuidsByEventUuids(List<String> eventUuids) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<EventParticipant> from = cq.from(getElementClass());
+
+		cq.select(from.get(EventParticipant.UUID));
+		cq.where(createDefaultFilter(cb, from), cb.in(from.join(EventParticipant.EVENT).get(Event.UUID)).value(eventUuids));
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	public List<String> getArchivedUuidsSince(Date since) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<EventParticipant> eventParticipant = cq.from(EventParticipant.class);
+
+		Predicate filter = createUserFilter(cb, cq, eventParticipant);
+		if (since != null) {
+			Predicate dateFilter = cb.greaterThanOrEqualTo(eventParticipant.get(EventParticipant.CHANGE_DATE), since);
+			if (filter != null) {
+				filter = cb.and(filter, dateFilter);
+			} else {
+				filter = dateFilter;
+			}
+		}
+
+		Join<EventParticipant, Event> eventJoin = eventParticipant.join(EventParticipant.EVENT, JoinType.INNER);
+		Predicate archivedFilter =
+			cb.or(cb.equal(eventParticipant.get(EventParticipant.ARCHIVED), true), cb.equal(eventJoin.get(Event.ARCHIVED), true));
+		if (filter != null) {
+			filter = cb.and(filter, archivedFilter);
+		} else {
+			filter = archivedFilter;
+		}
+
+		cq.where(filter);
+		cq.select(eventParticipant.get(Contact.UUID));
+
+		List<String> resultList = em.createQuery(cq).getResultList();
+		return resultList;
 	}
 
 	public List<String> getDeletedUuidsSince(Date since, User user) {
@@ -429,17 +479,27 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		From<?, EventParticipant> eventParticipantFrom,
 		boolean includeExtendedChangeDateFilters) {
 
-		return super.addChangeDates(builder, eventParticipantFrom, includeExtendedChangeDateFilters)
+		Join<EventParticipant, Sample> eventParticipantSampleJoin = eventParticipantFrom.join(EventParticipant.SAMPLES, JoinType.LEFT);
+
+		builder = super.addChangeDates(builder, eventParticipantFrom, includeExtendedChangeDateFilters)
 			.add(eventParticipantFrom, EventParticipant.SORMAS_TO_SORMAS_ORIGIN_INFO)
-			.add(eventParticipantFrom, EventParticipant.SORMAS_TO_SORMAS_SHARES);
+			.add(eventParticipantFrom, EventParticipant.SORMAS_TO_SORMAS_SHARES)
+			.add(eventParticipantSampleJoin);
+
+		return builder;
 	}
 
-	public boolean isEventParticipantEditAllowed(EventParticipant eventParticipant) {
+	public EditPermissionType isEventParticipantEditAllowed(EventParticipant eventParticipant) {
+
 		if (eventParticipant.getSormasToSormasOriginInfo() != null && !eventParticipant.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
-			return false;
+			return EditPermissionType.REFUSED;
 		}
 
-		return inJurisdiction(eventParticipant) && !sormasToSormasShareInfoService.isEventParticipantOwnershipHandedOver(eventParticipant);
+		if (!inJurisdiction(eventParticipant) || sormasToSormasShareInfoService.isEventParticipantOwnershipHandedOver(eventParticipant)) {
+			return EditPermissionType.REFUSED;
+		}
+
+		return super.getEditPermissionType(eventParticipant);
 	}
 
 	public Collection<EventParticipant> getByPersonUuids(List<String> personUuids) {

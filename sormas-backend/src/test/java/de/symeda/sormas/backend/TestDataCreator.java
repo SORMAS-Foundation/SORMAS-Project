@@ -143,8 +143,8 @@ public class TestDataCreator {
 
 		UserDto user = UserDto.build();
 		user.setFirstName("User");
-		user.setLastName("User");
-		user.setUserName("Username");
+		user.setLastName(userRole.toShortString());
+		user.setUserName(userRole.toString());
 		user.setUserRoles(new HashSet<>(Arrays.asList(userRole)));
 		user.setRegion(rdcf.region);
 		user.setDistrict(rdcf.district);
@@ -159,11 +159,23 @@ public class TestDataCreator {
 	}
 
 	public UserDto createUser(RDCFEntities rdcf, UserRole... roles) {
-		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "First", "Name", roles);
+		return createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			roles.length > 0 ? roles[0].toShortString() : "First",
+			"User",
+			roles);
 	}
 
 	public UserDto createUser(RDCF rdcf, UserRole... roles) {
-		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "First", "Name", roles);
+		return createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			roles.length > 0 ? roles[0].toShortString() : "First",
+			"User",
+			roles);
 	}
 
 	public UserDto createUser(RDCF rdcf, String firstName, String lastName, UserRole... roles) {
@@ -204,6 +216,7 @@ public class TestDataCreator {
 		user1.setLastName(lastName);
 		user1.setUserName(firstName + lastName);
 		user1.setUserRoles(new HashSet<UserRole>(Arrays.asList(roles)));
+
 		user1.setLimitedDisease(limitedDisease);
 		UserDto user = user1;
 		user.setRegion(beanTest.getRegionFacade().getReferenceByUuid(regionUuid));
@@ -606,6 +619,23 @@ public class TestDataCreator {
 		return beanTest.getVaccinationFacade().save(vaccination);
 	}
 
+	public TravelEntryDto createTravelEntry(PersonReferenceDto person, UserReferenceDto reportingUser, RDCF rdcf, Consumer<TravelEntryDto> config) {
+
+		TravelEntryDto travelEntry = TravelEntryDto.build(person);
+		travelEntry.setDisease(Disease.EVD);
+		travelEntry.setReportingUser(reportingUser);
+		travelEntry.setResponsibleRegion(rdcf.region);
+		travelEntry.setResponsibleDistrict(rdcf.district);
+		travelEntry.setPointOfEntry(rdcf.pointOfEntry);
+		travelEntry.setDateOfArrival(new Date());
+
+		if (config != null) {
+			config.accept(travelEntry);
+		}
+
+		return beanTest.getTravelEntryFacade().save(travelEntry);
+	}
+
 	public TravelEntryDto createTravelEntry(
 		PersonReferenceDto person,
 		UserReferenceDto reportingUser,
@@ -617,6 +647,7 @@ public class TestDataCreator {
 		TravelEntryDto travelEntry = TravelEntryDto.build(person);
 		travelEntry.setDisease(disease);
 		travelEntry.setReportingUser(reportingUser);
+		travelEntry.setDateOfArrival(new Date());
 		travelEntry.setResponsibleRegion(responsibleRegion);
 		travelEntry.setResponsibleDistrict(responsibleDistrict);
 		travelEntry.setPointOfEntry(pointOfEntry);
@@ -1428,7 +1459,7 @@ public class TestDataCreator {
 	}
 
 	public RDCF createRDCF() {
-		return createRDCF("Region", "District", "Community", "Facility");
+		return createRDCF("Region", "District", "Community", "Facility", "PointOfEntry");
 	}
 
 	public RDCF createRDCF(String regionName, String districtName, String communityName, String facilityName) {

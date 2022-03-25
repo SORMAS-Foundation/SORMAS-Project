@@ -26,14 +26,15 @@ import javax.ejb.Remote;
 import javax.validation.Valid;
 
 import de.symeda.sormas.api.CoreFacade;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.utils.SortProperty;
 
 @Remote
-public interface EventParticipantFacade extends CoreFacade<EventParticipantDto, EventParticipantIndexDto, EventParticipantReferenceDto, EventParticipantCriteria> {
+public interface EventParticipantFacade
+	extends CoreFacade<EventParticipantDto, EventParticipantIndexDto, EventParticipantReferenceDto, EventParticipantCriteria> {
 
 	List<EventParticipantDto> getAllEventParticipantsByEventAfter(Date date, String eventUuid);
 
@@ -65,9 +66,11 @@ public interface EventParticipantFacade extends CoreFacade<EventParticipantDto, 
 
 	List<EventParticipantDto> getAllActiveEventParticipantsAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
 
+	List<String> getArchivedUuidsSince(Date since);
+
 	List<String> getDeletedUuidsSince(Date date);
 
-	boolean isEventParticipantEditAllowed(String uuid);
+	EditPermissionType isEventParticipantEditAllowed(String uuid);
 
 	EventParticipantDto getFirst(EventParticipantCriteria eventParticipantCriteria);
 

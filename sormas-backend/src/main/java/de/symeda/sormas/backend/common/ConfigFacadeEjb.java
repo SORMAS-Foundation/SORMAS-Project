@@ -152,6 +152,8 @@ public class ConfigFacadeEjb implements ConfigFacade {
 
 	private static final String SORMAS2SORMAS_ETCD_KEY_PREFIX = "sormas2sormas.etcd.keyPrefix";
 
+	private static final String SORMAS2SORMAS_DISTRICT_EXTERNAL_ID = "sormas2sormas.districtExternalId";
+
 	private static final String EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL = "survnet.url";
 	private static final String EXTERNAL_SURVEILLANCE_TOOL_VERSION_ENDPOINT = "survnet.versionEndpoint";
 
@@ -531,6 +533,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		config.setOidcClientSecret(getProperty(SORMAS2SORMAS_OIDC_CLIENT_SECRET, null));
 		config.setKeyPrefix(getProperty(SORMAS2SORMAS_ETCD_KEY_PREFIX, null));
 		config.getIgnoreProperties().putAll(getS2SIgnoreProperties());
+		config.setDistrictExternalId(getProperty(SORMAS2SORMAS_DISTRICT_EXTERNAL_ID, null));
 		return config;
 	}
 
@@ -553,24 +556,35 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
-	public void validateExternalUrls() {
+	public void validateConfigUrls() {
+		SormasToSormasConfig s2sConfig = getS2SConfig();
+		SymptomJournalConfig symptomJournalConfig = getSymptomJournalConfig();
+		PatientDiaryConfig patientDiaryConfig = getPatientDiaryConfig();
 
 		List<String> urls = Lists.newArrayList(
-			getSymptomJournalConfig().getUrl(),
-			getSymptomJournalConfig().getAuthUrl(),
-			getPatientDiaryConfig().getUrl(),
-			getPatientDiaryConfig().getProbandsUrl(),
-			getPatientDiaryConfig().getAuthUrl(),
-			getPatientDiaryConfig().getFrontendAuthUrl(),
-			getSormasStatsUrl());
+			symptomJournalConfig.getUrl(),
+			symptomJournalConfig.getAuthUrl(),
+			patientDiaryConfig.getUrl(),
+			patientDiaryConfig.getProbandsUrl(),
+			patientDiaryConfig.getAuthUrl(),
+			patientDiaryConfig.getFrontendAuthUrl(),
+			getSormasStatsUrl(),
+			s2sConfig.getOidcServer(),
+			getExternalSurveillanceToolGatewayUrl(),
+			getAppUrl(),
+			getUiUrl());
 
-		SormasToSormasConfig s2sConfig = getS2SConfig();
+		// getGeocodingServiceUrlTemplate() and getMapTilersUrl() contain special chars and are ignored
 
-		if (s2sConfig.getOidcServer() != null && s2sConfig.getOidcRealm() != null) {
+		// separately as they are interpolated
+		if (!StringUtils.isBlank(s2sConfig.getOidcServer())) {
+
 			urls.add(s2sConfig.getOidcRealmCertEndpoint());
 			urls.add(s2sConfig.getOidcRealmTokenEndpoint());
-			urls.add(s2sConfig.getOidcRealmUrl());
-			urls.add(s2sConfig.getOidcServer());
+
+			if (!StringUtils.isBlank(s2sConfig.getOidcRealm())) {
+				urls.add(s2sConfig.getOidcRealmUrl());
+			}
 		}
 
 		UrlValidator urlValidator = new UrlValidator(
@@ -579,15 +593,14 @@ public class ConfigFacadeEjb implements ConfigFacade {
 				"https" },
 			UrlValidator.ALLOW_LOCAL_URLS);
 
-		urls.forEach(url -> {
-			if (StringUtils.isBlank(url)) {
-				return;
-			}
+		List<String> invalidUrls =
+			urls.stream().filter(u -> !StringUtils.isBlank(u)).filter(u -> !urlValidator.isValid(u)).collect(Collectors.toList());
 
-			if (!urlValidator.isValid(url)) {
-				throw new IllegalArgumentException("'" + url + "' is not a valid URL");
-			}
-		});
+		if (!invalidUrls.isEmpty()) {
+			String invalid = String.join(",\n\t", invalidUrls);
+			throw new IllegalArgumentException(String.format("Invalid URLs in property file:\n\t%s", invalid));
+		}
+
 	}
 
 	@Override
@@ -688,13 +701,13 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	}
 
 	@Override
-	public String getAuditLoggerConfig(){
-		return getProperty(AUDIT_LOGGER_CONFIG,"");
+	public String getAuditLoggerConfig() {
+		return getProperty(AUDIT_LOGGER_CONFIG, "");
 	}
 
 	@Override
-	public String getAuditSourceSite(){
-		return getProperty(AUDIT_SOURCE_SITE,"");
+	public String getAuditSourceSite() {
+		return getProperty(AUDIT_SOURCE_SITE, "");
 	}
 
 	@Override
