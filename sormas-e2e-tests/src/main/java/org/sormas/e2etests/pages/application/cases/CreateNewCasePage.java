@@ -23,6 +23,7 @@ import org.openqa.selenium.By;
 public class CreateNewCasePage {
   public static final By DATE_OF_REPORT_INPUT = By.cssSelector(".v-window #reportDate input");
   public static final By DISEASE_COMBOBOX = By.cssSelector(".v-window #disease div");
+  public static final By DISEASE_VARIANT_COMBOBOX = By.cssSelector(".v-window #diseaseVariant div");
   public static final By RESPONSIBLE_REGION_COMBOBOX =
       By.cssSelector(".v-window #responsibleRegion div");
   public static final By RESPONSIBLE_DISTRICT_COMBOBOX =
@@ -59,4 +60,6 @@ public class CreateNewCasePage {
       By.xpath("//div[contains(@class, 'popupContent')]//div[@id='commit']");
   public static final By ENTER_HOME_ADDRESS_CHECKBOX =
       By.cssSelector("[location='enterHomeAddressNow'] span.v-checkbox");
+  public static final By CASE_DISEASE_VARIANT_COMBOBOX =
+      By.cssSelector(".v-window #diseaseVariant div");
 }

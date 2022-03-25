@@ -20,12 +20,6 @@ package de.symeda.sormas.ui.events;
 import java.util.Collection;
 import java.util.function.Consumer;
 
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
-import com.vaadin.ui.themes.ValoTheme;
-import de.symeda.sormas.api.i18n.Captions;
-import de.symeda.sormas.ui.contact.ContactDataView;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.server.Page;
@@ -57,6 +51,7 @@ import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
 import de.symeda.sormas.ui.utils.DateFormatHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.components.automaticdeletion.AutomaticDeletionLabel;
@@ -178,8 +173,7 @@ public class EventParticipantsController {
 				String.format(I18nProperties.getString(Strings.confirmationDeleteEventParticipants), selectedRows.size()),
 				() -> {
 					for (Object selectedRow : selectedRows) {
-						FacadeProvider.getEventParticipantFacade()
-							.deleteEventParticipant(new EventParticipantReferenceDto(((EventParticipantIndexDto) selectedRow).getUuid()));
+						FacadeProvider.getEventParticipantFacade().delete(((EventParticipantIndexDto) selectedRow).getUuid());
 					}
 					callback.run();
 					new Notification(
@@ -198,7 +192,7 @@ public class EventParticipantsController {
 				EventParticipantReferenceDto eventParticipantRef =
 					FacadeProvider.getEventParticipantFacade().getReferenceByEventAndPerson(eventUuid, personUuid);
 				if (eventParticipantRef != null) {
-					FacadeProvider.getEventParticipantFacade().deleteEventParticipant(eventParticipantRef);
+					FacadeProvider.getEventParticipantFacade().delete(eventParticipantRef.getUuid());
 					callback.run();
 				} else {
 					Notification.show(I18nProperties.getString(Strings.errorOccurred), Type.ERROR_MESSAGE);
@@ -224,45 +218,20 @@ public class EventParticipantsController {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
 			editComponent.addDeleteListener(() -> {
-				FacadeProvider.getEventParticipantFacade().deleteEventParticipant(eventParticipant.toReference());
+				FacadeProvider.getEventParticipantFacade().delete(eventParticipant.getUuid());
 				ControllerProvider.getEventController().navigateToParticipants(eventParticipant.getEvent().getUuid());
 			}, I18nProperties.getString(Strings.entityEventParticipant));
 		}
 
 		// Initialize 'Archive' button
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_ARCHIVE)) {
-			boolean archived = FacadeProvider.getEventParticipantFacade().isArchived(eventParticipant.getUuid());
-			Button archiveButton = ButtonHelper.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {
-				if (editComponent.isModified()) {
-					editComponent.commit();
-				}
-
-				if (archived) {
-					ControllerProvider.getArchiveController()
-						.dearchiveEntity(
-							eventParticipant,
-							FacadeProvider.getEventParticipantFacade(),
-							Strings.headingDearchiveEventParticipant,
-							Strings.confirmationDearchiveEventParticipant,
-							Strings.entityEventParticipant,
-							Strings.messageEventParticipantDearchived,
-							() -> navigateToData(eventParticipant.getUuid()));
-				} else {
-					ControllerProvider.getArchiveController()
-						.archiveEntity(
-							eventParticipant,
-							FacadeProvider.getEventParticipantFacade(),
-							Strings.headingArchiveEventParticipant,
-							Strings.confirmationArchiveEventParticipant,
-							Strings.entityEventParticipant,
-							Strings.messageEventParticipantArchived,
-							() -> navigateToData(eventParticipant.getUuid()));
-				}
-
-			}, ValoTheme.BUTTON_LINK);
-
-			editComponent.getButtonsPanel().addComponentAsFirst(archiveButton);
-			editComponent.getButtonsPanel().setComponentAlignment(archiveButton, Alignment.BOTTOM_LEFT);
+			ControllerProvider.getArchiveController()
+				.addArchivingButton(
+					eventParticipant,
+					FacadeProvider.getEventParticipantFacade(),
+					CoreEntityArchiveMessages.EVENT_PARTICIPANT,
+					editComponent,
+					() -> navigateToData(eventParticipant.getUuid()));
 		}
 
 		return editComponent;

@@ -93,11 +93,17 @@ import de.symeda.sormas.api.therapy.PrescriptionDto;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.DiseaseFieldVisibilityChecker;
 import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.XssfHelper;
 
 @Stateless(name = "InfoFacade")
@@ -108,122 +114,80 @@ public class InfoFacadeEjb implements InfoFacade {
 
 	@EJB
 	private ConfigFacadeEjbLocal configFacade;
+	@EJB
+	private UserService userService;
+	@EJB
+	private DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
 
 	@Override
 	public String generateDataDictionary() throws IOException {
-		return generateDataDictionary(EnumSet.allOf(EntityColumn.class), Collections.emptyList(), Collections.emptyMap());
+		return generateDataDictionary(
+			filterColumnsForDataDictionary(),
+			FieldVisibilityCheckers.getNoop(),
+			Collections.emptyList(),
+			Collections.emptyMap(),
+			false);
 	}
 
 	@Override
 	public boolean isGenerateDataProtectionDictionaryAllowed() {
-		return getDataProtectionFile().exists();
+		return userService.hasRight(UserRight.EXPORT_DATA_PROTECTION_DATA) && getDataProtectionFile().exists();
 	}
 
 	@Override
 	public String generateDataProtectionDictionary() throws IOException {
+		FieldVisibilityCheckers fieldVisibilityCheckers = FieldVisibilityCheckers.withCheckers(
+			new CountryFieldVisibilityChecker(configFacade.getCountryLocale()),
+			new DiseaseFieldVisibilityChecker(diseaseConfigurationFacade.getAllActiveDiseases()));
+
 		try {
 			XSSFWorkbook dataProtectionInputWorkbook = new XSSFWorkbook(getDataProtectionFile());
 			XSSFSheet dataProtectionSheet = dataProtectionInputWorkbook.getSheetAt(0);
 
 			List<ColumnData> dataProtectionColumns = getDataProtectionColumns(dataProtectionSheet);
 			Map<String, List<XSSFCell>> dataProtectionData = getDataProtectionCellData(dataProtectionSheet);
-			EnumSet<EntityColumn> entityColumns = EnumSet.allOf(EntityColumn.class);
-			entityColumns.remove(EntityColumn.IGNORED_COUNTRIES);
-			entityColumns.remove(EntityColumn.EXCLUSIVE_COUNTRIES);
-
-			return generateDataDictionary(entityColumns, dataProtectionColumns, dataProtectionData);
+			return generateDataDictionary(
+				filterColumnsForDataProtectionDictionaryWithEntityColumn(),
+				fieldVisibilityCheckers,
+				dataProtectionColumns,
+				dataProtectionData,
+				true);
 
 		} catch (InvalidFormatException e) {
 			throw new IOException(e);
 		}
 	}
 
-	private File getDataProtectionFile() {
-		return new File(configFacade.getCustomFilesPath(), DATA_PROTECTION_FILE_NAME);
-	}
-
-	private Map<String, List<XSSFCell>> getDataProtectionCellData(XSSFSheet dataProtectionSheet) {
-		int numRows = dataProtectionSheet.getPhysicalNumberOfRows();
-		Map<String, List<XSSFCell>> dataProtectionData = new HashMap<>(numRows - 1);
-
-		for (int rowNum = 1; rowNum < numRows; rowNum++) {
-			XSSFRow row = dataProtectionSheet.getRow(rowNum);
-
-			String fieldId = row.getCell(0).getStringCellValue();
-
-			List<XSSFCell> dataProtectionCells = new ArrayList<>();
-			for (short colNum = FIRST_DATA_PROTECTION_COLUMN_INDEX; colNum < row.getLastCellNum(); colNum++) {
-				XSSFCell rowCell = row.getCell(colNum);
-				dataProtectionCells.add(rowCell);
-			}
-
-			dataProtectionData.put(fieldId, dataProtectionCells);
-		}
-
-		return dataProtectionData;
-	}
-
-	private List<ColumnData> getDataProtectionColumns(XSSFSheet dataProtectionSheet) {
-		XSSFRow headerRow = dataProtectionSheet.getRow(0);
-		short lastCellNum = headerRow.getLastCellNum();
-
-		List<ColumnData> dataProtectionColumns = new ArrayList<>();
-		for (short colNum = FIRST_DATA_PROTECTION_COLUMN_INDEX; colNum < lastCellNum; colNum++) {
-			dataProtectionColumns.add(new ColumnData(headerRow.getCell(colNum).getStringCellValue(), dataProtectionSheet.getColumnWidth(colNum)));
-		}
-
-		return dataProtectionColumns;
-	}
-
-	private String generateDataDictionary(EnumSet<EntityColumn> entityColumns, List<ColumnData> extraColumns, Map<String, List<XSSFCell>> extraCells)
+	private String generateDataDictionary(
+		EnumSet<EntityColumn> entityColumns,
+		FieldVisibilityCheckers fieldVisibilityCheckers,
+		List<ColumnData> extraColumns,
+		Map<String, List<XSSFCell>> extraCells,
+		boolean isDataProtectionDictionary)
 		throws IOException {
 		XSSFWorkbook workbook = new XSSFWorkbook();
+		CellStyle defaultCellStyle = getDefaultCellStyle(workbook);
 
-		createEntitySheet(workbook, PersonDto.class, PersonDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, PersonContactDetailDto.class, PersonContactDetailDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, LocationDto.class, LocationDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, CaseDataDto.class, CaseDataDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, ActivityAsCaseDto.class, ActivityAsCaseDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, HospitalizationDto.class, HospitalizationDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(
+		if (isDataProtectionDictionary) {
+			createEntitySheetWithAllFields(
+				workbook,
+				defaultCellStyle,
+				getEntityInfoList(),
+				entityColumns,
+				fieldVisibilityCheckers,
+				extraColumns,
+				extraCells);
+		}
+
+		createEntitySheetsForDataDictionary(
 			workbook,
-			PreviousHospitalizationDto.class,
-			PreviousHospitalizationDto.I18N_PREFIX,
-			entityColumns,
+			defaultCellStyle,
+			getEntityInfoList(),
+			filterColumnsForDataProtectionDictionaryWithoutEntityColumn(entityColumns),
+			fieldVisibilityCheckers,
 			extraColumns,
-			extraCells);
-		createEntitySheet(workbook, SurveillanceReportDto.class, SurveillanceReportDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, SymptomsDto.class, SymptomsDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, EpiDataDto.class, EpiDataDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, ExposureDto.class, ExposureDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, HealthConditionsDto.class, HealthConditionsDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, PrescriptionDto.class, PrescriptionDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, TreatmentDto.class, TreatmentDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, ClinicalVisitDto.class, ClinicalVisitDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, ContactDto.class, ContactDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, VisitDto.class, VisitDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, SampleDto.class, SampleDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, PathogenTestDto.class, PathogenTestDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, AdditionalTestDto.class, AdditionalTestDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, TaskDto.class, TaskDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, EventDto.class, EventDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, EventParticipantDto.class, EventParticipantDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, ActionDto.class, ActionDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, ImmunizationDto.class, ImmunizationDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, VaccinationDto.class, VaccinationDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, TravelEntryDto.class, TravelEntryDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, ContinentDto.class, ContinentDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, SubcontinentDto.class, SubcontinentDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, CountryDto.class, CountryDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, RegionDto.class, RegionDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, DistrictDto.class, DistrictDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, CommunityDto.class, CommunityDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, FacilityDto.class, FacilityDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, PointOfEntryDto.class, PointOfEntryDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, UserDto.class, UserDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, LabMessageDto.class, LabMessageDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-		createEntitySheet(workbook, TestReportDto.class, TestReportDto.I18N_PREFIX, entityColumns, extraColumns, extraCells);
-
+			extraCells,
+			isDataProtectionDictionary);
 		XssfHelper.addAboutSheet(workbook);
 
 		Path documentPath = generateDocumentTempPath();
@@ -238,69 +202,103 @@ public class InfoFacadeEjb implements InfoFacade {
 		return documentPath.toString();
 	}
 
-	private Path generateDocumentTempPath() {
+	private void createEntitySheetsForDataDictionary(
+		XSSFWorkbook workbook,
+		CellStyle defaultCellStyle,
+		List<EntityInfo> entityInfoList,
+		EnumSet<EntityColumn> entityColumns,
+		FieldVisibilityCheckers fieldVisibilityCheckers,
+		List<ColumnData> extraColumns,
+		Map<String, List<XSSFCell>> extraCells,
+		boolean isDataProtectionDictionary) {
 
-		Path path = Paths.get(configFacade.getTempFilesPath());
-		String fileName = ImportExportUtils.TEMP_FILE_PREFIX + "_datadictionary_" + DateHelper.formatDateForExport(new Date()) + "_"
-			+ new Random().nextInt(Integer.MAX_VALUE) + ".xlsx";
+		for (EntityInfo entityInfo : entityInfoList) {
+			createEntitySheet(
+				workbook,
+				defaultCellStyle,
+				entityInfo,
+				entityColumns,
+				fieldVisibilityCheckers,
+				extraColumns,
+				extraCells,
+				isDataProtectionDictionary);
+		}
+	}
 
-		return path.resolve(fileName);
+	private void createEntitySheetWithAllFields(
+		XSSFWorkbook workbook,
+		CellStyle defaultCellStyle,
+		List<EntityInfo> entityInfoList,
+		EnumSet<EntityColumn> entityColumns,
+		FieldVisibilityCheckers fieldVisibilityCheckers,
+		List<ColumnData> extraColumns,
+		Map<String, List<XSSFCell>> extraCells) {
+
+		String name = "All fields";
+		String safeName = WorkbookUtil.createSafeSheetName(name);
+		XSSFSheet sheet = workbook.createSheet(safeName);
+
+		buildHeader(sheet, entityColumns, extraColumns);
+		int rowNumber = 1;
+		int columnCount = entityColumns.size() + extraColumns.size();
+		for (EntityInfo entityInfo : entityInfoList) {
+			Class<? extends EntityDto> entityClass = entityInfo.getEntityClass();
+
+			for (Field field : entityClass.getDeclaredFields()) {
+				if (java.lang.reflect.Modifier.isStatic(field.getModifiers()) || !fieldVisibilityCheckers.isVisible(entityClass, field.getName())) {
+					continue;
+				}
+				FieldData fieldData = new FieldData(field, entityClass, entityInfo.getI18nPrefix());
+				XSSFRow row = sheet.createRow(rowNumber++);
+				for (EntityColumn c : entityColumns) {
+					createCellsForRow(c, row, fieldData, defaultCellStyle);
+				}
+				copyCellsFromExtraCells(row, fieldData, extraCells);
+			}
+		}
+
+		// Configure table
+		AreaReference reference =
+			workbook.getCreationHelper().createAreaReference(new CellReference(0, 0), new CellReference(rowNumber - 1, columnCount - 1));
+		XssfHelper.configureTable(reference, getSafeTableName(safeName), sheet, XssfHelper.TABLE_STYLE_PRIMARY);
 	}
 
 	private void createEntitySheet(
 		XSSFWorkbook workbook,
-		Class<? extends EntityDto> entityClass,
-		String i18nPrefix,
+		CellStyle defaultCellStyle,
+		EntityInfo entityInfo,
 		EnumSet<EntityColumn> entityColumns,
+		FieldVisibilityCheckers fieldVisibilityCheckers,
 		List<ColumnData> extraColumns,
-		Map<String, List<XSSFCell>> extraCells) {
+		Map<String, List<XSSFCell>> extraCells,
+		boolean isDataProtectionDictionary) {
 
-		String name = I18nProperties.getCaption(i18nPrefix);
+		String name;
+		Class<? extends EntityDto> entityClass = entityInfo.getEntityClass();
+		if (isDataProtectionDictionary) {
+			name = DataHelper.getHumanClassName(entityClass);
+		} else {
+			name = I18nProperties.getCaption(entityInfo.getI18nPrefix());
+		}
+
 		String safeName = WorkbookUtil.createSafeSheetName(name);
 		XSSFSheet sheet = workbook.createSheet(safeName);
 
+		buildHeader(sheet, entityColumns, extraColumns);
+		int rowNumber = 1;
 		int columnCount = entityColumns.size() + extraColumns.size();
-		int rowNumber = 0;
-
-		// header
-		XSSFRow headerRow = sheet.createRow(rowNumber++);
-		entityColumns.forEach(column -> {
-			int colIndex = Math.max(headerRow.getLastCellNum(), 0);
-			headerRow.createCell(colIndex).setCellValue(column.toString());
-			sheet.setColumnWidth(colIndex, column.getWidth());
-		});
-
-		extraColumns.forEach(c -> {
-			short colIndex = headerRow.getLastCellNum();
-			headerRow.createCell(colIndex).setCellValue(c.header);
-			sheet.setColumnWidth(colIndex, c.width);
-		});
-
-		CellStyle defaultCellStyle = workbook.createCellStyle();
-		defaultCellStyle.setWrapText(true);
 
 		List<Class<Enum<?>>> usedEnums = new ArrayList<>();
 		boolean usesFacilityReference = false;
 
 		for (Field field : entityClass.getDeclaredFields()) {
-			if (java.lang.reflect.Modifier.isStatic(field.getModifiers()))
+			if (java.lang.reflect.Modifier.isStatic(field.getModifiers()) || !fieldVisibilityCheckers.isVisible(entityClass, field.getName())) {
 				continue;
-
-			FieldData fieldData = new FieldData(field, entityClass, i18nPrefix);
-
+			}
+			FieldData fieldData = new FieldData(field, entityClass, entityInfo.getI18nPrefix());
 			XSSFRow row = sheet.createRow(rowNumber++);
-
 			for (EntityColumn c : entityColumns) {
-				XSSFCell newCell = row.createCell(Math.max(row.getLastCellNum(), 0));
-
-				String fieldValue = c.getGetValueFromField(fieldData);
-				if (fieldValue != null) {
-					newCell.setCellValue(fieldValue);
-				}
-
-				if (c.hasDefaultStyle()) {
-					newCell.setCellStyle(defaultCellStyle);
-				}
+				createCellsForRow(c, row, fieldData, defaultCellStyle);
 
 				Class<?> fieldType = field.getType();
 				if (fieldType.isEnum()) {
@@ -318,15 +316,7 @@ public class InfoFacadeEjb implements InfoFacade {
 				}
 			}
 
-			String fieldId = EntityColumn.FIELD_ID.getGetValueFromField(fieldData);
-			if (extraCells.containsKey(fieldId)) {
-				extraCells.get(fieldId).forEach((extraCell) -> {
-					XSSFCell newCell = row.createCell(row.getLastCellNum());
-					if (extraCell != null) {
-						newCell.copyCellFrom(extraCell, new CellCopyPolicy.Builder().cellValue(true).cellStyle(false).cellFormula(false).build());
-					}
-				});
-			}
+			copyCellsFromExtraCells(row, fieldData, extraCells);
 		}
 
 		// Configure table
@@ -341,7 +331,7 @@ public class InfoFacadeEjb implements InfoFacade {
 
 		// enums
 		for (Class<Enum<?>> usedEnum : usedEnums) {
-			rowNumber = createEnumTable(sheet, rowNumber + 1, usedEnum);
+			rowNumber = createEnumTable(sheet, rowNumber + 1, usedEnum, fieldVisibilityCheckers);
 		}
 
 	}
@@ -420,9 +410,10 @@ public class InfoFacadeEjb implements InfoFacade {
 		public String toString() {
 			return I18nProperties.getEnumCaption(this);
 		}
+
 	}
 
-	private int createEnumTable(XSSFSheet sheet, int startRow, Class<Enum<?>> enumType) {
+	private int createEnumTable(XSSFSheet sheet, int startRow, Class<Enum<?>> enumType, FieldVisibilityCheckers fieldVisibilityCheckers) {
 
 		int columnCount = EnumColumn.values().length;
 		int rowNumber = startRow;
@@ -435,14 +426,17 @@ public class InfoFacadeEjb implements InfoFacade {
 			headerRow.createCell(column.ordinal()).setCellValue(columnCaption);
 		}
 
-		Object[] enumValues = enumType.getEnumConstants();
-		for (Object enumValueObject : enumValues) {
+		Enum<?>[] enumValues = enumType.getEnumConstants();
+		for (Enum<?> enumValue : enumValues) {
+			if (!fieldVisibilityCheckers.isVisible(enumType, enumValue.name())) {
+				continue;
+			}
+
 			XSSFRow row = sheet.createRow(rowNumber++);
 			XSSFCell cell;
-			Enum<?> enumValue = ((Enum<?>) enumValueObject);
 
 			cell = row.createCell(EnumColumn.TYPE.ordinal());
-			if (enumValueObject == enumValues[0]) {
+			if (enumValue == enumValues[0]) {
 				cell.setCellValue(enumType.getSimpleName());
 			}
 
@@ -471,8 +465,166 @@ public class InfoFacadeEjb implements InfoFacade {
 		return rowNumber;
 	}
 
+	private File getDataProtectionFile() {
+		return new File(configFacade.getCustomFilesPath(), DATA_PROTECTION_FILE_NAME);
+	}
+
+	private Map<String, List<XSSFCell>> getDataProtectionCellData(XSSFSheet dataProtectionSheet) {
+		int numRows = dataProtectionSheet.getPhysicalNumberOfRows();
+		Map<String, List<XSSFCell>> dataProtectionData = new HashMap<>(numRows - 1);
+
+		for (int rowNum = 1; rowNum < numRows; rowNum++) {
+			XSSFRow row = dataProtectionSheet.getRow(rowNum);
+
+			String fieldId = row.getCell(0).getStringCellValue();
+
+			List<XSSFCell> dataProtectionCells = new ArrayList<>();
+			for (short colNum = FIRST_DATA_PROTECTION_COLUMN_INDEX; colNum < row.getLastCellNum(); colNum++) {
+				XSSFCell rowCell = row.getCell(colNum);
+				dataProtectionCells.add(rowCell);
+			}
+
+			dataProtectionData.put(fieldId, dataProtectionCells);
+		}
+
+		return dataProtectionData;
+	}
+
+	private List<ColumnData> getDataProtectionColumns(XSSFSheet dataProtectionSheet) {
+		XSSFRow headerRow = dataProtectionSheet.getRow(0);
+		short lastCellNum = headerRow.getLastCellNum();
+
+		List<ColumnData> dataProtectionColumns = new ArrayList<>();
+		for (short colNum = FIRST_DATA_PROTECTION_COLUMN_INDEX; colNum < lastCellNum; colNum++) {
+			dataProtectionColumns.add(new ColumnData(headerRow.getCell(colNum).getStringCellValue(), dataProtectionSheet.getColumnWidth(colNum)));
+		}
+
+		return dataProtectionColumns;
+	}
+
+	private Path generateDocumentTempPath() {
+
+		Path path = Paths.get(configFacade.getTempFilesPath());
+		String fileName = ImportExportUtils.TEMP_FILE_PREFIX + "_datadictionary_" + DateHelper.formatDateForExport(new Date()) + "_"
+			+ new Random().nextInt(Integer.MAX_VALUE) + ".xlsx";
+
+		return path.resolve(fileName);
+	}
+
 	private String getSafeTableName(String name) {
 		return name.replaceAll("\\s|\\p{Punct}", "_");
+	}
+
+	private List<EntityInfo> getEntityInfoList() {
+		List<EntityInfo> entityInfoList = new ArrayList<>();
+
+		entityInfoList.add(new EntityInfo(PersonDto.class, PersonDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(PersonContactDetailDto.class, PersonContactDetailDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(LocationDto.class, LocationDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(CaseDataDto.class, CaseDataDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(ActivityAsCaseDto.class, ActivityAsCaseDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(HospitalizationDto.class, HospitalizationDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(PreviousHospitalizationDto.class, PreviousHospitalizationDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(SurveillanceReportDto.class, SurveillanceReportDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(SymptomsDto.class, SymptomsDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(EpiDataDto.class, EpiDataDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(ExposureDto.class, ExposureDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(HealthConditionsDto.class, HealthConditionsDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(PrescriptionDto.class, PrescriptionDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(TreatmentDto.class, TreatmentDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(ClinicalVisitDto.class, ClinicalVisitDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(ContactDto.class, ContactDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(VisitDto.class, VisitDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(SampleDto.class, SampleDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(PathogenTestDto.class, PathogenTestDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(AdditionalTestDto.class, AdditionalTestDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(TaskDto.class, TaskDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(EventDto.class, EventDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(EventParticipantDto.class, EventParticipantDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(ActionDto.class, ActionDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(ImmunizationDto.class, ImmunizationDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(VaccinationDto.class, VaccinationDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(TravelEntryDto.class, TravelEntryDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(ContinentDto.class, ContinentDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(SubcontinentDto.class, SubcontinentDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(CountryDto.class, CountryDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(RegionDto.class, RegionDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(DistrictDto.class, DistrictDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(CommunityDto.class, CommunityDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(FacilityDto.class, FacilityDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(PointOfEntryDto.class, PointOfEntryDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(UserDto.class, UserDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(LabMessageDto.class, LabMessageDto.I18N_PREFIX));
+		entityInfoList.add(new EntityInfo(TestReportDto.class, TestReportDto.I18N_PREFIX));
+
+		return entityInfoList;
+	}
+
+	private EnumSet<EntityColumn> filterColumnsForDataDictionary() {
+		EnumSet<EntityColumn> enumSet = EnumSet.allOf(EntityColumn.class);
+		enumSet.remove(EntityColumn.ENTITY);
+		return enumSet;
+	}
+
+	private EnumSet<EntityColumn> filterColumnsForDataProtectionDictionaryWithEntityColumn() {
+		EnumSet<EntityColumn> enumSet = EnumSet.allOf(EntityColumn.class);
+		return enumSet.stream()
+			.filter(EntityColumn::isDataProtectionColumn)
+			.collect(Collectors.toCollection(() -> EnumSet.noneOf(EntityColumn.class)));
+	}
+
+	private EnumSet<EntityColumn> filterColumnsForDataProtectionDictionaryWithoutEntityColumn(EnumSet<EntityColumn> enumSet) {
+		return enumSet.stream()
+			.filter(column -> !column.isColumnForAllFieldsSheet())
+			.collect(Collectors.toCollection(() -> EnumSet.noneOf(EntityColumn.class)));
+	}
+
+	private CellStyle getDefaultCellStyle(XSSFWorkbook workbook) {
+		CellStyle defaultCellStyle = workbook.createCellStyle();
+		defaultCellStyle.setWrapText(true);
+
+		return defaultCellStyle;
+	}
+
+	private XSSFCell createCellsForRow(EntityColumn c, XSSFRow row, FieldData fieldData, CellStyle defaultCellStyle) {
+		XSSFCell newCell = row.createCell(Math.max(row.getLastCellNum(), 0));
+
+		String fieldValue = c.getGetValueFromField(fieldData);
+		if (fieldValue != null) {
+			newCell.setCellValue(fieldValue);
+		}
+
+		if (c.hasDefaultStyle()) {
+			newCell.setCellStyle(defaultCellStyle);
+		}
+		return newCell;
+	}
+
+	private void copyCellsFromExtraCells(XSSFRow row, FieldData fieldData, Map<String, List<XSSFCell>> extraCells) {
+		String fieldId = EntityColumn.FIELD_ID.getGetValueFromField(fieldData);
+		if (extraCells.containsKey(fieldId)) {
+			extraCells.get(fieldId).forEach((extraCell) -> {
+				XSSFCell newCell = row.createCell(row.getLastCellNum());
+				if (extraCell != null) {
+					newCell.copyCellFrom(extraCell, new CellCopyPolicy.Builder().cellValue(true).cellStyle(false).cellFormula(false).build());
+				}
+			});
+		}
+	}
+
+	private void buildHeader(XSSFSheet sheet, EnumSet<EntityColumn> entityColumns, List<ColumnData> extraColumns) {
+		XSSFRow headerRow = sheet.createRow(0);
+		entityColumns.forEach(column -> {
+			int colIndex = Math.max(headerRow.getLastCellNum(), 0);
+			headerRow.createCell(colIndex).setCellValue(column.toString());
+			sheet.setColumnWidth(colIndex, column.getWidth());
+		});
+
+		extraColumns.forEach(c -> {
+			short colIndex = headerRow.getLastCellNum();
+			headerRow.createCell(colIndex).setCellValue(c.header);
+			sheet.setColumnWidth(colIndex, c.width);
+		});
 	}
 
 	@LocalBean
@@ -488,6 +640,25 @@ public class InfoFacadeEjb implements InfoFacade {
 		public ColumnData(String header, int width) {
 			this.header = header;
 			this.width = width;
+		}
+	}
+
+	private static class EntityInfo {
+
+		private Class<? extends EntityDto> entityClass;
+		private String i18nPrefix;
+
+		public EntityInfo(Class<? extends EntityDto> entityClass, String i18nPrefix) {
+			this.entityClass = entityClass;
+			this.i18nPrefix = i18nPrefix;
+		}
+
+		public Class<? extends EntityDto> getEntityClass() {
+			return entityClass;
+		}
+
+		public String getI18nPrefix() {
+			return i18nPrefix;
 		}
 	}
 }

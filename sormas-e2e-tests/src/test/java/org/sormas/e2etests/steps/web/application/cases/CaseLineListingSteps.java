@@ -9,7 +9,6 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
 import javax.inject.Inject;
-import org.openqa.selenium.By;
 import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.entities.services.CaseService;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
@@ -19,6 +18,7 @@ public class CaseLineListingSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   protected static Case caze;
+  public static Case caseLineListing;
 
   @Inject
   public CaseLineListingSteps(
@@ -26,23 +26,43 @@ public class CaseLineListingSteps implements En {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
-        "^I create a new case in line listing feature popup$",
+        "^I create a new case in line listing feature popup for DE version$",
         () -> {
-          caze = caseService.buildCaseForLineListingFeature();
+          caze = caseService.buildCaseForLineListingFeatureDE();
           selectDisease(caze.getDisease());
           selectRegion(caze.getRegion());
           selectDistrict(caze.getDistrict());
           selectFacilityCategory(caze.getFacilityCategory());
           selectFacilityType(caze.getFacilityType());
-          fillDateOfReport(caze.getDateOfReport());
+          fillDateOfReport(caze.getDateOfReport(), Locale.GERMAN);
           selectCommunity(caze.getCommunity());
-          selectFacility();
+          selectFacility("Andere Einrichtung");
           fillFacilityName(caze.getPlaceDescription());
           fillFirstName(caze.getFirstName());
           fillLastName(caze.getLastName());
-          fillDateOfBirth(caze.getDateOfBirth());
+          fillDateOfBirth(caze.getDateOfBirth(), Locale.GERMAN);
           selectSex(caze.getSex());
-          fillDateOfSymptom(caze.getDateOfSymptomOnset());
+          fillDateOfSymptom(caze.getDateOfSymptomOnset(), Locale.GERMAN);
+        });
+
+    When(
+        "^I create a new case in line listing feature popup$",
+        () -> {
+          caseLineListing = caseService.buildCaseForLineListingFeature();
+          selectDisease(caseLineListing.getDisease());
+          selectRegion(caseLineListing.getRegion());
+          selectDistrict(caseLineListing.getDistrict());
+          selectFacilityCategory(caseLineListing.getFacilityCategory());
+          selectFacilityType(caseLineListing.getFacilityType());
+          fillDateOfReport(caseLineListing.getDateOfReport(), Locale.ENGLISH);
+          selectCommunity(caseLineListing.getCommunity());
+          selectFacility("Other facility");
+          fillFacilityName(caseLineListing.getPlaceDescription());
+          fillFirstName(caseLineListing.getFirstName());
+          fillLastName(caseLineListing.getLastName());
+          fillDateOfBirth(caseLineListing.getDateOfBirth(), Locale.ENGLISH);
+          selectSex(caseLineListing.getSex());
+          fillDateOfSymptom(caseLineListing.getDateOfSymptomOnset(), Locale.ENGLISH);
         });
 
     When(
@@ -50,21 +70,49 @@ public class CaseLineListingSteps implements En {
         () -> webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_ADD_LINE_BUTTON));
 
     When(
-        "^I save the new case using line listing feature$",
+        "^I save the new line listing case$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_SAVE_BUTTON);
-          // TODO remove this logic once problem is investigated in Jenkins
-          // start
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              By.xpath("//*[@class='v-Notification-caption']"));
-          webDriverHelpers.clickOnWebElementBySelector(
-              By.xpath("//*[@class='v-Notification-caption']"));
-          // end
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(25);
         });
 
     When(
         "I check that case created from Line Listing is saved and displayed in results grid",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(
+              PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT);
+          String caseName = caseLineListing.getFirstName() + " " + caseLineListing.getLastName();
+          webDriverHelpers.fillInWebElement(
+              PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT, caseName);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
+          webDriverHelpers.waitUntilNumberOfElementsIsReduceToGiven(CASE_DETAILED_TABLE_ROWS, 2);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(FIRST_CASE_ID_BUTTON);
+
+          softly.assertEquals(
+              getCaseDiseaseFromGridResults(),
+              caseLineListing.getDisease(),
+              "Disease value doesn't match");
+          softly.assertEquals(
+              getCaseFirstNameFromGridResults(),
+              caseLineListing.getFirstName(),
+              "First name value doesn't match");
+          softly.assertEquals(
+              getCaseLastNameFromGridResults(),
+              caseLineListing.getLastName(),
+              "Last name value doesn't match");
+          softly.assertEquals(
+              getCaseDistrictFromGridResults(),
+              caseLineListing.getDistrict(),
+              "District value doesn't match");
+          softly.assertEquals(
+              getCaseHealthFacilityFromGridResults(),
+              "Other facility - " + caseLineListing.getPlaceDescription(),
+              "Health facility value doesn't match");
+          softly.assertAll();
+        });
+
+    When(
+        "I check that case created from Line Listing for DE version is saved and displayed in results grid",
         () -> {
           webDriverHelpers.waitForPageLoaded();
 
@@ -82,7 +130,7 @@ public class CaseLineListingSteps implements En {
               getCaseDistrictFromGridResults(), caze.getDistrict(), "District value doesn't match");
           softly.assertEquals(
               getCaseHealthFacilityFromGridResults(),
-              "Other facility - " + caze.getPlaceDescription(),
+              "Andere Einrichtung - " + caze.getPlaceDescription(),
               "Health facility value doesn't match");
           softly.assertAll();
         });
@@ -108,8 +156,11 @@ public class CaseLineListingSteps implements En {
     webDriverHelpers.selectFromCombobox(FACILITY_TYPE_COMBOBOX, facilityType);
   }
 
-  private void fillDateOfReport(LocalDate date) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+  private void fillDateOfReport(LocalDate date, Locale locale) {
+    DateTimeFormatter formatter;
+    if (locale.equals(Locale.GERMAN))
+      formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy").localizedBy(Locale.GERMANY);
+    else formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     webDriverHelpers.fillInWebElement(DATE_OF_REPORT, formatter.format(date));
   }
 
@@ -117,8 +168,8 @@ public class CaseLineListingSteps implements En {
     webDriverHelpers.selectFromCombobox(COMMUNITY_COMBOBOX, community);
   }
 
-  private void selectFacility() {
-    webDriverHelpers.selectFromCombobox(FACILITY_COMBOBOX, "Other facility");
+  private void selectFacility(String facility) {
+    webDriverHelpers.selectFromCombobox(FACILITY_COMBOBOX, facility);
   }
 
   private void fillFacilityName(String facilityName) {
@@ -133,12 +184,11 @@ public class CaseLineListingSteps implements En {
     webDriverHelpers.fillInWebElement(LAST_NAME_INPUT, lastName);
   }
 
-  private void fillDateOfBirth(LocalDate localDate) {
+  private void fillDateOfBirth(LocalDate localDate, Locale locale) {
     webDriverHelpers.selectFromCombobox(
         DATE_OF_BIRTH_YEAR_COMBOBOX, String.valueOf(localDate.getYear()));
     webDriverHelpers.selectFromCombobox(
-        DATE_OF_BIRTH_MONTH_COMBOBOX,
-        localDate.getMonth().getDisplayName(TextStyle.FULL, Locale.ENGLISH));
+        DATE_OF_BIRTH_MONTH_COMBOBOX, localDate.getMonth().getDisplayName(TextStyle.FULL, locale));
     webDriverHelpers.selectFromCombobox(
         DATE_OF_BIRTH_DAY_COMBOBOX, String.valueOf(localDate.getDayOfMonth()));
   }
@@ -147,8 +197,11 @@ public class CaseLineListingSteps implements En {
     webDriverHelpers.selectFromCombobox(SEX, sex);
   }
 
-  private void fillDateOfSymptom(LocalDate date) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+  private void fillDateOfSymptom(LocalDate date, Locale locale) {
+    DateTimeFormatter formatter;
+    if (locale.equals(Locale.GERMAN))
+      formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy").localizedBy(Locale.GERMANY);
+    else formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     webDriverHelpers.fillInWebElement(DATE_OF_SYMPTOM_INPUT, formatter.format(date));
   }
 

@@ -34,12 +34,12 @@ public class InfoProvider {
 	InfoProvider() {
 
 		try (InputStream fis = InfoProvider.class.getResourceAsStream("/git.properties")) {
-
+			// in case you run test from the IDE and this errors, please run `mvn verify -DskipTests` from sormas-base first
 			Properties prop = new Properties();
 			prop.load(fis);
 			this.version = prop.getProperty("git.build.version");
 			this.commitShortId = prop.getProperty("git.commit.id.abbrev");
-			this.commitHistoryUrl = prop.getProperty("git.remote.origin.url").replace(".git", "/commits/") + prop.getProperty("git.commit.id.full");
+			this.commitHistoryUrl = createLastCommitHistoryUrl(prop.getProperty("git.remote.origin.url"), prop.getProperty("git.commit.id.full"));
 		} catch (IOException e) {
 			throw new UncheckedIOException(e);
 		}
@@ -53,12 +53,31 @@ public class InfoProvider {
 	}
 
 	/**
+	 * @param gitRemoteOriginUrl
+	 *            URL of the origin repo.
+	 * @param commitFullId
+	 *            The full/ling id of the last commit.
+	 * @return {@code lastCommitHistoryUrl}
+	 */
+	static String createLastCommitHistoryUrl(String gitRemoteOriginUrl, String commitFullId) {
+
+		String url = gitRemoteOriginUrl;
+		if (url.startsWith("git@")) {
+			url = url.replaceFirst(":", "/").replace("git@", "https://");
+		}
+
+		url = url.replace(".git", "/commits/");
+		url = url + commitFullId;
+		return url;
+	}
+
+	/**
 	 * When changing this make sure to check also EXTERNAL_VISITS_API_VERSION.
 	 * 
 	 * @return
 	 */
 	public String getMinimumRequiredVersion() {
-		return "1.67.0";
+		return "1.70.0";
 	}
 
 	/**

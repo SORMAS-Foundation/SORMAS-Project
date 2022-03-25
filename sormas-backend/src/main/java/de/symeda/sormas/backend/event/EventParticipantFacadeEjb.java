@@ -15,10 +15,10 @@
 
 package de.symeda.sormas.backend.event;
 
-import de.symeda.sormas.api.user.NotificationType;
-import de.symeda.sormas.backend.common.NotificationService;
+import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -34,6 +34,8 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -53,11 +55,13 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
@@ -69,6 +73,7 @@ import de.symeda.sormas.api.event.EventParticipantListEntryDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -81,6 +86,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -89,17 +95,16 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
+import de.symeda.sormas.backend.common.NotificationService;
 import de.symeda.sormas.backend.common.messaging.MessageContents;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
-import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.ImmunizationEntityHelper;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
@@ -135,7 +140,7 @@ import de.symeda.sormas.utils.EventParticipantJoins;
 @Stateless(name = "EventParticipantFacade")
 public class EventParticipantFacadeEjb
 	extends
-        AbstractCoreFacadeEjb<EventParticipant, EventParticipantDto, EventParticipantIndexDto, EventParticipantReferenceDto, EventParticipantService, EventParticipantCriteria>
+	AbstractCoreFacadeEjb<EventParticipant, EventParticipantDto, EventParticipantIndexDto, EventParticipantReferenceDto, EventParticipantService, EventParticipantCriteria>
 	implements EventParticipantFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -232,6 +237,37 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
+	public List<String> getArchivedUuidsSince(Date since) {
+		if (userService.getCurrentUser() == null) {
+			return Collections.emptyList();
+		}
+
+		return service.getArchivedUuidsSince(since);
+	}
+
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public void archiveAllArchivableEventParticipants(int daysAfterEventParticipantGetsArchived) {
+		archiveAllArchivableEventParticipants(daysAfterEventParticipantGetsArchived, LocalDate.now());
+	}
+
+	private void archiveAllArchivableEventParticipants(int daysAfterEventParticipantGetsArchived, @NotNull LocalDate referenceDate) {
+		LocalDate notChangedSince = referenceDate.minusDays(daysAfterEventParticipantGetsArchived);
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<EventParticipant> from = cq.from(EventParticipant.class);
+
+		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
+		cq.where(cb.equal(from.get(Event.ARCHIVED), false), cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
+		cq.select(from.get(EventParticipant.UUID)).distinct(true);
+		List<String> eventParticipantUuids = em.createQuery(cq).getResultList();
+
+		if (!eventParticipantUuids.isEmpty()) {
+			archive(eventParticipantUuids);
+		}
+	}
+
+	@Override
 	public List<String> getDeletedUuidsSince(Date since) {
 
 		User user = userService.getCurrentUser();
@@ -272,7 +308,9 @@ public class EventParticipantFacadeEjb
 	public EventParticipantDto saveEventParticipant(@Valid EventParticipantDto dto, boolean checkChangeDate, boolean internal) {
 		EventParticipant existingParticipant = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 
-		if (internal && existingParticipant != null && !service.isEventParticipantEditAllowed(existingParticipant)) {
+		if (internal
+			&& existingParticipant != null
+			&& !service.isEventParticipantEditAllowed(existingParticipant).equals(EditPermissionType.ALLOWED)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEventParticipantNotEditable));
 		}
 
@@ -325,23 +363,26 @@ public class EventParticipantFacadeEjb
 	private void notifyEventResponsibleUsersOfCommonEventParticipant(EventParticipant eventParticipant, Event event) {
 		try {
 
-			notificationService.sendNotifications(NotificationType.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS, MessageSubject.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS, () -> {
+			notificationService.sendNotifications(
+				NotificationType.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS,
+				MessageSubject.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS,
+				() -> {
 
-				final Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
-				final Map<String, Optional<User>> responsibleUserByEventUuid =
-					eventService.getAllEventUuidsWithResponsibleUserByPersonAndDiseaseAfterDateForNotification(
-						eventParticipant.getPerson().getUuid(),
-						event.getDisease(),
-						fromDate);
-				if (responsibleUserByEventUuid.size() == 1 && responsibleUserByEventUuid.containsKey(event.getUuid())) {
-					// it means the event participant is only appearing into the current event
-					return new HashMap<>();
-				}
+					final Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
+					final Map<String, Optional<User>> responsibleUserByEventUuid =
+						eventService.getAllEventUuidsWithResponsibleUserByPersonAndDiseaseAfterDateForNotification(
+							eventParticipant.getPerson().getUuid(),
+							event.getDisease(),
+							fromDate);
+					if (responsibleUserByEventUuid.size() == 1 && responsibleUserByEventUuid.containsKey(event.getUuid())) {
+						// it means the event participant is only appearing into the current event
+						return new HashMap<>();
+					}
 
-				final Map<User, String> mapToReturn = new HashMap<>();
-				for (Map.Entry<String, Optional<User>> entry : responsibleUserByEventUuid.entrySet()) {
-					entry.getValue().filter(user -> StringUtils.isNotEmpty(user.getUserEmail())).ifPresent(user -> {
-						String message = String.format(
+					final Map<User, String> mapToReturn = new HashMap<>();
+					for (Map.Entry<String, Optional<User>> entry : responsibleUserByEventUuid.entrySet()) {
+						entry.getValue().filter(user -> StringUtils.isNotEmpty(user.getUserEmail())).ifPresent(user -> {
+							String message = String.format(
 								I18nProperties.getString(MessageContents.CONTENT_EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS),
 								DataHelper.getShortUuid(eventParticipant.getPerson().getUuid()),
 								DataHelper.getShortUuid(eventParticipant.getUuid()),
@@ -349,13 +390,11 @@ public class EventParticipantFacadeEjb
 								User.buildCaptionForNotification(event.getResponsibleUser()),
 								User.buildCaptionForNotification(userService.getCurrentUser()),
 								buildEventListContentForNotification(responsibleUserByEventUuid));
-						mapToReturn.put(
-							user,
-								message);
-					});
-				}
-				return mapToReturn;
-			});
+							mapToReturn.put(user, message);
+						});
+					}
+					return mapToReturn;
+				});
 		} catch (NotificationDeliveryFailedException e) {
 			logger.error(
 				String.format(
@@ -387,13 +426,13 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
-	public void deleteEventParticipant(EventParticipantReferenceDto eventParticipantRef) {
+	public void delete(String uuid) throws ExternalSurveillanceToolException {
 
 		if (!userService.hasRight(UserRight.EVENTPARTICIPANT_DELETE)) {
 			throw new UnsupportedOperationException("Your user is not allowed to delete event participants");
 		}
 
-		EventParticipant eventParticipant = service.getByReferenceDto(eventParticipantRef);
+		EventParticipant eventParticipant = service.getByUuid(uuid);
 		service.delete(eventParticipant);
 	}
 
@@ -839,6 +878,7 @@ public class EventParticipantFacadeEjb
 	public boolean exists(String personUuid, String eventUuid) {
 		return service.exists(
 			(cb, root, cq) -> cb.and(
+				cb.isFalse(root.get(EventParticipant.DELETED)),
 				cb.equal(root.get(EventParticipant.PERSON).get(AbstractDomainObject.UUID), personUuid),
 				cb.equal(root.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID), eventUuid)));
 	}
@@ -857,7 +897,7 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
-	public boolean isEventParticipantEditAllowed(String uuid) {
+	public EditPermissionType isEventParticipantEditAllowed(String uuid) {
 		EventParticipant eventParticipant = service.getByUuid(uuid);
 
 		return service.isEventParticipantEditAllowed(eventParticipant);
@@ -1073,10 +1113,5 @@ public class EventParticipantFacadeEjb
 	@Override
 	protected CoreEntityType getCoreEntityType() {
 		return CoreEntityType.EVENT_PARTICIPANT;
-	}
-
-	@Override
-	protected void delete(EventParticipant entity) {
-		service.delete(entity);
 	}
 }

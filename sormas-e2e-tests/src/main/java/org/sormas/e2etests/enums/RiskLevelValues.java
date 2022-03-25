@@ -7,7 +7,7 @@ import lombok.SneakyThrows;
 @Getter
 public enum RiskLevelValues {
   LOW("LOW", "Low risk"),
-  Moderate("Moderate", "Moderate risk"),
+  Moderate("MODERATE", "Moderate risk"),
   HIGH("HIGH", "High risk"),
   UNKNOWN("UNKNOWN", "Unknown");
 
@@ -27,6 +27,17 @@ public enum RiskLevelValues {
       if (value.riskLevelName.equalsIgnoreCase(option)) return value.riskLevelCaption;
     }
     throw new Exception("Unable to find " + option + " value in RiskLevelValues Enum");
+  }
+
+  @SneakyThrows
+  public static String getRandomUIRiskLevelDifferentThan(String excludedOption) {
+    RiskLevelValues[] riskLevelValueOptions = RiskLevelValues.values();
+    for (RiskLevelValues value : riskLevelValueOptions) {
+      if (!value.getRiskLevelCaption().equalsIgnoreCase(excludedOption)
+          && !value.getRiskLevelName().equalsIgnoreCase(excludedOption))
+        return value.getRiskLevelCaption();
+    }
+    throw new Exception("Unable to provide option different than: " + excludedOption);
   }
   /** Returns values used for API tests */
   public static String getRandomRiskLevelName() {

@@ -213,7 +213,7 @@ public class ContinentFacadeEjb
 	}
 
 	@Override
-	public List<ContinentReferenceDto> getByExternalId(String externalId, boolean includeArchived) {
+	public List<ContinentReferenceDto> getReferencesByExternalId(String externalId, boolean includeArchived) {
 		return service.getByExternalId(externalId, includeArchived).stream().map(ContinentFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 

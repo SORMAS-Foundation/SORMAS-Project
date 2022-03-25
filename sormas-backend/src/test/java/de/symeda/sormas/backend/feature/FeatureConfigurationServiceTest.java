@@ -6,37 +6,41 @@ import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import org.junit.Test;
+
+import java.util.stream.Collectors;
+
+import static org.junit.Assert.assertTrue;
 
 public class FeatureConfigurationServiceTest extends AbstractBeanTest {
 
-	// TODO Re-enable these tests after #7218 has been implemented
-//	@Test
-//	public void testCreateMissingFeatureConfigurations() {
-//
-//		createConfigurations();
-//		FeatureConfigurationService featureConfigurationService = getBean(FeatureConfigurationService.class);
-//		featureConfigurationService.createMissingFeatureConfigurations();
-//		assertTrue(
-//			featureConfigurationService.getAll()
-//				.stream()
-//				.map(e -> e.getFeatureType())
-//				.collect(Collectors.toList())
-//				.containsAll(FeatureType.getAllServerFeatures()));
-//	}
+	@Test
+	public void testCreateMissingFeatureConfigurations() {
 
-//	@Test
-//	public void testUpdateFeatureConfigurations() {
-//
-//		createConfigurations();
-//		FeatureConfigurationService featureConfigurationService = getBean(FeatureConfigurationService.class);
-//
-//		/*
-//		 * update relies on that all serverFeature configurations are already present,
-//		 * that's why the createMissing needs to be run before.
-//		 */
-//		featureConfigurationService.createMissingFeatureConfigurations();
-//		featureConfigurationService.updateFeatureConfigurations();
-//	}
+		createConfigurations();
+		FeatureConfigurationService featureConfigurationService = getBean(FeatureConfigurationService.class);
+		featureConfigurationService.createMissingFeatureConfigurations();
+		assertTrue(
+			featureConfigurationService.getAll()
+				.stream()
+				.map(e -> e.getFeatureType())
+				.collect(Collectors.toList())
+				.containsAll(FeatureType.getAllServerFeatures()));
+	}
+
+	@Test
+	public void testUpdateFeatureConfigurations() {
+
+		createConfigurations();
+		FeatureConfigurationService featureConfigurationService = getBean(FeatureConfigurationService.class);
+
+		/*
+		 * update relies on that all serverFeature configurations are already present,
+		 * that's why the createMissing needs to be run before.
+		 */
+		featureConfigurationService.createMissingFeatureConfigurations();
+		featureConfigurationService.updateFeatureConfigurations();
+	}
 
 	private void createConfigurations() {
 

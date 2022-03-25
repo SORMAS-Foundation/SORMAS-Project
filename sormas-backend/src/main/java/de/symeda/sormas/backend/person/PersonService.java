@@ -51,6 +51,7 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
@@ -81,7 +82,9 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.messaging.ManualMessageLogService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -127,6 +130,8 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 	private ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	@EJB
+	private ManualMessageLogService manualMessageLogService;
 
 	public PersonService() {
 		super(Person.class);
@@ -373,18 +378,18 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 
-		// persons by LGA
+		// persons by district
 		CriteriaQuery<Person> personsQuery = cb.createQuery(Person.class);
 		Root<Person> personsRoot = personsQuery.from(Person.class);
 		Join<Person, Location> address = personsRoot.join(Person.ADDRESS);
-		Predicate lgaFilter = cb.equal(address.get(Location.DISTRICT), user.getDistrict());
+		Predicate districtFilter = cb.equal(address.get(Location.DISTRICT), user.getDistrict());
 		// date range
 		if (date != null) {
 			Predicate dateFilter = createChangeDateFilter(cb, personsRoot, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
-			lgaFilter = cb.and(lgaFilter, dateFilter);
+			districtFilter = cb.and(districtFilter, dateFilter);
 		}
-		personsQuery.where(lgaFilter);
-		List<Person> lgaResultList = getBatchedQueryResults(cb, personsQuery, personsRoot, batchSize);
+		personsQuery.where(districtFilter);
+		List<Person> districtResultList = getBatchedQueryResults(cb, personsQuery, personsRoot, batchSize);
 
 		// persons by case
 		CriteriaQuery<Person> casePersonsQuery = cb.createQuery(Person.class);
@@ -509,7 +514,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 
 		return Stream
 			.of(
-				lgaResultList,
+				districtResultList,
 				casePersonsResultList,
 				contactPersonsResultList,
 				eventPersonsResultList,
@@ -906,5 +911,56 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		cq.where(from.get(Person.EXTERNAL_ID).in(externalIds));
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	public void executePermanentDeletion(int batchSize) {
+		IterableHelper.executeBatched(getAllNonReferencedPersonUuids(), batchSize, batchedUuids -> deletePermanent(batchedUuids));
+	}
+
+	private List<String> getAllNonReferencedPersonUuids() {
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<String> cq = cb.createQuery(String.class);
+		final Root<Person> personRoot = cq.from(getElementClass());
+
+		final Subquery<String> caseSubquery = createSubquery(cb, cq, personRoot, Case.class, Case.PERSON);
+		final Subquery<String> contactSubquery = createSubquery(cb, cq, personRoot, Contact.class, Contact.PERSON);
+		final Subquery<String> eventParticipantSubquery = createSubquery(cb, cq, personRoot, EventParticipant.class, EventParticipant.PERSON);
+		final Subquery<String> immunizationSubquery = createSubquery(cb, cq, personRoot, Immunization.class, Immunization.PERSON);
+		final Subquery<String> travelEntrySubquery = createSubquery(cb, cq, personRoot, TravelEntry.class, TravelEntry.PERSON);
+
+		cq.where(
+			cb.and(
+				cb.not(cb.exists(caseSubquery)),
+				cb.not(cb.exists(contactSubquery)),
+				cb.not(cb.exists(eventParticipantSubquery)),
+				cb.not(cb.exists(immunizationSubquery)),
+				cb.not(cb.exists(travelEntrySubquery))));
+
+		cq.select(personRoot.get(Person.UUID));
+		cq.distinct(true);
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	private Subquery<String> createSubquery(
+		CriteriaBuilder cb,
+		CriteriaQuery<String> cq,
+		Root<Person> personRoot,
+		Class<? extends CoreAdo> subqueryClass,
+		String personField) {
+		final Subquery<String> subquery = cq.subquery(String.class);
+		final Root<? extends CoreAdo> from = subquery.from(subqueryClass);
+		subquery.where(cb.equal(from.get(personField), personRoot));
+		subquery.select(from.get(AbstractDomainObject.UUID));
+		return subquery;
+	}
+
+	@Override
+	public void deletePermanent(Person person) {
+		manualMessageLogService.getByPersonUuid(person.getUuid())
+			.forEach(manualMessageLog -> manualMessageLogService.deletePermanent(manualMessageLog));
+
+		super.deletePermanent(person);
 	}
 }

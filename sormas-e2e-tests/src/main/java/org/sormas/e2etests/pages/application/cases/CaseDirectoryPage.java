@@ -34,9 +34,9 @@ public class CaseDirectoryPage {
       By.cssSelector("thead .v-grid-column-default-header-content");
   public static final By CASE_DETAILED_TABLE_ROWS =
       By.cssSelector("div.v-grid-tablewrapper tbody tr");
-  public static final By SAVE_BUTTON_IN_LINK_FORM = By.cssSelector(".popupContent #commit");
   public static final By FIRST_CASE_ID_BUTTON = By.cssSelector(".v-grid-row-has-data a[title]");
   public static final By NAME_UUID_EPID_NUMBER_LIKE_INPUT = By.cssSelector("input#caseLike");
+  public static final By EPI_DATA_TAB = By.id("tab-cases-epidata");
   public static final By PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT =
       By.cssSelector("#personLike");
   public static final By CASE_OUTCOME_FILTER_COMBOBOX =
@@ -45,9 +45,15 @@ public class CaseDirectoryPage {
       By.cssSelector("[id='caseClassification'] [class='v-filterselect-button']");
   public static final By CASE_DISEASE_FILTER_COMBOBOX =
       By.cssSelector("[id='disease'] [class='v-filterselect-button']");
+  public static final By CASE_DISEASE_VARIANT_FILTER_COMBOBOX =
+      By.cssSelector("[id='diseaseVariant'] [class='v-filterselect-button']");
   public static final By CASE_APPLY_FILTERS_BUTTON = By.cssSelector("[id='actionApplyFilters']");
   public static final By CASE_RESET_FILTERS_BUTTON = By.cssSelector("[id='actionResetFilters']");
-  public static final String CASE_RESULTS_UUID_LOCATOR = "[title = '%s']";
+
+  public static final By getCaseResultsUuidLocator(String uuid) {
+    return By.cssSelector(String.format("[title = '%s']", uuid));
+  }
+
   public static final By CASE_GRID_RESULTS_ROWS = By.cssSelector("[role=rowgroup] tr a");
   public static final By LINE_LISTING_BUTTON = By.id("lineListing");
   public static final By GRID_HEADERS = By.xpath("//thead//tr//th");
@@ -69,7 +75,6 @@ public class CaseDirectoryPage {
   public static final By SHOW_MORE_LESS_FILTERS = By.id("showHideMoreFilters");
   public static final By CASE_ORIGIN_FILTER_COMBOBOX =
       By.cssSelector("[id='caseOrigin'] [class='v-filterselect-button']");
-
   public static final By CASE_COMMUNITY_FILTER_COMBOBOX =
       By.cssSelector("[id='community'] [class='v-filterselect-button']");
   public static final By CASE_PRESENT_CONDITION_COMBOBOX =
@@ -136,5 +141,16 @@ public class CaseDirectoryPage {
   public static final By FIRST_RESULT_IN_GRID =
       By.xpath("//div[contains(@class, 'popupContent')]//tr[@role='row']");
   public static final By SEARCH_BUTTON = By.id("search");
-  // TODO refactor the other headers based on the last one added
+  public static final By CASE_EPIDEMIOLOGICAL_DATA_TAB = By.cssSelector("#tab-cases-epidata");
+  public static final By EPIDEMIOLOGICAL_DATA_TAB = By.cssSelector("#tab-cases-epidata");
+  public static final By FIRST_PERSON_ID = By.xpath("//td[10]//a");
+  public static final By FIRST_CASE_ID = By.xpath("//td[1]//a");
+  public static final By IMPORT_BUTTON = By.id("actionImport");
+  public static final By DETAILED_IMPORT_BUTTON = By.id("importDetailed");
+  public static final By DOWNLOAD_IMPORT_GUIDE_BUTTON = By.id("import-step-1");
+  public static final By DOWNLOAD_DATA_DICTIONARY_BUTTON = By.id("importDownloadDataDictionary");
+
+  public static By getResultByIndex(String rowNumber) {
+    return By.xpath(String.format("//tr[%s]//a", rowNumber));
+  }
 }

@@ -25,6 +25,7 @@ import javax.ejb.Remote;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -50,9 +51,7 @@ public interface UserFacade {
 
 	UserDto getByUserName(String userName);
 
-	List<UserReferenceDto> getUsersByRegionAndRoles(RegionReferenceDto regionRef, UserRole... assignableRoles);
-
-	List<UserReferenceDto> getUsersByRegionsAndRoles(List<RegionReferenceDto> regionRefs, UserRole... assignableRoles);
+	List<UserReferenceDto> getUsersByRegionAndRights(RegionReferenceDto regionRef, Disease limitedDisease, UserRight... userRights);
 
 	List<UserReferenceDto> getUsersWithSuperiorJurisdiction(UserDto user);
 
@@ -64,19 +63,25 @@ public interface UserFacade {
 
 	/**
 	 * @param district
-	 * @param includeSupervisors
-	 *            independent from the district
-	 * @param userRoles
-	 *            roles of the users by district
+	 * @param userRights
+	 *            rights of the users by district
 	 * @return
 	 */
-	List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto district, boolean includeSupervisors, UserRole... userRoles);
+	List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto district, Disease limitedDisease, UserRight... userRights);
 
-	List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districts, boolean includeSupervisors, UserRole... userRoles);
+	/**
+	 * @param district
+	 * @param userRights
+	 *            rights of the users by district
+	 * @return
+	 */
+	List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto district, boolean excludeLimitedDiseaseUsers, UserRight... userRights);
+
+	List<UserReferenceDto> getUserRefsByDistricts(List<DistrictReferenceDto> districts, Disease limitedDisease, UserRight... userRights);
 
 	List<UserReferenceDto> getAllUserRefs(boolean includeInactive);
 
-	List<UserDto> getUsersByAssociatedOfficer(UserReferenceDto associatedOfficer, UserRole... userRoles);
+	List<UserDto> getUsersByAssociatedOfficer(UserReferenceDto associatedOfficer, UserRight... userRights);
 
 	List<String> getAllUuids();
 
@@ -86,7 +91,7 @@ public interface UserFacade {
 
 	UserReferenceDto getCurrentUserAsReference();
 
-	Set<UserRole> getValidLoginRoles(String userName, String password);
+	Set<UserRight> getValidLoginRights(String userName, String password);
 
 	void removeUserAsSurveillanceAndContactOfficer(String userUuid);
 
@@ -107,6 +112,4 @@ public interface UserFacade {
 	List<UserReferenceDto> getUsersHavingTravelEntryInJurisdiction(TravelEntryReferenceDto travelEntryReferenceDto);
 
 	List<UserReferenceWithTaskNumbersDto> getAssignableUsersWithTaskNumbers(@NotNull TaskContextIndex taskContextIndex);
-
-	List<UserReferenceDto> getUsersByRegionAndRight(RegionReferenceDto region, UserRight userRight);
 }

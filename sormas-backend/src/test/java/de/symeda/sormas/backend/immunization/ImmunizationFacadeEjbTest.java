@@ -16,6 +16,9 @@
 package de.symeda.sormas.backend.immunization;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertTrue;
 
 import java.sql.Timestamp;
 import java.util.Arrays;
@@ -96,6 +99,35 @@ public class ImmunizationFacadeEjbTest extends AbstractBeanTest {
 		ImmunizationDto actual = getImmunizationFacade().getByUuid(immunizationDto.getUuid());
 		assertEquals(immunizationDto.getUuid(), actual.getUuid());
 		assertEquals(immunizationDto.getPerson(), actual.getPerson());
+	}
+
+	@Test
+	public void testPermanentDelete() {
+		loginWith(nationalUser);
+
+		final PersonDto person = creator.createPerson("John", "Doe");
+		final ImmunizationDto immunizationDto = creator.createImmunization(
+			Disease.CORONAVIRUS,
+			person.toReference(),
+			nationalUser.toReference(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf1);
+		final String immunizationUuid = immunizationDto.getUuid();
+
+		assertEquals(immunizationUuid, getImmunizationFacade().getByUuid(immunizationUuid).getUuid());
+		assertEquals(1, getImmunizationFacade().count(new ImmunizationCriteria()));
+
+		getImmunizationFacade().delete(immunizationUuid);
+
+		assertEquals(0, getImmunizationFacade().count(new ImmunizationCriteria()));
+		assertTrue(getImmunizationFacade().exists(immunizationUuid));
+
+		getImmunizationFacade().executePermanentDeletion(10);
+
+		assertEquals(0, getImmunizationFacade().count(new ImmunizationCriteria()));
+		assertFalse(getImmunizationFacade().exists(immunizationUuid));
 	}
 
 	@Test

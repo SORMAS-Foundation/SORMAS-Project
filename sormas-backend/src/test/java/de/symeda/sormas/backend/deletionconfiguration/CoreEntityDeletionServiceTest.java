@@ -1,7 +1,11 @@
 package de.symeda.sormas.backend.deletionconfiguration;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertTrue;
 
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.Date;
 
@@ -15,9 +19,17 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
+import de.symeda.sormas.api.document.DocumentRelatedEntityType;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
+import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -64,7 +76,79 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 		getCoreEntityDeletionService().executeAutomaticDeletion();
 
 		assertEquals(0, getCaseFacade().count(caseCriteria));
+	}
 
+	@Test
+	public void testCasePermanentDeletion() throws IOException {
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, UserRole.ADMIN, UserRole.NATIONAL_USER);
+		PersonDto person = creator.createPerson();
+		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
+
+		creator.createClinicalVisit(caze);
+		creator.createTreatment(caze);
+		creator.createPrescription(caze);
+		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		creator.createSurveillanceReport(user.toReference(), caze.toReference());
+		creator.createDocument(
+			user.toReference(),
+			"document.pdf",
+			"application/pdf",
+			42L,
+			DocumentRelatedEntityType.CASE,
+			caze.getUuid(),
+			"content".getBytes(StandardCharsets.UTF_8));
+
+		CaseDataDto duplicateCase = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		getCaseFacade().deleteCaseAsDuplicate(duplicateCase.getUuid(), caze.getUuid());
+
+		ContactDto resultingContact = creator.createContact(user.toReference(), person.toReference(), caze);
+		ContactDto sourceContact = creator.createContact(
+			user.toReference(),
+			person.toReference(),
+			caze.getDisease(),
+			contactDto -> contactDto.setResultingCase(caze.toReference()));
+		EventDto event = creator.createEvent(user.toReference(), caze.getDisease());
+		EventParticipantDto eventParticipant = creator.createEventParticipant(
+			event.toReference(),
+			person,
+			"Description",
+			user.toReference(),
+			eventParticipantDto -> eventParticipantDto.setResultingCase(caze.toReference()),
+			rdcf);
+		SampleDto multiSample = creator.createSample(
+			caze.toReference(),
+			user.toReference(),
+			rdcf.facility,
+			sampleDto -> sampleDto.setAssociatedContact(resultingContact.toReference()));
+		TravelEntryDto travelEntry =
+			creator.createTravelEntry(person.toReference(), user.toReference(), rdcf, te -> te.setResultingCase(caze.toReference()));
+		ImmunizationDto immunization = creator.createImmunization(
+			caze.getDisease(),
+			person.toReference(),
+			user.toReference(),
+			rdcf,
+			immunizationDto -> immunizationDto.setRelatedCase(caze.toReference()));
+
+		assertEquals(2, getCaseService().count());
+
+		getCaseFacade().delete(caze.getUuid());
+		getCoreEntityDeletionService().executePermanentDeletion();
+
+		assertEquals(0, getCaseService().count());
+		assertEquals(0, getClinicalVisitService().count());
+		assertEquals(0, getTreatmentService().count());
+		assertEquals(0, getPrescriptionService().count());
+		assertEquals(1, getSampleService().count());
+		assertNull(getSampleFacade().getSampleByUuid(multiSample.getUuid()).getAssociatedCase());
+		assertEquals(0, getSurveillanceReportService().count());
+		assertTrue(getDocumentService().getAll().get(0).isDeleted());
+		assertNull(getContactFacade().getByUuid(resultingContact.getUuid()).getCaze());
+		assertNull(getContactFacade().getByUuid(sourceContact.getUuid()).getResultingCase());
+		assertNull(getEventParticipantFacade().getByUuid(eventParticipant.getUuid()).getResultingCase());
+		assertNull(getTravelEntryFacade().getByUuid(travelEntry.getUuid()).getResultingCase());
+		assertNull(getImmunizationFacade().getByUuid(immunization.getUuid()).getRelatedCase());
 	}
 
 	private void createDeletionConfigurations() {

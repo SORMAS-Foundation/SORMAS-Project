@@ -73,7 +73,6 @@ public class WebDriverHelpers {
   }
 
   public void waitForPageLoaded() {
-    log.info("Waiting for page to load");
     assertHelpers.assertWithPoll20Second(
         () ->
             Assert.assertEquals(
@@ -265,8 +264,6 @@ public class WebDriverHelpers {
             .getDriver()
             .findElement(selector)
             .findElement(By.xpath("preceding-sibling::input"));
-    // TODO check in Jenkins if this is a fix for flaky situations when option is selected twice
-    // comboboxInput.sendKeys(Keys.chord(Keys.BACK_SPACE));
     String comboBoxItemWithText =
         "//td[@role='listitem']/span[ contains(text(), '"
             + text
@@ -298,6 +295,10 @@ public class WebDriverHelpers {
 
   public void clickOnWebElementBySelector(By selector) {
     clickOnWebElementBySelectorAndIndex(selector, 0);
+  }
+
+  public void doubleClickOnWebElementBySelector(By selector) {
+    doubleClickOnWebElementBySelectorAndIndex(selector, 0);
   }
 
   public void clickWhileOtherButtonIsDisplayed(By clickedElement, By waitedSelector) {
@@ -336,6 +337,37 @@ public class WebDriverHelpers {
       log.error("Unable to click on element identified by locator: {}", selector);
       throw new TimeoutException(
           String.format("Unable to click on element identified by locator: %s", selector));
+    }
+  }
+
+  public void doubleClickOnWebElementBySelectorAndIndex(By selector, int index) {
+    WebElement element = baseSteps.getDriver().findElement(selector);
+    Actions actions = new Actions(baseSteps.getDriver());
+    scrollToElementUntilIsVisible(selector);
+    try {
+      await()
+          .pollInterval(ONE_HUNDRED_MILLISECONDS)
+          .ignoreExceptions()
+          .catchUncaughtExceptions()
+          .timeout(ofSeconds(FLUENT_WAIT_TIMEOUT_SECONDS))
+          .untilAsserted(
+              () -> {
+                scrollToElement(selector);
+                Assert.assertTrue(
+                    baseSteps.getDriver().findElements(selector).get(index).isDisplayed(),
+                    String.format("The element: %s is not displayed", selector));
+                Assert.assertTrue(
+                    baseSteps.getDriver().findElements(selector).get(index).isEnabled(),
+                    String.format("The element: %s was not enabled", selector));
+                scrollToElement(selector);
+                actions.doubleClick(element).perform();
+                waitForPageLoaded();
+              });
+
+    } catch (ConditionTimeoutException ignored) {
+      log.error("Unable to double click on element identified by locator: {}", selector);
+      throw new TimeoutException(
+          String.format("Unable to double click on element identified by locator: %s", selector));
     }
   }
 
@@ -532,9 +564,11 @@ public class WebDriverHelpers {
     return getWebElementByText(selector, webElement -> webElement.getText().contentEquals(text));
   }
 
+  @SneakyThrows
   public void clickWebElementByText(final By selector, final String text) {
     scrollToElement(selector);
     getWebElementBySelectorAndText(selector, text).click();
+    TimeUnit.MILLISECONDS.sleep(200);
   }
 
   public String getValueFromWebElement(By byObject) {
@@ -723,26 +757,6 @@ public class WebDriverHelpers {
     }
   }
 
-  // always needs the raw header value from the DOM, not the stylized one (the one displayed in UI)
-  // rowIndex parameter will return the demanded row. 0 is the header
-  // style.substring(style.length() - 17) matches the width value for the selector. it will be used
-  // to match the header and the rows by the length.
-  public String getValueFromTableRowUsingTheHeader(String headerValue, int rowIndex) {
-    // TODO remove try catch after Jenkins investigation
-    try {
-      By header = By.xpath("//div[contains(text(), '" + headerValue + "')]/ancestor::th");
-      waitUntilIdentifiedElementIsPresent(header);
-      scrollToElement(header);
-      String style = getAttributeFromWebElement(header, "style");
-      By selector = By.cssSelector("[style*='" + style.substring(style.length() - 17) + "']");
-      waitUntilIdentifiedElementIsPresent(selector);
-      return baseSteps.getDriver().findElements(selector).get(rowIndex).getText();
-    } catch (Exception e) {
-      Assert.fail("Failed due to: " + e.getMessage());
-    }
-    return null;
-  }
-
   public boolean isElementDisplayedIn20SecondsOrThrowException(Object selector) {
     if (selector instanceof WebElement) {
       try {
@@ -791,17 +805,16 @@ public class WebDriverHelpers {
     boolean isSpinnerDisplayed;
 
     try {
-      assertHelpers.assertWithPoll(
+      assertHelpers.assertWithPollWithoutFail(
           () ->
               Assert.assertTrue(
                   baseSteps.getDriver().findElement(loadingSpinner).isDisplayed(),
                   "Loading spinner isn't displayed"),
-          3);
+          5);
       isSpinnerDisplayed = true;
-    } catch (Throwable ignored) {
+    } catch (ConditionTimeoutException ignored) {
       isSpinnerDisplayed = false;
     }
-
     try {
       if (isSpinnerDisplayed)
         assertHelpers.assertWithPoll(

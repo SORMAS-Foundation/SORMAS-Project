@@ -47,6 +47,20 @@ public class AssertHelpers {
     }
   }
 
+  @SneakyThrows
+  public void assertWithPollWithoutFail(ThrowingRunnable throwingRunnable, int seconds) {
+    try {
+      await()
+          .pollInterval(fibonacci(TimeUnit.MILLISECONDS))
+          .ignoreExceptions()
+          .catchUncaughtExceptions()
+          .timeout(Duration.ofSeconds(seconds))
+          .untilAsserted(throwingRunnable);
+    } catch (ConditionTimeoutException e) {
+      log.error("Skipped failing assert: {}", e.getCause());
+    }
+  }
+
   public void assertWithPoll20Second(ThrowingRunnable throwingRunnable) {
     assertWithPoll(throwingRunnable, 20);
   }

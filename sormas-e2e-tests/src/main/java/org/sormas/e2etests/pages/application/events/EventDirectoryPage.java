@@ -69,7 +69,8 @@ public class EventDirectoryPage {
   public static final By EVENTS_TABLE_DATA = By.tagName("td");
   public static final By EVENT_PARTICIPANT_INPUT = By.id("freeTextEventParticipants");
   public static final By EVENT_GROUP_INPUT = By.id("freeTextEventGroups");
-
+  public static final By EVENT_GROUP_ID_NAME_INPUT = By.id("freeText");
+  public static final By EVENT_GROUP_FREE_TEXT_EVENT_INPUT = By.id("freeTextEvent");
   public static final By EVENTS_RADIO_BUTTON = By.cssSelector(".v-radiobutton");
   public static final By LINK_EVENT_BUTTON = By.id("Link event");
   public static final By LINK_EVENT_BUTTON_EDIT_PAGE = By.id("Link event group");
@@ -96,6 +97,27 @@ public class EventDirectoryPage {
   public static final By BULK_ACTIONS_EVENT_DIRECTORY = By.id("bulkActions-2");
   public static final By GROUP_EVENTS_EVENT_DIRECTORY = By.id("bulkActions-7");
   public static final By GROUP_ID_COLUMN = By.xpath("(//td//a)[2]");
+  public static final By EXPORT_PARTICIPANT_BUTTON = By.id("export");
+  public static final By BASIC_EXPORT_PARTICIPANT_BUTTON = By.id("exportBasic");
+  public static final By CLOSE_POPUP_BUTTON = By.cssSelector(".v-window-closebox");
+  public static final By IMPORT_BUTTON = By.cssSelector("div#actionImport");
+  public static final By IMPORT_POPUP_BUTTON = By.cssSelector("[class='v-button']");
+  public static final By IMPORT_SUCCESS = By.xpath("//*[text()='Import successful!']");
+  public static final By IMPORT_POPUP_CLOSE_BUTTON = By.cssSelector(".popupContent #actionCancel");
+  public static final By IMPORT_WINDOW_CLOSE_BUTTON = By.cssSelector("[class='v-window-closebox']");
+  public static final By EVENT_REGION_COMBOBOX_INPUT = By.cssSelector("#region div");
+  public static final By EVENT_DISTRICT_COMBOBOX_INPUT = By.cssSelector("#district div");
+  public static final By EVENT_COMMUNITY_COMBOBOX_INPUT = By.cssSelector("#community div");
+  public static final By EVENT_STATUS_FILTER_COMBOBOX =
+      By.cssSelector("#relevanceStatusFilter div");
+  public static final By EVENT_GROUP_ID_SORT = By.xpath("//div[text()='Group id']");
+  public static final By EVENT_GROUP_NAME_SORT = By.xpath("//div[text()='Group name']");
+  public static final By EVENT_EXPORT_BUTTON = By.id("export");
+  public static final By EVENT_EXPORT_BASIC_BUTTON = By.id("exportBasic");
+  public static final By DETAILED_EXPORT_PARTICIPANT_BUTTON = By.id("exportDetailed");
+  public static final By IMPORT_PARTICIPANT_BUTTON = By.id("actionImport");
+  public static final By COMMIT_BUTTON = By.id("commit");
+  public static final By CUSTOM_EXPORT_PARTICIPANT_BUTTON = By.id("exportCustom");
 
   public static By getByEventUuid(String eventUuid) {
     return By.xpath(String.format("//a[@title='%s']", eventUuid));

@@ -88,15 +88,7 @@ public interface ConfigFacade {
 
 	int getInfrastructureSyncThreshold();
 
-	int getDaysAfterCaseGetsArchived();
-
-	int getDaysAfterEventGetsArchived();
-
-	int getDaysAfterEventParticipantGetsArchived();
-
 	int getDaysAfterSystemEventGetsDeleted();
-
-	int getDaysAfterTravelEntryGetsArchived();
 
 	GeoLatLon getCountryCenter();
 
@@ -120,7 +112,7 @@ public interface ConfigFacade {
 
 	PatientDiaryConfig getPatientDiaryConfig();
 
-	void validateExternalUrls();
+	void validateConfigUrls();
 
 	SormasToSormasConfig getS2SConfig();
 
@@ -149,4 +141,8 @@ public interface ConfigFacade {
 	long getDocumentUploadSizeLimitMb();
 
 	long getImportFileSizeLimitMb();
+
+	String getAuditLoggerConfig();
+
+	String getAuditSourceSite();
 }

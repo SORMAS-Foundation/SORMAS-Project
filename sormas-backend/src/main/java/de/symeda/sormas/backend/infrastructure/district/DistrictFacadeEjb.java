@@ -217,12 +217,20 @@ public class DistrictFacadeEjb
 	}
 
 	@Override
-	public List<DistrictReferenceDto> getByExternalId(String externalId, boolean includeArchivedEntities) {
+	public List<DistrictReferenceDto> getReferencesByExternalId(String externalId, boolean includeArchivedEntities) {
 
 		return service.getByExternalId(externalId, includeArchivedEntities)
 			.stream()
 			.map(DistrictFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
+	}
+
+	public List<DistrictDto> getByExternalId(String externalId, boolean includeArchivedEntities) {
+
+		return service.getByExternalId(externalId, includeArchivedEntities)
+				.stream()
+				.map(this::toDto)
+				.collect(Collectors.toList());
 	}
 
 	@Override

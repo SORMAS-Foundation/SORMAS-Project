@@ -26,27 +26,42 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_FROM_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_TO_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
+import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_PARTICIPANTS_TAB;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_EVENT_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_TASK_BUTTON;
-import static org.sormas.e2etests.pages.application.events.EditEventPage.TITLE_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.APPLY_FILTER;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BASIC_EXPORT_PARTICIPANT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BULK_ACTIONS_EVENT_DIRECTORY;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CLOSE_POPUP_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.COMMIT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CREATED_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CREATE_CASE_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CUSTOM_EXPORT_PARTICIPANT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.DATE_TYPE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.DETAILED_EXPORT_PARTICIPANT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.ENTER_BULK_EDIT_MODE_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENTS_COLUMN_HEADERS;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENTS_RADIO_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENTS_TABLE_DATA;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENTS_TABLE_ROW;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_COMMUNITY_COMBOBOX_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_DISPLAY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_DISTRICT_COMBOBOX_INPUT;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_EXPORT_BASIC_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_EXPORT_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_GROUP_FREE_TEXT_EVENT_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_GROUP_ID_IN_GRID;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_GROUP_ID_SORT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_GROUP_INPUT;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_GROUP_NAME_SORT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_INVESTIGATION_STATUS;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_MANAGEMENT_FILTER;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_REGION_COMBOBOX_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_STATUS_FILTER_BUTTONS;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_STATUS_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EXPORT_PARTICIPANT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTERED_EVENT_LINK_EVENT_FORM;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTER_BY_DISEASE;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FILTER_BY_REPORTING_USER;
@@ -59,6 +74,12 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.FI
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.GROUP_EVENTS_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.GROUP_ID_COLUMN;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.ID_FIELD_FILTER;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.IMPORT_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.IMPORT_PARTICIPANT_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.IMPORT_POPUP_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.IMPORT_POPUP_CLOSE_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.IMPORT_SUCCESS;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.IMPORT_WINDOW_CLOSE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LINKED_EVENT_GROUP_ID;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LINK_EVENT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LINK_EVENT_BUTTON_EDIT_PAGE;
@@ -75,10 +96,12 @@ import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
+import java.io.File;
 import java.time.LocalDate;
 import java.time.ZoneId;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -93,8 +116,11 @@ import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.EventGroup;
 import org.sormas.e2etests.entities.services.EventGroupService;
 import org.sormas.e2etests.entities.services.EventService;
+import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.EventReferenceDateOptions;
+import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.enums.RiskLevelValues;
 import org.sormas.e2etests.enums.SourceTypeValues;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
@@ -111,6 +137,8 @@ import org.testng.asserts.SoftAssert;
 public class EventDirectorySteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   private final BaseSteps baseSteps;
+  public static final String userDirPath = System.getProperty("user.dir");
+  private final List<String> oldEventUUIDs = new ArrayList<>();
 
   @Inject
   public EventDirectorySteps(
@@ -161,6 +189,117 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(FIRST_CHECKBOX_EVENT_DIRECTORY);
           webDriverHelpers.waitForPageLoaded();
         });
+
+    When(
+        "I search last created Event by {string} option filter in Event Group Directory",
+        (String searchCriteria) -> {
+          String searchText = "";
+          switch (searchCriteria) {
+            case "EVENT_ID":
+              searchText = apiState.getCreatedEvent().getUuid();
+              break;
+            case "TITLE":
+              searchText = apiState.getCreatedEvent().getEventTitle();
+              break;
+            case "LOCATION":
+              searchText = apiState.getCreatedEvent().getTypeOfPlace();
+              break;
+            case "DESCRIPTION":
+              searchText = apiState.getCreatedEvent().getEventDesc();
+              break;
+          }
+          webDriverHelpers.fillInWebElement(EVENT_GROUP_FREE_TEXT_EVENT_INPUT, searchText);
+        });
+
+    When(
+        "I chose Region option in Event Group Directory",
+        () -> {
+          String region = apiState.getCreatedEvent().getEventLocation().getRegion().getUuid();
+          webDriverHelpers.selectFromCombobox(
+              EVENT_REGION_COMBOBOX_INPUT, RegionsValues.getValueFor(region));
+        });
+
+    When(
+        "I chose District option in Event Group Directory",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          String district = apiState.getCreatedEvent().getEventLocation().getDistrict().getUuid();
+          webDriverHelpers.selectFromCombobox(
+              EVENT_DISTRICT_COMBOBOX_INPUT, DistrictsValues.getNameByUUID(district));
+        });
+
+    When(
+        "I chose Community option in Event Group Directory",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          String community = apiState.getCreatedEvent().getEventLocation().getCommunity().getUuid();
+          webDriverHelpers.selectFromCombobox(
+              EVENT_COMMUNITY_COMBOBOX_INPUT, CommunityValues.getValueFor(community));
+        });
+
+    When(
+        "I chose Region {string} option in Event Group Directory",
+        (String regionOption) -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(EVENT_REGION_COMBOBOX_INPUT, regionOption);
+        });
+
+    When(
+        "I chose District {string} option in Event Group Directory",
+        (String districtOption) -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(EVENT_DISTRICT_COMBOBOX_INPUT, districtOption);
+        });
+    When(
+        "I chose Community {string} option in Event Group Directory",
+        (String communityOption) -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(EVENT_COMMUNITY_COMBOBOX_INPUT, communityOption);
+        });
+
+    When(
+        "I chose {string} option from Relevnce Status filter in Event Group Directory",
+        (String searchCriteria) -> {
+          String searchText = "";
+          switch (searchCriteria) {
+            case "Active groups":
+              searchText = "Active groups";
+              break;
+            case "Archived groups":
+              searchText = "Archived groups";
+              break;
+            case "All groups":
+              searchText = "All groups";
+              break;
+          }
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.selectFromCombobox(EVENT_STATUS_FILTER_COMBOBOX, searchText);
+        });
+
+    When(
+        "I sort all rows by Group ID in Event Group Directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EVENT_GROUP_ID_SORT);
+        });
+
+    When(
+        "I sort all rows by Group NAME in Event Group Directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EVENT_GROUP_NAME_SORT);
+        });
+
+    When(
+        "I click on a Export button in Event Group Directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EVENT_EXPORT_BUTTON);
+        });
+
+    When(
+        "I click on a Basic Export button from Export options in Event Group Directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EVENT_EXPORT_BASIC_BUTTON);
+        });
+
     And(
         "I click on Bulk Actions combobox on Event Directory Page",
         () -> webDriverHelpers.clickOnWebElementBySelector(BULK_ACTIONS_EVENT_DIRECTORY));
@@ -238,9 +377,7 @@ public class EventDirectorySteps implements En {
 
     When(
         "I click on the NEW EVENT button",
-        () ->
-            webDriverHelpers.clickWhileOtherButtonIsDisplayed(
-                EventDirectoryPage.NEW_EVENT_BUTTON, TITLE_INPUT));
+        () -> webDriverHelpers.clickOnWebElementBySelector(EventDirectoryPage.NEW_EVENT_BUTTON));
     And(
         "I apply {string} to combobox on Event Directory Page",
         (String eventParameter) -> {
@@ -304,7 +441,6 @@ public class EventDirectorySteps implements En {
         "I select random Risk level filter among the filter options from API",
         () -> {
           String riskLevel = apiState.getCreatedEvent().getRiskLevel();
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
               FILTER_BY_RISK_LEVEL, RiskLevelValues.getCaptionForName(riskLevel));
         });
@@ -336,28 +472,29 @@ public class EventDirectorySteps implements En {
             webDriverHelpers.selectFromCombobox(CASE_COMMUNITY_FILTER_COMBOBOX, community));
 
     When(
-        "I select random Risk level filter among the filter options",
+        "I select random risk level value different than risk level value of last created via API Event in Event Directory",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
+          String apiRiskLevel = apiState.getCreatedEvent().getRiskLevel();
           webDriverHelpers.selectFromCombobox(
-              FILTER_BY_RISK_LEVEL, RiskLevelValues.getRandomRiskLevelCaption());
+              FILTER_BY_RISK_LEVEL,
+              RiskLevelValues.getRandomUIRiskLevelDifferentThan(apiRiskLevel));
         });
 
     When(
         "I select random Disease filter among the filter options from API",
         () -> {
           String disease = apiState.getCreatedEvent().getDisease();
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
               FILTER_BY_DISEASE, DiseasesValues.getCaptionForName(disease));
         });
 
     When(
-        "I select random Disease filter among the filter options",
+        "I select Disease filter value different than the disease value of the last created via API case in Event Directory",
         () -> {
-          String disease = DiseasesValues.getRandomDiseaseCaption();
-          webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.selectFromCombobox(FILTER_BY_DISEASE, disease);
+          String apiRandomDisease = apiState.getCreatedEvent().getDisease();
+          webDriverHelpers.selectFromCombobox(
+              FILTER_BY_DISEASE,
+              DiseasesValues.getRandomDiseaseCaptionDifferentThan(apiRandomDisease));
         });
     When(
         "I filter by last created group in Event Directory Page",
@@ -416,35 +553,34 @@ public class EventDirectorySteps implements En {
         "I select Source Type among the filter options from API",
         () -> {
           String sourceType = apiState.getCreatedEvent().getSrcType();
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
               FILTER_BY_SOURCE_TYPE, SourceTypeValues.getCaptionForName((sourceType)));
         });
 
     When(
-        "I select random Source Type among the filter options",
+        "I select source Type filter value different than the source type value of the last created via API case in Event Directory",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
+          String apiSourceType = apiState.getCreatedEvent().getSrcType();
           webDriverHelpers.selectFromCombobox(
-              FILTER_BY_SOURCE_TYPE, SourceTypeValues.getRandomSourceTypeCaption());
+              FILTER_BY_SOURCE_TYPE,
+              SourceTypeValues.getRandomSourceTypeDifferentThan(apiSourceType));
         });
 
     When(
         "I select Type of Place field among the filter options from API",
         () -> {
           String sourceTypeOfPlace = apiState.getCreatedEvent().getTypeOfPlace();
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
               FILTER_BY_TYPE_OF_PLACE, TypeOfPlace.getValueFor(sourceTypeOfPlace));
         });
 
     When(
-        "I select random Type of Place field among the filter options",
+        "I select type of place filter value different than the type of place value of the last created via API case in Event Directory",
         () -> {
-          String typeOfPlace = TypeOfPlace.getRandomTypeOfPlace();
-          webDriverHelpers.waitForPageLoaded();
+          String apiValueTypeOfPlace = apiState.getCreatedEvent().getTypeOfPlace();
           webDriverHelpers.selectFromCombobox(
-              FILTER_BY_TYPE_OF_PLACE, TypeOfPlace.getValueFor(typeOfPlace));
+              FILTER_BY_TYPE_OF_PLACE,
+              TypeOfPlace.getRandomUITypeOfPlaceDifferentThan(apiValueTypeOfPlace));
         });
 
     When(
@@ -534,6 +670,13 @@ public class EventDirectorySteps implements En {
         });
 
     When(
+        "I check if filtered participant appears in the event participants list",
+        () -> {
+          final String personUuid = EditEventSteps.person.getUuid();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(personUuid));
+        });
+
+    When(
         "I click on the first row from event participant",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_PARTICIPANT);
@@ -555,7 +698,7 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               APPLY_FILTERS_BUTTON, 30);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
-          TimeUnit.SECONDS.sleep(10);
+          TimeUnit.SECONDS.sleep(3);
         });
     When(
         "I hover to Event Groups column of the Event result",
@@ -570,9 +713,8 @@ public class EventDirectorySteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               RESET_FILTERS_BUTTON, 30);
-          TimeUnit.SECONDS.sleep(10);
           webDriverHelpers.clickOnWebElementBySelector(RESET_FILTERS_BUTTON);
-          TimeUnit.SECONDS.sleep(10);
+          TimeUnit.SECONDS.sleep(3);
         });
 
     When(
@@ -599,7 +741,75 @@ public class EventDirectorySteps implements En {
     And(
         "I click Create Case for Event Participant",
         () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_CASE_BUTTON));
+    And(
+        "I click on Basic Export button in Event Participant Directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(BASIC_EXPORT_PARTICIPANT_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CLOSE_POPUP_BUTTON);
+          TimeUnit.SECONDS.sleep(5); // time for file to be downloaded
+        });
+    And(
+        "I click Export button in Event Participant Directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(EXPORT_PARTICIPANT_BUTTON));
+    And(
+        "I click on Custom Export button in Event Participant Directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CUSTOM_EXPORT_PARTICIPANT_BUTTON);
+        });
 
+    And(
+        "I click on Detailed Export button in Event Participant Directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DETAILED_EXPORT_PARTICIPANT_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CLOSE_POPUP_BUTTON);
+          TimeUnit.SECONDS.sleep(5); // time for file to be downloaded
+        });
+    When(
+        "I close popup after export in Event Participant directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CLOSE_POPUP_BUTTON);
+        });
+    When(
+        "I click on the Import button from Event Participants directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(IMPORT_PARTICIPANT_BUTTON);
+        });
+    When(
+        "I select the event participant CSV file in the file picker",
+        () -> {
+          TimeUnit.SECONDS.sleep(3);
+          webDriverHelpers.sendFile(
+              FILE_PICKER,
+              userDirPath + "/downloads/sormas_ereignisteilnehmer_" + LocalDate.now() + "_.csv");
+        });
+    When(
+        "I click on the {string} button from the Import Event Participant popup",
+        (String buttonName) -> {
+          webDriverHelpers.clickWebElementByText(IMPORT_POPUP_BUTTON, buttonName);
+        });
+    When(
+        "I delete exported file from Event Participant Directory",
+        () -> {
+          File toDelete =
+              new File(
+                  userDirPath
+                      + "/downloads/sormas_ereignisteilnehmer_"
+                      + LocalDate.now()
+                      + "_.csv");
+          toDelete.deleteOnExit();
+        });
+    When(
+        "I check that an import success notification appears in the Import Event Participant popup",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(IMPORT_SUCCESS);
+        });
+
+    When(
+        "I confirm the save Event Participant Import popup",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(COMMIT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(COMMIT_BUTTON);
+        });
     Then(
         "I check that number of displayed Event results is {int}",
         (Integer number) ->
@@ -620,6 +830,72 @@ public class EventDirectorySteps implements En {
                             webDriverHelpers.getTextFromPresentWebElement(TOTAL_EVENTS_COUNTER)),
                         number.intValue(),
                         "Number of displayed cases is not correct")));
+
+    When(
+        "I click on the Import button from Events directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(IMPORT_BUTTON);
+        });
+
+    When(
+        "I select the Event CSV file in the file picker",
+        () -> {
+          webDriverHelpers.sendFile(
+              FILE_PICKER, userDirPath + "/uploads/ImportTestData_Events_INT.csv");
+        });
+
+    When(
+        "I click on the Start Data Import button from Import Events popup",
+        () -> {
+          webDriverHelpers.clickWebElementByText(IMPORT_POPUP_BUTTON, "START DATA IMPORT");
+        });
+
+    When(
+        "I check that an import success notification appears in the Import Events popup",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(IMPORT_SUCCESS);
+        });
+
+    When(
+        "I close the Import Events popups",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(IMPORT_POPUP_CLOSE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(IMPORT_WINDOW_CLOSE_BUTTON);
+        });
+
+    When(
+        "I read the UUIDs of the first four events in Events directory",
+        () -> {
+          List<Map<String, String>> tableRowsData = getTableRowsData();
+          for (int i = 0; i < 4; i++) {
+            String eventUUID =
+                tableRowsData.get(i).get(EventsTableColumnsHeaders.EVENT_ID_HEADER.toString());
+            oldEventUUIDs.add(eventUUID);
+          }
+        });
+
+    When(
+        "I check that four new events have appeared in Events directory",
+        () -> {
+          List<String> eventUUIDs = new ArrayList<>();
+          List<String> eventTitles = new ArrayList<>();
+          List<Map<String, String>> tableRowsData = getTableRowsData();
+          for (int i = 0; i < 4; i++) {
+            String eventUUID =
+                tableRowsData.get(i).get(EventsTableColumnsHeaders.EVENT_ID_HEADER.toString());
+            eventUUIDs.add(eventUUID);
+            String eventTitle =
+                tableRowsData.get(i).get(EventsTableColumnsHeaders.TITLE_HEADER.toString());
+            eventTitles.add(eventTitle);
+          }
+          softly.assertTrue(
+              !eventUUIDs.equals(oldEventUUIDs)
+                  && eventTitles.containsAll(
+                      Arrays.asList(
+                          "ImportEvent1", "ImportEvent2", "ImportEvent3", "ImportEvent4")),
+              "The imported events did not show up correctly in Events directory.");
+          softly.assertAll();
+        });
   }
 
   private List<Map<String, String>> getTableRowsData() {
