@@ -37,7 +37,7 @@ public enum ActivityAsCaseType {
   public static String getForNameDE(String option) {
     ActivityAsCaseType[] options = ActivityAsCaseType.values();
     for (ActivityAsCaseType value : options) {
-      if (value.activityCase.equalsIgnoreCase(option)) return value.activityCaseDE;
+      if (value.getActivityCase().equalsIgnoreCase(option)) return value.activityCaseDE;
     }
     throw new Exception("Unable to find " + option + " value in ActivityAsCase Enum");
   }

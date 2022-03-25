@@ -87,7 +87,7 @@ public class EpidemiologicalDataCaseSteps implements En {
           for (ActivityAsCaseType value : ActivityAsCaseType.values()) {
             webDriverHelpers.selectFromCombobox(
                 ACTIVITY_TYPE_OF_ACTIVITY_COMBOBOX,
-                ActivityAsCaseType.getForNameDE(value.toString()));
+                ActivityAsCaseType.getForNameDE(value.getActivityCase()));
           }
         });
     When(
