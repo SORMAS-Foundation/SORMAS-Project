@@ -153,6 +153,7 @@ public class CaseDirectoryPage {
   public static By getResultByIndex(String rowNumber) {
     return By.xpath(String.format("//tr[%s]//a", rowNumber));
   }
+
   public static final By CASE_CLOSE_WINDOW_BUTTON =
       By.xpath("//div[contains(@class,\"v-window-closebox\")]");
   public static final By CASE_INFO_BUTTON = By.cssSelector("[id='info']");
