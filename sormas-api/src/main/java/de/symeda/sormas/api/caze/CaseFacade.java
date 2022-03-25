@@ -21,7 +21,6 @@ import java.math.BigDecimal;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Random;
 
 import javax.ejb.Remote;
@@ -132,6 +131,8 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	List<String> deleteCases(List<String> caseUuids);
 
+	void deleteWithContacts(String caseUuid);
+
 	void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid) throws ExternalSurveillanceToolException;
 
 	Date getOldestCaseOnsetDate();
@@ -141,6 +142,8 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 	Date getOldestCaseOutcomeDate();
 
 	boolean isDeleted(String caseUuid);
+
+	boolean isArchived(String caseUuid);
 
 	List<String> getArchivedUuidsSince(Date since);
 
@@ -225,4 +228,9 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	PreviousCaseDto getMostRecentPreviousCase(PersonReferenceDto person, Disease disease, Date startDate);
 
+	void archive(String entityUuid, Date endOfProcessingDate, boolean includeContacts);
+
+	void archive(List<String> entityUuids, boolean includeContacts);
+
+	void dearchive(List<String> entityUuids, String dearchiveReason, boolean includeContacts);
 }

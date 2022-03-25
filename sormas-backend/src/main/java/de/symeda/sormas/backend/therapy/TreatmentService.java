@@ -79,7 +79,7 @@ public class TreatmentService extends AdoServiceWithUserFilter<Treatment> {
 		Join<Treatment, Therapy> therapy = from.join(Treatment.THERAPY, JoinType.LEFT);
 		Join<Therapy, Case> caze = therapy.join(Therapy.CASE, JoinType.LEFT);
 
-		Predicate filter = cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED)));
+		Predicate filter = caseService.createActiveCasesFilter(cb, caze);
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
@@ -105,7 +105,7 @@ public class TreatmentService extends AdoServiceWithUserFilter<Treatment> {
 		Join<Treatment, Therapy> therapy = from.join(Treatment.THERAPY, JoinType.LEFT);
 		Join<Therapy, Case> caze = therapy.join(Therapy.CASE, JoinType.LEFT);
 
-		Predicate filter = cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED)));
+		Predicate filter = caseService.createActiveCasesFilter(cb, caze);
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);

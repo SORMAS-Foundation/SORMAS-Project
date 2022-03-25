@@ -155,6 +155,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
 	@EJB
 	private SormasToSormasEventFacadeEjbLocal sormasToSormasEventFacade;
+	@EJB
+	private EventParticipantService eventParticipantService;
 	@Resource
 	private ManagedScheduledExecutorService executorService;
 
@@ -871,6 +873,27 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		}
 
 		return service.getArchivedUuidsSince(since);
+	}
+
+	@Override
+	public void archive(String eventUuid, Date endOfProcessingDate) {
+		super.archive(eventUuid, endOfProcessingDate);
+		List<String> eventParticipantList = eventParticipantService.getAllUuidsByEventUuids(Collections.singletonList(eventUuid));
+		eventParticipantService.archive(eventParticipantList);
+	}
+
+	@Override
+	public void archive(List<String> eventUuids) {
+		super.archive(eventUuids);
+		List<String> eventParticipantList = eventParticipantService.getAllUuidsByEventUuids(eventUuids);
+		eventParticipantService.archive(eventParticipantList);
+	}
+
+	@Override
+	public void dearchive(List<String> eventUuids, String dearchiveReason) {
+		super.dearchive(eventUuids, dearchiveReason);
+		List<String> eventParticipantList = eventParticipantService.getAllUuidsByEventUuids(eventUuids);
+		eventParticipantService.dearchive(eventParticipantList, dearchiveReason);
 	}
 
 	@Override

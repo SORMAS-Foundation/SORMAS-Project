@@ -893,14 +893,14 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		getCaseFacade().delete(caze.getUuid());
 
-		// Deleted flag should be set for case, contact, sample and pathogen test; Task and additional test should be deleted
+		// Deleted flag should be set for case, sample and pathogen test; Additional test should be deleted; Contact should not have the deleted flag; Task should not be deleted
 		assertTrue(getCaseFacade().getDeletedUuidsSince(since).contains(caze.getUuid()));
-		assertTrue(getContactFacade().getDeletedUuidsSince(since).contains(contact.getUuid()));
+		assertFalse(getContactFacade().getDeletedUuidsSince(since).contains(contact.getUuid()));
 		assertTrue(getSampleFacade().getDeletedUuidsSince(since).contains(sample.getUuid()));
 		assertFalse(getSampleFacade().getDeletedUuidsSince(since).contains(sampleAssociatedToContactAndCase.getUuid()));
 		assertTrue(getSampleTestFacade().getDeletedUuidsSince(since).contains(pathogenTest.getUuid()));
 		assertNull(getAdditionalTestFacade().getByUuid(additionalTest.getUuid()));
-		assertNull(getTaskFacade().getByUuid(task.getUuid()));
+		assertNotNull(getTaskFacade().getByUuid(task.getUuid()));
 	}
 
 	@Test
@@ -2357,7 +2357,25 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertThat(
 			getCaseFacade().getMostRecentPreviousCase(person1.toReference(), Disease.EVD, newCase.getReportDate()).getUuid(),
 			is(previousCase1.getUuid()));
+	}
 
+	@Test
+	public void testDeleteWithContacts() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
+		PersonDto person1 = creator.createPerson();
+		PersonDto person2 = creator.createPerson();
+
+		CaseDataDto caze = creator.createCase(user.toReference(), person1.toReference(), rdcf);
+		ContactDto contact = creator.createContact(user.toReference(), person2.toReference(), caze);
+
+		assertEquals(1, getCaseFacade().getAllActiveUuids().size());
+		assertEquals(1, getContactFacade().getAllActiveUuids().size());
+
+		getCaseFacade().deleteWithContacts(caze.getUuid());
+
+		assertEquals(0, getCaseFacade().getAllActiveUuids().size());
+		assertEquals(0, getContactFacade().getAllActiveUuids().size());
 	}
 
 	private static final String AB = "0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz ";

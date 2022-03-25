@@ -116,6 +116,7 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 	}
 
 	@Test
+	@Ignore
 	public void testHistoryTablesMatch() throws IOException, URISyntaxException {
 
 		SormasPostgresSQLContainer container = new SormasPostgresSQLContainer().withDatabaseName("sormas");
@@ -139,8 +140,12 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 			Files.readAllBytes(Paths.get(Objects.requireNonNull(getClass().getClassLoader().getResource("checkHistoryTables.sql")).toURI())));
 		@SuppressWarnings("unchecked")
 		List<Object[]> results = (List<Object[]>) em.createNativeQuery(checkHistoryTablesSql).getResultList();
-		assertTrue(CollectionUtils.isEmpty(results));
-
+		StringBuilder result = new StringBuilder();
+		results.forEach(objects -> {
+			result.append("\n");
+			Arrays.stream(objects).forEach(o -> result.append((o != null ? o.toString() : "") + " "));
+		});
+		assertTrue(result.toString(), CollectionUtils.isEmpty(results));
 	}
 
 	/**

@@ -23,8 +23,8 @@ import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -232,7 +232,7 @@ public class StartupShutdownService {
 		deletionConfigurationService.createMissingDeletionConfiguration();
 
 		configFacade.validateAppUrls();
-		configFacade.validateExternalUrls();
+		configFacade.validateConfigUrls();
 
 		centralInfraSync.syncAll();
 	}
@@ -506,7 +506,7 @@ public class StartupShutdownService {
 			rnd.nextBytes(pwd);
 
 			createOrUpdateDefaultUser(
-				Collections.singleton(UserRole.SORMAS_TO_SORMAS_CLIENT),
+				EnumSet.of(UserRole.SORMAS_TO_SORMAS_CLIENT, UserRole.NATIONAL_USER),
 				DefaultEntityHelper.SORMAS_TO_SORMAS_USER_NAME,
 				new String(pwd),
 				"Sormas to Sormas",
@@ -566,9 +566,14 @@ public class StartupShutdownService {
 		} else if (!DataHelper.equal(existingUser.getPassword(), PasswordHelper.encodePassword(password, existingUser.getSeed()))) {
 			existingUser.setSeed(PasswordHelper.createPass(16));
 			existingUser.setPassword(PasswordHelper.encodePassword(password, existingUser.getSeed()));
-
+			existingUser.setUserRoles(userRoles);
+			
 			userService.persist(existingUser);
 			passwordResetEvent.fire(new PasswordResetEvent(existingUser));
+		} else if (userRoles.stream().anyMatch(r -> !existingUser.getUserRoles().contains(r))
+			|| existingUser.getUserRoles().stream().anyMatch(r -> !userRoles.contains(r))) {
+			existingUser.setUserRoles(userRoles);
+			userService.persist(existingUser);
 		}
 
 	}

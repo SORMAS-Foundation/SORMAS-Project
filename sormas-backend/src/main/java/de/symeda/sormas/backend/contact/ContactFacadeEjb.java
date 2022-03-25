@@ -22,6 +22,7 @@ import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 import java.math.BigInteger;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -153,6 +154,7 @@ import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
 import de.symeda.sormas.backend.event.ContactEventSummaryDetails;
+import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.exposure.Exposure;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
@@ -310,13 +312,17 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed({UserRight._CONTACT_CREATE, UserRight._CONTACT_EDIT})
+	@RolesAllowed({
+		UserRight._CONTACT_CREATE,
+		UserRight._CONTACT_EDIT })
 	public ContactDto save(@Valid @NotNull ContactDto dto) {
 		return save(dto, true, true);
 	}
 
 	@Override
-	@RolesAllowed({UserRight._CONTACT_CREATE, UserRight._CONTACT_EDIT})
+	@RolesAllowed({
+		UserRight._CONTACT_CREATE,
+		UserRight._CONTACT_EDIT })
 	public ContactDto save(@Valid ContactDto dto, boolean handleChanges, boolean handleCaseChanges) {
 		return save(dto, handleChanges, handleCaseChanges, true, true);
 	}
@@ -1428,6 +1434,38 @@ public class ContactFacadeEjb
 	}
 
 	@Override
+	public List<String> getArchivedUuidsSince(Date since) {
+		if (userService.getCurrentUser() == null) {
+			return Collections.emptyList();
+		}
+
+		return service.getArchivedUuidsSince(since);
+	}
+
+	@Override
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public void archiveAllArchivableContacts(int daysAfterContactsGetsArchived) {
+		archiveAllArchivableContacts(daysAfterContactsGetsArchived, LocalDate.now());
+	}
+
+	private void archiveAllArchivableContacts(int daysAfterEventGetsArchived, @NotNull LocalDate referenceDate) {
+		LocalDate notChangedSince = referenceDate.minusDays(daysAfterEventGetsArchived);
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Contact> from = cq.from(Contact.class);
+
+		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
+		cq.where(cb.equal(from.get(Contact.ARCHIVED), false), cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
+		cq.select(from.get(Contact.UUID)).distinct(true);
+		List<String> contactUuids = em.createQuery(cq).getResultList();
+
+		if (!contactUuids.isEmpty()) {
+			archive(contactUuids);
+		}
+	}
+
+	@Override
 	public List<DashboardContactDto> getContactsForDashboard(
 		RegionReferenceDto regionRef,
 		DistrictReferenceDto districtRef,
@@ -2149,6 +2187,11 @@ public class ContactFacadeEjb
 			}
 		}
 		return changedContacts;
+	}
+
+	@Override
+	public long getContactCount(CaseReferenceDto caze) {
+		return service.getContactCount(caze);
 	}
 
 	@Override

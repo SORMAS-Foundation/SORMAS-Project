@@ -26,6 +26,7 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
 import de.symeda.sormas.api.sormastosormas.sharerequest.SormasToSormasCasePreview;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
@@ -35,6 +36,7 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.data.received.ReceivedDataProcessor;
+import de.symeda.sormas.backend.sormastosormas.entities.SormasToSormasEntitiesHelper;
 import de.symeda.sormas.backend.user.UserService;
 
 @Stateless
@@ -45,6 +47,8 @@ public class ReceivedCaseProcessor
 
 	@EJB
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
+	@EJB
+	private SormasToSormasEntitiesHelper sormasToSormasEntitiesHelper;
 
 	public ReceivedCaseProcessor() {
 	}
@@ -59,7 +63,7 @@ public class ReceivedCaseProcessor
 	}
 
 	@Override
-	public void handleReceivedData(SormasToSormasCaseDto sharedData, Case existingCase) {
+	public void handleReceivedData(SormasToSormasCaseDto sharedData, Case existingCase, SormasToSormasOriginInfoDto originInfo) {
 		handleIgnoredProperties(sharedData.getEntity(), caseFacade.toDto(existingCase));
 
 		handleIgnoredProperties(
@@ -70,6 +74,10 @@ public class ReceivedCaseProcessor
 		PersonDto person = sharedData.getPerson();
 		caze.setPerson(person.toReference());
 		updateReportingUser(caze, existingCase);
+
+		if(originInfo.isOwnershipHandedOver()) {
+			sormasToSormasEntitiesHelper.updateCaseResponsibleDistrict(caze, configFacade.getS2SConfig().getDistrictExternalId());
+		}
 	}
 
 	@Override
