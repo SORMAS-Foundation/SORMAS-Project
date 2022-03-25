@@ -10548,4 +10548,17 @@ ALTER TABLE travelentry ALTER COLUMN dateofarrival SET NOT NULL;
 
 INSERT INTO schema_version (version_number, comment) VALUES (449, 'Add dateOfArrival to travel entries #7845');
 
+-- 2022-03-14 - #7774 Automatic & manual archiving for all core entities
+UPDATE contact ct
+SET archived = TRUE
+FROM cases cs
+WHERE ct.caze_id = cs.id AND cs.archived IS TRUE AND ct.archived IS FALSE;
+
+UPDATE eventparticipant ep
+SET archived = TRUE
+FROM events ev
+WHERE ep.event_id = ev.id AND ev.archived IS TRUE AND ep.archived IS FALSE;
+
+INSERT INTO schema_version (version_number, comment) VALUES (450, 'Automatic & manual archiving for all core entities #7774 ');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

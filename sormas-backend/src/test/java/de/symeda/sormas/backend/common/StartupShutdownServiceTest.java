@@ -30,7 +30,6 @@ import javax.persistence.Persistence;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.hamcrest.Matchers;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;

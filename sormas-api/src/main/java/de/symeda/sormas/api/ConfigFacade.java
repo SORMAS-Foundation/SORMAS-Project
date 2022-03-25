@@ -112,7 +112,7 @@ public interface ConfigFacade {
 
 	PatientDiaryConfig getPatientDiaryConfig();
 
-	void validateExternalUrls();
+	void validateConfigUrls();
 
 	SormasToSormasConfig getS2SConfig();
 
