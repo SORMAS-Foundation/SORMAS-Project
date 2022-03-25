@@ -176,6 +176,7 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private ComboBox cbPlaceOfBirthFacility;
 	private PersonContext personContext;
 	private boolean isPseudonymized;
+	private LocationEditForm addressForm;
 	//@formatter:on
 
 	public PersonEditForm(PersonContext personContext, Disease disease, String diseaseDetails, ViewMode viewMode, boolean isPseudonymized) {
