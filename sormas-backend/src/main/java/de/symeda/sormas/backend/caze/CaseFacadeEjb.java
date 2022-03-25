@@ -186,6 +186,7 @@ import de.symeda.sormas.api.therapy.TherapyReferenceDto;
 import de.symeda.sormas.api.therapy.TreatmentCriteria;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.user.NotificationType;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -1505,7 +1506,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		// Setting the surveillance officer is only allowed if all selected cases are in
 		// the same district
 		if (surveillanceOfficerChange) {
-			existingCase.setSurveillanceOfficer(userService.getByUuid(updatedCaseBulkEditData.getSurveillanceOfficer().getUuid()));
+			UserReferenceDto surveillanceOfficer = updatedCaseBulkEditData.getSurveillanceOfficer();
+			existingCase.setSurveillanceOfficer(surveillanceOfficer != null ? userService.getByUuid(surveillanceOfficer.getUuid()) : null);
 		}
 
 		if (Objects.nonNull(updatedCaseBulkEditData.getHealthFacilityDetails())) {
@@ -2936,7 +2938,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		return target;
 	}
-
 
 	private Map<ReinfectionDetail, Boolean> cleanupReinfectionDetails(Map<ReinfectionDetail, Boolean> reinfectionDetails) {
 		if (reinfectionDetails != null && reinfectionDetails.containsValue(Boolean.FALSE)) {
