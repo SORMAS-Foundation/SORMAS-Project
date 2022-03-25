@@ -113,7 +113,7 @@ public class ContactsLineListingSteps implements En {
               contactsLineListing.getFirstName() + " " + contactsLineListing.getLastName();
           webDriverHelpers.fillInWebElement(PERSON_LIKE_SEARCH_INPUT, caseName);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
-          webDriverHelpers.waitUntilNumberOfElementsIsReduceToGiven(CONTACT_GRID_RESULTS_ROWS, 2);
+          webDriverHelpers.waitUntilNumberOfElementsIsReduceToGiven(CONTACT_GRID_RESULTS_ROWS, 1);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(FIRST_CONTACT_ID_BUTTON);
 
           softly.assertTrue(
