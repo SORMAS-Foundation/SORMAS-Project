@@ -638,8 +638,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			Disease disease = this.disease != null ? this.disease : FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease();
 			FieldVisibilityCheckers fieldVisibilityCheckers = FieldVisibilityCheckers.withDisease(disease);
 			List<PresentCondition> validValues = Arrays.stream(PresentCondition.values())
-					.filter(c -> fieldVisibilityCheckers.isVisible(PresentCondition.class, c.name()))
-					.collect(Collectors.toList());
+				.filter(c -> fieldVisibilityCheckers.isVisible(PresentCondition.class, c.name()))
+				.collect(Collectors.toList());
 			PresentCondition currentValue = (PresentCondition) presentConditionField.getValue();
 			if (currentValue != null && !validValues.contains(currentValue)) {
 				validValues.add(currentValue);
@@ -773,6 +773,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 				PersonDto.BURIAL_CONDUCTOR);
 			getField(PersonDto.DEATH_DATE).setValue(null);
 			getField(PersonDto.BURIAL_DATE).setValue(null);
+			getField(PersonDto.BURIAL_PLACE_DESCRIPTION).setValue(null);
+			getField(PersonDto.BURIAL_CONDUCTOR).setValue(null);
 			toggleCauseOfDeathFields(false);
 		} else {
 			switch (type) {
@@ -808,6 +810,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 					PersonDto.BURIAL_CONDUCTOR);
 				getField(PersonDto.DEATH_DATE).setValue(null);
 				getField(PersonDto.BURIAL_DATE).setValue(null);
+				getField(PersonDto.BURIAL_PLACE_DESCRIPTION).setValue(null);
+				getField(PersonDto.BURIAL_CONDUCTOR).setValue(null);
 				toggleCauseOfDeathFields(false);
 				break;
 			}
