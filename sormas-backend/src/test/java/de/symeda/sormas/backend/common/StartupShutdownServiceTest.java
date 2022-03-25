@@ -141,7 +141,7 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 		StringBuilder result = new StringBuilder();
 		results.forEach(objects -> {
 			result.append("\n");
-			Arrays.stream(objects).forEach(o -> result.append(o != null ? o.toString() : " " + " "));
+			Arrays.stream(objects).forEach(o -> result.append((o != null ? o.toString() : "") + " "));
 		});
 		assertTrue(result.toString(), CollectionUtils.isEmpty(results));
 	}
