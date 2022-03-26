@@ -34,6 +34,7 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -339,6 +340,13 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		cq.orderBy(order);
 
 		return QueryHelper.getResultList(em, cq, first, max);
+	}
+
+	public Page<LabMessageIndexDto> getIndexPage(LabMessageCriteria criteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
+		List<LabMessageIndexDto> labMessageIndexList = getIndexList(criteria, offset, size, sortProperties);
+		long totalElementCount = count(criteria);
+		return new Page<>(labMessageIndexList, offset, size, totalElementCount);
+
 	}
 
 	/**
