@@ -124,7 +124,7 @@ public class CreateNewSampleSteps implements En {
         });
 
     When(
-        "I select the German words for PCR / RT-PCR as Type of Test in the Create New Sample popup",
+        "I select the German words for PCR RT-PCR as Type of Test in the Create New Sample popup",
         () -> {
           selectTypeOfTest("Nukleins\u00E4ure-Nachweis (z.B. PCR)");
         });

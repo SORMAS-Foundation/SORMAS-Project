@@ -248,7 +248,7 @@ public class EditCaseSteps implements En {
         });
 
     When(
-        "I click on Info button on Case Edit page",
+        "I click on INFO button on Case Edit page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CASE_INFO_BUTTON);
           webDriverHelpers.waitForPageLoaded();

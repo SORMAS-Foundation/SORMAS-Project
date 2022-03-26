@@ -174,14 +174,14 @@ public class SymptomsTabSteps implements En {
         });
 
     Then(
-        "From Symptoms Tab I click on Case tab",
+        "I click on Case tab from Symptoms tab directory",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CASE_TAB);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
         });
 
     And(
-        "From Symptoms Tab I click on Clear All button",
+        "I click on Clear all button From Symptoms tab",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CLEAR_ALL_BUTTON);
         });
