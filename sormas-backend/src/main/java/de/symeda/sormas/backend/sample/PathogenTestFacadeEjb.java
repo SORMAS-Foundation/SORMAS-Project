@@ -23,7 +23,6 @@ import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -492,7 +491,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		if (eventParticipant != null) {
 			disease = eventParticipant.getEvent().getDisease();
 			notificationTypes.add(NotificationType.EVENT_PARTICIPANT_LAB_RESULT_ARRIVED);
-			regions.add(eventParticipant.getEvent().getEventLocation().getRegion());
+			regions.add(eventParticipant.getRegion());
 
 			if (disease == null) {
 				sendMessageOnPathogenTestChanged(
