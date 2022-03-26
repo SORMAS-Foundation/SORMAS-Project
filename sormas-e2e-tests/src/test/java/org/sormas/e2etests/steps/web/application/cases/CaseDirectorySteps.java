@@ -52,8 +52,8 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DISEASE_VARIANT_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DISPLAY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DISTRICT_FILTER_COMBOBOX;
-import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_EXPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_EPIDEMIOLOGICAL_DATA_TAB;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_EXPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_FACILITY_CATEGORY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_FACILITY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_FACILITY_TYPE_FILTER_COMBOBOX;
@@ -104,14 +104,14 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getC
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getResultByIndex;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SAVE_BUTTON;
-import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
-import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CREATE_NEW_PERSON_RADIO_BUTTON;
-import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.CLOSE_DIALOG_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_CASES_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFERENCE_DEFINITION_TEXT;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.NEW_ENTRY_POPUP;
+import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CREATE_NEW_PERSON_RADIO_BUTTON;
+import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.CLOSE_DIALOG_BUTTON;
 
 import com.github.javafaker.Faker;
 import com.google.common.truth.Truth;
@@ -146,7 +146,6 @@ import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.sormas.e2etests.steps.web.application.events.EventsTableColumnsHeaders;
-import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
@@ -156,9 +155,6 @@ public class CaseDirectorySteps implements En {
   private final BaseSteps baseSteps;
   private final List<String> oldCaseUUIDs = new ArrayList<>();
   Faker faker = new Faker();
-  private final WebDriverHelpers webDriverHelpers;
-  private final BaseSteps baseSteps;
-  public static final String userDirPath = System.getProperty("user.dir");
   private final DateTimeFormatter formatterDataDictionary =
       DateTimeFormatter.ofPattern("yyyy-MM-dd");
 
@@ -169,8 +165,6 @@ public class CaseDirectorySteps implements En {
       DataOperations dataOperations,
       ApiState apiState,
       AssertHelpers assertHelpers,
-      SoftAssert softly,
-      BaseSteps baseSteps,
       SoftAssert softly,
       Faker faker) {
     this.webDriverHelpers = webDriverHelpers;
@@ -195,24 +189,12 @@ public class CaseDirectorySteps implements En {
           TimeUnit.SECONDS.sleep(3);
         });
 
-    // I search case by UUID in Case Directory Page
-    //    And I apply uuid filter for last created via API Person in Case directory page
     When(
         "I search case by specific {string} UUID in Case Directory Page",
         (String uuid) -> {
           webDriverHelpers.fillInWebElement(CASE_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, uuid);
         });
 
-    When(
-        "I read the UUIDs of the first four events in Events directory",
-        () -> {
-          List<Map<String, String>> tableRowsData = getTableRowsData();
-          for (int i = 0; i < 4; i++) {
-            String caseUUID =
-                tableRowsData.get(i).get(EventsTableColumnsHeaders.EVENT_ID_HEADER.toString());
-            oldCaseUUIDs.add(caseUUID);
-          }
-        });
     When(
         "I click on the {string} button from Import Cases Entries",
         (String buttonName) -> {
@@ -261,7 +243,7 @@ public class CaseDirectorySteps implements En {
         "I delete exported file from Cases Directory",
         () -> {
           File toDelete =
-              new File(userDirPath + "\\downloads\\sormas_cases_" + LocalDate.now() + "_.csv");
+              new File(userDirPath + "\\downloads\\sormas_f\u00E4lle_" + LocalDate.now() + "_.csv");
           toDelete.deleteOnExit();
         });
 
@@ -269,7 +251,8 @@ public class CaseDirectorySteps implements En {
         "I select the case entry csv in file picker",
         () -> {
           webDriverHelpers.sendFile(
-              FILE_PICKER, userDirPath + "\\downloads\\sormas_cases_" + LocalDate.now() + "_.csv");
+              FILE_PICKER,
+              userDirPath + "\\downloads\\sormas_f\u00E4lle_" + LocalDate.now() + "_.csv");
           //          TimeUnit.SECONDS.sleep(3);
         });
 
