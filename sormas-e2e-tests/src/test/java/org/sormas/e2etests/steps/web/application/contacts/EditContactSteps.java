@@ -76,32 +76,32 @@ public class EditContactSteps implements En {
           openContactFromResultsByUUID(collectedContact.getUuid());
         });
 
-      When(
-              "I check the created data for DE version is correctly displayed on Edit Contact page",
-              () -> {
-                  collectedContact = collectContactDataDE();
-                  createdContact = CreateNewContactSteps.contact;
-                  ComparisonHelper.compareEqualFieldsOfEntities(
-                          collectedContact,
-                          createdContact,
-                          List.of(
-                                  "firstName",
-                                  "lastName",
-                                  "returningTraveler",
-                                  "reportDate",
-                                  "diseaseOfSourceCase",
-                                  "caseIdInExternalSystem",
-                                  "dateOfLastContact",
-                                  "caseOrEventInformation",
-                                  "responsibleRegion",
-                                  "responsibleDistrict",
-                                  "responsibleCommunity",
-                                  "additionalInformationOnContactType",
-                                  "typeOfContact",
-                                  "contactCategory",
-                                  "relationshipWithCase",
-                                  "descriptionOfHowContactTookPlace"));
-              });
+    When(
+        "I check the created data for DE version is correctly displayed on Edit Contact page",
+        () -> {
+          collectedContact = collectContactDataDE();
+          createdContact = CreateNewContactSteps.contact;
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              collectedContact,
+              createdContact,
+              List.of(
+                  "firstName",
+                  "lastName",
+                  "returningTraveler",
+                  "reportDate",
+                  "diseaseOfSourceCase",
+                  "caseIdInExternalSystem",
+                  "dateOfLastContact",
+                  "caseOrEventInformation",
+                  "responsibleRegion",
+                  "responsibleDistrict",
+                  "responsibleCommunity",
+                  "additionalInformationOnContactType",
+                  "typeOfContact",
+                  "contactCategory",
+                  "relationshipWithCase",
+                  "descriptionOfHowContactTookPlace"));
+        });
 
     When(
         "I check the created data is correctly displayed on Edit Contact page",
