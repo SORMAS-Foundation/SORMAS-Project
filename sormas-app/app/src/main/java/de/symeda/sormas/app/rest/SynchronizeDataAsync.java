@@ -15,18 +15,18 @@
 
 package de.symeda.sormas.app.rest;
 
-import android.content.Context;
-import android.os.AsyncTask;
-import android.util.Log;
+import java.io.IOException;
+import java.sql.SQLException;
+import java.util.Date;
+import java.util.List;
 
 import com.google.firebase.perf.FirebasePerformance;
 import com.google.firebase.perf.metrics.AddTrace;
 import com.google.firebase.perf.metrics.Trace;
 
-import java.io.IOException;
-import java.sql.SQLException;
-import java.util.Date;
-import java.util.List;
+import android.content.Context;
+import android.os.AsyncTask;
+import android.util.Log;
 
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.infrastructure.InfrastructureChangeDatesDto;

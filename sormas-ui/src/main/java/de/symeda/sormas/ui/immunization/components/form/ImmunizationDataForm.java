@@ -551,6 +551,10 @@ public class ImmunizationDataForm extends AbstractEditForm<ImmunizationDto> {
 		super.setValue(newFieldValue);
 		ignoreMeansOfImmunizationChange = false;
 		previousMeansOfImmunization = newFieldValue.getMeansOfImmunization();
+
+		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
+		// this hopefully resets everything to its correct value
+		discard();
 	}
 
 	@Override

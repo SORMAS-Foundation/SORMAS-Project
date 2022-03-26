@@ -257,6 +257,7 @@ public interface Captions {
 	String caseArchivedCases = "caseArchivedCases";
 	String caseBackToDirectory = "caseBackToDirectory";
 	String caseCalculateCompleteness = "caseCalculateCompleteness";
+	String caseCancelDeletion = "caseCancelDeletion";
 	String caseCasesList = "caseCasesList";
 	String caseClassificationCalculationButton = "caseClassificationCalculationButton";
 	String caseCloneCaseWithNewDisease = "caseCloneCaseWithNewDisease";

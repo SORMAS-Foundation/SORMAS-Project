@@ -186,6 +186,7 @@ import de.symeda.sormas.api.therapy.TherapyReferenceDto;
 import de.symeda.sormas.api.therapy.TreatmentCriteria;
 import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.user.NotificationType;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -1505,7 +1506,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		// Setting the surveillance officer is only allowed if all selected cases are in
 		// the same district
 		if (surveillanceOfficerChange) {
-			existingCase.setSurveillanceOfficer(userService.getByUuid(updatedCaseBulkEditData.getSurveillanceOfficer().getUuid()));
+			UserReferenceDto surveillanceOfficer = updatedCaseBulkEditData.getSurveillanceOfficer();
+			existingCase.setSurveillanceOfficer(surveillanceOfficer != null ? userService.getByUuid(surveillanceOfficer.getUuid()) : null);
 		}
 
 		if (Objects.nonNull(updatedCaseBulkEditData.getHealthFacilityDetails())) {
@@ -2382,23 +2384,26 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		deleteCase(caze);
 	}
 
-	private void deleteCase(Case caze) throws ExternalSurveillanceToolException {
-		externalJournalService.handleExternalJournalPersonUpdateAsync(caze.getPerson().toReference());
-		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && caze.getExternalID() != null && !caze.getExternalID().isEmpty()) {
-			List<CaseDataDto> casesWithSameExternalId = getByExternalId(caze.getExternalID());
-			if (casesWithSameExternalId != null && casesWithSameExternalId.size() == 1) {
-				externalSurveillanceToolGatewayFacade.deleteCases(Collections.singletonList(toDto(caze)));
-			}
-		}
+	@Override
+	@RolesAllowed(UserRight._CASE_DELETE)
+	public void deleteWithContacts(String caseUuid) {
 
+		Case caze = service.getByUuid(caseUuid);
+		deleteCase(caze);
+
+		Optional.of(caze.getContacts()).ifPresent(cl -> cl.forEach(c -> contactService.delete(c)));
+	}
+
+	private void deleteCase(Case caze) throws ExternalSurveillanceToolException {
+
+		externalJournalService.handleExternalJournalPersonUpdateAsync(caze.getPerson().toReference());
 		service.delete(caze);
 	}
 
 	@RolesAllowed(UserRight._CASE_DELETE)
+	@Override
 	public List<String> deleteCases(List<String> caseUuids) {
-		if (!userService.hasRight(UserRight.CASE_DELETE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete cases.");
-		}
+
 		List<String> deletedCasesUuids = new ArrayList<>();
 		List<Case> casesToBeDeleted = service.getByUuids(caseUuids);
 		if (casesToBeDeleted != null) {
@@ -2426,6 +2431,17 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		service.ensurePersisted(caze);
 
 		delete(caseUuid);
+	}
+
+	@RolesAllowed(UserRight._CASE_DELETE)
+	public void deleteCaseInExternalSurveillanceTool(Case caze) {
+
+		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && caze.getExternalID() != null && !caze.getExternalID().isEmpty()) {
+			List<CaseDataDto> casesWithSameExternalId = getByExternalId(caze.getExternalID());
+			if (casesWithSameExternalId != null && casesWithSameExternalId.size() == 1) {
+				externalSurveillanceToolGatewayFacade.deleteCases(Collections.singletonList(toDto(caze)));
+			}
+		}
 	}
 
 	@Override
@@ -2936,7 +2952,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		return target;
 	}
-
 
 	private Map<ReinfectionDetail, Boolean> cleanupReinfectionDetails(Map<ReinfectionDetail, Boolean> reinfectionDetails) {
 		if (reinfectionDetails != null && reinfectionDetails.containsValue(Boolean.FALSE)) {

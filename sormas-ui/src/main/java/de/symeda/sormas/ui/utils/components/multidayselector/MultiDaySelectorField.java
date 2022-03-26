@@ -76,8 +76,8 @@ public class MultiDaySelectorField extends CustomField<MultiDaySelectorDto> {
 			startDateBindingBuilder = startDateBindingBuilder.withValidator(
 				new DateComparisonValidator(
 					reportDate,
-					false,
-					I18nProperties.getValidationError(Validations.afterDate, startDate.getCaption(), reportDate.getCaption())));
+					true,
+					I18nProperties.getValidationError(Validations.beforeDate, startDate.getCaption(), reportDate.getCaption())));
 		}
 		startDateBindingBuilder.bind(MultiDaySelectorDto.START_DATE);
 		startDate.addValueChangeListener(e -> {
@@ -103,8 +103,8 @@ public class MultiDaySelectorField extends CustomField<MultiDaySelectorDto> {
 			endDateBindingBuilder = endDateBindingBuilder.withValidator(
 				new DateComparisonValidator(
 					reportDate,
-					false,
-					I18nProperties.getValidationError(Validations.afterDate, endDate.getCaption(), reportDate.getCaption())));
+					true,
+					I18nProperties.getValidationError(Validations.beforeDate, endDate.getCaption(), reportDate.getCaption())));
 		}
 		endDateBindingBuilder.bind(MultiDaySelectorDto.END_DATE);
 		endDate.setRangeEnd(LocalDate.now());

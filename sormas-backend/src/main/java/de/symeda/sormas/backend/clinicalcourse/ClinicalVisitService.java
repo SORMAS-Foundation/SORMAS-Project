@@ -83,7 +83,7 @@ public class ClinicalVisitService extends AdoServiceWithUserFilter<ClinicalVisit
 		Join<ClinicalVisit, ClinicalCourse> clinicalCourse = from.join(ClinicalVisit.CLINICAL_COURSE, JoinType.LEFT);
 		Join<ClinicalCourse, Case> caze = clinicalCourse.join(ClinicalCourse.CASE, JoinType.LEFT);
 
-		Predicate filter = cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED)));
+		Predicate filter = caseService.createActiveCasesFilter(cb, caze);
 
 		if (getCurrentUser() != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
@@ -109,7 +109,7 @@ public class ClinicalVisitService extends AdoServiceWithUserFilter<ClinicalVisit
 		Join<ClinicalVisit, ClinicalCourse> clinicalCourse = from.join(ClinicalVisit.CLINICAL_COURSE, JoinType.LEFT);
 		Join<ClinicalCourse, Case> caze = clinicalCourse.join(ClinicalCourse.CASE, JoinType.LEFT);
 
-		Predicate filter = cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED)));
+		Predicate filter = caseService.createActiveCasesFilter(cb, caze);
 
 		if (user != null) {
 			Predicate userFilter = createUserFilter(cb, cq, from);
