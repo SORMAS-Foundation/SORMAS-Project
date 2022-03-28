@@ -124,12 +124,15 @@ import de.symeda.sormas.api.sample.AdditionalTestDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
+import de.symeda.sormas.api.sample.SampleAssociationType;
+import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.share.ExternalShareStatus;
 import de.symeda.sormas.api.symptoms.SymptomState;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.task.TaskContext;
+import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
@@ -166,6 +169,43 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@Rule
 	public final ExpectedException exception = ExpectedException.none();
 
+	@Test
+	public void testFilterCasesByRegion() {
+
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		RDCFEntities rdcf2 = creator.createRDCFEntities("Region2", "District2", "Community2", "Facility2");
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 1);
+		CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+
+		caze.setRegion(new RegionReferenceDto(rdcf2.region.getUuid(), null, null));
+		caze.setDistrict(new DistrictReferenceDto(rdcf2.district.getUuid(), null, null));
+		caze.setCommunity(new CommunityReferenceDto(rdcf2.community.getUuid(), null, null));
+		caze.setHealthFacility(new FacilityReferenceDto(rdcf2.facility.getUuid(), null, null));
+
+		getCaseFacade().save(caze);
+
+		final CaseCriteria caseCriteria = new CaseCriteria().region(new RegionReferenceDto(rdcf.region.getUuid(), null, null))
+			.district(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
+		Assert.assertEquals(1, getCaseFacade().getIndexList(caseCriteria, 0, 100, null).size());
+		final SampleCriteria sampleCriteria = new SampleCriteria().region(new RegionReferenceDto(rdcf.region.getUuid(), null, null))
+			.sampleAssociationType(SampleAssociationType.CASE)
+			.district(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
+		Assert.assertEquals(1, getSampleFacade().getIndexList(sampleCriteria, 0, 100, null).size());
+		final TaskCriteria taskCriteria = new TaskCriteria().region(new RegionReferenceDto(rdcf.region.getUuid(), null, null))
+			.district(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
+		Assert.assertEquals(1, getTaskFacade().getIndexList(taskCriteria, 0, 100, null).size());
+	}
+	
 	@Test
 	public void testGetCasesForDuplicateMerging() {
 
