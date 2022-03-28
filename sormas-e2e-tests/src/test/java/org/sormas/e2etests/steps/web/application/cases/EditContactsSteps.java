@@ -91,7 +91,6 @@ public class EditContactsSteps implements En {
     When(
         "I open the Case Contacts tab",
         () -> {
-            webDriverHelpers.clickOnWebElementBySelector(CONTACT_CREATED_POPUP);
           webDriverHelpers.clickOnWebElementBySelector(CONTACTS_TAB_BUTTON);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NEW_CONTACT_BUTTON);
         });
