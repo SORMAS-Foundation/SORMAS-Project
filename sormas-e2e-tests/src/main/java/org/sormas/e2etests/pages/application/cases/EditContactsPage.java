@@ -44,6 +44,4 @@ public class EditContactsPage {
           By.xpath(" //div[contains(@class, 'popupContent')]//tr[contains(@class, 'v-grid-row-has-data')]");
   public static final By FIRST_RESULT_IN_GRID_IMPORT_POPUP=
           By.xpath(" //div[contains(@class, 'popupContent')]//tr[contains(@class, 'v-grid-row-has-data')]//td");
-
-
 }
