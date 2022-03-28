@@ -235,40 +235,6 @@ Feature: Case end to end tests
     Then I navigate to symptoms tab
     And I check if created data is correctly displayed in Symptoms tab for Set cleared to Unknown
     Then I click on Clinical Course tab from Edit Case page
-    And I set Diabetes radio button to YES
-    And I set Diabetes radio button to NO
-    And I set Diabetes radio button to UNKNOWN
-    And I set Diabetes radio button to UNKNOWN
-    And I set Immunodeficiency including HIV radio button to YES
-    And I set Immunodeficiency including HIV radio button to NO
-    And I set Immunodeficiency including HIV radio button to UNKNOWN
-    And I set Immunodeficiency including HIV radio button to UNKNOWN
-    And I set Liver disease radio button to YES
-    And I set Liver disease radio button to NO
-    And I set Liver disease radio button to UNKNOWN
-    And I set Liver disease radio button to UNKNOWN
-    And I set Malignancy radio button to YES
-    And I set Malignancy radio button to NO
-    And I set Malignancy radio button to UNKNOWN
-    And I set Malignancy radio button to UNKNOWN
-    And I set Chronic pulmonary disease radio button to YES
-    And I set Chronic pulmonary disease radio button to NO
-    And I set Chronic pulmonary disease radio button to UNKNOWN
-    And I set Chronic pulmonary disease radio button to UNKNOWN
-    And I set Renal disease radio button to YES
-    And I set Renal disease radio button to NO
-    And I set Renal disease radio button to UNKNOWN
-    And I set Renal disease radio button to UNKNOWN
-    And I set Chronic neurological/neuromuscular disease radio button to YES
-    And I set Chronic neurological/neuromuscular disease radio button to NO
-    And I set Chronic neurological/neuromuscular disease radio button to UNKNOWN
-    And I set Chronic neurological/neuromuscular disease radio button to UNKNOWN
-    And I set Cardiovascular disease including hypertension radio button to YES
-    And I set Cardiovascular disease including hypertension radio button to NO
-    And I set Cardiovascular disease including hypertension radio button to UNKNOWN
-    And I set Cardiovascular disease including hypertension radio button to UNKNOWN
-    Then I click Save button on Clinical Course Tab
-    And I check if Case saved popup appeared and close it
 
   @issue=SORDEV-8412 @env_main
   Scenario: Change of Isolation/Quarantine should be documented
