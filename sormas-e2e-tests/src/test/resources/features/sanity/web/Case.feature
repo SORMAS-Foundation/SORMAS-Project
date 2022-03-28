@@ -137,7 +137,7 @@ Feature: Case end to end tests
     When I am accessing the Symptoms tab using of created case via api
     And I check the created data is correctly displayed on Symptoms tab page
 
-@issue=SORDEV-5496 @env_main
+  @issue=SORDEV-5496 @env_main
   Scenario: Generate and download Case document
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -192,7 +192,7 @@ Feature: Case end to end tests
     Then I click on Save button from New Treatment popup
     Then I check if created data is correctly displayed in Treatment section
 
-    @issue=SORDEV-5518 @env_main
+  @issue=SORDEV-5518 @env_main
   Scenario: Fill the case person tab
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -209,7 +209,7 @@ Feature: Case end to end tests
     And I click on save button to Save Person data in Case Person Tab
     Then I check if saved Person data is correct
 
-  @issue=SORDEV-5529 @env_main @ignore
+  @issue=SORDEV-5529 @env_main
   Scenario: Fill the clinical course tab
     When API: I create a new person
     Then API: I check that POST call body is "OK"
