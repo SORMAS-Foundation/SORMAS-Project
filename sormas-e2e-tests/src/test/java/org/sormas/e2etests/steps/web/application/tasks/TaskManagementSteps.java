@@ -83,14 +83,8 @@ public class TaskManagementSteps implements En {
               ASSIGNED_USER_FILTER_INPUT, assignedUser.substring(0, indexToSubstring).trim());
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(lastTaskEditButton, 40);
-          int attempts = 0;
-          do {
-            webDriverHelpers.javaScriptClickElement(lastTaskEditButton);
-            attempts++;
-          } while (attempts < 5
-              && webDriverHelpers.isElementVisibleWithTimeout(TASK_STATUS_OPTIONS, 3));
-
-          // webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(TASK_STATUS_OPTIONS);
+          webDriverHelpers.clickElementSeveralTimesUntilNextElementIsDisplayed(
+              lastTaskEditButton, TASK_STATUS_OPTIONS, 5);
         });
 
     When(
