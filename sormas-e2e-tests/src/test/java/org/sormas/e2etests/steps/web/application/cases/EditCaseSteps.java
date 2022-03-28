@@ -746,7 +746,7 @@ public class EditCaseSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EXTRA_COMMENT_INPUT);
           fillExtraComment(aQuarantineOrder.getExtraComment());
           webDriverHelpers.clickOnWebElementBySelector(CREATE_QUARANTINE_ORDER_BUTTON);
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CASE_SAVED_POPUP);
+          //  webDriverHelpers.waitUntilIdentifiedElementIsPresent(CASE_SAVED_POPUP);
         });
 
     And(
