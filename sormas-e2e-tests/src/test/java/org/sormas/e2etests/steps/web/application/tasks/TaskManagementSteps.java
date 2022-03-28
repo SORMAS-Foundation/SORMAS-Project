@@ -21,8 +21,7 @@ package org.sormas.e2etests.steps.web.application.tasks;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.APPLY_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.RESET_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
-import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.COMMENTS_ON_EXECUTION_TEXTAREA;
-import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.TASK_TYPE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.*;
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.*;
 
 import cucumber.api.java8.En;
@@ -85,8 +84,7 @@ public class TaskManagementSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(lastTaskEditButton, 40);
           webDriverHelpers.clickOnWebElementBySelector(lastTaskEditButton);
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              COMMENTS_ON_EXECUTION_TEXTAREA);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(TASK_STATUS_OPTIONS);
         });
 
     When(

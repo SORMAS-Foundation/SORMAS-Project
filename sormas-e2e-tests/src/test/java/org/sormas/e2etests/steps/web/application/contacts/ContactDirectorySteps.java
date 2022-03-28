@@ -500,8 +500,8 @@ public class ContactDirectorySteps implements En {
     When(
         "^I click on Line Listing button$",
         () -> {
-            webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LINE_LISTING);
-            webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LINE_LISTING);
+          webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING);
         });
 
     And(
