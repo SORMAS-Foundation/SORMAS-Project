@@ -24,6 +24,7 @@ public class CaseImportExportPage {
 
   public static final By CASE_EXPORT_BUTTON = By.id("export");
   public static final By CUSTOM_CASE_EXPORT_BUTTON = By.id("exportCaseCustom");
+  public static final By BASIC_CASE_EXPORT_BUTTON = By.id("exportBasic");
   public static final By NEW_EXPORT_CONFIGURATION_BUTTON = By.id("exportNewExportConfiguration");
   public static final By CONFIGURATION_NAME_INPUT =
       By.xpath("//*[@class='v-widget v-has-caption v-caption-on-top']//input");
@@ -33,6 +34,10 @@ public class CaseImportExportPage {
       By.xpath("//label[text()='First name']");
   public static final By EXPORT_CONFIGURATION_DATA_LAST_NAME_CHECKBOX =
       By.xpath("//label[text()='Last name']");
+  public static final By EXPORT_CONFIGURATION_DATA_REGION_CHECKBOX =
+      By.xpath("//label[text()='region']");
+  public static final By EXPORT_CONFIGURATION_DATA_DISTRICT_CHECKBOX =
+      By.xpath("//label[text()='District']");
   public static final By NEW_EXPORT_CONFIGURATION_SAVE_BUTTON = By.id("actionSave");
   public static final By CUSTOM_CASE_EXPORT_DOWNLOAD_BUTTON =
       By.xpath("//div[@class='popupContent']//div[@class='v-slot v-slot-primary']");

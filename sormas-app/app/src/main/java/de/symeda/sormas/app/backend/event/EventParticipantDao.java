@@ -111,6 +111,12 @@ public class EventParticipantDao extends AbstractAdoDao<EventParticipant> {
 		deleteCascade(eventParticipant);
 	}
 
+	public void deleteEventParticipantAndAllDependingEntities(String eventParticipantUuid) throws SQLException {
+		EventParticipant eventParticipant = queryUuidWithEmbedded(eventParticipantUuid);
+
+		deleteEventParticipant(eventParticipant);
+	}
+
 	// TODO #704
 //    @Override
 //    public void markAsRead(EventParticipant eventParticipant) {

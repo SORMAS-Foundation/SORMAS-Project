@@ -635,7 +635,7 @@ public class ContactController {
 
 		// Create a temporary contact in order to use the CommitDiscardWrapperComponent
 		ContactBulkEditData bulkEditData = new ContactBulkEditData();
-		BulkContactDataForm form = new BulkContactDataForm(district);
+		BulkContactDataForm form = new BulkContactDataForm(district, selectedContacts);
 		form.setValue(bulkEditData);
 		final CommitDiscardWrapperComponent<BulkContactDataForm> editView =
 			new CommitDiscardWrapperComponent<BulkContactDataForm>(form, form.getFieldGroup());

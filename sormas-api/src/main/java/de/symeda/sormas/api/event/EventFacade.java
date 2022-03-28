@@ -33,7 +33,6 @@ import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
-import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -95,4 +94,10 @@ public interface EventFacade extends CoreFacade<EventDto, EventIndexDto, EventRe
 		boolean eventStatusChange,
 		boolean eventInvestigationStatusChange,
 		boolean eventManagementStatusChange);
+
+	void archive(String eventUuid, Date endOfProcessingDate);
+
+	void archive(List<String> eventUuids);
+
+	void dearchive(List<String> eventUuids, String dearchiveReason);
 }

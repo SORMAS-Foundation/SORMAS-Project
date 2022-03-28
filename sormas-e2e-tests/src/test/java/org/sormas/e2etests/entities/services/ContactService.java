@@ -243,4 +243,52 @@ public class ContactService {
         .contactPersonEmail(firstName + lastName + emailDomain)
         .build();
   }
+
+  public Exposure buildGeneratedExposureDataContactForRandomInputsDE() {
+    firstName = faker.name().firstName();
+    lastName = faker.name().lastName();
+    return Exposure.builder()
+        .startOfExposure(LocalDate.now().minusDays(3))
+        .endOfExposure(LocalDate.now().minusDays(1))
+        .exposureDescription(faker.medical().symptoms())
+        .typeOfActivity(TypeOfActivityExposure.VISIT)
+        .exposureDetailsRole(ExposureDetailsRole.MEDICAL_STAFF)
+        .riskArea(YesNoUnknownOptions.NO)
+        .indoors(YesNoUnknownOptions.YES)
+        .outdoors(YesNoUnknownOptions.NO)
+        .wearingMask(YesNoUnknownOptions.NO)
+        .wearingPpe(YesNoUnknownOptions.NO)
+        .otherProtectiveMeasures(YesNoUnknownOptions.NO)
+        .shortDistance(YesNoUnknownOptions.YES)
+        .longFaceToFaceContact(YesNoUnknownOptions.YES)
+        .percutaneous(YesNoUnknownOptions.NO)
+        .contactToBodyFluids(YesNoUnknownOptions.NO)
+        .handlingSamples(YesNoUnknownOptions.NO)
+        .typeOfPlace(TypeOfPlace.HOME)
+        .typeOfPlaceDetails(faker.address().fullAddress())
+        .continent("Europa")
+        .subcontinent("Westeuropa")
+        .country("Deutschland")
+        .exposureRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .district(DistrictsValues.VoreingestellterLandkreis.getName())
+        .community(CommunityValues.VoreingestellteGemeinde.getName())
+        .street(faker.address().streetAddress())
+        .houseNumber(String.valueOf(faker.number().numberBetween(1, 99)))
+        .additionalInformation(faker.address().streetAddress())
+        .postalCode(faker.address().zipCode())
+        .city(faker.address().cityName())
+        .areaType("St\u00E4dtisch")
+        .latitude(faker.address().latitude())
+        .longitude(faker.address().longitude())
+        .latLonAccuracy(faker.address().latitude())
+        .facilityCategory(FacilityCategory.ACCOMMODATION.getFacilityDE())
+        .facilityType(FacilityType.CAMPSITE.getTypeDE())
+        .facility(faker.book().title())
+        .facilityDetails("Andere Einrichtung")
+        .contactPersonFirstName(firstName)
+        .contactPersonLastName(lastName)
+        .contactPersonPhone(faker.phoneNumber().phoneNumber())
+        .contactPersonEmail(firstName + "." + lastName + emailDomain)
+        .build();
+  }
 }

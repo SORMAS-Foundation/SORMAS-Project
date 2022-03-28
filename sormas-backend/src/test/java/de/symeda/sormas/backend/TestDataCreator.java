@@ -619,6 +619,23 @@ public class TestDataCreator {
 		return beanTest.getVaccinationFacade().save(vaccination);
 	}
 
+	public TravelEntryDto createTravelEntry(PersonReferenceDto person, UserReferenceDto reportingUser, RDCF rdcf, Consumer<TravelEntryDto> config) {
+
+		TravelEntryDto travelEntry = TravelEntryDto.build(person);
+		travelEntry.setDisease(Disease.EVD);
+		travelEntry.setReportingUser(reportingUser);
+		travelEntry.setResponsibleRegion(rdcf.region);
+		travelEntry.setResponsibleDistrict(rdcf.district);
+		travelEntry.setPointOfEntry(rdcf.pointOfEntry);
+		travelEntry.setDateOfArrival(new Date());
+
+		if (config != null) {
+			config.accept(travelEntry);
+		}
+
+		return beanTest.getTravelEntryFacade().save(travelEntry);
+	}
+
 	public TravelEntryDto createTravelEntry(
 		PersonReferenceDto person,
 		UserReferenceDto reportingUser,
@@ -1442,7 +1459,7 @@ public class TestDataCreator {
 	}
 
 	public RDCF createRDCF() {
-		return createRDCF("Region", "District", "Community", "Facility");
+		return createRDCF("Region", "District", "Community", "Facility", "PointOfEntry");
 	}
 
 	public RDCF createRDCF(String regionName, String districtName, String communityName, String facilityName) {
