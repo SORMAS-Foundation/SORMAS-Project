@@ -135,6 +135,7 @@ public class EditContactsSteps implements En {
       When(
               "I select first existing person from the Case Contact Import popup",
               () -> {
+                  webDriverHelpers.waitUntilElementIsVisibleAndClickable(COMMIT_BUTTON);
                   webDriverHelpers.clickOnWebElementBySelector(FIRST_RESULT_IN_GRID_IMPORT_POPUP);
               });
     When(
