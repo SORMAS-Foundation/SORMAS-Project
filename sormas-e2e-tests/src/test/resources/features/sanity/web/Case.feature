@@ -601,7 +601,7 @@ Feature: Case end to end tests
     Then I check that the created Pathogen is correctly displayed
     And I save the created sample
     And I click on Case tab from Symptoms tab directory
-    Then I click on save case button
+    Then I click on save case button in Symptoms tab
     And I check that Case Classification has "Confirmed case" value
     When I am accessing the Symptoms tab using of created case via api
     And I click on Clear all button From Symptoms tab
