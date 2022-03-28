@@ -40,4 +40,6 @@ public class EditContactsPage {
   public static final By IMPORT_POPUP_BUTTON = By.cssSelector("[class='v-button']");
   public static final By COMMIT_BUTTON = By.id("commit");
   public static final By IMPORT_SUCCESS = By.xpath("//*[text()='Import successful!']");
+  public static final By NEW_PERSON_RADIOBUTTON=
+          By.xpath("//*[text()='Create a new person']");
 }
