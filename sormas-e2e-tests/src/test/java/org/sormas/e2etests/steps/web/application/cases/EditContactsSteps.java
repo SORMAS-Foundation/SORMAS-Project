@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.cases;
 
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRST_RESULT_IN_GRID;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.*;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RELATIONSHIP_WITH_CASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_COMMUNITY_COMBOBOX;
@@ -132,8 +133,9 @@ public class EditContactsSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(COMMIT_BUTTON);
         });
       When(
-              "I select to create new person from the Case Contact Import popup",
+              "I select first existing person from the Case Contact Import popup",
               () -> {
+                  webDriverHelpers.clickOnWebElementBySelector(FIRST_RESULT_IN_GRID);
                   webDriverHelpers.clickOnWebElementBySelector(NEW_PERSON_RADIOBUTTON);
               });
     When(
