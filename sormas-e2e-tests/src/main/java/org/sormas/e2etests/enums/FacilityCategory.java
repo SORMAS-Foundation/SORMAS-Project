@@ -24,15 +24,17 @@ import lombok.SneakyThrows;
 
 @Getter
 public enum FacilityCategory {
-  ACCOMMODATION("Accommodation"),
-  CARE_FACILITY("Care facility"),
-  MEDICAL_FACILITY("Medical facility"),
-  RESIDENCE("Residence");
+  ACCOMMODATION("Accommodation", "Beherbergungsst\u00E4tten"),
+  CARE_FACILITY("Care facility", "Pflegeeinrichtung"),
+  MEDICAL_FACILITY("Medical facility", "Medizinische Einrichtung"),
+  RESIDENCE("Residence", "Wohnst\u00E4tte");
 
   private final String facility;
+  private final String facilityDE;
 
-  FacilityCategory(String aFacilityCategory) {
+  FacilityCategory(String aFacilityCategory, String aFacilityCategoryDE) {
     facility = aFacilityCategory;
+    facilityDE = aFacilityCategoryDE;
   }
 
   public static String getRandomFacility() {
