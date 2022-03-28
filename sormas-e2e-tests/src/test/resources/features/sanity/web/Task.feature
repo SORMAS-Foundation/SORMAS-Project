@@ -1,7 +1,7 @@
 @UI @Sanity @Task
 Feature: Tasks functionalities
 
-  @env_main @check
+  @env_main
   Scenario: Create and check a new task data
     Given I log in with National User
     And I click on the Tasks button from navbar
