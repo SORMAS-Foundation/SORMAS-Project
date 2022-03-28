@@ -21,6 +21,7 @@ import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.or;
 import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 
+import de.symeda.sormas.api.utils.fieldaccess.checkers.UserRightFieldAccessChecker;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -45,6 +46,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
@@ -499,7 +501,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		Pseudonymizer pseudonymizer = getPseudonymizerForDtoWithClinician("");
 		return service.getAllActiveCasesAfter(date, includeExtendedChangeDateFilters, batchSize, lastSynchronizedUuid)
 			.stream()
 			.map(c -> convertToDto(c, pseudonymizer))
@@ -1017,7 +1019,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 			Map<Long, UserReference> caseUsers = getCaseUsersForExport(resultList, exportConfiguration);
 
-			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+			Pseudonymizer pseudonymizer = getPseudonymizerForDtoWithClinician(I18nProperties.getCaption(Captions.inaccessibleValue));
 
 			for (CaseExportDto exportDto : resultList) {
 				final boolean inJurisdiction = exportDto.getInJurisdiction();
@@ -1296,7 +1298,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@Override
 	public List<CaseDataDto> getAllCasesOfPerson(String personUuid) {
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		Pseudonymizer pseudonymizer = getPseudonymizerForDtoWithClinician("");
 
 		return service.findBy(new CaseCriteria().person(new PersonReferenceDto(personUuid)), false)
 			.stream()
@@ -1354,7 +1356,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	public CaseDataDto getCaseDataByUuid(String uuid) {
-		return convertToDto(service.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
+		return convertToDto(service.getByUuid(uuid), getPseudonymizerForDtoWithClinician(""));
 	}
 
 	private CaseDataDto getCaseDataWithoutPseudonyimization(String uuid) {
@@ -1541,7 +1543,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		throws ValidationRuntimeException {
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
 
-		restorePseudonymizedDto(dto, existingCaseDto, existingCaze, Pseudonymizer.getDefault(userService::hasRight));
+		Pseudonymizer pseudonymizer = getPseudonymizerForDtoWithClinician("");
+
+		restorePseudonymizedDto(dto, existingCaseDto, existingCaze, pseudonymizer);
 
 		validateUserRights(dto, existingCaseDto);
 		validate(dto);
@@ -1557,7 +1561,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		doSave(caze, handleChanges, existingCaseDto, syncShares);
 
-		return convertToDto(caze, Pseudonymizer.getDefault(userService::hasRight));
+		return convertToDto(caze, pseudonymizer);
 	}
 
 	public void syncSharesAsync(ShareTreeCriteria criteria) {
@@ -3976,7 +3980,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	public List<CaseDataDto> getByExternalId(String externalId) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		Pseudonymizer pseudonymizer = getPseudonymizerForDtoWithClinician("");
 		return service.getByExternalId(externalId).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
@@ -3984,6 +3988,15 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@RolesAllowed(UserRight._CASE_EDIT)
 	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		service.updateExternalData(externalData);
+	}
+
+	private Pseudonymizer getPseudonymizerForDtoWithClinician(@Nullable String pseudonymizedValue){
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, pseudonymizedValue);
+
+		UserRightFieldAccessChecker clinicianViewRightChecker = new UserRightFieldAccessChecker(UserRight.CASE_CLINICIAN_VIEW, userService.hasRight(UserRight.CASE_CLINICIAN_VIEW));
+		pseudonymizer.addFieldAccessChecker(clinicianViewRightChecker, clinicianViewRightChecker);
+
+		return pseudonymizer;
 	}
 
 	@LocalBean
