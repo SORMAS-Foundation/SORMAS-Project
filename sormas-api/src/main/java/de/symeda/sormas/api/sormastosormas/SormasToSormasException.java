@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,14 +15,15 @@
 
 package de.symeda.sormas.api.sormastosormas;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
+import java.util.List;
+
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.List;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
 
-public class SormasToSormasException extends Exception implements SormasToSormasI18nMessage {
+public class SormasToSormasException extends SormasToSormasI18nMessageError {
 
 	private static final long serialVersionUID = 952700907523341584L;
 
@@ -60,7 +61,7 @@ public class SormasToSormasException extends Exception implements SormasToSormas
 	}
 
 	@Override
-	public String getHumanMessage() {
+	protected String getHumanMessageUnsafe(){
 		if (StringUtils.isNotBlank(i18nTag) && ArrayUtils.isNotEmpty(args)) {
 			return String.format(I18nProperties.getString(i18nTag), args);
 		} else if (StringUtils.isNotBlank(i18nTag)) {
