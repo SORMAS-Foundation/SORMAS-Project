@@ -73,7 +73,7 @@ public class TaskManagementSteps implements En {
           By lastTaskEditButton =
               By.xpath(
                   String.format(
-                      EDIT_BUTTON_XPATH_BY_TEXT, CreateNewTaskSteps.task.getCommentsOnTask()));
+                      EDIT_BUTTON_XPATH_BY_TEXT, CreateNewTaskSteps.task.getCommentsOnExecution()));
           webDriverHelpers.clickOnWebElementBySelector(SHOW_MORE_FILTERS);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               ASSIGNED_USER_FILTER_INPUT);
@@ -83,7 +83,7 @@ public class TaskManagementSteps implements En {
               ASSIGNED_USER_FILTER_INPUT, assignedUser.substring(0, indexToSubstring).trim());
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(lastTaskEditButton, 40);
-          webDriverHelpers.clickOnWebElementBySelector(lastTaskEditButton);
+          webDriverHelpers.javaScriptClickElement(lastTaskEditButton);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(TASK_STATUS_OPTIONS);
         });
 
