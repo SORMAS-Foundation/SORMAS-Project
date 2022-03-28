@@ -170,7 +170,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	public final ExpectedException exception = ExpectedException.none();
 
 	@Test
-	public void testFilterCasesByRegion() {
+	public void testFilterByResponsibleRegionAndDistrictOfCase() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		RDCFEntities rdcf2 = creator.createRDCFEntities("Region2", "District2", "Community2", "Facility2");
