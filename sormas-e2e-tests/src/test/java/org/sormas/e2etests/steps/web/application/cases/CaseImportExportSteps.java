@@ -187,9 +187,9 @@ public class CaseImportExportSteps implements En {
             .build()) {
       r = reader.readAll();
     } catch (IOException e) {
-      log.error("IOException parseCustomCaseExport: ", e);
+      log.error("IOException parseCustomCaseExport: {}", e.getCause());
     } catch (CsvException e) {
-      log.error("CsvException parseCustomCaseExport: ", e);
+      log.error("CsvException parseCustomCaseExport: {}", e.getCause());
     }
     try {
       for (int i = 0; i < r.size(); i++) {
@@ -202,7 +202,7 @@ public class CaseImportExportSteps implements En {
               .lastName(String.format(values[2], Locale.GERMAN))
               .build();
     } catch (NullPointerException e) {
-      log.error("Null pointer exception parseCustomCaseExport: ", e);
+      log.error("Null pointer exception parseCustomCaseExport: {}", e.getCause());
     }
     return builder;
   }
@@ -221,9 +221,9 @@ public class CaseImportExportSteps implements En {
             .build()) {
       r = reader.readAll();
     } catch (IOException e) {
-      log.error("IOException parseCustomCaseExport: ", e);
+      log.error("IOException parseCustomCaseExport: {}", e.getCause());
     } catch (CsvException e) {
-      log.error("CsvException parseCustomCaseExport: ", e);
+      log.error("CsvException parseCustomCaseExport: {}", e.getCause());
     }
     try {
       for (int i = 0; i < r.size(); i++) {
@@ -242,7 +242,7 @@ public class CaseImportExportSteps implements En {
               .pointOfEntry(values[14])
               .build();
     } catch (NullPointerException e) {
-      log.error("Null pointer exception parseCustomCaseExport: ", e);
+      log.error("Null pointer exception parseCustomCaseExport: {}", e.getCause());
     }
     return builder;
   }
