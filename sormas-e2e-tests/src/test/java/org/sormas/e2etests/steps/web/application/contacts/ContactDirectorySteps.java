@@ -566,7 +566,10 @@ public class ContactDirectorySteps implements En {
         });
     When(
         "^I click on Line Listing button$",
-        () -> webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING));
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LINE_LISTING);
+          webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING);
+        });
 
     And(
         "I click on All button in Contact Directory Page",
