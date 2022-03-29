@@ -91,7 +91,6 @@ public class EpidemiologicalDataCaseSteps implements En {
         "I click on New Entry in Action as Case Details Known",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(NEW_ENTRY_EPIDEMIOLOGICAL_DATA);
-          TimeUnit.SECONDS.sleep(5);
         });
 
     When(
