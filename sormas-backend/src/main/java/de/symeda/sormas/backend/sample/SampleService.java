@@ -933,6 +933,9 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 			ensurePersisted(referralSample);
 		}
 
+		// Remove the case association because the case might be permanently deleted
+		sample.setAssociatedCase(null);
+
 		super.delete(sample);
 	}
 
