@@ -154,7 +154,6 @@ import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
 import de.symeda.sormas.backend.event.ContactEventSummaryDetails;
-import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.exposure.Exposure;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
@@ -1444,6 +1443,7 @@ public class ContactFacadeEjb
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	@RolesAllowed(UserRight._SYSTEM)
 	public void archiveAllArchivableContacts(int daysAfterContactsGetsArchived) {
 		archiveAllArchivableContacts(daysAfterContactsGetsArchived, LocalDate.now());
 	}
@@ -1456,7 +1456,10 @@ public class ContactFacadeEjb
 		Root<Contact> from = cq.from(Contact.class);
 
 		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
-		cq.where(cb.equal(from.get(Contact.ARCHIVED), false), cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
+		cq.where(
+			cb.equal(from.get(Contact.ARCHIVED), false),
+			cb.equal(from.get(Contact.DELETED), false),
+			cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
 		cq.select(from.get(Contact.UUID)).distinct(true);
 		List<String> contactUuids = em.createQuery(cq).getResultList();
 
