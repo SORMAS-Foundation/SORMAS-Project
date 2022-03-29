@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -115,6 +116,7 @@ import de.symeda.sormas.backend.vaccination.Vaccination;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb.VaccinationFacadeEjbLocal;
 
 @Stateless(name = "ImmunizationFacade")
+@RolesAllowed(UserRight._IMMUNIZATION_VIEW)
 public class ImmunizationFacadeEjb
 	extends
 	AbstractCoreFacadeEjb<Immunization, ImmunizationDto, ImmunizationIndexDto, ImmunizationReferenceDto, ImmunizationService, ImmunizationCriteria>
@@ -252,6 +254,7 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
+    @RolesAllowed(UserRight._SYSTEM)
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void archiveAllArchivableImmunizations(int daysAfterImmunizationsGetsArchived) {
 		archiveAllArchivableImmunizations(daysAfterImmunizationsGetsArchived, LocalDate.now());
@@ -520,6 +523,7 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
+    @RolesAllowed(UserRight._SYSTEM)
 	public void updateImmunizationStatuses() {
 		service.updateImmunizationStatuses();
 	}

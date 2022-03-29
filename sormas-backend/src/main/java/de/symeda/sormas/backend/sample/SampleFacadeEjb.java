@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -119,6 +120,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "SampleFacade")
+@RolesAllowed(UserRight._SAMPLE_VIEW)
 public class SampleFacadeEjb implements SampleFacade {
 
 	private static final int DELETED_BATCH_SIZE = 1000;
