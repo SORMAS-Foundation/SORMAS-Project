@@ -28,6 +28,8 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ENTE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FACILITY_ACTIVITY_AS_CASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MORE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHOW_MORE_LESS_FILTERS;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_DESCRIPTION;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_TYPE_OF_ACTIVITY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ADDITIONAL_INFORMATION_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CITY_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.COMMUNITY_COMBOBOX;
@@ -46,6 +48,7 @@ import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCas
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.INDOORS_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.LONG_FACE_TO_FACE_CONTACT_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.NEW_CONTACT_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.OPEN_SAVED_ACTIVITY_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.OPEN_SAVED_EXPOSURE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.OTHER_PROTECTIVE_MEASURES_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.OUTDOORS_OPTIONS;
@@ -116,6 +119,7 @@ import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPag
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_GATHERING_DETAILS;
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_PLACE_DETAILS;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
+import static org.sormas.e2etests.steps.web.application.contacts.ContactsLineListingSteps.DATE_FORMATTER_DE;
 import static org.sormas.e2etests.steps.web.application.contacts.EditContactSteps.collectedContact;
 
 import com.github.javafaker.Faker;
@@ -303,6 +307,25 @@ public class ContactDirectorySteps implements En {
         });
 
     When(
+        "I select ([^\"]*) option in Type of activity from Combobox in Activity as Case form",
+        (String typeOfactivity) -> {
+          webDriverHelpers.selectFromCombobox(ACTIVITY_TYPE_OF_ACTIVITY_COMBOBOX, typeOfactivity);
+        });
+    When(
+        "I set Start and End of activity by current date in Activity as Case form",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              START_OF_EXPOSURE_INPUT, DATE_FORMATTER_DE.format(LocalDate.now()));
+          webDriverHelpers.fillInWebElement(
+              END_OF_EXPOSURE_INPUT, DATE_FORMATTER_DE.format(LocalDate.now()));
+        });
+    When(
+        "I fill Description field in Activity as Case form",
+        () -> {
+          webDriverHelpers.fillInWebElement(ACTIVITY_DESCRIPTION, faker.book().title());
+        });
+
+    When(
         "I fill Location form for Type of place by chosen {string} options in Exposure for Epidemiological data",
         (String searchCriteria) -> {
           exposureData = contactService.buildGeneratedExposureDataContactForRandomInputs();
@@ -349,18 +372,17 @@ public class ContactDirectorySteps implements En {
     When(
         "I fill Location form for Type of place field by {string} options in Case directory for DE version",
         (String searchCriteria) -> {
+          exposureData = contactService.buildGeneratedExposureDataContactForRandomInputsDE();
           switch (searchCriteria) {
             case "Unbekannt":
               webDriverHelpers.selectFromCombobox(
                   FACILITY_ACTIVITY_AS_CASE_COMBOBOX, searchCriteria);
-              exposureData = contactService.buildGeneratedExposureDataContactForRandomInputsDE();
               fillLocationDE(exposureData);
               break;
             case "Sonstiges":
               webDriverHelpers.selectFromCombobox(
                   FACILITY_ACTIVITY_AS_CASE_COMBOBOX, searchCriteria);
               webDriverHelpers.fillInWebElement(TYPE_OF_PLACE_DETAILS, faker.book().title());
-              exposureData = contactService.buildGeneratedExposureDataContactForRandomInputsDE();
               fillLocationDE(exposureData);
               break;
             case "Transportmittel":
@@ -373,13 +395,11 @@ public class ContactDirectorySteps implements En {
                   CASE_CONNECTION_NUMBER, String.valueOf(faker.number().numberBetween(1, 200)));
               webDriverHelpers.fillInWebElement(
                   CASE_SEAT_NUMBER, String.valueOf(faker.number().numberBetween(1, 200)));
-              exposureData = contactService.buildGeneratedExposureDataContactForRandomInputsDE();
               fillLocationDE(exposureData);
               break;
             case "Einrichtung":
               webDriverHelpers.selectFromCombobox(
                   FACILITY_ACTIVITY_AS_CASE_COMBOBOX, searchCriteria);
-              exposureData = contactService.buildGeneratedExposureDataContactForRandomInputsDE();
               fillLocationDE(exposureData);
               webDriverHelpers.selectFromCombobox(
                   FACILITY_CATEGORY_COMBOBOX, exposureData.getFacilityCategory());
@@ -400,6 +420,69 @@ public class ContactDirectorySteps implements En {
                   CONTACT_PERSON_EMAIL_ADRESS,
                   Normalizer.normalize(emailAddress, Normalizer.Form.NFD)
                       .replaceAll("[^\\p{ASCII}]", ""));
+              break;
+          }
+        });
+    When(
+        "I fill Location form for Type of place field by {string} options in Case as Activity directory for DE version",
+        (String searchCriteria) -> {
+          exposureData = contactService.buildGeneratedExposureDataContactForRandomInputsDE();
+          String emailAddress = exposureData.getContactPersonEmail();
+          switch (searchCriteria) {
+            case "Einrichtung":
+              webDriverHelpers.selectFromCombobox(
+                  FACILITY_ACTIVITY_AS_CASE_COMBOBOX, searchCriteria);
+              fillLocationDE(exposureData);
+              webDriverHelpers.selectFromCombobox(
+                  FACILITY_TYPE_COMBOBOX,
+                  "Krankenhaus"); // need be hardcoded otherwise must be implement new builder in
+              // contactService and create a new enum
+
+              // TODO This field it not use here ...
+              //              webDriverHelpers.selectFromCombobox(
+              //                  FACILITY_CATEGORY_COMBOBOX, exposureData.getFacilityCategory());
+
+              webDriverHelpers.selectFromCombobox(
+                  FACILITY_DETAILS_COMBOBOX, exposureData.getFacilityDetails());
+              webDriverHelpers.fillInWebElement(
+                  FACILITY_NAME_AND_DESCRIPTION, exposureData.getFacilityDetails());
+              webDriverHelpers.fillInWebElement(
+                  CONTACT_PERSON_FIRST_NAME, exposureData.getContactPersonFirstName());
+              webDriverHelpers.fillInWebElement(
+                  CONTACT_PERSON_LAST_NAME, exposureData.getContactPersonLastName());
+              webDriverHelpers.fillInWebElement(
+                  CONTACT_PERSON_PHONE_NUMBER, exposureData.getContactPersonPhone());
+              webDriverHelpers.fillInWebElement(
+                  CONTACT_PERSON_EMAIL_ADRESS,
+                  Normalizer.normalize(emailAddress, Normalizer.Form.NFD)
+                      .replaceAll("[^\\p{ASCII}]", ""));
+              break;
+            case "Gemeinschaftseinrichtung":
+              webDriverHelpers.selectFromCombobox(
+                  FACILITY_ACTIVITY_AS_CASE_COMBOBOX, searchCriteria);
+              fillLocationDE(exposureData);
+              webDriverHelpers.selectFromCombobox(FACILITY_TYPE_COMBOBOX, "Schule");
+              webDriverHelpers.selectFromCombobox(
+                  FACILITY_DETAILS_COMBOBOX, exposureData.getFacilityDetails());
+              webDriverHelpers.fillInWebElement(
+                  FACILITY_NAME_AND_DESCRIPTION, exposureData.getFacilityDetails());
+              webDriverHelpers.fillInWebElement(
+                  CONTACT_PERSON_FIRST_NAME, exposureData.getContactPersonFirstName());
+              webDriverHelpers.fillInWebElement(
+                  CONTACT_PERSON_LAST_NAME, exposureData.getContactPersonLastName());
+              webDriverHelpers.fillInWebElement(
+                  CONTACT_PERSON_PHONE_NUMBER, exposureData.getContactPersonPhone());
+              webDriverHelpers.fillInWebElement(
+                  CONTACT_PERSON_EMAIL_ADRESS,
+                  Normalizer.normalize(emailAddress, Normalizer.Form.NFD)
+                      .replaceAll("[^\\p{ASCII}]", ""));
+              break;
+            case "Sonstiges":
+              webDriverHelpers.selectFromCombobox(
+                  FACILITY_ACTIVITY_AS_CASE_COMBOBOX, searchCriteria);
+              webDriverHelpers.fillInWebElement(TYPE_OF_PLACE_DETAILS, faker.book().title());
+              exposureData = contactService.buildGeneratedExposureDataContactForRandomInputsDE();
+              fillLocationDE(exposureData);
               break;
           }
         });
@@ -670,7 +753,6 @@ public class ContactDirectorySteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(OPEN_SAVED_EXPOSURE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(OPEN_SAVED_EXPOSURE_BUTTON);
           Exposure actualLocationData = collectLocationData();
-          System.out.println("From exposure: " + exposureData.getLongitude());
           ComparisonHelper.compareEqualFieldsOfEntities(
               actualLocationData,
               exposureData,
@@ -687,6 +769,36 @@ public class ContactDirectorySteps implements En {
                   "postalCode",
                   "city",
                   "areaType"));
+        });
+
+    When(
+        "I am checking all Location data in Activity as Case are saved and displayed",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(OPEN_SAVED_ACTIVITY_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(OPEN_SAVED_ACTIVITY_BUTTON);
+          Exposure actualLocationData = collectLocationData();
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              actualLocationData,
+              exposureData,
+              List.of(
+                  "continent",
+                  "subcontinent",
+                  "country",
+                  "exposureRegion",
+                  "district",
+                  "community",
+                  "street",
+                  "houseNumber",
+                  "additionalInformation",
+                  "postalCode",
+                  "city",
+                  "areaType"));
+        });
+
+    When(
+        "I click on edit Activity as Case vision button",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(OPEN_SAVED_ACTIVITY_BUTTON);
         });
 
     When(

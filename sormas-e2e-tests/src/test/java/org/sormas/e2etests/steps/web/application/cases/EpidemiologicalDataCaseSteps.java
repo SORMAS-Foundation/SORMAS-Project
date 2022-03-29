@@ -2,6 +2,7 @@ package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.*;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.NEW_ENTRY_EPIDEMIOLOGICAL_DATA;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_CONTACT_WINDOW_FIRST_RESULT_OPTION;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_WINDOW_CONTACT;
@@ -10,7 +11,6 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOU
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_ACTIVITY_DETAILS;
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_GATHERING_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_GATHERING_DETAILS;
-import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.NEW_ENTRY_EPIDEMIOLOGICAL_DATA;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.cases.FollowUpStep.faker;
 
@@ -241,6 +241,12 @@ public class EpidemiologicalDataCaseSteps implements En {
         });
     When(
         "I click on save button in Exposure for Epidemiological data tab in Cases",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
+        });
+
+    When(
+        "I click on save button in Activity as Case data tab in Cases",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
         });
