@@ -18,7 +18,6 @@ import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.maxBy;
 
-import de.symeda.sormas.api.user.UserRight;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -108,6 +107,7 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -305,6 +305,10 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._PERSON_VIEW,
+		UserRight._EXTERNAL_VISITS,
+		UserRight._SYSTEM })
 	public JournalPersonDto getPersonForJournal(String uuid) {
 		PersonDto detailedPerson = getPersonByUuid(uuid);
 		return getPersonForJournal(detailedPerson);

@@ -554,7 +554,9 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CONTACT_ARCHIVE)
+	@RolesAllowed({
+		UserRight._CONTACT_ARCHIVE,
+		UserRight._SYSTEM })
 	public void archive(List<String> entityUuids) {
 		super.archive(entityUuids);
 	}

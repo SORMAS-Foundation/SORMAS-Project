@@ -2433,7 +2433,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		delete(caseUuid);
 	}
 
-	@RolesAllowed(UserRight._CASE_DELETE)
+	@RolesAllowed({
+		UserRight._CASE_DELETE,
+		UserRight._SYSTEM })
 	public void deleteCaseInExternalSurveillanceTool(Case caze) {
 
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled() && caze.getExternalID() != null && !caze.getExternalID().isEmpty()) {
@@ -2455,7 +2457,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	@RolesAllowed(UserRight._CASE_ARCHIVE)
+	@RolesAllowed({
+		UserRight._CASE_ARCHIVE,
+		UserRight._SYSTEM })
 	public void archive(List<String> entityUuids, boolean includeContacts) {
 		super.archive(entityUuids);
 		if (includeContacts) {
