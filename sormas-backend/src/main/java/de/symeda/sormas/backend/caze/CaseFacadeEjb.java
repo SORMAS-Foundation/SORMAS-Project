@@ -69,6 +69,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.vaccination.VaccinationService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -462,6 +463,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	private HealthConditionsMapper healthConditionsMapper;
 	@EJB
 	private TravelEntryService travelEntryService;
+	@EJB
+	private VaccinationService vaccinationService;
+	@EJB
+	private CaseService caseService;
 
 	@Resource
 	private ManagedScheduledExecutorService executorService;
@@ -1138,7 +1143,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 							filteredImmunizations.sort(Comparator.comparing(i -> ImmunizationEntityHelper.getDateForComparison(i, false)));
 							Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
 							Integer numberOfDoses = mostRecentImmunization.getNumberOfDoses();
-							exportDto.setNumberOfDoses(numberOfDoses != null ? String.valueOf(numberOfDoses) : "");
+							exportDto.setNumberOfDoses(
+								numberOfDoses != null
+									? String.valueOf(numberOfDoses)
+									: getNumberOfDosesFromVaccinations(exportDto.getUuid(), mostRecentImmunization.getVaccinations()));
 
 							if (CollectionUtils.isNotEmpty(mostRecentImmunization.getVaccinations())) {
 								List<Vaccination> sortedVaccinations = mostRecentImmunization.getVaccinations()
@@ -1244,6 +1252,17 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 
 		return caseUsers;
+	}
+
+	private String getNumberOfDosesFromVaccinations(String caseUuid, List<Vaccination> vaccinations) {
+		Case caze = caseService.getByUuid(caseUuid);
+
+		Optional<Vaccination> lastVaccinationOptional = vaccinations.stream()
+			.filter(v -> vaccinationService.isVaccinationRelevant(caze, v))
+			.max(Comparator.comparing(Vaccination::getVaccinationDate));
+		Vaccination lastVaccination = lastVaccinationOptional.orElse(null);
+
+		return lastVaccination != null ? lastVaccination.getVaccineDose() : "";
 	}
 
 	@Override
