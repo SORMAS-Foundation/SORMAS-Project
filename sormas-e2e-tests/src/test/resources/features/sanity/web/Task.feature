@@ -1,8 +1,7 @@
 @UI @Sanity @Task
 Feature: Tasks functionalities
 
-  #please check this test once test-auto has latest development version
-  @env_main @ignore
+  @env_main
   Scenario: Create and check a new task data
     Given I log in with National User
     And I click on the Tasks button from navbar

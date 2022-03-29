@@ -21,8 +21,7 @@ package org.sormas.e2etests.steps.web.application.tasks;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.APPLY_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.RESET_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
-import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.COMMENTS_ON_EXECUTION_TEXTAREA;
-import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.TASK_TYPE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.*;
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.*;
 
 import cucumber.api.java8.En;
@@ -74,11 +73,18 @@ public class TaskManagementSteps implements En {
           By lastTaskEditButton =
               By.xpath(
                   String.format(
-                      EDIT_BUTTON_XPATH_BY_TEXT, CreateNewTaskSteps.task.getCommentsOnTask()));
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(lastTaskEditButton, 40);
-          webDriverHelpers.clickOnWebElementBySelector(lastTaskEditButton);
+                      EDIT_BUTTON_XPATH_BY_TEXT, CreateNewTaskSteps.task.getCommentsOnExecution()));
+          webDriverHelpers.clickOnWebElementBySelector(SHOW_MORE_FILTERS);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              COMMENTS_ON_EXECUTION_TEXTAREA);
+              ASSIGNED_USER_FILTER_INPUT);
+          String assignedUser = CreateNewTaskSteps.task.getAssignedTo();
+          int indexToSubstring = assignedUser.indexOf("-");
+          webDriverHelpers.fillInWebElement(
+              ASSIGNED_USER_FILTER_INPUT, assignedUser.substring(0, indexToSubstring).trim());
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(lastTaskEditButton, 40);
+          webDriverHelpers.clickElementSeveralTimesUntilNextElementIsDisplayed(
+              lastTaskEditButton, TASK_STATUS_OPTIONS, 5);
         });
 
     When(

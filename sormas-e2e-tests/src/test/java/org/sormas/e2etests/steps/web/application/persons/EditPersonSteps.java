@@ -30,7 +30,6 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.BIRTH
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.CITY_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.COMMUNITY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.COMMUNITY_INPUT;
-import static org.sormas.e2etests.pages.application.persons.EditPersonPage.CONFIRM_NAVIGATION_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DATE_OF_BIRTH_DAY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DATE_OF_BIRTH_MONTH_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.DATE_OF_BIRTH_YEAR_COMBOBOX;
@@ -187,38 +186,38 @@ public class EditPersonSteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
           webDriverHelpers.clickOnWebElementBySelector(SEE_CASES_FOR_PERSON_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+          //          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_BUTTON);
+          //          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
         });
     Then(
         "I click on See CONTACTS for this Person button from Edit Person page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SEE_CONTACTS_FOR_PERSON_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+          //    webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_BUTTON);
+          //    webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
         });
 
     Then(
         "I click on Edit Case button from Cases card on Edit Person page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EDIT_CASES_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+          //  webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_BUTTON);
+          //  webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
         });
     Then(
         "I click on Edit Contact button from Contacts card on Edit Person page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EDIT_CONTACTS_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+          //  webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_BUTTON);
+          //  webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
         });
     Then(
         "I click on Edit Immunization button for Immunization created through API from Immunization card on Edit Person page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(
               getByImmunizationUuid(apiState.getCreatedImmunization().getUuid()));
-          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+          //   webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_BUTTON);
+          //   webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
         });
 
     Then(
