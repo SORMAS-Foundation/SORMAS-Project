@@ -330,7 +330,7 @@ public class CreateNewEventSteps implements En {
               .riskLevel(values[5])
               .investigationStatus(values[7])
               .disease(values[10])
-                  .build();
+              .build();
     } catch (NullPointerException e) {
       log.error("Null pointer exception parseCustomCaseExport: {}", e.getCause());
     }
