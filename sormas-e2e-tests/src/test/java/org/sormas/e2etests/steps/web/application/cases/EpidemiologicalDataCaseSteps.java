@@ -212,15 +212,15 @@ public class EpidemiologicalDataCaseSteps implements En {
           }
         });
 
-      When(
-              "I select from Combobox all options in Type of activity field in Activity as Case for Epidemiological data tab for Cases for DE version",
-              () -> {
-                  for (ActivityAsCaseType value : ActivityAsCaseType.values()) {
-                      webDriverHelpers.selectFromCombobox(
-                              ACTIVITY_TYPE_OF_ACTIVITY_COMBOBOX,
-                              ActivityAsCaseType.getForNameDE(value.getActivityCase()));
-                  }
-              });
+    When(
+        "I select from Combobox all options in Type of activity field in Activity as Case for Epidemiological data tab for Cases",
+        () -> {
+          for (ActivityAsCaseType value : ActivityAsCaseType.values()) {
+            webDriverHelpers.selectFromCombobox(
+                ACTIVITY_TYPE_OF_ACTIVITY_COMBOBOX,
+                ActivityAsCaseType.getForName(value.getActivityCase()));
+          }
+        });
 
     When(
         "I select a type of gathering ([^\"]*) option from Combobox in Exposure for Epidemiological data tab in Cases",

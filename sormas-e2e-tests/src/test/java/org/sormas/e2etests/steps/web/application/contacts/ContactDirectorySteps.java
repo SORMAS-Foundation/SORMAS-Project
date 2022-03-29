@@ -405,6 +405,62 @@ public class ContactDirectorySteps implements En {
         });
 
     When(
+        "I fill Location form for Type of place field by {string} options in Case as Activity directory",
+        (String searchCriteria) -> {
+          exposureData = contactService.buildGeneratedExposureDataContactForRandomInputs();
+          String emailAddress = exposureData.getContactPersonEmail();
+          switch (searchCriteria) {
+            case "Facility":
+              webDriverHelpers.selectFromCombobox(
+                  FACILITY_ACTIVITY_AS_CASE_COMBOBOX, searchCriteria);
+              fillLocationDE(exposureData);
+              webDriverHelpers.selectFromCombobox(FACILITY_TYPE_COMBOBOX, "Hospital");
+              webDriverHelpers.selectFromCombobox(
+                  FACILITY_DETAILS_COMBOBOX, exposureData.getFacilityDetails());
+              webDriverHelpers.fillInWebElement(
+                  FACILITY_NAME_AND_DESCRIPTION, exposureData.getFacilityDetails());
+              webDriverHelpers.fillInWebElement(
+                  CONTACT_PERSON_FIRST_NAME, exposureData.getContactPersonFirstName());
+              webDriverHelpers.fillInWebElement(
+                  CONTACT_PERSON_LAST_NAME, exposureData.getContactPersonLastName());
+              webDriverHelpers.fillInWebElement(
+                  CONTACT_PERSON_PHONE_NUMBER, exposureData.getContactPersonPhone());
+              webDriverHelpers.fillInWebElement(
+                  CONTACT_PERSON_EMAIL_ADRESS,
+                  Normalizer.normalize(emailAddress, Normalizer.Form.NFD)
+                      .replaceAll("[^\\p{ASCII}]", ""));
+              break;
+            case "Gemeinschaftseinrichtung":
+              webDriverHelpers.selectFromCombobox(
+                  FACILITY_ACTIVITY_AS_CASE_COMBOBOX, searchCriteria);
+              fillLocationDE(exposureData);
+              webDriverHelpers.selectFromCombobox(FACILITY_TYPE_COMBOBOX, "Schule");
+              webDriverHelpers.selectFromCombobox(
+                  FACILITY_DETAILS_COMBOBOX, exposureData.getFacilityDetails());
+              webDriverHelpers.fillInWebElement(
+                  FACILITY_NAME_AND_DESCRIPTION, exposureData.getFacilityDetails());
+              webDriverHelpers.fillInWebElement(
+                  CONTACT_PERSON_FIRST_NAME, exposureData.getContactPersonFirstName());
+              webDriverHelpers.fillInWebElement(
+                  CONTACT_PERSON_LAST_NAME, exposureData.getContactPersonLastName());
+              webDriverHelpers.fillInWebElement(
+                  CONTACT_PERSON_PHONE_NUMBER, exposureData.getContactPersonPhone());
+              webDriverHelpers.fillInWebElement(
+                  CONTACT_PERSON_EMAIL_ADRESS,
+                  Normalizer.normalize(emailAddress, Normalizer.Form.NFD)
+                      .replaceAll("[^\\p{ASCII}]", ""));
+              break;
+            case "Sonstiges":
+              webDriverHelpers.selectFromCombobox(
+                  FACILITY_ACTIVITY_AS_CASE_COMBOBOX, searchCriteria);
+              webDriverHelpers.fillInWebElement(TYPE_OF_PLACE_DETAILS, faker.book().title());
+              exposureData = contactService.buildGeneratedExposureDataContactForRandomInputsDE();
+              fillLocationDE(exposureData);
+              break;
+          }
+        });
+
+    When(
         "I click on save button in Exposure for Epidemiological data tab in Contacts",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);

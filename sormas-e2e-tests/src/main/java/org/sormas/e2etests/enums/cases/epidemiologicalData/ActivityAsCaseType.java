@@ -1,5 +1,6 @@
 package org.sormas.e2etests.enums.cases.epidemiologicalData;
 
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 
 @Slf4j
@@ -28,5 +29,14 @@ public enum ActivityAsCaseType {
     }
     log.error("Couldn't map activity !");
     return null;
+  }
+
+  @SneakyThrows
+  public static String getForName(String option) {
+    ActivityAsCaseType[] options = ActivityAsCaseType.values();
+    for (ActivityAsCaseType value : options) {
+      if (value.getActivityCase().equalsIgnoreCase(option)) return value.activityCase;
+    }
+    throw new Exception("Unable to find " + option + " value in ActivityAsCase Enum");
   }
 }

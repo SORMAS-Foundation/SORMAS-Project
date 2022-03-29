@@ -180,3 +180,5 @@ Feature: Epidemiological data coverage
     And I click on Activity details known with NO option
     And I click on Activity details known with YES option
     And I click on new entry button from Epidemiological Data tab
+    And I select from Combobox all options in Type of activity field in Activity as Case for Epidemiological data tab for Cases
+    And I fill Location form for Type of place field by "Facility" options in Case as Activity directory
