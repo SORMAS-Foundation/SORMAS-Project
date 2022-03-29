@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.List;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -55,6 +56,7 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless(name = "TravelEntryFacade")
+@RolesAllowed(UserRight._TRAVEL_ENTRY_VIEW)
 public class TravelEntryFacadeEjb
 	extends AbstractCoreFacadeEjb<TravelEntry, TravelEntryDto, TravelEntryIndexDto, TravelEntryReferenceDto, TravelEntryService, TravelEntryCriteria>
 	implements TravelEntryFacade {
@@ -186,6 +188,7 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
+    @RolesAllowed(UserRight._SYSTEM)
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void archiveAllArchivableTravelEntries(int daysAfterTravelEntryGetsArchived) {
 		archiveAllArchivableTravelEntry(daysAfterTravelEntryGetsArchived, LocalDate.now());

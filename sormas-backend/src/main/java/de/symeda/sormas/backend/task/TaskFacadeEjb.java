@@ -32,6 +32,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -120,6 +121,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "TaskFacade")
+@RolesAllowed(UserRight._TASK_VIEW)
 public class TaskFacadeEjb implements TaskFacade {
 
 	private static final int ARCHIVE_BATCH_SIZE = 1000;
@@ -891,6 +893,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
+    @RolesAllowed(UserRight._SYSTEM)
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void sendNewAndDueTaskMessages() {
 
