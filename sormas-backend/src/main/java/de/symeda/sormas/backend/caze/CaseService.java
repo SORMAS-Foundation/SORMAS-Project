@@ -57,7 +57,6 @@ import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseListEntryDto;
 import de.symeda.sormas.api.caze.CaseLogic;
@@ -1305,21 +1304,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				statusChangedBySystem = true;
 			}
 		} else {
-			CaseDataDto caseDto = caseFacade.toDto(caze);
-			Date currentFollowUpUntil = caseDto.getFollowUpUntil();
-
-			Date earliestSampleDate = sampleService.getEarliestSampleDate(caze.getSamples());
-
-			Date untilDate = CaseLogic
-				.calculateFollowUpUntilDate(
-					caseDto,
-					CaseLogic.getFollowUpStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate(), earliestSampleDate),
-					caze.getVisits().stream().map(visit -> visitFacade.toDto(visit)).collect(Collectors.toList()),
-					diseaseConfigurationFacade.getCaseFollowUpDuration(caze.getDisease()),
-					false,
-					featureConfigurationFacade.isPropertyValueTrue(FeatureType.CASE_FOLLOWUP, FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE))
-				.getFollowUpEndDate();
+			Date untilDate = computeFollowUpuntilDate(caze);
 			caze.setFollowUpUntil(untilDate);
+			Date currentFollowUpUntil = caze.getFollowUpUntil();
 			if (DateHelper.getStartOfDay(currentFollowUpUntil).before(DateHelper.getStartOfDay(untilDate))) {
 				caze.setOverwriteFollowUpUntil(false);
 			}
@@ -1344,6 +1331,24 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		externalJournalService.handleExternalJournalPersonUpdateAsync(caze.getPerson().toReference());
 		ensurePersisted(caze);
+	}
+
+	private Date computeFollowUpuntilDate(Case caze) {
+		return computeFollowUpuntilDate(caze, caze.getSamples());
+	}
+
+	public Date computeFollowUpuntilDate(Case caze, Collection<Sample> samples) {
+		Date earliestSampleDate = sampleService.getEarliestSampleDate(samples);
+
+		return CaseLogic
+			.calculateFollowUpUntilDate(
+				caseFacade.toDto(caze),
+				CaseLogic.getFollowUpStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate(), earliestSampleDate),
+				caze.getVisits().stream().map(visit -> visitFacade.toDto(visit)).collect(Collectors.toList()),
+				diseaseConfigurationFacade.getCaseFollowUpDuration(caze.getDisease()),
+				false,
+				featureConfigurationFacade.isPropertyValueTrue(FeatureType.CASE_FOLLOWUP, FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE))
+			.getFollowUpEndDate();
 	}
 
 	@Override
