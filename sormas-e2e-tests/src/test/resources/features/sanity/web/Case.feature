@@ -93,6 +93,67 @@ Feature: Case end to end tests
     And I click on save button from Edit Case page with current hospitalization
     Then I check if the specific data is correctly displayed
 
+  @issue=SORDEV-5517 @env_de
+  Scenario: Fill the case tab (DE specific)
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data for DE version
+    Then I select German Investigation Status Done
+    And I check if date of investigation filed is available
+    Then I select German Investigation Status Pending
+    Then I select German Investigation Status Discarded
+    And I check if date of investigation filed is available
+    Then I select German Investigation Status Pending
+    Then I select German Outcome Of Case Status Deceased
+    And I check if date of outcome filed is available
+    Then I select German Outcome Of Case Status Recovered
+    And I check if date of outcome filed is available
+    And I click on the German option for Yes in Sequelae
+    And I check if Sequelae Details field is available
+    And I click on the German option for No in Sequelae
+    And I click on the German option for Unknown in Sequelae
+    Then I select German Outcome Of Case Status Unknown
+    And I check if date of outcome filed is available
+    And I click on the German option for Yes in Sequelae
+    And I check if Sequelae Details field is available
+    And I click on the German option for No in Sequelae
+    And I click on the German option for Unknown in Sequelae
+    Then I click on Place of stay of this case differs from its responsible jurisdiction
+    And I check if region combobox is available and I select Responsible Region
+    And I check if district combobox is available and i select Responsible District
+    And I check if community combobox is available
+    Then I click on Facility as German place of stay
+    And I check if Facility Category combobox is available
+    And I check if Facility Type combobox is available
+    Then I set Facility in German as a Other facility
+    And I fill Facility name and description filed by dummy description
+    And I check if Facility name and description field is available
+    Then I set German Quarantine Home
+    And I check if Quarantine start field is available
+    And I check if Quarantine end field is available
+    Then I select Quarantine ordered verbally checkbox
+    And I check if Date of verbal order field is available
+    Then I select Quarantine ordered by official document checkbox
+    And I check if Date of the official document ordered field is available
+    Then I select Official quarantine order sent
+    And I check if Date official quarantine order was sent field is available
+    Then I set German Quarantine Institutional
+    And I check if Quarantine start field is available
+    And I check if Quarantine end field is available
+    And I check if Date of verbal order field is available
+    And I check if Date of the official document ordered field is available
+    And I check if Date official quarantine order was sent field is available
+    Then I set German Quarantine None
+    Then I set German Quarantine Unknown
+    Then I set German Quarantine Other
+    And I check if Quarantine details field is available
+    Then I set German Vaccination Status as vaccinated
+    Then I set German Vaccination Status as unvaccinated
+    Then I set German Vaccination Status as unknown
+    And I click on save button from Edit Case page with current hospitalization
+    Then I check if the specific data is correctly displayed
+
   @env_main
   Scenario: Delete created case
     When API: I create a new person
