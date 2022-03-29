@@ -1618,7 +1618,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			// The samples for case are not persisted yet, so use the samples from contact since they are the same
 			Date untilDate = service.computeFollowUpuntilDate(caze, contact.getSamples());
 			caze.setFollowUpUntil(untilDate);
-			service.ensurePersisted(caze);
 		}
 	}
 
