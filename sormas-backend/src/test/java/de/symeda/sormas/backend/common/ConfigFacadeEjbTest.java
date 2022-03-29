@@ -39,11 +39,16 @@ public class ConfigFacadeEjbTest extends AbstractBeanTest {
 		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL, "https://www.google.com");
 		getConfigFacade().validateConfigUrls();
 
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL, "http://www.google.com");
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL, "https://www.google.com");
 		getConfigFacade().validateConfigUrls();
 
-		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL, "http://my-docker-service:12345/route/path");
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL, "https://my-docker-service:12345/route/path");
 		getConfigFacade().validateConfigUrls();
+
+		try {
+			MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS_STATS_URL, "http://my-stats-service:12345/route/path");
+			getConfigFacade().validateConfigUrls();
+		}catch (IllegalArgumentException ignored){}
 
 		try {
 			MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL, "htps://www.google.com#");

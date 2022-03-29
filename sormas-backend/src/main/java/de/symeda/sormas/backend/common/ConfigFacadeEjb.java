@@ -168,7 +168,7 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	private static final String STEP_SIZE_FOR_CSV_EXPORT = "stepSizeForCsvExport";
 
 	private static final String UI_URL = "ui.url";
-	private static final String SORMAS_STATS_URL = "sormasStats.url";
+	public static final String SORMAS_STATS_URL = "sormasStats.url";
 
 	private static final String DOCUMENT_UPLOAD_SIZE_LIMIT_MB = "documentUploadSizeLimitMb";
 	public static final int DEFAULT_DOCUMENT_UPLOAD_SIZE_LIMIT_MB = 20;
