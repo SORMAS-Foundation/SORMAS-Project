@@ -433,9 +433,7 @@ public class ContactDirectorySteps implements En {
               webDriverHelpers.selectFromCombobox(
                   FACILITY_ACTIVITY_AS_CASE_COMBOBOX, searchCriteria);
               fillLocationDE(exposureData);
-              webDriverHelpers.selectFromCombobox(
-                  FACILITY_TYPE_COMBOBOX,
-                  "Krankenhaus");
+              webDriverHelpers.selectFromCombobox(FACILITY_TYPE_COMBOBOX, "Krankenhaus");
               webDriverHelpers.selectFromCombobox(
                   FACILITY_DETAILS_COMBOBOX, exposureData.getFacilityDetails());
               webDriverHelpers.fillInWebElement(
