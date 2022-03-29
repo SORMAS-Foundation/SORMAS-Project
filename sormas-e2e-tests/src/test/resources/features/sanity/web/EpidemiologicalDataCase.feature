@@ -166,7 +166,7 @@ Feature: Epidemiological data coverage
     And I click on SAVE button in create contact form
 
   @issue=SORDEV-5525 @env_de
-  Scenario: Enter an activity as case for DE version
+  Scenario: Enter an activity as case in Epidemiological data tab in Cases for DE version
     Given I log in with National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
