@@ -161,8 +161,7 @@ public class ExternalJournalService {
 	 * It can not check for Contact related data such as FollowUpUntil dates.
 	 */
 	private boolean shouldNotify(JournalPersonDto existingJournalPerson) {
-		PersonDto detailedExistingPerson = personFacade.getPersonByUuid(existingJournalPerson.getUuid());
-		if (detailedExistingPerson.isEnrolledInExternalJournal()) {
+		if (personFacade.isEnrolledInExternalJournal(existingJournalPerson.getUuid())) {
 			JournalPersonDto updatedJournalPerson = personFacade.getPersonForJournal(existingJournalPerson.getUuid());
 			return !existingJournalPerson.equals(updatedJournalPerson);
 		}
