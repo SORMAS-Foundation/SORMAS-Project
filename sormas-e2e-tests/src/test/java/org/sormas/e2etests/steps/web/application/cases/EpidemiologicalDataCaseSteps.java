@@ -246,6 +246,12 @@ public class EpidemiologicalDataCaseSteps implements En {
         });
 
     When(
+        "I check that edit Activity as Case vision button is visible and clickable",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(OPEN_SAVED_ACTIVITY_BUTTON);
+        });
+
+    When(
         "I click on save button in Activity as Case data tab in Cases",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);

@@ -435,13 +435,7 @@ public class ContactDirectorySteps implements En {
               fillLocationDE(exposureData);
               webDriverHelpers.selectFromCombobox(
                   FACILITY_TYPE_COMBOBOX,
-                  "Krankenhaus"); // need be hardcoded otherwise must be implement new builder in
-              // contactService and create a new enum
-
-              // TODO This field it not use here ...
-              //              webDriverHelpers.selectFromCombobox(
-              //                  FACILITY_CATEGORY_COMBOBOX, exposureData.getFacilityCategory());
-
+                  "Krankenhaus");
               webDriverHelpers.selectFromCombobox(
                   FACILITY_DETAILS_COMBOBOX, exposureData.getFacilityDetails());
               webDriverHelpers.fillInWebElement(

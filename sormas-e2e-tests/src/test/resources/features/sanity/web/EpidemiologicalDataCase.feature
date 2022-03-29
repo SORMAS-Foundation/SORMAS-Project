@@ -178,31 +178,9 @@ Feature: Epidemiological data coverage
     And I click on Activity details known with NEIN option
     And I click on Activity details known with JA option
     And I click on New Entry in Action as Case Details Known
-    And I select from Combobox all options in Type of activity field in Activity as Case for Epidemiological data tab for Cases for DE version
-#    And I fill Location form for Type of place field by "Einrichtung" options in Case as Activity directory for DE version
-#    And  I click on save button in Exposure for Epidemiological data tab in Cases
-#    And I am checking all Location data in Activity as Case are saved and displayed
-#    And I click on save button in Exposure for Epidemiological data tab in Cases
-#    Then I click on edit Activity as Case vision button
-#    And I fill Location form for Type of place field by "Gemeinschaftseinrichtung" options in Case as Activity directory for DE version
-#    And  I click on save button in Exposure for Epidemiological data tab in Cases
-#    And I am checking all Location data in Activity as Case are saved and displayed
-#    And I click on save button in Exposure for Epidemiological data tab in Cases
-  #    Then I click on edit Activity as Case vision button
-    And I fill Location form for Type of place field by "Sonstiges" options in Case as Activity directory for DE version
-    And  I click on save button in Exposure for Epidemiological data tab in Cases
-    And I am checking all Location data in Activity as Case are saved and displayed
-    And I click on save button in Exposure for Epidemiological data tab in Cases
-    And I click on New Entry in Action as Case Details Known
     And I set Start and End of activity by current date in Activity as Case form
     And I fill Description field in Activity as Case form
     And I select Unbekannt option in Type of activity from Combobox in Activity as Case form
     And I fill Location form for Type of place field by "Einrichtung" options in Case as Activity directory for DE version
     And  I click on save button in Exposure for Epidemiological data tab in Cases
-    Then I check that number of displayed cases results is 2
-#ToDo sprawdzic jak sie liczy ilosc row w table w selenium Wygooglowac
-
-    And I check that an import success notification appears in the Import Case Contact popup
-
-
-
+    And I check that edit Activity as Case vision button is visible and clickable
