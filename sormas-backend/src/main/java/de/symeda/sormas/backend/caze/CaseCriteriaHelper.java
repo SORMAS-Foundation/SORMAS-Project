@@ -36,20 +36,22 @@ public class CaseCriteriaHelper {
 		return CriteriaBuilderHelper.or(
 			cb,
 			cb.and(cb.isNotNull(joins.getRegion()), cb.equal(joins.getRegion().get(Region.UUID), region.getUuid())),
-			cb.and(cb.isNull(joins.getRegion()), cb.equal(joins.getResponsibleRegion().get(Region.UUID), region.getUuid())));
+			cb.and(cb.isNotNull(joins.getResponsibleRegion()), cb.equal(joins.getResponsibleRegion().get(Region.UUID), region.getUuid())));
 	}
 
 	public static Predicate createDistrictFilterWithFallback(CriteriaBuilder cb, CaseJoins<Case> joins, DistrictReferenceDto district) {
 		return CriteriaBuilderHelper.or(
 			cb,
 			cb.and(cb.isNotNull(joins.getDistrict()), cb.equal(joins.getDistrict().get(District.UUID), district.getUuid())),
-			cb.and(cb.isNull(joins.getDistrict()), cb.equal(joins.getResponsibleDistrict().get(District.UUID), district.getUuid())));
+			cb.and(cb.isNotNull(joins.getResponsibleDistrict()), cb.equal(joins.getResponsibleDistrict().get(District.UUID), district.getUuid())));
 	}
 
 	public static Predicate createCommunityFilterWithFallback(CriteriaBuilder cb, CaseJoins<Case> joins, CommunityReferenceDto community) {
 		return CriteriaBuilderHelper.or(
 			cb,
 			cb.and(cb.isNotNull(joins.getCommunity()), cb.equal(joins.getCommunity().get(Community.UUID), community.getUuid())),
-			cb.and(cb.isNull(joins.getCommunity()), cb.equal(joins.getResponsibleCommunity().get(Community.UUID), community.getUuid())));
+			cb.and(
+				cb.isNotNull(joins.getResponsibleCommunity()),
+				cb.equal(joins.getResponsibleCommunity().get(Community.UUID), community.getUuid())));
 	}
 }

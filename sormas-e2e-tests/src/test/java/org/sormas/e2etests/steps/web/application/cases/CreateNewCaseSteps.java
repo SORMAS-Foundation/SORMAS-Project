@@ -268,6 +268,7 @@ public class CreateNewCaseSteps implements En {
               SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
         });
+
     When(
         "I create a new case with specific data for DE version",
         () -> {

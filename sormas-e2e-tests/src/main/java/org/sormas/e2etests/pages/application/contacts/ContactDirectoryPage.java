@@ -22,7 +22,7 @@ import org.openqa.selenium.By;
 
 public class ContactDirectoryPage {
   public static final By NEW_CONTACT_PAGE_BUTTON = By.id("contactNewContact");
-  public static final By LINE_LISTING = By.cssSelector("[id='lineListing']");
+  public static final By LINE_LISTING = By.id("lineListing");
   public static final By MULTIPLE_OPTIONS_SEARCH_INPUT = By.cssSelector("#contactOrCaseLike");
   public static final By PERSON_LIKE_SEARCH_INPUT = By.cssSelector("#personLike");
   public static final By APPLY_FILTERS_BUTTON = By.id("actionApplyFilters");

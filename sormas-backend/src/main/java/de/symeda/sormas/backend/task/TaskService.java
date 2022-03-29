@@ -330,7 +330,8 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 					cb.selectCase()
 						.when(cb.isNotNull(joins.getContactRegion()), joins.getContactRegion().get(Region.UUID))
 						.otherwise(joins.getEventRegion().get(Region.UUID)));
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(region, taskCriteria.getRegion().getUuid()));
+			String regionUuid = taskCriteria.getRegion().getUuid();
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(region, regionUuid), cb.equal(joins.getCaseResponsibleRegion().get(Region.UUID), regionUuid)));
 		}
 		if (taskCriteria.getDistrict() != null) {
 			Expression<Object> district = cb.selectCase()
@@ -339,7 +340,8 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 					cb.selectCase()
 						.when(cb.isNotNull(joins.getContactDistrict()), joins.getContactDistrict().get(District.UUID))
 						.otherwise(joins.getEventDistrict().get(District.UUID)));
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(district, taskCriteria.getDistrict().getUuid()));
+			String districtUuid = taskCriteria.getDistrict().getUuid();
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(district, districtUuid), cb.equal(joins.getCaseResponsibleDistrict().get(District.UUID), districtUuid)));
 		}
 		if (taskCriteria.getFreeText() != null) {
 			String[] textFilters = taskCriteria.getFreeText().split("\\s+");
