@@ -164,3 +164,19 @@ Feature: Epidemiological data coverage
     And I click on the CHOOSE CASE button in Create new contact form in Exposure for Epidemiological data tab in Cases
     And I search and chose the last case uuid created via UI in the CHOOSE CASE Contact window
     And I click on SAVE button in create contact form
+
+  @issue=SORDEV-5524 @env_main
+  Scenario: Enter an activity as case in Epidemiological data tab in Cases
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    When I am accessing via URL the Epidemiological data tab of the created case
+    Then I click on Activity details known with UNKNOWN option
+    And I click on Activity details known with NO option
+    And I click on Activity details known with YES option
+    And I click on new entry button from Epidemiological Data tab
