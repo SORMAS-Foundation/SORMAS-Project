@@ -913,6 +913,7 @@ public class EventDirectorySteps implements En {
     When(
         "I click on the Detailed Event Export button",
         () -> {
+          TimeUnit.SECONDS.sleep(2); // wait for basic download if in parallel
           webDriverHelpers.clickOnWebElementBySelector(DETAILED_EVENT_EXPORT_BUTTON);
           TimeUnit.SECONDS.sleep(4); // wait for download
         });
