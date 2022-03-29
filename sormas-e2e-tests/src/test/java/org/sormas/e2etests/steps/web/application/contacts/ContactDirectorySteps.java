@@ -767,30 +767,6 @@ public class ContactDirectorySteps implements En {
         });
 
     When(
-        "I am checking all Location data in Activity as Case are saved and displayed",
-        () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(OPEN_SAVED_ACTIVITY_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(OPEN_SAVED_ACTIVITY_BUTTON);
-          Exposure actualLocationData = collectLocationData();
-          ComparisonHelper.compareEqualFieldsOfEntities(
-              actualLocationData,
-              exposureData,
-              List.of(
-                  "continent",
-                  "subcontinent",
-                  "country",
-                  "exposureRegion",
-                  "district",
-                  "community",
-                  "street",
-                  "houseNumber",
-                  "additionalInformation",
-                  "postalCode",
-                  "city",
-                  "areaType"));
-        });
-
-    When(
         "I click on edit Activity as Case vision button",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(OPEN_SAVED_ACTIVITY_BUTTON);

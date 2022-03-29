@@ -105,15 +105,6 @@ public class EpidemiologicalDataCaseSteps implements En {
         });
 
     When(
-        "I select from Combobox all options in Type of activity field in Activity as Case for Epidemiological data tab for Cases for DE version",
-        () -> {
-          for (ActivityAsCaseType value : ActivityAsCaseType.values()) {
-            webDriverHelpers.selectFromCombobox(
-                ACTIVITY_TYPE_OF_ACTIVITY_COMBOBOX,
-                ActivityAsCaseType.getForNameDE(value.getActivityCase()));
-          }
-        });
-    When(
         "I click on Residing or travelling to countries, territories, areas experiencing larger outbreaks of local transmission with ([^\"]*) option",
         (String option) -> {
           epidemiologialDataSavedFromFields =
