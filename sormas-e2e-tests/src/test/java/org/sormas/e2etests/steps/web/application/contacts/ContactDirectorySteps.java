@@ -767,12 +767,6 @@ public class ContactDirectorySteps implements En {
         });
 
     When(
-        "I click on edit Activity as Case vision button",
-        () -> {
-          webDriverHelpers.clickOnWebElementBySelector(OPEN_SAVED_ACTIVITY_BUTTON);
-        });
-
-    When(
         "I search after last created contact via API by name and uuid then open",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(APPLY_FILTERS_BUTTON);
