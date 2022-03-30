@@ -52,6 +52,26 @@ public class EpidemiologicalDataCaseSteps implements En {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
+        "I set Start and End of activity by current date in Activity as Case form",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              START_OF_EXPOSURE_INPUT, formatter.format(LocalDate.now()));
+          webDriverHelpers.fillInWebElement(
+              END_OF_EXPOSURE_INPUT, formatter.format(LocalDate.now()));
+        });
+    When(
+        "I fill Description field in Activity as Case form",
+        () -> {
+          webDriverHelpers.fillInWebElement(ACTIVITY_DESCRIPTION, faker.book().title());
+        });
+
+    When(
+        "I check that edit Activity as Case vision button is visible and clickable",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(OPEN_SAVED_ACTIVITY_BUTTON);
+        });
+
+    When(
         "I tick a Probable infection environmental box in Exposure for Epidemiological data tab in Cases",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(

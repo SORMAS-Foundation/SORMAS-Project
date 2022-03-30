@@ -207,3 +207,4 @@ Feature: Epidemiological data coverage
     And  I click on save button in Exposure for Epidemiological data tab in Cases
     And I am checking all Location data in Activity as Case are saved and displayed
     And I click on save button in Exposure for Epidemiological data tab in Cases
+    And I check that edit Activity as Case vision button is visible and clickable
