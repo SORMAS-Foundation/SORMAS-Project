@@ -904,7 +904,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		caze.getSamples()
 			.stream()
 			.filter(sample -> sample.getAssociatedContact() == null && sample.getAssociatedEventParticipant() == null)
-			.forEach(sample -> sampleService.deletePermanent(sample));
+			.forEach(sample -> sampleService.delete(sample));
 
 		// Delete surveillance reports related to this case
 		surveillanceReportService.getByCaseUuids(Collections.singletonList(caze.getUuid()))
@@ -1098,8 +1098,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				filterResponsible = cb.equal(casePath.get(Case.REPORTING_USER).get(User.ID), currentUser.getId());
 				filterResponsible = cb.or(filterResponsible, cb.equal(casePath.get(Case.SURVEILLANCE_OFFICER).get(User.ID), currentUser.getId()));
 				filterResponsible = cb.or(filterResponsible, cb.equal(casePath.get(Case.CASE_OFFICER).get(User.ID), currentUser.getId()));
-			}
-			else {
+			} else {
 				// make sure we don't see all cases just because no filter is defined at all
 				filterResponsible = cb.disjunction();
 			}
