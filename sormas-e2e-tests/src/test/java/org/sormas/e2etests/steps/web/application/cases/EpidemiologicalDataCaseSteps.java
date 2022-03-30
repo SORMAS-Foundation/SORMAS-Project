@@ -59,6 +59,12 @@ public class EpidemiologicalDataCaseSteps implements En {
         });
 
     When(
+        "I click on edit Activity as Case vision button",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(OPEN_SAVED_ACTIVITY_BUTTON);
+        });
+
+    When(
         "I am accessing via URL the Epidemiological data tab of the created case",
         () -> {
           String uuid = apiState.getCreatedCase().getUuid();
