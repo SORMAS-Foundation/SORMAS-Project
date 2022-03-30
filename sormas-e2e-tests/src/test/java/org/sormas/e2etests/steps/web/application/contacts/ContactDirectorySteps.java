@@ -311,19 +311,6 @@ public class ContactDirectorySteps implements En {
         (String typeOfactivity) -> {
           webDriverHelpers.selectFromCombobox(ACTIVITY_TYPE_OF_ACTIVITY_COMBOBOX, typeOfactivity);
         });
-    When(
-        "I set Start and End of activity by current date in Activity as Case form",
-        () -> {
-          webDriverHelpers.fillInWebElement(
-              START_OF_EXPOSURE_INPUT, DATE_FORMATTER_DE.format(LocalDate.now()));
-          webDriverHelpers.fillInWebElement(
-              END_OF_EXPOSURE_INPUT, DATE_FORMATTER_DE.format(LocalDate.now()));
-        });
-    When(
-        "I fill Description field in Activity as Case form",
-        () -> {
-          webDriverHelpers.fillInWebElement(ACTIVITY_DESCRIPTION, faker.book().title());
-        });
 
     When(
         "I fill Location form for Type of place by chosen {string} options in Exposure for Epidemiological data",
