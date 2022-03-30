@@ -2457,9 +2457,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	@RolesAllowed({
-		UserRight._CASE_ARCHIVE,
-		UserRight._SYSTEM })
+	@RolesAllowed(UserRight._CASE_ARCHIVE)
 	public void archive(List<String> entityUuids, boolean includeContacts) {
 		super.archive(entityUuids);
 		if (includeContacts) {
