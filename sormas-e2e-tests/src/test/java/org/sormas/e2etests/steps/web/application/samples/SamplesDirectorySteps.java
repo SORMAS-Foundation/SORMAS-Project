@@ -162,7 +162,7 @@ public class SamplesDirectorySteps implements En {
         () -> {
           String region = apiState.getCreatedCase().getRegion().getUuid();
           webDriverHelpers.selectFromCombobox(
-              SAMPLE_REGION_SEARCH_COMBOBOX, RegionsValues.getValueFor(region));
+              SAMPLE_REGION_SEARCH_COMBOBOX, RegionsValues.getNameValueForUuid(region));
         });
 
     When(
@@ -176,7 +176,7 @@ public class SamplesDirectorySteps implements En {
         () -> {
           String district = apiState.getCreatedCase().getDistrict().getUuid();
           webDriverHelpers.selectFromCombobox(
-              SAMPLE_DISTRICT_SEARCH_COMBOBOX, DistrictsValues.getNameByUUID(district));
+              SAMPLE_DISTRICT_SEARCH_COMBOBOX, DistrictsValues.getNameValueForUuid(district));
         });
 
     When(

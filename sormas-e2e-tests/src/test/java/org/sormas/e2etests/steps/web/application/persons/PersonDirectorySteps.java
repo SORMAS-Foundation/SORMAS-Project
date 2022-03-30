@@ -158,7 +158,7 @@ public class PersonDirectorySteps implements En {
           String regionName = apiState.getLastCreatedPerson().getAddress().getRegion();
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
-              REGIONS_COMBOBOX, RegionsValues.getValueFor(regionName));
+              REGIONS_COMBOBOX, RegionsValues.getNameValueForUuid(regionName));
         });
 
     Then(
@@ -167,7 +167,7 @@ public class PersonDirectorySteps implements En {
           String districtName = apiState.getLastCreatedPerson().getAddress().getDistrict();
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
-              DISTRICTS_COMBOBOX, DistrictsValues.getNameByUUID(districtName));
+              DISTRICTS_COMBOBOX, DistrictsValues.getNameValueForUuid(districtName));
         });
 
     Then(
@@ -176,7 +176,7 @@ public class PersonDirectorySteps implements En {
           String communityName = apiState.getLastCreatedPerson().getAddress().getCommunity();
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
-              COMMUNITY_PERSON_COMBOBOX, CommunityValues.getValueFor(communityName));
+              COMMUNITY_PERSON_COMBOBOX, CommunityValues.getNameValueForUuid(communityName));
         });
 
     Then(
