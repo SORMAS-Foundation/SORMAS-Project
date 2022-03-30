@@ -310,8 +310,18 @@ public class PersonFacadeEjb implements PersonFacade {
 		UserRight._EXTERNAL_VISITS,
 		UserRight._SYSTEM })
 	public JournalPersonDto getPersonForJournal(String uuid) {
-		PersonDto detailedPerson = getPersonByUuid(uuid);
+		PersonDto detailedPerson = Optional.of(uuid).map(u -> personService.getByUuid(u)).map(p -> toDto(p)).orElse(null);
 		return getPersonForJournal(detailedPerson);
+	}
+
+	@Override
+	@RolesAllowed({
+			UserRight._PERSON_VIEW,
+			UserRight._EXTERNAL_VISITS,
+			UserRight._SYSTEM })
+	public boolean isEnrolledInExternalJournal(String uuid) {
+		Person person = personService.getByUuid(uuid);
+		return person != null ? person.isEnrolledInExternalJournal() : false;
 	}
 
 	public JournalPersonDto getPersonForJournal(PersonDto detailedPerson) {
