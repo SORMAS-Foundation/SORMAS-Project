@@ -140,7 +140,7 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 		assertEquals(0, getClinicalVisitService().count());
 		assertEquals(0, getTreatmentService().count());
 		assertEquals(0, getPrescriptionService().count());
-		assertEquals(1, getSampleService().count());
+		assertEquals(2, getSampleService().count());
 		assertNull(getSampleFacade().getSampleByUuid(multiSample.getUuid()).getAssociatedCase());
 		assertEquals(0, getSurveillanceReportService().count());
 		assertTrue(getDocumentService().getAll().get(0).isDeleted());
