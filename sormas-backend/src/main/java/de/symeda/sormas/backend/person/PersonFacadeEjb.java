@@ -306,9 +306,9 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	@Override
 	@RolesAllowed({
-			UserRight._PERSON_VIEW,
-			UserRight._EXTERNAL_VISITS,
-			UserRight._SYSTEM })
+		UserRight._PERSON_VIEW,
+		UserRight._EXTERNAL_VISITS,
+		UserRight._SYSTEM })
 	public JournalPersonDto getPersonForJournal(String uuid) {
 		PersonDto detailedPerson = Optional.of(uuid).map(u -> personService.getByUuid(u)).map(p -> toDto(p)).orElse(null);
 		return getPersonForJournal(detailedPerson);
