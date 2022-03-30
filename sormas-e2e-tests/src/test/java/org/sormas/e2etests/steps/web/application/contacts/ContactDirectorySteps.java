@@ -28,7 +28,6 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ENTE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FACILITY_ACTIVITY_AS_CASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MORE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHOW_MORE_LESS_FILTERS;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_DESCRIPTION;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_TYPE_OF_ACTIVITY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ADDITIONAL_INFORMATION_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CITY_INPUT;
@@ -48,7 +47,6 @@ import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCas
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.INDOORS_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.LONG_FACE_TO_FACE_CONTACT_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.NEW_CONTACT_BUTTON;
-import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.OPEN_SAVED_ACTIVITY_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.OPEN_SAVED_EXPOSURE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.OTHER_PROTECTIVE_MEASURES_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.OUTDOORS_OPTIONS;
@@ -119,7 +117,6 @@ import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPag
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_GATHERING_DETAILS;
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_PLACE_DETAILS;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
-import static org.sormas.e2etests.steps.web.application.contacts.ContactsLineListingSteps.DATE_FORMATTER_DE;
 import static org.sormas.e2etests.steps.web.application.contacts.EditContactSteps.collectedContact;
 
 import com.github.javafaker.Faker;
@@ -416,7 +413,7 @@ public class ContactDirectorySteps implements En {
           exposureData = contactService.buildGeneratedExposureDataContactForRandomInputsDE();
           String emailAddress = exposureData.getContactPersonEmail();
           switch (searchCriteria) {
-            case "Einrichtung":
+            case "Einrichtung (\u00A7 23 IfSG)":
               webDriverHelpers.selectFromCombobox(
                   FACILITY_ACTIVITY_AS_CASE_COMBOBOX, searchCriteria);
               fillLocationDE(exposureData);
@@ -436,7 +433,7 @@ public class ContactDirectorySteps implements En {
                   Normalizer.normalize(emailAddress, Normalizer.Form.NFD)
                       .replaceAll("[^\\p{ASCII}]", ""));
               break;
-            case "Gemeinschaftseinrichtung":
+            case "Gemeinschaftseinrichtung (\u00A7 33 IfSG)":
               webDriverHelpers.selectFromCombobox(
                   FACILITY_ACTIVITY_AS_CASE_COMBOBOX, searchCriteria);
               fillLocationDE(exposureData);
