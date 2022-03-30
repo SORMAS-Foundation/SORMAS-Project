@@ -236,7 +236,7 @@ public class ContactService {
         .facilityCategory(FacilityCategory.ACCOMMODATION.getFacility())
         .facilityType(FacilityType.CAMPSITE.getType())
         .facility("Other facility")
-        .facilityDetails(faker.book().title())
+        .facilityDetails("Other facility")
         .contactPersonFirstName(firstName)
         .contactPersonLastName(lastName)
         .contactPersonPhone(faker.phoneNumber().phoneNumber())

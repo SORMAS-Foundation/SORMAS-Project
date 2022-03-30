@@ -46,6 +46,7 @@ import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCas
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.INDOORS_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.LONG_FACE_TO_FACE_CONTACT_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.NEW_CONTACT_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.OPEN_SAVED_ACTIVITY_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.OPEN_SAVED_EXPOSURE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.OTHER_PROTECTIVE_MEASURES_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.OUTDOORS_OPTIONS;
@@ -458,6 +459,30 @@ public class ContactDirectorySteps implements En {
               fillLocationDE(exposureData);
               break;
           }
+        });
+
+    When(
+        "I am checking all Location data in Activity as Case are saved and displayed",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(OPEN_SAVED_ACTIVITY_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(OPEN_SAVED_ACTIVITY_BUTTON);
+          Exposure actualLocationData = collectLocationData();
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              actualLocationData,
+              exposureData,
+              List.of(
+                  "continent",
+                  "subcontinent",
+                  "country",
+                  "exposureRegion",
+                  "district",
+                  "community",
+                  "street",
+                  "houseNumber",
+                  "additionalInformation",
+                  "postalCode",
+                  "city",
+                  "areaType"));
         });
 
     When(

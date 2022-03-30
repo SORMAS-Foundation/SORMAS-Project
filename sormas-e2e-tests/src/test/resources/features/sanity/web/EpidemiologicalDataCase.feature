@@ -182,3 +182,7 @@ Feature: Epidemiological data coverage
     And I click on new entry button from Epidemiological Data tab
     And I select from Combobox all options in Type of activity field in Activity as Case for Epidemiological data tab for Cases
     And I fill Location form for Type of place field by "Facility" options in Case as Activity directory
+    And  I click on save button in Exposure for Epidemiological data tab in Cases
+    And I am checking all Location data in Activity as Case are saved and displayed
+    And I click on save button in Exposure for Epidemiological data tab in Cases
+    Then I click on edit Activity as Case vision button
