@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -78,6 +79,7 @@ import de.symeda.sormas.backend.util.PatchHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless(name = "VaccinationFacade")
+@RolesAllowed(UserRight._IMMUNIZATION_VIEW)
 public class VaccinationFacadeEjb implements VaccinationFacade {
 
 	@EJB
