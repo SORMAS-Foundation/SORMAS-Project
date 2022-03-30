@@ -45,6 +45,8 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.caze.CaseCriteriaHelper;
+import de.symeda.sormas.utils.CaseJoins;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -1077,7 +1079,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					cb.equal(joins.getRegion().get(Region.UUID), contactCriteria.getRegion().getUuid()),
 					cb.and(
 						cb.isNull(from.get(Contact.REGION)),
-						cb.equal(caze.join(Case.REGION, JoinType.LEFT).get(Region.UUID), contactCriteria.getRegion().getUuid()))));
+							CaseCriteriaHelper.createRegionFilterWithFallback(cb, new CaseJoins<>(joins.getCaze()), contactCriteria.getRegion()))));
 		}
 		if (contactCriteria.getDistrict() != null) {
 			filter = CriteriaBuilderHelper.and(
@@ -1087,7 +1089,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					cb.equal(joins.getDistrict().get(District.UUID), contactCriteria.getDistrict().getUuid()),
 					cb.and(
 						cb.isNull(from.get(Contact.DISTRICT)),
-						cb.equal(caze.join(Case.DISTRICT, JoinType.LEFT).get(District.UUID), contactCriteria.getDistrict().getUuid()))));
+							CaseCriteriaHelper.createDistrictFilterWithFallback(cb, new CaseJoins<>(joins.getCaze()), contactCriteria.getDistrict()))));
 		}
 		if (contactCriteria.getCommunity() != null) {
 			filter = CriteriaBuilderHelper.and(
@@ -1097,7 +1099,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					cb.equal(joins.getCommunity().get(Community.UUID), contactCriteria.getCommunity().getUuid()),
 					cb.and(
 						cb.isNull(from.get(Contact.COMMUNITY)),
-						cb.equal(caze.join(Case.COMMUNITY, JoinType.LEFT).get(Community.UUID), contactCriteria.getCommunity().getUuid()))));
+							CaseCriteriaHelper.createCommunityFilterWithFallback(cb, new CaseJoins<>(joins.getCaze()), contactCriteria.getCommunity()))));
 		}
 		if (contactCriteria.getContactOfficer() != null) {
 			filter = CriteriaBuilderHelper

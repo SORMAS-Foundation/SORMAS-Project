@@ -744,44 +744,33 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 		} else if (sampleAssociationType == SampleAssociationType.EVENT_PARTICIPANT) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNotNull(joins.getEventParticipant()));
 		}
-
 		if (criteria.getRegion() != null) {
-			Expression<Object> regionExpression = cb.selectCase()
-				.when(cb.isNotNull(joins.getCaseRegion()), joins.getCaseRegion().get(AbstractDomainObject.UUID))
-				.otherwise(
-					cb.selectCase()
-						.when(cb.isNotNull(joins.getContactRegion()), joins.getContactRegion().get(AbstractDomainObject.UUID))
-						.otherwise(
-							cb.selectCase()
-								.when(cb.isNotNull(joins.getContactCaseRegion()), joins.getContactCaseRegion().get(AbstractDomainObject.UUID))
-								.otherwise(joins.getEventRegion().get(AbstractDomainObject.UUID))));
+			final String regionUuid = criteria.getRegion().getUuid();
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				cb.or(
-					cb.and(
-						cb.isNotNull(joins.getCaze()),
-						cb.equal(joins.getCaseResponsibleRegion().get(AbstractDomainObject.UUID), criteria.getRegion().getUuid())),
-					cb.equal(regionExpression, criteria.getRegion().getUuid())));
+				CriteriaBuilderHelper.or(
+					cb,
+					cb.equal(joins.getCaseRegion().get(AbstractDomainObject.UUID), regionUuid),
+					cb.equal(joins.getCaseResponsibleRegion().get(AbstractDomainObject.UUID), regionUuid),
+					cb.equal(joins.getContactRegion().get(AbstractDomainObject.UUID), regionUuid),
+					cb.equal(joins.getContactCaseRegion().get(AbstractDomainObject.UUID), regionUuid),
+					cb.equal(joins.getContactCaseResponsibleRegion().get(AbstractDomainObject.UUID), regionUuid),
+					cb.equal(joins.getEventRegion().get(AbstractDomainObject.UUID), regionUuid)));
 		}
 		if (criteria.getDistrict() != null) {
-			Expression<Object> districtExpression = cb.selectCase()
-				.when(cb.isNotNull(joins.getCaseDistrict()), joins.getCaseDistrict().get(AbstractDomainObject.UUID))
-				.otherwise(
-					cb.selectCase()
-						.when(cb.isNotNull(joins.getContactDistrict()), joins.getContactDistrict().get(AbstractDomainObject.UUID))
-						.otherwise(
-							cb.selectCase()
-								.when(cb.isNotNull(joins.getContactCaseDistrict()), joins.getContactCaseDistrict().get(AbstractDomainObject.UUID))
-								.otherwise(joins.getEventDistrict().get(AbstractDomainObject.UUID))));
+			final String districtUuid = criteria.getDistrict().getUuid();
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				cb.or(
-					cb.and(
-						cb.isNotNull(joins.getCaze()),
-						cb.equal(joins.getCaseResponsibleDistrict().get(AbstractDomainObject.UUID), criteria.getDistrict().getUuid())),
-					cb.equal(districtExpression, criteria.getDistrict().getUuid())));
+				CriteriaBuilderHelper.or(
+					cb,
+					cb.equal(joins.getCaseDistrict().get(AbstractDomainObject.UUID), districtUuid),
+					cb.equal(joins.getCaseResponsibleDistrict().get(AbstractDomainObject.UUID), districtUuid),
+					cb.equal(joins.getContactDistrict().get(AbstractDomainObject.UUID), districtUuid),
+					cb.equal(joins.getContactCaseDistrict().get(AbstractDomainObject.UUID), districtUuid),
+					cb.equal(joins.getContactCaseResponsibleDistrict().get(AbstractDomainObject.UUID), districtUuid),
+					cb.equal(joins.getEventDistrict().get(AbstractDomainObject.UUID), districtUuid)));
 		}
 		if (criteria.getLaboratory() != null) {
 			filter =

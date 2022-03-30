@@ -50,6 +50,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import de.symeda.sormas.api.contact.ContactCriteria;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
@@ -185,7 +186,23 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			InvestigationStatus.PENDING,
 			new Date(),
 			rdcf);
-		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		SampleDto caseSample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+
+		ContactDto contact = creator.createContact(
+				user.toReference(),
+				null,
+				creator.createPerson("John", "Smith").toReference(),
+				caze,
+				new Date(),
+				new Date(),
+				Disease.CORONAVIRUS,
+				null);
+		SampleDto contactSample = creator.createSample(contact.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+
+		ContactDto otherContact = creator.createContact(user.toReference(), creator.createPerson("John", "Doe").toReference(), new Date());
+		SampleDto otherContactSample = creator.createSample(otherContact.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+		otherContact.setResultingCase(caze.toReference());
+		getContactFacade().save(otherContact);
 
 		caze.setRegion(new RegionReferenceDto(rdcf2.region.getUuid(), null, null));
 		caze.setDistrict(new DistrictReferenceDto(rdcf2.district.getUuid(), null, null));
@@ -197,13 +214,23 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		final CaseCriteria caseCriteria = new CaseCriteria().region(new RegionReferenceDto(rdcf.region.getUuid(), null, null))
 			.district(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
 		Assert.assertEquals(1, getCaseFacade().getIndexList(caseCriteria, 0, 100, null).size());
+
 		final SampleCriteria sampleCriteria = new SampleCriteria().region(new RegionReferenceDto(rdcf.region.getUuid(), null, null))
-			.sampleAssociationType(SampleAssociationType.CASE)
 			.district(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
-		Assert.assertEquals(1, getSampleFacade().getIndexList(sampleCriteria, 0, 100, null).size());
+		Assert.assertEquals(3, getSampleFacade().getIndexList(sampleCriteria, 0, 100, null).size());
+		resulting caze of samples contact is requested to be used here - check answer on ticket
+
 		final TaskCriteria taskCriteria = new TaskCriteria().region(new RegionReferenceDto(rdcf.region.getUuid(), null, null))
 			.district(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
 		Assert.assertEquals(1, getTaskFacade().getIndexList(taskCriteria, 0, 100, null).size());
+
+		final ContactCriteria contactCriteriaRdcf2 = new ContactCriteria().region(new RegionReferenceDto(rdcf2.region.getUuid(), null, null))
+				.district(new DistrictReferenceDto(rdcf2.district.getUuid(), null, null));
+		Assert.assertEquals(1, getContactFacade().getIndexList(contactCriteriaRdcf2, 0, 100, null).size());
+
+		final ContactCriteria contactCriteria = new ContactCriteria().region(new RegionReferenceDto(rdcf.region.getUuid(), null, null))
+			.district(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
+		Assert.assertEquals(1, getContactFacade().getIndexList(contactCriteria, 0, 100, null).size());
 	}
 	
 	@Test
