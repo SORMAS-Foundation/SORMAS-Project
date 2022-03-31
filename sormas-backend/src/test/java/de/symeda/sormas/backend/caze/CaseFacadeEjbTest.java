@@ -695,23 +695,10 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	public void testGetExportListWithRelevantVaccinations() {
 		RDCFEntities rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		RDCF rdcf = new RDCF(rdcfEntities);
-		UserDto user = creator.createUser(
-			rdcfEntities.region.getUuid(),
-			rdcfEntities.district.getUuid(),
-			rdcfEntities.facility.getUuid(),
-			"Surv",
-			"Sup",
-			UserRole.SURVEILLANCE_SUPERVISOR);
-		PersonDto cazePerson = creator.createPerson("Case", "Person");
-		CaseDataDto caze = creator.createCase(
-			user.toReference(),
-			cazePerson.toReference(),
-			Disease.EVD,
-			CaseClassification.PROBABLE,
-			InvestigationStatus.PENDING,
-			new Date(),
-			rdcfEntities);
+		UserDto user = getUser(rdcfEntities);
 
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+        CaseDataDto caze = getCaze(user, cazePerson, rdcfEntities);
 		cazePerson.getAddress().setCity("City");
 		getPersonFacade().savePerson(cazePerson);
 
@@ -850,6 +837,66 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(secondVaccination.getVaccineBatchNumber(), exportDto.getVaccineBatchNumber());
 		assertEquals(secondVaccination.getVaccineAtcCode(), exportDto.getVaccineAtcCode());
 		assertEquals(secondVaccination.getVaccineDose(), exportDto.getNumberOfDoses());
+	}
+
+	@Test
+	public void testGetExportListWithoutRelevantVaccinations() {
+		RDCFEntities rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		RDCF rdcf = new RDCF(rdcfEntities);
+		UserDto user = getUser(rdcfEntities);
+
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = getCaze(user, cazePerson, rdcfEntities);
+		cazePerson.getAddress().setCity("City");
+		getPersonFacade().savePerson(cazePerson);
+
+		caze.getSymptoms().setAbdominalPain(SymptomState.YES);
+		caze = getCaseFacade().save(caze);
+
+		ImmunizationDto immunization = creator.createImmunization(
+			caze.getDisease(),
+			caze.getPerson(),
+			caze.getReportingUser(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf,
+			DateHelper.subtractDays(new Date(), 10),
+			DateHelper.subtractDays(new Date(), 5),
+			DateHelper.subtractDays(new Date(), 1),
+			null);
+
+		VaccinationDto vaccination = creator.createVaccinationWithDetails(
+			caze.getReportingUser(),
+			immunization.toReference(),
+			HealthConditionsDto.build(),
+			DateHelper.addDays(new Date(), 1),
+			Vaccine.MRNA_1273,
+			VaccineManufacturer.MODERNA,
+			VaccinationInfoSource.UNKNOWN,
+			"inn2",
+			"456",
+			"code456",
+			"2");
+
+		cazePerson = getPersonFacade().getPersonByUuid(cazePerson.getUuid());
+		getPersonFacade().savePerson(cazePerson);
+
+		List<CaseExportDto> results =
+			getCaseFacade().getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
+
+		// List should have one entry
+		assertEquals(1, results.size());
+		CaseExportDto exportDto = results.get(0);
+
+		assertNull(exportDto.getFirstVaccinationDate());
+		assertNull(exportDto.getVaccineName());
+		assertNull(exportDto.getLastVaccinationDate());
+		assertNull(exportDto.getVaccinationInfoSource());
+		assertNull(exportDto.getVaccineInn());
+		assertNull(exportDto.getVaccineBatchNumber());
+		assertNull(exportDto.getVaccineAtcCode());
+		assertEquals(exportDto.getNumberOfDoses(), "");
 	}
 
 	/**
@@ -2447,6 +2494,27 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		for (int i = 0; i < len; i++)
 			sb.append(AB.charAt(rnd.nextInt(AB.length())));
 		return sb.toString();
+	}
+
+	private UserDto getUser(RDCFEntities rdcfEntities) {
+		return creator.createUser(
+			rdcfEntities.region.getUuid(),
+			rdcfEntities.district.getUuid(),
+			rdcfEntities.facility.getUuid(),
+			"Surv",
+			"Sup",
+			UserRole.SURVEILLANCE_SUPERVISOR);
+	}
+
+	private CaseDataDto getCaze(UserDto user, PersonDto cazePerson, RDCFEntities rdcfEntities) {
+		return creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcfEntities);
 	}
 
 }
