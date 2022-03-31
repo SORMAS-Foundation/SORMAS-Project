@@ -828,9 +828,6 @@ public class EditCaseSteps implements En {
               aCase.getBloodOrganTissueDonationInTheLast6Months());
           selectVaccinationStatusForThisDisease(aCase.getVaccinationStatusForThisDisease());
           selectResponsibleSurveillanceOfficer(aCase.getResponsibleSurveillanceOfficer());
-          fillDateReceivedAtDistrictLevel(aCase.getDateReceivedAtDistrictLevel());
-          fillDateReceivedAtRegionLevel(aCase.getDateReceivedAtRegionLevel());
-          fillDateReceivedAtNationalLevel(aCase.getDateReceivedAtNationalLevel());
           fillGeneralComment(aCase.getGeneralComment());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
@@ -873,9 +870,6 @@ public class EditCaseSteps implements En {
                   "bloodOrganTissueDonationInTheLast6Months",
                   "vaccinationStatusForThisDisease",
                   "responsibleSurveillanceOfficer",
-                  "dateReceivedAtDistrictLevel",
-                  "dateReceivedAtRegionLevel",
-                  "dateReceivedAtNationalLevel",
                   "generalComment"));
         });
 
@@ -1056,9 +1050,6 @@ public class EditCaseSteps implements En {
         .bloodOrganTissueDonationInTheLast6Months(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
                 BLOOD_ORGAN_TISSUE_DONATION_IN_THE_LAST_6_MONTHS_OPTIONS))
-        .dateReceivedAtDistrictLevel(getDateReceivedAtDistrictLevel())
-        .dateReceivedAtRegionLevel(getDateReceivedAtRegionLevel())
-        .dateReceivedAtNationalLevel(getDateReceivedAtNationalLevel())
         .generalComment(webDriverHelpers.getValueFromWebElement(GENERAL_COMMENT_TEXTAREA))
         .vaccinationStatusForThisDisease(
             webDriverHelpers.getValueFromCombobox(VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX))
