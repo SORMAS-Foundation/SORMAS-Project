@@ -398,6 +398,9 @@ public class ContactFacadeEjb
 		return toDto(entity);
 	}
 
+	@RolesAllowed({
+		UserRight._CONTACT_EDIT,
+		UserRight._EXTERNAL_VISITS })
 	public void onContactChanged(ContactDto contact, boolean syncShares) {
 		if (syncShares && sormasToSormasFacade.isFeatureConfigured()) {
 			syncSharesAsync(new ShareTreeCriteria(contact.getUuid()));
@@ -1604,6 +1607,10 @@ public class ContactFacadeEjb
 	}
 
 	public ContactDto toDto(Contact source) {
+		return toContactDto(source);
+	}
+
+	public static ContactDto toContactDto(Contact source) {
 
 		if (source == null) {
 			return null;
@@ -1685,7 +1692,7 @@ public class ContactFacadeEjb
 		target.setAdditionalDetails(source.getAdditionalDetails());
 
 		target.setEpiData(EpiDataFacadeEjb.toDto(source.getEpiData()));
-		target.setHealthConditions(healthConditionsMapper.toDto(source.getHealthConditions()));
+		target.setHealthConditions(HealthConditionsMapper.toDto(source.getHealthConditions()));
 		target.setReturningTraveler(source.getReturningTraveler());
 		target.setEndOfQuarantineReason(source.getEndOfQuarantineReason());
 		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());

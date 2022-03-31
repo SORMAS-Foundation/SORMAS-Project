@@ -30,7 +30,7 @@ public class HealthConditionsMapper {
 	@EJB
 	private HealthConditionsService healthConditionsService;
 
-	public HealthConditionsDto toDto(HealthConditions source) {
+	public static HealthConditionsDto toDto(HealthConditions source) {
 
 		if (source == null) {
 			return null;
