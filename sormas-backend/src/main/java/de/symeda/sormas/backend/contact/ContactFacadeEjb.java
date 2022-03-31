@@ -327,6 +327,9 @@ public class ContactFacadeEjb
 		return save(dto, handleChanges, handleCaseChanges, true, true);
 	}
 
+	@RolesAllowed({
+		UserRight._CONTACT_CREATE,
+		UserRight._CONTACT_EDIT })
 	public CoreAndPersonDto<ContactDto> save(@Valid @NotNull CoreAndPersonDto<ContactDto> coreAndPersonDto) throws ValidationRuntimeException {
 		ContactDto contactDto = coreAndPersonDto.getCoreData();
 		CoreAndPersonDto savedCoreAndPersonDto = new CoreAndPersonDto();
@@ -340,6 +343,9 @@ public class ContactFacadeEjb
 		return savedCoreAndPersonDto;
 	}
 
+	@RolesAllowed({
+		UserRight._CONTACT_CREATE,
+		UserRight._CONTACT_EDIT })
 	public ContactDto save(ContactDto dto, boolean handleChanges, boolean handleCaseChanges, boolean checkChangeDate, boolean internal) {
 		final Contact existingContact = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 
@@ -363,7 +369,7 @@ public class ContactFacadeEjb
 		//		}
 
 		Contact entity = fillOrBuildEntity(dto, existingContact, checkChangeDate);
-		doSave(entity, true);
+		service.ensurePersisted(entity);
 
 		if (existingContact == null && featureConfigurationFacade.isTaskGenerationFeatureEnabled(TaskType.CONTACT_INVESTIGATION)) {
 			createInvestigationTask(entity);
@@ -371,6 +377,8 @@ public class ContactFacadeEjb
 		}
 
 		if (handleChanges) {
+			entity.setCompleteness(calculateCompleteness(entity));
+
 			updateContactVisitAssociations(existingContactDto, entity);
 
 			final boolean convertedToCase =
@@ -399,12 +407,18 @@ public class ContactFacadeEjb
 		return toDto(entity);
 	}
 
+	@RolesAllowed({
+		UserRight._CONTACT_CREATE,
+		UserRight._CONTACT_EDIT })
 	public void onContactChanged(ContactDto contact, boolean syncShares) {
 		if (syncShares && sormasToSormasFacade.isFeatureConfigured()) {
 			syncSharesAsync(new ShareTreeCriteria(contact.getUuid()));
 		}
 	}
 
+	@RolesAllowed({
+		UserRight._CONTACT_CREATE,
+		UserRight._CONTACT_EDIT })
 	public void onContactChanged(ContactDto existingContact, Contact contact, boolean syncShares) {
 
 		if (existingContact == null) {
@@ -421,6 +435,7 @@ public class ContactFacadeEjb
 		}
 	}
 
+	@RolesAllowed(UserRight._CONTACT_EDIT)
 	public void syncSharesAsync(ShareTreeCriteria criteria) {
 		executorService.schedule(() -> {
 			sormasToSormasContactFacade.syncShares(criteria);
@@ -1168,7 +1183,7 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	public FollowUpPeriodDto calculateFollowUpUntilDate(ContactDto contactDto, boolean ignoreOverwrite) {
+	public FollowUpPeriodDto getCalculatedFollowUpUntilDate(ContactDto contactDto, boolean ignoreOverwrite) {
 		return ContactLogic.calculateFollowUpUntilDate(
 			contactDto,
 			ContactLogic.getFollowUpStartDate(contactDto, sampleFacade.getByContactUuids(Collections.singletonList(contactDto.getUuid()))),
@@ -1444,6 +1459,7 @@ public class ContactFacadeEjb
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	@RolesAllowed(UserRight._SYSTEM)
 	public void archiveAllArchivableContacts(int daysAfterContactsGetsArchived) {
 		archiveAllArchivableContacts(daysAfterContactsGetsArchived, LocalDate.now());
 	}
@@ -2130,22 +2146,6 @@ public class ContactFacadeEjb
 		cq.multiselect(listCriteriaBuilder.getMergeContactIndexSelections(root, contactQueryContext));
 	}
 
-	private void doSave(Contact contact, boolean handleChanges) {
-		service.ensurePersisted(contact);
-		if (handleChanges) {
-			onCaseChanged(contact);
-		}
-	}
-
-	/**
-	 * Handles potential changes, processes and backend logic that needs to be done
-	 * after a contact has been created/saved
-	 */
-	public void onCaseChanged(Contact newContact) {
-		// Update completeness value
-		newContact.setCompleteness(calculateCompleteness(newContact));
-	}
-
 	@Override
 	@RolesAllowed(UserRight._CONTACT_EDIT)
 	public void updateCompleteness(String uuid) {
@@ -2161,6 +2161,7 @@ public class ContactFacadeEjb
 	}
 
 	@Override
+	@RolesAllowed(UserRight._CONTACT_EDIT)
 	public int saveBulkContacts(
 		List<String> contactUuidlist,
 		ContactBulkEditData updatedContactBulkEditData,

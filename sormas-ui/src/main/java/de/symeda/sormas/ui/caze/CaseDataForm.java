@@ -44,7 +44,6 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.ConfigFacade;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -402,7 +401,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		// Button to automatically assign a new epid number
 		Button assignNewEpidNumberButton = ButtonHelper.createButton(
 			Captions.actionAssignNewEpidNumber,
-			e -> epidField.setValue(FacadeProvider.getCaseFacade().generateEpidNumber(getValue())),
+			e -> epidField.setValue(FacadeProvider.getCaseFacade().getGenerateEpidNumber(getValue())),
 			ValoTheme.BUTTON_DANGER,
 			FORCE_CAPTION);
 

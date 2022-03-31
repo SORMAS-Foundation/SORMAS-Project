@@ -1,5 +1,7 @@
 package de.symeda.sormas.backend.externaljournal;
 
+import de.symeda.sormas.api.user.UserRight;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.Stateless;
 
@@ -13,6 +15,7 @@ import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 
 @Stateless(name = "ExternalJournalFacade")
+@RolesAllowed(UserRight._MANAGE_EXTERNAL_SYMPTOM_JOURNAL)
 public class ExternalJournalFacadeEjb implements ExternalJournalFacade {
 
 	@EJB

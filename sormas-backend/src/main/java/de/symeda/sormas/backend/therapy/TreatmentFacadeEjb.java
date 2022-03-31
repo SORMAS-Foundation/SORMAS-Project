@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -41,6 +42,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "TreatmentFacade")
+@RolesAllowed(UserRight._CASE_VIEW)
 public class TreatmentFacadeEjb implements TreatmentFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
@@ -100,6 +102,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	}
 
 	@Override
+	@RolesAllowed({UserRight._TREATMENT_CREATE, UserRight._TREATMENT_EDIT})
 	public TreatmentDto saveTreatment(@Valid TreatmentDto source) {
 		Treatment existingTreatment = service.getByUuid(source.getUuid());
 		TreatmentDto existingDto = toDto(existingTreatment);
@@ -112,6 +115,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	}
 
 	@Override
+	@RolesAllowed(UserRight._TREATMENT_EDIT)
 	public void deleteTreatment(String treatmentUuid) {
 
 		if (!userService.hasRight(UserRight.TREATMENT_DELETE)) {
