@@ -678,6 +678,10 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
 	}
 
+	protected void useSystemUser() {
+		when(MockProducer.getPrincipal().getName()).thenReturn("SYSTEM");
+	}
+
 	public PathogenTestService getPathogenTestService() {
 		return getBean(PathogenTestService.class);
 	}
