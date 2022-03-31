@@ -14,21 +14,21 @@ android {
     buildToolsVersion '28.0.3'
 
     defaultConfig {
-        applicationId "de.symeda.sormas.app"
+        applicationId "de.symeda.sormas.app.apmis"
         minSdkVersion 24
         targetSdkVersion 29
         versionCode buildVersionCode()
         versionName "$sormasVersion"
         testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
-        setProperty("archivesBaseName", "sormas-$versionName")
+        setProperty("archivesBaseName", "apmis-$versionName")
         multiDexEnabled true
     }
-   signingConfigs {
+    signingConfigs {
         release {
-          //  storeFile file(keystoreProperties['storeFile'])
-           // storePassword keystoreProperties['storePassword']
-          //  keyAlias keystoreProperties['keyAlias']
-           // keyPassword keystoreProperties['keyPassword']
+            //  storeFile file(keystoreProperties['storeFile'])
+            // storePassword keystoreProperties['storePassword']
+            //  keyAlias keystoreProperties['keyAlias']
+            // keyPassword keystoreProperties['keyPassword']
         }
     }
     buildTypes {
@@ -38,7 +38,7 @@ android {
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
         release {
-          //  signingConfig signingConfigs.release
+            //  signingConfig signingConfigs.release
             minifyEnabled true
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
         }
@@ -144,19 +144,19 @@ jacoco {
 }
 task jacocoUnitTestReport(type: JacocoReport, dependsOn: ['testDebugUnitTest']) {
     def coverageSourceDirs = [
-        "src/main/java"
+            "src/main/java"
     ]
     def fileFilter = [
-        '**/R.class',
-        '**/R$*.class',
-        '**/*$ViewInjector*.*',
-        '**/*$ViewBinder*.*',
-        '**/BuildConfig.*',
-        '**/Manifest*.*'
+            '**/R.class',
+            '**/R$*.class',
+            '**/*$ViewInjector*.*',
+            '**/*$ViewBinder*.*',
+            '**/BuildConfig.*',
+            '**/Manifest*.*'
     ]
     def javaClasses = fileTree(
-        dir: "$buildDir/intermediates/javac/debug/classes/de/symeda/sormas/app",
-        excludes: fileFilter
+            dir: "$buildDir/intermediates/javac/debug/classes/de/symeda/sormas/app",
+            excludes: fileFilter
     )
     classDirectories.from = files([ javaClasses ])
     additionalSourceDirs.from = files(coverageSourceDirs)
@@ -179,6 +179,6 @@ sonarqube {
         property "sonar.projectName", "sormas-app"
 
         property "sonar.coverage.jacoco.xmlReportPaths", "build/reports/jacocoUnitTestReport/jacocoUnitTestReport.xml"
-        property "sonar.junit.reportPaths", "build/test-results/testDebugUnitTest/" 
+        property "sonar.junit.reportPaths", "build/test-results/testDebugUnitTest/"
     }
 }

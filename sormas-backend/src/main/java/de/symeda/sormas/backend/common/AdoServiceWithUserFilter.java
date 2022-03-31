@@ -12,6 +12,8 @@ import javax.persistence.criteria.Root;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.vladmihalcea.hibernate.type.util.SQLExtractor;
+
 import de.symeda.sormas.backend.user.User;
 
 public abstract class AdoServiceWithUserFilter<ADO extends AbstractDomainObject> extends BaseAdoService<ADO> {
@@ -48,7 +50,7 @@ public abstract class AdoServiceWithUserFilter<ADO extends AbstractDomainObject>
 		}
 		cq.orderBy(cb.desc(root.get(AbstractDomainObject.CHANGE_DATE)));
 		cq.distinct(true);
-
+		System.out.println("DEBUGGER 5678ijdfasdfashyuio"+SQLExtractor.from(em.createQuery(cq)));
 		return em.createQuery(cq).getResultList();
 	}
 

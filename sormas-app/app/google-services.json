@@ -1,34 +1,33 @@
 {
   "project_info": {
-    "project_number": "760056161360",
-    "firebase_url": "https://fir-sormas.firebaseio.com",
-    "project_id": "firebase-sormas",
-    "storage_bucket": "firebase-sormas.appspot.com"
+    "project_number": "436948249915",
+    "project_id": "cinoteck-apmis",
+    "storage_bucket": "cinoteck-apmis.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:760056161360:android:6fafcdbe8a96d8fd",
+        "mobilesdk_app_id": "1:436948249915:android:d24f358c51f54917449b1e",
         "android_client_info": {
-          "package_name": "de.symeda.sormas.app"
+          "package_name": "de.symeda.sormas.app.apmis"
         }
       },
       "oauth_client": [
         {
-          "client_id": "760056161360-35bvjna1alheasb8m6e1dkb2al2nqbea.apps.googleusercontent.com",
+          "client_id": "436948249915-ajia4mp7ph2gf825tfkd7d4f1l6c3jrr.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyANSALdHZnRqG9iLez51K9wzvQ-DvmpXDo"
+          "current_key": "AIzaSyDMBBs53mbMZCnCfxVmyPCGf6lAnL9mZdU"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "760056161360-35bvjna1alheasb8m6e1dkb2al2nqbea.apps.googleusercontent.com",
+              "client_id": "436948249915-ajia4mp7ph2gf825tfkd7d4f1l6c3jrr.apps.googleusercontent.com",
               "client_type": 3
             }
           ]
@@ -37,27 +36,27 @@
     },
     {
       "client_info": {
-        "mobilesdk_app_id": "1:760056161360:android:9a973478a96fa8e7",
+        "mobilesdk_app_id": "1:436948249915:android:5db83e45e75bc38c449b1e",
         "android_client_info": {
-          "package_name": "de.symeda.sormas.app.debug"
+          "package_name": "de.symeda.sormas.app.apmis.debug"
         }
       },
       "oauth_client": [
         {
-          "client_id": "760056161360-35bvjna1alheasb8m6e1dkb2al2nqbea.apps.googleusercontent.com",
+          "client_id": "436948249915-ajia4mp7ph2gf825tfkd7d4f1l6c3jrr.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyANSALdHZnRqG9iLez51K9wzvQ-DvmpXDo"
+          "current_key": "AIzaSyDMBBs53mbMZCnCfxVmyPCGf6lAnL9mZdU"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "760056161360-35bvjna1alheasb8m6e1dkb2al2nqbea.apps.googleusercontent.com",
+              "client_id": "436948249915-ajia4mp7ph2gf825tfkd7d4f1l6c3jrr.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

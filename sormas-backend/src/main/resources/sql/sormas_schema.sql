@@ -8381,6 +8381,15 @@ CREATE TRIGGER update_formType
      EXECUTE PROCEDURE function_update_Types_FormData();
      
 INSERT INTO schema_version (version_number, comment) VALUES (415, 'adding formType to campaignformdata table');
+
+
+--adding FormType Logic to Db
+ALTER TABLE cases ADD COLUMN area_id bigint;
+ALTER TABLE cases_history ADD COLUMN area_id bigint;
+INSERT INTO schema_version (version_number, comment) VALUES (416, 'adding area_id patch to cases table');
+
+
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
 
 

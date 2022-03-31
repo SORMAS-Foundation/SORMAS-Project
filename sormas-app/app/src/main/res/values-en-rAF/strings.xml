@@ -415,7 +415,7 @@
     <string name="heading_search_for_case">Search specific case</string>
     <string name="hint_add_to_empty_list">Add a new entry by pressing the \"+\" symbol in the top right.</string>
     <string name="hint_clear">Clear</string>
-    <string name="hint_create_pin">Please choose a four-digit PIN which you will use to authenticate yourself whenever you open the SORMAS app.</string>
+    <string name="hint_create_pin">Please choose a four-digit PIN which you will use to authenticate yourself whenever you open the APMIS app.</string>
     <string name="hint_create_pin_again">Please enter the PIN again.</string>
     <string name="hint_dashboard_section_not_data">No summary to display for the %1$s section.</string>
     <string name="hint_enter_authentication_pin">Please enter your authentication PIN.</string>
@@ -425,7 +425,7 @@
     <string name="hint_last_name">Last Name</string>
     <string name="hint_login_password">Your Password</string>
     <string name="hint_login_username">Username</string>
-    <string name="hint_new_pin">Please choose a new four-digit PIN to authenticate when opening the SORMAS app in the future.</string>
+    <string name="hint_new_pin">Please choose a new four-digit PIN to authenticate when opening the APMIS app in the future.</string>
     <string name="hint_new_pin_again">Please enter the new PIN again.</string>
     <string name="hint_no_coordinates">No coordinates picked</string>
     <string name="hint_no_entries">No entries</string>
@@ -511,7 +511,7 @@
     <string name="message_no_matching_persons">No matching persons found.</string>
     <string name="message_no_more_entries">There are no more entries to display.</string>
     <string name="message_pin_changed">PIN has been successfully changed.</string>
-    <string name="message_pin_correct_loading">PIN correct. Starting SORMAS ...</string>
+    <string name="message_pin_correct_loading">PIN correct. Starting APMIS ...</string>
     <string name="message_pin_no_consecutive">PIN must not be made of consecutive numbers.</string>
     <string name="message_pin_no_same">PIN must not have more than 2 equal numbers.</string>
     <string name="message_pin_not_matching">The PINs you\'ve entered do not match. Please try again.</string>
@@ -529,7 +529,7 @@
     <string name="message_sync_success">Synchronization successful.</string>
     <string name="message_task_reply_required">An assignee reply is required when setting the task status to not executable.</string>
     <string name="message_unsynchronized_changes">There are unsynchronized changes on your device.\nIf you proceed, they will be lost and you will not be able to restore them.</string>
-    <string name="message_update_app_required">A new version of the SORMAS app is available. It is strongly recommended to download it by clicking the \'Download\' button below.</string>
+    <string name="message_update_app_required">A new version of the APMIS app is available. It is strongly recommended to download it by clicking the \'Download\' button below.</string>
     <string name="message_version_too_new">Could not synchronize because the app version is newer than the server version.</string>
     <string name="message_weekly_report_submitted">Thank you for submitting your weekly report.</string>
     <string name="message_case_numbers_submitted">Thank you for submitting your collected case numbers.</string>
