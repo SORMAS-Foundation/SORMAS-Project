@@ -325,7 +325,10 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 	}
 
 	private Predicate createUserFilter(DirectoryImmunizationQueryContext<DirectoryImmunization> qc) {
-		final User currentUser = userService.getCurrentUser();
+		User currentUser = getCurrentUser();
+		if (currentUser == null) {
+			return null;
+		}
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();
 
 		Predicate filter;

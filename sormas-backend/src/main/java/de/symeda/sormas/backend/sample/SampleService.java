@@ -617,9 +617,13 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 	@SuppressWarnings("rawtypes")
 	public Predicate createUserFilter(CriteriaQuery cq, CriteriaBuilder cb, SampleJoins joins, SampleCriteria criteria) {
 
+		User currentUser = getCurrentUser();
+		if (currentUser == null) {
+			return null;
+		}
+
 		Predicate filter = createUserFilterWithoutAssociations(cb, joins);
 
-		User currentUser = getCurrentUser();
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (jurisdictionLevel == JurisdictionLevel.LABORATORY || jurisdictionLevel == JurisdictionLevel.EXTERNAL_LABORATORY) {
 			return filter;
