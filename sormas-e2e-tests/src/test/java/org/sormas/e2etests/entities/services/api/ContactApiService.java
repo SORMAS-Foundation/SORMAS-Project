@@ -64,12 +64,16 @@ public class ContactApiService {
         .district(
             District.builder()
                 .caption(DistrictsValues.VoreingestellterLandkreis.getName())
-                .uuid(DistrictsValues.VoreingestellterLandkreis.getUuid())
+                .uuid(
+                    DistrictsValues.getUuidValueForLocale(
+                        DistrictsValues.VoreingestellterLandkreis.name(), locale))
                 .build())
         .region(
             Region.builder()
                 .caption(RegionsValues.VoreingestellteBundeslander.getName())
-                .uuid(RegionsValues.VoreingestellteBundeslander.getUuid())
+                .uuid(
+                    RegionsValues.getUuidValueForLocale(
+                        RegionsValues.VoreingestellteBundeslander.getName(), locale))
                 .build())
         .relationToCase("")
         .contactClassification("UNCONFIRMED")
@@ -101,12 +105,16 @@ public class ContactApiService {
         .district(
             District.builder()
                 .caption(DistrictsValues.VoreingestellterLandkreis.getName())
-                .uuid(DistrictsValues.VoreingestellterLandkreis.getUuid())
+                .uuid(
+                    DistrictsValues.getUuidValueForLocale(
+                        DistrictsValues.VoreingestellterLandkreis.name(), locale))
                 .build())
         .region(
             Region.builder()
                 .caption(RegionsValues.VoreingestellteBundeslander.getName())
-                .uuid(RegionsValues.VoreingestellteBundeslander.getUuid())
+                .uuid(
+                    RegionsValues.getUuidValueForLocale(
+                        RegionsValues.VoreingestellteBundeslander.getName(), locale))
                 .build())
         .relationToCase("")
         .contactClassification("UNCONFIRMED")

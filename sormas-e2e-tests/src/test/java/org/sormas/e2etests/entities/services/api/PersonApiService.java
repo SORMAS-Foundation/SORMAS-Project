@@ -18,6 +18,8 @@
 
 package org.sormas.e2etests.entities.services.api;
 
+import static org.sormas.e2etests.steps.BaseSteps.locale;
+
 import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.util.Collections;
@@ -70,16 +72,24 @@ public class PersonApiService {
             .longitude(8 + (random.nextInt(5)) + ThreadLocalRandom.current().nextDouble(0, 1))
             .country(
                 Country.builder()
-                    .uuid(CountryUUIDs.Germany.toString())
+                    .uuid(CountryUUIDs.getUuidValueForLocale(CountryUUIDs.Germany.name(), locale))
                     .caption("Deutschland")
                     .externalId(null)
                     .isoCode("DEU")
                     .build())
-            .region(RegionsValues.VoreingestellteBundeslander.getUuid())
-            .continent(ContinentUUIDs.Europe.toString())
-            .subcontinent(SubcontinentUUIDs.WesternEurope.toString())
-            .district(DistrictsValues.VoreingestellterLandkreis.getUuid())
-            .community(CommunityValues.VoreingestellteGemeinde.getUuid())
+            .region(
+                RegionsValues.getUuidValueForLocale(
+                    RegionsValues.VoreingestellteBundeslander.getName(), locale))
+            .continent(ContinentUUIDs.getUuidValueForLocale(ContinentUUIDs.Europe.name(), locale))
+            .subcontinent(
+                SubcontinentUUIDs.getUuidValueForLocale(
+                    SubcontinentUUIDs.WesternEurope.name(), locale))
+            .district(
+                DistrictsValues.getUuidValueForLocale(
+                    DistrictsValues.VoreingestellterLandkreis.name(), locale))
+            .community(
+                CommunityValues.getUuidValueForLocale(
+                    CommunityValues.VoreingestellteGemeinde.name(), locale))
             .city(faker.address().cityName())
             .areaType(AreaTypeValues.getRandomAreaType())
             .postalCode(faker.address().zipCode())
