@@ -114,11 +114,13 @@ import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
@@ -245,6 +247,9 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._PERSON_VIEW,
+		UserRight._EXTERNAL_VISITS })
 	public Boolean isValidPersonUuid(String personUuid) {
 		return personService.exists(personUuid);
 	}
@@ -296,6 +301,9 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._PERSON_VIEW,
+		UserRight._EXTERNAL_VISITS })
 	public PersonDto getPersonByUuid(String uuid) {
 		final Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
 		return Optional.of(uuid)
@@ -316,9 +324,9 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	@Override
 	@RolesAllowed({
-			UserRight._PERSON_VIEW,
-			UserRight._EXTERNAL_VISITS,
-			UserRight._SYSTEM })
+		UserRight._PERSON_VIEW,
+		UserRight._EXTERNAL_VISITS,
+		UserRight._SYSTEM })
 	public boolean isEnrolledInExternalJournal(String uuid) {
 		Person person = personService.getByUuid(uuid);
 		return person != null ? person.isEnrolledInExternalJournal() : false;
@@ -621,6 +629,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	//@formatter:off
 	@Override
+	@RolesAllowed(UserRight._EXTERNAL_VISITS)
 	public List<PersonFollowUpEndDto> getLatestFollowUpEndDates(Date since, boolean forSymptomJournal) {
 		Stream<PersonFollowUpEndDto> contactLatestDates = getContactLatestFollowUpEndDates(since, forSymptomJournal);
 		boolean caseFollowupEnabled = featureConfigurationFacade.isFeatureEnabled(FeatureType.CASE_FOLLOWUP);
@@ -845,7 +854,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._PERSON_EDIT)
+	@RolesAllowed(UserRight._EXTERNAL_VISITS)
 	public boolean setSymptomJournalStatus(String personUuid, SymptomJournalStatus status) {
 		PersonDto person = getPersonByUuid(personUuid);
 		person.setSymptomJournalStatus(status);
@@ -1090,7 +1099,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			// Call onCaseChanged once for every case to update case classification
 			// Attention: this may lead to infinite recursion when not properly implemented
 			for (Case personCase : personCases) {
-				CaseDataDto existingCase = caseFacade.toDto(personCase);
+				CaseDataDto existingCase = CaseFacadeEjb.toCaseDto(personCase);
 				caseFacade.onCaseChanged(existingCase, personCase, syncShares);
 			}
 
@@ -1098,7 +1107,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			// Call onContactChanged once for every contact
 			// Attention: this may lead to infinite recursion when not properly implemented
 			for (Contact personContact : personContacts) {
-				contactFacade.onContactChanged(contactFacade.toDto(personContact), syncShares);
+				contactFacade.onContactChanged(ContactFacadeEjb.toContactDto(personContact), syncShares);
 			}
 
 			List<EventParticipant> personEventParticipants =
@@ -1137,7 +1146,7 @@ public class PersonFacadeEjb implements PersonFacade {
 						&& personCase.getOutcome() != CaseOutcome.DECEASED
 						&& (personCase.getReportDate().before(DateHelper.addDays(newPerson.getDeathDate(), 30))
 							&& personCase.getReportDate().after(DateHelper.subtractDays(newPerson.getDeathDate(), 30)))) {
-						CaseDataDto existingCase = caseFacade.toDto(personCase);
+						CaseDataDto existingCase = CaseFacadeEjb.toCaseDto(personCase);
 						personCase.setOutcome(CaseOutcome.DECEASED);
 						personCase.setOutcomeDate(newPerson.getDeathDate());
 						caseFacade.onCaseChanged(existingCase, personCase, syncShares);
@@ -1155,7 +1164,7 @@ public class PersonFacadeEjb implements PersonFacade {
 					newPerson.setCauseOfDeathDisease(null);
 					// update the latest associated case, if it was set to deceased && and if the case-disease was also the causeofdeath-disease
 					if (personCase != null && personCase.getOutcome() == CaseOutcome.DECEASED) {
-						CaseDataDto existingCase = caseFacade.toDto(personCase);
+						CaseDataDto existingCase = CaseFacadeEjb.toCaseDto(personCase);
 						personCase.setOutcome(CaseOutcome.NO_OUTCOME);
 						personCase.setOutcomeDate(null);
 						caseFacade.onCaseChanged(existingCase, personCase, syncShares);
@@ -1171,7 +1180,7 @@ public class PersonFacadeEjb implements PersonFacade {
 				if (personCase != null
 					&& personCase.getOutcome() == CaseOutcome.DECEASED
 					&& newPerson.getCauseOfDeath() == CauseOfDeath.EPIDEMIC_DISEASE) {
-					CaseDataDto existingCase = caseFacade.toDto(personCase);
+					CaseDataDto existingCase = CaseFacadeEjb.toCaseDto(personCase);
 					personCase.setOutcomeDate(newPerson.getDeathDate());
 					caseFacade.onCaseChanged(existingCase, personCase, syncShares);
 				}
@@ -1192,7 +1201,7 @@ public class PersonFacadeEjb implements PersonFacade {
 			// Update case list after previous onCaseChanged
 			personCases = caseService.findBy(new CaseCriteria().person(new PersonReferenceDto(newPerson.getUuid())), true);
 			for (Case personCase : personCases) {
-				CaseDataDto existingCase = caseFacade.toDto(personCase);
+				CaseDataDto existingCase = CaseFacadeEjb.toCaseDto(personCase);
 				if (newPerson.getApproximateAge() == null) {
 					personCase.setCaseAge(null);
 				} else if (newPerson.getApproximateAgeType() == ApproximateAgeType.MONTHS) {
