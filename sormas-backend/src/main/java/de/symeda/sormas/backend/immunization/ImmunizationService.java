@@ -469,7 +469,10 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 	}
 
 	private Predicate createUserFilter(ImmunizationQueryContext<Immunization> qc) {
-		final User currentUser = userService.getCurrentUser();
+		User currentUser = getCurrentUser();
+		if (currentUser == null) {
+			return null;
+		}
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();
 
 		Predicate filter;
