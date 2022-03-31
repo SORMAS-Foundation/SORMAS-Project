@@ -68,9 +68,15 @@ public class ImmunizationApiService {
         .meansOfImmunization(MeansOfImmunizationValues.getRandomMeansOfImmunization())
         .immunizationManagementStatus(
             ImmunizationManagementStatusValues.getRandomImmunizationManagementStatus())
-        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getUuid())
-        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getUuid())
-        .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getUuid())
+        .responsibleRegion(
+            RegionsValues.getUuidValueForLocale(
+                RegionsValues.VoreingestellteBundeslander.getName(), locale))
+        .responsibleDistrict(
+            DistrictsValues.getUuidValueForLocale(
+                DistrictsValues.VoreingestellterLandkreis.name(), locale))
+        .responsibleCommunity(
+            CommunityValues.getUuidValueForLocale(
+                CommunityValues.VoreingestellteGemeinde.name(), locale))
         .build();
   }
 }

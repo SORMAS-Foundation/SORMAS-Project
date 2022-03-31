@@ -31,6 +31,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -246,6 +247,7 @@ public class EventParticipantFacadeEjb
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	@RolesAllowed(UserRight._SYSTEM)
 	public void archiveAllArchivableEventParticipants(int daysAfterEventParticipantGetsArchived) {
 		archiveAllArchivableEventParticipants(daysAfterEventParticipantGetsArchived, LocalDate.now());
 	}
@@ -258,7 +260,10 @@ public class EventParticipantFacadeEjb
 		Root<EventParticipant> from = cq.from(EventParticipant.class);
 
 		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
-		cq.where(cb.equal(from.get(Event.ARCHIVED), false), cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
+		cq.where(
+			cb.equal(from.get(EventParticipant.ARCHIVED), false),
+			cb.equal(from.get(EventParticipant.DELETED), false),
+			cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
 		cq.select(from.get(EventParticipant.UUID)).distinct(true);
 		List<String> eventParticipantUuids = em.createQuery(cq).getResultList();
 

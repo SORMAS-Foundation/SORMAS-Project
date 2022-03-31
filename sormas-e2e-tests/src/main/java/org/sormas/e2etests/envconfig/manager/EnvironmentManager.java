@@ -25,18 +25,23 @@ import org.sormas.e2etests.envconfig.configprovider.ConfigFileReader;
 import org.sormas.e2etests.envconfig.dto.EnvUser;
 import org.sormas.e2etests.envconfig.dto.Environment;
 import org.sormas.e2etests.envconfig.dto.Environments;
+import org.testng.Assert;
 
 @Slf4j
 public class EnvironmentManager {
 
   private ObjectMapper objectMapper;
   private static Environments environments;
+  private static boolean wasJsonChecked;
 
   @SneakyThrows
   public EnvironmentManager() {
     objectMapper = new ObjectMapper();
     environments =
         objectMapper.readValue(ConfigFileReader.getConfigurationFile(), Environments.class);
+    if (!wasJsonChecked) {
+      validateJsonData();
+    }
   }
 
   @SneakyThrows
@@ -72,5 +77,35 @@ public class EnvironmentManager {
         .filter(env -> env.getIdentifier().equalsIgnoreCase(identifier))
         .findFirst()
         .get();
+  }
+
+  private void validateJsonData() {
+    environments.getEnvironments().stream()
+        .forEach(
+            environment -> {
+              Assert.assertFalse(
+                  environment.getIdentifier().isEmpty(),
+                  "Environment identifier field cannot be empty!");
+              Assert.assertFalse(
+                  environment.getName().isEmpty(), "Environment name field cannot be empty!");
+              Assert.assertFalse(
+                  environment.getUrl().isEmpty(), "Environment url field cannot be empty!");
+              Assert.assertFalse(
+                  environment.getUsers().isEmpty(), "Environment users list cannot be empty!");
+              environment.getUsers().stream()
+                  .forEach(
+                      envUser -> {
+                        Assert.assertFalse(
+                            envUser.getUserRole().isEmpty(), "User role field cannot be empty!");
+                        Assert.assertFalse(
+                            envUser.getUsername().isEmpty(), "User name field cannot be empty!");
+                        Assert.assertFalse(
+                            envUser.getUuid().isEmpty(), "User uuid field cannot be empty!");
+                        Assert.assertFalse(
+                            envUser.getPassword().isEmpty(),
+                            "User password field cannot be empty!");
+                      });
+            });
+    wasJsonChecked = true;
   }
 }

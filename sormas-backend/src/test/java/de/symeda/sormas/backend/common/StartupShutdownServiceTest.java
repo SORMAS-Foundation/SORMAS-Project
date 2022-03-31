@@ -30,7 +30,6 @@ import javax.persistence.Persistence;
 
 import org.apache.commons.collections.CollectionUtils;
 import org.hamcrest.Matchers;
-import org.junit.Ignore;
 import org.junit.Test;
 import org.testcontainers.containers.JdbcDatabaseContainer;
 import org.testcontainers.containers.wait.strategy.LogMessageWaitStrategy;
@@ -116,10 +115,9 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 	}
 
 	@Test
-	@Ignore
 	public void testHistoryTablesMatch() throws IOException, URISyntaxException {
 
-		SormasPostgresSQLContainer container = new SormasPostgresSQLContainer().withDatabaseName("sormas");
+		SormasPostgresSQLContainer container = new SormasPostgresSQLContainer();
 		container.start();
 
 		Map<String, String> properties = new HashMap<>();
@@ -132,6 +130,7 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 		properties.put("hibernate.jdbc.batch_size", "100");
 		properties.put("hibernate.order_inserts", "true");
 		properties.put("hibernate.order_updates", "true");
+		properties.put("hibernate.hbm2ddl.auto", "none");
 
 		EntityManagerFactory emf = Persistence.createEntityManagerFactory("beanTestPU", properties);
 		EntityManager em = emf.createEntityManager();
@@ -188,8 +187,6 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 
 	public static class SormasPostgresSQLContainer extends JdbcDatabaseContainer<SormasPostgresSQLContainer> {
 
-		private String databaseName;
-
 		public SormasPostgresSQLContainer() {
 			super(
 				new ImageFromDockerfile().withFileFromClasspath("setup_sormas_db.sh", "testcontainers/setup_sormas_db.sh")
@@ -201,6 +198,7 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 			addExposedPort(POSTGRESQL_PORT);
 			withEnv("POSTGRES_USER", getUsername());
 			withEnv("POSTGRES_PASSWORD", getPassword());
+			withEnv("POSTGRES_DB", getDatabaseName());
 		}
 
 		@Override
@@ -216,14 +214,8 @@ public class StartupShutdownServiceTest extends BaseBeanTest {
 		}
 
 		@Override
-		public SormasPostgresSQLContainer withDatabaseName(String dbName) {
-			this.databaseName = dbName;
-			return self();
-		}
-
-		@Override
 		public String getDatabaseName() {
-			return databaseName;
+			return "sormas";
 		}
 
 		@Override

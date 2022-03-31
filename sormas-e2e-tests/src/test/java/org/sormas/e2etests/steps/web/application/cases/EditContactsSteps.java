@@ -31,6 +31,9 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CON
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.LAST_CONTACT_DATE;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.TYPE_OF_CONTACT_OPTIONS;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CREATE_NEW_PERSON_RADIO_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_PERSON_POPUP;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_POPUP_SAVE_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
@@ -128,6 +131,14 @@ public class EditContactsSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(COMMIT_BUTTON);
         });
     When(
+        "I select first existing person from the Case Contact Import popup",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(COMMIT_BUTTON);
+          if (webDriverHelpers.getNumberOfElements(RESULTS_IN_GRID_IMPORT_POPUP) > 1) {
+            webDriverHelpers.clickOnWebElementBySelector(FIRST_RESULT_IN_GRID_IMPORT_POPUP);
+          }
+        });
+    When(
         "I confirm the save Case Contact Import popup",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(COMMIT_BUTTON);
@@ -179,7 +190,10 @@ public class EditContactsSteps implements En {
           fillLastName(contact.getLastName());
           selectSex(contact.getSex());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.clickOnWebElementBySelector(CONTACT_CREATED_POPUP);
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_POPUP, 15)) {
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_RADIO_BUTTON);
+            webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
+          }
         });
 
     Then(

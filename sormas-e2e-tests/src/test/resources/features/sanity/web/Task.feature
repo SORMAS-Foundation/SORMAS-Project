@@ -1,8 +1,7 @@
 @UI @Sanity @Task
 Feature: Tasks functionalities
 
-  #please check this test once test-auto has latest development version
-  @env_main @ignore
+  @env_main
   Scenario: Create and check a new task data
     Given I log in with National User
     And I click on the Tasks button from navbar
@@ -13,7 +12,7 @@ Feature: Tasks functionalities
 
   @issue=SORDEV-5476 @env_main
   Scenario: Check the edit of task from Case
-    Given I log in as a Surveillance Officer
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data

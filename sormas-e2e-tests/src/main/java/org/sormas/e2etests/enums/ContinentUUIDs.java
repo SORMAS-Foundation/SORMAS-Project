@@ -18,19 +18,34 @@
 package org.sormas.e2etests.enums;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 @Getter
 public enum ContinentUUIDs {
-  Europe("W2FUSQ-PXGMRZ-V6ZTOE-6EPIKCSI");
+  Europe("W2FUSQ-PXGMRZ-V6ZTOE-6EPIKCSI", "VFJAQB-RGCNWG-7WS2IX-HJBECAVM");
 
-  private final String option;
+  private final String uuidMain;
+  private final String uuidDe;
 
-  ContinentUUIDs(String option) {
-    this.option = option;
+  ContinentUUIDs(String uuidMain, String uuidDe) {
+    this.uuidMain = uuidMain;
+    this.uuidDe = uuidDe;
   }
 
-  @Override
-  public String toString() {
-    return this.option;
+  @SneakyThrows
+  public static String getUuidValueForLocale(String continent, String locale) {
+    ContinentUUIDs[] continentUUIDs = ContinentUUIDs.values();
+    for (ContinentUUIDs value : continentUUIDs) {
+      if (value.name().equalsIgnoreCase(continent)) {
+        if (locale.equalsIgnoreCase("main")) {
+          return value.getUuidMain();
+        }
+        if (locale.equalsIgnoreCase("DE")) {
+          return value.getUuidDe();
+        }
+      }
+    }
+    throw new Exception(
+        String.format("Unable to find uuid for continent: %s and locale: %s", continent, locale));
   }
 }

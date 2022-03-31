@@ -24,6 +24,7 @@ public class CaseImportExportPage {
 
   public static final By CASE_EXPORT_BUTTON = By.id("export");
   public static final By CUSTOM_CASE_EXPORT_BUTTON = By.id("exportCaseCustom");
+  public static final By BASIC_CASE_EXPORT_BUTTON = By.id("exportBasic");
   public static final By NEW_EXPORT_CONFIGURATION_BUTTON = By.id("exportNewExportConfiguration");
   public static final By CONFIGURATION_NAME_INPUT =
       By.xpath("//*[@class='v-widget v-has-caption v-caption-on-top']//input");
