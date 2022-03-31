@@ -30,7 +30,6 @@ public class CaseLineListingSteps implements En {
         "^I create a new case in line listing feature popup for DE version$",
         () -> {
           caze = caseService.buildCaseForLineListingFeatureDE();
-          // selectDisease(caze.getDisease()); // Disease should be set as a COVID-19 as default
           selectRegion(caze.getRegion());
           selectDistrict(caze.getDistrict());
           selectFacilityCategory(caze.getFacilityCategory());

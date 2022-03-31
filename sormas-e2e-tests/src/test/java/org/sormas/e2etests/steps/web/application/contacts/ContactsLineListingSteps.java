@@ -49,8 +49,6 @@ public class ContactsLineListingSteps implements En {
         "^I create a new Contact with specific data for DE version through Line Listing$",
         () -> {
           contactsLineListing = contactsLineListingService.buildGeneratedLineListingContactsDE();
-          //   selectDisease(contactsLineListing.getDisease()); // Disease should be set as a
-          // COVID-19 as default
           selectRegion(contactsLineListing.getRegion());
           selectDistrict(contactsLineListing.getDistrict());
           fillDateOfReport(contactsLineListing.getDateOfReport(), Locale.GERMAN);
