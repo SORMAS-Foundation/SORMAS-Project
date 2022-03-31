@@ -157,6 +157,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
+import de.symeda.sormas.backend.visit.VisitService;
 import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless
@@ -171,6 +172,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	private ContactService contactService;
 	@EJB
 	private SampleService sampleService;
+	@EJB
+	private VisitService visitService;
 	@EJB
 	private EpiDataService epiDataService;
 	@EJB
@@ -905,6 +908,15 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			.stream()
 			.filter(sample -> sample.getAssociatedContact() == null && sample.getAssociatedEventParticipant() == null)
 			.forEach(sample -> sampleService.delete(sample));
+
+		caze.getVisits().stream().forEach(visit -> {
+			if (visit.getContacts() == null || visit.getContacts().isEmpty()) {
+				visitService.deletePermanent(visit);
+			} else {
+				visit.setCaze(null);
+				visitService.ensurePersisted(visit);
+			}
+		});
 
 		// Delete surveillance reports related to this case
 		surveillanceReportService.getByCaseUuids(Collections.singletonList(caze.getUuid()))
