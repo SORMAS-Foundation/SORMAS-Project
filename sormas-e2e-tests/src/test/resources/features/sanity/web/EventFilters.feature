@@ -43,7 +43,7 @@ Feature: Event Directory filters check
     And I check the number of displayed Event results from All button is 0
     And I click on the RESET FILTERS button from Event
 
-  @issue=SORDEV-5917 @env_de
+  @issue=SORDEV-5917 @env_de @env_ch
   Scenario: Check all filters are working properly in Event directory for DE version
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
