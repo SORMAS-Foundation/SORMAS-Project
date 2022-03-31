@@ -41,17 +41,29 @@ Feature: Contacts end to end tests
     And I navigate to the last created contact via the url
     Then I check the edited data is correctly displayed on Edit Contact page after editing
 
+#    this
   @issue=SORDEV-5476 @env_main
     Scenario: Add a task from contact and verify the fields
-    Given I log in with National User
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in with National User
     And I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     And I fill a new contact form
     And I click on SAVE new contact button
+    And I click on the CHOOSE SOURCE CASE button from CONTACT page
+    And I click yes on the DISCARD UNSAVED CHANGES popup from CONTACT page
+    And I search for the last case uuid created via Api in the CHOOSE SOURCE Contact window
+    And I open the first found result in the CHOOSE SOURCE window
+    Then I click SAVE button on Edit Contact Page
     And I click on the Tasks button from navbar
     Then I search created task by Contact first and last name
     And I open the last created UI Contact
-    Then I check the created data is correctly displayed on Edit Contact page
+    Then I check the created data is correctly displayed on Edit Contact page related with CHOSEN SOURCE CASE
 
   @env_main
   Scenario: Source case selected for contact

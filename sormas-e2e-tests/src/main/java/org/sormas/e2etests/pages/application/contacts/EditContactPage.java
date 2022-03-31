@@ -27,6 +27,8 @@ public class EditContactPage {
   public static final By REPORT_DATE = By.cssSelector("#reportDateTime input");
   public static final By DISEASE_COMBOBOX =
       By.cssSelector(".v-verticallayout [location='disease'] [role='combobox'] div");
+  public static final By DISEASE_VALUE = By.xpath("//*[@id=\"gwt-uid-388\"]");
+
   public static final By CASE_ID_IN_EXTERNAL_SYSTEM_INPUT = By.cssSelector("#caseIdExternalSystem");
   public static final By LAST_CONTACT_DATE = By.cssSelector("#lastContactDate input");
   public static final By CASE_OR_EVENT_INFORMATION_INPUT =
