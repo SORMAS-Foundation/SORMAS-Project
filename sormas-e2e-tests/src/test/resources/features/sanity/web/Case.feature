@@ -658,7 +658,7 @@ Feature: Case end to end tests
     Then I click on the Import button from Case Contacts directory
     And I select the case contact CSV file in the file picker
     And I click on the "START DATA IMPORT" button from the Import Case Contacts popup
-    And I confirm the save Case Contact Import popup
+    And I select first existing person from the Case Contact Import popup
     And I confirm the save Case Contact Import popup
     And I check that an import success notification appears in the Import Case Contact popup
     Then I delete exported file from Case Contact Directory
