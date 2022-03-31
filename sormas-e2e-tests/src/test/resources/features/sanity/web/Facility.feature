@@ -17,3 +17,4 @@ Feature: Facility end to end tests
     And I close import facilities popup window
     And I close facilities popup window
     Then I check if data from csv is correctly displayed in facilities tab
+    And I delete downloaded csv file for facilities in facility tab
