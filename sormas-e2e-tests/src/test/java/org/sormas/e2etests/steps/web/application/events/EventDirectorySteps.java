@@ -445,7 +445,7 @@ public class EventDirectorySteps implements En {
               FILTER_BY_RISK_LEVEL, RiskLevelValues.getCaptionForName(riskLevel));
         });
     When(
-        "I select random German Risk level filter among the filter options from API",
+        "I select a German Risk level filter based on the event created with API",
         () -> {
           String riskLevel = apiState.getCreatedEvent().getRiskLevel();
           webDriverHelpers.selectFromCombobox(
@@ -573,7 +573,7 @@ public class EventDirectorySteps implements En {
         });
 
     When(
-        "I select German Source Type among the filter options from API",
+        "I select German Source Type based on the event created with API",
         () -> {
           String sourceType = apiState.getCreatedEvent().getSrcType();
           webDriverHelpers.selectFromCombobox(
@@ -607,7 +607,7 @@ public class EventDirectorySteps implements En {
         });
 
     When(
-        "I select German Type of Place field among the filter options from API",
+        "I select German Type of Place field based on the event created with API",
         () -> {
           String sourceTypeOfPlace = apiState.getCreatedEvent().getTypeOfPlace();
           webDriverHelpers.selectFromCombobox(

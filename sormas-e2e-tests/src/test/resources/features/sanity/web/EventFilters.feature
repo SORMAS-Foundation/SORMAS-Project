@@ -50,7 +50,7 @@ Feature: Event Directory filters check
     And API: I check that POST call status code is 200
     When I log in with National User
     And I click on the Events button from navbar
-    Then I select random German Risk level filter among the filter options from API
+    Then I select a German Risk level filter based on the event created with API
     And I fill EVENT ID filter by API
     And I apply on the APPLY FILTERS button from Event
     And I check that number of displayed Event results is 1
@@ -64,7 +64,7 @@ Feature: Event Directory filters check
     And I check that number of displayed Event results is 1
     And I click on the RESET FILTERS button from Event
     Then I click on Show more filters in Events
-    Then I select German Source Type among the filter options from API
+    Then I select German Source Type based on the event created with API
     And I fill EVENT ID filter by API
     And I apply on the APPLY FILTERS button from Event
     And I check that number of displayed Event results is 1
@@ -73,7 +73,7 @@ Feature: Event Directory filters check
     And I check the number of displayed Event results from All button is 0
     And I click on the RESET FILTERS button from Event
     Then I click on Show more filters in Events
-    Then I select German Type of Place field among the filter options from API
+    Then I select German Type of Place field based on the event created with API
     And I fill EVENT ID filter by API
     And I apply on the APPLY FILTERS button from Event
     And I check that number of displayed Event results is 1
