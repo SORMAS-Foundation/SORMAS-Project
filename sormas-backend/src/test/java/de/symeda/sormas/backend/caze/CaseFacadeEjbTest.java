@@ -50,6 +50,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
@@ -205,7 +206,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			.district(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
 		Assert.assertEquals(1, getTaskFacade().getIndexList(taskCriteria, 0, 100, null).size());
 	}
-	
+
 	@Test
 	public void testGetCasesForDuplicateMerging() {
 
@@ -691,8 +692,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetExportList() {
-
+	public void testGetExportListWithRelevantVaccinations() {
 		RDCFEntities rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		RDCF rdcf = new RDCF(rdcfEntities);
 		UserDto user = creator.createUser(
@@ -752,27 +752,43 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			DateHelper.subtractDays(new Date(), 7),
 			null,
 			null);
-		VaccinationDto firstVaccination = creator.createVaccination(
+
+		VaccinationDto firstVaccination = creator.createVaccinationWithDetails(
 			caze.getReportingUser(),
 			immunization.toReference(),
 			HealthConditionsDto.build(),
 			DateHelper.subtractDays(new Date(), 7),
 			Vaccine.OXFORD_ASTRA_ZENECA,
-			VaccineManufacturer.ASTRA_ZENECA);
-		creator.createVaccination(
+			VaccineManufacturer.ASTRA_ZENECA,
+			VaccinationInfoSource.UNKNOWN,
+			"inn1",
+			"123",
+			"code123",
+			"3");
+		VaccinationDto secondVaccination = creator.createVaccinationWithDetails(
 			caze.getReportingUser(),
 			immunization.toReference(),
 			HealthConditionsDto.build(),
 			DateHelper.subtractDays(new Date(), 4),
 			Vaccine.MRNA_1273,
-			VaccineManufacturer.MODERNA);
-		VaccinationDto thirdVaccination = creator.createVaccination(
+			VaccineManufacturer.MODERNA,
+			VaccinationInfoSource.UNKNOWN,
+			"inn2",
+			"456",
+			"code456",
+			"2");
+		VaccinationDto thirdVaccination = creator.createVaccinationWithDetails(
 			caze.getReportingUser(),
 			immunization.toReference(),
 			HealthConditionsDto.build(),
 			new Date(),
 			Vaccine.COMIRNATY,
-			VaccineManufacturer.BIONTECH_PFIZER);
+			VaccineManufacturer.BIONTECH_PFIZER,
+			VaccinationInfoSource.UNKNOWN,
+			"inn3",
+			"789",
+			"code789",
+			"1");
 
 		final String primaryPhone = "0000444888";
 		final String primaryEmail = "primary@email.com";
@@ -826,9 +842,14 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(otherContactDetails.contains("secondary@email.com (EMAIL)"));
 		assertTrue(otherContactDetails.contains("personSkype (SkypeID)"));
 		assertEquals(VaccinationStatus.VACCINATED, exportDto.getVaccinationStatus());
-		assertEquals(thirdVaccination.getVaccineName(), exportDto.getVaccineName());
 		assertEquals(firstVaccination.getVaccinationDate(), exportDto.getFirstVaccinationDate());
-		assertEquals(thirdVaccination.getVaccinationDate(), exportDto.getLastVaccinationDate());
+		assertEquals(secondVaccination.getVaccineName(), exportDto.getVaccineName());
+		assertEquals(secondVaccination.getVaccinationDate(), exportDto.getLastVaccinationDate());
+		assertEquals(secondVaccination.getVaccinationInfoSource(), exportDto.getVaccinationInfoSource());
+		assertEquals(secondVaccination.getVaccineInn(), exportDto.getVaccineInn());
+		assertEquals(secondVaccination.getVaccineBatchNumber(), exportDto.getVaccineBatchNumber());
+		assertEquals(secondVaccination.getVaccineAtcCode(), exportDto.getVaccineAtcCode());
+		assertEquals(secondVaccination.getVaccineDose(), exportDto.getNumberOfDoses());
 	}
 
 	/**
