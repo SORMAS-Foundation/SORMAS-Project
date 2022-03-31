@@ -157,6 +157,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
+import de.symeda.sormas.backend.visit.VisitService;
 import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless
@@ -171,6 +172,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	private ContactService contactService;
 	@EJB
 	private SampleService sampleService;
+	@EJB
+	private VisitService visitService;
 	@EJB
 	private EpiDataService epiDataService;
 	@EJB
@@ -902,7 +905,16 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		caze.getSamples()
 			.stream()
 			.filter(sample -> sample.getAssociatedContact() == null && sample.getAssociatedEventParticipant() == null)
-			.forEach(sample -> sampleService.deletePermanent(sample));
+			.forEach(sample -> sampleService.delete(sample));
+
+		caze.getVisits().stream().forEach(visit -> {
+			if (visit.getContacts() == null || visit.getContacts().isEmpty()) {
+				visitService.deletePermanent(visit);
+			} else {
+				visit.setCaze(null);
+				visitService.ensurePersisted(visit);
+			}
+		});
 
 		// Delete surveillance reports related to this case
 		surveillanceReportService.getByCaseUuids(Collections.singletonList(caze.getUuid()))
@@ -1096,8 +1108,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				filterResponsible = cb.equal(casePath.get(Case.REPORTING_USER).get(User.ID), currentUser.getId());
 				filterResponsible = cb.or(filterResponsible, cb.equal(casePath.get(Case.SURVEILLANCE_OFFICER).get(User.ID), currentUser.getId()));
 				filterResponsible = cb.or(filterResponsible, cb.equal(casePath.get(Case.CASE_OFFICER).get(User.ID), currentUser.getId()));
-			}
-			else {
+			} else {
 				// make sure we don't see all cases just because no filter is defined at all
 				filterResponsible = cb.disjunction();
 			}

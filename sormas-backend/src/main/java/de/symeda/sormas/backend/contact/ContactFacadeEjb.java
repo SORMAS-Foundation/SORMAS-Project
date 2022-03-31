@@ -408,8 +408,8 @@ public class ContactFacadeEjb
 	}
 
 	@RolesAllowed({
-		UserRight._CONTACT_CREATE,
-		UserRight._CONTACT_EDIT })
+		UserRight._CONTACT_EDIT,
+		UserRight._EXTERNAL_VISITS })
 	public void onContactChanged(ContactDto contact, boolean syncShares) {
 		if (syncShares && sormasToSormasFacade.isFeatureConfigured()) {
 			syncSharesAsync(new ShareTreeCriteria(contact.getUuid()));
@@ -1464,7 +1464,10 @@ public class ContactFacadeEjb
 		Root<Contact> from = cq.from(Contact.class);
 
 		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
-		cq.where(cb.equal(from.get(Contact.ARCHIVED), false), cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
+		cq.where(
+			cb.equal(from.get(Contact.ARCHIVED), false),
+			cb.equal(from.get(Contact.DELETED), false),
+			cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
 		cq.select(from.get(Contact.UUID)).distinct(true);
 		List<String> contactUuids = em.createQuery(cq).getResultList();
 
@@ -1609,6 +1612,10 @@ public class ContactFacadeEjb
 	}
 
 	public ContactDto toDto(Contact source) {
+		return toContactDto(source);
+	}
+
+	public static ContactDto toContactDto(Contact source) {
 
 		if (source == null) {
 			return null;
@@ -1690,7 +1697,7 @@ public class ContactFacadeEjb
 		target.setAdditionalDetails(source.getAdditionalDetails());
 
 		target.setEpiData(EpiDataFacadeEjb.toDto(source.getEpiData()));
-		target.setHealthConditions(healthConditionsMapper.toDto(source.getHealthConditions()));
+		target.setHealthConditions(HealthConditionsMapper.toDto(source.getHealthConditions()));
 		target.setReturningTraveler(source.getReturningTraveler());
 		target.setEndOfQuarantineReason(source.getEndOfQuarantineReason());
 		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());

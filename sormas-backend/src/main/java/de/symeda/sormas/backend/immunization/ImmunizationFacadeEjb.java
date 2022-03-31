@@ -28,6 +28,7 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -83,7 +84,6 @@ import de.symeda.sormas.api.vaccination.VaccinationDto;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
-import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
@@ -253,6 +253,7 @@ public class ImmunizationFacadeEjb
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	@RolesAllowed(UserRight._SYSTEM)
 	public void archiveAllArchivableImmunizations(int daysAfterImmunizationsGetsArchived) {
 		archiveAllArchivableImmunizations(daysAfterImmunizationsGetsArchived, LocalDate.now());
 	}
@@ -265,7 +266,10 @@ public class ImmunizationFacadeEjb
 		Root<Immunization> from = cq.from(Immunization.class);
 
 		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
-		cq.where(cb.equal(from.get(Event.ARCHIVED), false), cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
+		cq.where(
+			cb.equal(from.get(Immunization.ARCHIVED), false),
+			cb.equal(from.get(Immunization.DELETED), false),
+			cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
 		cq.select(from.get(Immunization.UUID)).distinct(true);
 		List<String> immunizationUuids = em.createQuery(cq).getResultList();
 
@@ -350,7 +354,7 @@ public class ImmunizationFacadeEjb
 			vaccinationFacade.updateVaccinationStatuses(
 				vaccination.getVaccinationDate(),
 				oldVaccinationDate,
-				immunization.getPersonId(),
+				immunization.getPerson().getId(),
 				immunization.getDisease());
 		});
 

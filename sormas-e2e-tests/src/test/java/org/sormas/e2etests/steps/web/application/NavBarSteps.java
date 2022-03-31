@@ -102,6 +102,22 @@ public class NavBarSteps implements En {
         });
 
     When(
+        "^I click on the About button from navbar$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.ABOUT_BUTTON);
+          startTime = ZonedDateTime.now().toInstant().toEpochMilli();
+        });
+
+    When(
+        "^I click on the User Settings button from navbar$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.USER_SETTINGS_BUTTON);
+          startTime = ZonedDateTime.now().toInstant().toEpochMilli();
+        });
+
+    When(
         "^I click on the Configuration button from navbar$",
         () -> {
           webDriverHelpers.waitForPageLoaded();
