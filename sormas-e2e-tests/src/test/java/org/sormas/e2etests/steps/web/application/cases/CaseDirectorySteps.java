@@ -753,7 +753,7 @@ public class CaseDirectorySteps implements En {
         "I apply District filter {string} on Case directory page",
         (String district) ->
             webDriverHelpers.selectFromCombobox(
-                CASE_DISTRICT_FILTER_COMBOBOX, DistrictsValues.getValueFor(district)));
+                CASE_DISTRICT_FILTER_COMBOBOX, DistrictsValues.getNameValueFor(district)));
 
     And(
         "I apply Year filter {string} on Case directory page",

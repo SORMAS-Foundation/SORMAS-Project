@@ -58,4 +58,7 @@ public class SamplesDirectoryPage {
   public static final By CONFIRM_BUTTON = By.cssSelector(".popupContent [id='actionConfirm']");
   public static final By EDIT_PATHOGEN_TEST_BUTTON =
       By.xpath("//div[@class='v-button v-widget link v-button-link compact v-button-compact']");
+  public static final By EXPORT_SAMPLE_BUTTON = By.id("export");
+  public static final By BASIC_EXPORT_SAMPLE_BUTTON = By.id("exportBasic");
+  public static final By DETAILED_EXPORT_SAMPLE_BUTTON = By.id("exportDetailed");
 }

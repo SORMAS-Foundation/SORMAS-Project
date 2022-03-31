@@ -32,6 +32,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_E
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.APPLY_FILTER;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BASIC_EVENT_EXPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BASIC_EXPORT_PARTICIPANT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BULK_ACTIONS_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CLOSE_POPUP_BUTTON;
@@ -40,6 +41,7 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CR
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CREATE_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CUSTOM_EXPORT_PARTICIPANT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.DATE_TYPE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.DETAILED_EVENT_EXPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.DETAILED_EXPORT_PARTICIPANT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.ENTER_BULK_EDIT_MODE_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENTS_COLUMN_HEADERS;
@@ -216,7 +218,7 @@ public class EventDirectorySteps implements En {
         () -> {
           String region = apiState.getCreatedEvent().getEventLocation().getRegion().getUuid();
           webDriverHelpers.selectFromCombobox(
-              EVENT_REGION_COMBOBOX_INPUT, RegionsValues.getValueFor(region));
+              EVENT_REGION_COMBOBOX_INPUT, RegionsValues.getNameValueForUuid(region));
         });
 
     When(
@@ -225,7 +227,7 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.waitForPageLoaded();
           String district = apiState.getCreatedEvent().getEventLocation().getDistrict().getUuid();
           webDriverHelpers.selectFromCombobox(
-              EVENT_DISTRICT_COMBOBOX_INPUT, DistrictsValues.getNameByUUID(district));
+              EVENT_DISTRICT_COMBOBOX_INPUT, DistrictsValues.getNameValueForUuid(district));
         });
 
     When(
@@ -234,7 +236,7 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.waitForPageLoaded();
           String community = apiState.getCreatedEvent().getEventLocation().getCommunity().getUuid();
           webDriverHelpers.selectFromCombobox(
-              EVENT_COMMUNITY_COMBOBOX_INPUT, CommunityValues.getValueFor(community));
+              EVENT_COMMUNITY_COMBOBOX_INPUT, CommunityValues.getNameValueForUuid(community));
         });
 
     When(
@@ -895,6 +897,25 @@ public class EventDirectorySteps implements En {
                           "ImportEvent1", "ImportEvent2", "ImportEvent3", "ImportEvent4")),
               "The imported events did not show up correctly in Events directory.");
           softly.assertAll();
+        });
+
+    When(
+        "I click on the Export Event button",
+        () -> webDriverHelpers.clickOnWebElementBySelector(EVENT_EXPORT_BUTTON));
+
+    When(
+        "I click on the Basic Event Export button",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(BASIC_EVENT_EXPORT_BUTTON);
+          TimeUnit.SECONDS.sleep(2); // wait for download
+        });
+
+    When(
+        "I click on the Detailed Event Export button",
+        () -> {
+          TimeUnit.SECONDS.sleep(8); // wait for basic download if in parallel
+          webDriverHelpers.clickOnWebElementBySelector(DETAILED_EVENT_EXPORT_BUTTON);
+          TimeUnit.SECONDS.sleep(4); // wait for download
         });
   }
 

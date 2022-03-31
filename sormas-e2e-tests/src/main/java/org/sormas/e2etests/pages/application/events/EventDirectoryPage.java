@@ -118,6 +118,8 @@ public class EventDirectoryPage {
   public static final By IMPORT_PARTICIPANT_BUTTON = By.id("actionImport");
   public static final By COMMIT_BUTTON = By.id("commit");
   public static final By CUSTOM_EXPORT_PARTICIPANT_BUTTON = By.id("exportCustom");
+  public static final By DETAILED_EVENT_EXPORT_BUTTON = By.id("exportDetailed");
+  public static final By BASIC_EVENT_EXPORT_BUTTON = By.id("exportBasic");
 
   public static By getByEventUuid(String eventUuid) {
     return By.xpath(String.format("//a[@title='%s']", eventUuid));
