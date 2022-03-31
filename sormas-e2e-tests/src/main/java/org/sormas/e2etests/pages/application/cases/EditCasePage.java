@@ -170,4 +170,5 @@ public class EditCasePage {
       By.cssSelector("#caseReferenceDefinition input");
   public static final By BACK_TO_CASES_BUTTON = By.id("tab-cases");
   public static final By CASE_DATA_TITLE = By.cssSelector("[location='caseDataHeadingLoc']");
+  public static final By EDIT_CASE_EPIDEMIOLOGICAL_DATA = By.cssSelector("#tab-cases-epidata");
 }

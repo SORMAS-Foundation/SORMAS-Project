@@ -417,6 +417,15 @@ public class WebDriverHelpers {
     }
   }
 
+  public void clickElementSeveralTimesUntilNextElementIsDisplayed(
+      By elementToClick, By elementToWaitAfter, int maxNumberOfClicks) {
+    int attempts = 0;
+    do {
+      javaScriptClickElement(elementToClick);
+      attempts++;
+    } while (attempts < maxNumberOfClicks && isElementVisibleWithTimeout(elementToWaitAfter, 10));
+  }
+
   public void scrollToElement(final Object selector) {
     log.info("Scrolling to element [{}]", selector);
     JavascriptExecutor javascriptExecutor = baseSteps.getDriver();

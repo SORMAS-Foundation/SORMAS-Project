@@ -79,15 +79,21 @@ public class EventApiService {
                 .uuid(UUID.randomUUID().toString())
                 .community(
                     Community.builder()
-                        .uuid(CommunityValues.VoreingestellteGemeinde.getUuid())
+                        .uuid(
+                            CommunityValues.getUuidValueForLocale(
+                                CommunityValues.VoreingestellteGemeinde.name(), locale))
                         .build())
                 .region(
                     Region.builder()
-                        .uuid(RegionsValues.VoreingestellteBundeslander.getUuid())
+                        .uuid(
+                            RegionsValues.getUuidValueForLocale(
+                                RegionsValues.VoreingestellteBundeslander.getName(), locale))
                         .build())
                 .district(
                     District.builder()
-                        .uuid(DistrictsValues.VoreingestellterLandkreis.getUuid())
+                        .uuid(
+                            DistrictsValues.getUuidValueForLocale(
+                                DistrictsValues.VoreingestellterLandkreis.name(), locale))
                         .build())
                 .build())
         .build();

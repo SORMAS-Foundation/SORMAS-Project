@@ -80,4 +80,3 @@ Feature: Check basic POSTs RestApi endpoints
       | numberOfImmunizations |
       | 1                     |
       | 5                     |
-
