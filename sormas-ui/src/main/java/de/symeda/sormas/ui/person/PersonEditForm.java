@@ -449,16 +449,20 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		addFieldListeners(PersonDto.PRESENT_CONDITION, presentConditionChangeListener);
 
 		causeOfDeathField.addValueChangeListener(e -> {
-			toggleCauseOfDeathFields(presentCondition.getValue() != PresentCondition.ALIVE && presentCondition.getValue() != null);
+			boolean causeOfDeathVisible = presentCondition.getValue() != PresentCondition.ALIVE
+				&& presentCondition.getValue() != PresentCondition.UNKNOWN
+				&& presentCondition.getValue() != null;
+			toggleCauseOfDeathFields(causeOfDeathVisible);
 		});
 
 		causeOfDeathDiseaseField.addValueChangeListener(e -> {
-			toggleCauseOfDeathFields(presentCondition.getValue() != PresentCondition.ALIVE && presentCondition.getValue() != null);
+			boolean causeOfDeathVisible = presentCondition.getValue() != PresentCondition.ALIVE
+					&& presentCondition.getValue() != PresentCondition.UNKNOWN
+					&& presentCondition.getValue() != null;
+			toggleCauseOfDeathFields(causeOfDeathVisible);
 		});
 
-		addValueChangeListener(e -> {
-			fillDeathAndBurialFields(deathPlaceType, deathPlaceDesc, burialPlaceDesc);
-		});
+		addValueChangeListener(e -> fillDeathAndBurialFields(deathPlaceType, deathPlaceDesc, burialPlaceDesc));
 
 		deathDate.addValidator(
 			new DateComparisonValidator(
