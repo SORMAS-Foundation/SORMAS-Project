@@ -23,6 +23,7 @@ public class DashboardContactStatisticDto implements Serializable {
 	Map<Disease, Map<String, Integer>> diseaseMap = new TreeMap<>();
 
 	private DashboardContactFollowUpDto dashboardContactFollowUp;
+	private DashboardContactStoppedFollowUpDto dashboardContactStoppedFollowUp;
 	private DashboardContactVisitDto dashboardContactVisit;
 
 	public DashboardContactStatisticDto(
@@ -34,6 +35,7 @@ public class DashboardContactStatisticDto implements Serializable {
 		int symptomaticContactsCount,
 		Map<Disease, Map<String, Integer>> diseaseMap,
 		DashboardContactFollowUpDto dashboardContactFollowUp,
+		DashboardContactStoppedFollowUpDto dashboardContactStoppedFollowUp,
 		DashboardContactVisitDto dashboardContactVisit) {
 		this.contactsCount = contactsCount;
 		this.newContactsCount = newContactsCount;
@@ -43,6 +45,7 @@ public class DashboardContactStatisticDto implements Serializable {
 		this.symptomaticContactsCount = symptomaticContactsCount;
 		this.diseaseMap = diseaseMap;
 		this.dashboardContactFollowUp = dashboardContactFollowUp;
+		this.dashboardContactStoppedFollowUp = dashboardContactStoppedFollowUp;
 		this.dashboardContactVisit = dashboardContactVisit;
 	}
 
@@ -80,5 +83,9 @@ public class DashboardContactStatisticDto implements Serializable {
 
 	public DashboardContactVisitDto getDashboardContactVisit() {
 		return dashboardContactVisit;
+	}
+
+	public DashboardContactStoppedFollowUpDto getDashboardContactStoppedFollowUp() {
+		return dashboardContactStoppedFollowUp;
 	}
 }

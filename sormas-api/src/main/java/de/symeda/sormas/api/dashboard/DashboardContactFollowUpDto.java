@@ -15,12 +15,6 @@ public class DashboardContactFollowUpDto implements Serializable {
 	private int missedVisitsThreeDays;
 	private int missedVisitsGtThreeDays;
 
-	private int stoppedFollowUpContacts;
-	private int completedContacts;
-	private int cancelledContacts;
-	private int lostContacts;
-	private int convertedContacts;
-
 	public DashboardContactFollowUpDto(
 		int followUpContacts,
 		int cooperativeContacts,
@@ -30,12 +24,7 @@ public class DashboardContactFollowUpDto implements Serializable {
 		int missedVisitsOneDay,
 		int missedVisitsTwoDays,
 		int missedVisitsThreeDays,
-		int missedVisitsGtThreeDays,
-		int stoppedFollowUpContacts,
-		int completedContacts,
-		int cancelledContacts,
-		int lostContacts,
-		int convertedContacts) {
+		int missedVisitsGtThreeDays) {
 
 		this.followUpContacts = followUpContacts;
 		this.cooperativeContacts = cooperativeContacts;
@@ -46,11 +35,7 @@ public class DashboardContactFollowUpDto implements Serializable {
 		this.missedVisitsTwoDays = missedVisitsTwoDays;
 		this.missedVisitsThreeDays = missedVisitsThreeDays;
 		this.missedVisitsGtThreeDays = missedVisitsGtThreeDays;
-		this.stoppedFollowUpContacts = stoppedFollowUpContacts;
-		this.completedContacts = completedContacts;
-		this.cancelledContacts = cancelledContacts;
-		this.lostContacts = lostContacts;
-		this.convertedContacts = convertedContacts;
+
 	}
 
 	public int getFollowUpContacts() {
@@ -87,25 +72,5 @@ public class DashboardContactFollowUpDto implements Serializable {
 
 	public int getMissedVisitsGtThreeDays() {
 		return missedVisitsGtThreeDays;
-	}
-
-	public int getStoppedFollowUpContacts() {
-		return stoppedFollowUpContacts;
-	}
-
-	public int getCompletedContacts() {
-		return completedContacts;
-	}
-
-	public int getCancelledContacts() {
-		return cancelledContacts;
-	}
-
-	public int getLostContacts() {
-		return lostContacts;
-	}
-
-	public int getConvertedContacts() {
-		return convertedContacts;
 	}
 }

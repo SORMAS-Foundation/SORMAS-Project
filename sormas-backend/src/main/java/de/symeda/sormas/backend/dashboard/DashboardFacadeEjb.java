@@ -33,6 +33,7 @@ import de.symeda.sormas.api.dashboard.DashboardCaseStatisticDto;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
 import de.symeda.sormas.api.dashboard.DashboardContactFollowUpDto;
 import de.symeda.sormas.api.dashboard.DashboardContactStatisticDto;
+import de.symeda.sormas.api.dashboard.DashboardContactStoppedFollowUpDto;
 import de.symeda.sormas.api.dashboard.DashboardContactVisitDto;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.dashboard.DashboardEventDto;
@@ -349,10 +350,11 @@ public class DashboardFacadeEjb implements DashboardFacade {
 
 		Map<Disease, Map<String, Integer>> orderedDiseaseMap = diseaseMap.entrySet()
 			.stream()
-			.sorted(Map.Entry.comparingByValue((o1, o2) -> Integer.compare(o1.get(CURRENT_CONTACTS), o2.get(CURRENT_CONTACTS))))
+			.sorted(Map.Entry.comparingByValue((o1, o2) -> -Integer.compare(o1.get(CURRENT_CONTACTS), o2.get(CURRENT_CONTACTS))))
 			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue, LinkedHashMap::new));
 
 		DashboardContactFollowUpDto dashboardContactFollowUp = calculateContactFollowUpStatistics(dashboardContacts, dashboardCriteria.getDateTo());
+		DashboardContactStoppedFollowUpDto dashboardContactStoppedFollowUp = calculateContactStoppedFollowUpStatistics(dashboardContacts);
 		DashboardContactVisitDto dashboardContactVisit = calculateContactVisitStatistics(dashboardContacts, previousDashboardContacts);
 
 		return new DashboardContactStatisticDto(
@@ -364,6 +366,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 			symptomaticContactsCount,
 			orderedDiseaseMap,
 			dashboardContactFollowUp,
+			dashboardContactStoppedFollowUp,
 			dashboardContactVisit);
 
 	}
@@ -373,12 +376,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 		List<DashboardContactDto> followUpContacts =
 			contacts.stream().filter(c -> c.getFollowUpStatus() == FollowUpStatus.FOLLOW_UP).collect(Collectors.toList());
 
-		List<DashboardContactDto> stoppedFollowUpContacts = contacts.stream()
-			.filter(c -> c.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP && c.getFollowUpStatus() != FollowUpStatus.FOLLOW_UP)
-			.collect(Collectors.toList());
-
 		int followUpContactsCount = followUpContacts.size();
-		int stoppedFollowUpContactsCount = stoppedFollowUpContacts.size();
 
 		int uncooperativeContactsCount = (int) followUpContacts.stream().filter(c -> c.getLastVisitStatus() == VisitStatus.UNCOOPERATIVE).count();
 		int cooperativeContactsCount = (int) followUpContacts.stream().filter(c -> c.getLastVisitStatus() == VisitStatus.COOPERATIVE).count();
@@ -415,11 +413,6 @@ public class DashboardFacadeEjb implements DashboardFacade {
 
 		}
 
-		int followUpCompletedCount = (int) stoppedFollowUpContacts.stream().filter(c -> c.getFollowUpStatus() == FollowUpStatus.COMPLETED).count();
-		int followUpCanceledCount = (int) stoppedFollowUpContacts.stream().filter(c -> c.getFollowUpStatus() == FollowUpStatus.CANCELED).count();
-		int lostToFollowUpCount = (int) stoppedFollowUpContacts.stream().filter(c -> c.getFollowUpStatus() == FollowUpStatus.LOST).count();
-		int contactStatusConvertedCount = (int) stoppedFollowUpContacts.stream().filter(c -> c.getContactStatus() == ContactStatus.CONVERTED).count();
-
 		return new DashboardContactFollowUpDto(
 			followUpContactsCount,
 			cooperativeContactsCount,
@@ -429,12 +422,28 @@ public class DashboardFacadeEjb implements DashboardFacade {
 			missedVisitsOneDayCount,
 			missedVisitsTwoDaysCount,
 			missedVisitsThreeDaysCount,
-			missedVisitsGtThreeDaysCount,
+			missedVisitsGtThreeDaysCount);
+	}
+
+	private DashboardContactStoppedFollowUpDto calculateContactStoppedFollowUpStatistics(List<DashboardContactDto> contacts) {
+
+		List<DashboardContactDto> stoppedFollowUpContacts = contacts.stream()
+			.filter(c -> c.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP && c.getFollowUpStatus() != FollowUpStatus.FOLLOW_UP)
+			.collect(Collectors.toList());
+
+		int stoppedFollowUpContactsCount = stoppedFollowUpContacts.size();
+		int followUpCompletedCount = (int) stoppedFollowUpContacts.stream().filter(c -> c.getFollowUpStatus() == FollowUpStatus.COMPLETED).count();
+		int followUpCanceledCount = (int) stoppedFollowUpContacts.stream().filter(c -> c.getFollowUpStatus() == FollowUpStatus.CANCELED).count();
+		int lostToFollowUpCount = (int) stoppedFollowUpContacts.stream().filter(c -> c.getFollowUpStatus() == FollowUpStatus.LOST).count();
+		int contactStatusConvertedCount = (int) stoppedFollowUpContacts.stream().filter(c -> c.getContactStatus() == ContactStatus.CONVERTED).count();
+
+		return new DashboardContactStoppedFollowUpDto(
 			stoppedFollowUpContactsCount,
 			followUpCompletedCount,
 			followUpCanceledCount,
 			lostToFollowUpCount,
 			contactStatusConvertedCount);
+
 	}
 
 	private DashboardContactVisitDto calculateContactVisitStatistics(List<DashboardContactDto> contacts, List<DashboardContactDto> previousContacts) {
