@@ -35,6 +35,7 @@ import java.util.GregorianCalendar;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import com.vaadin.v7.data.Property;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.ui.CustomLayout;
@@ -175,6 +176,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	private ComboBox cbPlaceOfBirthFacility;
 	private PersonContext personContext;
 	private boolean isPseudonymized;
+	private LocationEditForm addressForm;
+	private PresentConditionChangeListener presentConditionChangeListener;
 	//@formatter:on
 
 	public PersonEditForm(PersonContext personContext, Disease disease, String diseaseDetails, ViewMode viewMode, boolean isPseudonymized) {
@@ -295,7 +298,8 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		DateField burialDate = addField(PersonDto.BURIAL_DATE, DateField.class);
 		TextField burialPlaceDesc = addField(PersonDto.BURIAL_PLACE_DESCRIPTION, TextField.class);
 		ComboBox burialConductor = addField(PersonDto.BURIAL_CONDUCTOR, ComboBox.class);
-		addField(PersonDto.ADDRESS, LocationEditForm.class).setCaption(null);
+		addressForm = addField(PersonDto.ADDRESS, LocationEditForm.class);
+		addressForm.setCaption(null);
 		addField(PersonDto.ADDRESSES, LocationsField.class).setCaption(null);
 
 		PersonContactDetailsField personContactDetailsField = addField(PersonDto.PERSON_CONTACT_DETAILS, PersonContactDetailsField.class);
@@ -441,19 +445,24 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			true);
 		cbPlaceOfBirthRegion.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 
-		addFieldListeners(PersonDto.PRESENT_CONDITION, e -> toggleDeathAndBurialFields());
+		this.presentConditionChangeListener = new PresentConditionChangeListener();
+		addFieldListeners(PersonDto.PRESENT_CONDITION, presentConditionChangeListener);
 
 		causeOfDeathField.addValueChangeListener(e -> {
-			toggleCauseOfDeathFields(presentCondition.getValue() != PresentCondition.ALIVE && presentCondition.getValue() != null);
+			boolean causeOfDeathVisible = presentCondition.getValue() != PresentCondition.ALIVE
+				&& presentCondition.getValue() != PresentCondition.UNKNOWN
+				&& presentCondition.getValue() != null;
+			toggleCauseOfDeathFields(causeOfDeathVisible);
 		});
 
 		causeOfDeathDiseaseField.addValueChangeListener(e -> {
-			toggleCauseOfDeathFields(presentCondition.getValue() != PresentCondition.ALIVE && presentCondition.getValue() != null);
+			boolean causeOfDeathVisible = presentCondition.getValue() != PresentCondition.ALIVE
+					&& presentCondition.getValue() != PresentCondition.UNKNOWN
+					&& presentCondition.getValue() != null;
+			toggleCauseOfDeathFields(causeOfDeathVisible);
 		});
 
-		addValueChangeListener(e -> {
-			fillDeathAndBurialFields(deathPlaceType, deathPlaceDesc, burialPlaceDesc);
-		});
+		addValueChangeListener(e -> fillDeathAndBurialFields(deathPlaceType, deathPlaceDesc, burialPlaceDesc));
 
 		deathDate.addValidator(
 			new DateComparisonValidator(
@@ -540,6 +549,10 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 	public void setValue(PersonDto newFieldValue) {
 		super.setValue(newFieldValue);
 		initializePresentConditionField();
+
+		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
+		// this hopefully resets everything to its correct value
+		addressForm.discard();
 	}
 
 	private void addListenersToInfrastructureFields(
@@ -638,13 +651,15 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 			Disease disease = this.disease != null ? this.disease : FacadeProvider.getDiseaseConfigurationFacade().getDefaultDisease();
 			FieldVisibilityCheckers fieldVisibilityCheckers = FieldVisibilityCheckers.withDisease(disease);
 			List<PresentCondition> validValues = Arrays.stream(PresentCondition.values())
-					.filter(c -> fieldVisibilityCheckers.isVisible(PresentCondition.class, c.name()))
-					.collect(Collectors.toList());
+				.filter(c -> fieldVisibilityCheckers.isVisible(PresentCondition.class, c.name()))
+				.collect(Collectors.toList());
 			PresentCondition currentValue = (PresentCondition) presentConditionField.getValue();
 			if (currentValue != null && !validValues.contains(currentValue)) {
 				validValues.add(currentValue);
 			}
+			presentConditionField.removeValueChangeListener(presentConditionChangeListener);
 			FieldHelper.updateEnumData(presentConditionField, validValues);
+			presentConditionField.addValueChangeListener(presentConditionChangeListener);
 		}
 
 		/*
@@ -756,75 +771,6 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 		if (!visibleAndRequired) {
 			detailsField.clear();
 		}
-	}
-
-	private void toggleDeathAndBurialFields() {
-		//		List<Object> diseaseSpecificFields = Arrays.asList(PersonDto.DEATH_PLACE_TYPE, PersonDto.DEATH_PLACE_DESCRIPTION, PersonDto.BURIAL_DATE,
-		//				PersonDto.BURIAL_PLACE_DESCRIPTION, PersonDto.BURIAL_CONDUCTOR);
-		PresentCondition type = (PresentCondition) ((AbstractSelect) getFieldGroup().getField(PersonDto.PRESENT_CONDITION)).getValue();
-		if (type == null) {
-			setVisible(
-				false,
-				PersonDto.DEATH_DATE,
-				PersonDto.DEATH_PLACE_TYPE,
-				PersonDto.DEATH_PLACE_DESCRIPTION,
-				PersonDto.BURIAL_DATE,
-				PersonDto.BURIAL_PLACE_DESCRIPTION,
-				PersonDto.BURIAL_CONDUCTOR);
-			getField(PersonDto.DEATH_DATE).setValue(null);
-			getField(PersonDto.BURIAL_DATE).setValue(null);
-			toggleCauseOfDeathFields(false);
-		} else {
-			switch (type) {
-			case DEAD:
-				setVisible(true, PersonDto.DEATH_DATE, PersonDto.DEATH_PLACE_TYPE, PersonDto.DEATH_PLACE_DESCRIPTION);
-				causeOfDeathField.setValue(CauseOfDeath.EPIDEMIC_DISEASE);
-				toggleCauseOfDeathFields(true);
-				setVisible(false, PersonDto.BURIAL_DATE, PersonDto.BURIAL_PLACE_DESCRIPTION, PersonDto.BURIAL_CONDUCTOR);
-
-				getField(PersonDto.BURIAL_DATE).setValue(null);
-				getField(PersonDto.BURIAL_PLACE_DESCRIPTION).setValue(null);
-				getField(PersonDto.BURIAL_CONDUCTOR).setValue(null);
-
-				break;
-			case BURIED:
-				setVisible(true, PersonDto.DEATH_DATE, PersonDto.DEATH_PLACE_TYPE, PersonDto.DEATH_PLACE_DESCRIPTION);
-				causeOfDeathField.setValue(CauseOfDeath.EPIDEMIC_DISEASE);
-				//@formatter:off
-				setVisible(fieldVisibilityCheckers.isVisible(PersonDto.class, PersonDto.BURIAL_DATE), PersonDto.BURIAL_DATE);
-				setVisible(fieldVisibilityCheckers.isVisible(PersonDto.class, PersonDto.BURIAL_PLACE_DESCRIPTION), PersonDto.BURIAL_PLACE_DESCRIPTION);
-				setVisible(fieldVisibilityCheckers.isVisible(PersonDto.class, PersonDto.BURIAL_CONDUCTOR), PersonDto.BURIAL_CONDUCTOR);
-				//@formatter:on
-				toggleCauseOfDeathFields(true);
-				break;
-			default:
-				setVisible(
-					false,
-					PersonDto.DEATH_DATE,
-					PersonDto.DEATH_PLACE_TYPE,
-					PersonDto.DEATH_PLACE_DESCRIPTION,
-					PersonDto.BURIAL_DATE,
-					PersonDto.BURIAL_PLACE_DESCRIPTION,
-					PersonDto.BURIAL_CONDUCTOR);
-				getField(PersonDto.DEATH_DATE).setValue(null);
-				getField(PersonDto.BURIAL_DATE).setValue(null);
-				toggleCauseOfDeathFields(false);
-				break;
-			}
-		}
-
-		// Make sure that disease specific fields are only shown when required
-		//		for (Object propertyId : diseaseSpecificFields) {
-		//			boolean visible = DiseasesConfiguration.isDefinedOrMissing(PersonDto.class, (String)propertyId, disease);
-		//			if (!visible) {
-		//				getFieldGroup().getField(propertyId).setVisible(false);
-		//			}
-		//		}
-
-		fillDeathAndBurialFields(
-			(AbstractSelect) getField(PersonDto.DEATH_PLACE_TYPE),
-			(TextField) getField(PersonDto.DEATH_PLACE_DESCRIPTION),
-			(TextField) getField(PersonDto.BURIAL_PLACE_DESCRIPTION));
 	}
 
 	private void toggleCauseOfDeathFields(boolean causeOfDeathVisible) {
@@ -945,5 +891,72 @@ public class PersonEditForm extends AbstractEditForm<PersonDto> {
 
 	public void setHeading(String heading) {
 		personInformationHeadingLabel.setValue(heading);
+	}
+
+	private class PresentConditionChangeListener implements ValueChangeListener {
+
+		@Override
+		public void valueChange(Property.ValueChangeEvent valueChangeEvent) {
+			PresentCondition type = (PresentCondition) ((AbstractSelect) getFieldGroup().getField(PersonDto.PRESENT_CONDITION)).getValue();
+			if (type == null) {
+				setVisible(
+						false,
+						PersonDto.DEATH_DATE,
+						PersonDto.DEATH_PLACE_TYPE,
+						PersonDto.DEATH_PLACE_DESCRIPTION,
+						PersonDto.BURIAL_DATE,
+						PersonDto.BURIAL_PLACE_DESCRIPTION,
+						PersonDto.BURIAL_CONDUCTOR);
+				getField(PersonDto.DEATH_DATE).setValue(null);
+				getField(PersonDto.BURIAL_DATE).setValue(null);
+				getField(PersonDto.BURIAL_PLACE_DESCRIPTION).setValue(null);
+				getField(PersonDto.BURIAL_CONDUCTOR).setValue(null);
+				toggleCauseOfDeathFields(false);
+			} else {
+				switch (type) {
+					case DEAD:
+						setVisible(true, PersonDto.DEATH_DATE, PersonDto.DEATH_PLACE_TYPE, PersonDto.DEATH_PLACE_DESCRIPTION);
+						causeOfDeathField.setValue(CauseOfDeath.EPIDEMIC_DISEASE);
+						toggleCauseOfDeathFields(true);
+						setVisible(false, PersonDto.BURIAL_DATE, PersonDto.BURIAL_PLACE_DESCRIPTION, PersonDto.BURIAL_CONDUCTOR);
+
+						getField(PersonDto.BURIAL_DATE).setValue(null);
+						getField(PersonDto.BURIAL_PLACE_DESCRIPTION).setValue(null);
+						getField(PersonDto.BURIAL_CONDUCTOR).setValue(null);
+
+						break;
+					case BURIED:
+						setVisible(true, PersonDto.DEATH_DATE, PersonDto.DEATH_PLACE_TYPE, PersonDto.DEATH_PLACE_DESCRIPTION);
+						causeOfDeathField.setValue(CauseOfDeath.EPIDEMIC_DISEASE);
+						//@formatter:off
+						setVisible(fieldVisibilityCheckers.isVisible(PersonDto.class, PersonDto.BURIAL_DATE), PersonDto.BURIAL_DATE);
+						setVisible(fieldVisibilityCheckers.isVisible(PersonDto.class, PersonDto.BURIAL_PLACE_DESCRIPTION), PersonDto.BURIAL_PLACE_DESCRIPTION);
+						setVisible(fieldVisibilityCheckers.isVisible(PersonDto.class, PersonDto.BURIAL_CONDUCTOR), PersonDto.BURIAL_CONDUCTOR);
+						//@formatter:on
+						toggleCauseOfDeathFields(true);
+						break;
+					default:
+						setVisible(
+								false,
+								PersonDto.DEATH_DATE,
+								PersonDto.DEATH_PLACE_TYPE,
+								PersonDto.DEATH_PLACE_DESCRIPTION,
+								PersonDto.BURIAL_DATE,
+								PersonDto.BURIAL_PLACE_DESCRIPTION,
+								PersonDto.BURIAL_CONDUCTOR);
+						getField(PersonDto.DEATH_DATE).setValue(null);
+						getField(PersonDto.BURIAL_DATE).setValue(null);
+						getField(PersonDto.BURIAL_PLACE_DESCRIPTION).setValue(null);
+						getField(PersonDto.BURIAL_CONDUCTOR).setValue(null);
+						toggleCauseOfDeathFields(false);
+						break;
+				}
+			}
+
+			fillDeathAndBurialFields(
+					getField(PersonDto.DEATH_PLACE_TYPE),
+					getField(PersonDto.DEATH_PLACE_DESCRIPTION),
+					getField(PersonDto.BURIAL_PLACE_DESCRIPTION));
+		}
 	}
 }

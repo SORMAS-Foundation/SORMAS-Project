@@ -24,22 +24,7 @@ import com.google.inject.Inject;
 import java.util.Date;
 import java.util.LinkedHashMap;
 import java.util.UUID;
-import org.sormas.e2etests.entities.pojo.api.Case;
-import org.sormas.e2etests.entities.pojo.api.ClinicalCourse;
-import org.sormas.e2etests.entities.pojo.api.Community;
-import org.sormas.e2etests.entities.pojo.api.District;
-import org.sormas.e2etests.entities.pojo.api.EpiData;
-import org.sormas.e2etests.entities.pojo.api.HealthConditions;
-import org.sormas.e2etests.entities.pojo.api.HealthFacility;
-import org.sormas.e2etests.entities.pojo.api.Hospitalization;
-import org.sormas.e2etests.entities.pojo.api.MaternalHistory;
-import org.sormas.e2etests.entities.pojo.api.Person;
-import org.sormas.e2etests.entities.pojo.api.PortHealthInfo;
-import org.sormas.e2etests.entities.pojo.api.Region;
-import org.sormas.e2etests.entities.pojo.api.ReportingUser;
-import org.sormas.e2etests.entities.pojo.api.SurveillanceOfficer;
-import org.sormas.e2etests.entities.pojo.api.Symptoms;
-import org.sormas.e2etests.entities.pojo.api.Therapy;
+import org.sormas.e2etests.entities.pojo.api.*;
 import org.sormas.e2etests.enums.CaseClassification;
 import org.sormas.e2etests.enums.CommunityValues;
 import org.sormas.e2etests.enums.DiseasesValues;
@@ -72,14 +57,35 @@ public class CaseApiService {
                         .getUuid())
                 .build())
         .district(
-            District.builder().uuid(DistrictsValues.VoreingestellterLandkreis.getUuid()).build())
-        .region(Region.builder().uuid(RegionsValues.VoreingestellteBundeslander.getUuid()).build())
+            District.builder()
+                .uuid(
+                    DistrictsValues.getUuidValueForLocale(
+                        DistrictsValues.VoreingestellterLandkreis.name(), locale))
+                .build())
+        .region(
+            Region.builder()
+                .uuid(
+                    RegionsValues.getUuidValueForLocale(
+                        RegionsValues.VoreingestellteBundeslander.getName(), locale))
+                .build())
         .responsibleDistrict(
-            District.builder().uuid(DistrictsValues.VoreingestellterLandkreis.getUuid()).build())
+            District.builder()
+                .uuid(
+                    DistrictsValues.getUuidValueForLocale(
+                        DistrictsValues.VoreingestellterLandkreis.name(), locale))
+                .build())
         .responsibleRegion(
-            Region.builder().uuid(RegionsValues.VoreingestellteBundeslander.getUuid()).build())
+            Region.builder()
+                .uuid(
+                    RegionsValues.getUuidValueForLocale(
+                        RegionsValues.VoreingestellteBundeslander.getName(), locale))
+                .build())
         .community(
-            Community.builder().uuid(CommunityValues.VoreingestellteGemeinde.getUuid()).build())
+            Community.builder()
+                .uuid(
+                    CommunityValues.getUuidValueForLocale(
+                        CommunityValues.VoreingestellteGemeinde.name(), locale))
+                .build())
         .followUpStatus("FOLLOW_UP")
         .person(
             Person.builder()

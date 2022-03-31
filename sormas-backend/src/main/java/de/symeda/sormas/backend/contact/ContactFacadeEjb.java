@@ -154,7 +154,6 @@ import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
 import de.symeda.sormas.backend.event.ContactEventSummaryDetails;
-import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.exposure.Exposure;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
@@ -312,13 +311,17 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed({UserRight._CONTACT_CREATE, UserRight._CONTACT_EDIT})
+	@RolesAllowed({
+		UserRight._CONTACT_CREATE,
+		UserRight._CONTACT_EDIT })
 	public ContactDto save(@Valid @NotNull ContactDto dto) {
 		return save(dto, true, true);
 	}
 
 	@Override
-	@RolesAllowed({UserRight._CONTACT_CREATE, UserRight._CONTACT_EDIT})
+	@RolesAllowed({
+		UserRight._CONTACT_CREATE,
+		UserRight._CONTACT_EDIT })
 	public ContactDto save(@Valid ContactDto dto, boolean handleChanges, boolean handleCaseChanges) {
 		return save(dto, handleChanges, handleCaseChanges, true, true);
 	}
@@ -395,6 +398,9 @@ public class ContactFacadeEjb
 		return toDto(entity);
 	}
 
+	@RolesAllowed({
+		UserRight._CONTACT_EDIT,
+		UserRight._EXTERNAL_VISITS })
 	public void onContactChanged(ContactDto contact, boolean syncShares) {
 		if (syncShares && sormasToSormasFacade.isFeatureConfigured()) {
 			syncSharesAsync(new ShareTreeCriteria(contact.getUuid()));
@@ -1440,6 +1446,7 @@ public class ContactFacadeEjb
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	@RolesAllowed(UserRight._SYSTEM)
 	public void archiveAllArchivableContacts(int daysAfterContactsGetsArchived) {
 		archiveAllArchivableContacts(daysAfterContactsGetsArchived, LocalDate.now());
 	}
@@ -1452,7 +1459,10 @@ public class ContactFacadeEjb
 		Root<Contact> from = cq.from(Contact.class);
 
 		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
-		cq.where(cb.equal(from.get(Contact.ARCHIVED), false), cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
+		cq.where(
+			cb.equal(from.get(Contact.ARCHIVED), false),
+			cb.equal(from.get(Contact.DELETED), false),
+			cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
 		cq.select(from.get(Contact.UUID)).distinct(true);
 		List<String> contactUuids = em.createQuery(cq).getResultList();
 
@@ -1597,6 +1607,10 @@ public class ContactFacadeEjb
 	}
 
 	public ContactDto toDto(Contact source) {
+		return toContactDto(source);
+	}
+
+	public static ContactDto toContactDto(Contact source) {
 
 		if (source == null) {
 			return null;
@@ -1678,7 +1692,7 @@ public class ContactFacadeEjb
 		target.setAdditionalDetails(source.getAdditionalDetails());
 
 		target.setEpiData(EpiDataFacadeEjb.toDto(source.getEpiData()));
-		target.setHealthConditions(healthConditionsMapper.toDto(source.getHealthConditions()));
+		target.setHealthConditions(HealthConditionsMapper.toDto(source.getHealthConditions()));
 		target.setReturningTraveler(source.getReturningTraveler());
 		target.setEndOfQuarantineReason(source.getEndOfQuarantineReason());
 		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());
@@ -2183,6 +2197,11 @@ public class ContactFacadeEjb
 			}
 		}
 		return changedContacts;
+	}
+
+	@Override
+	public long getContactCount(CaseReferenceDto caze) {
+		return service.getContactCount(caze);
 	}
 
 	@Override

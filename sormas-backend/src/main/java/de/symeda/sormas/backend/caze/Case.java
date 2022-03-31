@@ -240,6 +240,7 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	public static final String CASE_REFERENCE_DEFINITION = "caseReferenceDefinition";
 	public static final String PREVIOUS_QUARANTINE_TO = "previousQuarantineTo";
 	public static final String QUARANTINE_CHANGE_COMMENT = "quarantineChangeComment";
+	public static final String DUPLICATE_OF = "duplicateOf";
 
 	private Person person;
 	private String description;

@@ -131,6 +131,8 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	List<String> deleteCases(List<String> caseUuids);
 
+	void deleteWithContacts(String caseUuid);
+
 	void deleteCaseAsDuplicate(String caseUuid, String duplicateOfCaseUuid) throws ExternalSurveillanceToolException;
 
 	Date getOldestCaseOnsetDate();

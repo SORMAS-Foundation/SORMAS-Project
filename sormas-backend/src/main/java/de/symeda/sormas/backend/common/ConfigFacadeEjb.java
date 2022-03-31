@@ -571,9 +571,10 @@ public class ConfigFacadeEjb implements ConfigFacade {
 			getSormasStatsUrl(),
 			s2sConfig.getOidcServer(),
 			getExternalSurveillanceToolGatewayUrl(),
-			getMapTilersUrl(),
 			getAppUrl(),
 			getUiUrl());
+
+		// getGeocodingServiceUrlTemplate() and getMapTilersUrl() contain special chars and are ignored
 
 		// separately as they are interpolated
 		if (!StringUtils.isBlank(s2sConfig.getOidcServer())) {
