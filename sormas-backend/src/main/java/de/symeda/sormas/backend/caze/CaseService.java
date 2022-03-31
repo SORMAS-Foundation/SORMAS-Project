@@ -1304,9 +1304,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				statusChangedBySystem = true;
 			}
 		} else {
+			Date currentFollowUpUntil = caze.getFollowUpUntil();
 			Date untilDate = computeFollowUpuntilDate(caze);
 			caze.setFollowUpUntil(untilDate);
-			Date currentFollowUpUntil = caze.getFollowUpUntil();
 			if (DateHelper.getStartOfDay(currentFollowUpUntil).before(DateHelper.getStartOfDay(untilDate))) {
 				caze.setOverwriteFollowUpUntil(false);
 			}
