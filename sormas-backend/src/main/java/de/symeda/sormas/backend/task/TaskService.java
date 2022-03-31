@@ -143,23 +143,21 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Task> taskPath) {
 
-		Join<Object, User> assigneeUser = taskPath.join(Task.ASSIGNEE_USER, JoinType.LEFT);
-
-		Predicate assigneeFilter = createAssigneeFilter(cb, assigneeUser);
-
 		User currentUser = getCurrentUser();
 		if (currentUser == null) {
 			return null;
 		}
 
-		// National users can access all tasks in the system that are assigned in their jurisdiction
+		Join<Object, User> assigneeUser = taskPath.join(Task.ASSIGNEE_USER, JoinType.LEFT);
+
+		Predicate assigneeFilter = createAssigneeFilter(cb, assigneeUser);
+
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if ((jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
 			|| currentUser.hasUserRole(UserRole.REST_USER)) {
 			return assigneeFilter;
 		}
 
-		// whoever created the task or is assigned to it is allowed to access it
 		Predicate filter = cb.equal(taskPath.get(Task.CREATOR_USER), currentUser);
 		filter = cb.or(filter, cb.equal(assigneeUser, currentUser));
 
