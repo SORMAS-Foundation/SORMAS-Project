@@ -103,7 +103,6 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Action> actionPath) {
 
-		// National users can access all actions in the system
 		User currentUser = getCurrentUser();
 		if (currentUser == null) {
 			return null;
@@ -114,7 +113,6 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 			return null;
 		}
 
-		// whoever created the action is allowed to access it
 		Predicate filter = cb.equal(actionPath.join(Action.CREATOR_USER, JoinType.LEFT), currentUser);
 
 		Predicate eventFilter = eventService.createUserFilter(cb, cq, actionPath.join(Action.EVENT, JoinType.LEFT));
