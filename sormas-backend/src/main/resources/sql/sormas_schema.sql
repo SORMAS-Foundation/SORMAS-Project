@@ -10960,15 +10960,6 @@ CREATE TRIGGER delete_history_trigger
     AFTER DELETE ON action
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('action_history', 'id');
 
-DROP TRIGGER IF EXISTS versioning_trigger ON systemevent;
-CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE ON systemevent
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'systemevent_history', true);
-DROP TRIGGER IF EXISTS delete_history_trigger ON systemevent;
-CREATE TRIGGER delete_history_trigger
-    AFTER DELETE ON systemevent
-    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('systemevent_history', 'id');
-
 DROP TRIGGER IF EXISTS versioning_trigger ON exportconfiguration;
 CREATE TRIGGER versioning_trigger
     BEFORE INSERT OR UPDATE ON exportconfiguration
@@ -11220,4 +11211,12 @@ CREATE TRIGGER delete_history_trigger_person_locations
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('person_locations_history', 'person_id');
 
 INSERT INTO schema_version (version_number, comment) VALUES (451, 'Delete history data on permanent deletion of entities #7713');
+
+-- 2022-03-29 Persisting systemevent on latest develop fails with SQL error #8585
+
+DROP TRIGGER IF EXISTS versioning_trigger ON systemevent;
+DROP TRIGGER IF EXISTS delete_history_trigger ON systemevent;
+
+INSERT INTO schema_version (version_number, comment) VALUES (452, 'Persisting systemevent on latest develop fails with SQL error #8585');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

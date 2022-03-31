@@ -354,7 +354,10 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		final From<?, EventParticipant> eventParticipantPath,
 		final EventUserFilterCriteria eventUserFilterCriteria) {
 
-		final User currentUser = getCurrentUser();
+		User currentUser = getCurrentUser();
+		if (currentUser == null) {
+			return null;
+		}
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		Predicate filter = null;
 
