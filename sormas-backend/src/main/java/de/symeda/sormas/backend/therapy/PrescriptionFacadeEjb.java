@@ -120,11 +120,6 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 	@Override
 	@RolesAllowed(UserRight._PRESCRIPTION_DELETE)
 	public void deletePrescription(String prescriptionUuid) {
-
-		if (!userService.hasRight(UserRight.PRESCRIPTION_DELETE)) {
-			throw new UnsupportedOperationException("Your user is not allowed to delete prescriptions");
-		}
-
 		Prescription prescription = service.getByUuid(prescriptionUuid);
 		service.deletePermanent(prescription);
 	}

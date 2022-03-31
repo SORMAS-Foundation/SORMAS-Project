@@ -154,7 +154,6 @@ import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
 import de.symeda.sormas.backend.event.ContactEventSummaryDetails;
-import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.exposure.Exposure;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
@@ -357,6 +356,7 @@ public class ContactFacadeEjb
 
 		restorePseudonymizedDto(dto, existingContactDto, existingContact, Pseudonymizer.getDefault(userService::hasRight));
 
+		validateUserRights(dto, existingContactDto);
 		validate(dto);
 
 		externalJournalService.handleExternalJournalPersonUpdateAsync(dto.getPerson());
@@ -527,11 +527,6 @@ public class ContactFacadeEjb
 	@Override
 	@RolesAllowed(UserRight._CONTACT_DELETE)
 	public void delete(String contactUuid) {
-
-		if (!userService.hasRight(UserRight.CONTACT_DELETE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete contacts.");
-		}
-
 		Contact contact = service.getByUuid(contactUuid);
 		deleteContact(contact);
 	}
@@ -546,9 +541,6 @@ public class ContactFacadeEjb
 
 	@RolesAllowed(UserRight._CONTACT_DELETE)
 	public List<String> deleteContacts(List<String> contactUuids) {
-		if (!userService.hasRight(UserRight.CONTACT_DELETE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete contacts.");
-		}
 		List<String> deletedContactUuids = new ArrayList<>();
 		List<Contact> contactsToBeDeleted = service.getByUuids(contactUuids);
 		if (contactsToBeDeleted != null) {
@@ -1792,6 +1784,19 @@ public class ContactFacadeEjb
 			task.setPriority(TaskPriority.HIGH);
 		}
 		return task;
+	}
+
+	private void validateUserRights(ContactDto contact, ContactDto existingContact) {
+		if (existingContact != null) {
+			if (!DataHelper.isSame(contact.getCaze(), existingContact.getCaze())
+				&& !(userService.hasRight(UserRight.CONTACT_REASSIGN_CASE) || userService.hasRight(UserRight.EXTERNAL_VISITS))) {
+				throw new AccessDeniedException(
+					String.format(
+						I18nProperties.getString(Strings.errorNoRightsForChangingField),
+						I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.CAZE)));
+
+			}
+		}
 	}
 
 	@Override

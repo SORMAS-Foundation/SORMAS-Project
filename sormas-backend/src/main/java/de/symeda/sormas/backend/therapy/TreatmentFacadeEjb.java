@@ -115,13 +115,8 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	}
 
 	@Override
-	@RolesAllowed(UserRight._TREATMENT_EDIT)
+	@RolesAllowed(UserRight._TREATMENT_DELETE)
 	public void deleteTreatment(String treatmentUuid) {
-
-		if (!userService.hasRight(UserRight.TREATMENT_DELETE)) {
-			throw new UnsupportedOperationException("Your user is not allowed to delete treatments");
-		}
-
 		Treatment treatment = service.getByUuid(treatmentUuid);
 		service.deletePermanent(treatment);
 	}

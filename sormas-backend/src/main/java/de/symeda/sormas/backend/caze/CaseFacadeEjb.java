@@ -2421,11 +2421,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@Override
 	@RolesAllowed(UserRight._CASE_DELETE)
 	public void delete(String caseUuid) throws ExternalSurveillanceToolException {
-
-		if (!userService.hasRight(UserRight.CASE_DELETE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete cases.");
-		}
-
 		Case caze = service.getByUuid(caseUuid);
 		deleteCase(caze);
 	}
