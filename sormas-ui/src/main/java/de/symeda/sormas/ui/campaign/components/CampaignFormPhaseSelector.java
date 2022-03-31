@@ -40,14 +40,14 @@ public class CampaignFormPhaseSelector extends HorizontalLayout {
            // phaseComboBox.setItems(CampaignPhase.values());
 			
 			List<String> phases = new ArrayList();
-			phases.add("ALL PHASES");
+			//phases.add("ALL PHASES");
 			phases.add(CampaignPhase.PRE.toString());
 			phases.add(CampaignPhase.INTRA.toString());
 			phases.add(CampaignPhase.POST.toString());
 			
 			
 			phaseComboBox.setItems(phases);
-			phaseComboBox.setValue("ALL PHASES");
+			phaseComboBox.setValue(CampaignPhase.INTRA.toString());
 			phaseComboBox.setEmptySelectionAllowed(false);
 			//phaseComboBox.setEmptySelectionCaption(I18nProperties.getCaption(Captions.campaignAllCampaigns));
 			//final CampaignReferenceDto lastStartedCampaign = FacadeProvider.getCampaignFacade().getLastStartedCampaign();
@@ -77,14 +77,14 @@ public class CampaignFormPhaseSelector extends HorizontalLayout {
            // phaseComboBox.setItems(CampaignPhase.values());
 			
 			List<String> phases = new ArrayList();
-			phases.add("ALL PHASES");
+			//phases.add("ALL PHASES");
 			phases.add(CampaignPhase.PRE.toString());
 			phases.add(CampaignPhase.INTRA.toString());
 			phases.add(CampaignPhase.POST.toString());
 			
 			
 			phaseComboBox.setItems(phases);
-			phaseComboBox.setValue("ALL PHASES");
+			phaseComboBox.setValue(CampaignPhase.INTRA.toString());
 			phaseComboBox.setEmptySelectionAllowed(false);
 			//phaseComboBox.setEmptySelectionCaption(I18nProperties.getCaption(Captions.campaignAllCampaigns));
 			//final CampaignReferenceDto lastStartedCampaign = FacadeProvider.getCampaignFacade().getLastStartedCampaign();
