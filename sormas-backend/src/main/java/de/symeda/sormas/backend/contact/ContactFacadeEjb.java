@@ -154,7 +154,6 @@ import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb;
 import de.symeda.sormas.backend.epidata.EpiDataFacadeEjb.EpiDataFacadeEjbLocal;
 import de.symeda.sormas.backend.event.ContactEventSummaryDetails;
-import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.exposure.Exposure;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
@@ -1966,13 +1965,21 @@ public class ContactFacadeEjb
 	}
 
 	private void copyDtoValues(ContactDto leadContactDto, ContactDto otherContactDto) {
-		String leadAdditionalDetails = leadContactDto.getAdditionalDetails();
-		String leadFollowUpComment = leadContactDto.getFollowUpComment();
 
 		DtoHelper.copyDtoValues(leadContactDto, otherContactDto, false);
 
-		leadContactDto.setAdditionalDetails(DataHelper.joinStrings(" ", leadAdditionalDetails, otherContactDto.getAdditionalDetails()));
-		leadContactDto.setFollowUpComment(DataHelper.joinStrings(" ", leadFollowUpComment, otherContactDto.getFollowUpComment()));
+		final String leadAdditionalDetails = leadContactDto.getAdditionalDetails();
+		final String leadFollowUpComment = leadContactDto.getFollowUpComment();
+		final String otherAdditionalDetails = otherContactDto.getAdditionalDetails();
+		final String otherFollowUpComment = otherContactDto.getFollowUpComment();
+		leadContactDto.setAdditionalDetails(
+				leadAdditionalDetails != null && leadAdditionalDetails.equals(otherAdditionalDetails)
+				? leadAdditionalDetails
+				: DataHelper.joinStrings(" ", leadAdditionalDetails, otherAdditionalDetails));
+		leadContactDto.setFollowUpComment(
+				leadFollowUpComment != null && leadFollowUpComment.equals(otherFollowUpComment)
+				? leadFollowUpComment
+				: DataHelper.joinStrings(" ", leadFollowUpComment, otherFollowUpComment));
 	}
 
 	@Override

@@ -1441,6 +1441,79 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testMergeContactDoesNotDuplicateSystemComment() throws IOException {
+
+		useNationalUserLogin();
+
+		UserDto leadUser = creator.createUser("", "", "", "First", "User");
+		UserReferenceDto leadUserReference = new UserReferenceDto(leadUser.getUuid());
+		PersonDto leadPerson = creator.createPerson("Alex", "Miller");
+		PersonReferenceDto leadPersonReference = new PersonReferenceDto(leadPerson.getUuid());
+		RDCF leadRdcf = creator.createRDCF();
+		CaseDataDto sourceCase = creator.createCase(
+				leadUserReference,
+				leadPersonReference,
+				Disease.CORONAVIRUS,
+				CaseClassification.SUSPECT,
+				InvestigationStatus.PENDING,
+				new Date(),
+				leadRdcf);
+		ContactDto leadContact = creator.createContact(
+				leadUserReference,
+				leadUserReference,
+				leadPersonReference,
+				sourceCase,
+				new Date(),
+				new Date(),
+				Disease.CORONAVIRUS,
+				leadRdcf);
+		getContactFacade().save(leadContact);
+
+		// Create otherContact
+		UserDto otherUser = creator.createUser("", "", "", "Some", "User");
+		UserReferenceDto otherUserReference = new UserReferenceDto(otherUser.getUuid());
+		PersonDto otherPerson = creator.createPerson("Max", "Smith");
+		PersonReferenceDto otherPersonReference = new PersonReferenceDto(otherPerson.getUuid());
+		RDCF otherRdcf = creator.createRDCF();
+		ContactDto otherContact = creator.createContact(
+				otherUserReference,
+				otherUserReference,
+				otherPersonReference,
+				sourceCase,
+				new Date(),
+				new Date(),
+				Disease.CORONAVIRUS,
+				otherRdcf);
+		ContactReferenceDto otherContactReference = getContactFacade().getReferenceByUuid(otherContact.getUuid());
+		ContactDto contact =
+				creator.createContact(otherUserReference, otherUserReference, otherPersonReference, sourceCase, new Date(), new Date(), null);
+		Region region = creator.createRegion("");
+		District district = creator.createDistrict("", region);
+		Facility facility = creator.createFacility("", region, district, creator.createCommunity("", district));
+
+		CaseDataDto resultingCase = getCaseFacade().save(creator.createCase(
+				otherUserReference,
+				otherPersonReference,
+				Disease.CORONAVIRUS,
+				CaseClassification.CONFIRMED_NO_SYMPTOMS,
+				InvestigationStatus.DONE,
+				new Date(),
+				otherRdcf));
+		otherContact.setResultingCase(resultingCase.toReference());
+		getContactFacade().save(otherContact);
+
+		// 2. Merge
+
+		getContactFacade().mergeContact(leadContact.getUuid(), otherContact.getUuid());
+
+		// 3. Test
+
+		ContactDto mergedContact = getContactFacade().getByUuid(leadContact.getUuid());
+
+		assertEquals("[System] Follow-up automatically canceled because contact was converted to a case", mergedContact.getFollowUpComment());
+	}
+
+	@Test
 	public void testMergeContact() throws IOException {
 
 		useNationalUserLogin();
@@ -1567,8 +1640,8 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(otherPerson.getBirthWeight(), mergedPerson.getBirthWeight());
 
 		// Check merge comments
-		assertEquals(mergedContact.getAdditionalDetails(), "Test additional details Test other additional details");
-		assertEquals(mergedContact.getFollowUpComment(), "Test followup comment Test other followup comment");
+		assertEquals("Test additional details Test other additional details", mergedContact.getAdditionalDetails());
+		assertEquals("Test followup comment Test other followup comment", mergedContact.getFollowUpComment());
 
 		// 4. Test Reference Changes
 		// 4.1 Samples
