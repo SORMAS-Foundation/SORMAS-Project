@@ -12,6 +12,7 @@ import java.util.Date;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.internal.SessionImpl;
 import org.hibernate.query.spi.QueryImplementor;
+import org.junit.Before;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -33,10 +34,17 @@ import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.AbstractBeanTest;
+import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 
 public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
+
+	@Before
+	public void setupConfig() {
+		MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_PATIENT_DIARY_URL, "url");
+	}
 
 	@Test
 	public void testCaseAutomaticDeletion() {
@@ -60,6 +68,9 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 			tenYearsPlusAgo,
 			rdcf);
 
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+		creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, tenYearsPlusAgo, tenYearsPlusAgo, null);
+
 		SessionImpl em = (SessionImpl) getEntityManager();
 		QueryImplementor query = em.createQuery("select c from cases c where c.uuid=:uuid");
 		query.setParameter("uuid", caze.getUuid());
@@ -73,6 +84,7 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 
 		assertEquals(1, getCaseFacade().count(caseCriteria));
 
+		useSystemUser();
 		getCoreEntityDeletionService().executeAutomaticDeletion();
 
 		assertEquals(0, getCaseFacade().count(caseCriteria));
