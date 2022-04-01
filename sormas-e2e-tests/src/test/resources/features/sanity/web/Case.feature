@@ -93,6 +93,67 @@ Feature: Case end to end tests
     And I click on save button from Edit Case page with current hospitalization
     Then I check if the specific data is correctly displayed
 
+  @issue=SORDEV-5517 @env_de
+  Scenario: Fill the case tab (DE specific)
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data for DE version
+    Then I select German Investigation Status Done
+    And I check if date of investigation filed is available
+    Then I select German Investigation Status Pending
+    Then I select German Investigation Status Discarded
+    And I check if date of investigation filed is available
+    Then I select German Investigation Status Pending
+    Then I select German Outcome Of Case Status Deceased
+    And I check if date of outcome filed is available
+    Then I select German Outcome Of Case Status Recovered
+    And I check if date of outcome filed is available
+    And I click on the German option for Yes in Sequelae
+    And I check if Sequelae Details field is available
+    And I click on the German option for No in Sequelae
+    And I click on the German option for Unknown in Sequelae
+    Then I select German Outcome Of Case Status Unknown
+    And I check if date of outcome filed is available
+    And I click on the German option for Yes in Sequelae
+    And I check if Sequelae Details field is available
+    And I click on the German option for No in Sequelae
+    And I click on the German option for Unknown in Sequelae
+    Then I click on Place of stay of this case differs from its responsible jurisdiction
+    And I check if region combobox is available and I select Responsible Region
+    And I check if district combobox is available and i select Responsible District
+    And I check if community combobox is available
+    Then I click on Facility as German place of stay
+    And I check if Facility Category combobox is available
+    And I check if Facility Type combobox is available
+    Then I set Facility in German as a Other facility
+    And I fill Facility name and description filed by dummy description
+    And I check if Facility name and description field is available
+    Then I set German Quarantine Home
+    And I check if Quarantine start field is available
+    And I check if Quarantine end field is available
+    Then I select Quarantine ordered verbally checkbox
+    And I check if Date of verbal order field is available
+    Then I select Quarantine ordered by official document checkbox
+    And I check if Date of the official document ordered field is available
+    Then I select Official quarantine order sent
+    And I check if Date official quarantine order was sent field is available
+    Then I set German Quarantine Institutional
+    And I check if Quarantine start field is available
+    And I check if Quarantine end field is available
+    And I check if Date of verbal order field is available
+    And I check if Date of the official document ordered field is available
+    And I check if Date official quarantine order was sent field is available
+    Then I set German Quarantine None
+    Then I set German Quarantine Unknown
+    Then I set German Quarantine Other
+    And I check if Quarantine details field is available
+    Then I set German Vaccination Status as vaccinated
+    Then I set German Vaccination Status as unvaccinated
+    Then I set German Vaccination Status as unknown
+    And I click on save button from Edit Case page with current hospitalization
+    Then I check if the specific data is correctly displayed
+
   @env_main
   Scenario: Delete created case
     When API: I create a new person
@@ -137,7 +198,7 @@ Feature: Case end to end tests
     When I am accessing the Symptoms tab using of created case via api
     And I check the created data is correctly displayed on Symptoms tab page
 
-@issue=SORDEV-5496 @env_main
+  @issue=SORDEV-5496 @env_main
   Scenario: Generate and download Case document
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -192,7 +253,7 @@ Feature: Case end to end tests
     Then I click on Save button from New Treatment popup
     Then I check if created data is correctly displayed in Treatment section
 
-    @issue=SORDEV-5518 @env_main
+  @issue=SORDEV-5518 @env_main
   Scenario: Fill the case person tab
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -209,7 +270,7 @@ Feature: Case end to end tests
     And I click on save button to Save Person data in Case Person Tab
     Then I check if saved Person data is correct
 
-  @issue=SORDEV-5529 @env_main @ignore
+  @issue=SORDEV-5529 @env_main
   Scenario: Fill the clinical course tab
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -235,40 +296,6 @@ Feature: Case end to end tests
     Then I navigate to symptoms tab
     And I check if created data is correctly displayed in Symptoms tab for Set cleared to Unknown
     Then I click on Clinical Course tab from Edit Case page
-    And I set Diabetes radio button to YES
-    And I set Diabetes radio button to NO
-    And I set Diabetes radio button to UNKNOWN
-    And I set Diabetes radio button to UNKNOWN
-    And I set Immunodeficiency including HIV radio button to YES
-    And I set Immunodeficiency including HIV radio button to NO
-    And I set Immunodeficiency including HIV radio button to UNKNOWN
-    And I set Immunodeficiency including HIV radio button to UNKNOWN
-    And I set Liver disease radio button to YES
-    And I set Liver disease radio button to NO
-    And I set Liver disease radio button to UNKNOWN
-    And I set Liver disease radio button to UNKNOWN
-    And I set Malignancy radio button to YES
-    And I set Malignancy radio button to NO
-    And I set Malignancy radio button to UNKNOWN
-    And I set Malignancy radio button to UNKNOWN
-    And I set Chronic pulmonary disease radio button to YES
-    And I set Chronic pulmonary disease radio button to NO
-    And I set Chronic pulmonary disease radio button to UNKNOWN
-    And I set Chronic pulmonary disease radio button to UNKNOWN
-    And I set Renal disease radio button to YES
-    And I set Renal disease radio button to NO
-    And I set Renal disease radio button to UNKNOWN
-    And I set Renal disease radio button to UNKNOWN
-    And I set Chronic neurological/neuromuscular disease radio button to YES
-    And I set Chronic neurological/neuromuscular disease radio button to NO
-    And I set Chronic neurological/neuromuscular disease radio button to UNKNOWN
-    And I set Chronic neurological/neuromuscular disease radio button to UNKNOWN
-    And I set Cardiovascular disease including hypertension radio button to YES
-    And I set Cardiovascular disease including hypertension radio button to NO
-    And I set Cardiovascular disease including hypertension radio button to UNKNOWN
-    And I set Cardiovascular disease including hypertension radio button to UNKNOWN
-    Then I click Save button on Clinical Course Tab
-    And I check if Case saved popup appeared and close it
 
   @issue=SORDEV-8412 @env_main
   Scenario: Change of Isolation/Quarantine should be documented
@@ -658,7 +685,7 @@ Feature: Case end to end tests
     Then I click on the Import button from Case Contacts directory
     And I select the case contact CSV file in the file picker
     And I click on the "START DATA IMPORT" button from the Import Case Contacts popup
-    And I confirm the save Case Contact Import popup
+    And I select first existing person from the Case Contact Import popup
     And I confirm the save Case Contact Import popup
     And I check that an import success notification appears in the Import Case Contact popup
     Then I delete exported file from Case Contact Directory
