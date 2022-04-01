@@ -1,9 +1,7 @@
 @UI @Sanity @Case
 Feature: Cases using Line Listing feature
 
-  #weird behaviour in jenkins for these tests. We'll need to get in touch with a developer to understand business rules set for date fields
-
-  @env_main @ignore
+  @env_main
   Scenario: Create cases using Line Listing feature
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -22,6 +20,3 @@ Feature: Cases using Line Listing feature
     And I save the new contact using line listing feature
     Then I click on the Contacts button from navbar
     And I check that contact created from Line Listing is saved and displayed in results grid
-
-
-
