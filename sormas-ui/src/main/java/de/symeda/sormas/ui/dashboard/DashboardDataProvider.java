@@ -215,7 +215,7 @@ public class DashboardDataProvider {
 
 		if (getDashboardType() == DashboardType.SAMPLES) {
 			//Samples counts
-			setSampleCount(FacadeProvider.getSampleFacade().getSampleCounts(region, district, disease, fromDate, toDate));
+			setSampleCounts(FacadeProvider.getSampleFacade().getSampleCounts(region, district, disease, fromDate, toDate));
 			setPreviousSampleCounts(FacadeProvider.getSampleFacade().getSampleCounts(region, district, disease, previousFromDate, previousToDate));
 		}
 
@@ -468,11 +468,11 @@ public class DashboardDataProvider {
 		this.caseWithReferenceDefinitionFulfilledCount = caseWithReferenceDefinitionFulfilledCount;
 	}
 
-	public Map<SampleCountType, Long> getSampleCount() {
+	public Map<SampleCountType, Long> getSampleCounts() {
 		return sampleCounts;
 	}
 
-	public void setSampleCount(Map<SampleCountType, Long> sampleCounts) {
+	public void setSampleCounts(Map<SampleCountType, Long> sampleCounts) {
 		this.sampleCounts = sampleCounts;
 	}
 
