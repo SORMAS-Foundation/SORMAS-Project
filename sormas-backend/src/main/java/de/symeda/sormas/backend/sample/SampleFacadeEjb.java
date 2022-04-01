@@ -914,55 +914,6 @@ public class SampleFacadeEjb implements SampleFacade {
 		return em.createQuery(cq).getSingleResult();
 	}
 
-	public SampleDashboardCount getPathogenTestResultsCountObj(SampleCriteria sampleCriteria) {
-		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<SampleDashboardCount> cq = cb.createQuery(SampleDashboardCount.class);
-		final Root<Sample> root = cq.from(Sample.class);
-		SampleJoins<Sample> joins = new SampleJoins<>(root);
-		Predicate filter = sampleService.createUserFilter(cq, cb, joins, sampleCriteria);
-		if (sampleCriteria != null) {
-			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, joins);
-			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
-		}
-		if (filter != null) {
-			cq.where(filter);
-			cq.multiselect(
-				cb.sum(
-					cb.selectCase()
-						.when(cb.equal(root.get(Sample.PATHOGEN_TEST_RESULT), PathogenTestResultType.NEGATIVE), 1)
-						.otherwise(0)
-						.as(Long.class)),
-				cb.sum(
-					cb.selectCase()
-						.when(cb.equal(root.get(Sample.PATHOGEN_TEST_RESULT), PathogenTestResultType.POSITIVE), 1)
-						.otherwise(0)
-						.as(Long.class)),
-				cb.sum(
-					cb.selectCase()
-						.when(cb.equal(root.get(Sample.PATHOGEN_TEST_RESULT), PathogenTestResultType.PENDING), 1)
-						.otherwise(0)
-						.as(Long.class)),
-				cb.sum(
-					cb.selectCase()
-						.when(cb.equal(root.get(Sample.PATHOGEN_TEST_RESULT), PathogenTestResultType.INDETERMINATE), 1)
-						.otherwise(0)
-						.as(Long.class)),
-				cb.sum(cb.selectCase().when(cb.equal(root.get(Sample.SHIPPED), "true"), 1).otherwise(0).as(Long.class)),
-				cb.sum(cb.selectCase().when(cb.equal(root.get(Sample.SHIPPED), "false"), 1).otherwise(0).as(Long.class)),
-				cb.sum(cb.selectCase().when(cb.equal(root.get(Sample.RECEIVED), "true"), 1).otherwise(0).as(Long.class)),
-				cb.sum(cb.selectCase().when(cb.equal(root.get(Sample.RECEIVED), "false"), 1).otherwise(0).as(Long.class)),
-				cb.sum(
-					cb.selectCase().when(cb.equal(root.get(Sample.SPECIMEN_CONDITION), SpecimenCondition.ADEQUATE), 1).otherwise(0).as(Long.class)),
-				cb.sum(
-					cb.selectCase()
-						.when(cb.equal(root.get(Sample.SPECIMEN_CONDITION), SpecimenCondition.NOT_ADEQUATE), 1)
-						.otherwise(0)
-						.as(Long.class)));
-
-		}
-		return em.createQuery(cq).getSingleResult();
-	}
-
 	@Override
 	public SampleReferenceDto getReferredFrom(String sampleUuid) {
 		return toReferenceDto(sampleService.getReferredFrom(sampleUuid));
@@ -1033,23 +984,68 @@ public class SampleFacadeEjb implements SampleFacade {
 			.sampleDateBetween(from, to, SampleDateType.COLLECTION, DateFilterOption.DATE);
 
 		long total = count(sampleCriteria);
-		SampleDashboardCount sampleCount =
-			getPathogenTestResultsCountObj(sampleCriteria.sampleDateBetween(from, to, SampleDateType.COLLECTION, DateFilterOption.DATE));
+		SampleDashboardCount sampleCounts = getSampleDashboardCounts(sampleCriteria);
 
 		Map<SampleCountType, Long> map = new HashMap<SampleCountType, Long>();
 		map.put(SampleCountType.COLLECTED, total);
-		map.put(SampleCountType.INDETERMINATE, sampleCount.getPathogenTestResultIndeterminate());
-		map.put(SampleCountType.PENDING, sampleCount.getPathogenTestResultPending());
-		map.put(SampleCountType.POSITIVE, sampleCount.getPathogenTestResultPositive());
-		map.put(SampleCountType.NEGATIVE, sampleCount.getPathogenTestResultNegative());
-		map.put(SampleCountType.ADEQUATE, sampleCount.getSpecimenConditionAdequate());
-		map.put(SampleCountType.INADEQUATE, sampleCount.getSpecimenConditionInadequate());
-		map.put(SampleCountType.SHIPPED, sampleCount.getSampleShipped());
-		map.put(SampleCountType.NOT_SHIPED, sampleCount.getSampleNotShipped());
-		map.put(SampleCountType.RECEIVED, sampleCount.getSampleReceived());
-		map.put(SampleCountType.NOT_RECEIVED, sampleCount.getSampleNotReceived());
+		map.put(
+			SampleCountType.INDETERMINATE,
+			sampleCounts.getPathogenTestResultIndeterminate() == null ? 0 : sampleCounts.getPathogenTestResultIndeterminate());
+		map.put(SampleCountType.PENDING, sampleCounts.getPathogenTestResultPending() == null ? 0 : sampleCounts.getPathogenTestResultPending());
+		map.put(SampleCountType.POSITIVE, sampleCounts.getPathogenTestResultPositive() == null ? 0 : sampleCounts.getPathogenTestResultPositive());
+		map.put(SampleCountType.NEGATIVE, sampleCounts.getPathogenTestResultNegative() == null ? 0 : sampleCounts.getPathogenTestResultNegative());
+		map.put(SampleCountType.ADEQUATE, sampleCounts.getSpecimenConditionAdequate() == null ? 0 : sampleCounts.getSpecimenConditionAdequate());
+		map.put(
+			SampleCountType.INADEQUATE,
+			sampleCounts.getSpecimenConditionInadequate() == null ? 0 : sampleCounts.getSpecimenConditionInadequate());
+		map.put(SampleCountType.SHIPPED, sampleCounts.getSampleShipped() == null ? 0 : sampleCounts.getSampleShipped());
+		map.put(SampleCountType.NOT_SHIPED, sampleCounts.getSampleNotShipped() == null ? 0 : sampleCounts.getSampleNotShipped());
+		map.put(SampleCountType.RECEIVED, sampleCounts.getSampleReceived() == null ? 0 : sampleCounts.getSampleReceived());
+		map.put(SampleCountType.NOT_RECEIVED, sampleCounts.getSampleNotReceived() == null ? 0 : sampleCounts.getSampleNotReceived());
 
 		return map;
+	}
+
+	public SampleDashboardCount getSampleDashboardCounts(SampleCriteria sampleCriteria) {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<SampleDashboardCount> cq = cb.createQuery(SampleDashboardCount.class);
+		final Root<Sample> root = cq.from(Sample.class);
+		SampleJoins<Sample> joins = new SampleJoins<>(root);
+		Predicate filter = sampleService.createUserFilter(cq, cb, joins, sampleCriteria);
+		if (sampleCriteria != null) {
+			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, joins);
+			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
+		}
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.multiselect(
+			cb.sum(
+				cb.selectCase()
+					.when(cb.equal(root.get(Sample.PATHOGEN_TEST_RESULT), PathogenTestResultType.NEGATIVE), 1)
+					.otherwise(0)
+					.as(Long.class)),
+			cb.sum(
+				cb.selectCase()
+					.when(cb.equal(root.get(Sample.PATHOGEN_TEST_RESULT), PathogenTestResultType.POSITIVE), 1)
+					.otherwise(0)
+					.as(Long.class)),
+			cb.sum(
+				cb.selectCase().when(cb.equal(root.get(Sample.PATHOGEN_TEST_RESULT), PathogenTestResultType.PENDING), 1).otherwise(0).as(Long.class)),
+			cb.sum(
+				cb.selectCase()
+					.when(cb.equal(root.get(Sample.PATHOGEN_TEST_RESULT), PathogenTestResultType.INDETERMINATE), 1)
+					.otherwise(0)
+					.as(Long.class)),
+			cb.sum(cb.selectCase().when(cb.equal(root.get(Sample.SHIPPED), "true"), 1).otherwise(0).as(Long.class)),
+			cb.sum(cb.selectCase().when(cb.equal(root.get(Sample.SHIPPED), "false"), 1).otherwise(0).as(Long.class)),
+			cb.sum(cb.selectCase().when(cb.equal(root.get(Sample.RECEIVED), "true"), 1).otherwise(0).as(Long.class)),
+			cb.sum(cb.selectCase().when(cb.equal(root.get(Sample.RECEIVED), "false"), 1).otherwise(0).as(Long.class)),
+			cb.sum(cb.selectCase().when(cb.equal(root.get(Sample.SPECIMEN_CONDITION), SpecimenCondition.ADEQUATE), 1).otherwise(0).as(Long.class)),
+			cb.sum(
+				cb.selectCase().when(cb.equal(root.get(Sample.SPECIMEN_CONDITION), SpecimenCondition.NOT_ADEQUATE), 1).otherwise(0).as(Long.class)));
+
+		return em.createQuery(cq).getSingleResult();
 	}
 
 	public Sample fromDto(@NotNull SampleDto source, boolean checkChangeDate) {
