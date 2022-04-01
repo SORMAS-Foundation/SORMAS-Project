@@ -55,7 +55,6 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseFacade;
 import de.symeda.sormas.api.caze.MapCaseDto;
-import de.symeda.sormas.api.caze.NewCaseDateType;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.dashboard.DashboardEventDto;
@@ -1074,9 +1073,6 @@ public class DashboardMapComponent extends VerticalLayout {
 		for (MapCaseDto caze : cases) {
 			// these filters need to be used for the count too
 			CaseClassification classification = caze.getCaseClassification();
-			if (caseClassificationOption == MapCaseClassificationOption.ALL_CASES) {
-				dashboardDataProvider.setNewCaseDateType(NewCaseDateType.MOST_RELEVANT);
-			}
 			if (caseClassificationOption == MapCaseClassificationOption.CONFIRMED_CASES_ONLY && classification != CaseClassification.CONFIRMED)
 				continue;
 			boolean hasCaseGps =
