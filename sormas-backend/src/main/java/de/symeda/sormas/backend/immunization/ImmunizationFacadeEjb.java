@@ -253,7 +253,6 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
-    @RolesAllowed(UserRight._SYSTEM)
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	@RolesAllowed(UserRight._SYSTEM)
 	public void archiveAllArchivableImmunizations(int daysAfterImmunizationsGetsArchived) {
@@ -290,11 +289,8 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
+    @RolesAllowed(UserRight._IMMUNIZATION_DELETE)
 	public void delete(String uuid) {
-		if (!userService.hasRight(UserRight.IMMUNIZATION_DELETE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete immunizations");
-		}
-
 		Immunization immunization = service.getByUuid(uuid);
 		service.delete(immunization);
 	}
@@ -443,10 +439,8 @@ public class ImmunizationFacadeEjb
 		return new Page<>(immunizationIndexList, offset, size, totalElementCount);
 	}
 
+    @RolesAllowed(UserRight._IMMUNIZATION_DELETE)
 	public List<String> deleteImmunizations(List<String> immunizationUuids) {
-		if (!userService.hasRight(UserRight.IMMUNIZATION_DELETE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete immunizations.");
-		}
 		List<String> deletedImmunizationUuids = new ArrayList<>();
 		List<Immunization> immunizationsToBeDeleted = service.getByUuids(immunizationUuids);
 		if (immunizationsToBeDeleted != null) {
