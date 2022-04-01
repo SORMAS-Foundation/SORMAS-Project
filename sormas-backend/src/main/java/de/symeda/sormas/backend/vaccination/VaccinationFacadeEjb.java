@@ -428,12 +428,8 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	}
 
 	@Override
+    @RolesAllowed(UserRight._IMMUNIZATION_DELETE)
 	public void deleteWithImmunization(String uuid) {
-
-		if (!userService.hasRight(UserRight.IMMUNIZATION_DELETE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete vaccinations");
-		}
-
 		Vaccination vaccination = vaccinationService.getByUuid(uuid);
 		Immunization immunization = vaccination.getImmunization();
 		immunization.getVaccinations().remove(vaccination);

@@ -109,11 +109,8 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
+    @RolesAllowed(UserRight._TRAVEL_ENTRY_DELETE)
 	public void delete(String travelEntryUuid) {
-		if (!userService.hasRight(UserRight.TRAVEL_ENTRY_DELETE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete travel entries");
-		}
-
 		TravelEntry travelEntry = service.getByUuid(travelEntryUuid);
 		service.delete(travelEntry);
 
@@ -187,7 +184,6 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-    @RolesAllowed(UserRight._SYSTEM)
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	@RolesAllowed(UserRight._SYSTEM)
 	public void archiveAllArchivableTravelEntries(int daysAfterTravelEntryGetsArchived) {
