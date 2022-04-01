@@ -346,7 +346,6 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		List<LabMessageIndexDto> labMessageIndexList = getIndexList(criteria, offset, size, sortProperties);
 		long totalElementCount = count(criteria);
 		return new Page<>(labMessageIndexList, offset, size, totalElementCount);
-
 	}
 
 	/**

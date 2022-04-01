@@ -16,7 +16,7 @@ import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
-@Path("/labMessage")
+@Path("/labmessages")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 public class LabMessageResource extends EntityDtoResource {
 
