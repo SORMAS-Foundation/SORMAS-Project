@@ -8,6 +8,7 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.entities.services.CaseService;
@@ -29,7 +30,6 @@ public class CaseLineListingSteps implements En {
         "^I create a new case in line listing feature popup for DE version$",
         () -> {
           caze = caseService.buildCaseForLineListingFeatureDE();
-          selectDisease(caze.getDisease());
           selectRegion(caze.getRegion());
           selectDistrict(caze.getDistrict());
           selectFacilityCategory(caze.getFacilityCategory());
@@ -85,7 +85,7 @@ public class CaseLineListingSteps implements En {
           webDriverHelpers.fillInWebElement(
               PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT, caseName);
           webDriverHelpers.clickOnWebElementBySelector(CASE_APPLY_FILTERS_BUTTON);
-          webDriverHelpers.waitUntilNumberOfElementsIsReduceToGiven(CASE_DETAILED_TABLE_ROWS, 2);
+          TimeUnit.SECONDS.sleep(2); // wait for filter
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(FIRST_CASE_ID_BUTTON);
 
           softly.assertEquals(

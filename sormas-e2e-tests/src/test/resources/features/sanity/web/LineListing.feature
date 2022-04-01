@@ -1,4 +1,4 @@
-@UI @Sanity @Case @LineListing
+@UI @Sanity @Case
 Feature: Cases using Line Listing feature
 
   #weird behaviour in jenkins for these tests. We'll need to get in touch with a developer to understand business rules set for date fields
