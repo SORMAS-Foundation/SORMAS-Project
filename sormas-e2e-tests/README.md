@@ -62,8 +62,8 @@ issues that might block successful web development.
   ![config](./images/sc6.png)
 * Open `Preferences` -> `Plugins` and install `Lombok` plugin
    ![config](./images/sc7.png)
-   
-## Enable tests execution from local machine   
+
+## Enable tests execution from local machine
 
 * Navigate to: resources/configuration/properties/common.properties
 The default setup is set for remote execution:
