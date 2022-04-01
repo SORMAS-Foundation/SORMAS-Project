@@ -39,7 +39,19 @@ issues that might block successful web development.
     ```
 
 * Install Gradle
-* Install Allure(To check this run `allure serve` from IntelliJ command line)
+
+* Setup Allure 2.13.6
+  ```text
+    1. Download allure from: https://github.com/allure-framework/allure2/releases/tag/2.13.6
+    2. Run bat file from bin directory
+    3. Set ALLURE environment variables
+    ```
+
+   ![config](./images/sc9.png)
+
+   ![config](./images/sc10.png)
+    
+
 * Install IntelliJ IDEA please follow the steps [here](https://www.jetbrains.com/idea/)
 * Launch IntelliJ IDEA and click on `Import project`
 
