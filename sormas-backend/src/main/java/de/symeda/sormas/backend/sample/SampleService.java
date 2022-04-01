@@ -22,6 +22,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -1066,6 +1067,18 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 		}
 
 		return inJurisdictionOrOwned(sample).getInJurisdiction() && !sormasToSormasShareInfoService.isSamlpeOwnershipHandedOver(sample);
+	}
+
+	public Date getEarliestSampleDate(Collection<Sample> samples) {
+		Date earliestSampleDate = null;
+		for (Sample sample : samples) {
+			if (!sample.isDeleted()
+				&& sample.getPathogenTestResult() == PathogenTestResultType.POSITIVE
+				&& (earliestSampleDate == null || sample.getSampleDateTime().before(earliestSampleDate))) {
+				earliestSampleDate = sample.getSampleDateTime();
+			}
+		}
+		return earliestSampleDate;
 	}
 
 	private <T> java.util.function.Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {
