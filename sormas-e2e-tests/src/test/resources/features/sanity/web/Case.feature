@@ -573,9 +573,7 @@ Feature: Case end to end tests
     And I check if Cause of death is Other cause
     And I check if Date of dead for specified case is correct
 
-
-    #TODO separate into 3 tests - test doesn't reflect test case steps
-  @issue=SORDEV-8048 @env_de @ignore
+  @issue=SORDEV-8048 @env_de
   Scenario: Test Default value for disease if only one is used by the server
     Given I log in with National User
     And I click on the Cases button from navbar
