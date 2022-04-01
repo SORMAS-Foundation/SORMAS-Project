@@ -3,6 +3,9 @@ package de.symeda.sormas.rest.audit;
 import de.symeda.sormas.api.FacadeProvider;
 
 import javax.annotation.Priority;
+import javax.annotation.Resource;
+import javax.ejb.EJB;
+import javax.ejb.SessionContext;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
 import javax.ws.rs.container.ContainerRequestFilter;
@@ -16,8 +19,8 @@ public class RequestAuditFilter implements ContainerRequestFilter {
 
 	@Override
 	public void filter(ContainerRequestContext requestContext) throws IOException {
-		UriInfo uriInfo = requestContext.getUriInfo();
-		uriInfo.getQueryParameters();
-		FacadeProvider.getAuditLoggerFacade().logRestCall();
+		String actionMethod = requestContext.getMethod();
+
+		FacadeProvider.getAuditLoggerFacade().logRestCall(actionMethod);
 	}
 }

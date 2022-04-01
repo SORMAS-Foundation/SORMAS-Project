@@ -33,12 +33,16 @@ import java.util.Set;
 import java.util.TimeZone;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
+import javax.ejb.SessionContext;
 import javax.ejb.Singleton;
 import javax.ejb.Stateless;
 
 import de.symeda.sormas.api.audit.AuditLoggerFacade;
+import de.symeda.sormas.backend.user.CurrentUserService;
+import de.symeda.sormas.backend.user.UserService;
 import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
@@ -60,12 +64,30 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 
 	private static final Logger logger = LoggerFactory.getLogger(AuditLoggerEjb.class);
 	private String auditSourceSite;
-	private Map<String, AuditEvent.AuditEventAction> actionMap;
+	private Map<String, AuditEvent.AuditEventAction> actionBackendMap;
+	private static final Map<String, AuditEvent.AuditEventAction> actionRestMap = new HashMap<String, AuditEvent.AuditEventAction>() {
+
+		{
+			put("PUT", AuditEvent.AuditEventAction.C);
+			put("GET", AuditEvent.AuditEventAction.R);
+			put("POST", AuditEvent.AuditEventAction.U);
+			put("DELETE", AuditEvent.AuditEventAction.D);
+		}
+	};
 
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private LogSink auditLogger;
+	@EJB
+	private UserService userService;
+
+	@EJB
+	CurrentUserService currentUserService;
+
+	// todo we need the session context in addition to the UserService as SYSTEM/ANONYMOUS do return null in the currentUserService
+	@Resource
+	private SessionContext sessionContext;
 
 	private static boolean loggingDisabled = false;
 
@@ -88,7 +110,7 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 			loggingDisabled = true;
 		}
 
-		actionMap = new HashMap<>();
+		actionBackendMap = new HashMap<>();
 	}
 
 	private void accept(AuditEvent event) {
@@ -154,7 +176,7 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 		// backendCall.setType();
 		// backendCall.setSubType();
 
-		backendCall.setAction(inferAction(calledMethod.getName()));
+		backendCall.setAction(inferBackendAction(calledMethod.getName()));
 		Period period = new Period();
 		period.setStart(start);
 		Date end = Calendar.getInstance(TimeZone.getDefault()).getTime();
@@ -215,9 +237,9 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 		accept(backendCall);
 	}
 
-	private AuditEvent.AuditEventAction inferAction(String calledMethod) {
+	private AuditEvent.AuditEventAction inferBackendAction(String calledMethod) {
 
-		AuditEvent.AuditEventAction cached = actionMap.get(calledMethod);
+		AuditEvent.AuditEventAction cached = actionBackendMap.get(calledMethod);
 		if (cached != null) {
 			return cached;
 		}
@@ -236,7 +258,7 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 		} else {
 			inferred = AuditEvent.AuditEventAction.E;
 		}
-		actionMap.put(calledMethod, inferred);
+		actionBackendMap.put(calledMethod, inferred);
 		return inferred;
 	}
 
@@ -245,10 +267,49 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 	}
 
 	@Override
-	public void logRestCall() {
-		AuditEvent backendCall = new AuditEvent();
-		backendCall.setRecorded(Calendar.getInstance(TimeZone.getDefault()).getTime());
-		accept(backendCall);
+	public void logRestCall(String actionMethod) {
+		AuditEvent restCall = new AuditEvent();
+
+		restCall.setType(new Coding("https://hl7.org/fhir/R4/valueset-audit-event-type.html", "110100", "RESTful Operation"));
+		restCall.setAction(inferRestAction(actionMethod));
+
+		// agent
+		AuditEvent.AuditEventAgentComponent agent = new AuditEvent.AuditEventAgentComponent();
+
+
+		String principal = sessionContext.getCallerPrincipal().getName();
+		agent.setName(principal);
+		Reference who = new Reference();
+		Identifier identifier = new Identifier();
+		// todo optimize and reuse together with backendAudit
+		identifier.setValue(userService.getByUserName(principal).getUuid());
+		who.setIdentifier(identifier);
+		agent.setWho(who);
+		restCall.addAgent(agent);
+
+
+		// source
+		AuditEvent.AuditEventSourceComponent source = new AuditEvent.AuditEventSourceComponent();
+		source.setSite(String.format("%s - SORMAS REST API", auditSourceSite));
+
+		// Web Server
+		AuditSourceType auditSourceType = AuditSourceType._3;
+		source.addType(new Coding(auditSourceType.getSystem(), auditSourceType.toCode(), auditSourceType.getDisplay()));
+		restCall.setSource(source);
+
+		// entity
+
+		restCall.setRecorded(Calendar.getInstance(TimeZone.getDefault()).getTime());
+		accept(restCall);
+	}
+
+	private AuditEvent.AuditEventAction inferRestAction(String actionMethod) {
+		AuditEvent.AuditEventAction action = actionRestMap.get(actionMethod);
+		if (action != null) {
+			return action;
+		} else {
+			return AuditEvent.AuditEventAction.E;
+		}
 	}
 
 	@LocalBean
