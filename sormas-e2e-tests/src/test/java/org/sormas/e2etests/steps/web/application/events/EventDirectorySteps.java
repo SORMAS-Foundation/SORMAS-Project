@@ -651,13 +651,13 @@ public class EventDirectorySteps implements En {
               DATE_FROM_COMBOBOX,
               eventService
                   .timeRange[0]
-                  .format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+                  .format(DateTimeFormatter.ofPattern("MM/dd/yyyy"))
                   .toString());
           webDriverHelpers.fillInWebElement(
               DATE_TO_COMBOBOX,
               eventService
                   .timeRange[1]
-                  .format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+                  .format(DateTimeFormatter.ofPattern("MM/dd/yyyy"))
                   .toString());
         });
 
