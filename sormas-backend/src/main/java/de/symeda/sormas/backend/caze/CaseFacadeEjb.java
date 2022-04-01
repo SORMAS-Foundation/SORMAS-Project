@@ -1143,19 +1143,15 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 							filteredImmunizations.sort(Comparator.comparing(i -> ImmunizationEntityHelper.getDateForComparison(i, false)));
 							Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
 							Integer numberOfDoses = mostRecentImmunization.getNumberOfDoses();
-							exportDto.setNumberOfDoses(
-								numberOfDoses != null
-									? String.valueOf(numberOfDoses)
-									: getNumberOfDosesFromVaccinations(exportDto.getUuid(), mostRecentImmunization.getVaccinations()));
 
-							if (CollectionUtils.isNotEmpty(mostRecentImmunization.getVaccinations())) {
-								List<Vaccination> sortedVaccinations = mostRecentImmunization.getVaccinations()
-									.stream()
-									.sorted(Comparator.comparing(ImmunizationEntityHelper::getVaccinationDateForComparison))
-									.collect(Collectors.toList());
-								Vaccination firstVaccination = sortedVaccinations.get(0);
-								Vaccination lastVaccination = sortedVaccinations.get(sortedVaccinations.size() - 1);
+							List<Vaccination> relevantSortedVaccinations =
+								getRelevantSortedVaccinations(exportDto.getUuid(), mostRecentImmunization.getVaccinations());
+							Vaccination firstVaccination = null;
+							Vaccination lastVaccination = null;
 
+							if (CollectionUtils.isNotEmpty(relevantSortedVaccinations)) {
+								firstVaccination = relevantSortedVaccinations.get(0);
+								lastVaccination = relevantSortedVaccinations.get(relevantSortedVaccinations.size() - 1);
 								exportDto.setFirstVaccinationDate(firstVaccination.getVaccinationDate());
 								exportDto.setLastVaccinationDate(lastVaccination.getVaccinationDate());
 								exportDto.setVaccineName(lastVaccination.getVaccineName());
@@ -1168,6 +1164,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 								exportDto.setVaccineUniiCode(lastVaccination.getVaccineUniiCode());
 								exportDto.setVaccineInn(lastVaccination.getVaccineInn());
 							}
+
+							exportDto.setNumberOfDoses(
+								numberOfDoses != null ? String.valueOf(numberOfDoses) : getNumberOfDosesFromVaccinations(lastVaccination));
 						}
 					});
 				}
@@ -1254,15 +1253,17 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return caseUsers;
 	}
 
-	private String getNumberOfDosesFromVaccinations(String caseUuid, List<Vaccination> vaccinations) {
+	private List<Vaccination> getRelevantSortedVaccinations(String caseUuid, List<Vaccination> vaccinations) {
 		Case caze = caseService.getByUuid(caseUuid);
 
-		Optional<Vaccination> lastVaccinationOptional = vaccinations.stream()
+		return vaccinations.stream()
 			.filter(v -> vaccinationService.isVaccinationRelevant(caze, v))
-			.max(Comparator.comparing(Vaccination::getVaccinationDate));
-		Vaccination lastVaccination = lastVaccinationOptional.orElse(null);
+			.sorted(Comparator.comparing(ImmunizationEntityHelper::getVaccinationDateForComparison))
+			.collect(Collectors.toList());
+	}
 
-		return lastVaccination != null ? lastVaccination.getVaccineDose() : "";
+	private String getNumberOfDosesFromVaccinations(Vaccination vaccination) {
+		return vaccination != null ? vaccination.getVaccineDose() : "";
 	}
 
 	@Override
