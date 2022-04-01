@@ -15,10 +15,15 @@ public class DashboardContactStatisticDto implements Serializable {
 
 	private int contactsCount;
 	private int newContactsCount;
-	private int unconfirmedContactsCount;
-	private int confirmedContactsCount;
-	private int notContactsCount;
+	private int newContactsPercentage;
 	private int symptomaticContactsCount;
+	private int symptomaticContactsPercentage;
+	private int confirmedContactsCount;
+	private int contactClassificationConfirmedPercentage;
+	private int unconfirmedContactsCount;
+	private int contactClassificationUnconfirmedPercentage;
+	private int notContactsCount;
+	private int contactClassificationNotAContactPercentage;
 
 	Map<Disease, Map<String, Integer>> diseaseMap = new TreeMap<>();
 
@@ -29,20 +34,30 @@ public class DashboardContactStatisticDto implements Serializable {
 	public DashboardContactStatisticDto(
 		int contactsCount,
 		int newContactsCount,
-		int unconfirmedContactsCount,
-		int confirmedContactsCount,
-		int notContactsCount,
+		int newContactsPercentage,
 		int symptomaticContactsCount,
+		int symptomaticContactsPercentage,
+		int confirmedContactsCount,
+		int contactClassificationConfirmedPercentage,
+		int unconfirmedContactsCount,
+		int contactClassificationUnconfirmedPercentage,
+		int notContactsCount,
+		int contactClassificationNotAContactPercentage,
 		Map<Disease, Map<String, Integer>> diseaseMap,
 		DashboardContactFollowUpDto dashboardContactFollowUp,
 		DashboardContactStoppedFollowUpDto dashboardContactStoppedFollowUp,
 		DashboardContactVisitDto dashboardContactVisit) {
 		this.contactsCount = contactsCount;
 		this.newContactsCount = newContactsCount;
-		this.unconfirmedContactsCount = unconfirmedContactsCount;
-		this.confirmedContactsCount = confirmedContactsCount;
-		this.notContactsCount = notContactsCount;
+		this.newContactsPercentage = newContactsPercentage;
 		this.symptomaticContactsCount = symptomaticContactsCount;
+		this.symptomaticContactsPercentage = symptomaticContactsPercentage;
+		this.confirmedContactsCount = confirmedContactsCount;
+		this.contactClassificationConfirmedPercentage = contactClassificationConfirmedPercentage;
+		this.unconfirmedContactsCount = unconfirmedContactsCount;
+		this.contactClassificationUnconfirmedPercentage = contactClassificationUnconfirmedPercentage;
+		this.notContactsCount = notContactsCount;
+		this.contactClassificationNotAContactPercentage = contactClassificationNotAContactPercentage;
 		this.diseaseMap = diseaseMap;
 		this.dashboardContactFollowUp = dashboardContactFollowUp;
 		this.dashboardContactStoppedFollowUp = dashboardContactStoppedFollowUp;
@@ -57,20 +72,40 @@ public class DashboardContactStatisticDto implements Serializable {
 		return newContactsCount;
 	}
 
-	public int getUnconfirmedContactsCount() {
-		return unconfirmedContactsCount;
+	public int getNewContactsPercentage() {
+		return newContactsPercentage;
+	}
+
+	public int getSymptomaticContactsCount() {
+		return symptomaticContactsCount;
+	}
+
+	public int getSymptomaticContactsPercentage() {
+		return symptomaticContactsPercentage;
 	}
 
 	public int getConfirmedContactsCount() {
 		return confirmedContactsCount;
 	}
 
+	public int getContactClassificationConfirmedPercentage() {
+		return contactClassificationConfirmedPercentage;
+	}
+
+	public int getUnconfirmedContactsCount() {
+		return unconfirmedContactsCount;
+	}
+
+	public int getContactClassificationUnconfirmedPercentage() {
+		return contactClassificationUnconfirmedPercentage;
+	}
+
 	public int getNotContactsCount() {
 		return notContactsCount;
 	}
 
-	public int getSymptomaticContactsCount() {
-		return symptomaticContactsCount;
+	public int getContactClassificationNotAContactPercentage() {
+		return contactClassificationNotAContactPercentage;
 	}
 
 	public Map<Disease, Map<String, Integer>> getDiseaseMap() {
@@ -81,11 +116,11 @@ public class DashboardContactStatisticDto implements Serializable {
 		return dashboardContactFollowUp;
 	}
 
-	public DashboardContactVisitDto getDashboardContactVisit() {
-		return dashboardContactVisit;
-	}
-
 	public DashboardContactStoppedFollowUpDto getDashboardContactStoppedFollowUp() {
 		return dashboardContactStoppedFollowUp;
+	}
+
+	public DashboardContactVisitDto getDashboardContactVisit() {
+		return dashboardContactVisit;
 	}
 }

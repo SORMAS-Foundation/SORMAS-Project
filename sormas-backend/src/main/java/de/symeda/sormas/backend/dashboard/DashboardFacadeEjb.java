@@ -332,14 +332,18 @@ public class DashboardFacadeEjb implements DashboardFacade {
 		int newContactsCount = (int) dashboardContacts.stream()
 			.filter(c -> c.getReportDate().after(dashboardCriteria.getDateFrom()) || c.getReportDate().equals(dashboardCriteria.getDateFrom()))
 			.count();
+		int newContactsPercentage = calculatePercentage(newContactsCount, contactsCount);
 		int symptomaticContactsCount = (int) dashboardContacts.stream().filter(c -> Boolean.TRUE.equals(c.getSymptomatic())).count();
+		int symptomaticContactsPercentage = calculatePercentage(symptomaticContactsCount, contactsCount);
 		int contactClassificationUnconfirmedCount =
 			(int) dashboardContacts.stream().filter(c -> c.getContactClassification() == ContactClassification.UNCONFIRMED).count();
+		int contactClassificationUnconfirmedPercentage = calculatePercentage(contactClassificationUnconfirmedCount, contactsCount);
 		int contactClassificationConfirmedCount =
 			(int) dashboardContacts.stream().filter(c -> c.getContactClassification() == ContactClassification.CONFIRMED).count();
+		int contactClassificationConfirmedPercentage = calculatePercentage(contactClassificationConfirmedCount, contactsCount);
 		int contactClassificationNotAContactCount =
 			(int) dashboardContacts.stream().filter(c -> c.getContactClassification() == ContactClassification.NO_CONTACT).count();
-
+		int contactClassificationNotAContactPercentage = calculatePercentage(contactClassificationNotAContactCount, contactsCount);
 		Map<Disease, Map<String, Integer>> diseaseMap = new TreeMap<>();
 		for (Disease disease : diseaseConfigurationFacade.getAllDiseasesWithFollowUp()) {
 			Map<String, Integer> countValues = new HashMap<>();
@@ -360,15 +364,19 @@ public class DashboardFacadeEjb implements DashboardFacade {
 		return new DashboardContactStatisticDto(
 			contactsCount,
 			newContactsCount,
-			contactClassificationUnconfirmedCount,
-			contactClassificationConfirmedCount,
-			contactClassificationNotAContactCount,
+			newContactsPercentage,
 			symptomaticContactsCount,
+			symptomaticContactsPercentage,
+			contactClassificationConfirmedCount,
+			contactClassificationConfirmedPercentage,
+			contactClassificationUnconfirmedCount,
+			contactClassificationUnconfirmedPercentage,
+			contactClassificationNotAContactCount,
+			contactClassificationNotAContactPercentage,
 			orderedDiseaseMap,
 			dashboardContactFollowUp,
 			dashboardContactStoppedFollowUp,
 			dashboardContactVisit);
-
 	}
 
 	private DashboardContactFollowUpDto calculateContactFollowUpStatistics(List<DashboardContactDto> contacts, Date dateTo) {
@@ -378,10 +386,15 @@ public class DashboardFacadeEjb implements DashboardFacade {
 
 		int followUpContactsCount = followUpContacts.size();
 
-		int uncooperativeContactsCount = (int) followUpContacts.stream().filter(c -> c.getLastVisitStatus() == VisitStatus.UNCOOPERATIVE).count();
 		int cooperativeContactsCount = (int) followUpContacts.stream().filter(c -> c.getLastVisitStatus() == VisitStatus.COOPERATIVE).count();
+		int uncooperativeContactsCount = (int) followUpContacts.stream().filter(c -> c.getLastVisitStatus() == VisitStatus.UNCOOPERATIVE).count();
 		int unavailableContactsCount = (int) followUpContacts.stream().filter(c -> c.getLastVisitStatus() == VisitStatus.UNAVAILABLE).count();
 		int notVisitedContactsCount = (int) followUpContacts.stream().filter(c -> c.getLastVisitStatus() == null).count();
+		int cooperativeContactsPercentage = calculatePercentage(cooperativeContactsCount, followUpContactsCount);
+		int uncooperativeContactsPercentage = calculatePercentage(uncooperativeContactsCount, followUpContactsCount);
+		int unavailableContactsPercentage = calculatePercentage(unavailableContactsCount, followUpContactsCount);
+		int notVisitedContactsPercentage = calculatePercentage(notVisitedContactsCount, followUpContactsCount);
+
 		int missedVisitsOneDayCount = 0;
 		int missedVisitsTwoDaysCount = 0;
 		int missedVisitsThreeDaysCount = 0;
@@ -416,9 +429,13 @@ public class DashboardFacadeEjb implements DashboardFacade {
 		return new DashboardContactFollowUpDto(
 			followUpContactsCount,
 			cooperativeContactsCount,
+			cooperativeContactsPercentage,
 			uncooperativeContactsCount,
+			uncooperativeContactsPercentage,
 			unavailableContactsCount,
+			unavailableContactsPercentage,
 			notVisitedContactsCount,
+			notVisitedContactsPercentage,
 			missedVisitsOneDayCount,
 			missedVisitsTwoDaysCount,
 			missedVisitsThreeDaysCount,
@@ -432,18 +449,27 @@ public class DashboardFacadeEjb implements DashboardFacade {
 			.collect(Collectors.toList());
 
 		int stoppedFollowUpContactsCount = stoppedFollowUpContacts.size();
+
 		int followUpCompletedCount = (int) stoppedFollowUpContacts.stream().filter(c -> c.getFollowUpStatus() == FollowUpStatus.COMPLETED).count();
 		int followUpCanceledCount = (int) stoppedFollowUpContacts.stream().filter(c -> c.getFollowUpStatus() == FollowUpStatus.CANCELED).count();
 		int lostToFollowUpCount = (int) stoppedFollowUpContacts.stream().filter(c -> c.getFollowUpStatus() == FollowUpStatus.LOST).count();
 		int contactStatusConvertedCount = (int) stoppedFollowUpContacts.stream().filter(c -> c.getContactStatus() == ContactStatus.CONVERTED).count();
 
+		int followUpCompletedPercentage = calculatePercentage(followUpCompletedCount, stoppedFollowUpContactsCount);
+		int followUpCanceledPercentage = calculatePercentage(followUpCanceledCount, stoppedFollowUpContactsCount);
+		int lostToFollowUpPercentage = calculatePercentage(lostToFollowUpCount, stoppedFollowUpContactsCount);
+		int contactStatusConvertedPercentage = calculatePercentage(contactStatusConvertedCount, stoppedFollowUpContactsCount);
+
 		return new DashboardContactStoppedFollowUpDto(
 			stoppedFollowUpContactsCount,
 			followUpCompletedCount,
+			followUpCompletedPercentage,
 			followUpCanceledCount,
+			followUpCanceledPercentage,
 			lostToFollowUpCount,
-			contactStatusConvertedCount);
-
+			lostToFollowUpPercentage,
+			contactStatusConvertedCount,
+			contactStatusConvertedPercentage);
 	}
 
 	private DashboardContactVisitDto calculateContactVisitStatistics(List<DashboardContactDto> contacts, List<DashboardContactDto> previousContacts) {
@@ -502,17 +528,38 @@ public class DashboardFacadeEjb implements DashboardFacade {
 		int previousUncooperativeVisitsCount = Optional.ofNullable(previousVisitStatusMap.get(VisitStatus.UNCOOPERATIVE)).orElse(0).intValue();
 		int previousCooperativeVisitsCount = Optional.ofNullable(previousVisitStatusMap.get(VisitStatus.COOPERATIVE)).orElse(0).intValue();
 
+		int missedVisitsGrowth = calculateGrowth(missedVisitsCount, previousMissedVisitsCount);
+		int unavailableVisitsGrowth = calculateGrowth(unavailableVisitsCount, previousUnavailableVisitsCount);
+		int uncooperativeVisitsGrowth = calculateGrowth(uncooperativeVisitsCount, previousUncooperativeVisitsCount);
+		int cooperativeVisitsGrowth = calculateGrowth(cooperativeVisitsCount, previousCooperativeVisitsCount);
+
 		return new DashboardContactVisitDto(
 			visitsCount,
 			missedVisitsCount,
+			missedVisitsGrowth,
 			unavailableVisitsCount,
+			unavailableVisitsGrowth,
 			uncooperativeVisitsCount,
+			uncooperativeVisitsGrowth,
 			cooperativeVisitsCount,
+			cooperativeVisitsGrowth,
 			previousMissedVisitsCount,
 			previousUnavailableVisitsCount,
 			previousUncooperativeVisitsCount,
 			previousCooperativeVisitsCount);
 
+	}
+
+	public int calculateGrowth(int currentCount, int previousCount) {
+		return currentCount == 0
+			? (previousCount > 0 ? -100 : 0)
+			: previousCount == 0
+				? (currentCount > 0 ? Integer.MIN_VALUE : 0)
+				: Math.round(((currentCount - previousCount * 1.0f) / previousCount) * 100.0f);
+	}
+
+	public int calculatePercentage(int amount, int totalAmount) {
+		return totalAmount == 0 ? 0 : (int) ((amount * 100.0f) / totalAmount);
 	}
 
 	@Override
