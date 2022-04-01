@@ -4046,6 +4046,18 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		service.updateExternalData(externalData);
 	}
 
+	@RolesAllowed({
+		UserRight._VISIT_CREATE,
+		UserRight._VISIT_EDIT,
+		UserRight._EXTERNAL_VISITS })
+	public void updateSymptomsByVisit(Visit visit) {
+		CaseDataDto cazeDto = CaseFacadeEjbLocal.toCaseDto(visit.getCaze());
+		SymptomsDto caseSymptoms = cazeDto.getSymptoms();
+		SymptomsHelper.updateSymptoms(SymptomsFacadeEjb.toDto(visit.getSymptoms()), caseSymptoms);
+
+		save(cazeDto, true);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class CaseFacadeEjbLocal extends CaseFacadeEjb {
