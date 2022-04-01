@@ -32,7 +32,7 @@ public class EventParticipantsPage {
   public static final By PICK_OR_CREATE_PERSON_POPUP =
       By.xpath("//*[contains(text(),'Pick or create person')]");
   public static final By PICK_OR_CREATE_CONTACT_POPUP =
-          By.xpath("//*[contains(text(),'Pick or create contact')]");
+      By.xpath("//*[contains(text(),'Pick or create contact')]");
   public static final By CREATE_NEW_PERSON_RADIO_BUTTON =
       By.xpath("//label[contains(text(),'Create a new person')]");
   public static final By EVENT_PARTICIPANTS_TAB = By.id("tab-events-eventparticipants");

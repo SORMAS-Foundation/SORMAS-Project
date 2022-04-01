@@ -670,11 +670,15 @@ Feature: Case end to end tests
 
   @issue=SORDEV-5479 @env_main
   Scenario: Test for exporting and importing case contact
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Cases button from navbar
-    And I click on the NEW CASE button
-    When I create a new case with specific data
-    Then I check the created data is correctly displayed on Edit case page
+    And I open the last created Case via API
     When I open the Case Contacts tab
     Then I click on new contact button from Case Contacts tab
     And I create a new basic contact to export from Cases Contacts tab
