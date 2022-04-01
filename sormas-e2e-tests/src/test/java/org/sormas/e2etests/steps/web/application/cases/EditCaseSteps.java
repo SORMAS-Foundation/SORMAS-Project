@@ -18,6 +18,26 @@
 
 package org.sormas.e2etests.steps.web.application.cases;
 
+import static org.sormas.e2etests.enums.CaseOutcome.DECEASED;
+import static org.sormas.e2etests.enums.CaseOutcome.FACILITY_OTHER;
+import static org.sormas.e2etests.enums.CaseOutcome.INVESTIGATION_DISCARDED;
+import static org.sormas.e2etests.enums.CaseOutcome.INVESTIGATION_DONE;
+import static org.sormas.e2etests.enums.CaseOutcome.INVESTIGATION_PENDING;
+import static org.sormas.e2etests.enums.CaseOutcome.PLACE_OF_STAY_FACILITY;
+import static org.sormas.e2etests.enums.CaseOutcome.PLACE_OF_STAY_HOME;
+import static org.sormas.e2etests.enums.CaseOutcome.QUARANTINE_HOME;
+import static org.sormas.e2etests.enums.CaseOutcome.QUARANTINE_INSTITUTIONAL;
+import static org.sormas.e2etests.enums.CaseOutcome.QUARANTINE_NONE;
+import static org.sormas.e2etests.enums.CaseOutcome.QUARANTINE_OTHER;
+import static org.sormas.e2etests.enums.CaseOutcome.QUARANTINE_UNKNOWN;
+import static org.sormas.e2etests.enums.CaseOutcome.RECOVERED;
+import static org.sormas.e2etests.enums.CaseOutcome.SEQUELAE_NO;
+import static org.sormas.e2etests.enums.CaseOutcome.SEQUELAE_UNKNOWN;
+import static org.sormas.e2etests.enums.CaseOutcome.SEQUELAE_YES;
+import static org.sormas.e2etests.enums.CaseOutcome.UNKNOWN;
+import static org.sormas.e2etests.enums.CaseOutcome.VACCINATED_STATUS_UNKNOWN;
+import static org.sormas.e2etests.enums.CaseOutcome.VACCINATED_STATUS_UNVACCINATED;
+import static org.sormas.e2etests.enums.CaseOutcome.VACCINATED_STATUS_VACCINATED;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.EPIDEMIOLOGICAL_DATA_TAB;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
@@ -323,6 +343,31 @@ public class EditCaseSteps implements En {
         });
 
     When(
+        "I select German Investigation Status ([^\"]*)",
+        (String option) -> {
+          String investigationStatus = new String();
+          switch (option) {
+            case "Done":
+              investigationStatus = INVESTIGATION_DONE.getNameDE();
+              break;
+            case "Pending":
+              investigationStatus = INVESTIGATION_PENDING.getNameDE();
+              break;
+            case "Discarded":
+              investigationStatus = INVESTIGATION_DISCARDED.getNameDE();
+              break;
+          }
+          webDriverHelpers.clickWebElementByText(
+              INVESTIGATION_STATUS_OPTIONS, investigationStatus.toUpperCase());
+          editedCase =
+              Case.builder()
+                  .investigationStatus(investigationStatus)
+                  .build(); // TODO: Create POJO updater class
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
         "I check if date of investigation filed is available",
         () -> webDriverHelpers.waitUntilElementIsVisibleAndClickable(INVESTIGATED_DATE_FIELD));
 
@@ -336,6 +381,27 @@ public class EditCaseSteps implements En {
         });
 
     When(
+        "I select German Outcome Of Case Status ([^\"]*)",
+        (String option) -> {
+          String outcomeOfCaseStatus = new String();
+          switch (option) {
+            case "Deceased":
+              outcomeOfCaseStatus = DECEASED.getNameDE();
+              break;
+            case "Recovered":
+              outcomeOfCaseStatus = RECOVERED.getNameDE();
+              break;
+            case "Unknown":
+              outcomeOfCaseStatus = UNKNOWN.getNameDE();
+              break;
+          }
+          webDriverHelpers.clickWebElementByText(
+              OUTCOME_OF_CASE_OPTIONS, outcomeOfCaseStatus.toUpperCase());
+          editedCase = editedCase.toBuilder().outcomeOfCase(outcomeOfCaseStatus).build();
+          TimeUnit.SECONDS.sleep(1);
+        });
+
+    When(
         "I check if date of outcome filed is available",
         () -> webDriverHelpers.waitUntilElementIsVisibleAndClickable(DATE_OF_OUTCOME));
 
@@ -345,6 +411,27 @@ public class EditCaseSteps implements En {
           webDriverHelpers.clickWebElementByText(
               SEQUELAE_OPTIONS, CaseOutcome.getValueFor(option).toUpperCase());
           editedCase = editedCase.toBuilder().sequelae(option).build();
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I click on the German option for ([^\"]*) in Sequelae",
+        (String option) -> {
+          String sequelaeStatus = new String();
+          switch (option) {
+            case "Yes":
+              sequelaeStatus = SEQUELAE_YES.getNameDE();
+              break;
+            case "No":
+              sequelaeStatus = SEQUELAE_NO.getNameDE();
+              break;
+            case "Unknown":
+              sequelaeStatus = SEQUELAE_UNKNOWN.getNameDE();
+              break;
+          }
+          webDriverHelpers.clickWebElementByText(SEQUELAE_OPTIONS, sequelaeStatus.toUpperCase());
+          editedCase = editedCase.toBuilder().sequelae(sequelaeStatus).build();
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
@@ -396,6 +483,22 @@ public class EditCaseSteps implements En {
         });
 
     When(
+        "I click on ([^\"]*) as German place of stay",
+        (String option) -> {
+          String placeOfStay = new String();
+          switch (option) {
+            case "Facility":
+              placeOfStay = PLACE_OF_STAY_FACILITY.getNameDE();
+              break;
+            case "Home":
+              placeOfStay = PLACE_OF_STAY_HOME.getNameDE();
+              break;
+          }
+          webDriverHelpers.clickWebElementByText(PLACE_OF_STAY_OPTIONS, placeOfStay.toUpperCase());
+          editedCase = editedCase.toBuilder().placeOfStay(placeOfStay).build();
+        });
+
+    When(
         "I check if Facility Category combobox is available",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(FACILITY_CATEGORY_COMBOBOX);
@@ -423,6 +526,20 @@ public class EditCaseSteps implements En {
               FACILITY_HEALTH_COMBOBOX, CaseOutcome.getValueFor(facility));
           editedCase = editedCase.toBuilder().facility(facility).build();
         });
+
+    When(
+        "I set Facility in German as a ([^\"]*)",
+        (String option) -> {
+          String facility = new String();
+          switch (option) {
+            case "Other facility":
+              facility = FACILITY_OTHER.getNameDE();
+              break;
+          }
+          webDriverHelpers.selectFromCombobox(FACILITY_HEALTH_COMBOBOX, facility);
+          editedCase = editedCase.toBuilder().facility(facility).build();
+        });
+
     When(
         "I set Facility to {string} from New Entry popup",
         (String facility) -> {
@@ -456,6 +573,31 @@ public class EditCaseSteps implements En {
         (String option) -> {
           webDriverHelpers.selectFromCombobox(QUARANTINE_COMBOBOX, CaseOutcome.getValueFor(option));
           editedCase = editedCase.toBuilder().quarantine(option).build();
+        });
+
+    When(
+        "I set German Quarantine ([^\"]*)",
+        (String option) -> {
+          String quarantine = new String();
+          switch (option) {
+            case "Home":
+              quarantine = QUARANTINE_HOME.getNameDE();
+              break;
+            case "Institutional":
+              quarantine = QUARANTINE_INSTITUTIONAL.getNameDE();
+              break;
+            case "None":
+              quarantine = QUARANTINE_NONE.getNameDE();
+              break;
+            case "Unknown":
+              quarantine = QUARANTINE_UNKNOWN.getNameDE();
+              break;
+            case "Other":
+              quarantine = QUARANTINE_OTHER.getNameDE();
+              break;
+          }
+          webDriverHelpers.selectFromCombobox(QUARANTINE_COMBOBOX, quarantine);
+          editedCase = editedCase.toBuilder().quarantine(quarantine).build();
         });
 
     When(
@@ -623,6 +765,26 @@ public class EditCaseSteps implements En {
           webDriverHelpers.selectFromCombobox(
               VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX,
               CaseOutcome.getValueFor(vaccinationStatus));
+          editedCase = editedCase.toBuilder().vaccinationStatus(vaccinationStatus).build();
+        });
+
+    When(
+        "I set German Vaccination Status as ([^\"]*)",
+        (String option) -> {
+          String vaccinationStatus = new String();
+          switch (option) {
+            case "vaccinated":
+              vaccinationStatus = VACCINATED_STATUS_VACCINATED.getNameDE();
+              break;
+            case "unvaccinated":
+              vaccinationStatus = VACCINATED_STATUS_UNVACCINATED.getNameDE();
+              break;
+            case "unknown":
+              vaccinationStatus = VACCINATED_STATUS_UNKNOWN.getNameDE();
+              break;
+          }
+          webDriverHelpers.selectFromCombobox(
+              VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX, vaccinationStatus);
           editedCase = editedCase.toBuilder().vaccinationStatus(vaccinationStatus).build();
         });
 
