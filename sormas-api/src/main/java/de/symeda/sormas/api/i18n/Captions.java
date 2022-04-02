@@ -1382,6 +1382,7 @@ public interface Captions {
 	String labMessageProcess = "labMessageProcess";
 	String lastName = "lastName";
 	String latestPathogenTest = "latestPathogenTest";
+	String language = "languages";
 	String lineListing = "lineListing";
 	String lineListingAddLine = "lineListingAddLine";
 	String lineListingDisableAll = "lineListingDisableAll";

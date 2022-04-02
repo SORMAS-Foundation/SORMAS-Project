@@ -74,7 +74,7 @@ public class Menu extends CssLayout {
 		this.navigator = navigator;
 		setPrimaryStyleName(ValoTheme.MENU_ROOT);
 		menuPart = new CssLayout();
-		menuPart.addStyleName(ValoTheme.MENU_PART);
+		menuPart.setPrimaryStyleName(VALO_MENUITEMS);
 
 		// header of the menu
 		final HorizontalLayout top = new HorizontalLayout();
@@ -114,7 +114,8 @@ public class Menu extends CssLayout {
 		// container for the navigation buttons, which are added by addView()
 		menuItemsLayout = new CssLayout();
 		menuItemsLayout.setPrimaryStyleName(VALO_MENUITEMS);
-		menuPart.addComponent(menuItemsLayout);
+		
+		
 
 		// settings menu item
 		MenuBar settingsMenu = new MenuBar();
@@ -122,9 +123,40 @@ public class Menu extends CssLayout {
 		settingsMenu.addItem(I18nProperties.getCaption(Captions.actionSettings), VaadinIcons.COG,
 				(Command) selectedItem -> showSettingsPopup());
 
-		settingsMenu.addStyleNames("user-menu", "settings-menu");
-		//menuPart.addComponent(settingsMenu);
+		settingsMenu.addStyleNames("valo-menu-item", "v-widget");
+	//	menuItemsLayout.addComponent(settingsMenu);
 
+		
+		
+		menuPart.addComponent(menuItemsLayout);
+
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
+		
 		// logout menu item
 		MenuBar logoutMenu = new MenuBar();
 		logoutMenu.setId(Captions.actionLogout);
@@ -184,11 +216,24 @@ public class Menu extends CssLayout {
 		navigator.addView(name, viewClass);
 		createViewButton(name, caption, icon);
 	}
+	
+	
 
 	private void createViewButton(final String name, String caption, Resource icon) {
 
 		Button button = ButtonHelper.createIconButtonWithCaption(name, caption, icon,
 				event -> navigator.navigateTo(name));
+		button.setPrimaryStyleName(ValoTheme.MENU_ITEM);
+
+		menuItemsLayout.addComponent(button);
+		viewButtons.put(name, button);
+	}
+
+	
+	public void createViewButtonx(final String name, String caption, Resource icon) {
+
+		Button button = ButtonHelper.createIconButtonWithCaption(name, caption, icon,
+				event -> showSettingsPopup());
 		button.setPrimaryStyleName(ValoTheme.MENU_ITEM);
 
 		menuItemsLayout.addComponent(button);

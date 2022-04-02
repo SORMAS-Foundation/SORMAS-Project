@@ -253,36 +253,14 @@ public class MainScreen extends HorizontalLayout {
 		}
 		
 		
+		menu.createViewButtonx(Captions.actionSettings, I18nProperties.getCaption(Captions.language), VaadinIcons.GLOBE_WIRE);
 		
-		
-		menu.addView(LanguageView.class, LanguageView.VIEW_NAME, "Language", VaadinIcons.GLOBE_WIRE);
+	//	menu.addView(LanguageView.class, LanguageView.VIEW_NAME, "Language", VaadinIcons.GLOBE_WIRE);
 		
 		menu.addView(AboutView.class, AboutView.VIEW_NAME, I18nProperties.getCaption(Captions.mainMenuAbout), VaadinIcons.INFO_CIRCLE_O);
 		
 		menu.addView(LogoutView.class, LogoutView.VIEW_NAME, I18nProperties.getCaption(Captions.actionLogout) + " (" + UserProvider.getCurrent().getUserName() + ")", VaadinIcons.POWER_OFF);
-		
-		/* logout menu item
-				MenuBar logoutMenu = new MenuBar();
-				logoutMenu.setId(Captions.actionLogout);
-				logoutMenu.addItem(
-						I18nProperties.getCaption(Captions.actionLogout) + " (" + UserProvider.getCurrent().getUserName() + ")",
-						VaadinIcons.POWER_OFF, (Command) selectedItem -> LoginHelper.logout());
-
-				logoutMenu.addStyleNames("user-menu", "logout-menu");
-				//menuPart.addComponent(logoutMenu);
-				*/
-		
-		/* settings menu item
-			//	MenuBar settingsMenu = new MenuBar();
-			//	settingsMenu.setId(Captions.actionSettings);
-			//	settingsMenu.addItem(I18nProperties.getCaption(Captions.actionSettings), VaadinIcons.GLOBE_WIRE,
-			//			(Command) selectedItem -> showSettingsPopup());
-
-			//	settingsMenu.addStyleNames("user-menu", "settings-menu");
-			//	menu.addComponent(settingsMenu);
-				
-				*/
-
+			
 		navigator.addViewChangeListener(viewChangeListener);
 
 		// Add GDPR window
