@@ -18,7 +18,7 @@ public class AreaDto extends EntityDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String name;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
-	private String externalId;
+	private Long externalId;
 	private boolean archived;
 
 	public static AreaDto build() {
@@ -39,11 +39,11 @@ public class AreaDto extends EntityDto {
 		this.name = name;
 	}
 
-	public String getExternalId() {
+	public Long getExternalId() {
 		return externalId;
 	}
 
-	public void setExternalId(String externalId) {
+	public void setExternalId(Long externalId) {
 		this.externalId = externalId;
 	}
 

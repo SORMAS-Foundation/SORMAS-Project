@@ -59,7 +59,7 @@ public class ContinentService extends AbstractInfrastructureAdoService<Continent
 		return filter;
 	}
 
-	public List<Continent> getByExternalId(String externalId, boolean includeArchived) {
+	public List<Continent> getByExternalId(Long externalId, boolean includeArchived) {
 		return getByExternalId(externalId, Continent.EXTERNAL_ID, includeArchived);
 	}
 

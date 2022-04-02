@@ -198,15 +198,15 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<Facility> getFacilitiesByExternalIdAndType(@NotNull String externalId, FacilityType type, boolean includeArchivedEntities) {
+	public List<Facility> getFacilitiesByExternalIdAndType(@NotNull Long externalId, FacilityType type, boolean includeArchivedEntities) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Facility> cq = cb.createQuery(getElementClass());
 		Root<Facility> from = cq.from(getElementClass());
 
 		Predicate filter = cb.or(
-			cb.equal(cb.trim(from.get(Facility.EXTERNAL_ID)), externalId.trim()),
-			cb.equal(cb.lower(cb.trim(from.get(Facility.EXTERNAL_ID))), externalId.trim().toLowerCase()));
+			cb.equal(cb.trim(from.get(Facility.EXTERNAL_ID)), externalId),
+			cb.equal(cb.lower(cb.trim(from.get(Facility.EXTERNAL_ID))), externalId));
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));
 		}
@@ -303,7 +303,7 @@ public class FacilityService extends AbstractInfrastructureAdoService<Facility> 
 	}
 
 	@Override
-	public List<Facility> getByExternalId(String externalId, boolean includeArchived) {
+	public List<Facility> getByExternalId(Long externalId, boolean includeArchived) {
 		return getByExternalId(externalId, Facility.EXTERNAL_ID, includeArchived);
 	}
 }

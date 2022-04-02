@@ -17,7 +17,7 @@ public class CountryIndexDto extends EntityDto {
 
 	private String defaultName;
 	private String displayName;
-	private String externalId;
+	private Long externalId;
 	private String isoCode;
 	private String unoCode;
 	private boolean archived;
@@ -39,11 +39,11 @@ public class CountryIndexDto extends EntityDto {
 		this.displayName = displayName;
 	}
 
-	public String getExternalId() {
+	public Long getExternalId() {
 		return externalId;
 	}
 
-	public void setExternalId(String externalId) {
+	public void setExternalId(Long externalId) {
 		this.externalId = externalId;
 	}
 

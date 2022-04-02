@@ -66,7 +66,7 @@ public class RegionService extends AbstractInfrastructureAdoService<Region> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<Region> getByExternalId(String externalId, boolean includeArchivedEntities) {
+	public List<Region> getByExternalId(Long externalId, boolean includeArchivedEntities) {
 		return getByExternalId(externalId, Region.EXTERNAL_ID, includeArchivedEntities);
 	}
 

@@ -167,12 +167,13 @@ public class CampaignDashboardDataProvider {
 	private void createCampaignDashboarDiagrams() {
 
 		campaignDashboardDiagrams.clear();
+		System.out.println("~~~~~~~444444444444444PATCHED4444444444444~~~~~~~~~~``` externalid   "+getFormType());
 
 		if (campaign != null) {
-			FacadeProvider.getCampaignFacade().validate(campaign);
+			FacadeProvider.getCampaignFacade().validate(campaign, getFormType());
 
 			final List<CampaignDashboardElement> campaignDashboardElements =
-				FacadeProvider.getCampaignFacade().getCampaignDashboardElements(campaign.getUuid());
+				FacadeProvider.getCampaignFacade().getCampaignDashboardElements(campaign.getUuid(), getFormType());
 			final List<CampaignDiagramDefinitionDto> campaignDiagramDefinitions = FacadeProvider.getCampaignDiagramDefinitionFacade().getAll();
 
 			campaignDashboardElements.stream()

@@ -21,7 +21,7 @@ public class Country extends InfrastructureAdo {
 	public static final String SUBCONTINENT = "subcontinent";
 
 	private String defaultName;
-	private String externalId;
+	private Long externalId;
 	private String isoCode;
 	private String unoCode;
 	private Subcontinent subcontinent;
@@ -34,11 +34,11 @@ public class Country extends InfrastructureAdo {
 		this.defaultName = defaultName;
 	}
 
-	public String getExternalId() {
+	public Long getExternalId() {
 		return externalId;
 	}
 
-	public void setExternalId(String externalId) {
+	public void setExternalId(Long externalId) {
 		this.externalId = externalId;
 	}
 

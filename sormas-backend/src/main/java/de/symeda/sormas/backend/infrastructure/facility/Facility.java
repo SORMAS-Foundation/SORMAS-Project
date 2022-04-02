@@ -79,7 +79,7 @@ public class Facility extends InfrastructureAdo {
 	private Double longitude;
 	private FacilityType type;
 	private boolean publicOwnership;
-	private String externalID;
+	private Long externalID;
 
 	public String getName() {
 		return name;
@@ -240,11 +240,11 @@ public class Facility extends InfrastructureAdo {
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
-	public String getExternalID() {
+	public Long getExternalID() {
 		return externalID;
 	}
 
-	public void setExternalID(String externalID) {
+	public void setExternalID(Long externalID) {
 		this.externalID = externalID;
 	}
 

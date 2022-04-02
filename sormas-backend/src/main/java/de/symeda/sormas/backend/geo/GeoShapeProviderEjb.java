@@ -268,32 +268,11 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 					continue;
 				}
 
-				Optional<DistrictReferenceDto> districtResult;
+				Optional<DistrictReferenceDto> districtResult = null;
 
 				// Use IDs in germany (could also be used for other countries, if fitting externalIDs are provided. Those can then be mapped to the externalID in SORMAS
 				if (countryName.equals("germany")) {
-					String shapeDistrictId = GeoShapeHelper.sniffShapeAttribute(feature, Collections.singletonList("ARS"));
-					if (shapeDistrictId == null) {
-						continue;
-					}
-					districtResult = districts.stream().filter(r -> {
-						String districtExtID = r.getExternalId();
-						if (districtExtID == null) {
-							return false;
-						}
-						return districtExtID.contains(shapeDistrictId) || shapeDistrictId.contains(districtExtID);
-					}).reduce((r1, r2) -> {
-						// take the result that best fits
-						// in germany, the external IDs in SORMAS usually contain a leading '110'
-						if (r1.getExternalId().equals(shapeDistrictId) || r1.getExternalId().equals("110" + shapeDistrictId))
-							return r1;
-						if (r2.getExternalId().equals(shapeDistrictId) || r2.getExternalId().equals("110" + shapeDistrictId))
-							return r2;
 
-						return Double.compare(
-							GeoShapeHelper.similarity(r1.getExternalId(), shapeDistrictId),
-							GeoShapeHelper.similarity(r2.getExternalId(), shapeDistrictId)) <= 0 ? r1 : r2;
-					});
 				} else {
 					districtResult = districts.stream().filter(r -> {
 						String districtName = r.getCaption().replaceAll("\\W", "").toLowerCase();

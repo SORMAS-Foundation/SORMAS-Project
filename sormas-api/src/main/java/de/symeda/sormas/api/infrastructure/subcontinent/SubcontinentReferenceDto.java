@@ -13,7 +13,7 @@ public class SubcontinentReferenceDto extends InfrastructureDataReferenceDto imp
 		super(uuid);
 	}
 
-	public SubcontinentReferenceDto(String uuid, String caption, String externalId) {
+	public SubcontinentReferenceDto(String uuid, String caption, Long externalId) {
 		super(uuid, caption, externalId);
 	}
 

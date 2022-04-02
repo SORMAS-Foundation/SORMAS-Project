@@ -19,6 +19,7 @@ public class CampaignDashboardElement implements Serializable {
 	public static final String ORDER = "order";
 	public static final String WIDTH = "width";
 	public static final String HEIGHT = "height";
+	public static final String PHASE = "phase";
 
 	@Size(max = CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String diagramId;
@@ -29,20 +30,22 @@ public class CampaignDashboardElement implements Serializable {
 	private Integer order;
 	private Integer width;
 	private Integer height;
+	private String phase;
 
 	public CampaignDashboardElement() {
 	}
 
-	public CampaignDashboardElement(String diagramId, String tabId, Integer order, Integer width, Integer height) {
+	public CampaignDashboardElement(String diagramId, String tabId, Integer order, Integer width, Integer height, String phase) {
 		this.diagramId = diagramId;
 		this.tabId = tabId;
 		this.order = order;
 		this.width = width;
 		this.height = height;
+		this.phase = phase;
 	}
 
-	public CampaignDashboardElement(String diagramId, String tabId, String subTabId, Integer order, Integer width, Integer height) {
-		this(diagramId, tabId, order, width, height);
+	public CampaignDashboardElement(String diagramId, String tabId, String subTabId, Integer order, Integer width, Integer height, String phase) {
+		this(diagramId, tabId, order, width, height, phase);
 		this.subTabId = subTabId;
 	}
 
@@ -94,6 +97,14 @@ public class CampaignDashboardElement implements Serializable {
 		this.height = height;
 	}
 
+	public String getPhase() {
+		return phase;
+	}
+
+	public void setPhase(String phase) {
+		this.phase = phase;
+	}
+
 	/**
 	 * Needed. Otherwise hibernate will persist whenever loading,
 	 * because hibernate types creates new instances that aren't equal.
@@ -108,11 +119,12 @@ public class CampaignDashboardElement implements Serializable {
 				Objects.equals(subTabId, that.subTabId) &&
 				Objects.equals(order, that.order) &&
 				Objects.equals(width, that.width) &&
-				Objects.equals(height, that.height);
+				Objects.equals(height, that.height) &&
+				Objects.equals(phase, that.phase);
 	}
 
 	@Override
 	public int hashCode() {
-		return Objects.hash(diagramId, tabId, subTabId, order, width, height);
+		return Objects.hash(diagramId, tabId, subTabId, order, width, height, phase);
 	}
 }

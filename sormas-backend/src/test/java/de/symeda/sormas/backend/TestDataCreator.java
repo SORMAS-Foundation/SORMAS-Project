@@ -1397,7 +1397,7 @@ public class TestDataCreator {
 		return createRegion(regionName, null);
 	}
 
-	public Region createRegion(String regionName, String externalId) {
+	public Region createRegion(String regionName, Long externalId) {
 		Region region = new Region();
 		region.setUuid(DataHelper.createUuid());
 		region.setName(regionName);
@@ -1413,7 +1413,7 @@ public class TestDataCreator {
 		return createDistrict(districtName, region, null);
 	}
 
-	public District createDistrict(String districtName, Region region, String externalId) {
+	public District createDistrict(String districtName, Region region, Long externalId) {
 
 		District district = new District();
 		district.setUuid(DataHelper.createUuid());
@@ -1430,7 +1430,7 @@ public class TestDataCreator {
 		return createCommunity(communityName, district, null);
 	}
 
-	public Community createCommunity(String communityName, District district, String externalId) {
+	public Community createCommunity(String communityName, District district, Long externalId) {
 
 		Community community = new Community();
 		community.setUuid(DataHelper.createUuid());
@@ -1459,7 +1459,7 @@ public class TestDataCreator {
 		return createFacility(facilityName, type, region, district, community, null);
 	}
 
-	public Facility createFacility(String facilityName, FacilityType type, Region region, District district, Community community, String externalId) {
+	public Facility createFacility(String facilityName, FacilityType type, Region region, District district, Community community, Long externalId) {
 
 		Facility facility = new Facility();
 		facility.setUuid(DataHelper.createUuid());
@@ -1504,7 +1504,7 @@ public class TestDataCreator {
 		return createPointOfEntry(pointOfEntryName, region, district, null);
 	}
 
-	public PointOfEntry createPointOfEntry(String pointOfEntryName, Region region, District district, String externalId) {
+	public PointOfEntry createPointOfEntry(String pointOfEntryName, Region region, District district, Long externalId) {
 
 		PointOfEntry pointOfEntry = new PointOfEntry();
 		pointOfEntry.setUuid(DataHelper.createUuid());

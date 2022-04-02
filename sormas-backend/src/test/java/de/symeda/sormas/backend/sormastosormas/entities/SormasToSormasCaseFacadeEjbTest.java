@@ -736,7 +736,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasFacadeTest {
 		person.setLastName("Smith");
 
 		CaseDataDto caze = createRemoteCaseDto(rdcf.remoteRdcf, person);
-		caze.setHealthFacility(new FacilityReferenceDto("unknown", "Unknown facility", "unknown"));
+		caze.setHealthFacility(new FacilityReferenceDto("unknown", "Unknown facility", null));
 
 		SormasToSormasEncryptedDataDto encryptedData =
 			encryptShareDataAsArray(new SormasToSormasCaseDto(person, caze, createSormasToSormasOriginInfo(DEFAULT_SERVER_ID, false)));

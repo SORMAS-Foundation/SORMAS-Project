@@ -326,7 +326,7 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 	}
 
 	@Override
-	public List<DistrictReferenceDto> getByExternalId(String externalId, boolean includeArchivedEntities) {
+	public List<DistrictReferenceDto> getByExternalId(Long externalId, boolean includeArchivedEntities) {
 
 		return service.getByExternalId(externalId, includeArchivedEntities)
 			.stream()

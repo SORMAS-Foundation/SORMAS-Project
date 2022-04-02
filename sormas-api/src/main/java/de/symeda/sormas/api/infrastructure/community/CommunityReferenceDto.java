@@ -32,7 +32,7 @@ public class CommunityReferenceDto extends InfrastructureDataReferenceDto implem
 		super(uuid);
 	}
 
-	public CommunityReferenceDto(String uuid, String caption, String externalId) {
+	public CommunityReferenceDto(String uuid, String caption, Long externalId) {
 		super(uuid, caption, externalId);
 	}
 

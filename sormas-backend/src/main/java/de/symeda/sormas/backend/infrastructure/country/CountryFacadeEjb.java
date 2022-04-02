@@ -290,7 +290,7 @@ public class CountryFacadeEjb extends AbstractInfrastructureEjb<Country, Country
 		return dto;
 	}
 
-	public List<CountryReferenceDto> getByExternalId(String externalId, boolean includeArchived) {
+	public List<CountryReferenceDto> getByExternalId(Long externalId, boolean includeArchived) {
 		return service.getByExternalId(externalId, includeArchived).stream().map(CountryFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 

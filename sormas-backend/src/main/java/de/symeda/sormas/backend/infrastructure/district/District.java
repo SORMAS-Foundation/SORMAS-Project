@@ -53,7 +53,7 @@ public class District extends InfrastructureAdo {
 	private String epidCode;
 	private List<Community> communities;
 	private Float growthRate;
-	private String externalID;
+	private Long externalID;
 
 	public String getName() {
 		return name;
@@ -100,11 +100,11 @@ public class District extends InfrastructureAdo {
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
-	public String getExternalID() {
+	public Long getExternalID() {
 		return externalID;
 	}
 
-	public void setExternalID(String externalID) {
+	public void setExternalID(Long externalID) {
 		this.externalID = externalID;
 	}
 

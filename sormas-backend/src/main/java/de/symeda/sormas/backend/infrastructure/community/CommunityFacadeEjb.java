@@ -304,7 +304,7 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 	}
 
 	@Override
-	public List<CommunityReferenceDto> getByExternalId(String externalId, boolean includeArchivedEntities) {
+	public List<CommunityReferenceDto> getByExternalId(Long externalId, boolean includeArchivedEntities) {
 
 		return service.getByExternalId(externalId, includeArchivedEntities)
 			.stream()
@@ -346,6 +346,7 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 		if (entity == null) {
 			return null;
 		}
+		
 		CommunityReferenceDto dto = new CommunityReferenceDto(entity.getUuid(), entity.toString(), entity.getExternalID());
 		return dto;
 	}

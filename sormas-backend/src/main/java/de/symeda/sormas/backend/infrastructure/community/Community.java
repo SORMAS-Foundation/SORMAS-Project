@@ -43,7 +43,7 @@ public class Community extends InfrastructureAdo {
 	private String name;
 	private District district;
 	private Float growthRate;
-	private String externalID;
+	private Long externalID;
 
 	public String getName() {
 		return name;
@@ -72,11 +72,11 @@ public class Community extends InfrastructureAdo {
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
-	public String getExternalID() {
+	public Long getExternalID() {
 		return externalID;
 	}
 
-	public void setExternalID(String externalID) {
+	public void setExternalID(Long externalID) {
 		this.externalID = externalID;
 	}
 

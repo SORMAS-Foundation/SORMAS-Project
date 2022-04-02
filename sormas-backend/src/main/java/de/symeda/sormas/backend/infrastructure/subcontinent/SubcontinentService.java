@@ -63,7 +63,7 @@ public class SubcontinentService extends AbstractInfrastructureAdoService<Subcon
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<Subcontinent> getByExternalId(String externalId, boolean includeArchived) {
+	public List<Subcontinent> getByExternalId(Long externalId, boolean includeArchived) {
 		return getByExternalId(externalId, Subcontinent.EXTERNAL_ID, includeArchived);
 	}
 }

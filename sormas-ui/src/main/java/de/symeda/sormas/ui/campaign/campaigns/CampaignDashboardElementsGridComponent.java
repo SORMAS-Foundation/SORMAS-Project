@@ -79,8 +79,8 @@ public class CampaignDashboardElementsGridComponent extends AbstractEditableGrid
 			.filter(s -> StringUtils.isNotEmpty(s))
 			.distinct()
 			.collect(Collectors.toList());
+		
 		final ComboBox<String> subTabIdCombo = new ComboBox<>(Captions.campaignDashboardSubTabName, existingSubTabIds);
-
 		subTabIdCombo.setEmptySelectionAllowed(true);
 		subTabIdCombo.setTextInputAllowed(true);
 		subTabIdCombo.setNewItemProvider((ComboBox.NewItemProvider<String>) s -> Optional.of(s));
@@ -118,6 +118,17 @@ public class CampaignDashboardElementsGridComponent extends AbstractEditableGrid
 			grid.addColumn(campaignDashboardElement -> intToString(campaignDashboardElement.getOrder()))
 				.setCaption(I18nProperties.getCaption(Captions.campaignDashboardOrder));
 		orderColumn.setEditorBinding(orderBind);
+		
+		
+		TextField phase = new TextField(Captions.campaignDashboardPhase);
+		phase.setEnabled(false);
+		Binder.Binding<CampaignDashboardElement, String> phaseBind =
+			binder.bind(order, campaignDashboardElement -> campaignDashboardElement.getPhase(), (c, s) -> c.setPhase(s));
+		Grid.Column<CampaignDashboardElement, String> phaseColumn =
+			grid.addColumn(campaignDashboardElement -> campaignDashboardElement.getPhase())
+				.setCaption(I18nProperties.getCaption(Captions.campaignDashboardPhase));
+			phaseColumn.setEditorBinding(phaseBind);
+			
 		return binder;
 	}
 

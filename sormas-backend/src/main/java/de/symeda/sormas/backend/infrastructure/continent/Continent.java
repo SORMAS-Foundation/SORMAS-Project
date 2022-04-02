@@ -20,7 +20,7 @@ public class Continent extends InfrastructureAdo {
 	public static final String EXTERNAL_ID = "externalId";
 
 	private String defaultName;
-	private String externalId;
+	private Long externalId;
 	private List<Subcontinent> subcontinents;
 
 	public String getDefaultName() {
@@ -31,11 +31,11 @@ public class Continent extends InfrastructureAdo {
 		this.defaultName = defaultName;
 	}
 
-	public String getExternalId() {
+	public Long getExternalId() {
 		return externalId;
 	}
 
-	public void setExternalId(String externalId) {
+	public void setExternalId(Long externalId) {
 		this.externalId = externalId;
 	}
 

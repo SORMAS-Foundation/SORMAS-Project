@@ -245,11 +245,13 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 
 		// This tab gets its caption from the component caption
 		VerticalLayout tab2 = new VerticalLayout();
-		final List<CampaignDashboardElement> campaignDashboardElements = FacadeProvider.getCampaignFacade().getCampaignDashboardElements(null);
+		
+		//To Do: Check why set this to nulll in the first place
+		final List<CampaignDashboardElement> campaignDashboardElements = FacadeProvider.getCampaignFacade().getCampaignDashboardElements(null, PRE_CAMPAIGN);
 		campaignDashboardGridComponent = new CampaignDashboardElementsGridComponent(
 			this.campaignDto == null
 				? Collections.EMPTY_LIST
-				: FacadeProvider.getCampaignFacade().getCampaignDashboardElements(campaignDto.getUuid()),
+				: FacadeProvider.getCampaignFacade().getCampaignDashboardElements(campaignDto.getUuid(), PRE_CAMPAIGN),
 			campaignDashboardElements);
 		getContent().addComponent(campaignDashboardGridComponent, CAMPAIGN_DASHBOARD_LOC);
 		tab2.addComponent(campaignDashboardGridComponent);
@@ -295,11 +297,11 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 
 		// This tab gets its caption from the component caption
 		VerticalLayout tab2Post = new VerticalLayout();
-		final List<CampaignDashboardElement> campaignDashboardElementsxx = FacadeProvider.getCampaignFacade().getCampaignDashboardElements(null);
+		final List<CampaignDashboardElement> campaignDashboardElementsxx = FacadeProvider.getCampaignFacade().getCampaignDashboardElements(null, INTRA_CAMPAIGN);
 		campaignDashboardGridComponent = new CampaignDashboardElementsGridComponent(
 			this.campaignDto == null
 				? Collections.EMPTY_LIST
-				: FacadeProvider.getCampaignFacade().getCampaignDashboardElements(campaignDto.getUuid()),
+				: FacadeProvider.getCampaignFacade().getCampaignDashboardElements(campaignDto.getUuid(), INTRA_CAMPAIGN),
 			campaignDashboardElementsxx);
 		getContent().addComponent(campaignDashboardGridComponent, CAMPAIGN_DASHBOARD_LOC);
 		tab2Post.addComponent(campaignDashboardGridComponent);
@@ -338,7 +340,8 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 		
 		campaignFormsGridComponent = new CampaignFormsGridComponent(
 				this.campaignDto == null ? Collections.EMPTY_LIST : new ArrayList<>(campaignDto.getCampaignFormMetas()),
-				FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences());
+						FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferencesByRound(POST_CAMPAIGN));
+				//FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences());
 			getContent().addComponent(campaignFormsGridComponent, CAMPAIGN_DATA_LOC);
 			tab1Intra.addComponent(campaignFormsGridComponent);
 			tab1Intra.setCaption("Post Campaign Forms");
@@ -347,11 +350,11 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 
 		// This tab gets its caption from the component caption
 		VerticalLayout tab2Intra = new VerticalLayout();
-		final List<CampaignDashboardElement> campaignDashboardElementsx = FacadeProvider.getCampaignFacade().getCampaignDashboardElements(null);
+		final List<CampaignDashboardElement> campaignDashboardElementsx = FacadeProvider.getCampaignFacade().getCampaignDashboardElements(null, POST_CAMPAIGN);
 		campaignDashboardGridComponent = new CampaignDashboardElementsGridComponent(
 			this.campaignDto == null
 				? Collections.EMPTY_LIST
-				: FacadeProvider.getCampaignFacade().getCampaignDashboardElements(campaignDto.getUuid()),
+				: FacadeProvider.getCampaignFacade().getCampaignDashboardElements(campaignDto.getUuid(), POST_CAMPAIGN),
 			campaignDashboardElementsx);
 		getContent().addComponent(campaignDashboardGridComponent, CAMPAIGN_DASHBOARD_LOC);
 		tab2Intra.addComponent(campaignDashboardGridComponent);
@@ -468,6 +471,8 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 
 	@Override
 	public CampaignDto getValue() {
+		System.out.println("+++++++@@@@@@@@@@@@@@@@@@@@@+++++++++++");
+		
 		final CampaignDto campaignDto = super.getValue();
 		campaignDto.setCampaignFormMetas(new HashSet<>(campaignFormsGridComponent.getItems()));
 		campaignDto.setCampaignDashboardElements(campaignDashboardGridComponent.getItems());

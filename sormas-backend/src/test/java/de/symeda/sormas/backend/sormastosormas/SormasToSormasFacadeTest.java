@@ -243,18 +243,25 @@ public abstract class SormasToSormasFacadeTest extends AbstractBeanTest {
 		String facilityName = "Facility";
 		String pointOfEntryName = "Point of Entry";
 
-		String regionExternalId = null;
-		String districtExternalId = null;
-		String communityExternalId = null;
-		String facilityExternalId = null;
-		String pointOfEntryExternalId = null;
+		Long regionExternalId = null;
+		Long districtExternalId = null;
+		Long communityExternalId = null;
+		Long facilityExternalId = null;
+		Long pointOfEntryExternalId = null;
 
 		if (withExternalId) {
+			/*
 			regionExternalId = "RegionExtId";
 			districtExternalId = "DistrictExtId";
 			communityExternalId = "CommunityExtId";
 			facilityExternalId = "FacilityExtId";
 			pointOfEntryExternalId = "Point of EntryExtId";
+			*/
+			regionExternalId = Long.parseLong("1");
+			districtExternalId = Long.parseLong("1");
+			communityExternalId = Long.parseLong("1");
+			facilityExternalId = Long.parseLong("1");
+			pointOfEntryExternalId = Long.parseLong("1");
 		}
 
 		MappableRdcf rdcf = new MappableRdcf();

@@ -21,6 +21,6 @@ public interface InfrastructureBaseFacade<DTO extends EntityDto, INDEX_DTO exten
 	// todo investigate if we can move the save function up the hierarchy
 	DTO save(@Valid DTO dto, boolean allowMerge);
 
-	List<REF_DTO> getByExternalId(String externalId, boolean includeArchivedEntities);
+	List<REF_DTO> getByExternalId(Long externalId, boolean includeArchivedEntities);
 
 }

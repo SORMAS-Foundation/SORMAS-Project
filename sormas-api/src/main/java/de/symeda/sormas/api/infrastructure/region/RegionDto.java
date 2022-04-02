@@ -50,7 +50,7 @@ public class RegionDto extends EntityDto {
 	private Float growthRate;
 	private boolean archived;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
-	private String externalID;
+	private Long externalID;
 	@DependingOnFeatureType(featureType = FeatureType.INFRASTRUCTURE_TYPE_AREA)
 	private AreaReferenceDto area;
 	private CountryReferenceDto country;
@@ -63,7 +63,7 @@ public class RegionDto extends EntityDto {
 		String name,
 		String epidCode,
 		Float growthRate,
-		String externalID,
+		Long externalID,
 		String countryUuid,
 		String countryName,
 		String countryIsoCode,
@@ -126,11 +126,11 @@ public class RegionDto extends EntityDto {
 		this.archived = archived;
 	}
 
-	public String getExternalID() {
+	public Long getExternalID() {
 		return externalID;
 	}
 
-	public void setExternalID(String externalID) {
+	public void setExternalID(Long externalID) {
 		this.externalID = externalID;
 	}
 

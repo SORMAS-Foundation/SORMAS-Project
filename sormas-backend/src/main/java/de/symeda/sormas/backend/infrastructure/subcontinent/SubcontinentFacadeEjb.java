@@ -288,7 +288,7 @@ public class SubcontinentFacadeEjb extends AbstractInfrastructureEjb<Subcontinen
 		return dto;
 	}
 
-	public List<SubcontinentReferenceDto> getByExternalId(String externalId, boolean includeArchived) {
+	public List<SubcontinentReferenceDto> getByExternalId(Long externalId, boolean includeArchived) {
 		return service.getByExternalId(externalId, includeArchived).stream().map(SubcontinentFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 

@@ -8386,7 +8386,56 @@ INSERT INTO schema_version (version_number, comment) VALUES (415, 'adding formTy
 --adding FormType Logic to Db
 ALTER TABLE cases ADD COLUMN area_id bigint;
 ALTER TABLE cases_history ADD COLUMN area_id bigint;
+
 INSERT INTO schema_version (version_number, comment) VALUES (416, 'adding area_id patch to cases table');
+
+
+
+--patche for #99 5.a
+
+ALTER TABLE areas RENAME COLUMN externalid TO externalid_;
+--ALTER TABLE areas_history RENAME COLUMN externalid TO externalid_;
+ALTER TABLE areas ADD COLUMN externalid bigint;
+
+
+
+
+ALTER TABLE region RENAME COLUMN externalid TO externalid_;
+--ALTER TABLE region_history RENAME COLUMN externalid TO externalid_;
+ALTER TABLE region ADD COLUMN externalid bigint;
+
+
+ALTER TABLE district RENAME COLUMN externalid TO externalid_;
+--ALTER TABLE district_history RENAME COLUMN externalid TO externalid_;
+ALTER TABLE district ADD COLUMN externalid bigint;
+
+
+ALTER TABLE community RENAME COLUMN externalid TO externalid_;
+--ALTER TABLE community_history RENAME COLUMN externalid TO externalid_;
+ALTER TABLE community ADD COLUMN externalid bigint;
+
+--let try to bring in the old values... uncommet this section
+--update community SET externalid = externalid_::bigint;
+--update areas SET externalid = externalid_::bigint;
+--update region SET externalid = externalid_::bigint;
+--update district SET externalid = externalid_::bigint;
+
+INSERT INTO schema_version (version_number, comment) VALUES (417, 'patch for #99');
+
+
+
+-- patch for #99 5.c
+
+
+ALTER TABLE areas ADD CONSTRAINT unique_extgernal_id UNIQUE (externalid);
+
+ALTER TABLE region ADD CONSTRAINT region_unique_extgernal_id UNIQUE (externalid);
+
+ALTER TABLE district ADD CONSTRAINT district_unique_extgernal_id UNIQUE (externalid);
+
+ALTER TABLE community ADD CONSTRAINT community_unique_extgernal_id UNIQUE (externalid);
+
+INSERT INTO schema_version (version_number, comment) VALUES (418, 'patch for #99 5.c');
 
 
 

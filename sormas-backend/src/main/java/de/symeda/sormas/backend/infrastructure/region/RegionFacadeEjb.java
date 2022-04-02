@@ -376,7 +376,7 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionSer
 	}
 
 	@Override
-	public List<RegionReferenceDto> getByExternalId(String externalId, boolean includeArchivedEntities) {
+	public List<RegionReferenceDto> getByExternalId(Long externalId, boolean includeArchivedEntities) {
 		return service.getByExternalId(externalId, includeArchivedEntities)
 			.stream()
 			.map(RegionFacadeEjb::toReferenceDto)

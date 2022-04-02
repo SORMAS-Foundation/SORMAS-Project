@@ -40,7 +40,7 @@ public class DistrictIndexDto extends EntityDto {
 	private Integer population;
 	private Float growthRate;
 	private RegionReferenceDto region;
-	private String externalID;
+	private Long externalID;
 
 	public DistrictIndexDto() {
 		super();
@@ -91,11 +91,11 @@ public class DistrictIndexDto extends EntityDto {
 		this.growthRate = growthRate;
 	}
 
-	public String getExternalID() {
+	public Long getExternalID() {
 		return externalID;
 	}
 
-	public void setExternalID(String externalID) {
+	public void setExternalID(Long externalID) {
 		this.externalID = externalID;
 	}
 

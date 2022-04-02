@@ -52,7 +52,7 @@ public class Region extends InfrastructureAdo {
 	private String epidCode;
 	private List<District> districts;
 	private Float growthRate;
-	private String externalID;
+	private Long externalID;
 	private Area area;
 	private Country country;
 
@@ -96,11 +96,11 @@ public class Region extends InfrastructureAdo {
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
-	public String getExternalID() {
+	public Long getExternalID() {
 		return externalID;
 	}
 
-	public void setExternalID(String externalID) {
+	public void setExternalID(Long externalID) {
 		this.externalID = externalID;
 	}
 

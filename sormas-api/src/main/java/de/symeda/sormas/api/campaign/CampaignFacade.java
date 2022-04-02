@@ -24,7 +24,7 @@ public interface CampaignFacade {
 
 	CampaignDto getByUuid(String uuid);
 
-	List<CampaignDashboardElement> getCampaignDashboardElements(String campaignUuid);
+	List<CampaignDashboardElement> getCampaignDashboardElements(String campaignUuid, String formType);
 
 	boolean isArchived(String uuid);
 
@@ -45,4 +45,6 @@ public interface CampaignFacade {
 	List<String> getAllActiveUuids();
 
 	void validate(CampaignReferenceDto campaignReferenceDto);
+	
+	void validate(CampaignReferenceDto campaignReferenceDto, String formType);
 }

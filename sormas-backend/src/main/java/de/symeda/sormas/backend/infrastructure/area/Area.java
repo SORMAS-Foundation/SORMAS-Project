@@ -25,7 +25,7 @@ public class Area extends InfrastructureAdo {
 
 	private String name;
 	private List<Region> regions;
-	private String externalId;
+	private Long externalId;
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public String getName() {
@@ -47,11 +47,11 @@ public class Area extends InfrastructureAdo {
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
-	public String getExternalId() {
+	public Long getExternalId() {
 		return externalId;
 	}
 
-	public void setExternalId(String externalId) {
+	public void setExternalId(Long externalId) {
 		this.externalId = externalId;
 	}
 

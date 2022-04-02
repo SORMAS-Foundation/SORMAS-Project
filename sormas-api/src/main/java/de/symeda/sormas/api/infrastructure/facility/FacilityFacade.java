@@ -74,7 +74,7 @@ public interface FacilityFacade extends InfrastructureBaseFacade<FacilityDto, Fa
 
 	Map<String, String> getCommunityUuidsForFacilities(List<FacilityReferenceDto> facilities);
 
-	List<FacilityReferenceDto> getByExternalIdAndType(String id, FacilityType type, boolean includeArchivedEntities);
+	List<FacilityReferenceDto> getByExternalIdAndType(Long id, FacilityType type, boolean includeArchivedEntities);
 
 	Page<FacilityIndexDto> getIndexPage(FacilityCriteria criteria, Integer offset, Integer size, List<SortProperty> sortProperties);
 

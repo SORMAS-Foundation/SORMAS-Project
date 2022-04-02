@@ -67,7 +67,7 @@ public class LabMessage extends AbstractDomainObject {
 	private SpecimenCondition specimenCondition;
 
 	private String labName;
-	private String labExternalId;
+	private Long labExternalId;
 	private String labPostalCode;
 	private String labCity;
 
@@ -172,11 +172,11 @@ public class LabMessage extends AbstractDomainObject {
 	}
 
 	@Column(length = CHARACTER_LIMIT_DEFAULT)
-	public String getLabExternalId() {
+	public Long getLabExternalId() {
 		return labExternalId;
 	}
 
-	public void setLabExternalId(String labExternalId) {
+	public void setLabExternalId(Long labExternalId) {
 		this.labExternalId = labExternalId;
 	}
 

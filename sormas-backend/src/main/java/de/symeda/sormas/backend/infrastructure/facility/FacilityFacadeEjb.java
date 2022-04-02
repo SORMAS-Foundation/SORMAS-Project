@@ -218,7 +218,7 @@ public class FacilityFacadeEjb extends AbstractInfrastructureEjb<Facility, Facil
 	}
 
 	@Override
-	public List<FacilityReferenceDto> getByExternalId(String externalId, boolean includeArchivedEntities) {
+	public List<FacilityReferenceDto> getByExternalId(Long externalId, boolean includeArchivedEntities) {
 
 		return service.getByExternalId(externalId, includeArchivedEntities)
 			.stream()
@@ -326,7 +326,7 @@ public class FacilityFacadeEjb extends AbstractInfrastructureEjb<Facility, Facil
 	}
 
 	@Override
-	public List<FacilityReferenceDto> getByExternalIdAndType(String id, FacilityType type, boolean includeArchivedEntities) {
+	public List<FacilityReferenceDto> getByExternalIdAndType(Long id, FacilityType type, boolean includeArchivedEntities) {
 		return service.getFacilitiesByExternalIdAndType(id, type, includeArchivedEntities)
 			.stream()
 			.map(f -> toReferenceDto(f))

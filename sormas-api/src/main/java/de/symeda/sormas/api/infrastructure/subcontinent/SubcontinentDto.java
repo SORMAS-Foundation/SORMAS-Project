@@ -18,7 +18,7 @@ public class SubcontinentDto extends EntityDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String defaultName;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
-	private String externalId;
+	private Long externalId;
 	private boolean archived;
 	private ContinentReferenceDto continent;
 
@@ -36,11 +36,11 @@ public class SubcontinentDto extends EntityDto {
 		this.defaultName = defaultName;
 	}
 
-	public String getExternalId() {
+	public Long getExternalId() {
 		return externalId;
 	}
 
-	public void setExternalId(String externalId) {
+	public void setExternalId(Long externalId) {
 		this.externalId = externalId;
 	}
 

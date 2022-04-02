@@ -99,7 +99,7 @@ public class FacilityDto extends EntityDto {
 	private boolean publicOwnership;
 	private boolean archived;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
-	private String externalID;
+	private Long externalID;
 
 	public FacilityDto(
 		Date creationDate,
@@ -109,13 +109,13 @@ public class FacilityDto extends EntityDto {
 		String name,
 		String regionUuid,
 		String regionName,
-		String regionExternalId,
+		Long regionExternalId,
 		String districtUuid,
 		String districtName,
-		String districtExternalId,
+		Long districtExternalId,
 		String communityUuid,
 		String communityName,
-		String communityExternalId,
+		Long communityExternalId,
 		String city,
 		String postalCode,
 		String street,
@@ -130,7 +130,7 @@ public class FacilityDto extends EntityDto {
 		Double longitude,
 		FacilityType type,
 		boolean publicOwnership,
-		String externalID) {
+		Long externalID) {
 
 		super(creationDate, changeDate, uuid);
 		this.archived = archived;
@@ -321,11 +321,11 @@ public class FacilityDto extends EntityDto {
 		return new FacilityReferenceDto(getUuid(), toString(), externalID);
 	}
 
-	public String getExternalID() {
+	public Long getExternalID() {
 		return externalID;
 	}
 
-	public void setExternalID(String externalID) {
+	public void setExternalID(Long externalID) {
 		this.externalID = externalID;
 	}
 

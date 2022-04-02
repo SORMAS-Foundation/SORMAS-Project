@@ -31,7 +31,7 @@ public class FacilityReferenceDto extends InfrastructureDataReferenceDto impleme
 		super(uuid);
 	}
 
-	public FacilityReferenceDto(String uuid, String caption, String externalId) {
+	public FacilityReferenceDto(String uuid, String caption, Long externalId) {
 		super(uuid, caption, externalId);
 	}
 

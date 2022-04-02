@@ -173,7 +173,7 @@ public class PointOfEntryFacadeEjb extends AbstractInfrastructureEjb<PointOfEntr
 	}
 
 	@Override
-	public List<PointOfEntryReferenceDto> getByExternalId(String name, boolean includeArchivedEntities) {
+	public List<PointOfEntryReferenceDto> getByExternalId(Long name, boolean includeArchivedEntities) {
 		return service.getByExternalId(name, includeArchivedEntities)
 			.stream()
 			.map(PointOfEntryFacadeEjb::toReferenceDto)

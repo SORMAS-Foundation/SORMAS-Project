@@ -31,7 +31,7 @@ public class DistrictReferenceDto extends InfrastructureDataReferenceDto impleme
 		super(uuid);
 	}
 
-	public DistrictReferenceDto(String uuid, String caption, String externalId) {
+	public DistrictReferenceDto(String uuid, String caption, Long externalId) {
 		super(uuid, caption, externalId);
 	}
 

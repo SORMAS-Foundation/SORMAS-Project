@@ -47,7 +47,7 @@ public class CommunityDto extends EntityDto {
 	private DistrictReferenceDto district;
 	private boolean archived;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
-	private String externalID;
+	private Long externalID;
 
 	public CommunityDto(
 		Date creationDate,
@@ -58,11 +58,11 @@ public class CommunityDto extends EntityDto {
 		Float growthRate,
 		String regionUuid,
 		String regionName,
-		String regionExternalId,
+		Long regionExternalId,
 		String districtUuid,
 		String districtName,
-		String districtExternalId,
-		String externalID) {
+		Long districtExternalId,
+		Long externalID) {
 
 		super(creationDate, changeDate, uuid);
 		this.archived = archived;
@@ -117,11 +117,11 @@ public class CommunityDto extends EntityDto {
 		this.archived = archived;
 	}
 
-	public String getExternalID() {
+	public Long getExternalID() {
 		return externalID;
 	}
 
-	public void setExternalID(String externalID) {
+	public void setExternalID(Long externalID) {
 		this.externalID = externalID;
 	}
 

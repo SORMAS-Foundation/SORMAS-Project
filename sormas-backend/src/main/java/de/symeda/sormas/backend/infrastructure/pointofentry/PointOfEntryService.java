@@ -85,7 +85,7 @@ public class PointOfEntryService extends AbstractInfrastructureAdoService<PointO
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<PointOfEntry> getByExternalId(String externalId, boolean includeArchivedEntities) {
+	public List<PointOfEntry> getByExternalId(Long externalId, boolean includeArchivedEntities) {
 		return getByExternalId(externalId, PointOfEntry.EXTERNAL_ID, includeArchivedEntities);
 	}
 

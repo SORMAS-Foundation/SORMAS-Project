@@ -71,7 +71,7 @@ public class AreaService extends AbstractInfrastructureAdoService<Area> {
 	}
 
 	@Override
-	public List<Area> getByExternalId(String externalId, boolean includeArchived) {
+	public List<Area> getByExternalId(Long externalId, boolean includeArchived) {
 		return getByExternalId(externalId, Area.EXTERNAL_ID, includeArchived);
 	}
 }

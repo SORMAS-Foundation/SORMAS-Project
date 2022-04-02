@@ -92,12 +92,12 @@ public abstract class AbstractInfrastructureAdoService<ADO extends Infrastructur
 	}
 
 	// todo remove columnName later and handle this completely here. This is not possible due to #6549 now.
-	protected List<ADO> getByExternalId(String externalId, String columnName, boolean includeArchived) {
+	protected List<ADO> getByExternalId(Long externalId, String columnName, boolean includeArchived) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
 		Root<ADO> from = cq.from(getElementClass());
 
-		Predicate filter = CriteriaBuilderHelper.ilikePrecise(cb, from.get(columnName), externalId.trim());
+		Predicate filter = CriteriaBuilderHelper.ilikePrecise(cb, from.get(columnName), externalId.toString());
 		if (!includeArchived) {
 			filter = cb.and(filter, createBasicFilter(cb, from));
 		}
@@ -108,5 +108,5 @@ public abstract class AbstractInfrastructureAdoService<ADO extends Infrastructur
 
 	}
 
-	public abstract List<ADO> getByExternalId(String externalId, boolean includeArchived);
+	public abstract List<ADO> getByExternalId(Long externalId, boolean includeArchived);
 }

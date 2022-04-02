@@ -54,7 +54,7 @@ public class PointOfEntryDto extends EntityDto {
 	private boolean active;
 	private boolean archived;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
-	private String externalID;
+	private Long externalID;
 
 	public PointOfEntryDto(
 		Date creationDate,
@@ -65,14 +65,14 @@ public class PointOfEntryDto extends EntityDto {
 		String name,
 		String regionUuid,
 		String regionName,
-		String regionExternalId,
+		Long regionExternalId,
 		String districtUuid,
 		String districtName,
-		String districtExternalId,
+		Long districtExternalId,
 		Double latitude,
 		Double longitude,
 		boolean active,
-		String externalID) {
+		Long externalID) {
 
 		super(creationDate, changeDate, uuid);
 
@@ -193,11 +193,11 @@ public class PointOfEntryDto extends EntityDto {
 		this.archived = archived;
 	}
 
-	public String getExternalID() {
+	public Long getExternalID() {
 		return externalID;
 	}
 
-	public void setExternalID(String externalID) {
+	public void setExternalID(Long externalID) {
 		this.externalID = externalID;
 	}
 

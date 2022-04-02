@@ -34,12 +34,14 @@ public class CampaignDto extends EntityDto {
 	private String name;
 	private String round;
 	private String campaignTypes;
+	
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String description;
 	private Date startDate;
 	private Date endDate;
 	private UserReferenceDto creatingUser;
 	private Set<CampaignFormMetaReferenceDto> campaignFormMetas;
+	
 	@Valid
 	private List<CampaignDashboardElement> campaignDashboardElements;
 

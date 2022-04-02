@@ -48,7 +48,7 @@ public class FacilityIndexDto implements Serializable, HasUuid {
 	private String city;
 	private Double latitude;
 	private Double longitude;
-	private String externalID;
+	private Long externalID;
 
 	public FacilityIndexDto(
 		String uuid,
@@ -63,7 +63,7 @@ public class FacilityIndexDto implements Serializable, HasUuid {
 		String city,
 		Double latitude,
 		Double longitude,
-		String externalID) {
+		Long externalID) {
 
 		this.uuid = uuid;
 		this.name = name;
@@ -156,11 +156,11 @@ public class FacilityIndexDto implements Serializable, HasUuid {
 		this.longitude = longitude;
 	}
 
-	public String getExternalID() {
+	public Long getExternalID() {
 		return externalID;
 	}
 
-	public void setExternalID(String externalID) {
+	public void setExternalID(Long externalID) {
 		this.externalID = externalID;
 	}
 

@@ -24,7 +24,7 @@ public class CountryDto extends EntityDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String defaultName;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
-	private String externalId;
+	private Long externalId;
 	@Size(min = 2, max = 3, message = Validations.textSizeNotInRange)
 	private String isoCode;
 	@Size(min = 1, max = 3, message = Validations.textSizeNotInRange)
@@ -38,12 +38,12 @@ public class CountryDto extends EntityDto {
 		String uuid,
 		boolean archived,
 		String defaultName,
-		String externalId,
+		Long externalId,
 		String isoCode,
 		String unoCode,
 		String subcontinentUuid,
 		String subcontinentName,
-		String subcontinentExternalId) {
+		Long subcontinentExternalId) {
 
 		super(creationDate, changeDate, uuid);
 		this.archived = archived;
@@ -68,11 +68,11 @@ public class CountryDto extends EntityDto {
 		this.defaultName = defaultName;
 	}
 
-	public String getExternalId() {
+	public Long getExternalId() {
 		return externalId;
 	}
 
-	public void setExternalId(String externalID) {
+	public void setExternalId(Long externalID) {
 		this.externalId = externalID;
 	}
 

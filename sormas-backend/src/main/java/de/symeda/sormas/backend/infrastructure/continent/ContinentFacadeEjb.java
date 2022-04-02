@@ -255,7 +255,7 @@ public class ContinentFacadeEjb extends AbstractInfrastructureEjb<Continent, Con
 		return dto;
 	}
 
-	public List<ContinentReferenceDto> getByExternalId(String externalId, boolean includeArchived) {
+	public List<ContinentReferenceDto> getByExternalId(Long externalId, boolean includeArchived) {
 		return service.getByExternalId(externalId, includeArchived).stream().map(ContinentFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
@@ -286,4 +286,6 @@ public class ContinentFacadeEjb extends AbstractInfrastructureEjb<Continent, Con
 			super(service, featureConfiguration);
 		}
 	}
+
+
 }

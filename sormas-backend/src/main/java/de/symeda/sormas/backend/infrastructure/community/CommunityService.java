@@ -75,7 +75,7 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<Community> getByExternalId(String externalId, boolean includeArchivedEntities) {
+	public List<Community> getByExternalId(Long externalId, boolean includeArchivedEntities) {
 		return getByExternalId(externalId, Community.EXTERNAL_ID, includeArchivedEntities);
 	}
 

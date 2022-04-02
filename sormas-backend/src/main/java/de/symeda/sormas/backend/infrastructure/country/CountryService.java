@@ -126,7 +126,7 @@ public class CountryService extends AbstractInfrastructureAdoService<Country> {
 		return filter;
 	}
 
-	public List<Country> getByExternalId(String externalId, boolean includeArchived) {
+	public List<Country> getByExternalId(Long externalId, boolean includeArchived) {
 		return getByExternalId(externalId, Country.EXTERNAL_ID, includeArchived);
 	}
 }

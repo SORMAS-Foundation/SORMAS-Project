@@ -125,7 +125,7 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<District> getByExternalId(String externalId, boolean includeArchivedEntities) {
+	public List<District> getByExternalId(Long externalId, boolean includeArchivedEntities) {
 		return getByExternalId(externalId, District.EXTERNAL_ID, includeArchivedEntities);
 	}
 

@@ -13,7 +13,7 @@ public class ContinentReferenceDto extends InfrastructureDataReferenceDto implem
 		super(uuid);
 	}
 
-	public ContinentReferenceDto(String uuid, String caption, String externalId) {
+	public ContinentReferenceDto(String uuid, String caption, Long externalId) {
 		super(uuid, caption, externalId);
 	}
 

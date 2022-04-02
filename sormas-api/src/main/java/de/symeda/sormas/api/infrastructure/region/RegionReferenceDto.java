@@ -31,7 +31,7 @@ public class RegionReferenceDto extends InfrastructureDataReferenceDto implement
 		super(uuid);
 	}
 
-	public RegionReferenceDto(String uuid, String caption, String externalId) {
+	public RegionReferenceDto(String uuid, String caption, Long externalId) {
 		super(uuid, caption, externalId);
 	}
 

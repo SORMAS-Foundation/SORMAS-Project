@@ -61,7 +61,7 @@ public class LabMessageDto extends EntityDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String labName;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
-	private String labExternalId;
+	private Long labExternalId;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String labPostalCode;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
@@ -166,11 +166,11 @@ public class LabMessageDto extends EntityDto {
 		this.labName = labName;
 	}
 
-	public String getLabExternalId() {
+	public Long getLabExternalId() {
 		return labExternalId;
 	}
 
-	public void setLabExternalId(String labExternalId) {
+	public void setLabExternalId(Long labExternalId) {
 		this.labExternalId = labExternalId;
 	}
 
