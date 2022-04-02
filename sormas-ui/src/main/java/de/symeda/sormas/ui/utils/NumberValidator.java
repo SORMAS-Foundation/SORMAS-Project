@@ -17,6 +17,7 @@ package de.symeda.sormas.ui.utils;
 
 import java.math.BigDecimal;
 
+import com.vaadin.ui.Notification;
 import com.vaadin.v7.data.validator.AbstractValidator;
 
 public class NumberValidator extends AbstractValidator<Number> {
@@ -68,7 +69,9 @@ public class NumberValidator extends AbstractValidator<Number> {
 		if (maxValue != null && maxValue.compareTo(decimalNumber) < 0) {
 			return false;
 		}
-
-		return true;
+		System.out.println("yyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyyy" +getErrorMessage());
+		Notification.show(getErrorMessage());
+		
+		return false;
 	}
 }

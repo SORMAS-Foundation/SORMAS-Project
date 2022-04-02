@@ -17,7 +17,7 @@ public class ExpressionProcessorUtils {
 
 	public static EvaluationContext refreshEvaluationContext(List<CampaignFormDataEntry> formValues) {
 		EvaluationContext context = new StandardEvaluationContext(transformFormValueListToMap(formValues));
-		context.getPropertyAccessors().add(new MapAccessor());
+		context.getPropertyAccessors().add(new MapAccessor()); 
 		return context;
 	}
 

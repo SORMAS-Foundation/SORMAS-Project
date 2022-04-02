@@ -22,6 +22,9 @@ import java.math.BigDecimal;
 
 import org.apache.commons.lang3.StringUtils;
 
+import com.vaadin.shared.Position;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.Notification.Type;
 import com.vaadin.v7.data.validator.AbstractValidator;
 
 public class NumberNumericValueValidator extends AbstractValidator<String> {
@@ -92,13 +95,15 @@ public class NumberNumericValueValidator extends AbstractValidator<String> {
 		BigDecimal decimalNumber = new BigDecimal(number.toString());
 
 		if (minValue != null && minValue.compareTo(decimalNumber) > 0) {
-			return false;
+			Notification.show("WARNING! ", getErrorMessage(), Type.ERROR_MESSAGE.TRAY_NOTIFICATION);
+			return true;
 		}
 
 		if (maxValue != null && maxValue.compareTo(decimalNumber) < 0) {
-			return false;
+			Notification.show("WARNING! ", getErrorMessage(), Type.ERROR_MESSAGE);
+			
+			return true;
 		}
-
 		return true;
 	}
 

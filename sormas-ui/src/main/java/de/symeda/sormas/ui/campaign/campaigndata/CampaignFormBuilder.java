@@ -38,6 +38,7 @@ import com.vaadin.ui.CheckBoxGroup;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.CustomField;
 import com.vaadin.ui.GridLayout;
+import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.shared.ui.label.ContentMode;
@@ -413,12 +414,39 @@ public class CampaignFormBuilder {
 		case NUMBER:
 		case DECIMAL:
 		case RANGE:
+if(value != null) {
+				
+				if(value.equals(true)) {
+					field.setEnabled(true);
+				} else if(value.equals(false)){
+					field.setEnabled(false);
+					//Notification.show("Warning:", "Expression resulted in wrong value please check your data 3", Notification.TYPE_WARNING_MESSAGE);
+				}
+			};
 			((TextField) field).setValue(value != null ? value.toString() : null);
 			break;
 		case TEXTBOX:
+if(value != null) {
+				
+				if(value.equals(true)) {
+					field.setEnabled(true);
+				} else if(value.equals(false)){
+					field.setEnabled(false);
+					//Notification.show("Warning:", "Expression resulted in wrong value please check your data 1", Notification.TYPE_WARNING_MESSAGE);
+				}
+			};
 			((TextArea) field).setValue(value != null ? value.toString() : null);
 			break;
 		case DATE:
+if(value != null) {
+				
+				if(value.equals(true)) {
+					field.setEnabled(true);
+				} else if(value.equals(false)){
+					field.setEnabled(false);
+					//Notification.show("Warning:", "Expression resulted in wrong value please check your data 2", Notification.TYPE_WARNING_MESSAGE);
+				}
+			};
 			// ((TextArea) field).setValue(value != null ? value.toString() : null);
 			break;
 		case RADIO:
@@ -434,25 +462,39 @@ public class CampaignFormBuilder {
 				for (int i = 0; i < strArray.length; i++) {
 					((OptionGroup) field).select(strArray[i]);
 				}
-			}
+			};
 			break;
 		case CHECKBOXBASIC:
+			
 			if (value != null) {
 				String dcxs = value.toString().replace("[", "").replace("]", "").replaceAll(", ", ",");
 				String strArraxy[] = dcxs.split(",");
 				for (int i = 0; i < strArraxy.length; i++) {
 					((OptionGroup) field).select(strArraxy[i]);
 				}
-			}
+			};
 			break;
 		case DROPDOWN:
+			
+			if(value != null) {
+				
+				
+				
+				if(value.equals(true)) {
+					field.setEnabled(true);
+				} else if(value.equals(false)){
+					field.setEnabled(false);
+				//	Notification.show("Warning:", "Expression resulted in wrong value please check your data 4", Notification.TYPE_WARNING_MESSAGE);
+				}
+			};
 			if (value != null) {
 				String dcxsq = value.toString().replace("[", "").replace("]", "").replaceAll(", ", ",");
 				String strArraxyq[] = dcxsq.split(",");
 				for (int i = 0; i < strArraxyq.length; i++) {
 					((ComboBox) field).select(strArraxyq[i]);
 				}
-			}
+			};
+			
 
 			break;
 		default:
