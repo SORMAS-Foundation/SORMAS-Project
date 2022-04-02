@@ -306,7 +306,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		if (filter != null) {
 			cq.where(filter);
 		}else {
-			System.out.println("DEBUGGER ASDHFUASDFHAS: Filter is null");
+			System.out.println("DEBUGGER ASDHFUASDFHAS: Filter is null"); 
 		}
 
 		if (sortProperties != null && sortProperties.size() > 0) {
@@ -535,6 +535,7 @@ System.out.println("ddddddddddddddddddddddddddddd===============================
 		final RegionReferenceDto region = campaignDiagramCriteria.getRegion();
 		final DistrictReferenceDto district = campaignDiagramCriteria.getDistrict();
 		final CampaignReferenceDto campaign = campaignDiagramCriteria.getCampaign();
+		
 		String formType = campaignDiagramCriteria.getFormType();
 		
 		if ("all phases".equals(formType)) {

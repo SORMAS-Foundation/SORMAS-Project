@@ -225,6 +225,7 @@ public interface Captions {
 	String campaignDashboardChartHeight = "campaignDashboardChartHeight";
 	String campaignDashboardChartWidth = "campaignDashboardChartWidth";
 	String campaignDashboardOrder = "campaignDashboardOrder";
+	String campaignDashboardPhase = "campaignDashboardPhase";
 	String campaignDashboardSubTabName = "campaignDashboardSubTabName";
 	String campaignDashboardTabName = "campaignDashboardTabName";
 	String campaignDiagramGroupBy = "campaignDiagramGroupBy";

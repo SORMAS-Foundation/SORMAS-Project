@@ -76,7 +76,7 @@ public class CampaignFormDataService extends AdoServiceWithUserFilter<CampaignFo
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(campaignJoin.get(Campaign.ARCHIVED), false), cb.isNull(campaignJoin.get(Campaign.ARCHIVED))));
 		}
 		
-		if (criteria.getCampaignFormMeta() != null) {
+		if (criteria.getCampaignFormMeta() != null) { 
 			System.out.println("=======%%%%%%%%%%%%%%%======= "+criteria.getCampaignFormMeta().getUuid());
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(campaignFormJoin.get(CampaignFormMeta.UUID), criteria.getCampaignFormMeta().getUuid()));
 		}
