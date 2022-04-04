@@ -61,6 +61,8 @@ public class CreateNewContactSteps implements En {
           fillDiseaseOfSourceCase(contact.getDiseaseOfSourceCase());
           fillCaseIdInExternalSystem(contact.getCaseIdInExternalSystem());
           selectMultiDayContact();
+          fillDateOfFirstContact(contact.getDateOfFirstContact(), Locale.GERMAN);
+          fillDateOfLastContact(contact.getDateOfLastContact(), Locale.GERMAN);
           fillCaseOrEventInformation(contact.getCaseOrEventInformation());
           selectResponsibleRegion(contact.getResponsibleRegion());
           selectResponsibleDistrict(contact.getResponsibleDistrict());
