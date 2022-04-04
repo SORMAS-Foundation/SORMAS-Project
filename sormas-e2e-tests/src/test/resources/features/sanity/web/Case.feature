@@ -21,7 +21,7 @@ Feature: Case end to end tests
     Then I check the created data is correctly displayed on Edit case page
     And I check the created data is correctly displayed on Edit case person page
 
-  @env_main
+  @env_main @ignore #un-ignore this when dataReceived fields are fixed in test-auto
   Scenario: Edit, save and check all fields of a new case
     Given I log in with National User
     And I click on the Cases button from navbar
