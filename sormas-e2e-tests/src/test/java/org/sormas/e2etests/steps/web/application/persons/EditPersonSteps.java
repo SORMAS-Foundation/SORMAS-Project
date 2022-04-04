@@ -126,6 +126,7 @@ public class EditPersonSteps implements En {
     When(
         "I check that previous edited person is correctly displayed in Edit Person page",
         () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           collectedPerson = collectPersonData();
           ComparisonHelper.compareDifferentFieldsOfEntities(
               previousCreatedPerson,
@@ -178,6 +179,7 @@ public class EditPersonSteps implements En {
           selectAreaType(newGeneratedPerson.getAreaType());
           fillContactPersonFirstName(newGeneratedPerson.getContactPersonFirstName());
           fillContactPersonLastName(newGeneratedPerson.getContactPersonLastName());
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           fillBirthName(newGeneratedPerson.getBirthName());
           fillNamesOfGuardians(newGeneratedPerson.getNameOfGuardians());
         });
