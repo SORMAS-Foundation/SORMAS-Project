@@ -492,9 +492,6 @@ public class ContactFacadeEjb
 				(existingContactDto == null || existingContactDto.getResultingCase() == null) && entity.getResultingCase() != null;
 			final boolean dropped = entity.getContactStatus() == ContactStatus.DROPPED
 				&& (existingContactDto == null || existingContactDto.getContactStatus() != ContactStatus.DROPPED);
-
-			service.udpateContactStatus(entity);
-
 			if (dropped || convertedToCase) {
 				service.cancelFollowUp(
 					entity,
@@ -505,6 +502,7 @@ public class ContactFacadeEjb
 					entity,
 					existingContactDto != null && entity.getFollowUpStatus() != existingContactDto.getFollowUpStatus());
 			}
+			service.udpateContactStatus(entity);
 
 			if (handleCaseChanges && entity.getCaze() != null) {
 				caseFacade.onCaseChanged(caseFacade.toDto(entity.getCaze()), entity.getCaze(), internal);
