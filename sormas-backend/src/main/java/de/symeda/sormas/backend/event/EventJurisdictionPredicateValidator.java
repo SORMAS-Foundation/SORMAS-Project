@@ -22,6 +22,7 @@ import javax.persistence.criteria.Predicate;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 import de.symeda.sormas.utils.EventJoins;
@@ -87,22 +88,22 @@ public class EventJurisdictionPredicateValidator extends PredicateJurisdictionVa
 	@Override
 	protected Predicate whenRegionalLevel() {
 		return user != null
-			? cb.equal(joins.getRegion().get(Region.ID), user.getRegion().getId())
-			: cb.equal(joins.getRegion().get(Region.ID), userPath.get(User.REGION).get(Region.ID));
+			? cb.equal(joins.getLocation().get(Location.REGION).get(Region.ID), user.getRegion().getId())
+			: cb.equal(joins.getLocation().get(Location.REGION).get(Region.ID), userPath.get(User.REGION).get(Region.ID));
 	}
 
 	@Override
 	protected Predicate whenDistrictLevel() {
 		return user != null
-			? cb.equal(joins.getDistrict().get(District.ID), user.getDistrict().getId())
-			: cb.equal(joins.getDistrict().get(District.ID), userPath.get(User.DISTRICT).get(District.ID));
+			? cb.equal(joins.getLocation().get(Location.DISTRICT).get(District.ID), user.getDistrict().getId())
+			: cb.equal(joins.getLocation().get(Location.DISTRICT).get(District.ID), userPath.get(User.DISTRICT).get(District.ID));
 	}
 
 	@Override
 	protected Predicate whenCommunityLevel() {
 		return user != null
-			? cb.equal(joins.getCommunity().get(Community.ID), user.getCommunity().getId())
-			: cb.equal(joins.getCommunity().get(Community.ID), userPath.get(User.COMMUNITY).get(Community.ID));
+			? cb.equal(joins.getLocation().get(Location.COMMUNITY).get(Community.ID), user.getCommunity().getId())
+			: cb.equal(joins.getLocation().get(Location.COMMUNITY).get(Community.ID), userPath.get(User.COMMUNITY).get(Community.ID));
 	}
 
 	@Override
