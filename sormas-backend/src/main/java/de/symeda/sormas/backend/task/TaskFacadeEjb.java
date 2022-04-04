@@ -428,7 +428,7 @@ public class TaskFacadeEjb implements TaskFacade {
 
 		Predicate filter = null;
 		if (taskCriteria == null || !taskCriteria.hasContextCriteria()) {
-			filter = taskService.createUserFilter(cb, cq, task);
+			filter = taskService.createUserFilterForJoin(new TaskQueryContext<>(cb, cq, task));
 		} else {
 			filter = CriteriaBuilderHelper.and(cb, filter, taskService.createAssigneeFilter(cb, joins.getAssignee()));
 		}
@@ -546,7 +546,7 @@ public class TaskFacadeEjb implements TaskFacade {
 
 		Predicate filter = null;
 		if (taskCriteria == null || !taskCriteria.hasContextCriteria()) {
-			filter = taskService.createUserFilter(cb, cq, task);
+			filter = taskService.createUserFilterForJoin(taskQueryContext);
 		} else {
 			filter = CriteriaBuilderHelper.and(cb, filter, taskService.createAssigneeFilter(cb, joins.getAssignee()));
 		}
@@ -710,7 +710,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		//@formatter:on
 		Predicate filter = null;
 		if (criteria == null || !criteria.hasContextCriteria()) {
-			filter = taskService.createUserFilter(cb, cq, task);
+			filter = taskService.createUserFilterForJoin(new TaskQueryContext<>(cb, cq, task));
 		} else {
 			filter = CriteriaBuilderHelper.and(cb, filter, taskService.createAssigneeFilter(cb, joins.getAssignee()));
 		}
