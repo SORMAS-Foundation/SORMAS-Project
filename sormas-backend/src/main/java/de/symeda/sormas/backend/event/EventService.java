@@ -416,8 +416,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			default:
 			}
 
-			Predicate filterResponsible = cb.equal(eventJoins.getReportingUser(), currentUser);
-			filterResponsible = cb.or(filterResponsible, cb.equal(eventJoins.getResponsibleUser(), currentUser));
+			Predicate filterResponsible = cb.equal(eventJoins.getRoot().get(Event.REPORTING_USER), currentUser);
+			filterResponsible = cb.or(filterResponsible, cb.equal(eventJoins.getRoot().get(Event.RESPONSIBLE_USER), currentUser));
 
 			if (eventUserFilterCriteria != null && eventUserFilterCriteria.isIncludeUserCaseAndEventParticipantFilter()) {
 				filter = CriteriaBuilderHelper.or(cb, filter, createCaseAndEventParticipantFilter(cb, cq, eventParticipantJoin));
