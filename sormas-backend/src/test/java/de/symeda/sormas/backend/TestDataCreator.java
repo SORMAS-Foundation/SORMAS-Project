@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import org.jetbrains.annotations.NotNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -594,6 +595,31 @@ public class TestDataCreator {
 		vaccination.setImmunization(immunization);
 		vaccination.setHealthConditions(healthConditions);
 		return vaccination;
+	}
+
+	public VaccinationDto createVaccinationWithDetails(
+		UserReferenceDto reportingUser,
+		ImmunizationReferenceDto immunization,
+		HealthConditionsDto healthConditions,
+		Date vaccinationDate,
+		Vaccine vaccine,
+		VaccineManufacturer vaccineManufacturer,
+		VaccinationInfoSource infoSource,
+		String vaccineInn,
+		String vaccineBatchNumber,
+		String vaccineAtcCode,
+		String vaccineDose) {
+
+		VaccinationDto vaccinationDto =
+			createVaccination(reportingUser, immunization, healthConditions, vaccinationDate, vaccine, vaccineManufacturer);
+
+		vaccinationDto.setVaccinationInfoSource(infoSource);
+		vaccinationDto.setVaccineInn(vaccineInn);
+		vaccinationDto.setVaccineBatchNumber(vaccineBatchNumber);
+		vaccinationDto.setVaccineAtcCode(vaccineAtcCode);
+		vaccinationDto.setVaccineDose(vaccineDose);
+
+		return beanTest.getVaccinationFacade().save(vaccinationDto);
 	}
 
 	public VaccinationDto createVaccination(

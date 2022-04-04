@@ -49,7 +49,6 @@ public class ContactsLineListingSteps implements En {
         "^I create a new Contact with specific data for DE version through Line Listing$",
         () -> {
           contactsLineListing = contactsLineListingService.buildGeneratedLineListingContactsDE();
-          selectDisease(contactsLineListing.getDisease());
           selectRegion(contactsLineListing.getRegion());
           selectDistrict(contactsLineListing.getDistrict());
           fillDateOfReport(contactsLineListing.getDateOfReport(), Locale.GERMAN);
@@ -112,7 +111,6 @@ public class ContactsLineListingSteps implements En {
               contactsLineListing.getFirstName() + " " + contactsLineListing.getLastName();
           webDriverHelpers.fillInWebElement(PERSON_LIKE_SEARCH_INPUT, caseName);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
-          webDriverHelpers.waitUntilNumberOfElementsIsReduceToGiven(CONTACT_GRID_RESULTS_ROWS, 2);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(FIRST_CONTACT_ID_BUTTON);
 
           softly.assertTrue(

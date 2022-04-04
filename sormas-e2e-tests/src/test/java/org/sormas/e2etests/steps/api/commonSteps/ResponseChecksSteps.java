@@ -34,6 +34,9 @@ public class ResponseChecksSteps implements En {
           if (responseBody.isEmpty()) {
             Assert.fail("Response body call is empty!");
           }
+          if (responseBody.equalsIgnoreCase("TRANSACTIONROLLEDBACKEXCEPTION")) {
+            Assert.fail("API call failed due to wrong data used in sent json!");
+          }
           String regexUpdatedResponseBody = responseBody.replaceAll("[^a-zA-Z0-9]", "");
           Assert.assertEquals(
               regexUpdatedResponseBody, expectedBody, "Request response body is not correct");

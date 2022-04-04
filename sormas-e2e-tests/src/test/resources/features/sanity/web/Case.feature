@@ -21,7 +21,7 @@ Feature: Case end to end tests
     Then I check the created data is correctly displayed on Edit case page
     And I check the created data is correctly displayed on Edit case person page
 
-  @env_main
+  @env_main @ignore #un-ignore this when dataReceived fields are fixed in test-auto
   Scenario: Edit, save and check all fields of a new case
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -573,9 +573,7 @@ Feature: Case end to end tests
     And I check if Cause of death is Other cause
     And I check if Date of dead for specified case is correct
 
-
-    #TODO separate into 3 tests - test doesn't reflect test case steps
-  @issue=SORDEV-8048 @env_de @ignore
+  @issue=SORDEV-8048 @env_de
   Scenario: Test Default value for disease if only one is used by the server
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -670,11 +668,15 @@ Feature: Case end to end tests
 
   @issue=SORDEV-5479 @env_main
   Scenario: Test for exporting and importing case contact
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Cases button from navbar
-    And I click on the NEW CASE button
-    When I create a new case with specific data
-    Then I check the created data is correctly displayed on Edit case page
+    And I open the last created Case via API
     When I open the Case Contacts tab
     Then I click on new contact button from Case Contacts tab
     And I create a new basic contact to export from Cases Contacts tab
@@ -687,6 +689,7 @@ Feature: Case end to end tests
     And I click on the "START DATA IMPORT" button from the Import Case Contacts popup
     And I select first existing person from the Case Contact Import popup
     And I confirm the save Case Contact Import popup
+    And I select first existing contact from the Case Contact Import popup
     And I check that an import success notification appears in the Import Case Contact popup
     Then I delete exported file from Case Contact Directory
 
