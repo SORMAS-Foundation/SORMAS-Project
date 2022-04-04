@@ -19,6 +19,7 @@ public class PopulationDataDto extends EntityDto {
 	public static final String REGION = "region";
 	public static final String DISTRICT = "district";
 	public static final String COMMUNITY = "community";
+	public static final String COMMUNITY_EXTID = "CCode";
 	public static final String SEX = "sex";
 	public static final String AGE_GROUP = "ageGroup";
 	public static final String POPULATION = "population";

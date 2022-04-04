@@ -92,10 +92,15 @@ public class PopulationDataImporter extends DataImporter {
 					district = districts.get(0);
 				}
 			}
+			/*
 			if (PopulationDataDto.COMMUNITY.equalsIgnoreCase(entityProperties[i])) {
+				
 				if (DataHelper.isNullOrEmpty(values[i])) {
 					community = null;
 				} else {
+					
+					System.out.println("++++++++++++++++++===============");
+					
 					List<CommunityReferenceDto> communities = FacadeProvider.getCommunityFacade().getByName(values[i], district, false);
 					if (communities.size() != 1) {
 						writeImportError(values, new ImportErrorException(values[i], entityProperties[i]).getMessage());
@@ -103,8 +108,30 @@ public class PopulationDataImporter extends DataImporter {
 					}
 					community = communities.get(0);
 				}
+			}*/
+			
+			//patch to use cluster No for data import
+			if (PopulationDataDto.COMMUNITY_EXTID.equalsIgnoreCase(entityProperties[i])) {
+				
+				
+				if (DataHelper.isNullOrEmpty(values[i])) {
+					community = null;
+				} else {
+					if(isLong(values[i])) {
+					List<CommunityReferenceDto> communities = FacadeProvider.getCommunityFacade().getByExternalId(Long.parseLong(values[i]), false);
+					if (communities.size() != 1) {
+						writeImportError(values, new ImportErrorException(values[i], entityProperties[i]).getMessage());
+						return ImportLineResult.ERROR;
+					}
+					community = communities.get(0);
+				} else {
+					writeImportError(values, new ImportErrorException(values[i], entityProperties[i]).getMessage());
+					return ImportLineResult.ERROR;
+				}
+					}
+				}
 			}
-		}
+		
 
 		// The region and district that will be used to save the population data to the database
 		final RegionReferenceDto finalRegion = region;
@@ -134,7 +161,8 @@ public class PopulationDataImporter extends DataImporter {
 					try {
 						if (PopulationDataDto.REGION.equalsIgnoreCase(cellData.getEntityPropertyPath()[0])
 							|| PopulationDataDto.DISTRICT.equalsIgnoreCase(cellData.getEntityPropertyPath()[0])
-							|| PopulationDataDto.COMMUNITY.equalsIgnoreCase(cellData.getEntityPropertyPath()[0])) {
+							//|| PopulationDataDto.COMMUNITY.equalsIgnoreCase(cellData.getEntityPropertyPath()[0]) //Property type  not allowed
+							|| PopulationDataDto.COMMUNITY_EXTID.equalsIgnoreCase(cellData.getEntityPropertyPath()[0])) {
 							// Ignore the region, district and community columns
 						} else if (RegionDto.GROWTH_RATE.equalsIgnoreCase(cellData.getEntityPropertyPath()[0])) {
 							// Update the growth rate of the region or district
@@ -164,7 +192,6 @@ public class PopulationDataImporter extends DataImporter {
 									populationData -> populationData.getAgeGroup() == newPopulationData.getAgeGroup()
 										&& populationData.getSex() == newPopulationData.getSex())
 								.findFirst();
-
 							// Check whether this population data set already exists in the database; if yes, override it
 							if (existingPopulationData.isPresent()) {
 								existingPopulationData.get().setPopulation(newPopulationData.getPopulation());
@@ -197,6 +224,20 @@ public class PopulationDataImporter extends DataImporter {
 		} else {
 			return ImportLineResult.ERROR;
 		}
+	}
+	
+	
+	
+	private static boolean isLong(String str) {
+		
+	  	try {
+	      	@SuppressWarnings("unused")
+	    	int x = Integer.parseInt(str);
+	      	return true; //String is an Integer
+		} catch (NumberFormatException e) {
+	    	return false; //String is not an Integer
+		}
+	  	
 	}
 
 	/**

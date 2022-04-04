@@ -97,12 +97,11 @@ public abstract class AbstractInfrastructureAdoService<ADO extends Infrastructur
 		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
 		Root<ADO> from = cq.from(getElementClass());
 
-		Predicate filter = CriteriaBuilderHelper.ilikePrecise(cb, from.get(columnName), externalId.toString());
-		if (!includeArchived) {
-			filter = cb.and(filter, createBasicFilter(cb, from));
-		}
-
-		cq.where(filter);
+	//	Predicate filter;// = new Predicate;  //CriteriaBuilderHelper.ilikePrecise(cb, from.get(columnName), externalId.toString());
+	//	if (!includeArchived) {
+	//		filter = cb.and(filter, createBasicFilter(cb, from));
+	//	}
+		cq.where(cb.equal(from.get("externalID"), externalId));
 
 		return em.createQuery(cq).getResultList();
 
