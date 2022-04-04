@@ -128,8 +128,10 @@ public class EditCasePersonSteps implements En {
 
     When(
         "I set Present condition of Person to ([^\"]*) in Case Person tab",
-        (String condition) ->
-            webDriverHelpers.selectFromCombobox(PRESENT_CONDITION_COMBOBOX, condition));
+        (String condition) -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(PRESENT_CONDITION_COMBOBOX);
+          webDriverHelpers.selectFromCombobox(PRESENT_CONDITION_COMBOBOX, condition);
+        });
 
     When(
         "I check if death data fields are available in Case Person tab",
