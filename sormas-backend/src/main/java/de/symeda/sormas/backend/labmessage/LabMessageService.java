@@ -4,6 +4,7 @@ import java.util.Calendar;
 import java.util.Collections;
 import java.util.List;
 
+import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
@@ -21,8 +22,8 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractDeletableAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.sample.Sample;
@@ -32,8 +33,19 @@ import de.symeda.sormas.backend.user.User;
 @LocalBean
 public class LabMessageService extends AbstractDeletableAdoService<LabMessage> {
 
+	@EJB
+	private TestReportService testReportService;
+
 	public LabMessageService() {
 		super(LabMessage.class);
+	}
+
+	@Override
+	public void deletePermanent(LabMessage labMessage) {
+
+		testReportService.getByLabMessage(labMessage).forEach(t -> testReportService.deletePermanent(t));
+
+		super.deletePermanent(labMessage);
 	}
 
 	/**
