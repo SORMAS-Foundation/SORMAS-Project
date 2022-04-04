@@ -51,8 +51,8 @@ public class ContactsLineListingSteps implements En {
           contactsLineListing = contactsLineListingService.buildGeneratedLineListingContactsDE();
           selectRegion(contactsLineListing.getRegion());
           selectDistrict(contactsLineListing.getDistrict());
-          fillDateOfReport(contactsLineListing.getDateOfReport(), Locale.GERMAN);
-          fillDateOfLastContact(contactsLineListing.getDateOfLastContact(), Locale.GERMAN);
+          fillDateOfReport(contactsLineListing.getDateOfReport(), Locale.US);
+          fillDateOfLastContact(contactsLineListing.getDateOfLastContact(), Locale.US);
           selectTypeOfContact(contactsLineListing.getTypeOfContact());
           selectRelationshipWithCase(contactsLineListing.getRelationshipWithCase());
           fillFirstName(contactsLineListing.getFirstName());

@@ -34,7 +34,7 @@ public class CaseLineListingSteps implements En {
           selectDistrict(caze.getDistrict());
           selectFacilityCategory(caze.getFacilityCategory());
           selectFacilityType(caze.getFacilityType());
-          fillDateOfReport(caze.getDateOfReport(), Locale.GERMAN);
+          fillDateOfReport(caze.getDateOfReport(), Locale.US);
           selectCommunity(caze.getCommunity());
           selectFacility("Andere Einrichtung");
           fillFacilityName(caze.getPlaceDescription());
@@ -42,7 +42,7 @@ public class CaseLineListingSteps implements En {
           fillLastName(caze.getLastName());
           fillDateOfBirth(caze.getDateOfBirth(), Locale.GERMAN);
           selectSex(caze.getSex());
-          fillDateOfSymptom(caze.getDateOfSymptomOnset(), Locale.GERMAN);
+          fillDateOfSymptom(caze.getDateOfSymptomOnset(), Locale.US);
         });
 
     When(
