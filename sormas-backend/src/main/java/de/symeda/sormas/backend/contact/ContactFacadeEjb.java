@@ -277,122 +277,6 @@ public class ContactFacadeEjb
 		super(Contact.class, ContactDto.class, service, userService);
 	}
 
-	public static ContactReferenceDto toReferenceDto(Contact source) {
-
-		if (source == null) {
-			return null;
-		}
-
-		return source.toReference();
-	}
-
-	public static ContactDto toContactDto(Contact source) {
-
-		if (source == null) {
-			return null;
-		}
-		ContactDto target = new ContactDto();
-		DtoHelper.fillDto(target, source);
-
-		target.setCaze(CaseFacadeEjb.toReferenceDto(source.getCaze()));
-		target.setDisease(source.getDisease());
-		target.setDiseaseDetails(source.getDiseaseDetails());
-		if (source.getCaze() != null) {
-			target.setDiseaseVariant(source.getCaze().getDiseaseVariant());
-		}
-		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));
-
-		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
-		target.setReportDateTime(source.getReportDateTime());
-
-		target.setMultiDayContact(source.isMultiDayContact());
-		target.setFirstContactDate(source.getFirstContactDate());
-		target.setLastContactDate(source.getLastContactDate());
-		target.setContactIdentificationSource(source.getContactIdentificationSource());
-		target.setContactIdentificationSourceDetails(source.getContactIdentificationSourceDetails());
-		target.setTracingApp(source.getTracingApp());
-		target.setTracingAppDetails(source.getTracingAppDetails());
-		target.setContactProximity(source.getContactProximity());
-		target.setContactClassification(source.getContactClassification());
-		target.setContactStatus(source.getContactStatus());
-		target.setFollowUpStatus(source.getFollowUpStatus());
-		target.setFollowUpComment(source.getFollowUpComment());
-		target.setFollowUpUntil(source.getFollowUpUntil());
-		target.setOverwriteFollowUpUntil(source.isOverwriteFollowUpUntil());
-		target.setContactOfficer(UserFacadeEjb.toReferenceDto(source.getContactOfficer()));
-		target.setDescription(source.getDescription());
-		target.setRelationToCase(source.getRelationToCase());
-		target.setRelationDescription(source.getRelationDescription());
-		target.setResultingCase(CaseFacadeEjb.toReferenceDto(source.getResultingCase()));
-
-		target.setReportLat(source.getReportLat());
-		target.setReportLon(source.getReportLon());
-		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
-		target.setExternalID(source.getExternalID());
-		target.setExternalToken(source.getExternalToken());
-		target.setInternalToken(source.getInternalToken());
-
-		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
-		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
-		target.setCommunity(CommunityFacadeEjb.toReferenceDto(source.getCommunity()));
-
-		target.setHighPriority(source.isHighPriority());
-		target.setImmunosuppressiveTherapyBasicDisease(source.getImmunosuppressiveTherapyBasicDisease());
-		target.setImmunosuppressiveTherapyBasicDiseaseDetails(source.getImmunosuppressiveTherapyBasicDiseaseDetails());
-		target.setCareForPeopleOver60(source.getCareForPeopleOver60());
-
-		target.setQuarantine(source.getQuarantine());
-		target.setQuarantineTypeDetails(source.getquarantineTypeDetails());
-		target.setQuarantineFrom(source.getQuarantineFrom());
-		target.setQuarantineTo(source.getQuarantineTo());
-
-		target.setCaseIdExternalSystem(source.getCaseIdExternalSystem());
-		target.setCaseOrEventInformation(source.getCaseOrEventInformation());
-
-		target.setContactProximityDetails(source.getContactProximityDetails());
-		target.setContactCategory(source.getContactCategory());
-
-		target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());
-		target.setQuarantineOrderedVerbally(source.isQuarantineOrderedVerbally());
-		target.setQuarantineOrderedOfficialDocument(source.isQuarantineOrderedOfficialDocument());
-		target.setQuarantineOrderedVerballyDate(source.getQuarantineOrderedVerballyDate());
-		target.setQuarantineOrderedOfficialDocumentDate(source.getQuarantineOrderedOfficialDocumentDate());
-		target.setQuarantineHomePossible(source.getQuarantineHomePossible());
-		target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
-		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
-		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
-		target.setQuarantineExtended(source.isQuarantineExtended());
-		target.setQuarantineReduced(source.isQuarantineReduced());
-		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
-		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
-		target.setAdditionalDetails(source.getAdditionalDetails());
-
-		target.setEpiData(EpiDataFacadeEjb.toDto(source.getEpiData()));
-		target.setHealthConditions(HealthConditionsMapper.toDto(source.getHealthConditions()));
-		target.setReturningTraveler(source.getReturningTraveler());
-		target.setEndOfQuarantineReason(source.getEndOfQuarantineReason());
-		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());
-
-		target.setProhibitionToWork(source.getProhibitionToWork());
-		target.setProhibitionToWorkFrom(source.getProhibitionToWorkFrom());
-		target.setProhibitionToWorkUntil(source.getProhibitionToWorkUntil());
-
-		target.setReportingDistrict(DistrictFacadeEjb.toReferenceDto(source.getReportingDistrict()));
-
-		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
-		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
-
-		target.setVaccinationStatus(source.getVaccinationStatus());
-		target.setFollowUpStatusChangeDate(source.getFollowUpStatusChangeDate());
-		if (source.getFollowUpStatusChangeUser() != null) {
-			target.setFollowUpStatusChangeUser(source.getFollowUpStatusChangeUser().toReference());
-		}
-		target.setPreviousQuarantineTo(source.getPreviousQuarantineTo());
-		target.setQuarantineChangeComment(source.getQuarantineChangeComment());
-
-		return target;
-	}
-
 	@Override
 	protected void selectDtoFields(CriteriaQuery<ContactDto> cq, Root<Contact> root) {
 
@@ -1713,8 +1597,124 @@ public class ContactFacadeEjb
 		return dto;
 	}
 
+	public static ContactReferenceDto toReferenceDto(Contact source) {
+
+		if (source == null) {
+			return null;
+		}
+
+		return source.toReference();
+	}
+
 	public ContactDto toDto(Contact source) {
 		return toContactDto(source);
+	}
+
+	public static ContactDto toContactDto(Contact source) {
+
+		if (source == null) {
+			return null;
+		}
+		ContactDto target = new ContactDto();
+		DtoHelper.fillDto(target, source);
+
+		target.setCaze(CaseFacadeEjb.toReferenceDto(source.getCaze()));
+		target.setDisease(source.getDisease());
+		target.setDiseaseDetails(source.getDiseaseDetails());
+		if (source.getCaze() != null) {
+			target.setDiseaseVariant(source.getCaze().getDiseaseVariant());
+		}
+		target.setPerson(PersonFacadeEjb.toReferenceDto(source.getPerson()));
+
+		target.setReportingUser(UserFacadeEjb.toReferenceDto(source.getReportingUser()));
+		target.setReportDateTime(source.getReportDateTime());
+
+		target.setMultiDayContact(source.isMultiDayContact());
+		target.setFirstContactDate(source.getFirstContactDate());
+		target.setLastContactDate(source.getLastContactDate());
+		target.setContactIdentificationSource(source.getContactIdentificationSource());
+		target.setContactIdentificationSourceDetails(source.getContactIdentificationSourceDetails());
+		target.setTracingApp(source.getTracingApp());
+		target.setTracingAppDetails(source.getTracingAppDetails());
+		target.setContactProximity(source.getContactProximity());
+		target.setContactClassification(source.getContactClassification());
+		target.setContactStatus(source.getContactStatus());
+		target.setFollowUpStatus(source.getFollowUpStatus());
+		target.setFollowUpComment(source.getFollowUpComment());
+		target.setFollowUpUntil(source.getFollowUpUntil());
+		target.setOverwriteFollowUpUntil(source.isOverwriteFollowUpUntil());
+		target.setContactOfficer(UserFacadeEjb.toReferenceDto(source.getContactOfficer()));
+		target.setDescription(source.getDescription());
+		target.setRelationToCase(source.getRelationToCase());
+		target.setRelationDescription(source.getRelationDescription());
+		target.setResultingCase(CaseFacadeEjb.toReferenceDto(source.getResultingCase()));
+
+		target.setReportLat(source.getReportLat());
+		target.setReportLon(source.getReportLon());
+		target.setReportLatLonAccuracy(source.getReportLatLonAccuracy());
+		target.setExternalID(source.getExternalID());
+		target.setExternalToken(source.getExternalToken());
+		target.setInternalToken(source.getInternalToken());
+
+		target.setRegion(RegionFacadeEjb.toReferenceDto(source.getRegion()));
+		target.setDistrict(DistrictFacadeEjb.toReferenceDto(source.getDistrict()));
+		target.setCommunity(CommunityFacadeEjb.toReferenceDto(source.getCommunity()));
+
+		target.setHighPriority(source.isHighPriority());
+		target.setImmunosuppressiveTherapyBasicDisease(source.getImmunosuppressiveTherapyBasicDisease());
+		target.setImmunosuppressiveTherapyBasicDiseaseDetails(source.getImmunosuppressiveTherapyBasicDiseaseDetails());
+		target.setCareForPeopleOver60(source.getCareForPeopleOver60());
+
+		target.setQuarantine(source.getQuarantine());
+		target.setQuarantineTypeDetails(source.getquarantineTypeDetails());
+		target.setQuarantineFrom(source.getQuarantineFrom());
+		target.setQuarantineTo(source.getQuarantineTo());
+
+		target.setCaseIdExternalSystem(source.getCaseIdExternalSystem());
+		target.setCaseOrEventInformation(source.getCaseOrEventInformation());
+
+		target.setContactProximityDetails(source.getContactProximityDetails());
+		target.setContactCategory(source.getContactCategory());
+
+		target.setQuarantineHelpNeeded(source.getQuarantineHelpNeeded());
+		target.setQuarantineOrderedVerbally(source.isQuarantineOrderedVerbally());
+		target.setQuarantineOrderedOfficialDocument(source.isQuarantineOrderedOfficialDocument());
+		target.setQuarantineOrderedVerballyDate(source.getQuarantineOrderedVerballyDate());
+		target.setQuarantineOrderedOfficialDocumentDate(source.getQuarantineOrderedOfficialDocumentDate());
+		target.setQuarantineHomePossible(source.getQuarantineHomePossible());
+		target.setQuarantineHomePossibleComment(source.getQuarantineHomePossibleComment());
+		target.setQuarantineHomeSupplyEnsured(source.getQuarantineHomeSupplyEnsured());
+		target.setQuarantineHomeSupplyEnsuredComment(source.getQuarantineHomeSupplyEnsuredComment());
+		target.setQuarantineExtended(source.isQuarantineExtended());
+		target.setQuarantineReduced(source.isQuarantineReduced());
+		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
+		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
+		target.setAdditionalDetails(source.getAdditionalDetails());
+
+		target.setEpiData(EpiDataFacadeEjb.toDto(source.getEpiData()));
+		target.setHealthConditions(HealthConditionsMapper.toDto(source.getHealthConditions()));
+		target.setReturningTraveler(source.getReturningTraveler());
+		target.setEndOfQuarantineReason(source.getEndOfQuarantineReason());
+		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());
+
+		target.setProhibitionToWork(source.getProhibitionToWork());
+		target.setProhibitionToWorkFrom(source.getProhibitionToWorkFrom());
+		target.setProhibitionToWorkUntil(source.getProhibitionToWorkUntil());
+
+		target.setReportingDistrict(DistrictFacadeEjb.toReferenceDto(source.getReportingDistrict()));
+
+		target.setSormasToSormasOriginInfo(SormasToSormasOriginInfoFacadeEjb.toDto(source.getSormasToSormasOriginInfo()));
+		target.setOwnershipHandedOver(source.getSormasToSormasShares().stream().anyMatch(ShareInfoHelper::isOwnerShipHandedOver));
+
+		target.setVaccinationStatus(source.getVaccinationStatus());
+		target.setFollowUpStatusChangeDate(source.getFollowUpStatusChangeDate());
+		if (source.getFollowUpStatusChangeUser() != null) {
+			target.setFollowUpStatusChangeUser(source.getFollowUpStatusChangeUser().toReference());
+		}
+		target.setPreviousQuarantineTo(source.getPreviousQuarantineTo());
+		target.setQuarantineChangeComment(source.getQuarantineChangeComment());
+
+		return target;
 	}
 
 	@Override
