@@ -159,7 +159,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		}
 
 		Predicate filter = cb.equal(taskPath.get(Task.CREATOR_USER), currentUser);
-		filter = cb.or(filter, cb.equal(assigneeUser, currentUser));
+		filter = cb.or(filter, cb.equal(taskPath.get(Task.ASSIGNEE_USER), currentUser));
 
 		Predicate caseFilter = caseService.createUserFilter(cb, cq, taskPath.join(Task.CAZE, JoinType.LEFT));
 		if (caseFilter != null) {
