@@ -369,7 +369,7 @@ Feature: Case end to end tests
     And I navigate to case person tab
     And I check if saved Person data is correct
 
-  @issue=SORDEV-7452 @env_main @ignore
+  @issue=SORDEV-7452 @env_main
   Scenario: Bulk mode for linking/adding cases to new Event
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -396,7 +396,7 @@ Feature: Case end to end tests
     And I navigate to the last created Event page via URL
     And I check that number of displayed Event Participants is 1
 
-  @issue=SORDEV-7452 @env_main @ignore
+  @issue=SORDEV-7452 @env_main
   Scenario: Bulk mode for linking/adding case to existing Event
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
