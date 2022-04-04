@@ -58,17 +58,18 @@ public class EventJurisdictionPredicateValidator extends PredicateJurisdictionVa
 
 	@Override
 	protected Predicate isInJurisdictionOrOwned() {
+
 		final Predicate reportedByCurrentUser = cb.and(
-			cb.isNotNull(joins.getReportingUser()),
+			cb.isNotNull(joins.getRoot().get(Event.REPORTING_USER)),
 			user != null
-				? cb.equal(joins.getReportingUser().get(User.ID), user.getId())
-				: cb.equal(joins.getReportingUser().get(User.ID), userPath.get(User.ID)));
+				? cb.equal(joins.getRoot().get(Event.REPORTING_USER).get(User.ID), user.getId())
+				: cb.equal(joins.getRoot().get(Event.REPORTING_USER).get(User.ID), userPath.get(User.ID)));
 
 		final Predicate currentUserResponsible = cb.and(
-			cb.isNotNull(joins.getResponsibleUser()),
+			cb.isNotNull(joins.getRoot().get(Event.RESPONSIBLE_USER)),
 			user != null
-				? cb.equal(joins.getResponsibleUser().get(User.ID), user.getId())
-				: cb.equal(joins.getResponsibleUser().get(User.ID), userPath.get(User.ID)));
+				? cb.equal(joins.getRoot().get(Event.RESPONSIBLE_USER).get(User.ID), user.getId())
+				: cb.equal(joins.getRoot().get(Event.RESPONSIBLE_USER).get(User.ID), userPath.get(User.ID)));
 
 		return cb.or(reportedByCurrentUser, currentUserResponsible, isInJurisdiction());
 	}
