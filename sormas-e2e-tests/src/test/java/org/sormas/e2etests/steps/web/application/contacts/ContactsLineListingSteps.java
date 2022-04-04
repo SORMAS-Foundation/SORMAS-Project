@@ -150,7 +150,7 @@ public class ContactsLineListingSteps implements En {
   }
 
   private void fillDateOfReport(LocalDate dateOfReport, Locale locale) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     if (locale.equals(Locale.GERMAN))
       webDriverHelpers.clearAndFillInWebElement(
           LINE_LISTING_DATE_REPORT_INPUT, formatter.format(dateOfReport));
@@ -160,7 +160,7 @@ public class ContactsLineListingSteps implements En {
   }
 
   private void fillDateOfLastContact(LocalDate dateOfLastContact, Locale locale) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     if (locale.equals(Locale.GERMAN))
       webDriverHelpers.clearAndFillInWebElement(
           LINE_LISTING_DATE_LAST_CONTACT_INPUT, formatter.format(dateOfLastContact));
