@@ -118,6 +118,7 @@ public class EditPersonSteps implements En {
     When(
         "I check that previous created person is correctly displayed in Edit Person page",
         () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           previousCreatedPerson = EditContactPersonSteps.fullyDetailedPerson;
           collectedPerson = collectPersonData();
           ComparisonHelper.compareEqualEntities(previousCreatedPerson, collectedPerson);
@@ -150,6 +151,7 @@ public class EditPersonSteps implements En {
         "While on Person edit page, I will edit all fields with new values",
         () -> {
           newGeneratedPerson = personService.buildGeneratedPerson();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           fillFirstName(newGeneratedPerson.getFirstName());
           fillLastName(newGeneratedPerson.getLastName());
           fillSalutation(newGeneratedPerson.getSalutation());
