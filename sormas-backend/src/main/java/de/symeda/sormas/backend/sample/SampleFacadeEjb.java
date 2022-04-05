@@ -170,7 +170,6 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	public List<String> getAllActiveUuids() {
-
 		User user = userService.getCurrentUser();
 		if (user == null) {
 			return Collections.emptyList();
@@ -186,7 +185,6 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	public List<SampleDto> getAllActiveSamplesAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
-
 		User user = userService.getCurrentUser();
 		if (user == null) {
 			return Collections.emptyList();
@@ -323,7 +321,6 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	public List<String> getDeletedUuidsSince(Date since) {
-
 		User user = userService.getCurrentUser();
 		if (user == null) {
 			return Collections.emptyList();
@@ -338,10 +335,16 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._SAMPLE_CREATE,
+		UserRight._SAMPLE_EDIT })
 	public SampleDto saveSample(@Valid SampleDto dto) {
 		return saveSample(dto, true, true, true);
 	}
 
+	@RolesAllowed({
+		UserRight._SAMPLE_CREATE,
+		UserRight._SAMPLE_EDIT })
 	public SampleDto saveSample(@Valid SampleDto dto, boolean handleChanges, boolean checkChangeDate, boolean internal) {
 
 		Sample existingSample = sampleService.getByUuid(dto.getUuid());
@@ -399,22 +402,18 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		return sampleService.findBy(criteria, userService.getCurrentUser(), AbstractDomainObject.CREATION_DATE, false)
 			.stream()
-			.collect(
-				Collectors.toMap(
-					s -> associatedObjectFn.apply(s).getUuid(),
-					s -> s,
-					(s1, s2) -> {
+			.collect(Collectors.toMap(s -> associatedObjectFn.apply(s).getUuid(), s -> s, (s1, s2) -> {
 
-						// keep the positive one
-						if (s1.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
-							return s1;
-						} else if (s2.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
-							return s2;
-						}
+				// keep the positive one
+				if (s1.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
+					return s1;
+				} else if (s2.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
+					return s2;
+				}
 
-						// ordered by creation date by default, so always keep the first one
-						return s1;
-					}))
+				// ordered by creation date by default, so always keep the first one
+				return s1;
+			}))
 			.values()
 			.stream()
 			.map(s -> convertToDto(s, pseudonymizer))
@@ -453,6 +452,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		}
 	}
 
+	@RolesAllowed({
+		UserRight._SAMPLE_EXPORT })
 	private List<SampleExportDto> getExportList(
 		SampleCriteria sampleCriteria,
 		CaseCriteria caseCriteria,
@@ -657,11 +658,15 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._SAMPLE_EXPORT })
 	public List<SampleExportDto> getExportList(SampleCriteria criteria, Collection<String> selectedRows, int first, int max) {
 		return getExportList(criteria, null, selectedRows, first, max);
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._SAMPLE_EXPORT })
 	public List<SampleExportDto> getExportList(CaseCriteria criteria, Collection<String> selectedRows, int first, int max) {
 		return getExportList(null, criteria, selectedRows, first, max);
 	}
@@ -695,7 +700,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-    @RolesAllowed(UserRight._SAMPLE_DELETE)
+	@RolesAllowed(UserRight._SAMPLE_DELETE)
 	public void deleteSample(SampleReferenceDto sampleRef) {
 		Sample sample = sampleService.getByReferenceDto(sampleRef);
 		sampleService.delete(sample);
@@ -704,7 +709,7 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-    @RolesAllowed(UserRight._SAMPLE_DELETE)
+	@RolesAllowed(UserRight._SAMPLE_DELETE)
 	public void deleteAllSamples(List<String> sampleUuids) {
 		long startTime = DateHelper.startTime();
 
@@ -712,7 +717,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		logger.debug("deleteAllSamples(sampleUuids) finished. samplesCount = {}, {}ms", sampleUuids.size(), DateHelper.durationMillies(startTime));
 	}
 
-    @RolesAllowed(UserRight._SAMPLE_DELETE)
+	@RolesAllowed(UserRight._SAMPLE_DELETE)
 	public List<String> deleteSamples(List<String> sampleUuids) {
 		List<String> deletedSampleUuids = new ArrayList<>();
 		List<Sample> samplesToBeDeleted = sampleService.getByUuids(sampleUuids);
@@ -914,8 +919,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		return new SampleReferenceDto(entity.getUuid(), entity.toString());
 	}
 
+    @RolesAllowed(UserRight._SAMPLE_EDIT)
 	private void onSampleChanged(SampleDto existingSample, Sample newSample, boolean syncShares) {
-
 		// Change pathogenTestResultChangeDate if the pathogen test result has changed
 		if (existingSample != null
 			&& existingSample.getPathogenTestResult() != null
@@ -968,6 +973,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		return messageContent;
 	}
 
+    @RolesAllowed(UserRight._SAMPLE_EDIT)
 	private void handleAssotiatedObjectChanges(Sample newSample, boolean syncShares) {
 		if (newSample.getAssociatedCase() != null) {
 			caseFacade.onCaseChanged(caseFacade.toDto(newSample.getAssociatedCase()), newSample.getAssociatedCase(), syncShares);
@@ -1006,6 +1012,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		return sampleService.isSampleEditAllowed(sample);
 	}
 
+    @RolesAllowed(UserRight._SAMPLE_CREATE)
 	public void cloneSampleForCase(Sample sample, Case caze) {
 		SampleDto newSample = SampleDto.build(sample.getReportingUser().toReference(), caze.toReference());
 		DtoHelper.copyDtoValues(newSample, SampleFacadeEjb.toDto(sample), true);

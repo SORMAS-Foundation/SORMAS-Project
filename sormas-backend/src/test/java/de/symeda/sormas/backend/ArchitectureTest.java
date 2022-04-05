@@ -2,6 +2,13 @@ package de.symeda.sormas.backend;
 
 import javax.annotation.security.RolesAllowed;
 
+import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
+import de.symeda.sormas.backend.labmessage.LabMessageFacadeEjb;
+import de.symeda.sormas.backend.labmessage.TestReportFacadeEjb;
+import de.symeda.sormas.backend.sample.SampleFacadeEjb;
+import de.symeda.sormas.backend.task.TaskFacadeEjb;
+import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
+import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 import org.junit.runner.RunWith;
 
 import com.tngtech.archunit.core.domain.JavaClasses;
@@ -87,6 +94,41 @@ public class ArchitectureTest {
 
 	}
 
+	@ArchTest
+	public void testSampleFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(SampleFacadeEjb.class, classes);
+	}
+
+	@ArchTest
+	public void testLabMessageFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(LabMessageFacadeEjb.class, classes);
+	}
+
+	@ArchTest
+	public void testTestReportFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(TestReportFacadeEjb.class, classes);
+	}
+
+	@ArchTest
+	public void testImmunizationFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(ImmunizationFacadeEjb.class, classes);
+	}
+
+	@ArchTest
+	public void testVaccinationFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(VaccinationFacadeEjb.class, classes);
+	}
+
+	@ArchTest
+	public void testTravelEntryFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(TravelEntryFacadeEjb.class, classes);
+	}
+
+	@ArchTest
+	public void testTaskFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(TaskFacadeEjb.class, classes);
+	}
+
 	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, JavaClasses classes) {
 		assertFacadeEjbAnnotated(facadeEjbClass, false, classes);
 	}
@@ -102,8 +144,18 @@ public class ArchitectureTest {
 			methods.should()
 				.beAnnotatedWith(RolesAllowed.class)
 				.orShould()
-				.haveNameMatching("^(get|count|is|does|has|validate|to|pseudonymize|convertToReferenceDto|fillOrBuild|convertToDto|fromDto).*")
+				.haveNameMatching(
+					"^(get|count|is|does|has|validate|to|pseudonymize|convertToReferenceDto|fillOrBuild|convertToDto|fromDto|exists"
+						+ getAdditionalNameMatchingStringForFacade(facadeEjbClass) + ").*")
 				.check(classes);
 		}
+	}
+
+	private String getAdditionalNameMatchingStringForFacade(Class<?> facadeEjbClass) {
+        String additionalNameMatchingString = "";
+        if (facadeEjbClass.getSimpleName().equals("LabMessageFacadeEjb")) {
+            additionalNameMatchingString = "|save|delete|bulk";
+        }
+		return additionalNameMatchingString;
 	}
 }

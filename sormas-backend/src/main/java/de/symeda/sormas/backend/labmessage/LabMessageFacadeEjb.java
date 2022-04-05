@@ -378,6 +378,8 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		}
 	}
 
+
+    @RolesAllowed(UserRight._SYSTEM)
 	protected LabMessageFetchResult fetchAndSaveExternalLabMessages(SystemEventDto currentSync, Date since) throws NamingException {
 		if (since == null) {
 			since = syncFacadeEjb.findLastSyncDateFor(SystemEventType.FETCH_LAB_MESSAGES);
@@ -394,6 +396,8 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		}
 	}
 
+
+   @RolesAllowed(UserRight._SYSTEM)
 	protected ExternalMessageResult<List<LabMessageDto>> fetchExternalMessages(Date since) throws NamingException {
 		ExternalLabResultsFacade labResultsFacade = getExternalLabResultsFacade();
 		return labResultsFacade.getExternalLabMessages(since);
