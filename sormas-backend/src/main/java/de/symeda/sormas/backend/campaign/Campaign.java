@@ -37,6 +37,7 @@ public class Campaign extends CoreAdo {
 	public static final String NAME = "name";
 	public static final String ROUND = "round";
 	public static final String DESCRIPTION = "description";
+	public static final String CAMPAIGN_YEAR = "campaignYear";
 	public static final String START_DATE = "startDate";
 	public static final String END_DATE = "endDate";
 	public static final String CREATING_USER = "creatingUser";
@@ -47,6 +48,7 @@ public class Campaign extends CoreAdo {
 	private String name;
 	private String round;
 	private String description;
+	private String campaignYear;
 	private Date startDate;
 	private Date endDate;
 	private User creatingUser;
@@ -63,7 +65,15 @@ public class Campaign extends CoreAdo {
 		this.name = name;
 	}
 	
-	
+	@Column(length = 100)
+	public String getCampaignYear() {
+		return campaignYear;
+	}
+
+	public void setCampaignYear(String campaignYear) {
+		this.campaignYear = campaignYear;
+	}
+
 	@Column(length = 255)
 	public String getRound() {
 		return round;

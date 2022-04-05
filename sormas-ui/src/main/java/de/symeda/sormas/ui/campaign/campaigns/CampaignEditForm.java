@@ -19,11 +19,16 @@ import static de.symeda.sormas.ui.utils.CssStyles.H3;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.text.NumberFormat;
+import java.text.SimpleDateFormat;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Locale;
 import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.user.UserRight;
@@ -44,11 +49,12 @@ import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.util.converter.Converter;
+import com.vaadin.v7.data.util.converter.StringToIntegerConverter;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.OptionGroup;
 import com.vaadin.v7.ui.TextArea;
-import com.vaadin.ui.TextField;
+import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.campaign.CampaignDto;
@@ -63,7 +69,7 @@ import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
 import de.symeda.sormas.ui.utils.FieldHelper;
 
-public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
+public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Create new campaign
 
 	private static final long serialVersionUID = 7762204114905664597L;
 
@@ -84,7 +90,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 	private OptionGroup clusterfieldx;
 
 	private static final String HTML_LAYOUT = loc(CAMPAIGN_BASIC_HEADING_LOC)
-		+ fluidRowLocs(CampaignDto.UUID, CampaignDto.CREATING_USER)
+		+ fluidRowLocs(CampaignDto.UUID, CampaignDto.CREATING_USER, CampaignDto.CAMPAIGN_YEAR)
 		+ fluidRowLocs(CampaignDto.NAME, CampaignDto.ROUND) 
 		+ fluidRowLocs(CampaignDto.START_DATE, CampaignDto.END_DATE)
 		+ fluidRowLocs(CampaignDto.DESCRIPTION)
@@ -130,8 +136,11 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 	protected void addFields() {
 
 		if (isCreateForm == null) {
+			System.out.print("siCreateForm=null");
 			return;
 		}
+		
+		System.out.print("isCreateForm=true");
 
 		Label campaignBasicHeadingLabel = new Label(I18nProperties.getString(Strings.headingCampaignBasics));
 		campaignBasicHeadingLabel.addStyleName(H3);
@@ -142,8 +151,23 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 
 		DateField startDate = addField(CampaignDto.START_DATE, DateField.class);
 		startDate.removeAllValidators();
+		
 		DateField endDate = addField(CampaignDto.END_DATE, DateField.class);
 		endDate.removeAllValidators();
+		
+		//addField(CampaignDto.CAMPAIGN_YEAR);
+		
+		TextField textField = addField(CampaignDto.CAMPAIGN_YEAR);
+		textField.setReadOnly(true);
+		//textField.setEnabled(false);
+		
+		startDate.addValueChangeListener(e -> {
+			textField.setReadOnly(false);
+			textField.setValue(DateGetYear(startDate.getValue())+".");
+			textField.setReadOnly(true);		
+		});
+		
+		
 		startDate.addValidator(
 			new DateComparisonValidator(
 				startDate,
@@ -200,7 +224,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 		setReadOnly(true, CampaignDto.UUID, CampaignDto.CREATING_USER);
 		setVisible(!isCreateForm, CampaignDto.UUID, CampaignDto.CREATING_USER);
 
-		setRequired(true, CampaignDto.UUID, CampaignDto.NAME, CampaignDto.CREATING_USER, CampaignDto.START_DATE, CampaignDto.END_DATE, CampaignDto.ROUND);
+		setRequired(true, CampaignDto.UUID, CampaignDto.NAME, CampaignDto.CREATING_USER, CampaignDto.START_DATE, CampaignDto.END_DATE, CampaignDto.ROUND, CampaignDto.CAMPAIGN_YEAR);
 
 		FieldHelper.addSoftRequiredStyle(description);
 		final HorizontalLayout usageLayout = new HorizontalLayout();
@@ -513,4 +537,13 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Pre-
 	protected String createHtmlLayout() {
 		return HTML_LAYOUT;
 	}
+	
+	public String DateGetYear(Date dates) {
+	   
+		 SimpleDateFormat getYearFormat = new SimpleDateFormat("yyyy");
+	        String currentYear = getYearFormat.format(dates);
+	        return currentYear;
+	}
+	
+	
 }

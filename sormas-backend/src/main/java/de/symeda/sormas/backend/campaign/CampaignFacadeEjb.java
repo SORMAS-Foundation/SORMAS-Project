@@ -79,7 +79,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		CriteriaQuery<CampaignIndexDto> cq = cb.createQuery(CampaignIndexDto.class);
 		Root<Campaign> campaign = cq.from(Campaign.class);
 
-		cq.multiselect(campaign.get(Campaign.UUID), campaign.get(Campaign.NAME), campaign.get(Campaign.ROUND), campaign.get(Campaign.START_DATE), campaign.get(Campaign.END_DATE));
+		cq.multiselect(campaign.get(Campaign.UUID), campaign.get(Campaign.NAME), campaign.get(Campaign.ROUND), campaign.get(Campaign.CAMPAIGN_YEAR), campaign.get(Campaign.START_DATE), campaign.get(Campaign.END_DATE));
 
 		Predicate filter = campaignService.createUserFilter(cb, cq, campaign);
 
@@ -96,7 +96,8 @@ public class CampaignFacadeEjb implements CampaignFacade {
 				Expression<?> expression;
 				switch (sortProperty.propertyName) {
 				case CampaignIndexDto.UUID:
-				case CampaignIndexDto.ROUND:	
+				case CampaignIndexDto.ROUND:
+				case CampaignIndexDto.CAMPAIGN_YEAR:
 				case CampaignIndexDto.NAME:
 				case CampaignIndexDto.START_DATE:
 				case CampaignIndexDto.END_DATE:
@@ -181,6 +182,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		target.setEndDate(source.getEndDate());
 		target.setName(source.getName());
 		target.setRound(source.getRound());
+		target.setCampaignYear(source.getCampaignYear());
 		target.setStartDate(source.getStartDate());
 		final Set<CampaignFormMetaReferenceDto> campaignFormMetas = source.getCampaignFormMetas();
 		if (!CollectionUtils.isEmpty(campaignFormMetas)) {
@@ -387,6 +389,7 @@ public class CampaignFacadeEjb implements CampaignFacade {
 		target.setEndDate(source.getEndDate());
 		target.setName(source.getName());
 		target.setRound(source.getRound());
+		target.setCampaignYear(source.getCampaignYear());
 		target.setStartDate(source.getStartDate());
 		target.setCampaignFormMetas(
 			source.getCampaignFormMetas().stream().map(campaignFormMeta -> campaignFormMeta.toReference()).collect(Collectors.toSet()));

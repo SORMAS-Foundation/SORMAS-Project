@@ -26,6 +26,7 @@ public class CampaignDto extends EntityDto {
 	public static final String DESCRIPTION = "description";
 	public static final String START_DATE = "startDate";
 	public static final String END_DATE = "endDate";
+	public static final String CAMPAIGN_YEAR = "campaignYear";
 	public static final String CREATING_USER = "creatingUser";
 	public static final String CAMPAIGN_FORM_METAS = "campaignFormMetas";
 	public static final String CAMPAIGN_TYPES = "campaignTypes";
@@ -33,12 +34,13 @@ public class CampaignDto extends EntityDto {
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String name;
 	private String round;
-	private String campaignTypes;
+	//private String campaignTypes;
 	
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_BIG, message = Validations.textTooLong)
 	private String description;
 	private Date startDate;
 	private Date endDate;
+	private String campaignYear;
 	private UserReferenceDto creatingUser;
 	private Set<CampaignFormMetaReferenceDto> campaignFormMetas;
 	
@@ -71,14 +73,14 @@ public class CampaignDto extends EntityDto {
 
 	
 	
-	public String getCampaignTypes() {
+	/*public String getCampaignTypes() {
 		return campaignTypes;
 	}
 
 	public void setCampaignTypes(String campaignTypes) {
 		this.campaignTypes = campaignTypes;
 	}
-
+*/
 	public String getDescription() {
 		return description;
 	}
@@ -101,6 +103,14 @@ public class CampaignDto extends EntityDto {
 
 	public void setEndDate(Date endDate) {
 		this.endDate = endDate;
+	}
+
+	public String getCampaignYear() {
+		return campaignYear;
+	}
+
+	public void setCampaignYear(String campaignYear) {
+		this.campaignYear = campaignYear;
 	}
 
 	public UserReferenceDto getCreatingUser() {

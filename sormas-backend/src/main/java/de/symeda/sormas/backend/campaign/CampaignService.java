@@ -63,7 +63,8 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 
 				Predicate likeFilters = cb.or(
 						CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Campaign.NAME), textFilter),
-						CriteriaBuilderHelper.ilike(cb, from.get(Campaign.UUID), textFilter));
+						CriteriaBuilderHelper.ilike(cb, from.get(Campaign.UUID), textFilter),
+				CriteriaBuilderHelper.unaccentedIlike(cb, from.get(Campaign.CAMPAIGN_YEAR), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}

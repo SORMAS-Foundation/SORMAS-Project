@@ -17,12 +17,8 @@ $v-grid-cell-focused-border: none !default;
 	}
 	
 	.v-grid-rowx .v-grid-row:hover{
-		cursor: -webkit-grab !important;
-		background-color: green !important;
-		cursor: grab !important;
+		cursor: default !important;
 		text-decoration: none !important;
-		
-
 	}
 	
   .v-grid,

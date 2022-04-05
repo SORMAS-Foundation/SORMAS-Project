@@ -79,11 +79,12 @@ public class CampaignGrid extends FilteredGrid<CampaignIndexDto, CampaignCriteri
 			addItemClickListener(new ShowDetailsListener<>(CampaignIndexDto.NAME, e -> ControllerProvider.getCampaignController().navigateToCampaign(e.getUuid())));
 			addItemClickListener(new ShowDetailsListener<>(CampaignIndexDto.START_DATE, e -> ControllerProvider.getCampaignController().navigateToCampaign(e.getUuid())));
 			addItemClickListener(new ShowDetailsListener<>(CampaignIndexDto.END_DATE, e -> ControllerProvider.getCampaignController().navigateToCampaign(e.getUuid())));
+			addItemClickListener(new ShowDetailsListener<>(CampaignIndexDto.CAMPAIGN_YEAR, e -> ControllerProvider.getCampaignController().navigateToCampaign(e.getUuid())));
 			
 			}
 
 		//setColumns(, CampaignIndexDto.NAME, CampaignIndexDto.START_DATE, CampaignIndexDto.END_DATE);
-		setColumns(CampaignIndexDto.NAME, CampaignIndexDto.START_DATE, CampaignIndexDto.END_DATE);
+		setColumns(CampaignIndexDto.NAME, CampaignIndexDto.START_DATE, CampaignIndexDto.END_DATE, CampaignIndexDto.CAMPAIGN_YEAR);
 		Language userLanguage = I18nProperties.getUserLanguage();
 		((Column<CampaignIndexDto, Date>) getColumn(CampaignIndexDto.START_DATE))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateFormat(userLanguage)));
