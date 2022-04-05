@@ -21,6 +21,7 @@ import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.or;
 import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 
+import de.symeda.sormas.api.utils.fieldaccess.checkers.UserRightFieldAccessChecker;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -45,6 +46,7 @@ import java.util.concurrent.atomic.AtomicLong;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.Nullable;
 import javax.annotation.Resource;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
@@ -69,7 +71,6 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.vaccination.VaccinationService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -330,6 +331,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.vaccination.Vaccination;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
+import de.symeda.sormas.backend.vaccination.VaccinationService;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
@@ -504,7 +506,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			return Collections.emptyList();
 		}
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		Pseudonymizer pseudonymizer = getPseudonymizerForDtoWithClinician("");
 		return service.getAllActiveCasesAfter(date, includeExtendedChangeDateFilters, batchSize, lastSynchronizedUuid)
 			.stream()
 			.map(c -> convertToDto(c, pseudonymizer))
@@ -1022,7 +1024,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 			Map<Long, UserReference> caseUsers = getCaseUsersForExport(resultList, exportConfiguration);
 
-			Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+			Pseudonymizer pseudonymizer = getPseudonymizerForDtoWithClinician(I18nProperties.getCaption(Captions.inaccessibleValue));
 
 			for (CaseExportDto exportDto : resultList) {
 				final boolean inJurisdiction = exportDto.getInJurisdiction();
@@ -1316,7 +1318,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@Override
 	public List<CaseDataDto> getAllCasesOfPerson(String personUuid) {
 
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		Pseudonymizer pseudonymizer = getPseudonymizerForDtoWithClinician("");
 
 		return service.findBy(new CaseCriteria().person(new PersonReferenceDto(personUuid)), false)
 			.stream()
@@ -1374,7 +1376,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	public CaseDataDto getCaseDataByUuid(String uuid) {
-		return convertToDto(service.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
+		return convertToDto(service.getByUuid(uuid), getPseudonymizerForDtoWithClinician(""));
 	}
 
 	private CaseDataDto getCaseDataWithoutPseudonyimization(String uuid) {
@@ -1403,6 +1405,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._CASE_CREATE,
+		UserRight._CASE_EDIT })
 	public CoreAndPersonDto<CaseDataDto> save(@Valid @NotNull CoreAndPersonDto<CaseDataDto> coreAndPersonDto) throws ValidationRuntimeException {
 		CaseDataDto caseDto = coreAndPersonDto.getCoreData();
 		CoreAndPersonDto savedCoreAndPersonDto = new CoreAndPersonDto();
@@ -1539,6 +1544,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 	}
 
+	@RolesAllowed({
+		UserRight._CASE_CREATE,
+		UserRight._CASE_EDIT })
 	public CaseDataDto save(@Valid CaseDataDto dto, boolean handleChanges, boolean checkChangeDate, boolean internal, boolean systemSave)
 		throws ValidationRuntimeException {
 
@@ -1561,7 +1569,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		throws ValidationRuntimeException {
 		SymptomsHelper.updateIsSymptomatic(dto.getSymptoms());
 
-		restorePseudonymizedDto(dto, existingCaseDto, existingCaze, Pseudonymizer.getDefault(userService::hasRight));
+		Pseudonymizer pseudonymizer = getPseudonymizerForDtoWithClinician("");
+
+		restorePseudonymizedDto(dto, existingCaseDto, existingCaze, pseudonymizer);
 
 		validateUserRights(dto, existingCaseDto);
 		validate(dto);
@@ -1577,9 +1587,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		doSave(caze, handleChanges, existingCaseDto, syncShares);
 
-		return convertToDto(caze, Pseudonymizer.getDefault(userService::hasRight));
+		return convertToDto(caze, pseudonymizer);
 	}
 
+	@RolesAllowed(UserRight._CASE_EDIT)
 	public void syncSharesAsync(ShareTreeCriteria criteria) {
 		executorService.schedule(() -> sormasToSormasCaseFacade.syncShares(criteria), 5, TimeUnit.SECONDS);
 	}
@@ -1622,6 +1633,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._CASE_CREATE,
+		UserRight._CASE_EDIT })
 	public void setSampleAssociations(ContactReferenceDto sourceContact, CaseReferenceDto cazeRef) {
 
 		if (sourceContact != null) {
@@ -1634,10 +1648,16 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					sampleFacade.cloneSampleForCase(sample, caze);
 				}
 			});
+
+			// The samples for case are not persisted yet, so use the samples from contact since they are the same
+			caze.setFollowUpUntil(service.computeFollowUpuntilDate(caze, contact.getSamples()));
 		}
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._CASE_CREATE,
+		UserRight._CASE_EDIT })
 	public void setSampleAssociations(EventParticipantReferenceDto sourceEventParticipant, CaseReferenceDto cazeRef) {
 		if (sourceEventParticipant != null) {
 			final EventParticipant eventParticipant = eventParticipantService.getByUuid(sourceEventParticipant.getUuid());
@@ -1653,6 +1673,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._CASE_CREATE,
+		UserRight._CASE_EDIT })
 	public void setSampleAssociationsUnrelatedDisease(EventParticipantReferenceDto sourceEventParticipant, CaseReferenceDto cazeRef) {
 		final EventParticipant eventParticipant = eventParticipantService.getByUuid(sourceEventParticipant.getUuid());
 		final Case caze = service.getByUuid(cazeRef.getUuid());
@@ -1869,6 +1892,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 	}
 
+	@RolesAllowed(UserRight._CASE_EDIT)
 	public void onCaseSampleChanged(Case associatedCase) {
 		// Update case classification if the feature is enabled
 		if (configFacade.isFeatureAutomaticCaseClassification()) {
@@ -1901,6 +1925,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	 * Handles potential changes, processes and backend logic that needs to be done
 	 * after a case has been created/saved
 	 */
+	@RolesAllowed({
+		UserRight._CASE_EDIT,
+		UserRight._CASE_EDIT })
 	public void onCaseChanged(CaseDataDto existingCase, Case newCase) {
 		onCaseChanged(existingCase, newCase, true);
 	}
@@ -2165,6 +2192,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 	}
 
+	@RolesAllowed(UserRight._CASE_EDIT)
 	public void setCaseResponsible(Case caze) {
 		if (featureConfigurationFacade.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.AUTOMATIC_RESPONSIBILITY_ASSIGNMENT)) {
 			District reportingUserDistrict = caze.getReportingUser().getDistrict();
@@ -2206,6 +2234,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	 * @param forceReassignment
 	 *            force reassignment of case tasks.
 	 */
+	@RolesAllowed({
+		UserRight._CASE_CREATE,
+		UserRight._CASE_EDIT })
 	public void reassignTasksOfCase(Case caze, boolean forceReassignment) {
 		// for each task that is related to the case, the task assignee must match the jurisdiction of the case
 		// otherwise we will reassign the task
@@ -2257,7 +2288,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	public String generateEpidNumber(CaseDataDto caze) {
+	public String getGenerateEpidNumber(CaseDataDto caze) {
 		return generateEpidNumber(
 			caze.getEpidNumber(),
 			caze.getUuid(),
@@ -2398,11 +2429,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@Override
 	@RolesAllowed(UserRight._CASE_DELETE)
 	public void delete(String caseUuid) throws ExternalSurveillanceToolException {
-
-		if (!userService.hasRight(UserRight.CASE_DELETE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete cases.");
-		}
-
 		Case caze = service.getByUuid(caseUuid);
 		deleteCase(caze);
 	}
@@ -2562,6 +2588,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._CASE_EDIT,
+		UserRight._CASE_EDIT })
 	public void restorePseudonymizedDto(CaseDataDto dto, CaseDataDto existingCaseDto, Case caze, Pseudonymizer pseudonymizer) {
 		if (existingCaseDto != null) {
 			boolean inJurisdiction = service.inJurisdictionOrOwned(caze);
@@ -3042,6 +3071,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 	}
 
+	@RolesAllowed(UserRight._CASE_EDIT)
 	public void updateInvestigationByTask(Case caze) {
 
 		CaseReferenceDto caseRef = caze.toReference();
@@ -3583,6 +3613,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
+	@RolesAllowed(UserRight._CASE_CREATE)
 	public CaseDataDto cloneCase(CaseDataDto existingCaseDto) {
 
 		CaseDataDto newCase = CaseDataDto.build(existingCaseDto.getPerson(), existingCaseDto.getDisease());
@@ -3764,6 +3795,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._CASE_EDIT,
+		UserRight._CASE_EDIT })
 	public FollowUpPeriodDto calculateFollowUpUntilDate(CaseDataDto caseDto, boolean ignoreOverwrite) {
 		return CaseLogic.calculateFollowUpUntilDate(
 			caseDto,
@@ -3781,6 +3815,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
+	@RolesAllowed(UserRight._CASE_EDIT)
 	public void sendMessage(List<String> caseUuids, String subject, String messageContent, MessageType... messageTypes) {
 		caseUuids.forEach(uuid -> {
 			final Case aCase = service.getByUuid(uuid);
@@ -4008,7 +4043,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 	@Override
 	public List<CaseDataDto> getByExternalId(String externalId) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
+		Pseudonymizer pseudonymizer = getPseudonymizerForDtoWithClinician("");
 		return service.getByExternalId(externalId).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
 	}
 
@@ -4016,6 +4051,27 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@RolesAllowed(UserRight._CASE_EDIT)
 	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		service.updateExternalData(externalData);
+	}
+
+	@RolesAllowed({
+		UserRight._VISIT_CREATE,
+		UserRight._VISIT_EDIT,
+		UserRight._EXTERNAL_VISITS })
+	public void updateSymptomsByVisit(Visit visit) {
+		CaseDataDto cazeDto = CaseFacadeEjbLocal.toCaseDto(visit.getCaze());
+		SymptomsDto caseSymptoms = cazeDto.getSymptoms();
+		SymptomsHelper.updateSymptoms(SymptomsFacadeEjb.toDto(visit.getSymptoms()), caseSymptoms);
+
+		save(cazeDto, true);
+	}
+
+	private Pseudonymizer getPseudonymizerForDtoWithClinician(@Nullable String pseudonymizedValue){
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, pseudonymizedValue);
+
+		UserRightFieldAccessChecker clinicianViewRightChecker = new UserRightFieldAccessChecker(UserRight.CASE_CLINICIAN_VIEW, userService.hasRight(UserRight.CASE_CLINICIAN_VIEW));
+		pseudonymizer.addFieldAccessChecker(clinicianViewRightChecker, clinicianViewRightChecker);
+
+		return pseudonymizer;
 	}
 
 	@LocalBean

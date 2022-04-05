@@ -15,6 +15,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.dashboard.DashboardCaseStatisticDto;
+import de.symeda.sormas.api.dashboard.DashboardContactStatisticDto;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.dashboard.DashboardEventDto;
 import de.symeda.sormas.api.dashboard.SurveillanceDashboardCriteria;
@@ -104,6 +105,12 @@ public class DashboardResource extends EntityDtoResource {
 	@Path("/loadMapEventData")
 	public List<DashboardEventDto> getMapEventData(@RequestBody DashboardCriteria dashboardCriteria) {
 		return FacadeProvider.getDashboardFacade().getNewEvents(dashboardCriteria);
+	}
+
+	@POST
+	@Path("/contacts")
+	public DashboardContactStatisticDto getDashboardContactStatistic(@RequestBody DashboardCriteria dashboardCriteria) {
+		return FacadeProvider.getDashboardFacade().getDashboardContactStatistic(dashboardCriteria);
 	}
 
 }

@@ -71,7 +71,6 @@ import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
@@ -139,8 +138,6 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	private ExposureService exposureService;
 	@EJB
 	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
-	@EJB
-	private VisitFacadeEjb.VisitFacadeEjbLocal visitFacade;
 	@EJB
 	private ExternalJournalService externalJournalService;
 	@EJB
@@ -857,24 +854,17 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				statusChangedBySystem = true;
 			}
 		} else {
-			ContactDto contactDto = contactFacade.toDto(contact);
+			ContactDto contactDto = ContactFacadeEjb.toContactDto(contact);
 			Date currentFollowUpUntil = contact.getFollowUpUntil();
 
-			Date earliestSampleDate = null;
-			for (Sample sample : contact.getSamples()) {
-				if (!sample.isDeleted()
-					&& sample.getPathogenTestResult() == PathogenTestResultType.POSITIVE
-					&& (earliestSampleDate == null || sample.getSampleDateTime().before(earliestSampleDate))) {
-					earliestSampleDate = sample.getSampleDateTime();
-				}
-			}
+			Date earliestSampleDate = sampleService.getEarliestSampleDate(contact.getSamples());
 
 			Date untilDate =
 				ContactLogic
 					.calculateFollowUpUntilDate(
 						contactDto,
 						ContactLogic.getFollowUpStartDate(contact.getLastContactDate(), contact.getReportDateTime(), earliestSampleDate),
-						contact.getVisits().stream().map(visit -> visitFacade.toDto(visit)).collect(Collectors.toList()),
+						contact.getVisits().stream().map(VisitFacadeEjb::toDto).collect(Collectors.toList()),
 						diseaseConfigurationFacade.getFollowUpDuration(contact.getDisease()),
 						false,
 						featureConfigurationFacade
@@ -993,7 +983,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		// National users can access all contacts in the system
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if ((jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
-				|| currentUser.hasUserRole(UserRole.REST_USER)) {
+			|| currentUser.hasUserRole(UserRole.REST_USER)) {
 			if (currentUser.getLimitedDisease() != null) {
 				return cb.equal(contactPath.get(Contact.DISEASE), currentUser.getLimitedDisease());
 			} else {
