@@ -159,7 +159,7 @@ public class CaseLineListingSteps implements En {
   private void fillDateOfReport(LocalDate date, Locale locale) {
     DateTimeFormatter formatter;
     if (locale.equals(Locale.GERMAN))
-      formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy").localizedBy(Locale.GERMANY);
+      formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy").localizedBy(Locale.GERMANY);
     else formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     webDriverHelpers.fillInWebElement(DATE_OF_REPORT, formatter.format(date));
   }
@@ -200,7 +200,7 @@ public class CaseLineListingSteps implements En {
   private void fillDateOfSymptom(LocalDate date, Locale locale) {
     DateTimeFormatter formatter;
     if (locale.equals(Locale.GERMAN))
-      formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy").localizedBy(Locale.GERMANY);
+      formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy").localizedBy(Locale.GERMANY);
     else formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
     webDriverHelpers.fillInWebElement(DATE_OF_SYMPTOM_INPUT, formatter.format(date));
   }

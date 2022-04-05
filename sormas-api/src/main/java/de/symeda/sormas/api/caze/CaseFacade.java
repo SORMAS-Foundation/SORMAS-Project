@@ -153,7 +153,7 @@ public interface CaseFacade extends CoreFacade<CaseDataDto, CaseIndexDto, CaseRe
 
 	boolean doesExternalTokenExist(String externalToken, String caseUuid);
 
-	String generateEpidNumber(CaseDataDto caze);
+	String getGenerateEpidNumber(CaseDataDto caze);
 
 	void mergeCase(String leadUuid, String otherUuid);
 
