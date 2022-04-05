@@ -61,7 +61,8 @@ public class LoginSteps implements En {
           EnvUser user = environmentManager.getUserByRole(locale, UserRoles.NationalUser.getRole());
           webDriverHelpers.accessWebSite(environmentManager.getEnvironmentUrlForMarket(locale));
           webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(LoginPage.USER_NAME_INPUT);
+            webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                    LoginPage.USER_NAME_INPUT, 100);
           log.info("Filling username");
           webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, user.getUsername());
           log.info("Filling password");
@@ -69,8 +70,8 @@ public class LoginSteps implements En {
           log.info("Click on Login button");
           webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
           webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              SurveillanceDashboardPage.LOGOUT_BUTTON);
+            webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+                    SurveillanceDashboardPage.LOGOUT_BUTTON, 100);
         });
 
     Given(
@@ -94,25 +95,6 @@ public class LoginSteps implements En {
         () -> {
           webDriverHelpers.checkWebElementContainsText(
               NavBarPage.CONFIGURATION_BUTTON, "Einstellungen");
-        });
-
-    And(
-        "I log in with National User on performance environment",
-        () -> {
-          EnvUser user = environmentManager.getUserByRole(locale, UserRoles.NationalUser.getRole());
-          webDriverHelpers.accessWebSite(environmentManager.getEnvironmentUrlForMarket(locale));
-          webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              LoginPage.USER_NAME_INPUT, 100);
-          log.info("Filling username");
-          webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, user.getUsername());
-          log.info("Filling password");
-          webDriverHelpers.fillInWebElement(LoginPage.USER_PASSWORD_INPUT, user.getPassword());
-          log.info("Click on Login button");
-          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
-          webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-              SurveillanceDashboardPage.LOGOUT_BUTTON, 100);
         });
   }
 }
