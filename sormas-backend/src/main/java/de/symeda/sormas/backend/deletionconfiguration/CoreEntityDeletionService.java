@@ -62,22 +62,14 @@ public class CoreEntityDeletionService {
 			DeletionConfiguration coreEntityTypeConfig = deletionConfigurationService.getCoreEntityTypeConfig(entityTypeFacadePair.coreEntityType);
 
 			if (coreEntityTypeConfig.getDeletionReference() != null && coreEntityTypeConfig.deletionPeriod != null) {
-				entityTypeFacadePair.entityFacade.executeAutomaticDeletion(coreEntityTypeConfig);
+				entityTypeFacadePair.entityFacade
+					.executeAutomaticDeletion(coreEntityTypeConfig, supportsPermanentDeletion(entityTypeFacadePair.coreEntityType));
 			}
 		});
-	}
 
-	public void executePermanentDeletion() {
-		coreEntityFacades.forEach(entityTypeFacadePair -> {
-			if (entityTypeFacadePair.coreEntityType == CoreEntityType.IMMUNIZATION
-				|| entityTypeFacadePair.coreEntityType == CoreEntityType.TRAVEL_ENTRY
-				|| entityTypeFacadePair.coreEntityType == CoreEntityType.CASE) {
-				entityTypeFacadePair.entityFacade.executePermanentDeletion(DELETE_BATCH_SIZE);
-			}
-		});
+		// TODO figure out what to do with lab messages
 		labMessageService.executePermanentDeletion(DELETE_BATCH_SIZE);
-		sampleService.executePermanentDeletion(DELETE_BATCH_SIZE);
-		personService.executePermanentDeletion(DELETE_BATCH_SIZE);
+		personService.deleteUnreferencedPersons(DELETE_BATCH_SIZE);
 	}
 
 	private static final class EntityTypeFacadePair {
@@ -93,5 +85,11 @@ public class CoreEntityDeletionService {
 		public static EntityTypeFacadePair of(CoreEntityType coreEntityType, AbstractCoreFacadeEjb entityFacade) {
 			return new EntityTypeFacadePair(coreEntityType, entityFacade);
 		}
+	}
+
+	private boolean supportsPermanentDeletion(CoreEntityType coreEntityType) {
+		return coreEntityType == CoreEntityType.IMMUNIZATION
+			|| coreEntityType == CoreEntityType.TRAVEL_ENTRY
+			|| coreEntityType == CoreEntityType.CASE;
 	}
 }

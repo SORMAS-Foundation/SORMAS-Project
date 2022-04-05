@@ -120,14 +120,14 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertEquals(1, getPersonFacade().count(new PersonCriteria()));
 
 		getImmunizationFacade().delete(immunization.getUuid());
-		getCoreEntityDeletionService().executePermanentDeletion();
+		getCoreEntityDeletionService().executeAutomaticDeletion();
 
 		Assert.assertEquals(1, getPersonFacade().count(new PersonCriteria()));
 		Assert.assertTrue(getPersonFacade().exists(person.getUuid()));
 
 		getTravelEntryFacade().delete(travelEntry.getUuid());
 
-		getCoreEntityDeletionService().executePermanentDeletion();
+		getCoreEntityDeletionService().executeAutomaticDeletion();
 
 		Assert.assertEquals(0, getPersonFacade().count(new PersonCriteria()));
 		Assert.assertFalse(getPersonFacade().exists(person.getUuid()));
