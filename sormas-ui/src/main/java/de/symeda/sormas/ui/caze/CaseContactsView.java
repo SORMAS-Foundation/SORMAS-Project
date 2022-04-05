@@ -388,8 +388,10 @@ public class CaseContactsView extends AbstractCaseView {
 			grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
 
 			setSubComponent(gridLayout);
-			gridLayout.setEnabled(
-				!FacadeProvider.getCaseFacade().isCaseEditAllowed(getCaseRef().getUuid()).equals(EditPermissionType.ARCHIVING_STATUS_ONLY));
+
+			if (FacadeProvider.getCaseFacade().isArchived(this.getCaseRef().getUuid())){
+				gridLayout.setEnabled(false);
+			}
 		}
 
 		if (params.startsWith("?")) {

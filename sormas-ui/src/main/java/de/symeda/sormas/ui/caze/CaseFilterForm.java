@@ -5,11 +5,14 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.filterLocsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
+import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import de.symeda.sormas.api.person.PresentCondition;
 import org.apache.commons.collections.CollectionUtils;
 
 import com.vaadin.server.Sizeable;
@@ -602,17 +605,30 @@ public class CaseFilterForm extends AbstractFilterForm<CaseCriteria> {
 			break;
 		}
 		case CaseDataDto.DISEASE: {
-			ComboBox field = getField(CaseDataDto.DISEASE_VARIANT);
+			ComboBox diseaseVariantField = getField(CaseDataDto.DISEASE_VARIANT);
+			ComboBox presentConditionField = getField(PersonDto.PRESENT_CONDITION);
 			Disease disease = (Disease) event.getProperty().getValue();
 			if (disease == null) {
-				FieldHelper.updateItems(field, Collections.emptyList());
-				FieldHelper.setEnabled(false, field);
+				FieldHelper.updateItems(diseaseVariantField, Collections.emptyList());
+				FieldHelper.setEnabled(false, diseaseVariantField);
+				FieldHelper.updateEnumData(presentConditionField, Arrays.asList(PresentCondition.values()));
 			} else {
 				List<DiseaseVariant> diseaseVariants =
 					FacadeProvider.getCustomizableEnumFacade().getEnumValues(CustomizableEnumType.DISEASE_VARIANT, disease);
-				FieldHelper.updateItems(field, diseaseVariants);
-				FieldHelper.setEnabled(CollectionUtils.isNotEmpty(diseaseVariants), field);
+				FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
+				FieldHelper.setEnabled(CollectionUtils.isNotEmpty(diseaseVariants), diseaseVariantField);
+
+				FieldVisibilityCheckers fieldVisibilityCheckers = FieldVisibilityCheckers.withDisease(disease);
+				List<PresentCondition> validValues = Arrays.stream(PresentCondition.values())
+						.filter(c -> fieldVisibilityCheckers.isVisible(PresentCondition.class, c.name()))
+						.collect(Collectors.toList());
+				PresentCondition currentValue = (PresentCondition) presentConditionField.getValue();
+				if (currentValue != null && !validValues.contains(currentValue)) {
+					validValues.add(currentValue);
+				}
+				FieldHelper.updateEnumData(presentConditionField, validValues);
 			}
+
 		}
 		}
 	}

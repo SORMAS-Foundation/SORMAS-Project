@@ -22,6 +22,7 @@ import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 import static java.time.temporal.ChronoUnit.DAYS;
 
 import java.math.BigInteger;
+import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -310,17 +311,24 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed({UserRight._CONTACT_CREATE, UserRight._CONTACT_EDIT})
+	@RolesAllowed({
+		UserRight._CONTACT_CREATE,
+		UserRight._CONTACT_EDIT })
 	public ContactDto save(@Valid @NotNull ContactDto dto) {
 		return save(dto, true, true);
 	}
 
 	@Override
-	@RolesAllowed({UserRight._CONTACT_CREATE, UserRight._CONTACT_EDIT})
+	@RolesAllowed({
+		UserRight._CONTACT_CREATE,
+		UserRight._CONTACT_EDIT })
 	public ContactDto save(@Valid ContactDto dto, boolean handleChanges, boolean handleCaseChanges) {
 		return save(dto, handleChanges, handleCaseChanges, true, true);
 	}
 
+	@RolesAllowed({
+		UserRight._CONTACT_CREATE,
+		UserRight._CONTACT_EDIT })
 	public CoreAndPersonDto<ContactDto> save(@Valid @NotNull CoreAndPersonDto<ContactDto> coreAndPersonDto) throws ValidationRuntimeException {
 		ContactDto contactDto = coreAndPersonDto.getCoreData();
 		CoreAndPersonDto savedCoreAndPersonDto = new CoreAndPersonDto();
@@ -334,6 +342,9 @@ public class ContactFacadeEjb
 		return savedCoreAndPersonDto;
 	}
 
+	@RolesAllowed({
+		UserRight._CONTACT_CREATE,
+		UserRight._CONTACT_EDIT })
 	public ContactDto save(ContactDto dto, boolean handleChanges, boolean handleCaseChanges, boolean checkChangeDate, boolean internal) {
 		final Contact existingContact = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 
@@ -345,6 +356,7 @@ public class ContactFacadeEjb
 
 		restorePseudonymizedDto(dto, existingContactDto, existingContact, Pseudonymizer.getDefault(userService::hasRight));
 
+		validateUserRights(dto, existingContactDto);
 		validate(dto);
 
 		externalJournalService.handleExternalJournalPersonUpdateAsync(dto.getPerson());
@@ -357,7 +369,7 @@ public class ContactFacadeEjb
 		//		}
 
 		Contact entity = fillOrBuildEntity(dto, existingContact, checkChangeDate);
-		doSave(entity, true);
+		service.ensurePersisted(entity);
 
 		if (existingContact == null && featureConfigurationFacade.isTaskGenerationFeatureEnabled(TaskType.CONTACT_INVESTIGATION)) {
 			createInvestigationTask(entity);
@@ -365,6 +377,8 @@ public class ContactFacadeEjb
 		}
 
 		if (handleChanges) {
+			entity.setCompleteness(calculateCompleteness(entity));
+
 			updateContactVisitAssociations(existingContactDto, entity);
 
 			final boolean convertedToCase =
@@ -393,12 +407,18 @@ public class ContactFacadeEjb
 		return toDto(entity);
 	}
 
+	@RolesAllowed({
+		UserRight._CONTACT_EDIT,
+		UserRight._EXTERNAL_VISITS })
 	public void onContactChanged(ContactDto contact, boolean syncShares) {
 		if (syncShares && sormasToSormasFacade.isFeatureConfigured()) {
 			syncSharesAsync(new ShareTreeCriteria(contact.getUuid()));
 		}
 	}
 
+	@RolesAllowed({
+		UserRight._CONTACT_CREATE,
+		UserRight._CONTACT_EDIT })
 	public void onContactChanged(ContactDto existingContact, Contact contact, boolean syncShares) {
 
 		if (existingContact == null) {
@@ -415,6 +435,7 @@ public class ContactFacadeEjb
 		}
 	}
 
+	@RolesAllowed(UserRight._CONTACT_EDIT)
 	public void syncSharesAsync(ShareTreeCriteria criteria) {
 		executorService.schedule(() -> {
 			sormasToSormasContactFacade.syncShares(criteria);
@@ -506,11 +527,6 @@ public class ContactFacadeEjb
 	@Override
 	@RolesAllowed(UserRight._CONTACT_DELETE)
 	public void delete(String contactUuid) {
-
-		if (!userService.hasRight(UserRight.CONTACT_DELETE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete contacts.");
-		}
-
 		Contact contact = service.getByUuid(contactUuid);
 		deleteContact(contact);
 	}
@@ -525,9 +541,6 @@ public class ContactFacadeEjb
 
 	@RolesAllowed(UserRight._CONTACT_DELETE)
 	public List<String> deleteContacts(List<String> contactUuids) {
-		if (!userService.hasRight(UserRight.CONTACT_DELETE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete contacts.");
-		}
 		List<String> deletedContactUuids = new ArrayList<>();
 		List<Contact> contactsToBeDeleted = service.getByUuids(contactUuids);
 		if (contactsToBeDeleted != null) {
@@ -1162,7 +1175,7 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	public FollowUpPeriodDto calculateFollowUpUntilDate(ContactDto contactDto, boolean ignoreOverwrite) {
+	public FollowUpPeriodDto getCalculatedFollowUpUntilDate(ContactDto contactDto, boolean ignoreOverwrite) {
 		return ContactLogic.calculateFollowUpUntilDate(
 			contactDto,
 			ContactLogic.getFollowUpStartDate(contactDto, sampleFacade.getByContactUuids(Collections.singletonList(contactDto.getUuid()))),
@@ -1428,6 +1441,42 @@ public class ContactFacadeEjb
 	}
 
 	@Override
+	public List<String> getArchivedUuidsSince(Date since) {
+		if (userService.getCurrentUser() == null) {
+			return Collections.emptyList();
+		}
+
+		return service.getArchivedUuidsSince(since);
+	}
+
+	@Override
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	@RolesAllowed(UserRight._SYSTEM)
+	public void archiveAllArchivableContacts(int daysAfterContactsGetsArchived) {
+		archiveAllArchivableContacts(daysAfterContactsGetsArchived, LocalDate.now());
+	}
+
+	private void archiveAllArchivableContacts(int daysAfterEventGetsArchived, @NotNull LocalDate referenceDate) {
+		LocalDate notChangedSince = referenceDate.minusDays(daysAfterEventGetsArchived);
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Contact> from = cq.from(Contact.class);
+
+		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
+		cq.where(
+			cb.equal(from.get(Contact.ARCHIVED), false),
+			cb.equal(from.get(Contact.DELETED), false),
+			cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
+		cq.select(from.get(Contact.UUID)).distinct(true);
+		List<String> contactUuids = em.createQuery(cq).getResultList();
+
+		if (!contactUuids.isEmpty()) {
+			archive(contactUuids);
+		}
+	}
+
+	@Override
 	public List<DashboardContactDto> getContactsForDashboard(
 		RegionReferenceDto regionRef,
 		DistrictReferenceDto districtRef,
@@ -1563,6 +1612,10 @@ public class ContactFacadeEjb
 	}
 
 	public ContactDto toDto(Contact source) {
+		return toContactDto(source);
+	}
+
+	public static ContactDto toContactDto(Contact source) {
 
 		if (source == null) {
 			return null;
@@ -1644,7 +1697,7 @@ public class ContactFacadeEjb
 		target.setAdditionalDetails(source.getAdditionalDetails());
 
 		target.setEpiData(EpiDataFacadeEjb.toDto(source.getEpiData()));
-		target.setHealthConditions(healthConditionsMapper.toDto(source.getHealthConditions()));
+		target.setHealthConditions(HealthConditionsMapper.toDto(source.getHealthConditions()));
 		target.setReturningTraveler(source.getReturningTraveler());
 		target.setEndOfQuarantineReason(source.getEndOfQuarantineReason());
 		target.setEndOfQuarantineReasonDetails(source.getEndOfQuarantineReasonDetails());
@@ -1738,6 +1791,19 @@ public class ContactFacadeEjb
 			task.setPriority(TaskPriority.HIGH);
 		}
 		return task;
+	}
+
+	private void validateUserRights(ContactDto contact, ContactDto existingContact) {
+		if (existingContact != null) {
+			if (!DataHelper.isSame(contact.getCaze(), existingContact.getCaze())
+				&& !(userService.hasRight(UserRight.CONTACT_REASSIGN_CASE) || userService.hasRight(UserRight.EXTERNAL_VISITS))) {
+				throw new AccessDeniedException(
+					String.format(
+						I18nProperties.getString(Strings.errorNoRightsForChangingField),
+						I18nProperties.getPrefixCaption(ContactDto.I18N_PREFIX, ContactDto.CAZE)));
+
+			}
+		}
 	}
 
 	@Override
@@ -2092,22 +2158,6 @@ public class ContactFacadeEjb
 		cq.multiselect(listCriteriaBuilder.getMergeContactIndexSelections(root, contactQueryContext));
 	}
 
-	private void doSave(Contact contact, boolean handleChanges) {
-		service.ensurePersisted(contact);
-		if (handleChanges) {
-			onCaseChanged(contact);
-		}
-	}
-
-	/**
-	 * Handles potential changes, processes and backend logic that needs to be done
-	 * after a contact has been created/saved
-	 */
-	public void onCaseChanged(Contact newContact) {
-		// Update completeness value
-		newContact.setCompleteness(calculateCompleteness(newContact));
-	}
-
 	@Override
 	@RolesAllowed(UserRight._CONTACT_EDIT)
 	public void updateCompleteness(String uuid) {
@@ -2123,6 +2173,7 @@ public class ContactFacadeEjb
 	}
 
 	@Override
+	@RolesAllowed(UserRight._CONTACT_EDIT)
 	public int saveBulkContacts(
 		List<String> contactUuidlist,
 		ContactBulkEditData updatedContactBulkEditData,
@@ -2149,6 +2200,11 @@ public class ContactFacadeEjb
 			}
 		}
 		return changedContacts;
+	}
+
+	@Override
+	public long getContactCount(CaseReferenceDto caze) {
+		return service.getContactCount(caze);
 	}
 
 	@Override

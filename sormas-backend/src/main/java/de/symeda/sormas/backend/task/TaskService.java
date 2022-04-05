@@ -143,18 +143,21 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Task> taskPath) {
 
+		User currentUser = getCurrentUser();
+		if (currentUser == null) {
+			return null;
+		}
+
 		Join<Object, User> assigneeUser = taskPath.join(Task.ASSIGNEE_USER, JoinType.LEFT);
 
 		Predicate assigneeFilter = createAssigneeFilter(cb, assigneeUser);
 
-		// National users can access all tasks in the system that are assigned in their jurisdiction
-		User currentUser = getCurrentUser();
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-		if (currentUser == null || (jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))) {
+		if ((jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
+			|| currentUser.hasUserRole(UserRole.REST_USER)) {
 			return assigneeFilter;
 		}
 
-		// whoever created the task or is assigned to it is allowed to access it
 		Predicate filter = cb.equal(taskPath.get(Task.CREATOR_USER), currentUser);
 		filter = cb.or(filter, cb.equal(assigneeUser, currentUser));
 
@@ -325,7 +328,8 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 					cb.selectCase()
 						.when(cb.isNotNull(joins.getContactRegion()), joins.getContactRegion().get(Region.UUID))
 						.otherwise(joins.getEventRegion().get(Region.UUID)));
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(region, taskCriteria.getRegion().getUuid()));
+			String regionUuid = taskCriteria.getRegion().getUuid();
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(region, regionUuid), cb.equal(joins.getCaseResponsibleRegion().get(Region.UUID), regionUuid)));
 		}
 		if (taskCriteria.getDistrict() != null) {
 			Expression<Object> district = cb.selectCase()
@@ -334,7 +338,8 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 					cb.selectCase()
 						.when(cb.isNotNull(joins.getContactDistrict()), joins.getContactDistrict().get(District.UUID))
 						.otherwise(joins.getEventDistrict().get(District.UUID)));
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(district, taskCriteria.getDistrict().getUuid()));
+			String districtUuid = taskCriteria.getDistrict().getUuid();
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(district, districtUuid), cb.equal(joins.getCaseResponsibleDistrict().get(District.UUID), districtUuid)));
 		}
 		if (taskCriteria.getFreeText() != null) {
 			String[] textFilters = taskCriteria.getFreeText().split("\\s+");
@@ -411,16 +416,25 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 				cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.GENERAL),
 				cb.and(
 					cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CASE),
-					cb.and(cb.notEqual(caze.get(Case.ARCHIVED), true), cb.notEqual(caze.get(Case.DELETED), true))),
+					cb.and(
+						cb.or(cb.isNull(caze.get(Case.ARCHIVED)), cb.isFalse(caze.get(Case.ARCHIVED))),
+						cb.or(cb.isNull(caze.get(Case.DELETED)), cb.isFalse(caze.get(Case.DELETED))))),
 				cb.and(
 					cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT),
-					cb.and(cb.notEqual(contactCaze.get(Case.ARCHIVED), true), cb.notEqual(contactCaze.get(Case.DELETED), true))),
+					cb.and(
+						cb.or(cb.isNull(contactCaze.get(Case.ARCHIVED)), cb.isFalse(contactCaze.get(Case.ARCHIVED))),
+						cb.or(cb.isNull(contactCaze.get(Case.DELETED)), cb.isFalse(contactCaze.get(Case.DELETED))))),
 				cb.and(
 					cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT),
-					cb.and(cb.notEqual(event.get(Event.ARCHIVED), true), cb.notEqual(event.get(Event.DELETED), true))),
+					cb.and(
+						cb.or(cb.isNull(event.get(Event.ARCHIVED)), cb.isFalse(event.get(Event.ARCHIVED))),
+						cb.or(cb.isNull(event.get(Event.DELETED)), cb.isFalse(event.get(Event.DELETED))))),
+
 				cb.and(
 					cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.TRAVEL_ENTRY),
-					cb.and(cb.notEqual(travelEntry.get(TravelEntry.ARCHIVED), true), cb.notEqual(travelEntry.get(TravelEntry.DELETED), true)))));
+					cb.and(
+						cb.or(cb.isNull(travelEntry.get(TravelEntry.ARCHIVED)), cb.isFalse(travelEntry.get(TravelEntry.ARCHIVED))),
+						cb.or(cb.isNull(travelEntry.get(TravelEntry.DELETED)), cb.isFalse(travelEntry.get(TravelEntry.DELETED)))))));
 	}
 
 	public Task buildTask(User creatorUser) {

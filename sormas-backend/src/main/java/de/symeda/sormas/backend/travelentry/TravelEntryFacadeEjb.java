@@ -1,11 +1,17 @@
 package de.symeda.sormas.backend.travelentry;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.List;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
@@ -177,6 +183,33 @@ public class TravelEntryFacadeEjb
 		List<TravelEntryIndexDto> travelEntryIndexList = service.getIndexList(criteria, offset, size, sortProperties);
 		long totalElementCount = count(criteria);
 		return new Page<>(travelEntryIndexList, offset, size, totalElementCount);
+	}
+
+	@Override
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	@RolesAllowed(UserRight._SYSTEM)
+	public void archiveAllArchivableTravelEntries(int daysAfterTravelEntryGetsArchived) {
+		archiveAllArchivableTravelEntry(daysAfterTravelEntryGetsArchived, LocalDate.now());
+	}
+
+	private void archiveAllArchivableTravelEntry(int daysAfterTravelEntryGetsArchived, @NotNull LocalDate referenceDate) {
+		LocalDate notChangedSince = referenceDate.minusDays(daysAfterTravelEntryGetsArchived);
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<TravelEntry> from = cq.from(TravelEntry.class);
+
+		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
+		cq.where(
+			cb.equal(from.get(TravelEntry.ARCHIVED), false),
+			cb.equal(from.get(TravelEntry.DELETED), false),
+			cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
+		cq.select(from.get(TravelEntry.UUID)).distinct(true);
+		List<String> travelEntryUuids = em.createQuery(cq).getResultList();
+
+		if (!travelEntryUuids.isEmpty()) {
+			archive(travelEntryUuids);
+		}
 	}
 
 	@Override

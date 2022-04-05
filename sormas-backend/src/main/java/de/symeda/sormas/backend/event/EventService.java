@@ -40,11 +40,11 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 
-import de.symeda.sormas.api.EditPermissionType;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventCriteriaDateType;
@@ -53,6 +53,7 @@ import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
@@ -293,7 +294,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		cq.where(filter);
 		cq.select(event.get(Event.UUID));
 
-		return em.createQuery(cq).getResultList();
+		List<String> resultList = em.createQuery(cq).getResultList();
+		return resultList;
 	}
 
 	public List<String> getDeletedUuidsSince(Date since) {
@@ -352,7 +354,10 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		final From<?, EventParticipant> eventParticipantPath,
 		final EventUserFilterCriteria eventUserFilterCriteria) {
 
-		final User currentUser = getCurrentUser();
+		User currentUser = getCurrentUser();
+		if (currentUser == null) {
+			return null;
+		}
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		Predicate filter = null;
 
@@ -371,7 +376,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			eventParticipantJoin = eventParticipantPath;
 		}
 
-		if (jurisdictionLevel != JurisdictionLevel.NATION) {
+		if (jurisdictionLevel != JurisdictionLevel.NATION && !currentUser.hasUserRole(UserRole.REST_USER)) {
 			switch (jurisdictionLevel) {
 			case REGION:
 				if (currentUser.getRegion() != null) {
@@ -493,9 +498,18 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 	@Override
 	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, From<?, Event> eventFrom, boolean includeExtendedChangeDateFilters) {
-		return super.addChangeDates(builder, eventFrom, includeExtendedChangeDateFilters).add(eventFrom, Event.EVENT_LOCATION)
+		Join<Event, Action> eventActionJoin = eventFrom.join(Event.ACTIONS, JoinType.LEFT);
+		Join<Event, EventParticipant> eventParticipantJoin = eventFrom.join(Event.EVENT_PERSONS, JoinType.LEFT);
+		Join<EventParticipant, Sample> eventParticipantSampleJoin = eventParticipantJoin.join(EventParticipant.SAMPLES, JoinType.LEFT);
+
+		builder = super.addChangeDates(builder, eventFrom, includeExtendedChangeDateFilters).add(eventFrom, Event.EVENT_LOCATION)
 			.add(eventFrom, Event.SORMAS_TO_SORMAS_ORIGIN_INFO)
-			.add(eventFrom, Event.SORMAS_TO_SORMAS_SHARES);
+			.add(eventFrom, Event.SORMAS_TO_SORMAS_SHARES)
+			.add(eventActionJoin)
+			.add(eventParticipantJoin)
+			.add(eventParticipantSampleJoin);
+
+		return builder;
 	}
 
 	@Override

@@ -36,6 +36,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -155,6 +156,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	private SormasToSormasFacadeEjbLocal sormasToSormasFacade;
 	@EJB
 	private SormasToSormasEventFacadeEjbLocal sormasToSormasEventFacade;
+	@EJB
+	private EventParticipantService eventParticipantService;
 	@Resource
 	private ManagedScheduledExecutorService executorService;
 
@@ -874,6 +877,27 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Override
+	public void archive(String eventUuid, Date endOfProcessingDate) {
+		super.archive(eventUuid, endOfProcessingDate);
+		List<String> eventParticipantList = eventParticipantService.getAllUuidsByEventUuids(Collections.singletonList(eventUuid));
+		eventParticipantService.archive(eventParticipantList);
+	}
+
+	@Override
+	public void archive(List<String> eventUuids) {
+		super.archive(eventUuids);
+		List<String> eventParticipantList = eventParticipantService.getAllUuidsByEventUuids(eventUuids);
+		eventParticipantService.archive(eventParticipantList);
+	}
+
+	@Override
+	public void dearchive(List<String> eventUuids, String dearchiveReason) {
+		super.dearchive(eventUuids, dearchiveReason);
+		List<String> eventParticipantList = eventParticipantService.getAllUuidsByEventUuids(eventUuids);
+		eventParticipantService.dearchive(eventParticipantList, dearchiveReason);
+	}
+
+	@Override
 	public Set<String> getAllSubordinateEventUuids(String eventUuid) {
 
 		Set<String> uuids = new HashSet<>();
@@ -1174,6 +1198,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	 */
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	@RolesAllowed(UserRight._SYSTEM)
 	public void archiveAllArchivableEvents(int daysAfterEventGetsArchived) {
 
 		archiveAllArchivableEvents(daysAfterEventGetsArchived, LocalDate.now());
@@ -1188,7 +1213,10 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		Root<Event> from = cq.from(Event.class);
 
 		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
-		cq.where(cb.equal(from.get(Event.ARCHIVED), false), cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
+		cq.where(
+			cb.equal(from.get(Event.ARCHIVED), false),
+			cb.equal(from.get(Event.DELETED), false),
+			cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
 		cq.select(from.get(Event.UUID)).distinct(true);
 		List<String> eventUuids = em.createQuery(cq).getResultList();
 

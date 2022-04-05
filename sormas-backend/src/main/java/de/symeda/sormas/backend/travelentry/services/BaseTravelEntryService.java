@@ -52,7 +52,10 @@ public class BaseTravelEntryService extends AbstractCoreAdoService<TravelEntry> 
 	}
 
 	protected Predicate createUserFilter(TravelEntryQueryContext qc) {
-		final User currentUser = userService.getCurrentUser();
+		User currentUser = getCurrentUser();
+		if (currentUser == null) {
+			return null;
+		}
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();
 		Predicate filter = inJurisdictionOrOwned(qc);
 		if (currentUser.getLimitedDisease() != null) {

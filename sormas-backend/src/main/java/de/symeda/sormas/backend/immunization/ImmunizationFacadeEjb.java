@@ -15,6 +15,8 @@
 
 package de.symeda.sormas.backend.immunization;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,11 +28,15 @@ import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.enterprise.concurrent.ManagedScheduledExecutorService;
 import javax.inject.Inject;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.validation.Valid;
@@ -246,6 +252,33 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	@RolesAllowed(UserRight._SYSTEM)
+	public void archiveAllArchivableImmunizations(int daysAfterImmunizationsGetsArchived) {
+		archiveAllArchivableImmunizations(daysAfterImmunizationsGetsArchived, LocalDate.now());
+	}
+
+	private void archiveAllArchivableImmunizations(int daysAfterImmunizationGetsArchived, @NotNull LocalDate referenceDate) {
+		LocalDate notChangedSince = referenceDate.minusDays(daysAfterImmunizationGetsArchived);
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Immunization> from = cq.from(Immunization.class);
+
+		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
+		cq.where(
+			cb.equal(from.get(Immunization.ARCHIVED), false),
+			cb.equal(from.get(Immunization.DELETED), false),
+			cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
+		cq.select(from.get(Immunization.UUID)).distinct(true);
+		List<String> immunizationUuids = em.createQuery(cq).getResultList();
+
+		if (!immunizationUuids.isEmpty()) {
+			archive(immunizationUuids);
+		}
+	}
+
+	@Override
 	public List<String> getDeletedUuidsSince(Date since) {
 
 		if (userService.getCurrentUser() == null) {
@@ -321,7 +354,7 @@ public class ImmunizationFacadeEjb
 			vaccinationFacade.updateVaccinationStatuses(
 				vaccination.getVaccinationDate(),
 				oldVaccinationDate,
-				immunization.getPersonId(),
+				immunization.getPerson().getId(),
 				immunization.getDisease());
 		});
 

@@ -32,8 +32,6 @@ import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
-import org.joda.time.LocalDate;
-
 import com.google.common.collect.Sets;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.shared.ui.ErrorLevel;
@@ -42,7 +40,6 @@ import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
-import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.data.validator.DateRangeValidator;
 import com.vaadin.v7.shared.ui.datefield.Resolution;
@@ -594,7 +591,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					setRequired(true, ContactDto.DISEASE, ContactDto.REGION, ContactDto.DISTRICT);
 				}
 
-				updateLastContactDateValidator();
+				updateDateComparison();
 				updateDiseaseConfiguration(getValue().getDisease());
 				updateFollowUpStatusComponents();
 
@@ -787,25 +784,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		statusField.setReadOnly(true);
 
 		updateFollowUpStatusComponents();
-	}
-
-	protected void updateLastContactDateValidator() {
-
-		Field<?> dateField = getField(ContactDto.LAST_CONTACT_DATE);
-		for (Validator validator : dateField.getValidators()) {
-			if (validator instanceof DateRangeValidator) {
-				dateField.removeValidator(validator);
-			}
-		}
-		if (getValue() != null) {
-			dateField.addValidator(
-				new DateRangeValidator(
-					I18nProperties
-						.getValidationError(Validations.beforeDate, dateField.getCaption(), getField(ContactDto.REPORT_DATE_TIME).getCaption()),
-					null,
-					new LocalDate(getValue().getReportDateTime()).plusDays(1).toDate(),
-					Resolution.SECOND));
-		}
 	}
 
 	private void updateDiseaseConfiguration(Disease disease) {
@@ -1027,11 +1005,11 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		DateComparisonValidator.removeDateComparisonValidators(lastContactDate);
 		DateComparisonValidator.removeDateComparisonValidators(reportDate);
 
-		DateComparisonValidator.addStartEndValidators(firstContactDate, reportDate);
+		DateComparisonValidator.addStartEndValidators(lastContactDate, reportDate);
 
-		if (lastContactDate.isVisible() || multiDayContact.getValue() == Boolean.TRUE) {
+		if (firstContactDate.isVisible() || multiDayContact.getValue() == Boolean.TRUE) {
 			DateComparisonValidator.addStartEndValidators(firstContactDate, lastContactDate);
-			DateComparisonValidator.addStartEndValidators(lastContactDate, reportDate);
+			DateComparisonValidator.addStartEndValidators(firstContactDate, reportDate);
 		}
 	}
 
@@ -1039,7 +1017,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	public void setValue(ContactDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
 
-		FollowUpPeriodDto followUpPeriodDto = FacadeProvider.getContactFacade().calculateFollowUpUntilDate(newFieldValue, true);
+		FollowUpPeriodDto followUpPeriodDto = FacadeProvider.getContactFacade().getCalculatedFollowUpUntilDate(newFieldValue, true);
 		tfExpectedFollowUpUntilDate.setValue(DateHelper.formatLocalDate(followUpPeriodDto.getFollowUpEndDate(), I18nProperties.getUserLanguage()));
 		tfExpectedFollowUpUntilDate.setReadOnly(true);
 		tfExpectedFollowUpUntilDate.setDescription(

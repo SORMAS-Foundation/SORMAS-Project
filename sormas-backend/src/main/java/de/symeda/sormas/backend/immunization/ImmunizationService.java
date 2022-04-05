@@ -37,10 +37,10 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.api.EditPermissionType;
 import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.immunization.ImmunizationListEntryDto;
@@ -168,9 +168,11 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 		Join<Immunization, Vaccination> vaccinations = immunizationFrom.join(Immunization.VACCINATIONS, JoinType.LEFT);
 
-		return super.addChangeDates(builder, immunizationFrom, includeExtendedChangeDateFilters).add(vaccinations)
+		builder = super.addChangeDates(builder, immunizationFrom, includeExtendedChangeDateFilters).add(vaccinations)
 			.add(immunizationFrom, Immunization.SORMAS_TO_SORMAS_ORIGIN_INFO)
 			.add(immunizationFrom, Immunization.SORMAS_TO_SORMAS_SHARES);
+
+		return builder;
 	}
 
 	private Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Immunization> immunization, Timestamp date, String lastSynchronizedUuid) {
@@ -467,7 +469,10 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 	}
 
 	private Predicate createUserFilter(ImmunizationQueryContext<Immunization> qc) {
-		final User currentUser = userService.getCurrentUser();
+		User currentUser = getCurrentUser();
+		if (currentUser == null) {
+			return null;
+		}
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();
 
 		Predicate filter;
