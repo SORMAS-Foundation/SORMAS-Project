@@ -340,23 +340,18 @@ public class CreateNewCaseSteps implements En {
         "^I create a new case with specific data$",
         () -> {
           caze = caseService.buildGeneratedCase();
-          selectCaseOrigin(caze.getCaseOrigin());
-          fillExternalId(caze.getExternalId());
-          fillDisease(caze.getDisease());
-          selectResponsibleRegion(caze.getResponsibleRegion());
-          selectResponsibleDistrict(caze.getResponsibleDistrict());
-          selectResponsibleCommunity(caze.getResponsibleCommunity());
-          selectPlaceOfStay(caze.getPlaceOfStay());
-          fillFirstName(caze.getFirstName());
-          fillLastName(caze.getLastName());
-          fillDateOfBirth(caze.getDateOfBirth(), Locale.ENGLISH);
-          selectSex(caze.getSex());
-          selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
-          fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.ENGLISH);
-          fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
-          fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
-          fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
-          fillPlaceDescription(caze.getPlaceDescription());
+          fillAllCaseFields(caze);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+        });
+
+    When(
+        "I create a new case with disease {string}",
+        (String caseDisease) -> {
+          caze = caseService.buildCaseWithDisease(caseDisease);
+          fillAllCaseFields(caze);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
@@ -572,6 +567,26 @@ public class CreateNewCaseSteps implements En {
 
   private void fillPrimaryEmailAddress(String primaryPhoneNumber) {
     webDriverHelpers.fillInWebElement(PRIMARY_EMAIL_ADDRESS_INPUT, primaryPhoneNumber);
+  }
+
+  private void fillAllCaseFields(Case caze) {
+    selectCaseOrigin(caze.getCaseOrigin());
+    fillExternalId(caze.getExternalId());
+    fillDisease(caze.getDisease());
+    selectResponsibleRegion(caze.getResponsibleRegion());
+    selectResponsibleDistrict(caze.getResponsibleDistrict());
+    selectResponsibleCommunity(caze.getResponsibleCommunity());
+    selectPlaceOfStay(caze.getPlaceOfStay());
+    fillFirstName(caze.getFirstName());
+    fillLastName(caze.getLastName());
+    fillDateOfBirth(caze.getDateOfBirth(), Locale.ENGLISH);
+    selectSex(caze.getSex());
+    selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+    fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.ENGLISH);
+    fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
+    fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
+    fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
+    fillPlaceDescription(caze.getPlaceDescription());
   }
 
   private List<WebElement> getTableRows() {

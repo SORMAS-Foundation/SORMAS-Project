@@ -129,7 +129,6 @@ public class EditCasePersonSteps implements En {
     When(
         "I set Present condition of Person to ([^\"]*) in Case Person tab",
         (String condition) -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEE_CASES_FOR_THIS_PERSON_BUTTON);
           webDriverHelpers.selectFromCombobox(PRESENT_CONDITION_COMBOBOX, condition);
         });
 

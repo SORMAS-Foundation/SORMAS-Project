@@ -258,7 +258,7 @@ Feature: Case end to end tests
     Given I log in with National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
-    When I create a new case with specific data
+    When I create a new case with disease "ANTHRAX"
     Then I check the created data is correctly displayed on Edit case page
     And I check the created data is correctly displayed on Edit case person page
     Then I set Present condition of Person to Dead in Case Person tab
