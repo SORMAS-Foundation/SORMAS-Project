@@ -17,6 +17,7 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.user;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
@@ -154,8 +155,8 @@ public class UserRoleFacadeEjb implements UserRoleFacade {
 		target.setHasOptionalHealthFacility(source.hasOptionalHealthFacility());
 		target.setHasAssociatedOfficer(source.hasAssociatedOfficer());
 		target.setPortHealthUser(source.isPortHealthUser());
-		target.setEmailNotifications(source.getEmailNotifications());
-		target.setSmsNotifications(source.getSmsNotifications());
+		target.setEmailNotifications(new ArrayList<>(source.getEmailNotifications()));
+		target.setSmsNotifications(new ArrayList<>(source.getSmsNotifications()));
 		target.setJurisdictionLevel(source.getJurisdictionLevel());
 
 		return target;
