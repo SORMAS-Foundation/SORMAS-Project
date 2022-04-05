@@ -1,9 +1,9 @@
 @UI @PagesMeasurements @PublishCustomReport
 Feature: Pages loading time
 
-  @env_performance
+  @env_performance @check
   Scenario: Check Tasks page loading time
-    Given I log in with National User
+    Given I log in with National User on performance environment
     And I click on the Tasks button from navbar
     Then I wait for "Tasks" page to load and calculate elapsed time
 
