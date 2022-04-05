@@ -81,6 +81,7 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -108,6 +109,7 @@ import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DataHelper.Pair;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -439,6 +441,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		restorePseudonymizedDto(source, person, existingPerson);
 
+		validateUserRights(source, existingPerson);
 		if (!skipValidation) {
 			validate(source);
 		}
@@ -530,6 +533,18 @@ public class PersonFacadeEjb implements PersonFacade {
 				changedPerson.setApproximateAgeReferenceDate(null);
 			} else {
 				changedPerson.setApproximateAgeReferenceDate(changedPerson.getDeathDate() != null ? changedPerson.getDeathDate() : new Date());
+			}
+		}
+	}
+
+	private void validateUserRights(PersonDto person, PersonDto existingPerson) {
+		if (existingPerson != null) {
+			if (person.getSymptomJournalStatus() != existingPerson.getSymptomJournalStatus()
+				&& !userService.hasRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
+				throw new AccessDeniedException(
+					String.format(
+						I18nProperties.getString(Strings.errorNoRightsForChangingField),
+						I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, Person.SYMPTOM_JOURNAL_STATUS)));
 			}
 		}
 	}

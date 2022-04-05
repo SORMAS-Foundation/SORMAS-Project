@@ -1017,7 +1017,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	public void setValue(ContactDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
 
-		FollowUpPeriodDto followUpPeriodDto = FacadeProvider.getContactFacade().calculateFollowUpUntilDate(newFieldValue, true);
+		FollowUpPeriodDto followUpPeriodDto = FacadeProvider.getContactFacade().getCalculatedFollowUpUntilDate(newFieldValue, true);
 		tfExpectedFollowUpUntilDate.setValue(DateHelper.formatLocalDate(followUpPeriodDto.getFollowUpEndDate(), I18nProperties.getUserLanguage()));
 		tfExpectedFollowUpUntilDate.setReadOnly(true);
 		tfExpectedFollowUpUntilDate.setDescription(

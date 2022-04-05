@@ -8,6 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -63,6 +64,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "ClinicalVisitFacade")
+@RolesAllowed(UserRight._CLINICAL_COURSE_VIEW)
 public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
@@ -217,10 +219,12 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	}
 
 	@Override
+	@RolesAllowed({UserRight._CLINICAL_VISIT_CREATE, UserRight._CLINICAL_VISIT_EDIT})
 	public ClinicalVisitDto saveClinicalVisit(ClinicalVisitDto clinicalVisit, String caseUuid) {
 		return saveClinicalVisit(clinicalVisit, caseUuid, true);
 	}
 
+	@RolesAllowed({UserRight._CLINICAL_VISIT_CREATE, UserRight._CLINICAL_VISIT_EDIT})
 	public ClinicalVisitDto saveClinicalVisit(ClinicalVisitDto clinicalVisit, String caseUuid, boolean handleChanges) {
 		SymptomsHelper.updateIsSymptomatic(clinicalVisit.getSymptoms());
 
@@ -248,6 +252,7 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	 * case symptoms are not updated from this method.
 	 */
 	@Override
+	@RolesAllowed({UserRight._CLINICAL_VISIT_CREATE, UserRight._CLINICAL_VISIT_EDIT})
 	public ClinicalVisitDto saveClinicalVisit(@Valid ClinicalVisitDto clinicalVisit) {
 
 		ClinicalCourse clinicalCourse = clinicalCourseService.getByReferenceDto(clinicalVisit.getClinicalCourse());
@@ -255,12 +260,8 @@ public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 	}
 
 	@Override
+	@RolesAllowed(UserRight._CLINICAL_VISIT_DELETE)
 	public void deleteClinicalVisit(String clinicalVisitUuid) {
-
-		if (!userService.hasRight(UserRight.VISIT_DELETE)) {
-			throw new UnsupportedOperationException("Your user is not allowed to delete clinical visits");
-		}
-
 		ClinicalVisit clinicalVisit = service.getByUuid(clinicalVisitUuid);
 		service.deletePermanent(clinicalVisit);
 	}
