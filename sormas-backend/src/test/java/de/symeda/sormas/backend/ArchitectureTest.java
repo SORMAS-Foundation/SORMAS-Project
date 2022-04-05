@@ -156,6 +156,10 @@ public class ArchitectureTest {
         if (facadeEjbClass.getSimpleName().equals("LabMessageFacadeEjb")) {
             additionalNameMatchingString = "|save|delete|bulk";
         }
+        if (facadeEjbClass.getSimpleName().equals("TestReportFacadeEjb")) {
+            additionalNameMatchingString = "|save";
+        }
+
 		return additionalNameMatchingString;
 	}
 }
