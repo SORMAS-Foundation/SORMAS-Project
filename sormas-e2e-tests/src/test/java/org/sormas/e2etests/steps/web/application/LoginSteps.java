@@ -61,8 +61,8 @@ public class LoginSteps implements En {
           EnvUser user = environmentManager.getUserByRole(locale, UserRoles.NationalUser.getRole());
           webDriverHelpers.accessWebSite(environmentManager.getEnvironmentUrlForMarket(locale));
           webDriverHelpers.waitForPageLoaded();
-            webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-                    LoginPage.USER_NAME_INPUT, 100);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              LoginPage.USER_NAME_INPUT, 100);
           log.info("Filling username");
           webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, user.getUsername());
           log.info("Filling password");
@@ -70,8 +70,8 @@ public class LoginSteps implements En {
           log.info("Click on Login button");
           webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
           webDriverHelpers.waitForPageLoaded();
-            webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
-                    SurveillanceDashboardPage.LOGOUT_BUTTON, 100);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.LOGOUT_BUTTON, 100);
         });
 
     Given(
