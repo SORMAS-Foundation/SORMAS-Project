@@ -483,7 +483,7 @@ Feature: Case end to end tests
     Then I click on the Persons button from navbar
     And I filter Persons by created person name in cases
     And I click on first person in person directory
-    And I set Present condition of Person to Dead in Case Person tab
+    And I set Present condition of Person to Dead in Person tab
     Then I set death date for person 1 month ago
     And I click on save button from Edit Person page
     Then I click on the Cases button from navbar
