@@ -72,6 +72,7 @@ import de.symeda.sormas.api.caze.PreviousCaseDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
+import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
@@ -982,6 +983,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		contactService.getAllByResultingCase(caze).forEach(c -> {
 			c.setResultingCase(null);
+			c.setContactStatus(ContactStatus.DROPPED);
 			externalJournalService.handleExternalJournalPersonUpdateAsync(c.getPerson().toReference());
 			contactService.ensurePersisted(c);
 		});
