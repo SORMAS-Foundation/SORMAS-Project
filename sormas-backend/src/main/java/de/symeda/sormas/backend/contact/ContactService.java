@@ -139,8 +139,6 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	@EJB
 	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
 	@EJB
-	private VisitFacadeEjb.VisitFacadeEjbLocal visitFacade;
-	@EJB
 	private ExternalJournalService externalJournalService;
 	@EJB
 	private UserService userService;
@@ -856,7 +854,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				statusChangedBySystem = true;
 			}
 		} else {
-			ContactDto contactDto = contactFacade.toDto(contact);
+			ContactDto contactDto = ContactFacadeEjb.toContactDto(contact);
 			Date currentFollowUpUntil = contact.getFollowUpUntil();
 
 			Date earliestSampleDate = sampleService.getEarliestSampleDate(contact.getSamples());
@@ -866,7 +864,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					.calculateFollowUpUntilDate(
 						contactDto,
 						ContactLogic.getFollowUpStartDate(contact.getLastContactDate(), contact.getReportDateTime(), earliestSampleDate),
-						contact.getVisits().stream().map(visit -> visitFacade.toDto(visit)).collect(Collectors.toList()),
+						contact.getVisits().stream().map(VisitFacadeEjb::toDto).collect(Collectors.toList()),
 						diseaseConfigurationFacade.getFollowUpDuration(contact.getDisease()),
 						false,
 						featureConfigurationFacade

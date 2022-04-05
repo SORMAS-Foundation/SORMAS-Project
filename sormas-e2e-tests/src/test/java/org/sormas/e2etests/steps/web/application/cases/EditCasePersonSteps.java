@@ -125,6 +125,7 @@ public class EditCasePersonSteps implements En {
               CaseClassification.getUIValueFor(expectedCaseClassification),
               "Case classification value is wrong");
         });
+
     When(
         "I set Present condition of Person to ([^\"]*) in Case Person tab",
         (String condition) -> {

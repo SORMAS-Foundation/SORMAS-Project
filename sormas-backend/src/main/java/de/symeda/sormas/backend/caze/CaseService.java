@@ -72,6 +72,7 @@ import de.symeda.sormas.api.caze.PreviousCaseDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
+import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
@@ -187,8 +188,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	private DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
-	@EJB
-	private VisitFacadeEjb.VisitFacadeEjbLocal visitFacade;
 	@EJB
 	private SormasToSormasShareInfoFacadeEjbLocal sormasToSormasShareInfoFacade;
 	@EJB
@@ -982,6 +981,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		contactService.getAllByResultingCase(caze).forEach(c -> {
 			c.setResultingCase(null);
+			c.setContactStatus(ContactStatus.DROPPED);
 			externalJournalService.handleExternalJournalPersonUpdateAsync(c.getPerson().toReference());
 			contactService.ensurePersisted(c);
 		});
@@ -1354,9 +1354,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		return CaseLogic
 			.calculateFollowUpUntilDate(
-				caseFacade.toDto(caze),
+				CaseFacadeEjb.toCaseDto(caze),
 				CaseLogic.getFollowUpStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate(), earliestSampleDate),
-				caze.getVisits().stream().map(visit -> visitFacade.toDto(visit)).collect(Collectors.toList()),
+				caze.getVisits().stream().map(VisitFacadeEjb::toDto).collect(Collectors.toList()),
 				diseaseConfigurationFacade.getCaseFollowUpDuration(caze.getDisease()),
 				false,
 				featureConfigurationFacade.isPropertyValueTrue(FeatureType.CASE_FOLLOWUP, FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE))
