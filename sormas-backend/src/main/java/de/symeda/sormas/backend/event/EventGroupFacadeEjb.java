@@ -256,12 +256,16 @@ public class EventGroupFacadeEjb implements EventGroupFacade {
 	}
 
 	@Override
-	@RolesAllowed({UserRight._EVENTGROUP_CREATE, UserRight._EVENTGROUP_EDIT})
+	@RolesAllowed({
+		UserRight._EVENTGROUP_CREATE,
+		UserRight._EVENTGROUP_EDIT })
 	public EventGroupDto saveEventGroup(@Valid @NotNull EventGroupDto dto) {
 		return saveEventGroup(dto, true);
 	}
 
-	@RolesAllowed({UserRight._EVENTGROUP_CREATE, UserRight._EVENTGROUP_EDIT})
+	@RolesAllowed({
+		UserRight._EVENTGROUP_CREATE,
+		UserRight._EVENTGROUP_EDIT })
 	public EventGroupDto saveEventGroup(@Valid @NotNull EventGroupDto dto, boolean checkChangeDate) {
 		User currentUser = userService.getCurrentUser();
 		if (!userService.hasRight(UserRight.EVENTGROUP_EDIT)) {

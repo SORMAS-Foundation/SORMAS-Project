@@ -174,18 +174,18 @@ public class ExternalJournalService {
 	}
 
 	public void validateExternalJournalPerson(PersonDto person) {
-//		if (configFacade.getSymptomJournalConfig().isActive()) {
-//			ExternalJournalValidation validationResult = validateSymptomJournalPerson(person);
-//			if (!validationResult.isValid()) {
-//				throw new ValidationRuntimeException(validationResult.getMessage());
-//			}
-//		}
-//		if (configFacade.getPatientDiaryConfig().isActive()) {
-//			ExternalJournalValidation validationResult = validatePatientDiaryPerson(person);
-//			if (!validationResult.isValid()) {
-//				throw new ValidationRuntimeException(validationResult.getMessage());
-//			}
-//		}
+		if (configFacade.getSymptomJournalConfig().isActive()) {
+			ExternalJournalValidation validationResult = validateSymptomJournalPerson(person);
+			if (!validationResult.isValid()) {
+				throw new ValidationRuntimeException(validationResult.getMessage());
+			}
+		}
+		if (configFacade.getPatientDiaryConfig().isActive()) {
+			ExternalJournalValidation validationResult = validatePatientDiaryPerson(person);
+			if (!validationResult.isValid()) {
+				throw new ValidationRuntimeException(validationResult.getMessage());
+			}
+		}
 	}
 
 	public ExternalJournalValidation validateSymptomJournalPerson(PersonDto person) {
@@ -226,10 +226,10 @@ public class ExternalJournalService {
 		EnumSet<PatientDiaryValidationError> validationErrors = contactInfoValidator.validateContactInfo(person);
 
 		if (ObjectUtils.anyNotNull(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY())) {
-//			boolean validBirthdate = ObjectUtils.allNotNull(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY());
-//			if (!validBirthdate) {
-//				validationErrors.add(INVALID_BIRTHDATE);
-//			}
+			boolean validBirthdate = ObjectUtils.allNotNull(person.getBirthdateDD(), person.getBirthdateMM(), person.getBirthdateYYYY());
+			if (!validBirthdate) {
+				validationErrors.add(INVALID_BIRTHDATE);
+			}
 		}
 
 		return new ExternalJournalValidation(validationErrors.isEmpty(), getValidationMessage(validationErrors));
