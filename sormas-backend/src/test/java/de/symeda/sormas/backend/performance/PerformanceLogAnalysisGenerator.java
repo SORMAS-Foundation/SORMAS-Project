@@ -22,10 +22,13 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.Stack;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -48,7 +51,7 @@ public class PerformanceLogAnalysisGenerator {
             "* {font-family: Verdana, Arial, Helvetica, sans-serif;}\n" +
             "a {font-weight: bold; color: #666; text-decoration: none;}\n" +
             "a:hover {color: #ff9900;}\n" +
-            "th {font-weight: bold;}\n" +
+            "th {font-weight: bold; background: #EEF}\n" +
             "th,td {padding: 0 5px 0 5px; vertical-align: top;}\n" +
             "tr:nth-child(odd) {background: #EEE}\n" +
             "tr:nth-child(even) {background: #FFF}\n" +
@@ -68,7 +71,6 @@ public class PerformanceLogAnalysisGenerator {
 	public static final String OUTPUT_DIRECTORY = "target/performance/";
 
 	private Map<String, Stack<String>> callstacks;
-	private Map<String, MethodStats> methodStats;
 
 	// PerformanceLogAnalysisGenerator is a tool to generate an analysis of performance log files.
 	// To analyze a log file, run with argument <path_to_logfile>. If the argument is omitted, an analysis of the example
@@ -102,7 +104,6 @@ public class PerformanceLogAnalysisGenerator {
 	public void analyzePerformanceLog(File logFile) throws IOException {
 
 		callstacks = new HashMap<>();
-		methodStats = new HashMap<>();
 		MethodStats allStats = new MethodStats("all");
 
 		try (BufferedReader reader = new BufferedReader((new FileReader(logFile)))) {
@@ -162,10 +163,48 @@ public class PerformanceLogAnalysisGenerator {
 			csvFileWriter.close();
 
 			FileWriter htmlFileWriter = new FileWriter(new File(OUTPUT_DIRECTORY + logFilebasename + ".html"));
+			htmlFileWriter.append(HTML_HEADER);
 			htmlFileWriter.write("<h2>Performance Log <span style=\"background:#eee;\">&nbsp;" + logFile.toURI() + "&nbsp;</span></h2>\n\n");
-			htmlFileWriter.write(allStats.getSubCallsHtml());
+			htmlFileWriter.write("<h3>Methods started but not finished in this log:</h3>\n\n");
+			htmlFileWriter.write(getUnfinishedMethodsHtml());
+			htmlFileWriter.write("<h3>Time spent per method:</h3>\n\n");
+			htmlFileWriter.write(allStats.getSubCallsTable(true));
+			htmlFileWriter.append(HTML_FOOTER);
 			htmlFileWriter.close();
 		}
+	}
+
+	private String getUnfinishedMethodsHtml() {
+		StringBuilder stringBuilder = new StringBuilder();
+		stringBuilder.append("<table>\n");
+		stringBuilder.append("<tr><th>method</th></tr>\n");
+
+		Set<String> unfinishedMethods = new HashSet<String>();
+		for (Stack<String> stack : callstacks.values()) {
+			while (!stack.isEmpty()) {
+				unfinishedMethods.add(stack.pop());
+			}
+		}
+
+		if (unfinishedMethods.isEmpty()) {
+			stringBuilder.append("<tr><td>-- all methods completed --</td></tr>\n");
+		} else {
+			List<String> unfinishedMethodsSorted = Arrays.asList(unfinishedMethods.toArray(new String[unfinishedMethods.size()]));
+			Collections.sort(unfinishedMethodsSorted);
+
+			for (String unfinishedMethod : unfinishedMethodsSorted) {
+				stringBuilder
+					.append("<tr><td>" + "<a href=\"#" + getId("meth", unfinishedMethod) + "\">" + unfinishedMethod + "</a>" + "</td></tr>\n");
+			}
+		}
+
+		stringBuilder.append("</table>\n\n");
+
+		return stringBuilder.toString();
+	}
+
+	public static String getId(String prefix, String name) {
+		return prefix + "_" + name.replaceAll("[^a-zA-Z]", "_");
 	}
 
 	private class MethodStats implements Comparable<MethodStats> {
@@ -242,14 +281,6 @@ public class PerformanceLogAnalysisGenerator {
 			return method + ";" + calls + ";" + subcalls.size() + ";" + totalTime + ";" + maxTime + ";" + minTime + ";" + meanTime();
 		}
 
-		public String getSubCallsHtml() {
-			StringBuilder stringBuilder = new StringBuilder();
-			stringBuilder.append(HTML_HEADER);
-			stringBuilder.append(getSubCallsTable(true));
-			stringBuilder.append(HTML_FOOTER);
-			return stringBuilder.toString();
-		}
-
 		public String getSubCallsTable(boolean withSubcalls) {
 			if (subcalls.isEmpty()) {
 				return "--";
@@ -317,10 +348,6 @@ public class PerformanceLogAnalysisGenerator {
 
 		private String header(String caption) {
 			return "<th>" + caption + "</th>";
-		}
-
-		private String getId(String prefix, String name) {
-			return prefix + "_" + name.replaceAll("[^a-zA-Z]", "_");
 		}
 
 		@Override
