@@ -2337,6 +2337,7 @@ public interface Captions {
 	String userNewUser = "userNewUser";
 	String userResetPassword = "userResetPassword";
 	String userRight = "userRight";
+	String UserRight_caption = "UserRight.caption";
 	String UserRight_description = "UserRight.description";
 	String UserRight_jurisdiction = "UserRight.jurisdiction";
 	String UserRight_jurisdictionOfRole = "UserRight.jurisdictionOfRole";
