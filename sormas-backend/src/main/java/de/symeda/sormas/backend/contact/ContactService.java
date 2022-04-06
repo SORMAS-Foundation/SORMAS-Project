@@ -1480,19 +1480,13 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	public List<Contact> getByPersonUuids(List<String> personUuids) {
-		if (CollectionUtils.isEmpty(personUuids)) {
-			// Avoid empty IN clause
-			return Collections.emptyList();
-		} else if (personUuids.size() > ModelConstants.PARAMETER_LIMIT) {
-			List<Contact> contacts = new LinkedList<>();
-			IterableHelper.executeBatched(
-				personUuids,
-				ModelConstants.PARAMETER_LIMIT,
-				batchedPersonUuids -> contacts.addAll(getContactsByPersonUuids(batchedPersonUuids)));
-			return contacts;
-		} else {
-			return getContactsByPersonUuids(personUuids);
-		}
+
+		List<Contact> contacts = new LinkedList<>();
+		IterableHelper.executeBatched(
+			personUuids,
+			ModelConstants.PARAMETER_LIMIT,
+			batchedPersonUuids -> contacts.addAll(getContactsByPersonUuids(batchedPersonUuids)));
+		return contacts;
 	}
 
 	private List<Contact> getContactsByPersonUuids(List<String> personUuids) {

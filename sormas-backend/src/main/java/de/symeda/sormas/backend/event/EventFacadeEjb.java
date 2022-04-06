@@ -1265,9 +1265,6 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 	@Override
 	public List<String> getSubordinateEventUuids(List<String> uuids) {
-		if (uuids.isEmpty()) {
-			return Collections.emptyList();
-		}
 
 		List<String> subordinateEventUuids = new ArrayList<>();
 		IterableHelper.executeBatched(uuids, ModelConstants.PARAMETER_LIMIT, (batchedUuids) -> {

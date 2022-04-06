@@ -55,8 +55,6 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 
-import org.apache.commons.collections.CollectionUtils;
-
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -564,17 +562,13 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 		return em.createQuery(cq).getResultList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(List<Long> caseIds) {
-
-		if (CollectionUtils.isEmpty(caseIds)) {
-			// Avoid empty IN clause
-			return new HashMap<>();
-		}
 
 		// Avoid parameter limit by joining caseIds to a String instead of n parameters 
 		StringBuilder queryBuilder = new StringBuilder();
 		//@formatter:off
-			queryBuilder.append("WITH sortedsamples AS (SELECT DISTINCT ON (").append(Sample.ASSOCIATED_CASE).append("_id) ")
+		queryBuilder.append("WITH sortedsamples AS (SELECT DISTINCT ON (").append(Sample.ASSOCIATED_CASE).append("_id) ")
 					.append(Sample.ASSOCIATED_CASE).append("_id, ").append(Sample.PATHOGEN_TEST_RESULT).append(", ").append(Sample.SAMPLE_DATE_TIME)
 					.append(" FROM ").append(Sample.TABLE_NAME).append(" WHERE (").append(Sample.SPECIMEN_CONDITION).append(" IS NULL OR ")
 					.append(Sample.SPECIMEN_CONDITION).append(" = '").append(SpecimenCondition.ADEQUATE.name()).append("') AND ").append(Sample.TABLE_NAME)
@@ -584,28 +578,18 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 					.append(Sample.ASSOCIATED_CASE).append("_id = ").append(Case.TABLE_NAME).append(".id ")
 					.append(" WHERE sortedsamples.").append(Sample.ASSOCIATED_CASE).append("_id IN (:caseIds)")
 					.append(" GROUP BY sortedsamples." + Sample.PATHOGEN_TEST_RESULT);
-			//@formatter:on
+		//@formatter:on
 
-		if (caseIds.size() < ModelConstants.PARAMETER_LIMIT) {
-			List<Object[]> results;
+		List<Object[]> results = new LinkedList<>();
+		IterableHelper.executeBatched(caseIds, ModelConstants.PARAMETER_LIMIT, batchedCaseIds -> {
 			Query query = em.createNativeQuery(queryBuilder.toString());
-			query.setParameter("caseIds", caseIds);
-			results = query.getResultList();
+			query.setParameter("caseIds", batchedCaseIds);
+			results.addAll(query.getResultList());
+		});
 
-			return results.stream()
-				.filter(e -> e[0] != null)
-				.collect(Collectors.toMap(e -> PathogenTestResultType.valueOf((String) e[0]), e -> ((BigInteger) e[1]).longValue()));
-		} else {
-			List<Object[]> results = new LinkedList<>();
-			IterableHelper.executeBatched(caseIds, ModelConstants.PARAMETER_LIMIT, batchedCaseIds -> {
-				Query query = em.createNativeQuery(queryBuilder.toString());
-				query.setParameter("caseIds", batchedCaseIds);
-				results.addAll(query.getResultList());
-			});
-			return results.stream()
-				.filter(e -> e[0] != null)
-				.collect(Collectors.toMap(e -> PathogenTestResultType.valueOf((String) e[0]), e -> ((BigInteger) e[1]).longValue(), Long::sum));
-		}
+		return results.stream()
+			.filter(e -> e[0] != null)
+			.collect(Collectors.toMap(e -> PathogenTestResultType.valueOf((String) e[0]), e -> ((BigInteger) e[1]).longValue(), Long::sum));
 	}
 
 	@Override

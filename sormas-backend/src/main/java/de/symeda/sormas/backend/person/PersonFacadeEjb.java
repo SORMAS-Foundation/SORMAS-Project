@@ -274,7 +274,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 	@Override
 	public List<PersonDto> getByExternalIds(List<String> externalIds) {
-		return toPseudonymizedDtos(personService.getByExternalIdsBatched(externalIds));
+		return toPseudonymizedDtos(personService.getByExternalIds(externalIds));
 	}
 
 	@Override
