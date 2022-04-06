@@ -36,11 +36,28 @@ import java.util.regex.Pattern;
 import org.apache.commons.io.FilenameUtils;
 import org.jetbrains.annotations.NotNull;
 
+/**
+ * PerformanceLogAnalysisGenerator is a tool to generate an analysis of performance log files.
+ * To analyze a log file, run with argument <path_to_logfile>. If the argument is omitted, an analysis of the example
+ * log file 'exampleApplication.debug' is generated.
+ * To enable performance logging, change the log level of the 'PerformanceLoggingInterceptor' to 'TRACE' in the
+ * SORMAS server's 'logback.xml':
+ * 
+ * <logger name="de.symeda.sormas.backend.util.PerformanceLoggingInterceptor" level="TRACE" />
+ * 
+ * PerformanceLogAnalysisGenerator generates the following files in 'target/performanceLogAnalysis/':
+ * 
+ * <logfile_name>.html
+ * <logfile_name>.csv
+ * <logfile_name>.txt
+ * 
+ * Make sure working directory is 'SORMAS-Project/sormas-backend'
+ */
 public class PerformanceLogAnalysisGenerator {
 
-	private static final Pattern startPattern =
+	private static final Pattern LOG_LINE_PATTERN_START =
 		Pattern.compile("([^ ]* [^ ]*) TRACE *(.*) d.s.s.b.u.PerformanceLoggingInterceptor - Started: ([^ ]*) with parameters .*$");
-	private static final Pattern finishPattern =
+	private static final Pattern LOG_LINE_PATTERN_FINISH =
 		Pattern.compile("([^ ]* [^ ]*) DEBUG *(.*) d.s.s.b.u.PerformanceLoggingInterceptor - Finished in ([0-9]*) ms: (.*)$");
 
 	//@formatter:off
@@ -68,25 +85,9 @@ public class PerformanceLogAnalysisGenerator {
 	public static final int TIME_TRESHOLD_ORANGE = 300;
 	public static final int TIME_TRESHOLD_RED = 1000;
 
-	public static final String OUTPUT_DIRECTORY = "target/performance/";
+	public static final String OUTPUT_DIRECTORY = "target/performanceLogAnalysis/";
 
 	private Map<String, Stack<String>> callstacks;
-
-	// PerformanceLogAnalysisGenerator is a tool to generate an analysis of performance log files.
-	// To analyze a log file, run with argument <path_to_logfile>. If the argument is omitted, an analysis of the example
-	// log file 'exampleApplication.debug' is generated.
-	// To enable performance logging, change the log level of the 'PerformanceLoggingInterceptor' to 'TRACE' in the
-	// SORMAS server's 'logback.xml':
-	// 
-	// <logger name="de.symeda.sormas.backend.util.PerformanceLoggingInterceptor" level="TRACE" />
-	// 
-	// PerformanceLogAnalysisGenerator generates the following files in 'target/performance':
-	// 
-	// <logfile_name>.html
-	// <logfile_name>.csv
-	// <logfile_name>.txt
-	// 
-	// Make sure working directory is 'SORMAS-Project/sormas-backend'
 
 	public static void main(String[] args) throws IOException, URISyntaxException {
 
@@ -109,8 +110,8 @@ public class PerformanceLogAnalysisGenerator {
 		try (BufferedReader reader = new BufferedReader((new FileReader(logFile)))) {
 			String line;
 			while ((line = reader.readLine()) != null) {
-				Matcher matcherStart = startPattern.matcher(line);
-				Matcher matcherFinish = finishPattern.matcher(line);
+				Matcher matcherStart = LOG_LINE_PATTERN_START.matcher(line);
+				Matcher matcherFinish = LOG_LINE_PATTERN_FINISH.matcher(line);
 				if (matcherStart.find()) {
 					String startThread = matcherStart.group(2);
 					String startMethod = matcherStart.group(3);
@@ -341,7 +342,7 @@ public class PerformanceLogAnalysisGenerator {
 		}
 
 		private String totalTimeCell(long overallTotalTime) {
-			String timeColor = String.format("%02X", overallTotalTime > 0L ? 256L - (200L * totalTime) / overallTotalTime : 256L);
+			String timeColor = String.format("%02X", overallTotalTime > 0L ? Math.min(255L - (200L * totalTime) / overallTotalTime, 255L) : 255L);
 			String style = " style=\"background: #ff" + timeColor + timeColor + "\"";
 			return "<td" + style + ">" + totalTime + "</td>";
 		}
