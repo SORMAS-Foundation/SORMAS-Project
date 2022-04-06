@@ -36,6 +36,8 @@ public interface DashboardFacade {
 
 	DashboardCaseStatisticDto getDashboardCaseStatistic(DashboardCriteria dashboardCriteria);
 
+	DashboardContactStatisticDto getDashboardContactStatistic(DashboardCriteria dashboardCriteria);
+
 	Map<PathogenTestResultType, Long> getTestResultCountByResultType(DashboardCriteria dashboardCriteria);
 
 	Map<Date, Map<CaseClassification, Integer>> getEpiCurveSeriesElementsPerCaseClassification(DashboardCriteria dashboardCriteria);

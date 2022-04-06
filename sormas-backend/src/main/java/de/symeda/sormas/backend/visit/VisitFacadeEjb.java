@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -82,8 +83,8 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.NotificationService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.NotificationService;
 import de.symeda.sormas.backend.common.messaging.MessageContents;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
@@ -106,6 +107,9 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "VisitFacade")
+@RolesAllowed({
+	UserRight._CONTACT_VIEW,
+	UserRight._CASE_VIEW })
 public class VisitFacadeEjb implements VisitFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -208,6 +212,9 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._VISIT_CREATE,
+		UserRight._VISIT_EDIT })
 	public VisitDto saveVisit(@Valid VisitDto dto) {
 		final String visitUuid = dto.getUuid();
 		final Visit existingVisit = visitUuid != null ? visitService.getByUuid(visitUuid) : null;
@@ -232,6 +239,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
+	@RolesAllowed(UserRight._EXTERNAL_VISITS)
 	public ExternalVisitDto saveExternalVisit(@Valid final ExternalVisitDto dto) {
 
 		final String personUuid = dto.getPersonUuid();
@@ -285,6 +293,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
+	@RolesAllowed(UserRight._VISIT_DELETE)
 	public void deleteVisit(String visitUuid) {
 
 		if (!userService.hasRight(UserRight.VISIT_DELETE)) {
@@ -619,10 +628,7 @@ public class VisitFacadeEjb implements VisitFacade {
 
 		if (newVisit.getCaze() != null) {
 			// Update case symptoms
-			CaseDataDto caze = caseFacade.toDto(newVisit.getCaze());
-			SymptomsDto caseSymptoms = caze.getSymptoms();
-			SymptomsHelper.updateSymptoms(toDto(newVisit).getSymptoms(), caseSymptoms);
-			caseFacade.save(caze, true);
+			caseFacade.updateSymptomsByVisit(newVisit);
 		}
 	}
 
