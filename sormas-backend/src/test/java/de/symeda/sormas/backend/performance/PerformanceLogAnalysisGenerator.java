@@ -257,8 +257,8 @@ public class PerformanceLogAnalysisGenerator {
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("<table>");
 			stringBuilder.append(
-				"<tr>" + header("method") + header("calls") + header("total") + header("max") + header("min") + header("mean") + header("subcalls")
-					+ "</tr>");
+				"<tr>" + header("method") + header("calls") + header("total") + header("max") + header("min") + header("mean")
+					+ (withSubcalls ? header("subcalls") : "") + "</tr>");
 			List<MethodStats> subcallsList = new ArrayList<>(subcalls.values());
 			Collections.sort(subcallsList);
 			for (MethodStats subMethod : subcallsList) {
