@@ -11,14 +11,21 @@ import com.tngtech.archunit.junit.ArchUnitRunner;
 import com.tngtech.archunit.lang.ArchRule;
 import com.tngtech.archunit.lang.syntax.ArchRuleDefinition;
 import com.tngtech.archunit.lang.syntax.elements.GivenMethodsConjunction;
+import com.tngtech.archunit.lang.syntax.elements.MethodsShouldConjunction;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.backend.action.ActionFacadeEjb;
 import de.symeda.sormas.backend.bagexport.BAGExportFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.caseimport.CaseImportFacadeEjb;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportFacadeEjb;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
+import de.symeda.sormas.backend.dashboard.DashboardFacadeEjb;
+import de.symeda.sormas.backend.event.EventFacadeEjb;
+import de.symeda.sormas.backend.event.EventGroupFacadeEjb;
+import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
+import de.symeda.sormas.backend.event.eventimport.EventImportFacadeEjb;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalFacadeEjb;
 import de.symeda.sormas.backend.therapy.PrescriptionFacadeEjb;
 import de.symeda.sormas.backend.therapy.TreatmentFacadeEjb;
@@ -57,12 +64,12 @@ public class ArchitectureTest {
 
 	@ArchTest
 	public void testCaseImportFacadeEjbAuthorization(JavaClasses classes) {
-		assertFacadeEjbAnnotated(CaseImportFacadeEjb.class, true, classes);
+		assertFacadeEjbAnnotated(CaseImportFacadeEjb.class, AuthMode.CLASS_ONLY, classes);
 	}
 
 	@ArchTest
 	public void testExternalJournalFacadeEjbAuthorization(JavaClasses classes) {
-		assertFacadeEjbAnnotated(ExternalJournalFacadeEjb.class, true, classes);
+		assertFacadeEjbAnnotated(ExternalJournalFacadeEjb.class, AuthMode.CLASS_ONLY, classes);
 	}
 
 	@ArchTest
@@ -84,26 +91,42 @@ public class ArchitectureTest {
 	@ArchTest
 	public void testClinicalVisitFacadeEjbAuthorization(JavaClasses classes) {
 		assertFacadeEjbAnnotated(ClinicalVisitFacadeEjb.class, classes);
+	}
 
+	@ArchTest
+	public void testDashboardFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(DashboardFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
 	}
 
 	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, JavaClasses classes) {
-		assertFacadeEjbAnnotated(facadeEjbClass, false, classes);
+		assertFacadeEjbAnnotated(facadeEjbClass, AuthMode.CLASS_AND_METHODS, classes);
 	}
 
-	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, boolean classAuthOnly, JavaClasses classes) {
-		ArchRuleDefinition.theClass(facadeEjbClass).should().beAnnotatedWith(RolesAllowed.class).check(classes);
+	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, AuthMode authMode, JavaClasses classes) {
+		if (authMode != AuthMode.METHODS_ONLY) {
+			ArchRuleDefinition.theClass(facadeEjbClass).should().beAnnotatedWith(RolesAllowed.class).check(classes);
+		}
 
 		GivenMethodsConjunction methods = ArchRuleDefinition.methods().that().areDeclaredIn(facadeEjbClass).and().arePublic();
 
-		if (classAuthOnly) {
+		if (authMode == AuthMode.CLASS_ONLY) {
 			methods.should().notBeAnnotatedWith(RolesAllowed.class);
 		} else {
-			methods.should()
-				.beAnnotatedWith(RolesAllowed.class)
-				.orShould()
-				.haveNameMatching("^(get|count|is|does|has|validate|to|pseudonymize|convertToReferenceDto|fillOrBuild|convertToDto|fromDto).*")
-				.check(classes);
+			MethodsShouldConjunction methodChecks = methods.should().beAnnotatedWith(RolesAllowed.class);
+
+			if (authMode == AuthMode.CLASS_AND_METHODS) {
+				methodChecks = methodChecks.orShould()
+					.haveNameMatching(
+						"^(get|count|is|does|has|validate|to|pseudonymize|convertToReferenceDto|fillOrBuild|convertToDto|fromDto).*");
+			}
+
+			methodChecks.check(classes);
 		}
+	}
+
+	private enum AuthMode {
+		CLASS_AND_METHODS,
+		CLASS_ONLY,
+		METHODS_ONLY
 	}
 }
