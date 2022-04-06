@@ -255,15 +255,13 @@ public class ImmunizationFacadeEjb
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	@RolesAllowed({
-		UserRight._SYSTEM,
-		UserRight._IMMUNIZATION_ARCHIVE })
+		UserRight._SYSTEM})
 	public void archiveAllArchivableImmunizations(int daysAfterImmunizationsGetsArchived) {
 		archiveAllArchivableImmunizations(daysAfterImmunizationsGetsArchived, LocalDate.now());
 	}
 
 	@RolesAllowed({
-		UserRight._SYSTEM,
-		UserRight._IMMUNIZATION_ARCHIVE })
+		UserRight._SYSTEM})
 	private void archiveAllArchivableImmunizations(int daysAfterImmunizationGetsArchived, @NotNull LocalDate referenceDate) {
 		LocalDate notChangedSince = referenceDate.minusDays(daysAfterImmunizationGetsArchived);
 

@@ -670,6 +670,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
+    @RolesAllowed(UserRight._TASK_EXPORT)
 	public List<TaskExportDto> getExportList(TaskCriteria criteria, Collection<String> selectedRows, int first, int max) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<TaskExportDto> cq = cb.createQuery(TaskExportDto.class);
