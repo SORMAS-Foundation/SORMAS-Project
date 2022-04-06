@@ -44,8 +44,6 @@ import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.TRAVEL_ENTRY_PERSON_TAB;
 
 import cucumber.api.java8.En;
-
-import java.sql.Time;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
@@ -224,7 +222,7 @@ public class CreateNewTravelEntrySteps implements En {
     When(
         "I check if data in case based on travel entry is correct",
         () -> {
-            TimeUnit.SECONDS.sleep(3);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(By.id("info"));
           aCase = collectCasePersonDataBasedOnTravelEntryDE();
           softly.assertEquals(
               aCase.getResponsibleRegion(),
