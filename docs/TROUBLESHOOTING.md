@@ -23,6 +23,7 @@ Performance logging can be used to find out which part of the code or system mig
 
 Performance logs can be analyzed in detail using the `PerformanceLogAnalysisGenerator`. To use this tool, set the `PerformanceLoggingInterceptor`'s log level
 to `TRACE` as described above and reproduce the scenario you want to investigate on the server instance.
+
 After this, process the debug log file (default path: `/opt/domains/sormas/logs/application.debug`) using the `PerformanceLogAnalysisGenerator`. This will
 generate three files (`<logfileName>.csv`, `<logfileName>.txt`, `<logfileName>.html`) to further investigate method runtimes.
 
