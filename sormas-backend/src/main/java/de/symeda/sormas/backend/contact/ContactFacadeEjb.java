@@ -408,7 +408,7 @@ public class ContactFacadeEjb
 	}
 
 	@RolesAllowed({
-		UserRight._CONTACT_EDIT,
+		UserRight._PERSON_EDIT,
 		UserRight._EXTERNAL_VISITS })
 	public void onContactChanged(ContactDto contact, boolean syncShares) {
 		if (syncShares && sormasToSormasFacade.isFeatureConfigured()) {
@@ -416,10 +416,7 @@ public class ContactFacadeEjb
 		}
 	}
 
-	@RolesAllowed({
-		UserRight._CONTACT_CREATE,
-		UserRight._CONTACT_EDIT })
-	public void onContactChanged(ContactDto existingContact, Contact contact, boolean syncShares) {
+	private void onContactChanged(ContactDto existingContact, Contact contact, boolean syncShares) {
 
 		if (existingContact == null) {
 			vaccinationFacade.updateVaccinationStatuses(contact);

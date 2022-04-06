@@ -21,7 +21,6 @@ import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.or;
 import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 
-import de.symeda.sormas.api.utils.fieldaccess.checkers.UserRightFieldAccessChecker;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -198,6 +197,7 @@ import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.UserRightFieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitResultDto;
@@ -1926,14 +1926,15 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	 * after a case has been created/saved
 	 */
 	@RolesAllowed({
-		UserRight._CASE_EDIT,
-		UserRight._CASE_EDIT })
+		UserRight._CONTACT_DELETE,
+		UserRight._TRAVEL_ENTRY_DELETE })
 	public void onCaseChanged(CaseDataDto existingCase, Case newCase) {
 		onCaseChanged(existingCase, newCase, true);
 	}
 
 	@RolesAllowed({
-		UserRight._CASE_EDIT,
+		UserRight._CONTACT_EDIT,
+		UserRight._PERSON_EDIT,
 		UserRight._EXTERNAL_VISITS })
 	public void onCaseChanged(CaseDataDto existingCase, Case newCase, boolean syncShares) {
 
@@ -4065,10 +4066,11 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		save(cazeDto, true);
 	}
 
-	private Pseudonymizer getPseudonymizerForDtoWithClinician(@Nullable String pseudonymizedValue){
+	private Pseudonymizer getPseudonymizerForDtoWithClinician(@Nullable String pseudonymizedValue) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, pseudonymizedValue);
 
-		UserRightFieldAccessChecker clinicianViewRightChecker = new UserRightFieldAccessChecker(UserRight.CASE_CLINICIAN_VIEW, userService.hasRight(UserRight.CASE_CLINICIAN_VIEW));
+		UserRightFieldAccessChecker clinicianViewRightChecker =
+			new UserRightFieldAccessChecker(UserRight.CASE_CLINICIAN_VIEW, userService.hasRight(UserRight.CASE_CLINICIAN_VIEW));
 		pseudonymizer.addFieldAccessChecker(clinicianViewRightChecker, clinicianViewRightChecker);
 
 		return pseudonymizer;

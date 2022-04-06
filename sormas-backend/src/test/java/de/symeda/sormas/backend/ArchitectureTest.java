@@ -1,5 +1,10 @@
 package de.symeda.sormas.backend;
 
+import de.symeda.sormas.backend.action.ActionFacadeEjb;
+import de.symeda.sormas.backend.event.EventFacadeEjb;
+import de.symeda.sormas.backend.event.EventGroupFacadeEjb;
+import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
+import de.symeda.sormas.backend.event.eventimport.EventImportFacadeEjb;
 import javax.annotation.security.RolesAllowed;
 
 import org.junit.runner.RunWith;
@@ -84,7 +89,31 @@ public class ArchitectureTest {
 	@ArchTest
 	public void testClinicalVisitFacadeEjbAuthorization(JavaClasses classes) {
 		assertFacadeEjbAnnotated(ClinicalVisitFacadeEjb.class, classes);
+	}
 
+	@ArchTest
+	public void testEventFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(EventFacadeEjb.class, classes);
+	}
+
+	@ArchTest
+	public void testEventParticipantFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(EventParticipantFacadeEjb.class, classes);
+	}
+
+	@ArchTest
+	public void testActionFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(ActionFacadeEjb.class, classes);
+	}
+
+	@ArchTest
+	public void testEventGroupFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(EventGroupFacadeEjb.class, classes);
+	}
+
+	@ArchTest
+	public void testEventImportFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(EventImportFacadeEjb.class, true, classes);
 	}
 
 	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, JavaClasses classes) {
@@ -102,7 +131,7 @@ public class ArchitectureTest {
 			methods.should()
 				.beAnnotatedWith(RolesAllowed.class)
 				.orShould()
-				.haveNameMatching("^(get|count|is|does|has|validate|to|pseudonymize|convertToReferenceDto|fillOrBuild|convertToDto|fromDto).*")
+				.haveNameMatching("^(get|count|is|does|has|validate|to|pseudonymize|convertToReferenceDto|fillOrBuild|convertToDto|fromDto|convertToDetailedReferenceDto|exists).*")
 				.check(classes);
 		}
 	}

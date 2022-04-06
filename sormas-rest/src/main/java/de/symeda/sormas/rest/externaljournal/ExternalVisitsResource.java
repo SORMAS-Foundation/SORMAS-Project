@@ -87,6 +87,7 @@ public class ExternalVisitsResource extends EntityDtoResource {
 		try {
 			return FacadeProvider.getPersonFacade().setSymptomJournalStatus(personUuid, statusDto.getStatus());
 		} catch (Exception e) {
+			e.printStackTrace();
 			return false;
 		}
 	}

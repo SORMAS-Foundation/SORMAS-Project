@@ -85,11 +85,11 @@ public class DocumentStorageService {
 	}
 
 	private void setDocumentAttributes(Document document, Path filePath) throws IOException {
-		setAttribute(filePath, "Document UUID", document.getUuid());
-		setAttribute(filePath, "Author", userService.getCurrentUser().getUserName());
-		setAttribute(filePath, "Display Name", document.getName());
-		setAttribute(filePath, "Type", document.getMimeType());
-		setAttribute(filePath, "Upload Date", DateFormatHelper.formatDate(document.getCreationDate()));
+//		setAttribute(filePath, "Document UUID", document.getUuid());
+//		setAttribute(filePath, "Author", userService.getCurrentUser().getUserName());
+//		setAttribute(filePath, "Display Name", document.getName());
+//		setAttribute(filePath, "Type", document.getMimeType());
+//		setAttribute(filePath, "Upload Date", DateFormatHelper.formatDate(document.getCreationDate()));
 	}
 
 	private void setAttribute(Path path, String attributeKey, String attributeValue) throws IOException {
