@@ -41,7 +41,6 @@ Feature: Contacts end to end tests
     And I navigate to the last created contact via the url
     Then I check the edited data is correctly displayed on Edit Contact page after editing
 
-#    this
   @issue=SORDEV-5476 @env_main
     Scenario: Add a task from contact and verify the fields
     Given API: I create a new person
