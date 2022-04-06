@@ -62,13 +62,13 @@ public class CoreEntityDeletionService {
 			DeletionConfiguration coreEntityTypeConfig = deletionConfigurationService.getCoreEntityTypeConfig(entityTypeFacadePair.coreEntityType);
 
 			if (coreEntityTypeConfig.getDeletionReference() != null && coreEntityTypeConfig.deletionPeriod != null) {
-				entityTypeFacadePair.entityFacade
-					.executeAutomaticDeletion(coreEntityTypeConfig, supportsPermanentDeletion(entityTypeFacadePair.coreEntityType));
+				entityTypeFacadePair.entityFacade.executeAutomaticDeletion(
+					coreEntityTypeConfig,
+					supportsPermanentDeletion(entityTypeFacadePair.coreEntityType),
+					DELETE_BATCH_SIZE);
 			}
 		});
 
-		// TODO figure out what to do with lab messages
-		labMessageService.executePermanentDeletion(DELETE_BATCH_SIZE);
 		personService.deleteUnreferencedPersons(DELETE_BATCH_SIZE);
 	}
 

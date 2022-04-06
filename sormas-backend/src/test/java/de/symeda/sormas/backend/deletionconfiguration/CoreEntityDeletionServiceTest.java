@@ -8,7 +8,6 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.Date;
-import java.util.List;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.internal.SessionImpl;
@@ -16,16 +15,14 @@ import org.hibernate.query.spi.QueryImplementor;
 import org.junit.Before;
 import org.junit.Test;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
-import de.symeda.sormas.api.labmessage.LabMessageDto;
-import de.symeda.sormas.api.labmessage.TestReportDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
@@ -38,7 +35,8 @@ import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
-import de.symeda.sormas.backend.sample.PathogenTest;
+import de.symeda.sormas.backend.immunization.entity.Immunization;
+import de.symeda.sormas.backend.travelentry.TravelEntry;
 
 public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 
@@ -140,64 +138,10 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testSamplePermanentDeletion() {
+	public void testCaseVisitAutomaticDeletion() {
 
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, UserRole.ADMIN, UserRole.NATIONAL_USER);
-		PersonDto person = creator.createPerson();
-		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
-		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
-		SampleDto referralSample =
-			creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> s.setReferredTo(sample.toReference()));
-		creator.createPathogenTest(sample.toReference(), caze);
-		creator.createAdditionalTest(sample.toReference());
-		LabMessageDto labMessage = creator.createLabMessage(lm -> lm.setSample(sample.toReference()));
-
-		getSampleFacade().deleteSample(sample.toReference());
-
-		List<PathogenTest> pathogenTests = getPathogenTestService().getAll();
-		assertEquals(2, getSampleService().count());
-		assertTrue(getSampleService().getByUuid(sample.getUuid()).isDeleted());
-		assertEquals(1, pathogenTests.size());
-		assertTrue(pathogenTests.get(0).isDeleted());
-		assertEquals(1, getAdditionalTestService().count());
-		assertNull(getSampleService().getByUuid(referralSample.getUuid()).getReferredTo());
-		assertNull(getLabMessageService().getByUuid(labMessage.getUuid()).getSample());
-
-		useSystemUser();
-		getCoreEntityDeletionService().executeAutomaticDeletion();
-		loginWith(user);
-
-		assertEquals(1, getSampleService().count());
-		assertEquals(0, getPathogenTestService().count());
-		assertEquals(0, getAdditionalTestService().count());
-		assertEquals(1, getLabMessageService().count());
-	}
-
-	@Test
-	public void testLabMessagePermanentDeletion() {
-
-		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, UserRole.ADMIN, UserRole.NATIONAL_USER);
-
-		LabMessageDto labMessage = creator.createLabMessage(null);
-		TestReportDto testReport = creator.createTestReport(labMessage.toReference());
-
-		getLabMessageFacade().deleteLabMessage(labMessage.getUuid());
-
-		assertEquals(1, getLabMessageService().count());
-		assertEquals(labMessage.toReference(), getTestReportFacade().getByUuid(testReport.getUuid()).getLabMessage());
-
-		useSystemUser();
-		getCoreEntityDeletionService().executeAutomaticDeletion();
-		loginWith(user);
-
-		assertEquals(0, getLabMessageService().count());
-		assertEquals(0, getTestReportService().count());
-	}
-
-	@Test
-	public void testCaseVisitPermanentDeletion() {
+		createDeletionConfigurations();
+		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.CASE);
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, UserRole.ADMIN, UserRole.NATIONAL_USER);
@@ -208,9 +152,16 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 		visit.getSymptoms().setAnorexiaAppetiteLoss(SymptomState.YES);
 		getVisitFacade().saveVisit(visit);
 
-		assertEquals(1, getCaseService().count());
+		final Date tenYearsPlusAgo = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
+		SessionImpl em = (SessionImpl) getEntityManager();
+		QueryImplementor query = em.createQuery("select c from cases c where c.uuid=:uuid");
+		query.setParameter("uuid", caze.getUuid());
+		Case singleResult = (Case) query.getSingleResult();
+		singleResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
+		singleResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
+		em.save(singleResult);
 
-		getCaseFacade().delete(caze.getUuid());
+		assertEquals(1, getCaseService().count());
 
 		useSystemUser();
 		getCoreEntityDeletionService().executeAutomaticDeletion();
@@ -220,23 +171,110 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 		assertEquals(0, getVisitService().count());
 	}
 
-	private void createDeletionConfigurations() {
-		create(CoreEntityType.CASE);
-		create(CoreEntityType.CONTACT);
-		create(CoreEntityType.EVENT);
-		create(CoreEntityType.EVENT_PARTICIPANT);
-		create(CoreEntityType.IMMUNIZATION);
-		create(CoreEntityType.TRAVEL_ENTRY);
+	@Test
+	public void testImmunizationAutomaticDeletion() {
+
+		createDeletionConfigurations();
+		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.IMMUNIZATION);
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, UserRole.ADMIN, UserRole.NATIONAL_USER);
+		PersonDto person = creator.createPerson();
+		ImmunizationDto immunization = creator.createImmunization(Disease.EVD, person.toReference(), user.toReference(), rdcf);
+		creator.createVaccination(user.toReference(), immunization.toReference());
+
+		final Date tenYearsPlusAgo = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
+		SessionImpl em = (SessionImpl) getEntityManager();
+		QueryImplementor query = em.createQuery("select i from immunization i where i.uuid=:uuid");
+		query.setParameter("uuid", immunization.getUuid());
+		Immunization singleResult = (Immunization) query.getSingleResult();
+		singleResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
+		singleResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
+		em.save(singleResult);
+
+		assertEquals(1, getImmunizationService().count());
+
+		useSystemUser();
+		getCoreEntityDeletionService().executeAutomaticDeletion();
+		loginWith(user);
+
+		assertEquals(0, getImmunizationService().count());
+		assertEquals(0, getVaccinationService().count());
 	}
 
-	private DeletionConfiguration create(CoreEntityType coreEntityType) {
-		DeletionConfigurationService deletionConfigurationService = getBean(DeletionConfigurationService.class);
+	@Test
+	public void testTravelEntryAutomaticDeletion() {
 
-		DeletionConfiguration entity = new DeletionConfiguration();
-		entity.setEntityType(coreEntityType);
-		entity.setDeletionReference(DeletionReference.CREATION);
-		entity.setDeletionPeriod(3650);
-		deletionConfigurationService.ensurePersisted(entity);
-		return entity;
+		createDeletionConfigurations();
+		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.TRAVEL_ENTRY);
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, UserRole.ADMIN, UserRole.NATIONAL_USER);
+		PersonDto person = creator.createPerson();
+		TravelEntryDto travelEntry = creator.createTravelEntry(person.toReference(), user.toReference(), rdcf, null);
+
+		final Date tenYearsPlusAgo = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
+		SessionImpl em = (SessionImpl) getEntityManager();
+		QueryImplementor query = em.createQuery("select t from travelentry t where t.uuid=:uuid");
+		query.setParameter("uuid", travelEntry.getUuid());
+		TravelEntry singleResult = (TravelEntry) query.getSingleResult();
+		singleResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
+		singleResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
+		em.save(singleResult);
+
+		assertEquals(1, getTravelEntryService().count());
+
+		useSystemUser();
+		getCoreEntityDeletionService().executeAutomaticDeletion();
+		loginWith(user);
+
+		assertEquals(0, getTravelEntryService().count());
+	}
+
+	@Test
+	public void testPersonAutomaticDeletion() {
+
+		createDeletionConfigurations();
+		DeletionConfiguration caseCoreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.CASE);
+		DeletionConfiguration immunizationCoreEntityTypeConfig =
+			getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.IMMUNIZATION);
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, UserRole.ADMIN, UserRole.NATIONAL_USER);
+		PersonDto person = creator.createPerson();
+		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		ImmunizationDto immunization = creator.createImmunization(Disease.EVD, person.toReference(), user.toReference(), rdcf);
+
+		final Date tenYearsPlusAgoCases = DateUtils.addDays(new Date(), (-1) * caseCoreEntityTypeConfig.deletionPeriod - 1);
+		SessionImpl em = (SessionImpl) getEntityManager();
+		QueryImplementor query = em.createQuery("select c from cases c where c.uuid=:uuid");
+		query.setParameter("uuid", caze.getUuid());
+		Case singleResultCase = (Case) query.getSingleResult();
+		singleResultCase.setCreationDate(new Timestamp(tenYearsPlusAgoCases.getTime()));
+		singleResultCase.setChangeDate(new Timestamp(tenYearsPlusAgoCases.getTime()));
+		em.save(singleResultCase);
+
+		assertEquals(1, getPersonService().count());
+
+		useSystemUser();
+		getCoreEntityDeletionService().executeAutomaticDeletion();
+		loginWith(user);
+
+		assertEquals(1, getPersonService().count());
+
+		final Date tenYearsPlusAgoContacts = DateUtils.addDays(new Date(), (-1) * immunizationCoreEntityTypeConfig.deletionPeriod - 1);
+		em = (SessionImpl) getEntityManager();
+		query = em.createQuery("select i from immunization i where i.uuid=:uuid");
+		query.setParameter("uuid", immunization.getUuid());
+		Immunization singleResultImmunization = (Immunization) query.getSingleResult();
+		singleResultImmunization.setCreationDate(new Timestamp(tenYearsPlusAgoContacts.getTime()));
+		singleResultImmunization.setChangeDate(new Timestamp(tenYearsPlusAgoContacts.getTime()));
+		em.save(singleResultImmunization);
+
+		useSystemUser();
+		getCoreEntityDeletionService().executeAutomaticDeletion();
+		loginWith(user);
+
+		assertEquals(0, getPersonService().count());
 	}
 }

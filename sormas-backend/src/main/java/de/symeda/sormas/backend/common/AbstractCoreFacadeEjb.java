@@ -22,6 +22,8 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -47,6 +49,7 @@ import de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfigurationService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 
@@ -132,7 +135,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		return dto;
 	}
 
-	public void executeAutomaticDeletion(DeletionConfiguration entityConfig, boolean deletePermanent) {
+	public void executeAutomaticDeletion(DeletionConfiguration entityConfig, boolean deletePermanent, int batchSize) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ADO> cq = cb.createQuery(adoClass);
@@ -143,21 +146,19 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 
 		List<ADO> toDeleteEntities = QueryHelper.getResultList(em, cq, null, null);
 
+		IterableHelper.executeBatched(toDeleteEntities, batchSize, batchedEntities -> doAutomaticDeletion(batchedEntities, deletePermanent));
+	}
+
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	private void doAutomaticDeletion(List<ADO> toDeleteEntities, boolean deletePermanent) {
+
 		toDeleteEntities.forEach(ado -> {
-			if (deletePermanent) {
+			if (deletePermanent && featureConfigurationFacade.isFeatureEnabled(FeatureType.DELETE_PERMANENT)) {
 				service.deletePermanent(ado);
 			} else {
 				service.delete(ado);
 			}
 		});
-	}
-
-	public void executePermanentDeletion(int batchSize) {
-		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.DELETE_PERMANENT)) {
-			service.executePermanentDeletion(batchSize);
-		} else {
-			throw new UnsupportedOperationException("Permanent deletion is not activated!");
-		}
 	}
 
 	@Override
