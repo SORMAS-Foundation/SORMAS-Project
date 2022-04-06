@@ -1037,10 +1037,10 @@ public class SampleFacadeEjb implements SampleFacade {
 					.when(cb.equal(root.get(Sample.PATHOGEN_TEST_RESULT), PathogenTestResultType.INDETERMINATE), 1)
 					.otherwise(0)
 					.as(Long.class)),
-			cb.sum(cb.selectCase().when(cb.equal(root.get(Sample.SHIPPED), "true"), 1).otherwise(0).as(Long.class)),
-			cb.sum(cb.selectCase().when(cb.equal(root.get(Sample.SHIPPED), "false"), 1).otherwise(0).as(Long.class)),
-			cb.sum(cb.selectCase().when(cb.equal(root.get(Sample.RECEIVED), "true"), 1).otherwise(0).as(Long.class)),
-			cb.sum(cb.selectCase().when(cb.equal(root.get(Sample.RECEIVED), "false"), 1).otherwise(0).as(Long.class)),
+			cb.sum(cb.selectCase().when(cb.equal(root.get(Sample.SHIPPED), true), 1).otherwise(0).as(Long.class)),
+			cb.sum(cb.selectCase().when(cb.equal(root.get(Sample.SHIPPED), false), 1).otherwise(0).as(Long.class)),
+			cb.sum(cb.selectCase().when(cb.equal(root.get(Sample.RECEIVED), true), 1).otherwise(0).as(Long.class)),
+			cb.sum(cb.selectCase().when(cb.equal(root.get(Sample.RECEIVED), false), 1).otherwise(0).as(Long.class)),
 			cb.sum(cb.selectCase().when(cb.equal(root.get(Sample.SPECIMEN_CONDITION), SpecimenCondition.ADEQUATE), 1).otherwise(0).as(Long.class)),
 			cb.sum(
 				cb.selectCase().when(cb.equal(root.get(Sample.SPECIMEN_CONDITION), SpecimenCondition.NOT_ADEQUATE), 1).otherwise(0).as(Long.class)));
