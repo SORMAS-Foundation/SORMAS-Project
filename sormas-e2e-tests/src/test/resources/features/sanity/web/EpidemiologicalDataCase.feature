@@ -177,7 +177,7 @@ Feature: Epidemiological data coverage
     Then I click on Activity details known with UNBEKANNT option
     And I click on Activity details known with NEIN option
     And I click on Activity details known with JA option
-    And I click on New Entry in Action as Case Details Known
+    And I click on new entry button from Epidemiological Data tab
     And I set Start and End of activity by current date in Activity as Case form for DE version
     And I fill Description field in Activity as Case form
     And I select Unbekannt option in Type of activity from Combobox in Activity as Case form

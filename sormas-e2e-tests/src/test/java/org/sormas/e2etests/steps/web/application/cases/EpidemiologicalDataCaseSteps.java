@@ -109,12 +109,6 @@ public class EpidemiologicalDataCaseSteps implements En {
             webDriverHelpers.clickWebElementByText(ACTIVITY_DETAILS_KNOWN_OPTIONS, option));
 
     When(
-        "I click on New Entry in Action as Case Details Known",
-        () -> {
-          webDriverHelpers.clickOnWebElementBySelector(NEW_ENTRY_EPIDEMIOLOGICAL_DATA);
-        });
-
-    When(
         "I click on Residing or working in an area with high risk of transmission of the disease with ([^\"]*) option",
         (String option) -> {
           epidemiologialDataSavedFromFields =
