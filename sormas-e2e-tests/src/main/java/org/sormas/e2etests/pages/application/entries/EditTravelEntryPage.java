@@ -42,4 +42,5 @@ public class EditTravelEntryPage {
   public static final By DISEASE_NAME_INPUT = By.cssSelector(".popupContent #diseaseDetails");
   public static final By TRAVEL_ENTRY_CASE_UUID = By.cssSelector("#caseIdLabel");
   public static final By CASE_PERSON_NAME = By.xpath("//div[@class='v-slot'][4]//div//div[2]");
+  public static final By INFO_BUTTON = By.id("info");
 }

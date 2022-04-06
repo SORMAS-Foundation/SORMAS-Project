@@ -46,12 +46,16 @@ import java.io.File;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Random;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
@@ -75,7 +79,8 @@ public class ConfigurationFacilitiesSteps implements En {
   public static String[] UIHeader;
   public static int randomNr;
   public static Faker faker;
-  String facilityName;
+  private String facilityName;
+  private static String facilityFile;
   public static String cityName;
   public static String aFacilityName;
   public static String uploadFileDirectoryAndName;
@@ -137,12 +142,18 @@ public class ConfigurationFacilitiesSteps implements En {
     When(
         "I read exported csv from facilities tab",
         () -> {
-          FacilityCSV reader =
-              parseCSVintoPOJOFacilityTab(
-                  "./downloads/sormas_einrichtungen_"
-                      + LocalDate.now().format(formatter)
-                      + "_.csv");
+          facilityFile =
+              "./downloads/sormas_einrichtungen_" + LocalDate.now().format(formatter) + "_.csv";
+          FacilityCSV reader = parseCSVintoPOJOFacilityTab(facilityFile);
           writeCSVFromPOJOFacilityTab(reader);
+          TimeUnit.SECONDS.sleep(5); // wait for reader
+        });
+
+    When(
+        "I delete downloaded csv file for facilities in facility tab",
+        () -> {
+          Path path = Paths.get(facilityFile);
+          Files.delete(path);
         });
 
     When(
@@ -232,6 +243,8 @@ public class ConfigurationFacilitiesSteps implements En {
 
     uploadFileDirectoryAndName = userDirPath + "/uploads/testFile.csv";
     cityName = faker.harryPotter().location();
+    Random rand = new Random();
+    randomNr = rand.nextInt(1000);
     aFacilityName = faker.harryPotter().location() + randomNr;
 
     File file = new File(uploadFileDirectoryAndName);

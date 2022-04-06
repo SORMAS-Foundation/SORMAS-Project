@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.bagexport;
 
+import de.symeda.sormas.api.user.UserRight;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -26,6 +27,7 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
@@ -61,6 +63,7 @@ import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless(name = "BAGExportFacade")
+@RolesAllowed(UserRight._BAG_EXPORT)
 public class BAGExportFacadeEjb implements BAGExportFacade {
 
 	private static final String TODO_VALUE = "";

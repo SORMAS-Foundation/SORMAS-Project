@@ -316,11 +316,6 @@ public class CreateNewSampleSteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONFIRM_BUTTON);
-          String displayedText =
-              webDriverHelpers.getTextFromWebElement(CREATE_CASE_POSITIVE_TEST_RESULT_LABEL);
-          String expectedText = "Create case from contact with positive test result?";
-          softly.assertEquals(displayedText, expectedText);
-          softly.assertAll();
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
         });
 

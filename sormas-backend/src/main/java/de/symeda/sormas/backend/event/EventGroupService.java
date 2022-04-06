@@ -72,7 +72,10 @@ public class EventGroupService extends AdoServiceWithUserFilter<EventGroup> {
 		From<?, EventGroup> eventGroupPath,
 		EventUserFilterCriteria eventUserFilterCriteria) {
 
-		final User currentUser = getCurrentUser();
+		User currentUser = getCurrentUser();
+		if (currentUser == null) {
+			return null;
+		}
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (jurisdictionLevel == JurisdictionLevel.NATION || currentUser.hasUserRole(UserRole.REST_USER)) {
 			return null;
