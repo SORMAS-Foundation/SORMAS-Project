@@ -63,37 +63,6 @@ public class SymptomService {
         .build();
   }
 
-  public Symptoms buildEditGeneratedSymptomsWithNoOptionsAndYesForOtherSymptoms() {
-    return Symptoms.builder()
-        .maximumBodyTemperatureInC("35,2")
-        .sourceOfBodyTemperature("rectal")
-        .chillsOrSweats(NO.toString())
-        .headache(NO.toString())
-        .feelingIll(NO.toString())
-        .musclePain(NO.toString())
-        .fever(NO.toString())
-        .shivering(NO.toString())
-        .acuteRespiratoryDistressSyndrome(NO.toString())
-        .oxygenSaturationLower94(NO.toString())
-        .cough(NO.toString())
-        .pneumoniaClinicalOrRadiologic(NO.toString())
-        .difficultyBreathing(NO.toString())
-        .rapidBreathing(NO.toString())
-        .respiratoryDiseaseVentilation(NO.toString())
-        .runnyNose(NO.toString())
-        .soreThroat(NO.toString())
-        .fastHeartRate(NO.toString())
-        .diarrhea(NO.toString())
-        .nausea(NO.toString())
-        .lossOfSmell(NO.toString())
-        .lossOfTaste(NO.toString())
-        .otherNonHemorrhagicSymptoms(YES.toString())
-        .symptomsComments(UUID.randomUUID().toString())
-        .firstSymptom("Other clinical symptoms")
-        .dateOfSymptom(LocalDate.now().minusDays(2))
-        .build();
-  }
-
   public Symptoms buildEditGeneratedSymptomsWithNoOptions() {
     return Symptoms.builder()
         .maximumBodyTemperatureInC("35,2")
@@ -118,7 +87,6 @@ public class SymptomService {
         .nausea(NO.toString())
         .lossOfSmell(NO.toString())
         .lossOfTaste(NO.toString())
-        .otherNonHemorrhagicSymptoms(NO.toString())
         .symptomsComments(UUID.randomUUID().toString())
         .build();
   }
@@ -147,7 +115,6 @@ public class SymptomService {
         .nausea(UNKNOWN.toString())
         .lossOfSmell(UNKNOWN.toString())
         .lossOfTaste(UNKNOWN.toString())
-        .otherNonHemorrhagicSymptoms(UNKNOWN.toString())
         .symptomsComments(UUID.randomUUID().toString())
         .build();
   }

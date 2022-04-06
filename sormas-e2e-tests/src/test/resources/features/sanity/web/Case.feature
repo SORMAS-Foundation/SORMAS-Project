@@ -597,7 +597,7 @@ Feature: Case end to end tests
     And I click on Clear all button From Symptoms tab
     And I change all symptoms fields to "NO_AND_OTHER_SYMPTOMS_TO_YES" option field and save
     And I am accessing the Symptoms tab using of created case via api
-    And I check the created data is correctly displayed on Symptoms tab page
+    And I check the created data that describes Clinical signs and Symptoms are correctly displayed for No or UNKNOWN option in Symptoms tab page
     And  I click on Case tab from Symptoms tab directory
     And I check that Case Classification has "Not yet classified" value
     Then I click on save case button

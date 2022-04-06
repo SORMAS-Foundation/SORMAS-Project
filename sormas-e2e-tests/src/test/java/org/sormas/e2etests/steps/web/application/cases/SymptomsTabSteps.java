@@ -18,6 +18,9 @@
 
 package org.sormas.e2etests.steps.web.application.cases;
 
+import static org.sormas.e2etests.enums.YesNoUnknownOptions.NO;
+import static org.sormas.e2etests.enums.YesNoUnknownOptions.UNKNOWN;
+import static org.sormas.e2etests.enums.YesNoUnknownOptions.YES;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.cases.SymptomsTabPage.*;
@@ -128,23 +131,25 @@ public class SymptomsTabSteps implements En {
           switch (option) {
             case "NO":
               symptoms = symptomService.buildEditGeneratedSymptomsWithNoOptions();
-              FillSymptomsData(symptoms);
+              FillSymptomsDataForNoUnknown(symptoms);
+              selectOtherNonHemorrhagicSymptoms(NO.toString());
               fillSymptomsComments(symptoms.getSymptomsComments());
               webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
               break;
             case "NO_AND_OTHER_SYMPTOMS_TO_YES":
-              symptoms =
-                  symptomService.buildEditGeneratedSymptomsWithNoOptionsAndYesForOtherSymptoms();
-              FillSymptomsData(symptoms);
+              symptoms = symptomService.buildEditGeneratedSymptomsWithNoOptions();
+              FillSymptomsDataForNoUnknown(symptoms);
+              selectOtherNonHemorrhagicSymptoms(YES.toString());
               fillOtherNonHemorrhagicSymptoms(symptoms.getSymptomsComments());
               fillSymptomsComments(symptoms.getSymptomsComments());
-              selectFistSymptom(symptoms.getFirstSymptom());
-              fillDateOfSymptom(symptoms.getDateOfSymptom());
+              selectFistSymptom("Other clinical symptoms");
+              fillDateOfSymptom(LocalDate.now().minusDays(2));
               webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
               break;
             case "UNKNOWN":
               symptoms = symptomService.buildEditGeneratedSymptomsWithUnknownOptions();
-              FillSymptomsData(symptoms);
+              FillSymptomsDataForNoUnknown(symptoms);
+              selectOtherNonHemorrhagicSymptoms(UNKNOWN.toString());
               fillSymptomsComments(symptoms.getSymptomsComments());
               webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
               break;
@@ -211,9 +216,31 @@ public class SymptomsTabSteps implements En {
     selectLossOfSmell(symptoms.getLossOfSmell());
     selectLossOfTaste(symptoms.getLossOfTaste());
     selectOtherNonHemorrhagicSymptoms(symptoms.getOtherNonHemorrhagicSymptoms());
-    //   fillOtherNonHemorrhagicSymptoms(symptoms.getSymptomsComments());
-    //    fillSymptomsComments(symptoms.getSymptomsComments());
+  }
 
+  private void FillSymptomsDataForNoUnknown(Symptoms symptoms) {
+    selectMaximumBodyTemperatureInCCombobox(symptoms.getMaximumBodyTemperatureInC());
+    selectSourceOfBodyTemperature(symptoms.getSourceOfBodyTemperature());
+    selectChillsOrSweats(symptoms.getChillsOrSweats());
+    selectHeadache(symptoms.getHeadache());
+    selectFeelingIll(symptoms.getFeelingIll());
+    selectMusclePain(symptoms.getMusclePain());
+    selectFever(symptoms.getFever());
+    selectShivering(symptoms.getShivering());
+    selectAcuteRespiratoryDistressSyndrome(symptoms.getAcuteRespiratoryDistressSyndrome());
+    selectOxygenSaturationLower94(symptoms.getOxygenSaturationLower94());
+    selectCough(symptoms.getCough());
+    selectPneumoniaClinicalOrRadiologic(symptoms.getPneumoniaClinicalOrRadiologic());
+    selectDifficultyBreathing(symptoms.getDifficultyBreathing());
+    selectRapidBreathing(symptoms.getRapidBreathing());
+    selectRespiratoryDiseaseVentilation(symptoms.getRespiratoryDiseaseVentilation());
+    selectRunnyNose(symptoms.getRunnyNose());
+    selectSoreThroat(symptoms.getSoreThroat());
+    selectFastHeartRate(symptoms.getFastHeartRate());
+    selectDiarrhea(symptoms.getDiarrhea());
+    selectNausea(symptoms.getNausea());
+    selectLossOfSmell(symptoms.getLossOfSmell());
+    selectLossOfTaste(symptoms.getLossOfTaste());
   }
 
   private Symptoms collectSymptomsData() {
@@ -314,9 +341,9 @@ public class SymptomsTabSteps implements En {
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(LOSS_OF_SMELL_OPTIONS))
         .lossOfTaste(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(LOSS_OF_TASTE_OPTIONS))
-        .otherNonHemorrhagicSymptoms(
-            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-                OTHER_NON_HEMORRHAGIC_SYMPTOMS_OPTIONS))
+        //        .otherNonHemorrhagicSymptoms(
+        //            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+        //                OTHER_NON_HEMORRHAGIC_SYMPTOMS_OPTIONS))
         .symptomsComments(webDriverHelpers.getValueFromWebElement(SYMPTOMS_COMMENTS_INPUT))
         .build();
   }
