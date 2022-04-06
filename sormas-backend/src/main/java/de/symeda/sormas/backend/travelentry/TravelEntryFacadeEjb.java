@@ -109,7 +109,7 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-    @RolesAllowed(UserRight._TRAVEL_ENTRY_DELETE)
+	@RolesAllowed(UserRight._TRAVEL_ENTRY_DELETE)
 	public void delete(String travelEntryUuid) {
 		TravelEntry travelEntry = service.getByUuid(travelEntryUuid);
 		service.delete(travelEntry);
@@ -185,11 +185,16 @@ public class TravelEntryFacadeEjb
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	@RolesAllowed(UserRight._SYSTEM)
+	@RolesAllowed({
+		UserRight._SYSTEM,
+		UserRight._TRAVEL_ENTRY_ARCHIVE })
 	public void archiveAllArchivableTravelEntries(int daysAfterTravelEntryGetsArchived) {
 		archiveAllArchivableTravelEntry(daysAfterTravelEntryGetsArchived, LocalDate.now());
 	}
 
+    @RolesAllowed({
+            UserRight._SYSTEM,
+            UserRight._TRAVEL_ENTRY_ARCHIVE })
 	private void archiveAllArchivableTravelEntry(int daysAfterTravelEntryGetsArchived, @NotNull LocalDate referenceDate) {
 		LocalDate notChangedSince = referenceDate.minusDays(daysAfterTravelEntryGetsArchived);
 

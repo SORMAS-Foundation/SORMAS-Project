@@ -296,6 +296,9 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._TASK_CREATE,
+		UserRight._TASK_EDIT })
 	public TaskDto saveTask(@Valid TaskDto dto) {
 		// Let's retrieve the old assignee before updating the task
 		User oldAssignee = taskService.getTaskAssigneeByUuid(dto.getUuid());
@@ -365,10 +368,7 @@ public class TaskFacadeEjb implements TaskFacade {
 						MessageContents.CONTENT_TASK_GENERAL_UPDATED_ASSIGNEE_TARGET,
 						MessageContents.CONTENT_TASK_SPECIFIC_UPDATED_ASSIGNEE_TARGET));
 			}
-			notificationService.sendNotifications(
-				NotificationType.TASK_UPDATED_ASSIGNEE,
-				MessageSubject.TASK_UPDATED_ASSIGNEE,
-				() -> userMessages);
+			notificationService.sendNotifications(NotificationType.TASK_UPDATED_ASSIGNEE, MessageSubject.TASK_UPDATED_ASSIGNEE, () -> userMessages);
 		} catch (NotificationDeliveryFailedException e) {
 			logger.error(String.format("EmailDeliveryFailedException when trying to notify a user about an updated task assignee."));
 		}
@@ -867,13 +867,13 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
-    @RolesAllowed(UserRight._TASK_DELETE)
+	@RolesAllowed(UserRight._TASK_DELETE)
 	public void deleteTask(TaskDto taskDto) {
 		Task task = taskService.getByUuid(taskDto.getUuid());
 		taskService.deletePermanent(task);
 	}
 
-    @RolesAllowed(UserRight._TASK_DELETE)
+	@RolesAllowed(UserRight._TASK_DELETE)
 	public List<String> deleteTasks(List<String> tasksUuids) {
 		List<String> deletedTaskUuids = new ArrayList<>();
 		List<Task> tasksToBeDeleted = taskService.getByUuids(tasksUuids);
@@ -887,7 +887,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
-    @RolesAllowed(UserRight._SYSTEM)
+	@RolesAllowed(UserRight._SYSTEM)
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void sendNewAndDueTaskMessages() {
 
@@ -898,7 +898,10 @@ public class TaskFacadeEjb implements TaskFacade {
 		final Date before = calendar.getTime();
 
 		try {
-			notificationService.sendNotifications(NotificationType.TASK_START, MessageSubject.TASK_START, () -> buildTaskUserMessages(
+			notificationService.sendNotifications(
+				NotificationType.TASK_START,
+				MessageSubject.TASK_START,
+				() -> buildTaskUserMessages(
 					taskService.findBy(new TaskCriteria().taskStatus(TaskStatus.PENDING).startDateBetween(before, now), true),
 					MessageContents.CONTENT_TASK_START_GENERAL,
 					MessageContents.CONTENT_TASK_START_SPECIFIC));
@@ -958,6 +961,8 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
+    @RolesAllowed(
+            UserRight._TASK_EDIT)
 	public void updateArchived(List<String> taskUuids, boolean archived) {
 		IterableHelper.executeBatched(taskUuids, ARCHIVE_BATCH_SIZE, e -> taskService.updateArchived(e, archived));
 	}
