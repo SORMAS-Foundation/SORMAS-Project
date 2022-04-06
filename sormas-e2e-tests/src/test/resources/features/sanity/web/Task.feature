@@ -12,7 +12,7 @@ Feature: Tasks functionalities
 
   @issue=SORDEV-5476 @env_main
   Scenario: Check the edit of task from Case
-    Given I log in as a Surveillance Officer
+    Given I log in as a National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
     When I create a new case with specific data

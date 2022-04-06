@@ -19,6 +19,7 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -36,12 +37,13 @@ import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportDto;
 import de.symeda.sormas.api.caze.surveillancereport.SurveillanceReportFacade;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
-import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.facility.FacilityService;
 import de.symeda.sormas.backend.infrastructure.region.RegionFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.RegionService;
 import de.symeda.sormas.backend.user.User;
@@ -52,6 +54,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "SurveillanceReportFacade")
+@RolesAllowed(UserRight._CASE_VIEW)
 public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
@@ -94,11 +97,12 @@ public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
 	}
 
 	@Override
+	@RolesAllowed(UserRight._CASE_EDIT)
 	public SurveillanceReportDto saveSurveillanceReport(@Valid SurveillanceReportDto dto) {
 		return saveSurveillanceReport(dto, true);
 	}
 
-	public SurveillanceReportDto saveSurveillanceReport(SurveillanceReportDto dto, boolean checkChangeDate) {
+	private SurveillanceReportDto saveSurveillanceReport(SurveillanceReportDto dto, boolean checkChangeDate) {
 		SurveillanceReport existingReport = service.getByUuid(dto.getUuid());
 		SurveillanceReportDto existingReportDto = toDto(existingReport);
 
@@ -112,6 +116,7 @@ public class SurveillanceReportFacadeEjb implements SurveillanceReportFacade {
 	}
 
 	@Override
+	@RolesAllowed(UserRight._CASE_EDIT)
 	public void deleteSurveillanceReport(String surveillanceReportUuid) {
 		service.deletePermanent(service.getByUuid(surveillanceReportUuid));
 	}

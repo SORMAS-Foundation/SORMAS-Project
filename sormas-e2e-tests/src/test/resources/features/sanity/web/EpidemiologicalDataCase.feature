@@ -22,7 +22,7 @@ Feature: Epidemiological data coverage
     Then I am checking all Activity data is saved and displayed
 
     #TODO to be investigated if is defect
-    @issue=SORDEV-5522 @env_main @ignore
+    @issue=SORDEV-5522 @env_main
   Scenario: Validate all fields are present and functional on Epidemiological page
     Given API: I create a new person
     Then API: I check that POST call body is "OK"

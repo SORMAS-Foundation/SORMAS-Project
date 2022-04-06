@@ -86,6 +86,7 @@ public class ShareRequestGrid extends FilteredGrid<SormasToSormasShareRequestInd
 			SormasToSormasShareRequestIndexDto.COMMENT,
 			COLUMN_ACTIONS);
 
+		getColumn(COLUMN_ACTIONS).setMinimumWidth(260);
 		((Column<SormasToSormasShareRequestIndexDto, String>) getColumn(LabMessageIndexDto.UUID)).setRenderer(new UuidRenderer());
 		((Column<SormasToSormasShareRequestIndexDto, Date>) getColumn(SormasToSormasShareRequestIndexDto.CREATION_DATE))
 			.setRenderer(new DateRenderer(DateHelper.getLocalDateTimeFormat(I18nProperties.getUserLanguage())));

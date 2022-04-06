@@ -79,6 +79,7 @@ public class CreateNewContactSteps implements En {
         "^I fill a new contact form$",
         () -> {
           contact = contactService.buildGeneratedContact();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           fillFirstName(contact.getFirstName());
           fillLastName(contact.getLastName());
           fillDateOfBirth(contact.getDateOfBirth(), Locale.ENGLISH);

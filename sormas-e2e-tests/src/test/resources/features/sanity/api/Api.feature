@@ -1,4 +1,4 @@
-@Sanity  @API
+@Sanity @API
 Feature: Check basic POSTs RestApi endpoints
 
   @env_main
@@ -80,4 +80,3 @@ Feature: Check basic POSTs RestApi endpoints
       | numberOfImmunizations |
       | 1                     |
       | 5                     |
-

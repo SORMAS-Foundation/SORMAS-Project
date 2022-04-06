@@ -20,6 +20,8 @@ import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_GERMANY;
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_SWITZERLAND;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DependingOnUserRight;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -367,12 +369,15 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	private UserReferenceDto surveillanceOfficer;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@DependingOnUserRight(UserRight.CASE_CLINICIAN_VIEW)
 	private String clinicianName;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@DependingOnUserRight(UserRight.CASE_CLINICIAN_VIEW)
 	private String clinicianPhone;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@DependingOnUserRight(UserRight.CASE_CLINICIAN_VIEW)
 	private String clinicianEmail;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
