@@ -185,14 +185,11 @@ public class TravelEntryFacadeEjb
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	@RolesAllowed({
-		UserRight._SYSTEM})
+	@RolesAllowed(UserRight._SYSTEM)
 	public void archiveAllArchivableTravelEntries(int daysAfterTravelEntryGetsArchived) {
 		archiveAllArchivableTravelEntry(daysAfterTravelEntryGetsArchived, LocalDate.now());
 	}
 
-    @RolesAllowed({
-            UserRight._SYSTEM})
 	private void archiveAllArchivableTravelEntry(int daysAfterTravelEntryGetsArchived, @NotNull LocalDate referenceDate) {
 		LocalDate notChangedSince = referenceDate.minusDays(daysAfterTravelEntryGetsArchived);
 

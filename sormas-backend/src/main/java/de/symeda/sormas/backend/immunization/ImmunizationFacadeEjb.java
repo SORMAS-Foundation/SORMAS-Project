@@ -254,14 +254,11 @@ public class ImmunizationFacadeEjb
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	@RolesAllowed({
-		UserRight._SYSTEM })
+	@RolesAllowed(UserRight._SYSTEM)
 	public void archiveAllArchivableImmunizations(int daysAfterImmunizationsGetsArchived) {
 		archiveAllArchivableImmunizations(daysAfterImmunizationsGetsArchived, LocalDate.now());
 	}
 
-	@RolesAllowed({
-		UserRight._SYSTEM })
 	private void archiveAllArchivableImmunizations(int daysAfterImmunizationGetsArchived, @NotNull LocalDate referenceDate) {
 		LocalDate notChangedSince = referenceDate.minusDays(daysAfterImmunizationGetsArchived);
 
@@ -320,16 +317,12 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed({
-		UserRight._IMMUNIZATION_CREATE,
-		UserRight._IMMUNIZATION_EDIT })
+	@RolesAllowed({UserRight._IMMUNIZATION_CREATE, UserRight._IMMUNIZATION_EDIT})
 	public ImmunizationDto save(@Valid @NotNull ImmunizationDto dto) {
 		return save(dto, true, true);
 	}
 
-	@RolesAllowed({
-		UserRight._IMMUNIZATION_CREATE,
-		UserRight._IMMUNIZATION_EDIT })
+	@RolesAllowed({UserRight._IMMUNIZATION_CREATE, UserRight._IMMUNIZATION_EDIT})
 	public ImmunizationDto save(@Valid @NotNull ImmunizationDto dto, boolean checkChangeDate, boolean internal) {
 		Immunization existingImmunization = service.getByUuid(dto.getUuid());
 
@@ -529,9 +522,7 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed({
-		UserRight._SYSTEM,
-		UserRight._IMMUNIZATION_EDIT })
+	@RolesAllowed(UserRight._SYSTEM)
 	public void updateImmunizationStatuses() {
 		service.updateImmunizationStatuses();
 	}
@@ -639,7 +630,7 @@ public class ImmunizationFacadeEjb
 		}, 5, TimeUnit.SECONDS);
 	}
 
-	@RolesAllowed(UserRight._IMMUNIZATION_CREATE)
+	@RolesAllowed({UserRight._IMMUNIZATION_CREATE, UserRight._PERSON_EDIT})
 	public void copyImmunizationsToLeadPerson(ImmunizationDto immunizationDto, PersonDto leadPerson) {
 		Immunization newImmunization = new Immunization();
 		newImmunization.setUuid(DataHelper.createUuid());

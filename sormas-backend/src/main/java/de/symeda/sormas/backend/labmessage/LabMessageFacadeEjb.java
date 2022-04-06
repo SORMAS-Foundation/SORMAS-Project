@@ -359,7 +359,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	 * @return An indication whether the fetching of new labMessage was successful. If it was not, an error message meant for UI users.
 	 */
 	@Override
-    @RolesAllowed(UserRight._SYSTEM)
+    @RolesAllowed({UserRight._SYSTEM, UserRight._LAB_MESSAGES})
 	public LabMessageFetchResult fetchAndSaveExternalLabMessages(Date since) {
 
 		SystemEventDto currentSync = syncFacadeEjb.startSyncFor(SystemEventType.FETCH_LAB_MESSAGES);
@@ -378,8 +378,6 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		}
 	}
 
-
-    @RolesAllowed(UserRight._SYSTEM)
 	protected LabMessageFetchResult fetchAndSaveExternalLabMessages(SystemEventDto currentSync, Date since) throws NamingException {
 		if (since == null) {
 			since = syncFacadeEjb.findLastSyncDateFor(SystemEventType.FETCH_LAB_MESSAGES);
@@ -396,8 +394,6 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		}
 	}
 
-
-   @RolesAllowed(UserRight._SYSTEM)
 	protected ExternalMessageResult<List<LabMessageDto>> fetchExternalMessages(Date since) throws NamingException {
 		ExternalLabResultsFacade labResultsFacade = getExternalLabResultsFacade();
 		return labResultsFacade.getExternalLabMessages(since);

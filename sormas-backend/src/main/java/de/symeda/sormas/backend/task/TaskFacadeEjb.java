@@ -296,9 +296,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
-	@RolesAllowed({
-		UserRight._TASK_CREATE,
-		UserRight._TASK_EDIT })
+	@RolesAllowed({UserRight._TASK_CREATE, UserRight._TASK_EDIT})
 	public TaskDto saveTask(@Valid TaskDto dto) {
 		// Let's retrieve the old assignee before updating the task
 		User oldAssignee = taskService.getTaskAssigneeByUuid(dto.getUuid());
@@ -962,8 +960,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
-    @RolesAllowed(
-            UserRight._TASK_EDIT)
+    @RolesAllowed(UserRight._TASK_EDIT)
 	public void updateArchived(List<String> taskUuids, boolean archived) {
 		IterableHelper.executeBatched(taskUuids, ARCHIVE_BATCH_SIZE, e -> taskService.updateArchived(e, archived));
 	}
