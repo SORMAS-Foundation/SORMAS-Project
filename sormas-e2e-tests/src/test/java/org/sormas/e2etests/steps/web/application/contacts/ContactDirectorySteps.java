@@ -410,7 +410,6 @@ public class ContactDirectorySteps implements En {
         (String searchCriteria) -> {
           exposureData = contactService.buildGeneratedExposureDataContactForRandomInputs();
           String emailAddress = exposureData.getContactPersonEmail();
-          System.out.println("Facility: " + searchCriteria);
           switch (searchCriteria) {
             case "Facility (\u00A7 23 IfSG)":
               webDriverHelpers.selectFromCombobox(

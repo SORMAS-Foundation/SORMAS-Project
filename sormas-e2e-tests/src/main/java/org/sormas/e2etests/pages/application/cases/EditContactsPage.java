@@ -40,8 +40,10 @@ public class EditContactsPage {
   public static final By IMPORT_POPUP_BUTTON = By.cssSelector("[class='v-button']");
   public static final By COMMIT_BUTTON = By.id("commit");
   public static final By IMPORT_SUCCESS = By.xpath("//*[text()='Import successful!']");
-  public static final By RESULTS_IN_GRID_IMPORT_POPUP=
-          By.xpath(" //div[contains(@class, 'popupContent')]//tr[contains(@class, 'v-grid-row-has-data')]");
-  public static final By FIRST_RESULT_IN_GRID_IMPORT_POPUP=
-          By.xpath(" //div[contains(@class, 'popupContent')]//tr[contains(@class, 'v-grid-row-has-data')]//td");
+  public static final By RESULTS_IN_GRID_IMPORT_POPUP =
+      By.xpath(
+          " //div[contains(@class, 'popupContent')]//tr[contains(@class, 'v-grid-row-has-data')]");
+  public static final By FIRST_RESULT_IN_GRID_IMPORT_POPUP =
+      By.xpath(
+          " //div[contains(@class, 'popupContent')]//tr[contains(@class, 'v-grid-row-has-data')]//td");
 }
