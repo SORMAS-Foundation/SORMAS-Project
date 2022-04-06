@@ -285,6 +285,14 @@ public class PerformanceLogAnalysisGenerator {
 			if (subcalls.isEmpty()) {
 				return "--";
 			}
+
+			long overallTotalTime = totalTime;
+			if (overallTotalTime == 0L) {
+				for (MethodStats subMethod : subcalls.values()) {
+					overallTotalTime += subMethod.totalTime;
+				}
+			}
+
 			StringBuilder stringBuilder = new StringBuilder();
 			stringBuilder.append("<table>");
 			stringBuilder.append(
@@ -293,15 +301,15 @@ public class PerformanceLogAnalysisGenerator {
 			List<MethodStats> subcallsList = new ArrayList<>(subcalls.values());
 			Collections.sort(subcallsList);
 			for (MethodStats subMethod : subcallsList) {
-				stringBuilder.append(subMethod.getTableRow(withSubcalls)).append("\n");
+				stringBuilder.append(subMethod.getTableRow(withSubcalls, overallTotalTime)).append("\n");
 			}
 			stringBuilder.append("</table>\n");
 			return stringBuilder.toString();
 		}
 
-		public String getTableRow(boolean withSubcalls) {
+		public String getTableRow(boolean withSubcalls, long overallTotalTime) {
 
-			return "<tr>" + methodCell(method, withSubcalls) + cell(calls) + cell(totalTime) + timeCell(maxTime) + timeCell(minTime)
+			return "<tr>" + methodCell(method, withSubcalls) + cell(calls) + totalTimeCell(overallTotalTime) + timeCell(maxTime) + timeCell(minTime)
 				+ timeCell(meanTime())
 				// + (withSubcalls ? cell(subcalls.size()) : "") + "</tr>";
 				+ (withSubcalls ? subcallsCell() : "") + "</tr>";
@@ -332,7 +340,13 @@ public class PerformanceLogAnalysisGenerator {
 			return cell(withSubcalls ? "<span id=\"" + id + "\">" + method + "</span>" : "<a href=\"#" + id + "\">" + method + "</a>");
 		}
 
-		private String timeCell(Long time) {
+		private String totalTimeCell(long overallTotalTime) {
+			String timeColor = String.format("%02X", overallTotalTime > 0L ? 256L - (200L * totalTime) / overallTotalTime : 256L);
+			String style = " style=\"background: #ff" + timeColor + timeColor + "\"";
+			return "<td" + style + ">" + totalTime + "</td>";
+		}
+
+		private String timeCell(long time) {
 			String style = "";
 			if (time >= TIME_TRESHOLD_YELLOW) {
 				style = " style=\"background: #ffee00\"";
