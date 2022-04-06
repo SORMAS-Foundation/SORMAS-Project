@@ -183,4 +183,4 @@ Feature: Epidemiological data coverage
     And I select Unbekannt option in Type of activity from Combobox in Activity as Case form
     And I fill Location form for Type of place field by "Einrichtung (§ 23 IfSG)" options in Case as Activity directory for DE version
     And  I click on save button in Exposure for Epidemiological data tab in Cases
-    And I check that edit Activity as Case vision button is visible and clickable
+    And I check if created Activity as Case appears in a grid for Epidemiological data tab in Cases

@@ -68,7 +68,7 @@ public class EpidemiologicalDataCaseSteps implements En {
         });
 
     When(
-        "I check that edit Activity as Case vision button is visible and clickable",
+        "I check if created Activity as Case appears in a grid for Epidemiological data tab in Cases",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(OPEN_SAVED_ACTIVITY_BUTTON);
         });
