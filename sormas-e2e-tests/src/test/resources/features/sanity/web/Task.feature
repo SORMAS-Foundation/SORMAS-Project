@@ -28,7 +28,9 @@ Feature: Tasks functionalities
     When I click on first edit Task
     Then I check the created task is correctly displayed on Edit task page
 
-  @env_main
+#    this
+#  @env_main
+  @issue=SORDEV-9999 @env_main
   Scenario: Check all fields from the created Task in the Task Management table
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
