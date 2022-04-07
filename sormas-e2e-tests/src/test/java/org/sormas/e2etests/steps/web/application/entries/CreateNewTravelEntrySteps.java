@@ -38,6 +38,7 @@ import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.CREATE_CASE_FROM_TRAVEL_ENTRY;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.DISEASE_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.FIRST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.INFO_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.LAST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.POINT_OF_ENTRY_CASE;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.SAVE_NEW_CASE_FOR_TRAVEL_ENTRY_POPUP;
@@ -222,6 +223,7 @@ public class CreateNewTravelEntrySteps implements En {
     When(
         "I check if data in case based on travel entry is correct",
         () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(INFO_BUTTON);
           aCase = collectCasePersonDataBasedOnTravelEntryDE();
           softly.assertEquals(
               aCase.getResponsibleRegion(),

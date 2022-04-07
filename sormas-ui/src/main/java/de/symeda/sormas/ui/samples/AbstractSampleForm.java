@@ -192,7 +192,6 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 			Arrays.asList(true),
 			Arrays.asList(SampleDto.RECEIVED_DATE, SampleDto.LAB_SAMPLE_ID, SampleDto.SPECIMEN_CONDITION),
 			true);
-		FieldHelper.setRequiredWhen(getFieldGroup(), receivedField, Arrays.asList(SampleDto.SPECIMEN_CONDITION), Arrays.asList(true));
 
 		if (disease != Disease.NEW_INFLUENZA) {
 			getField(SampleDto.SAMPLE_SOURCE).setVisible(false);

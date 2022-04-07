@@ -8,6 +8,7 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.Date;
+import java.util.List;
 
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.internal.SessionImpl;
@@ -27,6 +28,8 @@ import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
+import de.symeda.sormas.api.labmessage.LabMessageDto;
+import de.symeda.sormas.api.labmessage.TestReportDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.SampleDto;
@@ -40,6 +43,7 @@ import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.sample.PathogenTest;
 
 public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 
@@ -161,7 +165,7 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 		assertEquals(0, getClinicalVisitService().count());
 		assertEquals(0, getTreatmentService().count());
 		assertEquals(0, getPrescriptionService().count());
-		assertEquals(2, getSampleService().count());
+		assertEquals(1, getSampleService().count());
 		assertEquals(1, getVisitService().count());
 		assertNull(getSampleFacade().getSampleByUuid(multiSample.getUuid()).getAssociatedCase());
 		assertEquals(0, getSurveillanceReportService().count());
@@ -172,7 +176,64 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 		assertNull(getTravelEntryFacade().getByUuid(travelEntry.getUuid()).getResultingCase());
 		assertNull(getImmunizationFacade().getByUuid(immunization.getUuid()).getRelatedCase());
 	}
-	
+
+	@Test
+	public void testSamplePermanentDeletion() {
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, UserRole.ADMIN, UserRole.NATIONAL_USER);
+		PersonDto person = creator.createPerson();
+		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
+		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		SampleDto referralSample =
+			creator.createSample(caze.toReference(), user.toReference(), rdcf.facility, s -> s.setReferredTo(sample.toReference()));
+		creator.createPathogenTest(sample.toReference(), caze);
+		creator.createAdditionalTest(sample.toReference());
+		LabMessageDto labMessage = creator.createLabMessage(lm -> lm.setSample(sample.toReference()));
+
+		getSampleFacade().deleteSample(sample.toReference());
+
+		List<PathogenTest> pathogenTests = getPathogenTestService().getAll();
+		assertEquals(2, getSampleService().count());
+		assertTrue(getSampleService().getByUuid(sample.getUuid()).isDeleted());
+		assertEquals(1, pathogenTests.size());
+		assertTrue(pathogenTests.get(0).isDeleted());
+		assertEquals(1, getAdditionalTestService().count());
+		assertNull(getSampleService().getByUuid(referralSample.getUuid()).getReferredTo());
+		assertNull(getLabMessageService().getByUuid(labMessage.getUuid()).getSample());
+
+		useSystemUser();
+		getCoreEntityDeletionService().executePermanentDeletion();
+		loginWith(user);
+
+		assertEquals(1, getSampleService().count());
+		assertEquals(0, getPathogenTestService().count());
+		assertEquals(0, getAdditionalTestService().count());
+		assertEquals(1, getLabMessageService().count());
+	}
+
+	@Test
+	public void testLabMessagePermanentDeletion() {
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, UserRole.ADMIN, UserRole.NATIONAL_USER);
+
+		LabMessageDto labMessage = creator.createLabMessage(null);
+		TestReportDto testReport = creator.createTestReport(labMessage.toReference());
+
+		getLabMessageFacade().deleteLabMessage(labMessage.getUuid());
+
+		assertEquals(1, getLabMessageService().count());
+		assertEquals(labMessage.toReference(), getTestReportFacade().getByUuid(testReport.getUuid()).getLabMessage());
+
+		useSystemUser();
+		getCoreEntityDeletionService().executePermanentDeletion();
+		loginWith(user);
+
+		assertEquals(0, getLabMessageService().count());
+		assertEquals(0, getTestReportService().count());
+	}
+
 	@Test
 	public void testCaseVisitPermanentDeletion() {
 

@@ -891,7 +891,7 @@ public class CaseController {
 				districtUuid = currentDistrictUuid;
 				first = false;
 			} else {
-				if (!DataHelper.equal(regionUuid, currentDistrictUuid)) {
+				if (!DataHelper.equal(regionUuid, currentRegionUuid)) {
 					regionUuid = null;
 				}
 				if (!DataHelper.equal(districtUuid, currentDistrictUuid)) {

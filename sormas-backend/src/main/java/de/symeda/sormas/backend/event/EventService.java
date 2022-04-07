@@ -868,12 +868,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	}
 
 	public List<ContactEventSummaryDetails> getEventSummaryDetailsByContacts(List<String> contactUuids) {
-		if (contactUuids.isEmpty()) {
-			return Collections.emptyList();
-		}
 
 		List<ContactEventSummaryDetails> eventSummaryDetailsList = new ArrayList<>();
-
 		IterableHelper.executeBatched(contactUuids, ModelConstants.PARAMETER_LIMIT, batchedContactUuids -> {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<ContactEventSummaryDetails> eventsCq = cb.createQuery(ContactEventSummaryDetails.class);

@@ -55,14 +55,16 @@ public class SampleReferenceDto extends ReferenceDto {
 		}
 		stringBuilder.append(I18nProperties.getString(Strings.entitySample));
 		if (caseUuid != null) {
-			stringBuilder.append(StringUtils.wrap(I18nProperties.getString(Strings.forCase), " ")).append(DataHelper.getShortUuid(caseUuid));
+			stringBuilder.append(StringUtils.wrap(I18nProperties.getString(Strings.forCase), " "))
+				.append("(" + DataHelper.getShortUuid(caseUuid) + ")");
 		}
 		if (contactUuid != null) {
-			stringBuilder.append(StringUtils.wrap(I18nProperties.getString(Strings.forContact), " ")).append(DataHelper.getShortUuid(contactUuid));
+			stringBuilder.append(StringUtils.wrap(I18nProperties.getString(Strings.forContact), " "))
+				.append("(" + DataHelper.getShortUuid(contactUuid) + ")");
 		}
 		if (eventParticipantUuid != null) {
 			stringBuilder.append(StringUtils.wrap(I18nProperties.getString(Strings.forEventParticipant), " "))
-				.append(DataHelper.getShortUuid(eventParticipantUuid));
+				.append("(" + DataHelper.getShortUuid(eventParticipantUuid) + ")");
 		}
 		return stringBuilder.toString();
 	}

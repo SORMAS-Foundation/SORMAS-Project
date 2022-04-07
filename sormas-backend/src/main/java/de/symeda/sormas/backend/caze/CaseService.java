@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -49,7 +48,6 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -793,12 +791,13 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			Join<Case, EventParticipant> eventParticipant = joins.getEventParticipants();
 			Join<EventParticipant, Event> event = eventParticipant.join(EventParticipant.EVENT, JoinType.LEFT);
 
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.isFalse(event.get(Event.DELETED)),
-				cb.isFalse(event.get(Event.ARCHIVED)),
-				cb.isFalse(eventParticipant.get(EventParticipant.DELETED)));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.isFalse(event.get(Event.DELETED)), cb.isFalse(eventParticipant.get(EventParticipant.DELETED)));
+			if (EntityRelevanceStatus.ACTIVE.equals(caseCriteria.getRelevanceStatus())) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(event.get(Event.ARCHIVED)));
+			} else if (EntityRelevanceStatus.ARCHIVED.equals(caseCriteria.getRelevanceStatus())) {
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.isTrue(event.get(Event.ARCHIVED)));
+			}
 
 			if (hasEventLikeCriteria) {
 				String[] textFilters = caseCriteria.getEventLike().trim().split("\\s+");
@@ -895,7 +894,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		caze.getSamples()
 			.stream()
 			.filter(sample -> sample.getAssociatedContact() == null && sample.getAssociatedEventParticipant() == null)
-			.forEach(sample -> sampleService.delete(sample));
+			.forEach(sample -> sampleService.deletePermanent(sample));
 
 		caze.getVisits().stream().forEach(visit -> {
 			if (visit.getContacts() == null || visit.getContacts().isEmpty()) {
@@ -1413,17 +1412,11 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	public Collection<Case> getByPersonUuids(List<String> personUuids) {
-		if (CollectionUtils.isEmpty(personUuids)) {
-			// Avoid empty IN clause
-			return Collections.emptyList();
-		} else if (personUuids.size() > ModelConstants.PARAMETER_LIMIT) {
-			List<Case> cases = new LinkedList<>();
-			IterableHelper
-				.executeBatched(personUuids, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> cases.addAll(getCasesByPersonUuids(personUuids)));
-			return cases;
-		} else {
-			return getCasesByPersonUuids(personUuids);
-		}
+
+		List<Case> cases = new ArrayList<>();
+		IterableHelper
+			.executeBatched(personUuids, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> cases.addAll(getCasesByPersonUuids(personUuids)));
+		return cases;
 	}
 
 	private List<Case> getCasesByPersonUuids(List<String> personUuids) {
