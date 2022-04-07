@@ -31,6 +31,9 @@ import de.symeda.sormas.backend.therapy.PrescriptionFacadeEjb;
 import de.symeda.sormas.backend.therapy.TreatmentFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 
+import java.util.ArrayList;
+import java.util.List;
+
 @RunWith(ArchUnitRunner.class)
 @AnalyzeClasses(packages = {
 	"de.symeda.sormas.api",
@@ -64,12 +67,12 @@ public class ArchitectureTest {
 
 	@ArchTest
 	public void testCaseImportFacadeEjbAuthorization(JavaClasses classes) {
-		assertFacadeEjbAnnotated(CaseImportFacadeEjb.class, true, classes);
+		assertFacadeEjbAnnotated(CaseImportFacadeEjb.class, true, classes, null);
 	}
 
 	@ArchTest
 	public void testExternalJournalFacadeEjbAuthorization(JavaClasses classes) {
-		assertFacadeEjbAnnotated(ExternalJournalFacadeEjb.class, true, classes);
+		assertFacadeEjbAnnotated(ExternalJournalFacadeEjb.class, true, classes, null);
 	}
 
 	@ArchTest
@@ -101,12 +104,14 @@ public class ArchitectureTest {
 
 	@ArchTest
 	public void testLabMessageFacadeEjbAuthorization(JavaClasses classes) {
-		assertFacadeEjbAnnotated(LabMessageFacadeEjb.class, classes);
+		List<String> specificMethodNames = new ArrayList<>();
+		specificMethodNames.add("fetchAndSaveExternalLabMessages");
+		assertFacadeEjbAnnotated(LabMessageFacadeEjb.class, true, classes, specificMethodNames);
 	}
 
 	@ArchTest
 	public void testTestReportFacadeEjbAuthorization(JavaClasses classes) {
-		assertFacadeEjbAnnotated(TestReportFacadeEjb.class, classes);
+		assertFacadeEjbAnnotated(TestReportFacadeEjb.class, true, classes, null);
 	}
 
 	@ArchTest
@@ -130,36 +135,31 @@ public class ArchitectureTest {
 	}
 
 	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, JavaClasses classes) {
-		assertFacadeEjbAnnotated(facadeEjbClass, false, classes);
+		assertFacadeEjbAnnotated(facadeEjbClass, false, classes, null);
 	}
 
-	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, boolean classAuthOnly, JavaClasses classes) {
+	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, boolean classAuthOnly, JavaClasses classes, List<String> specificMethodNames) {
 		ArchRuleDefinition.theClass(facadeEjbClass).should().beAnnotatedWith(RolesAllowed.class).check(classes);
-
-		GivenMethodsConjunction methods = ArchRuleDefinition.methods().that().areDeclaredIn(facadeEjbClass).and().arePublic();
+		GivenMethodsConjunction allPublicMethods = ArchRuleDefinition.methods().that().areDeclaredIn(facadeEjbClass).and().arePublic();
 
 		if (classAuthOnly) {
-			methods.should().notBeAnnotatedWith(RolesAllowed.class);
+			getMethodsShouldNotBeAnnotated(facadeEjbClass, allPublicMethods).should().notBeAnnotatedWith(RolesAllowed.class);
+			if (specificMethodNames != null) {
+				specificMethodNames.forEach(
+					specificMethodName -> allPublicMethods.and().haveFullName(specificMethodName).should().beAnnotatedWith(RolesAllowed.class));
+			}
 		} else {
-			methods.should()
+			allPublicMethods.should()
 				.beAnnotatedWith(RolesAllowed.class)
 				.orShould()
-				.haveNameMatching(
-					"^(get|count|is|does|has|validate|to|pseudonymize|convertToReferenceDto|fillOrBuild|convertToDto|fromDto|exists"
-						+ getAdditionalNameMatchingStringForFacade(facadeEjbClass) + ").*")
+				.haveNameMatching("^(get|count|is|does|has|validate|to|pseudonymize|convertToReferenceDto|fillOrBuild|convertToDto|fromDto|exists).*")
 				.check(classes);
 		}
 	}
 
-	private String getAdditionalNameMatchingStringForFacade(Class<?> facadeEjbClass) {
-        String additionalNameMatchingString = "";
-        if (facadeEjbClass.getSimpleName().equals("LabMessageFacadeEjb")) {
-            additionalNameMatchingString = "|save|delete|bulk";
-        }
-        if (facadeEjbClass.getSimpleName().equals("TestReportFacadeEjb")) {
-            additionalNameMatchingString = "|save";
-        }
-
-		return additionalNameMatchingString;
+	private GivenMethodsConjunction getMethodsShouldNotBeAnnotated(Class<?> facadeEjbClass, GivenMethodsConjunction methods) {
+		return !facadeEjbClass.getSimpleName().equals("LabMessageFacadeEjb")
+			? methods
+			: methods.and().doNotHaveFullName("fetchAndSaveExternalLabMessages");
 	}
 }
