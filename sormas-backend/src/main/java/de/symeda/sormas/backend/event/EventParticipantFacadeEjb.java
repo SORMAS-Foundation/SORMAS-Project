@@ -50,6 +50,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.vaccination.VaccinationService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -168,6 +169,8 @@ public class EventParticipantFacadeEjb
 	private SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal sormasToSormasOriginInfoFacade;
 	@EJB
 	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
+	@EJB
+    private VaccinationService vaccinationService;
 
 	public EventParticipantFacadeEjb() {
 	}
@@ -272,7 +275,20 @@ public class EventParticipantFacadeEjb
 		}
 	}
 
-	@Override
+    private List<Vaccination> getRelevantSortedVaccinations(String caseUuid, List<Vaccination> vaccinations) {
+        Case caze = caseService.getByUuid(caseUuid);
+
+        return vaccinations.stream()
+                .filter(v -> vaccinationService.isVaccinationRelevant(caze, v))
+                .sorted(Comparator.comparing(ImmunizationEntityHelper::getVaccinationDateForComparison))
+                .collect(Collectors.toList());
+    }
+
+    private String getNumberOfDosesFromVaccinations(Vaccination vaccination) {
+        return vaccination != null ? vaccination.getVaccineDose() : "";
+    }
+
+    @Override
 	public List<String> getDeletedUuidsSince(Date since) {
 
 		User user = userService.getCurrentUser();
@@ -783,16 +799,16 @@ public class EventParticipantFacadeEjb
 							epImmunizations.stream().filter(i -> i.getDisease() == exportDto.getEventDisease()).collect(Collectors.toList());
 						filteredImmunizations.sort(Comparator.comparing(i -> ImmunizationEntityHelper.getDateForComparison(i, false)));
 						Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
-						exportDto.setVaccinationDoses(String.valueOf(mostRecentImmunization.getNumberOfDoses()));
+                        Integer numberOfDoses = mostRecentImmunization.getNumberOfDoses();
 
-						if (CollectionUtils.isNotEmpty(mostRecentImmunization.getVaccinations())) {
-							List<Vaccination> sortedVaccinations = mostRecentImmunization.getVaccinations()
-								.stream()
-								.sorted(Comparator.comparing(ImmunizationEntityHelper::getVaccinationDateForComparison))
-								.collect(Collectors.toList());
-							Vaccination firstVaccination = sortedVaccinations.get(0);
-							Vaccination lastVaccination = sortedVaccinations.get(sortedVaccinations.size() - 1);
+                        List<Vaccination> relevantSortedVaccinations =
+                                getRelevantSortedVaccinations(exportDto.getEventParticipantUuid(), mostRecentImmunization.getVaccinations());
+                        Vaccination firstVaccination = null;
+                        Vaccination lastVaccination = null;
 
+						if (CollectionUtils.isNotEmpty(relevantSortedVaccinations)) {
+                            firstVaccination = relevantSortedVaccinations.get(0);
+                            lastVaccination = relevantSortedVaccinations.get(relevantSortedVaccinations.size() - 1);
 							exportDto.setFirstVaccinationDate(firstVaccination.getVaccinationDate());
 							exportDto.setLastVaccinationDate(lastVaccination.getVaccinationDate());
 							exportDto.setVaccineName(lastVaccination.getVaccineName());
@@ -805,6 +821,9 @@ public class EventParticipantFacadeEjb
 							exportDto.setVaccineUniiCode(lastVaccination.getVaccineUniiCode());
 							exportDto.setVaccineInn(lastVaccination.getVaccineInn());
 						}
+
+                        exportDto.setVaccinationDoses(
+                                numberOfDoses != null ? String.valueOf(numberOfDoses) : getNumberOfDosesFromVaccinations(lastVaccination));
 					});
 				}
 
