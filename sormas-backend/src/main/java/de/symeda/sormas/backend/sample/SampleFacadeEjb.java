@@ -703,11 +703,6 @@ public class SampleFacadeEjb implements SampleFacade {
 		handleAssotiatedObjectChanges(sample, true);
 	}
 
-	public void deletePermanent(SampleReferenceDto sampleRef) {
-		Sample sample = sampleService.getByReferenceDto(sampleRef);
-		sampleService.deletePermanent(sample);
-	}
-
 	@Override
 	@RolesAllowed(UserRight._SAMPLE_DELETE)
 	public void deleteAllSamples(List<String> sampleUuids) {

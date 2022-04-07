@@ -63,8 +63,6 @@ public interface SampleFacade {
 
 	void deleteSample(SampleReferenceDto sampleRef);
 
-	void deletePermanent(SampleReferenceDto sampleRef);
-
 	void deleteAllSamples(List<String> sampleUuids);
 
 	List<String> deleteSamples(List<String> sampleUuids);
