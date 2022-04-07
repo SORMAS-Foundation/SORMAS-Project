@@ -171,4 +171,11 @@ public class EditCasePage {
   public static final By BACK_TO_CASES_BUTTON = By.id("tab-cases");
   public static final By CASE_DATA_TITLE = By.cssSelector("[location='caseDataHeadingLoc']");
   public static final By EDIT_CASE_EPIDEMIOLOGICAL_DATA = By.cssSelector("#tab-cases-epidata");
+  public static final By PICK_OR_CREATE_PERSON_POPUP_HEADER =
+      By.xpath("//*[contains(text(),'Pick or create person')]");
+  public static final By PICK_OR_CREATE_CASE_POPUP_HEADER =
+      By.xpath("//*[contains(text(),'Pick or create case')]");
+  public static final By CREATE_NEW_PERSON_CHECKBOX =
+      By.xpath("//label[text()='Create a new person']");
+  public static final By CREATE_NEW_CASE_CHECKBOX = By.xpath("//label[text()='Create a new case']");
 }

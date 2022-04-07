@@ -67,7 +67,7 @@ public class TravelEntryDirectorySteps implements En {
         "I select the German travel entry CSV file in the file picker",
         () -> {
           webDriverHelpers.sendFile(
-              FILE_PICKER, userDirPath + "/uploads/Importvorlage_Einreise_21.11.04.csv");
+              FILE_PICKER, userDirPath + "/uploads/Importvorlage_Einreise_22.04.01.csv");
         });
 
     When(

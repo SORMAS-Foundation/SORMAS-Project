@@ -52,7 +52,7 @@ public enum RegionsValues {
     RegionsValues[] regionValuesOptions = RegionsValues.values();
     for (RegionsValues value : regionValuesOptions) {
       if (value.name.equalsIgnoreCase(regionName)) {
-        if (locale.equalsIgnoreCase("main")) {
+        if (locale.equalsIgnoreCase("main") || locale.equalsIgnoreCase("performance")) {
           return value.getUuidMain();
         }
         if (locale.equalsIgnoreCase("DE")) {

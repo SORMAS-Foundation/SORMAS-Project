@@ -286,7 +286,7 @@ public class CaseDetailedTableViewSteps implements En {
   private String getDateOfReportDateTime(String dateTimeString) {
     SimpleDateFormat outputFormat = new SimpleDateFormat("M/dd/yyyy h:mm a", Locale.ENGLISH);
     // because API request is sending local GMT and UI displays GMT+2 (server GMT)
-    outputFormat.setTimeZone(TimeZone.getTimeZone("GMT+1"));
+    outputFormat.setTimeZone(TimeZone.getDefault());
 
     // inputFormat is the format of teh dateTime as read from API created case
     DateFormat inputFormat = new SimpleDateFormat("EEE MMM dd HH:mm:ss zzz yyyy", Locale.US);

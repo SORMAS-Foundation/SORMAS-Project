@@ -55,7 +55,6 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -868,20 +867,6 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		ExternalDataUtil.updateExternalData(externalData, this::getByUuids, this::ensurePersisted);
 	}
 
-	public List<Person> getByExternalIdsBatched(List<String> externalIds) {
-		if (CollectionUtils.isEmpty(externalIds)) {
-			// Avoid empty IN clause
-			return Collections.emptyList();
-		} else if (externalIds.size() > ModelConstants.PARAMETER_LIMIT) {
-			List<Person> persons = new LinkedList<>();
-			IterableHelper
-				.executeBatched(externalIds, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> persons.addAll(getByExternalIds(externalIds)));
-			return persons;
-		} else {
-			return getByExternalIds(externalIds);
-		}
-	}
-
 	public Long getIdByUuid(@NotNull String uuid) {
 
 		if (uuid == null) {
@@ -900,17 +885,19 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		return q.getResultList().stream().findFirst().orElse(null);
 	}
 
-	private List<Person> getByExternalIds(List<String> externalIds) {
-		if (externalIds == null || externalIds.isEmpty()) {
-			return null;
-		}
+	public List<Person> getByExternalIds(List<String> externalIds) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Person> cq = cb.createQuery(getElementClass());
-		Root<Person> from = cq.from(getElementClass());
-		cq.where(from.get(Person.EXTERNAL_ID).in(externalIds));
+		List<Person> persons = new LinkedList<>();
+		IterableHelper.executeBatched(externalIds, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Person> cq = cb.createQuery(getElementClass());
+			Root<Person> from = cq.from(getElementClass());
 
-		return em.createQuery(cq).getResultList();
+			cq.where(from.get(Person.EXTERNAL_ID).in(externalIds));
+
+			persons.addAll(em.createQuery(cq).getResultList());
+		});
+		return persons;
 	}
 
 	public void executePermanentDeletion(int batchSize) {

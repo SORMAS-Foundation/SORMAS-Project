@@ -66,7 +66,6 @@ import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentFacade;
 import de.symeda.sormas.api.labmessage.LabMessageFacade;
 import de.symeda.sormas.api.labmessage.TestReportFacade;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
-import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.report.WeeklyReportFacade;
 import de.symeda.sormas.api.sample.AdditionalTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
@@ -167,6 +166,7 @@ import de.symeda.sormas.backend.person.PersonFacadeEjb.PersonFacadeEjbLocal;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb.WeeklyReportFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.AdditionalTestFacadeEjb.AdditionalTestFacadeEjbLocal;
+import de.symeda.sormas.backend.sample.AdditionalTestService;
 import de.symeda.sormas.backend.sample.PathogenTestFacadeEjb.PathogenTestFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.PathogenTestService;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
@@ -245,8 +245,6 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		em.getTransaction().begin();
 		Query nativeQuery = em.createNativeQuery("CREATE ALIAS similarity FOR \"de.symeda.sormas.backend.H2Function.similarity\"");
 		nativeQuery.executeUpdate();
-		nativeQuery = em.createNativeQuery("CREATE ALIAS array_to_string FOR \"de.symeda.sormas.backend.H2Function.array_to_string\"");
-		nativeQuery.executeUpdate();
 		nativeQuery = em.createNativeQuery("CREATE ALIAS date_part FOR \"de.symeda.sormas.backend.H2Function.date_part\"");
 		nativeQuery.executeUpdate();
 		nativeQuery = em.createNativeQuery("CREATE ALIAS epi_week FOR \"de.symeda.sormas.backend.H2Function.epi_week\"");
@@ -258,8 +256,6 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 		nativeQuery = em.createNativeQuery("CREATE ALIAS set_limit FOR \"de.symeda.sormas.backend.H2Function.set_limit\"");
 		nativeQuery.executeUpdate();
 		nativeQuery = em.createNativeQuery("CREATE ALIAS date FOR \"de.symeda.sormas.backend.H2Function.date\"");
-		nativeQuery.executeUpdate();
-		nativeQuery = em.createNativeQuery("CREATE TYPE \"JSONB\" AS other;");
 		nativeQuery.executeUpdate();
 		em.getTransaction().commit();
 	}
@@ -684,6 +680,10 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 
 	public PathogenTestService getPathogenTestService() {
 		return getBean(PathogenTestService.class);
+	}
+
+	public AdditionalTestService getAdditionalTestService() {
+		return getBean(AdditionalTestService.class);
 	}
 
 	public DocumentTemplateFacade getDocumentTemplateFacade() {

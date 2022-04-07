@@ -61,7 +61,7 @@ public enum DistrictsValues {
     DistrictsValues[] districtsValues = DistrictsValues.values();
     for (DistrictsValues value : districtsValues) {
       if (value.name().equalsIgnoreCase(districtName)) {
-        if (locale.equalsIgnoreCase("main")) {
+        if (locale.equalsIgnoreCase("main") || locale.equalsIgnoreCase("performance")) {
           return value.getUuidMain();
         }
         if (locale.equalsIgnoreCase("DE")) {

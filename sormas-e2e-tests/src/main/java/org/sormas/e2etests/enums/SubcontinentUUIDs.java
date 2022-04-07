@@ -37,7 +37,7 @@ public enum SubcontinentUUIDs {
     SubcontinentUUIDs[] subContinentUUIDs = SubcontinentUUIDs.values();
     for (SubcontinentUUIDs value : subContinentUUIDs) {
       if (value.name().equalsIgnoreCase(subContinent)) {
-        if (locale.equalsIgnoreCase("main")) {
+        if (locale.equalsIgnoreCase("main") || locale.equalsIgnoreCase("performance")) {
           return value.getUuidMain();
         }
         if (locale.equalsIgnoreCase("DE")) {

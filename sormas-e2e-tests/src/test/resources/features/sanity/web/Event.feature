@@ -144,12 +144,12 @@ Feature: Create events
     And I collect the event actions from table view
     And I am checking if all the fields are correctly displayed in the Event directory Actions table
 
-  @issue=SORDEV-5476 @env_main @ignore
+  @issue=SORDEV-5476 @env_main
   Scenario: Add a Task from event and verify the fields
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     When I am accessing the event tab using the created event via api
     Then I click on New Task from event tab
     And I create a new task with specific data for an event
