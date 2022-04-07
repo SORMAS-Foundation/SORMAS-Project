@@ -62,6 +62,7 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.vaccination.VaccinationService;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -265,6 +266,8 @@ public class ContactFacadeEjb
 	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
 	@EJB
 	private HealthConditionsMapper healthConditionsMapper;
+    @EJB
+    private VaccinationService vaccinationService;
 
 	@Resource
 	private ManagedScheduledExecutorService executorService;
@@ -839,16 +842,15 @@ public class ContactFacadeEjb
 							filteredImmunizations.sort(Comparator.comparing(i -> ImmunizationEntityHelper.getDateForComparison(i, false)));
 							Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
 							Integer numberOfDoses = mostRecentImmunization.getNumberOfDoses();
-							exportContact.setNumberOfDoses(numberOfDoses != null ? String.valueOf(numberOfDoses) : "");
 
-							if (CollectionUtils.isNotEmpty(mostRecentImmunization.getVaccinations())) {
-								List<Vaccination> sortedVaccinations = mostRecentImmunization.getVaccinations()
-									.stream()
-									.sorted(Comparator.comparing(ImmunizationEntityHelper::getVaccinationDateForComparison))
-									.collect(Collectors.toList());
-								Vaccination firstVaccination = sortedVaccinations.get(0);
-								Vaccination lastVaccination = sortedVaccinations.get(sortedVaccinations.size() - 1);
+							List<Vaccination> relevantSortedVaccinations =
+								getRelevantSortedVaccinations(exportContact.getUuid(), mostRecentImmunization.getVaccinations());
+							Vaccination firstVaccination = null;
+							Vaccination lastVaccination = null;
 
+							if (CollectionUtils.isNotEmpty(relevantSortedVaccinations)) {
+								firstVaccination = relevantSortedVaccinations.get(0);
+								lastVaccination = relevantSortedVaccinations.get(relevantSortedVaccinations.size() - 1);
 								exportContact.setFirstVaccinationDate(firstVaccination.getVaccinationDate());
 								exportContact.setLastVaccinationDate(lastVaccination.getVaccinationDate());
 								exportContact.setVaccineName(lastVaccination.getVaccineName());
@@ -861,6 +863,9 @@ public class ContactFacadeEjb
 								exportContact.setVaccineUniiCode(lastVaccination.getVaccineUniiCode());
 								exportContact.setVaccineInn(lastVaccination.getVaccineInn());
 							}
+
+							exportContact.setNumberOfDoses(
+								numberOfDoses != null ? String.valueOf(numberOfDoses) : getNumberOfDosesFromVaccinations(lastVaccination));
 						}
 					});
 				}
@@ -2237,6 +2242,19 @@ public class ContactFacadeEjb
 
 		return userService.getRandomDistrictUser(district, UserRight.CONTACT_RESPONSIBLE);
 	}
+
+    private List<Vaccination> getRelevantSortedVaccinations(String caseUuid, List<Vaccination> vaccinations) {
+        Case caze = caseService.getByUuid(caseUuid);
+
+        return vaccinations.stream()
+                .filter(v -> vaccinationService.isVaccinationRelevant(caze, v))
+                .sorted(Comparator.comparing(ImmunizationEntityHelper::getVaccinationDateForComparison))
+                .collect(Collectors.toList());
+    }
+
+    private String getNumberOfDosesFromVaccinations(Vaccination vaccination) {
+        return vaccination != null ? vaccination.getVaccineDose() : "";
+    }
 
 	public User getRandomRegionContactResponsible(Region region) {
 
