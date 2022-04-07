@@ -15,9 +15,19 @@ Performance logging can be used to find out which part of the code or system mig
 
 ### Switch on Performance Logging in SORMAS
 
-1. Open the logback file located in your domain (default path: `/opt/domains/sormas/config/logback.xml`) and change the log level of `PerformanceLoggingInterceptor` to `DEBUG`. The config change will be recognized during runtime within 30s. After that you will see detailed log entries in the SORMAS log.
+1. Open the logback file located in your domain (default path: `/opt/domains/sormas/config/logback.xml`) and change the log level of `PerformanceLoggingInterceptor` to `DEBUG` or `TRACE`. The config change will be recognized during runtime within 30s. After that you will see detailed log entries in the SORMAS log.
 
 2. Set the log level back to its default once the logging has been done since it can reduce the overall performance of SORMAS.
+
+### Analyze Performance Logs
+
+Performance logs can be analyzed in detail using the `PerformanceLogAnalysisGenerator`. To use this tool, set the `PerformanceLoggingInterceptor`'s log level
+to `TRACE` as described above and reproduce the scenario you want to investigate on the server instance.
+
+After this, process the debug log file (default path: `/opt/domains/sormas/logs/application.debug`) using the `PerformanceLogAnalysisGenerator`. This will
+generate three files (`<logfileName>.csv`, `<logfileName>.txt`, `<logfileName>.html`) to further investigate method runtimes.
+
+`<logfileName>.html` provides a navigable overview of methods along with runtime statistics (total, min, max and average time) and calls to sub methods.
 
 ### Log Slow SQL Queries in PostgreSQL
 
