@@ -894,7 +894,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		caze.getSamples()
 			.stream()
 			.filter(sample -> sample.getAssociatedContact() == null && sample.getAssociatedEventParticipant() == null)
-			.forEach(sample -> sampleService.delete(sample));
+			.forEach(sample -> sampleService.deletePermanent(sample));
 
 		caze.getVisits().stream().forEach(visit -> {
 			if (visit.getContacts() == null || visit.getContacts().isEmpty()) {

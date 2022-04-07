@@ -62,6 +62,7 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonJoins;
 import de.symeda.sormas.backend.person.PersonJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -79,6 +80,8 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 	@EJB
 	private UserService userService;
 	@EJB
+	private SormasToSormasShareInfoFacadeEjbLocal sormasToSormasShareInfoFacade;
+	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 
 	public ImmunizationService() {
@@ -88,11 +91,15 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 	@Override
 	public void deletePermanent(Immunization immunization) {
 
-		sormasToSormasShareInfoService.getByAssociatedEntity(SormasToSormasShareInfo.IMMUNIZATION, immunization.getUuid())
-			.forEach(sormasToSormasShareInfo -> {
-				sormasToSormasShareInfo.setImmunization(null);
-				sormasToSormasShareInfoService.ensurePersisted(sormasToSormasShareInfo);
-			});
+		// Remove the immunization from any S2S share info referencing it
+		sormasToSormasShareInfoService.getByAssociatedEntity(SormasToSormasShareInfo.IMMUNIZATION, immunization.getUuid()).forEach(s -> {
+			s.setImmunization(null);
+			if (sormasToSormasShareInfoFacade.hasAnyEntityReference(s)) {
+				sormasToSormasShareInfoService.ensurePersisted(s);
+			} else {
+				sormasToSormasShareInfoService.deletePermanent(s);
+			}
+		});
 
 		super.deletePermanent(immunization);
 	}

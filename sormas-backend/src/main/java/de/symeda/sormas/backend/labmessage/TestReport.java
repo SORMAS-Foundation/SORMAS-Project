@@ -19,11 +19,11 @@ import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.sample.PCRTestSpecification;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.PathogenTestType;
-import de.symeda.sormas.backend.common.DeletableAdo;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 @Entity(name = TestReport.TABLE_NAME)
 @Audited
-public class TestReport extends DeletableAdo {
+public class TestReport extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -9164498173635523905L;
 
