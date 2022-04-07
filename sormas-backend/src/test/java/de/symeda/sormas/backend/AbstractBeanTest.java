@@ -280,12 +280,7 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 	}
 
 	/**
-	 * Use Case: Benutzen in statischen Methoden, wenn bereits ein BeanTest läuft.
-	 *
-	 * @see #getBean(Class, Annotation...)
-	 * @param beanClass
-	 * @param qualifiers
-	 * @return
+	 * Use Case: Static methods when a bean test is already running.
 	 */
 	public static <T> T getBeanStatic(Class<T> beanClass, Annotation... qualifiers) {
 		return BeanProviderHelper.getInstance().getBean(beanClass, qualifiers);
