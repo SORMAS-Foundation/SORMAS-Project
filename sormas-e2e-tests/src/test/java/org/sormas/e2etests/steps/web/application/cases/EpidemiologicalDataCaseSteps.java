@@ -34,6 +34,7 @@ import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
 import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
+import org.testng.asserts.SoftAssert;
 
 public class EpidemiologicalDataCaseSteps implements En {
 
@@ -48,7 +49,8 @@ public class EpidemiologicalDataCaseSteps implements En {
       WebDriverHelpers webDriverHelpers,
       ApiState apiState,
       EpidemiologicalDataService epidemiologicalDataService,
-      EnvironmentManager environmentManager) {
+      EnvironmentManager environmentManager,
+      SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -337,6 +339,57 @@ public class EpidemiologicalDataCaseSteps implements En {
           Activity actualActivityData = collectActivityData();
           ComparisonHelper.compareEqualEntities(generatedActivityData, actualActivityData);
           webDriverHelpers.clickOnWebElementBySelector(ACTIVITY_DISCARD_BUTTON);
+        });
+
+    Then(
+        "I create a new Exposure for Epidemiological data",
+        () -> {
+          epidemiologicalData =
+              epidemiologicalDataService.buildGeneratedEpidemiologicalData(
+                  apiState
+                      .getCreatedCase()
+                      .getDisease()
+                      .equalsIgnoreCase(DiseasesValues.CORONAVIRUS.getDiseaseName()));
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickWebElementByText(
+              EXPOSURE_DETAILS_KNOWN_OPTIONS,
+              epidemiologicalData.getExposureDetailsKnown().toString());
+          webDriverHelpers.clickOnWebElementBySelector(EXPOSURE_DETAILS_NEW_ENTRY_BUTTON);
+        });
+
+    Then(
+        "I set Type of place as a ([^\"]*) in a new Exposure for Epidemiological data",
+        (String facility) -> {
+          webDriverHelpers.scrollToElement(TYPE_OF_PLACE_COMBOBOX);
+          webDriverHelpers.selectFromCombobox(TYPE_OF_PLACE_COMBOBOX, facility);
+        });
+
+    Then(
+        "I set Facility Category as a ([^\"]*) in a new Exposure for Epidemiological data",
+        (String facilityCategory) -> {
+          webDriverHelpers.scrollToElement(FACILITY_CATEGORY_POPUP_COMBOBOX);
+          webDriverHelpers.selectFromCombobox(FACILITY_CATEGORY_POPUP_COMBOBOX, facilityCategory);
+        });
+
+    Then(
+        "I set Facility Type as a ([^\"]*) in a new Exposure for Epidemiological data",
+        (String facilityType) -> {
+          webDriverHelpers.scrollToElement(FACILITY_TYPE_POPUP_COMBOBOX);
+          webDriverHelpers.selectFromCombobox(FACILITY_TYPE_POPUP_COMBOBOX, facilityType);
+        });
+
+    When(
+        "I check if Facility field has blue exclamation mark and displays correct message",
+        () -> {
+          webDriverHelpers.hoverToElement(BLUE_ERROR_EXCLAMATION_MARK_EXPOSURE_POPUP);
+          String displayedText =
+              webDriverHelpers.getTextFromWebElement(
+                  BLUE_ERROR_EXCLAMATION_MARK_EXPOSURE_POPUP_TEXT);
+          softly.assertEquals(
+              "Please define a district in order to select a facility.",
+              displayedText,
+              "Message is incorrect");
+          softly.assertAll();
         });
   }
 
