@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.contact;
 
-import static de.symeda.sormas.backend.sormastosormas.entities.contact.SormasToSormasContactFacadeEjb.SormasToSormasContactFacadeEjbLocal;
 import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 import static java.time.temporal.ChronoUnit.DAYS;
 
@@ -31,13 +30,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -180,6 +179,7 @@ import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.entities.contact.SormasToSormasContactFacadeEjb.SormasToSormasContactFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
@@ -1290,32 +1290,17 @@ public class ContactFacadeEjb
 	@Override
 	public int getNonSourceCaseCountForDashboard(List<String> caseUuids) {
 
-		if (CollectionUtils.isEmpty(caseUuids)) {
-			// Avoid empty IN clause
-			return 0;
-		} else if (caseUuids.size() > ModelConstants.PARAMETER_LIMIT) {
-			List<BigInteger> countResults = new LinkedList<>();
-			IterableHelper.executeBatched(caseUuids, ModelConstants.PARAMETER_LIMIT, batchedCaseUuids -> {
-				Query query = em.createNativeQuery(
-					String.format(
-						"SELECT DISTINCT count(case1_.id) FROM contact AS contact0_ LEFT OUTER JOIN cases AS case1_ ON (contact0_.%s_id = case1_.id) WHERE case1_.%s IN (:uuidList)",
-						Contact.RESULTING_CASE.toLowerCase(),
-						Case.UUID));
-				query.setParameter("uuidList", batchedCaseUuids);
-				countResults.add((BigInteger) query.getSingleResult());
-			});
-			return countResults.stream().collect(Collectors.summingInt(BigInteger::intValue));
-		} else {
+		AtomicInteger totalCount = new AtomicInteger();
+		IterableHelper.executeBatched(caseUuids, ModelConstants.PARAMETER_LIMIT, batchedCaseUuids -> {
 			Query query = em.createNativeQuery(
 				String.format(
 					"SELECT DISTINCT count(case1_.id) FROM contact AS contact0_ LEFT OUTER JOIN cases AS case1_ ON (contact0_.%s_id = case1_.id) WHERE case1_.%s IN (:uuidList)",
 					Contact.RESULTING_CASE.toLowerCase(),
 					Case.UUID));
-			query.setParameter("uuidList", caseUuids);
-			BigInteger count = (BigInteger) query.getSingleResult();
-			return count.intValue();
-		}
-
+			query.setParameter("uuidList", batchedCaseUuids);
+			totalCount.addAndGet(((BigInteger) query.getSingleResult()).intValue());
+		});
+		return totalCount.get();
 	}
 
 	public Contact fillOrBuildEntity(@NotNull ContactDto source, Contact target, boolean checkChangeDate) {
