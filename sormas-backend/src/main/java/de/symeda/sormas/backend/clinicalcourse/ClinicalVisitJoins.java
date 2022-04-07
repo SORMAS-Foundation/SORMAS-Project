@@ -23,7 +23,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.AbstractDomainObjectJoins;
+import de.symeda.sormas.backend.common.QueryJoins;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.person.Person;
@@ -33,7 +33,7 @@ import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 
-public class ClinicalVisitJoins extends AbstractDomainObjectJoins<ClinicalVisit, ClinicalVisit> {
+public class ClinicalVisitJoins extends QueryJoins<ClinicalVisit, ClinicalVisit> {
 	private Join<ClinicalVisit, Symptoms> symptoms;
 	private Join<ClinicalVisit, ClinicalCourse> clinicalCourse;
 	private Join<ClinicalCourse, Case> caze;

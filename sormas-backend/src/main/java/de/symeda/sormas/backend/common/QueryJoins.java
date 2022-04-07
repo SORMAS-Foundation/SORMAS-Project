@@ -6,11 +6,11 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 
-public class AbstractDomainObjectJoins<Z, Y extends AbstractDomainObject> {
+public class QueryJoins<Z, Y extends AbstractDomainObject> {
 
 	private From<Z, Y> root;
 
-	public AbstractDomainObjectJoins(From<Z, Y> root) {
+	public QueryJoins(From<Z, Y> root) {
 		this.root = root;
 	}
 

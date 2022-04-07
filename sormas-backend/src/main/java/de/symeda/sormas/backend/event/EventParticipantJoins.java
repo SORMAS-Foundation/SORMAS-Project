@@ -5,7 +5,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.common.AbstractDomainObjectJoins;
+import de.symeda.sormas.backend.common.QueryJoins;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
@@ -15,7 +15,7 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
 
-public class EventParticipantJoins<T> extends AbstractDomainObjectJoins<T, EventParticipant> {
+public class EventParticipantJoins<T> extends QueryJoins<T, EventParticipant> {
 
 	private Join<EventParticipant, User> eventParticipantReportingUser;
 

@@ -21,11 +21,11 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 
-import de.symeda.sormas.backend.common.AbstractDomainObjectJoins;
+import de.symeda.sormas.backend.common.QueryJoins;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.user.User;
 
-public class ActionJoins<T> extends AbstractDomainObjectJoins<T, Action> {
+public class ActionJoins<T> extends QueryJoins<T, Action> {
 
 	private Join<Action, Event> event;
 	private Join<Action, User> creator;

@@ -23,7 +23,7 @@ import javax.persistence.criteria.JoinType;
 
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseJoins;
-import de.symeda.sormas.backend.common.AbstractDomainObjectJoins;
+import de.symeda.sormas.backend.common.QueryJoins;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
@@ -37,7 +37,7 @@ import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.user.User;
 
-public class TaskJoins<T> extends AbstractDomainObjectJoins<T, Task> {
+public class TaskJoins<T> extends QueryJoins<T, Task> {
 
 	private Join<Task, Case> caze;
 	private Join<Case, Person> casePerson;

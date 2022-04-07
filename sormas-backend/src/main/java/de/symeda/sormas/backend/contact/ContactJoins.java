@@ -21,7 +21,7 @@ import javax.persistence.criteria.JoinType;
 
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
-import de.symeda.sormas.backend.common.AbstractDomainObjectJoins;
+import de.symeda.sormas.backend.common.QueryJoins;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
@@ -38,7 +38,7 @@ import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.visit.Visit;
 
-public class ContactJoins<T> extends AbstractDomainObjectJoins<T, Contact> {
+public class ContactJoins<T> extends QueryJoins<T, Contact> {
 
 	private Join<Contact, Person> person;
 //	private CaseJoins<Contact> caseJoins;

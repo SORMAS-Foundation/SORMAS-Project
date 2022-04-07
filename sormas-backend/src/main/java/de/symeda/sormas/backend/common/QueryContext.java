@@ -25,10 +25,10 @@ public abstract class QueryContext<T, ADO extends AbstractDomainObject> {
 	private CriteriaQuery<?> query;
 	private CriteriaBuilder criteriaBuilder;
 	private From<?, ADO> root;
-	private AbstractDomainObjectJoins<T, ADO> joins;
+	private QueryJoins<T, ADO> joins;
 	private Map<String, Expression<?>> subqueryExpressions;
 
-	public QueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, ADO> root, AbstractDomainObjectJoins<T, ADO> joins) {
+	public QueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, ADO> root, QueryJoins<T, ADO> joins) {
 		this.root = root;
 		this.joins = joins;
 		this.subqueryExpressions = new HashMap<>();
@@ -62,7 +62,7 @@ public abstract class QueryContext<T, ADO extends AbstractDomainObject> {
 		return criteriaBuilder;
 	}
 
-	public AbstractDomainObjectJoins<T, ADO> getJoins() {
+	public QueryJoins<T, ADO> getJoins() {
 		return joins;
 	}
 
