@@ -43,7 +43,7 @@ public class LabMessageService extends AbstractDeletableAdoService<LabMessage> {
 	@Override
 	public void deletePermanent(LabMessage labMessage) {
 
-		testReportService.getByLabMessage(labMessage).forEach(t -> testReportService.deletePermanent(t));
+		labMessage.getTestReports().forEach(t -> testReportService.deletePermanent(t));
 
 		super.deletePermanent(labMessage);
 	}
