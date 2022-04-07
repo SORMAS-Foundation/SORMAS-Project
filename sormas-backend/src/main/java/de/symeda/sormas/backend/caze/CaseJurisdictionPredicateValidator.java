@@ -36,7 +36,6 @@ import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
-import de.symeda.sormas.utils.CaseJoins;
 
 public class CaseJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 

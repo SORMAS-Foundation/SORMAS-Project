@@ -25,7 +25,6 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
-import de.symeda.sormas.utils.CaseJoins;
 
 public class CaseCriteriaHelper {
 

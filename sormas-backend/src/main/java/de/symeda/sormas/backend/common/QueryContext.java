@@ -19,7 +19,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonContactDetail;
-import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 
 public abstract class QueryContext<T, ADO extends AbstractDomainObject> {
 

@@ -24,6 +24,7 @@ import javax.persistence.criteria.JoinType;
 import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.common.AbstractDomainObjectJoins;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
@@ -31,7 +32,6 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationJoins;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
-import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 
 public class PersonJoins<T> extends AbstractDomainObjectJoins<T, Person> {
 

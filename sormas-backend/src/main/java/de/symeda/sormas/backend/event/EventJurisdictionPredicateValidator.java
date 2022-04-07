@@ -24,7 +24,6 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
-import de.symeda.sormas.utils.EventJoins;
 
 public class EventJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 

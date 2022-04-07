@@ -6,7 +6,6 @@ import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 
 import de.symeda.sormas.backend.common.QueryContext;
-import de.symeda.sormas.utils.EventParticipantJoins;
 
 public class EventParticipantQueryContext<T> extends QueryContext<T, EventParticipant> {
 

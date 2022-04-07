@@ -21,9 +21,9 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 
+import de.symeda.sormas.backend.common.AbstractDomainObjectJoins;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 
 public class ActionJoins<T> extends AbstractDomainObjectJoins<T, Action> {
 

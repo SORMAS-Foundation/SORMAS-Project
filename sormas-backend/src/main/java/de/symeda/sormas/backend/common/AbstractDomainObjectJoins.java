@@ -1,12 +1,10 @@
-package de.symeda.sormas.backend.util;
+package de.symeda.sormas.backend.common;
 
 import java.util.function.Consumer;
 
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
-
-import de.symeda.sormas.backend.common.AbstractDomainObject;
 
 public class AbstractDomainObjectJoins<Z, Y extends AbstractDomainObject> {
 

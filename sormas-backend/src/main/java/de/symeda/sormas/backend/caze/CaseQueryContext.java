@@ -8,7 +8,6 @@ import javax.persistence.criteria.Join;
 
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.backend.common.QueryContext;
-import de.symeda.sormas.utils.CaseJoins;
 
 public class CaseQueryContext<T> extends QueryContext<T, Case> {
 
