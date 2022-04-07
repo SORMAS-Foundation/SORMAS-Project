@@ -168,7 +168,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	public Predicate buildCriteriaFilter(EventParticipantCriteria criteria, EventParticipantQueryContext eventParticipantQueryContext) {
 
 		CriteriaBuilder cb = eventParticipantQueryContext.getCriteriaBuilder();
-		Root<EventParticipant> from = (Root<EventParticipant>) eventParticipantQueryContext.getRoot();
+		From<?, EventParticipant> from = eventParticipantQueryContext.getRoot();
 		CriteriaQuery cq = eventParticipantQueryContext.getQuery();
 		Join<EventParticipant, Event> event = from.join(EventParticipant.EVENT, JoinType.LEFT);
 		Join<Case, Person> person = from.join(EventParticipant.PERSON, JoinType.LEFT);

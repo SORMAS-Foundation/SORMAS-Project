@@ -17,6 +17,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
@@ -173,7 +174,7 @@ public class CaseListCriteriaBuilder {
 		return cq;
 	}
 
-	public List<Selection<?>> getCaseIndexSelections(Root<Case> root, CaseQueryContext caseQueryContext) {
+	public List<Selection<?>> getCaseIndexSelections(From<?, Case> root, CaseQueryContext caseQueryContext) {
 
 		final CaseJoins joins = caseQueryContext.getJoins();
 		final CriteriaBuilder cb = caseQueryContext.getCriteriaBuilder();
