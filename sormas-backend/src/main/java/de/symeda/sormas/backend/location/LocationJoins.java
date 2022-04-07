@@ -25,14 +25,14 @@ import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 
-public class LocationJoins<T> extends QueryJoins<T, Location> {
+public class LocationJoins extends QueryJoins<Location> {
 
 	private Join<Location, Region> region;
 	private Join<Location, District> district;
 	private Join<Location, Community> community;
 	private Join<Location, Facility> facility;
 
-	public LocationJoins(From<T, Location> root) {
+	public LocationJoins(From<?, Location> root) {
 		super(root);
 	}
 

@@ -7,10 +7,10 @@ import javax.persistence.criteria.From;
 
 import de.symeda.sormas.backend.common.QueryContext;
 
-public class EventQueryContext<T> extends QueryContext<T, Event> {
+public class EventQueryContext extends QueryContext<Event, EventJoins> {
 
-	public EventQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<T, Event> root) {
-		super(cb, query, root, new EventJoins<>(root));
+	public EventQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Event> root) {
+		super(cb, query, root, new EventJoins(root));
 	}
 
 	@Override

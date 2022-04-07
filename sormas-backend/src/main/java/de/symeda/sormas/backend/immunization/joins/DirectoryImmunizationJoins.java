@@ -9,13 +9,13 @@ import de.symeda.sormas.backend.vaccination.FirstVaccinationDate;
 import de.symeda.sormas.backend.vaccination.LastVaccinationDate;
 import de.symeda.sormas.backend.vaccination.LastVaccineType;
 
-public class DirectoryImmunizationJoins<T> extends BaseImmunizationJoins<T, DirectoryImmunization> {
+public class DirectoryImmunizationJoins extends BaseImmunizationJoins<DirectoryImmunization> {
 
 	private Join<DirectoryImmunization, LastVaccineType> lastVaccineType;
 	private Join<DirectoryImmunization, LastVaccinationDate> lastVaccinationDate;
 	private Join<DirectoryImmunization, FirstVaccinationDate> firstVaccinationDate;
 
-	public DirectoryImmunizationJoins(From<T, DirectoryImmunization> root) {
+	public DirectoryImmunizationJoins(From<?, DirectoryImmunization> root) {
 		super(root);
 	}
 

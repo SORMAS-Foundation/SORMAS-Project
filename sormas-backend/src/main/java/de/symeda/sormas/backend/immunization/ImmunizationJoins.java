@@ -27,7 +27,7 @@ import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
 
-public class ImmunizationJoins<T> extends QueryJoins<T, Immunization> {
+public class ImmunizationJoins extends QueryJoins<Immunization> {
 
 	private Join<Immunization, Person> person;
 	private Join<Immunization, Region> responsibleRegion;
@@ -35,7 +35,7 @@ public class ImmunizationJoins<T> extends QueryJoins<T, Immunization> {
 	private Join<Immunization, Community> responsibleCommunity;
 	private Join<Immunization, User> reportingUser;
 
-	public ImmunizationJoins(From<T, Immunization> root) {
+	public ImmunizationJoins(From<?, Immunization> root) {
 		super(root);
 	}
 

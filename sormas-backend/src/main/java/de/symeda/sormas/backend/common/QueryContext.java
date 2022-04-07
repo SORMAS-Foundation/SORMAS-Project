@@ -20,15 +20,15 @@ import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonContactDetail;
 
-public abstract class QueryContext<T, ADO extends AbstractDomainObject> {
+public abstract class QueryContext<ADO extends AbstractDomainObject, J extends QueryJoins<ADO>> {
 
 	private CriteriaQuery<?> query;
 	private CriteriaBuilder criteriaBuilder;
 	private From<?, ADO> root;
-	private QueryJoins<T, ADO> joins;
+	private J joins;
 	private Map<String, Expression<?>> subqueryExpressions;
 
-	public QueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, ADO> root, QueryJoins<T, ADO> joins) {
+	public QueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, ADO> root, J joins) {
 		this.root = root;
 		this.joins = joins;
 		this.subqueryExpressions = new HashMap<>();
@@ -62,7 +62,7 @@ public abstract class QueryContext<T, ADO extends AbstractDomainObject> {
 		return criteriaBuilder;
 	}
 
-	public QueryJoins<T, ADO> getJoins() {
+	public J getJoins() {
 		return joins;
 	}
 

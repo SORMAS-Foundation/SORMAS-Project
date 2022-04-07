@@ -35,7 +35,7 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.User;
 
-public class SampleJoins<T> extends QueryJoins<T, Sample> {
+public class SampleJoins extends QueryJoins<Sample> {
 
 	private Join<Sample, User> reportingUser;
 	private Join<Sample, Sample> referredSample;
@@ -85,7 +85,7 @@ public class SampleJoins<T> extends QueryJoins<T, Sample> {
 	private Join<Event, User> eventReportingUser;
 	private Join<Event, User> eventResponsibleUser;
 
-	public SampleJoins(From<T, Sample> root) {
+	public SampleJoins(From<?, Sample> root) {
 		super(root);
 	}
 

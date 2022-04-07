@@ -29,7 +29,7 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.User;
 
-public class VisitJoins extends QueryJoins<Visit, Visit> {
+public class VisitJoins extends QueryJoins<Visit> {
 
 	private Join<Visit, Contact> contacts;
 	private Join<Visit, Case> caze;
@@ -59,7 +59,7 @@ public class VisitJoins extends QueryJoins<Visit, Visit> {
 
 	private JoinType contactJoinType;
 
-	public VisitJoins(From<Visit, Visit> root, JoinType contactJoinType) {
+	public VisitJoins(From<?, Visit> root, JoinType contactJoinType) {
 		super(root);
 
 		this.contactJoinType = contactJoinType;

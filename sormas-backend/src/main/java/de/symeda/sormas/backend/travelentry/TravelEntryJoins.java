@@ -13,7 +13,7 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.User;
 
-public class TravelEntryJoins<T> extends QueryJoins<T, TravelEntry> {
+public class TravelEntryJoins extends QueryJoins<TravelEntry> {
 
 	private Join<TravelEntry, Person> person;
 	private Join<TravelEntry, Region> responsibleRegion;
@@ -25,7 +25,7 @@ public class TravelEntryJoins<T> extends QueryJoins<T, TravelEntry> {
 	private Join<TravelEntry, PointOfEntry> pointOfEntry;
 	private Join<TravelEntry, Case> resultingCase;
 
-	public TravelEntryJoins(From<T, TravelEntry> root) {
+	public TravelEntryJoins(From<?, TravelEntry> root) {
 		super(root);
 	}
 

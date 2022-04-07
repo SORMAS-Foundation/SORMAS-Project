@@ -22,11 +22,11 @@ import javax.persistence.criteria.JoinType;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.user.User;
 
-public class ImmunizationJoins<T> extends BaseImmunizationJoins<T, Immunization> {
+public class ImmunizationJoins extends BaseImmunizationJoins<Immunization> {
 
 	private Join<Immunization, User> reportingUser;
 
-	public ImmunizationJoins(From<T, Immunization> root) {
+	public ImmunizationJoins(From<?, Immunization> root) {
 		super(root);
 	}
 

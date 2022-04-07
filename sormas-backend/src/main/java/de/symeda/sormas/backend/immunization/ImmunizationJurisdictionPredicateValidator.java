@@ -32,25 +32,21 @@ import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 
 public class ImmunizationJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 
-	private final ImmunizationJoins<?> joins;
+	private final ImmunizationJoins joins;
 
 	private ImmunizationJurisdictionPredicateValidator(
 		CriteriaQuery<?> cq,
 		CriteriaBuilder cb,
-		ImmunizationJoins<?> joins,
+		ImmunizationJoins joins,
 		User user,
 		List<PredicateJurisdictionValidator> associatedJurisdictionValidators) {
+
 		super(cb, user, null, associatedJurisdictionValidators);
 		this.joins = joins;
 	}
 
 	public static ImmunizationJurisdictionPredicateValidator of(ImmunizationQueryContext qc, User user) {
-		return new ImmunizationJurisdictionPredicateValidator(
-			qc.getQuery(),
-			qc.getCriteriaBuilder(),
-			(ImmunizationJoins<?>) qc.getJoins(),
-			user,
-			null);
+		return new ImmunizationJurisdictionPredicateValidator(qc.getQuery(), qc.getCriteriaBuilder(), qc.getJoins(), user, null);
 	}
 
 	@Override

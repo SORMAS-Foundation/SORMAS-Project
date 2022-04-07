@@ -29,7 +29,7 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
 
-public class EventJoins<T> extends QueryJoins<T, Event> {
+public class EventJoins extends QueryJoins<Event> {
 
 	private Join<Event, User> reportingUser;
 	private Join<Event, User> responsibleUser;
@@ -48,7 +48,7 @@ public class EventJoins<T> extends QueryJoins<T, Event> {
 
 	private Join<Event, Event> superordinateEvent;
 
-	public EventJoins(From<T, Event> event) {
+	public EventJoins(From<?, Event> event) {
 		super(event);
 	}
 

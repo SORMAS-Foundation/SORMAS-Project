@@ -33,7 +33,8 @@ import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 
-public class ClinicalVisitJoins extends QueryJoins<ClinicalVisit, ClinicalVisit> {
+public class ClinicalVisitJoins extends QueryJoins<ClinicalVisit> {
+
 	private Join<ClinicalVisit, Symptoms> symptoms;
 	private Join<ClinicalVisit, ClinicalCourse> clinicalCourse;
 	private Join<ClinicalCourse, Case> caze;
@@ -48,8 +49,7 @@ public class ClinicalVisitJoins extends QueryJoins<ClinicalVisit, ClinicalVisit>
 	private Join<Case, Facility> caseHealthFacility;
 	private Join<Case, PointOfEntry> casePointOfEntry;
 
-
-	public ClinicalVisitJoins(From<ClinicalVisit, ClinicalVisit> root) {
+	public ClinicalVisitJoins(From<?, ClinicalVisit> root) {
 		super(root);
 	}
 

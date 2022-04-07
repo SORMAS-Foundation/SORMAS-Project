@@ -41,7 +41,7 @@ import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasSha
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 
-public class CaseJoins<T> extends QueryJoins<T, Case> {
+public class CaseJoins extends QueryJoins<Case> {
 
 	private Join<Case, Person> person;
 	private Join<Case, Region> responsibleRegion;
@@ -75,7 +75,7 @@ public class CaseJoins<T> extends QueryJoins<T, Case> {
 	private Join<Case, ExternalShareInfo> externalShareInfo;
 	private Join<Case, User> followUpStatusChangeUser;
 
-	public CaseJoins(From<T, Case> caze) {
+	public CaseJoins(From<?, Case> caze) {
 		super(caze);
 	}
 

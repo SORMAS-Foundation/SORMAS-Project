@@ -289,7 +289,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Case> caze = cq.from(getElementClass());
 
-		CaseJoins<Case> joins = new CaseJoins<>(caze);
+		CaseJoins joins = new CaseJoins(caze);
 
 		Predicate filter = createMapCasesFilter(cb, cq, caze, joins, region, district, disease, from, to, dateType);
 
@@ -310,7 +310,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Root<Case> caze = cq.from(getElementClass());
 
 		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
-		CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+		CaseJoins joins = caseQueryContext.getJoins();
 
 		Predicate filter = createMapCasesFilter(cb, cq, caze, joins, region, district, disease, from, to, dateType);
 
@@ -346,7 +346,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaBuilder cb,
 		CriteriaQuery<?> cq,
 		Root<Case> root,
-		CaseJoins<Case> joins,
+		CaseJoins joins,
 		Region region,
 		District district,
 		Disease disease,
@@ -567,7 +567,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		final From<?, Case> from = caseQueryContext.getRoot();
 		final CriteriaBuilder cb = caseQueryContext.getCriteriaBuilder();
 		final CriteriaQuery<?> cq = caseQueryContext.getQuery();
-		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+		final CaseJoins joins = caseQueryContext.getJoins();
 
 		Join<Case, Person> person = joins.getPerson();
 		Join<Case, User> reportingUser = joins.getReportingUser();
@@ -759,10 +759,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 					CriteriaBuilderHelper.ilikePrecise(cb, person.get(Person.UUID), textFilter + "%"),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
-					phoneNumberPredicate(
-						cb,
-						(Expression<String>) caseQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY),
-						textFilter),
+					phoneNumberPredicate(cb, caseQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
 					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter)));
 
@@ -1445,8 +1442,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		final Root<Case> root = cq.from(Case.class);
 
-		CaseQueryContext<Case> caseQueryContext = new CaseQueryContext<>(cb, cq, root);
-		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, root);
+		final CaseJoins joins = caseQueryContext.getJoins();
 
 		// This is needed in selection because of the combination of distinct and orderBy clauses - every operator in the orderBy has to be part of the select IF distinct is used
 		Expression<Date> latestChangedDateFunction =
@@ -1517,7 +1514,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		final Root<Case> caze = cq.from(Case.class);
 
-		CaseQueryContext<Case> caseQueryContext = new CaseQueryContext<>(cb, cq, caze);
+		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
 
 		cq.multiselect(
 			caze.get(Case.UUID),
@@ -1565,7 +1562,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> root = cq.from(Case.class);
-		CaseJoins<Case> joins = new CaseJoins<>(root);
+		CaseJoins joins = new CaseJoins(root);
 
 		cq.multiselect(
 			root.get(Case.UUID),
@@ -1636,7 +1633,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> root = cq.from(Case.class);
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, root);
-		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+		final CaseJoins joins = caseQueryContext.getJoins();
 
 		Root<Case> root2 = cq.from(Case.class);
 		Join<Case, Person> person = joins.getPerson();

@@ -77,7 +77,7 @@ public class BAGExportFacadeEjb implements BAGExportFacade {
 		CriteriaQuery<BAGExportCaseDto> cq = cb.createQuery(BAGExportCaseDto.class);
 		Root<Case> caseRoot = cq.from(Case.class);
 
-		CaseJoins<Case> caseJoins = new CaseJoins<>(caseRoot);
+		CaseJoins caseJoins = new CaseJoins(caseRoot);
 
 		Join<Case, Person> person = caseJoins.getPerson();
 		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);

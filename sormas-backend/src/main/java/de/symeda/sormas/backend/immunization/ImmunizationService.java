@@ -102,7 +102,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		final Root<Immunization> immunization = cq.from(Immunization.class);
 
-		ImmunizationQueryContext<Immunization> immunizationQueryContext = new ImmunizationQueryContext<>(cb, cq, immunization);
+		ImmunizationQueryContext immunizationQueryContext = new ImmunizationQueryContext(cb, cq, immunization);
 
 		cq.multiselect(
 			immunization.get(Immunization.UUID),
@@ -134,7 +134,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
 		Root<Immunization> root = cq.from(Immunization.class);
-		cq.multiselect(JurisdictionHelper.booleanSelector(cb, createUserFilter(new ImmunizationQueryContext<>(cb, cq, root))));
+		cq.multiselect(JurisdictionHelper.booleanSelector(cb, createUserFilter(new ImmunizationQueryContext(cb, cq, root))));
 		cq.where(cb.equal(root.get(Immunization.UUID), immunization.getUuid()));
 		return em.createQuery(cq).getResultStream().anyMatch(isInJurisdiction -> isInJurisdiction);
 	}
@@ -282,8 +282,8 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		final Root<Immunization> from = cq.from(Immunization.class);
 
-		ImmunizationQueryContext<Immunization> immunizationQueryContext = new ImmunizationQueryContext<>(cb, cq, from);
-		ImmunizationJoins<Immunization> joins = (ImmunizationJoins<Immunization>) immunizationQueryContext.getJoins();
+		ImmunizationQueryContext immunizationQueryContext = new ImmunizationQueryContext(cb, cq, from);
+		ImmunizationJoins joins = immunizationQueryContext.getJoins();
 
 		cq.multiselect(
 			from.get(Immunization.UUID),
@@ -397,7 +397,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		CriteriaQuery<Immunization> cq = cb.createQuery(Immunization.class);
 		Root<Immunization> from = cq.from(Immunization.class);
 
-		ImmunizationQueryContext<Immunization> immunizationQueryContext = new ImmunizationQueryContext<>(cb, cq, from);
+		ImmunizationQueryContext immunizationQueryContext = new ImmunizationQueryContext(cb, cq, from);
 
 		Predicate filter = createUserFilter(immunizationQueryContext);
 		filter = CriteriaBuilderHelper.andInValues(personIds, filter, cb, from.get(Immunization.PERSON_ID));
@@ -460,7 +460,8 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		return immunizations;
 	}
 
-	private Predicate createUserFilter(ImmunizationQueryContext<Immunization> qc) {
+	private Predicate createUserFilter(ImmunizationQueryContext qc) {
+
 		User currentUser = getCurrentUser();
 		if (currentUser == null) {
 			return null;
@@ -475,7 +476,7 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 				cb,
 				cb.equal(qc.getRoot().get(Immunization.REPORTING_USER), currentUser),
 				PersonJurisdictionPredicateValidator
-					.of(qc.getQuery(), cb, new PersonJoins<>(((ImmunizationJoins<Immunization>) qc.getJoins()).getPerson()), currentUser, false)
+					.of(qc.getQuery(), cb, new PersonJoins(qc.getJoins().getPerson()), currentUser, false)
 					.inJurisdictionOrOwned());
 		}
 
@@ -519,7 +520,8 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		}
 	}
 
-	private Predicate buildCriteriaFilter(Long personId, Disease disease, ImmunizationQueryContext<Immunization> immunizationQueryContext) {
+	private Predicate buildCriteriaFilter(Long personId, Disease disease, ImmunizationQueryContext immunizationQueryContext) {
+
 		final CriteriaBuilder cb = immunizationQueryContext.getCriteriaBuilder();
 		final From<?, ?> from = immunizationQueryContext.getRoot();
 

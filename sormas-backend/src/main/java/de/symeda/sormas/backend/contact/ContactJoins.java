@@ -38,7 +38,7 @@ import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.visit.Visit;
 
-public class ContactJoins<T> extends QueryJoins<T, Contact> {
+public class ContactJoins extends QueryJoins<Contact> {
 
 	private Join<Contact, Person> person;
 //	private CaseJoins<Contact> caseJoins;
@@ -86,7 +86,7 @@ public class ContactJoins<T> extends QueryJoins<T, Contact> {
 
 	private Join<Contact, User> followUpStatusChangeUser;
 
-	public ContactJoins(From<T, Contact> contact) {
+	public ContactJoins(From<?, Contact> contact) {
 		super(contact);
 
 //		this.caseJoins = new CaseJoins<>(contact.join(Contact.CAZE));

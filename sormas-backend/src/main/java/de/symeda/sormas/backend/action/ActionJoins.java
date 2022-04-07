@@ -25,13 +25,13 @@ import de.symeda.sormas.backend.common.QueryJoins;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.user.User;
 
-public class ActionJoins<T> extends QueryJoins<T, Action> {
+public class ActionJoins extends QueryJoins<Action> {
 
 	private Join<Action, Event> event;
 	private Join<Action, User> creator;
 	private Join<Action, User> lastModifiedBy;
 
-	public ActionJoins(From<T, Action> root) {
+	public ActionJoins(From<?, Action> root) {
 		super(root);
 	}
 

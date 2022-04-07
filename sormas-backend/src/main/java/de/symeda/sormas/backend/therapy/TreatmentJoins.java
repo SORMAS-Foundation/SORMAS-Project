@@ -29,7 +29,7 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.User;
 
-public class TreatmentJoins extends QueryJoins<Treatment, Treatment> {
+public class TreatmentJoins extends QueryJoins<Treatment> {
 
 	private Join<Treatment, Therapy> therapy;
 	private Join<Therapy, Case> caze;
@@ -44,7 +44,7 @@ public class TreatmentJoins extends QueryJoins<Treatment, Treatment> {
 	private Join<Case, Facility> caseFacility;
 	private Join<Case, PointOfEntry> casePointOfEntry;
 
-	public TreatmentJoins(From<Treatment, Treatment> root) {
+	public TreatmentJoins(From<?, Treatment> root) {
 		super(root);
 	}
 

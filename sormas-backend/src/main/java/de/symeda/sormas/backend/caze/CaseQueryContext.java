@@ -9,15 +9,15 @@ import javax.persistence.criteria.Join;
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.backend.common.QueryContext;
 
-public class CaseQueryContext<T> extends QueryContext<T, Case> {
+public class CaseQueryContext extends QueryContext<Case, CaseJoins> {
 
 	public static final String PERSON_PHONE_SUBQUERY = "personPhoneSubquery";
 	public static final String PERSON_PHONE_OWNER_SUBQUERY = "personPhoneOwnerSubquery";
 	public static final String PERSON_EMAIL_SUBQUERY = "personEmailSubquery";
 	public static final String PERSON_OTHER_CONTACT_DETAILS_SUBQUERY = "personOtherContactDetailsSubQuery";
 
-	public CaseQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<T, Case> root) {
-		super(cb, query, root, new CaseJoins<>(root));
+	public CaseQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Case> root) {
+		super(cb, query, root, new CaseJoins(root));
 	}
 
 	@Override

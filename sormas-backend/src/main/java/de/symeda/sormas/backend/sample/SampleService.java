@@ -163,7 +163,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 		final Root<Sample> sample = cq.from(Sample.class);
 
 		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, sample);
-		SampleJoins<Sample> joins = (SampleJoins<Sample>) sampleQueryContext.getJoins();
+		SampleJoins joins = sampleQueryContext.getJoins();
 
 		final Join<Sample, Case> caze = joins.getCaze();
 		final Join<Case, District> caseDistrict = joins.getCaseDistrict();
@@ -384,7 +384,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 		final Root<Sample> sample = cq.from(Sample.class);
 
 		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, sample);
-		SampleJoins<Sample> joins = (SampleJoins<Sample>) sampleQueryContext.getJoins();
+		SampleJoins joins = sampleQueryContext.getJoins();
 
 		cq.distinct(true);
 
@@ -596,7 +596,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 	@SuppressWarnings("rawtypes")
 	@Deprecated
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Sample> samplePath) {
-		return createUserFilter(cq, cb, new SampleJoins<>(samplePath), new SampleCriteria());
+		return createUserFilter(cq, cb, new SampleJoins(samplePath), new SampleCriteria());
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -694,7 +694,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 		CriteriaBuilder cb = qc.getCriteriaBuilder();
 		SampleJoins joins = (SampleJoins) qc.getJoins();
 		CriteriaQuery cq = qc.getQuery();
-		ContactJoins<Sample> contactJoins = new ContactJoins(joins.getContact());
+		ContactJoins contactJoins = new ContactJoins(joins.getContact());
 		return Arrays.asList(
 			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(qc)),
 			JurisdictionHelper.booleanSelector(

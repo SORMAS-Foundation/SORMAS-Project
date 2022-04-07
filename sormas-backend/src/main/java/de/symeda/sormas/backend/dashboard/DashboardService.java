@@ -74,7 +74,7 @@ public class DashboardService {
 		Root<Case> caze = cq.from(Case.class);
 
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
-		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+		final CaseJoins joins = caseQueryContext.getJoins();
 		Join<Case, Person> person = joins.getPerson();
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
@@ -162,7 +162,7 @@ public class DashboardService {
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Case> caze = cq.from(Case.class);
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
-		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+		final CaseJoins joins = caseQueryContext.getJoins();
 		Join<Case, District> district = joins.getResponsibleDistrict();
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
@@ -188,7 +188,7 @@ public class DashboardService {
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> caze = cq.from(Case.class);
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
-		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+		final CaseJoins joins = caseQueryContext.getJoins();
 		Join<Case, District> districtJoin = joins.getResponsibleDistrict();
 
 		Predicate filter = caseService.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
@@ -230,7 +230,7 @@ public class DashboardService {
 		Root<Case> root = cq.from(Case.class);
 
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, root);
-		CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+		CaseJoins joins = caseQueryContext.getJoins();
 		Join<Case, Person> person = joins.getPerson();
 
 		Predicate filter = caseService.createUserFilter(cb, cq, root, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
@@ -278,7 +278,7 @@ public class DashboardService {
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> caze = cq.from(Case.class);
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
-		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+		final CaseJoins joins = caseQueryContext.getJoins();
 
 		Join<Case, Person> person = joins.getPerson();
 
@@ -306,7 +306,7 @@ public class DashboardService {
 		CriteriaQuery<DashboardEventDto> cq = cb.createQuery(DashboardEventDto.class);
 		Root<Event> event = cq.from(Event.class);
 		EventQueryContext eventQueryContext = new EventQueryContext(cb, cq, event);
-		EventJoins<Event> eventJoins = (EventJoins<Event>) eventQueryContext.getJoins();
+		EventJoins eventJoins = eventQueryContext.getJoins();
 		Join<Event, Location> eventLocation = eventJoins.getLocation();
 		Join<Location, District> eventDistrict = eventJoins.getDistrict();
 
@@ -374,7 +374,7 @@ public class DashboardService {
 		final From<?, Case> from = caseQueryContext.getRoot();
 		final CriteriaBuilder cb = caseQueryContext.getCriteriaBuilder();
 		final CriteriaQuery<?> cq = caseQueryContext.getQuery();
-		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+		final CaseJoins joins = caseQueryContext.getJoins();
 
 		Join<Case, Region> responsibleRegion = joins.getResponsibleRegion();
 		Join<Case, District> responsibleDistrict = joins.getResponsibleDistrict();

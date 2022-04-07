@@ -15,7 +15,7 @@ import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
 
-public class EventParticipantJoins<T> extends QueryJoins<T, EventParticipant> {
+public class EventParticipantJoins extends QueryJoins<EventParticipant> {
 
 	private Join<EventParticipant, User> eventParticipantReportingUser;
 
@@ -47,7 +47,7 @@ public class EventParticipantJoins<T> extends QueryJoins<T, EventParticipant> {
 	private Join<Location, District> eventAddressDistrict;
 	private Join<Location, Community> eventAddressCommunity;
 
-	public EventParticipantJoins(From<T, EventParticipant> eventParticipant) {
+	public EventParticipantJoins(From<?, EventParticipant> eventParticipant) {
 		super(eventParticipant);
 	}
 

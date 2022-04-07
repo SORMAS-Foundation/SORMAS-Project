@@ -33,7 +33,7 @@ import de.symeda.sormas.backend.location.LocationJoins;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 
-public class PersonJoins<T> extends QueryJoins<T, Person> {
+public class PersonJoins extends QueryJoins<Person> {
 
 	private PersonAssociation personAssociation;
 	private Join<Person, Case> caze;
@@ -45,12 +45,12 @@ public class PersonJoins<T> extends QueryJoins<T, Person> {
 	private Join<Person, Country> birthCountry;
 	private Join<Person, Country> citizenship;
 
-	private final LocationJoins<Person> addressJoins;
+	private final LocationJoins addressJoins;
 
-	public PersonJoins(From<T, Person> root) {
+	public PersonJoins(From<?, Person> root) {
 		super(root);
 
-		addressJoins = new LocationJoins<>(getAddress());
+		addressJoins = new LocationJoins(getAddress());
 	}
 
 	public void configure(PersonCriteria criteria) {
@@ -109,7 +109,7 @@ public class PersonJoins<T> extends QueryJoins<T, Person> {
 		this.travelEntry = travelEntry;
 	}
 
-	public LocationJoins<Person> getAddressJoins() {
+	public LocationJoins getAddressJoins() {
 		return addressJoins;
 	}
 
