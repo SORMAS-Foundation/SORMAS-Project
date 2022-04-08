@@ -29,7 +29,6 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 
-import de.symeda.sormas.api.user.UserRole;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -77,7 +76,7 @@ public class EventGroupService extends AdoServiceWithUserFilter<EventGroup> {
 			return null;
 		}
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
-		if (jurisdictionLevel == JurisdictionLevel.NATION || currentUser.hasUserRole(UserRole.REST_USER)) {
+		if (jurisdictionLevel == JurisdictionLevel.NATION) {
 			return null;
 		}
 

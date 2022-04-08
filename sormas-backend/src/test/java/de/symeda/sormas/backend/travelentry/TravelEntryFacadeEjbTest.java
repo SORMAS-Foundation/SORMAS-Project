@@ -223,10 +223,18 @@ public class TravelEntryFacadeEjbTest extends AbstractBeanTest {
 			rdcf1.district,
 			rdcf1.pointOfEntry);
 
-		UserDto limitedCovidNationalUser =
-			creator.createUser(rdcf1, "Limited Disease Covid", "National User", Disease.CORONAVIRUS, UserRole.NATIONAL_USER);
-		UserDto limitedDengueNationalUser =
-			creator.createUser(rdcf1, "Limited Disease Dengue", "National User", Disease.DENGUE, UserRole.NATIONAL_USER);
+		UserDto limitedCovidNationalUser = creator.createUser(
+			rdcf1,
+			"Limited Disease Covid",
+			"National User",
+			Disease.CORONAVIRUS,
+			creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
+		UserDto limitedDengueNationalUser = creator.createUser(
+			rdcf1,
+			"Limited Disease Dengue",
+			"National User",
+			Disease.DENGUE,
+			creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
 
 		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUsersHavingTravelEntryInJurisdiction(travelEntry.toReference());
 		Assert.assertNotNull(userReferenceDtos);

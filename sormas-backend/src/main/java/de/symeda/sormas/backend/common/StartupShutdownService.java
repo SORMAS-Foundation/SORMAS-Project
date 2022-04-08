@@ -23,8 +23,8 @@ import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.Date;
-import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -69,8 +69,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityCriteria;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
-import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DefaultEntityHelper;
@@ -517,12 +515,13 @@ public class StartupShutdownService {
 			SecureRandom rnd = new SecureRandom();
 			rnd.nextBytes(pwd);
 
-			createOrUpdateDefaultUser(
-				Set.of(userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.SORMAS_TO_SORMAS_CLIENT)), userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.NATIONAL_USER))),
-				DefaultEntityHelper.SORMAS_TO_SORMAS_USER_NAME,
-				new String(pwd),
-				"Sormas to Sormas",
-				"Client");
+			HashSet<UserRole> userRoles = new HashSet<>();
+			userRoles.addAll(
+				Arrays.asList(
+					userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.SORMAS_TO_SORMAS_CLIENT)),
+					userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.NATIONAL_USER))));
+
+			createOrUpdateDefaultUser(userRoles, DefaultEntityHelper.SORMAS_TO_SORMAS_USER_NAME, new String(pwd), "Sormas to Sormas", "Client");
 		}
 	}
 
@@ -585,7 +584,7 @@ public class StartupShutdownService {
 			existingUser.setSeed(PasswordHelper.createPass(16));
 			existingUser.setPassword(PasswordHelper.encodePassword(password, existingUser.getSeed()));
 			existingUser.setUserRoles(userRoles);
-			
+
 			userService.persist(existingUser);
 			passwordResetEvent.fire(new PasswordResetEvent(existingUser));
 		} else if (userRoles.stream().anyMatch(r -> !existingUser.getUserRoles().contains(r))

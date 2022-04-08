@@ -324,8 +324,13 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testContactFollowUpStatusWhenConvertedCaseIsDeleted() {
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -1749,7 +1754,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf = creator.createRDCF();
 		useNationalUserLogin();
 
-		UserDto userDto = creator.createUser(rdcf, UserRole.NATIONAL_USER);
+		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
 		PersonDto personDto = creator.createPerson();
 		CaseDataDto caze = creator.createCase(
 			userDto.toReference(),
@@ -1763,10 +1768,18 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		ContactDto contact = creator
 			.createContact(userDto.toReference(), userDto.toReference(), personDto.toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS);
 
-		UserDto limitedCovidNationalUser =
-			creator.createUser(rdcf, "Limited Disease Covid", "National User", Disease.CORONAVIRUS, UserRole.NATIONAL_USER);
-		UserDto limitedDengueNationalUser =
-			creator.createUser(rdcf, "Limited Disease Dengue", "National User", Disease.DENGUE, UserRole.NATIONAL_USER);
+		UserDto limitedCovidNationalUser = creator.createUser(
+			rdcf,
+			"Limited Disease Covid",
+			"National User",
+			Disease.CORONAVIRUS,
+			creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
+		UserDto limitedDengueNationalUser = creator.createUser(
+			rdcf,
+			"Limited Disease Dengue",
+			"National User",
+			Disease.DENGUE,
+			creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
 
 		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUsersHavingContactInJurisdiction(contact.toReference());
 		Assert.assertNotNull(userReferenceDtos);

@@ -14,6 +14,22 @@
  */
 package de.symeda.sormas.rest.security;
 
+import java.util.Set;
+import java.util.stream.Collectors;
+
+import javax.enterprise.context.ApplicationScoped;
+import javax.inject.Inject;
+import javax.security.enterprise.AuthenticationException;
+import javax.security.enterprise.AuthenticationStatus;
+import javax.security.enterprise.authentication.mechanism.http.BasicAuthenticationMechanismDefinition;
+import javax.security.enterprise.authentication.mechanism.http.HttpAuthenticationMechanism;
+import javax.security.enterprise.authentication.mechanism.http.HttpMessageContext;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpServletResponse;
+
+import org.glassfish.soteria.cdi.BasicAuthenticationMechanismDefinitionAnnotationLiteral;
+import org.glassfish.soteria.mechanisms.BasicAuthenticationMechanism;
+
 import de.symeda.sormas.api.AuthProvider;
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.FacadeProvider;
@@ -26,19 +42,6 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
-import java.util.Set;
-import java.util.stream.Collectors;
-import javax.enterprise.context.ApplicationScoped;
-import javax.inject.Inject;
-import javax.security.enterprise.AuthenticationException;
-import javax.security.enterprise.AuthenticationStatus;
-import javax.security.enterprise.authentication.mechanism.http.BasicAuthenticationMechanismDefinition;
-import javax.security.enterprise.authentication.mechanism.http.HttpAuthenticationMechanism;
-import javax.security.enterprise.authentication.mechanism.http.HttpMessageContext;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
-import org.glassfish.soteria.cdi.BasicAuthenticationMechanismDefinitionAnnotationLiteral;
-import org.glassfish.soteria.mechanisms.BasicAuthenticationMechanism;
 
 /**
  * Mechanism which allows configuration of multiple providers trough a system property.
@@ -63,8 +66,8 @@ import org.glassfish.soteria.mechanisms.BasicAuthenticationMechanism;
  * @see KeycloakHttpAuthenticationMechanism
  */
 @OpenAPIDefinition(security = {
-		@SecurityRequirement(name = "basicAuth"),
-		@SecurityRequirement(name = "bearerAuth") })
+	@SecurityRequirement(name = "basicAuth"),
+	@SecurityRequirement(name = "bearerAuth") })
 @SecurityScheme(name = "basicAuth", type = SecuritySchemeType.HTTP, scheme = "basic")
 @SecurityScheme(name = "bearerAuth", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT")
 @ApplicationScoped
@@ -85,7 +88,7 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 
 	@Override
 	public AuthenticationStatus validateRequest(HttpServletRequest request, HttpServletResponse response, HttpMessageContext context)
-			throws AuthenticationException {
+		throws AuthenticationException {
 		if (request.getPathInfo().startsWith(SormasToSormasApiConstants.RESOURCE_PATH)) {
 			// S2S auth will be handled by S2SAuthFilter
 			return validateRequestS2S(context);
@@ -95,7 +98,7 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 
 	@Override
 	public AuthenticationStatus secureResponse(HttpServletRequest request, HttpServletResponse response, HttpMessageContext httpMessageContext)
-			throws AuthenticationException {
+		throws AuthenticationException {
 		return authenticationMechanism.secureResponse(request, response, httpMessageContext);
 	}
 
@@ -107,10 +110,11 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 	private AuthenticationStatus validateRequestS2S(HttpMessageContext context) {
 
 		UserDto s2sUser = FacadeProvider.getUserFacade().getByUserName(DefaultEntityHelper.SORMAS_TO_SORMAS_USER_NAME);
-		Set<UserRight> userRights = FacadeProvider.getUserRoleConfigFacade().getEffectiveUserRights(s2sUser.getUserRoles());
+		Set<UserRight> userRights =
+			s2sUser.getUserRoles().stream().flatMap(userRoleDto -> userRoleDto.getUserRights().stream()).collect(Collectors.toSet());
 
 		return context.notifyContainerAboutLogin(
-				() -> DefaultEntityHelper.SORMAS_TO_SORMAS_USER_NAME,
-				userRights.stream().map(Enum::name).collect(Collectors.toSet()));
+			() -> DefaultEntityHelper.SORMAS_TO_SORMAS_USER_NAME,
+			userRights.stream().map(Enum::name).collect(Collectors.toSet()));
 	}
 }

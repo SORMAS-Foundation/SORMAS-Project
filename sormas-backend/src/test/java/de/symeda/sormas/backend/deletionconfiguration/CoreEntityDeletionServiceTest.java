@@ -105,7 +105,8 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 	public void testCasePermanentDeletion() throws IOException {
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, UserRole.ADMIN, UserRole.NATIONAL_USER);
+		UserDto user = creator
+			.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.ADMIN), creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 
@@ -186,7 +187,8 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 	public void testSamplePermanentDeletion() {
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, UserRole.ADMIN, UserRole.NATIONAL_USER);
+		UserDto user = creator
+			.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.ADMIN), creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
@@ -221,7 +223,8 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 	public void testLabMessagePermanentDeletion() {
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, UserRole.ADMIN, UserRole.NATIONAL_USER);
+		UserDto user = creator
+			.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.ADMIN), creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
 
 		LabMessageDto labMessage = creator.createLabMessage(null);
 		TestReportDto testReport = creator.createTestReport(labMessage.toReference());
@@ -243,7 +246,8 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 	public void testCaseVisitPermanentDeletion() {
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, UserRole.ADMIN, UserRole.NATIONAL_USER);
+		UserDto user = creator
+			.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.ADMIN), creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 

@@ -27,6 +27,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collections;
 import java.util.List;
 import java.util.Set;
@@ -295,8 +296,10 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 
 		RDCF rdcf = creator.createRDCF();
 
-		UserDto generalSurveillanceOfficer = creator.createUser(rdcf, "General ", "SURVEILLANCE_OFFICER", SURVEILLANCE_OFFICER);
-		UserDto limitedSurveillanceOfficer = creator.createUser(rdcf, "Limited Dengue", "SURVEILLANCE_OFFICER", Disease.DENGUE, SURVEILLANCE_OFFICER);
+		UserDto generalSurveillanceOfficer =
+			creator.createUser(rdcf, "General ", "SURVEILLANCE_OFFICER", creator.getUserRoleDtoMap().get(SURVEILLANCE_OFFICER));
+		UserDto limitedSurveillanceOfficer =
+			creator.createUser(rdcf, "Limited Dengue", "SURVEILLANCE_OFFICER", Disease.DENGUE, creator.getUserRoleDtoMap().get(SURVEILLANCE_OFFICER));
 
 		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUserRefsByDistricts(Arrays.asList(rdcf.district), Disease.CORONAVIRUS);
 
@@ -311,8 +314,10 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 
 		RDCF rdcf = creator.createRDCF();
 
-		UserDto generalSurveillanceOfficer = creator.createUser(rdcf, "General ", "SURVEILLANCE_OFFICER", SURVEILLANCE_OFFICER);
-		UserDto limitedSurveillanceOfficer = creator.createUser(rdcf, "Limited Dengue", "SURVEILLANCE_OFFICER", Disease.DENGUE, SURVEILLANCE_OFFICER);
+		UserDto generalSurveillanceOfficer =
+			creator.createUser(rdcf, "General ", "SURVEILLANCE_OFFICER", creator.getUserRoleDtoMap().get(SURVEILLANCE_OFFICER));
+		UserDto limitedSurveillanceOfficer =
+			creator.createUser(rdcf, "Limited Dengue", "SURVEILLANCE_OFFICER", Disease.DENGUE, creator.getUserRoleDtoMap().get(SURVEILLANCE_OFFICER));
 
 		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUserRefsByDistrict(rdcf.district, Disease.CORONAVIRUS);
 

@@ -175,8 +175,13 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		RDCFEntities rdcf2 = creator.createRDCFEntities("Region2", "District2", "Community2", "Facility2");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user = creator.createUser(
+			rdcf.region.getUuid(),
+			rdcf.district.getUuid(),
+			rdcf.facility.getUuid(),
+			"Surv",
+			"Sup",
+			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person", Sex.MALE, 1980, 1, 1);
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -2575,7 +2580,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testDeleteWithContacts() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, UserRole.NATIONAL_USER);
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
 		PersonDto person1 = creator.createPerson();
 		PersonDto person2 = creator.createPerson();
 
@@ -2608,7 +2613,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			rdcfEntities.facility.getUuid(),
 			"Surv",
 			"Sup",
-			UserRole.SURVEILLANCE_SUPERVISOR);
+			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 	}
 
 	private CaseDataDto getCaze(UserDto user, PersonDto cazePerson, RDCFEntities rdcfEntities) {

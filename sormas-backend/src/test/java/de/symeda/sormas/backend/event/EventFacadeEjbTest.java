@@ -520,13 +520,21 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 	public void testGetEventUsersWithoutUsesLimitedToOthersDiseses() {
 		RDCF rdcf = creator.createRDCF();
 		useNationalUserLogin();
-		UserDto userDto = creator.createUser(rdcf, UserRole.NATIONAL_USER);
+		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
 		EventDto event = creator.createEvent(userDto.toReference(), Disease.CORONAVIRUS);
 
-		UserDto limitedCovidNationalUser =
-			creator.createUser(rdcf, "Limited Disease Covid", "National User", Disease.CORONAVIRUS, UserRole.NATIONAL_USER);
-		UserDto limitedDengueNationalUser =
-			creator.createUser(rdcf, "Limited Disease Dengue", "National User", Disease.DENGUE, UserRole.NATIONAL_USER);
+		UserDto limitedCovidNationalUser = creator.createUser(
+			rdcf,
+			"Limited Disease Covid",
+			"National User",
+			Disease.CORONAVIRUS,
+			creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
+		UserDto limitedDengueNationalUser = creator.createUser(
+			rdcf,
+			"Limited Disease Dengue",
+			"National User",
+			Disease.DENGUE,
+			creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
 
 		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUsersHavingEventInJurisdiction(event.toReference());
 		Assert.assertNotNull(userReferenceDtos);
