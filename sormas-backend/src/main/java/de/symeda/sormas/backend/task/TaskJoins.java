@@ -25,20 +25,21 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.common.QueryJoins;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.event.Event;
-import de.symeda.sormas.backend.infrastructure.facility.Facility;
-import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
-import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.person.PersonJoins;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.user.User;
 
 public class TaskJoins extends QueryJoins<Task> {
 
+	// TODO #8688: Totally remove cached JPA Joins beyond Case and Contact, use CaseJoins and ContactJoins
 	private Join<Task, Case> caze;
 	private Join<Case, Person> casePerson;
 	private Join<Task, Event> event;
@@ -78,25 +79,17 @@ public class TaskJoins extends QueryJoins<Task> {
 	private Join<Case, PointOfEntry> contactCasePointOfEntry;
 	private Join<Person, Location> casePersonAddress;
 	private Join<Person, Location> contactPersonAddress;
-	private final CaseJoins caseJoins;
-	private final PersonJoins contactPersonJoins;
-	private final PersonJoins casePersonJoins;
 	private Join<Task, TravelEntry> travelEntry;
 	private Join<TravelEntry, Region> travelEntryResponsibleRegion;
 	private Join<TravelEntry, District> travelEntryResponsibleDistrict;
 	private Join<TravelEntry, Community> travelEntryResponsibleCommunity;
 	private Join<TravelEntry, Person> travelEntryPerson;
 
+	private CaseJoins caseJoins;
+	private ContactJoins contactJoins;
+
 	public TaskJoins(From<?, Task> root) {
 		super(root);
-
-		caseJoins = new CaseJoins(getCaze());
-		casePersonJoins = new PersonJoins(getCasePerson());
-		contactPersonJoins = new PersonJoins(getContactPerson());
-	}
-
-	public CaseJoins getCaseJoins() {
-		return caseJoins;
 	}
 
 	public Join<Task, Case> getCaze() {
@@ -465,14 +458,6 @@ public class TaskJoins extends QueryJoins<Task> {
 		this.contactCasePointOfEntry = contactCasePointOfEntry;
 	}
 
-	public PersonJoins getCasePersonJoins() {
-		return casePersonJoins;
-	}
-
-	public PersonJoins getContactPersonJoins() {
-		return contactPersonJoins;
-	}
-
 	public Join<Person, Location> getCasePersonAddress() {
 		return getOrCreate(casePersonAddress, Person.ADDRESS, JoinType.LEFT, getCasePerson(), this::setCasePersonAddress);
 	}
@@ -487,5 +472,21 @@ public class TaskJoins extends QueryJoins<Task> {
 
 	private void setContactPersonAddress(Join<Person, Location> contactPersonAddress) {
 		this.contactPersonAddress = contactPersonAddress;
+	}
+
+	public CaseJoins getCaseJoins() {
+		return getOrCreate(caseJoins, () -> new CaseJoins(getCaze()), this::setCaseJoins);
+	}
+
+	private void setCaseJoins(CaseJoins caseJoins) {
+		this.caseJoins = caseJoins;
+	}
+
+	public ContactJoins getContactJoins() {
+		return getOrCreate(contactJoins, () -> new ContactJoins(getContact()), this::setContactJoins);
+	}
+
+	private void setContactJoins(ContactJoins contactJoins) {
+		this.contactJoins = contactJoins;
 	}
 }

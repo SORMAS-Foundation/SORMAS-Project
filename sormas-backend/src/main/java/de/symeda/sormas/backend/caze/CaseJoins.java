@@ -35,6 +35,7 @@ import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonJoins;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
@@ -43,6 +44,7 @@ import de.symeda.sormas.backend.user.User;
 
 public class CaseJoins extends QueryJoins<Case> {
 
+	// TODO #8688: Totally remove cached JPA Joins beyond Person, use PersonJoins
 	private Join<Case, Person> person;
 	private Join<Case, Region> responsibleRegion;
 	private Join<Case, District> responsibleDistrict;
@@ -74,6 +76,8 @@ public class CaseJoins extends QueryJoins<Case> {
 	private Join<Case, SormasToSormasShareInfo> sormasToSormasShareInfo;
 	private Join<Case, ExternalShareInfo> externalShareInfo;
 	private Join<Case, User> followUpStatusChangeUser;
+
+	private PersonJoins personJoins;
 
 	public CaseJoins(From<?, Case> caze) {
 		super(caze);
@@ -325,5 +329,13 @@ public class CaseJoins extends QueryJoins<Case> {
 
 	private void setFollowUpStatusChangeUser(Join<Case, User> followUpStatusChangeUser) {
 		this.followUpStatusChangeUser = followUpStatusChangeUser;
+	}
+
+	public PersonJoins getPersonJoins() {
+		return getOrCreate(personJoins, () -> new PersonJoins(getPerson()), this::setPersonJoins);
+	}
+
+	private void setPersonJoins(PersonJoins personJoins) {
+		this.personJoins = personJoins;
 	}
 }

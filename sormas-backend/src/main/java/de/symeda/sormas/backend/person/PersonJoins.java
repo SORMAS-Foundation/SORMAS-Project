@@ -28,9 +28,9 @@ import de.symeda.sormas.backend.common.QueryJoins;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
+import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationJoins;
-import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 
 public class PersonJoins extends QueryJoins<Person> {
@@ -45,12 +45,10 @@ public class PersonJoins extends QueryJoins<Person> {
 	private Join<Person, Country> birthCountry;
 	private Join<Person, Country> citizenship;
 
-	private final LocationJoins addressJoins;
+	private LocationJoins addressJoins;
 
 	public PersonJoins(From<?, Person> root) {
 		super(root);
-
-		addressJoins = new LocationJoins(getAddress());
 	}
 
 	public void configure(PersonCriteria criteria) {
@@ -109,10 +107,6 @@ public class PersonJoins extends QueryJoins<Person> {
 		this.travelEntry = travelEntry;
 	}
 
-	public LocationJoins getAddressJoins() {
-		return addressJoins;
-	}
-
 	public Join<Person, Location> getAddress() {
 		return getOrCreate(address, Person.ADDRESS, JoinType.LEFT, this::setAddress);
 	}
@@ -135,5 +129,13 @@ public class PersonJoins extends QueryJoins<Person> {
 
 	private void setCitizenship(Join<Person, Country> citizenship) {
 		this.citizenship = citizenship;
+	}
+
+	public LocationJoins getAddressJoins() {
+		return getOrCreate(addressJoins, () -> new LocationJoins(getAddress()), this::setAddressJoins);
+	}
+
+	private void setAddressJoins(LocationJoins addressJoins) {
+		this.addressJoins = addressJoins;
 	}
 }

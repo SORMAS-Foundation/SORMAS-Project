@@ -675,11 +675,10 @@ public class TaskFacadeEjb implements TaskFacade {
 
 		TaskQueryContext taskQueryContext = new TaskQueryContext(cb, cq, task);
 		TaskJoins joins = taskQueryContext.getJoins();
-		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, joins.getCaze());
-		ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, joins.getContact());
-
-		LocationJoins casePersonAddressJoins = joins.getCasePersonJoins().getAddressJoins();
-		LocationJoins contactPersonAddressJoins = joins.getContactPersonJoins().getAddressJoins();
+		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, joins.getCaseJoins());
+		ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, joins.getContactJoins());
+		LocationJoins casePersonAddressJoins = caseQueryContext.getJoins().getPersonJoins().getAddressJoins();
+		LocationJoins contactPersonAddressJoins = contactQueryContext.getJoins().getPersonJoins().getAddressJoins();
 
 		//@formatter:off
 		cq.multiselect(task.get(Task.UUID), task.get(Task.TASK_CONTEXT),

@@ -20,6 +20,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.QueryJoins;
 import de.symeda.sormas.backend.epidata.EpiData;
@@ -33,6 +34,7 @@ import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonJoins;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
@@ -40,8 +42,8 @@ import de.symeda.sormas.backend.visit.Visit;
 
 public class ContactJoins extends QueryJoins<Contact> {
 
+	// TODO #8688: Totally remove cached JPA Joins beyond Case and Person, use CaseJoins and PersonJoins
 	private Join<Contact, Person> person;
-//	private CaseJoins<Contact> caseJoins;
 	private Join<Contact, Case> caze;
 	private Join<Contact, Case> resultingCase;
 	private Join<Case, Person> casePerson;
@@ -86,10 +88,11 @@ public class ContactJoins extends QueryJoins<Contact> {
 
 	private Join<Contact, User> followUpStatusChangeUser;
 
+	private CaseJoins caseJoins;
+	private PersonJoins personJoins;
+
 	public ContactJoins(From<?, Contact> contact) {
 		super(contact);
-
-//		this.caseJoins = new CaseJoins<>(contact.join(Contact.CAZE));
 	}
 
 	public Join<Contact, Person> getPerson() {
@@ -394,5 +397,21 @@ public class ContactJoins extends QueryJoins<Contact> {
 
 	private void setFollowUpStatusChangeUser(Join<Contact, User> followUpStatusChangeUser) {
 		this.followUpStatusChangeUser = followUpStatusChangeUser;
+	}
+
+	public CaseJoins getCaseJoins() {
+		return getOrCreate(caseJoins, () -> new CaseJoins(getCaze()), this::setCaseJoins);
+	}
+
+	private void setCaseJoins(CaseJoins caseJoins) {
+		this.caseJoins = caseJoins;
+	}
+
+	public PersonJoins getPersonJoins() {
+		return getOrCreate(personJoins, () -> new PersonJoins(getPerson()), this::setPersonJoins);
+	}
+
+	private void setPersonJoins(PersonJoins personJoins) {
+		this.personJoins = personJoins;
 	}
 }
