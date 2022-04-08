@@ -24,22 +24,21 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
-import de.symeda.sormas.utils.EventJoins;
 
 public class EventJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 
-	private final EventJoins<?> joins;
+	private final EventJoins joins;
 	private final CriteriaQuery<?> cq;
 
 	private EventJurisdictionPredicateValidator(EventQueryContext qc, User user) {
 		super(qc.getCriteriaBuilder(), user, null, null);
-		this.joins = (EventJoins<?>) qc.getJoins();
+		this.joins = qc.getJoins();
 		this.cq = qc.getQuery();
 	}
 
 	private EventJurisdictionPredicateValidator(EventQueryContext qc, Path userPath) {
 		super(qc.getCriteriaBuilder(), null, userPath, null);
-		this.joins = (EventJoins<?>) qc.getJoins();
+		this.joins = qc.getJoins();
 		this.cq = qc.getQuery();
 	}
 

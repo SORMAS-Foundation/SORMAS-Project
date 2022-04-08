@@ -226,7 +226,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		final Root<Sample> root = cq.from(Sample.class);
 		cq.distinct(true);
 
-		SampleJoins<Sample> joins = new SampleJoins<>(root);
+		SampleJoins joins = new SampleJoins(root);
 
 		SampleCriteria sampleCriteria = new SampleCriteria();
 		sampleCriteria.caze(criteria.getCaze()).contact(criteria.getContact()).eventParticipant(criteria.getEventParticipant());
@@ -274,7 +274,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		final CriteriaQuery<Sample> cq = cb.createQuery(Sample.class);
 		final Root<Sample> root = cq.from(Sample.class);
 
-		SampleJoins<Sample> joins = new SampleJoins<>(root);
+		SampleJoins joins = new SampleJoins(root);
 
 		Predicate filter = sampleService.createUserFilter(cq, cb, joins, criteria);
 		filter = CriteriaBuilderHelper.and(cb, filter, sampleService.buildCriteriaFilter(criteria, cb, joins));
@@ -466,9 +466,8 @@ public class SampleFacadeEjb implements SampleFacade {
 		CriteriaQuery<SampleExportDto> cq = cb.createQuery(SampleExportDto.class);
 		Root<Sample> sampleRoot = cq.from(Sample.class);
 
-		SampleQueryContext<Sample> sampleQueryContext = new SampleQueryContext<>(cb, cq, sampleRoot);
-
-		SampleJoins<Sample> joins = (SampleJoins<Sample>) sampleQueryContext.getJoins();
+		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, sampleRoot);
+		SampleJoins joins = sampleQueryContext.getJoins();
 
 		cq.distinct(true);
 
@@ -580,7 +579,7 @@ public class SampleFacadeEjb implements SampleFacade {
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 			filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, sampleRoot.get(AbstractDomainObject.UUID));
 		} else if (caseCriteria != null) {
-			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, new CaseQueryContext<>(cb, cq, joins.getCaze()));
+			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, new CaseQueryContext(cb, cq, joins.getCaze()));
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(sampleRoot.get(CoreAdo.DELETED)));
 			filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, joins.getCaze().get(AbstractDomainObject.UUID));
@@ -675,7 +674,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		final Root<Sample> root = cq.from(Sample.class);
 
-		SampleJoins<Sample> joins = new SampleJoins<>(root);
+		SampleJoins joins = new SampleJoins(root);
 
 		Predicate filter = sampleService.createUserFilter(cq, cb, joins, sampleCriteria);
 		if (sampleCriteria != null) {

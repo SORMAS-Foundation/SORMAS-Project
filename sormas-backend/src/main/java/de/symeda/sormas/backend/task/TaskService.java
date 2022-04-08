@@ -329,7 +329,8 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 						.when(cb.isNotNull(joins.getContactRegion()), joins.getContactRegion().get(Region.UUID))
 						.otherwise(joins.getEventRegion().get(Region.UUID)));
 			String regionUuid = taskCriteria.getRegion().getUuid();
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(region, regionUuid), cb.equal(joins.getCaseResponsibleRegion().get(Region.UUID), regionUuid)));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.or(cb.equal(region, regionUuid), cb.equal(joins.getCaseResponsibleRegion().get(Region.UUID), regionUuid)));
 		}
 		if (taskCriteria.getDistrict() != null) {
 			Expression<Object> district = cb.selectCase()
@@ -339,7 +340,10 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 						.when(cb.isNotNull(joins.getContactDistrict()), joins.getContactDistrict().get(District.UUID))
 						.otherwise(joins.getEventDistrict().get(District.UUID)));
 			String districtUuid = taskCriteria.getDistrict().getUuid();
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(district, districtUuid), cb.equal(joins.getCaseResponsibleDistrict().get(District.UUID), districtUuid)));
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.or(cb.equal(district, districtUuid), cb.equal(joins.getCaseResponsibleDistrict().get(District.UUID), districtUuid)));
 		}
 		if (taskCriteria.getFreeText() != null) {
 			String[] textFilters = taskCriteria.getFreeText().split("\\s+");
@@ -539,7 +543,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		CriteriaBuilder cb = qc.getCriteriaBuilder();
 		TaskJoins joins = (TaskJoins) qc.getJoins();
 
-		ContactJoins<Task> contactJoins = new ContactJoins<>(joins.getContact());
+		ContactJoins contactJoins = new ContactJoins(joins.getContact());
 		return Arrays.asList(
 			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(qc)),
 			JurisdictionHelper.booleanSelector(
@@ -549,7 +553,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 				cb,
 				cb.and(
 					cb.isNotNull(joins.getContact()),
-					contactService.inJurisdictionOrOwned(new ContactQueryContext<>(cb, qc.getQuery(), joins.getContact())))),
+					contactService.inJurisdictionOrOwned(new ContactQueryContext(cb, qc.getQuery(), joins.getContact())))),
 			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(
@@ -560,7 +564,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 				cb,
 				cb.and(
 					cb.isNotNull(joins.getEvent()),
-					eventService.inJurisdictionOrOwned(new EventQueryContext<>(cb, qc.getQuery(), joins.getEvent())))),
+					eventService.inJurisdictionOrOwned(new EventQueryContext(cb, qc.getQuery(), joins.getEvent())))),
 			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(
