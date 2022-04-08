@@ -162,7 +162,6 @@ public class DashboardFacadeEjb implements DashboardFacade {
 
 		criteriaIntervalStartDates.forEach(intervalStartDate -> {
 			contactCriteria.reportDateBetween(intervalStartDate, getIntervalEndDate(intervalStartDate, dashboardCriteria.getEpiCurveGrouping()));
-
 			Map<ContactClassification, Long> contactClassifications = contactFacade.getNewContactCountPerClassification(contactCriteria);
 			epiCurveSeriesElements.put(intervalStartDate, contactClassifications);
 		});
@@ -184,7 +183,6 @@ public class DashboardFacadeEjb implements DashboardFacade {
 
 		criteriaIntervalStartDates.forEach(intervalStartDate -> {
 			contactCriteria.reportDateBetween(intervalStartDate, getIntervalEndDate(intervalStartDate, dashboardCriteria.getEpiCurveGrouping()));
-
 			Map<FollowUpStatus, Long> contactCounts = contactFacade.getNewContactCountPerFollowUpStatus(contactCriteria);
 			Map<String, Long> followUpClassificationMap =
 				contactCounts.entrySet().stream().collect(Collectors.toMap(e -> e.getKey().toShortString(), e -> e.getValue()));
