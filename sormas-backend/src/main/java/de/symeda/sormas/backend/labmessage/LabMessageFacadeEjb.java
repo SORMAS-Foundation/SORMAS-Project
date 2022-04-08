@@ -210,14 +210,13 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	}
 
 	@Override
-	// Also returns deleted lab messages
 	public LabMessageDto getByUuid(String uuid) {
 		return toDto(labMessageService.getByUuid(uuid));
 	}
 
 	@Override
 	public void deleteLabMessage(String uuid) {
-		labMessageService.delete(labMessageService.getByUuid(uuid));
+		labMessageService.deletePermanent(labMessageService.getByUuid(uuid));
 	}
 
 	@Override
@@ -225,7 +224,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		List<LabMessage> labMessages = labMessageService.getByUuids(uuids);
 		for (LabMessage labMessage : labMessages) {
 			if (labMessage.getStatus() != LabMessageStatus.PROCESSED) {
-				labMessageService.delete(labMessage);
+				labMessageService.deletePermanent(labMessage);
 			}
 		}
 	}
@@ -241,7 +240,6 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	}
 
 	@Override
-	// Does not return deleted lab messages
 	public List<LabMessageDto> getForSample(SampleReferenceDto sample) {
 
 		List<LabMessage> labMessages = labMessageService.getForSample(sample);

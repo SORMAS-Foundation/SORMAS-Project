@@ -11219,4 +11219,19 @@ DROP TRIGGER IF EXISTS delete_history_trigger ON systemevent;
 
 INSERT INTO schema_version (version_number, comment) VALUES (452, 'Persisting systemevent on latest develop fails with SQL error #8585');
 
+-- 2022-04-07 Refactor unique constraint on deletionconfiguration table #8295
+
+ALTER TABLE deletionconfiguration DROP CONSTRAINT deletionconfiguration_entity_key;
+ALTER TABLE deletionconfiguration ADD CONSTRAINT unq_deletionconfiguration_entity_reference UNIQUE (entitytype, deletionreference);
+
+INSERT INTO schema_version (version_number, comment) VALUES (453, 'Refactor unique constraint on deletionconfiguration table #8295');
+
+-- 2022-04-08 Drop deleted column from lab messages and remove deleted lab messages #8295
+
+ALTER TABLE labmessage DROP COLUMN deleted;
+ALTER TABLE labmessage_history DROP COLUMN deleted;
+DELETE FROM labmessage WHERE deleted IS TRUE;
+
+INSERT INTO schema_version (version_number, comment) VALUES (454, 'Drop deleted column from lab messages and remove deleted lab messages #8295');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
