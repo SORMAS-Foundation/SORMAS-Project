@@ -1,9 +1,10 @@
-package de.symeda.sormas.backend.immunization.joins;
+package de.symeda.sormas.backend.immunization;
 
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 
+import de.symeda.sormas.backend.common.QueryJoins;
 import de.symeda.sormas.backend.immunization.entity.BaseImmunization;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -11,9 +12,8 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.person.Person;
-import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 
-public class BaseImmunizationJoins<T, S extends BaseImmunization> extends AbstractDomainObjectJoins<T, S> {
+public class BaseImmunizationJoins<S extends BaseImmunization> extends QueryJoins<S> {
 
 	private Join<S, Person> person;
 	private Join<S, Region> responsibleRegion;
@@ -21,7 +21,7 @@ public class BaseImmunizationJoins<T, S extends BaseImmunization> extends Abstra
 	private Join<S, Community> responsibleCommunity;
 	private Join<S, Facility> healthFacility;
 
-	public BaseImmunizationJoins(From<T, S> root) {
+	public BaseImmunizationJoins(From<?, S> root) {
 		super(root);
 	}
 
