@@ -26,6 +26,7 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDefinition;
 import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.dashboard.DashboardCaseDto;
@@ -147,6 +148,73 @@ public class DashboardFacadeEjb implements DashboardFacade {
 		return epiCurveSeriesElements;
 	}
 
+	public Map<Date, Map<ContactClassification, Long>> getEpiCurveSeriesElementsPerContactClassification(DashboardCriteria dashboardCriteria) {
+		Map<Date, Map<ContactClassification, Long>> epiCurveSeriesElements = new TreeMap<>();
+		List<Date> criteriaIntervalStartDates = buildListOfFilteredDates(
+			dashboardCriteria.getDateFrom(),
+			dashboardCriteria.getDateTo(),
+			dashboardCriteria.getEpiCurveGrouping(),
+			dashboardCriteria.isShowMinimumEntries());
+
+		ContactCriteria contactCriteria = new ContactCriteria().disease(dashboardCriteria.getDisease())
+			.region(dashboardCriteria.getRegion())
+			.district(dashboardCriteria.getDistrict());
+
+		criteriaIntervalStartDates.forEach(intervalStartDate -> {
+			contactCriteria.reportDateBetween(intervalStartDate, getIntervalEndDate(intervalStartDate, dashboardCriteria.getEpiCurveGrouping()));
+
+			Map<ContactClassification, Long> contactClassifications = contactFacade.getNewContactCountPerClassification(contactCriteria);
+			epiCurveSeriesElements.put(intervalStartDate, contactClassifications);
+		});
+		return epiCurveSeriesElements;
+
+	}
+
+	public Map<Date, Map<String, Long>> getEpiCurveSeriesElementsPerContactFollowUpStatusClassification(DashboardCriteria dashboardCriteria) {
+		Map<Date, Map<String, Long>> epiCurveSeriesElements = new TreeMap<>();
+		List<Date> criteriaIntervalStartDates = buildListOfFilteredDates(
+			dashboardCriteria.getDateFrom(),
+			dashboardCriteria.getDateTo(),
+			dashboardCriteria.getEpiCurveGrouping(),
+			dashboardCriteria.isShowMinimumEntries());
+
+		ContactCriteria contactCriteria = new ContactCriteria().disease(dashboardCriteria.getDisease())
+			.region(dashboardCriteria.getRegion())
+			.district(dashboardCriteria.getDistrict());
+
+		criteriaIntervalStartDates.forEach(intervalStartDate -> {
+			contactCriteria.reportDateBetween(intervalStartDate, getIntervalEndDate(intervalStartDate, dashboardCriteria.getEpiCurveGrouping()));
+
+			Map<FollowUpStatus, Long> contactCounts = contactFacade.getNewContactCountPerFollowUpStatus(contactCriteria);
+			Map<String, Long> followUpClassificationMap =
+				contactCounts.entrySet().stream().collect(Collectors.toMap(e -> e.getKey().toShortString(), e -> e.getValue()));
+			Map<ContactStatus, Long> contactStatusCounts = contactFacade.getNewContactCountPerStatus(contactCriteria);
+			followUpClassificationMap.put(ContactStatus.CONVERTED.toString(), contactStatusCounts.get(ContactStatus.CONVERTED));
+			epiCurveSeriesElements.put(intervalStartDate, followUpClassificationMap);
+		});
+		return epiCurveSeriesElements;
+
+	}
+
+	public Map<Date, Integer> getEpiCurveSeriesElementsPerContactFollowUntilClassification(DashboardCriteria dashboardCriteria) {
+		Map<Date, Integer> epiCurveSeriesElements = new TreeMap<>();
+		List<Date> criteriaIntervalStartDates = buildListOfFilteredDates(
+			dashboardCriteria.getDateFrom(),
+			dashboardCriteria.getDateTo(),
+			dashboardCriteria.getEpiCurveGrouping(),
+			dashboardCriteria.isShowMinimumEntries());
+
+		ContactCriteria contactCriteria = new ContactCriteria().disease(dashboardCriteria.getDisease())
+			.region(dashboardCriteria.getRegion())
+			.district(dashboardCriteria.getDistrict());
+
+		criteriaIntervalStartDates.forEach(intervalStartDate -> {
+			contactCriteria.reportDateBetween(intervalStartDate, getIntervalEndDate(intervalStartDate, dashboardCriteria.getEpiCurveGrouping()));
+			epiCurveSeriesElements.put(intervalStartDate, contactFacade.getFollowUpUntilCount(contactCriteria));
+		});
+		return epiCurveSeriesElements;
+	}
+
 	@Override
 	public long countCasesConvertedFromContacts(DashboardCriteria dashboardCriteria) {
 		return dashboardService.countCasesConvertedFromContacts(dashboardCriteria);
@@ -216,6 +284,17 @@ public class DashboardFacadeEjb implements DashboardFacade {
 		}
 
 		return filteredDates;
+	}
+
+	protected Date getIntervalEndDate(Date intervalStartDate, EpiCurveGrouping epiCurveGrouping) {
+		switch (epiCurveGrouping) {
+		case DAY:
+			return DateHelper.getEndOfDay(intervalStartDate);
+		case WEEK:
+			return DateHelper.getEndOfWeek(intervalStartDate);
+		default:
+			return DateHelper.getEndOfMonth(intervalStartDate);
+		}
 	}
 
 	protected DashboardCriteria setNewCaseDatesInCaseCriteria(Date date, DashboardCriteria dashboardCriteria) {
