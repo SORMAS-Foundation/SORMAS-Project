@@ -143,7 +143,7 @@ public class ArchitectureTest {
 		GivenMethodsConjunction allPublicMethods = ArchRuleDefinition.methods().that().areDeclaredIn(facadeEjbClass).and().arePublic();
 
 		if (classAuthOnly) {
-			getMethodsShouldNotBeAnnotated(facadeEjbClass, allPublicMethods).should().notBeAnnotatedWith(RolesAllowed.class);
+			getMethodsShouldNotBeAnnotated(allPublicMethods, specificMethodNames).should().notBeAnnotatedWith(RolesAllowed.class);
 			if (specificMethodNames != null) {
 				specificMethodNames.forEach(
 					specificMethodName -> allPublicMethods.and().haveFullName(specificMethodName).should().beAnnotatedWith(RolesAllowed.class));
@@ -157,9 +157,14 @@ public class ArchitectureTest {
 		}
 	}
 
-	private GivenMethodsConjunction getMethodsShouldNotBeAnnotated(Class<?> facadeEjbClass, GivenMethodsConjunction methods) {
-		return !facadeEjbClass.getSimpleName().equals("LabMessageFacadeEjb")
-			? methods
-			: methods.and().doNotHaveFullName("fetchAndSaveExternalLabMessages");
+	private GivenMethodsConjunction getMethodsShouldNotBeAnnotated(GivenMethodsConjunction methods, List<String> specificMethodNames) {
+		return specificMethodNames != null ? getPublicMethodsWithoutSpecificMethods(methods, specificMethodNames) : methods;
+	}
+
+	private GivenMethodsConjunction getPublicMethodsWithoutSpecificMethods(GivenMethodsConjunction methods, List<String> specificMethodNames) {
+		for (String specificMethodName : specificMethodNames) {
+			methods = methods.and().doNotHaveFullName(specificMethodName);
+		}
+		return methods;
 	}
 }
