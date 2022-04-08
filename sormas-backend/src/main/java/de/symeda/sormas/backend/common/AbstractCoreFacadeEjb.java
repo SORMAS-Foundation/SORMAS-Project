@@ -27,6 +27,7 @@ import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
@@ -142,7 +143,12 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		Root<ADO> from = cq.from(adoClass);
 
 		Date referenceDeletionDate = DateHelper.subtractDays(new Date(), entityConfig.getDeletionPeriod());
-		cq.where(cb.lessThanOrEqualTo(from.get(getDeleteReferenceField(entityConfig.getDeletionReference())), referenceDeletionDate));
+
+		Predicate filter = cb.lessThanOrEqualTo(from.get(getDeleteReferenceField(entityConfig.getDeletionReference())), referenceDeletionDate);
+		if (entityConfig.getDeletionReference() == DeletionReference.MANUAL_DELETION) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isTrue(from.get(DeletableAdo.DELETED)));
+		}
+		cq.where(filter);
 
 		List<ADO> toDeleteEntities = QueryHelper.getResultList(em, cq, null, null);
 
@@ -163,10 +169,13 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 
 	@Override
 	public AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid) {
+
 		DeletionConfiguration deletionConfiguration = deletionConfigurationService.getCoreEntityTypeConfig(getCoreEntityType());
+
 		if (deletionConfiguration.getDeletionPeriod() == null || deletionConfiguration.getDeletionReference() == null) {
 			return null;
 		}
+
 		Object[] deletionData = getDeletionData(uuid, deletionConfiguration);
 		Date referenceDate = (Date) deletionData[0];
 		Date deletiondate = DateHelper.addDays(referenceDate, deletionConfiguration.getDeletionPeriod());
@@ -174,10 +183,12 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	}
 
 	protected String getDeleteReferenceField(DeletionReference deletionReference) {
+
 		switch (deletionReference) {
 		case CREATION:
 			return AbstractDomainObject.CREATION_DATE;
 		case END:
+		case MANUAL_DELETION:
 			return AbstractDomainObject.CHANGE_DATE;
 		default:
 			throw new IllegalArgumentException("deletion reference " + deletionReference + " not supported in " + getClass().getSimpleName());

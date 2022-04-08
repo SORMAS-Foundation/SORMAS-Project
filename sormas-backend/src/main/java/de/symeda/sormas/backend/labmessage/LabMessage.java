@@ -24,13 +24,13 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleMaterial;
 import de.symeda.sormas.api.sample.SpecimenCondition;
-import de.symeda.sormas.backend.common.DeletableAdo;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.user.User;
 
 @Entity(name = "labmessage")
 @Audited
-public class LabMessage extends DeletableAdo {
+public class LabMessage extends AbstractDomainObject {
 
 	public static final String TABLE_NAME = "labmessage";
 

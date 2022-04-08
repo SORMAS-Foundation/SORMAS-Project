@@ -57,14 +57,13 @@ public class CoreEntityDeletionService {
 	public void executeAutomaticDeletion() {
 
 		coreEntityFacades.forEach(entityTypeFacadePair -> {
-			DeletionConfiguration coreEntityTypeConfig = deletionConfigurationService.getCoreEntityTypeConfig(entityTypeFacadePair.coreEntityType);
+			List<DeletionConfiguration> coreEntityTypeConfigs =
+				deletionConfigurationService.getCoreEntityTypeConfigs(entityTypeFacadePair.coreEntityType);
 
-			if (coreEntityTypeConfig.getDeletionReference() != null && coreEntityTypeConfig.deletionPeriod != null) {
-				entityTypeFacadePair.entityFacade.executeAutomaticDeletion(
-					coreEntityTypeConfig,
-					supportsPermanentDeletion(entityTypeFacadePair.coreEntityType),
-					DELETE_BATCH_SIZE);
-			}
+			coreEntityTypeConfigs.stream().filter(c -> c.getDeletionReference() != null && c.getDeletionPeriod() != null).forEach(c -> {
+				entityTypeFacadePair.entityFacade
+					.executeAutomaticDeletion(c, supportsPermanentDeletion(entityTypeFacadePair.coreEntityType), DELETE_BATCH_SIZE);
+			});
 		});
 
 		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.DELETE_PERMANENT)) {
