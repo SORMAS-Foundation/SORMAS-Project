@@ -14,19 +14,18 @@ import com.tngtech.archunit.lang.syntax.elements.GivenMethodsConjunction;
 import com.tngtech.archunit.lang.syntax.elements.MethodsShouldConjunction;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.backend.action.ActionFacadeEjb;
 import de.symeda.sormas.backend.bagexport.BAGExportFacadeEjb;
+import de.symeda.sormas.backend.campaign.CampaignFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.caseimport.CaseImportFacadeEjb;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportFacadeEjb;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.dashboard.DashboardFacadeEjb;
-import de.symeda.sormas.backend.event.EventFacadeEjb;
-import de.symeda.sormas.backend.event.EventGroupFacadeEjb;
-import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
-import de.symeda.sormas.backend.event.eventimport.EventImportFacadeEjb;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalFacadeEjb;
+import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb;
+import de.symeda.sormas.backend.report.AggregateReportFacadeEjb;
+import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb;
 import de.symeda.sormas.backend.therapy.PrescriptionFacadeEjb;
 import de.symeda.sormas.backend.therapy.TreatmentFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
@@ -96,6 +95,26 @@ public class ArchitectureTest {
 	@ArchTest
 	public void testDashboardFacadeEjbAuthorization(JavaClasses classes) {
 		assertFacadeEjbAnnotated(DashboardFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
+	}
+
+	@ArchTest
+	public void testWeeklyReportFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(WeeklyReportFacadeEjb.class, AuthMode.CLASS_AND_METHODS, classes);
+	}
+
+	@ArchTest
+	public void testAggregateReportFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(AggregateReportFacadeEjb.class, AuthMode.CLASS_AND_METHODS, classes);
+	}
+
+	@ArchTest
+	public void testOutbreakFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(OutbreakFacadeEjb.class, AuthMode.CLASS_AND_METHODS, classes);
+	}
+
+	@ArchTest
+	public void testCampaignFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(CampaignFacadeEjb.class, AuthMode.CLASS_AND_METHODS, classes);
 	}
 
 	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, JavaClasses classes) {
