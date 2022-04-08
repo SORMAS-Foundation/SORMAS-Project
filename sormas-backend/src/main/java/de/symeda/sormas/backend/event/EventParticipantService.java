@@ -30,7 +30,6 @@ import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
@@ -169,7 +168,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	public Predicate buildCriteriaFilter(EventParticipantCriteria criteria, EventParticipantQueryContext eventParticipantQueryContext) {
 
 		CriteriaBuilder cb = eventParticipantQueryContext.getCriteriaBuilder();
-		Root<EventParticipant> from = (Root<EventParticipant>) eventParticipantQueryContext.getRoot();
+		From<?, EventParticipant> from = eventParticipantQueryContext.getRoot();
 		CriteriaQuery cq = eventParticipantQueryContext.getQuery();
 		Join<EventParticipant, Event> event = from.join(EventParticipant.EVENT, JoinType.LEFT);
 		Join<Case, Person> person = from.join(EventParticipant.PERSON, JoinType.LEFT);
@@ -193,10 +192,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 				Predicate likeFilters = cb.or(
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
-					phoneNumberPredicate(
-						cb,
-						(Expression<String>) personQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY),
-						textFilter));
+					phoneNumberPredicate(cb, personQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
