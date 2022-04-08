@@ -317,12 +317,16 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
-	@RolesAllowed({UserRight._IMMUNIZATION_CREATE, UserRight._IMMUNIZATION_EDIT})
+	@RolesAllowed({
+		UserRight._IMMUNIZATION_CREATE,
+		UserRight._IMMUNIZATION_EDIT })
 	public ImmunizationDto save(@Valid @NotNull ImmunizationDto dto) {
 		return save(dto, true, true);
 	}
 
-	@RolesAllowed({UserRight._IMMUNIZATION_CREATE, UserRight._IMMUNIZATION_EDIT})
+	@RolesAllowed({
+		UserRight._IMMUNIZATION_CREATE,
+		UserRight._IMMUNIZATION_EDIT })
 	public ImmunizationDto save(@Valid @NotNull ImmunizationDto dto, boolean checkChangeDate, boolean internal) {
 		Immunization existingImmunization = service.getByUuid(dto.getUuid());
 
@@ -630,7 +634,9 @@ public class ImmunizationFacadeEjb
 		}, 5, TimeUnit.SECONDS);
 	}
 
-	@RolesAllowed({UserRight._IMMUNIZATION_CREATE, UserRight._PERSON_EDIT})
+	@RolesAllowed({
+		UserRight._IMMUNIZATION_CREATE,
+		UserRight._PERSON_EDIT })
 	public void copyImmunizationsToLeadPerson(ImmunizationDto immunizationDto, PersonDto leadPerson) {
 		Immunization newImmunization = new Immunization();
 		newImmunization.setUuid(DataHelper.createUuid());

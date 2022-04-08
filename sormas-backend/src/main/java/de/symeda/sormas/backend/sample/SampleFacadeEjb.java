@@ -335,12 +335,16 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
-	@RolesAllowed({UserRight._SAMPLE_CREATE, UserRight._SAMPLE_EDIT})
+	@RolesAllowed({
+		UserRight._SAMPLE_CREATE,
+		UserRight._SAMPLE_EDIT })
 	public SampleDto saveSample(@Valid SampleDto dto) {
 		return saveSample(dto, true, true, true);
 	}
 
-	@RolesAllowed({UserRight._SAMPLE_CREATE, UserRight._SAMPLE_EDIT })
+	@RolesAllowed({
+		UserRight._SAMPLE_CREATE,
+		UserRight._SAMPLE_EDIT })
 	public SampleDto saveSample(@Valid SampleDto dto, boolean handleChanges, boolean checkChangeDate, boolean internal) {
 
 		Sample existingSample = sampleService.getByUuid(dto.getUuid());
@@ -1002,7 +1006,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		return sampleService.isSampleEditAllowed(sample);
 	}
 
-    @RolesAllowed(UserRight._SAMPLE_CREATE)
+	@RolesAllowed(UserRight._SAMPLE_CREATE)
 	public void cloneSampleForCase(Sample sample, Case caze) {
 		SampleDto newSample = SampleDto.build(sample.getReportingUser().toReference(), caze.toReference());
 		DtoHelper.copyDtoValues(newSample, SampleFacadeEjb.toDto(sample), true);

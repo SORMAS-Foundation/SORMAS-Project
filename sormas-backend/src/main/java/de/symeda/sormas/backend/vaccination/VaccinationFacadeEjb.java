@@ -101,7 +101,9 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	@EJB
 	private HealthConditionsMapper healthConditionsMapper;
 
-	@RolesAllowed({UserRight._IMMUNIZATION_CREATE, UserRight._IMMUNIZATION_EDIT})
+	@RolesAllowed({
+		UserRight._IMMUNIZATION_CREATE,
+		UserRight._IMMUNIZATION_EDIT })
 	public VaccinationDto save(@Valid VaccinationDto dto) {
 
 		Vaccination existingVaccination = dto.getUuid() != null ? vaccinationService.getByUuid(dto.getUuid()) : null;
@@ -453,7 +455,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		return toDto(vaccinationService.getByUuid(uuid));
 	}
 
-    @RolesAllowed(UserRight._IMMUNIZATION_EDIT)
+	@RolesAllowed(UserRight._IMMUNIZATION_EDIT)
 	public VaccinationDto postUpdate(String uuid, JsonNode vaccinationDtoJson) {
 		VaccinationDto existingVaccinationDto = toDto(vaccinationService.getByUuid(uuid));
 		PatchHelper.postUpdate(vaccinationDtoJson, existingVaccinationDto);
@@ -523,7 +525,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		return fillOrBuildEntity(source, vaccinationService.getByUuid(source.getUuid()), checkChangeDate);
 	}
 
-    @RolesAllowed(UserRight._IMMUNIZATION_EDIT)
+	@RolesAllowed(UserRight._IMMUNIZATION_EDIT)
 	public void copyExistingVaccinationsToNewImmunization(ImmunizationDto immunizationDto, Immunization newImmunization) {
 		List<Vaccination> vaccinationEntities = new ArrayList<>();
 		for (VaccinationDto vaccinationDto : immunizationDto.getVaccinations()) {
