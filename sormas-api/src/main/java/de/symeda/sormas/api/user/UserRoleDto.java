@@ -175,7 +175,9 @@ public class UserRoleDto extends EntityDto {
 		private final UserRoleDto forbiddenUserRole;
 
 		public UserRoleValidationException(UserRoleDto checkedUserRole, UserRoleDto forbiddenUserRole) {
-			super(checkedUserRole + " " + I18nProperties.getString(Strings.messageUserRoleCombination) + " " + forbiddenUserRole);
+			super(
+				checkedUserRole.getCaption() + " " + I18nProperties.getString(Strings.messageUserRoleCombination) + " "
+					+ forbiddenUserRole.getCaption());
 			this.checkedUserRole = checkedUserRole;
 			this.forbiddenUserRole = forbiddenUserRole;
 		}

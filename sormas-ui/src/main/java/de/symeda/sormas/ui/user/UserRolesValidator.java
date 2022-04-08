@@ -18,11 +18,13 @@
 package de.symeda.sormas.ui.user;
 
 import java.util.Collection;
+import java.util.stream.Collectors;
 
 import com.vaadin.v7.data.Validator;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.user.UserRoleDto;
+import de.symeda.sormas.api.user.UserRoleReferenceDto;
 
 @SuppressWarnings("serial")
 public final class UserRolesValidator implements Validator {
@@ -31,7 +33,10 @@ public final class UserRolesValidator implements Validator {
 	@Override
 	public void validate(Object value) throws InvalidValueException {
 		try {
-			FacadeProvider.getUserRoleFacade().validateUserRoleCombination((Collection<UserRoleDto>) value);
+			Collection<UserRoleReferenceDto> values = (Collection<UserRoleReferenceDto>) value;
+			FacadeProvider.getUserRoleFacade()
+				.validateUserRoleCombination(
+					values.stream().map(u -> FacadeProvider.getUserRoleFacade().getByUuid(u.getUuid())).collect(Collectors.toSet()));
 		} catch (UserRoleDto.UserRoleValidationException e) {
 			throw new InvalidValueException(e.getMessage());
 		}

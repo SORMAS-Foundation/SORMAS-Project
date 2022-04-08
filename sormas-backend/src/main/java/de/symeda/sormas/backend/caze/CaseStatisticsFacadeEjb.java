@@ -73,6 +73,7 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserRoleFacadeEjb;
+import de.symeda.sormas.backend.user.UserRoleService;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
@@ -90,6 +91,8 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 	private CommunityService communityService;
 	@EJB
 	private FacilityService facilityService;
+	@EJB
+	private UserRoleService userRoleService;
 
 	@EJB
 	private DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal diseaseConfigurationFacade;
@@ -881,13 +884,14 @@ public class CaseStatisticsFacadeEjb implements CaseStatisticsFacade {
 		}
 
 		if (CollectionUtils.isNotEmpty(caseCriteria.getReportingUserRoles())) {
+			List<Long> userRoleIds = userRoleService.getIdsByReferenceDtos(caseCriteria.getReportingUserRoles());
 			extendFilterBuilderWithSimpleValue(
 				caseFilterBuilder,
 				filterBuilderParameters,
 				User.TABLE_NAME_USERROLES,
 				UserDto.COLUMN_NAME_USERROLE,
-				caseCriteria.getReportingUserRoles(),
-				entry -> entry.getCaption());
+				userRoleIds,
+				entry -> entry);
 		}
 
 		//////////////

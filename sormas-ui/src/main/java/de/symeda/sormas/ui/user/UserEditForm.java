@@ -23,6 +23,9 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
+import java.util.Comparator;
+import java.util.stream.Collectors;
+
 import com.vaadin.ui.Label;
 import com.vaadin.v7.data.Validator;
 import com.vaadin.v7.ui.CheckBox;
@@ -42,6 +45,8 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserHelper;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRoleDto;
+import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -130,9 +135,13 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
         addField(UserDto.ACTIVE, CheckBox.class);
         addField(UserDto.USER_NAME, TextField.class);
-        addField(UserDto.USER_ROLES, OptionGroup.class).addValidator(new UserRolesValidator());
-        OptionGroup userRoles = (OptionGroup) getFieldGroup().getField(UserDto.USER_ROLES);
+        OptionGroup userRoles = new OptionGroup();
+        userRoles.setCaption(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.USER_ROLES));
+        userRoles.addItems(FacadeProvider.getUserRoleFacade().getEnabledUserRoles().stream().map(UserRoleDto::toReference).sorted(Comparator.comparing(UserRoleReferenceDto::getCaption)).collect(Collectors.toList()));
+        userRoles.addValidator(new UserRolesValidator());
         userRoles.setMultiSelect(true);
+        CssStyles.style(CssStyles.CAPTION_ON_TOP);
+        getContent().addComponent(userRoles, UserDto.USER_ROLES);
 
         ComboBox region = addInfrastructureField(UserDto.REGION);
         ComboBox community = addInfrastructureField(UserDto.COMMUNITY);
