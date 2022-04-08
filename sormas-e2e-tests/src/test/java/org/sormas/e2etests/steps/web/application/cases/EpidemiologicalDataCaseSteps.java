@@ -34,6 +34,7 @@ import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
 import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
+import org.testng.asserts.SoftAssert;
 
 public class EpidemiologicalDataCaseSteps implements En {
 
@@ -48,7 +49,8 @@ public class EpidemiologicalDataCaseSteps implements En {
       WebDriverHelpers webDriverHelpers,
       ApiState apiState,
       EpidemiologicalDataService epidemiologicalDataService,
-      EnvironmentManager environmentManager) {
+      EnvironmentManager environmentManager,
+      SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -118,8 +120,47 @@ public class EpidemiologicalDataCaseSteps implements En {
         });
 
     When(
+        "I click on the NEW CONTACT button on Epidemiological Data Tab of Edit Case Page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(NEW_CONTACT_BUTTON);
+        });
+
+    When(
+        "I select ([^\"]*) from Contacts With Source Case Known",
+        (String option) -> {
+          webDriverHelpers.clickWebElementByText(CONTACT_WITH_SOURCE_CASE_KNOWN, option);
+        });
+
+    When(
         "I check if Contacts of Source filed is available",
         () -> webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEW_CONTACT_BUTTON));
+
+    When(
+        "I check that Contacts of Source filed is not available",
+        () -> {
+          softly.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(NEW_CONTACT_BUTTON, 2),
+              "Contacts With Source Case box is visible!");
+          softly.assertAll();
+        });
+
+    When(
+        "I check that Selected case is listed as Source Case in the CONTACTS WITH SOURCE CASE Box",
+        () -> {
+          String boxContents =
+              webDriverHelpers.getTextFromWebElement(CONTACTS_WITH_SOURCE_CASE_BOX);
+          String expectedCase =
+              "Source case:\n"
+                  + apiState.getCreatedCase().getPerson().getFirstName()
+                  + " "
+                  + apiState.getCreatedCase().getPerson().getLastName().toUpperCase()
+                  + " ("
+                  + apiState.getCreatedCase().getUuid().substring(0, 6).toUpperCase();
+          softly.assertTrue(
+              boxContents.contains(expectedCase), "The case is not correctly listed!");
+          softly.assertAll();
+        });
+
     When(
         "I click on the NEW CONTACT button in in Exposure for Epidemiological data tab in Cases",
         () -> webDriverHelpers.clickOnWebElementBySelector(NEW_CONTACT_BUTTON));
