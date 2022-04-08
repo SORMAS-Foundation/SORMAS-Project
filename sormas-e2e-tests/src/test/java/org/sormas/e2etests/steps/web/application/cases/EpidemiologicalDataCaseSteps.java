@@ -16,6 +16,7 @@ import static org.sormas.e2etests.steps.web.application.cases.FollowUpStep.faker
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -428,6 +429,46 @@ public class EpidemiologicalDataCaseSteps implements En {
               "Please define a district in order to select a facility.",
               displayedText,
               "Message is incorrect");
+          softly.assertAll();
+        });
+
+    When(
+        "I check if data is correctly displayed in Exposures table in Epidemiological data tab",
+        () -> {
+          List<String> values = new ArrayList<>();
+          values.add(webDriverHelpers.getTextFromPresentWebElement(TYPE_OF_ACTIVITY_EXPOSURES));
+          for (int i = 3; i <= 8; i++) {
+            values.add(webDriverHelpers.getTextFromPresentWebElement(getExposureTableData(i)));
+          }
+          Exposure generatedExposureData =
+              epidemiologicalData.getExposures().stream()
+                  .findFirst()
+                  .orElse(Exposure.builder().build());
+          String date[] = values.get(3).split("\\s+");
+          softly.assertEquals(
+              generatedExposureData.getTypeOfActivity().toString(),
+              values.get(0).toUpperCase(),
+              "Activities are not equal");
+          softly.assertEquals(
+              generatedExposureData.getExposureDetailsRole().toString().replace("_", " "),
+              values.get(1).toUpperCase(),
+              "Exposure descriptions are not equal");
+          softly.assertEquals(
+              generatedExposureData.getTypeOfPlace().toString(),
+              values.get(2).toUpperCase(),
+              "Type of places are not equal");
+          softly.assertEquals(
+              formatter.format(generatedExposureData.getStartOfExposure()),
+              date[0],
+              "Start of exposure dates are not equal");
+          softly.assertEquals(
+              formatter.format(generatedExposureData.getEndOfExposure()),
+              date[4],
+              "End of exposure dates are not equal");
+          softly.assertEquals(
+              generatedExposureData.getExposureDescription(),
+              values.get(5),
+              "Exposure descriptions are not equal");
           softly.assertAll();
         });
   }
