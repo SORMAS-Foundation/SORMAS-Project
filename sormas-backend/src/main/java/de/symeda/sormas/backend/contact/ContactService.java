@@ -1305,11 +1305,6 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.isFalse(event.get(Event.DELETED)), cb.isFalse(eventParticipant.get(EventParticipant.DELETED)));
-			if (EntityRelevanceStatus.ACTIVE.equals(contactCriteria.getRelevanceStatus())) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(event.get(Event.ARCHIVED)));
-			} else if (EntityRelevanceStatus.ARCHIVED.equals(contactCriteria.getRelevanceStatus())) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.isTrue(event.get(Event.ARCHIVED)));
-			}
 
 			if (hasEventLikeCriteria) {
 				String[] textFilters = contactCriteria.getEventLike().trim().split("\\s+");
