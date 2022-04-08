@@ -56,6 +56,14 @@ public class EpidemiologicalDataCasePage {
   public static final By HANDLING_SAMPLES_OPTIONS =
       By.cssSelector(".v-window #handlingSamples .v-select-option");
   public static final By TYPE_OF_PLACE_COMBOBOX = By.cssSelector(".v-window #typeOfPlace div");
+  public static final By FACILITY_CATEGORY_POPUP_COMBOBOX =
+      By.cssSelector(".v-window #typeGroup div");
+  public static final By FACILITY_TYPE_POPUP_COMBOBOX =
+      By.cssSelector(".v-window #facilityType div");
+  public static final By BLUE_ERROR_EXCLAMATION_MARK_EXPOSURE_POPUP =
+      By.xpath("//span[@class='v-errorindicator v-errorindicator-info']");
+  public static final By BLUE_ERROR_EXCLAMATION_MARK_EXPOSURE_POPUP_TEXT =
+      By.xpath("//div[@class='gwt-HTML']");
   public static final By CONTINENT_COMBOBOX = By.cssSelector(".v-window #continent div");
   public static final By SUBCONTINENT_COMBOBOX = By.cssSelector(".v-window #subcontinent div");
   public static final By COUNTRY_COMBOBOX = By.cssSelector(".v-window #country div");
