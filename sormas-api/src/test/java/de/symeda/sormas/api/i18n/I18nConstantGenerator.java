@@ -105,7 +105,7 @@ public class I18nConstantGenerator {
 
 	/**
 	 * @param propertiesFileName
-	 *            The properties file to read the contant keys from.
+	 *            The properties file to read the constant keys from.
 	 * @param outputClassName
 	 *            Name of the constants class.
 	 * @param ignoreChildren

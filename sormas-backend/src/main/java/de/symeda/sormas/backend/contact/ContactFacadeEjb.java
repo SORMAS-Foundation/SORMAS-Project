@@ -17,7 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.contact;
 
-import static de.symeda.sormas.backend.sormastosormas.entities.contact.SormasToSormasContactFacadeEjb.SormasToSormasContactFacadeEjbLocal;
 import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 import static java.time.temporal.ChronoUnit.DAYS;
 
@@ -31,13 +30,13 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.Optional;
 import java.util.Set;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -180,6 +179,7 @@ import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleFacadeEjb.SampleFacadeEjbLocal;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.entities.contact.SormasToSormasContactFacadeEjb.SormasToSormasContactFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
@@ -588,7 +588,7 @@ public class ContactFacadeEjb
 		final Root<Contact> contact = cq.from(Contact.class);
 
 		final ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, contact);
-		final ContactJoins<Contact> joins = (ContactJoins) contactQueryContext.getJoins();
+		final ContactJoins joins = contactQueryContext.getJoins();
 
 		cq.multiselect(
 			contact.get(Contact.ID),
@@ -653,10 +653,11 @@ public class ContactFacadeEjb
 			joins.getAddressFacility().get(Facility.NAME),
 			joins.getAddressFacility().get(Facility.UUID),
 			joins.getAddress().get(Location.FACILITY_DETAILS),
-			((Expression<String>) contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY)),
-			((Expression<String>) contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_OWNER_SUBQUERY)),
-			((Expression<String>) contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_EMAIL_SUBQUERY)),
-			((Expression<String>) contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_OTHER_CONTACT_DETAILS_SUBQUERY)),
+			contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY),
+			contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_OWNER_SUBQUERY),
+			contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_EMAIL_SUBQUERY),
+			contactQueryContext.getSubqueryExpression(
+				ContactQueryContext.PERSON_OTHER_CONTACT_DETAILS_SUBQUERY),
 			joins.getPerson().get(Person.OCCUPATION_TYPE),
 			joins.getPerson().get(Person.OCCUPATION_DETAILS),
 			joins.getPerson().get(Person.ARMED_FORCES_RELATION_TYPE),
@@ -709,7 +710,7 @@ public class ContactFacadeEjb
 				ContactExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMS)) {
 				CriteriaQuery<VisitSummaryExportDetails> visitsCq = cb.createQuery(VisitSummaryExportDetails.class);
 				Root<Contact> visitsCqRoot = visitsCq.from(Contact.class);
-				ContactJoins<Contact> visitContactJoins = new ContactJoins(visitsCqRoot);
+				ContactJoins visitContactJoins = new ContactJoins(visitsCqRoot);
 
 				visitsCq.where(
 					CriteriaBuilderHelper
@@ -927,7 +928,7 @@ public class ContactFacadeEjb
 		final CriteriaQuery<VisitSummaryExportDto> cq = cb.createQuery(VisitSummaryExportDto.class);
 		final Root<Contact> contactRoot = cq.from(Contact.class);
 		final ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, contactRoot);
-		final ContactJoins contactJoins = (ContactJoins) contactQueryContext.getJoins();
+		final ContactJoins contactJoins = contactQueryContext.getJoins();
 		final Join<Contact, Person> contactPerson = contactJoins.getPerson();
 
 		cq.multiselect(
@@ -953,7 +954,7 @@ public class ContactFacadeEjb
 
 			CriteriaQuery<VisitSummaryExportDetails> visitsCq = cb.createQuery(VisitSummaryExportDetails.class);
 			Root<Contact> visitsCqRoot = visitsCq.from(Contact.class);
-			ContactJoins<Contact> joins = new ContactJoins(visitsCqRoot);
+			ContactJoins joins = new ContactJoins(visitsCqRoot);
 
 			visitsCq.where(
 				CriteriaBuilderHelper
@@ -1058,7 +1059,7 @@ public class ContactFacadeEjb
 		Root<Contact> contact = cq.from(Contact.class);
 
 		final ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, contact);
-		final ContactJoins<Contact> joins = (ContactJoins<Contact>) contactQueryContext.getJoins();
+		final ContactJoins joins = contactQueryContext.getJoins();
 
 		cq.multiselect(
 			contact.get(Contact.UUID),
@@ -1290,32 +1291,17 @@ public class ContactFacadeEjb
 	@Override
 	public int getNonSourceCaseCountForDashboard(List<String> caseUuids) {
 
-		if (CollectionUtils.isEmpty(caseUuids)) {
-			// Avoid empty IN clause
-			return 0;
-		} else if (caseUuids.size() > ModelConstants.PARAMETER_LIMIT) {
-			List<BigInteger> countResults = new LinkedList<>();
-			IterableHelper.executeBatched(caseUuids, ModelConstants.PARAMETER_LIMIT, batchedCaseUuids -> {
-				Query query = em.createNativeQuery(
-					String.format(
-						"SELECT DISTINCT count(case1_.id) FROM contact AS contact0_ LEFT OUTER JOIN cases AS case1_ ON (contact0_.%s_id = case1_.id) WHERE case1_.%s IN (:uuidList)",
-						Contact.RESULTING_CASE.toLowerCase(),
-						Case.UUID));
-				query.setParameter("uuidList", batchedCaseUuids);
-				countResults.add((BigInteger) query.getSingleResult());
-			});
-			return countResults.stream().collect(Collectors.summingInt(BigInteger::intValue));
-		} else {
+		AtomicInteger totalCount = new AtomicInteger();
+		IterableHelper.executeBatched(caseUuids, ModelConstants.PARAMETER_LIMIT, batchedCaseUuids -> {
 			Query query = em.createNativeQuery(
 				String.format(
 					"SELECT DISTINCT count(case1_.id) FROM contact AS contact0_ LEFT OUTER JOIN cases AS case1_ ON (contact0_.%s_id = case1_.id) WHERE case1_.%s IN (:uuidList)",
 					Contact.RESULTING_CASE.toLowerCase(),
 					Case.UUID));
-			query.setParameter("uuidList", caseUuids);
-			BigInteger count = (BigInteger) query.getSingleResult();
-			return count.intValue();
-		}
-
+			query.setParameter("uuidList", batchedCaseUuids);
+			totalCount.addAndGet(((BigInteger) query.getSingleResult()).intValue());
+		});
+		return totalCount.get();
 	}
 
 	public Contact fillOrBuildEntity(@NotNull ContactDto source, Contact target, boolean checkChangeDate) {
@@ -1839,7 +1825,7 @@ public class ContactFacadeEjb
 		cq.distinct(true);
 
 		ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, contactRoot);
-		ContactJoins<Contact> joins = (ContactJoins<Contact>) contactQueryContext.getJoins();
+		ContactJoins joins = contactQueryContext.getJoins();
 
 		List<Selection<?>> selections = new ArrayList<>(
 			Arrays.asList(

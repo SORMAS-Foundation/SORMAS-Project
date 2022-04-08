@@ -136,7 +136,6 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.vaccination.Vaccination;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
-import de.symeda.sormas.utils.EventParticipantJoins;
 
 @Stateless(name = "EventParticipantFacade")
 public class EventParticipantFacadeEjb
@@ -456,7 +455,7 @@ public class EventParticipantFacadeEjb
 		final CriteriaQuery<EventParticipantIndexDto> cq = cb.createQuery(EventParticipantIndexDto.class);
 		final Root<EventParticipant> eventParticipant = cq.from(EventParticipant.class);
 		final EventParticipantQueryContext queryContext = new EventParticipantQueryContext(cb, cq, eventParticipant);
-		EventParticipantJoins<EventParticipant> joins = (EventParticipantJoins<EventParticipant>) queryContext.getJoins();
+		EventParticipantJoins joins = queryContext.getJoins();
 
 		Join<EventParticipant, Person> person = joins.getPerson();
 		Join<EventParticipant, Case> resultingCase = joins.getResultingCase();
@@ -613,7 +612,7 @@ public class EventParticipantFacadeEjb
 		CriteriaQuery<EventParticipantExportDto> cq = cb.createQuery(EventParticipantExportDto.class);
 		Root<EventParticipant> eventParticipant = cq.from(EventParticipant.class);
 		EventParticipantQueryContext eventParticipantQueryContext = new EventParticipantQueryContext(cb, cq, eventParticipant);
-		EventParticipantJoins<EventParticipant> joins = (EventParticipantJoins<EventParticipant>) eventParticipantQueryContext.getJoins();
+		EventParticipantJoins joins = eventParticipantQueryContext.getJoins();
 
 		Join<EventParticipant, Person> person = joins.getPerson();
 
