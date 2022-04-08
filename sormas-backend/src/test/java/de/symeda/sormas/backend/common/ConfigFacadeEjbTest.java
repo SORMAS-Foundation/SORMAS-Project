@@ -48,7 +48,8 @@ public class ConfigFacadeEjbTest extends AbstractBeanTest {
 		try {
 			MockProducer.getProperties().setProperty(ConfigFacadeEjb.SORMAS_STATS_URL, "http://my-stats-service:12345/route/path");
 			getConfigFacade().validateConfigUrls();
-		}catch (IllegalArgumentException ignored){}
+		} catch (IllegalArgumentException ignored) {
+		}
 
 		try {
 			MockProducer.getProperties().setProperty(ConfigFacadeEjb.INTERFACE_SYMPTOM_JOURNAL_URL, "htps://www.google.com#");
