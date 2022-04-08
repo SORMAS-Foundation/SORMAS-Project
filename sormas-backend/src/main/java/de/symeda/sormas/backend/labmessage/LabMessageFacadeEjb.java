@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -28,6 +29,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.user.UserRight;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -66,6 +68,7 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "LabMessageFacade")
+@RolesAllowed(UserRight._LAB_MESSAGES)
 public class LabMessageFacadeEjb implements LabMessageFacade {
 
 	public static final List<String> VALID_SORT_PROPERTY_NAMES = Arrays.asList(
@@ -356,6 +359,9 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	 * @return An indication whether the fetching of new labMessage was successful. If it was not, an error message meant for UI users.
 	 */
 	@Override
+	@RolesAllowed({
+		UserRight._SYSTEM,
+		UserRight._LAB_MESSAGES })
 	public LabMessageFetchResult fetchAndSaveExternalLabMessages(Date since) {
 
 		SystemEventDto currentSync = syncFacadeEjb.startSyncFor(SystemEventType.FETCH_LAB_MESSAGES);
