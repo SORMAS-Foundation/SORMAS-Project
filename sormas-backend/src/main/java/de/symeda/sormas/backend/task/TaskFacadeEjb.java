@@ -456,7 +456,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		Root<Task> task = cq.from(Task.class);
 
 		TaskQueryContext taskQueryContext = new TaskQueryContext(cb, cq, task);
-		TaskJoins<Task> joins = (TaskJoins<Task>) taskQueryContext.getJoins();
+		TaskJoins joins = taskQueryContext.getJoins();
 
 		// Filter select based on case/contact/event region/district/community
 		Expression<Object> region = cb.selectCase()
@@ -676,13 +676,13 @@ public class TaskFacadeEjb implements TaskFacade {
 		CriteriaQuery<TaskExportDto> cq = cb.createQuery(TaskExportDto.class);
 		Root<Task> task = cq.from(Task.class);
 
-		TaskQueryContext<Task> taskQueryContext = new TaskQueryContext<>(cb, cq, task);
-		TaskJoins<Task> joins = (TaskJoins<Task>) taskQueryContext.getJoins();
-		CaseQueryContext<Task> caseQueryContext = new CaseQueryContext<>(cb, cq, joins.getCaze());
-		ContactQueryContext<Task> contactQueryContext = new ContactQueryContext<>(cb, cq, joins.getContact());
+		TaskQueryContext taskQueryContext = new TaskQueryContext(cb, cq, task);
+		TaskJoins joins = taskQueryContext.getJoins();
+		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, joins.getCaze());
+		ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, joins.getContact());
 
-		LocationJoins<Person> casePersonAddressJoins = joins.getCasePersonJoins().getAddressJoins();
-		LocationJoins<Person> contactPersonAddressJoins = joins.getContactPersonJoins().getAddressJoins();
+		LocationJoins casePersonAddressJoins = joins.getCasePersonJoins().getAddressJoins();
+		LocationJoins contactPersonAddressJoins = joins.getContactPersonJoins().getAddressJoins();
 
 		//@formatter:off
 		cq.multiselect(task.get(Task.UUID), task.get(Task.TASK_CONTEXT),
@@ -744,11 +744,11 @@ public class TaskFacadeEjb implements TaskFacade {
 		return tasks;
 	}
 
-	private Expression<String> getPersonFieldPath(CriteriaBuilder cb, TaskJoins<?> joins, String fieldName) {
+	private Expression<String> getPersonFieldPath(CriteriaBuilder cb, TaskJoins joins, String fieldName) {
 		return CriteriaBuilderHelper.coalesce(cb, joins.getCasePerson().get(fieldName), joins.getContactPerson().get(fieldName));
 	}
 
-	private Expression<String> getPersonAddressFieldPath(CriteriaBuilder cb, TaskJoins<?> joins, String fieldName) {
+	private Expression<String> getPersonAddressFieldPath(CriteriaBuilder cb, TaskJoins joins, String fieldName) {
 		return CriteriaBuilderHelper.coalesce(cb, joins.getCasePersonAddress().get(fieldName), joins.getContactPersonAddress().get(fieldName));
 	}
 

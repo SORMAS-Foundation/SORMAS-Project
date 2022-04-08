@@ -336,7 +336,6 @@ import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitService;
-import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless(name = "CaseFacade")
 @RolesAllowed(UserRight._CASE_VIEW)
@@ -722,7 +721,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		Root<Case> caseRoot = cq.from(Case.class);
 
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caseRoot);
-		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+		final CaseJoins joins = caseQueryContext.getJoins();
 
 		// Events count subquery
 		Subquery<Long> eventCountSq = cq.subquery(Long.class);
@@ -3693,7 +3692,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		Root<Case> caze = cq.from(Case.class);
 
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
-		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+		final CaseJoins joins = caseQueryContext.getJoins();
 
 		cq.multiselect(
 			caze.get(Case.UUID),
@@ -3921,7 +3920,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> caseRoot = cq.from(Case.class);
-		CaseJoins<Case> caseCaseJoins = new CaseJoins<>(caseRoot);
+		CaseJoins caseCaseJoins = new CaseJoins(caseRoot);
 		Join<Case, Person> person = caseCaseJoins.getPerson();
 
 		cq.multiselect(caseRoot.get(Case.UUID), person.get(Person.UUID));

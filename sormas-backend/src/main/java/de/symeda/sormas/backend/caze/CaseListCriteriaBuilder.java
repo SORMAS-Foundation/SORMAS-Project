@@ -17,6 +17,7 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
+import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
@@ -51,7 +52,6 @@ import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
-import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless
 @LocalBean
@@ -89,7 +89,7 @@ public class CaseListCriteriaBuilder {
 		CriteriaQuery<T> cq = cb.createQuery(type);
 		Root<Case> caze = cq.from(Case.class);
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
-		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+		final CaseJoins joins = caseQueryContext.getJoins();
 
 		List<Selection<?>> selectionList = new ArrayList<>(selectionProvider.apply(caze, caseQueryContext));
 
@@ -174,8 +174,9 @@ public class CaseListCriteriaBuilder {
 		return cq;
 	}
 
-	public List<Selection<?>> getCaseIndexSelections(Root<Case> root, CaseQueryContext caseQueryContext) {
-		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+	public List<Selection<?>> getCaseIndexSelections(From<?, Case> root, CaseQueryContext caseQueryContext) {
+
+		final CaseJoins joins = caseQueryContext.getJoins();
 		final CriteriaBuilder cb = caseQueryContext.getCriteriaBuilder();
 		return Arrays.asList(
 			root.get(AbstractDomainObject.ID),
@@ -225,7 +226,7 @@ public class CaseListCriteriaBuilder {
 			JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(caseQueryContext)));
 	}
 
-	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Case> caze, CaseJoins<Case> joins, CriteriaBuilder cb) {
+	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Case> caze, CaseJoins joins, CriteriaBuilder cb) {
 
 		switch (sortProperty.propertyName) {
 		case CaseIndexDto.ID:
@@ -282,7 +283,7 @@ public class CaseListCriteriaBuilder {
 
 	private List<Selection<?>> getCaseIndexDetailedSelections(Root<Case> caze, CaseQueryContext caseQueryContext) {
 
-		CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+		CaseJoins joins = caseQueryContext.getJoins();
 
 		List<Selection<?>> selections = new ArrayList<>(getCaseIndexSelections(caze, caseQueryContext));
 		selections.addAll(
@@ -293,7 +294,7 @@ public class CaseListCriteriaBuilder {
 				joins.getAddress().get(Location.HOUSE_NUMBER),
 				joins.getAddress().get(Location.ADDITIONAL_INFORMATION),
 				joins.getAddress().get(Location.POSTAL_CODE),
-				((Expression<String>) caseQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY)),
+				caseQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY),
 				joins.getReportingUser().get(User.UUID),
 				joins.getReportingUser().get(User.FIRST_NAME),
 				joins.getReportingUser().get(User.LAST_NAME),
@@ -304,7 +305,7 @@ public class CaseListCriteriaBuilder {
 		return selections;
 	}
 
-	private List<Expression<?>> getIndexDetailOrders(SortProperty sortProperty, Root<Case> caze, CaseJoins<Case> joins, CriteriaBuilder cb) {
+	private List<Expression<?>> getIndexDetailOrders(SortProperty sortProperty, Root<Case> caze, CaseJoins joins, CriteriaBuilder cb) {
 
 		switch (sortProperty.propertyName) {
 		case CaseIndexDetailedDto.CITY:
@@ -330,6 +331,6 @@ public class CaseListCriteriaBuilder {
 
 	private interface OrderExpressionProvider {
 
-		List<Expression<?>> forProperty(SortProperty sortProperty, Root<Case> caze, CaseJoins<Case> joins, CriteriaBuilder cb);
+		List<Expression<?>> forProperty(SortProperty sortProperty, Root<Case> caze, CaseJoins joins, CriteriaBuilder cb);
 	}
 }
