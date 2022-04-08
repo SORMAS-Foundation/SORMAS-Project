@@ -268,6 +268,8 @@ public class ContactFacadeEjb
 	private HealthConditionsMapper healthConditionsMapper;
     @EJB
     private VaccinationService vaccinationService;
+    @EJB
+    private ContactService contactService;
 
 	@Resource
 	private ManagedScheduledExecutorService executorService;
@@ -2245,10 +2247,10 @@ public class ContactFacadeEjb
 	}
 
     private List<Vaccination> getRelevantSortedVaccinations(String caseUuid, List<Vaccination> vaccinations) {
-        Case caze = caseService.getByUuid(caseUuid);
+        Contact contact = contactService.getByUuid(caseUuid);
 
         return vaccinations.stream()
-                .filter(v -> vaccinationService.isVaccinationRelevant(caze, v))
+                .filter(v -> vaccinationService.isVaccinationRelevant(contact, v))
                 .sorted(Comparator.comparing(ImmunizationEntityHelper::getVaccinationDateForComparison))
                 .collect(Collectors.toList());
     }
