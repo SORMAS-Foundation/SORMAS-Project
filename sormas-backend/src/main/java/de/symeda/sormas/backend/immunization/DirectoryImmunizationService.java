@@ -39,7 +39,6 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
-import de.symeda.sormas.backend.immunization.joins.DirectoryImmunizationJoins;
 import de.symeda.sormas.backend.immunization.transformers.ImmunizationIndexDtoResultTransformer;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.location.Location;

@@ -56,7 +56,6 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
-import de.symeda.sormas.backend.immunization.joins.ImmunizationJoins;
 import de.symeda.sormas.backend.immunization.transformers.ImmunizationListEntryDtoResultTransformer;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.person.PersonJoins;

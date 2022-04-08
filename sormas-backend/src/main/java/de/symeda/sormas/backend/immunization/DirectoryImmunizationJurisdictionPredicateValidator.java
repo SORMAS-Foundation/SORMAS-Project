@@ -7,7 +7,6 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 
 import de.symeda.sormas.backend.immunization.entity.Immunization;
-import de.symeda.sormas.backend.immunization.joins.DirectoryImmunizationJoins;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;

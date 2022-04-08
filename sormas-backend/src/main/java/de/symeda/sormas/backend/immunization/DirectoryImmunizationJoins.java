@@ -1,4 +1,4 @@
-package de.symeda.sormas.backend.immunization.joins;
+package de.symeda.sormas.backend.immunization;
 
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;

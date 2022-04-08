@@ -7,7 +7,6 @@ import javax.persistence.criteria.From;
 
 import de.symeda.sormas.backend.common.QueryContext;
 import de.symeda.sormas.backend.immunization.entity.DirectoryImmunization;
-import de.symeda.sormas.backend.immunization.joins.DirectoryImmunizationJoins;
 
 public class DirectoryImmunizationQueryContext extends QueryContext<DirectoryImmunization, DirectoryImmunizationJoins> {
 

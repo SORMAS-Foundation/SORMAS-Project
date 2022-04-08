@@ -22,7 +22,6 @@ import javax.persistence.criteria.From;
 
 import de.symeda.sormas.backend.common.QueryContext;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
-import de.symeda.sormas.backend.immunization.joins.ImmunizationJoins;
 
 public class ImmunizationQueryContext extends QueryContext<Immunization, ImmunizationJoins> {
 
