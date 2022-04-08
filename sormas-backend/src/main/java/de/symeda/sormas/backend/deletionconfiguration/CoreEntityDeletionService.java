@@ -9,15 +9,15 @@ import javax.ejb.Singleton;
 import javax.inject.Inject;
 
 import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
-import de.symeda.sormas.backend.labmessage.LabMessageService;
 import de.symeda.sormas.backend.person.PersonService;
-import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
 
 @LocalBean
@@ -33,9 +33,7 @@ public class CoreEntityDeletionService {
 	@EJB
 	private PersonService personService;
 	@EJB
-	private SampleService sampleService;
-	@EJB
-	private LabMessageService labMessageService;
+	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
 
 	public CoreEntityDeletionService() {
 	}
@@ -69,7 +67,9 @@ public class CoreEntityDeletionService {
 			}
 		});
 
-		personService.deleteUnreferencedPersons(DELETE_BATCH_SIZE);
+		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.DELETE_PERMANENT)) {
+			personService.deleteUnreferencedPersons(DELETE_BATCH_SIZE);
+		}
 	}
 
 	private static final class EntityTypeFacadePair {
