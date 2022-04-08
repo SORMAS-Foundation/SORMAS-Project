@@ -56,7 +56,7 @@ public class PersonJurisdictionPredicateValidator extends PredicateJurisdictionV
 		boolean includeImmunizations) {
 		final List<PredicateJurisdictionValidator> associatedJurisdictionValidators = new ArrayList<>();
 
-		associatedJurisdictionValidators.add(CaseJurisdictionPredicateValidator.of(new CaseQueryContext(cb, cq, joins.getCaze()), user));
+		associatedJurisdictionValidators.add(CaseJurisdictionPredicateValidator.of(new CaseQueryContext(cb, cq, joins.getCaseJoins()), user));
 		associatedJurisdictionValidators.add(ContactJurisdictionPredicateValidator.of(new ContactQueryContext(cb, cq, joins.getContact()), user));
 		associatedJurisdictionValidators
 			.add(EventParticipantJurisdictionPredicateValidator.of(new EventParticipantQueryContext(cb, cq, joins.getEventParticipant()), user));

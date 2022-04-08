@@ -707,7 +707,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(qc)),
 			JurisdictionHelper.booleanSelector(
 				cb,
-				cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, joins.getCaze())))),
+				cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, joins.getCaseJoins())))),
 			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(cb.isNotNull(joins.getContact()), contactService.inJurisdictionOrOwned(new ContactQueryContext(cb, cq, joins.getContact())))),
@@ -716,7 +716,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 				cb.and(
 					cb.isNotNull(joins.getContact()),
 					cb.isNotNull(contactJoins.getCaze()),
-					caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, contactJoins.getCaze())))),
+					caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, contactJoins.getCaseJoins())))),
 			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(

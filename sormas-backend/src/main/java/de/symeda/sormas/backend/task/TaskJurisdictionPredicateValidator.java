@@ -47,9 +47,9 @@ public class TaskJurisdictionPredicateValidator extends PredicateJurisdictionVal
 		final List<PredicateJurisdictionValidator> associatedJurisdictionValidators = new ArrayList<>();
 
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();
-		final TaskJoins joins = (TaskJoins) qc.getJoins();
+		final TaskJoins joins = qc.getJoins();
 
-		associatedJurisdictionValidators.add(CaseJurisdictionPredicateValidator.of(new CaseQueryContext(cb, qc.getQuery(), joins.getCaze()), user));
+		associatedJurisdictionValidators.add(CaseJurisdictionPredicateValidator.of(new CaseQueryContext(cb, qc.getQuery(), joins.getCaseJoins()), user));
 		associatedJurisdictionValidators
 			.add(ContactJurisdictionPredicateValidator.of(new ContactQueryContext(cb, qc.getQuery(), joins.getContact()), user));
 		associatedJurisdictionValidators

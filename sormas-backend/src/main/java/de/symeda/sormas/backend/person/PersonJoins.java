@@ -24,6 +24,7 @@ import javax.persistence.criteria.JoinType;
 import de.symeda.sormas.api.person.PersonAssociation;
 import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.common.QueryJoins;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.EventParticipant;
@@ -46,6 +47,7 @@ public class PersonJoins extends QueryJoins<Person> {
 	private Join<Person, Country> citizenship;
 
 	private LocationJoins addressJoins;
+	private CaseJoins caseJoins;
 
 	public PersonJoins(From<?, Person> root) {
 		super(root);
@@ -73,6 +75,14 @@ public class PersonJoins extends QueryJoins<Person> {
 
 	private void setCaze(Join<Person, Case> caze) {
 		this.caze = caze;
+	}
+
+	public CaseJoins getCaseJoins() {
+		return getOrCreate(caseJoins, () -> new CaseJoins(getCaze()), this::setCaseJoins);
+	}
+
+	private void setCaseJoins(CaseJoins caseJoins) {
+		this.caseJoins = caseJoins;
 	}
 
 	public Join<Person, Contact> getContact() {

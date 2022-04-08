@@ -78,20 +78,21 @@ public class VisitService extends BaseAdoService<Visit> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
 		Root<Visit> root = cq.from(Visit.class);
+		VisitJoins visitJoins = new VisitJoins(root, JoinType.LEFT);
 		Expression<Object> objectExpression = JurisdictionHelper.booleanSelector(
 			cb,
 			cb.and(
 				cb.equal(root.get(AbstractDomainObject.ID), visit.getId()),
-				inJurisdiction(cq, cb, root.join(Visit.CAZE, JoinType.LEFT), root.join(Visit.CONTACTS, JoinType.LEFT))));
+				inJurisdiction(cq, cb, visitJoins)));
 		cq.multiselect(objectExpression);
 		cq.where(cb.equal(root.get(Visit.UUID), visit.getUuid()));
 		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
 	}
 
-	private Predicate inJurisdiction(CriteriaQuery cq, CriteriaBuilder cb, Join<Visit, Case> caseJoin, Join<Visit, Contact> contactJoin) {
+	private Predicate inJurisdiction(CriteriaQuery cq, CriteriaBuilder cb, VisitJoins visitJoins) {
 		return cb.or(
-			caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, caseJoin)),
-			contactService.inJurisdictionOrOwned(new ContactQueryContext(cb, cq, contactJoin)));
+			caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, visitJoins.getCaseJoins())),
+			contactService.inJurisdictionOrOwned(new ContactQueryContext(cb, cq, visitJoins.getContactJoins())));
 	}
 
 	public List<String> getAllActiveUuids(User user) {

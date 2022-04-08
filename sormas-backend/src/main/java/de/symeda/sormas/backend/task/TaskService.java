@@ -543,12 +543,12 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		CriteriaBuilder cb = qc.getCriteriaBuilder();
 		TaskJoins joins = (TaskJoins) qc.getJoins();
 
-		ContactJoins contactJoins = new ContactJoins(joins.getContact());
+		ContactJoins contactJoins = joins.getContactJoins();
 		return Arrays.asList(
 			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(qc)),
 			JurisdictionHelper.booleanSelector(
 				cb,
-				cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, qc.getQuery(), joins.getCaze())))),
+				cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, qc.getQuery(), joins.getCaseJoins())))),
 			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(
@@ -559,7 +559,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 				cb.and(
 					cb.isNotNull(joins.getContact()),
 					cb.isNotNull(contactJoins.getCaze()),
-					caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, qc.getQuery(), contactJoins.getCaze())))),
+					caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, qc.getQuery(), contactJoins.getCaseJoins())))),
 			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(
