@@ -42,7 +42,6 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Transient;
 
-import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import org.hibernate.annotations.Type;
 
 import de.symeda.auditlog.api.Audited;
@@ -77,7 +76,9 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory;
 import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfo;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
+import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
@@ -205,6 +206,7 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String OVERWRITE_FOLLOW_UP_UNTIL = "overwriteFollowUpUntil";
 	public static final String VISITS = "visits";
+	public static final String SURVEILLANCE_REPORTS = "surveillanceReports";
 	public static final String FACILITY_TYPE = "facilityType";
 	public static final String CONTACTS = "contacts";
 	public static final String CONVERTED_FROM_CONTACT = "convertedContact";
@@ -238,6 +240,7 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	public static final String CASE_REFERENCE_DEFINITION = "caseReferenceDefinition";
 	public static final String PREVIOUS_QUARANTINE_TO = "previousQuarantineTo";
 	public static final String QUARANTINE_CHANGE_COMMENT = "quarantineChangeComment";
+	public static final String DUPLICATE_OF = "duplicateOf";
 
 	private Person person;
 	private String description;
@@ -320,7 +323,6 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 
 	private Integer caseAge;
 
-
 	private String creationVersion;
 	private Case duplicateOf;
 
@@ -365,6 +367,7 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	private List<Task> tasks;
 	private Set<Sample> samples = new HashSet<>();
 	private Set<Visit> visits = new HashSet<>();
+	private Set<SurveillanceReport> surveillanceReports = new HashSet<>();
 	private Set<EventParticipant> eventParticipants;
 	private List<Contact> contacts;
 	private List<Contact> convertedContact;
@@ -969,6 +972,16 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 
 	public void setVisits(Set<Visit> visits) {
 		this.visits = visits;
+	}
+
+	@AuditedIgnore
+	@OneToMany(mappedBy = SurveillanceReport.CAZE, fetch = FetchType.LAZY)
+	public Set<SurveillanceReport> getSurveillanceReports() {
+		return surveillanceReports;
+	}
+
+	public void setSurveillanceReports(Set<SurveillanceReport> surveillanceReports) {
+		this.surveillanceReports = surveillanceReports;
 	}
 
 	@OneToMany(mappedBy = Sample.ASSOCIATED_CASE, fetch = FetchType.LAZY)

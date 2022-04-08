@@ -73,7 +73,8 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 			fluidColumnLoc(6, 0, TravelEntryDto.DISEASE),
 			fluidColumnLoc(6, 0, TravelEntryDto.DISEASE_DETAILS)) 
 			+ fluidRowLocs(TravelEntryDto.DISEASE_VARIANT, TravelEntryDto.DISEASE_VARIANT_DETAILS)
-			+ fluidRowLocs(TravelEntryDto.RECOVERED, TravelEntryDto.VACCINATED, TravelEntryDto.TESTED_NEGATIVE) +
+			+ fluidRowLocs(TravelEntryDto.RECOVERED, TravelEntryDto.VACCINATED, TravelEntryDto.TESTED_NEGATIVE)
+			+ fluidRowLocs(TravelEntryDto.DATE_OF_ARRIVAL, "") +
 			fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC)
 			+ fluidRowLocs(TravelEntryDto.RESPONSIBLE_REGION, TravelEntryDto.RESPONSIBLE_DISTRICT, TravelEntryDto.RESPONSIBLE_COMMUNITY)
 			+ fluidRowLocs(DIFFERENT_POINT_OF_ENTRY_JURISDICTION)
@@ -154,6 +155,8 @@ public class TravelEntryDataForm extends AbstractEditForm<TravelEntryDto> {
 		addField(TravelEntryDto.RECOVERED).addStyleNames(CssStyles.FORCE_CAPTION_CHECKBOX);
 		addField(TravelEntryDto.VACCINATED).addStyleNames(CssStyles.FORCE_CAPTION_CHECKBOX);
 		addField(TravelEntryDto.TESTED_NEGATIVE).addStyleNames(CssStyles.FORCE_CAPTION_CHECKBOX);
+
+		addField(TravelEntryDto.DATE_OF_ARRIVAL).setRequired(true);
 
 		Label jurisdictionHeadingLabel = new Label(I18nProperties.getString(Strings.headingResponsibleJurisdiction));
 		jurisdictionHeadingLabel.addStyleName(H3);

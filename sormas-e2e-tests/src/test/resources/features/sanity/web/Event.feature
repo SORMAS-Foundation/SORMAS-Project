@@ -129,7 +129,7 @@ Feature: Create events
     Then I open the last created event via api
     And I check that number of actions in Edit Event Tab is 1
 
-  @env_main @ignore
+  @env_main
   Scenario: Add a New action for an Event and verify the Action in EventActions table
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -144,12 +144,12 @@ Feature: Create events
     And I collect the event actions from table view
     And I am checking if all the fields are correctly displayed in the Event directory Actions table
 
-  @issue=SORDEV-5476 @env_main @ignore
+  @issue=SORDEV-5476 @env_main
   Scenario: Add a Task from event and verify the fields
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
-    Given I log in with National User
+    Given I log in as a National User
     When I am accessing the event tab using the created event via api
     Then I click on New Task from event tab
     And I create a new task with specific data for an event
@@ -194,54 +194,6 @@ Feature: Create events
     Then I click Create Case for Event Participant
     And I fill all fields for a new case created for event participant
     And I click on save case button
-
-    @issue=SORDEV-5915 @env_main
-  Scenario: Check all filters are work properly in Event directory
-    Given API: I create a new event
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    When I log in with National User
-    And I click on the Events button from navbar
-    Then I select random Risk level filter among the filter options from API
-    And I fill EVENT ID filter by API
-    And I apply on the APPLY FILTERS button from Event
-    And I check that number of displayed Event results is 1
-    Then I select random Risk level filter among the filter options
-    And I apply on the APPLY FILTERS button from Event
-    And I check that number of displayed Event results is 0
-    And I click on the RESET FILTERS button from Event
-    Then I select random Disease filter among the filter options from API
-    And I fill EVENT ID filter by API
-    And I apply on the APPLY FILTERS button from Event
-    And I check that number of displayed Event results is 1
-    Then I select random Disease filter among the filter options
-    And I apply on the APPLY FILTERS button from Event
-    And I check that number of displayed Event results is 0
-    And I click on the RESET FILTERS button from Event
-    Then I click on Show more filters in Events
-    Then I select Source Type among the filter options from API
-    And I fill EVENT ID filter by API
-    And I apply on the APPLY FILTERS button from Event
-    And I check that number of displayed Event results is 1
-    Then I select random Source Type among the filter options
-    And I apply on the APPLY FILTERS button from Event
-    And I check that number of displayed Event results is 0
-    And I click on the RESET FILTERS button from Event
-    Then I click on Show more filters in Events
-    Then I select Type of Place field among the filter options from API
-    And I fill EVENT ID filter by API
-    And I apply on the APPLY FILTERS button from Event
-    And I check that number of displayed Event results is 1
-    Then I select random Type of Place field among the filter options
-    And I apply on the APPLY FILTERS button from Event
-    And I check that number of displayed Event results is 0
-    And I click on the RESET FILTERS button from Event
-    Then I select Signal filter from quick filter
-    And I select Event filter from quick filter
-    And I select Screening filter from quick filter
-    And I select Cluster filter from quick filter
-    And I select Dropped filter from quick filter
-    And I click on the RESET FILTERS button from Event
 
   @issue=SORDEV-9426 @env_main
   Scenario: Filter for the report date of events
@@ -383,7 +335,122 @@ Feature: Create events
     And I create a new Contacts from Event Participants using Line Listing
     And I save the new contacts from Event Participants using line listing feature in Event Participant tab
 
+  @issue=SORDEV-5480  @env_main
+  Scenario: Import Events
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    And I read the UUIDs of the first four events in Events directory
+    When I click on the Import button from Events directory
+    And I select the Event CSV file in the file picker
+    And I click on the Start Data Import button from Import Events popup
+    Then I check that an import success notification appears in the Import Events popup
+    And I close the Import Events popups
+    And I check that four new events have appeared in Events directory
 
+  @issue=SORDEV-5569 @env_main
+  Scenario: Testing Event groups view filters with sorting actions
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    When I am accessing the event tab using the created event via api
+    And I click on link event group
+    And I create a new event group
+    When I am accessing the event tab using the created event via api
+    Then I am checking event group name and id is correctly displayed
+    And I click on the Events button from navbar
+    And I click on GROUPS Radiobutton on Event Directory Page
+    Then I search last created groups Event by "GROUP_ID" option filter in Event Group Directory
+    Then I search last created Event by "TITLE" option filter in Event Group Directory
+    And I chose Region option in Event Group Directory
+    And I chose District option in Event Group Directory
+    And I chose Community option in Event Group Directory
+    And I apply on the APPLY FILTERS button from Event
+    And I check that number of displayed Event results is 1
+    And I chose Region "Berlin" option in Event Group Directory
+    And I apply on the APPLY FILTERS button from Event
+    And I check that number of displayed Event results is 0
+    And I chose Region "Region1" option in Event Group Directory
+    And I chose District "District11" option in Event Group Directory
+    And I apply on the APPLY FILTERS button from Event
+    And I check that number of displayed Event results is 0
+    And I chose Region option in Event Group Directory
+    And I chose District option in Event Group Directory
+    And I chose Community "Community1" option in Event Group Directory
+    And I apply on the APPLY FILTERS button from Event
+    And I check that number of displayed Event results is 0
+    And I chose Community option in Event Group Directory
+    And I apply on the APPLY FILTERS button from Event
+    And I chose "Active groups" option from Relevnce Status filter in Event Group Directory
+    And I check that number of displayed Event results is 1
+    And I chose "Archived groups" option from Relevnce Status filter in Event Group Directory
+    And I check that number of displayed Event results is 0
+    And I chose "All groups" option from Relevnce Status filter in Event Group Directory
+    And I check that number of displayed Event results is 1
+    And I chose "Active groups" option from Relevnce Status filter in Event Group Directory
+    And I click on the RESET FILTERS button from Event
+    And I sort all rows by Group ID in Event Group Directory
+    And I sort all rows by Group NAME in Event Group Directory
+    And I click on a Export button in Event Group Directory
+    And I click on a Basic Export button from Export options in Event Group Directory
 
+  @issue=SORDEV-5481 @env_main
+  Scenario: Export and import event participant
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with specific data
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    And I collect the UUID displayed on Edit event page
+    Then I add a participant to the event
+    Then I check if participant appears in the event participants list
+    And I click Export button in Event Participant Directory
+    And I click on Detailed Export button in Event Participant Directory
+    And I close popup after export in Event Participant directory
+    Then I click on the Import button from Event Participants directory
+    And I select the event participant CSV file in the file picker
+    And I click on the "START DATA IMPORT" button from the Import Event Participant popup
+    And I confirm the save Event Participant Import popup
+    And I check that an import success notification appears in the Import Event Participant popup
+    Then I delete exported file from Event Participant Directory
+
+  @issue=SORDEV-10049  @env_main
+  Scenario: Test basic export of event participant
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with specific data
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    And I collect the UUID displayed on Edit event page
+    Then I add a participant to the event
+    Then I check if participant appears in the event participants list
+    And I click Export button in Event Participant Directory
+    And I click on Basic Export button in Event Participant Directory
+
+  @issue=SORDEV-10051  @env_main
+  Scenario: Test custom export of event participant
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    And I create a new event with specific data
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    And I collect the UUID displayed on Edit event page
+    Then I add a participant to the event
+    Then I check if participant appears in the event participants list
+    And I click Export button in Event Participant Directory
+    And I click on Custom Export button in Event Participant Directory
+    And I click on the New Export Configuration button in Custom Event Participant Export popup
+    Then I fill Configuration Name field with Test Configuration Name
+    And I select specific data of event participant to export in Export Configuration
+    When I download created custom event participant export file
+    And I delete created custom event participant export file
+    Then I check if downloaded data generated by custom event option is correct
+    Then I delete exported file from Event Participant Directory
 
 

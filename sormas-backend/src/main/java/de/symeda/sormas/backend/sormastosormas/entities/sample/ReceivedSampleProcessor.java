@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities.sample;
 
+import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.inject.Inject;
@@ -59,7 +60,7 @@ public class ReceivedSampleProcessor
 	}
 
 	@Override
-	public void handleReceivedData(SormasToSormasSampleDto sharedData, Sample existingData) {
+	public void handleReceivedData(SormasToSormasSampleDto sharedData, Sample existingData, SormasToSormasOriginInfoDto originInfo) {
 		Map<String, PathogenTestDto> existingPathogenTests;
 		if (existingData != null) {
 			existingPathogenTests = existingData.getPathogenTests()

@@ -24,11 +24,14 @@ import java.util.Map;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.caze.CoreAndPersonDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
@@ -38,12 +41,15 @@ import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.visit.VisitSummaryExportDto;
 
 @Remote
 public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, ContactReferenceDto, ContactCriteria> {
 
 	ContactDto save(@Valid ContactDto dto, boolean handleChanges, boolean handleCaseChanges);
+
+	CoreAndPersonDto<ContactDto> save(@Valid @NotNull CoreAndPersonDto<ContactDto> coreAndPersonDto) throws ValidationRuntimeException;
 
 	List<String> getAllActiveUuids();
 
@@ -55,11 +61,17 @@ public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, C
 
 	List<String> deleteContacts(List<String> contactUuids);
 
-	FollowUpPeriodDto calculateFollowUpUntilDate(ContactDto contactDto, boolean ignoreOverwrite);
+	FollowUpPeriodDto getCalculatedFollowUpUntilDate(ContactDto contactDto, boolean ignoreOverwrite);
 
 	List<ContactListEntryDto> getEntriesList(String personUuid, Integer first, Integer max);
 
 	Page<ContactIndexDto> getIndexPage(ContactCriteria contactCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
+
+	Page<ContactIndexDetailedDto> getIndexDetailedPage(
+		@NotNull ContactCriteria contactCriteria,
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties);
 
 	List<ContactIndexDetailedDto> getIndexDetailedList(
 		ContactCriteria contactCriteria,
@@ -98,6 +110,10 @@ public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, C
 	Map<FollowUpStatus, Long> getNewContactCountPerFollowUpStatus(ContactCriteria contactCriteria);
 
 	int getFollowUpUntilCount(ContactCriteria contactCriteria);
+
+	List<String> getArchivedUuidsSince(Date since);
+
+	void archiveAllArchivableContacts(int daysAfterContactsGetsArchived);
 
 	List<String> getDeletedUuidsSince(Date since);
 
@@ -145,4 +161,6 @@ public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, C
 		@Valid ContactBulkEditData updatedContacBulkEditData,
 		boolean classificationChange,
 		boolean contactOfficerChange);
+
+	long getContactCount(CaseReferenceDto caze);
 }

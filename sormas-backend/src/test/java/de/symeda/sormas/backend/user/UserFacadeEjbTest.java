@@ -18,6 +18,7 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.nullValue;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
+import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertThrows;
 import static org.junit.Assert.assertTrue;
@@ -43,6 +44,7 @@ import org.mockito.Mockito;
 import org.mockito.MockitoAnnotations;
 
 import de.symeda.sormas.api.AuthProvider;
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserCriteria;
@@ -80,7 +82,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		RegionReferenceDto region = rdcf.region;
 		RegionFacadeEjb.RegionFacadeEjbLocal regionFacade = (RegionFacadeEjb.RegionFacadeEjbLocal) getRegionFacade();
 
-		List<UserReferenceDto> result = getUserFacade().getUsersByRegionAndRights(region, UserRight.LAB_MESSAGES);
+		List<UserReferenceDto> result = getUserFacade().getUsersByRegionAndRights(region, null, UserRight.LAB_MESSAGES);
 
 		assertTrue(result.isEmpty());
 
@@ -88,12 +90,12 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		UserDto natUser = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(NATIONAL_USER));
 		// Does not have LAB_MASSAGES right
 		creator.createUser(rdcf, "Some", "User", creator.getUserRoleDtoMap().get(POE_INFORMANT));
-		result = getUserFacade().getUsersByRegionAndRights(region, UserRight.LAB_MESSAGES);
+		result = getUserFacade().getUsersByRegionAndRights(region, null, UserRight.LAB_MESSAGES);
 
 		assertThat(result, contains(equalTo(natUser.toReference())));
 
 		UserDto natUser2 = creator.createUser(rdcf, "Nat", "User2", creator.getUserRoleDtoMap().get(NATIONAL_USER));
-		result = getUserFacade().getUsersByRegionAndRights(region, UserRight.LAB_MESSAGES);
+		result = getUserFacade().getUsersByRegionAndRights(region, null, UserRight.LAB_MESSAGES);
 
 		assertThat(result, hasSize(2));
 		assertThat(result, hasItems(equalTo(natUser.toReference()), equalTo(natUser2.toReference())));
@@ -286,5 +288,37 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 			"User name is not unique!",
 			ValidationException.class,
 			() -> creator.createUser(rdcf, "HANS", "PETER", creator.getUserRoleDtoMap().get(SURVEILLANCE_OFFICER)));
+	}
+
+	@Test
+	public void testGetUserRefsByDistrictsWithLimitedDiseaseUsers() {
+
+		RDCF rdcf = creator.createRDCF();
+
+		UserDto generalSurveillanceOfficer = creator.createUser(rdcf, "General ", "SURVEILLANCE_OFFICER", SURVEILLANCE_OFFICER);
+		UserDto limitedSurveillanceOfficer = creator.createUser(rdcf, "Limited Dengue", "SURVEILLANCE_OFFICER", Disease.DENGUE, SURVEILLANCE_OFFICER);
+
+		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUserRefsByDistricts(Arrays.asList(rdcf.district), Disease.CORONAVIRUS);
+
+		assertNotNull(userReferenceDtos);
+		assertTrue(userReferenceDtos.contains(generalSurveillanceOfficer));
+		assertFalse(userReferenceDtos.contains(limitedSurveillanceOfficer));
+
+	}
+
+	@Test
+	public void testGetUserRefsByDistrictsWithLimitedDiseaseUsersSingleDistrict() {
+
+		RDCF rdcf = creator.createRDCF();
+
+		UserDto generalSurveillanceOfficer = creator.createUser(rdcf, "General ", "SURVEILLANCE_OFFICER", SURVEILLANCE_OFFICER);
+		UserDto limitedSurveillanceOfficer = creator.createUser(rdcf, "Limited Dengue", "SURVEILLANCE_OFFICER", Disease.DENGUE, SURVEILLANCE_OFFICER);
+
+		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUserRefsByDistrict(rdcf.district, Disease.CORONAVIRUS);
+
+		assertNotNull(userReferenceDtos);
+		assertTrue(userReferenceDtos.contains(generalSurveillanceOfficer));
+		assertFalse(userReferenceDtos.contains(limitedSurveillanceOfficer));
+
 	}
 }

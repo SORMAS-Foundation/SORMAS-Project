@@ -19,6 +19,11 @@
 package org.sormas.e2etests.steps.web.application.contacts;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRST_CASE_ID_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFORMATION;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.APPLY_FILTERS_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_RESULTS_UUID_LOCATOR;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.MULTIPLE_OPTIONS_SEARCH_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPersonPage.CONTACT_PERSON_TAB;
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.GENERAL_SEARCH_INPUT;
@@ -32,6 +37,7 @@ import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import org.openqa.selenium.By;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Contact;
 import org.sormas.e2etests.entities.pojo.web.QuarantineOrder;
@@ -64,9 +70,16 @@ public class EditContactSteps implements En {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
-        "I check the created data for DE version is correctly displayed on Edit Contact page",
+        "I open the last created contact in Contact directory page",
         () -> {
-          collectedContact = collectContactDataDE();
+          searchAfterContactByMultipleOptions(collectedContact.getUuid());
+          openContactFromResultsByUUID(collectedContact.getUuid());
+        });
+
+    When(
+        "I check the created data is correctly displayed on Edit Contact page",
+        () -> {
+          collectedContact = collectContactData();
           createdContact = CreateNewContactSteps.contact;
           ComparisonHelper.compareEqualFieldsOfEntities(
               collectedContact,
@@ -91,9 +104,9 @@ public class EditContactSteps implements En {
         });
 
     When(
-        "I check the created data is correctly displayed on Edit Contact page",
+        "I check the created data is correctly displayed on Edit Contact page for DE version",
         () -> {
-          collectedContact = collectContactData();
+          collectedContact = collectContactDataDE();
           createdContact = CreateNewContactSteps.contact;
           ComparisonHelper.compareEqualFieldsOfEntities(
               collectedContact,
@@ -130,6 +143,11 @@ public class EditContactSteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
         });
 
+    When(
+        "^I click on ([^\"]*) radio button Contact Person tab$",
+        (String buttonName) ->
+            webDriverHelpers.clickWebElementByText(
+                CONTACT_CLASSIFICATION_RADIO_BUTTON, buttonName));
     When(
         "I check the edited data is correctly displayed on Edit Contact page after editing",
         () -> {
@@ -256,10 +274,10 @@ public class EditContactSteps implements En {
               120);
         });
     When(
-        "^I click on ([^\"]*) radio button Contact Person tab$",
-        (String buttonName) ->
+        "^I click on CONFIRMED CONTACT radio button Contact Data tab for DE version$",
+        () ->
             webDriverHelpers.clickWebElementByText(
-                CONTACT_CLASSIFICATION_RADIO_BUTTON, buttonName));
+                CONTACT_CLASSIFICATION_RADIO_BUTTON, "BEST\u00C4TIGTER KONTAKT"));
 
     When(
         "^I click SAVE button on Edit Contact Page$",
@@ -492,7 +510,6 @@ public class EditContactSteps implements En {
   private Contact collectContactDataDE() {
     String collectedDateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE);
     String collectedLastDateOfContact = webDriverHelpers.getValueFromWebElement(LAST_CONTACT_DATE);
-
     LocalDate parsedDateOfReport = LocalDate.parse(collectedDateOfReport, formatterDE);
     LocalDate parsedLastDateOfContact = LocalDate.parse(collectedLastDateOfContact, formatterDE);
     Contact contactInfo = getContactInformationDE();
@@ -717,5 +734,17 @@ public class EditContactSteps implements En {
   private Contact collectContactPersonUuid() {
     webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT, 40);
     return Contact.builder().uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT)).build();
+  }
+
+  private void searchAfterContactByMultipleOptions(String idPhoneNameEmail) {
+    webDriverHelpers.waitUntilElementIsVisibleAndClickable(APPLY_FILTERS_BUTTON);
+    webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, idPhoneNameEmail);
+    webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
+  }
+
+  private void openContactFromResultsByUUID(String uuid) {
+    By uuidLocator = By.cssSelector(String.format(CONTACT_RESULTS_UUID_LOCATOR, uuid));
+    webDriverHelpers.clickOnWebElementBySelector((uuidLocator));
+    webDriverHelpers.waitUntilIdentifiedElementIsPresent(EditContactPage.UUID_INPUT);
   }
 }

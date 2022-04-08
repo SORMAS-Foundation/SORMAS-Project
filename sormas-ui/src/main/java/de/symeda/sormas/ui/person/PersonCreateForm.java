@@ -23,8 +23,13 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.time.Month;
+import java.util.Arrays;
 import java.util.Date;
+import java.util.List;
+import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.person.PresentCondition;
 import org.apache.commons.lang3.StringUtils;
 
 import com.vaadin.icons.VaadinIcons;
@@ -259,8 +264,10 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 			boolean isChecked = (boolean) e.getProperty().getValue();
 			addressHeader.setVisible(isChecked);
 			homeAddressForm.setVisible(isChecked);
-			homeAddressForm.clear();
 			homeAddressForm.setFacilityFieldsVisible(isChecked, true);
+			if (!isChecked && searchedPerson == null) {
+				homeAddressForm.clear();
+			}
 		});
 	}
 
@@ -302,11 +309,12 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 	public void setPerson(PersonDto person) {
 
 		if (showHomeAddressForm) {
-			enterHomeAddressNow.setEnabled(searchedPerson != null ? false : true);
+			enterHomeAddressNow.setEnabled(searchedPerson == null);
 			if (searchedPerson == null) {
 				homeAddressForm.clear();
 				homeAddressForm.setFacilityFieldsVisible(false, true);
 				homeAddressForm.setVisible(false);
+				enterHomeAddressNow.setValue(person != null && person.getAddress() != null);
 			} else {
 				enterHomeAddressNow.setValue(false);
 			}
@@ -423,6 +431,24 @@ public class PersonCreateForm extends AbstractEditForm<PersonDto> {
 		} else {
 			getField(SymptomsDto.ONSET_DATE).clear();
 		}
+	}
+
+	public void updatePresentConditionEnum(Disease disease) {
+		ComboBox presentConditionField = getField(PersonDto.PRESENT_CONDITION);
+		PresentCondition currentValue = (PresentCondition) presentConditionField.getValue();
+		List<PresentCondition> validValues;
+		if (disease == null) {
+			validValues = Arrays.asList(PresentCondition.values());
+		} else {
+			FieldVisibilityCheckers fieldVisibilityCheckers = FieldVisibilityCheckers.withDisease(disease);
+			validValues = Arrays.stream(PresentCondition.values())
+				.filter(c -> fieldVisibilityCheckers.isVisible(PresentCondition.class, c.name()))
+				.collect(Collectors.toList());
+			if (currentValue != null && !validValues.contains(currentValue)) {
+				validValues.add(currentValue);
+			}
+		}
+		FieldHelper.updateEnumData(presentConditionField, validValues);
 	}
 
 	public String getPhone() {

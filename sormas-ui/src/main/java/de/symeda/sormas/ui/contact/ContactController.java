@@ -16,13 +16,13 @@
 package de.symeda.sormas.ui.contact;
 
 import java.util.Collection;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.ui.utils.NotificationHelper;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,14 +30,11 @@ import org.slf4j.LoggerFactory;
 import com.vaadin.navigator.Navigator;
 import com.vaadin.server.Page;
 import com.vaadin.server.Sizeable.Unit;
-import com.vaadin.ui.Alignment;
-import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.UI;
 import com.vaadin.ui.Window;
-import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.DiseaseHelper;
@@ -66,6 +63,7 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PersonFacade;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -82,13 +80,14 @@ import de.symeda.sormas.ui.contact.components.linelisting.layout.LineListingLayo
 import de.symeda.sormas.ui.epidata.ContactEpiDataView;
 import de.symeda.sormas.ui.epidata.EpiDataForm;
 import de.symeda.sormas.ui.utils.AbstractView;
-import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CoreEntityArchiveMessages;
 import de.symeda.sormas.ui.utils.CssStyles;
+import de.symeda.sormas.ui.utils.NotificationHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import de.symeda.sormas.ui.utils.ViewMode;
 import de.symeda.sormas.ui.utils.components.automaticdeletion.AutomaticDeletionLabel;
+import de.symeda.sormas.ui.utils.components.linelisting.model.LineDto;
 import de.symeda.sormas.ui.utils.components.page.title.RowLayout;
 import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 
@@ -134,7 +133,7 @@ public class ContactController {
 		UI.getCurrent().addWindow(window);
 	}
 
-	private void saveContactsFromLineListing(LineListingLayout lineListingForm, List<LineListingLayout.ContactLineDto> contacts) {
+	private void saveContactsFromLineListing(LineListingLayout lineListingForm, LinkedList<LineDto<ContactDto>> contacts) {
 		try {
 			lineListingForm.validate();
 		} catch (ValidationRuntimeException e) {
@@ -142,12 +141,9 @@ public class ContactController {
 			return;
 		}
 
-		for (LineListingLayout.ContactLineDto contactLineDto : contacts) {
-			ContactDto newContact = contactLineDto.getContact();
-			if (UserProvider.getCurrent() != null) {
-				newContact.setReportingUser(UserProvider.getCurrent().getUserReference());
-			}
-
+		while (!contacts.isEmpty()) {
+			LineDto<ContactDto> contactLineDto = contacts.pop();
+			ContactDto newContact = contactLineDto.getEntity();
 			PersonDto newPerson = contactLineDto.getPerson();
 
 			ControllerProvider.getPersonController()
@@ -161,12 +157,14 @@ public class ContactController {
 								Notification.show(I18nProperties.getString(Strings.messageContactCreated), Type.ASSISTIVE_NOTIFICATION);
 							}
 						});
+
+						if (contacts.isEmpty()) {
+							lineListingForm.closeWindow();
+							ControllerProvider.getContactController().navigateToIndex();
+						}
 					}
 				}, true);
 		}
-
-		lineListingForm.closeWindow();
-		ControllerProvider.getContactController().navigateToIndex();
 	}
 
 	public void openLineListingWindow(EventDto eventDto, Set<EventParticipantIndexDto> eventParticipantIndexDtos) {
@@ -193,7 +191,7 @@ public class ContactController {
 		UI.getCurrent().addWindow(window);
 	}
 
-	private void saveContactsFromEventParticipantsLineListing(LineListingLayout lineListingForm, List<LineListingLayout.ContactLineDto> contacts) {
+	private void saveContactsFromEventParticipantsLineListing(LineListingLayout lineListingForm, LinkedList<LineDto<ContactDto>> contacts) {
 		try {
 			lineListingForm.validate();
 		} catch (ValidationRuntimeException e) {
@@ -201,8 +199,9 @@ public class ContactController {
 			return;
 		}
 
-		for (LineListingLayout.ContactLineDto contactLineDto : contacts) {
-			ContactDto newContact = contactLineDto.getContact();
+		while (!contacts.isEmpty()) {
+			LineDto<ContactDto> contactLineDto = contacts.pop();
+			ContactDto newContact = contactLineDto.getEntity();
 			if (UserProvider.getCurrent() != null) {
 				newContact.setReportingUser(UserProvider.getCurrent().getUserReference());
 			}
@@ -215,10 +214,12 @@ public class ContactController {
 					Notification.show(I18nProperties.getString(Strings.messageContactCreated), Type.ASSISTIVE_NOTIFICATION);
 				}
 			});
-		}
 
-		lineListingForm.closeWindow();
-		ControllerProvider.getContactController().navigateToIndex();
+			if (contacts.isEmpty()) {
+				lineListingForm.closeWindow();
+				ControllerProvider.getContactController().navigateToIndex();
+			}
+		}
 	}
 
 	public void create() {
@@ -496,7 +497,10 @@ public class ContactController {
 		createComponent.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
 				final ContactDto dto = createForm.getValue();
-				PersonDto personDto = FacadeProvider.getPersonFacade().getPersonByUuid(dto.getPerson().getUuid());
+				PersonFacade personFacade = FacadeProvider.getPersonFacade();
+				PersonDto personDto = personFacade.getPersonByUuid(dto.getPerson().getUuid());
+				transferDataToPerson(createForm, personDto);
+				personFacade.savePerson(personDto);
 
 				fillPersonAddressIfEmpty(dto, () -> personDto);
 
@@ -631,7 +635,7 @@ public class ContactController {
 
 		// Create a temporary contact in order to use the CommitDiscardWrapperComponent
 		ContactBulkEditData bulkEditData = new ContactBulkEditData();
-		BulkContactDataForm form = new BulkContactDataForm(district);
+		BulkContactDataForm form = new BulkContactDataForm(district, selectedContacts);
 		form.setValue(bulkEditData);
 		final CommitDiscardWrapperComponent<BulkContactDataForm> editView =
 			new CommitDiscardWrapperComponent<BulkContactDataForm>(form, form.getFieldGroup());

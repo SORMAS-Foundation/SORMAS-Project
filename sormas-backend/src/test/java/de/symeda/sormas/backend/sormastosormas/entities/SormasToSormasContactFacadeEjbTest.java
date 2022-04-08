@@ -22,6 +22,7 @@ import static org.hamcrest.Matchers.notNullValue;
 import static org.hamcrest.Matchers.nullValue;
 import static org.mockito.ArgumentMatchers.eq;
 
+import de.symeda.sormas.backend.sormastosormas.share.ShareRequestAcceptData;
 import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
@@ -115,7 +116,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 				assertThat(postBody.getOriginInfo().getSenderName(), is("Surv Off"));
 				assertThat(postBody.getOriginInfo().getComment(), is("Test comment"));
 
-				return Response.noContent().build();
+				return encryptShareData(new ShareRequestAcceptData(null, null));
 			});
 
 		getSormasToSormasContactFacade().share(Collections.singletonList(contact.getUuid()), options);
@@ -176,7 +177,7 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 				assertThat(sharedSample.getPathogenTests(), hasSize(1));
 				assertThat(sharedSample.getAdditionalTests(), hasSize(1));
 
-				return Response.noContent().build();
+				return encryptShareData(new ShareRequestAcceptData(null, null));
 			});
 
 		getSormasToSormasContactFacade().share(Collections.singletonList(contact.getUuid()), options);
@@ -288,8 +289,8 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 		Mockito
 			.when(
 				MockProducer.getSormasToSormasClient()
-					.put(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any()))
-			.thenAnswer(invocation -> Response.noContent().build());
+					.post(ArgumentMatchers.anyString(), ArgumentMatchers.anyString(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+			.thenAnswer(invocation -> encryptShareData(new ShareRequestAcceptData(null, null)));
 
 		getSormasToSormasContactFacade().share(Collections.singletonList(contact.getUuid()), options);
 

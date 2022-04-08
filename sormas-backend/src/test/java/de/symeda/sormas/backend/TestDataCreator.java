@@ -26,6 +26,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import org.jetbrains.annotations.NotNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -636,6 +637,31 @@ public class TestDataCreator {
 		return vaccination;
 	}
 
+	public VaccinationDto createVaccinationWithDetails(
+		UserReferenceDto reportingUser,
+		ImmunizationReferenceDto immunization,
+		HealthConditionsDto healthConditions,
+		Date vaccinationDate,
+		Vaccine vaccine,
+		VaccineManufacturer vaccineManufacturer,
+		VaccinationInfoSource infoSource,
+		String vaccineInn,
+		String vaccineBatchNumber,
+		String vaccineAtcCode,
+		String vaccineDose) {
+
+		VaccinationDto vaccinationDto =
+			createVaccination(reportingUser, immunization, healthConditions, vaccinationDate, vaccine, vaccineManufacturer);
+
+		vaccinationDto.setVaccinationInfoSource(infoSource);
+		vaccinationDto.setVaccineInn(vaccineInn);
+		vaccinationDto.setVaccineBatchNumber(vaccineBatchNumber);
+		vaccinationDto.setVaccineAtcCode(vaccineAtcCode);
+		vaccinationDto.setVaccineDose(vaccineDose);
+
+		return beanTest.getVaccinationFacade().save(vaccinationDto);
+	}
+
 	public VaccinationDto createVaccination(
 		UserReferenceDto reportingUser,
 		ImmunizationReferenceDto immunization,
@@ -659,6 +685,23 @@ public class TestDataCreator {
 		return beanTest.getVaccinationFacade().save(vaccination);
 	}
 
+	public TravelEntryDto createTravelEntry(PersonReferenceDto person, UserReferenceDto reportingUser, RDCF rdcf, Consumer<TravelEntryDto> config) {
+
+		TravelEntryDto travelEntry = TravelEntryDto.build(person);
+		travelEntry.setDisease(Disease.EVD);
+		travelEntry.setReportingUser(reportingUser);
+		travelEntry.setResponsibleRegion(rdcf.region);
+		travelEntry.setResponsibleDistrict(rdcf.district);
+		travelEntry.setPointOfEntry(rdcf.pointOfEntry);
+		travelEntry.setDateOfArrival(new Date());
+
+		if (config != null) {
+			config.accept(travelEntry);
+		}
+
+		return beanTest.getTravelEntryFacade().save(travelEntry);
+	}
+
 	public TravelEntryDto createTravelEntry(
 		PersonReferenceDto person,
 		UserReferenceDto reportingUser,
@@ -670,6 +713,7 @@ public class TestDataCreator {
 		TravelEntryDto travelEntry = TravelEntryDto.build(person);
 		travelEntry.setDisease(disease);
 		travelEntry.setReportingUser(reportingUser);
+		travelEntry.setDateOfArrival(new Date());
 		travelEntry.setResponsibleRegion(responsibleRegion);
 		travelEntry.setResponsibleDistrict(responsibleDistrict);
 		travelEntry.setPointOfEntry(pointOfEntry);
@@ -1481,7 +1525,7 @@ public class TestDataCreator {
 	}
 
 	public RDCF createRDCF() {
-		return createRDCF("Region", "District", "Community", "Facility");
+		return createRDCF("Region", "District", "Community", "Facility", "PointOfEntry");
 	}
 
 	public RDCF createRDCF(String regionName, String districtName, String communityName, String facilityName) {

@@ -15,24 +15,25 @@
 
 package de.symeda.sormas.backend.sormastosormas.entities.contact;
 
-import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildContactValidationGroupName;
-import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.handleValidationError;
-
-import javax.ejb.EJB;
-import javax.ejb.LocalBean;
-import javax.ejb.Stateless;
-
 import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.sormastosormas.contact.SormasToSormasContactDto;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
+import de.symeda.sormas.backend.common.ConfigFacadeEjb;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
+import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.person.PersonFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.data.processed.ProcessedDataPersister;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
+import javax.ejb.EJB;
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
+
+import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.buildContactValidationGroupName;
+import static de.symeda.sormas.backend.sormastosormas.ValidationHelper.handleValidationError;
 
 @Stateless
 @LocalBean
@@ -62,7 +63,8 @@ public class ProcessedContactDataPersister extends ProcessedDataPersister<Contac
 
 	private void persistProcessedData(SormasToSormasContactDto processedData, boolean isCreate) throws SormasToSormasValidationException {
 
-		ValidationErrorGroup contactValidationGroupName = buildContactValidationGroupName(processedData.getEntity());
+		ContactDto contact = processedData.getEntity();
+		ValidationErrorGroup contactValidationGroupName = buildContactValidationGroupName(contact);
 
 		if (isCreate) {
 			// save person first during creation
@@ -70,16 +72,11 @@ public class ProcessedContactDataPersister extends ProcessedDataPersister<Contac
 				() -> personFacade.savePerson(processedData.getPerson(), false, false, false),
 				Captions.Person,
 				contactValidationGroupName);
-			handleValidationError(
-				() -> contactFacade.save(processedData.getEntity(), true, true, false, false),
-				Captions.Contact,
-				contactValidationGroupName);
+
+			handleValidationError(() -> contactFacade.save(contact, true, true, false, false), Captions.Contact, contactValidationGroupName);
 		} else {
 			//save contact first during update
-			handleValidationError(
-				() -> contactFacade.save(processedData.getEntity(), true, true, false, false),
-				Captions.Contact,
-				contactValidationGroupName);
+			handleValidationError(() -> contactFacade.save(contact, true, true, false, false), Captions.Contact, contactValidationGroupName);
 			handleValidationError(
 				() -> personFacade.savePerson(processedData.getPerson(), false, false, false),
 				Captions.Person,

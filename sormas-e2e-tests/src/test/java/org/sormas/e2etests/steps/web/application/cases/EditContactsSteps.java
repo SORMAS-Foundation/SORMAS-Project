@@ -23,21 +23,31 @@ import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RELAT
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_COMMUNITY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditContactsPage.RESPONSIBLE_REGION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.*;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CASE_ID_IN_EXTERNAL_SYSTEM_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CASE_OR_EVENT_INFORMATION_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CONTACT_CATEGORY_OPTIONS;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.LAST_CONTACT_DATE;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.TYPE_OF_CONTACT_OPTIONS;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CREATE_NEW_PERSON_RADIO_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_CONTACT_POPUP;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_PERSON_POPUP;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_POPUP_SAVE_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
+import static org.sormas.e2etests.steps.web.application.contacts.EditContactSteps.createdContact;
 
 import cucumber.api.java8.En;
+import java.io.File;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
 import org.openqa.selenium.By;
@@ -47,6 +57,7 @@ import org.sormas.e2etests.entities.services.ContactService;
 import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.web.application.contacts.CreateNewContactSteps;
 import org.testng.asserts.SoftAssert;
 
 @Slf4j
@@ -54,10 +65,12 @@ public class EditContactsSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+  public static final DateTimeFormatter formatterDE = DateTimeFormatter.ofPattern("d.M.yyyy");
   String LAST_CREATED_CASE_CONTACTS_TAB_URL;
   protected Contact contact;
   public static Contact collectedContact;
   protected String contactUUID;
+  public static final String userDirPath = System.getProperty("user.dir");
 
   @Inject
   public EditContactsSteps(
@@ -79,11 +92,87 @@ public class EditContactsSteps implements En {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NEW_CONTACT_BUTTON);
         });
+    When(
+        "I open the Case Contacts tab",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CONTACTS_TAB_BUTTON);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NEW_CONTACT_BUTTON);
+        });
 
     Then(
         "I click on new contact button from Case Contacts tab",
         () -> webDriverHelpers.clickOnWebElementBySelector(NEW_CONTACT_BUTTON));
+    And(
+        "I click Export button in Case Contacts Directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CASE_CONTACT_EXPORT));
+    And(
+        "I click on Detailed Export button in Case Contacts Directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DETAILED_EXPORT_CASE_CONTACT_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CLOSE_POPUP_BUTTON);
+          TimeUnit.SECONDS.sleep(5); // time for file to be downloaded
+        });
+    When(
+        "I close popup after export in Case Contacts directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CLOSE_POPUP_BUTTON);
+        });
+    When(
+        "I select the case contact CSV file in the file picker",
+        () -> {
+          TimeUnit.SECONDS.sleep(3);
+          webDriverHelpers.sendFile(
+              FILE_PICKER, userDirPath + "/downloads/sormas_kontakte_" + LocalDate.now() + "_.csv");
+        });
+    When(
+        "I click on the Import button from Case Contacts directory",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(IMPORT_CASE_CONTACTS_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(IMPORT_CASE_CONTACTS_BUTTON);
+        });
+    When(
+        "I click on the {string} button from the Import Case Contacts popup",
+        (String buttonName) -> {
+          webDriverHelpers.clickWebElementByText(IMPORT_POPUP_BUTTON, buttonName);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(COMMIT_BUTTON);
+        });
+    When(
+        "I select first existing person from the Case Contact Import popup",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(COMMIT_BUTTON);
+          if (webDriverHelpers.getNumberOfElements(RESULTS_IN_GRID_IMPORT_POPUP) > 1) {
+            webDriverHelpers.clickOnWebElementBySelector(FIRST_RESULT_IN_GRID_IMPORT_POPUP);
+          }
+        });
+    When(
+        "I select first existing contact from the Case Contact Import popup",
+        () -> {
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_CONTACT_POPUP, 15)) {
+            if (webDriverHelpers.getNumberOfElements(RESULTS_IN_GRID_IMPORT_POPUP) > 1) {
+              webDriverHelpers.clickOnWebElementBySelector(FIRST_RESULT_IN_GRID_IMPORT_POPUP);
+            }
+            webDriverHelpers.clickOnWebElementBySelector(COMMIT_BUTTON);
+          }
+        });
 
+    When(
+        "I confirm the save Case Contact Import popup",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(COMMIT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(COMMIT_BUTTON);
+        });
+    When(
+        "I check that an import success notification appears in the Import Case Contact popup",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(IMPORT_SUCCESS);
+        });
+    When(
+        "I delete exported file from Case Contact Directory",
+        () -> {
+          File toDelete =
+              new File(userDirPath + "/downloads/sormas_kontakte_" + LocalDate.now() + "_.csv");
+          toDelete.deleteOnExit();
+        });
     When(
         "^I create a new contact from Cases Contacts tab$",
         () -> {
@@ -109,6 +198,19 @@ public class EditContactsSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_CREATED_POPUP);
           contactUUID = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
+        });
+    When(
+        "^I create a new basic contact to export from Cases Contacts tab$",
+        () -> {
+          contact = contactService.buildGeneratedContact();
+          fillFirstName(contact.getFirstName());
+          fillLastName(contact.getLastName());
+          selectSex(contact.getSex());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_POPUP, 15)) {
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_RADIO_BUTTON);
+            webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
+          }
         });
 
     Then(
@@ -181,6 +283,33 @@ public class EditContactsSteps implements En {
               apiState.getCreatedContact().getPerson().getLastName().equalsIgnoreCase(lastName),
               "Last name doesn't match");
           softly.assertAll();
+        });
+
+    When(
+        "I check the created data for DE version is correctly displayed on Edit Contact page",
+        () -> {
+          collectedContact = collectContactDataDE();
+          createdContact = CreateNewContactSteps.contact;
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              collectedContact,
+              createdContact,
+              List.of(
+                  "firstName",
+                  "lastName",
+                  "returningTraveler",
+                  "reportDate",
+                  "diseaseOfSourceCase",
+                  "caseIdInExternalSystem",
+                  "dateOfLastContact",
+                  "caseOrEventInformation",
+                  "responsibleRegion",
+                  "responsibleDistrict",
+                  "responsibleCommunity",
+                  "additionalInformationOnContactType",
+                  "typeOfContact",
+                  "contactCategory",
+                  "relationshipWithCase",
+                  "descriptionOfHowContactTookPlace"));
         });
   }
 
@@ -305,6 +434,55 @@ public class EditContactsSteps implements En {
         .firstName(contactInfo[0])
         .lastName(contactInfo[1])
         .dateOfBirth(localDate)
+        .build();
+  }
+
+  private Contact getContactInformationDE() {
+    String contactInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
+    String[] contactInfos = contactInfo.split(" ");
+    LocalDate localDate = LocalDate.parse(contactInfos[3].replace(")", ""), formatterDE);
+    return Contact.builder()
+        .firstName(contactInfos[0])
+        .lastName(contactInfos[1])
+        .dateOfBirth(localDate)
+        .build();
+  }
+
+  private Contact collectContactDataDE() {
+    String collectedDateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE);
+    String collectedLastDateOfContact = webDriverHelpers.getValueFromWebElement(LAST_CONTACT_DATE);
+
+    LocalDate parsedDateOfReport = LocalDate.parse(collectedDateOfReport, formatterDE);
+    LocalDate parsedLastDateOfContact = LocalDate.parse(collectedLastDateOfContact, formatterDE);
+    Contact contactInfo = getContactInformationDE();
+
+    return Contact.builder()
+        .firstName(contactInfo.getFirstName())
+        .lastName(contactInfo.getLastName())
+        .returningTraveler(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RETURNING_TRAVELER_OPTIONS))
+        .reportDate(parsedDateOfReport)
+        .diseaseOfSourceCase(webDriverHelpers.getValueFromCombobox(DISEASE_COMBOBOX))
+        .caseIdInExternalSystem(
+            webDriverHelpers.getValueFromWebElement(CASE_ID_IN_EXTERNAL_SYSTEM_INPUT))
+        .dateOfLastContact(parsedLastDateOfContact)
+        .caseOrEventInformation(
+            webDriverHelpers.getValueFromWebElement(CASE_OR_EVENT_INFORMATION_INPUT))
+        .responsibleRegion(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_REGION_COMBOBOX))
+        .responsibleDistrict(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_DISTRICT_COMBOBOX))
+        .responsibleCommunity(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_COMMUNITY_COMBOBOX))
+        .additionalInformationOnContactType(
+            webDriverHelpers.getValueFromWebElement(
+                ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT))
+        .typeOfContact(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(TYPE_OF_CONTACT_OPTIONS))
+        .contactCategory(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CATEGORY_OPTIONS))
+        .relationshipWithCase(
+            webDriverHelpers.getValueFromCombobox(RELATIONSHIP_WITH_CASE_COMBOBOX))
+        .descriptionOfHowContactTookPlace(
+            webDriverHelpers.getValueFromWebElement(DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT))
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
         .build();
   }
 }

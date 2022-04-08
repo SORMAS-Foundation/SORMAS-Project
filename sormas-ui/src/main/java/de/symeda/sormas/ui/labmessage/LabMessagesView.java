@@ -282,7 +282,7 @@ public class LabMessagesView extends AbstractView {
 	}
 
 	private void askForSinceDateAndFetch() {
-		boolean atLeastOneFetchExecuted = FacadeProvider.getSyncFacade().atLeastOneSuccessfullSyncOf(SystemEventType.FETCH_LAB_MESSAGES);
+		boolean atLeastOneFetchExecuted = FacadeProvider.getSyncFacade().hasAtLeastOneSuccessfullSyncOf(SystemEventType.FETCH_LAB_MESSAGES);
 		if (atLeastOneFetchExecuted) {
 			fetchLabMessages(null);
 		} else {

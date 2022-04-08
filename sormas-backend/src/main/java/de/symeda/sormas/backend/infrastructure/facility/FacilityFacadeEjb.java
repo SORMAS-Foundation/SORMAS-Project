@@ -179,7 +179,7 @@ public class FacilityFacadeEjb
 	}
 
 	@Override
-	public List<FacilityReferenceDto> getByExternalId(String externalId, boolean includeArchivedEntities) {
+	public List<FacilityReferenceDto> getReferencesByExternalId(String externalId, boolean includeArchivedEntities) {
 
 		return service.getByExternalId(externalId, includeArchivedEntities)
 			.stream()

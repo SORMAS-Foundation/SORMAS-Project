@@ -23,13 +23,16 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -37,6 +40,7 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.task.TaskDto;
+import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -47,12 +51,10 @@ import de.symeda.sormas.ui.utils.NullableOptionGroup;
 
 public class BulkTaskDataForm extends AbstractEditForm<TaskBulkEditData> {
 
-	private static final long serialVersionUID = 1L;
-
 	public static final String ASSIGNEE_CHECKBOX = "assigneeCheckbox";
 	public static final String PRORITY_CHECKBOX = "prorityCheckbox";
 	public static final String STATUS_CHECKBOX = "statusCheckbox";
-
+	private static final long serialVersionUID = 1L;
 	private static final String HTML_LAYOUT = fluidRowLocsCss(VSPACE_4, ASSIGNEE_CHECKBOX)
 		+ fluidRowLocs(TaskBulkEditData.TASK_ASSIGNEE)
 		+ fluidRowLocsCss(VSPACE_4, PRORITY_CHECKBOX)
@@ -67,10 +69,12 @@ public class BulkTaskDataForm extends AbstractEditForm<TaskBulkEditData> {
 	private CheckBox assigneeCheckbox;
 	private CheckBox priorityCheckbox;
 	private CheckBox taskStatusCheckbox;
+	private Collection<? extends TaskIndexDto> selectedTasks;
 
-	public BulkTaskDataForm(DistrictReferenceDto district) {
+	public BulkTaskDataForm(DistrictReferenceDto district, Collection<? extends TaskIndexDto> selectedTasks) {
 		super(TaskBulkEditData.class, TaskDto.I18N_PREFIX);
 		this.district = district;
+		this.selectedTasks = selectedTasks;
 		setWidth(680, Unit.PIXELS);
 		hideValidationUntilNextCommit();
 		initialized = true;
@@ -119,9 +123,10 @@ public class BulkTaskDataForm extends AbstractEditForm<TaskBulkEditData> {
 		}
 
 		assigneeCheckbox.addValueChangeListener(e -> {
-			assignee.setEnabled((boolean) e.getProperty().getValue());
+			boolean changeAssignee = (boolean) e.getProperty().getValue();
+			assignee.setEnabled(changeAssignee);
+			assignee.setRequired(changeAssignee);
 		});
-
 	}
 
 	private List<UserReferenceDto> getUsers() {
@@ -129,7 +134,15 @@ public class BulkTaskDataForm extends AbstractEditForm<TaskBulkEditData> {
 		UserDto userDto = UserProvider.getCurrent().getUser();
 
 		if (district != null) {
-			users.addAll(FacadeProvider.getUserFacade().getUserRefsByDistrict(district));
+			Set<Disease> selectedDiseases = this.selectedTasks.stream().map(c -> c.getDisease()).collect(Collectors.toSet());
+			List<UserReferenceDto> assignableUsers = null;
+			if (selectedDiseases.size() == 1) {
+				Disease selectedDisease = selectedDiseases.iterator().next();
+				assignableUsers = FacadeProvider.getUserFacade().getUserRefsByDistrict(district, selectedDisease);
+			} else {
+				assignableUsers = FacadeProvider.getUserFacade().getUserRefsByDistrict(district, true);
+			}
+			users.addAll(assignableUsers);
 		} else {
 			users.addAll(FacadeProvider.getUserFacade().getAllUserRefs(false));
 		}

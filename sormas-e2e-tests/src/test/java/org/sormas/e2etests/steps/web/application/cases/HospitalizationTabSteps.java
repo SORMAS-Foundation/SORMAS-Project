@@ -1,21 +1,27 @@
 package org.sormas.e2etests.steps.web.application.cases;
 
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.FACILITY_HEALTH_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_SELECTED_VALUE;
 import static org.sormas.e2etests.pages.application.cases.HospitalizationTabPage.*;
+import static org.sormas.e2etests.pages.application.cases.SymptomsTabPage.CASE_TAB;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.entities.pojo.web.Hospitalization;
 import org.sormas.e2etests.entities.services.HospitalizationService;
 import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.state.ApiState;
+import org.testng.asserts.SoftAssert;
 
 public class HospitalizationTabSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
@@ -27,6 +33,7 @@ public class HospitalizationTabSteps implements En {
       WebDriverHelpers webDriverHelpers,
       HospitalizationService hospitalizationService,
       ApiState apiState,
+      SoftAssert softly,
       EnvironmentManager environmentManager) {
 
     this.webDriverHelpers = webDriverHelpers;
@@ -96,6 +103,41 @@ public class HospitalizationTabSteps implements En {
         "I check if error in Hospitalization data is available",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(BLUE_ERROR_EXCLAMATION_MARK);
+        });
+
+    When(
+        "I check if Place of stay in hospital popup is displayed",
+        () -> {
+          webDriverHelpers.isElementVisibleWithTimeout(PLACE_OF_STAY_IN_HOSPITAL_POPUP, 10);
+        });
+
+    When(
+        "I choose Facility in Place of stay in hospital popup in Case Hospitalization as ([^\"]*)",
+        (String facility) -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FACILITY_POPUP_CHECKBOX);
+          webDriverHelpers.selectFromCombobox(FACILITY_POPUP_CHECKBOX, facility);
+        });
+
+    When(
+        "I save the data in Place of stay in hospital popup",
+        () ->
+            webDriverHelpers.clickOnWebElementBySelector(
+                PLACE_OF_STAY_IN_HOSPITAL_POPUP_SAVE_BUTTON));
+
+    When(
+        "From hospitalization tab I click on the Case tab button",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CASE_TAB));
+
+    When(
+        "I check if place of stay data was updated in the Case edit tab with ([^\"]*)",
+        (String facility) -> {
+          Case collectedData = collectPlaceOfStayData();
+          softly.assertEquals(
+              collectedData.getPlaceOfStay().toLowerCase(Locale.ROOT),
+              "facility",
+              "facility types are not equal");
+          softly.assertEquals(collectedData.getFacility(), facility, "facilities are not equal");
+          softly.assertAll();
         });
   }
 
@@ -187,6 +229,13 @@ public class HospitalizationTabSteps implements En {
         .leftAgainstMedicalAdvice(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
                 LEFT_AGAINST_MEDICAL_ADVICE_OPTIONS))
+        .build();
+  }
+
+  private Case collectPlaceOfStayData() {
+    return Case.builder()
+        .placeOfStay(webDriverHelpers.getTextFromWebElement(PLACE_OF_STAY_SELECTED_VALUE))
+        .facility(webDriverHelpers.getValueFromCombobox(FACILITY_HEALTH_COMBOBOX))
         .build();
   }
 }

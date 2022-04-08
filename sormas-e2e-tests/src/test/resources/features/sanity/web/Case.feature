@@ -21,7 +21,7 @@ Feature: Case end to end tests
     Then I check the created data is correctly displayed on Edit case page
     And I check the created data is correctly displayed on Edit case person page
 
-  @env_main
+  @env_main @ignore #un-ignore this when dataReceived fields are fixed in test-auto
   Scenario: Edit, save and check all fields of a new case
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -93,6 +93,67 @@ Feature: Case end to end tests
     And I click on save button from Edit Case page with current hospitalization
     Then I check if the specific data is correctly displayed
 
+  @issue=SORDEV-5517 @env_de
+  Scenario: Fill the case tab (DE specific)
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data for DE version
+    Then I select German Investigation Status Done
+    And I check if date of investigation filed is available
+    Then I select German Investigation Status Pending
+    Then I select German Investigation Status Discarded
+    And I check if date of investigation filed is available
+    Then I select German Investigation Status Pending
+    Then I select German Outcome Of Case Status Deceased
+    And I check if date of outcome filed is available
+    Then I select German Outcome Of Case Status Recovered
+    And I check if date of outcome filed is available
+    And I click on the German option for Yes in Sequelae
+    And I check if Sequelae Details field is available
+    And I click on the German option for No in Sequelae
+    And I click on the German option for Unknown in Sequelae
+    Then I select German Outcome Of Case Status Unknown
+    And I check if date of outcome filed is available
+    And I click on the German option for Yes in Sequelae
+    And I check if Sequelae Details field is available
+    And I click on the German option for No in Sequelae
+    And I click on the German option for Unknown in Sequelae
+    Then I click on Place of stay of this case differs from its responsible jurisdiction
+    And I check if region combobox is available and I select Responsible Region
+    And I check if district combobox is available and i select Responsible District
+    And I check if community combobox is available
+    Then I click on Facility as German place of stay
+    And I check if Facility Category combobox is available
+    And I check if Facility Type combobox is available
+    Then I set Facility in German as a Other facility
+    And I fill Facility name and description filed by dummy description
+    And I check if Facility name and description field is available
+    Then I set German Quarantine Home
+    And I check if Quarantine start field is available
+    And I check if Quarantine end field is available
+    Then I select Quarantine ordered verbally checkbox
+    And I check if Date of verbal order field is available
+    Then I select Quarantine ordered by official document checkbox
+    And I check if Date of the official document ordered field is available
+    Then I select Official quarantine order sent
+    And I check if Date official quarantine order was sent field is available
+    Then I set German Quarantine Institutional
+    And I check if Quarantine start field is available
+    And I check if Quarantine end field is available
+    And I check if Date of verbal order field is available
+    And I check if Date of the official document ordered field is available
+    And I check if Date official quarantine order was sent field is available
+    Then I set German Quarantine None
+    Then I set German Quarantine Unknown
+    Then I set German Quarantine Other
+    And I check if Quarantine details field is available
+    Then I set German Vaccination Status as vaccinated
+    Then I set German Vaccination Status as unvaccinated
+    Then I set German Vaccination Status as unknown
+    And I click on save button from Edit Case page with current hospitalization
+    Then I check if the specific data is correctly displayed
+
   @env_main
   Scenario: Delete created case
     When API: I create a new person
@@ -122,7 +183,7 @@ Feature: Case end to end tests
     And I open the Case Contacts tab of the created case via api
     And I verify that created contact from Case Contacts tab is correctly displayed
 
-  @env_main @ignore
+  @issue=SORQA-100 @env_main
   Scenario: Edit all fields from Symptoms tab
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -137,7 +198,7 @@ Feature: Case end to end tests
     When I am accessing the Symptoms tab using of created case via api
     And I check the created data is correctly displayed on Symptoms tab page
 
-@issue=SORDEV-5496 @env_main
+  @issue=SORDEV-5496 @env_main
   Scenario: Generate and download Case document
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -192,12 +253,12 @@ Feature: Case end to end tests
     Then I click on Save button from New Treatment popup
     Then I check if created data is correctly displayed in Treatment section
 
-    @issue=SORDEV-5518 @env_main
+  @issue=SORDEV-5518 @env_main
   Scenario: Fill the case person tab
     Given I log in with National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
-    When I create a new case with specific data
+    When I create a new case with disease "ANTHRAX"
     Then I check the created data is correctly displayed on Edit case page
     And I check the created data is correctly displayed on Edit case person page
     Then I set Present condition of Person to Dead in Case Person tab
@@ -209,7 +270,7 @@ Feature: Case end to end tests
     And I click on save button to Save Person data in Case Person Tab
     Then I check if saved Person data is correct
 
-  @issue=SORDEV-5529 @env_main @ignore
+  @issue=SORDEV-5529 @env_main
   Scenario: Fill the clinical course tab
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -235,40 +296,6 @@ Feature: Case end to end tests
     Then I navigate to symptoms tab
     And I check if created data is correctly displayed in Symptoms tab for Set cleared to Unknown
     Then I click on Clinical Course tab from Edit Case page
-    And I set Diabetes radio button to YES
-    And I set Diabetes radio button to NO
-    And I set Diabetes radio button to UNKNOWN
-    And I set Diabetes radio button to UNKNOWN
-    And I set Immunodeficiency including HIV radio button to YES
-    And I set Immunodeficiency including HIV radio button to NO
-    And I set Immunodeficiency including HIV radio button to UNKNOWN
-    And I set Immunodeficiency including HIV radio button to UNKNOWN
-    And I set Liver disease radio button to YES
-    And I set Liver disease radio button to NO
-    And I set Liver disease radio button to UNKNOWN
-    And I set Liver disease radio button to UNKNOWN
-    And I set Malignancy radio button to YES
-    And I set Malignancy radio button to NO
-    And I set Malignancy radio button to UNKNOWN
-    And I set Malignancy radio button to UNKNOWN
-    And I set Chronic pulmonary disease radio button to YES
-    And I set Chronic pulmonary disease radio button to NO
-    And I set Chronic pulmonary disease radio button to UNKNOWN
-    And I set Chronic pulmonary disease radio button to UNKNOWN
-    And I set Renal disease radio button to YES
-    And I set Renal disease radio button to NO
-    And I set Renal disease radio button to UNKNOWN
-    And I set Renal disease radio button to UNKNOWN
-    And I set Chronic neurological/neuromuscular disease radio button to YES
-    And I set Chronic neurological/neuromuscular disease radio button to NO
-    And I set Chronic neurological/neuromuscular disease radio button to UNKNOWN
-    And I set Chronic neurological/neuromuscular disease radio button to UNKNOWN
-    And I set Cardiovascular disease including hypertension radio button to YES
-    And I set Cardiovascular disease including hypertension radio button to NO
-    And I set Cardiovascular disease including hypertension radio button to UNKNOWN
-    And I set Cardiovascular disease including hypertension radio button to UNKNOWN
-    Then I click Save button on Clinical Course Tab
-    And I check if Case saved popup appeared and close it
 
   @issue=SORDEV-8412 @env_main
   Scenario: Change of Isolation/Quarantine should be documented
@@ -342,7 +369,7 @@ Feature: Case end to end tests
     And I navigate to case person tab
     And I check if saved Person data is correct
 
-  @issue=SORDEV-7452 @env_main @ignore
+  @issue=SORDEV-7452 @env_main
   Scenario: Bulk mode for linking/adding cases to new Event
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -369,7 +396,7 @@ Feature: Case end to end tests
     And I navigate to the last created Event page via URL
     And I check that number of displayed Event Participants is 1
 
-  @issue=SORDEV-7452 @env_main @ignore
+  @issue=SORDEV-7452 @env_main
   Scenario: Bulk mode for linking/adding case to existing Event
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -456,7 +483,7 @@ Feature: Case end to end tests
     Then I click on the Persons button from navbar
     And I filter Persons by created person name in cases
     And I click on first person in person directory
-    And I set Present condition of Person to Dead in Case Person tab
+    And I set Present condition of Person to Dead in Person tab
     Then I set death date for person 1 month ago
     And I click on save button from Edit Person page
     Then I click on the Cases button from navbar
@@ -546,9 +573,7 @@ Feature: Case end to end tests
     And I check if Cause of death is Other cause
     And I check if Date of dead for specified case is correct
 
-
-    #TODO separate into 3 tests - test doesn't reflect test case steps
-  @issue=SORDEV-8048 @env_de @ignore
+  @issue=SORDEV-8048 @env_de
   Scenario: Test Default value for disease if only one is used by the server
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -596,3 +621,157 @@ Feature: Case end to end tests
     Then I click on save case button
     Then I check the created data is correctly displayed on Edit case page
     And I check the created data is correctly displayed on Edit case person page
+
+  @issue=SORDEV-7466 @env_de
+  Scenario: Check reference definition for cases
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with only the required data for DE version
+    Then I check that case classification is set to not yet classified in German on Edit case page
+    And I check that case reference definition is not editable on Edit case page
+    And I check that case reference definition is set to not fulfilled in German on Edit case page
+    When I click on New Sample in German
+    And I create a new Sample with positive test result for DE version
+    And I select the German words for Antigen Detection Test as Type of Test in the Create New Sample popup
+    And I save the created sample
+    Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
+    And I check that case reference definition is set to not fulfilled in German on Edit case page
+    When I click on New Sample in German
+    And I create a new Sample with positive test result for DE version
+    And I select the German words for Rapid Antigen Detection Test as Type of Test in the Create New Sample popup
+    And I save the created sample
+    Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
+    And I check that case reference definition is set to not fulfilled in German on Edit case page
+    When I click on New Sample in German
+    And I create a new Sample with positive test result for DE version
+    And I select the German words for Isolation as Type of Test in the Create New Sample popup
+    And I save the created sample
+    Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
+    And I check that case reference definition is set to fulfilled in German on Edit case page
+    When I click on New Sample in German
+    And I create a new Sample with positive test result for DE version
+    And I select the German words for PCR / RT-PCR as Type of Test in the Create New Sample popup
+    And I save the created sample
+    Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
+    And I check that case reference definition is set to fulfilled in German on Edit case page
+    When I click on the Cases button from navbar
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I click Only cases with fulfilled reference definition checkbox in Cases directory additional filters
+    And I click APPLY BUTTON in Case Directory Page
+    Then I check that only cases with fulfilled reference definition are being shown in Cases directory
+    When I click on the Dashboard button from navbar and access Surveillance Dashboard
+    And I click on the Time Period combobox from Surveillance Dashboard
+    And I choose yesterday from the Surveillance Dashboard Time Period combobox
+    And I click on the APPLY FILTERS button
+    Then I check that the number of cases fulfilling the reference definition is larger than 0
+
+  @issue=SORDEV-5479 @env_main
+  Scenario: Test for exporting and importing case contact
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    When I open the Case Contacts tab
+    Then I click on new contact button from Case Contacts tab
+    And I create a new basic contact to export from Cases Contacts tab
+    And I open the Case Contacts tab
+    And I click Export button in Case Contacts Directory
+    And I click on Detailed Export button in Case Contacts Directory
+    And I close popup after export in Case Contacts directory
+    Then I click on the Import button from Case Contacts directory
+    And I select the case contact CSV file in the file picker
+    And I click on the "START DATA IMPORT" button from the Import Case Contacts popup
+    And I select first existing person from the Case Contact Import popup
+    And I confirm the save Case Contact Import popup
+    And I select first existing contact from the Case Contact Import popup
+    And I check that an import success notification appears in the Import Case Contact popup
+    Then I delete exported file from Case Contact Directory
+
+
+  @issue=SORDEV-7456 @env_de
+  Scenario: Check different facility types depending on type of place in Epidemiological Tab
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data for DE version
+    And I navigate to Epidemiological Data tab on Edit Case Page
+    And I click on JA Radiobutton on Epidemiological Data Page
+    And I click on new entry button from Epidemiological Data tab
+    And I set Facility to "Einrichtung (§ 23 IfSG)" from New Entry popup
+    And I set Facility Type to "Krankenhaus" from New Entry popup
+    And I set Facility Type to "Einrichtung für ambulantes Operieren" from New Entry popup
+    And I set Facility Type to "Reha Einrichtung" from New Entry popup
+    And I set Facility Type to "Dialyseeinrichtung" from New Entry popup
+    And I set Facility Type to "Tagesklinik" from New Entry popup
+    And I set Facility Type to "Entbindungseinrichtung" from New Entry popup
+    And I set Facility Type to "Andere medizinische Einrichtung" from New Entry popup
+    And I set Facility Type to "Arztpraxis" from New Entry popup
+    And I set Facility Type to "Zahnarztpraxis" from New Entry popup
+    And I set Facility Type to "Praxis sonstiger humanmedizinischer Heilberufe" from New Entry popup
+    And I set Facility Type to "Einrichtung des ÖGD zur Diagnostik, Prävention, Therapie" from New Entry popup
+    And I set Facility Type to "Mobiler/Ambulanter Pflegedienst" from New Entry popup
+    And I set Facility Type to "Rettungsdienst" from New Entry popup
+    And I set Facility to "Gemeinschaftseinrichtung (§ 33 IfSG)" from New Entry popup
+    And I set Facility Type to "Kindertageseinrichtung" from New Entry popup
+    And I set Facility Type to "Kindertagespflege" from New Entry popup
+    And I set Facility Type to "Schule" from New Entry popup
+    And I set Facility Type to "Kinderheim" from New Entry popup
+    And I set Facility Type to "Ferienlager" from New Entry popup
+    And I set Facility Type to "Kinderhort" from New Entry popup
+    And I set Facility Type to "Andere Betreuungs- und Bildungseinrichtung" from New Entry popup
+    And I set Facility to "Einrichtung (§ 36 IfSG)" from New Entry popup
+    And I set Facility Type to "Andere Pflegeeinrichtung" from New Entry popup
+    And I set Facility Type to "Pflegeeinrichtung für ältere Menschen" from New Entry popup
+    And I set Facility Type to "Pflegeeinrichtung für Menschen mit Behinderung" from New Entry popup
+    And I set Facility Type to "Pflegeeinrichtung für pflegebedürftige Menschen" from New Entry popup
+    And I set Facility Type to "Obdachlosenunterkunft" from New Entry popup
+    And I set Facility Type to "Flüchtlingsunterkunft/Erstaufnahmeeinrichtung" from New Entry popup
+    And I set Facility Type to "Massenunterkunft (z.B. Gast- und Erntearbeiter)" from New Entry popup
+    And I set Facility Type to "Justizvollzugsanstalt" from New Entry popup
+    And I set Facility Type to "Mobiler/Ambulanter Pflegedienst" from New Entry popup
+    And I set Facility Type to "Aufsuchende ambulante Hilfen" from New Entry popup
+    And And I click on Discard button from New Entry popup
+
+  @issue=SORQA-123 @env_main
+  Scenario: Import Documentation for Cases Test
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the import button for Cases in Case tab
+    Then I click on the detailed button from import Case tab
+    And I click on the Download Import Guide button in Import Cases
+    Then I check if Import Guide for cases was downloaded correctly
+    And And I click on the Download Data Dictionary button in Import Cases
+    Then I check if Data Dictionary for cases was downloaded correctly
+
+  @issue=SORDEV-5526 @env_main
+    Scenario: Create a contact with source case
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And API: I create a new case
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And I log in with National User
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    And I navigate to Epidemiological Data tab on Edit Case Page
+    When I select NO from Contacts With Source Case Known
+    Then I check that Contacts of Source filed is not available
+    When I select UNKNOWN from Contacts With Source Case Known
+    Then I check that Contacts of Source filed is not available
+    When I select YES from Contacts With Source Case Known
+    Then I check if Contacts of Source filed is available
+    When I click on the NEW CONTACT button on Epidemiological Data Tab of Edit Case Page
+    And I click on the CHOOSE SOURCE CASE button from CONTACT page
+    And I click yes on the DISCARD UNSAVED CHANGES popup if it appears
+    And I click on the CHOOSE CASE button in Create new contact form in Exposure for Epidemiological data tab in Cases
+    And I search for the last case uuid in the CHOOSE SOURCE popup of Create Contact window
+    And I open the first found result in the CHOOSE SOURCE popup of Create Contact window
+    And I click on SAVE new contact button in the CHOOSE SOURCE popup of Create Contact window
+    Then I check that Selected case is listed as Source Case in the CONTACTS WITH SOURCE CASE Box

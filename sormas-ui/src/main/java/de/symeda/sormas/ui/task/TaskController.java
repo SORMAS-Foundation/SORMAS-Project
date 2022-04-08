@@ -186,7 +186,7 @@ public class TaskController {
 
 		// Create a temporary task in order to use the CommitDiscardWrapperComponent
 		TaskBulkEditData bulkEditData = new TaskBulkEditData();
-		BulkTaskDataForm form = new BulkTaskDataForm(districts.stream().findFirst().orElse(null));
+		BulkTaskDataForm form = new BulkTaskDataForm(districts.stream().findFirst().orElse(null), selectedTasks);
 		form.setValue(bulkEditData);
 		final CommitDiscardWrapperComponent<BulkTaskDataForm> editView = new CommitDiscardWrapperComponent<>(form, form.getFieldGroup());
 

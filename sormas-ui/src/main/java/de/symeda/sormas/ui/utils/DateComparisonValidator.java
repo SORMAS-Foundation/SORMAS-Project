@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.ui.utils;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.function.Supplier;
@@ -151,7 +152,7 @@ public class DateComparisonValidator extends AbstractValidator<Date> {
 	}
 
 	public static void removeDateComparisonValidators(Field<Date> dateField) {
-		Collection<Validator> validators = dateField.getValidators();
+		Collection<Validator> validators = new ArrayList<>(dateField.getValidators());
 		for (Validator validator : validators) {
 			if (validator instanceof DateComparisonValidator) {
 				dateField.removeValidator(validator);

@@ -7,7 +7,7 @@ import javax.persistence.criteria.From;
 
 import de.symeda.sormas.backend.common.QueryContext;
 
-public class TravelEntryQueryContext<T> extends QueryContext<T, TravelEntry> {
+public class TravelEntryQueryContext extends QueryContext<TravelEntry, TravelEntryJoins> {
 
 	public TravelEntryQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, TravelEntry> root) {
 		super(cb, query, root, new TravelEntryJoins(root));

@@ -1,11 +1,17 @@
 package de.symeda.sormas.backend.travelentry;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.List;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
+import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
@@ -49,6 +55,7 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless(name = "TravelEntryFacade")
+@RolesAllowed(UserRight._TRAVEL_ENTRY_VIEW)
 public class TravelEntryFacadeEjb
 	extends AbstractCoreFacadeEjb<TravelEntry, TravelEntryDto, TravelEntryIndexDto, TravelEntryReferenceDto, TravelEntryService, TravelEntryCriteria>
 	implements TravelEntryFacade {
@@ -102,11 +109,8 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
+	@RolesAllowed(UserRight._TRAVEL_ENTRY_DELETE)
 	public void delete(String travelEntryUuid) {
-		if (!userService.hasRight(UserRight.TRAVEL_ENTRY_DELETE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete travel entries");
-		}
-
 		TravelEntry travelEntry = service.getByUuid(travelEntryUuid);
 		service.delete(travelEntry);
 
@@ -180,6 +184,33 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	@RolesAllowed(UserRight._SYSTEM)
+	public void archiveAllArchivableTravelEntries(int daysAfterTravelEntryGetsArchived) {
+		archiveAllArchivableTravelEntry(daysAfterTravelEntryGetsArchived, LocalDate.now());
+	}
+
+	private void archiveAllArchivableTravelEntry(int daysAfterTravelEntryGetsArchived, @NotNull LocalDate referenceDate) {
+		LocalDate notChangedSince = referenceDate.minusDays(daysAfterTravelEntryGetsArchived);
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<TravelEntry> from = cq.from(TravelEntry.class);
+
+		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
+		cq.where(
+			cb.equal(from.get(TravelEntry.ARCHIVED), false),
+			cb.equal(from.get(TravelEntry.DELETED), false),
+			cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
+		cq.select(from.get(TravelEntry.UUID)).distinct(true);
+		List<String> travelEntryUuids = em.createQuery(cq).getResultList();
+
+		if (!travelEntryUuids.isEmpty()) {
+			archive(travelEntryUuids);
+		}
+	}
+
+	@Override
 	public List<TravelEntryListEntryDto> getEntriesList(TravelEntryListCriteria criteria, Integer first, Integer max) {
 		Long personId = null;
 		Long caseId = null;
@@ -221,6 +252,9 @@ public class TravelEntryFacadeEjb
 		}
 		if (travelEntryDto.getPointOfEntry() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validPointOfEntry));
+		}
+		if (travelEntryDto.getDateOfArrival() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDateOfArrival));
 		}
 	}
 
@@ -272,6 +306,7 @@ public class TravelEntryFacadeEjb
 		dto.setQuarantineReduced(entity.isQuarantineReduced());
 		dto.setQuarantineOfficialOrderSent(entity.isQuarantineOfficialOrderSent());
 		dto.setQuarantineOfficialOrderSentDate(entity.getQuarantineOfficialOrderSentDate());
+		dto.setDateOfArrival(entity.getDateOfArrival());
 
 		return dto;
 	}
@@ -332,6 +367,7 @@ public class TravelEntryFacadeEjb
 		target.setQuarantineReduced(source.isQuarantineReduced());
 		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
 		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
+		target.setDateOfArrival(source.getDateOfArrival());
 
 		return target;
 	}
@@ -339,7 +375,7 @@ public class TravelEntryFacadeEjb
 	@Override
 	protected String getDeleteReferenceField(DeletionReference deletionReference) {
 		if (deletionReference.equals(DeletionReference.ORIGIN)) {
-			return TravelEntry.REPORT_DATE;
+			return TravelEntry.DATE_OF_ARRIVAL;
 		}
 		return super.getDeleteReferenceField(deletionReference);
 	}

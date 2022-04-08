@@ -22,7 +22,7 @@ import org.openqa.selenium.By;
 
 public class ContactDirectoryPage {
   public static final By NEW_CONTACT_PAGE_BUTTON = By.id("contactNewContact");
-  public static final By LINE_LISTING = By.cssSelector("[id='lineListing']");
+  public static final By LINE_LISTING = By.id("lineListing");
   public static final By MULTIPLE_OPTIONS_SEARCH_INPUT = By.cssSelector("#contactOrCaseLike");
   public static final By PERSON_LIKE_SEARCH_INPUT = By.cssSelector("#personLike");
   public static final By APPLY_FILTERS_BUTTON = By.id("actionApplyFilters");
@@ -51,6 +51,8 @@ public class ContactDirectoryPage {
   public static final By EPIDEMIOLOGICAL_DATA_TAB = By.cssSelector("#tab-contacts-epidata");
   public static final By CONTACT_DISEASE_FILTER_COMBOBOX =
       By.cssSelector("[id='disease'] [class='v-filterselect-button']");
+  public static final By CONTACT_DISEASE_VARIANT_FILTER_COMBOBOX =
+      By.cssSelector("[id='diseaseVariant'] [class='v-filterselect-button']");
   public static final By CONTACT_CLASSIFICATION_FILTER_COMBOBOX =
       By.cssSelector("[id='contactClassification'] [class='v-filterselect-button']");
   public static final By CONTACT_CASE_CLASSIFICATION_FILTER_COMBOBOX =
@@ -81,5 +83,8 @@ public class ContactDirectoryPage {
   public static final By CONVERTED_TO_CASE_BUTTON = By.id("status-Converted to case");
   public static final By DROPPED_BUTTON = By.id("status-Dropped");
   public static final By BULK_ACTIONS_CONTACT_VALUES = By.id("bulkActions-9");
+  public static final By CONTACT_DATA_TAB = By.cssSelector("#tab-contacts-data");
   public static final By NEW_ENTRY_EPIDEMIOLOGICAL_DATA = By.id("actionNewEntry");
+  public static final By FIRST_PERSON_ID = By.xpath("//td[8]//a");
+  public static final By FIRST_CONTACT_ID = By.xpath("//td[1]//a");
 }

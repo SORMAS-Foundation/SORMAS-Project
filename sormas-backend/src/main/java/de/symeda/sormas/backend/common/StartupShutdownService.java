@@ -23,8 +23,8 @@ import java.sql.Timestamp;
 import java.text.MessageFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
+import java.util.EnumSet;
 import java.util.HashSet;
 import java.util.List;
 import java.util.NoSuchElementException;
@@ -64,10 +64,13 @@ import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.externaljournal.PatientDiaryConfig;
 import de.symeda.sormas.api.externaljournal.SymptomJournalConfig;
 import de.symeda.sormas.api.externaljournal.UserConfig;
+import de.symeda.sormas.api.feature.FeatureConfigurationDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityCriteria;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DefaultEntityHelper;
@@ -79,6 +82,7 @@ import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfigurationService;
 import de.symeda.sormas.backend.disease.DiseaseConfiguration;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationService;
+import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.feature.FeatureConfigurationService;
 import de.symeda.sormas.backend.importexport.ImportFacadeEjb.ImportFacadeEjbLocal;
 import de.symeda.sormas.backend.infrastructure.central.CentralInfraSyncFacade;
@@ -155,6 +159,8 @@ public class StartupShutdownService {
 	@EJB
 	private FeatureConfigurationService featureConfigurationService;
 	@EJB
+	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	@EJB
 	private CountryFacadeEjbLocal countryFacade;
 	@EJB
 	private CountryService countryService;
@@ -170,6 +176,8 @@ public class StartupShutdownService {
 	private Event<UserUpdateEvent> userUpdateEvent;
 	@EJB
 	private DeletionConfigurationService deletionConfigurationService;
+	@EJB
+	AuditLogger auditLogger;
 	@EJB
 	private UserRoleService userRoleService;
 
@@ -192,7 +200,7 @@ public class StartupShutdownService {
 
 	@PostConstruct
 	public void startup() {
-		AuditLogger.getInstance().logApplicationStart();
+		auditLogger.logApplicationStart();
 		checkDatabaseConfig(em);
 
 		logger.info("Initiating automatic database update of main database...");
@@ -221,17 +229,17 @@ public class StartupShutdownService {
 
 		syncUsers();
 
-		createImportTemplateFiles();
-
 		createMissingDiseaseConfigurations();
 
 		featureConfigurationService.createMissingFeatureConfigurations();
 		featureConfigurationService.updateFeatureConfigurations();
 
+		createImportTemplateFiles(featureConfigurationFacade.getActiveServerFeatureConfigurations());
+
 		deletionConfigurationService.createMissingDeletionConfiguration();
 
 		configFacade.validateAppUrls();
-		configFacade.validateExternalUrls();
+		configFacade.validateConfigUrls();
 
 		centralInfraSync.syncAll();
 	}
@@ -510,7 +518,7 @@ public class StartupShutdownService {
 			rnd.nextBytes(pwd);
 
 			createOrUpdateDefaultUser(
-				Collections.singleton(userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.SORMAS_TO_SORMAS_CLIENT))),
+				Set.of(userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.SORMAS_TO_SORMAS_CLIENT)), userRoleService.getByCaption(I18nProperties.getEnumCaption(DefaultUserRole.NATIONAL_USER))),
 				DefaultEntityHelper.SORMAS_TO_SORMAS_USER_NAME,
 				new String(pwd),
 				"Sormas to Sormas",
@@ -576,9 +584,14 @@ public class StartupShutdownService {
 		} else if (!DataHelper.equal(existingUser.getPassword(), PasswordHelper.encodePassword(password, existingUser.getSeed()))) {
 			existingUser.setSeed(PasswordHelper.createPass(16));
 			existingUser.setPassword(PasswordHelper.encodePassword(password, existingUser.getSeed()));
-
+			existingUser.setUserRoles(userRoles);
+			
 			userService.persist(existingUser);
 			passwordResetEvent.fire(new PasswordResetEvent(existingUser));
+		} else if (userRoles.stream().anyMatch(r -> !existingUser.getUserRoles().contains(r))
+			|| existingUser.getUserRoles().stream().anyMatch(r -> !userRoles.contains(r))) {
+			existingUser.setUserRoles(userRoles);
+			userService.persist(existingUser);
 		}
 
 	}
@@ -776,22 +789,22 @@ public class StartupShutdownService {
 		}
 	}
 
-	private void createImportTemplateFiles() {
+	private void createImportTemplateFiles(List<FeatureConfigurationDto> featureConfigurations) {
 
 		try {
-			importFacade.generateCaseImportTemplateFile();
+			importFacade.generateCaseImportTemplateFile(featureConfigurations);
 		} catch (IOException e) {
 			logger.error("Could not create case import template .csv file.");
 		}
 
 		try {
-			importFacade.generateCaseContactImportTemplateFile();
+			importFacade.generateCaseContactImportTemplateFile(featureConfigurations);
 		} catch (IOException e) {
 			logger.error("Could not create case contact import template .csv file.");
 		}
 
 		try {
-			importFacade.generateContactImportTemplateFile();
+			importFacade.generateContactImportTemplateFile(featureConfigurations);
 		} catch (IOException e) {
 			logger.error("Could not create contact import template .csv file.");
 		}
@@ -803,7 +816,7 @@ public class StartupShutdownService {
 		}
 
 		try {
-			importFacade.generatePointOfEntryImportTemplateFile();
+			importFacade.generatePointOfEntryImportTemplateFile(featureConfigurations);
 		} catch (IOException e) {
 			logger.error("Could not create point of entry import template .csv file.");
 		}
@@ -815,57 +828,57 @@ public class StartupShutdownService {
 		}
 
 		try {
-			importFacade.generateAreaImportTemplateFile();
+			importFacade.generateAreaImportTemplateFile(featureConfigurations);
 		} catch (IOException e) {
 			logger.error("Could not create area import template .csv file.");
 		}
 
 		try {
-			importFacade.generateContinentImportTemplateFile();
+			importFacade.generateContinentImportTemplateFile(featureConfigurations);
 		} catch (IOException e) {
 			logger.error("Could not create continent import template .csv file.");
 		}
 
 		try {
-			importFacade.generateSubcontinentImportTemplateFile();
+			importFacade.generateSubcontinentImportTemplateFile(featureConfigurations);
 		} catch (IOException e) {
 			logger.error("Could not create subcontinent import template .csv file.");
 		}
 
 		try {
-			importFacade.generateCountryImportTemplateFile();
+			importFacade.generateCountryImportTemplateFile(featureConfigurations);
 		} catch (IOException e) {
 			logger.error("Could not create country import template .csv file.");
 		}
 		try {
-			importFacade.generateRegionImportTemplateFile();
+			importFacade.generateRegionImportTemplateFile(featureConfigurations);
 		} catch (IOException e) {
 			logger.error("Could not create region import template .csv file.");
 		}
 		try {
-			importFacade.generateDistrictImportTemplateFile();
+			importFacade.generateDistrictImportTemplateFile(featureConfigurations);
 		} catch (IOException e) {
 			logger.error("Could not create district import template .csv file.");
 		}
 		try {
-			importFacade.generateCommunityImportTemplateFile();
+			importFacade.generateCommunityImportTemplateFile(featureConfigurations);
 		} catch (IOException e) {
 			logger.error("Could not create community import template .csv file.");
 		}
 		try {
-			importFacade.generateFacilityImportTemplateFile();
+			importFacade.generateFacilityImportTemplateFile(featureConfigurations);
 		} catch (IOException e) {
 			logger.error("Could not create facility/laboratory import template .csv file.");
 		}
 
 		try {
-			importFacade.generateEventImportTemplateFile();
+			importFacade.generateEventImportTemplateFile(featureConfigurations);
 		} catch (IOException e) {
 			logger.error("Could not create event import template .csv file.");
 		}
 
 		try {
-			importFacade.generateEventParticipantImportTemplateFile();
+			importFacade.generateEventParticipantImportTemplateFile(featureConfigurations);
 		} catch (IOException e) {
 			logger.error("Could not create event participant import template .csv file.");
 		}
@@ -882,7 +895,7 @@ public class StartupShutdownService {
 
 	@PreDestroy
 	public void shutdown() {
-		AuditLogger.getInstance().logApplicationStop();
+		auditLogger.logApplicationStop();
 	}
 
 	@LocalBean

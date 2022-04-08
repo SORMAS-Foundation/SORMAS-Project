@@ -40,11 +40,11 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 
-import de.symeda.sormas.api.EditPermissionType;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventCriteriaDateType;
@@ -53,6 +53,7 @@ import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
@@ -90,7 +91,6 @@ import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
-import de.symeda.sormas.utils.EventJoins;
 
 @Stateless
 @LocalBean
@@ -166,6 +166,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		cq.where(filter);
 		cq.select(from.get(Event.UUID));
+		cq.distinct(true);
 
 		return em.createQuery(cq).getResultList();
 	}
@@ -292,7 +293,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		cq.where(filter);
 		cq.select(event.get(Event.UUID));
 
-		return em.createQuery(cq).getResultList();
+		List<String> resultList = em.createQuery(cq).getResultList();
+		return resultList;
 	}
 
 	public List<String> getDeletedUuidsSince(Date since) {
@@ -351,7 +353,10 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		final From<?, EventParticipant> eventParticipantPath,
 		final EventUserFilterCriteria eventUserFilterCriteria) {
 
-		final User currentUser = getCurrentUser();
+		User currentUser = getCurrentUser();
+		if (currentUser == null) {
+			return null;
+		}
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		Predicate filter = null;
 
@@ -370,7 +375,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			eventParticipantJoin = eventParticipantPath;
 		}
 
-		if (jurisdictionLevel != JurisdictionLevel.NATION) {
+		if (jurisdictionLevel != JurisdictionLevel.NATION && !currentUser.hasUserRole(UserRole.REST_USER)) {
 			switch (jurisdictionLevel) {
 			case REGION:
 				if (currentUser.getRegion() != null) {
@@ -492,9 +497,18 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 	@Override
 	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, From<?, Event> eventFrom, boolean includeExtendedChangeDateFilters) {
-		return super.addChangeDates(builder, eventFrom, includeExtendedChangeDateFilters).add(eventFrom, Event.EVENT_LOCATION)
+		Join<Event, Action> eventActionJoin = eventFrom.join(Event.ACTIONS, JoinType.LEFT);
+		Join<Event, EventParticipant> eventParticipantJoin = eventFrom.join(Event.EVENT_PERSONS, JoinType.LEFT);
+		Join<EventParticipant, Sample> eventParticipantSampleJoin = eventParticipantJoin.join(EventParticipant.SAMPLES, JoinType.LEFT);
+
+		builder = super.addChangeDates(builder, eventFrom, includeExtendedChangeDateFilters).add(eventFrom, Event.EVENT_LOCATION)
 			.add(eventFrom, Event.SORMAS_TO_SORMAS_ORIGIN_INFO)
-			.add(eventFrom, Event.SORMAS_TO_SORMAS_SHARES);
+			.add(eventFrom, Event.SORMAS_TO_SORMAS_SHARES)
+			.add(eventActionJoin)
+			.add(eventParticipantJoin)
+			.add(eventParticipantSampleJoin);
+
+		return builder;
 	}
 
 	@Override
@@ -526,7 +540,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 
 		CriteriaBuilder cb = eventQueryContext.getCriteriaBuilder();
 		From<?, Event> from = eventQueryContext.getRoot();
-		final EventJoins<Event> joins = (EventJoins<Event>) eventQueryContext.getJoins();
+		final EventJoins joins = eventQueryContext.getJoins();
 
 		Predicate filter = null;
 		if (eventCriteria.getReportingUserRole() != null) {
@@ -638,14 +652,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 					CriteriaBuilderHelper.ilike(cb, eventParticipantJoin.get(EventParticipant.UUID), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, personJoin.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, personJoin.get(Person.LAST_NAME), textFilter),
-					CriteriaBuilderHelper.ilike(
-						cb,
-						(Expression<String>) personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY),
-						textFilter),
-					CriteriaBuilderHelper.ilike(
-						cb,
-						(Expression<String>) personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY),
-						textFilter));
+					CriteriaBuilderHelper.ilike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
+					CriteriaBuilderHelper.ilike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(eventParticipantJoin.get(EventParticipant.DELETED)));
@@ -812,7 +820,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<Event> root = cq.from(Event.class);
-		EventJoins<Event> joins = new EventJoins<>(root);
+		EventJoins joins = new EventJoins(root);
 
 		Predicate filter = cb.or(
 			cb.equal(cb.lower(joins.getEventParticipantCases().get(Case.UUID)), searchTerm.toLowerCase()),
@@ -853,12 +861,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	}
 
 	public List<ContactEventSummaryDetails> getEventSummaryDetailsByContacts(List<String> contactUuids) {
-		if (contactUuids.isEmpty()) {
-			return Collections.emptyList();
-		}
 
 		List<ContactEventSummaryDetails> eventSummaryDetailsList = new ArrayList<>();
-
 		IterableHelper.executeBatched(contactUuids, ModelConstants.PARAMETER_LIMIT, batchedContactUuids -> {
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<ContactEventSummaryDetails> eventsCq = cb.createQuery(ContactEventSummaryDetails.class);

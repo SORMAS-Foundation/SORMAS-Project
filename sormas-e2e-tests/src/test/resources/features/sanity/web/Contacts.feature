@@ -152,7 +152,7 @@ Feature: Contacts end to end tests
     And I open Follow up Visits tab from contact directory
     Then I am validating the From and To dates displayed
 
-  @issue=SORDEV-5490 @env_main @ignore
+  @issue=SORDEV-5490 @env_main
   Scenario: Create a contact and create a case for contact person
     Given I log in with National User
     When I click on the Contacts button from navbar
@@ -206,7 +206,7 @@ Feature: Contacts end to end tests
     Given I log in with National User
     When I click on the Contacts button from navbar
     Then I search after last created contact via API by UUID and open
-    And I click on the Epidemiological Data button
+    And I click on the Epidemiological Data button tab in Contact form
     And I click on Exposure details known with UNKNOWN option
     And I click on Exposure details known with NO option
     Then I fill all the data in Exposure for Epidemiological data tab in Contacts
@@ -295,6 +295,28 @@ Feature: Contacts end to end tests
     And I click on SAVE button in Link Event to group form
     And I navigate to the last created through API Event page via URL
     And I check that number of displayed Event Participants is 1
+
+  @issue=SORDEV-7425 @env_main
+  Scenario: Adopt the source case in the associated exposure after case conversion
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    When I click on the Contacts button from navbar
+    Then I open the last created contact
+    Then I click on the Epidemiological Data button tab in Contact form
+    And I fill all the data in Exposure for Epidemiological data tab in Contacts
+    And I click on save button from Epidemiological Data
+    Then I click on the Contact tab in Contacts
+    And I click on CONFIRMED CONTACT radio button Contact Person tab
+    Then I click SAVE button on Edit Contact Page
+    And I click Create Case from Contact button
+    And I create a new case for contact with specific data
+    Then I click on the Epidemiological data button tab in Case form
+    And I am checking all Exposure data created by UI is saved and displayed in Cases
 
   @issue=SORDEV-5640 @env_main
   Scenario: Enter an exposure data in Contacts to testing all available options

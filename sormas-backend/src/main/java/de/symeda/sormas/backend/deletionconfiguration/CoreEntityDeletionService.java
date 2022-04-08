@@ -15,7 +15,9 @@ import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
+import de.symeda.sormas.backend.labmessage.LabMessageService;
 import de.symeda.sormas.backend.person.PersonService;
+import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
 
 @LocalBean
@@ -30,6 +32,10 @@ public class CoreEntityDeletionService {
 	private DeletionConfigurationService deletionConfigurationService;
 	@EJB
 	private PersonService personService;
+	@EJB
+	private SampleService sampleService;
+	@EJB
+	private LabMessageService labMessageService;
 
 	public CoreEntityDeletionService() {
 	}
@@ -64,10 +70,13 @@ public class CoreEntityDeletionService {
 	public void executePermanentDeletion() {
 		coreEntityFacades.forEach(entityTypeFacadePair -> {
 			if (entityTypeFacadePair.coreEntityType == CoreEntityType.IMMUNIZATION
-				|| entityTypeFacadePair.coreEntityType == CoreEntityType.TRAVEL_ENTRY) {
+				|| entityTypeFacadePair.coreEntityType == CoreEntityType.TRAVEL_ENTRY
+				|| entityTypeFacadePair.coreEntityType == CoreEntityType.CASE) {
 				entityTypeFacadePair.entityFacade.executePermanentDeletion(DELETE_BATCH_SIZE);
 			}
 		});
+		labMessageService.executePermanentDeletion(DELETE_BATCH_SIZE);
+		sampleService.executePermanentDeletion(DELETE_BATCH_SIZE);
 		personService.executePermanentDeletion(DELETE_BATCH_SIZE);
 	}
 

@@ -39,6 +39,7 @@ import javax.persistence.criteria.Root;
 
 import org.apache.commons.collections4.CollectionUtils;
 
+import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.JurisdictionLevel;
@@ -171,7 +172,36 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		boolean activeOnly,
 		UserRight... userRights) {
 
-		return getUserReferences(regionUuids, districtUuids, null, filterByCurrentUserJurisdiction, activeOnly, Arrays.asList(userRights));
+		return getUserReferences(regionUuids, districtUuids, null, filterByCurrentUserJurisdiction, activeOnly, userRights);
+	}
+
+	public List<UserReference> getUserReferences(
+		List<String> regionUuids,
+		List<String> districtUuids,
+		List<String> communityUuids,
+		boolean filterByJurisdiction,
+		boolean activeOnly,
+		UserRight... userRights) {
+		return getUserReferences(regionUuids, districtUuids, communityUuids, filterByJurisdiction, activeOnly, null, userRights);
+	}
+
+	public List<UserReference> getUserReferences(
+		List<String> regionUuids,
+		List<String> districtUuids,
+		List<String> communityUuids,
+		boolean filterByJurisdiction,
+		boolean activeOnly,
+		Disease limitedDisease,
+		UserRight... userRights) {
+		return getUserReferences(
+			regionUuids,
+			districtUuids,
+			communityUuids,
+			filterByJurisdiction,
+			activeOnly,
+			limitedDisease,
+			false,
+			Arrays.asList(userRights));
 	}
 
 	/**
@@ -193,6 +223,8 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		List<String> communityUuids,
 		boolean filterByJurisdiction,
 		boolean activeOnly,
+		Disease limitedDisease,
+		boolean excludeLimitedDiseaseUsers,
 		List<UserRight> userRights) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -229,6 +261,18 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 		// WHERE outer AND
 		if (activeOnly) {
 			filter = CriteriaBuilderHelper.and(cb, filter, createDefaultFilter(cb, root));
+		}
+
+		// eliminate users that are limited to others diseases
+		if (limitedDisease != null) {
+			Predicate restrictOtherLimitedDiseaseUsers =
+				cb.or(cb.isNull(userRoot.get(User.LIMITED_DISEASE)), cb.equal(userRoot.get(User.LIMITED_DISEASE), limitedDisease));
+			filter = CriteriaBuilderHelper.and(cb, filter, restrictOtherLimitedDiseaseUsers);
+		}
+
+		//exlude users with limited diseases
+		if (excludeLimitedDiseaseUsers) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.isNull(userRoot.get(User.LIMITED_DISEASE)));
 		}
 
 		if (CollectionUtils.isNotEmpty(communityUuids)) {
@@ -540,7 +584,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param districts
 	 * @param userRight
 	 * @return Number of users with specified UserRight on district level
@@ -559,7 +603,7 @@ public class UserService extends AdoServiceWithUserFilter<User> {
 	}
 
 	/**
-	 * 
+	 *
 	 * @param districts
 	 * @return Number of users with specified UserRight on community level
 	 */

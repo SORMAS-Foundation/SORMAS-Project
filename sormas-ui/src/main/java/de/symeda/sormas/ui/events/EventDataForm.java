@@ -558,7 +558,8 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		regionField.addValueChangeListener(e -> {
 			RegionReferenceDto region = (RegionReferenceDto) regionField.getValue();
 			if (region != null) {
-				regionEventResponsibles = FacadeProvider.getUserFacade().getUsersByRegionAndRights(region, UserRight.EVENT_RESPONSIBLE);
+				regionEventResponsibles =
+					FacadeProvider.getUserFacade().getUsersByRegionAndRights(region, getValue().getDisease(), UserRight.EVENT_RESPONSIBLE);
 			} else {
 				regionEventResponsibles.clear();
 			}
@@ -568,7 +569,7 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 			DistrictReferenceDto district = (DistrictReferenceDto) districtField.getValue();
 			if (district != null) {
 				List<UserReferenceDto> districtEventResponsibles =
-					FacadeProvider.getUserFacade().getUserRefsByDistrict(district, UserRight.EVENT_RESPONSIBLE);
+					FacadeProvider.getUserFacade().getUserRefsByDistrict(district, getValue().getDisease(), UserRight.EVENT_RESPONSIBLE);
 
 				List<UserReferenceDto> responsibleUsers = new ArrayList<>();
 				responsibleUsers.addAll(districtEventResponsibles);
@@ -707,5 +708,9 @@ public class EventDataForm extends AbstractEditForm<EventDto> {
 		}
 
 		super.setValue(newFieldValue);
+
+		// HACK: Binding to the fields will call field listeners that may clear/modify the values of other fields.
+		// this hopefully resets everything to its correct value
+		locationForm.discard();
 	}
 }

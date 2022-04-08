@@ -127,6 +127,7 @@ import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.checkers.CountryFieldVisibilityChecker;
+import de.symeda.sormas.api.utils.fieldvisibility.checkers.UserRightFieldVisibilityChecker;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.surveillancereport.CaseReinfectionCheckBoxTree;
@@ -318,7 +319,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			false,
 			FieldVisibilityCheckers.withDisease(disease)
 				.add(new OutbreakFieldVisibilityChecker(viewMode))
-				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale())),
+				.add(new CountryFieldVisibilityChecker(FacadeProvider.getConfigFacade().getCountryLocale()))
+				.add(new UserRightFieldVisibilityChecker(UserProvider.getCurrent()::hasUserRight)),
 			UiFieldAccessCheckers.getDefault(isPseudonymized));
 
 		this.caseUuid = caseUuid;
@@ -400,7 +402,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		// Button to automatically assign a new epid number
 		Button assignNewEpidNumberButton = ButtonHelper.createButton(
 			Captions.actionAssignNewEpidNumber,
-			e -> epidField.setValue(FacadeProvider.getCaseFacade().generateEpidNumber(getValue())),
+			e -> epidField.setValue(FacadeProvider.getCaseFacade().getGenerateEpidNumber(getValue())),
 			ValoTheme.BUTTON_DANGER,
 			FORCE_CAPTION);
 
@@ -1188,33 +1190,13 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			null);
 
 		/// CLINICIAN FIELDS
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_CLINICIAN_VIEW)) {
-			if (isVisibleAllowed(CaseDataDto.CLINICIAN_NAME)) {
-				FieldHelper.setVisibleWhen(
-					getFieldGroup(),
-					CaseDataDto.CLINICIAN_NAME,
-					CaseDataDto.FACILITY_TYPE,
-					Arrays.asList(FacilityType.HOSPITAL, FacilityType.OTHER_MEDICAL_FACILITY),
-					true);
-			}
-			if (isVisibleAllowed(CaseDataDto.CLINICIAN_PHONE)) {
-				FieldHelper.setVisibleWhen(
-					getFieldGroup(),
-					CaseDataDto.CLINICIAN_PHONE,
-					CaseDataDto.FACILITY_TYPE,
-					Arrays.asList(FacilityType.HOSPITAL, FacilityType.OTHER_MEDICAL_FACILITY),
-					true);
-			}
-			if (isVisibleAllowed(CaseDataDto.CLINICIAN_EMAIL)) {
-				FieldHelper.setVisibleWhen(
-					getFieldGroup(),
-					CaseDataDto.CLINICIAN_EMAIL,
-					CaseDataDto.FACILITY_TYPE,
-					Arrays.asList(FacilityType.HOSPITAL, FacilityType.OTHER_MEDICAL_FACILITY),
-					true);
-			}
-		} else {
-			setVisible(false, CaseDataDto.CLINICIAN_NAME, CaseDataDto.CLINICIAN_PHONE, CaseDataDto.CLINICIAN_EMAIL);
+		if (isVisibleAllowed(CaseDataDto.CLINICIAN_NAME)) {
+			FieldHelper.setVisibleWhen(
+				getFieldGroup(),
+				Arrays.asList(CaseDataDto.CLINICIAN_NAME, CaseDataDto.CLINICIAN_PHONE, CaseDataDto.CLINICIAN_EMAIL),
+				CaseDataDto.FACILITY_TYPE,
+				Arrays.asList(FacilityType.HOSPITAL, FacilityType.OTHER_MEDICAL_FACILITY),
+				true);
 		}
 
 		// Other initializations

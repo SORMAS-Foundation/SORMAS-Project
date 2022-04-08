@@ -20,6 +20,7 @@ package org.sormas.e2etests.entities.services.api;
 
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
+import com.github.javafaker.Faker;
 import com.google.inject.Inject;
 import java.util.Date;
 import java.util.UUID;
@@ -40,10 +41,16 @@ import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 
 public class EventApiService {
   EnvironmentManager environmentManager;
+  private final Faker faker;
 
   @Inject
-  public EventApiService(EnvironmentManager environmentManager) {
+  public EventApiService(EnvironmentManager environmentManager, Faker faker) {
     this.environmentManager = environmentManager;
+    this.faker = faker;
+  }
+
+  public EventApiService(Faker faker) {
+    this.faker = faker;
   }
 
   public Event buildGeneratedEvent() {
@@ -61,6 +68,7 @@ public class EventApiService {
         .srcType(SourceTypeValues.getRandomSourceTypeName())
         .eventInvestigationStatus("PENDING")
         .eventTitle(String.valueOf(System.currentTimeMillis()))
+        .eventDesc(faker.chuckNorris().fact())
         .startDate(new Date())
         .reportDateTime(new Date())
         .riskLevel("LOW")
@@ -71,15 +79,21 @@ public class EventApiService {
                 .uuid(UUID.randomUUID().toString())
                 .community(
                     Community.builder()
-                        .uuid(CommunityValues.VoreingestellteGemeinde.getUuid())
+                        .uuid(
+                            CommunityValues.getUuidValueForLocale(
+                                CommunityValues.VoreingestellteGemeinde.name(), locale))
                         .build())
                 .region(
                     Region.builder()
-                        .uuid(RegionsValues.VoreingestellteBundeslander.getUuid())
+                        .uuid(
+                            RegionsValues.getUuidValueForLocale(
+                                RegionsValues.VoreingestellteBundeslander.getName(), locale))
                         .build())
                 .district(
                     District.builder()
-                        .uuid(DistrictsValues.VoreingestellterLandkreis.getUuid())
+                        .uuid(
+                            DistrictsValues.getUuidValueForLocale(
+                                DistrictsValues.VoreingestellterLandkreis.name(), locale))
                         .build())
                 .build())
         .build();

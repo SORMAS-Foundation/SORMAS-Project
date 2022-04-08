@@ -218,8 +218,7 @@ Feature: Case filter functionality
     And I apply "Archived cases" to combobox on Case Directory Page
     And I check that number of displayed cases results is 0
 
-    #todo requires more checks,the failure from jenkins cannot be reproduced
-  @issue=SORQA-30 @env_main @ignore
+  @issue=SORQA-30 @env_main
   Scenario: Check Case report date filters on Case directory page
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -241,7 +240,7 @@ Feature: Case filter functionality
     And I check that number of displayed cases results is 0
     And I fill Cases from input to 1 days before mocked Case created on Case directory page
 
-  @issue=SORQA-30 @env_main @check
+  @issue=SORQA-30 @env_main
   Scenario: Check complex filters regarding responsibilities, vaccination, reinfection adn quarantine
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -330,10 +329,6 @@ Feature: Case filter functionality
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 1
     And I apply Case origin "Einreiseort" on Case directory page
-    And I click APPLY BUTTON in Case Directory Page
-    And I check that number of displayed cases results is 0
-    And I apply Case origin "Im Land" on Case directory page
-    And I apply Disease filter "Cholera" on Case directory page
     And I click APPLY BUTTON in Case Directory Page
     And I check that number of displayed cases results is 0
     And I apply Disease filter "COVID-19" on Case directory page

@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.api.caze;
 
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DependingOnUserRight;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -324,10 +326,13 @@ public class CaseExportDto implements Serializable {
 	private String responsibleCommunity;
 
 	@SensitiveData
+	@DependingOnUserRight(UserRight.CASE_CLINICIAN_VIEW)
 	private String clinicianName;
 	@SensitiveData
+	@DependingOnUserRight(UserRight.CASE_CLINICIAN_VIEW)
 	private String clinicianPhone;
 	@SensitiveData
+	@DependingOnUserRight(UserRight.CASE_CLINICIAN_VIEW)
 	private String clinicianEmail;
 
 	private Long reportingUserId;
@@ -1426,6 +1431,7 @@ public class CaseExportDto implements Serializable {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(BURIAL_INFO)
 	@ExportGroup(ExportGroupType.SENSITIVE)
+	@HideForCountries
 	public BurialInfoDto getBurialInfo() {
 		return burialInfo;
 	}

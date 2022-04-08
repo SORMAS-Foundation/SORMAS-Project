@@ -297,6 +297,10 @@ public class WebDriverHelpers {
     clickOnWebElementBySelectorAndIndex(selector, 0);
   }
 
+  public void doubleClickOnWebElementBySelector(By selector) {
+    doubleClickOnWebElementBySelectorAndIndex(selector, 0);
+  }
+
   public void clickWhileOtherButtonIsDisplayed(By clickedElement, By waitedSelector) {
     TimerLite timer = TimerLite.of(ofSeconds(30));
     do {
@@ -333,6 +337,37 @@ public class WebDriverHelpers {
       log.error("Unable to click on element identified by locator: {}", selector);
       throw new TimeoutException(
           String.format("Unable to click on element identified by locator: %s", selector));
+    }
+  }
+
+  public void doubleClickOnWebElementBySelectorAndIndex(By selector, int index) {
+    WebElement element = baseSteps.getDriver().findElement(selector);
+    Actions actions = new Actions(baseSteps.getDriver());
+    scrollToElementUntilIsVisible(selector);
+    try {
+      await()
+          .pollInterval(ONE_HUNDRED_MILLISECONDS)
+          .ignoreExceptions()
+          .catchUncaughtExceptions()
+          .timeout(ofSeconds(FLUENT_WAIT_TIMEOUT_SECONDS))
+          .untilAsserted(
+              () -> {
+                scrollToElement(selector);
+                Assert.assertTrue(
+                    baseSteps.getDriver().findElements(selector).get(index).isDisplayed(),
+                    String.format("The element: %s is not displayed", selector));
+                Assert.assertTrue(
+                    baseSteps.getDriver().findElements(selector).get(index).isEnabled(),
+                    String.format("The element: %s was not enabled", selector));
+                scrollToElement(selector);
+                actions.doubleClick(element).perform();
+                waitForPageLoaded();
+              });
+
+    } catch (ConditionTimeoutException ignored) {
+      log.error("Unable to double click on element identified by locator: {}", selector);
+      throw new TimeoutException(
+          String.format("Unable to double click on element identified by locator: %s", selector));
     }
   }
 
@@ -380,6 +415,15 @@ public class WebDriverHelpers {
           index,
           exception.getMessage());
     }
+  }
+
+  public void clickElementSeveralTimesUntilNextElementIsDisplayed(
+      By elementToClick, By elementToWaitAfter, int maxNumberOfClicks) {
+    int attempts = 0;
+    do {
+      javaScriptClickElement(elementToClick);
+      attempts++;
+    } while (attempts < maxNumberOfClicks && isElementVisibleWithTimeout(elementToWaitAfter, 10));
   }
 
   public void scrollToElement(final Object selector) {
@@ -768,7 +812,6 @@ public class WebDriverHelpers {
         By.xpath(
             "//div[@class='v-loading-indicator third v-loading-indicator-wait' or contains(@class, 'v-loading-indicator')]");
     boolean isSpinnerDisplayed;
-
     try {
       assertHelpers.assertWithPollWithoutFail(
           () ->
@@ -806,5 +849,28 @@ public class WebDriverHelpers {
 
   public void sendFile(By selector, String filePath) {
     baseSteps.getDriver().findElement(selector).sendKeys(filePath);
+  }
+
+  public boolean isElementDisplayedAndNoLoadingSpinnerOrThrowException(By selector) {
+    By loadingSpinner =
+        By.xpath(
+            "//div[@class='v-loading-indicator third v-loading-indicator-wait' or contains(@class, 'v-loading-indicator')]");
+    try {
+      await()
+          .pollInterval(ONE_HUNDRED_MILLISECONDS)
+          .ignoreExceptions()
+          .catchUncaughtExceptions()
+          .timeout(ofSeconds(FLUENT_WAIT_TIMEOUT_SECONDS))
+          .until(
+              () ->
+                  baseSteps.getDriver().findElement(selector).isDisplayed()
+                      && !baseSteps.getDriver().findElement(loadingSpinner).isDisplayed());
+      return true;
+    } catch (ConditionTimeoutException ignored) {
+      throw new NoSuchElementException(
+          String.format(
+              "Element: %s is not visible under 20 seconds or loading spinner didn't finished",
+              selector));
+    }
   }
 }

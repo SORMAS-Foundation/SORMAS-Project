@@ -205,7 +205,7 @@ public class CommunityFacadeEjb
 	}
 
 	@Override
-	public List<CommunityReferenceDto> getByExternalId(String externalId, boolean includeArchivedEntities) {
+	public List<CommunityReferenceDto> getReferencesByExternalId(String externalId, boolean includeArchivedEntities) {
 
 		return service.getByExternalId(externalId, includeArchivedEntities)
 			.stream()

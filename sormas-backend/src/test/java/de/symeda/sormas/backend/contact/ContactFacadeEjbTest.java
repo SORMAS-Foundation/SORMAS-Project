@@ -322,6 +322,57 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testContactFollowUpStatusWhenConvertedCaseIsDeleted() {
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+
+		Date contactDate = new Date();
+		ContactDto contact =
+			creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, contactDate, contactDate, null);
+
+		assertEquals(ContactStatus.ACTIVE, contact.getContactStatus());
+		assertNull(contact.getResultingCase());
+
+		contact.setContactClassification(ContactClassification.CONFIRMED);
+		contact = getContactFacade().save(contact);
+
+		contact.setResultingCase(caze.toReference());
+		contact = getContactFacade().save(contact);
+
+		assertEquals(ContactClassification.CONFIRMED, contact.getContactClassification());
+		assertEquals(ContactStatus.CONVERTED, contact.getContactStatus());
+		assertEquals(FollowUpStatus.CANCELED, contact.getFollowUpStatus());
+
+		getCaseFacade().delete(caze.getUuid());
+		List<ContactDto> contactDtos = getContactFacade().getByPersonUuids(Arrays.asList(contactPerson.getUuid()));
+		assertEquals(1, contactDtos.size());
+		contact = contactDtos.get(0);
+
+		assertEquals(ContactClassification.CONFIRMED, contact.getContactClassification());
+		assertEquals(ContactStatus.DROPPED, contact.getContactStatus());
+		assertEquals(FollowUpStatus.CANCELED, contact.getFollowUpStatus());
+
+		RegionReferenceDto regionReferenceDto = getRegionFacade().getAllActiveByServerCountry().get(0);
+		DistrictReferenceDto districtReferenceDto = getDistrictFacade().getAllActiveAsReference().get(0);
+		contact.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
+		contact.setRegion(regionReferenceDto);
+		contact.setDistrict(districtReferenceDto);
+		contact = getContactFacade().save(contact);
+		assertEquals(FollowUpStatus.FOLLOW_UP, contact.getFollowUpStatus());
+	}
+
+	@Test
 	public void testGenerateContactFollowUpTasks() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
@@ -1376,7 +1427,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, getVisitFacade().getAllActiveVisitsAfter(null).size());
 		assertEquals(1, getVisitFacade().getAllActiveUuids().size());
 
-		getCaseFacade().archive(caze.getUuid(), null);
+		getCaseFacade().archive(caze.getUuid(), null, true);
 
 		// getAllActiveContacts and getAllUuids should return length 0
 		assertEquals(0, getContactFacade().getAllAfter(null).size());
@@ -1384,7 +1435,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(0, getVisitFacade().getAllActiveVisitsAfter(null).size());
 		assertEquals(0, getVisitFacade().getAllActiveUuids().size());
 
-		getCaseFacade().dearchive(Collections.singletonList(caze.getUuid()), null);
+		getCaseFacade().dearchive(Collections.singletonList(caze.getUuid()), null, true);
 
 		// getAllActiveContacts and getAllUuids should return length 1
 		assertEquals(1, getContactFacade().getAllAfter(null).size());
@@ -1691,5 +1742,36 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(documentUuids.contains(document.getUuid()));
 		assertTrue(documentUuids.contains(otherDocument.getUuid()));
 
+	}
+
+	@Test
+	public void testGetContactUsersWithoutUsersLimitedToOthersDiseses() {
+		RDCF rdcf = creator.createRDCF();
+		useNationalUserLogin();
+
+		UserDto userDto = creator.createUser(rdcf, UserRole.NATIONAL_USER);
+		PersonDto personDto = creator.createPerson();
+		CaseDataDto caze = creator.createCase(
+			userDto.toReference(),
+			personDto.toReference(),
+			Disease.CORONAVIRUS,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf,
+			null);
+		ContactDto contact = creator
+			.createContact(userDto.toReference(), userDto.toReference(), personDto.toReference(), caze, new Date(), new Date(), Disease.CORONAVIRUS);
+
+		UserDto limitedCovidNationalUser =
+			creator.createUser(rdcf, "Limited Disease Covid", "National User", Disease.CORONAVIRUS, UserRole.NATIONAL_USER);
+		UserDto limitedDengueNationalUser =
+			creator.createUser(rdcf, "Limited Disease Dengue", "National User", Disease.DENGUE, UserRole.NATIONAL_USER);
+
+		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUsersHavingContactInJurisdiction(contact.toReference());
+		Assert.assertNotNull(userReferenceDtos);
+		Assert.assertTrue(userReferenceDtos.contains(userDto));
+		Assert.assertTrue(userReferenceDtos.contains(limitedCovidNationalUser));
+		Assert.assertFalse(userReferenceDtos.contains(limitedDengueNationalUser));
 	}
 }

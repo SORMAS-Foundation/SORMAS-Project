@@ -79,5 +79,5 @@ public interface FeatureConfigurationFacade {
 
 	boolean isTaskGenerationFeatureEnabled(TaskType taskType);
 
-	List<FeatureType> getActiveServerFeatureTypes();
+	List<FeatureConfigurationDto> getActiveServerFeatureConfigurations();
 }

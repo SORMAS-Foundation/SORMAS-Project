@@ -63,6 +63,7 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 		fluidColumnLoc(6, 0, TravelEntryDto.DISEASE),
 		fluidColumnLoc(6, 0, TravelEntryDto.DISEASE_DETAILS)) 
 		+ fluidRowLocs(TravelEntryDto.DISEASE_VARIANT, TravelEntryDto.DISEASE_VARIANT_DETAILS)
+		+ fluidRowLocs(TravelEntryDto.DATE_OF_ARRIVAL, "")
 		+ fluidRowLocs(RESPONSIBLE_JURISDICTION_HEADING_LOC)
 		+ fluidRowLocs(TravelEntryDto.RESPONSIBLE_REGION, TravelEntryDto.RESPONSIBLE_DISTRICT, TravelEntryDto.RESPONSIBLE_COMMUNITY)
 		+ fluidRowLocs(DIFFERENT_POINT_OF_ENTRY_JURISDICTION)
@@ -118,6 +119,8 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 		addField(TravelEntryDto.DISEASE_DETAILS, TextField.class);
 		TextField diseaseVariantDetailsField = addField(TravelEntryDto.DISEASE_VARIANT_DETAILS, TextField.class);
 		diseaseVariantDetailsField.setVisible(false);
+
+		addField(TravelEntryDto.DATE_OF_ARRIVAL).setRequired(true);
 
 		Label jurisdictionHeadingLabel = new Label(I18nProperties.getString(Strings.headingResponsibleJurisdiction));
 		jurisdictionHeadingLabel.addStyleName(H3);
@@ -218,6 +221,7 @@ public class TravelEntryCreateForm extends AbstractEditForm<TravelEntryDto> {
 			FieldHelper.updateItems(diseaseVariantField, diseaseVariants);
 			diseaseVariantField
 				.setVisible(disease != null && isVisibleAllowed(TravelEntryDto.DISEASE_VARIANT) && CollectionUtils.isNotEmpty(diseaseVariants));
+			personCreateForm.updatePresentConditionEnum(disease);
 		});
 		diseaseVariantField.addValueChangeListener(e -> {
 			DiseaseVariant diseaseVariant = (DiseaseVariant) e.getProperty().getValue();

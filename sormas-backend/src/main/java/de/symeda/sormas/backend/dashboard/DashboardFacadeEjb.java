@@ -1,11 +1,17 @@
 package de.symeda.sormas.backend.dashboard;
 
+import static de.symeda.sormas.api.dashboard.DashboardContactStatisticDto.CURRENT_CONTACTS;
+import static de.symeda.sormas.api.dashboard.DashboardContactStatisticDto.PREVIOUS_CONTACTS;
+
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
+import java.util.EnumMap;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -19,8 +25,16 @@ import org.apache.commons.lang3.time.DateUtils;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDefinition;
+import de.symeda.sormas.api.contact.ContactClassification;
+import de.symeda.sormas.api.contact.ContactStatus;
+import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.dashboard.DashboardCaseDto;
 import de.symeda.sormas.api.dashboard.DashboardCaseStatisticDto;
+import de.symeda.sormas.api.dashboard.DashboardContactDto;
+import de.symeda.sormas.api.dashboard.DashboardContactFollowUpDto;
+import de.symeda.sormas.api.dashboard.DashboardContactStatisticDto;
+import de.symeda.sormas.api.dashboard.DashboardContactStoppedFollowUpDto;
+import de.symeda.sormas.api.dashboard.DashboardContactVisitDto;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.dashboard.DashboardEventDto;
 import de.symeda.sormas.api.dashboard.DashboardFacade;
@@ -37,6 +51,8 @@ import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
+import de.symeda.sormas.api.visit.VisitStatus;
+import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
@@ -61,6 +77,9 @@ public class DashboardFacadeEjb implements DashboardFacade {
 
 	@EJB
 	private SampleFacadeEjb.SampleFacadeEjbLocal sampleFacade;
+
+	@EJB
+	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
 
 	@EJB
 	private DashboardService dashboardService;
@@ -290,6 +309,257 @@ public class DashboardFacadeEjb implements DashboardFacade {
 			casesWithReferenceDefinitionFulfilledCount,
 			dashboardService.countCasesConvertedFromContacts(dashboardCriteria),
 			dashboardService.getLastReportedDistrictName(dashboardCriteria));
+	}
+
+	public DashboardContactStatisticDto getDashboardContactStatistic(DashboardCriteria dashboardCriteria) {
+
+		List<DashboardContactDto> dashboardContacts = contactFacade.getContactsForDashboard(
+			dashboardCriteria.getRegion(),
+			dashboardCriteria.getDistrict(),
+			dashboardCriteria.getDisease(),
+			dashboardCriteria.getDateFrom(),
+			dashboardCriteria.getDateTo());
+
+		List<DashboardContactDto> previousDashboardContacts = contactFacade.getContactsForDashboard(
+			dashboardCriteria.getRegion(),
+			dashboardCriteria.getDistrict(),
+			dashboardCriteria.getDisease(),
+			dashboardCriteria.getPreviousDateFrom(),
+			dashboardCriteria.getPreviousDateTo());
+
+		int contactsCount = dashboardContacts.size();
+
+		int newContactsCount = (int) dashboardContacts.stream()
+			.filter(c -> c.getReportDate().after(dashboardCriteria.getDateFrom()) || c.getReportDate().equals(dashboardCriteria.getDateFrom()))
+			.count();
+		int newContactsPercentage = calculatePercentage(newContactsCount, contactsCount);
+		int symptomaticContactsCount = (int) dashboardContacts.stream().filter(c -> Boolean.TRUE.equals(c.getSymptomatic())).count();
+		int symptomaticContactsPercentage = calculatePercentage(symptomaticContactsCount, contactsCount);
+		int contactClassificationUnconfirmedCount =
+			(int) dashboardContacts.stream().filter(c -> c.getContactClassification() == ContactClassification.UNCONFIRMED).count();
+		int contactClassificationUnconfirmedPercentage = calculatePercentage(contactClassificationUnconfirmedCount, contactsCount);
+		int contactClassificationConfirmedCount =
+			(int) dashboardContacts.stream().filter(c -> c.getContactClassification() == ContactClassification.CONFIRMED).count();
+		int contactClassificationConfirmedPercentage = calculatePercentage(contactClassificationConfirmedCount, contactsCount);
+		int contactClassificationNotAContactCount =
+			(int) dashboardContacts.stream().filter(c -> c.getContactClassification() == ContactClassification.NO_CONTACT).count();
+		int contactClassificationNotAContactPercentage = calculatePercentage(contactClassificationNotAContactCount, contactsCount);
+		Map<Disease, Map<String, Integer>> diseaseMap = new TreeMap<>();
+		for (Disease disease : diseaseConfigurationFacade.getAllDiseasesWithFollowUp()) {
+			Map<String, Integer> countValues = new HashMap<>();
+			countValues.put(PREVIOUS_CONTACTS, (int) previousDashboardContacts.stream().filter(c -> c.getDisease() == disease).count());
+			countValues.put(CURRENT_CONTACTS, (int) dashboardContacts.stream().filter(c -> c.getDisease() == disease).count());
+			diseaseMap.put(disease, countValues);
+		}
+
+		Map<Disease, Map<String, Integer>> orderedDiseaseMap = diseaseMap.entrySet()
+			.stream()
+			.sorted(Map.Entry.comparingByValue((o1, o2) -> -Integer.compare(o1.get(CURRENT_CONTACTS), o2.get(CURRENT_CONTACTS))))
+			.collect(Collectors.toMap(Map.Entry::getKey, Map.Entry::getValue, (oldValue, newValue) -> oldValue, LinkedHashMap::new));
+
+		DashboardContactFollowUpDto dashboardContactFollowUp = calculateContactFollowUpStatistics(dashboardContacts, dashboardCriteria.getDateTo());
+		DashboardContactStoppedFollowUpDto dashboardContactStoppedFollowUp = calculateContactStoppedFollowUpStatistics(dashboardContacts);
+		DashboardContactVisitDto dashboardContactVisit = calculateContactVisitStatistics(dashboardContacts, previousDashboardContacts);
+
+		return new DashboardContactStatisticDto(
+			contactsCount,
+			newContactsCount,
+			newContactsPercentage,
+			symptomaticContactsCount,
+			symptomaticContactsPercentage,
+			contactClassificationConfirmedCount,
+			contactClassificationConfirmedPercentage,
+			contactClassificationUnconfirmedCount,
+			contactClassificationUnconfirmedPercentage,
+			contactClassificationNotAContactCount,
+			contactClassificationNotAContactPercentage,
+			orderedDiseaseMap,
+			dashboardContactFollowUp,
+			dashboardContactStoppedFollowUp,
+			dashboardContactVisit);
+	}
+
+	private DashboardContactFollowUpDto calculateContactFollowUpStatistics(List<DashboardContactDto> contacts, Date dateTo) {
+
+		List<DashboardContactDto> followUpContacts =
+			contacts.stream().filter(c -> c.getFollowUpStatus() == FollowUpStatus.FOLLOW_UP).collect(Collectors.toList());
+
+		int followUpContactsCount = followUpContacts.size();
+
+		int cooperativeContactsCount = (int) followUpContacts.stream().filter(c -> c.getLastVisitStatus() == VisitStatus.COOPERATIVE).count();
+		int uncooperativeContactsCount = (int) followUpContacts.stream().filter(c -> c.getLastVisitStatus() == VisitStatus.UNCOOPERATIVE).count();
+		int unavailableContactsCount = (int) followUpContacts.stream().filter(c -> c.getLastVisitStatus() == VisitStatus.UNAVAILABLE).count();
+		int notVisitedContactsCount = (int) followUpContacts.stream().filter(c -> c.getLastVisitStatus() == null).count();
+		int cooperativeContactsPercentage = calculatePercentage(cooperativeContactsCount, followUpContactsCount);
+		int uncooperativeContactsPercentage = calculatePercentage(uncooperativeContactsCount, followUpContactsCount);
+		int unavailableContactsPercentage = calculatePercentage(unavailableContactsCount, followUpContactsCount);
+		int notVisitedContactsPercentage = calculatePercentage(notVisitedContactsCount, followUpContactsCount);
+
+		int missedVisitsOneDayCount = 0;
+		int missedVisitsTwoDaysCount = 0;
+		int missedVisitsThreeDaysCount = 0;
+		int missedVisitsGtThreeDaysCount = 0;
+
+		for (DashboardContactDto contact : followUpContacts) {
+			Date lastVisitDateTime = contact.getLastVisitDateTime() != null ? contact.getLastVisitDateTime() : contact.getReportDate();
+
+			Date referenceDate = dateTo.after(new Date()) ? new Date() : dateTo;
+
+			int missedDays = DateHelper.getFullDaysBetween(lastVisitDateTime, referenceDate);
+
+			switch (missedDays <= 3 ? missedDays : 4) {
+			case 1:
+				missedVisitsOneDayCount++;
+				break;
+			case 2:
+				missedVisitsTwoDaysCount++;
+				break;
+			case 3:
+				missedVisitsThreeDaysCount++;
+				break;
+			case 4:
+				missedVisitsGtThreeDaysCount++;
+				break;
+			default:
+				break;
+			}
+
+		}
+
+		return new DashboardContactFollowUpDto(
+			followUpContactsCount,
+			cooperativeContactsCount,
+			cooperativeContactsPercentage,
+			uncooperativeContactsCount,
+			uncooperativeContactsPercentage,
+			unavailableContactsCount,
+			unavailableContactsPercentage,
+			notVisitedContactsCount,
+			notVisitedContactsPercentage,
+			missedVisitsOneDayCount,
+			missedVisitsTwoDaysCount,
+			missedVisitsThreeDaysCount,
+			missedVisitsGtThreeDaysCount);
+	}
+
+	private DashboardContactStoppedFollowUpDto calculateContactStoppedFollowUpStatistics(List<DashboardContactDto> contacts) {
+
+		List<DashboardContactDto> stoppedFollowUpContacts = contacts.stream()
+			.filter(c -> c.getFollowUpStatus() != FollowUpStatus.NO_FOLLOW_UP && c.getFollowUpStatus() != FollowUpStatus.FOLLOW_UP)
+			.collect(Collectors.toList());
+
+		int stoppedFollowUpContactsCount = stoppedFollowUpContacts.size();
+
+		int followUpCompletedCount = (int) stoppedFollowUpContacts.stream().filter(c -> c.getFollowUpStatus() == FollowUpStatus.COMPLETED).count();
+		int followUpCanceledCount = (int) stoppedFollowUpContacts.stream().filter(c -> c.getFollowUpStatus() == FollowUpStatus.CANCELED).count();
+		int lostToFollowUpCount = (int) stoppedFollowUpContacts.stream().filter(c -> c.getFollowUpStatus() == FollowUpStatus.LOST).count();
+		int contactStatusConvertedCount = (int) stoppedFollowUpContacts.stream().filter(c -> c.getContactStatus() == ContactStatus.CONVERTED).count();
+
+		int followUpCompletedPercentage = calculatePercentage(followUpCompletedCount, stoppedFollowUpContactsCount);
+		int followUpCanceledPercentage = calculatePercentage(followUpCanceledCount, stoppedFollowUpContactsCount);
+		int lostToFollowUpPercentage = calculatePercentage(lostToFollowUpCount, stoppedFollowUpContactsCount);
+		int contactStatusConvertedPercentage = calculatePercentage(contactStatusConvertedCount, stoppedFollowUpContactsCount);
+
+		return new DashboardContactStoppedFollowUpDto(
+			stoppedFollowUpContactsCount,
+			followUpCompletedCount,
+			followUpCompletedPercentage,
+			followUpCanceledCount,
+			followUpCanceledPercentage,
+			lostToFollowUpCount,
+			lostToFollowUpPercentage,
+			contactStatusConvertedCount,
+			contactStatusConvertedPercentage);
+	}
+
+	private DashboardContactVisitDto calculateContactVisitStatistics(List<DashboardContactDto> contacts, List<DashboardContactDto> previousContacts) {
+		Map<VisitStatus, Integer> visitStatusMap = new EnumMap<>(VisitStatus.class);
+		Map<VisitStatus, Integer> previousVisitStatusMap = new EnumMap<>(VisitStatus.class);
+		int doneEssentialVisitsCount = 0;	// only visits that needed to be done, i.e. at most the amount of follow-up days
+		int previousDoneEssentialVisitsCount = 0;
+
+		Date now = new Date();
+		int totalFollowUpDays = 0;
+		int previousTotalFollowUpDays = 0;
+		for (DashboardContactDto contact : contacts) {
+			for (VisitStatus visitStatus : contact.getVisitStatusMap().keySet()) {
+				int value = 0;
+				if (visitStatusMap.containsKey(visitStatus)) {
+					value = visitStatusMap.get(visitStatus);
+				}
+				visitStatusMap.put(visitStatus, value + contact.getVisitStatusMap().get(visitStatus));
+			}
+			if (contact.getFollowUpUntil() != null) {
+				int contactFollowUpDays = Math.min(
+					DateHelper.getDaysBetween(contact.getReportDate(), now),
+					DateHelper.getDaysBetween(contact.getReportDate(), contact.getFollowUpUntil()));
+				totalFollowUpDays += contactFollowUpDays;
+				int visitCount = contact.getVisitStatusMap().values().stream().reduce(0, Integer::sum);
+				doneEssentialVisitsCount += (Math.min(visitCount, contactFollowUpDays));
+			}
+		}
+
+		for (DashboardContactDto contact : previousContacts) {
+			for (VisitStatus visitStatus : contact.getVisitStatusMap().keySet()) {
+				int value = 0;
+				if (previousVisitStatusMap.containsKey(visitStatus)) {
+					value = previousVisitStatusMap.get(visitStatus);
+				}
+				previousVisitStatusMap.put(visitStatus, value + contact.getVisitStatusMap().get(visitStatus));
+			}
+			if (contact.getFollowUpUntil() != null) {
+				int contactFollowUpDays = Math.min(
+					DateHelper.getDaysBetween(contact.getReportDate(), now),
+					DateHelper.getDaysBetween(contact.getReportDate(), contact.getFollowUpUntil()));
+				previousTotalFollowUpDays += contactFollowUpDays;
+				int visitCount = contact.getVisitStatusMap().values().stream().reduce(0, Integer::sum);
+				previousDoneEssentialVisitsCount += (Math.min(visitCount, contactFollowUpDays));
+			}
+		}
+
+		int visitsCount = visitStatusMap.values().stream().reduce(0, Integer::sum);
+
+		int missedVisitsCount = totalFollowUpDays - doneEssentialVisitsCount;
+		int unavailableVisitsCount = Optional.ofNullable(visitStatusMap.get(VisitStatus.UNAVAILABLE)).orElse(0).intValue();
+		int uncooperativeVisitsCount = Optional.ofNullable(visitStatusMap.get(VisitStatus.UNCOOPERATIVE)).orElse(0).intValue();
+		int cooperativeVisitsCount = Optional.ofNullable(visitStatusMap.get(VisitStatus.COOPERATIVE)).orElse(0).intValue();
+		int previousMissedVisitsCount = previousTotalFollowUpDays - previousDoneEssentialVisitsCount;
+		int previousUnavailableVisitsCount = Optional.ofNullable(previousVisitStatusMap.get(VisitStatus.UNAVAILABLE)).orElse(0).intValue();
+		int previousUncooperativeVisitsCount = Optional.ofNullable(previousVisitStatusMap.get(VisitStatus.UNCOOPERATIVE)).orElse(0).intValue();
+		int previousCooperativeVisitsCount = Optional.ofNullable(previousVisitStatusMap.get(VisitStatus.COOPERATIVE)).orElse(0).intValue();
+
+		int missedVisitsGrowth = calculateGrowth(missedVisitsCount, previousMissedVisitsCount);
+		int unavailableVisitsGrowth = calculateGrowth(unavailableVisitsCount, previousUnavailableVisitsCount);
+		int uncooperativeVisitsGrowth = calculateGrowth(uncooperativeVisitsCount, previousUncooperativeVisitsCount);
+		int cooperativeVisitsGrowth = calculateGrowth(cooperativeVisitsCount, previousCooperativeVisitsCount);
+
+		return new DashboardContactVisitDto(
+			visitsCount,
+			missedVisitsCount,
+			missedVisitsGrowth,
+			unavailableVisitsCount,
+			unavailableVisitsGrowth,
+			uncooperativeVisitsCount,
+			uncooperativeVisitsGrowth,
+			cooperativeVisitsCount,
+			cooperativeVisitsGrowth,
+			previousMissedVisitsCount,
+			previousUnavailableVisitsCount,
+			previousUncooperativeVisitsCount,
+			previousCooperativeVisitsCount);
+
+	}
+
+	public int calculateGrowth(int currentCount, int previousCount) {
+		return currentCount == 0
+			? (previousCount > 0 ? -100 : 0)
+			: previousCount == 0
+				? (currentCount > 0 ? Integer.MIN_VALUE : 0)
+				: Math.round(((currentCount - previousCount * 1.0f) / previousCount) * 100.0f);
+	}
+
+	public int calculatePercentage(int amount, int totalAmount) {
+		return totalAmount == 0 ? 0 : (int) ((amount * 100.0f) / totalAmount);
 	}
 
 	@Override

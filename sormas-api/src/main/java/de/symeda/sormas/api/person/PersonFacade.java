@@ -77,8 +77,6 @@ public interface PersonFacade {
 
 	Date getLatestFollowUpEndDateByUuid(String uuid);
 
-	FollowUpStatus getMostRelevantFollowUpStatusByUuid(String uuid);
-
 	boolean setSymptomJournalStatus(String personUuid, SymptomJournalStatus status);
 
 	List<PersonIndexDto> getIndexList(PersonCriteria criteria, Integer offset, Integer limit, List<SortProperty> sortProperties);
@@ -104,4 +102,6 @@ public interface PersonFacade {
 	void mergePerson(PersonDto leadPerson, PersonDto otherPerson);
 
 	PersonDto getByContext(PersonContext context, String contextUuid);
+
+    boolean isEnrolledInExternalJournal(String uuid);
 }
