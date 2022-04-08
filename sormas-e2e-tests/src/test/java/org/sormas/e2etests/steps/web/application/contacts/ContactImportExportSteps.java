@@ -52,8 +52,10 @@ import lombok.extern.slf4j.Slf4j;
 import org.sormas.e2etests.entities.pojo.csv.CustomContactExportCSV;
 import org.sormas.e2etests.entities.pojo.web.Contact;
 import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
+import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
 @Slf4j
@@ -64,7 +66,10 @@ public class ContactImportExportSteps implements En {
 
   @Inject
   public ContactImportExportSteps(
-      WebDriverHelpers webDriverHelpers, ApiState apiState, SoftAssert softly) {
+      WebDriverHelpers webDriverHelpers,
+      ApiState apiState,
+      SoftAssert softly,
+      AssertHelpers assertHelpers) {
 
     When(
         "I click on the Export contact button",
@@ -81,7 +86,6 @@ public class ContactImportExportSteps implements En {
         "I click on the Basic Contact Export button",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(BASIC_CASE_EXPORT_BUTTON);
-          TimeUnit.SECONDS.sleep(5); // wait for download
         });
 
     When(
@@ -112,7 +116,6 @@ public class ContactImportExportSteps implements En {
         "I download created custom contact export file",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CUSTOM_CASE_EXPORT_DOWNLOAD_BUTTON);
-          TimeUnit.SECONDS.sleep(5); // wait for download
         });
 
     When(
@@ -120,8 +123,14 @@ public class ContactImportExportSteps implements En {
         () -> {
           String file =
               "./downloads/sormas_kontakte_" + LocalDate.now().format(formatter) + "_.csv";
-          CustomContactExportCSV reader = parseCustomContactExport(file);
           Path path = Paths.get(file);
+          assertHelpers.assertWithPoll20Second(
+              () ->
+                  Assert.assertTrue(
+                      Files.exists(path),
+                      "Custom contact document was not downloaded. Path used for check: "
+                          + path.toAbsolutePath()));
+          CustomContactExportCSV reader = parseCustomContactExport(file);
           Files.delete(path);
           softly.assertEquals(
               reader.getUuid(), apiState.getCreatedContact().getUuid(), "UUIDs are not equal");
@@ -145,8 +154,15 @@ public class ContactImportExportSteps implements En {
         () -> {
           String file =
               "./downloads/sormas_kontakte_" + LocalDate.now().format(formatter) + "_.csv";
-          Contact reader = parseBasicContactExport(file);
+
           Path path = Paths.get(file);
+          assertHelpers.assertWithPoll20Second(
+              () ->
+                  Assert.assertTrue(
+                      Files.exists(path),
+                      "Basic contact document was not downloaded. Path used for check: "
+                          + path.toAbsolutePath()));
+          Contact reader = parseBasicContactExport(file);
           Files.delete(path);
           softly.assertEquals(
               reader.getUuid(), apiState.getCreatedContact().getUuid(), "UUIDs are not equal");
