@@ -32,9 +32,7 @@ public final class IterableHelper {
 	 */
 	public static <E> void executeBatched(List<E> entries, int batchSize, Consumer<List<E>> batchFunction) {
 
-		if (CollectionUtils.isNotEmpty(entries) && entries.size() <= batchSize) {
-			batchFunction.accept(entries);
-		} else {
+		if (CollectionUtils.isNotEmpty(entries)) {
 			for (List<E> batch : ListUtils.partition(new ArrayList<>(entries), batchSize)) {
 				if (CollectionUtils.isNotEmpty(batch)) {
 					batchFunction.accept(batch);
