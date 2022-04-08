@@ -37,6 +37,7 @@ import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.caze.CaseOutcome;
 import de.symeda.sormas.api.caze.InvestigationStatus;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.app.BaseListActivity;
 import de.symeda.sormas.app.PagedBaseListActivity;
@@ -188,7 +189,7 @@ public class CaseListActivity extends PagedBaseListActivity {
 		List<Item> outcomes = DataUtils.getEnumItems(CaseOutcome.class);
 		filterBinding.outcomeFilter.initializeSpinner(outcomes);
 
-		if (ConfigProvider.getUser().getPointOfEntry() != null) {
+		if (UserRole.isPortHealthUser(ConfigProvider.getUser().getUserRoles())) {
 			filterBinding.originFilter.setVisibility(GONE);
 		} else {
 			List<Item> caseOrigins = DataUtils.getEnumItems(CaseOrigin.class);

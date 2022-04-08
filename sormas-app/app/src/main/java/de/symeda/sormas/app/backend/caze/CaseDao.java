@@ -266,7 +266,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 			caze.setDisease(defaultDisease);
 		}
 
-		if (currentUser.getPointOfEntry() != null) {
+		if (UserRole.isPortHealthUser(currentUser.getUserRoles())) {
 			caze.setResponsibleRegion(currentUser.getRegion());
 			caze.setResponsibleDistrict(currentUser.getDistrict());
 			caze.setDisease(Disease.UNDEFINED);
