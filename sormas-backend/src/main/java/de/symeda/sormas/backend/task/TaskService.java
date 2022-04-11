@@ -139,18 +139,30 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
-	@SuppressWarnings("rawtypes")
+	@SuppressWarnings({
+		"rawtypes",
+		"unchecked" })
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Task> taskPath) {
+
+		return createUserFilterForJoin(new TaskQueryContext(cb, cq, taskPath));
+	}
+
+	@SuppressWarnings({
+		"rawtypes",
+		"unchecked" })
+	public Predicate createUserFilterForJoin(TaskQueryContext taskQueryContext) {
 
 		User currentUser = getCurrentUser();
 		if (currentUser == null) {
 			return null;
 		}
 
-		Join<Object, User> assigneeUser = taskPath.join(Task.ASSIGNEE_USER, JoinType.LEFT);
+		CriteriaQuery<?> cq = taskQueryContext.getQuery();
+		CriteriaBuilder cb = taskQueryContext.getCriteriaBuilder();
+		From<?, Task> taskPath = taskQueryContext.getRoot();
 
-		Predicate assigneeFilter = createAssigneeFilter(cb, assigneeUser);
+		Predicate assigneeFilter = createAssigneeFilter(cb, ((TaskJoins) taskQueryContext.getJoins()).getAssignee());
 
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if ((jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
@@ -159,21 +171,21 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		}
 
 		Predicate filter = cb.equal(taskPath.get(Task.CREATOR_USER), currentUser);
-		filter = cb.or(filter, cb.equal(assigneeUser, currentUser));
+		filter = cb.or(filter, cb.equal(taskPath.get(Task.ASSIGNEE_USER), currentUser));
 
-		Predicate caseFilter = caseService.createUserFilter(cb, cq, taskPath.join(Task.CAZE, JoinType.LEFT));
+		Predicate caseFilter = caseService.createUserFilter(cb, cq, ((TaskJoins) taskQueryContext.getJoins()).getCaze());
 		if (caseFilter != null) {
 			filter = cb.or(filter, caseFilter);
 		}
-		Predicate contactFilter = contactService.createUserFilter(cb, cq, taskPath.join(Task.CONTACT, JoinType.LEFT));
+		Predicate contactFilter = contactService.createUserFilter(cb, cq, ((TaskJoins) taskQueryContext.getJoins()).getContact());
 		if (contactFilter != null) {
 			filter = cb.or(filter, contactFilter);
 		}
-		Predicate eventFilter = eventService.createUserFilter(cb, cq, taskPath.join(Task.EVENT, JoinType.LEFT));
+		Predicate eventFilter = eventService.createUserFilter(cb, cq, ((TaskJoins) taskQueryContext.getJoins()).getEvent());
 		if (eventFilter != null) {
 			filter = cb.or(filter, eventFilter);
 		}
-		Predicate travelEntryFilter = travelEntryService.createUserFilter(cb, cq, taskPath.join(Task.TRAVEL_ENTRY, JoinType.LEFT));
+		Predicate travelEntryFilter = travelEntryService.createUserFilter(cb, cq, ((TaskJoins) taskQueryContext.getJoins()).getTravelEntry());
 		if (travelEntryFilter != null) {
 			filter = cb.or(filter, travelEntryFilter);
 		}
