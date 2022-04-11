@@ -25,12 +25,14 @@ import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.isEmptyOrNullString;
 import static org.hamcrest.Matchers.not;
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
+import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import org.hamcrest.MatcherAssert;
 import org.hamcrest.Matchers;
 import org.junit.Assert;
@@ -65,26 +67,11 @@ import de.symeda.sormas.backend.TestDataCreator.RDCFEntities;
 public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
-	public void testGetExportList() {
-
+	public void testGetExportListWithRelevantVaccinations() {
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		EventDto event = creator.createEvent(
-			EventStatus.SIGNAL,
-			EventInvestigationStatus.PENDING,
-			"Title",
-			"Description",
-			"First",
-			"Name",
-			"12345",
-			TypeOfPlace.PUBLIC_PLACE,
-			DateHelper.subtractDays(new Date(), 1),
-			new Date(),
-			user.toReference(),
-			user.toReference(),
-			Disease.EVD,
-			rdcf.district);
+		UserDto user = getUser(rdcf);
+		EventDto event = getEvent(user, rdcf);
+
 		PersonDto eventPerson = creator.createPerson("Event", "Organizer");
 		creator.createEventParticipant(event.toReference(), eventPerson, "event Director", user.toReference());
 
@@ -115,27 +102,103 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 			DateHelper.subtractDays(new Date(), 7),
 			null,
 			null);
-		VaccinationDto firstVaccination = creator.createVaccination(
+
+		VaccinationDto firstVaccination = creator.createVaccinationWithDetails(
 			event.getReportingUser(),
 			immunization.toReference(),
 			HealthConditionsDto.build(),
 			DateHelper.subtractDays(new Date(), 7),
 			Vaccine.OXFORD_ASTRA_ZENECA,
-			VaccineManufacturer.ASTRA_ZENECA);
-		creator.createVaccination(
+			VaccineManufacturer.ASTRA_ZENECA,
+			VaccinationInfoSource.UNKNOWN,
+			"inn1",
+			"123",
+			"code123",
+			"3");
+
+		VaccinationDto secondVaccination = creator.createVaccinationWithDetails(
 			event.getReportingUser(),
 			immunization.toReference(),
 			HealthConditionsDto.build(),
 			DateHelper.subtractDays(new Date(), 4),
 			Vaccine.MRNA_1273,
-			VaccineManufacturer.MODERNA);
-		VaccinationDto thirdVaccination = creator.createVaccination(
+			VaccineManufacturer.MODERNA,
+			VaccinationInfoSource.UNKNOWN,
+			"inn2",
+			"456",
+			"code456",
+			"2");
+
+		VaccinationDto thirdVaccination = creator.createVaccinationWithDetails(
 			event.getReportingUser(),
 			immunization.toReference(),
 			HealthConditionsDto.build(),
 			new Date(),
 			Vaccine.COMIRNATY,
-			VaccineManufacturer.BIONTECH_PFIZER);
+			VaccineManufacturer.BIONTECH_PFIZER,
+			VaccinationInfoSource.UNKNOWN,
+			"inn3",
+			"789",
+			"code789",
+			"1");
+
+		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
+		eventParticipantCriteria.withEvent(event.toReference());
+
+		List<EventParticipantExportDto> results =
+			getEventParticipantFacade().getExportList(eventParticipantCriteria, Collections.emptySet(), 0, 100, Language.EN, null);
+		EventParticipantExportDto exportDto = results.get(0);
+
+		// List should have two entries
+		assertThat(results, Matchers.hasSize(2));
+		assertEquals(VaccinationStatus.VACCINATED, exportDto.getVaccinationStatus());
+		assertEquals(firstVaccination.getVaccinationDate(), exportDto.getFirstVaccinationDate());
+		assertEquals(secondVaccination.getVaccineName(), exportDto.getVaccineName());
+		assertEquals(secondVaccination.getVaccinationDate(), exportDto.getLastVaccinationDate());
+		assertEquals(secondVaccination.getVaccinationInfoSource(), exportDto.getVaccinationInfoSource());
+		assertEquals(secondVaccination.getVaccineInn(), exportDto.getVaccineInn());
+		assertEquals(secondVaccination.getVaccineBatchNumber(), exportDto.getVaccineBatchNumber());
+		assertEquals(secondVaccination.getVaccineAtcCode(), exportDto.getVaccineAtcCode());
+		assertEquals(secondVaccination.getVaccineDose(), exportDto.getVaccinationDoses());
+	}
+
+	@Test
+	public void testGetExportListWithoutRelevantVaccinations() {
+		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+		UserDto user = getUser(rdcf);
+		EventDto event = getEvent(user, rdcf);
+
+		PersonDto eventPerson = creator.createPerson("Event", "Organizer");
+		creator.createEventParticipant(event.toReference(), eventPerson, "event Director", user.toReference());
+
+		PersonDto eventPerson1 = creator.createPerson("Event", "Participant");
+		creator.createEventParticipant(event.toReference(), eventPerson1, "event fan", user.toReference());
+
+		ImmunizationDto immunization = creator.createImmunization(
+			event.getDisease(),
+			eventPerson.toReference(),
+			event.getReportingUser(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf,
+			DateHelper.subtractDays(new Date(), 10),
+			DateHelper.subtractDays(new Date(), 5),
+			DateHelper.subtractDays(new Date(), 1),
+			null);
+
+		VaccinationDto vaccination = creator.createVaccinationWithDetails(
+			event.getReportingUser(),
+			immunization.toReference(),
+			HealthConditionsDto.build(),
+			DateHelper.addDays(new Date(), 1),
+			Vaccine.MRNA_1273,
+			VaccineManufacturer.MODERNA,
+			VaccinationInfoSource.UNKNOWN,
+			"inn2",
+			"456",
+			"code456",
+			"2");
 
 		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
 		eventParticipantCriteria.withEvent(event.toReference());
@@ -145,10 +208,16 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 
 		// List should have two entries
 		assertThat(results, Matchers.hasSize(2));
-		assertEquals(VaccinationStatus.VACCINATED, results.get(0).getVaccinationStatus());
-		assertEquals(thirdVaccination.getVaccineName(), results.get(0).getVaccineName());
-		assertEquals(firstVaccination.getVaccinationDate(), results.get(0).getFirstVaccinationDate());
-		assertEquals(thirdVaccination.getVaccinationDate(), results.get(0).getLastVaccinationDate());
+		EventParticipantExportDto exportDto = results.get(0);
+
+		assertNull(exportDto.getFirstVaccinationDate());
+		assertNull(exportDto.getVaccineName());
+		assertNull(exportDto.getLastVaccinationDate());
+		assertNull(exportDto.getVaccinationInfoSource());
+		assertNull(exportDto.getVaccineInn());
+		assertNull(exportDto.getVaccineBatchNumber());
+		assertNull(exportDto.getVaccineAtcCode());
+		assertEquals(exportDto.getVaccinationDoses(), "");
 	}
 
 	@Test
@@ -208,7 +277,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testExistEventParticipantWithDeletedFalse(){
+	public void testExistEventParticipantWithDeletedFalse() {
 		RDCFEntities rdcf = creator.createRDCFEntities();
 		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
 		EventDto event = creator.createEvent(user.toReference());
@@ -221,7 +290,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testExistEventParticipantWithDeletedTrue(){
+	public void testExistEventParticipantWithDeletedTrue() {
 		RDCFEntities rdcf = creator.createRDCFEntities();
 		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
 		EventDto event = creator.createEvent(user.toReference());
@@ -232,5 +301,28 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 
 		boolean exist = getEventParticipantFacade().exists(person.getUuid(), event.getUuid());
 		Assert.assertFalse(exist);
+	}
+
+	private UserDto getUser(TestDataCreator.RDCF rdcf) {
+		return creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+	}
+
+	private EventDto getEvent(UserDto user, TestDataCreator.RDCF rdcf) {
+		return creator.createEvent(
+			EventStatus.SIGNAL,
+			EventInvestigationStatus.PENDING,
+			"Title",
+			"Description",
+			"First",
+			"Name",
+			"12345",
+			TypeOfPlace.PUBLIC_PLACE,
+			DateHelper.subtractDays(new Date(), 1),
+			new Date(),
+			user.toReference(),
+			user.toReference(),
+			Disease.EVD,
+			rdcf.district);
 	}
 }
