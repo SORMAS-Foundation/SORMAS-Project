@@ -277,4 +277,90 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 		deletionConfigurationService.ensurePersisted(entity);
 		return entity;
 	}
+
+	@Test
+	public void testContactPermanentDeletion() throws IOException {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, UserRole.ADMIN, UserRole.NATIONAL_USER);
+		PersonDto person = creator.createPerson();
+
+		ContactDto contactDto = creator.createContact(user.toReference(), person.toReference(), Disease.CORONAVIRUS);
+
+		SampleDto sample = creator.createSample(
+				contactDto.toReference(),
+				user.toReference(),
+				rdcf.facility,
+				sampleDto -> sampleDto.setAssociatedContact(contactDto.toReference()));
+
+		VisitDto visitDto = creator.createVisit(contactDto.getDisease(), contactDto.getPerson(), contactDto.getReportDateTime());
+
+		assertEquals(1, getContactService().count());
+		assertEquals(1, getSampleService().count());
+		assertEquals(1, getVisitService().count());
+
+		getContactFacade().delete(contactDto.getUuid());
+
+		useSystemUser();
+		getCoreEntityDeletionService().executePermanentDeletion();
+		loginWith(user);
+
+		assertEquals(0, getContactService().count());
+		assertEquals(0, getSampleService().count());
+		assertEquals(0, getVisitService().count());
+	}
+
+	@Test
+	public void testPermanentDeletionOfVisitLinkedToMultipleContacts() throws IOException {
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, UserRole.ADMIN, UserRole.NATIONAL_USER);
+		PersonDto person = creator.createPerson();
+
+		ContactDto contactDto = creator.createContact(user.toReference(), person.toReference(), Disease.CORONAVIRUS);
+
+		SampleDto sample = creator.createSample(
+				contactDto.toReference(),
+				user.toReference(),
+				rdcf.facility,
+				sampleDto -> sampleDto.setAssociatedContact(contactDto.toReference()));
+
+		VisitDto visitDto = creator.createVisit(contactDto.getDisease(), contactDto.getPerson(), contactDto.getReportDateTime());
+
+		assertEquals(1, getContactService().count());
+		assertEquals(1, getSampleService().count());
+		assertEquals(1, getVisitService().count());
+
+		//create second contact with the same person
+		ContactDto contactDto2 = creator.createContact(user.toReference(), person.toReference(), Disease.CORONAVIRUS);
+		SampleDto sample2 = creator.createSample(
+				contactDto2.toReference(),
+				user.toReference(),
+				rdcf.facility,
+				sampleDto -> sampleDto.setAssociatedContact(contactDto2.toReference()));
+
+		VisitDto visitDto2 = creator.createVisit(contactDto2.getDisease(), contactDto2.getPerson(), contactDto2.getReportDateTime());
+
+		assertEquals(2, getContactService().count());
+		assertEquals(2, getSampleService().count());
+		assertEquals(2, getVisitService().count());
+
+		getContactFacade().delete(contactDto.getUuid());
+
+		useSystemUser();
+		getCoreEntityDeletionService().executePermanentDeletion();
+		loginWith(user);
+
+		assertEquals(1, getContactService().count());
+		assertEquals(1, getSampleService().count());
+		assertEquals(2, getVisitService().count());
+
+		getContactFacade().delete(contactDto2.getUuid());
+
+		useSystemUser();
+		getCoreEntityDeletionService().executePermanentDeletion();
+		loginWith(user);
+
+		assertEquals(0, getContactService().count());
+		assertEquals(0, getSampleService().count());
+		assertEquals(0, getVisitService().count());
+	}
 }

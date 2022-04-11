@@ -63,6 +63,7 @@ import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
+import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -89,6 +90,7 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.contact.transformers.ContactListEntryDtoResultTransformer;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.event.Event;
@@ -104,6 +106,7 @@ import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
@@ -116,6 +119,7 @@ import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
+import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless
 @LocalBean
@@ -141,6 +145,12 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	private ExternalJournalService externalJournalService;
 	@EJB
 	private UserService userService;
+	@EJB
+	private DocumentService documentService;
+	@EJB
+	private SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal sormasToSormasShareInfoFacade;
+	@EJB
+	private VisitService visitService;
 
 	public ContactService() {
 		super(Contact.class);
@@ -1372,7 +1382,79 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		// Notify external journal if necessary
 		externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
+		deleteContactLinks(contact);
+
 		super.delete(contact);
+	}
+
+	@Override
+	public void deletePermanent(Contact contact) {
+		// Delete all tasks associated with this contact
+		List<Task> tasks = taskService.findBy(new TaskCriteria().contact(new ContactReferenceDto(contact.getUuid())), true);
+		for (Task task : tasks) {
+			taskService.deletePermanent(task);
+		}
+
+		// Delete all samples that are only associated with this contact
+		contact.getSamples()
+			.stream()
+			.filter(sample -> sample.getAssociatedCase() == null && sample.getAssociatedEventParticipant() == null)
+			.forEach(sample -> sampleService.deletePermanent(sample));
+
+		// Delete all visits that are only associated with this contact
+		contact.getVisits()
+			.stream()
+			.filter(visit -> visit.getCaze() == null && visit.getContacts().size() <= 1)
+			.forEach(visit -> visitService.deletePermanent(visit));
+
+		// Delete documents related to this contact
+		documentService.getRelatedToEntity(DocumentRelatedEntityType.CONTACT, contact.getUuid()).forEach(d -> documentService.markAsDeleted(d));
+
+		// Remove the contact from any S2S share info referencing it
+		sormasToSormasShareInfoService.getByAssociatedEntity(SormasToSormasShareInfo.CONTACT, contact.getUuid()).forEach(s -> {
+			s.setContact(null);
+			if (sormasToSormasShareInfoFacade.hasAnyEntityReference(s)) {
+				sormasToSormasShareInfoService.ensurePersisted(s);
+			} else {
+				sormasToSormasShareInfoService.deletePermanent(s);
+			}
+		});
+
+		deleteContactFromDuplicateOf(contact);
+
+		deleteContactLinks(contact);
+
+		super.deletePermanent(contact);
+	}
+
+	private void deleteContactLinks(Contact contact) {
+		// Remove the contact from any sample that is also connected to other entities
+		contact.getSamples().stream().filter(s -> s.getAssociatedCase() != null || s.getAssociatedEventParticipant() != null).forEach(s -> {
+			s.setAssociatedContact(null);
+			sampleService.ensurePersisted(s);
+		});
+
+//		// Remove the contact from contact_visits
+		visitService.getAllByContact(contact).forEach(visit -> {
+			Set<Contact> visitContacts = new HashSet<>(visit.getContacts());
+			visit.getContacts().clear();
+			visit.getContacts().addAll(visitContacts.stream().filter(contact1 -> !DataHelper.isSame(contact1, contact)).collect(Collectors.toSet()));
+			visitService.ensurePersisted(visit);
+		});
+
+		// Remove the contactToCase from all exposures
+		exposureService.removeContactFromExposures(contact.getId());
+	}
+
+	private void deleteContactFromDuplicateOf(Contact contact) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<Contact> cu = cb.createCriteriaUpdate(Contact.class);
+		Root<Contact> root = cu.from(Contact.class);
+
+		cu.where(cb.equal(root.get(Contact.DUPLICATE_OF), contact.getId()));
+		cu.set(Contact.DUPLICATE_OF, null);
+
+		em.createQuery(cu).executeUpdate();
 	}
 
 	/**

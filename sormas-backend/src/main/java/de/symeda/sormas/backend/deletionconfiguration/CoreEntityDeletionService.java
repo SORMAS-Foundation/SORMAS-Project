@@ -19,6 +19,7 @@ import de.symeda.sormas.backend.labmessage.LabMessageService;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
+import de.symeda.sormas.backend.visit.VisitService;
 
 @LocalBean
 @Singleton
@@ -36,6 +37,8 @@ public class CoreEntityDeletionService {
 	private SampleService sampleService;
 	@EJB
 	private LabMessageService labMessageService;
+	@EJB
+	private VisitService visitService;
 
 	public CoreEntityDeletionService() {
 	}
@@ -71,12 +74,15 @@ public class CoreEntityDeletionService {
 		coreEntityFacades.forEach(entityTypeFacadePair -> {
 			if (entityTypeFacadePair.coreEntityType == CoreEntityType.IMMUNIZATION
 				|| entityTypeFacadePair.coreEntityType == CoreEntityType.TRAVEL_ENTRY
-				|| entityTypeFacadePair.coreEntityType == CoreEntityType.CASE) {
+				|| entityTypeFacadePair.coreEntityType == CoreEntityType.CASE
+				|| entityTypeFacadePair.coreEntityType == CoreEntityType.CONTACT) {
 				entityTypeFacadePair.entityFacade.executePermanentDeletion(DELETE_BATCH_SIZE);
 			}
 		});
 		labMessageService.executePermanentDeletion(DELETE_BATCH_SIZE);
 		sampleService.executePermanentDeletion(DELETE_BATCH_SIZE);
+		visitService.executePermanentDeletion(DELETE_BATCH_SIZE);
+
 		personService.executePermanentDeletion(DELETE_BATCH_SIZE);
 	}
 

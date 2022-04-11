@@ -38,6 +38,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseLogic;
@@ -51,6 +52,7 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
+import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
@@ -58,6 +60,7 @@ import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 
 @Stateless
@@ -289,5 +292,38 @@ public class VisitService extends BaseAdoService<Visit> {
 		ChangeDateFilterBuilder changeDateFilterBuilder =
 				lastSynchronizedUuid == null ? new ChangeDateFilterBuilder(cb, date) : new ChangeDateFilterBuilder(cb, date, visitPath, lastSynchronizedUuid);
 		return changeDateFilterBuilder.add(visitPath).add(symptoms).build();
+	}
+
+	public void executePermanentDeletion(int batchSize) {
+		IterableHelper.executeBatched(getAllNonReferencedVisits(), batchSize, batchedUuids -> deletePermanent(batchedUuids));
+	}
+
+	private List<String> getAllNonReferencedVisits() {
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<String> cq = cb.createQuery(String.class);
+		final Root<Visit> visitRoot = cq.from(getElementClass());
+
+		final Subquery<Long> contactSubquery = createSubquery(cb, cq, visitRoot, Contact.class, Contact.PERSON);
+
+		cq.where(cb.and(cb.isNull(visitRoot.get(Visit.CAZE))), cb.not(cb.exists(contactSubquery)));
+
+		cq.select(visitRoot.get(Visit.UUID));
+		cq.distinct(true);
+
+		List<String> resultList = em.createQuery(cq).getResultList();
+		return resultList;
+	}
+
+	private Subquery<Long> createSubquery(
+		CriteriaBuilder cb,
+		CriteriaQuery<String> cq,
+		Root<Visit> visitRoot,
+		Class<? extends CoreAdo> subqueryClass,
+		String personField) {
+		final Subquery<Long> subquery = cq.subquery(Long.class);
+		final Root<? extends CoreAdo> from = subquery.from(subqueryClass);
+		subquery.where(cb.equal(from.get(personField), visitRoot.get(Visit.PERSON)));
+		subquery.select(from.get(AbstractDomainObject.ID));
+		return subquery;
 	}
 }
