@@ -11231,6 +11231,7 @@ CREATE INDEX IF NOT EXISTS idx_eventpartivipant_archived ON eventparticipant (ar
 CREATE INDEX IF NOT EXISTS idx_immunization_archived ON immunization (archived);
 CREATE INDEX IF NOT EXISTS idx_travelentry_archived ON travelentry (archived);
 CREATE INDEX IF NOT EXISTS idx_campaigns_archived ON campaigns (archived);
+CREATE INDEX IF NOT EXISTS idx_task_archived ON task (archived);
 
 INSERT INTO schema_version (version_number, comment) VALUES (453, 'Investigate and add indexes #8778');
 
