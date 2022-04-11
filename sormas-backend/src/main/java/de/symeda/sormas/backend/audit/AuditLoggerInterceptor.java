@@ -36,12 +36,7 @@ public class AuditLoggerInterceptor {
 
 	@EJB
 	AuditLoggerEjb.AuditLoggerEjbLocal auditLogger;
-	@EJB
-	CurrentUserService currentUserService;
 
-	// todo we need the session context in addition to the UserService as SYSTEM/ANONYMOUS do return null in the currentUserService
-	@Resource
-	private SessionContext sessionContext;
 
 	/**
 	 * Cache to track all classes that should be ignored and those who must be audited. False indicates audit, True ignore
@@ -116,15 +111,13 @@ public class AuditLoggerInterceptor {
 		Date start = Calendar.getInstance(TimeZone.getDefault()).getTime();
 		List<String> parameters = getParameters(context);
 
-		User currentUser = currentUserService.getCurrentUser();
-		String agentUuid = currentUser == null ? null : currentUser.getUuid();
 
 		// do the actual call
 		Object result = context.proceed();
 
 		String returnValue = printObject(result);
 
-		auditLogger.logBackendCall(sessionContext.getCallerPrincipal().getName(), agentUuid, calledMethod, parameters, returnValue, start);
+		auditLogger.logBackendCall(calledMethod, parameters, returnValue, start);
 
 		return result;
 	}

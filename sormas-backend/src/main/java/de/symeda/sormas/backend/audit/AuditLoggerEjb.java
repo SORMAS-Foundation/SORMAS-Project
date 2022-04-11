@@ -40,9 +40,6 @@ import javax.ejb.SessionContext;
 import javax.ejb.Singleton;
 import javax.ejb.Stateless;
 
-import de.symeda.sormas.api.audit.AuditLoggerFacade;
-import de.symeda.sormas.backend.user.CurrentUserService;
-import de.symeda.sormas.backend.user.UserService;
 import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
@@ -57,7 +54,10 @@ import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
+import de.symeda.sormas.api.audit.AuditLoggerFacade;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.user.CurrentUserService;
+import de.symeda.sormas.backend.user.User;
 
 @Singleton(name = "AuditLoggerFacade")
 public class AuditLoggerEjb implements AuditLoggerFacade {
@@ -80,10 +80,7 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 	@EJB
 	private LogSink auditLogger;
 	@EJB
-	private UserService userService;
-
-	@EJB
-	CurrentUserService currentUserService;
+	private CurrentUserService currentUserService;
 
 	// todo we need the session context in addition to the UserService as SYSTEM/ANONYMOUS do return null in the currentUserService
 	@Resource
@@ -170,11 +167,8 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 		accept(applicationStartAudit);
 	}
 
-	public void logBackendCall(String agentName, String agentUuid, Method calledMethod, List<String> params, String returnValue, Date start) {
+	public void logBackendCall(Method calledMethod, List<String> params, String returnValue, Date start) {
 		AuditEvent backendCall = new AuditEvent();
-
-		// backendCall.setType();
-		// backendCall.setSubType();
 
 		backendCall.setAction(inferBackendAction(calledMethod.getName()));
 		Period period = new Period();
@@ -190,7 +184,9 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 		AuditEvent.AuditEventAgentComponent agent = new AuditEvent.AuditEventAgentComponent();
 		CodeableConcept codeableConcept = new CodeableConcept();
 
-		if (agentName.equals("SYSTEM") || agentName.equals("ANONYMOUS")) {
+		AgentDetails agentDetails = new AgentDetails(currentUserService, sessionContext);
+
+		if (agentDetails.name.equals("SYSTEM") || agentDetails.name.equals("ANONYMOUS")) {
 			codeableConcept.addCoding(new Coding("https://www.hl7.org/fhir/valueset-participation-role-type.html", "110150", "Application"));
 			agent.setType(codeableConcept);
 		} else {
@@ -198,11 +194,11 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 			agent.setType(codeableConcept);
 		}
 
-		agent.setName(agentName);
+		agent.setName(agentDetails.name);
 		Reference who = new Reference();
 		Identifier identifier = new Identifier();
-		if (!agentName.equals("SYSTEM") && !agentName.equals("ANONYMOUS")) {
-			identifier.setValue(agentUuid);
+		if (!agentDetails.name.equals("SYSTEM") && !agentDetails.name.equals("ANONYMOUS")) {
+			identifier.setValue(agentDetails.uuid);
 		}
 
 		who.setIdentifier(identifier);
@@ -227,11 +223,6 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 		});
 
 		entity.setDetail(details);
-
-		// System Object
-		//AuditEntityType entityType = AuditEntityType._2;
-		//entity.setType(new Coding(entityType.getSystem(), entityType.toCode(), entityType.getDisplay()));
-
 		backendCall.addEntity(entity);
 
 		accept(backendCall);
@@ -278,17 +269,15 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 		// agent
 		AuditEvent.AuditEventAgentComponent agent = new AuditEvent.AuditEventAgentComponent();
 
+		AgentDetails agentDetails = new AgentDetails(currentUserService, sessionContext);
 
-		String principal = sessionContext.getCallerPrincipal().getName();
-		agent.setName(principal);
+		agent.setName(agentDetails.name);
 		Reference who = new Reference();
 		Identifier identifier = new Identifier();
-		// todo optimize and reuse together with backendAudit
-		identifier.setValue(userService.getByUserName(principal).getUuid());
+		identifier.setValue(agentDetails.uuid);
 		who.setIdentifier(identifier);
 		agent.setWho(who);
 		restCall.addAgent(agent);
-
 
 		// source
 		AuditEvent.AuditEventSourceComponent source = new AuditEvent.AuditEventSourceComponent();
@@ -316,10 +305,27 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 		}
 	}
 
+	private class AgentDetails {
+
+		final String uuid;
+		final String name;
+
+		public AgentDetails(CurrentUserService currentUserService, SessionContext sessionContext) {
+			User currentUser = currentUserService.getCurrentUser();
+			uuid = currentUser == null ? null : currentUser.getUuid();
+			String tmpName = currentUser == null ? null : currentUser.getUserName();
+
+			if (tmpName == null) {
+				// in case the user is SYSTEM or ANONYMOUS, current user service will not help
+				tmpName = sessionContext.getCallerPrincipal().getName();
+			}
+			name = tmpName;
+		}
+	}
+
 	@LocalBean
 	@Stateless
 	public static class AuditLoggerEjbLocal extends AuditLoggerEjb {
 
 	}
-
 }
