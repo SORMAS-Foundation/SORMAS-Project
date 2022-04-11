@@ -231,7 +231,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		CriteriaBuilder cb = actionQueryContext.getCriteriaBuilder();
 		ActionJoins joins = (ActionJoins) actionQueryContext.getJoins();
 
-		From<Action, Action> action = joins.getRoot();
+		From<?, Action> action = joins.getRoot();
 		From<Action, Event> event = joins.getEvent(JoinType.INNER);
 
 		Predicate filter = eventService.buildCriteriaFilter(criteria, new EventQueryContext(cb, actionQueryContext.getQuery(), event));

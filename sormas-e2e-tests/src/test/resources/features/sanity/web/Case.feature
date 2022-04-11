@@ -843,3 +843,30 @@ Feature: Case end to end tests
     Then I check if Import Guide for cases was downloaded correctly
     And And I click on the Download Data Dictionary button in Import Cases
     Then I check if Data Dictionary for cases was downloaded correctly
+
+  @issue=SORDEV-5526 @env_main
+    Scenario: Create a contact with source case
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And API: I create a new case
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And I log in with National User
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    And I navigate to Epidemiological Data tab on Edit Case Page
+    When I select NO from Contacts With Source Case Known
+    Then I check that Contacts of Source filed is not available
+    When I select UNKNOWN from Contacts With Source Case Known
+    Then I check that Contacts of Source filed is not available
+    When I select YES from Contacts With Source Case Known
+    Then I check if Contacts of Source filed is available
+    When I click on the NEW CONTACT button on Epidemiological Data Tab of Edit Case Page
+    And I click on the CHOOSE SOURCE CASE button from CONTACT page
+    And I click yes on the DISCARD UNSAVED CHANGES popup if it appears
+    And I click on the CHOOSE CASE button in Create new contact form in Exposure for Epidemiological data tab in Cases
+    And I search for the last case uuid in the CHOOSE SOURCE popup of Create Contact window
+    And I open the first found result in the CHOOSE SOURCE popup of Create Contact window
+    And I click on SAVE new contact button in the CHOOSE SOURCE popup of Create Contact window
+    Then I check that Selected case is listed as Source Case in the CONTACTS WITH SOURCE CASE Box

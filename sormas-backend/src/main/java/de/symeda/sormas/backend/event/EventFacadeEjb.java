@@ -124,7 +124,6 @@ import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
-import de.symeda.sormas.utils.EventJoins;
 
 @Stateless(name = "EventFacade")
 public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, EventIndexDto, EventReferenceDto, EventService, EventCriteria>
@@ -354,7 +353,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 		EventQueryContext eventQueryContext = new EventQueryContext(cb, cq, event);
 
-		EventJoins<Event> eventJoins = (EventJoins<Event>) eventQueryContext.getJoins();
+		EventJoins eventJoins = eventQueryContext.getJoins();
 
 		Join<Event, Location> location = eventJoins.getLocation();
 		Join<Location, Region> region = eventJoins.getRegion();
@@ -652,7 +651,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		CriteriaQuery<EventExportDto> cq = cb.createQuery(EventExportDto.class);
 		Root<Event> event = cq.from(Event.class);
 		EventQueryContext eventQueryContext = new EventQueryContext(cb, cq, event);
-		EventJoins<Event> eventJoins = (EventJoins<Event>) eventQueryContext.getJoins();
+		EventJoins eventJoins = eventQueryContext.getJoins();
 		Join<Event, Location> location = eventJoins.getLocation();
 		Join<Location, Region> region = eventJoins.getRegion();
 		Join<Location, District> district = eventJoins.getDistrict();
@@ -1265,9 +1264,6 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 	@Override
 	public List<String> getSubordinateEventUuids(List<String> uuids) {
-		if (uuids.isEmpty()) {
-			return Collections.emptyList();
-		}
 
 		List<String> subordinateEventUuids = new ArrayList<>();
 		IterableHelper.executeBatched(uuids, ModelConstants.PARAMETER_LIMIT, (batchedUuids) -> {
@@ -1275,7 +1271,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			CriteriaQuery<String> cq = cb.createQuery(String.class);
 			Root<Event> from = cq.from(Event.class);
 
-			EventJoins<Event> eventJoins = new EventJoins<>(from);
+			EventJoins eventJoins = new EventJoins(from);
 
 			Predicate filters = CriteriaBuilderHelper.and(
 				cb,

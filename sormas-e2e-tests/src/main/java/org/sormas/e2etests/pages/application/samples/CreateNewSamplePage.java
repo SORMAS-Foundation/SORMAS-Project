@@ -89,4 +89,31 @@ public class CreateNewSamplePage {
       By.cssSelector("[id='pathogenTestResult'] [class='v-filterselect-button']");
   public static final By ADD_PATHOGEN_TEST_BUTTON_DE =
       By.xpath("/html/body/div[2]/div[3]/div/div/div[3]/div/div/div[2]/div/div/div[1]/div");
+  public static final By HAEMOGLOBIN_IN_URINE_COMBOBOX =
+      By.cssSelector("[id='haemoglobinuria'] [class='v-filterselect-button']");
+  public static final By HAEMOGLOBIN_IN_URINE_INPUT =
+      By.cssSelector("[id='haemoglobinuria'] input");
+  public static final By PROTEIN_IN_URINE_COMBOBOX =
+      By.cssSelector("[id='proteinuria'] [class='v-filterselect-button']");
+  public static final By PROTEIN_IN_URINE_INPUT = By.cssSelector("[id='proteinuria'] input");
+  public static final By CELLS_IN_URINE_COMBOBOX =
+      By.cssSelector("[id='hematuria'] [class='v-filterselect-button']");
+  public static final By CELLS_IN_URINE_INPUT = By.cssSelector("[id='hematuria'] input");
+  public static final By PH_INPUT = By.cssSelector("[id='arterialVenousGasPH']");
+  public static final By PCO2_INPUT = By.cssSelector("[id='arterialVenousGasPco2']");
+  public static final By PAO2_INPUT = By.cssSelector("[id='arterialVenousGasPao2']");
+  public static final By HCO3_INPUT = By.cssSelector("[id='arterialVenousGasHco3']");
+  public static final By OXYGEN_INPUT = By.cssSelector("[id='gasOxygenTherapy']");
+  public static final By SGPT_INPUT = By.cssSelector("[id='altSgpt']");
+  public static final By TOTAL_BILIRUBIN_INPUT = By.cssSelector("[id='totalBilirubin']");
+  public static final By SGOT_INPUT = By.cssSelector("[id='astSgot']");
+  public static final By CONJ_BILIRUBIN_INPUT = By.cssSelector("[id='conjBilirubin']");
+  public static final By CREATININE_INPUT = By.cssSelector("[id='creatinine']");
+  public static final By WBC_INPUT = By.cssSelector("[id='wbcCount']");
+  public static final By POTASSIUM_INPUT = By.xpath("(//div[@location='potassium'])//input");
+  public static final By PLATELETS_INPUT = By.cssSelector("[id='platelets']");
+  public static final By UREA_INPUT = By.cssSelector("[id='urea']");
+  public static final By PROTHROMBIN_INPUT = By.cssSelector("[id='prothrombinTime']");
+  public static final By HAEMOGLOBIN_INPUT = By.cssSelector("[id='haemoglobin']");
+  public static final By OTHER_TESTS_INPUT = By.cssSelector("[id='otherTestResults']");
 }
