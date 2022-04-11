@@ -42,6 +42,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.i18n.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
@@ -1502,15 +1503,10 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		otherContact.setResultingCase(resultingCase.toReference());
 		getContactFacade().save(otherContact);
 
-		// 2. Merge
-
 		getContactFacade().mergeContact(leadContact.getUuid(), otherContact.getUuid());
 
-		// 3. Test
-
 		ContactDto mergedContact = getContactFacade().getByUuid(leadContact.getUuid());
-
-		assertEquals("[System] Follow-up automatically canceled because contact was converted to a case", mergedContact.getFollowUpComment());
+		assertEquals(I18nProperties.getString(Strings.messageSystemFollowUpCanceled), mergedContact.getFollowUpComment());
 	}
 
 	@Test
