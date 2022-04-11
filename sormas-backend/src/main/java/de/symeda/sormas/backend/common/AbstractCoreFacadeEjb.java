@@ -39,7 +39,6 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
-import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.utils.AccessDeniedException;
@@ -159,7 +158,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 	private void doAutomaticDeletion(List<ADO> toDeleteEntities, boolean deletePermanent) {
 
 		toDeleteEntities.forEach(ado -> {
-			if (deletePermanent && featureConfigurationFacade.isFeatureEnabled(FeatureType.DELETE_PERMANENT)) {
+			if (deletePermanent) {
 				service.deletePermanent(ado);
 			} else {
 				service.delete(ado);
