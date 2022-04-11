@@ -23,7 +23,7 @@ import javax.persistence.criteria.From;
 
 import de.symeda.sormas.backend.common.QueryContext;
 
-public class SampleQueryContext<T> extends QueryContext<T, Sample> {
+public class SampleQueryContext extends QueryContext<Sample, SampleJoins> {
 
     public SampleQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Sample> root) {
         super(cb, query, root, new SampleJoins(root));

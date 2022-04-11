@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -32,6 +32,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -1098,10 +1099,12 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 	}
 
+	@PermitAll
 	public void onPersonChanged(PersonDto existingPerson, Person newPerson) {
 		onPersonChanged(existingPerson, newPerson, true);
 	}
 
+	@PermitAll
 	public void onPersonChanged(PersonDto existingPerson, Person newPerson, boolean syncShares) {
 
 		List<Case> personCases = null;
@@ -1727,7 +1730,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		CriteriaQuery<Person> cq = cb.createQuery(Person.class);
 		Root<Person> root = cq.from(Person.class);
 
-		PersonJoins<Person> joins = new PersonJoins<>(root);
+		PersonJoins joins = new PersonJoins(root);
 
 		Join<Person, ?> contextJoin;
 		switch (context) {

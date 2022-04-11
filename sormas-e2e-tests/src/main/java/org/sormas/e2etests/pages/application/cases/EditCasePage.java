@@ -178,4 +178,8 @@ public class EditCasePage {
   public static final By CREATE_NEW_PERSON_CHECKBOX =
       By.xpath("//label[text()='Create a new person']");
   public static final By CREATE_NEW_CASE_CHECKBOX = By.xpath("//label[text()='Create a new case']");
+  public static final By CURRENT_HOSPITALIZATION_POPUP =
+      By.xpath("//*[contains(text(),'Current hospitalization')]");
+  public static final By SAVE_AND_OPEN_HOSPITALIZATION_BUTTON =
+      By.cssSelector(".popupContent #actionConfirm");
 }

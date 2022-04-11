@@ -21,6 +21,7 @@ import javax.persistence.criteria.JoinType;
 
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
+import de.symeda.sormas.backend.common.QueryJoins;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
@@ -35,10 +36,9 @@ import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 import de.symeda.sormas.backend.visit.Visit;
 
-public class ContactJoins<T> extends AbstractDomainObjectJoins<T, Contact> {
+public class ContactJoins extends QueryJoins<Contact> {
 
 	private Join<Contact, Person> person;
 //	private CaseJoins<Contact> caseJoins;
@@ -86,7 +86,7 @@ public class ContactJoins<T> extends AbstractDomainObjectJoins<T, Contact> {
 
 	private Join<Contact, User> followUpStatusChangeUser;
 
-	public ContactJoins(From<T, Contact> contact) {
+	public ContactJoins(From<?, Contact> contact) {
 		super(contact);
 
 //		this.caseJoins = new CaseJoins<>(contact.join(Contact.CAZE));

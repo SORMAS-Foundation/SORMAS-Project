@@ -1,6 +1,6 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -41,6 +41,7 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.annotation.Resource;
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -407,18 +408,14 @@ public class ContactFacadeEjb
 		return toDto(entity);
 	}
 
-	@RolesAllowed({
-		UserRight._CONTACT_EDIT,
-		UserRight._EXTERNAL_VISITS })
+	@PermitAll
 	public void onContactChanged(ContactDto contact, boolean syncShares) {
 		if (syncShares && sormasToSormasFacade.isFeatureConfigured()) {
 			syncSharesAsync(new ShareTreeCriteria(contact.getUuid()));
 		}
 	}
 
-	@RolesAllowed({
-		UserRight._CONTACT_CREATE,
-		UserRight._CONTACT_EDIT })
+	@PermitAll
 	public void onContactChanged(ContactDto existingContact, Contact contact, boolean syncShares) {
 
 		if (existingContact == null) {
@@ -588,7 +585,7 @@ public class ContactFacadeEjb
 		final Root<Contact> contact = cq.from(Contact.class);
 
 		final ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, contact);
-		final ContactJoins<Contact> joins = (ContactJoins) contactQueryContext.getJoins();
+		final ContactJoins joins = contactQueryContext.getJoins();
 
 		cq.multiselect(
 			contact.get(Contact.ID),
@@ -653,10 +650,11 @@ public class ContactFacadeEjb
 			joins.getAddressFacility().get(Facility.NAME),
 			joins.getAddressFacility().get(Facility.UUID),
 			joins.getAddress().get(Location.FACILITY_DETAILS),
-			((Expression<String>) contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY)),
-			((Expression<String>) contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_OWNER_SUBQUERY)),
-			((Expression<String>) contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_EMAIL_SUBQUERY)),
-			((Expression<String>) contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_OTHER_CONTACT_DETAILS_SUBQUERY)),
+			contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY),
+			contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_OWNER_SUBQUERY),
+			contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_EMAIL_SUBQUERY),
+			contactQueryContext.getSubqueryExpression(
+				ContactQueryContext.PERSON_OTHER_CONTACT_DETAILS_SUBQUERY),
 			joins.getPerson().get(Person.OCCUPATION_TYPE),
 			joins.getPerson().get(Person.OCCUPATION_DETAILS),
 			joins.getPerson().get(Person.ARMED_FORCES_RELATION_TYPE),
@@ -709,7 +707,7 @@ public class ContactFacadeEjb
 				ContactExportDto.LAST_COOPERATIVE_VISIT_SYMPTOMS)) {
 				CriteriaQuery<VisitSummaryExportDetails> visitsCq = cb.createQuery(VisitSummaryExportDetails.class);
 				Root<Contact> visitsCqRoot = visitsCq.from(Contact.class);
-				ContactJoins<Contact> visitContactJoins = new ContactJoins(visitsCqRoot);
+				ContactJoins visitContactJoins = new ContactJoins(visitsCqRoot);
 
 				visitsCq.where(
 					CriteriaBuilderHelper
@@ -927,7 +925,7 @@ public class ContactFacadeEjb
 		final CriteriaQuery<VisitSummaryExportDto> cq = cb.createQuery(VisitSummaryExportDto.class);
 		final Root<Contact> contactRoot = cq.from(Contact.class);
 		final ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, contactRoot);
-		final ContactJoins contactJoins = (ContactJoins) contactQueryContext.getJoins();
+		final ContactJoins contactJoins = contactQueryContext.getJoins();
 		final Join<Contact, Person> contactPerson = contactJoins.getPerson();
 
 		cq.multiselect(
@@ -953,7 +951,7 @@ public class ContactFacadeEjb
 
 			CriteriaQuery<VisitSummaryExportDetails> visitsCq = cb.createQuery(VisitSummaryExportDetails.class);
 			Root<Contact> visitsCqRoot = visitsCq.from(Contact.class);
-			ContactJoins<Contact> joins = new ContactJoins(visitsCqRoot);
+			ContactJoins joins = new ContactJoins(visitsCqRoot);
 
 			visitsCq.where(
 				CriteriaBuilderHelper
@@ -1058,7 +1056,7 @@ public class ContactFacadeEjb
 		Root<Contact> contact = cq.from(Contact.class);
 
 		final ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, contact);
-		final ContactJoins<Contact> joins = (ContactJoins<Contact>) contactQueryContext.getJoins();
+		final ContactJoins joins = contactQueryContext.getJoins();
 
 		cq.multiselect(
 			contact.get(Contact.UUID),
@@ -1824,7 +1822,7 @@ public class ContactFacadeEjb
 		cq.distinct(true);
 
 		ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, contactRoot);
-		ContactJoins<Contact> joins = (ContactJoins<Contact>) contactQueryContext.getJoins();
+		ContactJoins joins = contactQueryContext.getJoins();
 
 		List<Selection<?>> selections = new ArrayList<>(
 			Arrays.asList(
@@ -1979,13 +1977,21 @@ public class ContactFacadeEjb
 	}
 
 	private void copyDtoValues(ContactDto leadContactDto, ContactDto otherContactDto) {
-		String leadAdditionalDetails = leadContactDto.getAdditionalDetails();
-		String leadFollowUpComment = leadContactDto.getFollowUpComment();
 
 		DtoHelper.copyDtoValues(leadContactDto, otherContactDto, false);
 
-		leadContactDto.setAdditionalDetails(DataHelper.joinStrings(" ", leadAdditionalDetails, otherContactDto.getAdditionalDetails()));
-		leadContactDto.setFollowUpComment(DataHelper.joinStrings(" ", leadFollowUpComment, otherContactDto.getFollowUpComment()));
+		final String leadAdditionalDetails = leadContactDto.getAdditionalDetails();
+		final String leadFollowUpComment = leadContactDto.getFollowUpComment();
+		final String otherAdditionalDetails = otherContactDto.getAdditionalDetails();
+		final String otherFollowUpComment = otherContactDto.getFollowUpComment();
+		leadContactDto.setAdditionalDetails(
+				leadAdditionalDetails != null && leadAdditionalDetails.equals(otherAdditionalDetails)
+				? leadAdditionalDetails
+				: DataHelper.joinStrings(" ", leadAdditionalDetails, otherAdditionalDetails));
+		leadContactDto.setFollowUpComment(
+				leadFollowUpComment != null && leadFollowUpComment.equals(otherFollowUpComment)
+				? leadFollowUpComment
+				: DataHelper.joinStrings(" ", leadFollowUpComment, otherFollowUpComment));
 	}
 
 	@Override
