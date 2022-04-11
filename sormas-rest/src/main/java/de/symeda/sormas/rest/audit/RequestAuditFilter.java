@@ -1,6 +1,7 @@
 package de.symeda.sormas.rest.audit;
 
 import de.symeda.sormas.api.FacadeProvider;
+import org.glassfish.jersey.server.ContainerRequest;
 
 import javax.annotation.Priority;
 import javax.annotation.Resource;
@@ -21,6 +22,6 @@ public class RequestAuditFilter implements ContainerRequestFilter {
 	public void filter(ContainerRequestContext requestContext) throws IOException {
 		String actionMethod = requestContext.getMethod();
 
-		FacadeProvider.getAuditLoggerFacade().logRestCall(actionMethod);
+		FacadeProvider.getAuditLoggerFacade().logRestCall(((ContainerRequest) requestContext).getPath(true), actionMethod);
 	}
 }

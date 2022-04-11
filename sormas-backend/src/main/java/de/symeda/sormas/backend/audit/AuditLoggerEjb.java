@@ -267,11 +267,13 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 	}
 
 	@Override
-	public void logRestCall(String actionMethod) {
+	public void logRestCall(String path, String method) {
 		AuditEvent restCall = new AuditEvent();
 
 		restCall.setType(new Coding("https://hl7.org/fhir/R4/valueset-audit-event-type.html", "110100", "RESTful Operation"));
-		restCall.setAction(inferRestAction(actionMethod));
+		restCall.setAction(inferRestAction(method));
+
+		restCall.setRecorded(Calendar.getInstance(TimeZone.getDefault()).getTime());
 
 		// agent
 		AuditEvent.AuditEventAgentComponent agent = new AuditEvent.AuditEventAgentComponent();
@@ -298,8 +300,10 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 		restCall.setSource(source);
 
 		// entity
+		AuditEvent.AuditEventEntityComponent entity = new AuditEvent.AuditEventEntityComponent();
+		entity.setWhat(new Reference(path));
+		restCall.addEntity(entity);
 
-		restCall.setRecorded(Calendar.getInstance(TimeZone.getDefault()).getTime());
 		accept(restCall);
 	}
 

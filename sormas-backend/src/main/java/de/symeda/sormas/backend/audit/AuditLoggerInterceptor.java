@@ -58,6 +58,7 @@ public class AuditLoggerInterceptor {
 				CurrentUserService.class,
 				AuditContextProducer.class,
 				AuditLogServiceBean.class,
+				AuditLoggerEjb.class,
 				I18nFacadeEjb.class)));
 
 	/**

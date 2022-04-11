@@ -5,5 +5,5 @@ import javax.ejb.Remote;
 @Remote
 public interface AuditLoggerFacade {
 
-	void logRestCall(String actionMethod);
+	void logRestCall(String path, String method);
 }
