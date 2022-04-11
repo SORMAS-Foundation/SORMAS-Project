@@ -169,7 +169,7 @@ public class EventParticipantFacadeEjb
 	@EJB
 	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
 	@EJB
-    private VaccinationService vaccinationService;
+	private VaccinationService vaccinationService;
 
 	public EventParticipantFacadeEjb() {
 	}
@@ -274,20 +274,20 @@ public class EventParticipantFacadeEjb
 		}
 	}
 
-    private List<Vaccination> getRelevantSortedVaccinations(String caseUuid, List<Vaccination> vaccinations) {
-        Case caze = caseService.getByUuid(caseUuid);
+	private List<Vaccination> getRelevantSortedVaccinations(String eventUuid, List<Vaccination> vaccinations) {
+		Event event = eventService.getByUuid(eventUuid);
 
-        return vaccinations.stream()
-                .filter(v -> vaccinationService.isVaccinationRelevant(caze, v))
-                .sorted(Comparator.comparing(ImmunizationEntityHelper::getVaccinationDateForComparison))
-                .collect(Collectors.toList());
-    }
+		return vaccinations.stream()
+			.filter(v -> vaccinationService.isVaccinationRelevant(event, v))
+			.sorted(Comparator.comparing(ImmunizationEntityHelper::getVaccinationDateForComparison))
+			.collect(Collectors.toList());
+	}
 
-    private String getNumberOfDosesFromVaccinations(Vaccination vaccination) {
-        return vaccination != null ? vaccination.getVaccineDose() : "";
-    }
+	private String getNumberOfDosesFromVaccinations(Vaccination vaccination) {
+		return vaccination != null ? vaccination.getVaccineDose() : "";
+	}
 
-    @Override
+	@Override
 	public List<String> getDeletedUuidsSince(Date since) {
 
 		User user = userService.getCurrentUser();
@@ -798,16 +798,16 @@ public class EventParticipantFacadeEjb
 							epImmunizations.stream().filter(i -> i.getDisease() == exportDto.getEventDisease()).collect(Collectors.toList());
 						filteredImmunizations.sort(Comparator.comparing(i -> ImmunizationEntityHelper.getDateForComparison(i, false)));
 						Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
-                        Integer numberOfDoses = mostRecentImmunization.getNumberOfDoses();
+						Integer numberOfDoses = mostRecentImmunization.getNumberOfDoses();
 
-                        List<Vaccination> relevantSortedVaccinations =
-                                getRelevantSortedVaccinations(exportDto.getEventParticipantUuid(), mostRecentImmunization.getVaccinations());
-                        Vaccination firstVaccination = null;
-                        Vaccination lastVaccination = null;
+						List<Vaccination> relevantSortedVaccinations =
+							getRelevantSortedVaccinations(exportDto.getEventUuid(), mostRecentImmunization.getVaccinations());
+						Vaccination firstVaccination = null;
+						Vaccination lastVaccination = null;
 
 						if (CollectionUtils.isNotEmpty(relevantSortedVaccinations)) {
-                            firstVaccination = relevantSortedVaccinations.get(0);
-                            lastVaccination = relevantSortedVaccinations.get(relevantSortedVaccinations.size() - 1);
+							firstVaccination = relevantSortedVaccinations.get(0);
+							lastVaccination = relevantSortedVaccinations.get(relevantSortedVaccinations.size() - 1);
 							exportDto.setFirstVaccinationDate(firstVaccination.getVaccinationDate());
 							exportDto.setLastVaccinationDate(lastVaccination.getVaccinationDate());
 							exportDto.setVaccineName(lastVaccination.getVaccineName());
@@ -821,8 +821,8 @@ public class EventParticipantFacadeEjb
 							exportDto.setVaccineInn(lastVaccination.getVaccineInn());
 						}
 
-                        exportDto.setVaccinationDoses(
-                                numberOfDoses != null ? String.valueOf(numberOfDoses) : getNumberOfDosesFromVaccinations(lastVaccination));
+						exportDto.setVaccinationDoses(
+							numberOfDoses != null ? String.valueOf(numberOfDoses) : getNumberOfDosesFromVaccinations(lastVaccination));
 					});
 				}
 
