@@ -52,6 +52,7 @@ public class LabMessageDto extends SormasToSormasShareableDto {
 	public static final String REPORT_ID = "reportId";
 	public static final String ASSIGNEE = "assignee";
 
+	private ExternalMessageType type;
 	private Disease testedDisease;
 	private Date messageDateTime;
 	private Date sampleDateTime;
@@ -111,6 +112,14 @@ public class LabMessageDto extends SormasToSormasShareableDto {
 	 * Used in S2S context
 	 */
 	private UserReferenceDto reportingUser;
+
+	public ExternalMessageType getType() {
+		return type;
+	}
+
+	public void setType(ExternalMessageType type) {
+		this.type = type;
+	}
 
 	public Disease getTestedDisease() {
 		return testedDisease;
@@ -391,4 +400,5 @@ public class LabMessageDto extends SormasToSormasShareableDto {
 	public void setReportingUser(UserReferenceDto reportingUser) {
 		this.reportingUser = reportingUser;
 	}
+
 }

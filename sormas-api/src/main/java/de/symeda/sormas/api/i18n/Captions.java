@@ -1389,6 +1389,8 @@ public interface Captions {
 	String infrastructureImportAllowOverwrite = "infrastructureImportAllowOverwrite";
 	String LabMessage = "LabMessage";
 	String LabMessage_assignee = "LabMessage.assignee";
+	String LabMessage_type = "LabMessage.type";
+
 	String labMessage_deleteNewlyCreatedCase = "labMessage.deleteNewlyCreatedCase";
 	String labMessage_deleteNewlyCreatedContact = "labMessage.deleteNewlyCreatedContact";
 	String labMessage_deleteNewlyCreatedEventParticipant = "labMessage.deleteNewlyCreatedEventParticipant";
