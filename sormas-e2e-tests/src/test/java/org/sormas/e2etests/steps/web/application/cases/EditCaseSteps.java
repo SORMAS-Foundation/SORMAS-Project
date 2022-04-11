@@ -39,6 +39,9 @@ import static org.sormas.e2etests.enums.CaseOutcome.VACCINATED_STATUS_UNKNOWN;
 import static org.sormas.e2etests.enums.CaseOutcome.VACCINATED_STATUS_UNVACCINATED;
 import static org.sormas.e2etests.enums.CaseOutcome.VACCINATED_STATUS_VACCINATED;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_APPLY_FILTERS_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_CLASSIFICATION_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_CLOSE_WINDOW_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_INFO_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.EPIDEMIOLOGICAL_DATA_TAB;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.ACTION_CANCEL;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BLOOD_ORGAN_TISSUE_DONATION_IN_THE_LAST_6_MONTHS_OPTIONS;
@@ -187,6 +190,7 @@ import org.sormas.e2etests.entities.pojo.web.QuarantineOrder;
 import org.sormas.e2etests.entities.pojo.web.epidemiologicalData.Exposure;
 import org.sormas.e2etests.entities.services.CaseDocumentService;
 import org.sormas.e2etests.entities.services.CaseService;
+import org.sormas.e2etests.enums.CaseClassification;
 import org.sormas.e2etests.enums.CaseOutcome;
 import org.sormas.e2etests.enums.YesNoUnknownOptions;
 import org.sormas.e2etests.enums.cases.epidemiologicalData.ExposureDetailsRole;
@@ -281,6 +285,32 @@ public class EditCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(ACTION_CANCEL);
           TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "I click on INFO button on Case Edit page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CASE_INFO_BUTTON);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(CASE_CLOSE_WINDOW_BUTTON);
+        });
+
+    When(
+        "I change Epidemiological confirmation Combobox to {string} option",
+        (String option) -> {
+          webDriverHelpers.selectFromCombobox(EPIDEMIOLOGICAL_CONFIRMATION_COMBOBOX, option);
+        });
+
+    When(
+        "I check that Case Classification has {string} value",
+        (String caseClassificationValue) -> {
+          String caseClassificationComboboxValue =
+              (webDriverHelpers.getValueFromCombobox(CASE_CLASSIFICATION_COMBOBOX));
+          softly.assertEquals(
+              caseClassificationValue,
+              caseClassificationComboboxValue,
+              "The case classification field has unexpected value ");
+          softly.assertAll();
         });
 
     And(
@@ -932,6 +962,14 @@ public class EditCaseSteps implements En {
     When(
         "I click on the Create button from Case Document Templates",
         () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_DOCUMENT_BUTTON));
+
+    When(
+        "I change the Case Classification field for {string} value",
+        (String caseClassificationValue) -> {
+          webDriverHelpers.selectFromCombobox(
+              CASE_CLASSIFICATION_FILTER_COMBOBOX,
+              CaseClassification.getCaptionValueFor(caseClassificationValue));
+        });
 
     When(
         "I create and download a case document from template",
