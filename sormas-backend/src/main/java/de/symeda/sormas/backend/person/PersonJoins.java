@@ -30,6 +30,7 @@ import de.symeda.sormas.backend.common.QueryJoins;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.event.EventParticipantJoins;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.location.Location;
@@ -52,6 +53,7 @@ public class PersonJoins extends QueryJoins<Person> {
 	private LocationJoins addressJoins;
 	private CaseJoins caseJoins;
 	private ContactJoins contactJoins;
+	private EventParticipantJoins eventParticipantJoins;
 
 	public PersonJoins(From<?, Person> root) {
 		super(root);
@@ -111,6 +113,14 @@ public class PersonJoins extends QueryJoins<Person> {
 
 	private void setEventParticipant(Join<Person, EventParticipant> eventParticipant) {
 		this.eventParticipant = eventParticipant;
+	}
+
+	public EventParticipantJoins getEventParticipantJoins() {
+		return getOrCreate(eventParticipantJoins, () -> new EventParticipantJoins(getEventParticipant()), this::setEventParticipantJoins);
+	}
+
+	public void setEventParticipantJoins(EventParticipantJoins eventParticipantJoins) {
+		this.eventParticipantJoins = eventParticipantJoins;
 	}
 
 	public Join<Person, Immunization> getImmunization() {

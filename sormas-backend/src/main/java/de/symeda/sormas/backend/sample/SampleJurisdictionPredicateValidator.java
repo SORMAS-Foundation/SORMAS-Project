@@ -67,7 +67,7 @@ public class SampleJurisdictionPredicateValidator extends PredicateJurisdictionV
 			.add(ContactJurisdictionPredicateValidator.of(new ContactQueryContext(cb, qc.getQuery(), joins.getContactJoins()), user));
 		associatedJurisdictionValidators.add(
 			EventParticipantJurisdictionPredicateValidator
-				.of(new EventParticipantQueryContext(cb, qc.getQuery(), joins.getEventParticipant()), user));
+				.of(new EventParticipantQueryContext(cb, qc.getQuery(), joins.getEventParticipantJoins()), user));
 
 		return new SampleJurisdictionPredicateValidator(cb, joins, user, associatedJurisdictionValidators);
 	}

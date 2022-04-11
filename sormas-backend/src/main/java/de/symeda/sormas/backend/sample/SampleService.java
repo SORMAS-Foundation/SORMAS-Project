@@ -83,7 +83,6 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
@@ -699,10 +698,9 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 
 	public List<Selection<?>> getJurisdictionSelections(SampleQueryContext qc) {
 
-		CriteriaBuilder cb = qc.getCriteriaBuilder();
-		SampleJoins joins = (SampleJoins) qc.getJoins();
-		CriteriaQuery cq = qc.getQuery();
-		ContactJoins contactJoins = new ContactJoins(joins.getContact());
+		final CriteriaBuilder cb = qc.getCriteriaBuilder();
+		final SampleJoins joins = qc.getJoins();
+		final CriteriaQuery cq = qc.getQuery();
 		return Arrays.asList(
 			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(qc)),
 			JurisdictionHelper.booleanSelector(
@@ -710,18 +708,20 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 				cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, joins.getCaseJoins())))),
 			JurisdictionHelper.booleanSelector(
 				cb,
-				cb.and(cb.isNotNull(joins.getContact()), contactService.inJurisdictionOrOwned(new ContactQueryContext(cb, cq, joins.getContactJoins())))),
+				cb.and(
+					cb.isNotNull(joins.getContact()),
+					contactService.inJurisdictionOrOwned(new ContactQueryContext(cb, cq, joins.getContactJoins())))),
 			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(
 					cb.isNotNull(joins.getContact()),
-					cb.isNotNull(contactJoins.getCaze()),
-					caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, contactJoins.getCaseJoins())))),
+					cb.isNotNull(joins.getContactJoins().getCaze()),
+					caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, joins.getContactJoins().getCaseJoins())))),
 			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(
 					cb.isNotNull(joins.getEventParticipant()),
-					eventParticipantService.inJurisdictionOrOwned(new EventParticipantQueryContext(cb, cq, joins.getEventParticipant())))));
+					eventParticipantService.inJurisdictionOrOwned(new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins())))));
 	}
 
 	public Predicate inJurisdictionOrOwned(SampleQueryContext qc) {

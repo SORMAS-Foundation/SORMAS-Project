@@ -28,6 +28,7 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.event.EventParticipantJoins;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.location.Location;
@@ -49,14 +50,13 @@ public class SampleJoins extends QueryJoins<Sample> {
 	private Join<Location, Region> eventRegion;
 	private Join<Location, District> eventDistrict;
 	private Join<Location, Community> eventCommunity;
-	private Join<EventParticipant, Person> eventParticipantPerson;
-	private Join<EventParticipant, Event> event;
 	private Join<Event, Location> eventLocation;
 	private Join<Event, User> eventReportingUser;
 	private Join<Event, User> eventResponsibleUser;
 
 	private CaseJoins caseJoins;
 	private ContactJoins contactJoins;
+	private EventParticipantJoins eventParticipantJoins;
 
 	public SampleJoins(From<?, Sample> root) {
 		super(root);
@@ -166,20 +166,20 @@ public class SampleJoins extends QueryJoins<Sample> {
 		this.eventParticipant = eventParticipant;
 	}
 
-	public Join<EventParticipant, Person> getEventParticipantPerson() {
-		return getOrCreate(eventParticipantPerson, EventParticipant.PERSON, JoinType.LEFT, getEventParticipant(), this::setEventParticipantPerson);
+	public EventParticipantJoins getEventParticipantJoins() {
+		return getOrCreate(eventParticipantJoins, () -> new EventParticipantJoins(getEventParticipant()), this::setEventParticipantJoins);
 	}
 
-	public void setEventParticipantPerson(Join<EventParticipant, Person> eventParticipantPerson) {
-		this.eventParticipantPerson = eventParticipantPerson;
+	public void setEventParticipantJoins(EventParticipantJoins eventParticipantJoins) {
+		this.eventParticipantJoins = eventParticipantJoins;
+	}
+
+	public Join<EventParticipant, Person> getEventParticipantPerson() {
+		return getEventParticipantJoins().getPerson();
 	}
 
 	public Join<EventParticipant, Event> getEvent() {
-		return getOrCreate(event, EventParticipant.EVENT, JoinType.LEFT, getEventParticipant(), this::setEvent);
-	}
-
-	public void setEvent(Join<EventParticipant, Event> event) {
-		this.event = event;
+		return getEventParticipantJoins().getEvent();
 	}
 
 	public Join<Event, Location> getEventLocation() {
