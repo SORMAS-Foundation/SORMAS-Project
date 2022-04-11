@@ -21,7 +21,6 @@ import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.or;
 import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 
-import de.symeda.sormas.api.utils.fieldaccess.checkers.UserRightFieldAccessChecker;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -198,6 +197,7 @@ import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.UserRightFieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitResultDto;
@@ -1668,6 +1668,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					sampleFacade.cloneSampleForCase(sample, caze);
 				}
 			});
+
+			// The samples for case are not persisted yet, so use the samples from event participant since they are the same
+			caze.setFollowUpUntil(service.computeFollowUpuntilDate(caze, eventParticipant.getSamples()));
 		}
 	}
 
@@ -1685,6 +1688,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			} else {
 				sampleFacade.cloneSampleForCase(sample, caze);
 			}
+
+			// The samples for case are not persisted yet, so use the samples from event participant since they are the same
+			caze.setFollowUpUntil(service.computeFollowUpuntilDate(caze, eventParticipant.getSamples()));
 		});
 
 	}
@@ -4064,10 +4070,11 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		save(cazeDto, true);
 	}
 
-	private Pseudonymizer getPseudonymizerForDtoWithClinician(@Nullable String pseudonymizedValue){
+	private Pseudonymizer getPseudonymizerForDtoWithClinician(@Nullable String pseudonymizedValue) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, pseudonymizedValue);
 
-		UserRightFieldAccessChecker clinicianViewRightChecker = new UserRightFieldAccessChecker(UserRight.CASE_CLINICIAN_VIEW, userService.hasRight(UserRight.CASE_CLINICIAN_VIEW));
+		UserRightFieldAccessChecker clinicianViewRightChecker =
+			new UserRightFieldAccessChecker(UserRight.CASE_CLINICIAN_VIEW, userService.hasRight(UserRight.CASE_CLINICIAN_VIEW));
 		pseudonymizer.addFieldAccessChecker(clinicianViewRightChecker, clinicianViewRightChecker);
 
 		return pseudonymizer;
