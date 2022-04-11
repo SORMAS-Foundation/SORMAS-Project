@@ -919,8 +919,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	private void addToFollowUpStatusComment(Contact contact, String comment) {
-		String followUpComment = DataHelper.joinStrings("\n", contact.getFollowUpComment(), comment);
-		contact.setFollowUpComment(followUpComment);
+		contact.setFollowUpComment(comment != null && comment.equals(contact.getFollowUpComment())
+				? contact.getFollowUpComment()
+				: DataHelper.joinStrings("\n", contact.getFollowUpComment(), comment));
 	}
 
 	// Used only for testing; directly retrieve the contacts from the visit instead
