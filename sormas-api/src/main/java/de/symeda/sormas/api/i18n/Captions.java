@@ -1389,8 +1389,6 @@ public interface Captions {
 	String infrastructureImportAllowOverwrite = "infrastructureImportAllowOverwrite";
 	String LabMessage = "LabMessage";
 	String LabMessage_assignee = "LabMessage.assignee";
-	String LabMessage_type = "LabMessage.type";
-
 	String labMessage_deleteNewlyCreatedCase = "labMessage.deleteNewlyCreatedCase";
 	String labMessage_deleteNewlyCreatedContact = "labMessage.deleteNewlyCreatedContact";
 	String labMessage_deleteNewlyCreatedEventParticipant = "labMessage.deleteNewlyCreatedEventParticipant";
@@ -1420,6 +1418,7 @@ public interface Captions {
 	String LabMessage_specimenCondition = "LabMessage.specimenCondition";
 	String LabMessage_status = "LabMessage.status";
 	String LabMessage_testedDisease = "LabMessage.testedDisease";
+	String LabMessage_type = "LabMessage.type";
 	String LabMessageCriteria_birthDateFrom = "LabMessageCriteria.birthDateFrom";
 	String LabMessageCriteria_birthDateTo = "LabMessageCriteria.birthDateTo";
 	String LabMessageCriteria_messageDateFrom = "LabMessageCriteria.messageDateFrom";
