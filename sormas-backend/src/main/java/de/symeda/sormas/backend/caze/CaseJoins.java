@@ -13,7 +13,7 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package de.symeda.sormas.utils;
+package de.symeda.sormas.backend.caze;
 
 import java.util.List;
 
@@ -21,9 +21,9 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
+import de.symeda.sormas.backend.common.QueryJoins;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
@@ -40,9 +40,8 @@ import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 
-public class CaseJoins<T> extends AbstractDomainObjectJoins<T, Case> {
+public class CaseJoins extends QueryJoins<Case> {
 
 	private Join<Case, Person> person;
 	private Join<Case, Region> responsibleRegion;
@@ -76,7 +75,7 @@ public class CaseJoins<T> extends AbstractDomainObjectJoins<T, Case> {
 	private Join<Case, ExternalShareInfo> externalShareInfo;
 	private Join<Case, User> followUpStatusChangeUser;
 
-	public CaseJoins(From<T, Case> caze) {
+	public CaseJoins(From<?, Case> caze) {
 		super(caze);
 	}
 

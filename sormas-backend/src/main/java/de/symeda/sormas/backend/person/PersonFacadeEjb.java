@@ -1727,7 +1727,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		CriteriaQuery<Person> cq = cb.createQuery(Person.class);
 		Root<Person> root = cq.from(Person.class);
 
-		PersonJoins<Person> joins = new PersonJoins<>(root);
+		PersonJoins joins = new PersonJoins(root);
 
 		Join<Person, ?> contextJoin;
 		switch (context) {

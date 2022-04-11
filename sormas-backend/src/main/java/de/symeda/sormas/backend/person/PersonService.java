@@ -339,14 +339,8 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 					CriteriaBuilderHelper.unaccentedIlike(cb, personFrom.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, personFrom.get(Person.LAST_NAME), textFilter),
 					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.UUID), textFilter),
-					CriteriaBuilderHelper.ilike(
-						cb,
-						(Expression<String>) personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY),
-						textFilter),
-					phoneNumberPredicate(
-						cb,
-						(Expression<String>) personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY),
-						textFilter),
+					CriteriaBuilderHelper.ilike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY), textFilter),
+					phoneNumberPredicate(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.STREET), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
 					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter),
@@ -900,7 +894,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		return persons;
 	}
 
-	public void executePermanentDeletion(int batchSize) {
+	public void deleteUnreferencedPersons(int batchSize) {
 		IterableHelper.executeBatched(getAllNonReferencedPersonUuids(), batchSize, batchedUuids -> deletePermanent(batchedUuids));
 	}
 

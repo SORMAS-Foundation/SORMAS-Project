@@ -53,6 +53,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.COMMUNITY
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.COMMUNITY_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_QUARANTINE_ORDER_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CURRENT_HOSPITALIZATION_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DATE_OFFICIAL_QUARANTINE_ORDER_WAS_SENT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DATE_OF_OUTCOME;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DATE_OF_OUTCOME_INPUT;
@@ -128,6 +129,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.RESPONSIB
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.RESPONSIBLE_DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.RESPONSIBLE_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.RESPONSIBLE_SURVEILLANCE_OFFICER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_AND_OPEN_HOSPITALIZATION_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SEQUELAE_DETAILS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SEQUELAE_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SYMPTOMS_TAB;
@@ -255,6 +257,19 @@ public class EditCaseSteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(CASE_SAVED_POPUP);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
+
+    When(
+        "I click only on save button from Edit Case page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON));
+
+    And(
+        "I check if Current Hospitalization popup is displayed",
+        () -> webDriverHelpers.isElementVisibleWithTimeout(CURRENT_HOSPITALIZATION_POPUP, 10));
+
+    When(
+        "I click on Save and open hospitalization in current hospitalization popup",
+        () -> webDriverHelpers.clickOnWebElementBySelector(SAVE_AND_OPEN_HOSPITALIZATION_BUTTON));
+
     Then(
         "I click on Clinical Course tab from Edit Case page",
         () -> webDriverHelpers.clickOnWebElementBySelector(CLINICAL_COURSE_TAB));
@@ -483,6 +498,13 @@ public class EditCaseSteps implements En {
         });
 
     When(
+        "I click on ([^\"]*) as place of stay in Case Edit tab",
+        (String placeOfStay) -> {
+          webDriverHelpers.clickWebElementByText(
+              PLACE_OF_STAY_OPTIONS, CaseOutcome.getValueFor(placeOfStay).toUpperCase());
+        });
+
+    When(
         "I click on ([^\"]*) as German place of stay",
         (String option) -> {
           String placeOfStay = new String();
@@ -525,6 +547,13 @@ public class EditCaseSteps implements En {
           webDriverHelpers.selectFromCombobox(
               FACILITY_HEALTH_COMBOBOX, CaseOutcome.getValueFor(facility));
           editedCase = editedCase.toBuilder().facility(facility).build();
+        });
+
+    When(
+        "In Case Edit tab I set Facility as a ([^\"]*)",
+        (String facility) -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FACILITY_TYPE_COMBOBOX);
+          webDriverHelpers.selectFromCombobox(FACILITY_HEALTH_COMBOBOX, facility);
         });
 
     When(

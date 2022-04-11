@@ -81,9 +81,12 @@ public class MultiDaySelectorField extends CustomField<MultiDaySelectorDto> {
 		}
 		startDateBindingBuilder.bind(MultiDaySelectorDto.START_DATE);
 		startDate.addValueChangeListener(e -> {
+			binder.validate();
 			getValue().setStartDate(e.getValue());
 			enableValidationForEndDate(e.getValue() != null);
 		});
+
+		reportDate.addValueChangeListener(event -> binder.validate());
 
 		endDate.setId("lastDate");
 		endDate.setWidth(150, Unit.PIXELS);

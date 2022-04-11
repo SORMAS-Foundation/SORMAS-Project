@@ -68,6 +68,7 @@ import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleJurisdictionFlagsDto;
 import de.symeda.sormas.api.sample.SampleListEntryDto;
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -91,9 +92,12 @@ import de.symeda.sormas.backend.event.EventParticipantQueryContext;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.labmessage.LabMessageService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.transformers.SampleListEntryDtoResultTransformer;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -122,7 +126,11 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 	@EJB
 	private AdditionalTestService additionalTestService;
 	@EJB
+	private SormasToSormasShareInfoFacadeEjbLocal sormasToSormasShareInfoFacade;
+	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
+	@EJB
+	private LabMessageService labMessageService;
 
 	public SampleService() {
 		super(Sample.class);
@@ -163,7 +171,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 		final Root<Sample> sample = cq.from(Sample.class);
 
 		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, sample);
-		SampleJoins<Sample> joins = (SampleJoins<Sample>) sampleQueryContext.getJoins();
+		SampleJoins joins = sampleQueryContext.getJoins();
 
 		final Join<Sample, Case> caze = joins.getCaze();
 		final Join<Case, District> caseDistrict = joins.getCaseDistrict();
@@ -384,7 +392,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 		final Root<Sample> sample = cq.from(Sample.class);
 
 		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, sample);
-		SampleJoins<Sample> joins = (SampleJoins<Sample>) sampleQueryContext.getJoins();
+		SampleJoins joins = sampleQueryContext.getJoins();
 
 		cq.distinct(true);
 
@@ -596,7 +604,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 	@SuppressWarnings("rawtypes")
 	@Deprecated
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Sample> samplePath) {
-		return createUserFilter(cq, cb, new SampleJoins<>(samplePath), new SampleCriteria());
+		return createUserFilter(cq, cb, new SampleJoins(samplePath), new SampleCriteria());
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -694,7 +702,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 		CriteriaBuilder cb = qc.getCriteriaBuilder();
 		SampleJoins joins = (SampleJoins) qc.getJoins();
 		CriteriaQuery cq = qc.getQuery();
-		ContactJoins<Sample> contactJoins = new ContactJoins(joins.getContact());
+		ContactJoins contactJoins = new ContactJoins(joins.getContact());
 		return Arrays.asList(
 			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(qc)),
 			JurisdictionHelper.booleanSelector(
@@ -903,6 +911,34 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 	}
 
 	@Override
+	public void deletePermanent(Sample sample) {
+
+		// Delete all pathogen tests of this sample
+		for (PathogenTest pathogenTest : sample.getPathogenTests()) {
+			pathogenTestService.deletePermanent(pathogenTest);
+		}
+
+		// Delete all additional tests of this sample
+		for (AdditionalTest additionalTest : sample.getAdditionalTests()) {
+			additionalTestService.deletePermanent(additionalTest);
+		}
+
+		// Remove the case from any S2S share info referencing it
+		sormasToSormasShareInfoService.getByAssociatedEntity(SormasToSormasShareInfo.SAMPLE, sample.getUuid()).forEach(s -> {
+			s.setSample(null);
+			if (sormasToSormasShareInfoFacade.hasAnyEntityReference(s)) {
+				sormasToSormasShareInfoService.ensurePersisted(s);
+			} else {
+				sormasToSormasShareInfoService.deletePermanent(s);
+			}
+		});
+
+		deleteSampleLinks(sample);
+
+		super.deletePermanent(sample);
+	}
+
+	@Override
 	public void delete(Sample sample) {
 
 		// Mark all pathogen tests of this sample as deleted
@@ -910,10 +946,12 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 			pathogenTestService.delete(pathogenTest);
 		}
 
-		// Delete all additional tests of this sample
-		for (AdditionalTest additionalTest : sample.getAdditionalTests()) {
-			additionalTestService.deletePermanent(additionalTest);
-		}
+		deleteSampleLinks(sample);
+
+		super.delete(sample);
+	}
+
+	private void deleteSampleLinks(Sample sample) {
 
 		// Remove the reference from another sample to this sample if existing
 		Sample referralSample = getReferredFrom(sample.getUuid());
@@ -922,10 +960,11 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 			ensurePersisted(referralSample);
 		}
 
-		// Remove the case association because the case might be permanently deleted
-		sample.setAssociatedCase(null);
-
-		super.delete(sample);
+		// Remove the reference from all lab messages
+		labMessageService.getForSample(new SampleReferenceDto(sample.getUuid())).forEach(labMessage -> {
+			labMessage.setSample(null);
+			labMessageService.ensurePersisted(labMessage);
+		});
 	}
 
 	/**

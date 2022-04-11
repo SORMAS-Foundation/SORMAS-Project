@@ -20,12 +20,15 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.Date;
+import java.util.List;
 
 import com.google.common.collect.Sets;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
@@ -149,6 +152,13 @@ public class ContactCreateForm extends AbstractEditForm<ContactDto> {
 		lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
 		firstContactDate.addValueChangeListener(event -> lastContactDate.setRequired(event.getProperty().getValue() != null));
 		multiDayContact.addValueChangeListener(event -> updateDateComparison());
+
+		List<AbstractField<Date>> validatedFields = Arrays.asList(firstContactDate, lastContactDate, reportDate);
+		validatedFields.forEach(field -> field.addValueChangeListener(r -> {
+			validatedFields.forEach(otherField -> {
+				otherField.setValidationVisible(!otherField.isValid());
+			});
+		}));
 
 		FieldHelper
 			.setVisibleWhen(getFieldGroup(), ContactDto.FIRST_CONTACT_DATE, ContactDto.MULTI_DAY_CONTACT, Collections.singletonList(true), true);
