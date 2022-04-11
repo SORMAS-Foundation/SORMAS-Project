@@ -11228,9 +11228,9 @@ INSERT INTO schema_version (version_number, comment) VALUES (453, 'Refactor uniq
 
 -- 2022-04-08 Drop deleted column from lab messages and remove deleted lab messages #8295
 
+DELETE FROM labmessage WHERE deleted IS TRUE;
 ALTER TABLE labmessage DROP COLUMN deleted;
 ALTER TABLE labmessage_history DROP COLUMN deleted;
-DELETE FROM labmessage WHERE deleted IS TRUE;
 
 INSERT INTO schema_version (version_number, comment) VALUES (454, 'Drop deleted column from lab messages and remove deleted lab messages #8295');
 
