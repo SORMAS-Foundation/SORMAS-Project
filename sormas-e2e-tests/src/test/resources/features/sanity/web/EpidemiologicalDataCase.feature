@@ -184,3 +184,37 @@ Feature: Epidemiological data coverage
     And I fill Location form for Type of place field by "Einrichtung (§ 23 IfSG)" options in Case as Activity directory for DE version
     And  I click on save button in Exposure for Epidemiological data tab in Cases
     And I check if created Activity as Case appears in a grid for Epidemiological data tab in Cases
+
+  @issue=SORDEV-5839 @env_main
+  Scenario: Make facility selection on LocationForm more intuitive
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    When I am accessing via URL the Epidemiological data tab of the created case
+    Then I create a new Exposure for Epidemiological data
+    And I set Type of place as a Facility in a new Exposure for Epidemiological data
+    Then I set Facility Category as a Medical facility in a new Exposure for Epidemiological data
+    Then I set Facility Type as a Hospital in a new Exposure for Epidemiological data
+    And I check if Facility field has blue exclamation mark and displays correct message
+
+  @issue=SORDEV-5977 @env_main
+  Scenario: Improve exposure table display
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    When I am accessing via URL the Epidemiological data tab of the created case
+    Then I create a new Exposure for Epidemiological data tab and fill all the data
+    And I click on save button from Epidemiological Data
+    When I am accessing via URL the Epidemiological data tab of the created case
+    And I am checking all Exposure data is saved and displayed
+    Then I check if data is correctly displayed in Exposures table in Epidemiological data tab

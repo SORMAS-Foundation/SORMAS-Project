@@ -62,7 +62,7 @@ public class TravelEntryService extends BaseTravelEntryService {
 		final Root<TravelEntry> travelEntry = cq.from(TravelEntry.class);
 
 		TravelEntryQueryContext travelEntryQueryContext = new TravelEntryQueryContext(cb, cq, travelEntry);
-		TravelEntryJoins<TravelEntry> joins = (TravelEntryJoins<TravelEntry>) travelEntryQueryContext.getJoins();
+		TravelEntryJoins joins = travelEntryQueryContext.getJoins();
 
 		final Join<TravelEntry, Person> person = joins.getPerson();
 		final Join<TravelEntry, PointOfEntry> pointOfEntry = joins.getPointOfEntry();
