@@ -1,8 +1,11 @@
 package de.symeda.sormas.backend.deletionconfiguration;
 
+import static java.util.stream.Collectors.toMap;
+
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 import javax.ejb.LocalBean;
@@ -90,8 +93,8 @@ public class DeletionConfigurationService extends BaseAdoService<DeletionConfigu
 		List<DeletionConfiguration> deletionConfigurations = getAll();
 		return deletionConfigurations.stream()
 			.collect(
-				Collectors.toMap(
+				Collectors.groupingBy(
 					DeletionConfiguration::getEntityType,
-					config -> Map.of(config.getDeletionReference() != null ? config.getDeletionReference().name() : "", config)));
+					toMap(config -> config.getDeletionReference() != null ? config.getDeletionReference().name() : "", Function.identity())));
 	}
 }
