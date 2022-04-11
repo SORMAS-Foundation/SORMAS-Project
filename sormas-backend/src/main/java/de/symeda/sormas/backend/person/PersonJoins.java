@@ -40,6 +40,7 @@ import de.symeda.sormas.backend.travelentry.TravelEntry;
 public class PersonJoins extends QueryJoins<Person> {
 
 	private PersonAssociation personAssociation;
+
 	private Join<Person, Case> caze;
 	private Join<Person, Contact> contact;
 	private Join<Person, EventParticipant> eventParticipant;

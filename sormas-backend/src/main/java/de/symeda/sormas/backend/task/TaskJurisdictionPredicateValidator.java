@@ -53,7 +53,7 @@ public class TaskJurisdictionPredicateValidator extends PredicateJurisdictionVal
 		associatedJurisdictionValidators
 			.add(ContactJurisdictionPredicateValidator.of(new ContactQueryContext(cb, qc.getQuery(), joins.getContactJoins()), user));
 		associatedJurisdictionValidators
-			.add(EventJurisdictionPredicateValidator.of(new EventQueryContext(cb, qc.getQuery(), joins.getEvent()), user));
+			.add(EventJurisdictionPredicateValidator.of(new EventQueryContext(cb, qc.getQuery(), joins.getEventJoins()), user));
 
 		return new TaskJurisdictionPredicateValidator(cb, joins, user, associatedJurisdictionValidators);
 	}
