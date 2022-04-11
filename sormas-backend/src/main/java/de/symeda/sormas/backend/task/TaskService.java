@@ -553,7 +553,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 				cb,
 				cb.and(
 					cb.isNotNull(joins.getContact()),
-					contactService.inJurisdictionOrOwned(new ContactQueryContext(cb, qc.getQuery(), joins.getContact())))),
+					contactService.inJurisdictionOrOwned(new ContactQueryContext(cb, qc.getQuery(), joins.getContactJoins())))),
 			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(

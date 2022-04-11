@@ -255,7 +255,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			caseService.createDefaultFilter(cb, joins.getCaze()));
 		final Supplier<Predicate> contactFilter = () -> {
 			final Predicate contactUserFilter = contactService.createUserFilterForJoin(
-				new ContactQueryContext(cb, cq, joins.getContact()),
+				new ContactQueryContext(cb, cq, joins.getContactJoins()),
 				new ContactCriteria().includeContactsFromOtherJurisdictions(false));
 			return CriteriaBuilderHelper.and(cb, contactUserFilter, contactService.createDefaultFilter(cb, joins.getContact()));
 		};

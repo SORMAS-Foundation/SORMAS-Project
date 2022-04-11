@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.person;
 
+import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.criteria.From;
@@ -27,6 +28,7 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.common.QueryJoins;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.infrastructure.country.Country;
@@ -45,9 +47,11 @@ public class PersonJoins extends QueryJoins<Person> {
 	private Join<Person, Location> address;
 	private Join<Person, Country> birthCountry;
 	private Join<Person, Country> citizenship;
+	private Join<Person, List<Location>> addresses;
 
 	private LocationJoins addressJoins;
 	private CaseJoins caseJoins;
+	private ContactJoins contactJoins;
 
 	public PersonJoins(From<?, Person> root) {
 		super(root);
@@ -91,6 +95,14 @@ public class PersonJoins extends QueryJoins<Person> {
 
 	private void setContact(Join<Person, Contact> contact) {
 		this.contact = contact;
+	}
+
+	public ContactJoins getContactJoins() {
+		return getOrCreate(contactJoins, () -> new ContactJoins(getContact()), this::setContactJoins);
+	}
+
+	public void setContactJoins(ContactJoins contactJoins) {
+		this.contactJoins = contactJoins;
 	}
 
 	public Join<Person, EventParticipant> getEventParticipant() {
@@ -139,6 +151,14 @@ public class PersonJoins extends QueryJoins<Person> {
 
 	private void setCitizenship(Join<Person, Country> citizenship) {
 		this.citizenship = citizenship;
+	}
+
+	public Join<Person, List<Location>> getAddresses() {
+		return getOrCreate(addresses, Person.ADDRESSES, JoinType.LEFT, this::setAddresses);
+	}
+
+	private void setAddresses(Join<Person, List<Location>> personAddresses) {
+		this.addresses = personAddresses;
 	}
 
 	public LocationJoins getAddressJoins() {

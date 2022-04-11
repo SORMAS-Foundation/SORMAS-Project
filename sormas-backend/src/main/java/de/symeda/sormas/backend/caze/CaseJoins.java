@@ -55,20 +55,13 @@ public class CaseJoins extends QueryJoins<Case> {
 	private Join<Case, Facility> facility;
 	private Join<Case, PointOfEntry> pointOfEntry;
 	private Join<Case, User> surveillanceOfficer;
-	private Join<Person, Location> address;
 	private Join<Case, User> reportingUser;
-	private Join<Person, Location> personAddress;
-	private Join<Location, Region> personAddressRegion;
-	private Join<Location, District> personAddressDistrict;
-	private Join<Location, Community> personAddressCommunity;
-	private Join<Location, Facility> personAddressFacility;
 	private Join<Case, Hospitalization> hospitalization;
 	private Join<Case, EpiData> epiData;
 	private Join<Case, Symptoms> symptoms;
 	private Join<Case, ClinicalCourse> clinicalCourse;
 	private Join<Case, HealthConditions> healthConditions;
 	private Join<Case, EventParticipant> eventParticipants;
-	private Join<Person, List<Location>> personAddresses;
 	private Join<Case, Sample> samples;
 	private Join<Sample, Facility> sampleLabs;
 	private Join<Person, Country> personBirthCountry;
@@ -163,14 +156,6 @@ public class CaseJoins extends QueryJoins<Case> {
 		this.surveillanceOfficer = surveillanceOfficer;
 	}
 
-	public Join<Person, Location> getAddress() {
-		return getOrCreate(address, Person.ADDRESS, JoinType.LEFT, getPerson(), this::setAddress);
-	}
-
-	private void setAddress(Join<Person, Location> address) {
-		this.address = address;
-	}
-
 	public Join<Case, User> getReportingUser() {
 		return getOrCreate(reportingUser, Case.REPORTING_USER, JoinType.LEFT, this::setReportingUser);
 	}
@@ -180,43 +165,23 @@ public class CaseJoins extends QueryJoins<Case> {
 	}
 
 	public Join<Person, Location> getPersonAddress() {
-		return getOrCreate(personAddress, Person.ADDRESS, JoinType.LEFT, getPerson(), this::setPersonAddress);
-	}
-
-	private void setPersonAddress(Join<Person, Location> personAddress) {
-		this.personAddress = personAddress;
+		return getPersonJoins().getAddress();
 	}
 
 	public Join<Location, Region> getPersonAddressRegion() {
-		return getOrCreate(personAddressRegion, Location.REGION, JoinType.LEFT, getPersonAddress(), this::setPersonAddressRegion);
-	}
-
-	private void setPersonAddressRegion(Join<Location, Region> personAddressRegion) {
-		this.personAddressRegion = personAddressRegion;
+		return getPersonJoins().getAddressJoins().getRegion();
 	}
 
 	public Join<Location, District> getPersonAddressDistrict() {
-		return getOrCreate(personAddressDistrict, Location.DISTRICT, JoinType.LEFT, getPersonAddress(), this::setPersonAddressDistrict);
-	}
-
-	private void setPersonAddressDistrict(Join<Location, District> personAddressDistrict) {
-		this.personAddressDistrict = personAddressDistrict;
+		return getPersonJoins().getAddressJoins().getDistrict();
 	}
 
 	public Join<Location, Community> getPersonAddressCommunity() {
-		return getOrCreate(personAddressCommunity, Location.COMMUNITY, JoinType.LEFT, getPersonAddress(), this::setPersonAddressCommunity);
-	}
-
-	private void setPersonAddressCommunity(Join<Location, Community> personAddressCommunity) {
-		this.personAddressCommunity = personAddressCommunity;
+		return getPersonJoins().getAddressJoins().getCommunity();
 	}
 
 	public Join<Location, Facility> getPersonAddressFacility() {
-		return getOrCreate(personAddressFacility, Location.FACILITY, JoinType.LEFT, getAddress(), this::setPersonAddressFacility);
-	}
-
-	private void setPersonAddressFacility(Join<Location, Facility> personAddressFacility) {
-		this.personAddressFacility = personAddressFacility;
+		return getPersonJoins().getAddressJoins().getFacility();
 	}
 
 	public Join<Case, Hospitalization> getHospitalization() {
@@ -268,11 +233,7 @@ public class CaseJoins extends QueryJoins<Case> {
 	}
 
 	public Join<Person, List<Location>> getPersonAddresses() {
-		return getOrCreate(personAddresses, Person.ADDRESSES, JoinType.LEFT, getPerson(), this::setPersonAddresses);
-	}
-
-	private void setPersonAddresses(Join<Person, List<Location>> personAddresses) {
-		this.personAddresses = personAddresses;
+		return getPersonJoins().getAddresses();
 	}
 
 	public Join<Case, Sample> getSamples() {
