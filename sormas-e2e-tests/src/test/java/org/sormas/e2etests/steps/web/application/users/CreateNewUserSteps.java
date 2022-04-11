@@ -26,6 +26,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ENTER_BULK_EDIT_MODE;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.LOGOUT_BUTTON;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.*;
+import static org.sormas.e2etests.pages.application.users.UserManagementPage.NEW_USER_BUTTON;
 
 import cucumber.api.java8.En;
 import java.util.*;
@@ -50,7 +51,7 @@ public class CreateNewUserSteps implements En {
   public static String userName;
   public static String userPass;
   private final BaseSteps baseSteps;
-  private List<User> userTableRows;
+  private static Integer amountOfRecords;
 
   @Inject
   public CreateNewUserSteps(
@@ -62,14 +63,16 @@ public class CreateNewUserSteps implements En {
     this.baseSteps = baseSteps;
 
     When(
-        "^I pick a users that was created on the same hour$",
+        "^I pick and count amount a users that was created on the same hour$",
         () -> {
-          //          String userDataPartial = user.getUserName().substring(0, 17);
-          String userDataPartial = user.getUserName().substring(0, 20);
-
+            String userDataPartial = user.getUserName().substring(0, 17);
           webDriverHelpers.fillInWebElement(USER_INPUT_SEARCH, userDataPartial);
-          TimeUnit.SECONDS.sleep(5);
+          TimeUnit.SECONDS.sleep(5); // wait for page loaded
+          String amountOfUsers = webDriverHelpers.getTextFromWebElement(AMOUNT_OF_CHOSEN_USERS);
+          amountOfRecords = Integer.parseInt(amountOfUsers);
         });
+
+    When("I Count amount of user", () -> {});
 
     When(
         "I click Enter Bulk Edit Mode on Users directory page",
@@ -81,6 +84,12 @@ public class CreateNewUserSteps implements En {
         "I click checkbox to choose all User results",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ALL_RESULTS_CHECKBOX);
+        });
+
+    When(
+        "I pick {string} value for Active filter in User Directory",
+        (String activeValue) -> {
+          webDriverHelpers.selectFromCombobox(ACTIVE_USER_COMBOBOX, activeValue);
         });
 
     When(
@@ -102,24 +111,14 @@ public class CreateNewUserSteps implements En {
           }
         });
 
-    When(
-        "I am collect ACTIVE checkbox",
+    And(
+        "I check that all Users are changed Active field value to opposite",
         () -> {
-          List<Map<String, String>> tableRowsData = getTableRowsData();
-          userTableRows = new ArrayList<>();
-          userTableRows.forEach(
-              tableRow ->
-                  userTableRows.add(
-                      User.builder().active(tableRow.getActive().booleanValue()).build()));
-        });
-
-    When(
-        "I am checking that ACTIVE checkbox are thick",
-        () -> {
-          //  webDriverHelpers.clickOnWebElementBySelector(ALL_RESULTS_CHECKBOX);
-          User actualUser = userTableRows.get(1);
-          softly.assertFalse(
-              actualUser.getActive().equals(Boolean.FALSE), "UUID is not correct displayed");
+          String amountOfCheckboxes =
+              webDriverHelpers.getTextFromWebElement(AMOUNT_ACTIVE_INACTIVE_USERS);
+          Integer optionsRecords = Integer.parseInt(amountOfCheckboxes);
+          softly.assertEquals(
+              amountOfRecords, optionsRecords, "Not all Active fields value are changed");
         });
 
     When(
@@ -220,6 +219,47 @@ public class CreateNewUserSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           closeNewPasswordPopUp();
+        });
+
+    When(
+        "I create {int} new users with National User via UI",
+        (Integer users) -> {
+          List<User> userList = new ArrayList<>();
+          for (int i = 0; i < users; i++) {
+            webDriverHelpers.clickWhileOtherButtonIsDisplayed(
+                NEW_USER_BUTTON, FIRST_NAME_OF_USER_INPUT);
+            user = userService.buildGeneratedUserWithRole("National User");
+            fillFirstName(user.getFirstName());
+            fillLastName(user.getLastName());
+            fillEmailAddress(user.getEmailAddress());
+            fillPhoneNumber(user.getPhoneNumber());
+            selectLanguage(user.getLanguage());
+            selectCountry(user.getCountry());
+            selectRegion(user.getRegion());
+            selectDistrict(user.getDistrict());
+            selectCommunity(user.getCommunity());
+            selectFacilityCategory(user.getFacilityCategory());
+            selectFacilityType(user.getFacilityType());
+            selectFacility(user.getFacility());
+            fillFacilityNameAndDescription(user.getFacilityNameAndDescription());
+            fillStreet(user.getStreet());
+            fillHouseNr(user.getHouseNumber());
+            fillAdditionalInformation(user.getAdditionalInformation());
+            fillPostalCode(user.getPostalCode());
+            fillCity(user.getCity());
+            selectAreaType(user.getAreaType());
+            fillGpsLatitude(user.getGpsLatitude());
+            fillGpsLongitude(user.getGpsLongitude());
+            fillGpsAccuracy(user.getGpsAccuracy());
+            selectActive(user.getActive());
+            fillUserName(user.getUserName());
+            selectUserRole("National User");
+            selectLimitedDisease(user.getLimitedDisease());
+            webDriverHelpers.scrollToElement(SAVE_BUTTON);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+            webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+            closeNewPasswordPopUp();
+          }
         });
 
     And(
