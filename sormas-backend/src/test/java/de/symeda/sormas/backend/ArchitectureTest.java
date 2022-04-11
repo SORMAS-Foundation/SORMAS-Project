@@ -1,14 +1,11 @@
 package de.symeda.sormas.backend;
 
-import javax.annotation.security.RolesAllowed;
+import java.util.Collections;
+import java.util.List;
 
-import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
-import de.symeda.sormas.backend.labmessage.LabMessageFacadeEjb;
-import de.symeda.sormas.backend.labmessage.TestReportFacadeEjb;
-import de.symeda.sormas.backend.sample.SampleFacadeEjb;
-import de.symeda.sormas.backend.task.TaskFacadeEjb;
-import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
-import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
+import javax.annotation.security.RolesAllowed;
+import javax.validation.constraints.NotNull;
+
 import org.junit.runner.RunWith;
 
 import com.tngtech.archunit.core.domain.JavaClasses;
@@ -30,15 +27,19 @@ import de.symeda.sormas.backend.clinicalcourse.ClinicalVisitFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.dashboard.DashboardFacadeEjb;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalFacadeEjb;
+import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
+import de.symeda.sormas.backend.labmessage.LabMessageFacadeEjb;
+import de.symeda.sormas.backend.labmessage.TestReportFacadeEjb;
 import de.symeda.sormas.backend.outbreak.OutbreakFacadeEjb;
 import de.symeda.sormas.backend.report.AggregateReportFacadeEjb;
 import de.symeda.sormas.backend.report.WeeklyReportFacadeEjb;
+import de.symeda.sormas.backend.sample.SampleFacadeEjb;
+import de.symeda.sormas.backend.task.TaskFacadeEjb;
 import de.symeda.sormas.backend.therapy.PrescriptionFacadeEjb;
 import de.symeda.sormas.backend.therapy.TreatmentFacadeEjb;
+import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
+import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @RunWith(ArchUnitRunner.class)
 @AnalyzeClasses(packages = {
@@ -73,12 +74,12 @@ public class ArchitectureTest {
 
 	@ArchTest
 	public void testCaseImportFacadeEjbAuthorization(JavaClasses classes) {
-		assertFacadeEjbAnnotated(CaseImportFacadeEjb.class, AuthMode.CLASS_ONLY, classes, null);
+		assertFacadeEjbAnnotated(CaseImportFacadeEjb.class, AuthMode.CLASS_ONLY, classes);
 	}
 
 	@ArchTest
 	public void testExternalJournalFacadeEjbAuthorization(JavaClasses classes) {
-		assertFacadeEjbAnnotated(ExternalJournalFacadeEjb.class, AuthMode.CLASS_ONLY, classes, null);
+		assertFacadeEjbAnnotated(ExternalJournalFacadeEjb.class, AuthMode.CLASS_ONLY, Collections.singletonList("notifyExternalJournal"), classes);
 	}
 
 	@ArchTest
@@ -134,14 +135,16 @@ public class ArchitectureTest {
 
 	@ArchTest
 	public void testLabMessageFacadeEjbAuthorization(JavaClasses classes) {
-		List<String> specificMethodNames = new ArrayList<>();
-		specificMethodNames.add("fetchAndSaveExternalLabMessages");
-		assertFacadeEjbAnnotated(LabMessageFacadeEjb.class, true, classes, specificMethodNames);
+		assertFacadeEjbAnnotated(
+			LabMessageFacadeEjb.class,
+			AuthMode.CLASS_ONLY,
+			Collections.singletonList("fetchAndSaveExternalLabMessages"),
+			classes);
 	}
 
 	@ArchTest
 	public void testTestReportFacadeEjbAuthorization(JavaClasses classes) {
-		assertFacadeEjbAnnotated(TestReportFacadeEjb.class, true, classes, null);
+		assertFacadeEjbAnnotated(TestReportFacadeEjb.class, AuthMode.CLASS_ONLY, classes);
 	}
 
 	@ArchTest
@@ -165,45 +168,37 @@ public class ArchitectureTest {
 	}
 
 	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, JavaClasses classes) {
-		assertFacadeEjbAnnotated(facadeEjbClass, AuthMode.CLASS_AND_METHODS, classes, null);
+		assertFacadeEjbAnnotated(facadeEjbClass, AuthMode.CLASS_AND_METHODS, Collections.emptyList(), classes);
 	}
 
 	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, AuthMode authMode, JavaClasses classes) {
+		assertFacadeEjbAnnotated(facadeEjbClass, authMode, Collections.emptyList(), classes);
+	}
+
+	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, AuthMode authMode, @NotNull List<String> exceptedMethods, JavaClasses classes) {
 		if (authMode != AuthMode.METHODS_ONLY) {
 			ArchRuleDefinition.theClass(facadeEjbClass).should().beAnnotatedWith(RolesAllowed.class).check(classes);
 		}
 
 		GivenMethodsConjunction methods = ArchRuleDefinition.methods().that().areDeclaredIn(facadeEjbClass).and().arePublic();
+		String exceptedMethodsMatcher = "^(" + String.join("|", exceptedMethods) + ")$";
 
 		if (authMode == AuthMode.CLASS_ONLY) {
-			methods.should().notBeAnnotatedWith(RolesAllowed.class);
-			getMethodsShouldNotBeAnnotated(allPublicMethods, specificMethodNames).should().notBeAnnotatedWith(RolesAllowed.class);
-			if (specificMethodNames != null) {
-				specificMethodNames.forEach(
-						specificMethodName -> allPublicMethods.and().haveFullName(specificMethodName).should().beAnnotatedWith(RolesAllowed.class));
-			}
+			methods.and().haveNameNotMatching(exceptedMethodsMatcher).should().notBeAnnotatedWith(RolesAllowed.class).check(classes);
+			methods.and().haveNameMatching(exceptedMethodsMatcher).should().beAnnotatedWith(RolesAllowed.class).check(classes);
 		} else {
+			// TODO - add exceptedMethods handling when needed
+
 			MethodsShouldConjunction methodChecks = methods.should().beAnnotatedWith(RolesAllowed.class);
 
 			if (authMode == AuthMode.CLASS_AND_METHODS) {
 				methodChecks = methodChecks.orShould()
 					.haveNameMatching(
-						"^(get|count|is|does|has|validate|to|pseudonymize|convertToReferenceDto|fillOrBuild|convertToDto|fromDto).*");
+						"^(get|count|is|does|has|validate|to|pseudonymize|convertToReferenceDto|fillOrBuild|convertToDto|fromDto|exists).*");
 			}
 
 			methodChecks.check(classes);
 		}
-	}
-
-	private GivenMethodsConjunction getMethodsShouldNotBeAnnotated(GivenMethodsConjunction methods, List<String> specificMethodNames) {
-		return specificMethodNames != null ? getPublicMethodsWithoutSpecificMethods(methods, specificMethodNames) : methods;
-	}
-
-	private GivenMethodsConjunction getPublicMethodsWithoutSpecificMethods(GivenMethodsConjunction methods, List<String> specificMethodNames) {
-		for (String specificMethodName : specificMethodNames) {
-			methods = methods.and().doNotHaveFullName(specificMethodName);
-		}
-		return methods;
 	}
 
 	private enum AuthMode {
