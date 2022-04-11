@@ -1221,18 +1221,18 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			DateHelper.subtractDays(new Date(), 1),
 			null);
 
-        VaccinationDto vaccination = creator.createVaccinationWithDetails(
-                caze.getReportingUser(),
-                immunization.toReference(),
-                HealthConditionsDto.build(),
-                DateHelper.addDays(new Date(), 1),
-                Vaccine.MRNA_1273,
-                VaccineManufacturer.MODERNA,
-                VaccinationInfoSource.UNKNOWN,
-                "inn2",
-                "456",
-                "code456",
-                "2");
+		VaccinationDto vaccination = creator.createVaccinationWithDetails(
+			caze.getReportingUser(),
+			immunization.toReference(),
+			HealthConditionsDto.build(),
+			DateHelper.addDays(new Date(), 1),
+			Vaccine.MRNA_1273,
+			VaccineManufacturer.MODERNA,
+			VaccinationInfoSource.UNKNOWN,
+			"inn2",
+			"456",
+			"code456",
+			"2");
 
 		List<ContactExportDto> results;
 		results = getContactFacade().getExportList(null, Collections.emptySet(), 0, 100, null, Language.EN);
@@ -1618,22 +1618,22 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		PersonReferenceDto leadPersonReference = new PersonReferenceDto(leadPerson.getUuid());
 		RDCF leadRdcf = creator.createRDCF();
 		CaseDataDto sourceCase = creator.createCase(
-				leadUserReference,
-				leadPersonReference,
-				Disease.CORONAVIRUS,
-				CaseClassification.SUSPECT,
-				InvestigationStatus.PENDING,
-				new Date(),
-				leadRdcf);
+			leadUserReference,
+			leadPersonReference,
+			Disease.CORONAVIRUS,
+			CaseClassification.SUSPECT,
+			InvestigationStatus.PENDING,
+			new Date(),
+			leadRdcf);
 		ContactDto leadContact = creator.createContact(
-				leadUserReference,
-				leadUserReference,
-				leadPersonReference,
-				sourceCase,
-				new Date(),
-				new Date(),
-				Disease.CORONAVIRUS,
-				leadRdcf);
+			leadUserReference,
+			leadUserReference,
+			leadPersonReference,
+			sourceCase,
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			leadRdcf);
 		getContactFacade().save(leadContact);
 
 		// Create otherContact
@@ -1643,22 +1643,23 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		PersonReferenceDto otherPersonReference = new PersonReferenceDto(otherPerson.getUuid());
 		RDCF otherRdcf = creator.createRDCF();
 		ContactDto otherContact = creator.createContact(
-				otherUserReference,
-				otherUserReference,
-				otherPersonReference,
-				sourceCase,
-				new Date(),
-				new Date(),
-				Disease.CORONAVIRUS,
-				otherRdcf);
+			otherUserReference,
+			otherUserReference,
+			otherPersonReference,
+			sourceCase,
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			otherRdcf);
 		ContactReferenceDto otherContactReference = getContactFacade().getReferenceByUuid(otherContact.getUuid());
 		ContactDto contact =
-				creator.createContact(otherUserReference, otherUserReference, otherPersonReference, sourceCase, new Date(), new Date(), null);
+			creator.createContact(otherUserReference, otherUserReference, otherPersonReference, sourceCase, new Date(), new Date(), null);
 		Region region = creator.createRegion("");
 		District district = creator.createDistrict("", region);
 		Facility facility = creator.createFacility("", region, district, creator.createCommunity("", district));
 
-		CaseDataDto resultingCase = getCaseFacade().save(creator.createCase(
+		CaseDataDto resultingCase = getCaseFacade().save(
+			creator.createCase(
 				otherUserReference,
 				otherPersonReference,
 				Disease.CORONAVIRUS,

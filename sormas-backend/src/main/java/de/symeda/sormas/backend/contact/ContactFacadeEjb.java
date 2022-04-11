@@ -266,10 +266,10 @@ public class ContactFacadeEjb
 	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
 	@EJB
 	private HealthConditionsMapper healthConditionsMapper;
-    @EJB
-    private VaccinationService vaccinationService;
-    @EJB
-    private ContactService contactService;
+	@EJB
+	private VaccinationService vaccinationService;
+	@EJB
+	private ContactService contactService;
 
 	@Resource
 	private ManagedScheduledExecutorService executorService;
@@ -661,8 +661,7 @@ public class ContactFacadeEjb
 			contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY),
 			contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_OWNER_SUBQUERY),
 			contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_EMAIL_SUBQUERY),
-			contactQueryContext.getSubqueryExpression(
-				ContactQueryContext.PERSON_OTHER_CONTACT_DETAILS_SUBQUERY),
+			contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_OTHER_CONTACT_DETAILS_SUBQUERY),
 			joins.getPerson().get(Person.OCCUPATION_TYPE),
 			joins.getPerson().get(Person.OCCUPATION_DETAILS),
 			joins.getPerson().get(Person.ARMED_FORCES_RELATION_TYPE),
@@ -1995,11 +1994,11 @@ public class ContactFacadeEjb
 		final String otherAdditionalDetails = otherContactDto.getAdditionalDetails();
 		final String otherFollowUpComment = otherContactDto.getFollowUpComment();
 		leadContactDto.setAdditionalDetails(
-				leadAdditionalDetails != null && leadAdditionalDetails.equals(otherAdditionalDetails)
+			leadAdditionalDetails != null && leadAdditionalDetails.equals(otherAdditionalDetails)
 				? leadAdditionalDetails
 				: DataHelper.joinStrings(" ", leadAdditionalDetails, otherAdditionalDetails));
 		leadContactDto.setFollowUpComment(
-				leadFollowUpComment != null && leadFollowUpComment.equals(otherFollowUpComment)
+			leadFollowUpComment != null && leadFollowUpComment.equals(otherFollowUpComment)
 				? leadFollowUpComment
 				: DataHelper.joinStrings(" ", leadFollowUpComment, otherFollowUpComment));
 	}
@@ -2254,18 +2253,18 @@ public class ContactFacadeEjb
 		return userService.getRandomDistrictUser(district, UserRight.CONTACT_RESPONSIBLE);
 	}
 
-    private List<Vaccination> getRelevantSortedVaccinations(String caseUuid, List<Vaccination> vaccinations) {
-        Contact contact = contactService.getByUuid(caseUuid);
+	private List<Vaccination> getRelevantSortedVaccinations(String caseUuid, List<Vaccination> vaccinations) {
+		Contact contact = contactService.getByUuid(caseUuid);
 
-        return vaccinations.stream()
-                .filter(v -> vaccinationService.isVaccinationRelevant(contact, v))
-                .sorted(Comparator.comparing(ImmunizationEntityHelper::getVaccinationDateForComparison))
-                .collect(Collectors.toList());
-    }
+		return vaccinations.stream()
+			.filter(v -> vaccinationService.isVaccinationRelevant(contact, v))
+			.sorted(Comparator.comparing(ImmunizationEntityHelper::getVaccinationDateForComparison))
+			.collect(Collectors.toList());
+	}
 
-    private String getNumberOfDosesFromVaccinations(Vaccination vaccination) {
-        return vaccination != null ? vaccination.getVaccineDose() : "";
-    }
+	private String getNumberOfDosesFromVaccinations(Vaccination vaccination) {
+		return vaccination != null ? vaccination.getVaccineDose() : "";
+	}
 
 	public User getRandomRegionContactResponsible(Region region) {
 
