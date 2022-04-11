@@ -18,15 +18,19 @@
 
 package org.sormas.e2etests.steps.web.application.users;
 
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALL_RESULTS_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DETAILED_COLUMN_HEADERS;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DETAILED_TABLE_DATA;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DETAILED_TABLE_ROWS;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ENTER_BULK_EDIT_MODE;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.LOGOUT_BUTTON;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.*;
 
 import cucumber.api.java8.En;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import org.openqa.selenium.WebElement;
@@ -46,6 +50,7 @@ public class CreateNewUserSteps implements En {
   public static String userName;
   public static String userPass;
   private final BaseSteps baseSteps;
+  private List<User> userTableRows;
 
   @Inject
   public CreateNewUserSteps(
@@ -55,6 +60,67 @@ public class CreateNewUserSteps implements En {
       SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
     this.baseSteps = baseSteps;
+
+    When(
+        "^I pick a users that was created on the same hour$",
+        () -> {
+          //          String userDataPartial = user.getUserName().substring(0, 17);
+          String userDataPartial = user.getUserName().substring(0, 20);
+
+          webDriverHelpers.fillInWebElement(USER_INPUT_SEARCH, userDataPartial);
+          TimeUnit.SECONDS.sleep(5);
+        });
+
+    When(
+        "I click Enter Bulk Edit Mode on Users directory page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ENTER_BULK_EDIT_MODE);
+        });
+
+    When(
+        "I click checkbox to choose all User results",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ALL_RESULTS_CHECKBOX);
+        });
+
+    When(
+        "I click on Bulk Actions combobox on User Directory Page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(BULK_ACTIONS));
+
+    When(
+        "I click on {string} from Bulk Actions combobox on User Directory Page",
+        (String action) -> {
+          switch (action) {
+            case "Enable":
+              webDriverHelpers.clickOnWebElementBySelector(ENABLE_BULK_ACTIONS_VALUES);
+              webDriverHelpers.clickOnWebElementBySelector(CONFIRM_POP_UP);
+              break;
+            case "Disable":
+              webDriverHelpers.clickOnWebElementBySelector(DISABLE_BULK_ACTIONS_VALUES);
+              webDriverHelpers.clickOnWebElementBySelector(CONFIRM_POP_UP);
+              break;
+          }
+        });
+
+    When(
+        "I am collect ACTIVE checkbox",
+        () -> {
+          List<Map<String, String>> tableRowsData = getTableRowsData();
+          userTableRows = new ArrayList<>();
+          userTableRows.forEach(
+              tableRow ->
+                  userTableRows.add(
+                      User.builder().active(tableRow.getActive().booleanValue()).build()));
+        });
+
+    When(
+        "I am checking that ACTIVE checkbox are thick",
+        () -> {
+          //  webDriverHelpers.clickOnWebElementBySelector(ALL_RESULTS_CHECKBOX);
+          User actualUser = userTableRows.get(1);
+          softly.assertFalse(
+              actualUser.getActive().equals(Boolean.FALSE), "UUID is not correct displayed");
+        });
 
     When(
         "I create new ([^\"]*) with limited disease to ([^\"]*)",
