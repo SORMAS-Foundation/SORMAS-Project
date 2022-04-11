@@ -341,9 +341,6 @@ public class SymptomsTabSteps implements En {
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(LOSS_OF_SMELL_OPTIONS))
         .lossOfTaste(
             webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(LOSS_OF_TASTE_OPTIONS))
-        //        .otherNonHemorrhagicSymptoms(
-        //            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
-        //                OTHER_NON_HEMORRHAGIC_SYMPTOMS_OPTIONS))
         .symptomsComments(webDriverHelpers.getValueFromWebElement(SYMPTOMS_COMMENTS_INPUT))
         .build();
   }

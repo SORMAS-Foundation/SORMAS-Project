@@ -86,10 +86,10 @@ public class SampleService {
         .sampleTestResults("Positive")
         .reportDate(LocalDate.now().minusDays(10))
         .typeOfTest("PCR / RT-PCR")
-        .testedDisease("COVID-19")
+        .testedDisease(DiseasesValues.CORONAVIRUS.getDiseaseCaption())
         .dateOfResult(LocalDate.now().minusDays(10))
         .timeOfResult(LocalTime.of(11, 30))
-        .laboratory("Other facility")
+        .laboratory(LaboratoryValues.OTHER_FACILITY.getCaptionEnglish())
         .resultVerifiedByLabSupervisor("YES")
         .testResultsComment(currentTimeMillis + "Comment on new Pathogen requests or received")
         .build();
