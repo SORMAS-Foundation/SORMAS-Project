@@ -4,6 +4,7 @@ import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.List;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -36,7 +37,6 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
-import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
@@ -55,6 +55,7 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless(name = "TravelEntryFacade")
+@RolesAllowed(UserRight._TRAVEL_ENTRY_VIEW)
 public class TravelEntryFacadeEjb
 	extends AbstractCoreFacadeEjb<TravelEntry, TravelEntryDto, TravelEntryIndexDto, TravelEntryReferenceDto, TravelEntryService, TravelEntryCriteria>
 	implements TravelEntryFacade {
@@ -108,11 +109,8 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
+	@RolesAllowed(UserRight._TRAVEL_ENTRY_DELETE)
 	public void delete(String travelEntryUuid) {
-		if (!userService.hasRight(UserRight.TRAVEL_ENTRY_DELETE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete travel entries");
-		}
-
 		TravelEntry travelEntry = service.getByUuid(travelEntryUuid);
 		service.delete(travelEntry);
 
@@ -187,6 +185,7 @@ public class TravelEntryFacadeEjb
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	@RolesAllowed(UserRight._SYSTEM)
 	public void archiveAllArchivableTravelEntries(int daysAfterTravelEntryGetsArchived) {
 		archiveAllArchivableTravelEntry(daysAfterTravelEntryGetsArchived, LocalDate.now());
 	}
@@ -199,7 +198,10 @@ public class TravelEntryFacadeEjb
 		Root<TravelEntry> from = cq.from(TravelEntry.class);
 
 		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
-		cq.where(cb.equal(from.get(Event.ARCHIVED), false), cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
+		cq.where(
+			cb.equal(from.get(TravelEntry.ARCHIVED), false),
+			cb.equal(from.get(TravelEntry.DELETED), false),
+			cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
 		cq.select(from.get(TravelEntry.UUID)).distinct(true);
 		List<String> travelEntryUuids = em.createQuery(cq).getResultList();
 

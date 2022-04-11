@@ -22,6 +22,8 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseJoins;
+import de.symeda.sormas.backend.common.QueryJoins;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
@@ -34,10 +36,8 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
-import de.symeda.sormas.utils.CaseJoins;
 
-public class TaskJoins<T> extends AbstractDomainObjectJoins<T, Task> {
+public class TaskJoins extends QueryJoins<Task> {
 
 	private Join<Task, Case> caze;
 	private Join<Case, Person> casePerson;
@@ -78,24 +78,24 @@ public class TaskJoins<T> extends AbstractDomainObjectJoins<T, Task> {
 	private Join<Case, PointOfEntry> contactCasePointOfEntry;
 	private Join<Person, Location> casePersonAddress;
 	private Join<Person, Location> contactPersonAddress;
-	private final CaseJoins<Task> caseJoins;
-	private final PersonJoins<Contact> contactPersonJoins;
-	private final PersonJoins<Case> casePersonJoins;
+	private final CaseJoins caseJoins;
+	private final PersonJoins contactPersonJoins;
+	private final PersonJoins casePersonJoins;
 	private Join<Task, TravelEntry> travelEntry;
 	private Join<TravelEntry, Region> travelEntryResponsibleRegion;
 	private Join<TravelEntry, District> travelEntryResponsibleDistrict;
 	private Join<TravelEntry, Community> travelEntryResponsibleCommunity;
 	private Join<TravelEntry, Person> travelEntryPerson;
 
-	public TaskJoins(From<T, Task> root) {
+	public TaskJoins(From<?, Task> root) {
 		super(root);
 
-		caseJoins = new CaseJoins<>(getCaze());
-		casePersonJoins = new PersonJoins<>(getCasePerson());
-		contactPersonJoins = new PersonJoins<>(getContactPerson());
+		caseJoins = new CaseJoins(getCaze());
+		casePersonJoins = new PersonJoins(getCasePerson());
+		contactPersonJoins = new PersonJoins(getContactPerson());
 	}
 
-	public CaseJoins<Task> getCaseJoins() {
+	public CaseJoins getCaseJoins() {
 		return caseJoins;
 	}
 
@@ -465,11 +465,11 @@ public class TaskJoins<T> extends AbstractDomainObjectJoins<T, Task> {
 		this.contactCasePointOfEntry = contactCasePointOfEntry;
 	}
 
-	public PersonJoins<Case> getCasePersonJoins() {
+	public PersonJoins getCasePersonJoins() {
 		return casePersonJoins;
 	}
 
-	public PersonJoins<Contact> getContactPersonJoins() {
+	public PersonJoins getContactPersonJoins() {
 		return contactPersonJoins;
 	}
 

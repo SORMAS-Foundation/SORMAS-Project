@@ -50,7 +50,7 @@ public enum CommunityValues {
     CommunityValues[] communityValues = CommunityValues.values();
     for (CommunityValues value : communityValues) {
       if (value.name().equalsIgnoreCase(communityName)) {
-        if (locale.equalsIgnoreCase("main")) {
+        if (locale.equalsIgnoreCase("main") || locale.equalsIgnoreCase("performance")) {
           return value.getUuidMain();
         }
         if (locale.equalsIgnoreCase("DE")) {

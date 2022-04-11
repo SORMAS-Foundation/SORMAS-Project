@@ -21,7 +21,7 @@ Feature: Case end to end tests
     Then I check the created data is correctly displayed on Edit case page
     And I check the created data is correctly displayed on Edit case person page
 
-  @env_main
+  @env_main @ignore #un-ignore this when dataReceived fields are fixed in test-auto
   Scenario: Edit, save and check all fields of a new case
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -258,7 +258,7 @@ Feature: Case end to end tests
     Given I log in with National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
-    When I create a new case with specific data
+    When I create a new case with disease "ANTHRAX"
     Then I check the created data is correctly displayed on Edit case page
     And I check the created data is correctly displayed on Edit case person page
     Then I set Present condition of Person to Dead in Case Person tab
@@ -369,7 +369,7 @@ Feature: Case end to end tests
     And I navigate to case person tab
     And I check if saved Person data is correct
 
-  @issue=SORDEV-7452 @env_main @ignore
+  @issue=SORDEV-7452 @env_main
   Scenario: Bulk mode for linking/adding cases to new Event
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -396,7 +396,7 @@ Feature: Case end to end tests
     And I navigate to the last created Event page via URL
     And I check that number of displayed Event Participants is 1
 
-  @issue=SORDEV-7452 @env_main @ignore
+  @issue=SORDEV-7452 @env_main
   Scenario: Bulk mode for linking/adding case to existing Event
     Given API: I create a new event
     Then API: I check that POST call body is "OK"
@@ -483,7 +483,7 @@ Feature: Case end to end tests
     Then I click on the Persons button from navbar
     And I filter Persons by created person name in cases
     And I click on first person in person directory
-    And I set Present condition of Person to Dead in Case Person tab
+    And I set Present condition of Person to Dead in Person tab
     Then I set death date for person 1 month ago
     And I click on save button from Edit Person page
     Then I click on the Cases button from navbar
@@ -573,9 +573,7 @@ Feature: Case end to end tests
     And I check if Cause of death is Other cause
     And I check if Date of dead for specified case is correct
 
-
-    #TODO separate into 3 tests - test doesn't reflect test case steps
-  @issue=SORDEV-8048 @env_de @ignore
+  @issue=SORDEV-8048 @env_de
   Scenario: Test Default value for disease if only one is used by the server
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -670,11 +668,15 @@ Feature: Case end to end tests
 
   @issue=SORDEV-5479 @env_main
   Scenario: Test for exporting and importing case contact
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Cases button from navbar
-    And I click on the NEW CASE button
-    When I create a new case with specific data
-    Then I check the created data is correctly displayed on Edit case page
+    And I open the last created Case via API
     When I open the Case Contacts tab
     Then I click on new contact button from Case Contacts tab
     And I create a new basic contact to export from Cases Contacts tab
@@ -687,6 +689,7 @@ Feature: Case end to end tests
     And I click on the "START DATA IMPORT" button from the Import Case Contacts popup
     And I select first existing person from the Case Contact Import popup
     And I confirm the save Case Contact Import popup
+    And I select first existing contact from the Case Contact Import popup
     And I check that an import success notification appears in the Import Case Contact popup
     Then I delete exported file from Case Contact Directory
 
@@ -745,3 +748,30 @@ Feature: Case end to end tests
     Then I check if Import Guide for cases was downloaded correctly
     And And I click on the Download Data Dictionary button in Import Cases
     Then I check if Data Dictionary for cases was downloaded correctly
+
+  @issue=SORDEV-5526 @env_main
+    Scenario: Create a contact with source case
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And API: I create a new case
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And I log in with National User
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    And I navigate to Epidemiological Data tab on Edit Case Page
+    When I select NO from Contacts With Source Case Known
+    Then I check that Contacts of Source filed is not available
+    When I select UNKNOWN from Contacts With Source Case Known
+    Then I check that Contacts of Source filed is not available
+    When I select YES from Contacts With Source Case Known
+    Then I check if Contacts of Source filed is available
+    When I click on the NEW CONTACT button on Epidemiological Data Tab of Edit Case Page
+    And I click on the CHOOSE SOURCE CASE button from CONTACT page
+    And I click yes on the DISCARD UNSAVED CHANGES popup if it appears
+    And I click on the CHOOSE CASE button in Create new contact form in Exposure for Epidemiological data tab in Cases
+    And I search for the last case uuid in the CHOOSE SOURCE popup of Create Contact window
+    And I open the first found result in the CHOOSE SOURCE popup of Create Contact window
+    And I click on SAVE new contact button in the CHOOSE SOURCE popup of Create Contact window
+    Then I check that Selected case is listed as Source Case in the CONTACTS WITH SOURCE CASE Box

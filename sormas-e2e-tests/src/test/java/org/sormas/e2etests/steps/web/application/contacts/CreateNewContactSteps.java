@@ -21,6 +21,7 @@ package org.sormas.e2etests.steps.web.application.contacts;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.*;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CONTACT_CREATED_POPUP;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 
@@ -79,6 +80,7 @@ public class CreateNewContactSteps implements En {
         "^I fill a new contact form$",
         () -> {
           contact = contactService.buildGeneratedContact();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           fillFirstName(contact.getFirstName());
           fillLastName(contact.getLastName());
           fillDateOfBirth(contact.getDateOfBirth(), Locale.ENGLISH);
@@ -132,6 +134,15 @@ public class CreateNewContactSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_CREATED_POPUP);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
+        });
+
+    When(
+        "^I click on SAVE new contact button in the CHOOSE SOURCE popup of Create Contact window$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SOURCE_CASE_WINDOW_CONFIRM_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_CONFIRM_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
         });
   }
 

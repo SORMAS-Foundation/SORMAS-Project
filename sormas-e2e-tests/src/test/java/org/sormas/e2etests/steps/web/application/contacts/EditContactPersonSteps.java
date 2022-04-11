@@ -110,6 +110,7 @@ public class EditContactPersonSteps implements En {
         "I complete all default empty fields from Contact Person tab",
         () -> {
           newGeneratedPerson = personService.buildGeneratedPerson();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           fillSalutation(newGeneratedPerson.getSalutation());
           fillDateOfBirth(newGeneratedPerson.getDateOfBirth());
           selectSex(newGeneratedPerson.getSex());

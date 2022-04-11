@@ -31,6 +31,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -135,7 +136,6 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.vaccination.Vaccination;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
-import de.symeda.sormas.utils.EventParticipantJoins;
 
 @Stateless(name = "EventParticipantFacade")
 public class EventParticipantFacadeEjb
@@ -246,6 +246,7 @@ public class EventParticipantFacadeEjb
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	@RolesAllowed(UserRight._SYSTEM)
 	public void archiveAllArchivableEventParticipants(int daysAfterEventParticipantGetsArchived) {
 		archiveAllArchivableEventParticipants(daysAfterEventParticipantGetsArchived, LocalDate.now());
 	}
@@ -258,7 +259,10 @@ public class EventParticipantFacadeEjb
 		Root<EventParticipant> from = cq.from(EventParticipant.class);
 
 		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
-		cq.where(cb.equal(from.get(Event.ARCHIVED), false), cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
+		cq.where(
+			cb.equal(from.get(EventParticipant.ARCHIVED), false),
+			cb.equal(from.get(EventParticipant.DELETED), false),
+			cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
 		cq.select(from.get(EventParticipant.UUID)).distinct(true);
 		List<String> eventParticipantUuids = em.createQuery(cq).getResultList();
 
@@ -451,7 +455,7 @@ public class EventParticipantFacadeEjb
 		final CriteriaQuery<EventParticipantIndexDto> cq = cb.createQuery(EventParticipantIndexDto.class);
 		final Root<EventParticipant> eventParticipant = cq.from(EventParticipant.class);
 		final EventParticipantQueryContext queryContext = new EventParticipantQueryContext(cb, cq, eventParticipant);
-		EventParticipantJoins<EventParticipant> joins = (EventParticipantJoins<EventParticipant>) queryContext.getJoins();
+		EventParticipantJoins joins = queryContext.getJoins();
 
 		Join<EventParticipant, Person> person = joins.getPerson();
 		Join<EventParticipant, Case> resultingCase = joins.getResultingCase();
@@ -608,7 +612,7 @@ public class EventParticipantFacadeEjb
 		CriteriaQuery<EventParticipantExportDto> cq = cb.createQuery(EventParticipantExportDto.class);
 		Root<EventParticipant> eventParticipant = cq.from(EventParticipant.class);
 		EventParticipantQueryContext eventParticipantQueryContext = new EventParticipantQueryContext(cb, cq, eventParticipant);
-		EventParticipantJoins<EventParticipant> joins = (EventParticipantJoins<EventParticipant>) eventParticipantQueryContext.getJoins();
+		EventParticipantJoins joins = eventParticipantQueryContext.getJoins();
 
 		Join<EventParticipant, Person> person = joins.getPerson();
 

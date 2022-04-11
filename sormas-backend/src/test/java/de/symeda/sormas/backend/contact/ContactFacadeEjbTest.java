@@ -42,6 +42,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.i18n.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
 import org.junit.Assert;
@@ -299,6 +300,57 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(ContactClassification.CONFIRMED, contact.getContactClassification());
 		assertEquals(ContactStatus.CONVERTED, contact.getContactStatus());
 		assertEquals(FollowUpStatus.CANCELED, contact.getFollowUpStatus());
+	}
+
+	@Test
+	public void testContactFollowUpStatusWhenConvertedCaseIsDeleted() {
+		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+		PersonDto contactPerson = creator.createPerson("Contact", "Person");
+
+		Date contactDate = new Date();
+		ContactDto contact =
+			creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, contactDate, contactDate, null);
+
+		assertEquals(ContactStatus.ACTIVE, contact.getContactStatus());
+		assertNull(contact.getResultingCase());
+
+		contact.setContactClassification(ContactClassification.CONFIRMED);
+		contact = getContactFacade().save(contact);
+
+		contact.setResultingCase(caze.toReference());
+		contact = getContactFacade().save(contact);
+
+		assertEquals(ContactClassification.CONFIRMED, contact.getContactClassification());
+		assertEquals(ContactStatus.CONVERTED, contact.getContactStatus());
+		assertEquals(FollowUpStatus.CANCELED, contact.getFollowUpStatus());
+
+		getCaseFacade().delete(caze.getUuid());
+		List<ContactDto> contactDtos = getContactFacade().getByPersonUuids(Arrays.asList(contactPerson.getUuid()));
+		assertEquals(1, contactDtos.size());
+		contact = contactDtos.get(0);
+
+		assertEquals(ContactClassification.CONFIRMED, contact.getContactClassification());
+		assertEquals(ContactStatus.DROPPED, contact.getContactStatus());
+		assertEquals(FollowUpStatus.CANCELED, contact.getFollowUpStatus());
+
+		RegionReferenceDto regionReferenceDto = getRegionFacade().getAllActiveByServerCountry().get(0);
+		DistrictReferenceDto districtReferenceDto = getDistrictFacade().getAllActiveAsReference().get(0);
+		contact.setFollowUpStatus(FollowUpStatus.FOLLOW_UP);
+		contact.setRegion(regionReferenceDto);
+		contact.setDistrict(districtReferenceDto);
+		contact = getContactFacade().save(contact);
+		assertEquals(FollowUpStatus.FOLLOW_UP, contact.getFollowUpStatus());
 	}
 
 	@Test
@@ -1441,6 +1493,74 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testMergeContactDoesNotDuplicateSystemComment() throws IOException {
+
+		useNationalUserLogin();
+
+		UserDto leadUser = creator.createUser("", "", "", "First", "User");
+		UserReferenceDto leadUserReference = new UserReferenceDto(leadUser.getUuid());
+		PersonDto leadPerson = creator.createPerson("Alex", "Miller");
+		PersonReferenceDto leadPersonReference = new PersonReferenceDto(leadPerson.getUuid());
+		RDCF leadRdcf = creator.createRDCF();
+		CaseDataDto sourceCase = creator.createCase(
+				leadUserReference,
+				leadPersonReference,
+				Disease.CORONAVIRUS,
+				CaseClassification.SUSPECT,
+				InvestigationStatus.PENDING,
+				new Date(),
+				leadRdcf);
+		ContactDto leadContact = creator.createContact(
+				leadUserReference,
+				leadUserReference,
+				leadPersonReference,
+				sourceCase,
+				new Date(),
+				new Date(),
+				Disease.CORONAVIRUS,
+				leadRdcf);
+		getContactFacade().save(leadContact);
+
+		// Create otherContact
+		UserDto otherUser = creator.createUser("", "", "", "Some", "User");
+		UserReferenceDto otherUserReference = new UserReferenceDto(otherUser.getUuid());
+		PersonDto otherPerson = creator.createPerson("Max", "Smith");
+		PersonReferenceDto otherPersonReference = new PersonReferenceDto(otherPerson.getUuid());
+		RDCF otherRdcf = creator.createRDCF();
+		ContactDto otherContact = creator.createContact(
+				otherUserReference,
+				otherUserReference,
+				otherPersonReference,
+				sourceCase,
+				new Date(),
+				new Date(),
+				Disease.CORONAVIRUS,
+				otherRdcf);
+		ContactReferenceDto otherContactReference = getContactFacade().getReferenceByUuid(otherContact.getUuid());
+		ContactDto contact =
+				creator.createContact(otherUserReference, otherUserReference, otherPersonReference, sourceCase, new Date(), new Date(), null);
+		Region region = creator.createRegion("");
+		District district = creator.createDistrict("", region);
+		Facility facility = creator.createFacility("", region, district, creator.createCommunity("", district));
+
+		CaseDataDto resultingCase = getCaseFacade().save(creator.createCase(
+				otherUserReference,
+				otherPersonReference,
+				Disease.CORONAVIRUS,
+				CaseClassification.CONFIRMED_NO_SYMPTOMS,
+				InvestigationStatus.DONE,
+				new Date(),
+				otherRdcf));
+		otherContact.setResultingCase(resultingCase.toReference());
+		getContactFacade().save(otherContact);
+
+		getContactFacade().mergeContact(leadContact.getUuid(), otherContact.getUuid());
+
+		ContactDto mergedContact = getContactFacade().getByUuid(leadContact.getUuid());
+		assertEquals(I18nProperties.getString(Strings.messageSystemFollowUpCanceled), mergedContact.getFollowUpComment());
+	}
+
+	@Test
 	public void testMergeContact() throws IOException {
 
 		useNationalUserLogin();
@@ -1567,8 +1687,8 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(otherPerson.getBirthWeight(), mergedPerson.getBirthWeight());
 
 		// Check merge comments
-		assertEquals(mergedContact.getAdditionalDetails(), "Test additional details Test other additional details");
-		assertEquals(mergedContact.getFollowUpComment(), "Test followup comment Test other followup comment");
+		assertEquals("Test additional details Test other additional details", mergedContact.getAdditionalDetails());
+		assertEquals("Test followup comment Test other followup comment", mergedContact.getFollowUpComment());
 
 		// 4. Test Reference Changes
 		// 4.1 Samples

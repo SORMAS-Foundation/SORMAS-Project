@@ -45,7 +45,6 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -71,7 +70,6 @@ import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
@@ -139,8 +137,6 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	private ExposureService exposureService;
 	@EJB
 	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
-	@EJB
-	private VisitFacadeEjb.VisitFacadeEjbLocal visitFacade;
 	@EJB
 	private ExternalJournalService externalJournalService;
 	@EJB
@@ -857,24 +853,17 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				statusChangedBySystem = true;
 			}
 		} else {
-			ContactDto contactDto = contactFacade.toDto(contact);
+			ContactDto contactDto = ContactFacadeEjb.toContactDto(contact);
 			Date currentFollowUpUntil = contact.getFollowUpUntil();
 
-			Date earliestSampleDate = null;
-			for (Sample sample : contact.getSamples()) {
-				if (!sample.isDeleted()
-					&& sample.getPathogenTestResult() == PathogenTestResultType.POSITIVE
-					&& (earliestSampleDate == null || sample.getSampleDateTime().before(earliestSampleDate))) {
-					earliestSampleDate = sample.getSampleDateTime();
-				}
-			}
+			Date earliestSampleDate = sampleService.getEarliestSampleDate(contact.getSamples());
 
 			Date untilDate =
 				ContactLogic
 					.calculateFollowUpUntilDate(
 						contactDto,
 						ContactLogic.getFollowUpStartDate(contact.getLastContactDate(), contact.getReportDateTime(), earliestSampleDate),
-						contact.getVisits().stream().map(visit -> visitFacade.toDto(visit)).collect(Collectors.toList()),
+						contact.getVisits().stream().map(VisitFacadeEjb::toDto).collect(Collectors.toList()),
 						diseaseConfigurationFacade.getFollowUpDuration(contact.getDisease()),
 						false,
 						featureConfigurationFacade
@@ -920,8 +909,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	private void addToFollowUpStatusComment(Contact contact, String comment) {
-		String followUpComment = DataHelper.joinStrings("\n", contact.getFollowUpComment(), comment);
-		contact.setFollowUpComment(followUpComment);
+		contact.setFollowUpComment(comment != null && comment.equals(contact.getFollowUpComment())
+				? contact.getFollowUpComment()
+				: DataHelper.joinStrings("\n", contact.getFollowUpComment(), comment));
 	}
 
 	// Used only for testing; directly retrieve the contacts from the visit instead
@@ -982,14 +972,18 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 	public Predicate createUserFilterWithoutCase(ContactQueryContext qc, ContactCriteria contactCriteria) {
 
+		User currentUser = getCurrentUser();
+		if (currentUser == null) {
+			return null;
+		}
+
 		CriteriaBuilder cb = qc.getCriteriaBuilder();
 		CriteriaQuery cq = qc.getQuery();
 		From contactPath = qc.getRoot();
 		// National users can access all contacts in the system
-		User currentUser = getCurrentUser();
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if ((jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
-				|| currentUser.hasUserRole(UserRole.REST_USER)) {
+			|| currentUser.hasUserRole(UserRole.REST_USER)) {
 			if (currentUser.getLimitedDisease() != null) {
 				return cb.equal(contactPath.get(Contact.DISEASE), currentUser.getLimitedDisease());
 			} else {
@@ -1232,10 +1226,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					CriteriaBuilderHelper.ilikePrecise(cb, person.get(Person.UUID), textFilter + "%"),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
-					phoneNumberPredicate(
-						cb,
-						(Expression<String>) contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY),
-						textFilter),
+					phoneNumberPredicate(cb, contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
 					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter)));
 
@@ -1263,10 +1254,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					CriteriaBuilderHelper.ilikePrecise(cb, casePerson.get(Person.UUID), textFilter + "%"),
 					CriteriaBuilderHelper.unaccentedIlike(cb, casePerson.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, casePerson.get(Person.LAST_NAME), textFilter),
-					phoneNumberPredicate(
-						cb,
-						(Expression<String>) contactQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY),
-						textFilter));
+					phoneNumberPredicate(cb, contactQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
@@ -1316,12 +1304,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			Join<Person, EventParticipant> eventParticipant = joins.getEventParticipants();
 			Join<EventParticipant, Event> event = joins.getEvent();
 
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.isFalse(event.get(Event.DELETED)),
-				cb.isFalse(event.get(Event.ARCHIVED)),
-				cb.isFalse(eventParticipant.get(EventParticipant.DELETED)));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.isFalse(event.get(Event.DELETED)), cb.isFalse(eventParticipant.get(EventParticipant.DELETED)));
 
 			if (hasEventLikeCriteria) {
 				String[] textFilters = contactCriteria.getEventLike().trim().split("\\s+");
@@ -1486,19 +1470,13 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	public List<Contact> getByPersonUuids(List<String> personUuids) {
-		if (CollectionUtils.isEmpty(personUuids)) {
-			// Avoid empty IN clause
-			return Collections.emptyList();
-		} else if (personUuids.size() > ModelConstants.PARAMETER_LIMIT) {
-			List<Contact> contacts = new LinkedList<>();
-			IterableHelper.executeBatched(
-				personUuids,
-				ModelConstants.PARAMETER_LIMIT,
-				batchedPersonUuids -> contacts.addAll(getContactsByPersonUuids(batchedPersonUuids)));
-			return contacts;
-		} else {
-			return getContactsByPersonUuids(personUuids);
-		}
+
+		List<Contact> contacts = new LinkedList<>();
+		IterableHelper.executeBatched(
+			personUuids,
+			ModelConstants.PARAMETER_LIMIT,
+			batchedPersonUuids -> contacts.addAll(getContactsByPersonUuids(batchedPersonUuids)));
+		return contacts;
 	}
 
 	private List<Contact> getContactsByPersonUuids(List<String> personUuids) {
@@ -1565,7 +1543,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		final Root<Contact> contact = cq.from(Contact.class);
 
-		ContactQueryContext<Contact> contactQueryContext = new ContactQueryContext<>(cb, cq, contact);
+		ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, contact);
 
 		cq.multiselect(
 			contact.get(Contact.UUID),

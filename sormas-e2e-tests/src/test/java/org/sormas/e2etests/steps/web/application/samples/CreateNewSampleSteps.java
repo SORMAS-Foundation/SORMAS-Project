@@ -32,6 +32,8 @@ import javax.inject.Inject;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Sample;
+import org.sormas.e2etests.entities.pojo.web.SampleAdditionalTest;
+import org.sormas.e2etests.entities.services.SampleAdditionalTestService;
 import org.sormas.e2etests.entities.services.SampleService;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.testng.asserts.SoftAssert;
@@ -42,6 +44,7 @@ public class CreateNewSampleSteps implements En {
   public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
   public static Sample sample;
   public static Sample sampleTestResult;
+  public static SampleAdditionalTest additionalTestResult;
   public static String sampleId;
   private final WebDriverHelpers webDriverHelpers;
   private final Faker faker;
@@ -50,6 +53,7 @@ public class CreateNewSampleSteps implements En {
   public CreateNewSampleSteps(
       WebDriverHelpers webDriverHelpers,
       SampleService sampleService,
+      SampleAdditionalTestService sampleAdditionalTestService,
       Faker faker,
       SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
@@ -165,6 +169,34 @@ public class CreateNewSampleSteps implements En {
           fillTestResultsComment(sampleTestResult.getTestResultsComment());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
         });
+    When(
+        "^I complete all fields from Additional test result popup and save$",
+        () -> {
+          additionalTestResult = sampleAdditionalTestService.buildSampleAdditionalTestResult();
+          fillDateOfResult(additionalTestResult.getDateOfResult(), Locale.ENGLISH);
+          fillTimeOfResult(additionalTestResult.getTimeOfResult());
+          selectHaemoglobinInUrine(additionalTestResult.getHaemoglobinInUrine());
+          selectProteinInUrine(additionalTestResult.getProteinInUrine());
+          selectCellsInUrine(additionalTestResult.getRedBloodCellsInUrine());
+          fillPh(additionalTestResult.getPh());
+          fillPCO2(additionalTestResult.getPCO2());
+          fillPAO2(additionalTestResult.getPAO2());
+          fillHCO3(additionalTestResult.getHCO3());
+          fillOxygenTherapy(additionalTestResult.getOxygen());
+          fillSgpt(additionalTestResult.getSgpt());
+          fillTotalBilirubin(additionalTestResult.getTotalBilirubin());
+          fillSgot(additionalTestResult.getSgot());
+          fillConjBilirubin(additionalTestResult.getConjBilirubin());
+          fillCretinine(additionalTestResult.getCreatine());
+          fillWbc(additionalTestResult.getWbc());
+          fillPotassium(additionalTestResult.getPotassium());
+          fillPlatelets(additionalTestResult.getPlatelets());
+          fillUrea(additionalTestResult.getUrea());
+          fillProthrombin(additionalTestResult.getProthrombin());
+          fillHaemoglobin(additionalTestResult.getHaemoglobin());
+          fillOtherTests(additionalTestResult.getOtherResults());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
 
     When(
         "^I complete all fields from Pathogen test result popup for IgM test type and save$",
@@ -264,6 +296,15 @@ public class CreateNewSampleSteps implements En {
         });
 
     When(
+        "^I check that the created Additional test is correctly displayed$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_ADDITIONAL_TEST_RESULTS_BUTTON);
+          final SampleAdditionalTest actualAdditionalTestResult =
+              collectAdditionalTestResultsData();
+          ComparisonHelper.compareEqualEntities(additionalTestResult, actualAdditionalTestResult);
+        });
+
+    When(
         "^I check that the created Pathogen is correctly displayed for DE version$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EDIT_TEST_RESULTS_BUTTON);
@@ -276,11 +317,6 @@ public class CreateNewSampleSteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONFIRM_BUTTON);
-          String displayedText =
-              webDriverHelpers.getTextFromWebElement(CREATE_CASE_POSITIVE_TEST_RESULT_LABEL);
-          String expectedText = "Create case from contact with positive test result?";
-          softly.assertEquals(displayedText, expectedText);
-          softly.assertAll();
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
         });
 
@@ -414,6 +450,86 @@ public class CreateNewSampleSteps implements En {
 
   private void fillTestResultsComment(String testResultsComment) {
     webDriverHelpers.clearAndFillInWebElement(TEST_RESULTS_COMMENT_AREA_INPUT, testResultsComment);
+  }
+
+  private void selectHaemoglobinInUrine(String haemoglobinInUrine) {
+    webDriverHelpers.selectFromCombobox(HAEMOGLOBIN_IN_URINE_COMBOBOX, haemoglobinInUrine);
+  }
+
+  private void selectProteinInUrine(String proteinInUrine) {
+    webDriverHelpers.selectFromCombobox(PROTEIN_IN_URINE_COMBOBOX, proteinInUrine);
+  }
+
+  private void selectCellsInUrine(String cellsInUrine) {
+    webDriverHelpers.selectFromCombobox(CELLS_IN_URINE_COMBOBOX, cellsInUrine);
+  }
+
+  private void fillPh(String ph) {
+    webDriverHelpers.clearAndFillInWebElement(PH_INPUT, ph);
+  }
+
+  private void fillPCO2(String pCO2) {
+    webDriverHelpers.clearAndFillInWebElement(PCO2_INPUT, pCO2);
+  }
+
+  private void fillPAO2(String pAO2) {
+    webDriverHelpers.clearAndFillInWebElement(PAO2_INPUT, pAO2);
+  }
+
+  private void fillHCO3(String hCO3) {
+    webDriverHelpers.clearAndFillInWebElement(HCO3_INPUT, hCO3);
+  }
+
+  private void fillOxygenTherapy(String oxygenTherapy) {
+    webDriverHelpers.clearAndFillInWebElement(OXYGEN_INPUT, oxygenTherapy);
+  }
+
+  private void fillSgpt(String sgpt) {
+    webDriverHelpers.clearAndFillInWebElement(SGPT_INPUT, sgpt);
+  }
+
+  private void fillTotalBilirubin(String totalBilirubin) {
+    webDriverHelpers.clearAndFillInWebElement(TOTAL_BILIRUBIN_INPUT, totalBilirubin);
+  }
+
+  private void fillSgot(String sgot) {
+    webDriverHelpers.clearAndFillInWebElement(SGOT_INPUT, sgot);
+  }
+
+  private void fillConjBilirubin(String conjBilirubin) {
+    webDriverHelpers.clearAndFillInWebElement(CONJ_BILIRUBIN_INPUT, conjBilirubin);
+  }
+
+  private void fillCretinine(String creatinine) {
+    webDriverHelpers.clearAndFillInWebElement(CREATININE_INPUT, creatinine);
+  }
+
+  private void fillWbc(String wbc) {
+    webDriverHelpers.clearAndFillInWebElement(WBC_INPUT, wbc);
+  }
+
+  private void fillPotassium(String potassium) {
+    webDriverHelpers.clearAndFillInWebElement(POTASSIUM_INPUT, potassium);
+  }
+
+  private void fillPlatelets(String platelets) {
+    webDriverHelpers.clearAndFillInWebElement(PLATELETS_INPUT, platelets);
+  }
+
+  private void fillUrea(String urea) {
+    webDriverHelpers.clearAndFillInWebElement(UREA_INPUT, urea);
+  }
+
+  private void fillProthrombin(String prothrombin) {
+    webDriverHelpers.clearAndFillInWebElement(PROTHROMBIN_INPUT, prothrombin);
+  }
+
+  private void fillHaemoglobin(String haemoglobin) {
+    webDriverHelpers.clearAndFillInWebElement(HAEMOGLOBIN_INPUT, haemoglobin);
+  }
+
+  private void fillOtherTests(String otherTests) {
+    webDriverHelpers.clearAndFillInWebElement(OTHER_TESTS_INPUT, otherTests);
   }
 
   private Sample collectSampleData() {
@@ -557,6 +673,86 @@ public class CreateNewSampleSteps implements En {
         RESULT_VERIFIED_BY_LAB_SUPERVISOR_EDIT_OPTIONS);
   }
 
+  private String getHaemoglobinInUrine() {
+    return webDriverHelpers.getValueFromWebElement(HAEMOGLOBIN_IN_URINE_INPUT);
+  }
+
+  private String getProteinInUrine() {
+    return webDriverHelpers.getValueFromWebElement(PROTEIN_IN_URINE_INPUT);
+  }
+
+  private String getCellsInUrine() {
+    return webDriverHelpers.getValueFromWebElement(CELLS_IN_URINE_INPUT);
+  }
+
+  private String getPh() {
+    return webDriverHelpers.getValueFromWebElement(PH_INPUT);
+  }
+
+  private String getPCO2() {
+    return webDriverHelpers.getValueFromWebElement(PCO2_INPUT);
+  }
+
+  private String getPAO2() {
+    return webDriverHelpers.getValueFromWebElement(PAO2_INPUT);
+  }
+
+  private String getHC03() {
+    return webDriverHelpers.getValueFromWebElement(HCO3_INPUT);
+  }
+
+  private String getOxygen() {
+    return webDriverHelpers.getValueFromWebElement(OXYGEN_INPUT);
+  }
+
+  private String getSgpt() {
+    return webDriverHelpers.getValueFromWebElement(SGPT_INPUT);
+  }
+
+  private String getTotalBilirubin() {
+    return webDriverHelpers.getValueFromWebElement(TOTAL_BILIRUBIN_INPUT);
+  }
+
+  private String getSgot() {
+    return webDriverHelpers.getValueFromWebElement(SGOT_INPUT);
+  }
+
+  private String getConjBilirubin() {
+    return webDriverHelpers.getValueFromWebElement(CONJ_BILIRUBIN_INPUT);
+  }
+
+  private String getCreatine() {
+    return webDriverHelpers.getValueFromWebElement(CREATININE_INPUT);
+  }
+
+  private String getWbc() {
+    return webDriverHelpers.getValueFromWebElement(WBC_INPUT);
+  }
+
+  private String getPotassium() {
+    return webDriverHelpers.getValueFromWebElement(POTASSIUM_INPUT);
+  }
+
+  private String getPlatelets() {
+    return webDriverHelpers.getValueFromWebElement(PLATELETS_INPUT);
+  }
+
+  private String getUrea() {
+    return webDriverHelpers.getValueFromWebElement(UREA_INPUT);
+  }
+
+  private String getProthrombin() {
+    return webDriverHelpers.getValueFromWebElement(PROTHROMBIN_INPUT);
+  }
+
+  private String getHaemoglobin() {
+    return webDriverHelpers.getValueFromWebElement(HAEMOGLOBIN_INPUT);
+  }
+
+  private String getOtherResults() {
+    return webDriverHelpers.getValueFromWebElement(OTHER_TESTS_INPUT);
+  }
+
   private Sample collectPathogenTestResultsData() {
     return Sample.builder()
         .sampleTestResults(getPathogenPopupTestResult())
@@ -568,6 +764,33 @@ public class CreateNewSampleSteps implements En {
         .laboratory(getPathogenPopupLaboratory())
         .resultVerifiedByLabSupervisor(getResultVerifiedByLabSupervisor())
         .testResultsComment(getTestResultComment())
+        .build();
+  }
+
+  private SampleAdditionalTest collectAdditionalTestResultsData() {
+    return SampleAdditionalTest.builder()
+        .dateOfResult(getDateOfResult(Locale.ENGLISH))
+        .timeOfResult(getTimeOfResult())
+        .haemoglobinInUrine(getHaemoglobinInUrine())
+        .proteinInUrine(getProteinInUrine())
+        .redBloodCellsInUrine(getCellsInUrine())
+        .ph(getPh())
+        .pCO2(getPCO2())
+        .pAO2(getPAO2())
+        .hCO3(getHC03())
+        .oxygen(getOxygen())
+        .sgpt(getSgpt())
+        .totalBilirubin(getTotalBilirubin())
+        .sgot(getSgot())
+        .conjBilirubin(getConjBilirubin())
+        .creatine(getCreatine())
+        .wbc(getWbc())
+        .potassium(getPotassium())
+        .platelets(getPlatelets())
+        .urea(getUrea())
+        .prothrombin(getProthrombin())
+        .haemoglobin(getHaemoglobin())
+        .otherResults(getOtherResults())
         .build();
   }
 

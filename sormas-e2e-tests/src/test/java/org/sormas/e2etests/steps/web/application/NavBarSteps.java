@@ -209,36 +209,39 @@ public class NavBarSteps implements En {
           try {
             switch (page) {
               case ("Surveillance Dashboard"):
-                webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
+                webDriverHelpers.isElementDisplayedAndNoLoadingSpinnerOrThrowException(
                     SURVEILLANCE_DASHBOARD_NAME);
                 break;
               case ("Contacts Dashboard"):
-                webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
+                webDriverHelpers.isElementDisplayedAndNoLoadingSpinnerOrThrowException(
                     CONTACTS_DASHBOARD_NAME);
                 break;
               case ("Tasks"):
-                webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
+                webDriverHelpers.isElementDisplayedAndNoLoadingSpinnerOrThrowException(
                     GENERAL_SEARCH_INPUT);
                 break;
               case ("Persons"):
-                webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
+                webDriverHelpers.isElementDisplayedAndNoLoadingSpinnerOrThrowException(
                     SEARCH_PERSON_BY_FREE_TEXT);
                 break;
               case ("Cases"):
-                webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(NEW_CASE_BUTTON);
+                webDriverHelpers.isElementDisplayedAndNoLoadingSpinnerOrThrowException(
+                    NEW_CASE_BUTTON);
                 break;
               case ("Contacts"):
-                webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
+                webDriverHelpers.isElementDisplayedAndNoLoadingSpinnerOrThrowException(
                     NEW_CONTACT_PAGE_BUTTON);
                 break;
               case ("Events"):
-                webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(NEW_EVENT_BUTTON);
+                webDriverHelpers.isElementDisplayedAndNoLoadingSpinnerOrThrowException(
+                    NEW_EVENT_BUTTON);
                 break;
               case ("Samples"):
-                webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(SAMPLE_SEARCH_INPUT);
+                webDriverHelpers.isElementDisplayedAndNoLoadingSpinnerOrThrowException(
+                    SAMPLE_SEARCH_INPUT);
                 break;
               case ("Immunizations"):
-                webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
+                webDriverHelpers.isElementDisplayedAndNoLoadingSpinnerOrThrowException(
                     ADD_NEW_IMMUNIZATION_BUTTON);
                 break;
             }
@@ -249,7 +252,7 @@ public class NavBarSteps implements En {
           } catch (Exception exception) {
             elapsedTime = "Couldn't load page under 20s";
           }
-          log.info("Collecting test results");
+          log.info("Adding page [ {} ] loading results to report", page);
           TableDataManager.addRowEntity(page + " page", elapsedTime);
         });
   }

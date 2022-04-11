@@ -812,7 +812,6 @@ public class WebDriverHelpers {
         By.xpath(
             "//div[@class='v-loading-indicator third v-loading-indicator-wait' or contains(@class, 'v-loading-indicator')]");
     boolean isSpinnerDisplayed;
-
     try {
       assertHelpers.assertWithPollWithoutFail(
           () ->
@@ -850,5 +849,28 @@ public class WebDriverHelpers {
 
   public void sendFile(By selector, String filePath) {
     baseSteps.getDriver().findElement(selector).sendKeys(filePath);
+  }
+
+  public boolean isElementDisplayedAndNoLoadingSpinnerOrThrowException(By selector) {
+    By loadingSpinner =
+        By.xpath(
+            "//div[@class='v-loading-indicator third v-loading-indicator-wait' or contains(@class, 'v-loading-indicator')]");
+    try {
+      await()
+          .pollInterval(ONE_HUNDRED_MILLISECONDS)
+          .ignoreExceptions()
+          .catchUncaughtExceptions()
+          .timeout(ofSeconds(FLUENT_WAIT_TIMEOUT_SECONDS))
+          .until(
+              () ->
+                  baseSteps.getDriver().findElement(selector).isDisplayed()
+                      && !baseSteps.getDriver().findElement(loadingSpinner).isDisplayed());
+      return true;
+    } catch (ConditionTimeoutException ignored) {
+      throw new NoSuchElementException(
+          String.format(
+              "Element: %s is not visible under 20 seconds or loading spinner didn't finished",
+              selector));
+    }
   }
 }
