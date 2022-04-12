@@ -31,9 +31,13 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.user.UserReferenceDto;
 import org.junit.Test;
 import org.junit.runner.RunWith;
 import org.mockito.junit.MockitoJUnitRunner;
@@ -365,6 +369,45 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 
 		List<TaskDto> tasksByCase = getTaskFacade().getAllByCase(caze.toReference());
 		assertThat(tasksByCase, is(empty()));
+	}
+
+	@Test
+	public void testGetAllTasksForUsersWithoutRights() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, UserRole.ADMIN, UserRole.NATIONAL_USER);
+		UserDto userCaseOfficer = creator.createUser(rdcf, UserRole.CASE_OFFICER);
+		loginWith(user);
+
+		PersonDto person = creator.createPerson("case person", "ln");
+		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
+
+		ContactDto contact = creator.createContact(
+				user.toReference(),
+				person.toReference(),
+				caze.getDisease(),
+				contactDto -> contactDto.setResultingCase(caze.toReference()));
+
+
+		creator.createTask(TaskContext.CONTACT, contact.toReference(), t -> {
+			t.setTaskStatus(TaskStatus.PENDING);
+			t.setAssigneeUser(user.toReference());
+		});
+
+		creator.createTask(TaskContext.CONTACT, contact.toReference(), t -> {
+			t.setTaskStatus(TaskStatus.PENDING);
+			t.setAssigneeUser(userCaseOfficer.toReference());
+		});
+
+		List<TaskIndexDto> tasks = getTaskFacade().getIndexList(null, 0, 100, null);
+		List<TaskIndexDto> contactTasks = tasks.stream().filter(t -> t.getTaskContext().equals(TaskContext.CONTACT)).collect(Collectors.toList());
+		assertEquals(2, contactTasks.size());
+
+		loginWith(userCaseOfficer);
+
+		tasks = getTaskFacade().getIndexList(null, 0, 100, null);
+		contactTasks = tasks.stream().filter(t -> t.getTaskContext().equals(TaskContext.CONTACT)).collect(Collectors.toList());
+		assertEquals(1, contactTasks.size());
+
 	}
 
 	@Test

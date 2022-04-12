@@ -827,6 +827,19 @@ public class TestDataCreator {
 		return createTask(TaskContext.GENERAL, TaskType.OTHER, TaskStatus.PENDING, null, null, null, new Date(), assigneeUser);
 	}
 
+	public TaskDto createTask(TaskContext context, ReferenceDto entityRef, Consumer<TaskDto> customConfig) {
+
+		TaskDto task = TaskDto.build(context, entityRef);
+
+		if (customConfig != null) {
+			customConfig.accept(task);
+		}
+
+		task = beanTest.getTaskFacade().saveTask(task);
+
+		return task;
+	}
+
 	public TaskDto createTask(
 		TaskContext context,
 		TaskType type,
