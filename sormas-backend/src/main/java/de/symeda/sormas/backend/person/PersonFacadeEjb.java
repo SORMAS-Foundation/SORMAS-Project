@@ -541,7 +541,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	private void validateUserRights(PersonDto person, PersonDto existingPerson) {
 		if (existingPerson != null) {
 			if (person.getSymptomJournalStatus() != existingPerson.getSymptomJournalStatus()
-				&& !userService.hasRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
+				&& !(userService.hasRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL) || userService.hasRight(UserRight.EXTERNAL_VISITS))) {
 				throw new AccessDeniedException(
 					String.format(
 						I18nProperties.getString(Strings.errorNoRightsForChangingField),
