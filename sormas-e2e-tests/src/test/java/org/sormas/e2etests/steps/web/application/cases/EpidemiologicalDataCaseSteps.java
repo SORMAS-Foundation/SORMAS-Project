@@ -2,7 +2,6 @@ package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.*;
-import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.NEW_ENTRY_EPIDEMIOLOGICAL_DATA;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_CONTACT_WINDOW_FIRST_RESULT_OPTION;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_WINDOW_CONTACT;
@@ -63,11 +62,6 @@ public class EpidemiologicalDataCaseSteps implements En {
               START_OF_EXPOSURE_INPUT, formatter.format(LocalDate.now()));
           webDriverHelpers.fillInWebElement(
               END_OF_EXPOSURE_INPUT, formatter.format(LocalDate.now()));
-        });
-    When(
-        "I fill Description field in Activity as Case form",
-        () -> {
-          webDriverHelpers.fillInWebElement(ACTIVITY_DESCRIPTION, faker.book().title());
         });
 
     When(
