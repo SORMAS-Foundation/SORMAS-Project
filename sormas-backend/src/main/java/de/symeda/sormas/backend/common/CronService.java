@@ -222,11 +222,6 @@ public class CronService {
 		coreEntityDeletionService.executeAutomaticDeletion();
 	}
 
-	@Schedule(hour = "2", minute = "10", persistent = false)
-	public void permanentDeleteEntities() {
-		coreEntityDeletionService.executePermanentDeletion();
-	}
-
 	@Schedule(hour = "2", minute = "15", persistent = false)
 	public void archiveContacts() {
 		final int daysAfterContactsGetsArchived = featureConfigurationFacade

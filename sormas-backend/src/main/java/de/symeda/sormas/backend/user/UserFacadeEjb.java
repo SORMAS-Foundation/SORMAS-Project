@@ -198,17 +198,17 @@ public class UserFacadeEjb implements UserFacade {
 		return new UserReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName(), entity.getUserRoles());
 	}
 
-	private List<String> toUuidList(HasUuid hasUuid) {
-		/*
-		 * Supports conversion of a null object into a list with one "null" value in it.
-		 * Uncertain if that use case exists, but wasn't suppose to be broken when replacing the Dto to Entity lookup.
-		 */
-		return Collections.singletonList(hasUuid == null ? null : hasUuid.getUuid());
-	}
-
 	@Override
 	public List<UserReferenceDto> getUsersByRegionAndRights(RegionReferenceDto regionRef, Disease limitedDisease, UserRight... userRights) {
-		return userService.getUserReferences(toUuidList(regionRef), null, null, true, true, limitedDisease, userRights)
+		return userService
+			.getUserReferences(
+				regionRef != null ? Collections.singletonList(regionRef.getUuid()) : null,
+				null,
+				null,
+				true,
+				true,
+				limitedDisease,
+				userRights)
 			.stream()
 			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
@@ -274,7 +274,15 @@ public class UserFacadeEjb implements UserFacade {
 	@Override
 	public List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto districtRef, Disease limitedDisease, UserRight... userRights) {
 
-		return userService.getUserReferences(null, toUuidList(districtRef), null, true, true, limitedDisease, userRights)
+		return userService
+			.getUserReferences(
+				null,
+				districtRef != null ? Collections.singletonList(districtRef.getUuid()) : null,
+				null,
+				true,
+				true,
+				limitedDisease,
+				userRights)
 			.stream()
 			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
@@ -286,7 +294,15 @@ public class UserFacadeEjb implements UserFacade {
 		boolean excludeLimitedDiseaseUsers,
 		UserRight... userRights) {
 		return userService
-			.getUserReferences(null, toUuidList(districtRef), null, true, true, null, excludeLimitedDiseaseUsers, Arrays.asList(userRights))
+			.getUserReferences(
+				null,
+				districtRef != null ? Collections.singletonList(districtRef.getUuid()) : null,
+				null,
+				true,
+				true,
+				null,
+				excludeLimitedDiseaseUsers,
+				Arrays.asList(userRights))
 			.stream()
 			.map(UserFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());

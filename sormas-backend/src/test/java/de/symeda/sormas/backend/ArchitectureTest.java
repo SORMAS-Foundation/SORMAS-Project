@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend;
 
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
@@ -151,6 +152,8 @@ public class ArchitectureTest {
 		} else {
 			allPublicMethods.should()
 				.beAnnotatedWith(RolesAllowed.class)
+				.orShould()
+				.beAnnotatedWith(PermitAll.class)
 				.orShould()
 				.haveNameMatching("^(get|count|is|does|has|validate|to|pseudonymize|convertToReferenceDto|fillOrBuild|convertToDto|fromDto|exists).*")
 				.check(classes);
