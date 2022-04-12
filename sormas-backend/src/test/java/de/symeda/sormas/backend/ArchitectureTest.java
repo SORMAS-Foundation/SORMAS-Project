@@ -124,7 +124,7 @@ public class ArchitectureTest {
 
 	@ArchTest
 	public void testEventImportFacadeEjbAuthorization(JavaClasses classes) {
-		assertFacadeEjbAnnotated(EventImportFacadeEjb.class, true, classes);
+		assertFacadeEjbAnnotated(EventImportFacadeEjb.class, true, classes, null);
 	}
 
 	@ArchTest
