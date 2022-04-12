@@ -139,6 +139,7 @@ import de.symeda.sormas.backend.vaccination.Vaccination;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 
 @Stateless(name = "EventParticipantFacade")
+@RolesAllowed(UserRight._EVENTPARTICIPANT_VIEW)
 public class EventParticipantFacadeEjb
 	extends
 	AbstractCoreFacadeEjb<EventParticipant, EventParticipantDto, EventParticipantIndexDto, EventParticipantReferenceDto, EventParticipantService, EventParticipantCriteria>
@@ -306,10 +307,16 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._EVENTPARTICIPANT_CREATE,
+		UserRight._EVENTPARTICIPANT_EDIT })
 	public EventParticipantDto saveEventParticipant(@Valid EventParticipantDto dto) {
 		return saveEventParticipant(dto, true, true);
 	}
 
+	@RolesAllowed({
+		UserRight._EVENTPARTICIPANT_CREATE,
+		UserRight._EVENTPARTICIPANT_EDIT })
 	public EventParticipantDto saveEventParticipant(@Valid EventParticipantDto dto, boolean checkChangeDate, boolean internal) {
 		EventParticipant existingParticipant = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 
@@ -432,12 +439,8 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
+	@RolesAllowed(UserRight._EVENTPARTICIPANT_DELETE)
 	public void delete(String uuid) throws ExternalSurveillanceToolException {
-
-		if (!userService.hasRight(UserRight.EVENTPARTICIPANT_DELETE)) {
-			throw new UnsupportedOperationException("Your user is not allowed to delete event participants");
-		}
-
 		EventParticipant eventParticipant = service.getByUuid(uuid);
 		service.delete(eventParticipant);
 	}
@@ -967,6 +970,10 @@ public class EventParticipantFacadeEjb
 	}
 
 	public EventParticipantDto toDto(EventParticipant source) {
+		return toEventParticipantDto(source);
+	}
+
+	public static EventParticipantDto toEventParticipantDto(EventParticipant source) {
 
 		if (source == null) {
 			return null;

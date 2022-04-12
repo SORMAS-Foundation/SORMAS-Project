@@ -127,6 +127,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "EventFacade")
+@RolesAllowed(UserRight._EVENT_VIEW)
 public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, EventIndexDto, EventReferenceDto, EventService, EventCriteria>
 	implements EventFacade {
 
@@ -237,10 +238,16 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._EVENT_CREATE,
+		UserRight._EVENT_EDIT })
 	public EventDto save(@Valid @NotNull EventDto dto) {
 		return save(dto, true, true);
 	}
 
+	@RolesAllowed({
+		UserRight._EVENT_CREATE,
+		UserRight._EVENT_EDIT })
 	public EventDto save(@NotNull EventDto dto, boolean checkChangeDate, boolean internal) {
 
 		Event existingEvent = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
@@ -273,6 +280,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		}
 	}
 
+	@RolesAllowed(UserRight._EVENT_EDIT)
 	public void syncSharesAsync(ShareTreeCriteria criteria) {
 		executorService.schedule(() -> {
 			sormasToSormasEventFacade.syncShares(criteria);
@@ -280,11 +288,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Override
+	@RolesAllowed(UserRight._EVENT_DELETE)
 	public void delete(String eventUuid) throws ExternalSurveillanceToolException {
-		if (!userService.hasRight(UserRight.EVENT_DELETE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete events.");
-		}
-
 		Event event = service.getByUuid(eventUuid);
 		deleteEvent(event);
 	}
@@ -299,10 +304,8 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		service.delete(event);
 	}
 
+	@RolesAllowed(UserRight._EVENT_DELETE)
 	public List<String> deleteEvents(List<String> eventUuids) {
-		if (!userService.hasRight(UserRight.EVENT_DELETE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete events.");
-		}
 		List<String> deletedEventUuids = new ArrayList<>();
 		List<Event> eventsToBeDeleted = service.getByUuids(eventUuids);
 		if (eventsToBeDeleted != null) {
@@ -648,6 +651,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Override
+	@RolesAllowed(UserRight._EVENT_EXPORT)
 	public List<EventExportDto> getExportList(EventCriteria eventCriteria, Collection<String> selectedRows, Integer first, Integer max) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<EventExportDto> cq = cb.createQuery(EventExportDto.class);
@@ -878,6 +882,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Override
+	@RolesAllowed(UserRight._EVENT_ARCHIVE)
 	public void archive(String eventUuid, Date endOfProcessingDate) {
 		super.archive(eventUuid, endOfProcessingDate);
 		List<String> eventParticipantList = eventParticipantService.getAllUuidsByEventUuids(Collections.singletonList(eventUuid));
@@ -885,6 +890,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Override
+	@RolesAllowed(UserRight._EVENT_ARCHIVE)
 	public void archive(List<String> eventUuids) {
 		super.archive(eventUuids);
 		List<String> eventParticipantList = eventParticipantService.getAllUuidsByEventUuids(eventUuids);
@@ -892,6 +898,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Override
+	@RolesAllowed(UserRight._EVENT_ARCHIVE)
 	public void dearchive(List<String> eventUuids, String dearchiveReason) {
 		super.dearchive(eventUuids, dearchiveReason);
 		List<String> eventParticipantList = eventParticipantService.getAllUuidsByEventUuids(eventUuids);
@@ -1011,6 +1018,10 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	public EventDto toDto(Event source) {
+		return toEventDto(source);
+	}
+
+	public static EventDto toEventDto(Event source) {
 
 		if (source == null) {
 			return null;
@@ -1205,6 +1216,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		archiveAllArchivableEvents(daysAfterEventGetsArchived, LocalDate.now());
 	}
 
+	@RolesAllowed(UserRight._SYSTEM)
 	void archiveAllArchivableEvents(int daysAfterEventGetsArchived, @NotNull LocalDate referenceDate) {
 
 		LocalDate notChangedSince = referenceDate.minusDays(daysAfterEventGetsArchived);
@@ -1260,6 +1272,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Override
+	@RolesAllowed(UserRight._EVENT_EDIT)
 	public void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException {
 		service.updateExternalData(externalData);
 	}
@@ -1290,16 +1303,6 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		return subordinateEventUuids;
 	}
 
-	private User getRandomDistrictEventResponsible(District district) {
-
-		return userService.getRandomDistrictUser(district, UserRight.EVENT_RESPONSIBLE);
-	}
-
-	private User getRandomRegionEventResponsible(Region region) {
-
-		return userService.getRandomRegionUser(region, UserRight.EVENT_RESPONSIBLE);
-	}
-
 	@Override
 	public boolean hasRegionAndDistrict(String eventUuid) {
 		return service.hasRegionAndDistrict(eventUuid);
@@ -1311,6 +1314,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 	}
 
 	@Override
+	@RolesAllowed(UserRight._EVENT_EDIT)
 	public int saveBulkEvents(
 		List<String> eventUuidList,
 		EventDto updatedTempEvent,
