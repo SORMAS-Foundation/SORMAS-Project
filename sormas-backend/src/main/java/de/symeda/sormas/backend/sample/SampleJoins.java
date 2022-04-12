@@ -47,13 +47,6 @@ public class SampleJoins extends QueryJoins<Sample> {
 	private Join<Sample, EventParticipant> eventParticipant;
 	private Join<Sample, Contact> contact;
 
-	private Join<Location, Region> eventRegion;
-	private Join<Location, District> eventDistrict;
-	private Join<Location, Community> eventCommunity;
-	private Join<Event, Location> eventLocation;
-	private Join<Event, User> eventReportingUser;
-	private Join<Event, User> eventResponsibleUser;
-
 	private CaseJoins caseJoins;
 	private ContactJoins contactJoins;
 	private EventParticipantJoins eventParticipantJoins;
@@ -183,51 +176,27 @@ public class SampleJoins extends QueryJoins<Sample> {
 	}
 
 	public Join<Event, Location> getEventLocation() {
-		return getOrCreate(eventLocation, Event.EVENT_LOCATION, JoinType.LEFT, getEvent(), this::setEventLocation);
-	}
-
-	public void setEventLocation(Join<Event, Location> eventLocation) {
-		this.eventLocation = eventLocation;
+		return getEventParticipantJoins().getEventJoins().getLocation();
 	}
 
 	public Join<Location, Region> getEventRegion() {
-		return getOrCreate(eventRegion, Location.REGION, JoinType.LEFT, getEventLocation(), this::setEventRegion);
-	}
-
-	public void setEventRegion(Join<Location, Region> eventRegion) {
-		this.eventRegion = eventRegion;
+		return getEventParticipantJoins().getEventJoins().getRegion();
 	}
 
 	public Join<Location, District> getEventDistrict() {
-		return getOrCreate(eventDistrict, Location.DISTRICT, JoinType.LEFT, getEventLocation(), this::setEventDistrict);
+		return getEventParticipantJoins().getEventJoins().getDistrict();
 	}
 
 	public Join<Location, Community> getEventCommunity() {
-		return getOrCreate(eventCommunity, Location.COMMUNITY, JoinType.LEFT, getEventLocation(), this::setEventCommunity);
-	}
-
-	public void setEventCommunity(Join<Location, Community> eventCommunity) {
-		this.eventCommunity = eventCommunity;
-	}
-
-	public void setEventDistrict(Join<Location, District> eventDistrict) {
-		this.eventDistrict = eventDistrict;
+		return getEventParticipantJoins().getEventJoins().getCommunity();
 	}
 
 	public Join<Event, User> getEventReportingUser() {
-		return getOrCreate(eventReportingUser, Event.REPORTING_USER, JoinType.LEFT, getEvent(), this::setEventReportingUser);
-	}
-
-	private void setEventReportingUser(Join<Event, User> eventReportingUser) {
-		this.eventReportingUser = eventReportingUser;
+		return getEventParticipantJoins().getEventJoins().getReportingUser();
 	}
 
 	public Join<Event, User> getEventResponsibleUser() {
-		return getOrCreate(eventResponsibleUser, Event.RESPONSIBLE_USER, JoinType.LEFT, getEvent(), this::setEventResponsibleUser);
-	}
-
-	private void setEventResponsibleUser(Join<Event, User> eventResponsibleUser) {
-		this.eventResponsibleUser = eventResponsibleUser;
+		return getEventParticipantJoins().getEventJoins().getResponsibleUser();
 	}
 
 	public Join<Contact, Person> getContactPerson() {
