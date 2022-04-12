@@ -164,6 +164,7 @@ public class EventDirectorySteps implements En {
               SEARCH_EVENT_BY_FREE_TEXT,
               dataOperations.getPartialUuidFromAssociatedLink(eventUuid));
         });
+
     When(
         "I navigate to the last created through API Event page via URL",
         () -> {
@@ -323,12 +324,6 @@ public class EventDirectorySteps implements En {
         });
 
     When(
-        "^I click on ([^\"]*) Radiobutton on Event Directory Page$",
-        (String buttonName) -> {
-          webDriverHelpers.clickWebElementByText(EVENTS_RADIO_BUTTON, buttonName);
-          webDriverHelpers.waitForPageLoaded();
-        });
-    When(
         "I check that name appearing in hover is equal to name of linked Event group",
         () -> {
           EventGroup createdGroup = EditEventSteps.groupEvent;
@@ -342,6 +337,13 @@ public class EventDirectorySteps implements En {
         });
 
     When(
+        "^I click on ([^\"]*) Radiobutton on Event Directory Page$",
+        (String buttonName) -> {
+          webDriverHelpers.clickWebElementByText(EVENTS_RADIO_BUTTON, buttonName);
+          webDriverHelpers.waitForPageLoaded();
+        });
+
+    When(
         "^I click on Link Event button on Event Directory Page$",
         () -> webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON));
     When(
@@ -351,6 +353,7 @@ public class EventDirectorySteps implements En {
     When(
         "^I click on Unlink Event button on Event Directory Page$",
         () -> webDriverHelpers.clickOnWebElementBySelector(UNLINK_EVENT_BUTTON));
+
     When(
         "^I fill Id filter with Id of last created event in Link Event to group form$",
         () ->

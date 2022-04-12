@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend;
 
+import javax.annotation.security.PermitAll;
 import java.util.Collections;
 import java.util.List;
 
@@ -196,6 +197,14 @@ public class ArchitectureTest {
 					.haveNameMatching(
 						"^(get|count|is|does|has|validate|to|pseudonymize|convertToReferenceDto|fillOrBuild|convertToDto|fromDto|exists).*");
 			}
+
+			allPublicMethods.should()
+					.beAnnotatedWith(RolesAllowed.class)
+					.orShould()
+					.beAnnotatedWith(PermitAll.class)
+					.orShould()
+					.haveNameMatching("^(get|count|is|does|has|validate|to|pseudonymize|convertToReferenceDto|fillOrBuild|convertToDto|fromDto|exists).*")
+					.check(classes);
 
 			methodChecks.check(classes);
 		}
