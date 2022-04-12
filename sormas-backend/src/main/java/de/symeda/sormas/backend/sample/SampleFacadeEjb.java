@@ -988,16 +988,12 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		Map<SampleCountType, Long> map = new HashMap<SampleCountType, Long>();
 		map.put(SampleCountType.COLLECTED, total);
-		map.put(
-			SampleCountType.INDETERMINATE,
-			sampleCounts.getPathogenTestResultIndeterminate() == null ? 0 : sampleCounts.getPathogenTestResultIndeterminate());
+		map.put(SampleCountType.INDETERMINATE,sampleCounts.getPathogenTestResultIndeterminate() == null ? 0 : sampleCounts.getPathogenTestResultIndeterminate());
 		map.put(SampleCountType.PENDING, sampleCounts.getPathogenTestResultPending() == null ? 0 : sampleCounts.getPathogenTestResultPending());
 		map.put(SampleCountType.POSITIVE, sampleCounts.getPathogenTestResultPositive() == null ? 0 : sampleCounts.getPathogenTestResultPositive());
 		map.put(SampleCountType.NEGATIVE, sampleCounts.getPathogenTestResultNegative() == null ? 0 : sampleCounts.getPathogenTestResultNegative());
 		map.put(SampleCountType.ADEQUATE, sampleCounts.getSpecimenConditionAdequate() == null ? 0 : sampleCounts.getSpecimenConditionAdequate());
-		map.put(
-			SampleCountType.INADEQUATE,
-			sampleCounts.getSpecimenConditionInadequate() == null ? 0 : sampleCounts.getSpecimenConditionInadequate());
+		map.put(SampleCountType.INADEQUATE,sampleCounts.getSpecimenConditionInadequate() == null ? 0 : sampleCounts.getSpecimenConditionInadequate());
 		map.put(SampleCountType.SHIPPED, sampleCounts.getSampleShipped() == null ? 0 : sampleCounts.getSampleShipped());
 		map.put(SampleCountType.NOT_SHIPED, sampleCounts.getSampleNotShipped() == null ? 0 : sampleCounts.getSampleNotShipped());
 		map.put(SampleCountType.RECEIVED, sampleCounts.getSampleReceived() == null ? 0 : sampleCounts.getSampleReceived());
@@ -1006,7 +1002,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		return map;
 	}
 
-	public SampleDashboardCount getSampleDashboardCounts(SampleCriteria sampleCriteria) {
+	private SampleDashboardCount getSampleDashboardCounts(SampleCriteria sampleCriteria) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<SampleDashboardCount> cq = cb.createQuery(SampleDashboardCount.class);
 		final Root<Sample> root = cq.from(Sample.class);
