@@ -16,35 +16,17 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.enums.cases.epidemiologicalData;
+package org.sormas.e2etests.pages.application.contacts;
 
-import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
 
-@Slf4j
-public enum ActivityAsCaseType {
-  WORK("Work"),
-  HABITATION("Habitation"),
-  CAREDFOR("Cared for"),
-  OTHER("Other"),
-  UNKNOWN("Unknown");
+public class ContactImportExportPage {
 
-  private String activityCase;
-
-  ActivityAsCaseType(String activity) {
-    this.activityCase = activity;
-  }
-
-  public String getActivityCase() {
-    return activityCase;
-  }
-
-  public static ActivityAsCaseType fromString(String activity) {
-    for (ActivityAsCaseType activityAsCaseType : ActivityAsCaseType.values()) {
-      if (activityAsCaseType.activityCase.equalsIgnoreCase(activity)) {
-        return activityAsCaseType;
-      }
-    }
-    log.error("Couldn't map activity !");
-    return null;
-  }
+  public static final By CUSTOM_CONTACT_EXPORT = By.id("exportCustom");
+  public static final By EXPORT_CONFIGURATION_DATA_ID_CHECKBOX_CONTACT =
+      By.xpath("//label[text()='Contact ID']");
+  public static final By EXPORT_CONFIGURATION_DATA_FIRST_NAME_CHECKBOX_CONTACT =
+      By.xpath("//label[text()='First name of contact person']");
+  public static final By EXPORT_CONFIGURATION_DATA_LAST_NAME_CHECKBOX_CONTACT =
+      By.xpath("//label[text()='Last name of contact person']");
 }
