@@ -193,7 +193,6 @@ public class EditContactSteps implements En {
               createdContact.getFirstName() + " " + createdContact.getLastName());
           TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
-          //          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
         });
 
     When(
