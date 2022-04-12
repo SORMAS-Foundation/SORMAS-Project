@@ -85,6 +85,13 @@ public class EditSampleSteps implements En {
           webDriverHelpers.scrollToElement(PATHOGEN_NEW_TEST_RESULT_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(PATHOGEN_NEW_TEST_RESULT_BUTTON);
         });
+    When(
+        "^I click on the new additional test from the Edit Sample page$",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(ADDIITONAL_NEW_TEST_RESULT_BUTTON);
+          webDriverHelpers.scrollToElement(ADDIITONAL_NEW_TEST_RESULT_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ADDIITONAL_NEW_TEST_RESULT_BUTTON);
+        });
 
     When(
         "^I change all Sample fields and save$",

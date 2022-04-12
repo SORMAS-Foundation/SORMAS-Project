@@ -232,6 +232,7 @@ public class CaseDirectorySteps implements En {
         () -> {
           String eventUuid = apiState.getCreatedEvent().getUuid();
           webDriverHelpers.fillInWebElement(SEARCH_BUTTON, eventUuid);
+          TimeUnit.SECONDS.sleep(3); // needed for table refresh
         });
     And(
         "I click first result in grid on Link to Event form",

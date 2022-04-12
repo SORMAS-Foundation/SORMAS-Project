@@ -573,6 +573,101 @@ Feature: Case end to end tests
     And I check if Cause of death is Other cause
     And I check if Date of dead for specified case is correct
 
+  @issue=SORDEV-6612 @env_main
+  Scenario: Manually triggered calculation of case classification
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    Then I click on INFO button on Case Edit page
+    When I am accessing the Symptoms tab using of created case via api
+    And I change all symptoms fields to "YES" option field and save
+    And I am accessing the Symptoms tab using of created case via api
+    And I check the created data is correctly displayed on Symptoms tab page
+    And I click on Case tab from Symptoms tab directory
+    And I check that Case Classification has "Suspect case" value
+    Then I click on save case button
+    Then I navigate to symptoms tab
+    Then I change Other symptoms to "YES" option
+    And I click on Clear all button From Symptoms tab
+    And I change all symptoms fields to "NO_AND_OTHER_SYMPTOMS_TO_YES" option field and save
+    And I am accessing the Symptoms tab using of created case via api
+    And I check the created data that describes Clinical signs and Symptoms are correctly displayed for No or UNKNOWN option in Symptoms tab page
+    And  I click on Case tab from Symptoms tab directory
+    And I check that Case Classification has "Not yet classified" value
+    Then I click on save case button
+    When I am accessing the Symptoms tab using of created case via api
+    And I click on Clear all button From Symptoms tab
+    And I change all symptoms fields to "YES" option field and save
+    When I am accessing the Symptoms tab using of created case via api
+    And I check the created data is correctly displayed on Symptoms tab page
+    And I click on Case tab from Symptoms tab directory
+    And I change Epidemiological confirmation Combobox to "Yes" option
+    Then I click on save case button
+    And I check that Case Classification has "Probable case" value
+    Then I click on save case button
+    When I am accessing the Symptoms tab using of created case via api
+    And I click on Clear all button From Symptoms tab
+    And I change all symptoms fields to "YES" option field and save
+    When I am accessing the Symptoms tab using of created case via api
+    And I check the created data is correctly displayed on Symptoms tab page
+    And I click on Case tab from Symptoms tab directory
+    Then I click on save case button
+    And I collect the case person UUID displayed on Edit case page
+    And I click on New Sample
+    When I collect the sample UUID displayed on create new sample page
+    And I create a new Sample with for COVID alternative purpose
+    And I click on edit Sample
+    And I click on the new pathogen test from the Edit Sample page
+    And I fill all fields from Pathogen test for COVID-19 disease result popup and save
+    Then I check that the created Pathogen is correctly displayed
+    And I save the created sample
+    And I click on Case tab from Symptoms tab directory
+    Then I click on save case button in Symptoms tab
+    And I check that Case Classification has "Confirmed case" value
+    When I am accessing the Symptoms tab using of created case via api
+    And I click on Clear all button From Symptoms tab
+    And I change all symptoms fields to "NO" option field and save
+    When I am accessing the Symptoms tab using of created case via api
+    And I check the created data that describes Clinical signs and Symptoms are correctly displayed for No or UNKNOWN option in Symptoms tab page
+    Then I click on save case button in Symptoms tab
+    And I click on Case tab from Symptoms tab directory
+    And I collect the case person UUID displayed on Edit case page
+    And I click on Case tab from Symptoms tab directory
+    Then I click on save case button in Symptoms tab
+    And I check that Case Classification has "Confirmed case with no symptoms" value
+    When I am accessing the Symptoms tab using of created case via api
+    And I click on Clear all button From Symptoms tab
+    And I change all symptoms fields to "UNKNOWN" option field and save
+    When I am accessing the Symptoms tab using of created case via api
+    And I check the created data that describes Clinical signs and Symptoms are correctly displayed for No or UNKNOWN option in Symptoms tab page
+    And I click on Case tab from Symptoms tab directory
+    Then I click on save case button in Symptoms tab
+    And I collect the case person UUID displayed on Edit case page
+    And I click on Case tab from Symptoms tab directory
+    Then I click on save case button
+    And I check that Case Classification has "Confirmed case with unknown symptoms" value
+    When I am accessing the Symptoms tab using of created case via api
+    And I click on Clear all button From Symptoms tab
+    And I change all symptoms fields and save
+    And I am accessing the Symptoms tab using of created case via api
+    And I check the created data is correctly displayed on Symptoms tab page
+    And I click on Case tab from Symptoms tab directory
+    And I check that Case Classification has "Confirmed case" value
+    Then I click on save case button
+    And I change the Case Classification field for "NOT_CLASSIFIED" value
+    And I click on save case button
+    And From Case page I click on Calculate Case Classification button
+    And I click on save case button
+    And I check that Case Classification has "Confirmed case" value
+
+    #TODO separate into 3 tests - test doesn't reflect test case steps
+  @issue=SORDEV-8048 @env_de @ignore
   @issue=SORDEV-8048 @env_de
   Scenario: Test Default value for disease if only one is used by the server
     Given I log in with National User
@@ -651,7 +746,7 @@ Feature: Case end to end tests
     And I check that case reference definition is set to fulfilled in German on Edit case page
     When I click on New Sample in German
     And I create a new Sample with positive test result for DE version
-    And I select the German words for PCR / RT-PCR as Type of Test in the Create New Sample popup
+    And I select the German words for PCR RT-PCR as Type of Test in the Create New Sample popup
     And I save the created sample
     Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
     And I check that case reference definition is set to fulfilled in German on Edit case page
@@ -748,3 +843,30 @@ Feature: Case end to end tests
     Then I check if Import Guide for cases was downloaded correctly
     And And I click on the Download Data Dictionary button in Import Cases
     Then I check if Data Dictionary for cases was downloaded correctly
+
+  @issue=SORDEV-5526 @env_main
+    Scenario: Create a contact with source case
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And API: I create a new case
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And I log in with National User
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    And I navigate to Epidemiological Data tab on Edit Case Page
+    When I select NO from Contacts With Source Case Known
+    Then I check that Contacts of Source filed is not available
+    When I select UNKNOWN from Contacts With Source Case Known
+    Then I check that Contacts of Source filed is not available
+    When I select YES from Contacts With Source Case Known
+    Then I check if Contacts of Source filed is available
+    When I click on the NEW CONTACT button on Epidemiological Data Tab of Edit Case Page
+    And I click on the CHOOSE SOURCE CASE button from CONTACT page
+    And I click yes on the DISCARD UNSAVED CHANGES popup if it appears
+    And I click on the CHOOSE CASE button in Create new contact form in Exposure for Epidemiological data tab in Cases
+    And I search for the last case uuid in the CHOOSE SOURCE popup of Create Contact window
+    And I open the first found result in the CHOOSE SOURCE popup of Create Contact window
+    And I click on SAVE new contact button in the CHOOSE SOURCE popup of Create Contact window
+    Then I check that Selected case is listed as Source Case in the CONTACTS WITH SOURCE CASE Box

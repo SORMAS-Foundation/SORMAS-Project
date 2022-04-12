@@ -18,22 +18,21 @@ import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
-import de.symeda.sormas.utils.EventParticipantJoins;
 
 public class EventParticipantJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 
 	private final CriteriaQuery<?> cq;
-	private EventParticipantJoins<?> joins;
+	private EventParticipantJoins joins;
 
 	private EventParticipantJurisdictionPredicateValidator(EventParticipantQueryContext qc, User user) {
 		super(qc.getCriteriaBuilder(), user, null, null);
-		this.joins = (EventParticipantJoins<?>) qc.getJoins();
+		this.joins = qc.getJoins();
 		this.cq = qc.getQuery();
 	}
 
 	private EventParticipantJurisdictionPredicateValidator(EventParticipantQueryContext qc, Path userPath) {
 		super(qc.getCriteriaBuilder(), null, userPath, null);
-		this.joins = (EventParticipantJoins<?>) qc.getJoins();
+		this.joins = qc.getJoins();
 		this.cq = qc.getQuery();
 	}
 
