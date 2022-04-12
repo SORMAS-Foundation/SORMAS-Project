@@ -18,6 +18,8 @@ import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.maxBy;
 
+import de.symeda.sormas.backend.event.EventFacadeEjb;
+import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -1135,8 +1137,8 @@ public class PersonFacadeEjb implements PersonFacade {
 			for (EventParticipant personEventParticipant : personEventParticipants) {
 
 				eventParticipantFacade.onEventParticipantChanged(
-					eventFacade.toDto(personEventParticipant.getEvent()),
-					eventParticipantFacade.toDto(personEventParticipant),
+					EventFacadeEjb.toEventDto(personEventParticipant.getEvent()),
+					EventParticipantFacadeEjb.toEventParticipantDto(personEventParticipant),
 					personEventParticipant,
 					syncShares);
 			}

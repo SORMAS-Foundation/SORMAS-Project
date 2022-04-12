@@ -4,6 +4,11 @@ import java.util.Collections;
 import java.util.List;
 
 import javax.annotation.security.PermitAll;
+import de.symeda.sormas.backend.action.ActionFacadeEjb;
+import de.symeda.sormas.backend.event.EventFacadeEjb;
+import de.symeda.sormas.backend.event.EventGroupFacadeEjb;
+import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
+import de.symeda.sormas.backend.event.eventimport.EventImportFacadeEjb;
 import javax.annotation.security.RolesAllowed;
 import javax.validation.constraints.NotNull;
 
@@ -105,6 +110,31 @@ public class ArchitectureTest {
 	}
 
 	@ArchTest
+	public void testEventFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(EventFacadeEjb.class, classes);
+	}
+
+	@ArchTest
+	public void testEventParticipantFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(EventParticipantFacadeEjb.class, classes);
+	}
+
+	@ArchTest
+	public void testActionFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(ActionFacadeEjb.class, classes);
+	}
+
+	@ArchTest
+	public void testEventGroupFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(EventGroupFacadeEjb.class, classes);
+	}
+
+	@ArchTest
+	public void testEventImportFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(EventImportFacadeEjb.class, AuthMode.CLASS_ONLY, classes);
+	}
+
+	@ArchTest
 	public void testDashboardFacadeEjbAuthorization(JavaClasses classes) {
 		assertFacadeEjbAnnotated(DashboardFacadeEjb.class, AuthMode.METHODS_ONLY, classes);
 	}
@@ -195,7 +225,7 @@ public class ArchitectureTest {
 			if (authMode == AuthMode.CLASS_AND_METHODS) {
 				methodChecks = methodChecks.orShould()
 					.haveNameMatching(
-						"^(get|count|is|does|has|validate|to|pseudonymize|convertToReferenceDto|fillOrBuild|convertToDto|fromDto|exists).*");
+						"^(get|count|is|does|has|validate|to|pseudonymize|convertToReferenceDto|fillOrBuild|convertToDto|fromDto|convertToDetailedReferenceDto|exists).*");
 			}
 
 			methodChecks.check(classes);
