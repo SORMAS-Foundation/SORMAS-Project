@@ -1,9 +1,9 @@
 package de.symeda.sormas.backend;
 
-import javax.annotation.security.PermitAll;
 import java.util.Collections;
 import java.util.List;
 
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.validation.constraints.NotNull;
 
@@ -190,21 +190,13 @@ public class ArchitectureTest {
 		} else {
 			// TODO - add exceptedMethods handling when needed
 
-			MethodsShouldConjunction methodChecks = methods.should().beAnnotatedWith(RolesAllowed.class);
+			MethodsShouldConjunction methodChecks = methods.should().beAnnotatedWith(RolesAllowed.class).orShould().beAnnotatedWith(PermitAll.class);
 
 			if (authMode == AuthMode.CLASS_AND_METHODS) {
 				methodChecks = methodChecks.orShould()
 					.haveNameMatching(
 						"^(get|count|is|does|has|validate|to|pseudonymize|convertToReferenceDto|fillOrBuild|convertToDto|fromDto|exists).*");
 			}
-
-			allPublicMethods.should()
-					.beAnnotatedWith(RolesAllowed.class)
-					.orShould()
-					.beAnnotatedWith(PermitAll.class)
-					.orShould()
-					.haveNameMatching("^(get|count|is|does|has|validate|to|pseudonymize|convertToReferenceDto|fillOrBuild|convertToDto|fromDto|exists).*")
-					.check(classes);
 
 			methodChecks.check(classes);
 		}
