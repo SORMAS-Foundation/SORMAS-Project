@@ -168,6 +168,12 @@ public class TaskManagementSteps implements En {
           TimeUnit.SECONDS.sleep(5);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
+    When(
+        "I click on Enter Bulk Edit Mode from Tasks Directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(BULK_EDIT_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
 
     When(
         "^I search last created task by API using Contact UUID$",
@@ -177,6 +183,16 @@ public class TaskManagementSteps implements En {
               GENERAL_SEARCH_INPUT, 50);
           webDriverHelpers.fillAndSubmitInWebElement(
               GENERAL_SEARCH_INPUT, apiState.getCreatedContact().getUuid());
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+    When(
+        "^I select first (\\d+) results in grid in Task Directory$",
+        (Integer number) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          for (int i = 1; i <= number; i++) {
+            webDriverHelpers.scrollToElement(getCheckboxByIndex(String.valueOf(i)));
+            webDriverHelpers.clickOnWebElementBySelector(getCheckboxByIndex(String.valueOf(i)));
+          }
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
