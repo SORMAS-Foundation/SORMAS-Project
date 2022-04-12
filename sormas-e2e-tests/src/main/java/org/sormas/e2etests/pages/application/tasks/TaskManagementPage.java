@@ -34,4 +34,9 @@ public class TaskManagementPage {
   public static final By SHOW_MORE_FILTERS = By.cssSelector("#showHideMoreFilters");
   public static final By ASSIGNED_USER_FILTER_INPUT = By.cssSelector("#assigneeUserLike");
   public static final By APPLY_FILTERS_BUTTON = By.cssSelector("#actionApplyFilters");
+  public static final By BULK_EDIT_BUTTON = By.id("actionEnterBulkEditMode");
+
+  public static By getCheckboxByIndex(String idx) {
+    return By.xpath(String.format("//input[@type=\"checkbox\"])[%s]", idx));
+  }
 }
