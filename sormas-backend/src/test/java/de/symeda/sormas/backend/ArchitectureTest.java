@@ -1,5 +1,6 @@
 package de.symeda.sormas.backend;
 
+import javax.annotation.security.PermitAll;
 import de.symeda.sormas.backend.action.ActionFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventGroupFacadeEjb;
@@ -7,6 +8,13 @@ import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.event.eventimport.EventImportFacadeEjb;
 import javax.annotation.security.RolesAllowed;
 
+import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
+import de.symeda.sormas.backend.labmessage.LabMessageFacadeEjb;
+import de.symeda.sormas.backend.labmessage.TestReportFacadeEjb;
+import de.symeda.sormas.backend.sample.SampleFacadeEjb;
+import de.symeda.sormas.backend.task.TaskFacadeEjb;
+import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
+import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 import org.junit.runner.RunWith;
 
 import com.tngtech.archunit.core.domain.JavaClasses;
@@ -28,6 +36,9 @@ import de.symeda.sormas.backend.externaljournal.ExternalJournalFacadeEjb;
 import de.symeda.sormas.backend.therapy.PrescriptionFacadeEjb;
 import de.symeda.sormas.backend.therapy.TreatmentFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
+
+import java.util.ArrayList;
+import java.util.List;
 
 @RunWith(ArchUnitRunner.class)
 @AnalyzeClasses(packages = {
@@ -62,12 +73,12 @@ public class ArchitectureTest {
 
 	@ArchTest
 	public void testCaseImportFacadeEjbAuthorization(JavaClasses classes) {
-		assertFacadeEjbAnnotated(CaseImportFacadeEjb.class, true, classes);
+		assertFacadeEjbAnnotated(CaseImportFacadeEjb.class, true, classes, null);
 	}
 
 	@ArchTest
 	public void testExternalJournalFacadeEjbAuthorization(JavaClasses classes) {
-		assertFacadeEjbAnnotated(ExternalJournalFacadeEjb.class, true, classes);
+		assertFacadeEjbAnnotated(ExternalJournalFacadeEjb.class, true, classes, null);
 	}
 
 	@ArchTest
@@ -116,23 +127,76 @@ public class ArchitectureTest {
 		assertFacadeEjbAnnotated(EventImportFacadeEjb.class, true, classes);
 	}
 
-	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, JavaClasses classes) {
-		assertFacadeEjbAnnotated(facadeEjbClass, false, classes);
+	@ArchTest
+	public void testSampleFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(SampleFacadeEjb.class, classes);
 	}
 
-	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, boolean classAuthOnly, JavaClasses classes) {
-		ArchRuleDefinition.theClass(facadeEjbClass).should().beAnnotatedWith(RolesAllowed.class).check(classes);
+	@ArchTest
+	public void testLabMessageFacadeEjbAuthorization(JavaClasses classes) {
+		List<String> specificMethodNames = new ArrayList<>();
+		specificMethodNames.add("fetchAndSaveExternalLabMessages");
+		assertFacadeEjbAnnotated(LabMessageFacadeEjb.class, true, classes, specificMethodNames);
+	}
 
-		GivenMethodsConjunction methods = ArchRuleDefinition.methods().that().areDeclaredIn(facadeEjbClass).and().arePublic();
+	@ArchTest
+	public void testTestReportFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(TestReportFacadeEjb.class, true, classes, null);
+	}
+
+	@ArchTest
+	public void testImmunizationFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(ImmunizationFacadeEjb.class, classes);
+	}
+
+	@ArchTest
+	public void testVaccinationFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(VaccinationFacadeEjb.class, classes);
+	}
+
+	@ArchTest
+	public void testTravelEntryFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(TravelEntryFacadeEjb.class, classes);
+	}
+
+	@ArchTest
+	public void testTaskFacadeEjbAuthorization(JavaClasses classes) {
+		assertFacadeEjbAnnotated(TaskFacadeEjb.class, classes);
+	}
+
+	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, JavaClasses classes) {
+		assertFacadeEjbAnnotated(facadeEjbClass, false, classes, null);
+	}
+
+	private void assertFacadeEjbAnnotated(Class<?> facadeEjbClass, boolean classAuthOnly, JavaClasses classes, List<String> specificMethodNames) {
+		ArchRuleDefinition.theClass(facadeEjbClass).should().beAnnotatedWith(RolesAllowed.class).check(classes);
+		GivenMethodsConjunction allPublicMethods = ArchRuleDefinition.methods().that().areDeclaredIn(facadeEjbClass).and().arePublic();
 
 		if (classAuthOnly) {
-			methods.should().notBeAnnotatedWith(RolesAllowed.class);
+			getMethodsShouldNotBeAnnotated(allPublicMethods, specificMethodNames).should().notBeAnnotatedWith(RolesAllowed.class);
+			if (specificMethodNames != null) {
+				specificMethodNames.forEach(
+					specificMethodName -> allPublicMethods.and().haveFullName(specificMethodName).should().beAnnotatedWith(RolesAllowed.class));
+			}
 		} else {
-			methods.should()
+			allPublicMethods.should()
 				.beAnnotatedWith(RolesAllowed.class)
+				.orShould()
+				.beAnnotatedWith(PermitAll.class)
 				.orShould()
 				.haveNameMatching("^(get|count|is|does|has|validate|to|pseudonymize|convertToReferenceDto|fillOrBuild|convertToDto|fromDto|convertToDetailedReferenceDto|exists).*")
 				.check(classes);
 		}
+	}
+
+	private GivenMethodsConjunction getMethodsShouldNotBeAnnotated(GivenMethodsConjunction methods, List<String> specificMethodNames) {
+		return specificMethodNames != null ? getPublicMethodsWithoutSpecificMethods(methods, specificMethodNames) : methods;
+	}
+
+	private GivenMethodsConjunction getPublicMethodsWithoutSpecificMethods(GivenMethodsConjunction methods, List<String> specificMethodNames) {
+		for (String specificMethodName : specificMethodNames) {
+			methods = methods.and().doNotHaveFullName(specificMethodName);
+		}
+		return methods;
 	}
 }

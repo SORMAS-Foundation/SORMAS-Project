@@ -21,7 +21,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -49,7 +48,6 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -152,7 +150,6 @@ import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitService;
-import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless
 @LocalBean
@@ -292,7 +289,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Case> caze = cq.from(getElementClass());
 
-		CaseJoins<Case> joins = new CaseJoins<>(caze);
+		CaseJoins joins = new CaseJoins(caze);
 
 		Predicate filter = createMapCasesFilter(cb, cq, caze, joins, region, district, disease, from, to, dateType);
 
@@ -313,7 +310,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Root<Case> caze = cq.from(getElementClass());
 
 		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
-		CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+		CaseJoins joins = caseQueryContext.getJoins();
 
 		Predicate filter = createMapCasesFilter(cb, cq, caze, joins, region, district, disease, from, to, dateType);
 
@@ -349,7 +346,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaBuilder cb,
 		CriteriaQuery<?> cq,
 		Root<Case> root,
-		CaseJoins<Case> joins,
+		CaseJoins joins,
 		Region region,
 		District district,
 		Disease disease,
@@ -570,7 +567,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		final From<?, Case> from = caseQueryContext.getRoot();
 		final CriteriaBuilder cb = caseQueryContext.getCriteriaBuilder();
 		final CriteriaQuery<?> cq = caseQueryContext.getQuery();
-		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+		final CaseJoins joins = caseQueryContext.getJoins();
 
 		Join<Case, Person> person = joins.getPerson();
 		Join<Case, User> reportingUser = joins.getReportingUser();
@@ -762,10 +759,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 					CriteriaBuilderHelper.ilikePrecise(cb, person.get(Person.UUID), textFilter + "%"),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
-					phoneNumberPredicate(
-						cb,
-						(Expression<String>) caseQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY),
-						textFilter),
+					phoneNumberPredicate(cb, caseQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
 					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter)));
 
@@ -793,12 +787,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			Join<Case, EventParticipant> eventParticipant = joins.getEventParticipants();
 			Join<EventParticipant, Event> event = eventParticipant.join(EventParticipant.EVENT, JoinType.LEFT);
 
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.isFalse(event.get(Event.DELETED)),
-				cb.isFalse(event.get(Event.ARCHIVED)),
-				cb.isFalse(eventParticipant.get(EventParticipant.DELETED)));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.isFalse(event.get(Event.DELETED)), cb.isFalse(eventParticipant.get(EventParticipant.DELETED)));
 
 			if (hasEventLikeCriteria) {
 				String[] textFilters = caseCriteria.getEventLike().trim().split("\\s+");
@@ -895,7 +885,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		caze.getSamples()
 			.stream()
 			.filter(sample -> sample.getAssociatedContact() == null && sample.getAssociatedEventParticipant() == null)
-			.forEach(sample -> sampleService.delete(sample));
+			.forEach(sample -> sampleService.deletePermanent(sample));
 
 		caze.getVisits().stream().forEach(visit -> {
 			if (visit.getContacts() == null || visit.getContacts().isEmpty()) {
@@ -1413,17 +1403,11 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	public Collection<Case> getByPersonUuids(List<String> personUuids) {
-		if (CollectionUtils.isEmpty(personUuids)) {
-			// Avoid empty IN clause
-			return Collections.emptyList();
-		} else if (personUuids.size() > ModelConstants.PARAMETER_LIMIT) {
-			List<Case> cases = new LinkedList<>();
-			IterableHelper
-				.executeBatched(personUuids, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> cases.addAll(getCasesByPersonUuids(personUuids)));
-			return cases;
-		} else {
-			return getCasesByPersonUuids(personUuids);
-		}
+
+		List<Case> cases = new ArrayList<>();
+		IterableHelper
+			.executeBatched(personUuids, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> cases.addAll(getCasesByPersonUuids(personUuids)));
+		return cases;
 	}
 
 	private List<Case> getCasesByPersonUuids(List<String> personUuids) {
@@ -1453,8 +1437,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		final Root<Case> root = cq.from(Case.class);
 
-		CaseQueryContext<Case> caseQueryContext = new CaseQueryContext<>(cb, cq, root);
-		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, root);
+		final CaseJoins joins = caseQueryContext.getJoins();
 
 		// This is needed in selection because of the combination of distinct and orderBy clauses - every operator in the orderBy has to be part of the select IF distinct is used
 		Expression<Date> latestChangedDateFunction =
@@ -1525,7 +1509,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		final Root<Case> caze = cq.from(Case.class);
 
-		CaseQueryContext<Case> caseQueryContext = new CaseQueryContext<>(cb, cq, caze);
+		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
 
 		cq.multiselect(
 			caze.get(Case.UUID),
@@ -1573,7 +1557,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> root = cq.from(Case.class);
-		CaseJoins<Case> joins = new CaseJoins<>(root);
+		CaseJoins joins = new CaseJoins(root);
 
 		cq.multiselect(
 			root.get(Case.UUID),
@@ -1644,7 +1628,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> root = cq.from(Case.class);
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, root);
-		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+		final CaseJoins joins = caseQueryContext.getJoins();
 
 		Root<Case> root2 = cq.from(Case.class);
 		Join<Case, Person> person = joins.getPerson();
@@ -1947,6 +1931,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 	private void selectIndexDtoFields(CaseQueryContext caseQueryContext) {
 		CriteriaQuery cq = caseQueryContext.getQuery();
-		cq.multiselect(listQueryBuilder.getCaseIndexSelections((Root<Case>) caseQueryContext.getRoot(), caseQueryContext));
+		cq.multiselect(listQueryBuilder.getCaseIndexSelections(caseQueryContext.getRoot(), caseQueryContext));
 	}
 }

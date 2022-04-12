@@ -27,6 +27,8 @@ import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
@@ -37,6 +39,7 @@ import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.asserts.SoftAssert;
 
+@Slf4j
 public class EventActionsTableSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
@@ -183,14 +186,20 @@ public class EventActionsTableSteps implements En {
     return headerHashmap;
   }
 
+  @SneakyThrows
   private LocalDateTime getLocalDateTimeFromColumns(String date) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/dd/yyyy h:mm a");
+    if (date.isEmpty()) {
+      throw new Exception(String.format("Provided date to be parsed: %s, is empty!", date));
+    }
+    DateTimeFormatter formatter =
+        DateTimeFormatter.ofPattern("M/d/yyyy h:m a").localizedBy(Locale.ENGLISH);
     try {
-      return LocalDateTime.parse(date, formatter);
+      log.info("Parsing date: [{}]", date);
+      return LocalDateTime.parse(date.trim(), formatter);
     } catch (Exception e) {
       throw new WebDriverException(
           String.format(
-              "Unable to parse date: %s due to caught exception: %s", date, e.getMessage()));
+              "Unable to parse date: [ %s ] due to caught exception: %s", date, e.getMessage()));
     }
   }
 
