@@ -11222,7 +11222,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (452, 'Persisting sy
 -- 2022-04-07 Refactor unique constraint on deletionconfiguration table #8295
 
 ALTER TABLE deletionconfiguration DROP CONSTRAINT IF EXISTS deletionconfiguration_entity_key;
-ALTER TABLE deletionconfiguration ADD CONSTRAINT IF NOT EXISTS unq_deletionconfiguration_entity_reference UNIQUE (entitytype, deletionreference);
+ALTER TABLE deletionconfiguration ADD CONSTRAINT unq_deletionconfiguration_entity_reference UNIQUE (entitytype, deletionreference);
 
 INSERT INTO schema_version (version_number, comment) VALUES (453, 'Refactor unique constraint on deletionconfiguration table #8295');
 
