@@ -70,45 +70,6 @@ public class UserDao extends AbstractAdoDao<User> {
 		}
 	}
 
-	public List<User> getByRegionAndRole(Region region, UserRole role) {
-		try {
-			QueryBuilder builder = queryBuilder();
-			Where where = builder.where();
-			where.and(where.eq(User.REGION + "_id", region.getId()), createRoleFilter(role, where));
-
-			return (List<User>) builder.query();
-		} catch (SQLException e) {
-			Log.e(getTableName(), "Could not perform getByRegionAndRole");
-			throw new RuntimeException(e);
-		}
-	}
-
-	public List<User> getByDistrictAndRole(District district, UserRole role) {
-		try {
-			QueryBuilder builder = queryBuilder();
-			Where where = builder.where();
-			where.and(where.eq(User.DISTRICT + "_id", district.getId()), createRoleFilter(role, where));
-
-			return (List<User>) builder.query();
-		} catch (SQLException e) {
-			Log.e(getTableName(), "Could not perform getByDistrictAndRole");
-			throw new RuntimeException(e);
-		}
-	}
-
-	public List<User> getByDistrictAndRole(District district, UserRole role, String orderBy) {
-		try {
-			QueryBuilder builder = queryBuilder();
-			Where where = builder.where();
-			where.and(where.eq(User.DISTRICT + "_id", district.getId()), createRoleFilter(role, where));
-
-			return (List<User>) builder.orderBy(orderBy, true).query();
-		} catch (SQLException e) {
-			Log.e(getTableName(), "Could not perform getByDistrictAndRole");
-			throw new RuntimeException(e);
-		}
-	}
-
 	public List<User> getAllInJurisdiction() {
 		try {
 			QueryBuilder builder = queryBuilder();
@@ -184,21 +145,37 @@ public class UserDao extends AbstractAdoDao<User> {
 
 	public User getRandomRegionUser(Region region, UserRight... userRights) {
 
-		return getRandomUser(getUsersWithJurisdictionLevel(JurisdictionLevel.REGION, Arrays.asList(userRights)));
+		return getRandomUser(getUsersWithJurisdictionLevel(JurisdictionLevel.REGION, region, null, Arrays.asList(userRights)));
 	}
 
 	public User getRandomDistrictUser(District district, UserRight... userRights) {
 
-		return getRandomUser(getUsersWithJurisdictionLevel(JurisdictionLevel.DISTRICT, Arrays.asList(userRights)));
+		return getRandomUser(getUsersWithJurisdictionLevel(JurisdictionLevel.DISTRICT, null, district, Arrays.asList(userRights)));
 	}
 
-	private List<User> getUsersWithJurisdictionLevel(JurisdictionLevel jurisdictionLevel, Collection<UserRight> userRights) {
+	private List<User> getUsersWithJurisdictionLevel(
+		JurisdictionLevel jurisdictionLevel,
+		Region region,
+		District district,
+		Collection<UserRight> userRights) {
 
 		try {
 			QueryBuilder<User, Long> builder = queryBuilder();
 			Where<User, Long> where = builder.where();
+
 			where.eq(User.JURISDICTION_LEVEL, jurisdictionLevel);
+
+			if (region != null) {
+				where.eq(User.REGION + "_id", region.getId());
+			}
+			if (district != null) {
+				where.eq(User.DISTRICT + "_id", district.getId());
+			}
+
+			where.and(region != null && district != null ? 3 : region != null || district != null ? 2 : 1);
+
 			addUserRightFilters(where, (UserRight[]) userRights.toArray());
+
 			return builder.query();
 		} catch (SQLException e) {
 			Log.e(getTableName(), "Could not perform getInformantsByAssociatedOfficer");
@@ -225,7 +202,6 @@ public class UserDao extends AbstractAdoDao<User> {
 			where.and();
 			createRoleFilter(userRoles.get(0), where);
 		} else if (userRoles.size() > 1) {
-			where.and();
 			userRoles.forEach(role -> {
 				try {
 					createRoleFilter(role, where);
@@ -233,7 +209,7 @@ public class UserDao extends AbstractAdoDao<User> {
 					throw new RuntimeException(e);
 				}
 			});
-			where.or(userRoles.size());
+			where.and(where, where.or(userRoles.size()));
 		}
 	}
 

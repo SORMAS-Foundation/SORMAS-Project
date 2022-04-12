@@ -15,7 +15,10 @@
 
 package de.symeda.sormas.app;
 
+import java.sql.SQLException;
+import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -30,6 +33,8 @@ import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
+import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
@@ -326,5 +331,31 @@ public class TestEntityCreator {
 		}
 
 		return DatabaseHelper.getWeeklyReportDao().queryForIdWithEmbedded(weeklyReport.getId());
+	}
+
+	public static User createUser(String username, Region region, District district, UserRole userRole) {
+
+		User user = DatabaseHelper.getUserDao().build();
+		user.setRegion(region);
+		user.setDistrict(district);
+		user.setUserRoles(new HashSet<>(Collections.singletonList(userRole)));
+		user.setActive(true);
+		user.setUserName(username);
+		user.setFirstName(username);
+		user.setLastName(username);
+
+		if (district == null) {
+			user.setJurisdictionLevel(JurisdictionLevel.REGION);
+		} else {
+			user.setJurisdictionLevel(JurisdictionLevel.DISTRICT);
+		}
+
+		try {
+			DatabaseHelper.getUserDao().create(user);
+		} catch (SQLException e) {
+			throw new RuntimeException(e);
+		}
+
+		return DatabaseHelper.getUserDao().queryForId(user.getId());
 	}
 }

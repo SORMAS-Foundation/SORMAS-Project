@@ -27,6 +27,7 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
@@ -89,6 +90,7 @@ public class TestHelper {
 		user.setUuid(USER_UUID);
 		user.setRegion(DatabaseHelper.getRegionDao().queryUuid(REGION_UUID));
 		user.setDistrict(DatabaseHelper.getDistrictDao().queryUuid(DISTRICT_UUID));
+		user.setJurisdictionLevel(JurisdictionLevel.DISTRICT);
 		DatabaseHelper.getUserDao().create(user);
 		if (!setInformantAsActiveUser) {
 			ConfigProvider.setUsernameAndPassword("SanaObas", "TestPassword");
@@ -106,6 +108,7 @@ public class TestHelper {
 		secondUser.setUuid(SECOND_USER_UUID);
 		secondUser.setRegion(DatabaseHelper.getRegionDao().queryUuid(REGION_UUID));
 		secondUser.setDistrict(DatabaseHelper.getDistrictDao().queryUuid(SECOND_DISTRICT_UUID));
+		secondUser.setJurisdictionLevel(JurisdictionLevel.DISTRICT);
 		DatabaseHelper.getUserDao().create(secondUser);
 
 		// Create an informant
@@ -121,6 +124,7 @@ public class TestHelper {
 		informant.setRegion(DatabaseHelper.getRegionDao().queryUuid(REGION_UUID));
 		informant.setDistrict(DatabaseHelper.getDistrictDao().queryUuid(DISTRICT_UUID));
 		informant.setHealthFacility(DatabaseHelper.getFacilityDao().queryUuid(FACILITY_UUID));
+		informant.setJurisdictionLevel(JurisdictionLevel.HEALTH_FACILITY);
 		DatabaseHelper.getUserDao().create(informant);
 		if (setInformantAsActiveUser) {
 			ConfigProvider.setUsernameAndPassword("InfoUser", "TestPassword");

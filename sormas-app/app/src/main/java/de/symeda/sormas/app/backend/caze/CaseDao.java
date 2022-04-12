@@ -90,7 +90,6 @@ import de.symeda.sormas.app.backend.therapy.TreatmentCriteria;
 import de.symeda.sormas.app.backend.user.User;
 import de.symeda.sormas.app.caze.read.CaseReadActivity;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
-import de.symeda.sormas.app.util.DataUtils;
 import de.symeda.sormas.app.util.DiseaseConfigurationCache;
 import de.symeda.sormas.app.util.JurisdictionHelper;
 import de.symeda.sormas.app.util.LocationService;
@@ -492,15 +491,13 @@ public class CaseDao extends AbstractAdoDao<Case> {
 				|| ((responsibleDistrictChanged || districtChanged)
 					&& !DataHelper.isSame(changedCase.getResponsibleDistrict(), changedCase.getSurveillanceOfficer().getDistrict())
 					&& !DataHelper.isSame(changedCase.getDistrict(), changedCase.getSurveillanceOfficer().getDistrict()))) {
-				List<User> districtOfficers =
-					DatabaseHelper.getUserDao().getByDistrictAndRole(changedCase.getResponsibleDistrict(), UserRole.SURVEILLANCE_OFFICER, User.UUID);
 
-				if (districtOfficers.size() == 0 && changedCase.getDistrict() != null) {
-					districtOfficers =
-						DatabaseHelper.getUserDao().getByDistrictAndRole(changedCase.getDistrict(), UserRole.SURVEILLANCE_OFFICER, User.UUID);
+				changedCase.setSurveillanceOfficer(
+					DatabaseHelper.getUserDao().getRandomDistrictUser(changedCase.getResponsibleDistrict(), UserRight.CASE_RESPONSIBLE));
+				if (changedCase.getSurveillanceOfficer() == null) {
+					changedCase.setSurveillanceOfficer(
+						DatabaseHelper.getUserDao().getRandomDistrictUser(changedCase.getDistrict(), UserRight.CASE_RESPONSIBLE));
 				}
-
-				changedCase.setSurveillanceOfficer(DataUtils.getRandomCandidate(districtOfficers));
 			}
 
 			// if the case's jurisdiction has changed, re-assign tasks
