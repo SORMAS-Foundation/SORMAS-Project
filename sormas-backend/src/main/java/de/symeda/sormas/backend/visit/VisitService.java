@@ -293,37 +293,4 @@ public class VisitService extends BaseAdoService<Visit> {
 				lastSynchronizedUuid == null ? new ChangeDateFilterBuilder(cb, date) : new ChangeDateFilterBuilder(cb, date, visitPath, lastSynchronizedUuid);
 		return changeDateFilterBuilder.add(visitPath).add(symptoms).build();
 	}
-
-	public void executePermanentDeletion(int batchSize) {
-		IterableHelper.executeBatched(getAllNonReferencedVisits(), batchSize, batchedUuids -> deletePermanent(batchedUuids));
-	}
-
-	private List<String> getAllNonReferencedVisits() {
-		final CriteriaBuilder cb = em.getCriteriaBuilder();
-		final CriteriaQuery<String> cq = cb.createQuery(String.class);
-		final Root<Visit> visitRoot = cq.from(getElementClass());
-
-		final Subquery<Long> contactSubquery = createSubquery(cb, cq, visitRoot, Contact.class, Contact.PERSON);
-
-		cq.where(cb.and(cb.isNull(visitRoot.get(Visit.CAZE))), cb.not(cb.exists(contactSubquery)));
-
-		cq.select(visitRoot.get(Visit.UUID));
-		cq.distinct(true);
-
-		List<String> resultList = em.createQuery(cq).getResultList();
-		return resultList;
-	}
-
-	private Subquery<Long> createSubquery(
-		CriteriaBuilder cb,
-		CriteriaQuery<String> cq,
-		Root<Visit> visitRoot,
-		Class<? extends CoreAdo> subqueryClass,
-		String personField) {
-		final Subquery<Long> subquery = cq.subquery(Long.class);
-		final Root<? extends CoreAdo> from = subquery.from(subqueryClass);
-		subquery.where(cb.equal(from.get(personField), visitRoot.get(Visit.PERSON)));
-		subquery.select(from.get(AbstractDomainObject.ID));
-		return subquery;
-	}
 }

@@ -35,9 +35,6 @@ public class CoreEntityDeletionService {
 	private PersonService personService;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
-	private SampleService sampleService;
-	@EJB
-	private LabMessageService labMessageService;
 	@EJB
 	private VisitService visitService;
 
@@ -96,6 +93,7 @@ public class CoreEntityDeletionService {
 	private boolean supportsPermanentDeletion(CoreEntityType coreEntityType) {
 		return coreEntityType == CoreEntityType.IMMUNIZATION
 			|| coreEntityType == CoreEntityType.TRAVEL_ENTRY
-			|| coreEntityType == CoreEntityType.CASE;
+			|| coreEntityType == CoreEntityType.CASE
+			|| coreEntityType == CoreEntityType.CONTACT;
 	}
 }

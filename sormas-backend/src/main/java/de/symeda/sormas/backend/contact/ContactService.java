@@ -1423,6 +1423,14 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		deleteContactFromDuplicateOf(contact);
 
+		// Remove the deleted contact from contact_visits
+		visitService.getAllByContact(contact).forEach(visit -> {
+			Set<Contact> visitContacts = new HashSet<>(visit.getContacts());
+			visit.getContacts().clear();
+			visit.getContacts().addAll(visitContacts.stream().filter(contact1 -> !DataHelper.isSame(contact1, contact)).collect(Collectors.toSet()));
+			visitService.ensurePersisted(visit);
+		});
+
 		deleteContactLinks(contact);
 
 		super.deletePermanent(contact);
@@ -1433,14 +1441,6 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		contact.getSamples().stream().filter(s -> s.getAssociatedCase() != null || s.getAssociatedEventParticipant() != null).forEach(s -> {
 			s.setAssociatedContact(null);
 			sampleService.ensurePersisted(s);
-		});
-
-//		// Remove the contact from contact_visits
-		visitService.getAllByContact(contact).forEach(visit -> {
-			Set<Contact> visitContacts = new HashSet<>(visit.getContacts());
-			visit.getContacts().clear();
-			visit.getContacts().addAll(visitContacts.stream().filter(contact1 -> !DataHelper.isSame(contact1, contact)).collect(Collectors.toSet()));
-			visitService.ensurePersisted(visit);
 		});
 
 		// Remove the contactToCase from all exposures

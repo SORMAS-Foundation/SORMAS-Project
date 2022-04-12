@@ -9,6 +9,7 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import de.symeda.sormas.backend.contact.Contact;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.internal.SessionImpl;
 import org.hibernate.query.spi.QueryImplementor;
@@ -280,6 +281,9 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 
 	@Test
 	public void testContactPermanentDeletion() throws IOException {
+		createDeletionConfigurations();
+		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.CONTACT);
+
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, UserRole.ADMIN, UserRole.NATIONAL_USER);
 		PersonDto person = creator.createPerson();
@@ -298,10 +302,17 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 		assertEquals(1, getSampleService().count());
 		assertEquals(1, getVisitService().count());
 
-		getContactFacade().delete(contactDto.getUuid());
+		final Date tenYearsPlusAgo = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
+		SessionImpl em = (SessionImpl) getEntityManager();
+		QueryImplementor query = em.createQuery("select i from contact i where i.uuid=:uuid");
+		query.setParameter("uuid", contactDto.getUuid());
+		Contact singleResult = (Contact) query.getSingleResult();
+		singleResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
+		singleResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
+		em.save(singleResult);
 
 		useSystemUser();
-		getCoreEntityDeletionService().executePermanentDeletion();
+		getCoreEntityDeletionService().executeAutomaticDeletion();
 		loginWith(user);
 
 		assertEquals(0, getContactService().count());
@@ -311,6 +322,9 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 
 	@Test
 	public void testPermanentDeletionOfVisitLinkedToMultipleContacts() throws IOException {
+		createDeletionConfigurations();
+		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.CONTACT);
+
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		UserDto user = creator.createUser(rdcf, UserRole.ADMIN, UserRole.NATIONAL_USER);
 		PersonDto person = creator.createPerson();
@@ -343,20 +357,33 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 		assertEquals(2, getSampleService().count());
 		assertEquals(2, getVisitService().count());
 
-		getContactFacade().delete(contactDto.getUuid());
+		final Date tenYearsPlusAgo = DateUtils.addDays(new Date(), (-1) * coreEntityTypeConfig.deletionPeriod - 1);
+		SessionImpl em = (SessionImpl) getEntityManager();
+		QueryImplementor query = em.createQuery("select i from contact i where i.uuid=:uuid");
+		query.setParameter("uuid", contactDto.getUuid());
+		Contact singleResult = (Contact) query.getSingleResult();
+		singleResult.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
+		singleResult.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
+		em.save(singleResult);
 
 		useSystemUser();
-		getCoreEntityDeletionService().executePermanentDeletion();
+		getCoreEntityDeletionService().executeAutomaticDeletion();
 		loginWith(user);
 
 		assertEquals(1, getContactService().count());
 		assertEquals(1, getSampleService().count());
 		assertEquals(2, getVisitService().count());
 
-		getContactFacade().delete(contactDto2.getUuid());
+		SessionImpl em2 = (SessionImpl) getEntityManager();
+		QueryImplementor query2 = em2.createQuery("select i from contact i where i.uuid=:uuid");
+		query2.setParameter("uuid", contactDto2.getUuid());
+		Contact singleResult2 = (Contact) query2.getSingleResult();
+		singleResult2.setCreationDate(new Timestamp(tenYearsPlusAgo.getTime()));
+		singleResult2.setChangeDate(new Timestamp(tenYearsPlusAgo.getTime()));
+		em2.save(singleResult2);
 
 		useSystemUser();
-		getCoreEntityDeletionService().executePermanentDeletion();
+		getCoreEntityDeletionService().executeAutomaticDeletion();
 		loginWith(user);
 
 		assertEquals(0, getContactService().count());
