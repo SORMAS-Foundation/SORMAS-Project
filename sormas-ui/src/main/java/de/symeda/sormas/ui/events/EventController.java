@@ -290,7 +290,7 @@ public class EventController {
 					personByUuid.get(caseDataDto.getPerson().getUuid()),
 					eventReferenceDto,
 					UserProvider.getCurrent().getUserReference());
-				FacadeProvider.getEventParticipantFacade().saveEventParticipant(ep);
+				FacadeProvider.getEventParticipantFacade().save(ep);
 			});
 		}
 
@@ -337,7 +337,7 @@ public class EventController {
 					personByUuid.get(contactDataDto.getPerson().getUuid()),
 					eventReferenceDto,
 					UserProvider.getCurrent().getUserReference());
-				FacadeProvider.getEventParticipantFacade().saveEventParticipant(ep);
+				FacadeProvider.getEventParticipantFacade().save(ep);
 			});
 		}
 
@@ -473,7 +473,7 @@ public class EventController {
 
 		EventParticipantDto eventParticipantDto = FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantRef.getUuid());
 		eventParticipantDto.setResultingCase(null);
-		FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipantDto);
+		FacadeProvider.getEventParticipantFacade().save(eventParticipantDto);
 
 		Notification.show(notificationMessage, Type.TRAY_NOTIFICATION);
 	}
@@ -499,7 +499,7 @@ public class EventController {
 			EventParticipantDto eventParticipant =
 				FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(eventParticipantRef.getUuid());
 			eventParticipant.setResultingCase(caseRef);
-			FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipant);
+			FacadeProvider.getEventParticipantFacade().save(eventParticipant);
 			Notification notification =
 				new Notification(I18nProperties.getString(Strings.messagePersonAlreadyEventParticipant), "", Type.HUMANIZED_MESSAGE);
 			notification.setDelayMsec(10000);

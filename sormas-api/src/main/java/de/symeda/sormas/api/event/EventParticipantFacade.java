@@ -24,6 +24,7 @@ import java.util.Map;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.EditPermissionType;
@@ -44,7 +45,7 @@ public interface EventParticipantFacade
 
 	EventParticipantDto getEventParticipantByUuid(String uuid);
 
-	EventParticipantDto saveEventParticipant(@Valid EventParticipantDto dto);
+	EventParticipantDto save(@Valid @NotNull EventParticipantDto dto);
 
 	List<String> getAllActiveUuids();
 

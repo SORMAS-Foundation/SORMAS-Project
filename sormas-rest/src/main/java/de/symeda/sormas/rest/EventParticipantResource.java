@@ -99,7 +99,7 @@ public class EventParticipantResource extends EntityDtoResource {
 	@Path("/push")
 	public List<PushResult> postEventParticipants(@Valid List<EventParticipantDto> dtos) {
 
-		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getEventParticipantFacade()::saveEventParticipant);
+		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getEventParticipantFacade()::save);
 		return result;
 	}
 

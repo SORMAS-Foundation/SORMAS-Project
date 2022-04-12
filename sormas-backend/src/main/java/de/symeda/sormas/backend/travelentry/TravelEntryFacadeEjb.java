@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.travelentry;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
@@ -14,6 +15,7 @@ import javax.inject.Inject;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.EditPermissionType;
@@ -185,7 +187,7 @@ public class TravelEntryFacadeEjb
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	@RolesAllowed(UserRight._SYSTEM)
+	@RolesAllowed(UserRight._TRAVEL_ENTRY_ARCHIVE)
 	public void archiveAllArchivableTravelEntries(int daysAfterTravelEntryGetsArchived) {
 		archiveAllArchivableTravelEntry(daysAfterTravelEntryGetsArchived, LocalDate.now());
 	}
@@ -378,6 +380,30 @@ public class TravelEntryFacadeEjb
 			return TravelEntry.DATE_OF_ARRIVAL;
 		}
 		return super.getDeleteReferenceField(deletionReference);
+	}
+
+	@Override
+	@RolesAllowed(UserRight._TRAVEL_ENTRY_ARCHIVE)
+	public void archive(String entityUuid, Date endOfProcessingDate) {
+		super.archive(entityUuid, endOfProcessingDate);
+	}
+
+	@Override
+	@RolesAllowed(UserRight._TRAVEL_ENTRY_ARCHIVE)
+	public void archive(List<String> entityUuids) {
+		super.archive(entityUuids);
+	}
+
+	@Override
+	@RolesAllowed(UserRight._TRAVEL_ENTRY_ARCHIVE)
+	public void dearchive(List<String> entityUuids, String dearchiveReason) {
+		super.dearchive(entityUuids, dearchiveReason);
+	}
+
+	@Override
+	@RolesAllowed(UserRight._TRAVEL_ENTRY_EDIT)
+	public TravelEntryDto save(@Valid @NotNull TravelEntryDto travelEntryDto) {
+		return doSave(travelEntryDto);
 	}
 
 	@LocalBean
