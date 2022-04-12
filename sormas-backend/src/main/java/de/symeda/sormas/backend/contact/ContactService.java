@@ -1390,12 +1390,6 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 	@Override
 	public void deletePermanent(Contact contact) {
-		// Delete all tasks associated with this contact
-		List<Task> tasks = taskService.findBy(new TaskCriteria().contact(new ContactReferenceDto(contact.getUuid())), true);
-		for (Task task : tasks) {
-			taskService.deletePermanent(task);
-		}
-
 		// Delete all samples that are only associated with this contact
 		contact.getSamples()
 			.stream()
