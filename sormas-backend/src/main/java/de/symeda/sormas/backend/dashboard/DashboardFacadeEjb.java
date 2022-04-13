@@ -190,7 +190,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 
 	}
 
-	public Map<Date, Map<String, Long>> getEpiCurveSeriesElementsPerContactFollowUpStatusClassification(DashboardCriteria dashboardCriteria) {
+	public Map<Date, Map<String, Long>> getEpiCurveSeriesElementsPerContactFollowUpStatus(DashboardCriteria dashboardCriteria) {
 		Map<Date, Map<String, Long>> epiCurveSeriesElements = new TreeMap<>();
 		List<Date> criteriaIntervalStartDates = buildListOfFilteredDates(
 			dashboardCriteria.getDateFrom(),
@@ -215,7 +215,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 
 	}
 
-	public Map<Date, Integer> getEpiCurveSeriesElementsPerContactFollowUntilClassification(DashboardCriteria dashboardCriteria) {
+	public Map<Date, Integer> getEpiCurveSeriesElementsPerContactFollowUpUntil(DashboardCriteria dashboardCriteria) {
 		Map<Date, Integer> epiCurveSeriesElements = new TreeMap<>();
 		List<Date> criteriaIntervalStartDates = buildListOfFilteredDates(
 			dashboardCriteria.getDateFrom(),

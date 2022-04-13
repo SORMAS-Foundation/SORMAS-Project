@@ -47,9 +47,9 @@ public interface DashboardFacade {
 
 	Map<Date, Map<ContactClassification, Long>> getEpiCurveSeriesElementsPerContactClassification(DashboardCriteria dashboardCriteria);
 
-	Map<Date, Map<String, Long>> getEpiCurveSeriesElementsPerContactFollowUpStatusClassification(DashboardCriteria dashboardCriteria);
+	Map<Date, Map<String, Long>> getEpiCurveSeriesElementsPerContactFollowUpStatus(DashboardCriteria dashboardCriteria);
 
-	Map<Date, Integer> getEpiCurveSeriesElementsPerContactFollowUntilClassification(DashboardCriteria dashboardCriteria);
+	Map<Date, Integer> getEpiCurveSeriesElementsPerContactFollowUpUntil(DashboardCriteria dashboardCriteria);
 
 	List<DiseaseBurdenDto> getDiseaseBurden(
 		RegionReferenceDto region,

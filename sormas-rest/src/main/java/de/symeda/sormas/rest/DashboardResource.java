@@ -78,22 +78,22 @@ public class DashboardResource extends EntityDtoResource {
 	}
 
 	@POST
-	@Path("/epiCurveContactStatusClassification")
-	public Map<Date, Map<ContactClassification, Long>> getEpidemiologicalCurveContactClassification(
+	@Path("/epiCurveElementsContactClassification")
+	public Map<Date, Map<ContactClassification, Long>> getEpiCurveSeriesElementsPerContactClassification(
 		@RequestBody DashboardCriteria dashboardCriteria) {
 		return FacadeProvider.getDashboardFacade().getEpiCurveSeriesElementsPerContactClassification(dashboardCriteria);
 	}
 
 	@POST
-	@Path("/epiCurveContactFollowUpStatusClassification")
-	public Map<Date, Map<String, Long>> getEpidemiologicalCurveContactFollowUpStatusClassification(@RequestBody DashboardCriteria dashboardCriteria) {
-		return FacadeProvider.getDashboardFacade().getEpiCurveSeriesElementsPerContactFollowUpStatusClassification(dashboardCriteria);
+	@Path("/epiCurveElementsContactFollowUpStatus")
+	public Map<Date, Map<String, Long>> getEpiCurveSeriesElementsPerContactFollowUpStatus(@RequestBody DashboardCriteria dashboardCriteria) {
+		return FacadeProvider.getDashboardFacade().getEpiCurveSeriesElementsPerContactFollowUpStatus(dashboardCriteria);
 	}
 
 	@POST
-	@Path("/epiCurveContactFollowUpUntilClassification")
-	public Map<Date, Integer> getEpidemiologicalCurveContactFollowUntilClassification(@RequestBody DashboardCriteria dashboardCriteria) {
-		return FacadeProvider.getDashboardFacade().getEpiCurveSeriesElementsPerContactFollowUntilClassification(dashboardCriteria);
+	@Path("/epiCurveElementsContactFollowUpUntil")
+	public Map<Date, Integer> getEpiCurveSeriesElementsPerContactFollowUpUntil(@RequestBody DashboardCriteria dashboardCriteria) {
+		return FacadeProvider.getDashboardFacade().getEpiCurveSeriesElementsPerContactFollowUpUntil(dashboardCriteria);
 	}
 
 	@POST
