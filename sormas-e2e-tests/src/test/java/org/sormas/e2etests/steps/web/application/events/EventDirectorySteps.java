@@ -699,6 +699,7 @@ public class EventDirectorySteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NEW_EVENT_BUTTON, 35);
           webDriverHelpers.clickOnWebElementBySelector(RESET_FILTER);
+          TimeUnit.SECONDS.sleep(3);
           final String eventUuid = CreateNewEventSteps.newEvent.getUuid();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               SEARCH_EVENT_BY_FREE_TEXT_INPUT, 20);
