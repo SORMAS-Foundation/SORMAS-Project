@@ -50,7 +50,9 @@ public class LabMessageDto extends SormasToSormasShareableDto {
 	public static final String LAB_MESSAGE_DETAILS = "labMessageDetails";
 	public static final String PROCESSED = "processed";
 	public static final String REPORT_ID = "reportId";
+	public static final String STATUS = "status";
 	public static final String ASSIGNEE = "assignee";
+	public static final String TEST_REPORTS = "testReports";
 
 	private ExternalMessageType type;
 	private Disease testedDisease;
