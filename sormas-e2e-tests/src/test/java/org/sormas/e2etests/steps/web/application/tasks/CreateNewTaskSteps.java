@@ -50,6 +50,15 @@ public class CreateNewTaskSteps implements En {
         });
 
     When(
+        "^I create a new task with specific data for Surveillance Supervisor user$",
+        () -> {
+          task = taskService.buildGeneratedTask();
+          fillAllFieldsForOtherThanNationalUsers(task);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
         "^I create a new task with specific data for an event$",
         () -> {
           task = taskService.buildGeneratedTaskForEvent();
@@ -84,6 +93,17 @@ public class CreateNewTaskSteps implements En {
     selectPriority(task.getPriority());
     fillCommentsOnTask(task.getCommentsOnTask());
     fillCommentsOnExecution(task.getCommentsOnExecution());
+  }
+
+  private void fillAllFieldsForOtherThanNationalUsers(Task task) {
+    selectTaskType(task.getTaskType());
+    fillSuggestedStartDate(task.getSuggestedStartDate());
+    fillSuggestedStartTime(task.getSuggestedStartTime());
+    fillDueDateDate(task.getDueDateDate());
+    fillDueDateTime(task.getDueDateTime());
+    selectAssignedTo(task.getAssignedTo());
+    selectPriority(task.getPriority());
+    fillCommentsOnTask(task.getCommentsOnTask());
   }
 
   private void selectTaskType(String taskType) {

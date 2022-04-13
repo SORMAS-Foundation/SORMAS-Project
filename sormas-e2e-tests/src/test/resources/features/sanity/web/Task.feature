@@ -44,3 +44,20 @@ Feature: Tasks functionalities
     And I search last created task by API using Contact UUID
     And I collect the task column objects
     Then I am checking if all the fields are correctly displayed in the Task Management table
+
+  @issue=SORDEV-9428 @env_main
+  Scenario: Test Allow users on national level or with no jurisdiction level to edit all tasks
+    Given I log in as a Surveillance Supervisor
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data
+    And I collect the case person UUID displayed on Edit case page
+    And I click on New Task from Case page
+    And I create a new task with specific data for Surveillance Supervisor user
+    And I click on the Tasks button from navbar
+    And I search last created task by Case UUID and open it
+
+
+
+#    ToDO dodac uzytkownika dla wszystkch serwiow
+#  W ramach testu dodaje tylko na auto
