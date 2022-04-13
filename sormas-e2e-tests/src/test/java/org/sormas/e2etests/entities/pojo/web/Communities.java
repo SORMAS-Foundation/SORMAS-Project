@@ -16,35 +16,22 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
-package org.sormas.e2etests.enums.cases.epidemiologicalData;
+package org.sormas.e2etests.entities.pojo.web;
 
-import lombok.extern.slf4j.Slf4j;
+import lombok.AccessLevel;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.NoArgsConstructor;
+import lombok.Value;
 
-@Slf4j
-public enum ActivityAsCaseType {
-  WORK("Work"),
-  HABITATION("Habitation"),
-  CAREDFOR("Cared for"),
-  OTHER("Other"),
-  UNKNOWN("Unknown");
+@Value
+@AllArgsConstructor
+@NoArgsConstructor(force = true, access = AccessLevel.PRIVATE)
+@Builder(toBuilder = true, builderClassName = "builder")
+public class Communities {
 
-  private String activityCase;
-
-  ActivityAsCaseType(String activity) {
-    this.activityCase = activity;
-  }
-
-  public String getActivityCase() {
-    return activityCase;
-  }
-
-  public static ActivityAsCaseType fromString(String activity) {
-    for (ActivityAsCaseType activityAsCaseType : ActivityAsCaseType.values()) {
-      if (activityAsCaseType.activityCase.equalsIgnoreCase(activity)) {
-        return activityAsCaseType;
-      }
-    }
-    log.error("Couldn't map activity !");
-    return null;
-  }
+  String communityName;
+  String region;
+  String district;
+  String externalID;
 }

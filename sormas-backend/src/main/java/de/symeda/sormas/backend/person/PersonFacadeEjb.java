@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -18,6 +18,8 @@ import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.maxBy;
 
+import de.symeda.sormas.backend.event.EventFacadeEjb;
+import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -32,6 +34,7 @@ import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -540,7 +543,7 @@ public class PersonFacadeEjb implements PersonFacade {
 	private void validateUserRights(PersonDto person, PersonDto existingPerson) {
 		if (existingPerson != null) {
 			if (person.getSymptomJournalStatus() != existingPerson.getSymptomJournalStatus()
-				&& !userService.hasRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL)) {
+				&& !(userService.hasRight(UserRight.MANAGE_EXTERNAL_SYMPTOM_JOURNAL) || userService.hasRight(UserRight.EXTERNAL_VISITS))) {
 				throw new AccessDeniedException(
 					String.format(
 						I18nProperties.getString(Strings.errorNoRightsForChangingField),
@@ -1098,10 +1101,12 @@ public class PersonFacadeEjb implements PersonFacade {
 		}
 	}
 
+	@PermitAll
 	public void onPersonChanged(PersonDto existingPerson, Person newPerson) {
 		onPersonChanged(existingPerson, newPerson, true);
 	}
 
+	@PermitAll
 	public void onPersonChanged(PersonDto existingPerson, Person newPerson, boolean syncShares) {
 
 		List<Case> personCases = null;
@@ -1132,8 +1137,8 @@ public class PersonFacadeEjb implements PersonFacade {
 			for (EventParticipant personEventParticipant : personEventParticipants) {
 
 				eventParticipantFacade.onEventParticipantChanged(
-					eventFacade.toDto(personEventParticipant.getEvent()),
-					eventParticipantFacade.toDto(personEventParticipant),
+					EventFacadeEjb.toEventDto(personEventParticipant.getEvent()),
+					EventParticipantFacadeEjb.toEventParticipantDto(personEventParticipant),
 					personEventParticipant,
 					syncShares);
 			}

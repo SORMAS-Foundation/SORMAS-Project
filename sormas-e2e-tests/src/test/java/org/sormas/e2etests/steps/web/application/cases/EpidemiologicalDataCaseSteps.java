@@ -2,6 +2,7 @@ package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.*;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.NEW_ENTRY_EPIDEMIOLOGICAL_DATA;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_CONTACT_WINDOW_FIRST_RESULT_OPTION;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_WINDOW_CONTACT;
@@ -12,6 +13,7 @@ import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPag
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_GATHERING_DETAILS;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.cases.FollowUpStep.faker;
+import static org.sormas.e2etests.steps.web.application.contacts.ContactsLineListingSteps.DATE_FORMATTER_DE;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -53,6 +55,26 @@ public class EpidemiologicalDataCaseSteps implements En {
       EnvironmentManager environmentManager,
       SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
+
+    When(
+        "I set Start and End of activity by current date in Activity as Case form for DE version",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              START_OF_EXPOSURE_INPUT, DATE_FORMATTER_DE.format(LocalDate.now()));
+          webDriverHelpers.fillInWebElement(
+              END_OF_EXPOSURE_INPUT, DATE_FORMATTER_DE.format(LocalDate.now()));
+        });
+    When(
+        "I fill Description field in Activity as Case form",
+        () -> {
+          webDriverHelpers.fillInWebElement(ACTIVITY_DESCRIPTION, faker.book().title());
+        });
+
+    When(
+        "I check if created Activity as Case appears in a grid for Epidemiological data tab in Cases",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(OPEN_SAVED_ACTIVITY_BUTTON);
+        });
 
     When(
         "I tick a Probable infection environmental box in Exposure for Epidemiological data tab in Cases",
@@ -266,6 +288,12 @@ public class EpidemiologicalDataCaseSteps implements En {
         });
     When(
         "I click on save button in Exposure for Epidemiological data tab in Cases",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
+        });
+
+    When(
+        "I click on save button in Activity as Case data tab in Cases",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
         });

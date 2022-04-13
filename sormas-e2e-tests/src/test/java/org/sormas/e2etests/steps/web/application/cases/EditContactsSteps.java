@@ -38,7 +38,6 @@ import static org.sormas.e2etests.pages.application.events.EventParticipantsPage
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_PERSON_POPUP;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.PICK_OR_CREATE_POPUP_SAVE_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
-import static org.sormas.e2etests.steps.web.application.contacts.EditContactSteps.createdContact;
 
 import cucumber.api.java8.En;
 import java.io.File;
@@ -57,7 +56,6 @@ import org.sormas.e2etests.entities.services.ContactService;
 import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
-import org.sormas.e2etests.steps.web.application.contacts.CreateNewContactSteps;
 import org.testng.asserts.SoftAssert;
 
 @Slf4j
@@ -283,33 +281,6 @@ public class EditContactsSteps implements En {
               apiState.getCreatedContact().getPerson().getLastName().equalsIgnoreCase(lastName),
               "Last name doesn't match");
           softly.assertAll();
-        });
-
-    When(
-        "I check the created data for DE version is correctly displayed on Edit Contact page",
-        () -> {
-          collectedContact = collectContactDataDE();
-          createdContact = CreateNewContactSteps.contact;
-          ComparisonHelper.compareEqualFieldsOfEntities(
-              collectedContact,
-              createdContact,
-              List.of(
-                  "firstName",
-                  "lastName",
-                  "returningTraveler",
-                  "reportDate",
-                  "diseaseOfSourceCase",
-                  "caseIdInExternalSystem",
-                  "dateOfLastContact",
-                  "caseOrEventInformation",
-                  "responsibleRegion",
-                  "responsibleDistrict",
-                  "responsibleCommunity",
-                  "additionalInformationOnContactType",
-                  "typeOfContact",
-                  "contactCategory",
-                  "relationshipWithCase",
-                  "descriptionOfHowContactTookPlace"));
         });
   }
 
