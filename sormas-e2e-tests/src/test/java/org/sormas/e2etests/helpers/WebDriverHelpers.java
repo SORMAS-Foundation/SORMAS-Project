@@ -293,6 +293,24 @@ public class WebDriverHelpers {
             });
   }
 
+  @SneakyThrows
+  public boolean checkIfElementExistsInCombobox(By selector, String text) {
+    clickOnWebElementBySelector(selector);
+    WebElement comboboxInput =
+        baseSteps
+            .getDriver()
+            .findElement(selector)
+            .findElement(By.xpath("preceding-sibling::input"));
+    String comboBoxItemWithText =
+        "//td[@role='listitem']/span[ contains(text(), '"
+            + text
+            + "') or starts-with(text(), '\" + text + \"') ]";
+    waitUntilIdentifiedElementIsVisibleAndClickable(comboboxInput);
+    comboboxInput.sendKeys(text);
+    waitUntilElementIsVisibleAndClickable(By.className("v-filterselect-suggestmenu"));
+    return isElementVisibleWithTimeout(By.xpath(comboBoxItemWithText), 2);
+  }
+
   public void clickOnWebElementBySelector(By selector) {
     clickOnWebElementBySelectorAndIndex(selector, 0);
   }
@@ -872,5 +890,15 @@ public class WebDriverHelpers {
               "Element: %s is not visible under 20 seconds or loading spinner didn't finished",
               selector));
     }
+  }
+
+  public String javascriptGetElementContent(String selector) {
+    JavascriptExecutor javascriptExecutor = baseSteps.getDriver();
+    String script =
+        "return window.getComputedStyle(document.querySelector("
+            + selector
+            + ").getPropertyValue('content')";
+    String content = javascriptExecutor.executeScript(script).toString();
+    return content;
   }
 }
