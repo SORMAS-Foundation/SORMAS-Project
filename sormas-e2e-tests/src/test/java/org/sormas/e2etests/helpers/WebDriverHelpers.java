@@ -873,4 +873,14 @@ public class WebDriverHelpers {
               selector));
     }
   }
+
+  public String javascriptGetElementContent(String selector) {
+    JavascriptExecutor javascriptExecutor = baseSteps.getDriver();
+    String script =
+        "return window.getComputedStyle(document.querySelector("
+            + selector
+            + ").getPropertyValue('content')";
+    String content = javascriptExecutor.executeScript(script).toString();
+    return content;
+  }
 }
