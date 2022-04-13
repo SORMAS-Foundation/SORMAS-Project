@@ -140,9 +140,10 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Sample> cq = cb.createQuery(getElementClass());
 		Root<Sample> from = cq.from(getElementClass());
-		SampleJoins joins = new SampleJoins(from);
 
-		Predicate filter = buildCriteriaFilter(criteria, cb, joins);
+		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, from);
+
+		Predicate filter = buildCriteriaFilter(criteria, sampleQueryContext);
 
 		if (user != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, from));
@@ -245,10 +246,10 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 		selections.addAll(getJurisdictionSelections(sampleQueryContext));
 		cq.multiselect(selections);
 
-		Predicate filter = createUserFilter(cq, cb, joins, sampleCriteria);
+		Predicate filter = createUserFilter(sampleQueryContext, sampleCriteria);
 
 		if (sampleCriteria != null) {
-			Predicate criteriaFilter = buildCriteriaFilter(sampleCriteria, cb, joins);
+			Predicate criteriaFilter = buildCriteriaFilter(sampleCriteria, sampleQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -425,7 +426,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 		selections.addAll(getJurisdictionSelections(sampleQueryContext));
 		cq.multiselect(selections);
 
-		Predicate filter = CriteriaBuilderHelper.and(cb, createDefaultFilter(cb, sample), createUserFilter(cq, cb, joins, sampleCriteria));
+		Predicate filter = CriteriaBuilderHelper.and(cb, createDefaultFilter(cb, sample), createUserFilter(sampleQueryContext, sampleCriteria));
 		Predicate criteriaFilter = buildSampleListCriteriaFilter(sampleCriteria, cb, joins);
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 
@@ -603,11 +604,15 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 	@SuppressWarnings("rawtypes")
 	@Deprecated
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Sample> samplePath) {
-		return createUserFilter(cq, cb, new SampleJoins(samplePath), new SampleCriteria());
+		return createUserFilter(new SampleQueryContext(cb, cq, samplePath), new SampleCriteria());
 	}
 
 	@SuppressWarnings("rawtypes")
-	public Predicate createUserFilter(CriteriaQuery cq, CriteriaBuilder cb, SampleJoins joins, SampleCriteria criteria) {
+	public Predicate createUserFilter(SampleQueryContext sampleQueryContext, SampleCriteria criteria) {
+
+		final CriteriaQuery cq = sampleQueryContext.getQuery();
+		final CriteriaBuilder cb = sampleQueryContext.getCriteriaBuilder();
+		final SampleJoins joins = sampleQueryContext.getJoins();
 
 		User currentUser = getCurrentUser();
 		if (currentUser == null) {
@@ -729,7 +734,9 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 		return SampleJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
 	}
 
-	public Predicate buildCriteriaFilter(SampleCriteria criteria, CriteriaBuilder cb, SampleJoins joins) {
+	public Predicate buildCriteriaFilter(SampleCriteria criteria, SampleQueryContext sampleQueryContext) {
+		SampleJoins joins = sampleQueryContext.getJoins();
+		CriteriaBuilder cb = sampleQueryContext.getCriteriaBuilder();
 		final From<?, ?> sample = joins.getRoot();
 
 		Predicate filter = null;

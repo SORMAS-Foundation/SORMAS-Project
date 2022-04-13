@@ -222,13 +222,13 @@ public class SampleFacadeEjb implements SampleFacade {
 		final Root<Sample> root = cq.from(Sample.class);
 		cq.distinct(true);
 
-		SampleJoins joins = new SampleJoins(root);
+		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, root);
 
 		SampleCriteria sampleCriteria = new SampleCriteria();
 		sampleCriteria.caze(criteria.getCaze()).contact(criteria.getContact()).eventParticipant(criteria.getEventParticipant());
 
-		Predicate filter = sampleService.createUserFilter(cq, cb, joins, sampleCriteria);
-		filter = CriteriaBuilderHelper.and(cb, filter, sampleService.buildCriteriaFilter(sampleCriteria, cb, joins));
+		Predicate filter = sampleService.createUserFilter(sampleQueryContext, sampleCriteria);
+		filter = CriteriaBuilderHelper.and(cb, filter, sampleService.buildCriteriaFilter(sampleCriteria, sampleQueryContext));
 
 		Predicate similarityFilter = null;
 		if (criteria.getLabSampleId() != null) {
@@ -270,10 +270,10 @@ public class SampleFacadeEjb implements SampleFacade {
 		final CriteriaQuery<Sample> cq = cb.createQuery(Sample.class);
 		final Root<Sample> root = cq.from(Sample.class);
 
-		SampleJoins joins = new SampleJoins(root);
+		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, root);
 
-		Predicate filter = sampleService.createUserFilter(cq, cb, joins, criteria);
-		filter = CriteriaBuilderHelper.and(cb, filter, sampleService.buildCriteriaFilter(criteria, cb, joins));
+		Predicate filter = sampleService.createUserFilter(sampleQueryContext, criteria);
+		filter = CriteriaBuilderHelper.and(cb, filter, sampleService.buildCriteriaFilter(criteria, sampleQueryContext));
 
 		if (filter != null) {
 			cq.where(filter);
@@ -572,7 +572,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		Predicate filter = sampleService.createUserFilter(cb, cq, sampleRoot);
 
 		if (sampleCriteria != null) {
-			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, joins);
+			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, sampleQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 			filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, sampleRoot.get(AbstractDomainObject.UUID));
 		} else if (caseCriteria != null) {
@@ -673,11 +673,10 @@ public class SampleFacadeEjb implements SampleFacade {
 		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		final Root<Sample> root = cq.from(Sample.class);
 
-		SampleJoins joins = new SampleJoins(root);
-
-		Predicate filter = sampleService.createUserFilter(cq, cb, joins, sampleCriteria);
+		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, root);
+		Predicate filter = sampleService.createUserFilter(sampleQueryContext, sampleCriteria);
 		if (sampleCriteria != null) {
-			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, cb, joins);
+			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria,sampleQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
