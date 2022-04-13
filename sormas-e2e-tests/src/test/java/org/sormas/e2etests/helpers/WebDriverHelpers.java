@@ -293,6 +293,24 @@ public class WebDriverHelpers {
             });
   }
 
+  @SneakyThrows
+  public boolean checkIfElementExistsInCombobox(By selector, String text) {
+    clickOnWebElementBySelector(selector);
+    WebElement comboboxInput =
+        baseSteps
+            .getDriver()
+            .findElement(selector)
+            .findElement(By.xpath("preceding-sibling::input"));
+    String comboBoxItemWithText =
+        "//td[@role='listitem']/span[ contains(text(), '"
+            + text
+            + "') or starts-with(text(), '\" + text + \"') ]";
+    waitUntilIdentifiedElementIsVisibleAndClickable(comboboxInput);
+    comboboxInput.sendKeys(text);
+    waitUntilElementIsVisibleAndClickable(By.className("v-filterselect-suggestmenu"));
+    return isElementVisibleWithTimeout(By.xpath(comboBoxItemWithText), 2);
+  }
+
   public void clickOnWebElementBySelector(By selector) {
     clickOnWebElementBySelectorAndIndex(selector, 0);
   }
