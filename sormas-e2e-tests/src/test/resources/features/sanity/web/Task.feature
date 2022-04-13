@@ -46,7 +46,7 @@ Feature: Tasks functionalities
     Then I am checking if all the fields are correctly displayed in the Task Management table
 
   @env_main
-  Scenario: Bulk action in Task Directory
+  Scenario: Bulk deleting tasks in Task Directory
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
@@ -56,12 +56,72 @@ Feature: Tasks functionalities
     And API: I create a new task
     Then API: I check that POST call body is "OK"
     And API: I check that POST call status code is 200
+    And API: I create a new task
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Tasks button from navbar
-    And I click on the NEW TASK button
-    When I create a new task with specific data
-    And I open last created task from Tasks Directory
-    Then I check the created task is correctly displayed on Edit task page
-    Then I click on Save button in New Task form
+    And I search last created task by API using Contact UUID
+    And I check that number of displayed tasks results is 3
     And I click on Enter Bulk Edit Mode from Tasks Directory
-    And I select first 2 results in grid in Task Directory
+    And I select first 3 results in grid in Task Directory
+    And I click on Bulk Actions combobox in Task Directory
+    And I click on Delete button from Bulk Actions Combobox in Task Directory
+    And I click yes on the CONFIRM REMOVAL popup from Task Directory page
+    And I check if popup message is "All selected tasks have been deleted"
+    And I check that number of displayed tasks results is 0
+
+  @env_main
+  Scenario: Bulk archiving tasks in Task Directory
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And API: I create a new task
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And API: I create a new task
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Tasks button from navbar
+    And I search last created task by API using Contact UUID
+    And I check that number of displayed tasks results is 3
+    And I click on Enter Bulk Edit Mode from Tasks Directory
+    And I select first 3 results in grid in Task Directory
+    And I click on Bulk Actions combobox in Task Directory
+    And I click on Archive button from Bulk Actions Combobox in Task Directory
+    And I click yes on the CONFIRM REMOVAL popup from Task Directory page
+    And I check if popup message is "All selected tasks have been archived"
+    And I check that number of displayed tasks results is 0
+
+  @env_main
+  Scenario: Bulk editing tasks in Task Directory
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And API: I create a new task
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And API: I create a new task
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Tasks button from navbar
+    And I search last created task by API using Contact UUID
+    And I check that number of displayed tasks results is 3
+    And I click on Enter Bulk Edit Mode from Tasks Directory
+    And I select first 3 results in grid in Task Directory
+    And I click on Bulk Actions combobox in Task Directory
+    And I click on Edit button from Bulk Actions Combobox in Task Directory
+    And I click to bulk change assignee for selected tasks
+    And I click to bulk change priority for selected tasks
+    And I click to bulk change status for selected tasks
+    And I click on Save button in New Task form
+    And I check if popup message after bulk edit is "All tasks have been edited"
+    And I check that number of displayed tasks results is 0

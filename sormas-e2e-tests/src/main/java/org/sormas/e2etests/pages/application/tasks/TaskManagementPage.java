@@ -35,8 +35,16 @@ public class TaskManagementPage {
   public static final By ASSIGNED_USER_FILTER_INPUT = By.cssSelector("#assigneeUserLike");
   public static final By APPLY_FILTERS_BUTTON = By.cssSelector("#actionApplyFilters");
   public static final By BULK_EDIT_BUTTON = By.id("actionEnterBulkEditMode");
+  public static final By BULK_DELETE_BUTTON = By.id("bulkActions-4");
+  public static final By BULK_ARCHIVE_BUTTON = By.id("bulkActions-5");
+  public static final By BULK_EDITING_BUTTON = By.id("bulkActions-3");
+  public static final By CHANGE_ASSIGNEE_CHECKBOX = By.xpath("//label[text()='Change assignee']");
+  public static final By CHANGE_PRIORITY_CHECKBOX = By.xpath("//label[text()='Change priority']");
+  public static final By CHANGE_STATUS_CHECKBOX = By.xpath("//label[text()='Change task status']");
+  public static final By TASK_ASSIGNEE_COMBOBOX = By.cssSelector("#taskAssignee div");
+  public static final By TASK_RADIOBUTTON = By.cssSelector(".v-radiobutton");
 
   public static By getCheckboxByIndex(String idx) {
-    return By.xpath(String.format("//input[@type=\"checkbox\"])[%s]", idx));
+    return By.xpath(String.format("(//input[@type=\"checkbox\"])[%s]", idx));
   }
 }
