@@ -18,7 +18,11 @@
 
 package org.sormas.e2etests.steps.web.application.tasks;
 
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.TOTAL_CASES_COUNTER;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.POPUP_YES_BUTTON;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.TRAVEL_ENTRY_DIRECTORY_PAGE_SHOW_MORE_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.APPLY_FILTER;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BULK_ACTIONS_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.RESET_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
 import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.*;
@@ -39,10 +43,12 @@ import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.entities.pojo.web.Task;
+import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
+import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
 @Slf4j
@@ -57,6 +63,7 @@ public class TaskManagementSteps implements En {
       WebDriverHelpers webDriverHelpers,
       BaseSteps baseSteps,
       ApiState apiState,
+      AssertHelpers assertHelpers,
       SoftAssert softly,
       Properties properties) {
     this.webDriverHelpers = webDriverHelpers;
@@ -66,6 +73,13 @@ public class TaskManagementSteps implements En {
         "^I click on the NEW TASK button$",
         () ->
             webDriverHelpers.clickWhileOtherButtonIsDisplayed(NEW_TASK_BUTTON, TASK_TYPE_COMBOBOX));
+    And(
+        "I click on SHOW MORE FILTERS BUTTON on Task directory page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              TRAVEL_ENTRY_DIRECTORY_PAGE_SHOW_MORE_FILTERS_BUTTON);
+          TimeUnit.SECONDS.sleep(3);
+        });
 
     When(
         "^I open last created task from Tasks Directory$",
@@ -189,11 +203,68 @@ public class TaskManagementSteps implements En {
         "^I select first (\\d+) results in grid in Task Directory$",
         (Integer number) -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
-          for (int i = 1; i <= number; i++) {
+          for (int i = 2; i <= number + 1; i++) {
             webDriverHelpers.scrollToElement(getCheckboxByIndex(String.valueOf(i)));
             webDriverHelpers.clickOnWebElementBySelector(getCheckboxByIndex(String.valueOf(i)));
           }
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+    When(
+        "I click yes on the CONFIRM REMOVAL popup from Task Directory page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(POPUP_YES_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+    When(
+        "I check if popup message is {string}",
+        (String expectedText) -> {
+          softly.assertEquals(
+              webDriverHelpers.getTextFromPresentWebElement(
+                  By.cssSelector(".v-Notification-description")),
+              expectedText,
+              "Bulk action went wrong");
+          softly.assertAll();
+        });
+    When(
+        "I check if popup message after bulk edit is {string}",
+        (String expectedText) -> {
+          softly.assertEquals(
+              webDriverHelpers.getTextFromPresentWebElement(
+                  By.cssSelector(".v-Notification-caption")),
+              expectedText,
+              "Bulk edit went wrong");
+          softly.assertAll();
+        });
+
+    And(
+        "I click on Bulk Actions combobox in Task Directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(BULK_ACTIONS_EVENT_DIRECTORY));
+    And(
+        "I click on Delete button from Bulk Actions Combobox in Task Directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(BULK_DELETE_BUTTON));
+    And(
+        "I click on Archive button from Bulk Actions Combobox in Task Directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(BULK_ARCHIVE_BUTTON));
+    And(
+        "I click on Edit button from Bulk Actions Combobox in Task Directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(BULK_EDITING_BUTTON));
+    When(
+        "I click to bulk change assignee for selected tasks",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CHANGE_ASSIGNEE_CHECKBOX);
+          webDriverHelpers.selectFromCombobox(TASK_ASSIGNEE_COMBOBOX, "Surveillance OFFICER");
+        });
+    When(
+        "I click to bulk change priority for selected tasks",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CHANGE_PRIORITY_CHECKBOX);
+          webDriverHelpers.clickWebElementByText(TASK_RADIOBUTTON, "HIGH");
+        });
+    When(
+        "I click to bulk change status for selected tasks",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CHANGE_STATUS_CHECKBOX);
+          webDriverHelpers.clickWebElementByText(TASK_RADIOBUTTON, "DONE");
         });
 
     When(
@@ -260,6 +331,17 @@ public class TaskManagementSteps implements En {
               "Task status is not correct displayed");
           softly.assertAll();
         });
+
+    Then(
+        "I check that number of displayed tasks results is {int}",
+        (Integer number) ->
+            assertHelpers.assertWithPoll20Second(
+                () ->
+                    Assert.assertEquals(
+                        Integer.parseInt(
+                            webDriverHelpers.getTextFromPresentWebElement(TOTAL_CASES_COUNTER)),
+                        number.intValue(),
+                        "Number of displayed tasks is not correct")));
 
     When(
         "^I collect the task column objects$",
