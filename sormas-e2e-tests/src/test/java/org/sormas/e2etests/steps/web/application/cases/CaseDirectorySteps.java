@@ -506,7 +506,7 @@ public class CaseDirectorySteps implements En {
     And(
         "I fill Cases from input to {int} days before UI Case created on Case directory page",
         (Integer number) -> {
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
           webDriverHelpers.fillInWebElement(
               DATE_FROM_COMBOBOX,
               formatter.format(CreateNewCaseSteps.caze.getDateOfReport().minusDays(number)));
@@ -533,7 +533,7 @@ public class CaseDirectorySteps implements En {
     And(
         "I fill Cases from input to {int} days after before UI Case created on Case directory page",
         (Integer number) -> {
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
           webDriverHelpers.fillInWebElement(
               DATE_FROM_COMBOBOX,
               formatter.format(CreateNewCaseSteps.caze.getDateOfReport().plusDays(number)));
@@ -630,7 +630,7 @@ public class CaseDirectorySteps implements En {
     And(
         "I fill Cases to input to {int} days after UI Case created on Case directory page",
         (Integer number) -> {
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
           webDriverHelpers.fillInWebElement(
               DATE_TO_COMBOBOX,
               formatter.format(CreateNewCaseSteps.caze.getDateOfReport().plusDays(number)));
