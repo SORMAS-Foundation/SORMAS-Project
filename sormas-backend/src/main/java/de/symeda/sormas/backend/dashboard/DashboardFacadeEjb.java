@@ -16,6 +16,7 @@ import java.util.TreeMap;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -49,6 +50,7 @@ import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.outbreak.OutbreakCriteria;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 import de.symeda.sormas.api.visit.VisitStatus;
@@ -85,21 +87,33 @@ public class DashboardFacadeEjb implements DashboardFacade {
 	private DashboardService dashboardService;
 
 	@Override
+	@RolesAllowed({
+		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
+		UserRight._DASHBOARD_CONTACT_VIEW })
 	public List<DashboardCaseDto> getCases(DashboardCriteria dashboardCriteria) {
 		return dashboardService.getCases(dashboardCriteria);
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
+		UserRight._DASHBOARD_CONTACT_VIEW })
 	public Map<CaseClassification, Integer> getCasesCountByClassification(DashboardCriteria dashboardCriteria) {
 		return dashboardService.getCasesCountByClassification(dashboardCriteria);
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
+		UserRight._DASHBOARD_CONTACT_VIEW })
 	public String getLastReportedDistrictName(DashboardCriteria dashboardCriteria) {
 		return dashboardService.getLastReportedDistrictName(dashboardCriteria);
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
+		UserRight._DASHBOARD_CONTACT_VIEW })
 	public Map<PathogenTestResultType, Long> getTestResultCountByResultType(List<DashboardCaseDto> cases) {
 		if (cases.isEmpty()) {
 			return Collections.emptyMap();
@@ -107,10 +121,16 @@ public class DashboardFacadeEjb implements DashboardFacade {
 		return sampleFacade.getNewTestResultCountByResultType(cases.stream().map(DashboardCaseDto::getId).collect(Collectors.toList()));
 	}
 
+	@RolesAllowed({
+		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
+		UserRight._DASHBOARD_CONTACT_VIEW })
 	public Map<PathogenTestResultType, Long> getTestResultCountByResultType(DashboardCriteria dashboardCriteria) {
 		return getTestResultCountByResultType(getCases(dashboardCriteria));
 	}
 
+	@RolesAllowed({
+		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
+		UserRight._DASHBOARD_CONTACT_VIEW })
 	public Map<Date, Map<CaseClassification, Integer>> getEpiCurveSeriesElementsPerCaseClassification(DashboardCriteria dashboardCriteria) {
 		Map<Date, Map<CaseClassification, Integer>> epiCurveSeriesElements = new TreeMap<>();
 		List<Date> dates = buildListOfFilteredDates(
@@ -128,6 +148,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 		return epiCurveSeriesElements;
 	}
 
+	@RolesAllowed(UserRight._DASHBOARD_SURVEILLANCE_VIEW)
 	public Map<Date, Map<PresentCondition, Integer>> getEpiCurveSeriesElementsPerPresentCondition(DashboardCriteria dashboardCriteria) {
 		Map<Date, Map<PresentCondition, Integer>> epiCurveSeriesElements = new TreeMap<>();
 		List<Date> dates = buildListOfFilteredDates(
@@ -148,21 +169,31 @@ public class DashboardFacadeEjb implements DashboardFacade {
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
+		UserRight._DASHBOARD_CONTACT_VIEW })
 	public long countCasesConvertedFromContacts(DashboardCriteria dashboardCriteria) {
 		return dashboardService.countCasesConvertedFromContacts(dashboardCriteria);
 	}
 
 	@Override
+	@RolesAllowed(UserRight._DASHBOARD_SURVEILLANCE_VIEW)
 	public Map<PresentCondition, Integer> getCasesCountPerPersonCondition(DashboardCriteria dashboardCriteria) {
 		return dashboardService.getCasesCountPerPersonCondition(dashboardCriteria);
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
+		UserRight._DASHBOARD_CONTACT_VIEW })
 	public List<DashboardEventDto> getNewEvents(DashboardCriteria dashboardCriteria) {
 		return dashboardService.getNewEvents(dashboardCriteria);
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
+		UserRight._DASHBOARD_CONTACT_VIEW })
 	public Map<EventStatus, Long> getEventCountByStatus(DashboardCriteria dashboardCriteria) {
 		return dashboardService.getEventCountByStatus(dashboardCriteria);
 	}
@@ -265,6 +296,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 		};
 	}
 
+	@RolesAllowed(UserRight._DASHBOARD_SURVEILLANCE_VIEW)
 	public DashboardCaseStatisticDto getDashboardCaseStatistic(DashboardCriteria dashboardCriteria) {
 		List<DashboardCaseDto> dashboardCases = dashboardService.getCases(dashboardCriteria);
 		long newCases = dashboardCases.size();
@@ -311,6 +343,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 			dashboardService.getLastReportedDistrictName(dashboardCriteria));
 	}
 
+	@RolesAllowed(UserRight._DASHBOARD_CONTACT_VIEW)
 	public DashboardContactStatisticDto getDashboardContactStatistic(DashboardCriteria dashboardCriteria) {
 
 		List<DashboardContactDto> dashboardContacts = contactFacade.getContactsForDashboard(
@@ -550,7 +583,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 
 	}
 
-	public int calculateGrowth(int currentCount, int previousCount) {
+	private int calculateGrowth(int currentCount, int previousCount) {
 		return currentCount == 0
 			? (previousCount > 0 ? -100 : 0)
 			: previousCount == 0
@@ -558,11 +591,14 @@ public class DashboardFacadeEjb implements DashboardFacade {
 				: Math.round(((currentCount - previousCount * 1.0f) / previousCount) * 100.0f);
 	}
 
-	public int calculatePercentage(int amount, int totalAmount) {
+	private int calculatePercentage(int amount, int totalAmount) {
 		return totalAmount == 0 ? 0 : (int) ((amount * 100.0f) / totalAmount);
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
+		UserRight._DASHBOARD_CONTACT_VIEW })
 	public List<DiseaseBurdenDto> getDiseaseBurden(
 		RegionReferenceDto region,
 		DistrictReferenceDto district,

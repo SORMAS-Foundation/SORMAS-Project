@@ -151,7 +151,7 @@ public class TravelEntryDirectorySteps implements En {
     And(
         "I fill Travel Entry from input to {int} days before UI Travel Entry created on Travel Entry directory page",
         (Integer number) -> {
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
           webDriverHelpers.fillInWebElement(
               DATE_FROM_COMBOBOX,
               formatter.format(
@@ -160,7 +160,7 @@ public class TravelEntryDirectorySteps implements En {
     And(
         "I fill Travel Entry to input to {int} days after UI Travel Entry created on Travel Entry directory page",
         (Integer number) -> {
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
           webDriverHelpers.fillInWebElement(
               DATE_TO_COMBOBOX,
               formatter.format(
@@ -169,7 +169,7 @@ public class TravelEntryDirectorySteps implements En {
     And(
         "I fill Travel Entry from input to {int} days after before UI Travel Entry created on Travel Entry directory page",
         (Integer number) -> {
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
           webDriverHelpers.fillInWebElement(
               DATE_FROM_COMBOBOX,
               formatter.format(
