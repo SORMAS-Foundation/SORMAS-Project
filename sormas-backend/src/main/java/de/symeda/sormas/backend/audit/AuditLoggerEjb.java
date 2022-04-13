@@ -40,6 +40,7 @@ import javax.ejb.SessionContext;
 import javax.ejb.Singleton;
 import javax.ejb.Stateless;
 
+import org.apache.commons.codec.binary.Base64;
 import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
@@ -303,6 +304,36 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 		} else {
 			return AuditEvent.AuditEventAction.E;
 		}
+	}
+
+	@Override
+	public void logFailedRestLogin(String caller, String method, String pathInfo) {
+		AuditEvent restLoginFail = new AuditEvent();
+
+		restLoginFail.setType(new Coding("https://hl7.org/fhir/R4/valueset-audit-event-type.html", "110114", "User Authentication"));
+		restLoginFail
+			.setSubtype(Collections.singletonList(new Coding("https://hl7.org/fhir/R4/valueset-audit-event-sub-type.html", "110122", "Login")));
+		restLoginFail.setAction(AuditEvent.AuditEventAction.E);
+
+		restLoginFail.setRecorded(Calendar.getInstance(TimeZone.getDefault()).getTime());
+
+		restLoginFail.setOutcome(AuditEvent.AuditEventOutcome._4);
+		restLoginFail.setOutcomeDesc("Authentication failed");
+
+		AuditEvent.AuditEventAgentComponent agent = new AuditEvent.AuditEventAgentComponent();
+
+		agent.setName(caller);
+
+		restLoginFail.addAgent(agent);
+
+		AuditEvent.AuditEventSourceComponent source = new AuditEvent.AuditEventSourceComponent();
+		source.setSite(String.format("%s - REST MultiAuthenticationMechanism", auditSourceSite));
+
+		AuditEvent.AuditEventEntityComponent entity = new AuditEvent.AuditEventEntityComponent();
+		entity.setWhat(new Reference(String.format("%s %s", method, pathInfo)));
+		restLoginFail.addEntity(entity);
+
+		accept(restLoginFail);
 	}
 
 	private class AgentDetails {
