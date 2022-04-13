@@ -402,4 +402,10 @@ public class SurveillanceDashboardPage {
   public static final By DASHBOARD_LAYERS_SHOW_EPIDEMIOLOGICAL_SITUATION =
       By.xpath(
           "//span[@id='dashboardMapShowEpiSituation']/label[.='Show epidemiological situation']");
+  public static final By DISEASES_LAYOUT = By.cssSelector("[location='burden'] .v-csslayout");
+  public static final By CURVE_AND_MAP_LAYOUT =
+      By.cssSelector(".v-slot.v-slot-curve-and-map-layout");
+  public static final By COLLAPSE_EPI_CURVE = By.cssSelector("#collapseEpiCurve");
+  public static final By HIDE_OVERVIEW = By.cssSelector("#hideOverview");
+  public static final By EXPAND_EPI_CURVE = By.cssSelector("#expandEpiCurve");
 }

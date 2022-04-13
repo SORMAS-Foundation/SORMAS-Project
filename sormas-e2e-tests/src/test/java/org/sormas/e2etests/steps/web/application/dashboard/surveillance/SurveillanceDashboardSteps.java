@@ -859,5 +859,108 @@ public class SurveillanceDashboardSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.DASHBOARD_LAYERS_HIDE_OTHER_COUNTRIES);
         });
+
+    Then(
+        "I expand Epidemiological curve$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.EXPAND_EPI_CURVE);
+          webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.EXPAND_EPI_CURVE);
+        });
+    Then(
+        "I verify that only epi curve chart is displayed on page$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          TimeUnit.SECONDS.sleep(2);
+          Assert.assertEquals(
+              webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.STATUS_MAP),
+              0,
+              "Case status map should not be visible when epidemiological curve is expanded");
+          Assert.assertEquals(
+              webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.DISEASES_LAYOUT),
+              0,
+              "Diseases layout should not be visible when epidemiological curve is expanded");
+          Assert.assertEquals(
+              webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.STATISTICS_CHARTS),
+              1,
+              "Only one statistics chart should be visible when epidemiological curve is expanded");
+          Assert.assertEquals(
+              webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.CURVE_AND_MAP_LAYOUT),
+              1,
+              "Curve and map layout should be visible when epidemiological curve is expanded");
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.CURVE_AND_MAP_LAYOUT);
+          webDriverHelpers.clickOnWebElementBySelector(
+              SurveillanceDashboardPage.COLLAPSE_EPI_CURVE);
+        });
+    Then(
+        "I expand Case status map$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.EXPAND_MAP_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.EXPAND_MAP_BUTTON);
+        });
+    Then(
+        "I verify only Case status map is displayed on page$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.STATUS_MAP);
+          Assert.assertEquals(
+              webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.STATUS_MAP),
+              1,
+              "Case status map should be visible when it's expanded");
+          Assert.assertEquals(
+              webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.DISEASES_LAYOUT),
+              0,
+              "Diseases layout should not be visible when status map is expanded");
+          Assert.assertEquals(
+              webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.STATISTICS_CHARTS),
+              0,
+              "No statistics chart should be visible when status map is expanded");
+          Assert.assertEquals(
+              webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.CURVE_AND_MAP_LAYOUT),
+              1,
+              "Curve and map layout should be visible when status map is expanded");
+          webDriverHelpers.clickOnWebElementBySelector(
+              SurveillanceDashboardPage.COLLAPSE_MAP_BUTTON);
+        });
+    Then(
+        "I select Difference in Number of Cases hide overview$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.HIDE_OVERVIEW);
+          webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.HIDE_OVERVIEW);
+        });
+    Then(
+        "I verify that Overview data should be hidden$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          TimeUnit.SECONDS.sleep(2);
+          Assert.assertEquals(
+              webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.STATUS_MAP),
+              1,
+              "Case status map should be visible when hide overview is selected");
+          Assert.assertEquals(
+              webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.DISEASES_LAYOUT),
+              0,
+              "Diseases layout should not be visible when hide overview is selected");
+          Assert.assertEquals(
+              webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.STATISTICS_CHARTS),
+              1,
+              "Only curve statistics chart should be visible when hide overview is selected");
+          Assert.assertEquals(
+              webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.CURVE_AND_MAP_LAYOUT),
+              1,
+              "Curve and map layout should be visible when hide overview is selected");
+          webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.HIDE_OVERVIEW);
+        });
   }
 }
