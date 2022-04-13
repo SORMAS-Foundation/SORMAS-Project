@@ -1034,8 +1034,8 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		UserDto user = useSurveillanceOfficerLogin(rdcf);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 
-		CaseDataDto caze = getCaze(user, cazePerson, rdcfEntities);
-		ContactDto contact = getContact(user, caze, rdcf);
+		CaseDataDto caze = createCaze(user, cazePerson, rdcfEntities);
+		ContactDto contact = createContact(user, caze, rdcf);
 
 		PersonDto contactPerson = getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
 		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
@@ -1178,8 +1178,8 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		UserDto user = useSurveillanceOfficerLogin(rdcf);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 
-		CaseDataDto caze = getCaze(user, cazePerson, rdcfEntities);
-		ContactDto contact = getContact(user, caze, rdcf);
+		CaseDataDto caze = createCaze(user, cazePerson, rdcfEntities);
+		ContactDto contact = createContact(user, caze, rdcf);
 
 		PersonDto contactPerson = getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
 		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
@@ -1867,7 +1867,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertFalse(userReferenceDtos.contains(limitedDengueNationalUser));
 	}
 
-	private CaseDataDto getCaze(UserDto user, PersonDto cazePerson, RDCFEntities rdcf) {
+	private CaseDataDto createCaze(UserDto user, PersonDto cazePerson, RDCFEntities rdcf) {
 		return creator.createCase(
 			user.toReference(),
 			cazePerson.toReference(),
@@ -1878,7 +1878,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			rdcf);
 	}
 
-	private ContactDto getContact(UserDto user, CaseDataDto caze, RDCF rdcf) {
+	private ContactDto createContact(UserDto user, CaseDataDto caze, RDCF rdcf) {
 		return creator.createContact(
 			user.toReference(),
 			user.toReference(),

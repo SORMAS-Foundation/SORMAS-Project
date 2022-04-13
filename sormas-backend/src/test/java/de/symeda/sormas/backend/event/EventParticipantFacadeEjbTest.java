@@ -69,8 +69,8 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetExportListWithRelevantVaccinations() {
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = getUser(rdcf);
-		EventDto event = getEvent(user, rdcf);
+		UserDto user = createUser(rdcf);
+		EventDto event = createEvent(user, rdcf);
 
 		PersonDto eventPerson = creator.createPerson("Event", "Organizer");
 		creator.createEventParticipant(event.toReference(), eventPerson, "event Director", user.toReference());
@@ -165,8 +165,8 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetExportListWithoutRelevantVaccinations() {
 		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		UserDto user = getUser(rdcf);
-		EventDto event = getEvent(user, rdcf);
+		UserDto user = createUser(rdcf);
+		EventDto event = createEvent(user, rdcf);
 
 		PersonDto eventPerson = creator.createPerson("Event", "Organizer");
 		creator.createEventParticipant(event.toReference(), eventPerson, "event Director", user.toReference());
@@ -303,12 +303,12 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertFalse(exist);
 	}
 
-	private UserDto getUser(TestDataCreator.RDCF rdcf) {
+	private UserDto createUser(TestDataCreator.RDCF rdcf) {
 		return creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 	}
 
-	private EventDto getEvent(UserDto user, TestDataCreator.RDCF rdcf) {
+	private EventDto createEvent(UserDto user, TestDataCreator.RDCF rdcf) {
 		return creator.createEvent(
 			EventStatus.SIGNAL,
 			EventInvestigationStatus.PENDING,
