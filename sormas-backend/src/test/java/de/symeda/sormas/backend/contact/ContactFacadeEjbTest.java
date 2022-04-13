@@ -42,6 +42,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.i18n.Strings;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.time.DateUtils;
@@ -1027,28 +1028,15 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetExportList() {
-
-		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+	public void testGetExportListWithRelevantVaccinations() {
+		RDCFEntities rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		RDCF rdcf = new RDCF(rdcfEntities);
 		UserDto user = useSurveillanceOfficerLogin(rdcf);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
-		CaseDataDto caze = creator.createCase(
-			user.toReference(),
-			cazePerson.toReference(),
-			Disease.EVD,
-			CaseClassification.PROBABLE,
-			InvestigationStatus.PENDING,
-			new Date(),
-			rdcf);
-		ContactDto contact = creator.createContact(
-			user.toReference(),
-			user.toReference(),
-			creator.createPerson("Contact", "Person").toReference(),
-			caze,
-			new Date(),
-			new Date(),
-			null,
-			rdcf);
+
+		CaseDataDto caze = createCaze(user, cazePerson, rdcfEntities);
+		ContactDto contact = createContact(user, caze, rdcf);
+
 		PersonDto contactPerson = getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
 		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
 		EpiDataDto epiData = contact.getEpiData();
@@ -1107,13 +1095,15 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			DateHelper.subtractDays(new Date(), 7),
 			Vaccine.OXFORD_ASTRA_ZENECA,
 			VaccineManufacturer.ASTRA_ZENECA);
-		creator.createVaccination(
+
+		VaccinationDto secondVaccination = creator.createVaccination(
 			contact.getReportingUser(),
 			immunization.toReference(),
 			HealthConditionsDto.build(),
 			DateHelper.subtractDays(new Date(), 4),
 			Vaccine.MRNA_1273,
 			VaccineManufacturer.MODERNA);
+
 		VaccinationDto thirdVaccination = creator.createVaccination(
 			contact.getReportingUser(),
 			immunization.toReference(),
@@ -1139,9 +1129,14 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals("Test information", exportDto.getAdditionalInformation());
 		assertEquals("1234", exportDto.getPostalCode());
 		assertEquals(VaccinationStatus.VACCINATED, exportDto.getVaccinationStatus());
-		assertEquals(thirdVaccination.getVaccineName(), exportDto.getVaccineName());
 		assertEquals(firstVaccination.getVaccinationDate(), exportDto.getFirstVaccinationDate());
-		assertEquals(thirdVaccination.getVaccinationDate(), exportDto.getLastVaccinationDate());
+		assertEquals(secondVaccination.getVaccineName(), exportDto.getVaccineName());
+		assertEquals(secondVaccination.getVaccinationDate(), exportDto.getLastVaccinationDate());
+		assertEquals(secondVaccination.getVaccinationInfoSource(), exportDto.getVaccinationInfoSource());
+		assertEquals(secondVaccination.getVaccineInn(), exportDto.getVaccineInn());
+		assertEquals(secondVaccination.getVaccineBatchNumber(), exportDto.getVaccineBatchNumber());
+		assertEquals(secondVaccination.getVaccineAtcCode(), exportDto.getVaccineAtcCode());
+		assertEquals(secondVaccination.getVaccineDose(), exportDto.getNumberOfDoses());
 
 		assertNotNull(exportDto.getLastCooperativeVisitDate());
 		assertTrue(StringUtils.isNotEmpty(exportDto.getLastCooperativeVisitSymptoms()));
@@ -1157,7 +1152,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 				exposure.getEndDate(),
 				Language.EN),
 			exportDto.getTravelHistory());
-		assertThat(exportDto.getEventCount(), equalTo(0L));
+		assertTrue(exportDto.getEventCount().equals(0L));
 
 		// one Contact with 2 Events
 		UserReferenceDto reportingUser = new UserReferenceDto(user.getUuid());
@@ -1167,12 +1162,132 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		creator.createEventParticipant(new EventReferenceDto(event1.getUuid()), contactPerson, reportingUser);
 
 		results = getContactFacade().getExportList(null, Collections.emptySet(), 0, 100, null, Language.EN);
-		assertThat(results, hasSize(1));
+		assertEquals(results.size(), 1);
 		{
 			ContactExportDto dto = results.get(0);
-			assertThat(dto.getLatestEventId(), equalTo(event2.getUuid()));
-			assertThat(dto.getLatestEventTitle(), equalTo(event2.getEventTitle()));
-			assertThat(dto.getEventCount(), equalTo(2L));
+			assertEquals(dto.getLatestEventId(), event2.getUuid());
+			assertEquals(dto.getLatestEventTitle(), event2.getEventTitle());
+			assertTrue(dto.getEventCount().equals(2L));
+		}
+	}
+
+	@Test
+	public void testGetExportListWithoutRelevantVaccinations() {
+		RDCFEntities rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		RDCF rdcf = new RDCF(rdcfEntities);
+		UserDto user = useSurveillanceOfficerLogin(rdcf);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+
+		CaseDataDto caze = createCaze(user, cazePerson, rdcfEntities);
+		ContactDto contact = createContact(user, caze, rdcf);
+
+		PersonDto contactPerson = getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
+		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
+		EpiDataDto epiData = contact.getEpiData();
+		epiData.setExposureDetailsKnown(YesNoUnknown.YES);
+		List<ExposureDto> travels = new ArrayList<>();
+		ExposureDto exposure = ExposureDto.build(ExposureType.TRAVEL);
+		exposure.getLocation().setDetails("Mallorca");
+		exposure.setStartDate(DateHelper.subtractDays(new Date(), 15));
+		exposure.setEndDate(DateHelper.subtractDays(new Date(), 7));
+		caze.getEpiData().getExposures().add(exposure);
+		travels.add(exposure);
+		epiData.setExposures(travels);
+		contact.setEpiData(epiData);
+		getContactFacade().save(contact);
+
+		contactPerson.getAddress().setRegion(new RegionReferenceDto(rdcf.region.getUuid(), null, null));
+		contactPerson.getAddress().setDistrict(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
+		contactPerson.getAddress().setCity("City");
+		contactPerson.getAddress().setStreet("Test street");
+		contactPerson.getAddress().setHouseNumber("Test number");
+		contactPerson.getAddress().setAdditionalInformation("Test information");
+		contactPerson.getAddress().setPostalCode("1234");
+		getPersonFacade().savePerson(contactPerson);
+
+		visit.getSymptoms().setAbdominalPain(SymptomState.YES);
+		getVisitFacade().saveVisit(visit);
+
+		ImmunizationDto immunization = creator.createImmunization(
+			contact.getDisease(),
+			contact.getPerson(),
+			contact.getReportingUser(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf,
+			DateHelper.subtractDays(new Date(), 10),
+			DateHelper.subtractDays(new Date(), 5),
+			DateHelper.subtractDays(new Date(), 1),
+			null);
+
+		VaccinationDto vaccination = creator.createVaccinationWithDetails(
+			caze.getReportingUser(),
+			immunization.toReference(),
+			HealthConditionsDto.build(),
+			DateHelper.addDays(new Date(), 1),
+			Vaccine.MRNA_1273,
+			VaccineManufacturer.MODERNA,
+			VaccinationInfoSource.UNKNOWN,
+			"inn2",
+			"456",
+			"code456",
+			"2");
+
+		List<ContactExportDto> results;
+		results = getContactFacade().getExportList(null, Collections.emptySet(), 0, 100, null, Language.EN);
+
+		// Database should contain one contact, associated visit and task
+		assertEquals(1, results.size());
+
+		// Make sure that everything that is added retrospectively (address, last cooperative visit date and symptoms) is present
+		ContactExportDto exportDto = results.get(0);
+
+		assertEquals(rdcf.region.getCaption(), exportDto.getAddressRegion());
+		assertEquals(rdcf.district.getCaption(), exportDto.getAddressDistrict());
+		assertEquals("City", exportDto.getCity());
+		assertEquals("Test street", exportDto.getStreet());
+		assertEquals("Test number", exportDto.getHouseNumber());
+		assertEquals("Test information", exportDto.getAdditionalInformation());
+		assertEquals("1234", exportDto.getPostalCode());
+		assertNull(exportDto.getFirstVaccinationDate());
+		assertNull(exportDto.getVaccineName());
+		assertNull(exportDto.getLastVaccinationDate());
+		assertNull(exportDto.getVaccinationInfoSource());
+		assertNull(exportDto.getVaccineInn());
+		assertNull(exportDto.getVaccineBatchNumber());
+		assertNull(exportDto.getVaccineAtcCode());
+		assertEquals(exportDto.getNumberOfDoses(), "");
+		assertNotNull(exportDto.getLastCooperativeVisitDate());
+		assertTrue(StringUtils.isNotEmpty(exportDto.getLastCooperativeVisitSymptoms()));
+		assertEquals(YesNoUnknown.YES, exportDto.getLastCooperativeVisitSymptomatic());
+
+		assertNotNull(exportDto.getEpiDataId());
+		assertTrue(exportDto.isTraveled());
+		assertEquals(
+			EpiDataHelper.buildDetailedTravelString(
+				exposure.getLocation().toString(),
+				exposure.getDescription(),
+				exposure.getStartDate(),
+				exposure.getEndDate(),
+				Language.EN),
+			exportDto.getTravelHistory());
+		assertTrue(exportDto.getEventCount().equals(0L));
+
+		// one Contact with 2 Events
+		UserReferenceDto reportingUser = new UserReferenceDto(user.getUuid());
+		EventDto event1 = creator.createEvent(reportingUser, DateHelper.subtractDays(new Date(), 1));
+		EventDto event2 = creator.createEvent(reportingUser, new Date());
+		creator.createEventParticipant(new EventReferenceDto(event2.getUuid()), contactPerson, reportingUser);
+		creator.createEventParticipant(new EventReferenceDto(event1.getUuid()), contactPerson, reportingUser);
+
+		results = getContactFacade().getExportList(null, Collections.emptySet(), 0, 100, null, Language.EN);
+		assertEquals(results.size(), 1);
+		{
+			ContactExportDto dto = results.get(0);
+			assertEquals(dto.getLatestEventId(), event2.getUuid());
+			assertEquals(dto.getLatestEventTitle(), event2.getEventTitle());
+			assertTrue(dto.getEventCount().equals(2L));
 		}
 	}
 
@@ -1503,22 +1618,22 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		PersonReferenceDto leadPersonReference = new PersonReferenceDto(leadPerson.getUuid());
 		RDCF leadRdcf = creator.createRDCF();
 		CaseDataDto sourceCase = creator.createCase(
-				leadUserReference,
-				leadPersonReference,
-				Disease.CORONAVIRUS,
-				CaseClassification.SUSPECT,
-				InvestigationStatus.PENDING,
-				new Date(),
-				leadRdcf);
+			leadUserReference,
+			leadPersonReference,
+			Disease.CORONAVIRUS,
+			CaseClassification.SUSPECT,
+			InvestigationStatus.PENDING,
+			new Date(),
+			leadRdcf);
 		ContactDto leadContact = creator.createContact(
-				leadUserReference,
-				leadUserReference,
-				leadPersonReference,
-				sourceCase,
-				new Date(),
-				new Date(),
-				Disease.CORONAVIRUS,
-				leadRdcf);
+			leadUserReference,
+			leadUserReference,
+			leadPersonReference,
+			sourceCase,
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			leadRdcf);
 		getContactFacade().save(leadContact);
 
 		// Create otherContact
@@ -1528,22 +1643,23 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		PersonReferenceDto otherPersonReference = new PersonReferenceDto(otherPerson.getUuid());
 		RDCF otherRdcf = creator.createRDCF();
 		ContactDto otherContact = creator.createContact(
-				otherUserReference,
-				otherUserReference,
-				otherPersonReference,
-				sourceCase,
-				new Date(),
-				new Date(),
-				Disease.CORONAVIRUS,
-				otherRdcf);
+			otherUserReference,
+			otherUserReference,
+			otherPersonReference,
+			sourceCase,
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			otherRdcf);
 		ContactReferenceDto otherContactReference = getContactFacade().getReferenceByUuid(otherContact.getUuid());
 		ContactDto contact =
-				creator.createContact(otherUserReference, otherUserReference, otherPersonReference, sourceCase, new Date(), new Date(), null);
+			creator.createContact(otherUserReference, otherUserReference, otherPersonReference, sourceCase, new Date(), new Date(), null);
 		Region region = creator.createRegion("");
 		District district = creator.createDistrict("", region);
 		Facility facility = creator.createFacility("", region, district, creator.createCommunity("", district));
 
-		CaseDataDto resultingCase = getCaseFacade().save(creator.createCase(
+		CaseDataDto resultingCase = getCaseFacade().save(
+			creator.createCase(
 				otherUserReference,
 				otherPersonReference,
 				Disease.CORONAVIRUS,
@@ -1749,5 +1865,28 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		Assert.assertTrue(userReferenceDtos.contains(userDto));
 		Assert.assertTrue(userReferenceDtos.contains(limitedCovidNationalUser));
 		Assert.assertFalse(userReferenceDtos.contains(limitedDengueNationalUser));
+	}
+
+	private CaseDataDto createCaze(UserDto user, PersonDto cazePerson, RDCFEntities rdcf) {
+		return creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+	}
+
+	private ContactDto createContact(UserDto user, CaseDataDto caze, RDCF rdcf) {
+		return creator.createContact(
+			user.toReference(),
+			user.toReference(),
+			creator.createPerson("Contact", "Person").toReference(),
+			caze,
+			new Date(),
+			new Date(),
+			null,
+			rdcf);
 	}
 }

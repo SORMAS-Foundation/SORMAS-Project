@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.event.eventimport;
 
+import de.symeda.sormas.api.user.UserRight;
 import java.beans.IntrospectionException;
 import java.beans.PropertyDescriptor;
 import java.lang.reflect.InvocationTargetException;
@@ -23,6 +24,7 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.function.Function;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -71,6 +73,7 @@ import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb.Distri
 import de.symeda.sormas.backend.user.UserService;
 
 @Stateless(name = "EventImportFacade")
+@RolesAllowed(UserRight._EVENT_IMPORT)
 public class EventImportFacadeEjb implements EventImportFacade {
 
 	private final Logger LOGGER = LoggerFactory.getLogger(EventImportFacadeEjb.class);
