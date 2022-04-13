@@ -47,12 +47,6 @@ import org.testng.Assert;
 @Slf4j
 public class WebDriverHelpers {
 
-  public static final By SELECTED_RADIO_BUTTON =
-      By.xpath("ancestor::div[contains(@role,'group')]//input[@checked]/following-sibling::label");
-  public static final By SELECTED_RADIO_DISABLED_AND_CHECKED_BUTTON =
-      By.xpath(
-          "//div[contains(@class,'v-select-optiongroup')]//input[@checked and @disabled]/following-sibling::label");
-
   public static final int FLUENT_WAIT_TIMEOUT_SECONDS = 20;
   public static final By CHECKBOX_TEXT_LABEL = By.xpath("ancestor::span//label");
   public static final By TABLE_SCROLLER =
@@ -63,8 +57,8 @@ public class WebDriverHelpers {
 
   private static final String SCROLL_TO_WEB_ELEMENT_SCRIPT =
       "arguments[0].scrollIntoView({behavior: \"auto\", block: \"center\", inline: \"center\"});";
-  public static final String CLICK_ELEMENT_SCRIPT = "arguments[0].click();";
-  public static final String TABLE_SCROLL_SCRIPT = "arguments[0].scrollTop+=%s";
+  private static final String CLICK_ELEMENT_SCRIPT = "arguments[0].click();";
+  private static final String TABLE_SCROLL_SCRIPT = "arguments[0].scrollTop+=%s";
 
   @Inject
   public WebDriverHelpers(BaseSteps baseSteps, AssertHelpers assertHelpers) {
@@ -150,6 +144,7 @@ public class WebDriverHelpers {
   }
 
   public void waitUntilAListOfWebElementsAreNotEmpty(final By selector) {
+    log.info("Waiting after list of elements [{}] to be populated", selector);
     assertHelpers.assertWithPoll(
         () -> {
           List<String> webElementsTexts =
@@ -170,7 +165,6 @@ public class WebDriverHelpers {
   }
 
   public void fillInWebElement(By selector, String text) {
-    log.info("Filling element [{{}] with text [{}]", selector, text);
     try {
       await()
           .pollInterval(ONE_HUNDRED_MILLISECONDS)
@@ -191,6 +185,7 @@ public class WebDriverHelpers {
                     getValueFromWebElement(selector),
                     "",
                     String.format("Field %s wasn't cleared", selector));
+                log.info("Filling element [ {} ] with text [ {} ]", selector, text);
                 baseSteps.getDriver().findElement(selector).sendKeys(text);
                 String valueFromWebElement = getValueFromWebElement(selector);
                 Assert.assertEquals(
@@ -226,6 +221,7 @@ public class WebDriverHelpers {
                 assertWithMessage("Field %s wasn't cleared", selector)
                     .that(getValueFromWebElement(selector))
                     .isEqualTo("");
+                log.info("Filling element [ {} ] with text [ {} ]", selector, text);
                 baseSteps.getDriver().findElement(selector).sendKeys(text);
                 baseSteps.getDriver().findElement(By.cssSelector("body")).sendKeys(Keys.TAB);
                 String valueFromWebElement = getValueFromWebElement(selector);
@@ -233,7 +229,6 @@ public class WebDriverHelpers {
                     .that(valueFromWebElement)
                     .isEqualTo(text);
               });
-
     } catch (ConditionTimeoutException ignored) {
       log.error("Unable to fill on element identified by locator: {} and text {}", selector, text);
       throw new TimeoutException(
@@ -273,7 +268,7 @@ public class WebDriverHelpers {
     waitUntilElementIsVisibleAndClickable(By.className("v-filterselect-suggestmenu"));
     waitUntilANumberOfElementsAreVisibleAndClickable(By.xpath("//td[@role='listitem']/span"), 1);
     By dropDownValueXpath = By.xpath(comboBoxItemWithText);
-    TimeUnit.MILLISECONDS.sleep(500);
+    TimeUnit.MILLISECONDS.sleep(700);
     clickOnWebElementBySelector(dropDownValueXpath);
     await()
         .pollInterval(ONE_HUNDRED_MILLISECONDS)
@@ -329,6 +324,7 @@ public class WebDriverHelpers {
                     baseSteps.getDriver().findElements(selector).get(index).isEnabled(),
                     String.format("The element: %s was not enabled", selector));
                 scrollToElement(selector);
+                log.info("Clicking on element [ {} ]", selector);
                 baseSteps.getDriver().findElement(selector).click();
                 waitForPageLoaded();
               });
@@ -360,6 +356,7 @@ public class WebDriverHelpers {
                     baseSteps.getDriver().findElements(selector).get(index).isEnabled(),
                     String.format("The element: %s was not enabled", selector));
                 scrollToElement(selector);
+                log.info("Double-Clicking on element [ {} ]", selector);
                 actions.doubleClick(element).perform();
                 waitForPageLoaded();
               });
@@ -427,12 +424,13 @@ public class WebDriverHelpers {
   }
 
   public void scrollToElement(final Object selector) {
-    log.info("Scrolling to element [{}]", selector);
     JavascriptExecutor javascriptExecutor = baseSteps.getDriver();
     try {
       if (selector instanceof WebElement) {
+        log.info("Scrolling to element [{}]", selector);
         javascriptExecutor.executeScript(SCROLL_TO_WEB_ELEMENT_SCRIPT, selector);
       } else {
+        log.info("Scrolling to element [{}]", selector);
         javascriptExecutor.executeScript(
             SCROLL_TO_WEB_ELEMENT_SCRIPT, baseSteps.getDriver().findElement((By) selector));
       }
@@ -464,12 +462,13 @@ public class WebDriverHelpers {
         javascriptExecutor.executeScript(CLICK_ELEMENT_SCRIPT, selector);
       } else {
         waitUntilIdentifiedElementIsPresent(selector);
+        log.info("Clicking on element {} via javascript", selector);
         javascriptExecutor.executeScript(
             CLICK_ELEMENT_SCRIPT, baseSteps.getDriver().findElement((By) selector));
       }
     } catch (Exception ignored) {
+      log.error("Unable to click on element {} via javascript", selector);
     }
-    waitForPageLoaded();
   }
 
   // TODO replace regular scroll wth this one
@@ -559,11 +558,6 @@ public class WebDriverHelpers {
     }
   }
 
-  public String getValueOfListElement(By selector, int index) {
-    scrollToElement(selector);
-    return baseSteps.getDriver().findElements(selector).get(index).getAttribute("value");
-  }
-
   public String getTextFromListElement(By selector, int index) {
     scrollToElement(selector);
     return baseSteps.getDriver().findElements(selector).get(index).getText();
@@ -637,15 +631,25 @@ public class WebDriverHelpers {
 
   public WebElement getWebElement(By byObject) {
     try {
+      log.info("Returning WebElement for provided locator [ {} ]", byObject);
       return baseSteps.getDriver().findElement(byObject);
-    } catch (Exception e) {
-      return null;
+    } catch (Exception any) {
+      throw new WebDriverException(
+          String.format(
+              "No elements found for locator [ %s ] : [ %s ]", byObject, any.getMessage()));
     }
   }
 
   public String getTextFromPresentWebElement(By byObject) {
     scrollToElement(byObject);
-    return baseSteps.getDriver().findElement(byObject).getText();
+    try {
+      return baseSteps.getDriver().findElement(byObject).getText();
+    } catch (Exception any) {
+      throw new WebDriverException(
+          String.format(
+              "Cannot get text from WebElement with locator [ %s ] : [ %s ]",
+              byObject, any.getMessage()));
+    }
   }
 
   public void waitUntilIdentifiedElementIsPresent(final Object selector) {
@@ -669,7 +673,7 @@ public class WebDriverHelpers {
             });
       }
     } catch (StaleElementReferenceException staleEx) {
-      log.warn("StaleElement found at: {}", selector);
+      log.warn("StaleElement found for: [ {} ]", selector);
       log.info("Performing again wait until element is present action");
       waitUntilIdentifiedElementIsPresent(selector);
     }
@@ -726,12 +730,18 @@ public class WebDriverHelpers {
   public String getCheckedOptionFromHorizontalOptionGroup(By options) {
     waitUntilIdentifiedElementIsPresent(options);
     scrollToElement(options);
+    final By SELECTED_RADIO_BUTTON =
+        By.xpath(
+            "ancestor::div[contains(@role,'group')]//input[@checked]/following-sibling::label");
     return baseSteps.getDriver().findElement(options).findElement(SELECTED_RADIO_BUTTON).getText();
   }
 
   public String getCheckedDisabledOptionFromHorizontalOptionGroup(By options) {
     waitUntilIdentifiedElementIsPresent(options);
     scrollToElement(options);
+    final By SELECTED_RADIO_DISABLED_AND_CHECKED_BUTTON =
+        By.xpath(
+            "//div[contains(@class,'v-select-optiongroup')]//input[@checked and @disabled]/following-sibling::label");
     return baseSteps
         .getDriver()
         .findElement(options)
@@ -745,7 +755,7 @@ public class WebDriverHelpers {
     scrollToElement(selector);
     WebElement webElement = baseSteps.getDriver().findElement(selector);
     while (!"".contentEquals(getValueFromWebElement(selector))) {
-      log.debug("Deleted char: {}", getValueFromWebElement(selector));
+      log.info("Deleted char: {}", getValueFromWebElement(selector));
       webElement.clear();
       webElement.sendKeys(Keys.LEFT_CONTROL);
       webElement.sendKeys("A");
@@ -847,8 +857,14 @@ public class WebDriverHelpers {
                 String.format("Row element: %s wasn't selected within 20s", rowLocator)));
   }
 
+  @SneakyThrows
   public void sendFile(By selector, String filePath) {
-    baseSteps.getDriver().findElement(selector).sendKeys(filePath);
+    try {
+      baseSteps.getDriver().findElement(selector).sendKeys(filePath);
+    } catch (Exception any) {
+      throw new Exception(
+          String.format("Unable to send file [ %s ] to [ %s }", filePath, selector));
+    }
   }
 
   public boolean isElementDisplayedAndNoLoadingSpinnerOrThrowException(By selector) {
