@@ -15,17 +15,20 @@
 
 package de.symeda.sormas.app.caze.edit;
 
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
+import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
+
+import java.util.Calendar;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 
 import androidx.annotation.NonNull;
-
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.Calendar;
-import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -54,9 +57,6 @@ import de.symeda.sormas.app.core.notification.NotificationHelper;
 import de.symeda.sormas.app.person.SelectOrCreatePersonDialog;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.DateFormatHelper;
-
-import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
-import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
 public class CaseNewActivity extends BaseEditActivity<Case> {
 
@@ -205,8 +205,8 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 			return;
 		}
 
-		// Person selection can be skipped if the case was created from a contact
-		if (contactUuid == null) {
+		// Person selection can be skipped if the case was created from a contact or event participant
+		if (contactUuid == null && eventParticipantUuid == null) {
 			SelectOrCreatePersonDialog.selectOrCreatePerson(caze.getPerson(), person -> {
 				if (person != null) {
 					caze.setPerson(person);
