@@ -463,16 +463,16 @@ Feature: Create events
     Then I open the last created event via api
     And I check CLUSTER option on edit Event page
     And I select Hauptsächlich von Mensch zu Mensch option from Primary Mode Of Transmission Combobox on edit Event page
-    And  I click on Epidemiological evidence with UNBEKANNT option
-    And  I click on Epidemiological evidence with NEIN option
-    And  I click on Epidemiological evidence with JA option
-    And I thick all options for Study on Epidemiological evidence for De version
-    And I thick all options for Explorative survey of affected people on Epidemiological evidence for De version
-    And I thick all options for Descriptive analysis of ascertained data on Epidemiological evidence for De version
-    And I thick all options for Suspicion on Epidemiological evidence for De version
-    Then I click on Laboratory diagnostic evidence  evidence with UNBEKANNT option
-    And I click on Laboratory diagnostic evidence  evidence with NEIN option
-    And I click on Laboratory diagnostic evidence  evidence with JA option
-    And I thick all options for Verification of at least two infected or diseased persons on Laboratory diagnostic evidence for De version
-    And I thick all options for Verification on materials on Laboratory diagnostic evidence for De version
+    And I click on Epidemiological evidence with UNBEKANNT option
+    And I click on Epidemiological evidence with NEIN option
+    And I click on Epidemiological evidence with JA option
+    And I tick the all options for Study on Epidemiological evidence for De version
+    And I tick the all options for Explorative survey of affected people on Epidemiological evidence for De version
+    And I tick the all options for Descriptive analysis of ascertained data on Epidemiological evidence for De version
+    And I tick the all options for Suspicion on Epidemiological evidence for De version
+    Then I click on Laboratory diagnostic evidence with UNBEKANNT option
+    And I click on Laboratory diagnostic evidence with NEIN option
+    And I click on Laboratory diagnostic evidence with JA option
+    And I tick the all options for Verification of at least two infected or diseased persons on Laboratory diagnostic evidence for De version
+    And I tick the all options for Verification on materials on Laboratory diagnostic evidence for De version
     And I click on SAVE button in edit event form
