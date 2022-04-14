@@ -37,7 +37,6 @@ public class AuditLoggerInterceptor {
 	@EJB
 	AuditLoggerEjb.AuditLoggerEjbLocal auditLogger;
 
-
 	/**
 	 * Cache to track all classes that should be ignored and those who must be audited. False indicates audit, True ignore
 	 */
@@ -68,7 +67,8 @@ public class AuditLoggerInterceptor {
 					Arrays.asList(
 						ContinentFacadeEjb.class.getMethod("getByDefaultName", String.class, boolean.class),
 						SubcontinentFacadeEjb.class.getMethod("getByDefaultName", String.class, boolean.class),
-						UserFacadeEjb.class.getMethod("getCurrentUser"))));
+						UserFacadeEjb.class.getMethod("getCurrentUser"),
+						UserFacadeEjb.class.getMethod("getValidLoginRights", String.class, String.class))));
 		} catch (NoSuchMethodException e) {
 			throw new RuntimeException(e);
 		}
@@ -110,7 +110,6 @@ public class AuditLoggerInterceptor {
 		// AuditContextProducer
 		Date start = Calendar.getInstance(TimeZone.getDefault()).getTime();
 		List<String> parameters = getParameters(context);
-
 
 		// do the actual call
 		Object result = context.proceed();

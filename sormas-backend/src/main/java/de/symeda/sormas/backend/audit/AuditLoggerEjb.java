@@ -261,7 +261,7 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 	public void logRestCall(String path, String method) {
 		AuditEvent restCall = new AuditEvent();
 
-		restCall.setType(new Coding("https://hl7.org/fhir/R4/valueset-audit-event-type.html", "110100", "RESTful Operation"));
+		restCall.setType(new Coding("https://hl7.org/fhir/R4/valueset-audit-event-type.html", "rest", "RESTful Operation"));
 		restCall.setAction(inferRestAction(method));
 
 		restCall.setRecorded(Calendar.getInstance(TimeZone.getDefault()).getTime());
