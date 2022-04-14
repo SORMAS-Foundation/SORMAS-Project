@@ -1049,7 +1049,7 @@ public class TestDataCreator {
 			eventParticipant.setDistrict(rdcf.district);
 		}
 
-		eventParticipant = beanTest.getEventParticipantFacade().saveEventParticipant(eventParticipant);
+		eventParticipant = beanTest.getEventParticipantFacade().save(eventParticipant);
 		return eventParticipant;
 	}
 

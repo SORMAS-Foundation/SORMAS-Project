@@ -11219,4 +11219,16 @@ DROP TRIGGER IF EXISTS delete_history_trigger ON systemevent;
 
 INSERT INTO schema_version (version_number, comment) VALUES (452, 'Persisting systemevent on latest develop fails with SQL error #8585');
 
+-- 2022-04-08 Initial UI support for physician's reports #8276
+
+ALTER TABLE labmessage ADD COLUMN type varchar(255);
+ALTER TABLE labmessage_history ADD COLUMN type varchar(255);
+
+UPDATE labmessage SET type = CASE
+    WHEN labmessagedetails LIKE '%profile value="https://demis.rki.de/fhir/StructureDefinition/NotificationDiseaseCVDD"%' THEN 'PHYSICIANS_REPORT'
+    ELSE 'LAB_MESSAGE'
+    END;
+
+INSERT INTO schema_version (version_number, comment) VALUES (453, 'Initial UI support for physicians reports #8276');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
