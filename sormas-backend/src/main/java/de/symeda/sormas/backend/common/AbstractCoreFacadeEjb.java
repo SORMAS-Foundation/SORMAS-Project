@@ -21,6 +21,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.DenyAll;
 import javax.ejb.EJB;
 import javax.ejb.TransactionAttribute;
 import javax.ejb.TransactionAttributeType;
@@ -94,8 +95,8 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 			.collect(Collectors.toList());
 	}
 
-	@Override
-	public DTO save(@Valid @NotNull DTO dto) {
+	@DenyAll
+	public DTO doSave(@Valid @NotNull DTO dto) {
 		ADO existingAdo = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 
 		if (existingAdo != null && !service.getEditPermissionType(existingAdo).equals(EditPermissionType.ALLOWED)) {
@@ -119,6 +120,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		return service.exists(uuid);
 	}
 
+	@DenyAll
 	public void delete(String uuid) {
 		ADO ado = service.getByUuid(uuid);
 		service.delete(ado);
@@ -218,14 +220,17 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 
 	public abstract void validate(DTO dto) throws ValidationRuntimeException;
 
+	@DenyAll
 	public void archive(String entityUuid, Date endOfProcessingDate) {
 		service.archive(entityUuid, endOfProcessingDate);
 	}
 
+	@DenyAll
 	public void archive(List<String> entityUuids) {
 		service.archive(entityUuids);
 	}
 
+	@DenyAll
 	public void dearchive(List<String> entityUuids, String dearchiveReason) {
 		service.dearchive(entityUuids, dearchiveReason);
 	}

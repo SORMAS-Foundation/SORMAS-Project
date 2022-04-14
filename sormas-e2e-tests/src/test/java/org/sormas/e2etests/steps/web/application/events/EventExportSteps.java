@@ -3,9 +3,9 @@ package org.sormas.e2etests.steps.web.application.events;
 import static org.sormas.e2etests.pages.application.cases.CaseImportExportPage.CUSTOM_CASE_DELETE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseImportExportPage.CUSTOM_CASE_EXPORT_DOWNLOAD_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseImportExportPage.EXPORT_CONFIGURATION_DATA_DISTRICT_CHECKBOX;
-import static org.sormas.e2etests.pages.application.cases.CaseImportExportPage.EXPORT_CONFIGURATION_DATA_REGION_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseImportExportPage.NEW_EXPORT_CONFIGURATION_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseImportExportPage.NEW_EXPORT_CONFIGURATION_SAVE_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.EXPORT_EVENT_PARTICIPANT_CONFIGURATION_DATA_REGION_CHECKBOX;
 
 import com.google.inject.Inject;
 import com.opencsv.CSVParser;
@@ -35,7 +35,8 @@ public class EventExportSteps implements En {
     When(
         "I select specific data of event participant to export in Export Configuration",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(EXPORT_CONFIGURATION_DATA_REGION_CHECKBOX);
+          webDriverHelpers.clickOnWebElementBySelector(
+              EXPORT_EVENT_PARTICIPANT_CONFIGURATION_DATA_REGION_CHECKBOX);
           webDriverHelpers.clickOnWebElementBySelector(EXPORT_CONFIGURATION_DATA_DISTRICT_CHECKBOX);
           webDriverHelpers.clickOnWebElementBySelector(NEW_EXPORT_CONFIGURATION_SAVE_BUTTON);
         });

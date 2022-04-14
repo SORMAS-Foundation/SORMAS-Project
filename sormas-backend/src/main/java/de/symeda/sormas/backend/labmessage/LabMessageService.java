@@ -57,6 +57,9 @@ public class LabMessageService extends AdoServiceWithUserFilter<LabMessage> {
 		if (criteria.getUuid() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(labMessage.get(LabMessage.UUID), criteria.getUuid()));
 		}
+		if (criteria.getType() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(labMessage.get(LabMessage.TYPE), criteria.getType()));
+		}
 		if (criteria.getLabMessageStatus() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(labMessage.get(LabMessage.STATUS), criteria.getLabMessageStatus()));
 		}

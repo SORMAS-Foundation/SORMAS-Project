@@ -17,8 +17,10 @@ public class LabMessageCriteria extends BaseCriteria implements Serializable {
 	public static final String BIRTH_DATE_FROM = "birthDateFrom";
 	public static final String BIRTH_DATE_TO = "birthDateTo";
 	public static final String ASSIGNEE = "assignee";
+	public static final String TYPE = "type";
 
 	private String uuid;
+	private ExternalMessageType type;
 	private LabMessageStatus labMessageStatus;
 	private SampleReferenceDto sample;
 	private String searchFieldLike;
@@ -34,6 +36,14 @@ public class LabMessageCriteria extends BaseCriteria implements Serializable {
 
 	public void setUuid(String uuid) {
 		this.uuid = uuid;
+	}
+
+	public ExternalMessageType getType() {
+		return type;
+	}
+
+	public void setType(ExternalMessageType type) {
+		this.type = type;
 	}
 
 	public LabMessageStatus getLabMessageStatus() {
