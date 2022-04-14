@@ -187,7 +187,7 @@ public class TravelEntryFacadeEjb
 
 	@Override
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	@RolesAllowed(UserRight._TRAVEL_ENTRY_ARCHIVE)
+	@RolesAllowed(UserRight._SYSTEM)
 	public void archiveAllArchivableTravelEntries(int daysAfterTravelEntryGetsArchived) {
 		archiveAllArchivableTravelEntry(daysAfterTravelEntryGetsArchived, LocalDate.now());
 	}
