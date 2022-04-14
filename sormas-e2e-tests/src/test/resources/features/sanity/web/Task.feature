@@ -45,7 +45,7 @@ Feature: Tasks functionalities
     And I collect the task column objects
     Then I am checking if all the fields are correctly displayed in the Task Management table
 
-  @env_main
+  @issue=SORDEV-6140 @env_main
   Scenario: Bulk deleting tasks in Task Directory
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -71,7 +71,7 @@ Feature: Tasks functionalities
     And I check if popup message is "All selected tasks have been deleted"
     And I check that number of displayed tasks results is 0
 
-  @env_main
+  @issue=SORDEV-6140 @env_main
   Scenario: Bulk archiving tasks in Task Directory
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -97,7 +97,7 @@ Feature: Tasks functionalities
     And I check if popup message is "All selected tasks have been archived"
     And I check that number of displayed tasks results is 0
 
-  @env_main
+  @issue=SORDEV-6140 @env_main
   Scenario: Bulk editing tasks in Task Directory
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
