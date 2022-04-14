@@ -111,6 +111,7 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 	}
 
 	@Override
+    @RolesAllowed({UserRight._CASE_VIEW, UserRight._OUTBREAK_VIEW})
 	public boolean hasOutbreak(DistrictReferenceDto district, Disease disease) {
 
 		Long count = outbreakService.countByCriteria(new OutbreakCriteria().district(district).disease(disease).active(true), null);
