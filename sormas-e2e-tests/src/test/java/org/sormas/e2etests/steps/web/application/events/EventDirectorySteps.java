@@ -86,6 +86,7 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LI
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LINK_EVENT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LINK_EVENT_BUTTON_EDIT_PAGE;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.MORE_BUTTON_EVENT_DIRECTORY;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.NEW_EVENT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.RESET_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SAVE_BUTTON_IN_LINK_FORM;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SEARCH_EVENT_BY_FREE_TEXT;
@@ -696,8 +697,9 @@ public class EventDirectorySteps implements En {
     When(
         "^I search for specific event in event directory",
         () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(RESET_FILTER, 35);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NEW_EVENT_BUTTON, 35);
           webDriverHelpers.clickOnWebElementBySelector(RESET_FILTER);
+          TimeUnit.SECONDS.sleep(3);
           final String eventUuid = CreateNewEventSteps.newEvent.getUuid();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               SEARCH_EVENT_BY_FREE_TEXT_INPUT, 20);

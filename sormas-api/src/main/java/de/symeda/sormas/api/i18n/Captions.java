@@ -1418,6 +1418,7 @@ public interface Captions {
 	String LabMessage_specimenCondition = "LabMessage.specimenCondition";
 	String LabMessage_status = "LabMessage.status";
 	String LabMessage_testedDisease = "LabMessage.testedDisease";
+	String LabMessage_type = "LabMessage.type";
 	String LabMessageCriteria_birthDateFrom = "LabMessageCriteria.birthDateFrom";
 	String LabMessageCriteria_birthDateTo = "LabMessageCriteria.birthDateTo";
 	String LabMessageCriteria_messageDateFrom = "LabMessageCriteria.messageDateFrom";
