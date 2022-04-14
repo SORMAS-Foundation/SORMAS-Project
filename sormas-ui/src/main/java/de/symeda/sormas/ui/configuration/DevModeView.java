@@ -1375,7 +1375,7 @@ public class DevModeView extends AbstractConfigurationView {
 					}
 				}
 
-				FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipant);
+				FacadeProvider.getEventParticipantFacade().save(eventParticipant);
 				generatedParticipants++;
 			}
 		}

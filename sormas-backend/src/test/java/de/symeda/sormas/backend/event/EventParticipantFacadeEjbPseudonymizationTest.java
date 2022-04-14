@@ -126,7 +126,7 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 		assertThat(savedPerson.getAddress().getAdditionalInformation(), is(nullValue()));
 		assertThat(savedPerson.getAddress().getCity(), is(nullValue()));
 
-		getEventParticipantFacade().saveEventParticipant(participant);
+		getEventParticipantFacade().save(participant);
 		EventParticipant savedParticipant = getEventParticipantService().getByUuid(participant.getUuid());
 
 //		assertThat(savedParticipant.getInvolvementDescription(), is("Test involvement descr"));
@@ -148,7 +148,7 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 		participant.getPerson().getAddress().setAdditionalInformation(null);
 		participant.getPerson().getAddress().setCity(null);
 
-		getEventParticipantFacade().saveEventParticipant(participant);
+		getEventParticipantFacade().save(participant);
 
 		EventParticipant saved = getEventParticipantService().getByUuid(participant.getUuid());
 

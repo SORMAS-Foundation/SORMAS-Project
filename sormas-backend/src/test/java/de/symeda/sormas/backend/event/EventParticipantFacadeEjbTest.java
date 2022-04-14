@@ -229,7 +229,7 @@ public class EventParticipantFacadeEjbTest extends AbstractBeanTest {
 		eventParticipant.setPerson(creator.createPerson());
 		eventParticipant.setReportingUser(user.toReference());
 
-		EventParticipantDto savedEventParticipant = getEventParticipantFacade().saveEventParticipant(eventParticipant);
+		EventParticipantDto savedEventParticipant = getEventParticipantFacade().save(eventParticipant);
 
 		MatcherAssert.assertThat(savedEventParticipant.getUuid(), not(isEmptyOrNullString()));
 	}

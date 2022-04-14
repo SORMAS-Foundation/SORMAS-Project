@@ -326,7 +326,7 @@ public class EventParticipantFacadeEjb
 	@RolesAllowed({
 		UserRight._EVENTPARTICIPANT_CREATE,
 		UserRight._EVENTPARTICIPANT_EDIT })
-	public EventParticipantDto saveEventParticipant(@Valid EventParticipantDto dto) {
+	public EventParticipantDto save(@Valid @NotNull EventParticipantDto dto) {
 		return saveEventParticipant(dto, true, true);
 	}
 

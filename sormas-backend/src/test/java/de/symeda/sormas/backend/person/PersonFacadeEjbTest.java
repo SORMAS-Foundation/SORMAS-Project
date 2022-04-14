@@ -656,9 +656,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person3 = creator.createPerson();
 		person3 = getPersonFacade().savePerson(person3);
 
-		TravelEntryDto travelEntry = creator
-			.createTravelEntry(person3.toReference(), nationalUser.toReference(), Disease.CORONAVIRUS, rdcf.region, rdcf.district, rdcf.pointOfEntry);
-		getTravelEntryFacade().save(travelEntry);
+		creator.createTravelEntry(person3.toReference(), nationalUser.toReference(), Disease.CORONAVIRUS, rdcf.region, rdcf.district, rdcf.pointOfEntry);
 
 		personsAfterT1 = getPersonFacade().getPersonsAfter(t1);
 		assertEquals(3, personsAfterT1.size());
