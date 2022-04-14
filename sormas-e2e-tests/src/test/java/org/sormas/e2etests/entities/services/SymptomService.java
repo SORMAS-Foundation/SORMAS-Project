@@ -18,6 +18,8 @@
 
 package org.sormas.e2etests.entities.services;
 
+import static org.sormas.e2etests.enums.YesNoUnknownOptions.NO;
+import static org.sormas.e2etests.enums.YesNoUnknownOptions.UNKNOWN;
 import static org.sormas.e2etests.enums.YesNoUnknownOptions.YES;
 
 import com.google.inject.Inject;
@@ -58,6 +60,62 @@ public class SymptomService {
         .symptomsComments(UUID.randomUUID().toString())
         .firstSymptom("Diarrhea")
         .dateOfSymptom(LocalDate.now().minusDays(2))
+        .build();
+  }
+
+  public Symptoms buildEditGeneratedSymptomsWithNoOptions() {
+    return Symptoms.builder()
+        .maximumBodyTemperatureInC("35,2")
+        .sourceOfBodyTemperature("rectal")
+        .chillsOrSweats(NO.toString())
+        .headache(NO.toString())
+        .feelingIll(NO.toString())
+        .musclePain(NO.toString())
+        .fever(NO.toString())
+        .shivering(NO.toString())
+        .acuteRespiratoryDistressSyndrome(NO.toString())
+        .oxygenSaturationLower94(NO.toString())
+        .cough(NO.toString())
+        .pneumoniaClinicalOrRadiologic(NO.toString())
+        .difficultyBreathing(NO.toString())
+        .rapidBreathing(NO.toString())
+        .respiratoryDiseaseVentilation(NO.toString())
+        .runnyNose(NO.toString())
+        .soreThroat(NO.toString())
+        .fastHeartRate(NO.toString())
+        .diarrhea(NO.toString())
+        .nausea(NO.toString())
+        .lossOfSmell(NO.toString())
+        .lossOfTaste(NO.toString())
+        .symptomsComments(UUID.randomUUID().toString())
+        .build();
+  }
+
+  public Symptoms buildEditGeneratedSymptomsWithUnknownOptions() {
+    return Symptoms.builder()
+        .maximumBodyTemperatureInC("35,2")
+        .sourceOfBodyTemperature("rectal")
+        .chillsOrSweats(UNKNOWN.toString())
+        .headache(UNKNOWN.toString())
+        .feelingIll(UNKNOWN.toString())
+        .musclePain(UNKNOWN.toString())
+        .fever(UNKNOWN.toString())
+        .shivering(UNKNOWN.toString())
+        .acuteRespiratoryDistressSyndrome(UNKNOWN.toString())
+        .oxygenSaturationLower94(UNKNOWN.toString())
+        .cough(UNKNOWN.toString())
+        .pneumoniaClinicalOrRadiologic(UNKNOWN.toString())
+        .difficultyBreathing(UNKNOWN.toString())
+        .rapidBreathing(UNKNOWN.toString())
+        .respiratoryDiseaseVentilation(UNKNOWN.toString())
+        .runnyNose(UNKNOWN.toString())
+        .soreThroat(UNKNOWN.toString())
+        .fastHeartRate(UNKNOWN.toString())
+        .diarrhea(UNKNOWN.toString())
+        .nausea(UNKNOWN.toString())
+        .lossOfSmell(UNKNOWN.toString())
+        .lossOfTaste(UNKNOWN.toString())
+        .symptomsComments(UUID.randomUUID().toString())
         .build();
   }
 }
