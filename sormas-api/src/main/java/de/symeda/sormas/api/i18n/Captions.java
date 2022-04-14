@@ -1458,6 +1458,7 @@ public interface Captions {
 	String Location_contactPersonFirstName = "Location.contactPersonFirstName";
 	String Location_contactPersonLastName = "Location.contactPersonLastName";
 	String Location_contactPersonPhone = "Location.contactPersonPhone";
+	String Location_country = "Location.country";
 	String Location_details = "Location.details";
 	String Location_district = "Location.district";
 	String Location_facility = "Location.facility";
@@ -1469,6 +1470,7 @@ public interface Captions {
 	String Location_latLonAccuracy = "Location.latLonAccuracy";
 	String Location_longitude = "Location.longitude";
 	String Location_postalCode = "Location.postalCode";
+	String Location_region = "Location.region";
 	String Location_street = "Location.street";
 	String Login_doLogIn = "Login.doLogIn";
 	String Login_login = "Login.login";
@@ -2337,6 +2339,7 @@ public interface Captions {
 	String userNewUser = "userNewUser";
 	String userResetPassword = "userResetPassword";
 	String userRight = "userRight";
+	String UserRight_caption = "UserRight.caption";
 	String UserRight_description = "UserRight.description";
 	String UserRight_jurisdiction = "UserRight.jurisdiction";
 	String UserRight_jurisdictionOfRole = "UserRight.jurisdictionOfRole";

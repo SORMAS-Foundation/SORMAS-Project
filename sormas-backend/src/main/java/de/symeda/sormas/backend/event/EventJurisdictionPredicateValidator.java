@@ -22,24 +22,24 @@ import javax.persistence.criteria.Predicate;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
-import de.symeda.sormas.utils.EventJoins;
 
 public class EventJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 
-	private final EventJoins<?> joins;
+	private final EventJoins joins;
 	private final CriteriaQuery<?> cq;
 
 	private EventJurisdictionPredicateValidator(EventQueryContext qc, User user) {
 		super(qc.getCriteriaBuilder(), user, null, null);
-		this.joins = (EventJoins<?>) qc.getJoins();
+		this.joins = qc.getJoins();
 		this.cq = qc.getQuery();
 	}
 
 	private EventJurisdictionPredicateValidator(EventQueryContext qc, Path userPath) {
 		super(qc.getCriteriaBuilder(), null, userPath, null);
-		this.joins = (EventJoins<?>) qc.getJoins();
+		this.joins = qc.getJoins();
 		this.cq = qc.getQuery();
 	}
 
@@ -58,17 +58,18 @@ public class EventJurisdictionPredicateValidator extends PredicateJurisdictionVa
 
 	@Override
 	protected Predicate isInJurisdictionOrOwned() {
+
 		final Predicate reportedByCurrentUser = cb.and(
-			cb.isNotNull(joins.getReportingUser()),
+			cb.isNotNull(joins.getRoot().get(Event.REPORTING_USER)),
 			user != null
-				? cb.equal(joins.getReportingUser().get(User.ID), user.getId())
-				: cb.equal(joins.getReportingUser().get(User.ID), userPath.get(User.ID)));
+				? cb.equal(joins.getRoot().get(Event.REPORTING_USER).get(User.ID), user.getId())
+				: cb.equal(joins.getRoot().get(Event.REPORTING_USER).get(User.ID), userPath.get(User.ID)));
 
 		final Predicate currentUserResponsible = cb.and(
-			cb.isNotNull(joins.getResponsibleUser()),
+			cb.isNotNull(joins.getRoot().get(Event.RESPONSIBLE_USER)),
 			user != null
-				? cb.equal(joins.getResponsibleUser().get(User.ID), user.getId())
-				: cb.equal(joins.getResponsibleUser().get(User.ID), userPath.get(User.ID)));
+				? cb.equal(joins.getRoot().get(Event.RESPONSIBLE_USER).get(User.ID), user.getId())
+				: cb.equal(joins.getRoot().get(Event.RESPONSIBLE_USER).get(User.ID), userPath.get(User.ID)));
 
 		return cb.or(reportedByCurrentUser, currentUserResponsible, isInJurisdiction());
 	}
@@ -86,22 +87,22 @@ public class EventJurisdictionPredicateValidator extends PredicateJurisdictionVa
 	@Override
 	protected Predicate whenRegionalLevel() {
 		return user != null
-			? cb.equal(joins.getRegion().get(Region.ID), user.getRegion().getId())
-			: cb.equal(joins.getRegion().get(Region.ID), userPath.get(User.REGION).get(Region.ID));
+			? cb.equal(joins.getLocation().get(Location.REGION).get(Region.ID), user.getRegion().getId())
+			: cb.equal(joins.getLocation().get(Location.REGION).get(Region.ID), userPath.get(User.REGION).get(Region.ID));
 	}
 
 	@Override
 	protected Predicate whenDistrictLevel() {
 		return user != null
-			? cb.equal(joins.getDistrict().get(District.ID), user.getDistrict().getId())
-			: cb.equal(joins.getDistrict().get(District.ID), userPath.get(User.DISTRICT).get(District.ID));
+			? cb.equal(joins.getLocation().get(Location.DISTRICT).get(District.ID), user.getDistrict().getId())
+			: cb.equal(joins.getLocation().get(Location.DISTRICT).get(District.ID), userPath.get(User.DISTRICT).get(District.ID));
 	}
 
 	@Override
 	protected Predicate whenCommunityLevel() {
 		return user != null
-			? cb.equal(joins.getCommunity().get(Community.ID), user.getCommunity().getId())
-			: cb.equal(joins.getCommunity().get(Community.ID), userPath.get(User.COMMUNITY).get(Community.ID));
+			? cb.equal(joins.getLocation().get(Location.COMMUNITY).get(Community.ID), user.getCommunity().getId())
+			: cb.equal(joins.getLocation().get(Location.COMMUNITY).get(Community.ID), userPath.get(User.COMMUNITY).get(Community.ID));
 	}
 
 	@Override

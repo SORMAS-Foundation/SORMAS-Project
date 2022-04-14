@@ -1,4 +1,4 @@
-package de.symeda.sormas.backend.util;
+package de.symeda.sormas.backend.common;
 
 import java.util.function.Consumer;
 
@@ -6,17 +6,15 @@ import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 
-import de.symeda.sormas.backend.common.AbstractDomainObject;
+public class QueryJoins<Y extends AbstractDomainObject> {
 
-public class AbstractDomainObjectJoins<Z, Y extends AbstractDomainObject> {
+	private From<?, Y> root;
 
-	private From<Z, Y> root;
-
-	public AbstractDomainObjectJoins(From<Z, Y> root) {
+	public QueryJoins(From<?, Y> root) {
 		this.root = root;
 	}
 
-	public From<Z, Y> getRoot() {
+	public From<?, Y> getRoot() {
 		return root;
 	}
 

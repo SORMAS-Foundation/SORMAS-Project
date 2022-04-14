@@ -43,6 +43,7 @@ import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.data.validator.DateRangeValidator;
 import com.vaadin.v7.shared.ui.datefield.Resolution;
+import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
@@ -233,6 +234,13 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		firstContactDate = addDateField(ContactDto.FIRST_CONTACT_DATE, DateField.class, 0);
 		lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
 		reportDate = addField(ContactDto.REPORT_DATE_TIME, DateField.class);
+
+		List<AbstractField<Date>> validatedFields = Arrays.asList(firstContactDate, lastContactDate, reportDate);
+		validatedFields.forEach(field -> field.addValueChangeListener(r -> {
+			validatedFields.forEach(otherField -> {
+				otherField.setValidationVisible(!otherField.isValid());
+			});
+		}));
 
 		FieldHelper
 			.setVisibleWhen(getFieldGroup(), ContactDto.FIRST_CONTACT_DATE, ContactDto.MULTI_DAY_CONTACT, Collections.singletonList(true), true);

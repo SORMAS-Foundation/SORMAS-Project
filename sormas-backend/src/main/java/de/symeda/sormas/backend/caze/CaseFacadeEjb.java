@@ -1,6 +1,6 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@ import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.or;
 import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 
-import de.symeda.sormas.api.utils.fieldaccess.checkers.UserRightFieldAccessChecker;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -48,6 +47,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.annotation.Resource;
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -198,6 +198,7 @@ import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.UserRightFieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitResultDto;
@@ -336,7 +337,6 @@ import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import de.symeda.sormas.backend.visit.VisitService;
-import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless(name = "CaseFacade")
 @RolesAllowed(UserRight._CASE_VIEW)
@@ -722,7 +722,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		Root<Case> caseRoot = cq.from(Case.class);
 
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caseRoot);
-		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+		final CaseJoins joins = caseQueryContext.getJoins();
 
 		// Events count subquery
 		Subquery<Long> eventCountSq = cq.subquery(Long.class);
@@ -1669,6 +1669,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					sampleFacade.cloneSampleForCase(sample, caze);
 				}
 			});
+
+			// The samples for case are not persisted yet, so use the samples from event participant since they are the same
+			caze.setFollowUpUntil(service.computeFollowUpuntilDate(caze, eventParticipant.getSamples()));
 		}
 	}
 
@@ -1686,6 +1689,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			} else {
 				sampleFacade.cloneSampleForCase(sample, caze);
 			}
+
+			// The samples for case are not persisted yet, so use the samples from event participant since they are the same
+			caze.setFollowUpUntil(service.computeFollowUpuntilDate(caze, eventParticipant.getSamples()));
 		});
 
 	}
@@ -1892,7 +1898,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 	}
 
-	@RolesAllowed(UserRight._CASE_EDIT)
+	@PermitAll
 	public void onCaseSampleChanged(Case associatedCase) {
 		// Update case classification if the feature is enabled
 		if (configFacade.isFeatureAutomaticCaseClassification()) {
@@ -1925,16 +1931,12 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	 * Handles potential changes, processes and backend logic that needs to be done
 	 * after a case has been created/saved
 	 */
-	@RolesAllowed({
-		UserRight._CASE_EDIT,
-		UserRight._CASE_EDIT })
+	@PermitAll
 	public void onCaseChanged(CaseDataDto existingCase, Case newCase) {
 		onCaseChanged(existingCase, newCase, true);
 	}
 
-	@RolesAllowed({
-		UserRight._CASE_EDIT,
-		UserRight._EXTERNAL_VISITS })
+	@PermitAll
 	public void onCaseChanged(CaseDataDto existingCase, Case newCase, boolean syncShares) {
 
 		// If its a new case and the case is new and the geo coordinates of the case's
@@ -3693,7 +3695,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		Root<Case> caze = cq.from(Case.class);
 
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
-		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+		final CaseJoins joins = caseQueryContext.getJoins();
 
 		cq.multiselect(
 			caze.get(Case.UUID),
@@ -3921,7 +3923,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> caseRoot = cq.from(Case.class);
-		CaseJoins<Case> caseCaseJoins = new CaseJoins<>(caseRoot);
+		CaseJoins caseCaseJoins = new CaseJoins(caseRoot);
 		Join<Case, Person> person = caseCaseJoins.getPerson();
 
 		cq.multiselect(caseRoot.get(Case.UUID), person.get(Person.UUID));
@@ -4065,10 +4067,11 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		save(cazeDto, true);
 	}
 
-	private Pseudonymizer getPseudonymizerForDtoWithClinician(@Nullable String pseudonymizedValue){
+	private Pseudonymizer getPseudonymizerForDtoWithClinician(@Nullable String pseudonymizedValue) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, pseudonymizedValue);
 
-		UserRightFieldAccessChecker clinicianViewRightChecker = new UserRightFieldAccessChecker(UserRight.CASE_CLINICIAN_VIEW, userService.hasRight(UserRight.CASE_CLINICIAN_VIEW));
+		UserRightFieldAccessChecker clinicianViewRightChecker =
+			new UserRightFieldAccessChecker(UserRight.CASE_CLINICIAN_VIEW, userService.hasRight(UserRight.CASE_CLINICIAN_VIEW));
 		pseudonymizer.addFieldAccessChecker(clinicianViewRightChecker, clinicianViewRightChecker);
 
 		return pseudonymizer;

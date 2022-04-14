@@ -45,7 +45,6 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -910,8 +909,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	private void addToFollowUpStatusComment(Contact contact, String comment) {
-		String followUpComment = DataHelper.joinStrings("\n", contact.getFollowUpComment(), comment);
-		contact.setFollowUpComment(followUpComment);
+		contact.setFollowUpComment(comment != null && comment.equals(contact.getFollowUpComment())
+				? contact.getFollowUpComment()
+				: DataHelper.joinStrings("\n", contact.getFollowUpComment(), comment));
 	}
 
 	// Used only for testing; directly retrieve the contacts from the visit instead
@@ -1226,10 +1226,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					CriteriaBuilderHelper.ilikePrecise(cb, person.get(Person.UUID), textFilter + "%"),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
-					phoneNumberPredicate(
-						cb,
-						(Expression<String>) contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY),
-						textFilter),
+					phoneNumberPredicate(cb, contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
 					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter)));
 
@@ -1257,10 +1254,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					CriteriaBuilderHelper.ilikePrecise(cb, casePerson.get(Person.UUID), textFilter + "%"),
 					CriteriaBuilderHelper.unaccentedIlike(cb, casePerson.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, casePerson.get(Person.LAST_NAME), textFilter),
-					phoneNumberPredicate(
-						cb,
-						(Expression<String>) contactQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY),
-						textFilter));
+					phoneNumberPredicate(cb, contactQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
@@ -1312,11 +1306,6 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.isFalse(event.get(Event.DELETED)), cb.isFalse(eventParticipant.get(EventParticipant.DELETED)));
-			if (EntityRelevanceStatus.ACTIVE.equals(contactCriteria.getRelevanceStatus())) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(event.get(Event.ARCHIVED)));
-			} else if (EntityRelevanceStatus.ARCHIVED.equals(contactCriteria.getRelevanceStatus())) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.isTrue(event.get(Event.ARCHIVED)));
-			}
 
 			if (hasEventLikeCriteria) {
 				String[] textFilters = contactCriteria.getEventLike().trim().split("\\s+");
@@ -1554,7 +1543,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		final Root<Contact> contact = cq.from(Contact.class);
 
-		ContactQueryContext<Contact> contactQueryContext = new ContactQueryContext<>(cb, cq, contact);
+		ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, contact);
 
 		cq.multiselect(
 			contact.get(Contact.UUID),

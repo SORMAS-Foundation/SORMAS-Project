@@ -95,6 +95,8 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFERENCE
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.NEW_ENTRY_POPUP;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_CASE_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 
 import com.github.javafaker.Faker;
 import com.google.common.truth.Truth;
@@ -167,6 +169,16 @@ public class CaseDirectorySteps implements En {
         });
 
     When(
+        "I search for the last case uuid created via Api in the CHOOSE SOURCE Contact window",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              SOURCE_CASE_WINDOW_CASE_INPUT, apiState.getCreatedCase().getUuid());
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
+        });
+
+    When(
         "^Search for Case using Case UUID from the created Task",
         () -> {
           webDriverHelpers.fillAndSubmitInWebElement(
@@ -220,6 +232,7 @@ public class CaseDirectorySteps implements En {
         () -> {
           String eventUuid = apiState.getCreatedEvent().getUuid();
           webDriverHelpers.fillInWebElement(SEARCH_BUTTON, eventUuid);
+          TimeUnit.SECONDS.sleep(3); // needed for table refresh
         });
     And(
         "I click first result in grid on Link to Event form",
@@ -505,7 +518,7 @@ public class CaseDirectorySteps implements En {
     And(
         "I fill Cases from input to {int} days before UI Case created on Case directory page",
         (Integer number) -> {
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
           webDriverHelpers.fillInWebElement(
               DATE_FROM_COMBOBOX,
               formatter.format(CreateNewCaseSteps.caze.getDateOfReport().minusDays(number)));
@@ -532,7 +545,7 @@ public class CaseDirectorySteps implements En {
     And(
         "I fill Cases from input to {int} days after before UI Case created on Case directory page",
         (Integer number) -> {
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
           webDriverHelpers.fillInWebElement(
               DATE_FROM_COMBOBOX,
               formatter.format(CreateNewCaseSteps.caze.getDateOfReport().plusDays(number)));
@@ -629,7 +642,7 @@ public class CaseDirectorySteps implements En {
     And(
         "I fill Cases to input to {int} days after UI Case created on Case directory page",
         (Integer number) -> {
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
           webDriverHelpers.fillInWebElement(
               DATE_TO_COMBOBOX,
               formatter.format(CreateNewCaseSteps.caze.getDateOfReport().plusDays(number)));

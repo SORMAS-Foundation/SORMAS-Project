@@ -25,6 +25,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.Objects;
 import java.util.Optional;
 
 import javax.annotation.PostConstruct;
@@ -386,12 +387,22 @@ public class GeoShapeProviderEjb implements GeoShapeProvider {
 		// fixme: Remove when the shapefiles are no longer part of the resources.
 		// fixme: In this case the logic to build country shapes will have to be checked again to fix the problem this is a workaround for.
 		if (configFacade.isConfiguredCountry(CountryHelper.COUNTRY_CODE_GERMANY) && !polygons.isEmpty()) {
-			polygons.add(getRegionPolygon(factory, "Bayern"));
-			polygons.add(getRegionPolygon(factory, "Berlin"));
-			polygons.add(getRegionPolygon(factory, "Bremen"));
+			Polygon polygon = getRegionPolygon(factory, "Bayern");
+			if(polygon != null){
+				polygons.add(polygon);
+			}
+			polygon = getRegionPolygon(factory, "Berlin");
+			if(polygon != null){
+				polygons.add(polygon);
+			}
+
+			polygon = getRegionPolygon(factory, "Bremen");
+			if(polygon != null){
+				polygons.add(polygon);
+			}
 		}
 
-		countryShape = polygons.stream()
+		countryShape = polygons.stream().filter(Objects::nonNull)
 			.map(
 				polygon -> Arrays.stream(polygon.getCoordinates())
 					.map(coordinate -> new GeoLatLon(coordinate.y, coordinate.x))
