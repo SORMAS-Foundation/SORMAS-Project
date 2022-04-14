@@ -28,6 +28,7 @@ import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Task;
 import org.sormas.e2etests.entities.services.TaskService;
+import org.sormas.e2etests.enums.UserRoles;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 
 public class CreateNewTaskSteps implements En {
@@ -50,10 +51,12 @@ public class CreateNewTaskSteps implements En {
         });
 
     When(
-        "^I create a new task with specific data for Surveillance Supervisor user$",
+        "^I create a new task with specific data for users excluding the National User$",
         () -> {
           task = taskService.buildGeneratedTask();
           fillAllFieldsForOtherThanNationalUsers(task);
+          webDriverHelpers.selectFromCombobox(
+              ASSIGNED_TO_COMBOBOX, UserRoles.NationalUser.getRole());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
@@ -101,7 +104,6 @@ public class CreateNewTaskSteps implements En {
     fillSuggestedStartTime(task.getSuggestedStartTime());
     fillDueDateDate(task.getDueDateDate());
     fillDueDateTime(task.getDueDateTime());
-    selectAssignedTo(task.getAssignedTo());
     selectPriority(task.getPriority());
     fillCommentsOnTask(task.getCommentsOnTask());
   }

@@ -96,5 +96,13 @@ public class LoginSteps implements En {
           webDriverHelpers.checkWebElementContainsText(
               NavBarPage.CONFIGURATION_BUTTON, "Einstellungen");
         });
+
+    When(
+        "I log out from page",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.LOGOUT_BUTTON, 60);
+          webDriverHelpers.clickOnWebElementBySelector(LOGOUT_BUTTON);
+        });
   }
 }

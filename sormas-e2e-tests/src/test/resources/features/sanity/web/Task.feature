@@ -53,11 +53,14 @@ Feature: Tasks functionalities
     When I create a new case with specific data
     And I collect the case person UUID displayed on Edit case page
     And I click on New Task from Case page
-    And I create a new task with specific data for Surveillance Supervisor user
+    And I create a new task with specific data for users excluding the National User
+    And I log out from page
+    Given I log in as a National User
     And I click on the Tasks button from navbar
     And I search last created task by Case UUID and open it
-
-
-
-#    ToDO dodac uzytkownika dla wszystkch serwiow
-#  W ramach testu dodaje tylko na auto
+    Then I change all Task's fields and save
+    And I click on the Cases button from navbar
+    And Search for Case using Case UUID from the created Task
+    When I open last created case
+    When I click on first edit Task
+    Then I check the created task is correctly displayed on Edit task page
