@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -31,6 +31,7 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -50,6 +51,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.vaccination.VaccinationService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -138,6 +140,7 @@ import de.symeda.sormas.backend.vaccination.Vaccination;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 
 @Stateless(name = "EventParticipantFacade")
+@RolesAllowed(UserRight._EVENTPARTICIPANT_VIEW)
 public class EventParticipantFacadeEjb
 	extends
 	AbstractCoreFacadeEjb<EventParticipant, EventParticipantDto, EventParticipantIndexDto, EventParticipantReferenceDto, EventParticipantService, EventParticipantCriteria>
@@ -167,6 +170,8 @@ public class EventParticipantFacadeEjb
 	private SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal sormasToSormasOriginInfoFacade;
 	@EJB
 	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
+	@EJB
+	private VaccinationService vaccinationService;
 
 	public EventParticipantFacadeEjb() {
 	}
@@ -271,6 +276,19 @@ public class EventParticipantFacadeEjb
 		}
 	}
 
+	private List<Vaccination> getRelevantSortedVaccinations(String eventUuid, List<Vaccination> vaccinations) {
+		Event event = eventService.getByUuid(eventUuid);
+
+		return vaccinations.stream()
+			.filter(v -> vaccinationService.isVaccinationRelevant(event, v))
+			.sorted(Comparator.comparing(ImmunizationEntityHelper::getVaccinationDateForComparison))
+			.collect(Collectors.toList());
+	}
+
+	private String getNumberOfDosesFromVaccinations(Vaccination vaccination) {
+		return vaccination != null ? vaccination.getVaccineDose() : "";
+	}
+
 	@Override
 	public List<String> getDeletedUuidsSince(Date since) {
 
@@ -305,10 +323,16 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
-	public EventParticipantDto saveEventParticipant(@Valid EventParticipantDto dto) {
+	@RolesAllowed({
+		UserRight._EVENTPARTICIPANT_CREATE,
+		UserRight._EVENTPARTICIPANT_EDIT })
+	public EventParticipantDto save(@Valid @NotNull EventParticipantDto dto) {
 		return saveEventParticipant(dto, true, true);
 	}
 
+	@RolesAllowed({
+		UserRight._EVENTPARTICIPANT_CREATE,
+		UserRight._EVENTPARTICIPANT_EDIT })
 	public EventParticipantDto saveEventParticipant(@Valid EventParticipantDto dto, boolean checkChangeDate, boolean internal) {
 		EventParticipant existingParticipant = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 
@@ -351,6 +375,7 @@ public class EventParticipantFacadeEjb
 		return convertToDto(entity, pseudonymizer);
 	}
 
+	@PermitAll
 	public void onEventParticipantChanged(
 		EventDto event,
 		EventParticipantDto existingEventParticipant,
@@ -430,12 +455,8 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
+	@RolesAllowed(UserRight._EVENTPARTICIPANT_DELETE)
 	public void delete(String uuid) throws ExternalSurveillanceToolException {
-
-		if (!userService.hasRight(UserRight.EVENTPARTICIPANT_DELETE)) {
-			throw new UnsupportedOperationException("Your user is not allowed to delete event participants");
-		}
-
 		EventParticipant eventParticipant = service.getByUuid(uuid);
 		service.delete(eventParticipant);
 	}
@@ -782,16 +803,16 @@ public class EventParticipantFacadeEjb
 							epImmunizations.stream().filter(i -> i.getDisease() == exportDto.getEventDisease()).collect(Collectors.toList());
 						filteredImmunizations.sort(Comparator.comparing(i -> ImmunizationEntityHelper.getDateForComparison(i, false)));
 						Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
-						exportDto.setVaccinationDoses(String.valueOf(mostRecentImmunization.getNumberOfDoses()));
+						Integer numberOfDoses = mostRecentImmunization.getNumberOfDoses();
 
-						if (CollectionUtils.isNotEmpty(mostRecentImmunization.getVaccinations())) {
-							List<Vaccination> sortedVaccinations = mostRecentImmunization.getVaccinations()
-								.stream()
-								.sorted(Comparator.comparing(ImmunizationEntityHelper::getVaccinationDateForComparison))
-								.collect(Collectors.toList());
-							Vaccination firstVaccination = sortedVaccinations.get(0);
-							Vaccination lastVaccination = sortedVaccinations.get(sortedVaccinations.size() - 1);
+						List<Vaccination> relevantSortedVaccinations =
+							getRelevantSortedVaccinations(exportDto.getEventUuid(), mostRecentImmunization.getVaccinations());
+						Vaccination firstVaccination = null;
+						Vaccination lastVaccination = null;
 
+						if (CollectionUtils.isNotEmpty(relevantSortedVaccinations)) {
+							firstVaccination = relevantSortedVaccinations.get(0);
+							lastVaccination = relevantSortedVaccinations.get(relevantSortedVaccinations.size() - 1);
 							exportDto.setFirstVaccinationDate(firstVaccination.getVaccinationDate());
 							exportDto.setLastVaccinationDate(lastVaccination.getVaccinationDate());
 							exportDto.setVaccineName(lastVaccination.getVaccineName());
@@ -804,6 +825,9 @@ public class EventParticipantFacadeEjb
 							exportDto.setVaccineUniiCode(lastVaccination.getVaccineUniiCode());
 							exportDto.setVaccineInn(lastVaccination.getVaccineInn());
 						}
+
+						exportDto.setVaccinationDoses(
+							numberOfDoses != null ? String.valueOf(numberOfDoses) : getNumberOfDosesFromVaccinations(lastVaccination));
 					});
 				}
 
@@ -965,6 +989,10 @@ public class EventParticipantFacadeEjb
 	}
 
 	public EventParticipantDto toDto(EventParticipant source) {
+		return toEventParticipantDto(source);
+	}
+
+	public static EventParticipantDto toEventParticipantDto(EventParticipant source) {
 
 		if (source == null) {
 			return null;

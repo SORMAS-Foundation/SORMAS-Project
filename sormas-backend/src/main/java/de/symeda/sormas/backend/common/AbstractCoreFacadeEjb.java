@@ -21,7 +21,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.DenyAll;
 import javax.ejb.EJB;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -33,6 +36,7 @@ import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -42,11 +46,11 @@ import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
-import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfigurationService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
+import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 
@@ -91,8 +95,8 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 			.collect(Collectors.toList());
 	}
 
-	@Override
-	public DTO save(@Valid @NotNull DTO dto) {
+	@DenyAll
+	public DTO doSave(@Valid @NotNull DTO dto) {
 		ADO existingAdo = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 
 		if (existingAdo != null && !service.getEditPermissionType(existingAdo).equals(EditPermissionType.ALLOWED)) {
@@ -116,6 +120,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		return service.exists(uuid);
 	}
 
+	@DenyAll
 	public void delete(String uuid) {
 		ADO ado = service.getByUuid(uuid);
 		service.delete(ado);
@@ -132,7 +137,7 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		return dto;
 	}
 
-	public void executeAutomaticDeletion(DeletionConfiguration entityConfig) {
+	public void executeAutomaticDeletion(DeletionConfiguration entityConfig, boolean deletePermanent, int batchSize) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<ADO> cq = cb.createQuery(adoClass);
@@ -143,15 +148,19 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 
 		List<ADO> toDeleteEntities = QueryHelper.getResultList(em, cq, null, null);
 
-		toDeleteEntities.forEach(ado -> service.delete(ado));
+		IterableHelper.executeBatched(toDeleteEntities, batchSize, batchedEntities -> doAutomaticDeletion(batchedEntities, deletePermanent));
 	}
 
-	public void executePermanentDeletion(int batchSize) {
-		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.DELETE_PERMANENT)) {
-			service.executePermanentDeletion(batchSize);
-		} else {
-			throw new UnsupportedOperationException("Permanent deletion is not activated!");
-		}
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	private void doAutomaticDeletion(List<ADO> toDeleteEntities, boolean deletePermanent) {
+
+		toDeleteEntities.forEach(ado -> {
+			if (deletePermanent && featureConfigurationFacade.isFeatureEnabled(FeatureType.DELETE_PERMANENT)) {
+				service.deletePermanent(ado);
+			} else {
+				service.delete(ado);
+			}
+		});
 	}
 
 	@Override
@@ -201,14 +210,17 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 
 	public abstract void validate(DTO dto) throws ValidationRuntimeException;
 
+	@DenyAll
 	public void archive(String entityUuid, Date endOfProcessingDate) {
 		service.archive(entityUuid, endOfProcessingDate);
 	}
 
+	@DenyAll
 	public void archive(List<String> entityUuids) {
 		service.archive(entityUuids);
 	}
 
+	@DenyAll
 	public void dearchive(List<String> entityUuids, String dearchiveReason) {
 		service.dearchive(entityUuids, dearchiveReason);
 	}
