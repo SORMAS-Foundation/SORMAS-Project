@@ -44,6 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -868,7 +869,8 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_SHARE), CaseDataDto.SHARED_TO_COUNTRY);
 		}
 
-		addInfrastructureField(CaseDataDto.POINT_OF_ENTRY);
+
+		ComboBox pointOfEntry = addInfrastructureField(CaseDataDto.POINT_OF_ENTRY);
 		addField(CaseDataDto.POINT_OF_ENTRY_DETAILS, TextField.class);
 
 		addField(CaseDataDto.PROHIBITION_TO_WORK, NullableOptionGroup.class).addStyleName(ValoTheme.OPTIONGROUP_HORIZONTAL);
@@ -1011,6 +1013,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 		responsibleCommunity.addStyleName(SOFT_REQUIRED);
 
 		InfrastructureFieldsHelper.initInfrastructureFields(responsibleRegion, responsibleDistrict, responsibleCommunity);
+		InfrastructureFieldsHelper.initPointOfEntry(responsibleDistrict, pointOfEntry);
 
 		responsibleDistrict.addValueChangeListener(e -> {
 			Boolean differentPlaceOfStay = differentPlaceOfStayJurisdiction.getValue();
