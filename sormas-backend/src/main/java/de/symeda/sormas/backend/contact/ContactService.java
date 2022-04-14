@@ -1396,11 +1396,18 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			.filter(sample -> sample.getAssociatedCase() == null && sample.getAssociatedEventParticipant() == null)
 			.forEach(sample -> sampleService.deletePermanent(sample));
 
-		// Delete all visits that are only associated with this contact
-		contact.getVisits()
-			.stream()
-			.filter(visit -> visit.getCaze() == null && visit.getContacts().size() <= 1)
-			.forEach(visit -> visitService.deletePermanent(visit));
+		// Delete all visits that are only associated with this contact and Remove the deleted contact from contact_visits
+		contact.getVisits().forEach(visit -> {
+			if (visit.getCaze() == null && visit.getContacts().size() <= 1) {
+				visitService.deletePermanent(visit);
+			} else {
+				Set<Contact> visitContacts = new HashSet<>(visit.getContacts());
+				visit.getContacts().clear();
+				visit.getContacts()
+					.addAll(visitContacts.stream().filter(contact1 -> !DataHelper.isSame(contact1, contact)).collect(Collectors.toSet()));
+				visitService.ensurePersisted(visit);
+			}
+		});
 
 		// Delete documents related to this contact
 		documentService.getRelatedToEntity(DocumentRelatedEntityType.CONTACT, contact.getUuid()).forEach(d -> documentService.markAsDeleted(d));
@@ -1416,14 +1423,6 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		});
 
 		deleteContactFromDuplicateOf(contact);
-
-		// Remove the deleted contact from contact_visits
-		visitService.getAllByContact(contact).forEach(visit -> {
-			Set<Contact> visitContacts = new HashSet<>(visit.getContacts());
-			visit.getContacts().clear();
-			visit.getContacts().addAll(visitContacts.stream().filter(contact1 -> !DataHelper.isSame(contact1, contact)).collect(Collectors.toSet()));
-			visitService.ensurePersisted(visit);
-		});
 
 		deleteContactLinks(contact);
 
