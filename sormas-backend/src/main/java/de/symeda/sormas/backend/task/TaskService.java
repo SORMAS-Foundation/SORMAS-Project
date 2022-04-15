@@ -22,7 +22,6 @@ import java.time.Instant;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import java.util.function.Function;
 
 import javax.ejb.EJB;
@@ -165,6 +164,12 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 
 		Predicate assigneeFilter = createAssigneeFilter(cb, ((TaskJoins) taskQueryContext.getJoins()).getAssignee());
 
+		Predicate contactRightsPredicate = this.createContactFilter(cb ,taskQueryContext.getRoot(), (taskQueryContext.getJoins()).getAssignee(),
+				(taskQueryContext.getJoins()).getTaskObservers(), currentUser);
+		if(contactRightsPredicate != null){
+			assigneeFilter = cb.and(assigneeFilter, contactRightsPredicate);
+		}
+
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if ((jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
 			|| currentUser.hasUserRole(UserRole.REST_USER)) {
@@ -203,19 +208,18 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		A user that not have CONTACT_VIEW or CONTACT_EDIT rights is allowed to see the tasks assign to it or where it is
 	set as an observer. This restriction should be applied only for tasks of type CONTACT.
 	 */
-	public Predicate createContactFilter(
-		CriteriaBuilder cb,
-		Root<Task> task,
-		Join<?, User> assigneeUserJoin,
-		Join<?, User> observersJoin,
-		User user,
-		Set<UserRight> userRights) {
+	private Predicate createContactFilter(
+			CriteriaBuilder cb,
+			From<?, Task> task,
+			Join<?, User> assigneeUserJoin,
+			Join<?, User> observersJoin,
+			User user) {
 		Predicate predicate = null;
-		if (!userRights.contains(UserRight.CONTACT_VIEW) && !userRights.contains(UserRight.CONTACT_EDIT)) {
+		if (!userService.hasRight(UserRight.CONTACT_VIEW) && !userService.hasRight(UserRight.CONTACT_EDIT)) {
 			predicate = cb.or(
-				cb.notEqual(task.get(Task.TASK_CONTEXT), TaskContext.CONTACT),
-				cb.equal(assigneeUserJoin.get(User.UUID), user.getUuid()),
-				cb.equal(observersJoin.get(User.UUID), user.getUuid()));
+					cb.notEqual(task.get(Task.TASK_CONTEXT), TaskContext.CONTACT),
+					cb.equal(assigneeUserJoin.get(User.UUID), user.getUuid()),
+					cb.equal(observersJoin.get(User.UUID), user.getUuid()));
 		}
 
 		return predicate;

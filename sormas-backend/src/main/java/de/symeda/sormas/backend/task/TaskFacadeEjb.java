@@ -109,7 +109,6 @@ import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
 import de.symeda.sormas.backend.travelentry.services.TravelEntryService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
-import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -150,9 +149,6 @@ public class TaskFacadeEjb implements TaskFacade {
 	private TravelEntryFacadeEjb.TravelEntryFacadeEjbLocal travelEntryFacade;
 	@EJB
 	private NotificationService notificationService;
-
-	@EJB
-	private UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 
 	public Task fromDto(TaskDto source, boolean checkChangeDate) {
 
@@ -441,11 +437,6 @@ public class TaskFacadeEjb implements TaskFacade {
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
-		Predicate contactPredicate = this.contactRightsPredicate(cb ,task, joins.getAssignee(), joins.getTaskObservers());
-		if(contactPredicate != null){
-			filter = CriteriaBuilderHelper.and(cb, filter, contactPredicate);
-		}
-
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -557,11 +548,6 @@ public class TaskFacadeEjb implements TaskFacade {
 			filter = taskService.createUserFilterForJoin(taskQueryContext);
 		} else {
 			filter = CriteriaBuilderHelper.and(cb, filter, taskService.createAssigneeFilter(cb, joins.getAssignee()));
-		}
-
-		Predicate contactPredicate = this.contactRightsPredicate(cb ,task, joins.getAssignee(), joins.getTaskObservers());
-		if(contactPredicate != null){
-			filter = CriteriaBuilderHelper.and(cb, filter, contactPredicate);
 		}
 
 		if (taskCriteria != null) {
@@ -1076,12 +1062,6 @@ public class TaskFacadeEjb implements TaskFacade {
 			uiUrlBuilder.append("/");
 		}
 		return uiUrlBuilder.append("#!").append(taskContext.getUrlPattern()).append("/data/").append(uuid).toString();
-	}
-
-	private Predicate contactRightsPredicate(CriteriaBuilder cb, Root<Task> task, Join<?, User> assigneeUserJoin, Join<?, User> observersJoin) {
-		User user = userService.getCurrentUser();
-		Set<UserRight> userRights = userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles());
-		return taskService.createContactFilter(cb, task, assigneeUserJoin, observersJoin, user, userRights);
 	}
 
 	@LocalBean
