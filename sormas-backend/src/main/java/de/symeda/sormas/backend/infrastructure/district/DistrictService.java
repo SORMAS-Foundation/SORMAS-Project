@@ -30,6 +30,8 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import com.vladmihalcea.hibernate.type.util.SQLExtractor;
+
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictCriteria;
@@ -124,8 +126,32 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 
 		return em.createQuery(cq).getResultList();
 	}
+	
+	
+	public List<District> getByExternalID(Long ext_id, Region reg_ext_id, boolean includeArchivedEntities) {
+System.out.println("++++REGION IN USE TO QUERY DISTRICT == "+reg_ext_id.getExternalID());
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<District> cq = cb.createQuery(getElementClass());  
+		Root<District> from = cq.from(getElementClass());
+		System.out.println("SSSSSSDDDSSSSSSSSSSSSSSSSSSSSDDSSSSS45 - "+SQLExtractor.from(em.createQuery(cq)));
+		Predicate filter = cb.equal(from.get("externalID"), ext_id);
+		
+		//suspending region here temporarily
+		if (reg_ext_id != null) {
+			filter = cb.and(filter, cb.equal(from.get(District.REGION), reg_ext_id));
+		}
+		if (!includeArchivedEntities) {
+			filter = cb.and(filter, createBasicFilter(cb, from));
+		}
+
+		cq.where(filter);
+		System.out.println("SSSSSSDDDDFFFFFFFFFFFFFFFFFFFFFFFFFDSSSSS45 - "+SQLExtractor.from(em.createQuery(cq)));
+		return em.createQuery(cq).getResultList();
+	}
 
 	public List<District> getByExternalId(Long externalId, boolean includeArchivedEntities) {
+		
+		System.out.println("++++REGION Idddddddddddddddddddddddddddddd");
 		return getByExternalId(externalId, District.EXTERNAL_ID, includeArchivedEntities);
 	}
 

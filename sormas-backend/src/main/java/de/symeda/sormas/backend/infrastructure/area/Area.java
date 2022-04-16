@@ -9,6 +9,7 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.OneToMany;
 import javax.persistence.OrderBy;
+import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.backend.common.InfrastructureAdo;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -46,7 +47,7 @@ public class Area extends InfrastructureAdo {
 		this.regions = regions;
 	}
 
-	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	@NotNull(message="PCode is mandatory")
 	public Long getExternalId() {
 		return externalId;
 	}

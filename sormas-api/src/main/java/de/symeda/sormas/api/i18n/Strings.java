@@ -191,6 +191,7 @@ public interface Strings {
 	String entityCampaign = "entityCampaign";
 	String entityCampaignData = "entityCampaignData";
 	String entityCampaignDataForm = "entityCampaignDataForm";
+	String entityCampaignDataFormPhase = "entityCampaignDataFormPhase";
 	String entityCampaigns = "entityCampaigns";
 	String entityCase = "entityCase";
 	String entityCaseManagement = "entityCaseManagement";

@@ -775,6 +775,7 @@ public class ImportFacadeEjb implements ImportFacade {
 			|| clazz == PointOfEntryReferenceDto.class
 			|| clazz == CountryReferenceDto.class
 			|| clazz == SubcontinentReferenceDto.class
+			|| clazz == AreaReferenceDto.class
 			|| clazz == ContinentReferenceDto.class;
 	}
 
@@ -832,7 +833,7 @@ public class ImportFacadeEjb implements ImportFacade {
 
 	/**
 	 * Replaces placeholders in the given file content.
-	 * The placeholders are resolved using dynamic data. For any static data extend {@link ImportColumn}.
+	 * The placeholders are resolved using dynamic data. For any static data extend {@link ImportColumn}. 
 	 *
 	 * @param content
 	 *            file content.
@@ -875,6 +876,7 @@ public class ImportFacadeEjb implements ImportFacade {
 
 			if (propertyType.isAssignableFrom(RegionReferenceDto.class) && !allowForeignRegions && parsedValue != null) {
 
+				System.out.println("Check this method.... seem workinf on some wired stuff "+entry);
 				Region region = regionService.getByUuid(((RegionReferenceDto) parsedValue).getUuid());
 				CountryReferenceDto serverCountry = countryFacade.getServerCountry();
 

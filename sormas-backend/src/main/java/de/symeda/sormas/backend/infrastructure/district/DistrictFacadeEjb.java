@@ -324,6 +324,15 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 			.map(DistrictFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
 	}
+	
+	@Override
+	public List<DistrictReferenceDto> getByExternalID(Long ext_id, RegionReferenceDto regionRef, boolean includeArchivedEntities) {
+		System.out.println("++++REGION IN USE TO QUERY DISTRICT b "+regionService.getByReferenceDto(regionRef));
+		return service.getByExternalID(ext_id, regionService.getByReferenceDto(regionRef), includeArchivedEntities)
+			.stream()
+			.map(DistrictFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
+	}
 
 	@Override
 	public List<DistrictReferenceDto> getByExternalId(Long externalId, boolean includeArchivedEntities) {
@@ -399,6 +408,7 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 		dto.setGrowthRate(entity.getGrowthRate());
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
 		dto.setArchived(entity.isArchived());
+		System.out.println("ddddddddddddddddddddddddd=============dddddddddddddddd");
 		dto.setExternalID(entity.getExternalID());
 
 		return dto;

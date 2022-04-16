@@ -374,6 +374,10 @@ public class RegionFacadeEjb extends AbstractInfrastructureEjb<Region, RegionSer
 	public List<RegionDto> getByName(String name, boolean includeArchivedEntities) {
 		return service.getByName(name, includeArchivedEntities).stream().map(this::toDto).collect(Collectors.toList());
 	}
+	
+	public List<RegionDto> getByExternalID(Long ext_id, boolean includeArchivedEntities) {
+		return service.getByExternalID(ext_id, includeArchivedEntities).stream().map(this::toDto).collect(Collectors.toList());
+	}
 
 	@Override
 	public List<RegionReferenceDto> getByExternalId(Long externalId, boolean includeArchivedEntities) {

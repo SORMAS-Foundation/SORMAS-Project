@@ -248,8 +248,10 @@ public abstract class DataImporter {
 			// Build dictionary of entity headers
 			String[] entityClasses;
 			if (hasEntityClassRow) {
+				System.out.println("has entity class row_");
 				entityClasses = readNextValidLine(csvReader);
 			} else {
+				System.out.println("has NO entity class row_");
 				entityClasses = null;
 			}
 
@@ -257,6 +259,7 @@ public abstract class DataImporter {
 			String[] entityProperties = readNextValidLine(csvReader);
 			String[][] entityPropertyPaths = new String[entityProperties.length][];
 			for (int i = 0; i < entityProperties.length; i++) {
+				System.out.println("____-----___"+entityProperties[i]);
 				String[] entityPropertyPath = entityProperties[i].split("\\.");
 				entityPropertyPaths[i] = entityPropertyPath;
 			}
@@ -273,7 +276,7 @@ public abstract class DataImporter {
 			String[] nextLine = readNextValidLine(csvReader);
 			int lineCounter = 0;
 			while (nextLine != null) {
-				ImportLineResult lineResult = importDataFromCsvLine(nextLine, entityClasses, entityProperties, entityPropertyPaths, lineCounter == 0);
+				ImportLineResult lineResult = importDataFromCsvLine(nextLine, entityClasses, entityProperties, entityPropertyPaths, lineCounter == 0); 
 				logger.debug("runImport - line {}", lineCounter);
 				if (importedLineCallback != null) {
 					importedLineCallback.accept(lineResult);
@@ -433,12 +436,20 @@ public abstract class DataImporter {
 			pd.getWriteMethod().invoke(element, Float.parseFloat(entry));
 			return true;
 		}
+		if (propertyType.isAssignableFrom(Long.class)) {
+			System.out.println("_____IN REGION ISASSIGNMENT________------long-----_________________+========  " +entry);
+			pd.getWriteMethod().invoke(element, Long.parseLong(entry));
+			return true;
+		}
 		if (propertyType.isAssignableFrom(Boolean.class) || propertyType.isAssignableFrom(boolean.class)) {
 			pd.getWriteMethod().invoke(element, DataHelper.parseBoolean(entry));
 			return true;
 		}
+		
 		if (propertyType.isAssignableFrom(AreaReferenceDto.class)) {
-			List<AreaReferenceDto> areas = FacadeProvider.getAreaFacade().getByName(entry, false);
+			System.out.println("_____IN REGION ISASSIGNMENT________------area-----_________________+========  " +entry);
+			List<AreaReferenceDto> areas = FacadeProvider.getAreaFacade().getByExternalID(Long.parseLong(entry), false);
+			
 			if (areas.isEmpty()) {
 				throw new ImportErrorException(
 					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
@@ -446,10 +457,12 @@ public abstract class DataImporter {
 				throw new ImportErrorException(
 					I18nProperties.getValidationError(Validations.importAreaNotUnique, entry, buildEntityProperty(entryHeaderPath)));
 			} else {
+				
 				pd.getWriteMethod().invoke(element, areas.get(0));
 				return true;
 			}
 		}
+		/*
 		if (propertyType.isAssignableFrom(SubcontinentReferenceDto.class)) {
 			List<SubcontinentReferenceDto> subcontinents = FacadeProvider.getSubcontinentFacade().getByDefaultName(entry, false);
 			if (subcontinents.isEmpty()) {
@@ -488,9 +501,11 @@ public abstract class DataImporter {
 				pd.getWriteMethod().invoke(element, continents.get(0));
 				return true;
 			}
-		}
+		}*/
 		if (propertyType.isAssignableFrom(RegionReferenceDto.class)) {
-			List<RegionDto> regions = FacadeProvider.getRegionFacade().getByName(entry, false);
+			
+			System.out.println("_____IN REGION ISASSIGNMENT________-----------_________________+========  " +entry);
+			List<RegionDto> regions = FacadeProvider.getRegionFacade().getByExternalID(Long.parseLong(entry), false);
 			if (regions.isEmpty()) {
 				throw new ImportErrorException(
 					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
@@ -498,6 +513,10 @@ public abstract class DataImporter {
 				throw new ImportErrorException(
 					I18nProperties.getValidationError(Validations.importRegionNotUnique, entry, buildEntityProperty(entryHeaderPath)));
 			} else {
+
+				System.out.println(regions.get(0).getExternalID()+" >>>>>>>>>>>>>>>>>>>>>>>>>>>. "+regions.get(0).getName());
+				
+				
 				RegionDto region = regions.get(0);
 				CountryReferenceDto serverCountry = FacadeProvider.getCountryFacade().getServerCountry();
 
@@ -520,7 +539,9 @@ public abstract class DataImporter {
 					I18nProperties.getValidationError(Validations.importEntryDoesNotExist, entry, buildEntityProperty(entryHeaderPath)));
 			}
 		}
+		
 		if (propertyType.isAssignableFrom(String.class)) {
+			System.out.println("_____IN REGION ISASSIGNMENT________---string--------_________________+========  " +entry);
 			pd.getWriteMethod().invoke(element, entry);
 			return true;
 		}

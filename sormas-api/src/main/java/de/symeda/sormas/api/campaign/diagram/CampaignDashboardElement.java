@@ -43,6 +43,11 @@ public class CampaignDashboardElement implements Serializable {
 		this.height = height;
 		this.phase = phase;
 	}
+	
+	public CampaignDashboardElement(String diagramId, String phase) {
+		this.diagramId = diagramId;
+		this.phase = phase;
+	}
 
 	public CampaignDashboardElement(String diagramId, String tabId, String subTabId, Integer order, Integer width, Integer height, String phase) {
 		this(diagramId, tabId, order, width, height, phase);

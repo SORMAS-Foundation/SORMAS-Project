@@ -48,6 +48,8 @@ public interface DistrictFacade extends GeoLocationFacade<DistrictDto, DistrictI
 	List<DistrictReferenceDto> getAllActiveAsReference();
 
 	List<DistrictReferenceDto> getByName(String name, RegionReferenceDto regionRef, boolean includeArchivedEntities);
+	
+	List<DistrictReferenceDto> getByExternalID(Long ext_id, RegionReferenceDto regionRef, boolean includeArchivedEntities);
 
 	List<String> getNamesByIds(List<Long> districtIds);
 

@@ -154,6 +154,11 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaService> 
 	public List<AreaReferenceDto> getByName(String name, boolean includeArchived) {
 		return service.getByName(name, includeArchived).stream().map(AreaFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
+	
+	@Override
+	public List<AreaReferenceDto> getByExternalID(Long ext_id, boolean includeArchived) {
+		return service.getByExternalID(ext_id, includeArchived).stream().map(AreaFacadeEjb::toReferenceDto).collect(Collectors.toList());
+	}
 
 	@Override
 	public List<AreaDto> getAllAfter(Date date) {

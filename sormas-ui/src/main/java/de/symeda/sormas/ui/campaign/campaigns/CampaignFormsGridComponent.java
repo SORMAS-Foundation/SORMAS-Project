@@ -12,6 +12,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.ComboBox;
 import com.vaadin.ui.Grid;
 import com.vaadin.ui.Notification;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.v7.ui.OptionGroup;
 
 import de.symeda.sormas.api.ReferenceDto;
@@ -37,7 +38,7 @@ public class CampaignFormsGridComponent extends AbstractEditableGrid<CampaignFor
 	protected Button.ClickListener newRowEvent() {
 		return event -> {
 			final ArrayList<CampaignFormMetaReferenceDto> gridItems = getItems();
-			gridItems.add(new CampaignFormMetaReferenceDto(null, " --Please select--"));
+			gridItems.add(new CampaignFormMetaReferenceDto(null, " --Please select--", null));
 
 			grid.setItems(gridItems);
 			
@@ -48,39 +49,48 @@ public class CampaignFormsGridComponent extends AbstractEditableGrid<CampaignFor
 		};
 	}
 
-	public void ListnerCampaignFilter(com.vaadin.v7.data.Property.ValueChangeEvent event) {
+	public void ListnerCampaignFilter(TabSheet.SelectedTabChangeEvent event) {
 		final ArrayList<CampaignFormMetaReferenceDto> gridItemss = getItems();
-		System.out.println(gridItemss);
+		//System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  --  "+gridItemss);
 		
 		
 		final ArrayList<CampaignFormMetaReferenceDto> gridItems;
 
 		// gridItems.add(new CampaignFormMetaReferenceDto(null, " --Please select--"));
+		//tabsheetParent.addSelectedTabChangeListener(event -> Notification.show("changed " +event.getTabSheet().getSelectedTab().getCaption()));
 		
-		//Notification.show("----" + event.getProperty().getValue());
+		Notification.show("----" + event.getTabSheet().getSelectedTab().getCaption());
+		
+		System.out.println(event.getTabSheet().getSelectedTab().getCaption()  +" | ___________---______O___");
 
-		if (event.getProperty().getValue().equals("Pre-Campaign")) {
+		if (event.getTabSheet().getSelectedTab().getCaption().equals("Pre-Campaign Phase")) {
 			gridItems = gridItemss;
-			gridItems.removeIf(n -> (n.getCaption().contains("a")));
+			gridItems.removeIf(n -> (n.getFormType().contains("Pre-Campaign")));
+			System.out.println(">>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>>  --  "+gridItems);
+			
 			grid.setItems(gridItems);
 			
-		} else if (event.getProperty().getValue() == "Intra-Campaign") {
+		} else if (event.getTabSheet().getSelectedTab().getCaption() == "Intra-Campaign Phase") {
 			gridItems = gridItemss;
-			gridItems.removeIf(n -> (n.getCaption().contains("a")));
+			gridItems.removeIf(n -> (n.getFormType().contains("Intra-Campaign")));
 			grid.setItems(gridItems);
 			
-		} else if (event.getProperty().getValue() == "Post-Campaign") {
+		} else if (event.getTabSheet().getSelectedTab().getCaption() == "Post-Campaign Phase") {
 			gridItems = gridItemss;
-			gridItems.removeIf(n -> (n.getCaption().contains("Re")));
+			gridItems.removeIf(n -> (n.getFormType().contains("Post-Campaign")));
 			grid.setItems(gridItems);
 			
 		}
+		
+		System.out.println("dddddddddddddddddddddd++++++++++++===================");
+		//grid.removeAllColumns();
+		grid.getDataProvider().refreshAll(); 
 
 		// grid.getDataProvider().refreshAll();
 
 		// grid.getEditor().editRow(gridItems.size() - 1);
 
-		
+		 
 		// grid.removeAllColumns();
 		
 
@@ -112,17 +122,20 @@ public class CampaignFormsGridComponent extends AbstractEditableGrid<CampaignFor
 					return !items.contains(campaignFormMetaReferenceDto);
 				}, I18nProperties.getValidationError(Validations.campaignDashboardDataFormValueDuplicate))
 				.bind(campaignFormMetaReferenceDto -> new CampaignFormMetaReferenceDto(
-						campaignFormMetaReferenceDto.getUuid(), campaignFormMetaReferenceDto.getCaption()),
+						campaignFormMetaReferenceDto.getUuid(), campaignFormMetaReferenceDto.getCaption(), campaignFormMetaReferenceDto.getFormType()),
 						(bindedCampaignFormMeta, selectedCampaignFormMeta) -> {
 							bindedCampaignFormMeta.setUuid(selectedCampaignFormMeta.getUuid());
 							bindedCampaignFormMeta.setCaption(selectedCampaignFormMeta.getCaption());
+							bindedCampaignFormMeta.setFormType(selectedCampaignFormMeta.getFormType());
 							// workarround: grid doesn't refresh itself for unknown reason
 							grid.getDataProvider().refreshAll();
 						});
 		formCombo.setEmptySelectionAllowed(false);
 
-		Grid.Column<CampaignFormMetaReferenceDto, String> formColumn = grid.addColumn(ReferenceDto::getCaption)
-				.setCaption(I18nProperties.getString(Strings.entityCampaignDataForm));
+		Grid.Column<CampaignFormMetaReferenceDto, String> formColumn;
+		formColumn = grid.addColumn(ReferenceDto::getCaption).setCaption(I18nProperties.getString(Strings.entityCampaignDataForm));
+		//formColumn = grid.addColumn(ReferenceDto::getFormType).setCaption(I18nProperties.getString(Strings.entityCampaignDataFormPhase));
+		
 		formColumn.setId("formtb");
 		formColumn.setEditorBinding(formBind);
 

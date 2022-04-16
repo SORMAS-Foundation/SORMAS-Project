@@ -302,6 +302,15 @@ public class CommunityFacadeEjb extends AbstractInfrastructureEjb<Community, Com
 			.map(CommunityFacadeEjb::toReferenceDto)
 			.collect(Collectors.toList());
 	}
+	
+	@Override
+	public List<CommunityReferenceDto> getByExternalID(Long ext_id, DistrictReferenceDto districtRef, boolean includeArchivedEntities) {
+
+		return service.getByExternalID(ext_id, districtService.getByReferenceDto(districtRef), includeArchivedEntities)
+			.stream()
+			.map(CommunityFacadeEjb::toReferenceDto)
+			.collect(Collectors.toList());
+	}
 
 	@Override
 	public List<CommunityReferenceDto> getByExternalId(Long externalId, boolean includeArchivedEntities) {

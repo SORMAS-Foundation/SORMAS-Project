@@ -77,6 +77,7 @@ public class CampaignDiagramDefinitionFacadeEjb implements CampaignDiagramDefini
 		target.setCampaignSeriesTotal(source.getCampaignSeriesTotal());
 		target.setPercentageDefault(source.isPercentageDefault());
 		target.setCampaignDiagramTranslations(source.getCampaignDiagramTranslations());
+		target.setFormType(source.getFormType());
 
 		return target;
 	}

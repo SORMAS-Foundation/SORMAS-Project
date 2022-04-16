@@ -19,6 +19,7 @@ package de.symeda.sormas.api.infrastructure.district;
 
 import java.util.Date;
 
+import javax.validation.constraints.Min;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.EntityDto;
@@ -46,7 +47,9 @@ public class DistrictDto extends EntityDto {
 	private Float growthRate;
 	private RegionReferenceDto region;
 	private boolean archived;
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	//@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	
+	//@Min(2)
 	private Long externalID;
 
 	public DistrictDto(
@@ -121,6 +124,7 @@ public class DistrictDto extends EntityDto {
 	}
 
 	public Long getExternalID() {
+		System.out.println("ddddddddddddddddddddddd?????????????????????????????//===================ddddddddddddddd");
 		return externalID;
 	}
 
@@ -129,6 +133,8 @@ public class DistrictDto extends EntityDto {
 	}
 
 	public DistrictReferenceDto toReference() {
+		System.out.println("ddddddddddddddddddddddddddddddddddddddddddddd=================================ddddddddddddddd");
+	//	return new DistrictReferenceDto(getUuid());
 		return new DistrictReferenceDto(getUuid(), name, externalID);
 	}
 

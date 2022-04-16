@@ -3,6 +3,7 @@ package de.symeda.sormas.api.campaign;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
@@ -122,7 +123,16 @@ public class CampaignDto extends EntityDto {
 	}
 
 	public Set<CampaignFormMetaReferenceDto> getCampaignFormMetas() {
+		System.out.println("******%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%*******");
 		return campaignFormMetas;
+	}
+	
+	public Set<CampaignFormMetaReferenceDto> getCampaignFormMetas(String formType) {
+		//System.out.println("*********************** "+ formType);
+		//System.out.println(campaignFormMetas.stream().filter(e -> e.getFormType().equals(formType)).collect(Collectors.toSet()));
+		//System.out.println(campaignFormMetas);
+		
+		return campaignFormMetas.stream().filter(e -> e.getFormType().equals(formType)).collect(Collectors.toSet());
 	}
 
 	public void setCampaignFormMetas(Set<CampaignFormMetaReferenceDto> campaignFormMetas) {
@@ -132,6 +142,11 @@ public class CampaignDto extends EntityDto {
 	public List<CampaignDashboardElement> getCampaignDashboardElements() {
 		return campaignDashboardElements;
 	}
+	
+	//public List<CampaignDashboardElement> getCampaignDashboardElements(String formType) {
+
+	//	return campaignDashboardElements;//.stream().filter(e -> e.getPhase().equals(formType)).collect(Collectors.toList());
+	//}
 
 	public void setCampaignDashboardElements(List<CampaignDashboardElement> campaignDashboardElements) {
 		this.campaignDashboardElements = campaignDashboardElements;

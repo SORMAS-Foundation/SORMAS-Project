@@ -3,6 +3,7 @@ package de.symeda.sormas.api.campaign.diagram;
 import java.util.List;
 
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.EntityDto;
@@ -16,6 +17,9 @@ public class CampaignDiagramDefinitionDto extends EntityDto {
 	private String diagramId;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String diagramCaption;
+	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@NotNull
+	private String formType;
 	private DiagramType diagramType;
 	@Valid
 	private List<CampaignDiagramSeries> campaignDiagramSeries;
@@ -23,6 +27,7 @@ public class CampaignDiagramDefinitionDto extends EntityDto {
 	private List<CampaignDiagramSeries> campaignSeriesTotal;
 	private boolean percentageDefault;
 	private List<CampaignDiagramTranslations> campaignDiagramTranslations;
+	
 
 	public static CampaignDiagramDefinitionDto build() {
 		CampaignDiagramDefinitionDto campaignDiagramDefinition = new CampaignDiagramDefinitionDto();
@@ -85,4 +90,14 @@ public class CampaignDiagramDefinitionDto extends EntityDto {
 	public void setCampaignDiagramTranslations(List<CampaignDiagramTranslations> campaignDiagramTranslations) {
 		this.campaignDiagramTranslations = campaignDiagramTranslations;
 	}
+
+	public String getFormType() {
+		return formType;
+	}
+
+	public void setFormType(String formType) {
+		this.formType = formType;
+	}
+	
+	
 }

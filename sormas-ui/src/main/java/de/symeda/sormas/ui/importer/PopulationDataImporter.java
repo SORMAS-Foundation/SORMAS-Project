@@ -111,7 +111,7 @@ public class PopulationDataImporter extends DataImporter {
 			}*/
 			
 			//patch to use cluster No for data import
-			if (PopulationDataDto.COMMUNITY_EXTID.equalsIgnoreCase(entityProperties[i])) {
+			if (PopulationDataDto.COMMUNITY_EXTID.equalsIgnoreCase(entityProperties[i])) { 
 				
 				
 				if (DataHelper.isNullOrEmpty(values[i])) {

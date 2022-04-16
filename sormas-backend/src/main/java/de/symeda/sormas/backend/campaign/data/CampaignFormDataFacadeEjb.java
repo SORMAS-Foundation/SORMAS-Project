@@ -380,7 +380,7 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 		final RegionReferenceDto region = campaignDiagramCriteria.getRegion();
 		final DistrictReferenceDto district = campaignDiagramCriteria.getDistrict();
 		final CampaignJurisdictionLevel grouping = campaignDiagramCriteria.getCampaignJurisdictionLevelGroupBy();
-		final String formTyper = campaignDiagramCriteria.getFormType();
+		//final String formTyper = campaignDiagramCriteria.getFormType();
 
 		if (grouping == CampaignJurisdictionLevel.AREA) {
 			List<Area> areas = areaService.getAll();
@@ -529,18 +529,18 @@ public class CampaignFormDataFacadeEjb implements CampaignFormDataFacade {
 
 	@Override
 	public List<CampaignDiagramDataDto> getDiagramData(List<CampaignDiagramSeries> diagramSeries, CampaignDiagramCriteria campaignDiagramCriteria) {
-System.out.println("ddddddddddddddddddddddddddddd=============================================ddddddddddddddd " + campaignDiagramCriteria.getFormType()); 
+//System.out.println("ddddddddddddddddddddddddddddd=============================================ddddddddddddddd " + campaignDiagramCriteria.getFormType()); 
 		List<CampaignDiagramDataDto> resultData = new ArrayList<>();
 		final AreaReferenceDto area = campaignDiagramCriteria.getArea();
 		final RegionReferenceDto region = campaignDiagramCriteria.getRegion();
 		final DistrictReferenceDto district = campaignDiagramCriteria.getDistrict();
 		final CampaignReferenceDto campaign = campaignDiagramCriteria.getCampaign();
 		
-		String formType = campaignDiagramCriteria.getFormType();
+		/*String formType = campaignDiagramCriteria.getFormType();
 		
 		if ("all phases".equals(formType)) {
 			formType = null;
-		}
+		}*/
 
 		for (CampaignDiagramSeries series : diagramSeries) {
 			//@formatter:off
@@ -549,7 +549,7 @@ System.out.println("ddddddddddddddddddddddddddddd===============================
 				final String regionFilter = region != null ? " AND " + CampaignFormData.REGION + "." + Region.UUID + " = :regionUuid" : "";
 				final String districtFilter = district != null ? " AND " + CampaignFormData.DISTRICT + "." + District.UUID + " = :districtUuid" : "";
 				final String campaignFilter = campaign != null ? " AND " + Campaign.TABLE_NAME + "." + Campaign.UUID + " = :campaignUuid" : "";
-				final String campaignPhaseFilter = formType != null ? " AND " + CampaignFormData.CAMPAIGN_FORM_META + ".formtype = '"+formType+"'" : "";
+			//	final String campaignPhaseFilter = formType != null ? " AND " + CampaignFormData.CAMPAIGN_FORM_META + ".formtype = '"+formType+"'" : "";
 				//@formatter:on
 
 			// SELECT
@@ -697,7 +697,7 @@ System.out.println("ddddddddddddddddddddddddddddd===============================
 			}
 			
 			
-				whereBuilder.append(areaFilter).append(regionFilter).append(districtFilter).append(campaignFilter).append(campaignPhaseFilter);
+				whereBuilder.append(areaFilter).append(regionFilter).append(districtFilter).append(campaignFilter);//.append(campaignPhaseFilter);
 			
 
 			// GROUP BY

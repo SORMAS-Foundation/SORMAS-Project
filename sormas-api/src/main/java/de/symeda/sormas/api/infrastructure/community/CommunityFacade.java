@@ -41,6 +41,8 @@ public interface CommunityFacade extends GeoLocationFacade<CommunityDto, Communi
 
 	// todo handle parent infra generically
 	List<CommunityReferenceDto> getByName(String name, DistrictReferenceDto districtRef, boolean includeArchivedEntities);
+	
+	List<CommunityReferenceDto> getByExternalID(Long ext_id, DistrictReferenceDto districtRef, boolean includeArchivedEntities);
 
 	boolean isUsedInOtherInfrastructureData(Collection<String> communityUuids);
 

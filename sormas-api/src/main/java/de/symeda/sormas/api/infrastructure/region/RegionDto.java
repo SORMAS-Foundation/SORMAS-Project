@@ -19,6 +19,7 @@ package de.symeda.sormas.api.infrastructure.region;
 
 import java.util.Date;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.EntityDto;
@@ -49,9 +50,9 @@ public class RegionDto extends EntityDto {
 	private String epidCode;
 	private Float growthRate;
 	private boolean archived;
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	//@NotNull
 	private Long externalID;
-	@DependingOnFeatureType(featureType = FeatureType.INFRASTRUCTURE_TYPE_AREA)
+	//@DependingOnFeatureType(featureType = FeatureType.INFRASTRUCTURE_TYPE_AREA)
 	private AreaReferenceDto area;
 	private CountryReferenceDto country;
 
@@ -134,7 +135,7 @@ public class RegionDto extends EntityDto {
 		this.externalID = externalID;
 	}
 
-	@DependingOnFeatureType(featureType = FeatureType.INFRASTRUCTURE_TYPE_AREA)
+	//@DependingOnFeatureType(featureType = FeatureType.INFRASTRUCTURE_TYPE_AREA)
 	public AreaReferenceDto getArea() {
 		return area;
 	}

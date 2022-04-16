@@ -20,5 +20,5 @@ import java.util.List;
 public interface GeoLocationFacade<DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends InfrastructureDataReferenceDto, CRITERIA extends BaseCriteria>
 	extends InfrastructureBaseFacade<DTO, INDEX_DTO, REF_DTO, CRITERIA> {
 
-	List<REF_DTO> getReferencesByName(String name, boolean includeArchived);
+	List<REF_DTO> getReferencesByName(String name, boolean includeArchived); 
 }

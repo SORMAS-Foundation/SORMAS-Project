@@ -19,6 +19,7 @@ package de.symeda.sormas.api.infrastructure.community;
 
 import java.util.Date;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.EntityDto;
@@ -46,7 +47,8 @@ public class CommunityDto extends EntityDto {
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
 	private boolean archived;
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+
+	
 	private Long externalID;
 
 	public CommunityDto(

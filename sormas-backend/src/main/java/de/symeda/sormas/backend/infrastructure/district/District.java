@@ -99,7 +99,7 @@ public class District extends InfrastructureAdo {
 		this.growthRate = growthRate;
 	}
 
-	@Column(length = CHARACTER_LIMIT_DEFAULT)
+	//@Column(length = CHARACTER_LIMIT_DEFAULT)
 	public Long getExternalID() {
 		return externalID;
 	}

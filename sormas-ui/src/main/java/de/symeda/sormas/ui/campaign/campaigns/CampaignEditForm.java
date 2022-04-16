@@ -83,6 +83,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Create n
 	private static final String CAMPAIGN_DASHBOARD_LOC = "campaignDashboardLoc";
 	private static final String SPACE_LOC = "spaceLoc";
 	private static final String SPACE_LOCX = "spaceLocx";
+	
 	private static final String PRE_CAMPAIGN = "pre-campaign";
 	private static final String INTRA_CAMPAIGN = "intra-campaign";
 	private static final String POST_CAMPAIGN = "post-campaign";
@@ -110,8 +111,12 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Create n
 	
 	
 	private CampaignFormsGridComponent campaignFormsGridComponent;
+	private CampaignFormsGridComponent campaignFormsGridComponent_1;
+	private CampaignFormsGridComponent campaignFormsGridComponent_2;
 	
 	private CampaignDashboardElementsGridComponent campaignDashboardGridComponent;
+	private CampaignDashboardElementsGridComponent campaignDashboardGridComponent_1;
+	private CampaignDashboardElementsGridComponent campaignDashboardGridComponent_2;
 
 	public CampaignEditForm(CampaignDto campaignDto) {
 
@@ -259,12 +264,15 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Create n
 		VerticalLayout tab1 = new VerticalLayout();
 		
 		campaignFormsGridComponent = new CampaignFormsGridComponent(
-				this.campaignDto == null ? Collections.EMPTY_LIST : new ArrayList<>(campaignDto.getCampaignFormMetas()),
+				this.campaignDto == null ? Collections.EMPTY_LIST : new ArrayList<>(campaignDto.getCampaignFormMetas("pre-campaign")),
 				FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferencesByRound(PRE_CAMPAIGN));
 			getContent().addComponent(campaignFormsGridComponent, CAMPAIGN_DATA_LOC);
 		tab1.addComponent(campaignFormsGridComponent);
 		tab1.setCaption("Pre Campaign Forms");
 		tabsheet.addTab(tab1);
+		
+		
+	//	campaignFormsGridComponent.ListnerCampaignFilter(event);
 		
 
 		// This tab gets its caption from the component caption
@@ -272,6 +280,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Create n
 		
 		//To Do: Check why set this to nulll in the first place
 		final List<CampaignDashboardElement> campaignDashboardElements = FacadeProvider.getCampaignFacade().getCampaignDashboardElements(null, PRE_CAMPAIGN);
+		System.out.println(campaignDashboardElements.get(1).getPhase());
 		campaignDashboardGridComponent = new CampaignDashboardElementsGridComponent(
 			this.campaignDto == null
 				? Collections.EMPTY_LIST
@@ -281,6 +290,9 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Create n
 		tab2.addComponent(campaignDashboardGridComponent);
 		tab2.setCaption("Pre Campaign Dashboard");
 		tabsheet.addTab(tab2);
+		
+
+		
 
 
 		
@@ -310,11 +322,11 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Create n
 		// Create the first tab
 		VerticalLayout tab1Post = new VerticalLayout();
 		
-		campaignFormsGridComponent = new CampaignFormsGridComponent(
-				this.campaignDto == null ? Collections.EMPTY_LIST : new ArrayList<>(campaignDto.getCampaignFormMetas()),
+		campaignFormsGridComponent_1 = new CampaignFormsGridComponent(
+				this.campaignDto == null ? Collections.EMPTY_LIST : new ArrayList<>(campaignDto.getCampaignFormMetas("intra-campaign")),
 				FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferencesByRound(INTRA_CAMPAIGN));
-			getContent().addComponent(campaignFormsGridComponent, CAMPAIGN_DATA_LOC);
-			tab1Post.addComponent(campaignFormsGridComponent);
+			getContent().addComponent(campaignFormsGridComponent_1, CAMPAIGN_DATA_LOC);
+			tab1Post.addComponent(campaignFormsGridComponent_1);
 			tab1Post.setCaption("Intra Campaign Forms");
 			tabsheetPost.addTab(tab1Post);
 		
@@ -322,18 +334,18 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Create n
 		// This tab gets its caption from the component caption
 		VerticalLayout tab2Post = new VerticalLayout();
 		final List<CampaignDashboardElement> campaignDashboardElementsxx = FacadeProvider.getCampaignFacade().getCampaignDashboardElements(null, INTRA_CAMPAIGN);
-		campaignDashboardGridComponent = new CampaignDashboardElementsGridComponent(
+		campaignDashboardGridComponent_1 = new CampaignDashboardElementsGridComponent(
 			this.campaignDto == null
 				? Collections.EMPTY_LIST
 				: FacadeProvider.getCampaignFacade().getCampaignDashboardElements(campaignDto.getUuid(), INTRA_CAMPAIGN),
 			campaignDashboardElementsxx);
-		getContent().addComponent(campaignDashboardGridComponent, CAMPAIGN_DASHBOARD_LOC);
-		tab2Post.addComponent(campaignDashboardGridComponent);
+		getContent().addComponent(campaignDashboardGridComponent_1, CAMPAIGN_DASHBOARD_LOC);
+		tab2Post.addComponent(campaignDashboardGridComponent_1);
 		tab2Post.setCaption("Intra Campaign Dashboard");
 		tabsheetPost.addTab(tab2Post);
-
-
 		
+		tabsheetPost.addSelectedTabChangeListener(event -> campaignFormsGridComponent.ListnerCampaignFilter(event));
+	
 		getContent().addComponent(layoutPost, ROUND_COMPONETS);
 		
 		
@@ -342,7 +354,7 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Create n
 		parentTab3.addComponent(layoutPost);
 		parentTab3.setCaption("Intra-Campaign Phase");
 		tabsheetParent.addTab(parentTab3);
-		
+		tabsheetParent.addSelectedTabChangeListener(event -> campaignFormsGridComponent.ListnerCampaignFilter(event));
 		//stop
 		
 
@@ -362,12 +374,12 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Create n
 		// Create the first tab
 		VerticalLayout tab1Intra = new VerticalLayout();
 		
-		campaignFormsGridComponent = new CampaignFormsGridComponent(
-				this.campaignDto == null ? Collections.EMPTY_LIST : new ArrayList<>(campaignDto.getCampaignFormMetas()),
+		campaignFormsGridComponent_2 = new CampaignFormsGridComponent(
+				this.campaignDto == null ? Collections.EMPTY_LIST : new ArrayList<>(campaignDto.getCampaignFormMetas("post-campaign")),
 						FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferencesByRound(POST_CAMPAIGN));
 				//FacadeProvider.getCampaignFormMetaFacade().getAllCampaignFormMetasAsReferences());
-			getContent().addComponent(campaignFormsGridComponent, CAMPAIGN_DATA_LOC);
-			tab1Intra.addComponent(campaignFormsGridComponent);
+			getContent().addComponent(campaignFormsGridComponent_2, CAMPAIGN_DATA_LOC);
+			tab1Intra.addComponent(campaignFormsGridComponent_2);
 			tab1Intra.setCaption("Post Campaign Forms");
 		tabsheetIntra.addTab(tab1Intra);
 		
@@ -375,18 +387,18 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Create n
 		// This tab gets its caption from the component caption
 		VerticalLayout tab2Intra = new VerticalLayout();
 		final List<CampaignDashboardElement> campaignDashboardElementsx = FacadeProvider.getCampaignFacade().getCampaignDashboardElements(null, POST_CAMPAIGN);
-		campaignDashboardGridComponent = new CampaignDashboardElementsGridComponent(
+		campaignDashboardGridComponent_2 = new CampaignDashboardElementsGridComponent(
 			this.campaignDto == null
 				? Collections.EMPTY_LIST
 				: FacadeProvider.getCampaignFacade().getCampaignDashboardElements(campaignDto.getUuid(), POST_CAMPAIGN),
 			campaignDashboardElementsx);
-		getContent().addComponent(campaignDashboardGridComponent, CAMPAIGN_DASHBOARD_LOC);
-		tab2Intra.addComponent(campaignDashboardGridComponent);
+		getContent().addComponent(campaignDashboardGridComponent_2, CAMPAIGN_DASHBOARD_LOC);
+		tab2Intra.addComponent(campaignDashboardGridComponent_2);
 		tab2Intra.setCaption("Post Campaign Dashboard");
 		tabsheetIntra.addTab(tab2Intra);
-
-
 		
+		tabsheetIntra.addSelectedTabChangeListener(event -> campaignFormsGridComponent.ListnerCampaignFilter(event));
+
 		getContent().addComponent(layoutIntra, ROUND_COMPONETS);
 		
 		
@@ -495,11 +507,25 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Create n
 
 	@Override
 	public CampaignDto getValue() {
-		System.out.println("+++++++@@@@@@@@@@@@@@@@@@@@@+++++++++++");
-		
 		final CampaignDto campaignDto = super.getValue();
-		campaignDto.setCampaignFormMetas(new HashSet<>(campaignFormsGridComponent.getItems()));
-		campaignDto.setCampaignDashboardElements(campaignDashboardGridComponent.getItems());
+		System.out.println("+++++++@@@  getting all values from phases@@@+++++++++++");
+		 HashSet<CampaignFormMetaReferenceDto> set = new HashSet<>();
+		 set.addAll(campaignFormsGridComponent.getItems());
+		 set.addAll(campaignFormsGridComponent_1.getItems());
+		 set.addAll(campaignFormsGridComponent_2.getItems());
+		 
+		 System.out.println("+++++++@@@@@@@@@@   getting all values from phases @@@@@@@@@@@+++++++++++"+set.toString());
+		
+		campaignDto.setCampaignFormMetas(new HashSet<>(set));
+		
+		
+		 List<CampaignDashboardElement> setDashboard = new ArrayList<>();
+		 setDashboard.addAll(campaignDashboardGridComponent.getItems());
+		 setDashboard.addAll(campaignDashboardGridComponent_1.getItems());
+		 setDashboard.addAll(campaignDashboardGridComponent_2.getItems());
+		 
+		 
+		campaignDto.setCampaignDashboardElements(setDashboard);
 		return campaignDto;
 	}
 
@@ -514,15 +540,38 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Create n
 		
 		super.setValue(newFieldValue);
 		campaignFormsGridComponent.setSavedItems(
-				newFieldValue.getCampaignFormMetas() != null ? new ArrayList<>(newFieldValue.getCampaignFormMetas()) : new ArrayList<>()
+				newFieldValue.getCampaignFormMetas() != null ? new ArrayList<>(newFieldValue.getCampaignFormMetas("pre-campaign")) : new ArrayList<>()
+						);
+		
+		campaignFormsGridComponent_1.setSavedItems(
+				newFieldValue.getCampaignFormMetas() != null ? new ArrayList<>(newFieldValue.getCampaignFormMetas("intra-campaign")) : new ArrayList<>()
+						);
+		
+		campaignFormsGridComponent_2.setSavedItems(
+				newFieldValue.getCampaignFormMetas() != null ? new ArrayList<>(newFieldValue.getCampaignFormMetas("post-campaign")) : new ArrayList<>()
 						);
 
 		if (CollectionUtils.isNotEmpty(newFieldValue.getCampaignDashboardElements())) {
+			
 			campaignDashboardGridComponent.setSavedItems(
-				newFieldValue.getCampaignDashboardElements()
+				newFieldValue.getCampaignDashboardElements().stream().filter(e -> e.getPhase().equals("pre-campaign")).collect(Collectors.toList())
 					.stream()
 					.sorted(Comparator.comparingInt(CampaignDashboardElement::getOrder))
 					.collect(Collectors.toList()));
+			
+			
+			campaignDashboardGridComponent_1.setSavedItems(
+					newFieldValue.getCampaignDashboardElements().stream().filter(e -> e.getPhase().equals("intra-campaign")).collect(Collectors.toList())
+						.stream()
+						.sorted(Comparator.comparingInt(CampaignDashboardElement::getOrder))
+						.collect(Collectors.toList()));
+			
+			campaignDashboardGridComponent_2.setSavedItems(
+					newFieldValue.getCampaignDashboardElements().stream().filter(e -> e.getPhase().equals("post-campaign")).collect(Collectors.toList()));
+					/*
+						.stream()
+						.sorted(Comparator.comparingInt(CampaignDashboardElement::getOrder))
+						.collect(Collectors.toList()));*/
 		}
 	}
 
@@ -530,7 +579,12 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Create n
 	public void discard() throws SourceException {
 		super.discard();
 		campaignFormsGridComponent.discardGrid();
+		campaignFormsGridComponent_1.discardGrid();
+		campaignFormsGridComponent_2.discardGrid();
+		
 		campaignDashboardGridComponent.discardGrid();
+		campaignDashboardGridComponent_1.discardGrid();
+		campaignDashboardGridComponent_2.discardGrid();
 	}
 
 	@Override

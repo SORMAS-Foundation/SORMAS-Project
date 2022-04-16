@@ -45,7 +45,7 @@ public class InfrastructureImporter extends DataImporter {
 	public InfrastructureImporter(File inputFile, UserDto currentUser, InfrastructureType type, boolean allowOverwrite, ValueSeparator csvSeparator)
 		throws IOException {
 		super(inputFile, false, currentUser, csvSeparator);
-		this.type = type;
+		this.type = type; 
 		this.allowOverwrite = allowOverwrite;
 	}
 
@@ -68,9 +68,11 @@ public class InfrastructureImporter extends DataImporter {
 
 		switch (type) {
 		case COMMUNITY:
+			System.out.println("$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$$55555555555555555555555555555555555555555555%%%%%%%%%%%");		
 			newEntityDto = CommunityDto.build();
 			break;
 		case DISTRICT:
+			System.out.println("$$$$$$$$$$$$$$==================55555%%%%%%%%%%%");		
 			newEntityDto = DistrictDto.build();
 			break;
 		case FACILITY:
@@ -96,9 +98,12 @@ public class InfrastructureImporter extends DataImporter {
 		}
 
 		boolean iHasImportError = insertRowIntoData(values, entityClasses, entityPropertyPaths, false, (cellData) -> {
+			
+					
 			try {
 				// If the cell entry is not empty, try to insert it into the current infrastructure object
 				if (!StringUtils.isEmpty(cellData.getValue())) {
+					System.out.println(cellData.getEntityPropertyPath()+ " trying to send data to db importer "+cellData.getValue()+"  == "+newEntityDto);
 					insertColumnEntryIntoData(newEntityDto, cellData.getValue(), cellData.getEntityPropertyPath());
 				}
 			} catch (ImportErrorException | InvalidColumnException e) {
@@ -110,6 +115,8 @@ public class InfrastructureImporter extends DataImporter {
 
 		// Save the infrastructure object into the database if the import has no errors or throw an error
 		// if there is already an infrastructure object with this name in the database
+		
+		System.out.println("$$$$$$$$$$$$$$$$$$$$$$$=======555555555555555555555555%%%%%%%%%%% iHasImportError= "+iHasImportError);
 		if (!iHasImportError) {
 			try {
 				switch (type) {
@@ -163,19 +170,25 @@ public class InfrastructureImporter extends DataImporter {
 			try {
 				if (i != entityPropertyPath.length - 1) {
 					currentElement = new PropertyDescriptor(headerPathElementName, currentElement.getClass()).getReadMethod().invoke(currentElement);
+					System.out.println("come000000000000");
 				} else {
+					System.out.println("come111111111111111");
 					PropertyDescriptor pd = new PropertyDescriptor(headerPathElementName, currentElement.getClass());
 					Class<?> propertyType = pd.getPropertyType();
 
 					// Execute the default invokes specified in the data importer; if none of those were triggered, execute additional invokes
 					// according to the types of the infrastructure object's fields; additionally, throw an error if infrastructure data that
 					// is referenced in the imported object does not exist in the database
-					if (!executeDefaultInvoke(pd, currentElement, value, entityPropertyPath)) {
+					if (!executeDefaultInvoke(pd, currentElement, value, entityPropertyPath)) { 
 						if (propertyType.isAssignableFrom(DistrictReferenceDto.class)) {
+							System.out.println("c!!!!!!!!!!!!!!!!!!!!!ome here to fix the for district..........................................");
+							
+							
 							List<DistrictReferenceDto> district;
 							switch (type) {
 							case COMMUNITY:
-								district = FacadeProvider.getDistrictFacade().getByName(value, ((CommunityDto) newEntityDto).getRegion(), false);
+								System.out.println("c!!!!!!!!!");
+								district = FacadeProvider.getDistrictFacade().getByExternalID(Long.parseLong(value), ((CommunityDto) newEntityDto).getRegion(), false);
 								break;
 							case FACILITY:
 								district = FacadeProvider.getDistrictFacade().getByName(value, ((FacilityDto) newEntityDto).getRegion(), false);
@@ -198,9 +211,12 @@ public class InfrastructureImporter extends DataImporter {
 									I18nProperties
 										.getValidationError(Validations.importDistrictNotUnique, value, buildEntityProperty(entityPropertyPath)));
 							} else {
+								System.out.println("SCUCESSSSSSSSSS DISTRTICT RETRIEVED!!! = "+district.get(0).getCaption());
 								pd.getWriteMethod().invoke(currentElement, district.get(0));
 							}
 						} else if (propertyType.isAssignableFrom(CommunityReferenceDto.class)) {
+							System.out.println("c!!!!!!!!!!!!!!!!!!!!!ome here to fix the uuid for comm..........................................");
+							
 							List<CommunityReferenceDto> community;
 							if (type == InfrastructureType.FACILITY) {
 								community = FacadeProvider.getCommunityFacade().getByName(value, ((FacilityDto) newEntityDto).getDistrict(), false);
@@ -222,6 +238,8 @@ public class InfrastructureImporter extends DataImporter {
 								pd.getWriteMethod().invoke(currentElement, community.get(0));
 							}
 						} else {
+							
+							
 							throw new UnsupportedOperationException(
 								I18nProperties.getValidationError(Validations.importPropertyTypeNotAllowed, propertyType.getName()));
 						}

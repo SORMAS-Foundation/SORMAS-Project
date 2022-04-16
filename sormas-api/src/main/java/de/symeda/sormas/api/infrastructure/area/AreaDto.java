@@ -1,5 +1,6 @@
 package de.symeda.sormas.api.infrastructure.area;
 
+import javax.validation.constraints.NotNull;
 import javax.validation.constraints.Size;
 
 import de.symeda.sormas.api.EntityDto;
@@ -17,7 +18,7 @@ public class AreaDto extends EntityDto {
 
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String name;
-	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	//@NotNull(message = "Please enter valid externalID")
 	private Long externalId;
 	private boolean archived;
 

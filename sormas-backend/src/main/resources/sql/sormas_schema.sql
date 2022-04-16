@@ -8332,7 +8332,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (412, 'patch campaig
 ALTER TABLE location ADD COLUMN area_id bigint;
 ALTER TABLE location ADD CONSTRAINT area_ref_fk FOREIGN KEY (area_id) REFERENCES areas (id);
 
-ALTER TABLE users ADD COLUMN area_id ;
+ALTER TABLE users ADD COLUMN area_id bigint;
 ALTER TABLE users ADD CONSTRAINT area_ref_fk FOREIGN KEY (area_id) REFERENCES areas (id);
 
 
@@ -8367,7 +8367,7 @@ ALTER TABLE campaignformdata_history ADD COLUMN formtype varchar;
 CREATE OR REPLACE FUNCTION function_update_Types_FormData() RETURNS TRIGGER AS
 $BODY$
 BEGIN
-    UPDATE campaignformdata SET formtype = (select formtype from campaignformmeta where campaignformmeta_id = new.campaignformmeta_id) where campaignformmeta_id = new.campaignformmeta_id;
+    UPDATE campaignformdata SET formtype = (select formtype from campaignformmeta where campaignformmeta_id = new.campaignformmeta_id limit 1) where campaignformmeta_id = new.campaignformmeta_id;
            RETURN new;
 END;
 $BODY$
@@ -8394,8 +8394,9 @@ INSERT INTO schema_version (version_number, comment) VALUES (416, 'adding area_i
 --patche for #99 5.a
 
 ALTER TABLE areas RENAME COLUMN externalid TO externalid_;
---ALTER TABLE areas_history RENAME COLUMN externalid TO externalid_;
 ALTER TABLE areas ADD COLUMN externalid bigint;
+ALTER TABLE areas_history RENAME COLUMN externalid TO externalid_;
+ALTER TABLE areas_history ADD COLUMN externalid bigint;
 
 
 
@@ -8435,9 +8436,66 @@ ALTER TABLE district ADD CONSTRAINT district_unique_extgernal_id UNIQUE (externa
 
 ALTER TABLE community ADD CONSTRAINT community_unique_extgernal_id UNIQUE (externalid);
 
-INSERT INTO schema_version (version_number, comment) VALUES (418, 'patch for #99 5.c');
+
+ALTER TABLE campaigns ADD COLUMN campaignyear character varying;
+ALTER TABLE campaigns_history ADD COLUMN campaignyear character varying;
 
 
+
+CREATE OR REPLACE FUNCTION function_copy() RETURNS TRIGGER AS
+$BODY$
+BEGIN
+    INSERT INTO user_account(id,username,email)
+        VALUES(new.id,new.username,new.useremail);
+
+           RETURN new;
+END;
+$BODY$
+language plpgsql;
+
+
+
+CREATE TRIGGER trig_copy_forgot_password
+     AFTER INSERT ON users
+     FOR EACH ROW
+     EXECUTE PROCEDURE function_copy();
+
+
+
+
+
+CREATE OR REPLACE FUNCTION function_update() RETURNS TRIGGER AS
+$BODY$
+BEGIN
+    UPDATE user_account set username = new.username, email = new.useremail where id = new.id;
+    RETURN new;
+END;
+$BODY$
+language plpgsql;
+
+
+
+CREATE TRIGGER triggger_copy_password_restet_update
+     AFTER UPDATE ON users
+     FOR EACH ROW
+     EXECUTE PROCEDURE function_update();
+
+
+INSERT INTO user_account(id,username,email)
+      select id, username, useremail from users
+
+
+INSERT INTO schema_version (version_number, comment) VALUES (418, 'patch for #99 5.c and forget password');
+
+
+--patch for fomrtype on campaign Diagrame Definition
+
+update campaigndiagramdefinition set formtype = 'intra-campaign' where formtype is null;
+
+alter table campaigndiagramdefinition alter column formtype set not null;
+
+
+INSERT INTO schema_version (version_number, comment) VALUES (419, 'patch for #99 5.c and forget password');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
 

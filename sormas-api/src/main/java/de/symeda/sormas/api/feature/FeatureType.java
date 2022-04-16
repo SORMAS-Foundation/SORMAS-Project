@@ -151,7 +151,7 @@ public enum FeatureType {
 
 	// ADDITIONAL FEATURES
 	GDPR_CONSENT_POPUP(true, false, null),
-	INFRASTRUCTURE_TYPE_AREA(true, false, null),
+	INFRASTRUCTURE_TYPE_AREA(true, true, null),
 	OUTBREAKS(true, true, null),
 	PERSON_MANAGEMENT(true,
 		true,

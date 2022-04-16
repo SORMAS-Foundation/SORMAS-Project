@@ -30,6 +30,8 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import com.vladmihalcea.hibernate.type.util.SQLExtractor;
+
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionCriteria;
@@ -63,6 +65,23 @@ public class RegionService extends AbstractInfrastructureAdoService<Region> {
 
 		cq.where(filter);
 
+		return em.createQuery(cq).getResultList();
+	}
+	
+	public List<Region> getByExternalID(Long ext_id, boolean includeArchivedEntities) {
+System.out.println("####################################3 "+ext_id);
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<Region> cq = cb.createQuery(getElementClass());
+		Root<Region> from = cq.from(getElementClass());
+		System.out.println("SSSSSSDDDDDSSSSS45 - "+SQLExtractor.from(em.createQuery(cq)));
+		Predicate filter = cb.equal(from.get("externalID"), ext_id);
+		
+		if (!includeArchivedEntities) {
+			filter = cb.and(filter, createBasicFilter(cb, from));
+		}
+
+		cq.where(filter);
+		System.out.println("SSSSSSDDDDD56754345 - "+SQLExtractor.from(em.createQuery(cq)));
 		return em.createQuery(cq).getResultList();
 	}
 
