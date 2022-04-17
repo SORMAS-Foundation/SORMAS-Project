@@ -44,6 +44,8 @@ public interface DashboardFacade {
 
 	Map<Date, Map<PresentCondition, Integer>> getEpiCurveSeriesElementsPerPresentCondition(DashboardCriteria dashboardCriteria);
 
+	DashboardCaseMeasureDto getCaseMeasurePerDistrict(DashboardCriteria dashboardCriteria);
+
 	List<DiseaseBurdenDto> getDiseaseBurden(
 		RegionReferenceDto region,
 		DistrictReferenceDto district,

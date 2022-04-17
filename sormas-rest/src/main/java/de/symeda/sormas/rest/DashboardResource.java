@@ -14,6 +14,7 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.contact.MapContactDto;
+import de.symeda.sormas.api.dashboard.DashboardCaseMeasureDto;
 import de.symeda.sormas.api.dashboard.DashboardCaseStatisticDto;
 import de.symeda.sormas.api.dashboard.DashboardContactStatisticDto;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
@@ -74,6 +75,12 @@ public class DashboardResource extends EntityDtoResource {
 	public Map<Date, Map<PresentCondition, Integer>> getEpidemiologicalCurveDataPerPresentCondition(
 		@RequestBody DashboardCriteria dashboardCriteria) {
 		return FacadeProvider.getDashboardFacade().getEpiCurveSeriesElementsPerPresentCondition(dashboardCriteria);
+	}
+
+	@POST
+	@Path("/caseMeasurePerDistrict")
+	public DashboardCaseMeasureDto getCaseMeasurePerDistrict(@RequestBody DashboardCriteria dashboardCriteria) {
+		return FacadeProvider.getDashboardFacade().getCaseMeasurePerDistrict(dashboardCriteria);
 	}
 
 	@POST
