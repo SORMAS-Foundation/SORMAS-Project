@@ -169,6 +169,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 		return epiCurveSeriesElements;
 	}
 
+	@RolesAllowed(UserRight._DASHBOARD_SURVEILLANCE_VIEW)
 	public Map<Date, Map<ContactClassification, Long>> getEpiCurveSeriesElementsPerContactClassification(DashboardCriteria dashboardCriteria) {
 		Map<Date, Map<ContactClassification, Long>> epiCurveSeriesElements = new TreeMap<>();
 		List<Date> criteriaIntervalStartDates = buildListOfFilteredDates(
@@ -190,6 +191,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 
 	}
 
+	@RolesAllowed(UserRight._DASHBOARD_SURVEILLANCE_VIEW)
 	public Map<Date, Map<String, Long>> getEpiCurveSeriesElementsPerContactFollowUpStatus(DashboardCriteria dashboardCriteria) {
 		Map<Date, Map<String, Long>> epiCurveSeriesElements = new TreeMap<>();
 		List<Date> criteriaIntervalStartDates = buildListOfFilteredDates(
@@ -215,6 +217,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 
 	}
 
+	@RolesAllowed(UserRight._DASHBOARD_SURVEILLANCE_VIEW)
 	public Map<Date, Integer> getEpiCurveSeriesElementsPerContactFollowUpUntil(DashboardCriteria dashboardCriteria) {
 		Map<Date, Integer> epiCurveSeriesElements = new TreeMap<>();
 		List<Date> criteriaIntervalStartDates = buildListOfFilteredDates(
