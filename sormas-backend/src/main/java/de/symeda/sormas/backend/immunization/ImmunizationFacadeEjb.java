@@ -656,6 +656,12 @@ public class ImmunizationFacadeEjb
 		super.archive(entityUuid, endOfProcessingDate);
 	}
 
+	@Override
+	@RolesAllowed(UserRight._IMMUNIZATION_ARCHIVE)
+	public void dearchive(List<String> entityUuids, String dearchiveReason) {
+		super.dearchive(entityUuids, dearchiveReason);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class ImmunizationFacadeEjbLocal extends ImmunizationFacadeEjb {

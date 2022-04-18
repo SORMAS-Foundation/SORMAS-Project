@@ -90,6 +90,4 @@ public interface EventParticipantFacade
 	List<EventParticipantDto> getByPersonUuids(List<String> personUuids);
 
 	List<EventParticipantDto> getByEventAndPersons(String eventUuid, List<String> personUuids);
-
-	void archive(String entityUuid, Date endOfProcessingDate);
 }
