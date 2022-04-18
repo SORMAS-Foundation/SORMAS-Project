@@ -18,6 +18,7 @@ import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureCon
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
+import de.symeda.sormas.backend.visit.VisitService;
 
 @LocalBean
 @Singleton
@@ -33,6 +34,8 @@ public class CoreEntityDeletionService {
 	private PersonService personService;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	@EJB
+	private VisitService visitService;
 
 	public CoreEntityDeletionService() {
 	}
@@ -86,6 +89,7 @@ public class CoreEntityDeletionService {
 	private boolean supportsPermanentDeletion(CoreEntityType coreEntityType) {
 		return coreEntityType == CoreEntityType.IMMUNIZATION
 			|| coreEntityType == CoreEntityType.TRAVEL_ENTRY
-			|| coreEntityType == CoreEntityType.CASE;
+			|| coreEntityType == CoreEntityType.CASE
+			|| coreEntityType == CoreEntityType.CONTACT;
 	}
 }
