@@ -34,10 +34,14 @@ import java.util.List;
 
 import com.google.common.collect.Sets;
 import com.vaadin.server.ErrorMessage;
+import com.vaadin.server.Sizeable;
+import com.vaadin.server.UserError;
 import com.vaadin.shared.ui.ErrorLevel;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.util.converter.Converter;
@@ -93,6 +97,7 @@ import de.symeda.sormas.ui.utils.AbstractEditForm;
 import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DateComparisonValidator;
+import de.symeda.sormas.ui.utils.DateHelper8;
 import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.LayoutUtil;
 import de.symeda.sormas.ui.utils.NullableOptionGroup;
@@ -624,10 +629,31 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 									I18nProperties.getString(Strings.headingContactConfirmationRequired),
 									I18nProperties.getString(Strings.messageContactToCaseConfirmationRequired));
 							} else {
-								ControllerProvider.getCaseController().createFromContact(getValue());
+								int finalFollowUpCommentLenght =
+									getValue().getFollowUpComment().length() + Strings.messageSystemFollowUpCanceled.length();
+								if (getValue().getFollowUpComment() != null && finalFollowUpCommentLenght > 4096) {
+									VerticalLayout verticalLayout = new VerticalLayout();
+									Label contentLabel = new Label(I18nProperties.getString(Strings.messageContactConversionFollowUpCommentLarge));
+									contentLabel.setWidth(100, Sizeable.Unit.PERCENTAGE);
+									verticalLayout.addComponent(contentLabel);
+									verticalLayout.setMargin(false);
+
+									VaadinUiUtil.showConfirmationPopup(
+										I18nProperties.getString(Strings.headingContactConversionFollowUpCommentLarge),
+										verticalLayout,
+										I18nProperties.getString(Strings.messageContactConversionFollowUpCommentLargeOmitMessage),
+										I18nProperties.getString(Strings.messageContactConversionFollowUpCommentLargeAdjustComment),
+										640,
+										confirm -> {
+											if (Boolean.TRUE.equals(confirm)) {
+												ControllerProvider.getCaseController().createFromContact(getValue());
+											}
+										});
+								} else {
+									ControllerProvider.getCaseController().createFromContact(getValue());
+								}
 							}
 						}, ValoTheme.BUTTON_LINK);
-
 						getContent().addComponent(toCaseButton, TO_CASE_BTN_LOC);
 					}
 				}
