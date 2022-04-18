@@ -403,7 +403,6 @@ public interface Strings {
 	String headingConfirmUnclearLabMessage = "headingConfirmUnclearLabMessage";
 	String headingConfirmUpdateCompleteness = "headingConfirmUpdateCompleteness";
 	String headingContactConfirmationRequired = "headingContactConfirmationRequired";
-	String headingContactConversionFollowUpCommentLarge = "headingContactConversionFollowUpCommentLarge";
 	String headingContactData = "headingContactData";
 	String headingContactDataNotComplete = "headingContactDataNotComplete";
 	String headingContactInformation = "headingContactInformation";
@@ -949,9 +948,6 @@ public interface Strings {
 	String messageContactArchived = "messageContactArchived";
 	String messageContactCaseChanged = "messageContactCaseChanged";
 	String messageContactCaseRemoved = "messageContactCaseRemoved";
-	String messageContactConversionFollowUpCommentLarge = "messageContactConversionFollowUpCommentLarge";
-	String messageContactConversionFollowUpCommentLargeAdjustComment = "messageContactConversionFollowUpCommentLargeAdjustComment";
-	String messageContactConversionFollowUpCommentLargeOmitMessage = "messageContactConversionFollowUpCommentLargeOmitMessage";
 	String messageContactCreated = "messageContactCreated";
 	String messageContactDearchived = "messageContactDearchived";
 	String messageContactDuplicateDeleted = "messageContactDuplicateDeleted";
