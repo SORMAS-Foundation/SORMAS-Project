@@ -650,6 +650,12 @@ public class ImmunizationFacadeEjb
 		service.ensurePersisted(newImmunization);
 	}
 
+	@Override
+	@RolesAllowed(UserRight._IMMUNIZATION_ARCHIVE)
+	public void archive(String entityUuid, Date endOfProcessingDate) {
+		super.archive(entityUuid, endOfProcessingDate);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class ImmunizationFacadeEjbLocal extends ImmunizationFacadeEjb {

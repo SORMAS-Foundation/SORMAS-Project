@@ -1146,4 +1146,10 @@ public class EventParticipantFacadeEjb
 	protected CoreEntityType getCoreEntityType() {
 		return CoreEntityType.EVENT_PARTICIPANT;
 	}
+
+	@Override
+	@RolesAllowed(UserRight._EVENTPARTICIPANT_ARCHIVE)
+	public void archive(String entityUuid, Date endOfProcessingDate) {
+		super.archive(entityUuid, endOfProcessingDate);
+	}
 }

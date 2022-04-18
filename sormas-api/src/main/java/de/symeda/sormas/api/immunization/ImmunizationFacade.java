@@ -55,4 +55,6 @@ public interface ImmunizationFacade extends CoreFacade<ImmunizationDto, Immuniza
 	boolean linkRecoveryImmunizationToSearchedCase(String specificCaseSearchValue, ImmunizationDto immunization);
 
 	List<ImmunizationDto> getByPersonUuids(List<String> uuids);
+
+	void archive(String entityUuid, Date endOfProcessingDate);
 }
