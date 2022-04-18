@@ -683,7 +683,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			new Date(),
 			rdcf);
 		event1Participant1.setResultingCase(case1.toReference());
-		getEventParticipantFacade().saveEventParticipant(event1Participant1);
+		getEventParticipantFacade().save(event1Participant1);
 
 		Assert.assertEquals(2, getCaseFacade().getIndexList(null, 0, 100, null).size());
 		Assert.assertEquals(1, getCaseFacade().getIndexList(new CaseCriteria().eventLike("signal"), 0, 100, null).size());
@@ -1465,18 +1465,17 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		getEventFacade().save(event);
 		EventParticipantDto otherCaseEventParticipant = creator.createEventParticipant(event.toReference(), otherPerson, otherUserReference);
 		otherCaseEventParticipant.setResultingCase(otherCaseReference);
-		getEventParticipantFacade().saveEventParticipant(otherCaseEventParticipant);
+		getEventParticipantFacade().save(otherCaseEventParticipant);
 
 		creator.createSurveillanceReport(otherUserReference, otherCaseReference);
 		TravelEntryDto travelEntry = creator.createTravelEntry(
-			otherPersonReference,
-			otherUserReference,
-			otherCase.getDisease(),
-			otherRdcf.region,
-			otherRdcf.district,
-			otherRdcf.pointOfEntry);
-		travelEntry.setResultingCase(otherCaseReference);
-		travelEntry = getTravelEntryFacade().save(travelEntry);
+				otherPersonReference,
+				otherUserReference,
+				otherRdcf,
+				(t)->{
+					t.setDisease(otherCase.getDisease());
+					t.setResultingCase(otherCaseReference);
+				});
 
 		DocumentDto document = creator.createDocument(
 			leadUserReference,

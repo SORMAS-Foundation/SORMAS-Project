@@ -22,7 +22,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.function.Consumer;
-import java.util.stream.Collectors;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
@@ -159,7 +158,7 @@ public class TestDataCreator {
 		eventParticipant.setPerson(eventPerson);
 		eventParticipant.setInvolvementDescription(involvementDescription);
 
-		eventParticipant = FacadeProviderMock.getEventParticipantFacade().saveEventParticipant(eventParticipant);
+		eventParticipant = FacadeProviderMock.getEventParticipantFacade().save(eventParticipant);
 		return eventParticipant;
 	}
 
