@@ -913,13 +913,19 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 	public void cancelFollowUp(Contact contact, String comment) {
 		contact.setFollowUpStatus(FollowUpStatus.CANCELED);
-		addToFollowUpStatusComment(contact, comment);
+		int finalFollowUpCommentLenght = contact.getFollowUpComment() == null
+			? Strings.messageSystemFollowUpCanceled.length()
+			: contact.getFollowUpComment().length() + Strings.messageSystemFollowUpCanceled.length();
+		if (finalFollowUpCommentLenght <= 4096) {
+			addToFollowUpStatusComment(contact, comment);
+		}
 		externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
 		ensurePersisted(contact);
 	}
 
 	private void addToFollowUpStatusComment(Contact contact, String comment) {
-		contact.setFollowUpComment(comment != null && comment.equals(contact.getFollowUpComment())
+		contact.setFollowUpComment(
+			comment != null && comment.equals(contact.getFollowUpComment())
 				? contact.getFollowUpComment()
 				: DataHelper.joinStrings("\n", contact.getFollowUpComment(), comment));
 	}
