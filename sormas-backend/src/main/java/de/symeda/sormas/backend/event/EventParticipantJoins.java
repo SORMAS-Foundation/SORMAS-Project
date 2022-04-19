@@ -174,7 +174,7 @@ public class EventParticipantJoins extends QueryJoins<EventParticipant> {
 		return getOrCreate(personJoins, () -> new PersonJoins(getPerson()), this::setPersonJoins);
 	}
 
-	public void setPersonJoins(PersonJoins personJoins) {
+	private void setPersonJoins(PersonJoins personJoins) {
 		this.personJoins = personJoins;
 	}
 
@@ -182,7 +182,7 @@ public class EventParticipantJoins extends QueryJoins<EventParticipant> {
 		return getOrCreate(eventJoins, () -> new EventJoins(getEvent()), this::setEventJoins);
 	}
 
-	public void setEventJoins(EventJoins eventJoins) {
+	private void setEventJoins(EventJoins eventJoins) {
 		this.eventJoins = eventJoins;
 	}
 }
