@@ -1378,7 +1378,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@Override
 	@RolesAllowed({
 		UserRight._CASE_CREATE,
-		UserRight._CASE_EDIT })
+		UserRight._CASE_EDIT,
+		UserRight._EXTERNAL_VISITS })
 	public CaseDataDto save(@Valid @NotNull CaseDataDto dto, boolean systemSave) throws ValidationRuntimeException {
 		return save(dto, true, true, true, systemSave);
 	}
@@ -2609,6 +2610,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return dto;
 	}
 
+	@RolesAllowed(UserRight._EXTERNAL_VISITS)
 	public CaseDataDto toDto(Case source) {
 		return toCaseDto(source);
 	}
