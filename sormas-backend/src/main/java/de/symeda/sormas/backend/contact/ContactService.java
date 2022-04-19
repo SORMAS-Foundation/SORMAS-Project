@@ -46,6 +46,7 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.utils.FieldConstraints;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -915,9 +916,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	public void cancelFollowUp(Contact contact, String comment) {
 		contact.setFollowUpStatus(FollowUpStatus.CANCELED);
 		int finalFollowUpCommentLenght = contact.getFollowUpComment() == null
-			? Strings.messageSystemFollowUpCanceled.length()
-			: contact.getFollowUpComment().length() + Strings.messageSystemFollowUpCanceled.length();
-		if (finalFollowUpCommentLenght <= 4096) {
+			? I18nProperties.getString(Strings.messageSystemFollowUpCanceled).length()
+			: contact.getFollowUpComment().length() + I18nProperties.getString(Strings.messageSystemFollowUpCanceled).length();
+		if (finalFollowUpCommentLenght <= FieldConstraints.CHARACTER_LIMIT_BIG) {
 			addToFollowUpStatusComment(contact, comment);
 		}
 		externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
@@ -1552,7 +1553,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(qc, userService.getCurrentUser())),
 			JurisdictionHelper.booleanSelector(
 				cb,
-				cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, qc.getQuery(), joins.getCaseJoins())))));
+				cb.and(
+					cb.isNotNull(joins.getCaze()),
+					caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, qc.getQuery(), joins.getCaseJoins())))));
 	}
 
 	public List<Contact> getByPersonUuids(List<String> personUuids) {
