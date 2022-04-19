@@ -47,7 +47,7 @@ public class ContactJurisdictionPredicateValidator extends PredicateJurisdiction
 			null,
 			Collections.singletonList(
 				CaseJurisdictionPredicateValidator
-					.of(new CaseQueryContext(qc.getCriteriaBuilder(), qc.getQuery(), (qc.getJoins()).getCaze()), user)));
+					.of(new CaseQueryContext(qc.getCriteriaBuilder(), qc.getQuery(), (qc.getJoins()).getCaseJoins()), user)));
 
 		this.joins = qc.getJoins();
 		this.cq = qc.getQuery();
@@ -60,7 +60,7 @@ public class ContactJurisdictionPredicateValidator extends PredicateJurisdiction
 			userPath,
 			Collections.singletonList(
 				CaseJurisdictionPredicateValidator
-					.of(new CaseQueryContext(qc.getCriteriaBuilder(), qc.getQuery(), (qc.getJoins()).getCaze()), userPath)));
+					.of(new CaseQueryContext(qc.getCriteriaBuilder(), qc.getQuery(), (qc.getJoins()).getCaseJoins()), userPath)));
 
 		this.joins = qc.getJoins();
 		this.cq = qc.getQuery();

@@ -5,6 +5,7 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.common.QueryJoins;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
@@ -13,39 +14,21 @@ import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonJoins;
 import de.symeda.sormas.backend.user.User;
 
 public class EventParticipantJoins extends QueryJoins<EventParticipant> {
 
 	private Join<EventParticipant, User> eventParticipantReportingUser;
-
 	private Join<EventParticipant, Person> person;
 	private Join<EventParticipant, Region> eventParticipantResponsibleRegion;
 	private Join<EventParticipant, District> eventParticipantResponsibleDistrict;
-
-	private Join<Person, Location> address;
-	private Join<Location, Region> addressRegion;
-	private Join<Location, District> addressDistrict;
-	private Join<Location, Community> addressCommunity;
-	private Join<Location, Facility> addressFacility;
-
 	private Join<EventParticipant, Case> resultingCase;
-	private Join<Case, Person> casePerson;
-	private Join<Case, User> caseReportingUser;
-	private Join<Case, Region> caseResponsibleRegion;
-	private Join<Case, District> caseResponsibleDistrict;
-	private Join<Case, Community> caseResponsibleCommunity;
-	private Join<Case, Region> caseRegion;
-	private Join<Case, District> caseDistrict;
-	private Join<Case, Community> caseCommunity;
-	private Join<Case, Facility> caseHealthFacility;
-	private Join<Case, PointOfEntry> caseAsPointOfEntry;
-
 	private Join<EventParticipant, Event> event;
-	private Join<Event, Location> eventAddress;
-	private Join<Location, Region> eventAddressRegion;
-	private Join<Location, District> eventAddressDistrict;
-	private Join<Location, Community> eventAddressCommunity;
+
+	private CaseJoins caseJoins;
+	private PersonJoins personJoins;
+	private EventJoins eventJoins;
 
 	public EventParticipantJoins(From<?, EventParticipant> eventParticipant) {
 		super(eventParticipant);
@@ -88,43 +71,23 @@ public class EventParticipantJoins extends QueryJoins<EventParticipant> {
 	}
 
 	public Join<Person, Location> getAddress() {
-		return getOrCreate(address, Person.ADDRESS, JoinType.LEFT, getPerson(), this::setAddress);
-	}
-
-	private void setAddress(Join<Person, Location> address) {
-		this.address = address;
+		return getPersonJoins().getAddress();
 	}
 
 	public Join<Location, Region> getAddressRegion() {
-		return getOrCreate(addressRegion, Location.REGION, JoinType.LEFT, getAddress(), this::setAddressRegion);
-	}
-
-	private void setAddressRegion(Join<Location, Region> addressRegion) {
-		this.addressRegion = addressRegion;
+		return getPersonJoins().getAddressJoins().getRegion();
 	}
 
 	public Join<Location, District> getAddressDistrict() {
-		return getOrCreate(addressDistrict, Location.DISTRICT, JoinType.LEFT, getAddress(), this::setAddressDistrict);
-	}
-
-	private void setAddressDistrict(Join<Location, District> addressDistrict) {
-		this.addressDistrict = addressDistrict;
+		return getPersonJoins().getAddressJoins().getDistrict();
 	}
 
 	public Join<Location, Community> getAddressCommunity() {
-		return getOrCreate(addressCommunity, Location.COMMUNITY, JoinType.LEFT, getAddress(), this::setAddressCommunity);
-	}
-
-	private void setAddressCommunity(Join<Location, Community> addressCommunity) {
-		this.addressCommunity = addressCommunity;
+		return getPersonJoins().getAddressJoins().getCommunity();
 	}
 
 	public Join<Location, Facility> getAddressFacility() {
-		return getOrCreate(addressFacility, Location.FACILITY, JoinType.LEFT, getAddress(), this::setAddressFacility);
-	}
-
-	private void setAddressFacility(Join<Location, Facility> addressFacility) {
-		this.addressFacility = addressFacility;
+		return getPersonJoins().getAddressJoins().getFacility();
 	}
 
 	public Join<EventParticipant, Case> getResultingCase() {
@@ -136,88 +99,43 @@ public class EventParticipantJoins extends QueryJoins<EventParticipant> {
 	}
 
 	public Join<Case, Person> getCasePerson() {
-		return getOrCreate(casePerson, Case.PERSON, JoinType.LEFT, getResultingCase(), this::setCasePerson);
-	}
-
-	private void setCasePerson(Join<Case, Person> casePerson) {
-		this.casePerson = casePerson;
+		return getCaseJoins().getPerson();
 	}
 
 	public Join<Case, User> getCaseReportingUser() {
-		return getOrCreate(caseReportingUser, Case.REPORTING_USER, JoinType.LEFT, getResultingCase(), this::setCaseReportingUser);
-	}
-
-	private void setCaseReportingUser(Join<Case, User> caseReportingUser) {
-		this.caseReportingUser = caseReportingUser;
+		return getCaseJoins().getReportingUser();
 	}
 
 	public Join<Case, Region> getCaseResponsibleRegion() {
-		return getOrCreate(caseResponsibleRegion, Case.RESPONSIBLE_REGION, JoinType.LEFT, getResultingCase(), this::setCaseResponsibleRegion);
-	}
-
-	private void setCaseResponsibleRegion(Join<Case, Region> caseResponsibleRegion) {
-		this.caseResponsibleRegion = caseResponsibleRegion;
+		return getCaseJoins().getResponsibleRegion();
 	}
 
 	public Join<Case, District> getCaseResponsibleDistrict() {
-		return getOrCreate(caseResponsibleDistrict, Case.RESPONSIBLE_DISTRICT, JoinType.LEFT, getResultingCase(), this::setCaseResponsibleDistrict);
-	}
-
-	private void setCaseResponsibleDistrict(Join<Case, District> caseResponsibleDistrict) {
-		this.caseResponsibleDistrict = caseResponsibleDistrict;
+		return getCaseJoins().getResponsibleDistrict();
 	}
 
 	public Join<Case, Community> getCaseResponsibleCommunity() {
-		return getOrCreate(
-			caseResponsibleCommunity,
-			Case.RESPONSIBLE_COMMUNITY,
-			JoinType.LEFT,
-			getResultingCase(),
-			this::setCaseResponsibleCommunity);
-	}
-
-	private void setCaseResponsibleCommunity(Join<Case, Community> caseResponsibleCommunity) {
-		this.caseResponsibleCommunity = caseResponsibleCommunity;
+		return getCaseJoins().getResponsibleCommunity();
 	}
 
 	public Join<Case, Region> getCaseRegion() {
-		return getOrCreate(caseRegion, Case.REGION, JoinType.LEFT, getResultingCase(), this::setCaseRegion);
-	}
-
-	private void setCaseRegion(Join<Case, Region> caseRegion) {
-		this.caseRegion = caseRegion;
+		return getCaseJoins().getRegion();
 	}
 
 	public Join<Case, District> getCaseDistrict() {
-		return getOrCreate(caseDistrict, Case.DISTRICT, JoinType.LEFT, getResultingCase(), this::setCaseDistrict);
-	}
-
-	private void setCaseDistrict(Join<Case, District> caseDistrict) {
-		this.caseDistrict = caseDistrict;
+		return getCaseJoins().getDistrict();
 	}
 
 	public Join<Case, Community> getCaseCommunity() {
-		return getOrCreate(caseCommunity, Case.COMMUNITY, JoinType.LEFT, getResultingCase(), this::setCaseCommunity);
-	}
-
-	private void setCaseCommunity(Join<Case, Community> caseCommunity) {
-		this.caseCommunity = caseCommunity;
+		return getCaseJoins().getCommunity();
 	}
 
 	public Join<Case, Facility> getCaseHealthFacility() {
-		return getOrCreate(caseHealthFacility, Case.HEALTH_FACILITY, JoinType.LEFT, getResultingCase(), this::setCaseHealthFacility);
-	}
-
-	private void setCaseHealthFacility(Join<Case, Facility> caseHealthFacility) {
-		this.caseHealthFacility = caseHealthFacility;
+		return getCaseJoins().getFacility();
 	}
 
 	public Join<Case, PointOfEntry> getCaseAsPointOfEntry() {
-		return getOrCreate(caseAsPointOfEntry, Case.POINT_OF_ENTRY, JoinType.LEFT, getResultingCase(), this::setCaseAsPointOfEntry);
-	}
-
-	private void setCaseAsPointOfEntry(Join<Case, PointOfEntry> caseAsPointOfEntry) {
-		this.caseAsPointOfEntry = caseAsPointOfEntry;
+		return getCaseJoins().getPointOfEntry();
 	}
 
 	public Join<EventParticipant, Event> getEvent() {
@@ -229,34 +147,42 @@ public class EventParticipantJoins extends QueryJoins<EventParticipant> {
 	}
 
 	public Join<Event, Location> getEventAddress() {
-		return getOrCreate(eventAddress, Event.EVENT_LOCATION, JoinType.LEFT, getEvent(), this::setEventAddress);
-	}
-
-	private void setEventAddress(Join<Event, Location> eventAddress) {
-		this.eventAddress = eventAddress;
+		return getEventJoins().getLocation();
 	}
 
 	public Join<Location, Region> getEventAddressRegion() {
-		return getOrCreate(eventAddressRegion, Location.REGION, JoinType.LEFT, getEventAddress(), this::setEventAddressRegion);
-	}
-
-	private void setEventAddressRegion(Join<Location, Region> eventAddressRegion) {
-		this.eventAddressRegion = eventAddressRegion;
+		return getEventJoins().getLocationJoins().getRegion();
 	}
 
 	public Join<Location, District> getEventAddressDistrict() {
-		return getOrCreate(eventAddressDistrict, Location.DISTRICT, JoinType.LEFT, getEventAddress(), this::setEventAddressDistrict);
-	}
-
-	private void setEventAddressDistrict(Join<Location, District> eventAddressDistrict) {
-		this.eventAddressDistrict = eventAddressDistrict;
+		return getEventJoins().getLocationJoins().getDistrict();
 	}
 
 	public Join<Location, Community> getEventAddressCommunity() {
-		return getOrCreate(eventAddressCommunity, Location.COMMUNITY, JoinType.LEFT, getEventAddress(), this::setEventAddressCommunity);
+		return getEventJoins().getLocationJoins().getCommunity();
 	}
 
-	private void setEventAddressCommunity(Join<Location, Community> eventAddressCommunity) {
-		this.eventAddressCommunity = eventAddressCommunity;
+	public CaseJoins getCaseJoins() {
+		return getOrCreate(caseJoins, () -> new CaseJoins(getResultingCase()), this::setCaseJoins);
+	}
+
+	private void setCaseJoins(CaseJoins caseJoins) {
+		this.caseJoins = caseJoins;
+	}
+
+	public PersonJoins getPersonJoins() {
+		return getOrCreate(personJoins, () -> new PersonJoins(getPerson()), this::setPersonJoins);
+	}
+
+	private void setPersonJoins(PersonJoins personJoins) {
+		this.personJoins = personJoins;
+	}
+
+	public EventJoins getEventJoins() {
+		return getOrCreate(eventJoins, () -> new EventJoins(getEvent()), this::setEventJoins);
+	}
+
+	private void setEventJoins(EventJoins eventJoins) {
+		this.eventJoins = eventJoins;
 	}
 }
