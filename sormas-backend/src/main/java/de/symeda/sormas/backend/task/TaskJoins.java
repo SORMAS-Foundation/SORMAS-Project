@@ -80,7 +80,7 @@ public class TaskJoins extends QueryJoins<Task> {
 		return getOrCreate(eventJoins, () -> new EventJoins(getEvent()), this::setEventJoins);
 	}
 
-	public void setEventJoins(EventJoins eventJoins) {
+	private void setEventJoins(EventJoins eventJoins) {
 		this.eventJoins = eventJoins;
 	}
 
@@ -96,7 +96,7 @@ public class TaskJoins extends QueryJoins<Task> {
 		return getOrCreate(travelEntryJoins, () -> new TravelEntryJoins(getTravelEntry()), this::setTravelEntryJoins);
 	}
 
-	public void setTravelEntryJoins(TravelEntryJoins travelEntryJoins) {
+	private void setTravelEntryJoins(TravelEntryJoins travelEntryJoins) {
 		this.travelEntryJoins = travelEntryJoins;
 	}
 

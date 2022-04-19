@@ -104,7 +104,7 @@ public class PersonJoins extends QueryJoins<Person> {
 		return getOrCreate(contactJoins, () -> new ContactJoins(getContact()), this::setContactJoins);
 	}
 
-	public void setContactJoins(ContactJoins contactJoins) {
+	private void setContactJoins(ContactJoins contactJoins) {
 		this.contactJoins = contactJoins;
 	}
 
@@ -120,7 +120,7 @@ public class PersonJoins extends QueryJoins<Person> {
 		return getOrCreate(eventParticipantJoins, () -> new EventParticipantJoins(getEventParticipant()), this::setEventParticipantJoins);
 	}
 
-	public void setEventParticipantJoins(EventParticipantJoins eventParticipantJoins) {
+	private void setEventParticipantJoins(EventParticipantJoins eventParticipantJoins) {
 		this.eventParticipantJoins = eventParticipantJoins;
 	}
 

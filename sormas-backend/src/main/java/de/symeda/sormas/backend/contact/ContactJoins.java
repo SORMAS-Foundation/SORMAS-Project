@@ -307,7 +307,7 @@ public class ContactJoins extends QueryJoins<Contact> {
 		return getOrCreate(sampleJoins, () -> new SampleJoins(getSamples()), this::setSampleJoins);
 	}
 
-	public void setSampleJoins(SampleJoins sampleJoins) {
+	private void setSampleJoins(SampleJoins sampleJoins) {
 		this.sampleJoins = sampleJoins;
 	}
 
@@ -315,7 +315,7 @@ public class ContactJoins extends QueryJoins<Contact> {
 		return getOrCreate(visitJoins, () -> new VisitJoins(getVisits(), JoinType.LEFT), this::setVisitJoins);
 	}
 
-	public void setVisitJoins(VisitJoins visitJoins) {
+	private void setVisitJoins(VisitJoins visitJoins) {
 		this.visitJoins = visitJoins;
 	}
 }
