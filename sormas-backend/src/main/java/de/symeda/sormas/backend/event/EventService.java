@@ -333,25 +333,23 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Event> eventPath) {
-		return createUserFilter(cb, cq, eventPath, null);
+		return createUserFilter(new EventQueryContext(cb, cq, new EventJoins(eventPath)));
 	}
 
 	@SuppressWarnings("rawtypes")
-	public Predicate createUserFilter(
+	private Predicate createUserFilter(
 		final CriteriaBuilder cb,
 		final CriteriaQuery cq,
 		final From<?, Event> eventPath,
 		final EventUserFilterCriteria eventUserFilterCriteria) {
-		return createUserFilter(cb, cq, eventPath, null, eventUserFilterCriteria);
+		return createUserFilter(new EventQueryContext(cb, cq, new EventJoins(eventPath)), eventUserFilterCriteria);
 	}
 
-	@SuppressWarnings("rawtypes")
-	public Predicate createUserFilter(
-		final CriteriaBuilder cb,
-		final CriteriaQuery cq,
-		final From<?, Event> eventPath,
-		final From<?, EventParticipant> eventParticipantPath,
-		final EventUserFilterCriteria eventUserFilterCriteria) {
+	public Predicate createUserFilter(EventQueryContext queryContext) {
+		return createUserFilter(queryContext, null);
+	}
+
+	public Predicate createUserFilter(final EventQueryContext queryContext, final EventUserFilterCriteria eventUserFilterCriteria) {
 
 		User currentUser = getCurrentUser();
 		if (currentUser == null) {
@@ -360,20 +358,12 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		Predicate filter = null;
 
-		final EventJoins eventJoins;
-		final From<?, Event> eventJoin;
-		final From<?, EventParticipant> eventParticipantJoin;
-		if (eventPath != null && eventParticipantPath != null) {
-			throw new UnsupportedOperationException("Wrong usage of event service user filter!");
-		} else if (eventPath != null) {
-			eventJoins = new EventJoins(eventPath);
-			eventJoin = eventPath;
-			eventParticipantJoin = eventJoins.getEventParticipants();
-		} else {
-			eventJoins = new EventJoins(eventParticipantPath.join(EventParticipant.EVENT, JoinType.LEFT));
-			eventJoin = eventJoins.getRoot();
-			eventParticipantJoin = eventParticipantPath;
-		}
+		@SuppressWarnings("rawtypes")
+		final CriteriaQuery cq = queryContext.getQuery();
+		final CriteriaBuilder cb = queryContext.getCriteriaBuilder();
+		final EventJoins eventJoins = queryContext.getJoins();
+		final From<?, Event> eventJoin = queryContext.getRoot();
+		final From<?, EventParticipant> eventParticipantJoin = eventJoins.getEventParticipants();
 
 		if (jurisdictionLevel != JurisdictionLevel.NATION && !currentUser.hasUserRole(UserRole.REST_USER)) {
 			switch (jurisdictionLevel) {
@@ -636,7 +626,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			}
 		}
 		if (StringUtils.isNotEmpty(eventCriteria.getFreeTextEventParticipants())) {
-			Join<Event, EventParticipant> eventParticipantJoin = joins.getEventParticipants();
+			From<?, EventParticipant> eventParticipantJoin = joins.getEventParticipants();
 			Join<EventParticipant, Person> personJoin = joins.getEventParticipantPersons();
 
 			final PersonQueryContext personQueryContext = new PersonQueryContext(cb, eventQueryContext.getQuery(), personJoin);

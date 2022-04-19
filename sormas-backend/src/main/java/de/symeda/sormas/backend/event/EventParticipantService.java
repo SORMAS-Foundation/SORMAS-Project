@@ -278,7 +278,10 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		CriteriaQuery cq,
 		From<?, EventParticipant> eventParticipantPath,
 		EventUserFilterCriteria eventUserFilterCriteria) {
-		return eventService.createUserFilter(cb, cq, null, eventParticipantPath, eventUserFilterCriteria);
+
+		return eventService.createUserFilter(
+			new EventQueryContext(cb, cq, new EventJoins(eventParticipantPath, eventParticipantPath.join(EventParticipant.EVENT, JoinType.LEFT))),
+			eventUserFilterCriteria);
 	}
 
 	public List<EventParticipant> getAllByPerson(Person person) {
@@ -370,14 +373,13 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<EventParticipant> eventParticipantRoot = cq.from(EventParticipant.class);
-		Join<EventParticipant, Event> event = eventParticipantRoot.join(EventParticipant.EVENT, JoinType.LEFT);
-
 		EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
 		eventUserFilterCriteria.includeUserCaseAndEventParticipantFilter(true);
 		eventUserFilterCriteria.forceRegionJurisdiction(true);
 
-		Predicate filter =
-			eventService.createUserFilter(cb, cq, eventParticipantRoot.join(EventParticipant.EVENT, JoinType.LEFT), eventUserFilterCriteria);
+		Predicate filter = eventService.createUserFilter(
+			new EventQueryContext(cb, cq, new EventJoins(eventParticipantRoot, eventParticipantRoot.join(EventParticipant.EVENT, JoinType.LEFT))),
+			eventUserFilterCriteria);
 
 		if (since != null) {
 			Predicate dateFilter = createChangeDateFilter(cb, eventParticipantRoot, since);

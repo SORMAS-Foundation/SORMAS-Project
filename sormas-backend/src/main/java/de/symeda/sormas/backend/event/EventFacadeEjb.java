@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
-import static de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
-
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -112,6 +110,7 @@ import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLoca
 import de.symeda.sormas.backend.share.ExternalShareInfoCountAndLatestDate;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
@@ -418,7 +417,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			if (eventCriteria.getUserFilterIncluded()) {
 				EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
 				eventUserFilterCriteria.includeUserCaseAndEventParticipantFilter(true);
-				filter = service.createUserFilter(cb, cq, event, eventUserFilterCriteria);
+				filter = service.createUserFilter(eventQueryContext, eventUserFilterCriteria);
 			}
 
 			Predicate criteriaFilter = service.buildCriteriaFilter(eventCriteria, eventQueryContext);
