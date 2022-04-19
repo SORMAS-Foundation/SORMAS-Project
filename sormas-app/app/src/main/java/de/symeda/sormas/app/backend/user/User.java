@@ -15,9 +15,7 @@
 
 package de.symeda.sormas.app.backend.user;
 
-import java.lang.reflect.Type;
 import java.util.Arrays;
-import java.util.HashSet;
 import java.util.Set;
 
 import javax.persistence.Column;
@@ -26,15 +24,12 @@ import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.Transient;
 
-import com.google.gson.Gson;
-import com.google.gson.reflect.TypeToken;
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.user.JurisdictionLevel;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.app.backend.common.AbstractDomainObject;
 import de.symeda.sormas.app.backend.facility.Facility;
 import de.symeda.sormas.app.backend.infrastructure.PointOfEntry;
@@ -103,9 +98,6 @@ public class User extends AbstractDomainObject {
 
 	@Enumerated(EnumType.STRING)
 	private Disease limitedDisease;
-
-	@Column(name = "userRole")
-	private String userRolesJson;
 
 	// initialized from userRolesJson
 	private Set<UserRole> userRoles = null;
@@ -233,47 +225,29 @@ public class User extends AbstractDomainObject {
 		this.language = language;
 	}
 
-	public String getUserRolesJson() {
-		return userRolesJson;
-	}
-
-	public void setUserRolesJson(String userRolesJson) {
-		this.userRolesJson = userRolesJson;
-		userRoles = null;
-	}
-
 	@Transient // Needed for merge logic
 	public Set<UserRole> getUserRoles() {
-		if (userRoles == null) {
-			Gson gson = new Gson();
-			Type type = new TypeToken<Set<UserRole>>() {
-			}.getType();
-			userRoles = gson.fromJson(userRolesJson, type);
-			if (userRoles == null) {
-				userRoles = new HashSet<>();
-			}
-		}
 		return userRoles;
 	}
 
 	public void setUserRoles(Set<UserRole> userRoles) {
 		this.userRoles = userRoles;
-		Gson gson = new Gson();
-		userRolesJson = gson.toJson(userRoles);
 	}
 
 	public boolean hasUserRole(UserRole userRole) {
-		return getUserRoles().contains(userRole);
+		return userRoles != null && userRoles.contains(userRole);
 	}
 
 	public String getUserRolesString() {
 
 		StringBuilder result = new StringBuilder();
-		for (UserRole userRole : getUserRoles()) {
-			if (result.length() > 0) {
-				result.append(", ");
+		if (userRoles != null) {
+			for (UserRole userRole : userRoles) {
+				if (result.length() > 0) {
+					result.append(", ");
+				}
+				result.append(userRole.toString());
 			}
-			result.append(userRole.toString());
 		}
 		return result.toString();
 	}

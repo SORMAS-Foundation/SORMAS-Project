@@ -64,6 +64,7 @@ public class UserDto extends EntityDto {
 	public static final String LIMITED_DISEASE = "limitedDisease";
 	public static final String LANGUAGE = "language";
 	public static final String HAS_CONSENTED_TO_GDPR = "hasConsentedToGdpr";
+	public static final String JURISDICTION_LEVEL = "jurisdictionLevel";
 
 	private boolean active = true;
 
@@ -81,7 +82,7 @@ public class UserDto extends EntityDto {
 	@Valid
 	private LocationDto address;
 
-	private Set<UserRoleDto> userRoles;
+	private Set<UserRoleReferenceDto> userRoles;
 
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
@@ -101,6 +102,8 @@ public class UserDto extends EntityDto {
 	private Language language;
 
 	private boolean hasConsentedToGdpr;
+
+	private JurisdictionLevel jurisdictionLevel;
 
 	public static UserDto build() {
 		UserDto user = new UserDto();
@@ -169,11 +172,11 @@ public class UserDto extends EntityDto {
 		this.address = address;
 	}
 
-	public Set<UserRoleDto> getUserRoles() {
+	public Set<UserRoleReferenceDto> getUserRoles() {
 		return userRoles;
 	}
 
-	public void setUserRoles(Set<UserRoleDto> userRoles) {
+	public void setUserRoles(Set<UserRoleReferenceDto> userRoles) {
 		this.userRoles = userRoles;
 	}
 
@@ -243,7 +246,7 @@ public class UserDto extends EntityDto {
 			getUuid(),
 			getFirstName(),
 			getLastName(),
-			getUserRoles() != null ? getUserRoles().stream().map(UserRoleDto::getCaption).collect(Collectors.toSet()) : null);
+			getUserRoles() != null ? getUserRoles().stream().map(UserRoleReferenceDto::getCaption).collect(Collectors.toSet()) : null);
 	}
 
 	public Disease getLimitedDisease() {
@@ -268,5 +271,13 @@ public class UserDto extends EntityDto {
 
 	public void setHasConsentedToGdpr(boolean hasConsentedToGdpr) {
 		this.hasConsentedToGdpr = hasConsentedToGdpr;
+	}
+
+	public JurisdictionLevel getJurisdictionLevel() {
+		return jurisdictionLevel;
+	}
+
+	public void setJurisdictionLevel(JurisdictionLevel jurisdictionLevel) {
+		this.jurisdictionLevel = jurisdictionLevel;
 	}
 }

@@ -145,6 +145,8 @@ public class UserFacadeEjb implements UserFacade {
 	private PointOfEntryService pointOfEntryService;
 	@EJB
 	private UserRoleFacadeEjbLocal userRoleFacade;
+	@EJB
+	private UserRoleService userRoleService;
 	@Inject
 	private Event<UserCreateEvent> userCreateEvent;
 	@Inject
@@ -180,7 +182,8 @@ public class UserFacadeEjb implements UserFacade {
 		target.setLanguage(source.getLanguage());
 		target.setHasConsentedToGdpr(source.isHasConsentedToGdpr());
 
-		target.setUserRoles(source.getUserRoles().stream().map(UserRoleFacadeEjb::toDto).collect(Collectors.toSet()));
+		target.setUserRoles(source.getUserRoles().stream().map(UserRoleFacadeEjb::toReferenceDto).collect(Collectors.toSet()));
+		target.setJurisdictionLevel(source.getJurisdictionLevel());
 		return target;
 	}
 
@@ -228,8 +231,7 @@ public class UserFacadeEjb implements UserFacade {
 	 * For facility users, this includes district and community users, if their district/community is identical with that of the facility
 	 */
 	public List<UserReferenceDto> getUsersWithSuperiorJurisdiction(UserDto user) {
-		JurisdictionLevel superordinateJurisdiction =
-			JurisdictionHelper.getSuperordinateJurisdiction(UserRoleDto.getJurisdictionLevel(user.getUserRoles()));
+		JurisdictionLevel superordinateJurisdiction = JurisdictionHelper.getSuperordinateJurisdiction(user.getJurisdictionLevel());
 
 		List<UserReference> superiorUsersList = Collections.emptyList();
 		switch (superordinateJurisdiction) {
@@ -361,6 +363,12 @@ public class UserFacadeEjb implements UserFacade {
 			.map(userReference -> new UserReferenceWithTaskNumbersDto(userReference, userTaskCounts.get(userReference.getUuid())))
 			.collect(Collectors.toList());
 
+	}
+
+	@Override
+	public Set<UserRoleDto> getUserRoles(UserDto userDto) {
+		User user = userService.getByUuid(userDto.getUuid());
+		return user != null ? user.getUserRoles().stream().map(UserRoleFacadeEjb::toDto).collect(Collectors.toSet()) : null;
 	}
 
 	@Override
@@ -661,7 +669,7 @@ public class UserFacadeEjb implements UserFacade {
 		Set<UserRole> userRoles = Optional.of(target).map(User::getUserRoles).orElseGet(HashSet::new);
 		target.setUserRoles(userRoles);
 		userRoles.clear();
-		source.getUserRoles().stream().map(userRoleDto -> userRoleFacade.fromDto(userRoleDto, true)).forEach(userRoles::add);
+		source.getUserRoles().stream().map(userRoleReferenceDto -> userRoleService.getByReferenceDto(userRoleReferenceDto)).forEach(userRoles::add);
 
 		target.updateJurisdictionLevel();
 

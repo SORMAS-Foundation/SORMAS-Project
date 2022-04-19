@@ -42,7 +42,6 @@ import de.symeda.sormas.app.backend.clinicalcourse.ClinicalVisitDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDtoHelper;
 import de.symeda.sormas.app.backend.customizableenum.CustomizableEnumValueDtoHelper;
 import de.symeda.sormas.app.backend.disease.DiseaseConfigurationDtoHelper;
@@ -71,7 +70,7 @@ import de.symeda.sormas.app.backend.task.TaskDtoHelper;
 import de.symeda.sormas.app.backend.therapy.PrescriptionDtoHelper;
 import de.symeda.sormas.app.backend.therapy.TreatmentDtoHelper;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
-import de.symeda.sormas.app.backend.user.UserRoleConfigDtoHelper;
+import de.symeda.sormas.app.backend.user.UserRoleDtoHelper;
 import de.symeda.sormas.app.backend.visit.VisitDtoHelper;
 import de.symeda.sormas.app.core.TaskNotificationService;
 import de.symeda.sormas.app.util.ErrorReportingHelper;
@@ -373,7 +372,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 		// order is important, due to dependencies (e.g. case & person)
 
-		new UserRoleConfigDtoHelper().repullEntities(context);
+		new UserRoleDtoHelper().repullEntities(context);
 		new DiseaseClassificationDtoHelper().repullEntities(context);
 		new UserDtoHelper().repullEntities(context);
 		new OutbreakDtoHelper().repullEntities(context);
@@ -453,12 +452,12 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 		// user role configurations may be removed, so have to pull the deleted uuids
 		// this may be applied to other entities later as well
-		Date latestChangeDate = DatabaseHelper.getUserRoleConfigDao().getLatestChangeDate();
+		Date latestChangeDate = DatabaseHelper.getUserRoleDao().getLatestChangeDate();
 		List<String> userRoleConfigUuids =
-			executeUuidCall(RetroProvider.getUserRoleConfigFacade().pullDeletedUuidsSince(latestChangeDate != null ? latestChangeDate.getTime() : 0));
-		DatabaseHelper.getUserRoleConfigDao().delete(userRoleConfigUuids);
+			executeUuidCall(RetroProvider.getUserRoleFacade().pullDeletedUuidsSince(latestChangeDate != null ? latestChangeDate.getTime() : 0));
+		DatabaseHelper.getUserRoleDao().delete(userRoleConfigUuids);
 
-		new UserRoleConfigDtoHelper().pullEntities(false, context);
+		new UserRoleDtoHelper().pullEntities(false, context);
 
 		Date featureConfigurationChangeDate = DatabaseHelper.getFeatureConfigurationDao().getLatestChangeDate();
 		List<String> featureConfigurationConfigUuids = executeUuidCall(
@@ -692,8 +691,8 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		List<String> featureConfigurationUuids = executeUuidCall(RetroProvider.getFeatureConfigurationFacade().pullUuids());
 		DatabaseHelper.getFeatureConfigurationDao().deleteInvalid(featureConfigurationUuids);
 		// user role config
-		List<String> userRoleConfigUuids = executeUuidCall(RetroProvider.getUserRoleConfigFacade().pullUuids());
-		DatabaseHelper.getUserRoleConfigDao().deleteInvalid(userRoleConfigUuids);
+		List<String> userRoleConfigUuids = executeUuidCall(RetroProvider.getUserRoleFacade().pullUuids());
+		DatabaseHelper.getUserRoleDao().deleteInvalid(userRoleConfigUuids);
 		// points of entry
 		List<String> pointOfEntryUuids = executeUuidCall(RetroProvider.getPointOfEntryFacade().pullUuids());
 		DatabaseHelper.getPointOfEntryDao().deleteInvalid(pointOfEntryUuids);
@@ -737,7 +736,7 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new CommunityDtoHelper().pullMissing(communityUuids);
 		new FacilityDtoHelper().pullMissing(facilityUuids);
 		new PointOfEntryDtoHelper().pullMissing(pointOfEntryUuids);
-		new UserRoleConfigDtoHelper().pullMissing(userRoleConfigUuids);
+		new UserRoleDtoHelper().pullMissing(userRoleConfigUuids);
 		new UserDtoHelper().pullMissing(userUuids);
 		new DiseaseConfigurationDtoHelper().pullMissing(diseaseConfigurationUuids);
 		new CustomizableEnumValueDtoHelper().pullMissing(customizableEnumValueUuids);

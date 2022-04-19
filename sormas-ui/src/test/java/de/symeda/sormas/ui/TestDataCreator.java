@@ -76,6 +76,7 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
+import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitStatus;
@@ -83,17 +84,23 @@ import de.symeda.sormas.backend.user.DefaultUserRole;
 
 public class TestDataCreator {
 
-	public final Map<DefaultUserRole, UserRoleDto> userRoleDtoMap = new HashMap<>();
+	private final Map<DefaultUserRole, UserRoleReferenceDto> userRoleDtoMap = new HashMap<>();
 
 	public TestDataCreator() {
 
 	}
 
-	public UserDto createUser(RDCF rdcf, UserRoleDto... roles) {
+	public UserDto createUser(RDCF rdcf, UserRoleReferenceDto... roles) {
 		return createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "First", "Name", roles);
 	}
 
-	public UserDto createUser(String regionUuid, String districtUuid, String facilityUuid, String firstName, String lastName, UserRoleDto... roles) {
+	public UserDto createUser(
+		String regionUuid,
+		String districtUuid,
+		String facilityUuid,
+		String firstName,
+		String lastName,
+		UserRoleReferenceDto... roles) {
 		return createUser(regionUuid, districtUuid, facilityUuid, null, firstName, lastName, Language.EN, roles);
 	}
 
@@ -117,13 +124,13 @@ public class TestDataCreator {
 		String firstName,
 		String lastName,
 		Language language,
-		UserRoleDto... roles) {
+		UserRoleReferenceDto... roles) {
 
 		UserDto user = UserDto.build();
 		user.setFirstName(firstName);
 		user.setLastName(lastName);
 		user.setUserName(firstName + lastName);
-		user.setUserRoles(new HashSet<UserRoleDto>(Arrays.asList(roles)));
+		user.setUserRoles(new HashSet<>(Arrays.asList(roles)));
 		user.setRegion(FacadeProvider.getRegionFacade().getReferenceByUuid(regionUuid));
 		user.setDistrict(FacadeProvider.getDistrictFacade().getReferenceByUuid(districtUuid));
 		user.setHealthFacility(FacadeProvider.getFacilityFacade().getReferenceByUuid(facilityUuid));
@@ -752,11 +759,11 @@ public class TestDataCreator {
 			userRoleDto.setSmsNotifications(defaultUserRole.getSmsNotifications());
 			userRoleDto.setJurisdictionLevel(defaultUserRole.getJurisdictionLevel());
 			FacadeProvider.getUserRoleFacade().saveUserRole(userRoleDto);
-			userRoleDtoMap.put(defaultUserRole, userRoleDto);
+			userRoleDtoMap.put(defaultUserRole, userRoleDto.toReference());
 		});
 	}
 
-	public Map<DefaultUserRole, UserRoleDto> getUserRoleDtoMap() {
+	public Map<DefaultUserRole, UserRoleReferenceDto> getUserRoleDtoMap() {
 		if (userRoleDtoMap.isEmpty()) {
 			createUserRoles();
 		}

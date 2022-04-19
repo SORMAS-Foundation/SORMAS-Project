@@ -51,6 +51,7 @@ import de.symeda.sormas.api.task.TaskFacade;
 import de.symeda.sormas.api.travelentry.TravelEntryFacade;
 import de.symeda.sormas.api.travelentry.travelentryimport.TravelEntryImportFacade;
 import de.symeda.sormas.api.user.UserFacade;
+import de.symeda.sormas.api.user.UserRoleFacade;
 import de.symeda.sormas.api.vaccination.VaccinationFacade;
 import de.symeda.sormas.api.visit.VisitFacade;
 import de.symeda.sormas.backend.campaign.CampaignFacadeEjb;
@@ -89,6 +90,7 @@ import de.symeda.sormas.backend.task.TaskFacadeEjb.TaskFacadeEjbLocal;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
 import de.symeda.sormas.backend.travelentry.travelentryimport.TravelEntryImportFacadeEjb;
 import de.symeda.sormas.backend.user.UserFacadeEjb.UserFacadeEjbLocal;
+import de.symeda.sormas.backend.user.UserRoleFacadeEjb;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
 import info.novatec.beantest.api.BeanProviderHelper;
@@ -175,6 +177,8 @@ public final class FacadeProviderMock extends FacadeProvider {
 			return (P) bm.getBean(LabMessageFacadeEjb.LabMessageFacadeEjbLocal.class);
 		} else if (FeatureConfigurationFacade.class == clazz) {
 			return (P) bm.getBean(FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal.class);
+		} else if (UserRoleFacade.class == clazz) {
+			return (P) bm.getBean(UserRoleFacadeEjb.UserRoleFacadeEjbLocal.class);
 		}
 
 		return null;

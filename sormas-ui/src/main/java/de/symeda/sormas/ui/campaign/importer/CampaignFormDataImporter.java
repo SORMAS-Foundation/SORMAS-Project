@@ -180,9 +180,9 @@ public class CampaignFormDataImporter extends DataImporter {
 						entry[i],
 						new String[] {
 							propertyPath })) {
+						//TODO: Check if reload of UserDto is necessary
 						final UserDto currentUserDto = userFacade.getByUuid(currentUser.getUuid());
-						final JurisdictionLevel jurisdictionLevel =
-							FacadeProvider.getUserRoleFacade().getJurisdictionLevel(currentUserDto.getUserRoles());
+						final JurisdictionLevel jurisdictionLevel = currentUserDto.getJurisdictionLevel();
 
 						if (propertyType.isAssignableFrom(DistrictReferenceDto.class)) {
 							if (jurisdictionLevel == JurisdictionLevel.DISTRICT && !currentUserDto.getDistrict().getCaption().equals(entry[i])) {

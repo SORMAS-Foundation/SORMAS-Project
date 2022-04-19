@@ -110,8 +110,14 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 	private AuthenticationStatus validateRequestS2S(HttpMessageContext context) {
 
 		UserDto s2sUser = FacadeProvider.getUserFacade().getByUserName(DefaultEntityHelper.SORMAS_TO_SORMAS_USER_NAME);
-		Set<UserRight> userRights =
-			s2sUser.getUserRoles().stream().flatMap(userRoleDto -> userRoleDto.getUserRights().stream()).collect(Collectors.toSet());
+		if (s2sUser == null) {
+			return AuthenticationStatus.SEND_FAILURE;
+		}
+		Set<UserRight> userRights = FacadeProvider.getUserFacade()
+			.getUserRoles(s2sUser)
+			.stream()
+			.flatMap(userRoleDto -> userRoleDto.getUserRights().stream())
+			.collect(Collectors.toSet());
 
 		return context.notifyContainerAboutLogin(
 			() -> DefaultEntityHelper.SORMAS_TO_SORMAS_USER_NAME,

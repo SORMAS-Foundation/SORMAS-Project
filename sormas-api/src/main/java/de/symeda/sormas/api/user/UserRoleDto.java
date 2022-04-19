@@ -150,7 +150,7 @@ public class UserRoleDto extends EntityDto {
 
 	public static Set<UserRight> getUserRights(Collection<UserRoleDto> userRoles) {
 
-		return userRoles.stream().flatMap(role -> role.getUserRights().stream()).collect(Collectors.toSet());
+		return userRoles != null ? userRoles.stream().flatMap(role -> role.getUserRights().stream()).collect(Collectors.toSet()) : null;
 	}
 
 	public static JurisdictionLevel getJurisdictionLevel(Collection<UserRoleDto> roles) {

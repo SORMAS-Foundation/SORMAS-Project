@@ -103,8 +103,8 @@ public abstract class AbstractBeanTest extends BaseBeanTest {
 			"ad",
 			"min",
 			Language.EN,
-			creator.userRoleDtoMap.get(DefaultUserRole.ADMIN),
-			creator.userRoleDtoMap.get(DefaultUserRole.NATIONAL_USER));
+			creator.getUserRoleDtoMap().get(DefaultUserRole.ADMIN),
+			creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
 		when(MockProducer.getPrincipal().getName()).thenReturn(user.getUserName());
 	}
 

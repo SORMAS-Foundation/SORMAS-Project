@@ -80,9 +80,9 @@ public class SormasOpenIdIdentityStore implements IdentityStore {
 	private Set<String> getCallerGroups(UserDto user) {
 
 		if (user != null) {
-			Set<UserRight> userRights = UserRoleDto.getUserRights(user.getUserRoles());
+			Set<UserRight> userRights = UserRoleDto.getUserRights(FacadeProvider.getUserFacade().getUserRoles(user));
 
-			return userRights.stream().map(Enum::name).collect(Collectors.toSet());
+			return userRights != null ? userRights.stream().map(Enum::name).collect(Collectors.toSet()) : Collections.emptySet();
 		}
 
 		return Collections.emptySet();

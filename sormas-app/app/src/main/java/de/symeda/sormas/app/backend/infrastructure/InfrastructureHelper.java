@@ -19,7 +19,7 @@ import de.symeda.sormas.app.backend.region.DistrictDtoHelper;
 import de.symeda.sormas.app.backend.region.RegionDtoHelper;
 import de.symeda.sormas.app.backend.region.SubcontinentDtoHelper;
 import de.symeda.sormas.app.backend.user.UserDtoHelper;
-import de.symeda.sormas.app.backend.user.UserRoleConfigDtoHelper;
+import de.symeda.sormas.app.backend.user.UserRoleDtoHelper;
 import de.symeda.sormas.app.rest.NoConnectionException;
 import de.symeda.sormas.app.rest.ServerCommunicationException;
 import de.symeda.sormas.app.rest.ServerConnectionException;
@@ -40,7 +40,7 @@ public class InfrastructureHelper {
 		changeDates.setUserChangeDate(DatabaseHelper.getUserDao().getLatestChangeDate());
 		changeDates.setDiseaseClassificationChangeDate(DatabaseHelper.getDiseaseClassificationCriteriaDao().getLatestChangeDate());
 		changeDates.setDiseaseConfigurationChangeDate(DatabaseHelper.getDiseaseConfigurationDao().getLatestChangeDate());
-		changeDates.setUserRoleConfigurationChangeDate(DatabaseHelper.getUserRoleConfigDao().getLatestChangeDate());
+		changeDates.setUserRoleChangeDate(DatabaseHelper.getUserRoleDao().getLatestChangeDate());
 		changeDates.setFeatureConfigurationChangeDate(DatabaseHelper.getFeatureConfigurationDao().getLatestChangeDate());
 		changeDates.setCampaignChangeDate(DatabaseHelper.getCampaignDao().getLatestChangeDate());
 		changeDates.setCampaignFormMetaChangeDate(DatabaseHelper.getCampaignFormMetaDao().getLatestChangeDate());
@@ -49,7 +49,8 @@ public class InfrastructureHelper {
 		return changeDates;
 	}
 
-	public static void handlePulledInfrastructureData(InfrastructureSyncDto infrastructureData) throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
+	public static void handlePulledInfrastructureData(InfrastructureSyncDto infrastructureData)
+		throws DaoException, NoConnectionException, ServerConnectionException, ServerCommunicationException {
 		new ContinentDtoHelper().handlePulledList(DatabaseHelper.getContinentDao(), infrastructureData.getContinents());
 		new SubcontinentDtoHelper().handlePulledList(DatabaseHelper.getSubcontinentDao(), infrastructureData.getSubcontinents());
 		new CountryDtoHelper().handlePulledList(DatabaseHelper.getCountryDao(), infrastructureData.getCountries());
@@ -68,8 +69,8 @@ public class InfrastructureHelper {
 			.handlePulledList(DatabaseHelper.getDiseaseClassificationCriteriaDao(), infrastructureData.getDiseaseClassifications());
 		new DiseaseConfigurationDtoHelper()
 			.handlePulledList(DatabaseHelper.getDiseaseConfigurationDao(), infrastructureData.getDiseaseConfigurations());
-		DatabaseHelper.getUserRoleConfigDao().delete(infrastructureData.getDeletedUserRoleConfigurationUuids());
-		new UserRoleConfigDtoHelper().handlePulledList(DatabaseHelper.getUserRoleConfigDao(), infrastructureData.getUserRoleConfigurations());
+		DatabaseHelper.getUserRoleDao().delete(infrastructureData.getDeletedUserRoleUuids());
+		new UserRoleDtoHelper().handlePulledList(DatabaseHelper.getUserRoleDao(), infrastructureData.getUserRoles());
 		DatabaseHelper.getFeatureConfigurationDao().delete(infrastructureData.getDeletedFeatureConfigurationUuids());
 		new FeatureConfigurationDtoHelper()
 			.handlePulledList(DatabaseHelper.getFeatureConfigurationDao(), infrastructureData.getFeatureConfigurations());

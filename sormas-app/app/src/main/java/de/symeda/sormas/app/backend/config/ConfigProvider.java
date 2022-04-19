@@ -37,7 +37,6 @@ import java.security.spec.InvalidKeySpecException;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Locale;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -58,12 +57,11 @@ import android.util.Base64;
 import android.util.Log;
 
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.backend.user.UserRoleConfig;
+import de.symeda.sormas.app.backend.user.UserRole;
 import de.symeda.sormas.app.lbds.LbdsKeyHelper;
 import de.symeda.sormas.app.rest.RetroProvider;
 import de.symeda.sormas.app.util.SormasProperties;
@@ -112,7 +110,6 @@ public final class ConfigProvider {
 	private String password;
 	private String pin;
 	private User user;
-	private Set<UserRight> userRights; // just a cache
 	private Date lastNotificationDate;
 	private Date lastArchivedSyncDate;
 	private Date lastDeletedSyncDate;
@@ -183,7 +180,7 @@ public final class ConfigProvider {
 				String username = getUsername();
 				String password = getPassword(); // needed to not automatically "login" again on logout with missing server connection
 				if (username != null && password != null) {
-					instance.user = DatabaseHelper.getUserDao().getByUsername(username);
+					instance.user = DatabaseHelper.getUserDao().getByUsername(username, true);
 				}
 			}
 			return instance.user;
@@ -191,30 +188,15 @@ public final class ConfigProvider {
 	}
 
 	public static Set<UserRight> getUserRights() {
-		synchronized (ConfigProvider.class) {
-			if (instance.userRights == null) {
-				User user = getUser();
-				if (user != null) {
-					instance.userRights = new HashSet<>();
-
-					for (UserRole userRole : user.getUserRoles()) {
-						List<UserRoleConfig> userRoleConfigs = DatabaseHelper.getUserRoleConfigDao().queryForEq(UserRoleConfig.USER_ROLE, userRole);
-						if (userRoleConfigs.size() > 0) {
-							instance.userRights.addAll(userRoleConfigs.get(0).getUserRights());
-						} else {
-							instance.userRights.addAll(userRole.getDefaultUserRights());
-						}
-					}
-				}
+		User user = getUser();
+		if (user != null) {
+			Set<UserRight> userRights = new HashSet();
+			for (UserRole userRole : user.getUserRoles()) {
+				userRights.addAll(userRole.getUserRights());
 			}
-			return instance.userRights;
+			return userRights;
 		}
-	}
-
-	public static void onUserRolesConfigChanged() {
-		synchronized (ConfigProvider.class) {
-			instance.userRights = null;
-		}
+		return new HashSet();
 	}
 
 	public static boolean hasUserRight(UserRight userRight) {
@@ -270,7 +252,6 @@ public final class ConfigProvider {
 			// instance.username = null;
 
 			instance.user = null;
-			instance.userRights = null;
 			instance.accessGranted = null;
 			instance.lastNotificationDate = null;
 			instance.lastArchivedSyncDate = null;

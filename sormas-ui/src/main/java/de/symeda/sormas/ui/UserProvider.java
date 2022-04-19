@@ -43,6 +43,7 @@ public class UserProvider {
 
 	private UserDto user;
 	private UserReferenceDto userReference;
+	private Set<UserRoleDto> userRoles;
 	private Set<UserRight> userRights;
 	private JurisdictionLevel jurisdictionLevel;
 	private Boolean portHealthUser;
@@ -60,18 +61,21 @@ public class UserProvider {
 	public Set<UserRight> getUserRights() {
 
 		if (userRights == null) {
-			userRights = UserRoleDto.getUserRights(getUser().getUserRoles());
+			userRights = UserRoleDto.getUserRights(getUserRoles());
 		}
 		return userRights;
 	}
 
 	public Set<UserRoleDto> getUserRoles() {
-		return getUser().getUserRoles();
+		if (userRoles == null) {
+			userRoles = FacadeProvider.getUserFacade().getUserRoles(getUser());
+		}
+		return userRoles;
 	}
 
 	public JurisdictionLevel getJurisdictionLevel() {
 		if (jurisdictionLevel == null) {
-			jurisdictionLevel = FacadeProvider.getUserRoleFacade().getJurisdictionLevel(getUser().getUserRoles());
+			jurisdictionLevel = getUser().getJurisdictionLevel();
 		}
 		return jurisdictionLevel;
 	}
@@ -155,21 +159,21 @@ public class UserProvider {
 
 	public boolean isPortHealthUser() {
 		if (portHealthUser == null) {
-			portHealthUser = FacadeProvider.getUserRoleFacade().isPortHealthUser(getUser().getUserRoles());
+			portHealthUser = FacadeProvider.getUserRoleFacade().isPortHealthUser(getUserRoles());
 		}
 		return portHealthUser;
 	}
 
 	public boolean hasAssociatedOfficer() {
 		if (hasAssociatedOfficer == null) {
-			hasAssociatedOfficer = FacadeProvider.getUserRoleFacade().hasAssociatedOfficer(getUser().getUserRoles());
+			hasAssociatedOfficer = FacadeProvider.getUserRoleFacade().hasAssociatedOfficer(getUserRoles());
 		}
 		return hasAssociatedOfficer;
 	}
 
 	public boolean hasOptionalHealthFacility() {
 		if (hasOptionalHealthFacility == null) {
-			hasOptionalHealthFacility = FacadeProvider.getUserRoleFacade().hasOptionalHealthFacility(getUser().getUserRoles());
+			hasOptionalHealthFacility = FacadeProvider.getUserRoleFacade().hasOptionalHealthFacility(getUserRoles());
 		}
 		return hasOptionalHealthFacility;
 	}

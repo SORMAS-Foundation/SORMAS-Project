@@ -41,7 +41,7 @@ public class KeycloakIdentityStore implements IdentityStore {
 		UserDto user = FacadeProvider.getUserFacade().getByUserName(credential.getCaller());
 
 		if (user != null) {
-			Set<UserRight> userRights = UserRoleDto.getUserRights(user.getUserRoles());
+			Set<UserRight> userRights = UserRoleDto.getUserRights(FacadeProvider.getUserFacade().getUserRoles(user));
 
 			if (CollectionUtils.isNotEmpty(userRights) && userRights.contains(UserRight.SORMAS_REST)) {
 				return new CredentialValidationResult(credential.getCaller(), userRights.stream().map(Enum::name).collect(Collectors.toSet()));

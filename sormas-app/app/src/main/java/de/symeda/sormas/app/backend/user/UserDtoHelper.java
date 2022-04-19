@@ -17,7 +17,10 @@ package de.symeda.sormas.app.backend.user;
 
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
+import java.util.Set;
 
 import de.symeda.sormas.api.PushResult;
 import de.symeda.sormas.api.user.UserDto;
@@ -35,6 +38,7 @@ import retrofit2.Call;
 public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
 
 	private LocationDtoHelper locationHelper = new LocationDtoHelper();
+	private UserRoleDtoHelper userRoleDtoHelper = new UserRoleDtoHelper();
 
 	@Override
 	protected Class<User> getAdoClass() {
@@ -90,7 +94,13 @@ public class UserDtoHelper extends AdoDtoHelper<User, UserDto> {
 		target.setUserEmail(source.getUserEmail());
 
 		if (source.getUserRoles().size() > 0) {
-			target.setUserRoles(source.getUserRoles());
+			Set<UserRole> userRoles = Optional.of(target).map(User::getUserRoles).orElseGet(HashSet::new);
+			target.setUserRoles(userRoles);
+			userRoles.clear();
+			source.getUserRoles()
+				.stream()
+				.map(userRoleReferenceDto -> DatabaseHelper.getUserRoleDao().getByReferenceDto(userRoleReferenceDto))
+				.forEach(userRoles::add);
 		}
 
 		target.setRegion(DatabaseHelper.getRegionDao().getByReferenceDto(source.getRegion()));

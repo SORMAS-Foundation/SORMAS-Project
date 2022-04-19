@@ -52,7 +52,7 @@ public class GermanCaseClassificationValidatorTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.userRoleDtoMap.get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		final PersonDto cazePerson = creator.createPerson("Case", "Person");
 		final CaseDataDto caze = creator.createCase(
 			user.toReference(),

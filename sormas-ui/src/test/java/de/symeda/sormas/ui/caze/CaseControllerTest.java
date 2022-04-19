@@ -34,8 +34,8 @@ public class CaseControllerTest extends AbstractBeanTest {
 			null,
 			"ad",
 			"min",
-			creator.userRoleDtoMap.get(DefaultUserRole.ADMIN),
-			creator.userRoleDtoMap.get(DefaultUserRole.NATIONAL_USER));
+			creator.getUserRoleDtoMap().get(DefaultUserRole.ADMIN),
+			creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
 
 		VaadinRequest request = Mockito.mock(VaadinServletRequest.class);
 		when(request.getUserPrincipal()).thenReturn((Principal) () -> "admin");

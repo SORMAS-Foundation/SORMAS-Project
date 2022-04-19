@@ -114,7 +114,7 @@ public final class RetroProvider {
 	private WeeklyReportFacadeRetro weeklyReportFacadeRetro;
 	private OutbreakFacadeRetro outbreakFacadeRetro;
 	private ClassificationFacadeRetro classificationFacadeRetro;
-	private UserRoleConfigFacadeRetro userRoleConfigFacadeRetro;
+	private UserRoleFacadeRetro userRoleFacadeRetro;
 	private PrescriptionFacadeRetro prescriptionFacadeRetro;
 	private TreatmentFacadeRetro treatmentFacadeRetro;
 	private AdditionalTestFacadeRetro additionalTestFacadeRetro;
@@ -797,17 +797,17 @@ public final class RetroProvider {
 		return instance.classificationFacadeRetro;
 	}
 
-	public static UserRoleConfigFacadeRetro getUserRoleConfigFacade() throws NoConnectionException {
+	public static UserRoleFacadeRetro getUserRoleFacade() throws NoConnectionException {
 		if (instance == null)
 			throw new NoConnectionException();
-		if (instance.userRoleConfigFacadeRetro == null) {
+		if (instance.userRoleFacadeRetro == null) {
 			synchronized ((RetroProvider.class)) {
-				if (instance.userRoleConfigFacadeRetro == null) {
-					instance.userRoleConfigFacadeRetro = instance.retrofit.create(UserRoleConfigFacadeRetro.class);
+				if (instance.userRoleFacadeRetro == null) {
+					instance.userRoleFacadeRetro = instance.retrofit.create(UserRoleFacadeRetro.class);
 				}
 			}
 		}
-		return instance.userRoleConfigFacadeRetro;
+		return instance.userRoleFacadeRetro;
 	}
 
 	public static PrescriptionFacadeRetro getPrescriptionFacade() throws NoConnectionException {

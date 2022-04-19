@@ -53,7 +53,6 @@ import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserFacade;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRoleDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.AbstractBeanTest;
 import de.symeda.sormas.backend.TestDataCreator.RDCF;
@@ -171,7 +170,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		assertThat(
 			validLoginRights,
 			containsInAnyOrder(
-				UserRoleDto.getUserRights(Collections.singletonList(creator.getUserRoleDtoMap().get(SURVEILLANCE_SUPERVISOR)))
+				UserRole.getUserRights(Collections.singletonList(creator.getUserRoleMap().get(SURVEILLANCE_SUPERVISOR)))
 					.toArray(new UserRight[] {})));
 
 		user.setActive(false);
