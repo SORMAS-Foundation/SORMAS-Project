@@ -10,6 +10,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -58,6 +59,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "CampaignFacade")
+@RolesAllowed(UserRight._CAMPAIGN_VIEW)
 public class CampaignFacadeEjb
 	extends AbstractCoreFacadeEjb<Campaign, CampaignDto, CampaignIndexDto, CampaignReferenceDto, CampaignService, CampaignCriteria>
 	implements CampaignFacade {
@@ -164,6 +166,7 @@ public class CampaignFacadeEjb
 	}
 
 	@Override
+	@RolesAllowed(UserRight._CAMPAIGN_EDIT)
 	public CampaignDto save(@Valid @NotNull CampaignDto dto) {
 		validate(dto);
 		Campaign campaign = fillOrBuildEntity(dto, service.getByUuid(dto.getUuid()), true);
@@ -344,6 +347,7 @@ public class CampaignFacadeEjb
 	}
 
 	@Override
+	@RolesAllowed(UserRight._CAMPAIGN_DELETE)
 	public void delete(String campaignUuid) {
 
 		User user = userService.getCurrentUser();
@@ -413,6 +417,24 @@ public class CampaignFacadeEjb
 	public EditPermissionType isCampaignEditAllowed(String caseUuid) {
 		Campaign campaign = service.getByUuid(caseUuid);
 		return service.getEditPermissionType(campaign);
+	}
+
+	@Override
+	@RolesAllowed(UserRight._CAMPAIGN_ARCHIVE)
+	public void archive(String entityUuid, Date endOfProcessingDate) {
+		super.archive(entityUuid, endOfProcessingDate);
+	}
+
+	@Override
+	@RolesAllowed(UserRight._CAMPAIGN_ARCHIVE)
+	public void archive(List<String> entityUuids) {
+		super.archive(entityUuids);
+	}
+
+	@Override
+	@RolesAllowed(UserRight._CAMPAIGN_ARCHIVE)
+	public void dearchive(List<String> entityUuids, String dearchiveReason) {
+		super.dearchive(entityUuids, dearchiveReason);
 	}
 
 	@LocalBean

@@ -35,7 +35,9 @@ import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonJoins;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.symptoms.Symptoms;
@@ -53,27 +55,20 @@ public class CaseJoins extends QueryJoins<Case> {
 	private Join<Case, Facility> facility;
 	private Join<Case, PointOfEntry> pointOfEntry;
 	private Join<Case, User> surveillanceOfficer;
-	private Join<Person, Location> address;
 	private Join<Case, User> reportingUser;
-	private Join<Person, Location> personAddress;
-	private Join<Location, Region> personAddressRegion;
-	private Join<Location, District> personAddressDistrict;
-	private Join<Location, Community> personAddressCommunity;
-	private Join<Location, Facility> personAddressFacility;
 	private Join<Case, Hospitalization> hospitalization;
 	private Join<Case, EpiData> epiData;
 	private Join<Case, Symptoms> symptoms;
 	private Join<Case, ClinicalCourse> clinicalCourse;
 	private Join<Case, HealthConditions> healthConditions;
 	private Join<Case, EventParticipant> eventParticipants;
-	private Join<Person, List<Location>> personAddresses;
 	private Join<Case, Sample> samples;
-	private Join<Sample, Facility> sampleLabs;
-	private Join<Person, Country> personBirthCountry;
-	private Join<Person, Country> personCitizenship;
 	private Join<Case, SormasToSormasShareInfo> sormasToSormasShareInfo;
 	private Join<Case, ExternalShareInfo> externalShareInfo;
 	private Join<Case, User> followUpStatusChangeUser;
+
+	private PersonJoins personJoins;
+	private SampleJoins sampleJoins;
 
 	public CaseJoins(From<?, Case> caze) {
 		super(caze);
@@ -159,14 +154,6 @@ public class CaseJoins extends QueryJoins<Case> {
 		this.surveillanceOfficer = surveillanceOfficer;
 	}
 
-	public Join<Person, Location> getAddress() {
-		return getOrCreate(address, Person.ADDRESS, JoinType.LEFT, getPerson(), this::setAddress);
-	}
-
-	private void setAddress(Join<Person, Location> address) {
-		this.address = address;
-	}
-
 	public Join<Case, User> getReportingUser() {
 		return getOrCreate(reportingUser, Case.REPORTING_USER, JoinType.LEFT, this::setReportingUser);
 	}
@@ -176,43 +163,23 @@ public class CaseJoins extends QueryJoins<Case> {
 	}
 
 	public Join<Person, Location> getPersonAddress() {
-		return getOrCreate(personAddress, Person.ADDRESS, JoinType.LEFT, getPerson(), this::setPersonAddress);
-	}
-
-	private void setPersonAddress(Join<Person, Location> personAddress) {
-		this.personAddress = personAddress;
+		return getPersonJoins().getAddress();
 	}
 
 	public Join<Location, Region> getPersonAddressRegion() {
-		return getOrCreate(personAddressRegion, Location.REGION, JoinType.LEFT, getPersonAddress(), this::setPersonAddressRegion);
-	}
-
-	private void setPersonAddressRegion(Join<Location, Region> personAddressRegion) {
-		this.personAddressRegion = personAddressRegion;
+		return getPersonJoins().getAddressJoins().getRegion();
 	}
 
 	public Join<Location, District> getPersonAddressDistrict() {
-		return getOrCreate(personAddressDistrict, Location.DISTRICT, JoinType.LEFT, getPersonAddress(), this::setPersonAddressDistrict);
-	}
-
-	private void setPersonAddressDistrict(Join<Location, District> personAddressDistrict) {
-		this.personAddressDistrict = personAddressDistrict;
+		return getPersonJoins().getAddressJoins().getDistrict();
 	}
 
 	public Join<Location, Community> getPersonAddressCommunity() {
-		return getOrCreate(personAddressCommunity, Location.COMMUNITY, JoinType.LEFT, getPersonAddress(), this::setPersonAddressCommunity);
-	}
-
-	private void setPersonAddressCommunity(Join<Location, Community> personAddressCommunity) {
-		this.personAddressCommunity = personAddressCommunity;
+		return getPersonJoins().getAddressJoins().getCommunity();
 	}
 
 	public Join<Location, Facility> getPersonAddressFacility() {
-		return getOrCreate(personAddressFacility, Location.FACILITY, JoinType.LEFT, getAddress(), this::setPersonAddressFacility);
-	}
-
-	private void setPersonAddressFacility(Join<Location, Facility> personAddressFacility) {
-		this.personAddressFacility = personAddressFacility;
+		return getPersonJoins().getAddressJoins().getFacility();
 	}
 
 	public Join<Case, Hospitalization> getHospitalization() {
@@ -264,11 +231,7 @@ public class CaseJoins extends QueryJoins<Case> {
 	}
 
 	public Join<Person, List<Location>> getPersonAddresses() {
-		return getOrCreate(personAddresses, Person.ADDRESSES, JoinType.LEFT, getPerson(), this::setPersonAddresses);
-	}
-
-	private void setPersonAddresses(Join<Person, List<Location>> personAddresses) {
-		this.personAddresses = personAddresses;
+		return getPersonJoins().getAddresses();
 	}
 
 	public Join<Case, Sample> getSamples() {
@@ -280,27 +243,15 @@ public class CaseJoins extends QueryJoins<Case> {
 	}
 
 	public Join<Sample, Facility> getSampleLabs() {
-		return getOrCreate(sampleLabs, Sample.LAB, JoinType.LEFT, getSamples(), this::setSampleLabs);
-	}
-
-	private void setSampleLabs(Join<Sample, Facility> sampleLabs) {
-		this.sampleLabs = sampleLabs;
+		return getSampleJoins().getLab();
 	}
 
 	public Join<Person, Country> getPersonBirthCountry() {
-		return getOrCreate(personBirthCountry, Person.BIRTH_COUNTRY, JoinType.LEFT, getPerson(), this::setPersonBirthCountry);
-	}
-
-	private void setPersonBirthCountry(Join<Person, Country> personBirthCountry) {
-		this.personBirthCountry = personBirthCountry;
+		return getPersonJoins().getBirthCountry();
 	}
 
 	public Join<Person, Country> getPersonCitizenship() {
-		return getOrCreate(personCitizenship, Person.CITIZENSHIP, JoinType.LEFT, getPerson(), this::setPersonCitizenship);
-	}
-
-	public void setPersonCitizenship(Join<Person, Country> personCitizenship) {
-		this.personCitizenship = personCitizenship;
+		return getPersonJoins().getCitizenship();
 	}
 
 	public Join<Case, SormasToSormasShareInfo> getSormasToSormasShareInfo() {
@@ -325,5 +276,21 @@ public class CaseJoins extends QueryJoins<Case> {
 
 	private void setFollowUpStatusChangeUser(Join<Case, User> followUpStatusChangeUser) {
 		this.followUpStatusChangeUser = followUpStatusChangeUser;
+	}
+
+	public PersonJoins getPersonJoins() {
+		return getOrCreate(personJoins, () -> new PersonJoins(getPerson()), this::setPersonJoins);
+	}
+
+	private void setPersonJoins(PersonJoins personJoins) {
+		this.personJoins = personJoins;
+	}
+
+	public SampleJoins getSampleJoins() {
+		return getOrCreate(sampleJoins, () -> new SampleJoins(getSamples()), this::setSampleJoins);
+	}
+
+	private void setSampleJoins(SampleJoins sampleJoins) {
+		this.sampleJoins = sampleJoins;
 	}
 }

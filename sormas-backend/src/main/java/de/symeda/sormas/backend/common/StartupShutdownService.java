@@ -74,7 +74,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DefaultEntityHelper;
 import de.symeda.sormas.api.utils.PasswordHelper;
-import de.symeda.sormas.backend.audit.AuditLogger;
+import de.symeda.sormas.backend.audit.AuditLoggerEjb;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -173,7 +173,7 @@ public class StartupShutdownService {
 	@EJB
 	private DeletionConfigurationService deletionConfigurationService;
 	@EJB
-	AuditLogger auditLogger;
+	AuditLoggerEjb.AuditLoggerEjbLocal auditLogger;
 	@Inject
 	private Event<PasswordResetEvent> passwordResetEvent;
 
@@ -229,7 +229,7 @@ public class StartupShutdownService {
 
 		createImportTemplateFiles(featureConfigurationFacade.getActiveServerFeatureConfigurations());
 
-		deletionConfigurationService.createMissingDeletionConfiguration();
+		deletionConfigurationService.createMissingDeletionConfigurations();
 
 		configFacade.validateAppUrls();
 		configFacade.validateConfigUrls();
@@ -567,7 +567,7 @@ public class StartupShutdownService {
 			existingUser.setSeed(PasswordHelper.createPass(16));
 			existingUser.setPassword(PasswordHelper.encodePassword(password, existingUser.getSeed()));
 			existingUser.setUserRoles(userRoles);
-			
+
 			userService.persist(existingUser);
 			passwordResetEvent.fire(new PasswordResetEvent(existingUser));
 		} else if (userRoles.stream().anyMatch(r -> !existingUser.getUserRoles().contains(r))
