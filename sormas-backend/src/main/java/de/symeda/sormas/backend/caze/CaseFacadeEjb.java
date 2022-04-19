@@ -2610,7 +2610,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return dto;
 	}
 
-	@RolesAllowed(UserRight._EXTERNAL_VISITS)
+	@RolesAllowed({
+		UserRight._CASE_VIEW,
+		UserRight._EXTERNAL_VISITS })
 	public CaseDataDto toDto(Case source) {
 		return toCaseDto(source);
 	}
