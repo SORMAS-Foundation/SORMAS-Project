@@ -19,6 +19,7 @@ import javax.persistence.TemporalType;
 
 import de.symeda.auditlog.api.Audited;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.labmessage.ExternalMessageType;
 import de.symeda.sormas.api.labmessage.LabMessageStatus;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
@@ -34,6 +35,7 @@ public class LabMessage extends DeletableAdo {
 
 	public static final String TABLE_NAME = "labmessage";
 
+	public static final String TYPE = "type";
 	public static final String TESTED_DISEASE = "testedDisease";
 	public static final String MESSAGE_DATE_TIME = "messageDateTime";
 	public static final String SAMPLE_DATE_TIME = "sampleDateTime";
@@ -65,6 +67,7 @@ public class LabMessage extends DeletableAdo {
 	public static final String SAMPLE = "sample";
 	public static final String ASSIGNEE = "assignee";
 
+	private ExternalMessageType type;
 	private Disease testedDisease;
 	private Date messageDateTime;
 	private Date sampleDateTime;
@@ -100,6 +103,15 @@ public class LabMessage extends DeletableAdo {
 
 	private LabMessageStatus status = LabMessageStatus.UNPROCESSED;
 	private User assignee;
+
+	@Enumerated(EnumType.STRING)
+	public ExternalMessageType getType() {
+		return type;
+	}
+
+	public void setType(ExternalMessageType type) {
+		this.type = type;
+	}
 
 	@Enumerated(EnumType.STRING)
 	public Disease getTestedDisease() {
@@ -381,4 +393,5 @@ public class LabMessage extends DeletableAdo {
 	public void setSample(Sample sample) {
 		this.sample = sample;
 	}
+
 }

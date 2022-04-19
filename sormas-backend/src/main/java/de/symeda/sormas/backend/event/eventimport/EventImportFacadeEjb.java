@@ -154,7 +154,7 @@ public class EventImportFacadeEjb implements EventImportFacade {
 				if (existingPerson == null) {
 					personFacade.savePerson(eventParticipant.getPerson());
 				}
-				eventParticipantFacade.saveEventParticipant(eventParticipant);
+				eventParticipantFacade.save(eventParticipant);
 			}
 
 			eventGroupFacade.linkEventToGroups(event.toReference(), eventGroupReferences);
