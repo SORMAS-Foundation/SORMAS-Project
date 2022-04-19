@@ -86,6 +86,7 @@ public class TaskJoins extends QueryJoins<Task> {
 	private Join<TravelEntry, District> travelEntryResponsibleDistrict;
 	private Join<TravelEntry, Community> travelEntryResponsibleCommunity;
 	private Join<TravelEntry, Person> travelEntryPerson;
+	private Join<Task, User> taskObservers;
 
 	public TaskJoins(From<?, Task> root) {
 		super(root);
@@ -487,5 +488,13 @@ public class TaskJoins extends QueryJoins<Task> {
 
 	private void setContactPersonAddress(Join<Person, Location> contactPersonAddress) {
 		this.contactPersonAddress = contactPersonAddress;
+	}
+
+	public Join<Task, User> getTaskObservers() {
+		return getOrCreate(taskObservers, Task.OBSERVER_USER, JoinType.LEFT, this::setTaskObservers);
+	}
+
+	public void setTaskObservers(Join<Task, User> taskObservers) {
+		this.taskObservers = taskObservers;
 	}
 }

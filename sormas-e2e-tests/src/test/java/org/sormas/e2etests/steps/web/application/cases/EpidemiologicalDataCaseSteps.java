@@ -2,7 +2,6 @@ package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.*;
-import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.NEW_ENTRY_EPIDEMIOLOGICAL_DATA;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_CONTACT_WINDOW_FIRST_RESULT_OPTION;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_WINDOW_CONTACT;
@@ -57,6 +56,21 @@ public class EpidemiologicalDataCaseSteps implements En {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
+        "I set Start and End of activity by current date in Activity as Case form",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              START_OF_EXPOSURE_INPUT, formatter.format(LocalDate.now()));
+          webDriverHelpers.fillInWebElement(
+              END_OF_EXPOSURE_INPUT, formatter.format(LocalDate.now()));
+        });
+
+    When(
+        "I check that edit Activity as Case vision button is visible and clickable",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(OPEN_SAVED_ACTIVITY_BUTTON);
+        });
+
+    When(
         "I set Start and End of activity by current date in Activity as Case form for DE version",
         () -> {
           webDriverHelpers.fillInWebElement(
@@ -81,6 +95,12 @@ public class EpidemiologicalDataCaseSteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(
               EXPOSURE_PROBABLE_INFECTION_ENVIRONMENT_CHECKBOX);
+        });
+
+    When(
+        "I click on edit Activity as Case vision button",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(OPEN_SAVED_ACTIVITY_BUTTON);
         });
 
     When(
@@ -273,6 +293,16 @@ public class EpidemiologicalDataCaseSteps implements En {
               webDriverHelpers.selectFromCombobox(
                   TYPE_OF_GATHERING_COMBOBOX, TypeOfGathering.getNameForDE(value.toString()));
             }
+          }
+        });
+
+    When(
+        "I select from Combobox all options in Type of activity field in Activity as Case for Epidemiological data tab for Cases",
+        () -> {
+          for (ActivityAsCaseType value : ActivityAsCaseType.values()) {
+            webDriverHelpers.selectFromCombobox(
+                ACTIVITY_TYPE_OF_ACTIVITY_COMBOBOX,
+                ActivityAsCaseType.getForName(value.getActivityCase()));
           }
         });
 

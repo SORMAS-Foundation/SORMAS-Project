@@ -74,6 +74,7 @@ public class Task extends AbstractDomainObject {
 	public static final String CLOSED_LON = "closedLon";
 	public static final String ARCHIVED = "archived";
 	public static final String TRAVEL_ENTRY = "travelEntry";
+	public static final String OBSERVER_USER = "observerUsers";
 
 	public static final String TASK_OBSERVER_TABLE = "task_observer";
 	public static final String TASK_OBSERVER_JOIN_COLUMN = "task_id";

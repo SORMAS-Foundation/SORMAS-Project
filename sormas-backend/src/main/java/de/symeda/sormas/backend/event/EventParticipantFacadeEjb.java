@@ -1129,6 +1129,18 @@ public class EventParticipantFacadeEjb
 		return resultList.stream().map(ep -> toDto(ep)).collect(Collectors.toList());
 	}
 
+	@Override
+	@RolesAllowed(UserRight._EVENTPARTICIPANT_ARCHIVE)
+	public void archive(String entityUuid, Date endOfProcessingDate) {
+		super.archive(entityUuid, endOfProcessingDate);
+	}
+
+	@Override
+	@RolesAllowed(UserRight._EVENTPARTICIPANT_ARCHIVE)
+	public void dearchive(List<String> entityUuids, String dearchiveReason) {
+		super.dearchive(entityUuids, dearchiveReason);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class EventParticipantFacadeEjbLocal extends EventParticipantFacadeEjb {
@@ -1146,4 +1158,5 @@ public class EventParticipantFacadeEjb
 	protected CoreEntityType getCoreEntityType() {
 		return CoreEntityType.EVENT_PARTICIPANT;
 	}
+
 }
