@@ -9,6 +9,10 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.Date;
 
+import de.symeda.sormas.api.task.TaskContext;
+import de.symeda.sormas.api.task.TaskDto;
+import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.backend.contact.Contact;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.internal.SessionImpl;
@@ -327,15 +331,19 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 
 		ContactDto contactDto = creator.createContact(user.toReference(), person.toReference(), Disease.CORONAVIRUS);
 
+		TaskDto taskDto = creator
+			.createTask(TaskContext.CONTACT, TaskType.CONTACT_FOLLOW_UP, TaskStatus.PENDING, null, contactDto.toReference(), null, new Date(), null);
+
 		SampleDto sample = creator.createSample(
-				contactDto.toReference(),
-				user.toReference(),
-				rdcf.facility,
-				sampleDto -> sampleDto.setAssociatedContact(contactDto.toReference()));
+			contactDto.toReference(),
+			user.toReference(),
+			rdcf.facility,
+			sampleDto -> sampleDto.setAssociatedContact(contactDto.toReference()));
 
 		VisitDto visitDto = creator.createVisit(contactDto.getDisease(), contactDto.getPerson(), contactDto.getReportDateTime());
 
 		assertEquals(1, getContactService().count());
+		assertEquals(1, getTaskFacade().getAllByContact(contactDto.toReference()).size());
 		assertEquals(1, getSampleService().count());
 		assertEquals(1, getVisitService().count());
 
@@ -353,6 +361,7 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 		loginWith(user);
 
 		assertEquals(0, getContactService().count());
+		assertEquals(0, getTaskFacade().getAllByContact(contactDto.toReference()).size());
 		assertEquals(0, getSampleService().count());
 		assertEquals(0, getVisitService().count());
 	}
@@ -368,29 +377,40 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 
 		ContactDto contactDto = creator.createContact(user.toReference(), person.toReference(), Disease.CORONAVIRUS);
 
+		TaskDto taskDto = creator
+				.createTask(TaskContext.CONTACT, TaskType.CONTACT_FOLLOW_UP, TaskStatus.PENDING, null, contactDto.toReference(), null, new Date(), null);
+
 		SampleDto sample = creator.createSample(
-				contactDto.toReference(),
-				user.toReference(),
-				rdcf.facility,
-				sampleDto -> sampleDto.setAssociatedContact(contactDto.toReference()));
+			contactDto.toReference(),
+			user.toReference(),
+			rdcf.facility,
+			sampleDto -> sampleDto.setAssociatedContact(contactDto.toReference()));
 
 		VisitDto visitDto = creator.createVisit(contactDto.getDisease(), contactDto.getPerson(), contactDto.getReportDateTime());
 
 		assertEquals(1, getContactService().count());
+		assertEquals(1, getTaskFacade().getAllActiveUuids().size());
+		assertEquals(1, getTaskFacade().getAllByContact(contactDto.toReference()).size());
 		assertEquals(1, getSampleService().count());
 		assertEquals(1, getVisitService().count());
 
 		//create second contact with the same person
 		ContactDto contactDto2 = creator.createContact(user.toReference(), person.toReference(), Disease.CORONAVIRUS);
+
+		TaskDto taskDto2 = creator
+				.createTask(TaskContext.CONTACT, TaskType.CONTACT_FOLLOW_UP, TaskStatus.PENDING, null, contactDto2.toReference(), null, new Date(), null);
 		SampleDto sample2 = creator.createSample(
-				contactDto2.toReference(),
-				user.toReference(),
-				rdcf.facility,
-				sampleDto -> sampleDto.setAssociatedContact(contactDto2.toReference()));
+			contactDto2.toReference(),
+			user.toReference(),
+			rdcf.facility,
+			sampleDto -> sampleDto.setAssociatedContact(contactDto2.toReference()));
 
 		VisitDto visitDto2 = creator.createVisit(contactDto2.getDisease(), contactDto2.getPerson(), contactDto2.getReportDateTime());
 
 		assertEquals(2, getContactService().count());
+		assertEquals(2, getTaskFacade().getAllActiveUuids().size());
+		assertEquals(1, getTaskFacade().getAllByContact(contactDto.toReference()).size());
+		assertEquals(1, getTaskFacade().getAllByContact(contactDto2.toReference()).size());
 		assertEquals(2, getSampleService().count());
 		assertEquals(2, getVisitService().count());
 
@@ -408,6 +428,8 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 		loginWith(user);
 
 		assertEquals(1, getContactService().count());
+		assertEquals(1, getTaskFacade().getAllActiveUuids().size());
+		assertEquals(1, getTaskFacade().getAllByContact(contactDto2.toReference()).size());
 		assertEquals(1, getSampleService().count());
 		assertEquals(2, getVisitService().count());
 
@@ -424,6 +446,7 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 		loginWith(user);
 
 		assertEquals(0, getContactService().count());
+		assertEquals(0, getTaskFacade().getAllActiveUuids().size());
 		assertEquals(0, getSampleService().count());
 		assertEquals(0, getVisitService().count());
 	}
