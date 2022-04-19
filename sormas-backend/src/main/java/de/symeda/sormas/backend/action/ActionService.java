@@ -41,11 +41,9 @@ import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.SortProperty;
-import de.symeda.sormas.backend.action.transformers.EventActionIndexDtoReasultTransformer;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.event.Event;
-import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventQueryContext;
 import de.symeda.sormas.backend.event.EventService;
 import de.symeda.sormas.backend.user.User;
@@ -89,9 +87,9 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		CriteriaQuery<Action> cq = cb.createQuery(getElementClass());
 		Root<Action> from = cq.from(getElementClass());
 
-		Predicate filter = cb.equal(from.get(EventParticipant.EVENT), event);
+		Predicate filter = cb.equal(from.get(Action.EVENT), event);
 		cq.where(filter);
-		cq.orderBy(cb.desc(from.get(EventParticipant.CREATION_DATE)));
+		cq.orderBy(cb.desc(from.get(Action.CREATION_DATE)));
 
 		return em.createQuery(cq).getResultList();
 	}
@@ -229,11 +227,12 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 	public Predicate buildEventCriteriaFilter(EventCriteria criteria, ActionQueryContext actionQueryContext) {
 
 		CriteriaBuilder cb = actionQueryContext.getCriteriaBuilder();
-		ActionJoins joins = (ActionJoins) actionQueryContext.getJoins();
+		ActionJoins joins = actionQueryContext.getJoins();
 
 		From<?, Action> action = joins.getRoot();
 
-		Predicate filter = eventService.buildCriteriaFilter(criteria, new EventQueryContext(cb, actionQueryContext.getQuery(), joins.getEventJoins()));
+		Predicate filter =
+			eventService.buildCriteriaFilter(criteria, new EventQueryContext(cb, actionQueryContext.getQuery(), joins.getEventJoins()));
 
 		if (criteria.getActionChangeDateFrom() != null && criteria.getActionChangeDateTo() != null) {
 			filter = CriteriaBuilderHelper
@@ -268,7 +267,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		final Root<Action> action = cq.from(getElementClass());
 
 		final ActionQueryContext actionQueryContext = new ActionQueryContext(cb, cq, action);
-		ActionJoins actionJoins = (ActionJoins) actionQueryContext.getJoins();
+		ActionJoins actionJoins = actionQueryContext.getJoins();
 
 		Join<Action, User> lastModifiedBy = actionJoins.getLastModifiedBy();
 		Join<Action, User> creatorUser = actionJoins.getCreator();
@@ -405,9 +404,11 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 			cq.orderBy(cb.desc(event.get(Event.CHANGE_DATE)));
 		}
 
-		return createQuery(cq, first, max).unwrap(org.hibernate.query.Query.class)
+		@SuppressWarnings("unchecked")
+		List<EventActionIndexDto> result = createQuery(cq, first, max).unwrap(org.hibernate.query.Query.class)
 			.setResultTransformer(new EventActionIndexDtoReasultTransformer())
 			.getResultList();
+		return result;
 	}
 
 	public List<EventActionExportDto> getEventActionExportList(EventCriteria criteria, Integer first, Integer max) {
@@ -416,7 +417,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		CriteriaQuery<EventActionExportDto> cq = cb.createQuery(EventActionExportDto.class);
 		Root<Action> action = cq.from(getElementClass());
 		final ActionQueryContext actionQueryContext = new ActionQueryContext(cb, cq, action);
-		ActionJoins actionJoins = (ActionJoins) actionQueryContext.getJoins();
+		ActionJoins actionJoins = actionQueryContext.getJoins();
 		Join<Action, User> lastModifiedBy = actionJoins.getLastModifiedBy();
 		Join<Action, User> creator = actionJoins.getCreator();
 		Join<Action, Event> event = actionJoins.getEvent();
@@ -480,7 +481,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Action> action = cq.from(getElementClass());
 		final ActionQueryContext actionQueryContext = new ActionQueryContext(cb, cq, action);
-		ActionJoins actionJoins = (ActionJoins) actionQueryContext.getJoins();
+		ActionJoins actionJoins = actionQueryContext.getJoins();
 
 		Join<Action, Event> event = actionJoins.getEvent();
 
