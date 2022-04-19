@@ -53,7 +53,7 @@ public class ArchitectureTest {
 	@ArchTest
 	public static final ArchRule testCorrectNamedMethods = classes().that().resideInAPackage("de.symeda.sormas.api.(*)..").
 
-		should(new ArchCondition<JavaClass>("Methods should have proper prefixes") {
+		should(new ArchCondition<JavaClass>("have proper method prefixes") {
 
 			@Override
 			public void check(JavaClass javaClass, ConditionEvents events) {

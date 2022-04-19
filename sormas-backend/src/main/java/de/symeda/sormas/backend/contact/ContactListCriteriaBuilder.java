@@ -111,7 +111,7 @@ public class ContactListCriteriaBuilder {
 					new CaseQueryContext(
 						contactQueryContext.getCriteriaBuilder(),
 						contactQueryContext.getQuery(),
-						((ContactJoins) contactQueryContext.getJoins()).getCaze()))));
+						contactQueryContext.getJoins().getCaseJoins()))));
 	}
 
 	public List<Selection<?>> getMergeContactIndexSelections(Root<Contact> contact, ContactQueryContext contactQueryContext) {

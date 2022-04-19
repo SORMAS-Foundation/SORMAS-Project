@@ -185,11 +185,6 @@ public class LabMessageServiceTest extends AbstractBeanTest {
 
 		getLabMessageFacade().deleteLabMessage(labMessage.getUuid());
 
-		assertEquals(1, getLabMessageService().count());
-		assertEquals(labMessage.toReference(), getTestReportFacade().getByUuid(testReport.getUuid()).getLabMessage());
-
-		getLabMessageService().deletePermanent(getEntityAttached(getLabMessageService().getByUuid(labMessage.getUuid())));
-
 		assertEquals(0, getLabMessageService().count());
 		assertEquals(0, getTestReportService().count());
 	}

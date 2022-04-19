@@ -11219,4 +11219,54 @@ DROP TRIGGER IF EXISTS delete_history_trigger ON systemevent;
 
 INSERT INTO schema_version (version_number, comment) VALUES (452, 'Persisting systemevent on latest develop fails with SQL error #8585');
 
+-- 2022-04-08 Initial UI support for physician's reports #8276
+
+ALTER TABLE labmessage ADD COLUMN type varchar(255);
+ALTER TABLE labmessage_history ADD COLUMN type varchar(255);
+
+UPDATE labmessage SET type = CASE
+    WHEN labmessagedetails LIKE '%profile value="https://demis.rki.de/fhir/StructureDefinition/NotificationDiseaseCVDD"%' THEN 'PHYSICIANS_REPORT'
+    ELSE 'LAB_MESSAGE'
+    END;
+
+INSERT INTO schema_version (version_number, comment) VALUES (453, 'Initial UI support for physicians reports #8276');
+
+-- 2022-04-07 Refactor unique constraint on deletionconfiguration table #8295
+
+ALTER TABLE deletionconfiguration DROP CONSTRAINT IF EXISTS deletionconfiguration_entity_key;
+ALTER TABLE deletionconfiguration ADD CONSTRAINT unq_deletionconfiguration_entity_reference UNIQUE (entitytype, deletionreference);
+
+INSERT INTO schema_version (version_number, comment) VALUES (454, 'Refactor unique constraint on deletionconfiguration table #8295');
+
+-- 2022-04-08 Drop deleted column from lab messages and remove deleted lab messages #8295
+
+DELETE FROM testreport USING labmessage WHERE testreport.labmessage_id = labmessage.id AND labmessage.deleted IS TRUE;
+DELETE FROM labmessage WHERE deleted IS TRUE;
+ALTER TABLE labmessage DROP COLUMN deleted;
+ALTER TABLE labmessage_history DROP COLUMN deleted;
+
+INSERT INTO schema_version (version_number, comment) VALUES (455, 'Drop deleted column from lab messages and remove deleted lab messages #8295');
+
+-- 2022-04-11 Remove DELETE_PERMANENT feature type #8295
+
+DELETE FROM featureconfiguration WHERE featuretype = 'DELETE_PERMANENT';
+
+INSERT INTO schema_version (version_number, comment) VALUES (456, 'Remove DELETE_PERMANENT feature type #8295');
+
+-- 2022-04-11 Investigate and add indexes #8778
+
+CREATE INDEX IF NOT EXISTS idx_cases_responsibleregion_id ON cases (responsibleregion_id);
+CREATE INDEX IF NOT EXISTS idx_cases_responsibledistrict_id ON cases (responsibledistrict_id);
+
+CREATE INDEX IF NOT EXISTS idx_cases_archived ON cases (archived);
+CREATE INDEX IF NOT EXISTS idx_contact_archived ON contact (archived);
+CREATE INDEX IF NOT EXISTS idx_events_archived ON events (archived);
+CREATE INDEX IF NOT EXISTS idx_eventpartivipant_archived ON eventparticipant (archived);
+CREATE INDEX IF NOT EXISTS idx_immunization_archived ON immunization (archived);
+CREATE INDEX IF NOT EXISTS idx_travelentry_archived ON travelentry (archived);
+CREATE INDEX IF NOT EXISTS idx_campaigns_archived ON campaigns (archived);
+CREATE INDEX IF NOT EXISTS idx_task_archived ON task (archived);
+
+INSERT INTO schema_version (version_number, comment) VALUES (457, 'Investigate and add indexes #8778');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
