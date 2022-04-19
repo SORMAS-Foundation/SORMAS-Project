@@ -123,8 +123,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 
 		Predicate filter = cb.equal(joins.getCreator(), currentUser);
 
-		// TODO #8747: handover of EventJoins
-		Predicate eventFilter = eventService.createUserFilter(cb, cq, joins.getEvent());
+		Predicate eventFilter = eventService.createUserFilter(new EventQueryContext(cb, cq, joins.getEventJoins()));
 		if (eventFilter != null) {
 			filter = cb.or(filter, eventFilter);
 		}
@@ -284,8 +283,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		Join<Event, User> eventResponsibleUser = actionJoins.getEventJoins().getResponsibleUser();
 
 		// Add filters
-		// TODO #8747: handover of EventJoins
-		Predicate filter = eventService.createUserFilter(cb, cq, event);
+		Predicate filter = eventService.createUserFilter(new EventQueryContext(cb, cq, actionJoins.getEventJoins()));
 
 		if (criteria != null) {
 			Predicate criteriaFilter = buildEventCriteriaFilter(criteria, queryContext);
@@ -434,8 +432,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		Join<Event, User> eventResponsibleUser = actionJoins.getEventJoins().getResponsibleUser();
 
 		// Add filters
-		// TODO #8747: handover of EventJoins
-		Predicate filter = eventService.createUserFilter(cb, cq, event);
+		Predicate filter = eventService.createUserFilter(new EventQueryContext(cb, cq, actionJoins.getEventJoins()));
 
 		if (criteria != null) {
 			Predicate criteriaFilter = buildEventCriteriaFilter(criteria, queryContext);
@@ -495,8 +492,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		ActionJoins actionJoins = queryContext.getJoins();
 
 		// Add filters
-		// TODO #8747: handover of EventJoins
-		Predicate filter = eventService.createUserFilter(cb, cq, actionJoins.getEvent());
+		Predicate filter = eventService.createUserFilter(new EventQueryContext(cb, cq, actionJoins.getEventJoins()));
 
 		if (criteria != null) {
 			Predicate criteriaFilter = buildEventCriteriaFilter(criteria, queryContext);
