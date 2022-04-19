@@ -111,6 +111,9 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._CASE_VIEW,
+		UserRight._OUTBREAK_VIEW })
 	public boolean hasOutbreak(DistrictReferenceDto district, Disease disease) {
 
 		Long count = outbreakService.countByCriteria(new OutbreakCriteria().district(district).disease(disease).active(true), null);
@@ -210,8 +213,8 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 
 	@Override
 	@RolesAllowed({
-			UserRight._DASHBOARD_SURVEILLANCE_VIEW,
-			UserRight._DASHBOARD_CONTACT_VIEW })
+		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
+		UserRight._DASHBOARD_CONTACT_VIEW })
 	public Long getOutbreakDistrictCount(OutbreakCriteria criteria) {
 		User user = userService.getCurrentUser();
 
