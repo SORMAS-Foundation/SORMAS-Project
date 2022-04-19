@@ -11240,7 +11240,7 @@ INSERT INTO schema_version (version_number, comment) VALUES (454, 'Refactor uniq
 
 -- 2022-04-08 Drop deleted column from lab messages and remove deleted lab messages #8295
 
-UPDATE testreport SET labmessage_id = NULL FROM labmessage WHERE testreport.labmessage_id = labmessage.id AND labmessage.deleted IS TRUE;
+DELETE FROM testreport USING labmessage WHERE testreport.labmessage_id = labmessage.id AND labmessage.deleted IS TRUE;
 DELETE FROM labmessage WHERE deleted IS TRUE;
 ALTER TABLE labmessage DROP COLUMN deleted;
 ALTER TABLE labmessage_history DROP COLUMN deleted;
