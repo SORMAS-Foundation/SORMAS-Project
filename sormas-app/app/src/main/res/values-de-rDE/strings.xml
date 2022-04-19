@@ -542,7 +542,7 @@
     <string name="message_language_change_unsuccessful">Die Sprache konnte aufgrund eines internen Fehlers nicht geändert werden.</string>
     <string name="message_Event_and_Case_disease_mismatch">Das neue Ereignis, das mit dem Fall verknüpft werden soll, hat eine andere Krankheit als der Fall </string>
     <string name="message_Event_already_linked_to_Case">Das Ereignis wurde bereits mit diesem Fall verknüpft </string>
-    <string name="message_EventParticipant_to_Case_Without_Event_Disease">It is not possible to create cases from an event participant if the disease of the event has not been set </string>
+    <string name="message_EventParticipant_to_Case_Without_Event_Disease">Es ist nicht möglich, Fälle über einen Ereignisteilnehmer zu erstellen, wenn die Krankheit zum Ereignis nicht festgelegt wurde </string>
     <string name="notification_channel_tasks_name">Neue oder aktualisierte Aufgaben</string>
     <string name="notification_channel_tasks_description">Erhalten Sie eine Benachrichtigung, wenn Ihnen eine neue Aufgabe zugewiesen wurde oder eine Ihnen zugewiesene Aufgabe geändert wurde</string>
     <string name="notification_channel_case_changes_name">Wichtige Falländerungen</string>
