@@ -114,4 +114,12 @@ public class EpidemiologicalDataCasePage {
   public static final By EXPOSURE_ACTION_CANCEL = By.id("actionCancel");
   public static final By EXPOSURE_ACTION_CONFIRM = By.id("actionConfirm");
   public static final By EXPOSURE_CHOOSE_CASE_BUTTON = By.id("contactChooseCase");
+  public static final By CONTACTS_WITH_SOURCE_CASE_BOX =
+      By.cssSelector("[location='sourceContacts']");
+  public static final By TYPE_OF_ACTIVITY_EXPOSURES =
+      By.xpath("//table[@class='v-table-table']//td[2]/div/div");
+
+  public static By getExposureTableData(Integer tdNr) {
+    return By.xpath(String.format("//table[@class='v-table-table']//td[%s]", tdNr));
+  }
 }

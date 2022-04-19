@@ -789,11 +789,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.isFalse(event.get(Event.DELETED)), cb.isFalse(eventParticipant.get(EventParticipant.DELETED)));
-			if (EntityRelevanceStatus.ACTIVE.equals(caseCriteria.getRelevanceStatus())) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(event.get(Event.ARCHIVED)));
-			} else if (EntityRelevanceStatus.ARCHIVED.equals(caseCriteria.getRelevanceStatus())) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.isTrue(event.get(Event.ARCHIVED)));
-			}
 
 			if (hasEventLikeCriteria) {
 				String[] textFilters = caseCriteria.getEventLike().trim().split("\\s+");

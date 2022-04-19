@@ -63,6 +63,7 @@ import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
+import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -89,6 +90,7 @@ import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.contact.transformers.ContactListEntryDtoResultTransformer;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.event.Event;
@@ -104,6 +106,7 @@ import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
@@ -116,6 +119,7 @@ import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
+import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless
 @LocalBean
@@ -141,6 +145,12 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	private ExternalJournalService externalJournalService;
 	@EJB
 	private UserService userService;
+	@EJB
+	private DocumentService documentService;
+	@EJB
+	private SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal sormasToSormasShareInfoFacade;
+	@EJB
+	private VisitService visitService;
 
 	public ContactService() {
 		super(Contact.class);
@@ -909,8 +919,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	private void addToFollowUpStatusComment(Contact contact, String comment) {
-		String followUpComment = DataHelper.joinStrings("\n", contact.getFollowUpComment(), comment);
-		contact.setFollowUpComment(followUpComment);
+		contact.setFollowUpComment(comment != null && comment.equals(contact.getFollowUpComment())
+				? contact.getFollowUpComment()
+				: DataHelper.joinStrings("\n", contact.getFollowUpComment(), comment));
 	}
 
 	// Used only for testing; directly retrieve the contacts from the visit instead
@@ -1305,11 +1316,6 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.isFalse(event.get(Event.DELETED)), cb.isFalse(eventParticipant.get(EventParticipant.DELETED)));
-			if (EntityRelevanceStatus.ACTIVE.equals(contactCriteria.getRelevanceStatus())) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(event.get(Event.ARCHIVED)));
-			} else if (EntityRelevanceStatus.ARCHIVED.equals(contactCriteria.getRelevanceStatus())) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.isTrue(event.get(Event.ARCHIVED)));
-			}
 
 			if (hasEventLikeCriteria) {
 				String[] textFilters = contactCriteria.getEventLike().trim().split("\\s+");
@@ -1377,7 +1383,72 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		// Notify external journal if necessary
 		externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
+		deleteContactLinks(contact);
+
 		super.delete(contact);
+	}
+
+	@Override
+	public void deletePermanent(Contact contact) {
+		// Delete all samples that are only associated with this contact
+		contact.getSamples()
+			.stream()
+			.filter(sample -> sample.getAssociatedCase() == null && sample.getAssociatedEventParticipant() == null)
+			.forEach(sample -> sampleService.deletePermanent(sample));
+
+		// Delete all visits that are only associated with this contact and Remove the deleted contact from contact_visits
+		contact.getVisits().forEach(visit -> {
+			if (visit.getCaze() == null && visit.getContacts().size() <= 1) {
+				visitService.deletePermanent(visit);
+			} else {
+				Set<Contact> visitContacts = new HashSet<>(visit.getContacts());
+				visit.getContacts().clear();
+				visit.getContacts()
+					.addAll(visitContacts.stream().filter(contact1 -> !DataHelper.isSame(contact1, contact)).collect(Collectors.toSet()));
+				visitService.ensurePersisted(visit);
+			}
+		});
+
+		// Delete documents related to this contact
+		documentService.getRelatedToEntity(DocumentRelatedEntityType.CONTACT, contact.getUuid()).forEach(d -> documentService.markAsDeleted(d));
+
+		// Remove the contact from any S2S share info referencing it
+		sormasToSormasShareInfoService.getByAssociatedEntity(SormasToSormasShareInfo.CONTACT, contact.getUuid()).forEach(s -> {
+			s.setContact(null);
+			if (sormasToSormasShareInfoFacade.hasAnyEntityReference(s)) {
+				sormasToSormasShareInfoService.ensurePersisted(s);
+			} else {
+				sormasToSormasShareInfoService.deletePermanent(s);
+			}
+		});
+
+		deleteContactFromDuplicateOf(contact);
+
+		deleteContactLinks(contact);
+
+		super.deletePermanent(contact);
+	}
+
+	private void deleteContactLinks(Contact contact) {
+		// Remove the contact from any sample that is also connected to other entities
+		contact.getSamples().stream().filter(s -> s.getAssociatedCase() != null || s.getAssociatedEventParticipant() != null).forEach(s -> {
+			s.setAssociatedContact(null);
+			sampleService.ensurePersisted(s);
+		});
+
+		// Remove the contactToCase from all exposures
+		exposureService.removeContactFromExposures(contact.getId());
+	}
+
+	private void deleteContactFromDuplicateOf(Contact contact) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<Contact> cu = cb.createCriteriaUpdate(Contact.class);
+		Root<Contact> root = cu.from(Contact.class);
+
+		cu.where(cb.equal(root.get(Contact.DUPLICATE_OF), contact.getId()));
+		cu.set(Contact.DUPLICATE_OF, null);
+
+		em.createQuery(cu).executeUpdate();
 	}
 
 	/**

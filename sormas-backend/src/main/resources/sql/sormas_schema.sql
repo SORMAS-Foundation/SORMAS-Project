@@ -11219,6 +11219,18 @@ DROP TRIGGER IF EXISTS delete_history_trigger ON systemevent;
 
 INSERT INTO schema_version (version_number, comment) VALUES (452, 'Persisting systemevent on latest develop fails with SQL error #8585');
 
+-- 2022-04-08 Initial UI support for physician's reports #8276
+
+ALTER TABLE labmessage ADD COLUMN type varchar(255);
+ALTER TABLE labmessage_history ADD COLUMN type varchar(255);
+
+UPDATE labmessage SET type = CASE
+    WHEN labmessagedetails LIKE '%profile value="https://demis.rki.de/fhir/StructureDefinition/NotificationDiseaseCVDD"%' THEN 'PHYSICIANS_REPORT'
+    ELSE 'LAB_MESSAGE'
+    END;
+
+INSERT INTO schema_version (version_number, comment) VALUES (453, 'Initial UI support for physicians reports #8276');
+
 -- 2022-04-11 Investigate and add indexes #8778
 
 CREATE INDEX IF NOT EXISTS idx_cases_responsibleregion_id ON cases (responsibleregion_id);
@@ -11233,6 +11245,6 @@ CREATE INDEX IF NOT EXISTS idx_travelentry_archived ON travelentry (archived);
 CREATE INDEX IF NOT EXISTS idx_campaigns_archived ON campaigns (archived);
 CREATE INDEX IF NOT EXISTS idx_task_archived ON task (archived);
 
-INSERT INTO schema_version (version_number, comment) VALUES (453, 'Investigate and add indexes #8778');
+INSERT INTO schema_version (version_number, comment) VALUES (454, 'Investigate and add indexes #8778');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

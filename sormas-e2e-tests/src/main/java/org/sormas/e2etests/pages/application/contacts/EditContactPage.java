@@ -27,6 +27,9 @@ public class EditContactPage {
   public static final By REPORT_DATE = By.cssSelector("#reportDateTime input");
   public static final By DISEASE_COMBOBOX =
       By.cssSelector(".v-verticallayout [location='disease'] [role='combobox'] div");
+  public static final By DISEASE_VALUE =
+      By.xpath(
+          "//div[contains(@class, 'v-expand')]//span[text()='Disease']/../following-sibling::div");
   public static final By CASE_ID_IN_EXTERNAL_SYSTEM_INPUT = By.cssSelector("#caseIdExternalSystem");
   public static final By LAST_CONTACT_DATE = By.cssSelector("#lastContactDate input");
   public static final By CASE_OR_EVENT_INFORMATION_INPUT =
@@ -99,6 +102,8 @@ public class EditContactPage {
   public static final By POPUP_YES_BUTTON = By.id("actionConfirm");
   public static final By SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON = By.id("caseSearchCase");
   public static final By SOURCE_CASE_WINDOW_CASE_INPUT = By.cssSelector(".v-window-wrap input");
+  public static final By SOURCE_CASE_WINDOW_CASE_INPUT_NESTED =
+      By.xpath("//div[contains(@class, 'popupContent')]//input[@placeholder='Search...']");
   public static final By SOURCE_CASE_WINDOW_CONFIRM_BUTTON =
       By.cssSelector(".v-window-wrap #commit");
   public static final By SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION =

@@ -148,10 +148,10 @@ public class ContactDataView extends AbstractContactView {
 					confirmed -> {
 						if (confirmed) {
 							editComponent.discard();
-							Disease selectedDisease = ((ContactDataForm) editComponent.getWrappedComponent()).getSelectedDisease();
+							Disease selectedDisease = editComponent.getWrappedComponent().getSelectedDisease();
 							ControllerProvider.getContactController().openSelectCaseForContactWindow(selectedDisease, selectedCase -> {
 								if (selectedCase != null) {
-									((ContactDataForm) editComponent.getWrappedComponent()).setSourceCase(selectedCase.toReference());
+									editComponent.getWrappedComponent().setSourceCase(selectedCase.toReference());
 									ContactDto contactToChange = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
 									contactToChange.setCaze(selectedCase.toReference());
 									FacadeProvider.getContactFacade().save(contactToChange);
@@ -183,7 +183,7 @@ public class ContactDataView extends AbstractContactView {
 							if (confirmed) {
 								editComponent.discard();
 								layout.removeComponent(CASE_LOC);
-								((ContactDataForm) editComponent.getWrappedComponent()).setSourceCase(null);
+								editComponent.getWrappedComponent().setSourceCase(null);
 								ContactDto contactToChange = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
 								contactToChange.setCaze(null);
 								FacadeProvider.getContactFacade().save(contactToChange);
@@ -212,8 +212,10 @@ public class ContactDataView extends AbstractContactView {
 			sampleList.addSideComponentCreateEventListener(
 				e -> showNavigationConfirmPopupIfDirty(
 					() -> ControllerProvider.getSampleController().create(getContactRef(), contactDto.getDisease(), () -> {
-						final ContactDto contactByUuid = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
-						FacadeProvider.getContactFacade().save(contactByUuid);
+						if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)) {
+							final ContactDto contactByUuid = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
+							FacadeProvider.getContactFacade().save(contactByUuid);
+						}
 						SormasUI.refreshView();
 					})));
 

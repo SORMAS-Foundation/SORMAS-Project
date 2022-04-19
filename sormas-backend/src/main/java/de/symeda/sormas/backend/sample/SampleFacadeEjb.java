@@ -23,6 +23,7 @@ import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -67,7 +68,6 @@ import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SampleSimilarityCriteria;
 import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
@@ -110,7 +110,6 @@ import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFa
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
-import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.IterableHelper;
@@ -119,6 +118,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "SampleFacade")
+@RolesAllowed(UserRight._SAMPLE_VIEW)
 public class SampleFacadeEjb implements SampleFacade {
 
 	private static final int DELETED_BATCH_SIZE = 1000;
@@ -164,15 +164,12 @@ public class SampleFacadeEjb implements SampleFacade {
 	@EJB
 	private NotificationService notificationService;
 	@EJB
-	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
-	@EJB
 	private PathogenTestFacadeEjbLocal pathogenTestFacade;
 	@EJB
 	private SormasToSormasOriginInfoFacadeEjbLocal originInfoFacade;
 
 	@Override
 	public List<String> getAllActiveUuids() {
-
 		User user = userService.getCurrentUser();
 		if (user == null) {
 			return Collections.emptyList();
@@ -188,7 +185,6 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	public List<SampleDto> getAllActiveSamplesAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
-
 		User user = userService.getCurrentUser();
 		if (user == null) {
 			return Collections.emptyList();
@@ -325,7 +321,6 @@ public class SampleFacadeEjb implements SampleFacade {
 
 	@Override
 	public List<String> getDeletedUuidsSince(Date since) {
-
 		User user = userService.getCurrentUser();
 		if (user == null) {
 			return Collections.emptyList();
@@ -340,10 +335,16 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._SAMPLE_CREATE,
+		UserRight._SAMPLE_EDIT })
 	public SampleDto saveSample(@Valid SampleDto dto) {
 		return saveSample(dto, true, true, true);
 	}
 
+	@RolesAllowed({
+		UserRight._SAMPLE_CREATE,
+		UserRight._SAMPLE_EDIT })
 	public SampleDto saveSample(@Valid SampleDto dto, boolean handleChanges, boolean checkChangeDate, boolean internal) {
 
 		Sample existingSample = sampleService.getByUuid(dto.getUuid());
@@ -401,22 +402,18 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		return sampleService.findBy(criteria, userService.getCurrentUser(), AbstractDomainObject.CREATION_DATE, false)
 			.stream()
-			.collect(
-				Collectors.toMap(
-					s -> associatedObjectFn.apply(s).getUuid(),
-					s -> s,
-					(s1, s2) -> {
+			.collect(Collectors.toMap(s -> associatedObjectFn.apply(s).getUuid(), s -> s, (s1, s2) -> {
 
-						// keep the positive one
-						if (s1.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
-							return s1;
-						} else if (s2.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
-							return s2;
-						}
+				// keep the positive one
+				if (s1.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
+					return s1;
+				} else if (s2.getPathogenTestResult() == PathogenTestResultType.POSITIVE) {
+					return s2;
+				}
 
-						// ordered by creation date by default, so always keep the first one
-						return s1;
-					}))
+				// ordered by creation date by default, so always keep the first one
+				return s1;
+			}))
 			.values()
 			.stream()
 			.map(s -> convertToDto(s, pseudonymizer))
@@ -658,11 +655,13 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
+	@RolesAllowed(UserRight._SAMPLE_EXPORT)
 	public List<SampleExportDto> getExportList(SampleCriteria criteria, Collection<String> selectedRows, int first, int max) {
 		return getExportList(criteria, null, selectedRows, first, max);
 	}
 
 	@Override
+	@RolesAllowed(UserRight._SAMPLE_EXPORT)
 	public List<SampleExportDto> getExportList(CaseCriteria criteria, Collection<String> selectedRows, int first, int max) {
 		return getExportList(null, criteria, selectedRows, first, max);
 	}
@@ -696,14 +695,8 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
+	@RolesAllowed(UserRight._SAMPLE_DELETE)
 	public void deleteSample(SampleReferenceDto sampleRef) {
-
-		User user = userService.getCurrentUser();
-		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
-			.contains(UserRight.SAMPLE_DELETE)) {
-			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete samples.");
-		}
-
 		Sample sample = sampleService.getByReferenceDto(sampleRef);
 		sampleService.delete(sample);
 
@@ -711,24 +704,16 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	@Override
+	@RolesAllowed(UserRight._SAMPLE_DELETE)
 	public void deleteAllSamples(List<String> sampleUuids) {
-		User user = userService.getCurrentUser();
-		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
-			.contains(UserRight.SAMPLE_DELETE)) {
-			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete samples.");
-		}
 		long startTime = DateHelper.startTime();
 
 		IterableHelper.executeBatched(sampleUuids, DELETED_BATCH_SIZE, batchedSampleUuids -> sampleService.deleteAll(batchedSampleUuids));
 		logger.debug("deleteAllSamples(sampleUuids) finished. samplesCount = {}, {}ms", sampleUuids.size(), DateHelper.durationMillies(startTime));
 	}
 
+	@RolesAllowed(UserRight._SAMPLE_DELETE)
 	public List<String> deleteSamples(List<String> sampleUuids) {
-		User user = userService.getCurrentUser();
-		if (!userRoleConfigFacade.getEffectiveUserRights(user.getUserRoles().toArray(new UserRole[user.getUserRoles().size()]))
-			.contains(UserRight.SAMPLE_DELETE)) {
-			throw new UnsupportedOperationException("User " + user.getUuid() + " is not allowed to delete samples.");
-		}
 		List<String> deletedSampleUuids = new ArrayList<>();
 		List<Sample> samplesToBeDeleted = sampleService.getByUuids(sampleUuids);
 		if (samplesToBeDeleted != null) {
@@ -930,7 +915,6 @@ public class SampleFacadeEjb implements SampleFacade {
 	}
 
 	private void onSampleChanged(SampleDto existingSample, Sample newSample, boolean syncShares) {
-
 		// Change pathogenTestResultChangeDate if the pathogen test result has changed
 		if (existingSample != null
 			&& existingSample.getPathogenTestResult() != null
@@ -1021,6 +1005,7 @@ public class SampleFacadeEjb implements SampleFacade {
 		return sampleService.isSampleEditAllowed(sample);
 	}
 
+	@RolesAllowed(UserRight._SAMPLE_CREATE)
 	public void cloneSampleForCase(Sample sample, Case caze) {
 		SampleDto newSample = SampleDto.build(sample.getReportingUser().toReference(), caze.toReference());
 		DtoHelper.copyDtoValues(newSample, SampleFacadeEjb.toDto(sample), true);

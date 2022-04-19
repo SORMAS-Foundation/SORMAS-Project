@@ -12,10 +12,12 @@ import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPag
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.TYPE_OF_GATHERING_DETAILS;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.cases.FollowUpStep.faker;
+import static org.sormas.e2etests.steps.web.application.contacts.ContactsLineListingSteps.DATE_FORMATTER_DE;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
@@ -54,10 +56,51 @@ public class EpidemiologicalDataCaseSteps implements En {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
+        "I set Start and End of activity by current date in Activity as Case form",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              START_OF_EXPOSURE_INPUT, formatter.format(LocalDate.now()));
+          webDriverHelpers.fillInWebElement(
+              END_OF_EXPOSURE_INPUT, formatter.format(LocalDate.now()));
+        });
+
+    When(
+        "I check that edit Activity as Case vision button is visible and clickable",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(OPEN_SAVED_ACTIVITY_BUTTON);
+        });
+
+    When(
+        "I set Start and End of activity by current date in Activity as Case form for DE version",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              START_OF_EXPOSURE_INPUT, DATE_FORMATTER_DE.format(LocalDate.now()));
+          webDriverHelpers.fillInWebElement(
+              END_OF_EXPOSURE_INPUT, DATE_FORMATTER_DE.format(LocalDate.now()));
+        });
+    When(
+        "I fill Description field in Activity as Case form",
+        () -> {
+          webDriverHelpers.fillInWebElement(ACTIVITY_DESCRIPTION, faker.book().title());
+        });
+
+    When(
+        "I check if created Activity as Case appears in a grid for Epidemiological data tab in Cases",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(OPEN_SAVED_ACTIVITY_BUTTON);
+        });
+
+    When(
         "I tick a Probable infection environmental box in Exposure for Epidemiological data tab in Cases",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(
               EXPOSURE_PROBABLE_INFECTION_ENVIRONMENT_CHECKBOX);
+        });
+
+    When(
+        "I click on edit Activity as Case vision button",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(OPEN_SAVED_ACTIVITY_BUTTON);
         });
 
     When(
@@ -120,8 +163,47 @@ public class EpidemiologicalDataCaseSteps implements En {
         });
 
     When(
+        "I click on the NEW CONTACT button on Epidemiological Data Tab of Edit Case Page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(NEW_CONTACT_BUTTON);
+        });
+
+    When(
+        "I select ([^\"]*) from Contacts With Source Case Known",
+        (String option) -> {
+          webDriverHelpers.clickWebElementByText(CONTACT_WITH_SOURCE_CASE_KNOWN, option);
+        });
+
+    When(
         "I check if Contacts of Source filed is available",
         () -> webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEW_CONTACT_BUTTON));
+
+    When(
+        "I check that Contacts of Source filed is not available",
+        () -> {
+          softly.assertFalse(
+              webDriverHelpers.isElementVisibleWithTimeout(NEW_CONTACT_BUTTON, 2),
+              "Contacts With Source Case box is visible!");
+          softly.assertAll();
+        });
+
+    When(
+        "I check that Selected case is listed as Source Case in the CONTACTS WITH SOURCE CASE Box",
+        () -> {
+          String boxContents =
+              webDriverHelpers.getTextFromWebElement(CONTACTS_WITH_SOURCE_CASE_BOX);
+          String expectedCase =
+              "Source case:\n"
+                  + apiState.getCreatedCase().getPerson().getFirstName()
+                  + " "
+                  + apiState.getCreatedCase().getPerson().getLastName().toUpperCase()
+                  + " ("
+                  + apiState.getCreatedCase().getUuid().substring(0, 6).toUpperCase();
+          softly.assertTrue(
+              boxContents.contains(expectedCase), "The case is not correctly listed!");
+          softly.assertAll();
+        });
+
     When(
         "I click on the NEW CONTACT button in in Exposure for Epidemiological data tab in Cases",
         () -> webDriverHelpers.clickOnWebElementBySelector(NEW_CONTACT_BUTTON));
@@ -215,6 +297,16 @@ public class EpidemiologicalDataCaseSteps implements En {
         });
 
     When(
+        "I select from Combobox all options in Type of activity field in Activity as Case for Epidemiological data tab for Cases",
+        () -> {
+          for (ActivityAsCaseType value : ActivityAsCaseType.values()) {
+            webDriverHelpers.selectFromCombobox(
+                ACTIVITY_TYPE_OF_ACTIVITY_COMBOBOX,
+                ActivityAsCaseType.getForName(value.getActivityCase()));
+          }
+        });
+
+    When(
         "I select a type of gathering ([^\"]*) option from Combobox in Exposure for Epidemiological data tab in Cases",
         (String option) -> {
           webDriverHelpers.selectFromCombobox(TYPE_OF_GATHERING_COMBOBOX, option);
@@ -226,6 +318,12 @@ public class EpidemiologicalDataCaseSteps implements En {
         });
     When(
         "I click on save button in Exposure for Epidemiological data tab in Cases",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
+        });
+
+    When(
+        "I click on save button in Activity as Case data tab in Cases",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(DONE_BUTTON);
         });
@@ -389,6 +487,46 @@ public class EpidemiologicalDataCaseSteps implements En {
               "Please define a district in order to select a facility.",
               displayedText,
               "Message is incorrect");
+          softly.assertAll();
+        });
+
+    When(
+        "I check if data is correctly displayed in Exposures table in Epidemiological data tab",
+        () -> {
+          List<String> values = new ArrayList<>();
+          values.add(webDriverHelpers.getTextFromPresentWebElement(TYPE_OF_ACTIVITY_EXPOSURES));
+          for (int i = 3; i <= 8; i++) {
+            values.add(webDriverHelpers.getTextFromPresentWebElement(getExposureTableData(i)));
+          }
+          Exposure generatedExposureData =
+              epidemiologicalData.getExposures().stream()
+                  .findFirst()
+                  .orElse(Exposure.builder().build());
+          String date[] = values.get(3).split("\\s+");
+          softly.assertEquals(
+              generatedExposureData.getTypeOfActivity().toString(),
+              values.get(0).toUpperCase(),
+              "Activities are not equal");
+          softly.assertEquals(
+              generatedExposureData.getExposureDetailsRole().toString().replace("_", " "),
+              values.get(1).toUpperCase(),
+              "Exposure descriptions are not equal");
+          softly.assertEquals(
+              generatedExposureData.getTypeOfPlace().toString(),
+              values.get(2).toUpperCase(),
+              "Type of places are not equal");
+          softly.assertEquals(
+              formatter.format(generatedExposureData.getStartOfExposure()),
+              date[0],
+              "Start of exposure dates are not equal");
+          softly.assertEquals(
+              formatter.format(generatedExposureData.getEndOfExposure()),
+              date[4],
+              "End of exposure dates are not equal");
+          softly.assertEquals(
+              generatedExposureData.getExposureDescription(),
+              values.get(5),
+              "Exposure descriptions are not equal");
           softly.assertAll();
         });
   }

@@ -308,12 +308,16 @@
                     android:id="@+id/person_burialDate"
                     app:value="@={data.burialDate}"
                     app:softRequired="true"
+                    app:dependencyParentField="@{personPresentCondition}"
+                    app:dependencyParentValue="@{PresentCondition.BURIED}"
                     style="@style/ControlFirstOfTwoColumnsStyle" />
 
                 <de.symeda.sormas.app.component.controls.ControlSpinnerField
                     android:id="@+id/person_burialConductor"
                     app:value="@={data.burialConductor}"
                     app:softRequired="true"
+                    app:dependencyParentField="@{personPresentCondition}"
+                    app:dependencyParentValue="@{PresentCondition.BURIED}"
                     style="@style/ControlSecondOfTwoColumnsStyle" />
 
             </LinearLayout>
@@ -322,6 +326,8 @@
                 android:id="@+id/person_burialPlaceDescription"
                 app:value="@={data.burialPlaceDescription}"
                 app:softRequired="true"
+                app:dependencyParentField="@{personPresentCondition}"
+                app:dependencyParentValue="@{PresentCondition.BURIED}"
                 style="@style/ControlSingleColumnStyle" />
 
             <ImageView style="@style/FullHorizontalDividerStyle"/>
