@@ -120,7 +120,7 @@ public class VisitJoins extends QueryJoins<Visit> {
 		return getOrCreate(contactJoins, () -> new ContactJoins(getContacts()), this::setContactJoins);
 	}
 
-	public void setContactJoins(ContactJoins contactJoins) {
+	private void setContactJoins(ContactJoins contactJoins) {
 		this.contactJoins = contactJoins;
 	}
 
