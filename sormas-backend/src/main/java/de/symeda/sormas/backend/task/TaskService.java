@@ -579,31 +579,30 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 	}
 
 	public List<Selection<?>> getJurisdictionSelections(TaskQueryContext qc) {
-		CriteriaBuilder cb = qc.getCriteriaBuilder();
-		TaskJoins joins = (TaskJoins) qc.getJoins();
+		final CriteriaBuilder cb = qc.getCriteriaBuilder();
+		final TaskJoins joins = qc.getJoins();
 
-		ContactJoins contactJoins = new ContactJoins(joins.getContact());
 		return Arrays.asList(
 			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(qc)),
 			JurisdictionHelper.booleanSelector(
 				cb,
-				cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, qc.getQuery(), joins.getCaze())))),
+				cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, qc.getQuery(), joins.getCaseJoins())))),
 			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(
 					cb.isNotNull(joins.getContact()),
-					contactService.inJurisdictionOrOwned(new ContactQueryContext(cb, qc.getQuery(), joins.getContact())))),
+					contactService.inJurisdictionOrOwned(new ContactQueryContext(cb, qc.getQuery(), joins.getContactJoins())))),
 			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(
 					cb.isNotNull(joins.getContact()),
-					cb.isNotNull(contactJoins.getCaze()),
-					caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, qc.getQuery(), contactJoins.getCaze())))),
+					cb.isNotNull(joins.getContactJoins().getCaze()),
+					caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, qc.getQuery(), joins.getContactJoins().getCaseJoins())))),
 			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(
 					cb.isNotNull(joins.getEvent()),
-					eventService.inJurisdictionOrOwned(new EventQueryContext(cb, qc.getQuery(), joins.getEvent())))),
+					eventService.inJurisdictionOrOwned(new EventQueryContext(cb, qc.getQuery(), joins.getEventJoins())))),
 			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(

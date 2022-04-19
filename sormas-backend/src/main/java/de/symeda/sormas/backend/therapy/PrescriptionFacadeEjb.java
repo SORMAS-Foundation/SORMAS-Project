@@ -78,7 +78,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 			prescription.get(Prescription.ROUTE),
 			prescription.get(Prescription.ROUTE_DETAILS),
 			prescription.get(Prescription.PRESCRIBING_CLINICIAN),
-			JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, joins.getCaze()))));
+			JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, joins.getCaseJoins()))));
 
 		if (criteria != null) {
 			cq.where(service.buildCriteriaFilter(criteria, cb, prescription));
@@ -173,7 +173,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 
 		PrescriptionJoins joins = new PrescriptionJoins(prescription);
 
-		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, joins.getCaze());
+		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, joins.getCaseJoins());
 		cq.multiselect(
 			joins.getCaze().get(Case.UUID),
 			joins.getCasePerson().get(Person.FIRST_NAME),

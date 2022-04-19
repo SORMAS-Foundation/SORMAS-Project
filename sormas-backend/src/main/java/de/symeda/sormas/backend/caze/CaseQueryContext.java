@@ -8,6 +8,7 @@ import javax.persistence.criteria.Join;
 
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.backend.common.QueryContext;
+import de.symeda.sormas.backend.person.Person;
 
 public class CaseQueryContext extends QueryContext<Case, CaseJoins> {
 
@@ -17,13 +18,17 @@ public class CaseQueryContext extends QueryContext<Case, CaseJoins> {
 	public static final String PERSON_OTHER_CONTACT_DETAILS_SUBQUERY = "personOtherContactDetailsSubQuery";
 
 	public CaseQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Case> root) {
-		super(cb, query, root, new CaseJoins(root));
+		this(cb, query, new CaseJoins(root));
+	}
+
+	public CaseQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, CaseJoins joins) {
+		super(cb, query, joins.getRoot(), joins);
 	}
 
 	@Override
 	protected Expression<?> createExpression(String name) {
 
-		final Join personJoin = ((CaseJoins) getJoins()).getPerson();
+		final Join<Case, Person> personJoin = getJoins().getPerson();
 		if (name.equals(PERSON_PHONE_SUBQUERY)) {
 			return addSubqueryExpression(PERSON_PHONE_SUBQUERY, getPersonContactDetailSubquery(PersonContactDetailType.PHONE, personJoin));
 		} else if (name.equals(PERSON_EMAIL_SUBQUERY)) {

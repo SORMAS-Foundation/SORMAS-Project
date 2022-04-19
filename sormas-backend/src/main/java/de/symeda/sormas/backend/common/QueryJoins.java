@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.common;
 
 import java.util.function.Consumer;
+import java.util.function.Supplier;
 
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
@@ -32,5 +33,18 @@ public class QueryJoins<Y extends AbstractDomainObject> {
 		}
 
 		return join;
+	}
+
+	protected <A extends AbstractDomainObject, J extends QueryJoins<A>> J getOrCreate(J joins, Supplier<J> joinsSupplier, Consumer<J> setValue) {
+
+		final J result;
+		if (joins == null) {
+			result = joinsSupplier.get();
+			setValue.accept(result);
+		} else {
+			result = joins;
+		}
+
+		return result;
 	}
 }

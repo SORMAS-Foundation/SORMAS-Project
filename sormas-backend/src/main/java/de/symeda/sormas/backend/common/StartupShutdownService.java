@@ -74,7 +74,7 @@ import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DefaultEntityHelper;
 import de.symeda.sormas.api.utils.PasswordHelper;
-import de.symeda.sormas.backend.audit.AuditLogger;
+import de.symeda.sormas.backend.audit.AuditLoggerEjb;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -173,7 +173,7 @@ public class StartupShutdownService {
 	@EJB
 	private DeletionConfigurationService deletionConfigurationService;
 	@EJB
-	AuditLogger auditLogger;
+	AuditLoggerEjb.AuditLoggerEjbLocal auditLogger;
 	@Inject
 	private Event<PasswordResetEvent> passwordResetEvent;
 
