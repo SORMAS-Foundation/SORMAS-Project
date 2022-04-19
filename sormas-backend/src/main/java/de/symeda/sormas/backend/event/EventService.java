@@ -345,6 +345,11 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return createUserFilter(cb, cq, eventPath, null, eventUserFilterCriteria);
 	}
 
+	public Predicate createUserFilter(final EventQueryContext queryContext) {
+
+		return createUserFilter(queryContext.getCriteriaBuilder(), queryContext.getQuery(), queryContext.getRoot(), null);
+	}
+
 	@SuppressWarnings("rawtypes")
 	public Predicate createUserFilter(
 		final CriteriaBuilder cb,
