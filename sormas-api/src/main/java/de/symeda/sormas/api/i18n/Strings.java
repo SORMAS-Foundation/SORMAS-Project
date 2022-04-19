@@ -949,6 +949,9 @@ public interface Strings {
 	String messageContactArchived = "messageContactArchived";
 	String messageContactCaseChanged = "messageContactCaseChanged";
 	String messageContactCaseRemoved = "messageContactCaseRemoved";
+	String messageContactConversionFollowUpCommentLarge = "messageContactConversionFollowUpCommentLarge";
+	String messageContactConversionFollowUpCommentLargeAdjustComment = "messageContactConversionFollowUpCommentLargeAdjustComment";
+	String messageContactConversionFollowUpCommentLargeOmitMessage = "messageContactConversionFollowUpCommentLargeOmitMessage";
 	String messageContactCreated = "messageContactCreated";
 	String messageContactDearchived = "messageContactDearchived";
 	String messageContactDuplicateDeleted = "messageContactDuplicateDeleted";
@@ -959,9 +962,6 @@ public interface Strings {
 	String messageContactsEditedExceptArchived = "messageContactsEditedExceptArchived";
 	String messageContactsMerged = "messageContactsMerged";
 	String messageContactToCaseConfirmationRequired = "messageContactToCaseConfirmationRequired";
-	String messageContactConversionFollowUpCommentLarge = "messageContactConversionFollowUpCommentLarge";
-	String messageContactConversionFollowUpCommentLargeAdjustComment = "messageContactConversionFollowUpCommentLargeAdjustComment";
-	String messageContactConversionFollowUpCommentLargeOmitMessage = "messageContactConversionFollowUpCommentLargeOmitMessage";
 	String messageContinentArchived = "messageContinentArchived";
 	String messageContinentArchivingNotPossible = "messageContinentArchivingNotPossible";
 	String messageContinentDearchived = "messageContinentDearchived";
