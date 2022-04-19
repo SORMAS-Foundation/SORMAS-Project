@@ -45,6 +45,7 @@ public class TaskJoins extends QueryJoins<Task> {
 	private Join<Task, User> creator;
 	private Join<Task, User> assignee;
 	private Join<Task, TravelEntry> travelEntry;
+	private Join<Task, User> taskObservers;
 
 	private CaseJoins caseJoins;
 	private ContactJoins contactJoins;
@@ -79,7 +80,7 @@ public class TaskJoins extends QueryJoins<Task> {
 		return getOrCreate(eventJoins, () -> new EventJoins(getEvent()), this::setEventJoins);
 	}
 
-	public void setEventJoins(EventJoins eventJoins) {
+	private void setEventJoins(EventJoins eventJoins) {
 		this.eventJoins = eventJoins;
 	}
 
@@ -95,7 +96,7 @@ public class TaskJoins extends QueryJoins<Task> {
 		return getOrCreate(travelEntryJoins, () -> new TravelEntryJoins(getTravelEntry()), this::setTravelEntryJoins);
 	}
 
-	public void setTravelEntryJoins(TravelEntryJoins travelEntryJoins) {
+	private void setTravelEntryJoins(TravelEntryJoins travelEntryJoins) {
 		this.travelEntryJoins = travelEntryJoins;
 	}
 
@@ -233,5 +234,13 @@ public class TaskJoins extends QueryJoins<Task> {
 
 	private void setContactJoins(ContactJoins contactJoins) {
 		this.contactJoins = contactJoins;
+	}
+
+	public Join<Task, User> getTaskObservers() {
+		return getOrCreate(taskObservers, Task.OBSERVER_USER, JoinType.LEFT, this::setTaskObservers);
+	}
+
+	public void setTaskObservers(Join<Task, User> taskObservers) {
+		this.taskObservers = taskObservers;
 	}
 }

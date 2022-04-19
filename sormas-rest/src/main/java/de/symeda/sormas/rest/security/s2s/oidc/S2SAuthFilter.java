@@ -1,4 +1,4 @@
-package de.symeda.sormas.rest.security.oidc;
+package de.symeda.sormas.rest.security.s2s.oidc;
 
 import java.io.IOException;
 import java.net.URL;

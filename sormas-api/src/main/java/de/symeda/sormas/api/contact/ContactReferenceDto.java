@@ -66,7 +66,8 @@ public class ContactReferenceDto extends ReferenceDto {
 			contactName.lastName,
 			caseName != null ? caseName.firstName : null,
 			caseName != null ? caseName.lastName : null,
-			getUuid());
+			getUuid(),
+			true);
 	}
 
 	@JsonIgnore

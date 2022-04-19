@@ -7,6 +7,7 @@ import java.util.Map;
 import javax.ejb.Remote;
 
 import de.symeda.sormas.api.caze.CaseClassification;
+import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -43,6 +44,12 @@ public interface DashboardFacade {
 	Map<Date, Map<CaseClassification, Integer>> getEpiCurveSeriesElementsPerCaseClassification(DashboardCriteria dashboardCriteria);
 
 	Map<Date, Map<PresentCondition, Integer>> getEpiCurveSeriesElementsPerPresentCondition(DashboardCriteria dashboardCriteria);
+
+	Map<Date, Map<ContactClassification, Long>> getEpiCurveSeriesElementsPerContactClassification(DashboardCriteria dashboardCriteria);
+
+	Map<Date, Map<String, Long>> getEpiCurveSeriesElementsPerContactFollowUpStatus(DashboardCriteria dashboardCriteria);
+
+	Map<Date, Integer> getEpiCurveSeriesElementsPerContactFollowUpUntil(DashboardCriteria dashboardCriteria);
 
 	List<DiseaseBurdenDto> getDiseaseBurden(
 		RegionReferenceDto region,

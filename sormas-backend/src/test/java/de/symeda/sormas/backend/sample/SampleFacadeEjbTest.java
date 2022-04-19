@@ -230,12 +230,12 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		final SampleIndexDto sample12 = sampleList1.get(1);
 		Assert.assertEquals(sample.getUuid(), sample12.getUuid());
 		Assert.assertEquals(contact.getUuid(), sample12.getAssociatedContact().getUuid());
-		Assert.assertEquals("Contact PERSON2", sample12.getAssociatedContact().getCaption());
+		Assert.assertTrue(sample12.getAssociatedContact().getCaption().startsWith("Contact PERSON2"));
 
 		final SampleIndexDto sample13 = sampleList1.get(2);
 		Assert.assertEquals(referredSample.getUuid(), sample13.getUuid());
 		Assert.assertEquals(contact.getUuid(), sample13.getAssociatedContact().getUuid());
-		Assert.assertEquals("Contact PERSON2", sample12.getAssociatedContact().getCaption());
+		Assert.assertTrue(sample13.getAssociatedContact().getCaption().startsWith("Contact PERSON2"));
 
 		final SampleIndexDto sample14 = sampleList1.get(3);
 		Assert.assertEquals(sampleOfEventParticipant.getUuid(), sample14.getUuid());
