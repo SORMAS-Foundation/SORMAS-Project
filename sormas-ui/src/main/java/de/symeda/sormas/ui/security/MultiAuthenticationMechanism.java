@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2020 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -55,7 +55,7 @@ import fish.payara.security.openid.OpenIdAuthenticationMechanism;
  * @since 12-Aug-20
  */
 
-interface extractCallerFromRequest {
+interface ExtractCallerFromRequest {
 
 	String extract(HttpServletRequest request);
 }
@@ -64,7 +64,7 @@ interface extractCallerFromRequest {
 public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism {
 
 	private final static Logger logger = LoggerFactory.getLogger(MultiAuthenticationMechanism.class);
-	private final extractCallerFromRequest extractor;
+	private final ExtractCallerFromRequest extractor;
 	private final HttpAuthenticationMechanism authenticationMechanism;
 
 	@Inject
@@ -76,7 +76,7 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 		if (authenticationProvider.equalsIgnoreCase(AuthProvider.KEYCLOAK)) {
 			try {
 				authenticationMechanism = openIdAuthenticationMechanism;
-				// OIDC Authorization Code Flow  exchanges authorization code for an ID Token, At this point in 
+				// OIDC Authorization Code Flow  exchanges authorization code for an ID Token. At this point in
 				// time we do not have access to the ID token, therefore, we cannot determine the username.
 				// In addition to that, the Keycloak serves the login page on its own, therefore, 
 				// this code will never be called if a user enters a wrong password. It is only suitable to audit
