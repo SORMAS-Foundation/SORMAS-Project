@@ -308,10 +308,11 @@ public class SampleFacadeEjb implements SampleFacade {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<Sample> cq = cb.createQuery(Sample.class);
 		final Root<Sample> sampleRoot = cq.from(Sample.class);
+		final SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, sampleRoot);
 
 		Predicate filter = CriteriaBuilderHelper.and(
 			cb,
-			sampleService.createUserFilter(cb, cq, sampleRoot),
+			sampleService.createUserFilter(sampleQueryContext, null),
 			sampleService.createDefaultFilter(cb, sampleRoot),
 			cb.equal(sampleRoot.get(Sample.LAB_SAMPLE_ID), labSampleId));
 		cq.where(filter);

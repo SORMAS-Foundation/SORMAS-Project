@@ -146,7 +146,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 		Predicate filter = buildCriteriaFilter(criteria, sampleQueryContext);
 
 		if (user != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, from));
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(sampleQueryContext, null));
 		}
 		if (filter != null) {
 			cq.where(filter);
@@ -446,11 +446,12 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Sample> cq = cb.createQuery(getElementClass());
 		Root<Sample> from = cq.from(getElementClass());
+		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, from);
 
-		Predicate filter = createActiveSamplesFilter(cb, from);
+		Predicate filter = createActiveSamplesFilter(sampleQueryContext);
 
 		if (user != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from);
+			Predicate userFilter = createUserFilter(sampleQueryContext, null);
 			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
 		}
 
@@ -467,14 +468,15 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 
 	public List<String> getAllActiveUuids(User user) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<String> cq = cb.createQuery(String.class);
-		Root<Sample> from = cq.from(getElementClass());
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<String> cq = cb.createQuery(String.class);
+		final Root<Sample> from = cq.from(getElementClass());
+		final SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, from);
 
-		Predicate filter = createActiveSamplesFilter(cb, from);
+		Predicate filter = createActiveSamplesFilter(sampleQueryContext);
 
 		if (user != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from);
+			Predicate userFilter = createUserFilter(sampleQueryContext, null);
 			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
 		}
 
@@ -504,11 +506,12 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 
 	public List<String> getDeletedUuidsSince(User user, Date since) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<String> cq = cb.createQuery(String.class);
-		Root<Sample> sample = cq.from(Sample.class);
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<String> cq = cb.createQuery(String.class);
+		final Root<Sample> sample = cq.from(Sample.class);
+		final SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, sample);
 
-		Predicate filter = createUserFilter(cb, cq, sample);
+		Predicate filter = createUserFilter(sampleQueryContext, null);
 		if (since != null) {
 			Predicate dateFilter = cb.greaterThanOrEqualTo(sample.get(Sample.CHANGE_DATE), since);
 			if (filter != null) {
@@ -604,7 +607,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 	@SuppressWarnings("rawtypes")
 	@Deprecated
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Sample> samplePath) {
-		return createUserFilter(new SampleQueryContext(cb, cq, samplePath), new SampleCriteria());
+		throw new UnsupportedOperationException("Method should no longer be used!");
 	}
 
 	@SuppressWarnings("rawtypes")
@@ -1062,13 +1065,17 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 	/**
 	 * Creates a filter that excludes all samples that are deleted or associated with archived or deleted entities
 	 */
-	public Predicate createActiveSamplesFilter(CriteriaBuilder cb, From<?, Sample> root) {
+	public Predicate createActiveSamplesFilter(SampleQueryContext sampleQueryContext) {
+		final From<?, Sample> root = sampleQueryContext.getRoot();
+		final CriteriaBuilder cb = sampleQueryContext.getCriteriaBuilder();
+		final SampleJoins joins = sampleQueryContext.getJoins();
 
-		Join<Sample, Case> caze = root.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
-		Join<Sample, Contact> contact = root.join(Sample.ASSOCIATED_CONTACT, JoinType.LEFT);
-		Join<Contact, Case> contactCase = contact.join(Contact.CAZE, JoinType.LEFT);
-		Join<Sample, EventParticipant> eventParticipant = root.join(Sample.ASSOCIATED_EVENT_PARTICIPANT, JoinType.LEFT);
-		Join<EventParticipant, Event> event = eventParticipant.join(EventParticipant.EVENT, JoinType.LEFT);
+		final Join<Sample, Case> caze = joins.getCaze();
+		final Join<Sample, Contact> contact = joins.getContact();
+		final Join<Contact, Case> contactCase = joins.getContactCase();
+		final Join<Sample, EventParticipant> eventParticipant = joins.getEventParticipant();
+		final Join<EventParticipant, Event> event = joins.getEvent();
+
 		Predicate pred = cb.or(
 			cb.and(cb.isFalse(caze.get(Case.ARCHIVED)), cb.isFalse(caze.get(Case.DELETED))),
 			cb.and(

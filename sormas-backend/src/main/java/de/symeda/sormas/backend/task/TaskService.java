@@ -144,8 +144,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		"unchecked" })
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Task> taskPath) {
-
-		return createUserFilter(new TaskQueryContext(cb, cq, taskPath));
+		throw new UnsupportedOperationException("Method should no longer be used!");
 	}
 
 	@SuppressWarnings({
@@ -224,7 +223,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 
 		Predicate filter = buildCriteriaFilter(taskCriteria, taskQueryContext);
 		if (!ignoreUserFilter) {
-			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, from));
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(taskQueryContext));
 		}
 
 		if (filter != null) {
@@ -237,11 +236,12 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 
 	public List<String> getArchivedUuidsSince(Date since) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<String> cq = cb.createQuery(String.class);
-		Root<Task> taskRoot = cq.from(Task.class);
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<String> cq = cb.createQuery(String.class);
+		final Root<Task> taskRoot = cq.from(Task.class);
+		final TaskQueryContext taskQueryContext = new TaskQueryContext(cb, cq, taskRoot);
 
-		Predicate filter = createUserFilter(cb, cq, taskRoot);
+		Predicate filter = createUserFilter(taskQueryContext);
 		if (since != null) {
 			Predicate dateFilter = cb.greaterThanOrEqualTo(taskRoot.get(Task.CHANGE_DATE), since);
 			if (filter != null) {
