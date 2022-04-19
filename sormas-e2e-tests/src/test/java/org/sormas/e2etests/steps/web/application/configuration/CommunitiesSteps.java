@@ -192,8 +192,7 @@ public class CommunitiesSteps implements En {
 
     When(
         "I clear Community from Responsible Community in Case Edit Tab",
-        () ->
-          webDriverHelpers.selectFromCombobox(COMMUNITY_COMBOBOX, ""));
+        () -> webDriverHelpers.selectFromCombobox(COMMUNITY_COMBOBOX, ""));
 
     When(
         "I check if archived community is unavailable in Case Edit Tab",

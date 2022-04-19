@@ -26,6 +26,7 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.location.LocationJoins;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
 
@@ -33,20 +34,13 @@ public class EventJoins extends QueryJoins<Event> {
 
 	private Join<Event, User> reportingUser;
 	private Join<Event, User> responsibleUser;
-
 	private Join<Event, Location> location;
-	private Join<Location, Region> region;
-	private Join<Location, District> district;
-	private Join<Location, Community> community;
-	private Join<Location, Facility> facility;
-
 	private Join<Event, EventParticipant> eventParticipants;
-	private Join<EventParticipant, Person> eventParticipantPersons;
-	private Join<EventParticipant, Case> eventParticipantCases;
-
 	private Join<Event, EventGroup> eventGroup;
-
 	private Join<Event, Event> superordinateEvent;
+
+	private LocationJoins locationJoins;
+	private EventParticipantJoins eventParticipantJoins;
 
 	public EventJoins(From<?, Event> event) {
 		super(event);
@@ -77,35 +71,19 @@ public class EventJoins extends QueryJoins<Event> {
 	}
 
 	public Join<Location, Region> getRegion() {
-		return getOrCreate(region, Location.REGION, JoinType.LEFT, getLocation(), this::setRegion);
-	}
-
-	private void setRegion(Join<Location, Region> region) {
-		this.region = region;
+		return getLocationJoins().getRegion();
 	}
 
 	public Join<Location, District> getDistrict() {
-		return getOrCreate(district, Location.DISTRICT, JoinType.LEFT, getLocation(), this::setDistrict);
-	}
-
-	private void setDistrict(Join<Location, District> district) {
-		this.district = district;
+		return getLocationJoins().getDistrict();
 	}
 
 	public Join<Location, Community> getCommunity() {
-		return getOrCreate(community, Location.COMMUNITY, JoinType.LEFT, getLocation(), this::setCommunity);
-	}
-
-	private void setCommunity(Join<Location, Community> community) {
-		this.community = community;
+		return getLocationJoins().getCommunity();
 	}
 
 	public Join<Location, Facility> getFacility() {
-		return getOrCreate(facility, Location.FACILITY, JoinType.LEFT, getLocation(), this::setFacility);
-	}
-
-	private void setFacility(Join<Location, Facility> facility) {
-		this.facility = facility;
+		return getLocationJoins().getFacility();
 	}
 
 	public Join<Event, EventParticipant> getEventParticipants() {
@@ -117,24 +95,11 @@ public class EventJoins extends QueryJoins<Event> {
 	}
 
 	public Join<EventParticipant, Person> getEventParticipantPersons() {
-		return getOrCreate(eventParticipantPersons, EventParticipant.PERSON, JoinType.LEFT, getEventParticipants(), this::setEventParticipantPersons);
-	}
-
-	private void setEventParticipantPersons(Join<EventParticipant, Person> eventParticipantPersons) {
-		this.eventParticipantPersons = eventParticipantPersons;
+		return getEventParticipantJoins().getPerson();
 	}
 
 	public Join<EventParticipant, Case> getEventParticipantCases() {
-		return getOrCreate(
-			eventParticipantCases,
-			EventParticipant.RESULTING_CASE,
-			JoinType.LEFT,
-			getEventParticipants(),
-			this::setEventParticipantCases);
-	}
-
-	private void setEventParticipantCases(Join<EventParticipant, Case> eventParticipantCases) {
-		this.eventParticipantCases = eventParticipantCases;
+		return getEventParticipantJoins().getResultingCase();
 	}
 
 	public Join<Event, EventGroup> getEventGroup() {
@@ -151,5 +116,21 @@ public class EventJoins extends QueryJoins<Event> {
 
 	private void setSuperordinateEvent(Join<Event, Event> superordinateEvent) {
 		this.superordinateEvent = superordinateEvent;
+	}
+
+	public LocationJoins getLocationJoins() {
+		return getOrCreate(locationJoins, () -> new LocationJoins(getLocation()), this::setLocationJoins);
+	}
+
+	public void setLocationJoins(LocationJoins locationJoins) {
+		this.locationJoins = locationJoins;
+	}
+
+	public EventParticipantJoins getEventParticipantJoins() {
+		return getOrCreate(eventParticipantJoins, () -> new EventParticipantJoins(getEventParticipants()), this::setEventParticipantJoins);
+	}
+
+	public void setEventParticipantJoins(EventParticipantJoins eventParticipantJoins) {
+		this.eventParticipantJoins = eventParticipantJoins;
 	}
 }

@@ -164,6 +164,12 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 
 		Predicate assigneeFilter = createAssigneeFilter(cb, ((TaskJoins) taskQueryContext.getJoins()).getAssignee());
 
+		Predicate contactRightsPredicate = this.createContactFilter(cb ,taskQueryContext.getRoot(), (taskQueryContext.getJoins()).getAssignee(),
+				(taskQueryContext.getJoins()).getTaskObservers(), currentUser);
+		if(contactRightsPredicate != null){
+			assigneeFilter = cb.and(assigneeFilter, contactRightsPredicate);
+		}
+
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if ((jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
 			|| currentUser.hasUserRole(UserRole.REST_USER)) {
@@ -196,6 +202,27 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 	public Predicate createAssigneeFilter(CriteriaBuilder cb, Join<?, User> assigneeUserJoin) {
 		return CriteriaBuilderHelper
 			.or(cb, cb.isNull(assigneeUserJoin.get(User.UUID)), userService.createCurrentUserJurisdictionFilter(cb, assigneeUserJoin));
+	}
+
+	/*
+		A user that not have CONTACT_VIEW or CONTACT_EDIT rights is allowed to see the tasks assign to it or where it is
+	set as an observer. This restriction should be applied only for tasks of type CONTACT.
+	 */
+	private Predicate createContactFilter(
+			CriteriaBuilder cb,
+			From<?, Task> task,
+			Join<?, User> assigneeUserJoin,
+			Join<?, User> observersJoin,
+			User user) {
+		Predicate predicate = null;
+		if (!userService.hasRight(UserRight.CONTACT_VIEW) && !userService.hasRight(UserRight.CONTACT_EDIT)) {
+			predicate = cb.or(
+					cb.notEqual(task.get(Task.TASK_CONTEXT), TaskContext.CONTACT),
+					cb.equal(assigneeUserJoin.get(User.UUID), user.getUuid()),
+					cb.equal(observersJoin.get(User.UUID), user.getUuid()));
+		}
+
+		return predicate;
 	}
 
 	public long getCount(TaskCriteria taskCriteria) {
@@ -552,31 +579,30 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 	}
 
 	public List<Selection<?>> getJurisdictionSelections(TaskQueryContext qc) {
-		CriteriaBuilder cb = qc.getCriteriaBuilder();
-		TaskJoins joins = (TaskJoins) qc.getJoins();
+		final CriteriaBuilder cb = qc.getCriteriaBuilder();
+		final TaskJoins joins = qc.getJoins();
 
-		ContactJoins contactJoins = new ContactJoins(joins.getContact());
 		return Arrays.asList(
 			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(qc)),
 			JurisdictionHelper.booleanSelector(
 				cb,
-				cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, qc.getQuery(), joins.getCaze())))),
+				cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, qc.getQuery(), joins.getCaseJoins())))),
 			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(
 					cb.isNotNull(joins.getContact()),
-					contactService.inJurisdictionOrOwned(new ContactQueryContext(cb, qc.getQuery(), joins.getContact())))),
+					contactService.inJurisdictionOrOwned(new ContactQueryContext(cb, qc.getQuery(), joins.getContactJoins())))),
 			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(
 					cb.isNotNull(joins.getContact()),
-					cb.isNotNull(contactJoins.getCaze()),
-					caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, qc.getQuery(), contactJoins.getCaze())))),
+					cb.isNotNull(joins.getContactJoins().getCaze()),
+					caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, qc.getQuery(), joins.getContactJoins().getCaseJoins())))),
 			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(
 					cb.isNotNull(joins.getEvent()),
-					eventService.inJurisdictionOrOwned(new EventQueryContext(cb, qc.getQuery(), joins.getEvent())))),
+					eventService.inJurisdictionOrOwned(new EventQueryContext(cb, qc.getQuery(), joins.getEventJoins())))),
 			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(
