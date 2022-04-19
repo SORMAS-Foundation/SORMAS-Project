@@ -20,12 +20,13 @@ public abstract class DeletableAdo extends AbstractDomainObject {
 
 	private boolean deleted;
 
-	public void setDeleted(boolean deleted) {
-		this.deleted = deleted;
-	}
-
 	@Column
 	public boolean isDeleted() {
 		return deleted;
 	}
+
+	public void setDeleted(boolean deleted) {
+		this.deleted = deleted;
+	}
+
 }

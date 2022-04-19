@@ -100,9 +100,12 @@ public abstract class AbstractDetailView<R extends ReferenceDto> extends Abstrac
 
 						@Override
 						protected void onConfirm() {
-							subComponent.commitAndHandle();
+							boolean committedSuccessfully = subComponent.commitAndHandle();
 							popupWindow.close();
-							navigate.run();
+
+							if (committedSuccessfully) {
+								navigate.run();
+							}
 						}
 
 						@Override
