@@ -45,6 +45,7 @@ public class TaskJoins extends QueryJoins<Task> {
 	private Join<Task, User> creator;
 	private Join<Task, User> assignee;
 	private Join<Task, TravelEntry> travelEntry;
+	private Join<Task, User> taskObservers;
 
 	private CaseJoins caseJoins;
 	private ContactJoins contactJoins;
