@@ -526,7 +526,7 @@ public class LabMessageController {
 				final EventParticipantDto dto = createForm.getValue();
 
 				FacadeProvider.getPersonFacade().savePerson(dto.getPerson());
-				EventParticipantDto savedDto = FacadeProvider.getEventParticipantFacade().saveEventParticipant(dto);
+				EventParticipantDto savedDto = FacadeProvider.getEventParticipantFacade().save(dto);
 				Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Notification.Type.ASSISTIVE_NOTIFICATION);
 				createSample(
 					SampleDto.build(UserProvider.getCurrent().getUserReference(), savedDto.toReference()),

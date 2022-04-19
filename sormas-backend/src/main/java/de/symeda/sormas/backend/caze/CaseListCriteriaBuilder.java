@@ -289,11 +289,11 @@ public class CaseListCriteriaBuilder {
 		selections.addAll(
 			Arrays.asList(
 				caze.get(Case.RE_INFECTION),
-				joins.getAddress().get(Location.CITY),
-				joins.getAddress().get(Location.STREET),
-				joins.getAddress().get(Location.HOUSE_NUMBER),
-				joins.getAddress().get(Location.ADDITIONAL_INFORMATION),
-				joins.getAddress().get(Location.POSTAL_CODE),
+				joins.getPersonAddress().get(Location.CITY),
+				joins.getPersonAddress().get(Location.STREET),
+				joins.getPersonAddress().get(Location.HOUSE_NUMBER),
+				joins.getPersonAddress().get(Location.ADDITIONAL_INFORMATION),
+				joins.getPersonAddress().get(Location.POSTAL_CODE),
 				caseQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY),
 				joins.getReportingUser().get(User.UUID),
 				joins.getReportingUser().get(User.FIRST_NAME),
@@ -313,7 +313,7 @@ public class CaseListCriteriaBuilder {
 		case CaseIndexDetailedDto.HOUSE_NUMBER:
 		case CaseIndexDetailedDto.ADDITIONAL_INFORMATION:
 		case CaseIndexDetailedDto.POSTAL_CODE:
-			return Collections.singletonList(joins.getAddress().get(sortProperty.propertyName));
+			return Collections.singletonList(joins.getPersonAddress().get(sortProperty.propertyName));
 		case CaseIndexDetailedDto.PHONE:
 			return Collections.singletonList(cb.literal(49));
 		case CaseIndexDetailedDto.REPORTING_USER:

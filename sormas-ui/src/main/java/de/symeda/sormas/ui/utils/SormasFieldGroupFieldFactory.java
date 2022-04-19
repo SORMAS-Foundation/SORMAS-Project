@@ -1,6 +1,5 @@
 package de.symeda.sormas.ui.utils;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.EnumSet;
 import java.util.List;
@@ -22,13 +21,10 @@ import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.symptoms.SymptomState;
-import de.symeda.sormas.api.user.HasRights;
-import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
-import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.ActivityAsCase.ActivityAsCaseField;
 import de.symeda.sormas.ui.clinicalcourse.HealthConditionsForm;
 import de.symeda.sormas.ui.exposure.ExposuresField;
@@ -220,15 +216,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 				visible = fieldVisibilityCheckers.isVisible(enumClass, ((Enum<?>) r).name());
 			}
 
-			boolean hasRights = true;
-			if (r instanceof HasRights) {
-				UserRight[] rights = ((HasRights) r).hasRights();
-				if (rights != null && rights.length > 0) {
-					hasRights = UserProvider.getCurrent().getUserRights().containsAll(Arrays.asList(rights));
-				}
-			}
-
-			if (visible && hasRights) {
+			if (visible) {
 				Item newItem = select.addItem(r);
 				newItem.getItemProperty(CAPTION_PROPERTY_ID).setValue(r.toString());
 			}
