@@ -38,8 +38,10 @@ public class ActionJoins extends QueryJoins<Action> {
 		super(root);
 	}
 
-	public Join<Action, Event> getEvent(JoinType joinType) {
-		return getOrCreate(event, Action.EVENT, joinType, this::setEvent);
+	public Join<Action, Event> getEvent() {
+
+		// Despite the usual pattern this is intended to be an INNER join (currently Actions only belong to Events)
+		return getOrCreate(event, Action.EVENT, JoinType.INNER, this::setEvent);
 	}
 
 	private void setEvent(Join<Action, Event> event) {
@@ -47,7 +49,7 @@ public class ActionJoins extends QueryJoins<Action> {
 	}
 
 	public EventJoins getEventJoins() {
-		return getOrCreate(eventJoins, () -> new EventJoins(getEvent(JoinType.INNER)), this::setEventJoins);
+		return getOrCreate(eventJoins, () -> new EventJoins(getEvent()), this::setEventJoins);
 	}
 
 	private void setEventJoins(EventJoins eventJoins) {

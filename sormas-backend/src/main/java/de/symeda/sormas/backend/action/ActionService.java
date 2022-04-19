@@ -272,7 +272,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 
 		Join<Action, User> lastModifiedBy = actionJoins.getLastModifiedBy();
 		Join<Action, User> creatorUser = actionJoins.getCreator();
-		Join<Action, Event> event = actionJoins.getEvent(JoinType.INNER);
+		Join<Action, Event> event = actionJoins.getEvent();
 		Join<Event, User> eventReportingUser = event.join(Event.REPORTING_USER, JoinType.LEFT);
 		Join<Event, User> eventResponsibleUser = event.join(Event.RESPONSIBLE_USER, JoinType.LEFT);
 
@@ -419,7 +419,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		ActionJoins actionJoins = (ActionJoins) actionQueryContext.getJoins();
 		Join<Action, User> lastModifiedBy = actionJoins.getLastModifiedBy();
 		Join<Action, User> creator = actionJoins.getCreator();
-		Join<Action, Event> event = actionJoins.getEvent(JoinType.INNER);
+		Join<Action, Event> event = actionJoins.getEvent();
 		Join<Event, User> eventReportingUser = event.join(Event.REPORTING_USER, JoinType.LEFT);
 		Join<Event, User> eventResponsibleUser = event.join(Event.RESPONSIBLE_USER, JoinType.LEFT);
 
@@ -482,7 +482,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		final ActionQueryContext actionQueryContext = new ActionQueryContext(cb, cq, action);
 		ActionJoins actionJoins = (ActionJoins) actionQueryContext.getJoins();
 
-		Join<Action, Event> event = actionJoins.getEvent(JoinType.INNER);
+		Join<Action, Event> event = actionJoins.getEvent();
 
 		// Add filters
 		Predicate filter = eventService.createUserFilter(cb, cq, event);
