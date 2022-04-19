@@ -25,6 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -1396,6 +1397,10 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 	@Override
 	public void deletePermanent(Contact contact) {
+
+		// Delete all tasks associated with this case
+		Optional.ofNullable(contact.getTasks()).ifPresent(tl -> tl.forEach(t -> taskService.deletePermanent(t)));
+
 		// Delete all samples that are only associated with this contact
 		contact.getSamples()
 			.stream()
