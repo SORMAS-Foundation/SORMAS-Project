@@ -569,7 +569,7 @@ public class SampleFacadeEjb implements SampleFacade {
 
 		cq.multiselect(selections);
 
-		Predicate filter = sampleService.createUserFilter(cb, cq, sampleRoot);
+		Predicate filter = sampleService.createUserFilter(sampleQueryContext, sampleCriteria);
 
 		if (sampleCriteria != null) {
 			Predicate criteriaFilter = sampleService.buildCriteriaFilter(sampleCriteria, sampleQueryContext);
