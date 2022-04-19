@@ -52,7 +52,7 @@ Feature: Create user
     Given I log in as a Admin User
     And I click on the Users from navbar
     And I create 2 new users with National User via UI
-    And I pick and count amount a users that was created on the same hour
+    And I pick and count amount a users that was created on the same period of time
     And I click Enter Bulk Edit Mode on Users directory page
     And I click checkbox to choose all User results
     And I click on Bulk Actions combobox on User Directory Page

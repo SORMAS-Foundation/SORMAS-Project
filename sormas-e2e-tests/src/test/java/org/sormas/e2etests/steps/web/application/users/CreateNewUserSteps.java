@@ -51,7 +51,7 @@ public class CreateNewUserSteps implements En {
   public static String userName;
   public static String userPass;
   private final BaseSteps baseSteps;
-  private static Integer amountOfRecords;
+  private static int amountOfRecords;
 
   @Inject
   public CreateNewUserSteps(
@@ -63,16 +63,14 @@ public class CreateNewUserSteps implements En {
     this.baseSteps = baseSteps;
 
     When(
-        "^I pick and count amount a users that was created on the same hour$",
+        "^I pick and count amount a users that was created on the same period of time$",
         () -> {
-            String userDataPartial = user.getUserName().substring(0, 17);
-          webDriverHelpers.fillInWebElement(USER_INPUT_SEARCH, userDataPartial);
+          String userNameFromEditUser = user.getUserName().substring(0, 19);
+          webDriverHelpers.fillInWebElement(USER_INPUT_SEARCH, userNameFromEditUser);
           TimeUnit.SECONDS.sleep(5); // wait for page loaded
           String amountOfUsers = webDriverHelpers.getTextFromWebElement(AMOUNT_OF_CHOSEN_USERS);
           amountOfRecords = Integer.parseInt(amountOfUsers);
         });
-
-    When("I Count amount of user", () -> {});
 
     When(
         "I click Enter Bulk Edit Mode on Users directory page",
@@ -90,11 +88,15 @@ public class CreateNewUserSteps implements En {
         "I pick {string} value for Active filter in User Directory",
         (String activeValue) -> {
           webDriverHelpers.selectFromCombobox(ACTIVE_USER_COMBOBOX, activeValue);
+          TimeUnit.SECONDS.sleep(3); // waiting for all users to pick
         });
 
     When(
         "I click on Bulk Actions combobox on User Directory Page",
-        () -> webDriverHelpers.clickOnWebElementBySelector(BULK_ACTIONS));
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(BULK_ACTIONS);
+          TimeUnit.SECONDS.sleep(3); // waiting for all users to pick
+        });
 
     When(
         "I click on {string} from Bulk Actions combobox on User Directory Page",
@@ -118,7 +120,10 @@ public class CreateNewUserSteps implements En {
               webDriverHelpers.getTextFromWebElement(AMOUNT_ACTIVE_INACTIVE_USERS);
           Integer optionsRecords = Integer.parseInt(amountOfCheckboxes);
           softly.assertEquals(
-              amountOfRecords, optionsRecords, "Not all Active fields value are changed");
+              Integer.valueOf(amountOfRecords),
+              optionsRecords,
+              "Not all Active fields value are changed");
+          softly.assertAll();
         });
 
     When(
