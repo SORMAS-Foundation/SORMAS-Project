@@ -542,6 +542,7 @@
     <string name="message_language_change_unsuccessful">No se pudo cambiar el idioma debido a un error interno.</string>
     <string name="message_Event_and_Case_disease_mismatch">El nuevo evento que será vinculado al caso tiene una enfermedad diferente a la del caso </string>
     <string name="message_Event_already_linked_to_Case">El evento ya fue vinculado a este caso </string>
+    <string name="message_EventParticipant_to_Case_Without_Event_Disease">No es posible crear casos a partir de un participante de evento si la enfermedad del evento no está especificada </string>
     <string name="notification_channel_tasks_name">Tareas nuevas o actualizadas</string>
     <string name="notification_channel_tasks_description">Reciba una notificación cuando se le asigne una nueva tarea o se edite una de sus tareas asignadas</string>
     <string name="notification_channel_case_changes_name">Cambios importantes del caso</string>
