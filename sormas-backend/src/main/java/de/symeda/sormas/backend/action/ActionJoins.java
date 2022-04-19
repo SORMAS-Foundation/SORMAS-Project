@@ -50,7 +50,7 @@ public class ActionJoins extends QueryJoins<Action> {
 		return getOrCreate(eventJoins, () -> new EventJoins(getEvent(joinType)), this::setEventJoins);
 	}
 
-	public void setEventJoins(EventJoins eventJoins) {
+	private void setEventJoins(EventJoins eventJoins) {
 		this.eventJoins = eventJoins;
 	}
 

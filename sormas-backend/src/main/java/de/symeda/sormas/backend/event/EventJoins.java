@@ -122,7 +122,7 @@ public class EventJoins extends QueryJoins<Event> {
 		return getOrCreate(locationJoins, () -> new LocationJoins(getLocation()), this::setLocationJoins);
 	}
 
-	public void setLocationJoins(LocationJoins locationJoins) {
+	private void setLocationJoins(LocationJoins locationJoins) {
 		this.locationJoins = locationJoins;
 	}
 
@@ -130,7 +130,7 @@ public class EventJoins extends QueryJoins<Event> {
 		return getOrCreate(eventParticipantJoins, () -> new EventParticipantJoins(getEventParticipants()), this::setEventParticipantJoins);
 	}
 
-	public void setEventParticipantJoins(EventParticipantJoins eventParticipantJoins) {
+	private void setEventParticipantJoins(EventParticipantJoins eventParticipantJoins) {
 		this.eventParticipantJoins = eventParticipantJoins;
 	}
 }
