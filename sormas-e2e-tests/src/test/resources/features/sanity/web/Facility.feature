@@ -18,3 +18,15 @@ Feature: Facility end to end tests
     And I close facilities popup window
     Then I check if data from csv is correctly displayed in facilities tab
     And I delete downloaded csv file for facilities in facility tab
+
+  @issue=SORDEV-9206 @env_main
+  Scenario: Checking availability of new categories and types of facility
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I fill new case form with specific data
+    And I set Place of stay to "FACILITY", Facility Category to "Accommodation" and  Facility Type to "Hostel, dormitory"
+    Then I click on save case button
+    And I check the created data is correctly displayed on Edit case person page
+    And I Facility Category to "Accommodation" and  Facility Type to "Hostel, dormitory"
+    And I click on New Sample
