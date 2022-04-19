@@ -9,7 +9,6 @@ import javax.ejb.Singleton;
 import javax.inject.Inject;
 
 import de.symeda.sormas.api.common.CoreEntityType;
-import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
@@ -60,19 +59,16 @@ public class CoreEntityDeletionService {
 	public void executeAutomaticDeletion() {
 
 		coreEntityFacades.forEach(entityTypeFacadePair -> {
-			DeletionConfiguration coreEntityTypeConfig = deletionConfigurationService.getCoreEntityTypeConfig(entityTypeFacadePair.coreEntityType);
+			List<DeletionConfiguration> coreEntityTypeConfigs =
+				deletionConfigurationService.getCoreEntityTypeConfigs(entityTypeFacadePair.coreEntityType);
 
-			if (coreEntityTypeConfig.getDeletionReference() != null && coreEntityTypeConfig.deletionPeriod != null) {
-				entityTypeFacadePair.entityFacade.executeAutomaticDeletion(
-					coreEntityTypeConfig,
-					supportsPermanentDeletion(entityTypeFacadePair.coreEntityType),
-					DELETE_BATCH_SIZE);
-			}
+			coreEntityTypeConfigs.stream().filter(c -> c.getDeletionReference() != null && c.getDeletionPeriod() != null).forEach(c -> {
+				entityTypeFacadePair.entityFacade
+					.executeAutomaticDeletion(c, supportsPermanentDeletion(entityTypeFacadePair.coreEntityType), DELETE_BATCH_SIZE);
+			});
 		});
 
-		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.DELETE_PERMANENT)) {
-			personService.deleteUnreferencedPersons(DELETE_BATCH_SIZE);
-		}
+		personService.deleteUnreferencedPersons(DELETE_BATCH_SIZE);
 	}
 
 	private static final class EntityTypeFacadePair {

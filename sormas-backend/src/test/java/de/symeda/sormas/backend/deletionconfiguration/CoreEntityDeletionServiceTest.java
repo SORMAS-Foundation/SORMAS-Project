@@ -280,6 +280,43 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testAutomaticManuallyDeletedEntitiesDeletion() {
+
+		createDeletionConfigurations();
+		DeletionConfiguration deletionConfig = getDeletionConfigurationService().getCoreEntityTypeManualDeletionConfig(CoreEntityType.IMMUNIZATION);
+
+		TestDataCreator.RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, UserRole.ADMIN, UserRole.NATIONAL_USER);
+		PersonDto person = creator.createPerson();
+		ImmunizationDto immunization = creator.createImmunization(Disease.EVD, person.toReference(), user.toReference(), rdcf);
+
+		useSystemUser();
+		getCoreEntityDeletionService().executeAutomaticDeletion();
+		loginWith(user);
+
+		assertEquals(1, getImmunizationService().count());
+
+		getImmunizationFacade().delete(immunization.getUuid());
+
+		assertEquals(1, getImmunizationService().count());
+
+		final Date ninetyDaysPlusAgo = DateUtils.addDays(new Date(), (-1) * deletionConfig.deletionPeriod - 1);
+		SessionImpl em = (SessionImpl) getEntityManager();
+		QueryImplementor query = em.createQuery("update immunization i set changedate=:date where i.uuid=:uuid");
+		em.getTransaction().begin();
+		query.setParameter("date", new Timestamp(ninetyDaysPlusAgo.getTime()));
+		query.setParameter("uuid", immunization.getUuid());
+		query.executeUpdate();
+		em.getTransaction().commit();
+
+		useSystemUser();
+		getCoreEntityDeletionService().executeAutomaticDeletion();
+		loginWith(user);
+
+		assertEquals(0, getImmunizationService().count());
+	}
+
+	@Test
 	public void testContactPermanentDeletion() throws IOException {
 		createDeletionConfigurations();
 		DeletionConfiguration coreEntityTypeConfig = getDeletionConfigurationService().getCoreEntityTypeConfig(CoreEntityType.CONTACT);
