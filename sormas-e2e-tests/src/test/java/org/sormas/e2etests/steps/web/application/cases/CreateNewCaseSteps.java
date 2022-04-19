@@ -394,17 +394,9 @@ public class CreateNewCaseSteps implements En {
           fillPlaceDescription(caze.getPlaceDescription());
         });
     When(
-        "I set Place of stay to {string}, Facility Category to {string} and  Facility Type to {string}",
+        "I set Place of stay to {string}, Facility Category to {string} and  Facility Type to {string} in Case creation",
         (String placeOfStay, String facilityCategory, String facilityType) -> {
           selectPlaceOfStay(placeOfStay);
-          selectFacilityCategory(facilityCategory);
-          selectFacilityType(facilityType);
-          selectFacility("Other facility");
-          fillPlaceDescription(caze.getPlaceDescription());
-        });
-    When(
-        "I Facility Category to {string} and  Facility Type to {string}",
-        (String facilityCategory, String facilityType) -> {
           selectFacilityCategory(facilityCategory);
           selectFacilityType(facilityType);
           selectFacility("Other facility");
