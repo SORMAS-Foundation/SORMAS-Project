@@ -234,4 +234,12 @@ public class TaskJoins extends QueryJoins<Task> {
 	private void setContactJoins(ContactJoins contactJoins) {
 		this.contactJoins = contactJoins;
 	}
+
+	public Join<Task, User> getTaskObservers() {
+		return getOrCreate(taskObservers, Task.OBSERVER_USER, JoinType.LEFT, this::setTaskObservers);
+	}
+
+	public void setTaskObservers(Join<Task, User> taskObservers) {
+		this.taskObservers = taskObservers;
+	}
 }

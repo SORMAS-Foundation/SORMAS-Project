@@ -40,4 +40,6 @@ public class EventParticipantsPage {
   public static final By ERROR_MESSAGE_TEXT = By.cssSelector("p.v-Notification-description");
   public static final By DISCARD_BUTTON = By.id("discard");
   public static final By APPLY_FILTERS_BUTTON = By.id("actionApplyFilters");
+  public static final By EXPORT_EVENT_PARTICIPANT_CONFIGURATION_DATA_REGION_CHECKBOX =
+      By.xpath("//label[text()='Region']");
 }

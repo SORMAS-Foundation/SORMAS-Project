@@ -15,17 +15,20 @@
 
 package de.symeda.sormas.app.caze.edit;
 
+import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
+import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
+
+import java.util.Calendar;
+import java.util.List;
+
+import org.apache.commons.lang3.StringUtils;
+
 import android.content.Context;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.view.Menu;
 
 import androidx.annotation.NonNull;
-
-import org.apache.commons.lang3.StringUtils;
-
-import java.util.Calendar;
-import java.util.List;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
@@ -51,12 +54,10 @@ import de.symeda.sormas.app.core.async.AsyncTaskResult;
 import de.symeda.sormas.app.core.async.SavingAsyncTask;
 import de.symeda.sormas.app.core.async.TaskResultHolder;
 import de.symeda.sormas.app.core.notification.NotificationHelper;
+import de.symeda.sormas.app.core.notification.NotificationType;
 import de.symeda.sormas.app.person.SelectOrCreatePersonDialog;
 import de.symeda.sormas.app.util.Bundler;
 import de.symeda.sormas.app.util.DateFormatHelper;
-
-import static de.symeda.sormas.app.core.notification.NotificationType.ERROR;
-import static de.symeda.sormas.app.core.notification.NotificationType.WARNING;
 
 public class CaseNewActivity extends BaseEditActivity<Case> {
 
@@ -83,8 +84,15 @@ public class CaseNewActivity extends BaseEditActivity<Case> {
 		BaseEditActivity.startActivity(fromActivity, CaseNewActivity.class, buildBundleWithContact(contactUuid));
 	}
 
-	public static void startActivityFromEventPerson(Context fromActivity, String eventParticipantUuid) {
-		BaseEditActivity.startActivity(fromActivity, CaseNewActivity.class, buildBundleWithEventParticipant(eventParticipantUuid));
+	public static void startActivityFromEventPerson(Context fromActivity, EventParticipant eventParticipant) {
+		if (eventParticipant.getEvent().getDisease() == null) {
+			NotificationHelper.showNotification(
+				getActiveActivity(),
+				NotificationType.WARNING,
+				getActiveActivity().getResources().getString(R.string.message_EventParticipant_to_Case_Without_Event_Disease));
+			return;
+		}
+		BaseEditActivity.startActivity(fromActivity, CaseNewActivity.class, buildBundleWithEventParticipant(eventParticipant.getUuid()));
 	}
 
 	public static Bundler buildBundle() {

@@ -13,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.MapCaseDto;
+import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.dashboard.DashboardCaseStatisticDto;
 import de.symeda.sormas.api.dashboard.DashboardContactStatisticDto;
@@ -74,6 +75,25 @@ public class DashboardResource extends EntityDtoResource {
 	public Map<Date, Map<PresentCondition, Integer>> getEpidemiologicalCurveDataPerPresentCondition(
 		@RequestBody DashboardCriteria dashboardCriteria) {
 		return FacadeProvider.getDashboardFacade().getEpiCurveSeriesElementsPerPresentCondition(dashboardCriteria);
+	}
+
+	@POST
+	@Path("/epiCurveElementsContactClassification")
+	public Map<Date, Map<ContactClassification, Long>> getEpiCurveSeriesElementsPerContactClassification(
+		@RequestBody DashboardCriteria dashboardCriteria) {
+		return FacadeProvider.getDashboardFacade().getEpiCurveSeriesElementsPerContactClassification(dashboardCriteria);
+	}
+
+	@POST
+	@Path("/epiCurveElementsContactFollowUpStatus")
+	public Map<Date, Map<String, Long>> getEpiCurveSeriesElementsPerContactFollowUpStatus(@RequestBody DashboardCriteria dashboardCriteria) {
+		return FacadeProvider.getDashboardFacade().getEpiCurveSeriesElementsPerContactFollowUpStatus(dashboardCriteria);
+	}
+
+	@POST
+	@Path("/epiCurveElementsContactFollowUpUntil")
+	public Map<Date, Integer> getEpiCurveSeriesElementsPerContactFollowUpUntil(@RequestBody DashboardCriteria dashboardCriteria) {
+		return FacadeProvider.getDashboardFacade().getEpiCurveSeriesElementsPerContactFollowUpUntil(dashboardCriteria);
 	}
 
 	@POST
