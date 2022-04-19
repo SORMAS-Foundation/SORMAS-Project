@@ -511,6 +511,7 @@ public class EditEventSteps implements En {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.scrollToElement(UNLINK_EVENT_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(UNLINK_EVENT_BUTTON);
+          TimeUnit.SECONDS.sleep(3); // waiting for unlinked
         });
 
     When(
@@ -532,8 +533,8 @@ public class EditEventSteps implements En {
     When(
         "I click on the Navigate to event directory filtered on this event group",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.scrollToElement(NAVIGATE_TO_EVENT_DIRECTORY_EVENT_GROUP_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              NAVIGATE_TO_EVENT_DIRECTORY_EVENT_GROUP_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(
               NAVIGATE_TO_EVENT_DIRECTORY_EVENT_GROUP_BUTTON);
         });

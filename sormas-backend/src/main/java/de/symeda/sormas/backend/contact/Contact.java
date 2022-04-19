@@ -166,6 +166,7 @@ public class Contact extends CoreAdo implements SormasToSormasShareable, HasExte
 	public static final String TRACING_APP_DETAILS = "tracingAppDetails";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
 	public static final String VISITS = "visits";
+	public static final String DUPLICATE_OF	= "duplicateOf";
 
 	private Date reportDateTime;
 	private User reportingUser;

@@ -419,6 +419,24 @@ public class CampaignFacadeEjb
 		return service.getEditPermissionType(campaign);
 	}
 
+	@Override
+	@RolesAllowed(UserRight._CAMPAIGN_ARCHIVE)
+	public void archive(String entityUuid, Date endOfProcessingDate) {
+		super.archive(entityUuid, endOfProcessingDate);
+	}
+
+	@Override
+	@RolesAllowed(UserRight._CAMPAIGN_ARCHIVE)
+	public void archive(List<String> entityUuids) {
+		super.archive(entityUuids);
+	}
+
+	@Override
+	@RolesAllowed(UserRight._CAMPAIGN_ARCHIVE)
+	public void dearchive(List<String> entityUuids, String dearchiveReason) {
+		super.dearchive(entityUuids, dearchiveReason);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class CampaignFacadeEjbLocal extends CampaignFacadeEjb {

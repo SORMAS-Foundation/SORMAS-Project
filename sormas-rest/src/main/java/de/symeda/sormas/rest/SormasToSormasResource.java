@@ -42,7 +42,7 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasErrorResponse;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationException;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.rest.security.oidc.ClientCredentials;
+import de.symeda.sormas.rest.security.s2s.oidc.ClientCredentials;
 
 @Path(SormasToSormasApiConstants.RESOURCE_PATH)
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
