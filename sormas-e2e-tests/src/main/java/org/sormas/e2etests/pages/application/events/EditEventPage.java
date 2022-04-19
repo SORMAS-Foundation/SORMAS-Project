@@ -93,8 +93,9 @@ public class EditEventPage {
       By.xpath("//label[text()='Kontakt zu Erkrankten']");
   public static final By CONTACT_TO_CONTAMINATED_MATERIALS_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE =
       By.xpath("//label[text()='Kontakt zu kontaminierten Gegenst\u00E4nden']");
-  public static final By DESCRIPTIVE_ANALYSIS_OF_ASCETAINED_DATA_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE =
-      By.xpath("//label[text()='Deskriptive Auswertung der ermittelten Daten']");
+  public static final By
+      DESCRIPTIVE_ANALYSIS_OF_ASCETAINED_DATA_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE =
+          By.xpath("//label[text()='Deskriptive Auswertung der ermittelten Daten']");
   public static final By TEMPORAL_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE =
       By.xpath(
           "//label[text()='Zeitlich: zeitliches Auftreten der Erkrankung deutet auf gemeinsame Infektionsquelle hin']");

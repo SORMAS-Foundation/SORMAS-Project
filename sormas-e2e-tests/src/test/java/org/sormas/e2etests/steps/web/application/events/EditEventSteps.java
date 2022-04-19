@@ -186,7 +186,7 @@ public class EditEventSteps implements En {
         });
 
     When(
-        "I select {} option from Primary Mode Of Transmission Combobox on edit Event page",
+        "I select {string} option from Primary Mode Of Transmission Combobox on edit Event page",
         (String option) -> {
           webDriverHelpers.selectFromCombobox(PRIMARY_MODE_OF_TRANSMISSION_COMBOBOX, option);
         });
@@ -208,6 +208,17 @@ public class EditEventSteps implements En {
         });
 
     When(
+        "I check that all options for Study on Epidemiological evidence are visible and clickable for De version",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              STUDY_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              CASE_CONTROL_STUDY_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              COHORT_STUDY_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+        });
+
+    When(
         "I tick the all options for Explorative survey of affected people on Epidemiological evidence for De version",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(
@@ -215,6 +226,17 @@ public class EditEventSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(
               CONTACT_TO_SICK_PERSON_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
           webDriverHelpers.clickOnWebElementBySelector(
+              CONTACT_TO_CONTAMINATED_MATERIALS_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+        });
+
+    When(
+        "I check the all options for Explorative survey of affected people on Epidemiological evidence are visible and clickable for De version",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              EXPLORATIVE_SURVEY_OF_AFFECTED_PEOPLE_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              CONTACT_TO_SICK_PERSON_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               CONTACT_TO_CONTAMINATED_MATERIALS_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
         });
 
@@ -229,12 +251,37 @@ public class EditEventSteps implements En {
         });
 
     When(
+        "I check the all options for Descriptive analysis of ascertained data on Epidemiological evidence are visible and clickable for De version",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              DESCRIPTIVE_ANALYSIS_OF_ASCETAINED_DATA_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              TEMPORAL_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SPATIAL_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              PERSON_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+        });
+
+    When(
         "I tick the all options for Suspicion on Epidemiological evidence for De version",
         () -> {
-          webDriverHelpers.clickOnWebElementBySelector(SUSPICION_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(
+              SUSPICION_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
           webDriverHelpers.clickOnWebElementBySelector(
               EXPRESSED_BY_THE_DISEASE_PERSON_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
           webDriverHelpers.clickOnWebElementBySelector(
+              EXPRESSED_BY_THE_HEALTH_DEPARTMENT_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+        });
+
+    When(
+        "I check the all options for Suspicion on Epidemiological evidence are visible and clickable for De version",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SUSPICION_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              EXPRESSED_BY_THE_DISEASE_PERSON_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               EXPRESSED_BY_THE_HEALTH_DEPARTMENT_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
         });
 
@@ -254,6 +301,15 @@ public class EditEventSteps implements En {
         });
 
     When(
+        "I check the all options for Verification of at least two infected or diseased persons on Laboratory diagnostic evidence are visible and clickable for De version",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              VERIFICATION_OF_AT_LEAST_TWO_INFECTED_OR_DISEASED_PERSONS_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              COMPLIANT_PATHOGEN_FINE_TYPING_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE);
+        });
+
+    When(
         "I tick the all options for Verification on materials on Laboratory diagnostic evidence for De version",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(
@@ -262,8 +318,24 @@ public class EditEventSteps implements En {
               IMPRESSION_TEST_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE);
           webDriverHelpers.clickOnWebElementBySelector(
               WATER_SAMPLE_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE);
-          webDriverHelpers.clickOnWebElementBySelector(OTHER_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE);
           webDriverHelpers.clickOnWebElementBySelector(
+              OTHER_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(
+              PATHOGEN_FINE_TYPING_COMPLIANT_WITH_THE_ONE_OF_CASES_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE);
+        });
+
+    When(
+        "I check the all options for Verification on materials on Laboratory diagnostic evidence are visible and clickable for De version",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              VERIFICATION_ON_MATERIALS_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              IMPRESSION_TEST_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              WATER_SAMPLE_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              OTHER_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               PATHOGEN_FINE_TYPING_COMPLIANT_WITH_THE_ONE_OF_CASES_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE);
         });
 
