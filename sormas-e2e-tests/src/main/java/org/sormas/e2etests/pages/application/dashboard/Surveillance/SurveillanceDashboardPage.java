@@ -39,7 +39,7 @@ public class SurveillanceDashboardPage {
           "/html/body/div[1]/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div[3]/div/div[2]/div/div/div[2]/div/div/div/div[7]/div/div[2]/div");
   public static final By CURRENT_PERIOD = By.id("currentPeriod");
   public static final By COMPARISON_PERIOD = By.id("comparisonPeriod");
-  public static final By DATE_TYPE = By.id("dateType");
+  public static final By DATE_TYPE = By.cssSelector("div#dateType > .v-filterselect-input");
   public static final By REGION_COMBOBOX =
       By.cssSelector("div:nth-of-type(3) > div[role='combobox'] > .v-filterselect-input");
   public static final By RESET_FILTERS = By.cssSelector("div#actionResetFilters");
@@ -408,4 +408,11 @@ public class SurveillanceDashboardPage {
   public static final By COLLAPSE_EPI_CURVE = By.cssSelector("#collapseEpiCurve");
   public static final By HIDE_OVERVIEW = By.cssSelector("#hideOverview");
   public static final By EXPAND_EPI_CURVE = By.cssSelector("#expandEpiCurve");
+  public static final By DASHBOARD_TODAY = By.cssSelector("#dashboardToday");
+  public static final By DASHBOARD_DAY_BEFORE = By.cssSelector("#dashboardDayBefore");
+  public static final By DASHBOARD_THIS_WEEK = By.cssSelector("#dashboardThisWeek");
+  public static final By DASHBOARD_LAST_WEEK = By.cssSelector("#dashboardLastWeek");
+  public static final By REGION_COMBOBOX_DROPDOWN =
+      By.cssSelector("[location='regionFilter'] > div > div");
+  public static final By DATE_TYPE_COMBOBOX_DROPDOWN = By.cssSelector("#dateType div");
 }

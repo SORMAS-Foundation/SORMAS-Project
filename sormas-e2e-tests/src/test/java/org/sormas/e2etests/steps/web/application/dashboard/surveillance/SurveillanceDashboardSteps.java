@@ -25,7 +25,10 @@ import org.testng.asserts.SoftAssert;
 import javax.inject.Inject;
 import java.util.concurrent.TimeUnit;
 
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.DATE_TYPE;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.REFERENCE_DEFINITION_FULFILLED_CASES_NUMBER;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.REGION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.REGION_COMBOBOX_DROPDOWN;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.TIME_PERIOD_COMBOBOX;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.TIME_PERIOD_YESTERDAY_BUTTON;
 
@@ -961,6 +964,63 @@ public class SurveillanceDashboardSteps implements En {
               1,
               "Curve and map layout should be visible when hide overview is selected");
           webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.HIDE_OVERVIEW);
+        });
+    Then(
+        "^I apply filter compare: today -> yesterday$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.CURRENT_PERIOD);
+          webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.DASHBOARD_TODAY);
+          webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.COMPARISON_PERIOD);
+          webDriverHelpers.clickOnWebElementBySelector(
+              SurveillanceDashboardPage.DASHBOARD_DAY_BEFORE);
+          webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.APPLY_FILTERS);
+        });
+    Then(
+        "^I verify filter works$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.APPLY_FILTERS);
+          webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.APPLY_FILTERS);
+        });
+    Then(
+        "^I apply date filter$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.CURRENT_PERIOD);
+          webDriverHelpers.clickOnWebElementBySelector(
+              SurveillanceDashboardPage.DASHBOARD_THIS_WEEK);
+          webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.CURRENT_PERIOD);
+          webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.APPLY_FILTERS);
+        });
+    Then(
+        "^I apply region filter$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.selectFromCombobox(
+              REGION_COMBOBOX_DROPDOWN, "Voreingestellte Bundesl\u00E4nder");
+          webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.APPLY_FILTERS);
+        });
+    Then(
+        "^I click on reset filters$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.RESET_FILTERS);
+          webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.RESET_FILTERS);
+          TimeUnit.SECONDS.sleep(2);
+        });
+    Then(
+        "^I verify filters were reset$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          TimeUnit.SECONDS.sleep(2);
+          Assert.assertEquals(webDriverHelpers.getValueFromWebElement(REGION_COMBOBOX), "Region");
+          Assert.assertEquals(
+              webDriverHelpers.getValueFromWebElement(DATE_TYPE), "Most relevant date");
         });
   }
 }

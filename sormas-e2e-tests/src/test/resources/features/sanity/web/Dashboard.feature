@@ -32,7 +32,7 @@ Feature: Dashboard counters
     When I click on the Dashboard button from navbar and access Contacts Dashboard
     Then I check that previous saved Contacts Dashboard contact counter for COVID-19 has been incremented
 
-  @env_main
+  @env_main @#7440
   Scenario: Validate Surveillance Dashboard layout
     Given I log in with National User
     When I click on the Dashboard button from navbar and access Surveillance Dashboard
@@ -43,7 +43,7 @@ Feature: Dashboard counters
     Then I validate presence of Epidemiological Curve
     Then I validate presence of maps
 
-  @env_main
+  @env_main @#7440
   Scenario: Validate show all diseases functionality
     Given I log in with National User
     When I click on the Dashboard button from navbar and access Surveillance Dashboard
@@ -52,7 +52,7 @@ Feature: Dashboard counters
     Then I click on show all diseases
     Then I validate presence of all diseases
 
-  @env_main
+  @env_main @#7440
   Scenario: Check disease information layout
     Given I log in with National User
     When I click on the Dashboard button from navbar and access Surveillance Dashboard
@@ -63,7 +63,7 @@ Feature: Dashboard counters
     Then I validate fatalities of diseases is shown
     Then I validate number of events of diseases is shown
 
-  @env_main
+  @env_main @#7440
   Scenario: Check disease burden information table
     Given I log in with National User
     When I click on the Dashboard button from navbar and access Surveillance Dashboard
@@ -72,7 +72,7 @@ Feature: Dashboard counters
     Then I validate diseases presence in the data table
     Then I validate switching back to disease boxes is working
 
-  @env_main
+  @env_main @#7440
   Scenario: Check New Cases and Events layout on surveillance dashboard
     Given I log in with National User
     When I click on the Dashboard button from navbar and access Surveillance Dashboard
@@ -86,7 +86,7 @@ Feature: Dashboard counters
     Then I validate presence of test results counter
     Then I validate presence of test results metrics
 
-  @env_main
+  @env_main @#7440
   Scenario: Check Epidemiological curve chart Alive or Dead option
     Given I log in with National User
     When I click on the Dashboard button from navbar and access Surveillance Dashboard
@@ -95,7 +95,7 @@ Feature: Dashboard counters
     Then I click on legend alive or dead
     Then I check alive or dead chart
 
-  @env_main
+  @env_main @#7440
   Scenario: Check Epidemiological curve layout
     Given I log in with National User
     When I click on the Dashboard button from navbar and access Surveillance Dashboard
@@ -105,7 +105,7 @@ Feature: Dashboard counters
     Then I validate chart download options
     Then I validate presence of chart buttons
 
-  @env_main
+  @env_main @#7440
   Scenario: Check Case status map
     Given I log in with National User
     When I click on the Dashboard button from navbar and access Surveillance Dashboard
@@ -114,7 +114,7 @@ Feature: Dashboard counters
     Then I validate presence of Map key options
     Then I validate presence of Layers options
 
-  @env_main
+  @env_main @#7440
   Scenario: Check components expand-collapse functionality
     Given I log in with National User
     When I click on the Dashboard button from navbar and access Surveillance Dashboard
@@ -125,7 +125,7 @@ Feature: Dashboard counters
     Then I select Difference in Number of Cases hide overview
     Then I verify that Overview data should be hidden
 
-  @env_main
+  @env_main @#7440
   Scenario: Overview data apply filters check
     Given I log in with National User
     When I click on the Dashboard button from navbar and access Surveillance Dashboard
