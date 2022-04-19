@@ -15,12 +15,12 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import de.symeda.sormas.backend.user.UserService;
 import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.feature.FeatureType;
@@ -47,7 +47,6 @@ import de.symeda.sormas.backend.person.PersonJoins;
 import de.symeda.sormas.backend.person.PersonJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.vaccination.FirstVaccinationDate;
 import de.symeda.sormas.backend.vaccination.LastVaccinationDate;
@@ -68,7 +67,7 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, DirectoryImmunization> immunizationDirectoryPath) {
-		return createUserFilter(new DirectoryImmunizationQueryContext(cb, cq, immunizationDirectoryPath));
+		throw new UnsupportedOperationException("Method should no longer be used!");
 	}
 
 	public List<ImmunizationIndexDto> getIndexList(ImmunizationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
@@ -81,8 +80,7 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 
 		final Join<DirectoryImmunization, Person> person = joins.getPerson();
 
-		final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
-		final Join<Location, District> district = location.join(Location.DISTRICT, JoinType.LEFT);
+		final Join<Location, District> district = joins.getPersonJoins().getAddressJoins().getDistrict();
 
 		final Join<DirectoryImmunization, LastVaccineType> lastVaccineType = joins.getLastVaccineType();
 
@@ -106,7 +104,7 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 			immunization.get(Immunization.END_DATE),
 			lastVaccineType.get(LastVaccineType.VACCINE_TYPE),
 			immunization.get(Immunization.RECOVERY_DATE),
-			JurisdictionHelper.booleanSelector(cb, createUserFilter(directoryImmunizationQueryContext)),
+			JurisdictionHelper.booleanSelector(cb, isInJurisdictionOrOwned(directoryImmunizationQueryContext)),
 			immunization.get(Immunization.CHANGE_DATE));
 
 		buildWhereCondition(criteria, cb, cq, directoryImmunizationQueryContext);
@@ -197,13 +195,13 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 
 	private Predicate buildCriteriaFilter(ImmunizationCriteria criteria, DirectoryImmunizationQueryContext directoryImmunizationQueryContext) {
 
-		final DirectoryImmunizationJoins joins = (DirectoryImmunizationJoins) directoryImmunizationQueryContext.getJoins();
+		final DirectoryImmunizationJoins joins = directoryImmunizationQueryContext.getJoins();
 		final CriteriaBuilder cb = directoryImmunizationQueryContext.getCriteriaBuilder();
 		final From<?, ?> from = directoryImmunizationQueryContext.getRoot();
 		final Join<DirectoryImmunization, Person> person = joins.getPerson();
 		final Join<DirectoryImmunization, LastVaccineType> lastVaccineType = joins.getLastVaccineType();
 
-		final Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
+		final Join<Person, Location> location = joins.getPersonJoins().getAddress();
 
 		Predicate filter = null;
 		if (criteria.getDisease() != null) {
@@ -320,23 +318,29 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 		}
 		final CriteriaBuilder cb = qc.getCriteriaBuilder();
 
-		Predicate filter;
-
-		if (!featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
-			filter = DirectoryImmunizationJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
-		} else {
-			filter = CriteriaBuilderHelper.or(
-				qc.getCriteriaBuilder(),
-				qc.getCriteriaBuilder().equal(qc.getRoot().get(Immunization.REPORTING_USER), currentUser),
-				PersonJurisdictionPredicateValidator
-					.of(qc.getQuery(), qc.getCriteriaBuilder(), new PersonJoins(qc.getJoins().getPerson()), currentUser, false)
-					.inJurisdictionOrOwned());
-		}
+		Predicate filter = isInJurisdictionOrOwned(qc);
 
 		if (currentUser.getLimitedDisease() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(qc.getRoot().get(Contact.DISEASE), currentUser.getLimitedDisease()));
 		}
 
+		return filter;
+	}
+
+	private Predicate isInJurisdictionOrOwned(DirectoryImmunizationQueryContext qc) {
+		final User currentUser = userService.getCurrentUser();
+		CriteriaBuilder cb = qc.getCriteriaBuilder();
+		Predicate filter;
+		if (!featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
+			filter = DirectoryImmunizationJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
+		} else {
+			filter = CriteriaBuilderHelper.or(
+					cb,
+					cb.equal(qc.getRoot().get(Immunization.REPORTING_USER), currentUser),
+					PersonJurisdictionPredicateValidator
+							.of(qc.getQuery(), cb, new PersonJoins(qc.getJoins().getPerson()), currentUser, false)
+							.inJurisdictionOrOwned());
+		}
 		return filter;
 	}
 }

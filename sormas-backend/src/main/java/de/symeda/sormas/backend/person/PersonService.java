@@ -55,6 +55,7 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.immunization.ImmunizationQueryContext;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -464,7 +465,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			Join<Immunization, Person> immunizationPersonsSelect = immunizationPersonsRoot.join(Immunization.PERSON);
 			immunizationPersonsSelect.fetch(Person.ADDRESS);
 			immunizationPersonsQuery.select(immunizationPersonsSelect);
-			Predicate immunizationPersonsFilter = immunizationService.createUserFilter(cb, immunizationPersonsQuery, immunizationPersonsRoot);
+			Predicate immunizationPersonsFilter = immunizationService.createUserFilter(new ImmunizationQueryContext(cb, immunizationPersonsQuery, immunizationPersonsRoot));
 			// date range
 			if (date != null) {
 				Predicate dateFilter = createChangeDateFilter(cb, immunizationPersonsSelect, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
