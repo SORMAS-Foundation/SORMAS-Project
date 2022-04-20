@@ -10,6 +10,7 @@ import java.util.stream.Collectors;
 
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
@@ -65,7 +66,11 @@ public class DeletionConfigurationService extends BaseAdoService<DeletionConfigu
 					? cb.equal(from.get(DeletionConfiguration.DELETION_REFERENCE), DeletionReference.MANUAL_DELETION)
 					: cb.notEqual(from.get(DeletionConfiguration.DELETION_REFERENCE), DeletionReference.MANUAL_DELETION)));
 
-		return em.createQuery(cq).getSingleResult();
+		try {
+			return em.createQuery(cq).getSingleResult();
+		} catch (NoResultException e) {
+			return null;
+		}
 	}
 
 	public void createMissingDeletionConfigurations() {
