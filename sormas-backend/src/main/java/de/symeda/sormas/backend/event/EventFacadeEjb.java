@@ -215,6 +215,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		return service.getDeletedUuidsSince(since);
 	}
 
+	@PermitAll
 	public Map<Disease, Long> getEventCountByDisease(EventCriteria eventCriteria) {
 
 		return service.getEventCountByDisease(eventCriteria);
