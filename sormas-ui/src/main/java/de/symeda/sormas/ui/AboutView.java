@@ -135,11 +135,7 @@ public class AboutView extends VerticalLayout implements View {
 
 		if (InfoProvider.get().isSnapshotVersion()) {
 			Link commitLink = new Link(
-				String.format(
-					"%s (%s)",
-					versionLabel.getValue(),
-					InfoProvider.get()
-						.getLastCommitShortId()),
+				String.format("%s (%s)", versionLabel.getValue(), InfoProvider.get().getLastCommitShortId()),
 				new ExternalResource(InfoProvider.get().getLastCommitHistoryUrl()));
 			commitLink.setTargetName("_blank");
 			CssStyles.style(commitLink, CssStyles.VSPACE_3);
@@ -147,10 +143,12 @@ public class AboutView extends VerticalLayout implements View {
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.LAB_MESSAGES)) {
-			addExternalServiceVersion(
-				Captions.aboutLabMessageAdapter,
-				() -> FacadeProvider.getLabMessageFacade().getLabMessagesAdapterVersion(),
-				infoLayout);
+			if (UserProvider.getCurrent().hasAllUserRights(UserRight.LAB_MESSAGES)) {
+				addExternalServiceVersion(
+					Captions.aboutLabMessageAdapter,
+					() -> FacadeProvider.getLabMessageFacade().getLabMessagesAdapterVersion(),
+					infoLayout);
+			}
 		}
 
 		if (FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()) {
