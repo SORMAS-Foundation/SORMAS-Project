@@ -806,11 +806,13 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.ZOOM_OUT_BUTTON_ON_MAP);
           webDriverHelpers.clickOnWebElementBySelector(
               SurveillanceDashboardPage.FULL_SCREEN_BUTTON_ON_MAP);
-          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.EXIT_FULL_SCREEN_BUTTON_ON_MAP);
           webDriverHelpers.clickOnWebElementBySelector(
               SurveillanceDashboardPage.EXIT_FULL_SCREEN_BUTTON_ON_MAP);
           webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.EXPAND_MAP_BUTTON);
-          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.COLLAPSE_MAP_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(
               SurveillanceDashboardPage.COLLAPSE_MAP_BUTTON);
         });
@@ -977,7 +979,11 @@ public class SurveillanceDashboardSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.COMPARISON_PERIOD);
           webDriverHelpers.clickOnWebElementBySelector(
               SurveillanceDashboardPage.DASHBOARD_DAY_BEFORE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.APPLY_FILTERS);
           webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.APPLY_FILTERS);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.APPLY_FILTERS);
         });
     Then(
         "^I verify filter works$",
@@ -986,16 +992,22 @@ public class SurveillanceDashboardSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.APPLY_FILTERS);
           webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.APPLY_FILTERS);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.APPLY_FILTERS);
         });
     Then(
         "^I apply date filter$",
         () -> {
           webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.CURRENT_PERIOD);
           webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.CURRENT_PERIOD);
           webDriverHelpers.clickOnWebElementBySelector(
               SurveillanceDashboardPage.DASHBOARD_THIS_WEEK);
           webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.CURRENT_PERIOD);
           webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.APPLY_FILTERS);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.APPLY_FILTERS);
         });
     Then(
         "^I apply region filter$",
@@ -1005,6 +1017,8 @@ public class SurveillanceDashboardSteps implements En {
           webDriverHelpers.selectFromCombobox(
               REGION_COMBOBOX_DROPDOWN, "Voreingestellte Bundesl\u00E4nder");
           webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.APPLY_FILTERS);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.APPLY_FILTERS);
         });
     Then(
         "^I click on reset filters$",
@@ -1013,13 +1027,16 @@ public class SurveillanceDashboardSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.RESET_FILTERS);
           webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.RESET_FILTERS);
-          TimeUnit.SECONDS.sleep(2);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.RESET_FILTERS);
         });
     Then(
         "^I verify filters were reset$",
         () -> {
           webDriverHelpers.waitForPageLoaded();
-          TimeUnit.SECONDS.sleep(5);
+          TimeUnit.SECONDS.sleep(10);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SurveillanceDashboardPage.RESET_FILTERS);
           Assert.assertEquals(webDriverHelpers.getValueFromWebElement(REGION_COMBOBOX), "Region");
           Assert.assertEquals(
               webDriverHelpers.getValueFromWebElement(DATE_TYPE), "Most relevant date");
