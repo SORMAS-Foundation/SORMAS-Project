@@ -806,9 +806,11 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.ZOOM_OUT_BUTTON_ON_MAP);
           webDriverHelpers.clickOnWebElementBySelector(
               SurveillanceDashboardPage.FULL_SCREEN_BUTTON_ON_MAP);
+          TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.clickOnWebElementBySelector(
               SurveillanceDashboardPage.EXIT_FULL_SCREEN_BUTTON_ON_MAP);
           webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.EXPAND_MAP_BUTTON);
+          TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.clickOnWebElementBySelector(
               SurveillanceDashboardPage.COLLAPSE_MAP_BUTTON);
         });
@@ -1017,7 +1019,7 @@ public class SurveillanceDashboardSteps implements En {
         "^I verify filters were reset$",
         () -> {
           webDriverHelpers.waitForPageLoaded();
-          TimeUnit.SECONDS.sleep(2);
+          TimeUnit.SECONDS.sleep(5);
           Assert.assertEquals(webDriverHelpers.getValueFromWebElement(REGION_COMBOBOX), "Region");
           Assert.assertEquals(
               webDriverHelpers.getValueFromWebElement(DATE_TYPE), "Most relevant date");
