@@ -1375,9 +1375,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	@RolesAllowed({
-		UserRight._SAMPLE_VIEW,
-		UserRight._CASE_EDIT })
 	public CaseDataDto getCaseDataByUuid(String uuid) {
 		return convertToDto(service.getByUuid(uuid), getPseudonymizerForDtoWithClinician(""));
 	}

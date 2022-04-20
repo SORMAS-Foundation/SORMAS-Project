@@ -308,7 +308,6 @@ public class PersonFacadeEjb implements PersonFacade {
 	@Override
 	@RolesAllowed({
 		UserRight._PERSON_VIEW,
-		UserRight._SAMPLE_VIEW,
 		UserRight._EXTERNAL_VISITS })
 	public PersonDto getPersonByUuid(String uuid) {
 		final Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
