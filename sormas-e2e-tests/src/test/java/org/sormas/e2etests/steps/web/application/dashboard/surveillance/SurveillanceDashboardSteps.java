@@ -808,6 +808,7 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.FULL_SCREEN_BUTTON_ON_MAP);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.EXIT_FULL_SCREEN_BUTTON_ON_MAP);
+          TimeUnit.SECONDS.sleep(5);
           webDriverHelpers.clickOnWebElementBySelector(
               SurveillanceDashboardPage.EXIT_FULL_SCREEN_BUTTON_ON_MAP);
           webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.EXPAND_MAP_BUTTON);
