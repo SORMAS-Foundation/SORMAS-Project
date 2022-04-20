@@ -25,8 +25,7 @@ public class SurveillanceDashboardPage {
       By.xpath("(//div[contains(@class,'v-select-optiongroup')]//span)[1]");
   public static final By CONTACTS_BUTTON =
       By.xpath("(//div[contains(@class,'v-select-optiongroup')]//span)[2]");
-  public static final By LOGOUT_BUTTON =
-      By.cssSelector("#actionLogout span.v-menubar-menuitem-caption");
+  public static final By LOGOUT_BUTTON = By.cssSelector("#actionLogout");
   public static final By COVID19_DISEASE_COUNTER =
       By.cssSelector("div.v-verticallayout-background-disease-coronavirus > div > div > div");
   public static final By CASE_COUNTER =

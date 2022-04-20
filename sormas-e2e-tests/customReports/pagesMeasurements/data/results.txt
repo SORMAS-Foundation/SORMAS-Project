@@ -1,0 +1,8 @@
+Samples page=6.441/
+Persons page=8.468/
+Cases page=6.882/
+Tasks page=19.554/
+Contacts page=Couldn't load page under 20s/
+Events page=Couldn't load page under 20s/
+Surveillance Dashboard page=Couldn't load page under 20s/
+Contacts Dashboard page=0.317/

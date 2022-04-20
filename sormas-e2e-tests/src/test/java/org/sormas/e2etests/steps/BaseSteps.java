@@ -93,7 +93,7 @@ public class BaseSteps implements StepLifecycleListener {
     log.info("Creating Chart for UI Meassurements report");
     ReportChartBuilder.buildChartForData(TableDataManager.getTableRowsDataList());
     log.info("Generating Sormas Custom report");
-    CustomReportBuilder.generateReport(TableDataManager.getTableRowsAsHtml());
+    CustomReportBuilder.generatePagesMeasurementsReport(TableDataManager.getTableRowsAsHtml());
     log.info("Custom report was created!");
   }
 

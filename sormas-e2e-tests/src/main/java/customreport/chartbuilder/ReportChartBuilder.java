@@ -16,7 +16,8 @@ public abstract class ReportChartBuilder {
 
   public static final int width = 1300;
   public static final int height = 800;
-  public static final String generateChartPath = "customReports/images/BarChart.jpeg";
+  public static final String generateChartPath =
+      "customReports/pagesMeasurements/images/BarChart.jpeg";
 
   public static void buildChartForData(List<TableRowObject> data) {
     try {
@@ -39,7 +40,7 @@ public abstract class ReportChartBuilder {
       File BarChart = new File(generateChartPath);
       ChartUtils.saveChartAsJPEG(BarChart, barChart, width, height);
     } catch (Exception e) {
-      log.warn("Unable to generate results chart: " + e.getStackTrace());
+      log.warn("Unable to generate results chart: {} ", e.getMessage());
     }
   }
 }

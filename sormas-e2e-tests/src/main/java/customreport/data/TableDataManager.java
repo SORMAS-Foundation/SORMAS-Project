@@ -16,7 +16,7 @@ import lombok.extern.slf4j.Slf4j;
 public abstract class TableDataManager {
 
   private static List<TableRowObject> tableRowsDataList = new ArrayList<>();
-  private static final String resultsTextPath = "customReports/data/results.txt";
+  private static final String resultsTextPath = "customReports/pagesMeasurements/data/results.txt";
 
   @SneakyThrows
   public static void addRowEntity(String testName, String elapsedTime) {
