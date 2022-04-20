@@ -358,7 +358,8 @@ public class SurveillanceDashboardPage {
   public static final By ZOOM_OUT_BUTTON_ON_MAP = By.cssSelector("[title='Zoom out']");
   public static final By FULL_SCREEN_BUTTON_ON_MAP = By.cssSelector("[title='View Fullscreen']");
   public static final By EXIT_FULL_SCREEN_BUTTON_ON_MAP =
-      By.cssSelector("[title='Exit Fullscreen']");
+      // By.cssSelector("a[title='Exit Fullscreen']");
+      By.cssSelector(".leaflet-control-fullscreen.leaflet-control");
   public static final By EXPAND_MAP_BUTTON = By.cssSelector("#expandMap");
   public static final By COLLAPSE_MAP_BUTTON = By.cssSelector("#collapseMap");
   public static final By DASHBOARD_MAP_KEY_BUTTON = By.cssSelector("#dashboardMapKey");
