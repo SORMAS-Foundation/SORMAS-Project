@@ -999,7 +999,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			contactService.ensurePersisted(c);
 		}));
 
-		contactService.getAllByResultingCase(caze).forEach(c -> {
+		contactService.getAllByResultingCase(caze, true).forEach(c -> {
 			c.setResultingCase(null);
 			externalJournalService.handleExternalJournalPersonUpdateAsync(c.getPerson().toReference());
 			contactService.ensurePersisted(c);
@@ -1018,7 +1018,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		}));
 
 		// Remove the case as the resulting case of travel entries
-		travelEntryService.getAllByResultingCase(caze).forEach(t -> {
+		travelEntryService.getAllByResultingCase(caze, true).forEach(t -> {
 			t.setResultingCase(null);
 			travelEntryService.ensurePersisted(t);
 		});

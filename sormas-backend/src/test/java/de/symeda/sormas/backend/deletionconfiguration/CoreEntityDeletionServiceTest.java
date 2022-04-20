@@ -124,6 +124,12 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 			person.toReference(),
 			caze.getDisease(),
 			contactDto -> contactDto.setResultingCase(caze.toReference()));
+		ContactDto deletedSourceContact = creator.createContact(
+			user.toReference(),
+			person.toReference(),
+			caze.getDisease(),
+			contactDto -> contactDto.setResultingCase(caze.toReference()));
+		getContactFacade().delete(deletedSourceContact.getUuid());
 		EventDto event = creator.createEvent(user.toReference(), caze.getDisease());
 		EventParticipantDto eventParticipant = creator.createEventParticipant(
 			event.toReference(),
@@ -139,6 +145,10 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 			sampleDto -> sampleDto.setAssociatedContact(resultingContact.toReference()));
 		TravelEntryDto travelEntry =
 			creator.createTravelEntry(person.toReference(), user.toReference(), rdcf, te -> te.setResultingCase(caze.toReference()));
+		creator.createTravelEntry(person.toReference(), user.toReference(), rdcf, te -> {
+			te.setResultingCase(caze.toReference());
+			te.setDeleted(true);
+		});
 		ImmunizationDto immunization = creator.createImmunization(
 			caze.getDisease(),
 			person.toReference(),
