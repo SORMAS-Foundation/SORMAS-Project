@@ -393,6 +393,15 @@ public class CreateNewCaseSteps implements En {
           fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
           fillPlaceDescription(caze.getPlaceDescription());
         });
+    When(
+        "I set Place of stay to {string}, Facility Category to {string} and  Facility Type to {string} in Case creation",
+        (String placeOfStay, String facilityCategory, String facilityType) -> {
+          selectPlaceOfStay(placeOfStay);
+          selectFacilityCategory(facilityCategory);
+          selectFacilityType(facilityType);
+          selectFacility("Other facility");
+          fillPlaceDescription(caze.getPlaceDescription());
+        });
 
     When(
         "^I create a new case with specific data using line listing feature$",
@@ -526,6 +535,18 @@ public class CreateNewCaseSteps implements En {
 
   private void selectResponsibleCommunity(String responsibleCommunity) {
     webDriverHelpers.selectFromCombobox(RESPONSIBLE_COMMUNITY_COMBOBOX, responsibleCommunity);
+  }
+
+  private void selectFacilityCategory(String selectFacilityCategory) {
+    webDriverHelpers.selectFromCombobox(FACILITY_CATEGORY_COMBOBOX, selectFacilityCategory);
+  }
+
+  private void selectFacilityType(String selectFacilityType) {
+    webDriverHelpers.selectFromCombobox(FACILITY_TYPE_COMBOBOX, selectFacilityType);
+  }
+
+  private void selectFacility(String selectFacility) {
+    webDriverHelpers.selectFromCombobox(FACILITY_COMBOBOX, selectFacility);
   }
 
   private void selectPlaceOfStay(String placeOfStay) {

@@ -63,7 +63,7 @@ public class ActionJoins extends QueryJoins<Action> {
 	}
 
 	public Join<Action, User> getLastModifiedBy() {
-		return getOrCreate(creator, Action.LAST_MODIFIED_BY, JoinType.LEFT, this::setLastModifiedBy);
+		return getOrCreate(lastModifiedBy, Action.LAST_MODIFIED_BY, JoinType.LEFT, this::setLastModifiedBy);
 	}
 
 	private void setLastModifiedBy(Join<Action, User> lastModifiedBy) {

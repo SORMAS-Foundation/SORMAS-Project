@@ -173,7 +173,9 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 
 		DeletionConfiguration deletionConfiguration = deletionConfigurationService.getCoreEntityTypeConfig(getCoreEntityType());
 
-		if (deletionConfiguration.getDeletionPeriod() == null || deletionConfiguration.getDeletionReference() == null) {
+		if (deletionConfiguration == null
+			|| deletionConfiguration.getDeletionPeriod() == null
+			|| deletionConfiguration.getDeletionReference() == null) {
 			return null;
 		}
 
