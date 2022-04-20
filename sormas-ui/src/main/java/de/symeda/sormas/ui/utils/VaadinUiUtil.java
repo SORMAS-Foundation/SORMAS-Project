@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
+import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
 import java.util.function.Function;
 import java.util.function.UnaryOperator;
@@ -206,6 +208,26 @@ public final class VaadinUiUtil {
 
 			return confirmationComponent;
 		}, width);
+	}
+
+	public static CompletionStage<Boolean> showConfirmationPopup(
+		String caption,
+		Component content,
+		String confirmCaption,
+		String cancelCaption,
+		Integer width) {
+
+		CompletableFuture<Boolean> ret = new CompletableFuture<>();
+
+		VaadinUiUtil.showConfirmationPopup(
+				caption,
+				content,
+				confirmCaption,
+				cancelCaption,
+				width,
+				ret::complete);
+
+		return ret;
 	}
 
 	public static Window showConfirmationPopup(

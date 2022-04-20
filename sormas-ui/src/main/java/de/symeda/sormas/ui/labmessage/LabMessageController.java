@@ -21,6 +21,7 @@ import java.util.Objects;
 import java.util.Optional;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
+import java.util.concurrent.ExecutionException;
 import java.util.function.Consumer;
 import java.util.stream.Collectors;
 
@@ -160,6 +161,137 @@ public class LabMessageController {
 	public void processLabMessage(String labMessageUuid) {
 		LabMessageDto labMessage = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid);
 		checkDisease(labMessage);
+	}
+
+	public void processLabMessage_flow(String labMessageUuid) {
+		LabMessageDto labMessage = FacadeProvider.getLabMessageFacade().getByUuid(labMessageUuid);
+		LabMessageProcessingFlow flow = new LabMessageProcessingFlow(UserProvider.getCurrent().getUserReference()) {
+
+			@Override
+			CompletionStage<Boolean> handleMissingDisease() {
+				return VaadinUiUtil.showConfirmationPopup(
+					I18nProperties.getCaption(Captions.labMessageNoDisease),
+					new Label(I18nProperties.getString(Strings.messageDiseaseNotSpecifiedInLabMessage)),
+					I18nProperties.getCaption(Captions.actionContinue),
+					I18nProperties.getCaption(Captions.actionCancel),
+					null);
+			}
+
+			@Override
+			protected CompletionStage<Boolean> handleRelatedForwardedMessages() {
+				return VaadinUiUtil.showConfirmationPopup(
+					I18nProperties.getCaption(Captions.labMessageForwardedMessageFound),
+					new Label(I18nProperties.getString(Strings.messageForwardedLabMessageFound)),
+					I18nProperties.getCaption(Captions.actionYes),
+					I18nProperties.getCaption(Captions.actionCancel),
+					null);
+			}
+
+			@Override
+			protected CompletionStage<PersonDto> handlePickOrCreatePerson(LabMessageDto labMessage) {
+				CompletableFuture<PersonDto> ret = new CompletableFuture<>();
+
+				final PersonDto personDto = buildPerson(LabMessageMapper.forLabMessage(labMessage));
+
+				ControllerProvider.getPersonController()
+					.selectOrCreatePerson(personDto, I18nProperties.getString(Strings.infoSelectOrCreatePersonForLabMessage), selectedPersonRef -> {
+						PersonDto selectedPersonDto = null;
+						if (selectedPersonRef != null) {
+							if (selectedPersonRef.getUuid().equals(personDto.getUuid())) {
+								selectedPersonDto = personDto;
+							} else {
+								selectedPersonDto = FacadeProvider.getPersonFacade().getPersonByUuid(selectedPersonRef.getUuid());
+							}
+						}
+
+						ret.complete(selectedPersonDto);
+					},
+						false,
+						FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.PERSON_DUPLICATE_CUSTOM_SEARCH)
+							? I18nProperties.getString(Strings.infoSelectOrCreatePersonForLabMessageWithoutMatches)
+							: null);
+				return ret;
+			}
+
+			@Override
+			protected CompletionStage<SimilarEntriesDto> handlePickOrCreateEntry(LabMessageDto labMessage, List<CaseSelectionDto> similarCases, List<SimilarContactDto> similarContacts, List<SimilarEventParticipantDto> similarEventParticipants) {
+				CompletableFuture<SimilarEntriesDto> ret = new CompletableFuture<>();
+
+				EntrySelectionField selectField = new EntrySelectionField(labMessage, similarCases, similarContacts, similarEventParticipants);
+
+				final CommitDiscardWrapperComponent<EntrySelectionField> selectionField = new CommitDiscardWrapperComponent<>(selectField);
+				selectionField.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
+				selectionField.setWidth(1280, Sizeable.Unit.PIXELS);
+
+				selectionField.addCommitListener(() -> ret.complete(selectField.getValue()));
+
+				selectField.setSelectionChangeCallback((commitAllowed) -> selectionField.getCommitButton().setEnabled(commitAllowed));
+				selectionField.getCommitButton().setEnabled(false);
+
+				VaadinUiUtil.showModalPopupWindow(selectionField, I18nProperties.getString(Strings.headingPickOrCreateEntry));
+
+				return ret;
+			}
+
+			@Override
+			protected CompletionStage<CaseDataDto> handleCreateCase(CaseDataDto caze, PersonDto person, LabMessageDto labMessage) {
+				CompletableFuture<CaseDataDto> ret = new CompletableFuture<>();
+
+				Window window = VaadinUiUtil.createPopupWindow();
+
+				CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent =
+						ControllerProvider.getCaseController().getCaseCreateComponent(null, null, null, null, true);
+				caseCreateComponent.addCommitListener(() -> {
+					savePerson(
+							FacadeProvider.getPersonFacade().getPersonByUuid(caseCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
+							labMessage);
+
+					ret.complete(caseCreateComponent.getWrappedComponent().getValue());
+
+					window.close();
+				});
+				caseCreateComponent.addDiscardListener(window::close);
+				caseCreateComponent.getWrappedComponent().setValue(caze);
+				if (FacadeProvider.getPersonFacade().isValidPersonUuid(person.getUuid())) {
+					caseCreateComponent.getWrappedComponent().setSearchedPerson(person);
+				}
+				caseCreateComponent.getWrappedComponent().setPerson(person);
+
+				showFormWithLabMessage(labMessage, caseCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewCase), false);
+
+				return ret;
+			}
+
+			@Override
+			protected CompletionStage<SampleDto> handleCreateSample(SampleDto sample, Disease disease, LabMessageDto labMessage) {
+				CompletableFuture<SampleDto> ret = new CompletableFuture<>();
+
+				Window window = VaadinUiUtil.createPopupWindow();
+				CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent = getSampleCreateComponent(sample, labMessage, disease, window);
+				sampleCreateComponent.addCommitListener(() -> ret.complete(sampleCreateComponent.getWrappedComponent().getValue()));
+				showFormWithLabMessage(
+						labMessage,
+						sampleCreateComponent,
+						window,
+						I18nProperties.getString(Strings.headingCreateNewSample),
+						// TODO - delete created entities
+						true);
+
+				return ret;
+			}
+		};
+
+		try {
+			LabMessageProcessingFlow.ResultStatus result = flow.run(labMessage, relatedLabMessageHandler);
+
+			if (result == LabMessageProcessingFlow.ResultStatus.CANCELED_WITH_CORRECTIONS) {
+				showCorrectionsSavedPopup();
+			} else if (result == LabMessageProcessingFlow.ResultStatus.DONE) {
+				SormasUI.get().getNavigator().navigateTo(LabMessagesView.VIEW_NAME);
+			}
+		} catch (ExecutionException | InterruptedException e) {
+			throw new RuntimeException(e);
+		}
 	}
 
 	private void checkDisease(LabMessageDto labMessage) {
