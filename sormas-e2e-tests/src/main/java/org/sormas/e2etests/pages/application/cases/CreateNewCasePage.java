@@ -30,6 +30,9 @@ public class CreateNewCasePage {
       By.cssSelector(".v-window #responsibleDistrict div");
   public static final By RESPONSIBLE_COMMUNITY_COMBOBOX =
       By.cssSelector(".v-window #responsibleCommunity div");
+  public static final By FACILITY_CATEGORY_COMBOBOX = By.cssSelector("#typeGroup div");
+  public static final By FACILITY_TYPE_COMBOBOX = By.cssSelector("#type div");
+  public static final By FACILITY_COMBOBOX = By.cssSelector("#healthFacility div");
   public static final By PLACE_OF_STAY_HOME =
       By.xpath("//div[@location='facilityOrHomeLoc']//label[contains(text(), 'Home')]");
   public static final By FIRST_NAME_INPUT =
