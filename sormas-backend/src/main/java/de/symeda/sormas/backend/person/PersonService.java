@@ -46,7 +46,6 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
@@ -370,16 +369,19 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 
 		User user = getCurrentUser();
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Person> personsQuery = cb.createQuery(Person.class);
+		final Root<Person> personsRoot = personsQuery.from(Person.class);
+		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, personsQuery, personsRoot);
+		final PersonJoins joins = personQueryContext.getJoins();
 
 		// persons by district
-		CriteriaQuery<Person> personsQuery = cb.createQuery(Person.class);
-		Root<Person> personsRoot = personsQuery.from(Person.class);
-		Join<Person, Location> address = personsRoot.join(Person.ADDRESS);
+
+		Join<Person, Location> address = joins.getAddress();
 		Predicate districtFilter = cb.equal(address.get(Location.DISTRICT), user.getDistrict());
 		// date range
 		if (date != null) {
-			Predicate dateFilter = createChangeDateFilter(cb, personsRoot, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
+			Predicate dateFilter = createChangeDateFilter(personQueryContext, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
 			districtFilter = cb.and(districtFilter, dateFilter);
 		}
 		personsQuery.where(districtFilter);
@@ -560,17 +562,17 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		setSimilarityThresholdQuery();
 		boolean activeEntriesOnly = configFacade.isDuplicateChecksExcludePersonsOfArchivedEntries();
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Person> personQuery = cb.createQuery(Person.class);
-		Root<Person> personRoot = personQuery.from(Person.class);
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Person> personQuery = cb.createQuery(Person.class);
+		final Root<Person> personRoot = personQuery.from(Person.class);
+		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, personQuery, personRoot);
+		final PersonJoins joins = personQueryContext.getJoins();
 
-		// todo continue here
-
-		Join<Person, Case> personCaseJoin = personRoot.join(Person.CASES, JoinType.LEFT);
-		Join<Person, Contact> personContactJoin = personRoot.join(Person.CONTACTS, JoinType.LEFT);
-		Join<Person, EventParticipant> personEventParticipantJoin = personRoot.join(Person.EVENT_PARTICIPANTS, JoinType.LEFT);
-		Join<Person, Immunization> personImmunizationJoin = personRoot.join(Person.IMMUNIZATIONS, JoinType.LEFT);
-		Join<Person, TravelEntry> personTravelEntryJoin = personRoot.join(Person.TRAVEL_ENTRIES, JoinType.LEFT);
+		Join<Person, Case> personCaseJoin = joins.getCaze();
+		Join<Person, Contact> personContactJoin = joins.getContact();
+		Join<Person, EventParticipant> personEventParticipantJoin = joins.getEventParticipant();
+		Join<Person, Immunization> personImmunizationJoin = joins.getImmunization();
+		Join<Person, TravelEntry> personTravelEntryJoin = joins.getTravelEntry();
 
 		// Persons of active cases
 		Predicate personSimilarityFilter = buildSimilarityCriteriaFilter(criteria, cb, personRoot);
@@ -824,6 +826,18 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		Join<Person, Location> address = persons.join(Person.ADDRESS);
 
 		// TODO #7303: Include change date of addresses, personContactDetails?
+		ChangeDateFilterBuilder changeDateFilterBuilder = lastSynchronizedUuid == null
+			? new ChangeDateFilterBuilder(cb, date)
+			: new ChangeDateFilterBuilder(cb, date, persons, lastSynchronizedUuid);
+		return changeDateFilterBuilder.add(persons).add(address).build();
+	}
+
+	private Predicate createChangeDateFilter(PersonQueryContext personQueryContext, Timestamp date, String lastSynchronizedUuid) {
+		final From<?, Person> persons = personQueryContext.getRoot();
+		final CriteriaBuilder cb = personQueryContext.getCriteriaBuilder();
+		final PersonJoins joins = personQueryContext.getJoins();
+		final Join<Person, Location> address = joins.getAddress();
+
 		ChangeDateFilterBuilder changeDateFilterBuilder = lastSynchronizedUuid == null
 			? new ChangeDateFilterBuilder(cb, date)
 			: new ChangeDateFilterBuilder(cb, date, persons, lastSynchronizedUuid);

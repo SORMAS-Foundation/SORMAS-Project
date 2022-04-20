@@ -186,7 +186,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		if (contactFilter != null) {
 			filter = cb.or(filter, contactFilter);
 		}
-		Predicate eventFilter = eventService.createUserFilter(cb, cq, taskQueryContext.getJoins().getEvent());
+		Predicate eventFilter = eventService.createUserFilter(new EventQueryContext(cb, cq, taskQueryContext.getJoins().getEventJoins()));
 		if (eventFilter != null) {
 			filter = cb.or(filter, eventFilter);
 		}

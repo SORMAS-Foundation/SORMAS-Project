@@ -312,7 +312,7 @@ public class DashboardService {
 
 		Predicate filter = eventService.createDefaultFilter(cb, event);
 		filter = CriteriaBuilderHelper.and(cb, filter, buildEventCriteriaFilter(dashboardCriteria, eventQueryContext));
-		filter = CriteriaBuilderHelper.and(cb, filter, eventService.createUserFilter(cb, cq, event));
+		filter = CriteriaBuilderHelper.and(cb, filter, eventService.createUserFilter(eventQueryContext));
 
 		List<DashboardEventDto> result;
 
@@ -357,7 +357,7 @@ public class DashboardService {
 
 		Predicate filter = eventService.createDefaultFilter(cb, event);
 		filter = CriteriaBuilderHelper.and(cb, filter, buildEventCriteriaFilter(dashboardCriteria, eventQueryContext));
-		filter = CriteriaBuilderHelper.and(cb, filter, eventService.createUserFilter(cb, cq, event));
+		filter = CriteriaBuilderHelper.and(cb, filter, eventService.createUserFilter(eventQueryContext));
 
 		if (filter != null)
 			cq.where(filter);
