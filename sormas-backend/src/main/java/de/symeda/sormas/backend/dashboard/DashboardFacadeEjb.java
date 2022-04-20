@@ -246,6 +246,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 		return epiCurveSeriesElements;
 	}
 
+	@RolesAllowed(UserRight._DASHBOARD_SURVEILLANCE_VIEW)
 	public DashboardCaseMeasureDto getCaseMeasurePerDistrict(DashboardCriteria dashboardCriteria) {
 		Map<DistrictDto, BigDecimal> caseMeasurePerDistrictMap = new LinkedHashMap<>();
 		BigDecimal districtValuesLowerQuartile;
