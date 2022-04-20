@@ -245,12 +245,13 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	}
 
 	@Override
+    @RolesAllowed({
+            UserRight._SAMPLE_EDIT,
+            UserRight._SAMPLE_CREATE,
+            UserRight._LAB_MESSAGES })
 	public List<LabMessageDto> getForSample(SampleReferenceDto sample) {
-
 		List<LabMessage> labMessages = labMessageService.getForSample(sample);
-
 		return labMessages.stream().map(this::toDto).collect(Collectors.toList());
-
 	}
 
 	@Override
