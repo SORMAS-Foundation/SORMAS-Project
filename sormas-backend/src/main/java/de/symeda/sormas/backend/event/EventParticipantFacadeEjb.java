@@ -480,7 +480,7 @@ public class EventParticipantFacadeEjb
 
 		Join<EventParticipant, Person> person = joins.getPerson();
 		Join<EventParticipant, Case> resultingCase = joins.getResultingCase();
-		Join<EventParticipant, Event> event = joins.getEvent();
+		Join<EventParticipant, Event> event = joins.getEvent(JoinType.LEFT);
 		final Join<EventParticipant, Sample> samples = eventParticipant.join(EventParticipant.SAMPLES, JoinType.LEFT);
 		samples.on(
 			cb.and(
@@ -643,7 +643,7 @@ public class EventParticipantFacadeEjb
 		Join<Person, Country> birthCountry = person.join(Person.BIRTH_COUNTRY, JoinType.LEFT);
 		Join<Person, Country> citizenship = person.join(Person.CITIZENSHIP, JoinType.LEFT);
 
-		Join<EventParticipant, Event> event = joins.getEvent();
+		Join<EventParticipant, Event> event = joins.getEvent(JoinType.LEFT);
 		Join<Event, Location> eventLocation = joins.getEventAddress();
 
 		Join<EventParticipant, Case> resultingCase = joins.getResultingCase();

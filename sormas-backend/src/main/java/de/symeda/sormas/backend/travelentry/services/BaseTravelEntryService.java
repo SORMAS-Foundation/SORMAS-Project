@@ -36,7 +36,6 @@ public class BaseTravelEntryService extends AbstractCoreAdoService<TravelEntry> 
 
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, TravelEntry> travelEntryPath) {
-//		return createUserFilter(new TravelEntryQueryContext(cb, cq, travelEntryPath));
 		throw new UnsupportedOperationException("Method should no longer be used!");
 	}
 
@@ -52,7 +51,7 @@ public class BaseTravelEntryService extends AbstractCoreAdoService<TravelEntry> 
 		return cb.isFalse(root.get(TravelEntry.DELETED));
 	}
 
-	protected Predicate createUserFilter(TravelEntryQueryContext qc) {
+	public Predicate createUserFilter(TravelEntryQueryContext qc) {
 		User currentUser = getCurrentUser();
 		if (currentUser == null) {
 			return null;

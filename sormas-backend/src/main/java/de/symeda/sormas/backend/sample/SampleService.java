@@ -634,9 +634,13 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 			if (sampleAssociationType == SampleAssociationType.CASE) {
 				filter = CriteriaBuilderHelper.or(cb, filter, caseService.createUserFilter(cb, cq, joins.getCaze(), null));
 			} else if (sampleAssociationType == SampleAssociationType.CONTACT) {
-				filter = CriteriaBuilderHelper.or(cb, filter, contactService.createUserFilter(cb, cq, joins.getContact()));
+				filter = CriteriaBuilderHelper
+					.or(cb, filter, contactService.createUserFilter(new ContactQueryContext(cb, cq, joins.getContactJoins()), null));
 			} else if (sampleAssociationType == SampleAssociationType.EVENT_PARTICIPANT) {
-				filter = CriteriaBuilderHelper.or(cb, filter, eventParticipantService.createUserFilterForJoin(cb, cq, joins.getEventParticipant()));
+				filter = CriteriaBuilderHelper.or(
+					cb,
+					filter,
+					eventParticipantService.createUserFilter(new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins())));
 			}
 		} else if (currentUser.getLimitedDisease() != null) {
 			filter = CriteriaBuilderHelper.and(
@@ -645,15 +649,15 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 				CriteriaBuilderHelper.or(
 					cb,
 					caseService.createUserFilter(cb, cq, joins.getCaze(), null),
-					contactService.createUserFilter(cb, cq, joins.getContact()),
-					eventParticipantService.createUserFilterForJoin(cb, cq, joins.getEventParticipant())));
+					contactService.createUserFilter(new ContactQueryContext(cb, cq, joins.getContactJoins()), null),
+					eventParticipantService.createUserFilter(new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins()))));
 		} else {
 			filter = CriteriaBuilderHelper.or(
 				cb,
 				filter,
 				caseService.createUserFilter(cb, cq, joins.getCaze(), null),
-				contactService.createUserFilter(cb, cq, joins.getContact()),
-				eventParticipantService.createUserFilterForJoin(cb, cq, joins.getEventParticipant()));
+				contactService.createUserFilter(new ContactQueryContext(cb, cq, joins.getContactJoins()), null),
+				eventParticipantService.createUserFilter(new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins())));
 		}
 
 		return filter;

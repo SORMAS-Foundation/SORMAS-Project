@@ -46,8 +46,6 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.caze.CaseJoins;
-import de.symeda.sormas.api.utils.FieldConstraints;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -79,8 +77,10 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
@@ -1476,11 +1476,13 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return cb.and(cb.isFalse(root.get(Contact.ARCHIVED)), cb.isFalse(root.get(Contact.DELETED)));
 	}
 
-	public Predicate createActiveContactsFilter(CriteriaBuilder cb, Join<?, Contact> contactJoin) {
+	public Predicate createActiveContactsFilter(ContactQueryContext contactQueryContext) {
 
-		Join<Contact, Case> caze = contactJoin.join(Contact.CAZE, JoinType.LEFT);
+		From<?, Contact> root = contactQueryContext.getRoot();
+		ContactJoins joins = contactQueryContext.getJoins();
+		CriteriaBuilder cb = contactQueryContext.getCriteriaBuilder();
 		return cb
-			.and(cb.or(cb.isNull(contactJoin.get(Contact.CAZE)), cb.isFalse(caze.get(Case.ARCHIVED))), cb.isFalse(contactJoin.get(Contact.DELETED)));
+			.and(cb.or(cb.isNull(root.get(Contact.CAZE)), cb.isFalse(joins.getCaze().get(Case.ARCHIVED))), cb.isFalse(root.get(Contact.DELETED)));
 	}
 
 	/**
