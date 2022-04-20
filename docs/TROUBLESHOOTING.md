@@ -10,11 +10,11 @@ Please consult this collection of solutions to common problems if you have any i
 **Q:** The app crashes. How can I get a log file?  
 **A:** If you are using a release version of the app and need to get error logs, you can do the following:  
 
-	  1. [Enable developer options in the Android device's settings](https://developer.android.com/studio/debug/dev-options)
-   2. Use the "Take Bug Report" option. The full report is not needed.
-   3. The zip file that is created will have a dumpstate-<current date>.txt file that contains the log and some more information
-   4. Open it and search for de.symeda.sormas to identify the process id. E.g. "de.symeda.sormas.app/de.symeda.sormas.app.login.LoginActivity$_11109#0" -> 11109 is the id
-   5. Search for all occurences of the process id to filter the file down to lines that contain the actual log of sormas
+1. [Enable developer options in the Android device's settings](https://developer.android.com/studio/debug/dev-options)
+2. Use the "Take Bug Report" option. The full report is not needed.
+3. The zip file that is created will have a dumpstate-<current date>.txt file that contains the log and some more information
+4. Open it and search for de.symeda.sormas to identify the process id. E.g. `de.symeda.sormas.app/de.symeda.sormas.app.login.LoginActivity$_11109#0` -> 11109 is the id
+5. Search for all occurences of the process id to filter the file down to lines that contain the actual log of sormas
 
 ## Debugging Performance Problems
 
