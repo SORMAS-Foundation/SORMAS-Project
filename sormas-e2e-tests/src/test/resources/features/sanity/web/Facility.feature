@@ -46,18 +46,6 @@ Feature: Facility end to end tests
     And I click on Save Button in Edit Event directory
 
   @issue=SORDEV-9206 @env_main
-  Scenario: Checking availability of new categories and types of facility in Edit Event directory
-    Given API: I create a new event
-    Then API: I check that POST call body is "OK"
-    And API: I check that POST call status code is 200
-    Given I log in as a Admin User
-    Then I open the last created event via api
-    And I set Place of stay to "Facility", Facility Category to "Accommodation" and  Facility Type to "Hostel, dormitory" in Edit Event directory
-    And I click on Save Button in Edit Event directory
-    And I set Place of stay to "Facility", Facility Category to "Educational facility" and  Facility Type to "Kindergarten/After school care" in Edit Event directory
-    And I click on Save Button in Edit Event directory
-
-  @issue=SORDEV-9206 @env_main
   Scenario: Creating new facilities with new data in Configuration directory
     Given I log in as a Admin User
     Then I click on the Configuration button from navbar
