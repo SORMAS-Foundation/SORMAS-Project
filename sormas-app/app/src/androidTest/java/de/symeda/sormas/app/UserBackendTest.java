@@ -30,12 +30,12 @@ import org.junit.runner.RunWith;
 import androidx.test.rule.ActivityTestRule;
 import androidx.test.runner.AndroidJUnit4;
 
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
 import de.symeda.sormas.app.backend.user.User;
-import de.symeda.sormas.app.backend.user.UserRole;
 
 /**
  * Created by Mate Strysewske on 16.06.2017.
@@ -66,8 +66,10 @@ public class UserBackendTest {
 		Region firstRegion = DatabaseHelper.getRegionDao().queryUuid(TestHelper.REGION_UUID);
 		Region secondRegion = DatabaseHelper.getRegionDao().queryUuid(SECOND_REGION_UUID);
 
-		User firstRegionUser = TestEntityCreator.createUser("Region1User", firstRegion, null, UserRole.SURVEILLANCE_SUPERVISOR);
-		User secondRegionUser = TestEntityCreator.createUser("Region2User", secondRegion, null, UserRole.SURVEILLANCE_SUPERVISOR);
+		User firstRegionUser =
+			TestEntityCreator.createUser("Region1User", firstRegion, null, TestHelper.getUserRoleMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		User secondRegionUser =
+			TestEntityCreator.createUser("Region2User", secondRegion, null, TestHelper.getUserRoleMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		User randomRegion1User = DatabaseHelper.getUserDao().getRandomRegionUser(firstRegion, UserRight.CASE_RESPONSIBLE);
 		assertThat(randomRegion1User, is(firstRegionUser));

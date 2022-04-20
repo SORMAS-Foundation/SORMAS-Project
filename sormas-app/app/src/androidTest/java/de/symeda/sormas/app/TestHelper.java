@@ -18,7 +18,9 @@ package de.symeda.sormas.app;
 import java.sql.SQLException;
 import java.util.Arrays;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 
 import android.content.Context;
 import android.util.Log;
@@ -27,7 +29,9 @@ import androidx.test.platform.app.InstrumentationRegistry;
 
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
 import de.symeda.sormas.app.backend.facility.Facility;
@@ -53,6 +57,8 @@ public class TestHelper {
 	public static final String SECOND_USER_UUID = "0987654321";
 	public static final String INFORMANT_USER_UUID = "0192837465";
 	public static final String TEST_DATABASE_NAME = "test_sormas.db";
+
+	public static Map<DefaultUserRole, UserRole> userRoleMap = new HashMap<>();
 
 	public static void initTestEnvironment(boolean setInformantAsActiveUser) {
 		// Initialize a testing context to not operate on the actual database
@@ -84,7 +90,7 @@ public class TestHelper {
 		user.setActive(true);
 		user.setFirstName("Sana");
 		user.setLastName("Obas");
-		user.setUserRoles(new HashSet(Arrays.asList(UserRole.SURVEILLANCE_OFFICER)));
+		user.setUserRoles(new HashSet(Arrays.asList(getUserRoleMap().get(DefaultUserRole.SURVEILLANCE_OFFICER))));
 		user.setCreationDate(new Date());
 		user.setChangeDate(new Date());
 		user.setUuid(USER_UUID);
@@ -102,7 +108,9 @@ public class TestHelper {
 		secondUser.setActive(true);
 		secondUser.setFirstName("Sabo");
 		secondUser.setLastName("Anas");
-		secondUser.setUserRoles(new HashSet(Arrays.asList(UserRole.SURVEILLANCE_OFFICER, UserRole.CASE_OFFICER)));
+		secondUser.setUserRoles(
+			new HashSet(
+				Arrays.asList(getUserRoleMap().get(DefaultUserRole.SURVEILLANCE_OFFICER), getUserRoleMap().get(DefaultUserRole.CASE_OFFICER))));
 		secondUser.setCreationDate(new Date());
 		secondUser.setChangeDate(new Date());
 		secondUser.setUuid(SECOND_USER_UUID);
@@ -117,7 +125,7 @@ public class TestHelper {
 		informant.setActive(true);
 		informant.setFirstName("Info");
 		informant.setLastName("User");
-		informant.setUserRoles(new HashSet(Arrays.asList(UserRole.HOSPITAL_INFORMANT)));
+		informant.setUserRoles(new HashSet(Arrays.asList(getUserRoleMap().get(DefaultUserRole.HOSPITAL_INFORMANT))));
 		informant.setCreationDate(new Date());
 		informant.setChangeDate(new Date());
 		informant.setUuid(INFORMANT_USER_UUID);
@@ -237,5 +245,30 @@ public class TestHelper {
 		noneFacility.setPublicOwnership(false);
 		noneFacility.setUuid(FacilityDto.NONE_FACILITY_UUID);
 		DatabaseHelper.getFacilityDao().create(noneFacility);
+	}
+
+	public static Map<DefaultUserRole, UserRole> getUserRoleMap() {
+		if (userRoleMap.isEmpty()) {
+			createUserRoles();
+		}
+		return userRoleMap;
+	}
+
+	private static void createUserRoles() {
+		Arrays.stream(DefaultUserRole.values()).forEach(defaultUserRole -> {
+			UserRole userRole = new UserRole();
+			userRole.setUserRights(defaultUserRole.getDefaultUserRights());
+			userRole.setCaption(defaultUserRole.toString());
+			userRole.setPortHealthUser(defaultUserRole.isPortHealthUser());
+			userRole.setHasAssociatedOfficer(defaultUserRole.hasAssociatedOfficer());
+			userRole.setHasOptionalHealthFacility(defaultUserRole.hasOptionalHealthFacility());
+			userRole.setJurisdictionLevel(defaultUserRole.getJurisdictionLevel());
+			try {
+				userRole = DatabaseHelper.getUserRoleDao().saveAndSnapshot(userRole);
+			} catch (DaoException e) {
+				e.printStackTrace();
+			}
+			userRoleMap.put(defaultUserRole, userRole);
+		});
 	}
 }

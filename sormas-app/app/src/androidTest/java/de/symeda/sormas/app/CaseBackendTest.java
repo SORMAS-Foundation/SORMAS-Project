@@ -49,6 +49,7 @@ import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -429,7 +430,7 @@ public class CaseBackendTest {
 		Case caze = TestEntityCreator.createCase();
 		caze.setHealthFacility(null);
 
-		UserRole userRole = UserRole.HOSPITAL_INFORMANT;
+		UserRole userRole = TestHelper.getUserRoleMap().get(DefaultUserRole.HOSPITAL_INFORMANT);
 		Set<UserRole> userRoles = new HashSet<>();
 		userRoles.add(userRole);
 
@@ -446,7 +447,7 @@ public class CaseBackendTest {
 		District secondDistrict = DatabaseHelper.getDistrictDao().queryUuid(TestHelper.SECOND_DISTRICT_UUID);
 		caze.setResponsibleDistrict(secondDistrict);
 
-		UserRole userRole = UserRole.SURVEILLANCE_OFFICER;
+		UserRole userRole = TestHelper.getUserRoleMap().get(DefaultUserRole.SURVEILLANCE_OFFICER);
 		Set<UserRole> userRoles = new HashSet<>();
 		userRoles.add(userRole);
 
@@ -471,7 +472,7 @@ public class CaseBackendTest {
 		User user = ConfigProvider.getUser();
 		user.setCommunity(caze.getCommunity());
 
-		UserRole userRole = UserRole.COMMUNITY_OFFICER;
+		UserRole userRole = TestHelper.getUserRoleMap().get(DefaultUserRole.COMMUNITY_OFFICER);
 		Set<UserRole> userRoles = new HashSet<>();
 		userRoles.add(userRole);
 		user.setUserRoles(userRoles);
@@ -530,7 +531,7 @@ public class CaseBackendTest {
 
 		User user = ConfigProvider.getUser();
 
-		UserRole userRole = UserRole.SURVEILLANCE_OFFICER;
+		UserRole userRole = TestHelper.getUserRoleMap().get(DefaultUserRole.SURVEILLANCE_OFFICER);
 		Set<UserRole> userRoles = new HashSet<>();
 		userRoles.add(userRole);
 		user.setUserRoles(userRoles);
@@ -578,7 +579,7 @@ public class CaseBackendTest {
 		User user = ConfigProvider.getUser();
 		user.setHealthFacility(caze.getHealthFacility());
 
-		UserRole userRole = UserRole.HOSPITAL_INFORMANT;
+		UserRole userRole = TestHelper.getUserRoleMap().get(DefaultUserRole.HOSPITAL_INFORMANT);
 		Set<UserRole> userRoles = new HashSet<>();
 		userRoles.add(userRole);
 		user.setUserRoles(userRoles);
