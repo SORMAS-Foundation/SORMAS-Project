@@ -40,7 +40,6 @@ import javax.ejb.SessionContext;
 import javax.ejb.Singleton;
 import javax.ejb.Stateless;
 
-import org.apache.commons.codec.binary.Base64;
 import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.CodeableConcept;
 import org.hl7.fhir.r4.model.Coding;
