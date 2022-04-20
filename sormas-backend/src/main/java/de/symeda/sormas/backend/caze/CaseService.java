@@ -987,6 +987,14 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		// Remove the case as the resulting case and source case from all contacts
 		Optional.ofNullable(caze.getContacts()).ifPresent(cl -> cl.forEach(c -> {
 			c.setCaze(null);
+
+			// Assign the case jurisdiction to the contact if it does not already have one
+			if (c.getDistrict() == null) {
+				c.setRegion(caze.getResponsibleRegion());
+				c.setDistrict(caze.getResponsibleDistrict());
+				c.setCommunity(caze.getResponsibleCommunity());
+			}
+
 			externalJournalService.handleExternalJournalPersonUpdateAsync(c.getPerson().toReference());
 			contactService.ensurePersisted(c);
 		}));
