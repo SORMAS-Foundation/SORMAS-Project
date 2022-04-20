@@ -139,7 +139,8 @@ public class CaseDataView extends AbstractCaseView {
 			layout.addSidePanelComponent(sampleListComponentLayout, SAMPLES_LOC);
 		}
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
+				&& UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW)) {
 			VerticalLayout eventLayout = new VerticalLayout();
 			eventLayout.setMargin(false);
 			eventLayout.setSpacing(false);
