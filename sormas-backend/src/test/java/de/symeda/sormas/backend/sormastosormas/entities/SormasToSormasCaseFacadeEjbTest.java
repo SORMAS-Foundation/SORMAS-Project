@@ -148,7 +148,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 		assertThat(shareInfoList.size(), is(1));
 		assertThat(shareInfoList.get(0).getTargetDescriptor().getId(), is(SECOND_SERVER_ID));
-		assertThat(shareInfoList.get(0).getSender().getCaption(), is("Surv OFF - Surveillance Officer"));
+		assertThat(shareInfoList.get(0).getSender().getCaption(), is("Surv OFF"));
 		assertThat(shareInfoList.get(0).getComment(), is("Test comment"));
 	}
 
@@ -193,7 +193,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 		SormasToSormasShareInfoDto contactShareInfo = shareInfoList.get(0);
 		assertThat(contactShareInfo.getTargetDescriptor().getId(), is(SECOND_SERVER_ID));
-		assertThat(contactShareInfo.getSender().getCaption(), is("Surv OFF - Surveillance Officer"));
+		assertThat(contactShareInfo.getSender().getCaption(), is("Surv OFF"));
 		assertThat(contactShareInfo.getComment(), is("Test comment"));
 	}
 
@@ -268,7 +268,7 @@ public class SormasToSormasCaseFacadeEjbTest extends SormasToSormasTest {
 
 		SormasToSormasShareInfoDto contactShareInfo = shareInfoList.get(0);
 		assertThat(contactShareInfo.getTargetDescriptor().getId(), is(SECOND_SERVER_ID));
-		assertThat(contactShareInfo.getSender().getCaption(), is("Surv OFF - Surveillance Officer"));
+		assertThat(contactShareInfo.getSender().getCaption(), is("Surv OFF"));
 		assertThat(contactShareInfo.getComment(), is("Test comment"));
 	}
 
