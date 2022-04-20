@@ -255,7 +255,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			caseService.createUserFilter(cb, cq, joins.getCaze(), new CaseUserFilterCriteria()),
 			caseService.createDefaultFilter(cb, joins.getCaze()));
 		final Supplier<Predicate> contactFilter = () -> {
-			final Predicate contactUserFilter = contactService.createUserFilterForJoin(
+			final Predicate contactUserFilter = contactService.createUserFilter(
 				new ContactQueryContext(cb, cq, joins.getContactJoins()),
 				new ContactCriteria().includeContactsFromOtherJurisdictions(false));
 			return CriteriaBuilderHelper.and(cb, contactUserFilter, contactService.createDefaultFilter(cb, joins.getContact()));
@@ -561,9 +561,11 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		boolean activeEntriesOnly = configFacade.isDuplicateChecksExcludePersonsOfArchivedEntries();
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-
 		CriteriaQuery<Person> personQuery = cb.createQuery(Person.class);
 		Root<Person> personRoot = personQuery.from(Person.class);
+
+		// todo continue here
+
 		Join<Person, Case> personCaseJoin = personRoot.join(Person.CASES, JoinType.LEFT);
 		Join<Person, Contact> personContactJoin = personRoot.join(Person.CONTACTS, JoinType.LEFT);
 		Join<Person, EventParticipant> personEventParticipantJoin = personRoot.join(Person.EVENT_PARTICIPANTS, JoinType.LEFT);

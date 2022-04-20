@@ -36,7 +36,8 @@ public class BaseTravelEntryService extends AbstractCoreAdoService<TravelEntry> 
 
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, TravelEntry> travelEntryPath) {
-		return createUserFilter(new TravelEntryQueryContext(cb, cq, travelEntryPath));
+//		return createUserFilter(new TravelEntryQueryContext(cb, cq, travelEntryPath));
+		throw new UnsupportedOperationException("Method should no longer be used!");
 	}
 
 	public Predicate inJurisdictionOrOwned(TravelEntryQueryContext qc, User user) {
@@ -70,9 +71,10 @@ public class BaseTravelEntryService extends AbstractCoreAdoService<TravelEntry> 
 		Root<TravelEntry> from = cq.from(getElementClass());
 
 		Predicate filter = createDefaultFilter(cb, from);
+		TravelEntryQueryContext travelEntryQueryContext = new TravelEntryQueryContext(cb, cq, from);
 
 		if (getCurrentUser() != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from);
+			Predicate userFilter = createUserFilter(travelEntryQueryContext);
 			if (userFilter != null) {
 				filter = cb.and(filter, userFilter);
 			}

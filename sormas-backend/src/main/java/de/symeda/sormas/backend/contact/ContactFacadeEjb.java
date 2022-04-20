@@ -1475,9 +1475,8 @@ public class ContactFacadeEjb
 
 		Region region = regionService.getByReferenceDto(regionRef);
 		District district = districtService.getByReferenceDto(districtRef);
-		User user = userService.getCurrentUser();
 
-		return service.getContactsForDashboard(region, district, disease, from, to, user);
+		return service.getContactsForDashboard(region, district, disease, from, to);
 	}
 
 	@Override
@@ -1495,15 +1494,13 @@ public class ContactFacadeEjb
 	@Override
 	public Map<ContactClassification, Long> getNewContactCountPerClassification(ContactCriteria contactCriteria) {
 
-		User user = userService.getCurrentUser();
-		return service.getNewContactCountPerClassification(contactCriteria, user);
+		return service.getNewContactCountPerClassification(contactCriteria);
 	}
 
 	@Override
 	public Map<FollowUpStatus, Long> getNewContactCountPerFollowUpStatus(ContactCriteria contactCriteria) {
 
-		User user = userService.getCurrentUser();
-		return service.getNewContactCountPerFollowUpStatus(contactCriteria, user);
+		return service.getNewContactCountPerFollowUpStatus(contactCriteria);
 	}
 
 	@Override

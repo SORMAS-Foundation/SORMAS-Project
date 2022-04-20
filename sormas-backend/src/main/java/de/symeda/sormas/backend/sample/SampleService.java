@@ -634,7 +634,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 			if (sampleAssociationType == SampleAssociationType.CASE) {
 				filter = CriteriaBuilderHelper.or(cb, filter, caseService.createUserFilter(cb, cq, joins.getCaze(), null));
 			} else if (sampleAssociationType == SampleAssociationType.CONTACT) {
-				filter = CriteriaBuilderHelper.or(cb, filter, contactService.createUserFilterForJoin(cb, cq, joins.getContact()));
+				filter = CriteriaBuilderHelper.or(cb, filter, contactService.createUserFilter(cb, cq, joins.getContact()));
 			} else if (sampleAssociationType == SampleAssociationType.EVENT_PARTICIPANT) {
 				filter = CriteriaBuilderHelper.or(cb, filter, eventParticipantService.createUserFilterForJoin(cb, cq, joins.getEventParticipant()));
 			}
@@ -645,14 +645,14 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 				CriteriaBuilderHelper.or(
 					cb,
 					caseService.createUserFilter(cb, cq, joins.getCaze(), null),
-					contactService.createUserFilterForJoin(cb, cq, joins.getContact()),
+					contactService.createUserFilter(cb, cq, joins.getContact()),
 					eventParticipantService.createUserFilterForJoin(cb, cq, joins.getEventParticipant())));
 		} else {
 			filter = CriteriaBuilderHelper.or(
 				cb,
 				filter,
 				caseService.createUserFilter(cb, cq, joins.getCaze(), null),
-				contactService.createUserFilterForJoin(cb, cq, joins.getContact()),
+				contactService.createUserFilter(cb, cq, joins.getContact()),
 				eventParticipantService.createUserFilterForJoin(cb, cq, joins.getEventParticipant()));
 		}
 
