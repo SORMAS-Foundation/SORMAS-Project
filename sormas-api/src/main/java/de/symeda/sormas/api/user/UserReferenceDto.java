@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.api.user;
 
-import java.util.Set;
-
 import com.fasterxml.jackson.annotation.JsonIgnore;
 
 import de.symeda.sormas.api.ReferenceDto;
@@ -44,9 +42,9 @@ public class UserReferenceDto extends ReferenceDto {
 		setUuid(uuid);
 	}
 
-	public UserReferenceDto(String uuid, String firstName, String lastName, Set<String> userRoleCaptions) {
+	public UserReferenceDto(String uuid, String firstName, String lastName) {
 		setUuid(uuid);
-		setCaption(buildCaption(firstName, lastName, userRoleCaptions));
+		setCaption(buildCaption(firstName, lastName));
 		this.firstName = firstName;
 		this.lastName = lastName;
 	}
@@ -58,23 +56,13 @@ public class UserReferenceDto extends ReferenceDto {
 		setCaption(caption);
 	}
 
-	public static String buildCaption(String firstName, String lastName, Set<String> userRoleCaptions) {
+	public static String buildCaption(String firstName, String lastName) {
 
 		StringBuilder result = new StringBuilder();
-		result.append(DataHelper.toStringNullable(firstName)).append(" ").append(DataHelper.toStringNullable(lastName).toUpperCase());
-		boolean first = true;
-		if (userRoleCaptions != null) {
-			for (String caption : userRoleCaptions) {
-				if (first) {
-					result.append(" - ");
-					first = false;
-				} else {
-					result.append(", ");
-				}
-				result.append(caption);
-			}
-		}
-		return result.toString();
+		return result.append(DataHelper.toStringNullable(firstName))
+			.append(" ")
+			.append(DataHelper.toStringNullable(lastName).toUpperCase())
+			.toString();
 	}
 
 	public String getFirstName() {
@@ -87,6 +75,6 @@ public class UserReferenceDto extends ReferenceDto {
 
 	@JsonIgnore
 	public String getShortCaption() {
-		return buildCaption(firstName, lastName, null);
+		return buildCaption(firstName, lastName);
 	}
 }

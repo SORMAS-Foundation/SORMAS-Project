@@ -408,7 +408,7 @@ public class SormasToSormasListComponent extends VerticalLayout {
 		targetLabel.addStyleName(CssStyles.LABEL_BOLD);
 		infoLayout.addComponent(targetLabel);
 
-		Label senderLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedBy) + ": " + shareInfo.getSender().getShortCaption());
+		Label senderLabel = new Label(I18nProperties.getCaption(Captions.sormasToSormasSharedBy) + ": " + shareInfo.getSender().getCaption());
 		infoLayout.addComponent(senderLabel);
 
 		Label shareDateLabel =

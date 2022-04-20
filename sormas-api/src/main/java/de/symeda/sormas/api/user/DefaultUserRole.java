@@ -15,7 +15,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
-package de.symeda.sormas.backend.user;
+package de.symeda.sormas.api.user;
 
 import static de.symeda.sormas.api.user.UserRight.*;
 
@@ -27,9 +27,6 @@ import java.util.List;
 import java.util.Set;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.user.JurisdictionLevel;
-import de.symeda.sormas.api.user.NotificationType;
-import de.symeda.sormas.api.user.UserRight;
 
 /**
  * These are also used as user groups in the server realm

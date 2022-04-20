@@ -18,7 +18,6 @@
 package de.symeda.sormas.api.user;
 
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.validation.Valid;
 import javax.validation.constraints.Size;
@@ -182,7 +181,7 @@ public class UserDto extends EntityDto {
 
 	@Override
 	public String toString() {
-		return UserReferenceDto.buildCaption(firstName, lastName, userRoles.stream().map(role -> role.getCaption()).collect(Collectors.toSet()));
+		return UserReferenceDto.buildCaption(firstName, lastName);
 	}
 
 	public UserReferenceDto getAssociatedOfficer() {
@@ -242,11 +241,7 @@ public class UserDto extends EntityDto {
 	}
 
 	public UserReferenceDto toReference() {
-		return new UserReferenceDto(
-			getUuid(),
-			getFirstName(),
-			getLastName(),
-			getUserRoles() != null ? getUserRoles().stream().map(UserRoleReferenceDto::getCaption).collect(Collectors.toSet()) : null);
+		return new UserReferenceDto(getUuid(), getFirstName(), getLastName());
 	}
 
 	public Disease getLimitedDisease() {

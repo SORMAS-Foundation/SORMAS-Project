@@ -31,9 +31,9 @@ import de.symeda.sormas.api.sormastosormas.SormasToSormasEncryptedDataDto;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasException;
 import de.symeda.sormas.api.sormastosormas.SormasToSormasOriginInfoDto;
 import de.symeda.sormas.api.sormastosormas.caze.SormasToSormasCaseDto;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasTest;
-import de.symeda.sormas.backend.user.DefaultUserRole;
 
 public class SormasToSormasEncryptionServiceTest extends SormasToSormasTest {
 

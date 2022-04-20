@@ -191,22 +191,14 @@ public class UserFacadeEjb implements UserFacade {
 		if (entity == null) {
 			return null;
 		}
-		return new UserReferenceDto(
-			entity.getUuid(),
-			entity.getFirstName(),
-			entity.getLastName(),
-			entity.getUserRoles().stream().map(UserRole::getCaption).collect(Collectors.toSet()));
+		return new UserReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName());
 	}
 
 	public static UserReferenceDto toReferenceDto(UserReference entity) {
 		if (entity == null) {
 			return null;
 		}
-		return new UserReferenceDto(
-			entity.getUuid(),
-			entity.getFirstName(),
-			entity.getLastName(),
-			entity.getUserRoles().stream().map(UserRole::getCaption).collect(Collectors.toSet()));
+		return new UserReferenceDto(entity.getUuid(), entity.getFirstName(), entity.getLastName());
 	}
 
 	private List<String> toUuidList(HasUuid hasUuid) {

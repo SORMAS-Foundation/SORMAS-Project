@@ -21,7 +21,6 @@ import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_DEFAUL
 
 import java.util.Arrays;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -255,18 +254,11 @@ public class User extends AbstractDomainObject {
 
 	@Override
 	public String toString() {
-		return UserReferenceDto.buildCaption(
-			getFirstName(),
-			getLastName(),
-			getUserRoles() != null ? getUserRoles().stream().map(UserRole::getCaption).collect(Collectors.toSet()) : null);
+		return UserReferenceDto.buildCaption(getFirstName(), getLastName());
 	}
 
 	public UserReferenceDto toReference() {
-		return new UserReferenceDto(
-			getUuid(),
-			getFirstName(),
-			getLastName(),
-			getUserRoles() != null ? getUserRoles().stream().map(UserRole::getCaption).collect(Collectors.toSet()) : null);
+		return new UserReferenceDto(getUuid(), getFirstName(), getLastName());
 	}
 
 	@ManyToOne(cascade = {})

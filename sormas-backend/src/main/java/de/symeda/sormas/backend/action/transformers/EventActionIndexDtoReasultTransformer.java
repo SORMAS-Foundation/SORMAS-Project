@@ -23,11 +23,11 @@ public class EventActionIndexDtoReasultTransformer implements ResultTransformer 
 
 	@Override
 	public Object transformTuple(Object[] objects, String[] strings) {
-		UserReferenceDto eventReportingUser = new UserReferenceDto((String) objects[12], (String) objects[13], (String) objects[14], null);
-		UserReferenceDto eventResponsibleUser = new UserReferenceDto((String) objects[15], (String) objects[16], (String) objects[17], null);
+		UserReferenceDto eventReportingUser = new UserReferenceDto((String) objects[12], (String) objects[13], (String) objects[14]);
+		UserReferenceDto eventResponsibleUser = new UserReferenceDto((String) objects[15], (String) objects[16], (String) objects[17]);
 		String actionTitle = EventHelper.buildEventActionTitleString((ActionMeasure) objects[18], (String) objects[20]);
-		UserReferenceDto actionLastModifiedBy = new UserReferenceDto((String) objects[26], (String) objects[27], (String) objects[28], null);
-		UserReferenceDto actionCreatorUser = new UserReferenceDto((String) objects[29], (String) objects[30], (String) objects[31], null);
+		UserReferenceDto actionLastModifiedBy = new UserReferenceDto((String) objects[26], (String) objects[27], (String) objects[28]);
+		UserReferenceDto actionCreatorUser = new UserReferenceDto((String) objects[29], (String) objects[30], (String) objects[31]);
 		return new EventActionIndexDto(
 			(String) objects[0],
 			(String) objects[1],

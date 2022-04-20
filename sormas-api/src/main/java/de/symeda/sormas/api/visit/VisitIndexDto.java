@@ -68,7 +68,7 @@ public class VisitIndexDto extends PseudonymizableIndexDto implements Serializab
 		this.temperature = temperature;
 		this.temperatureSource = temperatureSource;
 		this.origin = origin;
-		this.visitUser = visitUserUuid != null ? new UserReferenceDto(visitUserUuid, visitUserFirstName, visitUserLastName, null) : null;
+		this.visitUser = visitUserUuid != null ? new UserReferenceDto(visitUserUuid, visitUserFirstName, visitUserLastName) : null;
 		this.isInJurisdiction = isInJurisdiction;
 	}
 

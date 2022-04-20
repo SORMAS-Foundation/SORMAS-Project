@@ -16,7 +16,7 @@ import com.vaadin.ui.UI;
 import com.vaadin.util.CurrentInstance;
 import com.vaadin.v7.data.util.converter.ConverterFactory;
 
-import de.symeda.sormas.backend.user.DefaultUserRole;
+import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.ui.AbstractBeanTest;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.SormasDefaultConverterFactory;

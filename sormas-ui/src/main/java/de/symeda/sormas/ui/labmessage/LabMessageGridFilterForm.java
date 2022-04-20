@@ -68,7 +68,7 @@ public class LabMessageGridFilterForm extends AbstractFilterForm<LabMessageCrite
 		searchField.setNullRepresentation("");
 
 		ComboBoxWithPlaceholder assignee = addField(LabMessageCriteria.ASSIGNEE, ComboBoxWithPlaceholder.class);
-		assignee.addItem(new UserReferenceDto(ReferenceDto.NO_REFERENCE_UUID, I18nProperties.getCaption(Captions.unassigned), "", null));
+		assignee.addItem(new UserReferenceDto(ReferenceDto.NO_REFERENCE_UUID, I18nProperties.getCaption(Captions.unassigned), ""));
 		assignee.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(user.getRegion(), null, UserRight.LAB_MESSAGES));
 		assignee.setNullSelectionAllowed(true);
 

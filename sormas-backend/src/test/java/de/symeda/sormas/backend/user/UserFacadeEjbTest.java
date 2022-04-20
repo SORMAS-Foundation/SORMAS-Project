@@ -1,14 +1,14 @@
 package de.symeda.sormas.backend.user;
 
-import static de.symeda.sormas.backend.user.DefaultUserRole.ADMIN;
-import static de.symeda.sormas.backend.user.DefaultUserRole.CASE_OFFICER;
-import static de.symeda.sormas.backend.user.DefaultUserRole.CONTACT_OFFICER;
-import static de.symeda.sormas.backend.user.DefaultUserRole.CONTACT_SUPERVISOR;
-import static de.symeda.sormas.backend.user.DefaultUserRole.DISTRICT_OBSERVER;
-import static de.symeda.sormas.backend.user.DefaultUserRole.NATIONAL_USER;
-import static de.symeda.sormas.backend.user.DefaultUserRole.POE_INFORMANT;
-import static de.symeda.sormas.backend.user.DefaultUserRole.SURVEILLANCE_OFFICER;
-import static de.symeda.sormas.backend.user.DefaultUserRole.SURVEILLANCE_SUPERVISOR;
+import static de.symeda.sormas.api.user.DefaultUserRole.ADMIN;
+import static de.symeda.sormas.api.user.DefaultUserRole.CASE_OFFICER;
+import static de.symeda.sormas.api.user.DefaultUserRole.CONTACT_OFFICER;
+import static de.symeda.sormas.api.user.DefaultUserRole.CONTACT_SUPERVISOR;
+import static de.symeda.sormas.api.user.DefaultUserRole.DISTRICT_OBSERVER;
+import static de.symeda.sormas.api.user.DefaultUserRole.NATIONAL_USER;
+import static de.symeda.sormas.api.user.DefaultUserRole.POE_INFORMANT;
+import static de.symeda.sormas.api.user.DefaultUserRole.SURVEILLANCE_OFFICER;
+import static de.symeda.sormas.api.user.DefaultUserRole.SURVEILLANCE_SUPERVISOR;
 import static org.hamcrest.CoreMatchers.equalTo;
 import static org.hamcrest.MatcherAssert.assertThat;
 import static org.hamcrest.Matchers.contains;
