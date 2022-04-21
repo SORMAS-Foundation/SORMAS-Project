@@ -177,7 +177,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		final CriteriaQuery cq = eventParticipantQueryContext.getQuery();
 		final EventParticipantJoins joins = eventParticipantQueryContext.getJoins();
 		final Join<EventParticipant, Event> event = joins.getEvent(JoinType.LEFT);
-		final Join<Case, Person> person = joins.getCasePerson();
+		final Join<EventParticipant, Person> person = joins.getPerson();
 		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, joins.getPersonJoins());
 
 		Predicate filter = null;
@@ -213,7 +213,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.BIRTHDATE_DD), criteria.getBirthdateDD()));
 		}
 		if (criteria.getPathogenTestResult() != null) {
-			Join<EventParticipant, Sample> samples = joins.getSamples();
+			Join<EventParticipant, Sample> samples = from.join(EventParticipant.SAMPLES, JoinType.LEFT);
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(samples.get(Sample.PATHOGEN_TEST_RESULT), criteria.getPathogenTestResult()));
 		}
 		if (criteria.getVaccinationStatus() != null) {
