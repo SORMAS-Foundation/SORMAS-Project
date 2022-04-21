@@ -970,11 +970,12 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		CriteriaBuilder cb = contactQueryContext.getCriteriaBuilder();
 		From<?, ?> contactPath = contactQueryContext.getRoot();
 
+		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, contactQueryContext.getJoins().getCaseJoins());
 		if (contactCriteria == null || contactCriteria.getIncludeContactsFromOtherJurisdictions()) {
-			userFilter = caseService.createUserFilter(cb, cq, contactQueryContext.getJoins().getCaze());
+			userFilter = caseService.createUserFilter(caseQueryContext);
 		} else {
 			CaseUserFilterCriteria userFilterCriteria = new CaseUserFilterCriteria();
-			userFilter = caseService.createUserFilter(cb, cq, contactQueryContext.getJoins().getCaze(), userFilterCriteria);
+			userFilter = caseService.createUserFilter(caseQueryContext, userFilterCriteria);
 		}
 
 		Predicate filter;

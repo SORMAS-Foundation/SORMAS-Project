@@ -54,6 +54,7 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
 import org.apache.commons.lang3.StringUtils;
 
@@ -253,7 +254,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		// 1. Define filters per association lazy to avoid superfluous joins
 		final Supplier<Predicate> caseFilter = () -> CriteriaBuilderHelper.and(
 			cb,
-			caseService.createUserFilter(cb, cq, joins.getCaze(), new CaseUserFilterCriteria()),
+			caseService.createUserFilter(new CaseQueryContext(cb, cq, joins.getCaseJoins()), new CaseUserFilterCriteria()),
 			caseService.createDefaultFilter(cb, joins.getCaze()));
 		final Supplier<Predicate> contactFilter = () -> {
 			final Predicate contactUserFilter = contactService.createUserFilter(

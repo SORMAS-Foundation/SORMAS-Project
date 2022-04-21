@@ -160,7 +160,7 @@ public class CaseListCriteriaBuilder {
 		if (caseCriteria != null) {
 			caseUserFilterCriteria.setIncludeCasesFromOtherJurisdictions(caseCriteria.getIncludeCasesFromOtherJurisdictions());
 		}
-		Predicate filter = caseService.createUserFilter(cb, cq, caze, caseUserFilterCriteria);
+		Predicate filter = caseService.createUserFilter(caseQueryContext, caseUserFilterCriteria);
 
 		if (caseCriteria != null) {
 			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, caseQueryContext);

@@ -289,9 +289,11 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Case> caze = cq.from(getElementClass());
 
+		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
+
 		CaseJoins joins = new CaseJoins(caze);
 
-		Predicate filter = createMapCasesFilter(cb, cq, caze, joins, region, district, disease, from, to, dateType);
+		Predicate filter = createMapCasesFilter(caseQueryContext, region, district, disease, from, to, dateType);
 
 		if (filter != null) {
 			cq.where(filter);
@@ -312,7 +314,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
 		CaseJoins joins = caseQueryContext.getJoins();
 
-		Predicate filter = createMapCasesFilter(cb, cq, caze, joins, region, district, disease, from, to, dateType);
+		Predicate filter = createMapCasesFilter(caseQueryContext, region, district, disease, from, to, dateType);
 
 		List<MapCaseDto> result;
 		if (filter != null) {
@@ -343,27 +345,30 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	private Predicate createMapCasesFilter(
-		CriteriaBuilder cb,
-		CriteriaQuery<?> cq,
-		Root<Case> root,
-		CaseJoins joins,
+			CaseQueryContext caseQueryContext,
 		Region region,
 		District district,
 		Disease disease,
 		Date from,
 		Date to,
 		NewCaseDateType dateType) {
+
+		final CriteriaBuilder cb = caseQueryContext.getCriteriaBuilder();
+		final From<?, Case> root = caseQueryContext.getRoot();
+		final CriteriaQuery<?> cq = caseQueryContext.getQuery();
+		final CaseJoins joins = caseQueryContext.getJoins();
+
 		Predicate filter = createActiveCasesFilter(cb, root);
 
 		// Userfilter
-		filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, root, new CaseUserFilterCriteria().excludeCasesFromContacts(true)));
+		filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true)));
 
 		// Filter by date. The relevancefilter uses a special algorithm that should reflect the current situation.
 		if (dateType == null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, createCaseRelevanceFilter(cb, root, from, to));
+			filter = CriteriaBuilderHelper.and(cb, filter, createCaseRelevanceFilter(caseQueryContext, from, to));
 		} else {
 			filter = CriteriaBuilderHelper
-				.and(cb, filter, createNewCaseFilter(cq, cb, root, DateHelper.getStartOfDay(from), DateHelper.getEndOfDay(to), dateType));
+				.and(cb, filter, createNewCaseFilter(caseQueryContext, DateHelper.getStartOfDay(from), DateHelper.getEndOfDay(to), dateType));
 		}
 
 		// only show cases which actually have GPS coordinates provided
@@ -454,7 +459,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, root);
 			filter = createCriteriaFilter(caseCriteria, caseQueryContext);
 			// Userfilter
-			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, root, new CaseUserFilterCriteria()));
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(caseQueryContext, new CaseUserFilterCriteria()));
 		}
 
 		filter = CriteriaBuilderHelper.and(
@@ -537,7 +542,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	 * {@code toDate}, i.e. either the {@link Symptoms#onsetDate} or {@link Case#reportDate} OR the {@link Case#outcomeDate} are
 	 * within the time frame. Also excludes cases with classification=not a case
 	 */
-	public Predicate createCaseRelevanceFilter(CriteriaBuilder cb, Root<Case> from, Date fromDate, Date toDate) {
+	public Predicate createCaseRelevanceFilter(CaseQueryContext caseQueryContext, Date fromDate, Date toDate) {
+		CriteriaBuilder cb = caseQueryContext.getCriteriaBuilder();
+		From<?, Case> from = caseQueryContext.getRoot();
 		Predicate classificationFilter = cb.notEqual(from.get(Case.CASE_CLASSIFICATION), CaseClassification.NO_CASE);
 		Predicate dateFromFilter = null;
 		Predicate dateToFilter = null;
@@ -545,7 +552,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			dateFromFilter = cb.or(cb.isNull(from.get(Case.OUTCOME_DATE)), cb.greaterThanOrEqualTo(from.get(Case.OUTCOME_DATE), fromDate));
 		}
 		if (toDate != null) {
-			Join<Case, Symptoms> symptoms = from.join(Case.SYMPTOMS, JoinType.LEFT);
+			Join<Case, Symptoms> symptoms = caseQueryContext.getJoins().getSymptoms();
 			dateToFilter = cb.or(
 				cb.lessThanOrEqualTo(symptoms.get(Symptoms.ONSET_DATE), toDate),
 				cb.and(cb.isNull(symptoms.get(Symptoms.ONSET_DATE)), cb.lessThanOrEqualTo(from.get(Case.REPORT_DATE), toDate)));
@@ -572,14 +579,14 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Join<Case, Person> person = joins.getPerson();
 		Join<Case, User> reportingUser = joins.getReportingUser();
 		Join<Case, Facility> facility = joins.getFacility();
-		Join<Person, Location> location = person.join(Person.ADDRESS, JoinType.LEFT);
+		Join<Person, Location> location = joins.getPersonAddress();
 
 		Predicate filter = null;
 		if (caseCriteria.getReportingUserRole() != null) {
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				cb.isMember(caseCriteria.getReportingUserRole(), from.join(Case.REPORTING_USER, JoinType.LEFT).get(User.USER_ROLES)));
+				cb.isMember(caseCriteria.getReportingUserRole(), joins.getReportingUser().get(User.USER_ROLES)));
 		}
 		if (caseCriteria.getDisease() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DISEASE), caseCriteria.getDisease()));
@@ -633,7 +640,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				cb.equal(from.join(Case.HEALTH_FACILITY, JoinType.LEFT).get(Facility.UUID), caseCriteria.getHealthFacility().getUuid()));
+				cb.equal(joins.getFacility().get(Facility.UUID), caseCriteria.getHealthFacility().getUuid()));
 		}
 		if (caseCriteria.getFacilityTypeGroup() != null) {
 			filter =
@@ -646,13 +653,13 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				cb.equal(from.join(Case.POINT_OF_ENTRY, JoinType.LEFT).get(PointOfEntry.UUID), caseCriteria.getPointOfEntry().getUuid()));
+				cb.equal(joins.getPointOfEntry().get(PointOfEntry.UUID), caseCriteria.getPointOfEntry().getUuid()));
 		}
 		if (caseCriteria.getSurveillanceOfficer() != null) {
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				cb.equal(from.join(Case.SURVEILLANCE_OFFICER, JoinType.LEFT).get(User.UUID), caseCriteria.getSurveillanceOfficer().getUuid()));
+				cb.equal(joins.getSurveillanceOfficer().get(User.UUID), caseCriteria.getSurveillanceOfficer().getUuid()));
 		}
 		if (caseCriteria.getCaseClassification() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.CASE_CLASSIFICATION), caseCriteria.getCaseClassification()));
@@ -668,9 +675,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				cb,
 				filter,
 				createNewCaseFilter(
-					cq,
-					cb,
-					from,
+					caseQueryContext,
 					DateHelper.getStartOfDay(caseCriteria.getNewCaseDateFrom()),
 					DateHelper.getEndOfDay(caseCriteria.getNewCaseDateTo()),
 					caseCriteria.getNewCaseDateType()));
@@ -699,7 +704,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(person.get(Person.UUID), caseCriteria.getPerson().getUuid()));
 		}
 		if (caseCriteria.getMustHaveNoGeoCoordinates() != null && caseCriteria.getMustHaveNoGeoCoordinates() == true) {
-			Join<Person, Location> personAddress = person.join(Person.ADDRESS, JoinType.LEFT);
+			Join<Person, Location> personAddress = joins.getPersonAddress();
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
@@ -711,7 +716,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				cb.and(cb.equal(from.get(Case.CASE_ORIGIN), CaseOrigin.POINT_OF_ENTRY), cb.isNull(from.join(Case.HEALTH_FACILITY, JoinType.LEFT))));
+				cb.and(cb.equal(from.get(Case.CASE_ORIGIN), CaseOrigin.POINT_OF_ENTRY), cb.isNull(joins.getFacility())));
 		}
 		if (caseCriteria.getMustHaveCaseManagementData() != null && caseCriteria.getMustHaveCaseManagementData() == true) {
 			Subquery<Prescription> prescriptionSubquery = cq.subquery(Prescription.class);
@@ -785,7 +790,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		boolean hasOnlyCasesWithEventsCriteria = Boolean.TRUE.equals(caseCriteria.getOnlyCasesWithEvents());
 		if (hasEventLikeCriteria || hasOnlyCasesWithEventsCriteria) {
 			Join<Case, EventParticipant> eventParticipant = joins.getEventParticipants();
-			Join<EventParticipant, Event> event = eventParticipant.join(EventParticipant.EVENT, JoinType.LEFT);
+			Join<EventParticipant, Event> event = joins.getEventParticipantJoins().getEvent(JoinType.LEFT);
 
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.isFalse(event.get(Event.DELETED)), cb.isFalse(eventParticipant.get(EventParticipant.DELETED)));
@@ -859,7 +864,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	/**
 	 * Creates a filter that excludes all cases that are either {@link Case#archived} or {@link DeletableAdo#deleted}.
 	 */
-	public Predicate createActiveCasesFilter(CriteriaBuilder cb, Root<Case> root) {
+	public Predicate createActiveCasesFilter(CriteriaBuilder cb, From<?, Case> root) {
 		return cb.and(cb.isFalse(root.get(Case.ARCHIVED)), cb.isFalse(root.get(Case.DELETED)));
 	}
 
@@ -1072,12 +1077,16 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	@SuppressWarnings("rawtypes")
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Case> casePath, CaseUserFilterCriteria userFilterCriteria) {
+	public Predicate createUserFilter(CaseQueryContext caseQueryContext, CaseUserFilterCriteria userFilterCriteria) {
 
 		User currentUser = getCurrentUser();
 		if (currentUser == null) {
 			return null;
 		}
+
+		final CriteriaQuery<?> cq = caseQueryContext.getQuery();
+		final CriteriaBuilder cb = caseQueryContext.getCriteriaBuilder();
+		final From<?, Case> casePath = caseQueryContext.getRoot();
 
 		Predicate filterResponsible = null;
 		Predicate filter = null;
@@ -1155,10 +1164,11 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			if (userFilterCriteria == null
 				|| (!userFilterCriteria.isExcludeCasesFromContacts()
 					&& Boolean.TRUE.equals(userFilterCriteria.getIncludeCasesFromOtherJurisdictions()))) {
+				CaseJoins caseJoins = caseQueryContext.getJoins();
 				filter = CriteriaBuilderHelper.or(
 					cb,
 					filter,
-					contactService.createUserFilterWithoutCase(new ContactQueryContext(cb, cq, casePath.join(Case.CONTACTS, JoinType.LEFT))));
+					contactService.createUserFilterWithoutCase(new ContactQueryContext(cb, cq, caseJoins.getContacts())));
 			}
 
 			// users can only be assigned to a task when they have also access to the case
@@ -1190,7 +1200,11 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Case> casePath) {
-		return createUserFilter(cb, cq, casePath, null);
+		return createUserFilter(new CaseQueryContext(cb, cq, casePath));
+	}
+
+	public Predicate createUserFilter(CaseQueryContext caseQueryContext) {
+		return createUserFilter(caseQueryContext, null);
 	}
 
 	/**
@@ -1199,14 +1213,17 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	 * the {@link Case#reportDate}.
 	 */
 	public Predicate createNewCaseFilter(
-		CriteriaQuery<?> cq,
-		CriteriaBuilder cb,
-		From<?, Case> caze,
+		CaseQueryContext caseQueryContext,
 		Date fromDate,
 		Date toDate,
 		CriteriaDateType dateType) {
 
-		Join<Case, Symptoms> symptoms = caze.join(Case.SYMPTOMS, JoinType.LEFT);
+		final CriteriaBuilder cb = caseQueryContext.getCriteriaBuilder();
+		final From<?, Case> caze = caseQueryContext.getRoot();
+		final CriteriaQuery<?> cq = caseQueryContext.getQuery();
+		final CaseJoins joins = caseQueryContext.getJoins();
+
+		Join<Case, Symptoms> symptoms = joins.getSymptoms();
 
 		Date toDateEndOfDay = DateHelper.getEndOfDay(toDate);
 
@@ -1470,7 +1487,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		cq.orderBy(cb.desc(latestChangedDateFunction));
 
-		Predicate filter = CriteriaBuilderHelper.and(cb, createDefaultFilter(cb, root), createUserFilter(cb, cq, root, new CaseUserFilterCriteria()));
+		Predicate filter = CriteriaBuilderHelper.and(cb, createDefaultFilter(cb, root), createUserFilter(caseQueryContext, new CaseUserFilterCriteria()));
 
 		if (caseCriteria != null) {
 			if (caseCriteria.getDisease() != null) {
@@ -1624,21 +1641,24 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 	public List<CaseIndexDto[]> getCasesForDuplicateMerging(CaseCriteria criteria, boolean ignoreRegion, double nameSimilarityThreshold) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
-		Root<Case> root = cq.from(Case.class);
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		final Root<Case> root = cq.from(Case.class);
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, root);
 		final CaseJoins joins = caseQueryContext.getJoins();
 
-		Root<Case> root2 = cq.from(Case.class);
+		final Root<Case> root2 = cq.from(Case.class);
+		final CaseQueryContext caseQueryContext2 = new CaseQueryContext(cb, cq, root2);
+		final CaseJoins joins2 = caseQueryContext2.getJoins();
+
 		Join<Case, Person> person = joins.getPerson();
-		Join<Case, Person> person2 = root2.join(Case.PERSON, JoinType.LEFT);
+		Join<Case, Person> person2 = joins2.getPerson();
 		Join<Case, Region> responsibleRegion = joins.getResponsibleRegion();
-		Join<Case, Region> responsibleRegion2 = root2.join(Case.RESPONSIBLE_REGION, JoinType.LEFT);
+		Join<Case, Region> responsibleRegion2 = joins2.getResponsibleRegion();
 		Join<Case, Region> region = joins.getRegion();
-		Join<Case, Region> region2 = root2.join(Case.REGION, JoinType.LEFT);
+		Join<Case, Region> region2 = joins2.getRegion();
 		Join<Case, Symptoms> symptoms = joins.getSymptoms();
-		Join<Case, Symptoms> symptoms2 = root2.join(Case.SYMPTOMS, JoinType.LEFT);
+		Join<Case, Symptoms> symptoms2 = joins2.getSymptoms();
 
 		cq.distinct(true);
 
