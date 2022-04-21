@@ -702,7 +702,7 @@ public class CaseController {
 							if (unrelatedDisease == null) {
 								// set resulting case on event participant and save it
 								updatedEventParticipant.setResultingCase(dto.toReference());
-								FacadeProvider.getEventParticipantFacade().save(updatedEventParticipant);
+								FacadeProvider.getCaseFacade().setResultingCase(updatedEventParticipant.toReference(), dto.toReference());
 								FacadeProvider.getCaseFacade().setSampleAssociations(updatedEventParticipant.toReference(), dto.toReference());
 							} else {
 								FacadeProvider.getCaseFacade()
