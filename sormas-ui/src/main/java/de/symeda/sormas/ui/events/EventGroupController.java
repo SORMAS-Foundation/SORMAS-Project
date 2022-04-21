@@ -29,7 +29,6 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
-import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -203,19 +202,21 @@ public class EventGroupController {
 			});
 		}
 
-		if (user.hasUserRight(UserRight.EVENTGROUP_DELETE) && hasRegion) {
-			editView.addDeleteListener(() -> {
-				deleteEventGroup(eventGroup);
-				UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
-			}, I18nProperties.getString(Strings.entityEventGroup));
-		}
+		// TODO Temporarily deleted in #8915, enable again in #8851
+//		if (user.hasUserRight(UserRight.EVENTGROUP_DELETE) && hasRegion) {
+//			editView.addDeleteListener(() -> {
+//				deleteEventGroup(eventGroup);
+//				UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
+//			}, I18nProperties.getString(Strings.entityEventGroup));
+//		}
 
 		// Initialize 'Archive' button
 		if (user.hasUserRight(UserRight.EVENTGROUP_ARCHIVE) && hasRegion) {
 			boolean archived = FacadeProvider.getEventGroupFacade().isArchived(uuid);
-			Button archiveEventButton = ButtonHelper.createButton(archived ? Captions.actionDearchiveInfrastructure : Captions.actionArchiveInfrastructure, e -> {
-				archiveOrDearchiveEventGroup(uuid, !archived);
-			}, ValoTheme.BUTTON_LINK);
+			Button archiveEventButton =
+				ButtonHelper.createButton(archived ? Captions.actionDearchiveInfrastructure : Captions.actionArchiveInfrastructure, e -> {
+					archiveOrDearchiveEventGroup(uuid, !archived);
+				}, ValoTheme.BUTTON_LINK);
 
 			editView.getButtonsPanel().addComponentAsFirst(archiveEventButton);
 			editView.getButtonsPanel().setComponentAlignment(archiveEventButton, Alignment.BOTTOM_LEFT);
