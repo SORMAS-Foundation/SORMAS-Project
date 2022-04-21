@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -414,6 +415,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	}
 
 	@Override
+	@PermitAll
 	public String getLabMessagesAdapterVersion() throws NamingException {
 		ExternalLabResultsFacade labResultsFacade = getExternalLabResultsFacade();
 		return labResultsFacade.getVersion();

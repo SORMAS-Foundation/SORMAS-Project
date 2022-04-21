@@ -143,12 +143,10 @@ public class AboutView extends VerticalLayout implements View {
 		}
 
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.LAB_MESSAGES)) {
-			if (UserProvider.getCurrent().hasAllUserRights(UserRight.LAB_MESSAGES)) {
-				addExternalServiceVersion(
-					Captions.aboutLabMessageAdapter,
-					() -> FacadeProvider.getLabMessageFacade().getLabMessagesAdapterVersion(),
-					infoLayout);
-			}
+			addExternalServiceVersion(
+				Captions.aboutLabMessageAdapter,
+				() -> FacadeProvider.getLabMessageFacade().getLabMessagesAdapterVersion(),
+				infoLayout);
 		}
 
 		if (FacadeProvider.getExternalSurveillanceToolFacade().isFeatureEnabled()) {
