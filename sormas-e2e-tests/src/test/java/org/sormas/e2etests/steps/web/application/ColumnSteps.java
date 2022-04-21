@@ -98,6 +98,38 @@ public class ColumnSteps implements En {
         });
 
     When(
+        "I check that column {int} is sorted by age in ascending order",
+        (Integer col) -> {
+          TimeUnit.SECONDS.sleep(2); // For preventing premature data collection
+          List<String> rawColumnData = getTableColumnDataByIndex(col, 10);
+          rawColumnData.replaceAll(element -> nullifyEmptyString(element));
+          rawColumnData.replaceAll(element -> getAge(element));
+          List<String> ascColumnData = new ArrayList<>(rawColumnData);
+          ascColumnData.sort(Comparator.nullsLast(Comparator.naturalOrder()));
+          softly.assertEquals(
+              rawColumnData,
+              ascColumnData,
+              "Column " + col.toString() + " is not correctly sorted!");
+          softly.assertAll();
+        });
+
+    When(
+        "I check that column {int} is sorted by age in descending order",
+        (Integer col) -> {
+          TimeUnit.SECONDS.sleep(2); // For preventing premature data collection
+          List<String> rawColumnData = getTableColumnDataByIndex(col, 10);
+          rawColumnData.replaceAll(element -> nullifyEmptyString(element));
+          rawColumnData.replaceAll(element -> getAge(element));
+          List<String> desColumnData = new ArrayList<>(rawColumnData);
+          desColumnData.sort(Comparator.nullsFirst(Comparator.reverseOrder()));
+          softly.assertEquals(
+              rawColumnData,
+              desColumnData,
+              "Column " + col.toString() + " is not correctly sorted!");
+          softly.assertAll();
+        });
+
+    When(
         "I check that column {int} is sorted by date in ascending order",
         (Integer col) -> {
           TimeUnit.SECONDS.sleep(2); // For preventing premature data collection
@@ -226,6 +258,13 @@ public class ColumnSteps implements En {
   private String getLastName(String string) {
     if (string != null) {
       string = string.substring(string.indexOf(" ") + 1, string.indexOf("(") - 1);
+    }
+    return string;
+  }
+
+  private String getAge(String string) {
+    if (string != null) {
+      string = string.substring(0, string.indexOf(" "));
     }
     return string;
   }

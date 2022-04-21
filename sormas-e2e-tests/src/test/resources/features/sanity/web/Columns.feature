@@ -57,7 +57,6 @@ Scenario Outline: Sort column <col> alphabetically in Persons directory
     |1 |
     |2 |
     |3 |
-    |4 |
     |5 |
     |6 |
     |7 |
@@ -66,6 +65,21 @@ Scenario Outline: Sort column <col> alphabetically in Persons directory
     |10 |
     |11 |
     |12 |
+
+@env_main @issue=SORDEV-5342 @Persons
+Scenario Outline: Sort column <col> by age in Persons directory
+  Given I log in with National User
+  And I click on the Persons button from navbar
+  When I click the header of column <col>
+  Then I check that column <col> is sorted by age in ascending order
+  And I check that an upwards arrow appears in the header of column <col>
+  When I click the header of column <col>
+  Then I check that column <col> is sorted by age in descending order
+  And I check that a downwards arrow appears in the header of column <col>
+
+  Examples:
+    | col |
+    |4 |
 
 @env_main @issue=SORDEV-5342 @Case
 Scenario Outline: Sort column <col> alphabetically in Cases directory
@@ -94,13 +108,10 @@ Scenario Outline: Sort column <col> alphabetically in Cases directory
     |12 |
     |13 |
     |14 |
-    |16 |
+    |15 |
     |18 |
     |20 |
-    |21 |
     |22 |
-    |23 |
-    |24 |
 
 @env_main @issue=SORDEV-5342 @Case
 Scenario Outline: Sort column <col> by date and time in Cases directory
@@ -115,7 +126,7 @@ Scenario Outline: Sort column <col> by date and time in Cases directory
 
   Examples:
     | col |
-    |15 |
+    |16 |
     |17 |
 
 @env_main @issue=SORDEV-5342 @Case
