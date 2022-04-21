@@ -32,6 +32,8 @@ import java.util.stream.Collectors;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
@@ -1399,6 +1401,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	@Override
 	public void deletePermanent(Contact contact) {
 
+		System.out.println("Contact deleted " + contact.getId() + " " + contact.getUuid());
 		// Delete all tasks associated with this case
 		Optional.ofNullable(contact.getTasks()).ifPresent(tl -> tl.forEach(t -> taskService.deletePermanent(t)));
 
@@ -1408,17 +1411,12 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			.filter(sample -> sample.getAssociatedCase() == null && sample.getAssociatedEventParticipant() == null)
 			.forEach(sample -> sampleService.deletePermanent(sample));
 
-		// Delete all visits that are only associated with this contact and Remove the deleted contact from contact_visits
+		// Remove the deleted contact from contact_visits
 		contact.getVisits().forEach(visit -> {
-			if (visit.getCaze() == null && visit.getContacts().size() <= 1) {
-				visitService.deletePermanent(visit);
-			} else {
-				Set<Contact> visitContacts = new HashSet<>(visit.getContacts());
-				visit.getContacts().clear();
-				visit.getContacts()
-					.addAll(visitContacts.stream().filter(contact1 -> !DataHelper.isSame(contact1, contact)).collect(Collectors.toSet()));
-				visitService.ensurePersisted(visit);
-			}
+			Set<Contact> visitContacts = new HashSet<>(visit.getContacts());
+			visit.getContacts().clear();
+			visit.getContacts().addAll(visitContacts.stream().filter(contact1 -> !DataHelper.isSame(contact1, contact)).collect(Collectors.toSet()));
+			visitService.ensurePersisted(visit);
 		});
 
 		// Delete documents related to this contact

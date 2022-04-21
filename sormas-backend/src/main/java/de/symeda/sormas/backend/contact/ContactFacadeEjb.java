@@ -43,6 +43,7 @@ import java.util.stream.Collectors;
 import javax.annotation.Resource;
 import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
+import javax.annotation.security.RunAs;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -63,6 +64,7 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration;
 import de.symeda.sormas.backend.vaccination.VaccinationService;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
@@ -555,6 +557,13 @@ public class ContactFacadeEjb
 		}
 		return deletedContactUuids;
 
+	}
+
+	@Override
+	@RolesAllowed(UserRight._SYSTEM)
+	public void executeAutomaticDeletion(DeletionConfiguration entityConfig, boolean deletePermanent, int batchSize) {
+		super.executeAutomaticDeletion(entityConfig, deletePermanent, batchSize);
+		visitService.permanentDeleteOrphanVisits(batchSize);
 	}
 
 	@Override
