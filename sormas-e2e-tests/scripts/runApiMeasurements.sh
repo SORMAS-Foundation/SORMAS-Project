@@ -25,13 +25,11 @@ date +"%T"
 echo "Deleting allure report folder..."
 rm -rf ./allureReports
 echo "Deleting custom report"
-rm -rf ./customReports/pagesMeasurements/customReport.html
-eho "Deleting BarChart image"
-rm -rf ./customReports/pagesMeasurements/images/BarChart.jpeg
+rm -rf ./customReports/apiMeasurements/customReport.html
 echo "Cleaning old results from results.txt file"
-cat /dev/null > ./customReports/pagesMeasurements/data/results.txt
+cat /dev/null > ./customReports/apiMeasurements/data/results.txt
 echo "Executing gradle clean..."
 ./gradlew clean goJF
-echo "Starting all BDD tests under @PagesMeasurements tag..."
-#./gradlew startTests -Dcucumber.tags="@PagesMeasurements" -Dheadless=true -Dcourgette.threads=9 -DenvConfig=/srv/dockerdata/jenkins_new/sormas-files/envData.json --stacktrace --debug --scan
-./gradlew startTests -Dcucumber.tags="@PagesMeasurements" -Dheadless=true -Dcourgette.threads=9 -DenvConfig=C:/Users/Razvan/Desktop/envData.json
+echo "Starting all BDD tests under @ApiMeasurements tag..."
+#./gradlew startTests -Dcucumber.tags="@ApiMeasurements" -Dheadless=true -Dcourgette.threads=9 -DenvConfig=/srv/dockerdata/jenkins_new/sormas-files/envData.json --stacktrace --debug --scan
+./gradlew startTests -Dcucumber.tags="@ApiMeasurements" -Dheadless=true -Dcourgette.threads=9 -DenvConfig=C:/Users/Razvan/Desktop/envData.json

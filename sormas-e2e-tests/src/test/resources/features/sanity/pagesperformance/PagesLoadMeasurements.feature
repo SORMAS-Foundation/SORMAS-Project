@@ -1,4 +1,4 @@
-@UI @PagesMeasurements @PublishCustomReport
+@UI @PagesMeasurements @PublishPagesCustomReport
 Feature: Pages loading time
 
   @env_performance
