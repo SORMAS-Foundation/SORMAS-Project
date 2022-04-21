@@ -3,17 +3,11 @@ package org.sormas.e2etests.steps.web.application.persons;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.PERSON_DETAILED_COLUMN_HEADERS;
 
 import cucumber.api.java8.En;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Comparator;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.asserts.SoftAssert;
@@ -68,66 +62,6 @@ public class PersonDetailedTableViewSteps implements En {
               "The PRIMARY EMAIL ADDRESS column is not correctly displayed!");
           softly.assertAll();
         });
-
-    When(
-        "I click the header of column {int} in Person directory",
-        (Integer col) -> {
-          webDriverHelpers.clickOnWebElementBySelector(
-              By.xpath("//thead//tr//th[" + col.toString() + "]"));
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(5);
-        });
-
-    When(
-        "I check that column {int} is sorted in ascending order",
-        (Integer col) -> {
-          List<String> rawColumnData = getTableColumnDataByIndex(col, 10);
-          List<String> ascColumnData = new ArrayList<>(rawColumnData);
-          ascColumnData.sort(Comparator.naturalOrder());
-          softly.assertEquals(
-              rawColumnData,
-              ascColumnData,
-              "Column " + col.toString() + " is not correctly sorted!");
-          softly.assertAll();
-        });
-
-    When(
-        "I check that column {int} is sorted in descending order",
-        (Integer col) -> {
-          List<String> rawColumnData = getTableColumnDataByIndex(col, 10);
-          List<String> desColumnData = new ArrayList<>(rawColumnData);
-          desColumnData.sort(Comparator.reverseOrder());
-          softly.assertEquals(
-              rawColumnData,
-              desColumnData,
-              "Column " + col.toString() + " is not correctly sorted!");
-          softly.assertAll();
-        });
-
-    When(
-        "I check that an upwards arrow appears in the header of column {int}",
-        (Integer col) -> {
-          String upArrowBytes = "[34, -17, -125, -98, 32, 34]";
-          String content =
-              webDriverHelpers.javascriptGetElementContent(
-                  "'table > thead > tr > th:nth-of-type(" + col + ")'),'::after'");
-          byte[] array = content.getBytes(StandardCharsets.UTF_8);
-          softly.assertEquals(
-              Arrays.toString(array), upArrowBytes, "The upwards arrow is not displayed!");
-          softly.assertAll();
-        });
-
-    When(
-        "I check that a downwards arrow appears in the header of column {int}",
-        (Integer col) -> {
-          String downArrowBytes = "[34, -17, -125, -99, 32, 34]";
-          String content =
-              webDriverHelpers.javascriptGetElementContent(
-                  "'table > thead > tr > th:nth-of-type(" + col + ")'),'::after'");
-          byte[] array = content.getBytes(StandardCharsets.UTF_8);
-          softly.assertEquals(
-              Arrays.toString(array), downArrowBytes, "The downwards arrow is not displayed!");
-          softly.assertAll();
-        });
   }
 
   private Map<String, Integer> extractColumnHeadersHashMap() {
@@ -146,15 +80,5 @@ public class PersonDetailedTableViewSteps implements En {
               headerHashmap.put(webElement.getText(), atomicInt.getAndIncrement());
             });
     return headerHashmap;
-  }
-
-  private List<String> getTableColumnDataByIndex(int col, int maxRows) {
-    List<String> list = new ArrayList<>();
-    for (int i = 1; i < maxRows + 1; i++) {
-      list.add(
-          webDriverHelpers.getTextFromWebElement(
-              By.xpath("//tbody//tr[" + i + "]//td[" + col + "]")));
-    }
-    return list;
   }
 }
