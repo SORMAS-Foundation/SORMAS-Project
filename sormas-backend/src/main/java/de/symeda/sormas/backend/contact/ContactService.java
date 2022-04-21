@@ -252,12 +252,19 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	public List<Contact> getAllByResultingCase(Case caze) {
+		return getAllByResultingCase(caze, false);
+	}
+
+	public List<Contact> getAllByResultingCase(Case caze, boolean includeDeleted) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Contact> cq = cb.createQuery(getElementClass());
 		Root<Contact> from = cq.from(getElementClass());
 
-		cq.where(cb.and(createDefaultFilter(cb, from), cb.equal(from.get(Contact.RESULTING_CASE), caze)));
+		Predicate filter = includeDeleted ? null : createDefaultFilter(cb, from);
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Contact.RESULTING_CASE), caze));
+		cq.where(filter);
+
 		cq.orderBy(cb.desc(from.get(Contact.REPORT_DATE_TIME)));
 
 		return em.createQuery(cq).getResultList();
@@ -993,7 +1000,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		// National users can access all contacts in the system
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if ((jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
-				|| currentUser.hasUserRole(UserRole.REST_USER)) {
+			|| currentUser.hasUserRole(UserRole.REST_USER)) {
 			if (currentUser.getLimitedDisease() != null) {
 				return cb.equal(contactPath.get(Contact.DISEASE), currentUser.getLimitedDisease());
 			} else {
