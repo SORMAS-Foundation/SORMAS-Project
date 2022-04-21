@@ -144,7 +144,8 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		"unchecked" })
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Task> taskPath) {
-		throw new UnsupportedOperationException("Method should no longer be used!");
+		logger.warn("Obsolete createUserFilter method called!");
+		return createUserFilter(new TaskQueryContext(cb, cq, taskPath));
 	}
 
 	@SuppressWarnings({

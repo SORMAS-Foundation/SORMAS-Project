@@ -36,7 +36,8 @@ public class BaseTravelEntryService extends AbstractCoreAdoService<TravelEntry> 
 
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, TravelEntry> travelEntryPath) {
-		throw new UnsupportedOperationException("Method should no longer be used!");
+		logger.warn("Obsolete createUserFilter method called!");
+		return createUserFilter(new TravelEntryQueryContext(cb, cq, travelEntryPath));
 	}
 
 	public Predicate inJurisdictionOrOwned(TravelEntryQueryContext qc, User user) {

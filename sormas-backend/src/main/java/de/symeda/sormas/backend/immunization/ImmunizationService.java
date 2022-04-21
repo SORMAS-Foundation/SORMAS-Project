@@ -164,7 +164,8 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Immunization> immunizationPath) {
-		throw new UnsupportedOperationException("Method should no longer be used!");
+		logger.warn("Obsolete createUserFilter method called!");
+		return createUserFilter(new ImmunizationQueryContext(cb, cq, immunizationPath));
 	}
 
 	public Predicate createActiveImmunizationsFilter(CriteriaBuilder cb, From<?, Immunization> root) {

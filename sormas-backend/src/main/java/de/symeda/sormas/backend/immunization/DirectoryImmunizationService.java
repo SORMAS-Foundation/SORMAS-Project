@@ -67,7 +67,8 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, DirectoryImmunization> immunizationDirectoryPath) {
-		throw new UnsupportedOperationException("Method should no longer be used!");
+		logger.warn("Obsolete createUserFilter method called!");
+		return createUserFilter(new DirectoryImmunizationQueryContext(cb, cq, immunizationDirectoryPath));
 	}
 
 	public List<ImmunizationIndexDto> getIndexList(ImmunizationCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {

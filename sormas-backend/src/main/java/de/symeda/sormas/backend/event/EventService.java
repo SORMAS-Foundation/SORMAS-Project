@@ -341,6 +341,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Event> eventPath) {
+		logger.warn("Obsolete createUserFilter method called!");
 		return createUserFilter(new EventQueryContext(cb, cq, new EventJoins(eventPath)));
 	}
 

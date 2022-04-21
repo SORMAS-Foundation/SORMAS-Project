@@ -958,6 +958,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 	@SuppressWarnings("rawtypes")
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Contact> contactPath) {
+		logger.warn("Obsolete createUserFilter method called!");
 		return createUserFilter(new ContactQueryContext(cb, cq, contactPath), null);
 	}
 

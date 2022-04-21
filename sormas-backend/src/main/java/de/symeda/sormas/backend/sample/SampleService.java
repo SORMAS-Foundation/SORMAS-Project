@@ -607,7 +607,8 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 	@SuppressWarnings("rawtypes")
 	@Deprecated
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Sample> samplePath) {
-		throw new UnsupportedOperationException("Method should no longer be used!");
+		logger.warn("Obsolete createUserFilter method called!");
+		return createUserFilter(new SampleQueryContext(cb, cq, samplePath), null);
 	}
 
 	@SuppressWarnings("rawtypes")

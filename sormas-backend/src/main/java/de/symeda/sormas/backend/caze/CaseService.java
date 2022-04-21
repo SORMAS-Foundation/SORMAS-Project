@@ -1200,6 +1200,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Case> casePath) {
+		logger.warn("Obsolete createUserFilter method called!");
 		return createUserFilter(new CaseQueryContext(cb, cq, casePath));
 	}
 

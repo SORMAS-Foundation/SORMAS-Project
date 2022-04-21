@@ -273,7 +273,8 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, EventParticipant> eventParticipantPath) {
-		throw new UnsupportedOperationException("Method should no longer be used!");
+		logger.warn("Obsolete createUserFilter method called!");
+		return createUserFilter(new EventParticipantQueryContext(cb, cq, eventParticipantPath));
 	}
 
 	public Predicate createUserFilter(EventParticipantQueryContext eventParticipantQueryContext) {

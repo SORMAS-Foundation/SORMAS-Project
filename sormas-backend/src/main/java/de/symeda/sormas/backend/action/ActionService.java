@@ -102,6 +102,7 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Action> actionPath) {
+		logger.warn("Obsolete createUserFilter method called!");
 		return createUserFilter(new ActionQueryContext(cb, cq, actionPath));
 	}
 
