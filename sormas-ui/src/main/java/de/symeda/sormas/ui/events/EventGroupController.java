@@ -202,7 +202,7 @@ public class EventGroupController {
 			});
 		}
 
-		// TODO Temporarily deleted in #8915, enable again in #8851
+		// TODO #8851: Enable temporarily removed button when EventGroup deletion works
 //		if (user.hasUserRight(UserRight.EVENTGROUP_DELETE) && hasRegion) {
 //			editView.addDeleteListener(() -> {
 //				deleteEventGroup(eventGroup);
