@@ -35,10 +35,19 @@ import javax.security.enterprise.AuthenticationStatus;
 import javax.security.enterprise.authentication.mechanism.http.BasicAuthenticationMechanismDefinition;
 import javax.security.enterprise.authentication.mechanism.http.HttpAuthenticationMechanism;
 import javax.security.enterprise.authentication.mechanism.http.HttpMessageContext;
+import javax.security.enterprise.credential.CallerOnlyCredential;
+import javax.security.enterprise.credential.Credential;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.xml.bind.DatatypeConverter;
+
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.http.HttpHeaders;
+import org.glassfish.soteria.Utils;
 import org.glassfish.soteria.cdi.BasicAuthenticationMechanismDefinitionAnnotationLiteral;
 import org.glassfish.soteria.mechanisms.BasicAuthenticationMechanism;
+import org.keycloak.KeycloakSecurityContext;
 
 /**
  * Mechanism which allows configuration of multiple providers trough a system property.
@@ -62,14 +71,21 @@ import org.glassfish.soteria.mechanisms.BasicAuthenticationMechanism;
  * @see KeycloakConfigResolver
  * @see KeycloakHttpAuthenticationMechanism
  */
+
+interface extractCallerFromRequest {
+
+	String extract(HttpServletRequest request);
+}
+
 @OpenAPIDefinition(security = {
-		@SecurityRequirement(name = "basicAuth"),
-		@SecurityRequirement(name = "bearerAuth") })
+	@SecurityRequirement(name = "basicAuth"),
+	@SecurityRequirement(name = "bearerAuth") })
 @SecurityScheme(name = "basicAuth", type = SecuritySchemeType.HTTP, scheme = "basic")
 @SecurityScheme(name = "bearerAuth", type = SecuritySchemeType.HTTP, scheme = "bearer", bearerFormat = "JWT")
 @ApplicationScoped
 public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism {
 
+	private final extractCallerFromRequest extractor;
 	private final HttpAuthenticationMechanism authenticationMechanism;
 
 	@Inject
@@ -77,25 +93,69 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 		String authenticationProvider = FacadeProvider.getConfigFacade().getAuthenticationProvider();
 		if (authenticationProvider.equals(AuthProvider.KEYCLOAK)) {
 			authenticationMechanism = keycloakHttpAuthenticationMechanism;
+
+			extractor = (request) -> {
+				String authorization = request.getHeader("Authorization");
+				boolean valid = StringUtils.isNotBlank(authorization) && StringUtils.startsWithAny(authorization, "Basic", "Bearer");
+				if (!valid) {
+					return String.format("Invalid Authorization header provided! Was: %s", authorization);
+				}
+
+				KeycloakSecurityContext keycloakContext = (KeycloakSecurityContext) request.getAttribute(KeycloakSecurityContext.class.getName());
+
+				String caller = null;
+				if (keycloakContext != null) {
+					caller = keycloakContext.getToken().getPreferredUsername();
+				}
+				if (StringUtils.isEmpty(caller)) {
+					return "Username could not be determined. Try to check Keycloak logs?";
+				} else {
+					return caller;
+				}
+			};
+
 		} else {
 			BasicAuthenticationMechanismDefinition definition = new BasicAuthenticationMechanismDefinitionAnnotationLiteral("sormas-rest-realm");
 			authenticationMechanism = new BasicAuthenticationMechanism(definition);
+
+			extractor = (request) -> {
+				String authorization = request.getHeader("Authorization");
+				boolean valid = StringUtils.isNotBlank(authorization) && StringUtils.startsWithAny(authorization, "Basic");
+				if (!valid) {
+					return String.format("Invalid Authorization header provided! Was: %s", authorization);
+				}
+				String authorizationHeader = request.getHeader(HttpHeaders.AUTHORIZATION);
+				if (authorizationHeader != null && authorizationHeader.toLowerCase().startsWith("basic")) {
+					String encodedCredentials = authorizationHeader.substring("Basic".length()).trim();
+					String credentials = new String(Base64.decodeBase64(encodedCredentials));
+					return credentials.split(":", 2)[0];
+				} else {
+					return "Username could not be determined.";
+				}
+			};
 		}
+
 	}
 
 	@Override
 	public AuthenticationStatus validateRequest(HttpServletRequest request, HttpServletResponse response, HttpMessageContext context)
-			throws AuthenticationException {
+		throws AuthenticationException {
 		if (request.getPathInfo().startsWith(SormasToSormasApiConstants.RESOURCE_PATH)) {
 			// S2S auth will be handled by S2SAuthFilter
 			return validateRequestS2S(context);
 		}
-		return authenticationMechanism.validateRequest(request, response, context);
+		AuthenticationStatus authenticationStatus = authenticationMechanism.validateRequest(request, response, context);
+		if (authenticationStatus.equals(AuthenticationStatus.SEND_FAILURE)) {
+
+			FacadeProvider.getAuditLoggerFacade().logFailedRestLogin(extractor.extract(request), request.getMethod(), request.getRequestURI());
+		}
+
+		return authenticationStatus;
 	}
 
 	@Override
 	public AuthenticationStatus secureResponse(HttpServletRequest request, HttpServletResponse response, HttpMessageContext httpMessageContext)
-			throws AuthenticationException {
+		throws AuthenticationException {
 		return authenticationMechanism.secureResponse(request, response, httpMessageContext);
 	}
 
@@ -110,7 +170,7 @@ public class MultiAuthenticationMechanism implements HttpAuthenticationMechanism
 		Set<UserRight> userRights = FacadeProvider.getUserRoleConfigFacade().getEffectiveUserRights(s2sUser.getUserRoles());
 
 		return context.notifyContainerAboutLogin(
-				() -> DefaultEntityHelper.SORMAS_TO_SORMAS_USER_NAME,
-				userRights.stream().map(Enum::name).collect(Collectors.toSet()));
+			() -> DefaultEntityHelper.SORMAS_TO_SORMAS_USER_NAME,
+			userRights.stream().map(Enum::name).collect(Collectors.toSet()));
 	}
 }
