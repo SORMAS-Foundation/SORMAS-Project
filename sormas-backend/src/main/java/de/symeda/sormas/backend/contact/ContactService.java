@@ -260,12 +260,19 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	public List<Contact> getAllByResultingCase(Case caze) {
+		return getAllByResultingCase(caze, false);
+	}
+
+	public List<Contact> getAllByResultingCase(Case caze, boolean includeDeleted) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Contact> cq = cb.createQuery(getElementClass());
 		Root<Contact> from = cq.from(getElementClass());
 
-		cq.where(cb.and(createDefaultFilter(cb, from), cb.equal(from.get(Contact.RESULTING_CASE), caze)));
+		Predicate filter = includeDeleted ? null : createDefaultFilter(cb, from);
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Contact.RESULTING_CASE), caze));
+		cq.where(filter);
+
 		cq.orderBy(cb.desc(from.get(Contact.REPORT_DATE_TIME)));
 
 		return em.createQuery(cq).getResultList();

@@ -78,12 +78,19 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 		CaseDataDto duplicateCase = creator.createCase(user.toReference(), person.toReference(), rdcf);
 		getCaseFacade().deleteCaseAsDuplicate(duplicateCase.getUuid(), caze.getUuid());
 
-		ContactDto resultingContact = creator.createContact(user.toReference(), person.toReference(), caze);
+		final ContactDto resultingContact = creator.createContact(user.toReference(), person.toReference(), caze);
+		assertNull(resultingContact.getRegion());
 		ContactDto sourceContact = creator.createContact(
 			user.toReference(),
 			person.toReference(),
 			caze.getDisease(),
 			contactDto -> contactDto.setResultingCase(caze.toReference()));
+		ContactDto deletedSourceContact = creator.createContact(
+			user.toReference(),
+			person.toReference(),
+			caze.getDisease(),
+			contactDto -> contactDto.setResultingCase(caze.toReference()));
+		getContactFacade().delete(deletedSourceContact.getUuid());
 		EventDto event = creator.createEvent(user.toReference(), caze.getDisease());
 		EventParticipantDto eventParticipant = creator.createEventParticipant(
 			event.toReference(),
@@ -99,6 +106,10 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 			sampleDto -> sampleDto.setAssociatedContact(resultingContact.toReference()));
 		TravelEntryDto travelEntry =
 			creator.createTravelEntry(person.toReference(), user.toReference(), rdcf, te -> te.setResultingCase(caze.toReference()));
+		creator.createTravelEntry(person.toReference(), user.toReference(), rdcf, te -> {
+			te.setResultingCase(caze.toReference());
+			te.setDeleted(true);
+		});
 		ImmunizationDto immunization = creator.createImmunization(
 			caze.getDisease(),
 			person.toReference(),
@@ -125,9 +136,10 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 		getCoreEntityDeletionService().executeAutomaticDeletion();
 		loginWith(user);
 
+		ContactDto resultingContactUpdated = getContactFacade().getByUuid(resultingContact.getUuid());		
+
 		assertEquals(1, getCaseService().count());
-		assertEquals(duplicateCase.getUuid(), getCaseService().getAll().get(0).getUuid());
-		assertEquals(0, getClinicalVisitService().count());
+		assertEquals(duplicateCase.getUuid(), getCaseService().getAll().get(0).getUuid());		assertEquals(0, getClinicalVisitService().count());
 		assertEquals(0, getTreatmentService().count());
 		assertEquals(0, getPrescriptionService().count());
 		assertEquals(1, getSampleService().count());
@@ -135,7 +147,10 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 		assertNull(getSampleFacade().getSampleByUuid(multiSample.getUuid()).getAssociatedCase());
 		assertEquals(0, getSurveillanceReportService().count());
 		assertTrue(getDocumentService().getAll().get(0).isDeleted());
-		assertNull(getContactFacade().getByUuid(resultingContact.getUuid()).getCaze());
+		assertNull(resultingContactUpdated.getCaze());
+		assertEquals(rdcf.region, resultingContactUpdated.getRegion());
+		assertEquals(rdcf.district, resultingContactUpdated.getDistrict());
+		assertEquals(rdcf.community, resultingContactUpdated.getCommunity());
 		assertNull(getContactFacade().getByUuid(sourceContact.getUuid()).getResultingCase());
 		assertNull(getEventParticipantFacade().getByUuid(eventParticipant.getUuid()).getResultingCase());
 		assertNull(getTravelEntryFacade().getByUuid(travelEntry.getUuid()).getResultingCase());
