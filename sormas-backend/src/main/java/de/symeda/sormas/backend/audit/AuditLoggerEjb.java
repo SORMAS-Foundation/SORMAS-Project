@@ -38,7 +38,6 @@ import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.SessionContext;
 import javax.ejb.Singleton;
-import javax.ejb.Stateless;
 
 import org.hl7.fhir.r4.model.AuditEvent;
 import org.hl7.fhir.r4.model.CodeableConcept;
@@ -382,7 +381,7 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 	}
 
 	@LocalBean
-	@Stateless
+	@Singleton
 	public static class AuditLoggerEjbLocal extends AuditLoggerEjb {
 
 	}
