@@ -51,7 +51,6 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.vaccination.VaccinationService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -138,6 +137,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.vaccination.Vaccination;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
+import de.symeda.sormas.backend.vaccination.VaccinationService;
 
 @Stateless(name = "EventParticipantFacade")
 @RolesAllowed(UserRight._EVENTPARTICIPANT_VIEW)
@@ -1053,6 +1053,7 @@ public class EventParticipantFacadeEjb
 
 		Join<Object, Object> personJoin = eventParticipantRoot.join(EventParticipant.PERSON, JoinType.LEFT);
 		Join<Object, Object> eventJoin = eventParticipantRoot.join(EventParticipant.EVENT, JoinType.LEFT);
+		EventParticipantQueryContext eventParticipantQueryContext = new EventParticipantQueryContext(cb, cq, eventParticipantRoot);
 
 		Expression<Object> jurisdictionSelector =
 			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(new EventParticipantQueryContext(cb, cq, eventParticipantRoot)));
@@ -1078,7 +1079,7 @@ public class EventParticipantFacadeEjb
 			jurisdictionSelector);
 
 		final Predicate defaultFilter = service.createDefaultFilter(cb, eventParticipantRoot);
-		final Predicate userFilter = service.createUserFilter(cb, cq, eventParticipantRoot);
+		final Predicate userFilter = service.createUserFilter(eventParticipantQueryContext);
 
 		final PersonReferenceDto person = criteria.getPerson();
 		final Predicate samePersonFilter = person != null ? cb.equal(personJoin.get(Person.UUID), person.getUuid()) : null;

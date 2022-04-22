@@ -44,7 +44,6 @@ import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ChangeDateBuilder;
@@ -267,14 +266,10 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		return cb.and(cb.isFalse(eventParticipantJoin.get(EventParticipant.DELETED)));
 	}
 
-	/**
-	 * @see /sormas-backend/doc/UserDataAccess.md
-	 */
-	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, EventParticipant> eventParticipantPath) {
-		logger.warn("Obsolete createUserFilter method called!");
-		return createUserFilter(new EventParticipantQueryContext(cb, cq, eventParticipantPath));
+	@SuppressWarnings("rawtypes")
+	protected Predicate createUserFilterInternal(CriteriaBuilder cb, CriteriaQuery cq, From<?, EventParticipant> from) {
+		return createUserFilter(new EventParticipantQueryContext(cb, cq, from));
 	}
 
 	public Predicate createUserFilter(EventParticipantQueryContext eventParticipantQueryContext) {
@@ -302,7 +297,8 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		Root<EventParticipant> from = cq.from(getElementClass());
 		EventParticipantQueryContext eventParticipantQueryContext = new EventParticipantQueryContext(cb, cq, from);
 
-		Predicate userFilter = eventService.createUserFilter(new EventQueryContext(cb, cq, eventParticipantQueryContext.getJoins().getEvent(JoinType.INNER)));
+		Predicate userFilter =
+			eventService.createUserFilter(new EventQueryContext(cb, cq, eventParticipantQueryContext.getJoins().getEvent(JoinType.INNER)));
 
 		Predicate filter = CriteriaBuilderHelper.and(cb, cb.equal(from.get(EventParticipant.PERSON), person), userFilter);
 
@@ -439,7 +435,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		Predicate filter = buildCriteriaFilter(criteria, queryContext);
 
 		if (user != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, from));
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(queryContext));
 		}
 		if (filter != null) {
 			cq.where(filter);

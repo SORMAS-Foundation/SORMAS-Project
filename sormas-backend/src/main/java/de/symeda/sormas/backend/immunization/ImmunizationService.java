@@ -143,11 +143,10 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			filter = ImmunizationJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
 		} else {
 			filter = CriteriaBuilderHelper.or(
-					cb,
-					cb.equal(qc.getRoot().get(Immunization.REPORTING_USER), currentUser),
-					PersonJurisdictionPredicateValidator
-							.of(qc.getQuery(), cb, new PersonJoins(qc.getJoins().getPerson()), currentUser, false)
-							.inJurisdictionOrOwned());
+				cb,
+				cb.equal(qc.getRoot().get(Immunization.REPORTING_USER), currentUser),
+				PersonJurisdictionPredicateValidator.of(qc.getQuery(), cb, new PersonJoins(qc.getJoins().getPerson()), currentUser, false)
+					.inJurisdictionOrOwned());
 		}
 		return filter;
 	}
@@ -160,12 +159,6 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 		cq.multiselect(JurisdictionHelper.booleanSelector(cb, createUserFilter(new ImmunizationQueryContext(cb, cq, root))));
 		cq.where(cb.equal(root.get(Immunization.UUID), immunization.getUuid()));
 		return em.createQuery(cq).getResultStream().anyMatch(isInJurisdiction -> isInJurisdiction);
-	}
-
-	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Immunization> immunizationPath) {
-		logger.warn("Obsolete createUserFilter method called!");
-		return createUserFilter(new ImmunizationQueryContext(cb, cq, immunizationPath));
 	}
 
 	public Predicate createActiveImmunizationsFilter(CriteriaBuilder cb, From<?, Immunization> root) {
@@ -485,6 +478,12 @@ public class ImmunizationService extends AbstractCoreAdoService<Immunization> {
 			immunizations.addAll(em.createQuery(cq).getResultList());
 		});
 		return immunizations;
+	}
+
+	@Override
+	@SuppressWarnings("rawtypes")
+	protected Predicate createUserFilterInternal(CriteriaBuilder cb, CriteriaQuery cq, From<?, Immunization> from) {
+		return createUserFilter(new ImmunizationQueryContext(cb, cq, from));
 	}
 
 	public Predicate createUserFilter(ImmunizationQueryContext qc) {

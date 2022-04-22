@@ -26,12 +26,9 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 		super(Campaign.class);
 	}
 
-	/**
-	 * a user who has access to @CamnpaignView can read all campaigns
-	 */
-	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Campaign> from) {
+	@SuppressWarnings("rawtypes")
+	protected Predicate createUserFilterInternal(CriteriaBuilder cb, CriteriaQuery cq, From<?, Campaign> from) {
 		return createUserFilter(new CampaignQueryContext(cb, cq, from));
 	}
 
@@ -138,4 +135,5 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 
 		return em.createQuery(cq).getResultList();
 	}
+
 }

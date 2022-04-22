@@ -535,13 +535,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return result;
 	}
 
-	private Predicate createMapContactsFilter(
-		ContactQueryContext cqc,
-		Region region,
-		District district,
-		Disease disease,
-		Date from,
-		Date to) {
+	private Predicate createMapContactsFilter(ContactQueryContext cqc, Region region, District district, Disease disease, Date from, Date to) {
 
 		From<?, Contact> contactRoot = cqc.getRoot();
 		CriteriaBuilder cb = cqc.getCriteriaBuilder();
@@ -555,7 +549,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			cb.between(contactRoot.get(Contact.REPORT_DATE_TIME), DateHelper.getStartOfDay(from), DateHelper.getEndOfDay(to));
 		filter = CriteriaBuilderHelper.and(cb, filter, reportDateFilter);
 
-		filter = CriteriaBuilderHelper.and(cb, filter, getRegionDistrictDiseasePredicate(region, district, disease, cb, contactRoot, joins.getCaze()));
+		filter =
+			CriteriaBuilderHelper.and(cb, filter, getRegionDistrictDiseasePredicate(region, district, disease, cb, contactRoot, joins.getCaze()));
 
 		// Only retrieve contacts that are currently under follow-up
 		Predicate followUpFilter = cb.equal(contactRoot.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.FOLLOW_UP);
@@ -956,13 +951,16 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return em.createQuery(cq).getResultList();
 	}
 
+	@Override
 	@SuppressWarnings("rawtypes")
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Contact> contactPath) {
-		logger.warn("Obsolete createUserFilter method called!");
-		return createUserFilter(new ContactQueryContext(cb, cq, contactPath), null);
+	protected Predicate createUserFilterInternal(CriteriaBuilder cb, CriteriaQuery cq, From<?, Contact> from) {
+		return createUserFilter(new ContactQueryContext(cb, cq, from));
 	}
 
-	@SuppressWarnings("rawtypes")
+	public Predicate createUserFilter(ContactQueryContext queryContext) {
+		return createUserFilter(queryContext, null);
+	}
+
 	public Predicate createUserFilter(ContactQueryContext contactQueryContext, ContactCriteria contactCriteria) {
 
 		Predicate userFilter = null;
@@ -1675,5 +1673,4 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		return em.createQuery(cq).getSingleResult();
 	}
-
 }

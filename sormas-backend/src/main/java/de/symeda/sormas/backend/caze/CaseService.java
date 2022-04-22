@@ -218,7 +218,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		Predicate filter = createCriteriaFilter(caseCriteria, caseQueryContext);
 		if (!ignoreUserFilter) {
-			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, from));
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(caseQueryContext));
 		}
 
 		if (filter != null) {
@@ -345,7 +345,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	private Predicate createMapCasesFilter(
-			CaseQueryContext caseQueryContext,
+		CaseQueryContext caseQueryContext,
 		Region region,
 		District district,
 		Disease disease,
@@ -361,7 +361,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Predicate filter = createActiveCasesFilter(cb, root);
 
 		// Userfilter
-		filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true)));
+		filter =
+			CriteriaBuilderHelper.and(cb, filter, createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true)));
 
 		// Filter by date. The relevancefilter uses a special algorithm that should reflect the current situation.
 		if (dateType == null) {
@@ -583,10 +584,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		Predicate filter = null;
 		if (caseCriteria.getReportingUserRole() != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.isMember(caseCriteria.getReportingUserRole(), joins.getReportingUser().get(User.USER_ROLES)));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.isMember(caseCriteria.getReportingUserRole(), joins.getReportingUser().get(User.USER_ROLES)));
 		}
 		if (caseCriteria.getDisease() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.DISEASE), caseCriteria.getDisease()));
@@ -637,10 +636,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.CASE_ORIGIN), caseCriteria.getCaseOrigin()));
 		}
 		if (caseCriteria.getHealthFacility() != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.equal(joins.getFacility().get(Facility.UUID), caseCriteria.getHealthFacility().getUuid()));
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, cb.equal(joins.getFacility().get(Facility.UUID), caseCriteria.getHealthFacility().getUuid()));
 		}
 		if (caseCriteria.getFacilityTypeGroup() != null) {
 			filter =
@@ -650,16 +647,12 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.FACILITY_TYPE), caseCriteria.getFacilityType()));
 		}
 		if (caseCriteria.getPointOfEntry() != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.equal(joins.getPointOfEntry().get(PointOfEntry.UUID), caseCriteria.getPointOfEntry().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(joins.getPointOfEntry().get(PointOfEntry.UUID), caseCriteria.getPointOfEntry().getUuid()));
 		}
 		if (caseCriteria.getSurveillanceOfficer() != null) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.equal(joins.getSurveillanceOfficer().get(User.UUID), caseCriteria.getSurveillanceOfficer().getUuid()));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.equal(joins.getSurveillanceOfficer().get(User.UUID), caseCriteria.getSurveillanceOfficer().getUuid()));
 		}
 		if (caseCriteria.getCaseClassification() != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Case.CASE_CLASSIFICATION), caseCriteria.getCaseClassification()));
@@ -713,10 +706,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 					cb.or(cb.isNull(personAddress.get(Location.LATITUDE)), cb.isNull(personAddress.get(Location.LONGITUDE)))));
 		}
 		if (caseCriteria.getMustBePortHealthCaseWithoutFacility() != null && caseCriteria.getMustBePortHealthCaseWithoutFacility() == true) {
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.and(cb.equal(from.get(Case.CASE_ORIGIN), CaseOrigin.POINT_OF_ENTRY), cb.isNull(joins.getFacility())));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.and(cb.equal(from.get(Case.CASE_ORIGIN), CaseOrigin.POINT_OF_ENTRY), cb.isNull(joins.getFacility())));
 		}
 		if (caseCriteria.getMustHaveCaseManagementData() != null && caseCriteria.getMustHaveCaseManagementData() == true) {
 			Subquery<Prescription> prescriptionSubquery = cq.subquery(Prescription.class);
@@ -1076,6 +1067,16 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return builder;
 	}
 
+	@Override
+	@SuppressWarnings("rawtypes")
+	protected Predicate createUserFilterInternal(CriteriaBuilder cb, CriteriaQuery cq, From<?, Case> from) {
+		return createUserFilter(new CaseQueryContext(cb, cq, from));
+	}
+
+	public Predicate createUserFilter(CaseQueryContext caseQueryContext) {
+		return createUserFilter(caseQueryContext, null);
+	}
+
 	@SuppressWarnings("rawtypes")
 	public Predicate createUserFilter(CaseQueryContext caseQueryContext, CaseUserFilterCriteria userFilterCriteria) {
 
@@ -1165,10 +1166,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				|| (!userFilterCriteria.isExcludeCasesFromContacts()
 					&& Boolean.TRUE.equals(userFilterCriteria.getIncludeCasesFromOtherJurisdictions()))) {
 				CaseJoins caseJoins = caseQueryContext.getJoins();
-				filter = CriteriaBuilderHelper.or(
-					cb,
-					filter,
-					contactService.createUserFilterWithoutCase(new ContactQueryContext(cb, cq, caseJoins.getContacts())));
+				filter = CriteriaBuilderHelper
+					.or(cb, filter, contactService.createUserFilterWithoutCase(new ContactQueryContext(cb, cq, caseJoins.getContacts())));
 			}
 
 			// users can only be assigned to a task when they have also access to the case
@@ -1197,27 +1196,12 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return filter;
 	}
 
-	@SuppressWarnings("rawtypes")
-	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Case> casePath) {
-		logger.warn("Obsolete createUserFilter method called!");
-		return createUserFilter(new CaseQueryContext(cb, cq, casePath));
-	}
-
-	public Predicate createUserFilter(CaseQueryContext caseQueryContext) {
-		return createUserFilter(caseQueryContext, null);
-	}
-
 	/**
 	 * Creates a filter that checks whether the case has "started" within the time frame specified by {@code fromDate} and {@code toDate}.
 	 * By default (if {@code dateType} is null), this logic looks at the {@link Symptoms#onsetDate} first or, if this is null,
 	 * the {@link Case#reportDate}.
 	 */
-	public Predicate createNewCaseFilter(
-		CaseQueryContext caseQueryContext,
-		Date fromDate,
-		Date toDate,
-		CriteriaDateType dateType) {
+	public Predicate createNewCaseFilter(CaseQueryContext caseQueryContext, Date fromDate, Date toDate, CriteriaDateType dateType) {
 
 		final CriteriaBuilder cb = caseQueryContext.getCriteriaBuilder();
 		final From<?, Case> caze = caseQueryContext.getRoot();
@@ -1488,7 +1472,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		cq.orderBy(cb.desc(latestChangedDateFunction));
 
-		Predicate filter = CriteriaBuilderHelper.and(cb, createDefaultFilter(cb, root), createUserFilter(caseQueryContext, new CaseUserFilterCriteria()));
+		Predicate filter =
+			CriteriaBuilderHelper.and(cb, createDefaultFilter(cb, root), createUserFilter(caseQueryContext, new CaseUserFilterCriteria()));
 
 		if (caseCriteria != null) {
 			if (caseCriteria.getDisease() != null) {
@@ -1575,7 +1560,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> root = cq.from(Case.class);
-		CaseJoins joins = new CaseJoins(root);
+		CaseQueryContext queryContext = new CaseQueryContext(cb, cq, root);
+		CaseJoins joins = queryContext.getJoins();
 
 		cq.multiselect(
 			root.get(Case.UUID),
@@ -1601,7 +1587,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			root.get(Case.CHANGE_DATE));
 		cq.distinct(true);
 
-		Predicate userFilter = createUserFilter(cb, cq, root);
+		Predicate userFilter = createUserFilter(queryContext);
 
 		// In case you wonder: At this point in time the **person** duplicate check has already happen.
 		// Here, we really just check if there is a similar case to the current one, therefore it is allowed to just
@@ -1673,7 +1659,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		// * same birth date (when fully defined)
 		// * onset date within 30 days of each other (when defined)
 
-		Predicate userFilter = createUserFilter(cb, cq, root);
+		Predicate userFilter = createUserFilter(caseQueryContext);
 		Predicate criteriaFilter = criteria != null ? createCriteriaFilter(criteria, caseQueryContext) : null;
 		Expression<String> nameSimilarityExpr = cb.concat(person.get(Person.FIRST_NAME), " ");
 		nameSimilarityExpr = cb.concat(nameSimilarityExpr, person.get(Person.LAST_NAME));

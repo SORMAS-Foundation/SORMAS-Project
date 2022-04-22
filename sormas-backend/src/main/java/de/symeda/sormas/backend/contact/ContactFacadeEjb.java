@@ -63,7 +63,6 @@ import javax.persistence.criteria.Selection;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.vaccination.VaccinationService;
 import org.apache.commons.collections.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -202,6 +201,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.vaccination.Vaccination;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
+import de.symeda.sormas.backend.vaccination.VaccinationService;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb.VisitFacadeEjbLocal;
@@ -1846,7 +1846,7 @@ public class ContactFacadeEjb
 		cq.multiselect(selections);
 
 		final Predicate defaultFilter = service.createDefaultFilter(cb, contactRoot);
-		final Predicate userFilter = service.createUserFilter(cb, cq, contactRoot);
+		final Predicate userFilter = service.createUserFilter(contactQueryContext);
 
 		final PersonReferenceDto person = criteria.getPerson();
 		final Predicate samePersonFilter = person != null ? cb.equal(joins.getPerson().get(Person.UUID), person.getUuid()) : null;
@@ -2015,7 +2015,7 @@ public class ContactFacadeEjb
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Contact> root = cq.from(Contact.class);
 		final ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, root);
-		ContactJoins joins = (ContactJoins) contactQueryContext.getJoins();
+		ContactJoins joins = contactQueryContext.getJoins();
 		Root<Contact> root2 = cq.from(Contact.class);
 		Join<Contact, Person> person = joins.getPerson();
 		Join<Contact, Person> person2 = root2.join(Contact.PERSON, JoinType.LEFT);
@@ -2037,7 +2037,7 @@ public class ContactFacadeEjb
 		// * same birth date (when fully defined)
 
 		Predicate sourceCaseFilter = cb.equal(sourceCase, sourceCase2);
-		Predicate userFilter = service.createUserFilter(cb, cq, root);
+		Predicate userFilter = service.createUserFilter(contactQueryContext);
 		Predicate criteriaFilter = criteria != null ? service.buildCriteriaFilter(criteria, contactQueryContext) : null;
 		Expression<String> nameSimilarityExpr = cb.concat(person.get(Person.FIRST_NAME), " ");
 		nameSimilarityExpr = cb.concat(nameSimilarityExpr, person.get(Person.LAST_NAME));

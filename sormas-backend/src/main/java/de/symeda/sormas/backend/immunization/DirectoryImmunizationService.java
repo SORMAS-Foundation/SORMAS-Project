@@ -67,7 +67,6 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, DirectoryImmunization> immunizationDirectoryPath) {
-		logger.warn("Obsolete createUserFilter method called!");
 		return createUserFilter(new DirectoryImmunizationQueryContext(cb, cq, immunizationDirectoryPath));
 	}
 

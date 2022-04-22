@@ -61,6 +61,7 @@ import de.symeda.sormas.api.utils.criteria.ExternalShareDateType;
 import de.symeda.sormas.backend.action.Action;
 import de.symeda.sormas.backend.action.ActionService;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -338,11 +339,10 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Event> eventPath) {
-		logger.warn("Obsolete createUserFilter method called!");
-		return createUserFilter(new EventQueryContext(cb, cq, new EventJoins(eventPath)));
+	@SuppressWarnings("rawtypes")
+	protected Predicate createUserFilterInternal(CriteriaBuilder cb, CriteriaQuery cq, From<?, Event> from) {
+		return createUserFilter(new EventQueryContext(cb, cq, from));
 	}
 
 	public Predicate createUserFilter(EventQueryContext queryContext) {
@@ -433,14 +433,13 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		return filter;
 	}
 
-	@SuppressWarnings("rawtypes")
 	public Predicate createCaseAndEventParticipantFilter(EventQueryContext eventQueryContext) {
-		EventJoins joins = eventQueryContext.getJoins();
-		From<?, EventParticipant> eventParticipants = joins.getEventParticipants();
-		Join<EventParticipant, Case> caseJoin = joins.getEventParticipantCases();
+
+		From<?, EventParticipant> eventParticipants = eventQueryContext.getJoins().getEventParticipants();
 
 		CriteriaBuilder cb = eventQueryContext.getCriteriaBuilder();
-		Predicate filter = caseService.createUserFilter(cb, eventQueryContext.getQuery(), caseJoin);
+		Predicate filter = caseService.createUserFilter(
+			new CaseQueryContext(cb, eventQueryContext.getQuery(), eventQueryContext.getJoins().getEventParticipantJoins().getCaseJoins()));
 
 		final User currentUser = getCurrentUser();
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
@@ -940,7 +939,7 @@ public class EventService extends AbstractCoreAdoService<Event> {
 		CriteriaQuery<Event> cq = cb.createQuery(getElementClass());
 		Root<Event> from = cq.from(getElementClass());
 		from.fetch(Event.EVENT_LOCATION);
-		
+
 		EventQueryContext eventQueryContext = new EventQueryContext(cb, cq, from);
 		EventJoins joins = eventQueryContext.getJoins();
 
