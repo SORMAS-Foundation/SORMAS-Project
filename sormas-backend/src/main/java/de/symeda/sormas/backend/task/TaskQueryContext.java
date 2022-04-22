@@ -24,7 +24,7 @@ import de.symeda.sormas.backend.common.QueryContext;
 
 public class TaskQueryContext extends QueryContext<Task, TaskJoins> {
 
-	public TaskQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Task> root) {
+	protected TaskQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Task> root) {
 		super(cb, query, root, new TaskJoins(root));
 	}
 

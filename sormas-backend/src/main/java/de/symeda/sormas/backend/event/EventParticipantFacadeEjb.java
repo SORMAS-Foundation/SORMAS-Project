@@ -637,7 +637,7 @@ public class EventParticipantFacadeEjb
 
 		Join<EventParticipant, Person> person = joins.getPerson();
 
-		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
+		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, joins.getPersonJoins());
 
 		Join<Person, Location> address = joins.getAddress();
 		Join<Person, Country> birthCountry = person.join(Person.BIRTH_COUNTRY, JoinType.LEFT);

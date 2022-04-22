@@ -20,7 +20,6 @@ import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
-import de.symeda.sormas.backend.user.UserService;
 import org.apache.commons.collections4.CollectionUtils;
 
 import de.symeda.sormas.api.feature.FeatureType;
@@ -47,6 +46,7 @@ import de.symeda.sormas.backend.person.PersonJoins;
 import de.symeda.sormas.backend.person.PersonJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.person.PersonQueryContext;
 import de.symeda.sormas.backend.user.User;
+import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.vaccination.FirstVaccinationDate;
 import de.symeda.sormas.backend.vaccination.LastVaccinationDate;
@@ -210,7 +210,7 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 
 		if (!DataHelper.isNullOrEmpty(criteria.getNameAddressPhoneEmailLike())) {
 			final CriteriaQuery<PersonIndexDto> cq = cb.createQuery(PersonIndexDto.class);
-			final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
+			final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, joins.getPersonJoins());
 
 			String[] textFilters = criteria.getNameAddressPhoneEmailLike().split("\\s+");
 
@@ -335,11 +335,10 @@ public class DirectoryImmunizationService extends AbstractDeletableAdoService<Di
 			filter = DirectoryImmunizationJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
 		} else {
 			filter = CriteriaBuilderHelper.or(
-					cb,
-					cb.equal(qc.getRoot().get(Immunization.REPORTING_USER), currentUser),
-					PersonJurisdictionPredicateValidator
-							.of(qc.getQuery(), cb, new PersonJoins(qc.getJoins().getPerson()), currentUser, false)
-							.inJurisdictionOrOwned());
+				cb,
+				cb.equal(qc.getRoot().get(Immunization.REPORTING_USER), currentUser),
+				PersonJurisdictionPredicateValidator.of(qc.getQuery(), cb, new PersonJoins(qc.getJoins().getPerson()), currentUser, false)
+					.inJurisdictionOrOwned());
 		}
 		return filter;
 	}

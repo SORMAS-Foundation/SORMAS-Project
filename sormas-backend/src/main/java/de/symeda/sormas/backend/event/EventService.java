@@ -630,7 +630,8 @@ public class EventService extends AbstractCoreAdoService<Event> {
 			From<?, EventParticipant> eventParticipantJoin = joins.getEventParticipants();
 			Join<EventParticipant, Person> personJoin = joins.getEventParticipantPersons();
 
-			final PersonQueryContext personQueryContext = new PersonQueryContext(cb, eventQueryContext.getQuery(), personJoin);
+			final PersonQueryContext personQueryContext =
+				new PersonQueryContext(cb, eventQueryContext.getQuery(), joins.getEventParticipantJoins().getPersonJoins());
 
 			String[] textFilters = eventCriteria.getFreeTextEventParticipants().split("\\s+");
 
