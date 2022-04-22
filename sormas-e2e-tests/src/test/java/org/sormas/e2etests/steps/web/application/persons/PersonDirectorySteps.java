@@ -90,12 +90,12 @@ public class PersonDirectorySteps implements En {
         "^I open the last created Person via API",
         () -> {
           String personUUID = apiState.getLastCreatedPerson().getUuid();
+          TimeUnit.SECONDS.sleep(5); // waiting for event table grid reloaded
           webDriverHelpers.fillAndSubmitInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, personUUID);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               getPersonResultsUuidLocator(personUUID));
           webDriverHelpers.clickOnWebElementBySelector(getPersonResultsUuidLocator(personUUID));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
-          TimeUnit.SECONDS.sleep(5);
         });
 
     Then(

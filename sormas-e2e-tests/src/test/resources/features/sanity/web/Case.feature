@@ -889,7 +889,6 @@ Feature: Case end to end tests
     And I click on the person search button in new case form
     And I search for the last created person via Api by uuid in popup on Select Person window
     And I open the first found result in the popup of Select Person window
-##    TODO na koniec zmienic selektor dla PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION !!!!! bo jest full Xpath
     And I click on the clear button in new case form
     And I click on the person search button in new case form
     And I search for the last created person via Api by uuid in popup on Select Person window
@@ -899,11 +898,7 @@ Feature: Case end to end tests
     When I click on the Persons button from navbar
     And I open the last created Person via API
     And I check that SEE CASES FOR THIS PERSON button is visible and clickable
-
-#    Then API: I create a new person
-#    And API: I check that POST call body is "OK"
-#    And API: I check that POST call status code is 200
-#    Then I click on the Cases button from navbar
+    Then I click on the Cases button from navbar
     And I open last created case
     And I navigate to Contacts tab in Edit case page
     Then I click on the NEW CONTACT button
@@ -917,11 +912,6 @@ Feature: Case end to end tests
     And I open the first found result in the popup of Select Person window
     Then I click on Save button in Case form
     When I click on the Persons button from navbar
+    And I click on the RESET FILTERS button for Person
     And I open the last created Person via API
     And I check that SEE CONTACTS FOR THIS PERSON button is visible and clickable
-
-
-
-
-
-

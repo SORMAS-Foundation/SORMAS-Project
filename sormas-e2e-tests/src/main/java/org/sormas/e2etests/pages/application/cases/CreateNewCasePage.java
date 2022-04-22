@@ -73,13 +73,7 @@ public class CreateNewCasePage {
   public static final By SELECT_PERSON_WINDOW_CONFIRM_BUTTON =
       By.xpath(
           "//div[contains(@class, 'popupContent')]//span[contains(text(), 'Confirm')]//ancestor::div[@id='commit']");
-
-  //  public static final By PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION =
-  //      By.cssSelector(
-  //          "tr[class*='v-grid-row v-grid-row-has-data v-grid-row-selected v-grid-row-focused']");
-  //  public static final By PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION =
-  //      By.xpath("//table/tbody/tr[1]");
   public static final By PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION =
       By.xpath(
-          "/html/body/div[2]/div[5]/div/div/div[3]/div/div/div[1]/div/div[2]/div/div/div[5]/div/div[3]/table/tbody/tr");
+          "//*[@id=\"sormasui-1655777373-overlays\"]/div[5]/div/div/div[3]/div/div/div[1]/div/div[2]/div/div/div[5]/div/div[3]/table/tbody/tr");
 }
