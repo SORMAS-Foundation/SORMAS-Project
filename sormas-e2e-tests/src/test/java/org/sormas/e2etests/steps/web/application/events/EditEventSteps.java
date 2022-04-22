@@ -20,6 +20,7 @@ package org.sormas.e2etests.steps.web.application.events;
 
 import static org.sormas.e2etests.pages.application.actions.CreateNewActionPage.NEW_ACTION_POPUP;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALL_RESULTS_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PERSON_SEARCH_LOCATOR_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.CREATE_CONTACTS_BULK_EDIT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DISEASE_COMBOBOX;
@@ -39,6 +40,8 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.GROUP_E
 import static org.sormas.e2etests.pages.application.events.EditEventPage.GROUP_EVENT_UUID;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.LINK_EVENT_GROUP_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NAVIGATE_TO_EVENT_DIRECTORY_EVENT_GROUP_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.NAVIGATE_TO_EVENT_DIRECTORY_LIST_GROUP_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.NAVIGATE_TO_EVENT_PARTICIPANTS_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_ACTION_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_EVENT_GROUP_RADIOBUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_GROUP_EVENT_CREATED_MESSAGE;
@@ -66,6 +69,7 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.TO
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.ADD_PARTICIPANT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.APPLY_FILTERS_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CONFIRM_NAVIGATION_POPUP;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.CREATE_NEW_PERSON_RADIO_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventParticipantsPage.ERROR_MESSAGE_TEXT;
@@ -86,6 +90,7 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.POPUP
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.POPUP_RESPONSIBLE_DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.POPUP_RESPONSIBLE_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.POPUP_SAVE;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.SEE_EVENTS_FOR_PERSON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import com.github.javafaker.Faker;
@@ -279,6 +284,12 @@ public class EditEventSteps implements En {
         });
 
     When(
+        "^I click on the person search button in add new event participant form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(PERSON_SEARCH_LOCATOR_BUTTON);
+        });
+
+    When(
         "I fill birth fields for participant in event participant list",
         () -> {
           webDriverHelpers.selectFromCombobox(
@@ -308,6 +319,15 @@ public class EditEventSteps implements En {
         () -> {
           participant = eventParticipant.buildGeneratedEventParticipant();
           fillFirstName(participant.getFirstName());
+        });
+
+    When(
+        "I add participant responsible region and responsible district only",
+        () -> {
+          participant = eventParticipant.buildGeneratedEventParticipant();
+          webDriverHelpers.clickOnWebElementBySelector(ADD_PARTICIPANT_BUTTON);
+          selectResponsibleRegion(participant.getResponsibleRegion());
+          selectResponsibleDistrict(participant.getResponsibleDistrict());
         });
 
     When(
@@ -343,6 +363,12 @@ public class EditEventSteps implements En {
         "I save changes in participant window",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
+        });
+
+    When(
+        "I confirm navigation popup",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_POPUP);
         });
 
     When(
@@ -425,6 +451,23 @@ public class EditEventSteps implements En {
         });
 
     When(
+        "I navigate to EVENTS LIST from edit event page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              NAVIGATE_TO_EVENT_DIRECTORY_LIST_GROUP_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(
+              NAVIGATE_TO_EVENT_DIRECTORY_LIST_GROUP_BUTTON);
+        });
+
+    When(
+        "I navigate to EVENT PARTICIPANT from edit event page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              NAVIGATE_TO_EVENT_PARTICIPANTS_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(NAVIGATE_TO_EVENT_PARTICIPANTS_BUTTON);
+        });
+
+    When(
         "^I create a new event group$",
         () -> {
           groupEvent = eventGroupService.buildGroupEvent();
@@ -474,6 +517,12 @@ public class EditEventSteps implements En {
                   + apiState.getCreatedEvent().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_EVENT_ACTIONS_URL);
           webDriverHelpers.waitForPageLoaded();
+        });
+    Then(
+        "I check that SEE EVENTS FOR THIS PERSON button is visible and clickable",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEE_EVENTS_FOR_PERSON);
         });
 
     Then(

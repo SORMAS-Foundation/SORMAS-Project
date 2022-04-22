@@ -86,6 +86,18 @@ public class PersonDirectorySteps implements En {
           webDriverHelpers.isElementVisibleWithTimeout(UUID_INPUT, 20);
         });
 
+    When(
+        "^I open the last created Person via API",
+        () -> {
+          String personUUID = apiState.getLastCreatedPerson().getUuid();
+          webDriverHelpers.fillAndSubmitInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, personUUID);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              getPersonResultsUuidLocator(personUUID));
+          webDriverHelpers.clickOnWebElementBySelector(getPersonResultsUuidLocator(personUUID));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
+          TimeUnit.SECONDS.sleep(5);
+        });
+
     Then(
         "I check the result for UID for second person in grid PERSON ID column",
         () -> {

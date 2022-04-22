@@ -269,7 +269,7 @@ Feature: Create events
     Then I unlinked the first chosen group by click on Unlink event group button
     And I click on Edit event group button from event groups box
     And I click on Edit event button for the first event in Events section
-    And I click on the Navigate to event directory filtered on this event group
+    And I navigate to EVENTS LIST from edit event page
     And I fill Event Group Id filter to one assigned to created event on Event Directory Page
     And I apply on the APPLY FILTERS button from Event
     And I check the number of displayed Event results from All button is 1
@@ -474,3 +474,34 @@ Feature: Create events
       Then I click on Edit event group button from event groups box
       And I click on the Navigate to event directory filtered on this event group
       And I check the if Event is displayed correctly in Events Directory table
+
+  @issue=SORDEV-9477 @env_main
+  Scenario: Add a person search option on creation forms
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And I log in with National User
+    And I click on the Events button from navbar
+    Then I open the last created event via api
+    And I navigate to Event Participants tab in Edit case page
+    And I add participant responsible region and responsible district only
+    And I click on the person search button in add new event participant form
+    And I search for the last created person via Api by uuid in popup on Select Person window
+    And I open the first found result in the popup of Select Person window
+    And I click on the clear button in new add new event participant form
+    And I click on the person search button in add new event participant form
+    And I search for the last created person via Api by uuid in popup on Select Person window
+    And I open the first found result in the popup of Select Person window
+    And I save changes in participant window
+    And I confirm navigation popup
+    And I navigate to EVENT PARTICIPANT from edit event page
+    And I confirm navigation popup
+    When I click on the Persons button from navbar
+    And I open the last created Person via API
+    And I check that SEE EVENTS FOR THIS PERSON button is visible and clickable

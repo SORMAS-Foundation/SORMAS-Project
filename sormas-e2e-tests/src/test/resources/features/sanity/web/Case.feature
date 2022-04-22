@@ -870,3 +870,58 @@ Feature: Case end to end tests
     And I open the first found result in the CHOOSE SOURCE popup of Create Contact window
     And I click on SAVE new contact button in the CHOOSE SOURCE popup of Create Contact window
     Then I check that Selected case is listed as Source Case in the CONTACTS WITH SOURCE CASE Box
+
+  @issue=SORDEV-9477 @env_main
+  Scenario: Add a person search option on creation forms
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+   And I fill new case form with chosen data without personal data on Case directory page
+    And I click on the person search button in new case form
+    And I search for the last created person via Api by uuid in popup on Select Person window
+    And I open the first found result in the popup of Select Person window
+##    TODO na koniec zmienic selektor dla PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION !!!!! bo jest full Xpath
+    And I click on the clear button in new case form
+    And I click on the person search button in new case form
+    And I search for the last created person via Api by uuid in popup on Select Person window
+    And I open the first found result in the popup of Select Person window
+    Then I click on Save button in Case form
+    And I Pick an existing case in Pick or create person popup in Case entry
+    When I click on the Persons button from navbar
+    And I open the last created Person via API
+    And I check that SEE CASES FOR THIS PERSON button is visible and clickable
+
+#    Then API: I create a new person
+#    And API: I check that POST call body is "OK"
+#    And API: I check that POST call status code is 200
+#    Then I click on the Cases button from navbar
+    And I open last created case
+    And I navigate to Contacts tab in Edit case page
+    Then I click on the NEW CONTACT button
+    And I fill a new contact form with chosen data without personal data
+    And I click on the person search button in create new contact form
+    And I search for the last created person via Api by uuid in popup on Select Person window
+    And I open the first found result in the popup of Select Person window
+    And I click on the clear button in new contact form
+    And I click on the person search button in create new contact form
+    And I search for the last created person via Api by uuid in popup on Select Person window
+    And I open the first found result in the popup of Select Person window
+    Then I click on Save button in Case form
+    When I click on the Persons button from navbar
+    And I open the last created Person via API
+    And I check that SEE CONTACTS FOR THIS PERSON button is visible and clickable
+
+
+
+
+
+

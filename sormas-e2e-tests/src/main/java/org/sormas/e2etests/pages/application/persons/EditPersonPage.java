@@ -114,6 +114,8 @@ public class EditPersonPage {
   public static final By CONFIRM_NAVIGATION_BUTTON = By.cssSelector(".popupContent #actionConfirm");
   public static final By PERSON_INFORMATION_TITLE =
       By.cssSelector("[location='personInformationHeadingLoc']");
+  public static final By EVENT_PARTICIPANTS_DATA_TAB =
+      By.cssSelector("#tab-events-eventparticipants");
 
   public static By getByPersonUuid(String personUuid) {
     return By.cssSelector("a[title='" + personUuid + "']");
