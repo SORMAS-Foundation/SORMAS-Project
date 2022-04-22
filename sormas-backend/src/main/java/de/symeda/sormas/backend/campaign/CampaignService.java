@@ -16,7 +16,6 @@ import de.symeda.sormas.api.campaign.CampaignCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 
 @Stateless
@@ -33,10 +32,18 @@ public class CampaignService extends AbstractCoreAdoService<Campaign> {
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Campaign> from) {
+		return createUserFilter(new CampaignQueryContext(cb, cq, from));
+	}
+
+	public Predicate createUserFilter(CampaignQueryContext queryContext) {
+		// A user who has access to CampaignView can read all campaigns
 		return null;
 	}
 
-	public Predicate buildCriteriaFilter(CampaignCriteria campaignCriteria, CriteriaBuilder cb, Root<Campaign> from) {
+	public Predicate buildCriteriaFilter(CampaignQueryContext queryContext, CampaignCriteria campaignCriteria) {
+
+		CriteriaBuilder cb = queryContext.getCriteriaBuilder();
+		From<?, Campaign> from = queryContext.getRoot();
 
 		Predicate filter = null;
 		if (campaignCriteria.getDeleted() != null) {
