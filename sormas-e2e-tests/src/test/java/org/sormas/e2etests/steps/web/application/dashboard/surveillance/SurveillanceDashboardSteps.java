@@ -19,7 +19,6 @@ import cucumber.api.java8.En;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage;
-import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
 import javax.inject.Inject;
@@ -126,17 +125,15 @@ public class SurveillanceDashboardSteps implements En {
         });
 
     Then(
-        "^I validate contacts button is clickable$",
+        "^I validate contacts button is clickable on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.CONTACTS_BUTTON);
         });
     Then(
-        "^I validate filter components presence$",
+        "^I validate filter components presence on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.CURRENT_PERIOD);
@@ -152,57 +149,50 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.APPLY_FILTERS);
         });
     Then(
-        "^I validate presence of diseases metrics$",
+        "^I validate presence of diseases metrics on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.DISEASE_METRICS);
         });
     Then(
-        "^I validate presence of diseases slider$",
+        "^I validate presence of diseases slider on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.DISEASE_SLIDER);
         });
     Then(
-        "^I validate presence of Epidemiological Curve$",
+        "^I validate presence of Epidemiological Curve on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.EPIDEMIOLOGICAL_CURVE);
         });
     Then(
-        "^I validate presence of maps$",
+        "^I validate presence of maps on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.STATUS_MAP);
         });
     Then(
-        "^I validate show all diseases button is available and clickable$",
+        "^I validate show all diseases button is available and clickable on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.SHOW_ALL_DISEASES);
         });
     Then(
-        "^I validate only 6 disease categories are displayed$",
+        "^I validate only 6 disease categories are displayed on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
-          Assert.assertEquals(
+          softly.assertEquals(
               webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.DISEASE_CATEGORIES),
               6,
-              "Number of displayed cases is not correct");
+              "Number of displayed diseases boxes on surveillance dashboard is not correct");
         });
     Then(
-        "^I click on show all diseases$",
+        "^I click on show all diseases on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.SHOW_ALL_DISEASES);
           TimeUnit.SECONDS.sleep(2);
@@ -212,18 +202,16 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.SHOW_ALL_DISEASES, 7);
         });
     Then(
-        "^I validate presence of all diseases$",
+        "^I validate presence of all diseases on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
-          Assert.assertEquals(
+          softly.assertEquals(
               webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.DISEASE_CATEGORIES),
               20,
-              "Number of displayed cases is not correct");
+              "Number of displayed diseases boxes on surveillance dashboard is not correct");
         });
     Then(
-        "^I validate name of diseases is shown$",
+        "^I validate name of diseases is shown on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.FIRST_DISEASE_BOX);
@@ -237,29 +225,35 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.FIFTH_DISEASE_BOX);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.SIXTH_DISEASE_BOX);
-          Assert.assertNotEquals(
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(SurveillanceDashboardPage.FIRST_DISEASE_BOX),
-              "");
-          Assert.assertNotEquals(
+              "",
+              "First disease box is not displayed or empty");
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(SurveillanceDashboardPage.SECOND_DISEASE_BOX),
-              "");
-          Assert.assertNotEquals(
+              "",
+              "Second disease box is not displayed or empty");
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(SurveillanceDashboardPage.THIRD_DISEASE_BOX),
-              "");
-          Assert.assertNotEquals(
+              "",
+              "Third disease box is not displayed or empty");
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(SurveillanceDashboardPage.FOURTH_DISEASE_BOX),
-              "");
-          Assert.assertNotEquals(
+              "",
+              "Fourth disease box is not displayed or empty");
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(SurveillanceDashboardPage.FIFTH_DISEASE_BOX),
-              "");
-          Assert.assertNotEquals(
+              "",
+              "Fifth disease box is not displayed or empty");
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(SurveillanceDashboardPage.SIXTH_DISEASE_BOX),
-              "");
+              "",
+              "Sixth disease box is not displayed or empty");
+          softly.assertAll();
         });
     Then(
-        "^I validate total data of diseases is shown$",
+        "^I validate total data of diseases is shown on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.TOTAL_DATA_FIRST_DISEASE_BOX);
@@ -273,35 +267,41 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.TOTAL_DATA_FIFTH_DISEASE_BOX);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.TOTAL_DATA_SIXTH_DISEASE_BOX);
-          Assert.assertNotEquals(
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.TOTAL_DATA_FIRST_DISEASE_BOX),
-              "");
-          Assert.assertNotEquals(
+              "",
+              "Total data in first disease box is empty of in not displayed");
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.TOTAL_DATA_SECOND_DISEASE_BOX),
-              "");
-          Assert.assertNotEquals(
+              "",
+              "Total data in second disease box is empty of in not displayed");
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.TOTAL_DATA_THIRD_DISEASE_BOX),
-              "");
-          Assert.assertNotEquals(
+              "",
+              "Total data in third disease box is empty of in not displayed");
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.TOTAL_DATA_FOURTH_DISEASE_BOX),
-              "");
-          Assert.assertNotEquals(
+              "",
+              "Total data in fourth disease box is empty of in not displayed");
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.TOTAL_DATA_FIFTH_DISEASE_BOX),
-              "");
-          Assert.assertNotEquals(
+              "",
+              "Total data in fifth disease box is empty of in not displayed");
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.TOTAL_DATA_SIXTH_DISEASE_BOX),
-              "");
+              "",
+              "Total data in sixth disease box is empty of in not displayed");
+          softly.assertAll();
         });
     Then(
-        "^I validate compared data of diseases is shown$",
+        "^I validate compared data of diseases is shown on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.COMPARED_DATA_FIRST_DISEASE_BOX);
@@ -315,40 +315,46 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.COMPARED_DATA_FIFTH_DISEASE_BOX);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.COMPARED_DATA_SIXTH_DISEASE_BOX);
-          Assert.assertNotEquals(
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.COMPARED_DATA_FIRST_DISEASE_BOX),
-              "");
-          Assert.assertNotEquals(
+              "",
+              "Compared data in first disease box is empty of in not displayed");
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.COMPARED_DATA_SECOND_DISEASE_BOX),
-              "");
-          Assert.assertNotEquals(
+              "",
+              "Compared data in second disease box is empty of in not displayed");
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.COMPARED_DATA_THIRD_DISEASE_BOX),
-              "");
-          Assert.assertNotEquals(
+              "",
+              "Compared data in third third box is empty of in not displayed");
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.COMPARED_DATA_FOURTH_DISEASE_BOX),
-              "");
-          Assert.assertNotEquals(
+              "",
+              "Compared data in fourth disease box is empty of in not displayed");
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.COMPARED_DATA_FIFTH_DISEASE_BOX),
-              "");
-          Assert.assertNotEquals(
+              "",
+              "Compared data in fifth disease box is empty of in not displayed");
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.COMPARED_DATA_SIXTH_DISEASE_BOX),
-              "");
+              "",
+              "Compared data in sixth disease box is empty of in not displayed");
+          softly.assertAll();
         });
     Then(
-        "^I validate last report of diseases is shown$",
+        "^I validate last report of diseases is shown on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
-          Assert.assertEquals(
+          softly.assertEquals(
               webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.LAST_REPORT),
               6,
-              "Number of displayed cases is not correct");
+              "Number of displayed entries for last report on surveillance dashboard is not correct");
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.LAST_REPORT_FIRST_DISEASE_BOX);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
@@ -361,40 +367,46 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.LAST_REPORT_FIFTH_DISEASE_BOX);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.LAST_REPORT_SIXTH_DISEASE_BOX);
-          Assert.assertNotEquals(
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.LAST_REPORT_FIRST_DISEASE_BOX),
-              "");
-          Assert.assertNotEquals(
+              "",
+              "Last report data in first disease box is empty of in not displayed");
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.LAST_REPORT_SECOND_DISEASE_BOX),
-              "");
-          Assert.assertNotEquals(
+              "",
+              "Last report data in second disease box is empty of in not displayed");
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.LAST_REPORT_THIRD_DISEASE_BOX),
-              "");
-          Assert.assertNotEquals(
+              "",
+              "Last report data in third disease box is empty of in not displayed");
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.LAST_REPORT_FOURTH_DISEASE_BOX),
-              "");
-          Assert.assertNotEquals(
+              "",
+              "Last report data in fourth disease box is empty of in not displayed");
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.LAST_REPORT_FIFTH_DISEASE_BOX),
-              "");
-          Assert.assertNotEquals(
+              "",
+              "Last report data in fifth disease box is empty of in not displayed");
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.LAST_REPORT_SIXTH_DISEASE_BOX),
-              "");
+              "",
+              "Last report data in sixth disease box is empty of in not displayed");
+          softly.assertAll();
         });
     Then(
-        "^I validate fatalities of diseases is shown$",
+        "^I validate fatalities of diseases is shown on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
-          Assert.assertEquals(
+          softly.assertEquals(
               webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.FATALITIES),
               7,
-              "Number of displayed cases is not correct");
+              "Number of displayed entries for fatalities displayed on surveillance dashboard is not correct");
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.FATALITIES_FIRST_DISEASE_BOX);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
@@ -407,40 +419,46 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.FATALITIES_FIFTH_DISEASE_BOX);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.FATALITIES_SIXTH_DISEASE_BOX);
-          Assert.assertNotEquals(
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.FATALITIES_FIRST_DISEASE_BOX),
-              "");
-          Assert.assertNotEquals(
+              "",
+              "Fatalities data in first disease box is empty of in not displayed");
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.FATALITIES_SECOND_DISEASE_BOX),
-              "");
-          Assert.assertNotEquals(
+              "",
+              "Fatalities data in second disease box is empty of in not displayed");
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.FATALITIES_THIRD_DISEASE_BOX),
-              "");
-          Assert.assertNotEquals(
+              "",
+              "Fatalities data in third disease box is empty of in not displayed");
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.FATALITIES_FOURTH_DISEASE_BOX),
-              "");
-          Assert.assertNotEquals(
+              "",
+              "Fatalities data in fourth disease box is empty of in not displayed");
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.FATALITIES_FIFTH_DISEASE_BOX),
-              "");
-          Assert.assertNotEquals(
+              "",
+              "Fatalities data in fifth disease box is empty of in not displayed");
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.FATALITIES_SIXTH_DISEASE_BOX),
-              "");
+              "",
+              "Fatalities data in sixth disease box is empty of in not displayed");
+          softly.assertAll();
         });
     Then(
-        "^I validate number of events of diseases is shown$",
+        "^I validate number of events of diseases is shown on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
-          Assert.assertEquals(
+          softly.assertEquals(
               webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.NUMBER_OF_EVENTS),
               6,
-              "Number of displayed cases is not correct");
+              "Number of displayed entries for number of events displayed on surveillance dashboard is not correct");
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.NUMBER_OF_EVENTS_FIRST_DISEASE_BOX);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
@@ -453,47 +471,51 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.NUMBER_OF_EVENTS_FIFTH_DISEASE_BOX);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.NUMBER_OF_EVENTS_SIXTH_DISEASE_BOX);
-          Assert.assertNotEquals(
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.NUMBER_OF_EVENTS_FIRST_DISEASE_BOX),
-              "");
-          Assert.assertNotEquals(
+              "",
+              "Number of events data in first disease box is empty of in not displayed");
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.NUMBER_OF_EVENTS_SECOND_DISEASE_BOX),
-              "");
-          Assert.assertNotEquals(
+              "",
+              "Number of events data in second disease box is empty of in not displayed");
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.NUMBER_OF_EVENTS_THIRD_DISEASE_BOX),
-              "");
-          Assert.assertNotEquals(
+              "",
+              "Number of events data in third disease box is empty of in not displayed");
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.NUMBER_OF_EVENTS_FOURTH_DISEASE_BOX),
-              "");
-          Assert.assertNotEquals(
+              "",
+              "Number of events data in fourth disease box is empty of in not displayed");
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.NUMBER_OF_EVENTS_FIFTH_DISEASE_BOX),
-              "");
-          Assert.assertNotEquals(
+              "",
+              "Number of events data in fifth disease box is empty of in not displayed");
+          softly.assertNotEquals(
               webDriverHelpers.getTextFromWebElement(
                   SurveillanceDashboardPage.NUMBER_OF_EVENTS_SIXTH_DISEASE_BOX),
-              "");
+              "",
+              "Number of events data in sixth disease box is empty of in not displayed");
+          softly.assertAll();
         });
     Then(
-        "^I switch to burden information table$",
+        "^I switch to burden information table on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.DASHBOARD_BUTTON);
           TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.clickOnWebElementBySelector(
               SurveillanceDashboardPage.BURDEN_TABLE_VIEW_SWITCH);
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.DISEASE_BURDEN_INFORMATION);
         });
     Then(
-        "^I validate that all the headers are present in the burden information table$",
+        "^I validate that all the headers are present in the burden information table on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.DISEASE_BURDEN_BOX_DISEASES);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
@@ -512,9 +534,8 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.DISEASE_BURDEN_BOX_CFR);
         });
     Then(
-        "^I validate diseases presence in the data table$",
+        "^I validate diseases presence in the data table on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.DISEASE_BURDEN_BOX_FIRST_DISEASE);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
@@ -529,21 +550,17 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.DISEASE_BURDEN_BOX_SIXTH_DISEASE);
         });
     Then(
-        "^I validate switching back to disease boxes is working$",
+        "^I validate switching back to disease boxes is working on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.clickOnWebElementBySelector(
               SurveillanceDashboardPage.BURDEN_TILE_VIEW_SWITCH);
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.FIRST_DISEASE_BOX);
         });
     Then(
-        "^I validate all diseases are displayed in the carousel slider options$",
+        "^I validate all diseases are displayed in the carousel slider options on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
-          // TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.AFP_BOX_IN_CAROUSEL_SLIDER_BAR);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
@@ -582,10 +599,8 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.YELLOW_FEVER_BOX_IN_CAROUSEL_SLIDER_BAR);
         });
     Then(
-        "^I validate counter is present$",
+        "^I validate counter is present on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
-          // TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.NEW_CASES_COUNTER_BOX_IN_CAROUSEL_SLIDER_BAR);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
@@ -594,17 +609,14 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.TEST_RESULTS_COUNTER_BOX_IN_CAROUSEL_SLIDER_BAR);
         });
     Then(
-        "^I validate presence of left statistics charts$",
+        "^I validate presence of left statistics charts on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
-          // TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.STATISTICS_CHARTS);
         });
     Then(
-        "^I validate presence of cases metrics$",
+        "^I validate presence of cases metrics on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.CASES_METRICS_MAIN_BOX);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
@@ -623,23 +635,20 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.CASES_METRICS_NOT_YET_CLASSIFIED_BOX);
         });
     Then(
-        "^I validate presence of fatalities counter$",
+        "^I validate presence of fatalities counter on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.FATALITIES_COUNTER);
         });
     Then(
-        "^I validate presence of events counter$",
+        "^I validate presence of events counter on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.NEW_EVENTS_COUNTER);
         });
     Then(
-        "^I validate presence of events metrics$",
+        "^I validate presence of events metrics on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.NEW_EVENTS_TYPE_CLUSTER);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
@@ -652,16 +661,14 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.NEW_EVENTS_TYPE_SCREENING);
         });
     Then(
-        "^I validate presence of test results counter$",
+        "^I validate presence of test results counter on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.TEST_RESULTS_COUNTER);
         });
     Then(
-        "^I validate presence of test results metrics$",
+        "^I validate presence of test results metrics on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.TEST_RESULTS_INDETERMINATE);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
@@ -672,34 +679,30 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.TEST_RESULTS_PENDING);
         });
     Then(
-        "^I validate presence of legend data$",
+        "^I validate presence of legend data on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.TEST_RESULTS_PENDING);
         });
     Then(
-        "^I validate presence of chart$",
+        "^I validate presence of chart on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.LEGEND_DATA);
-          Assert.assertEquals(
+          softly.assertEquals(
               webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.STATISTICS_CHARTS),
               2,
               "Statistic chart is missing or not displayed");
         });
     Then(
-        "^I validate presence of chart download button$",
+        "^I validate presence of chart download button on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.LEGEND_CHART_DOWNLOAD_BUTTON);
         });
     Then(
-        "^I validate chart download options$",
+        "^I validate chart download options on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(
               SurveillanceDashboardPage.LEGEND_CHART_DOWNLOAD_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
@@ -718,9 +721,8 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.DOWNLOAD_CHART_OPTION_DOWNLOAD_XLS);
         });
     Then(
-        "^I validate presence of chart buttons$",
+        "^I validate presence of chart buttons on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.LEGEND_DATA_EXPAND_EPI_CURVE_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
@@ -741,18 +743,16 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.LEGEND_DATA_DEAD_OR_ALIVE_BUTTON);
         });
     Then(
-        "^I click on legend case status$",
+        "^I click on legend case status on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.LEGEND_DATA_CASE_STATUS_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(
               SurveillanceDashboardPage.LEGEND_DATA_CASE_STATUS_BUTTON);
         });
     Then(
-        "^I check case status chart$",
+        "^I check case status chart on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.LEGEND_CHART_CASE_STATUS_CONFIRMED);
@@ -768,18 +768,16 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.LEGEND_CHART_CASE_STATUS_SUSPECT);
         });
     Then(
-        "^I click on legend alive or dead$",
+        "^I click on legend alive or dead on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.LEGEND_DATA_DEAD_OR_ALIVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(
               SurveillanceDashboardPage.LEGEND_DATA_DEAD_OR_ALIVE_BUTTON);
         });
     Then(
-        "^I check alive or dead chart$",
+        "^I check alive or dead chart on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.LEGEND_CHART_ALIVE_OR_DEAD_DEAD);
@@ -789,9 +787,8 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.LEGEND_CHART_ALIVE_OR_DEAD_UNKNOWN);
         });
     Then(
-        "^I validate presence of map options$",
+        "^I validate presence of map options on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.ZOOM_IN_BUTTON_ON_MAP);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
@@ -808,7 +805,7 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.FULL_SCREEN_BUTTON_ON_MAP);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.EXIT_FULL_SCREEN_BUTTON_ON_MAP);
-          TimeUnit.SECONDS.sleep(1);
+          // TimeUnit.SECONDS.sleep(1);
           webDriverHelpers.clickOnWebElementBySelector(
               SurveillanceDashboardPage.EXIT_FULL_SCREEN_BUTTON_ON_MAP);
           webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.EXPAND_MAP_BUTTON);
@@ -818,9 +815,8 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.COLLAPSE_MAP_BUTTON);
         });
     Then(
-        "^I validate presence of Map key options$",
+        "^I validate presence of Map key options on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.DASHBOARD_MAP_KEY_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(
@@ -843,9 +839,8 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.DASHBOARD_MAP_KEY_CONFIRMED);
         });
     Then(
-        "I validate presence of Layers options$",
+        "I validate presence of Layers options on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.DASHBOARD_LAYERS_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(
@@ -869,32 +864,30 @@ public class SurveillanceDashboardSteps implements En {
         });
 
     Then(
-        "I expand Epidemiological curve$",
+        "I expand Epidemiological curve on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.EXPAND_EPI_CURVE);
           webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.EXPAND_EPI_CURVE);
         });
     Then(
-        "I verify that only epi curve chart is displayed on page$",
+        "I verify that only epi curve chart is displayed on Surveillance Dashboard Page",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           TimeUnit.SECONDS.sleep(2);
-          Assert.assertEquals(
+          softly.assertEquals(
               webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.STATUS_MAP),
               0,
               "Case status map should not be visible when epidemiological curve is expanded");
-          Assert.assertEquals(
+          softly.assertEquals(
               webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.DISEASES_LAYOUT),
               0,
               "Diseases layout should not be visible when epidemiological curve is expanded");
-          Assert.assertEquals(
+          softly.assertEquals(
               webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.STATISTICS_CHARTS),
               1,
               "Only one statistics chart should be visible when epidemiological curve is expanded");
-          Assert.assertEquals(
+          softly.assertEquals(
               webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.CURVE_AND_MAP_LAYOUT),
               1,
               "Curve and map layout should be visible when epidemiological curve is expanded");
@@ -904,34 +897,32 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.COLLAPSE_EPI_CURVE);
         });
     Then(
-        "I expand Case status map$",
+        "I expand Case status map on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.EXPAND_MAP_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.EXPAND_MAP_BUTTON);
         });
     Then(
-        "I verify only Case status map is displayed on page$",
+        "I verify only Case status map is displayed on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.STATUS_MAP);
-          Assert.assertEquals(
+          softly.assertEquals(
               webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.STATUS_MAP),
               1,
               "Case status map should be visible when it's expanded");
-          Assert.assertEquals(
+          softly.assertEquals(
               webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.DISEASES_LAYOUT),
               0,
               "Diseases layout should not be visible when status map is expanded");
-          Assert.assertEquals(
+          softly.assertEquals(
               webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.STATISTICS_CHARTS),
               0,
               "No statistics chart should be visible when status map is expanded");
-          Assert.assertEquals(
+          softly.assertEquals(
               webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.CURVE_AND_MAP_LAYOUT),
               1,
               "Curve and map layout should be visible when status map is expanded");
@@ -939,41 +930,38 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.COLLAPSE_MAP_BUTTON);
         });
     Then(
-        "I select Difference in Number of Cases hide overview$",
+        "I select Difference in Number of Cases hide overview on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.HIDE_OVERVIEW);
           webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.HIDE_OVERVIEW);
         });
     Then(
-        "I verify that Overview data should be hidden$",
+        "I verify that Overview data is hidden on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           TimeUnit.SECONDS.sleep(2);
-          Assert.assertEquals(
+          softly.assertEquals(
               webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.STATUS_MAP),
               1,
               "Case status map should be visible when hide overview is selected");
-          Assert.assertEquals(
+          softly.assertEquals(
               webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.DISEASES_LAYOUT),
               0,
               "Diseases layout should not be visible when hide overview is selected");
-          Assert.assertEquals(
+          softly.assertEquals(
               webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.STATISTICS_CHARTS),
               1,
               "Only curve statistics chart should be visible when hide overview is selected");
-          Assert.assertEquals(
+          softly.assertEquals(
               webDriverHelpers.getNumberOfElements(SurveillanceDashboardPage.CURVE_AND_MAP_LAYOUT),
               1,
               "Curve and map layout should be visible when hide overview is selected");
           webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.HIDE_OVERVIEW);
         });
     Then(
-        "^I apply filter compare: today -> yesterday$",
+        "^I apply filter compare: today -> yesterday on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.CURRENT_PERIOD);
           webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.DASHBOARD_TODAY);
@@ -987,9 +975,8 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.APPLY_FILTERS);
         });
     Then(
-        "^I verify filter works$",
+        "^I verify filter works on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.APPLY_FILTERS);
           webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.APPLY_FILTERS);
@@ -997,9 +984,8 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.APPLY_FILTERS);
         });
     Then(
-        "^I apply date filter$",
+        "^I apply date filter on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.CURRENT_PERIOD);
           webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.CURRENT_PERIOD);
@@ -1011,9 +997,8 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.APPLY_FILTERS);
         });
     Then(
-        "^I apply region filter$",
+        "^I apply region filter on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.selectFromCombobox(
               REGION_COMBOBOX_DROPDOWN, "Voreingestellte Bundesl\u00E4nder");
@@ -1022,9 +1007,8 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.APPLY_FILTERS);
         });
     Then(
-        "^I click on reset filters$",
+        "^I click on reset filters on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.RESET_FILTERS);
           webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.RESET_FILTERS);
@@ -1032,15 +1016,19 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.RESET_FILTERS);
         });
     Then(
-        "^I verify filters were reset$",
+        "^I verify that filters were reset on Surveillance Dashboard Page$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           TimeUnit.SECONDS.sleep(10);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SurveillanceDashboardPage.RESET_FILTERS);
-          Assert.assertEquals(webDriverHelpers.getValueFromWebElement(REGION_COMBOBOX), "Region");
-          Assert.assertEquals(
-              webDriverHelpers.getValueFromWebElement(DATE_TYPE), "Most relevant date");
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(REGION_COMBOBOX),
+              "Region",
+              "Default value of region combobox should be Region");
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(DATE_TYPE),
+              "Most relevant date",
+              "Default value of date type combobox should be Most relevant date");
         });
   }
 }
