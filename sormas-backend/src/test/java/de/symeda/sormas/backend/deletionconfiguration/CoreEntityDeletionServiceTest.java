@@ -9,11 +9,6 @@ import java.nio.charset.StandardCharsets;
 import java.sql.Timestamp;
 import java.util.Date;
 
-import de.symeda.sormas.api.task.TaskContext;
-import de.symeda.sormas.api.task.TaskDto;
-import de.symeda.sormas.api.task.TaskStatus;
-import de.symeda.sormas.api.task.TaskType;
-import de.symeda.sormas.backend.contact.Contact;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hibernate.internal.SessionImpl;
 import org.hibernate.query.spi.QueryImplementor;
@@ -31,6 +26,10 @@ import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.symptoms.SymptomState;
+import de.symeda.sormas.api.task.TaskContext;
+import de.symeda.sormas.api.task.TaskDto;
+import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRole;
@@ -40,6 +39,7 @@ import de.symeda.sormas.backend.MockProducer;
 import de.symeda.sormas.backend.TestDataCreator;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
 
@@ -78,12 +78,19 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 		CaseDataDto duplicateCase = creator.createCase(user.toReference(), person.toReference(), rdcf);
 		getCaseFacade().deleteCaseAsDuplicate(duplicateCase.getUuid(), caze.getUuid());
 
-		ContactDto resultingContact = creator.createContact(user.toReference(), person.toReference(), caze);
+		final ContactDto resultingContact = creator.createContact(user.toReference(), person.toReference(), caze);
+		assertNull(resultingContact.getRegion());
 		ContactDto sourceContact = creator.createContact(
 			user.toReference(),
 			person.toReference(),
 			caze.getDisease(),
 			contactDto -> contactDto.setResultingCase(caze.toReference()));
+		ContactDto deletedSourceContact = creator.createContact(
+			user.toReference(),
+			person.toReference(),
+			caze.getDisease(),
+			contactDto -> contactDto.setResultingCase(caze.toReference()));
+		getContactFacade().delete(deletedSourceContact.getUuid());
 		EventDto event = creator.createEvent(user.toReference(), caze.getDisease());
 		EventParticipantDto eventParticipant = creator.createEventParticipant(
 			event.toReference(),
@@ -99,6 +106,10 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 			sampleDto -> sampleDto.setAssociatedContact(resultingContact.toReference()));
 		TravelEntryDto travelEntry =
 			creator.createTravelEntry(person.toReference(), user.toReference(), rdcf, te -> te.setResultingCase(caze.toReference()));
+		creator.createTravelEntry(person.toReference(), user.toReference(), rdcf, te -> {
+			te.setResultingCase(caze.toReference());
+			te.setDeleted(true);
+		});
 		ImmunizationDto immunization = creator.createImmunization(
 			caze.getDisease(),
 			person.toReference(),
@@ -125,6 +136,8 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 		getCoreEntityDeletionService().executeAutomaticDeletion();
 		loginWith(user);
 
+		ContactDto resultingContactUpdated = getContactFacade().getByUuid(resultingContact.getUuid());
+
 		assertEquals(1, getCaseService().count());
 		assertEquals(duplicateCase.getUuid(), getCaseService().getAll().get(0).getUuid());
 		assertEquals(0, getClinicalVisitService().count());
@@ -135,7 +148,10 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 		assertNull(getSampleFacade().getSampleByUuid(multiSample.getUuid()).getAssociatedCase());
 		assertEquals(0, getSurveillanceReportService().count());
 		assertTrue(getDocumentService().getAll().get(0).isDeleted());
-		assertNull(getContactFacade().getByUuid(resultingContact.getUuid()).getCaze());
+		assertNull(resultingContactUpdated.getCaze());
+		assertEquals(rdcf.region, resultingContactUpdated.getRegion());
+		assertEquals(rdcf.district, resultingContactUpdated.getDistrict());
+		assertEquals(rdcf.community, resultingContactUpdated.getCommunity());
 		assertNull(getContactFacade().getByUuid(sourceContact.getUuid()).getResultingCase());
 		assertNull(getEventParticipantFacade().getByUuid(eventParticipant.getUuid()).getResultingCase());
 		assertNull(getTravelEntryFacade().getByUuid(travelEntry.getUuid()).getResultingCase());
@@ -378,7 +394,7 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 		ContactDto contactDto = creator.createContact(user.toReference(), person.toReference(), Disease.CORONAVIRUS);
 
 		TaskDto taskDto = creator
-				.createTask(TaskContext.CONTACT, TaskType.CONTACT_FOLLOW_UP, TaskStatus.PENDING, null, contactDto.toReference(), null, new Date(), null);
+			.createTask(TaskContext.CONTACT, TaskType.CONTACT_FOLLOW_UP, TaskStatus.PENDING, null, contactDto.toReference(), null, new Date(), null);
 
 		SampleDto sample = creator.createSample(
 			contactDto.toReference(),
@@ -398,7 +414,7 @@ public class CoreEntityDeletionServiceTest extends AbstractBeanTest {
 		ContactDto contactDto2 = creator.createContact(user.toReference(), person.toReference(), Disease.CORONAVIRUS);
 
 		TaskDto taskDto2 = creator
-				.createTask(TaskContext.CONTACT, TaskType.CONTACT_FOLLOW_UP, TaskStatus.PENDING, null, contactDto2.toReference(), null, new Date(), null);
+			.createTask(TaskContext.CONTACT, TaskType.CONTACT_FOLLOW_UP, TaskStatus.PENDING, null, contactDto2.toReference(), null, new Date(), null);
 		SampleDto sample2 = creator.createSample(
 			contactDto2.toReference(),
 			user.toReference(),
