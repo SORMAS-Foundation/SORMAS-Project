@@ -32,6 +32,8 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_H
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_INVESTIGATION_STATUS_OPTIONS;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_MANAGEMENT_STATUS_OPTIONS;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_STATUS_OPTIONS;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.FACILITY_CATEGORY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.FACILITY_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_GROUP_ID;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.GROUP_EVENT_NAME_POPUP_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.GROUP_EVENT_UUID;
@@ -40,6 +42,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.NAVIGAT
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_ACTION_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_EVENT_GROUP_RADIOBUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_GROUP_EVENT_CREATED_MESSAGE;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.PLACE_OF_STAY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.REPORT_DATE_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.RISK_LEVEL_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.RISK_LEVEL_INPUT;
@@ -95,6 +98,7 @@ import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Event;
@@ -392,6 +396,7 @@ public class EditEventSteps implements En {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.scrollToElement(UNLINK_EVENT_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(UNLINK_EVENT_BUTTON);
+          TimeUnit.SECONDS.sleep(3); // waiting for unlinked
         });
 
     When(
@@ -413,8 +418,8 @@ public class EditEventSteps implements En {
     When(
         "I click on the Navigate to event directory filtered on this event group",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
-          webDriverHelpers.scrollToElement(NAVIGATE_TO_EVENT_DIRECTORY_EVENT_GROUP_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              NAVIGATE_TO_EVENT_DIRECTORY_EVENT_GROUP_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(
               NAVIGATE_TO_EVENT_DIRECTORY_EVENT_GROUP_BUTTON);
         });
@@ -557,6 +562,21 @@ public class EditEventSteps implements En {
                           + path.toAbsolutePath()),
               120);
         });
+    When(
+        "I set Place of stay to {string}, Facility Category to {string} and  Facility Type to {string} in Edit Event directory",
+        (String placeOfStay, String facilityCategory, String facilityType) -> {
+          selectPlaceOfStay(placeOfStay);
+          selectFacilityCategory(facilityCategory);
+          selectFacilityType(facilityType);
+        });
+
+    When(
+        "I click on Save Button in Edit Event directory",
+        () -> {
+          webDriverHelpers.scrollToElement(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_DATA_SAVED_MESSAGE);
+        });
   }
 
   private Person collectPersonUuid() {
@@ -659,6 +679,18 @@ public class EditEventSteps implements En {
 
   private void selectDisease(String disease) {
     webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, disease);
+  }
+
+  private void selectFacilityType(String facilityType) {
+    webDriverHelpers.selectFromCombobox(FACILITY_TYPE_COMBOBOX, facilityType);
+  }
+
+  private void selectFacilityCategory(String facilityCategory) {
+    webDriverHelpers.selectFromCombobox(FACILITY_CATEGORY_COMBOBOX, facilityCategory);
+  }
+
+  private void selectPlaceOfStay(String placeOfStay) {
+    webDriverHelpers.selectFromCombobox(PLACE_OF_STAY_COMBOBOX, placeOfStay);
   }
 
   private void fillTitle(String title) {

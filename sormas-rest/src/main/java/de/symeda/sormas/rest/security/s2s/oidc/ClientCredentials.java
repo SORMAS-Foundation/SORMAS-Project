@@ -1,4 +1,4 @@
-package de.symeda.sormas.rest.security.oidc;
+package de.symeda.sormas.rest.security.s2s.oidc;
 
 import static java.lang.annotation.ElementType.METHOD;
 import static java.lang.annotation.ElementType.TYPE;

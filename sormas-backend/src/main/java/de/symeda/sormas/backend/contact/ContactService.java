@@ -25,6 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -45,6 +46,7 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.utils.FieldConstraints;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -258,12 +260,19 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	public List<Contact> getAllByResultingCase(Case caze) {
+		return getAllByResultingCase(caze, false);
+	}
+
+	public List<Contact> getAllByResultingCase(Case caze, boolean includeDeleted) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Contact> cq = cb.createQuery(getElementClass());
 		Root<Contact> from = cq.from(getElementClass());
 
-		cq.where(cb.and(createDefaultFilter(cb, from), cb.equal(from.get(Contact.RESULTING_CASE), caze)));
+		Predicate filter = includeDeleted ? null : createDefaultFilter(cb, from);
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Contact.RESULTING_CASE), caze));
+		cq.where(filter);
+
 		cq.orderBy(cb.desc(from.get(Contact.REPORT_DATE_TIME)));
 
 		return em.createQuery(cq).getResultList();
@@ -913,13 +922,19 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 	public void cancelFollowUp(Contact contact, String comment) {
 		contact.setFollowUpStatus(FollowUpStatus.CANCELED);
-		addToFollowUpStatusComment(contact, comment);
+		int finalFollowUpCommentLenght = contact.getFollowUpComment() == null
+			? I18nProperties.getString(Strings.messageSystemFollowUpCanceled).length()
+			: contact.getFollowUpComment().length() + I18nProperties.getString(Strings.messageSystemFollowUpCanceled).length();
+		if (finalFollowUpCommentLenght <= FieldConstraints.CHARACTER_LIMIT_BIG) {
+			addToFollowUpStatusComment(contact, comment);
+		}
 		externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
 		ensurePersisted(contact);
 	}
 
 	private void addToFollowUpStatusComment(Contact contact, String comment) {
-		contact.setFollowUpComment(comment != null && comment.equals(contact.getFollowUpComment())
+		contact.setFollowUpComment(
+			comment != null && comment.equals(contact.getFollowUpComment())
 				? contact.getFollowUpComment()
 				: DataHelper.joinStrings("\n", contact.getFollowUpComment(), comment));
 	}
@@ -1390,6 +1405,10 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 	@Override
 	public void deletePermanent(Contact contact) {
+
+		// Delete all tasks associated with this case
+		Optional.ofNullable(contact.getTasks()).ifPresent(tl -> tl.forEach(t -> taskService.deletePermanent(t)));
+
 		// Delete all samples that are only associated with this contact
 		contact.getSamples()
 			.stream()
@@ -1541,7 +1560,9 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(qc, userService.getCurrentUser())),
 			JurisdictionHelper.booleanSelector(
 				cb,
-				cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, qc.getQuery(), joins.getCaze())))));
+				cb.and(
+					cb.isNotNull(joins.getCaze()),
+					caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, qc.getQuery(), joins.getCaseJoins())))));
 	}
 
 	public List<Contact> getByPersonUuids(List<String> personUuids) {

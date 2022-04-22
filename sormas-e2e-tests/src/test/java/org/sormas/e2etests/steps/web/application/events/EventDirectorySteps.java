@@ -794,6 +794,10 @@ public class EventDirectorySteps implements En {
         "I open the first event from events list",
         () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_ID_BUTTON));
 
+    When(
+        "I open the first event group from events list group",
+        () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_ID_BUTTON));
+
     And(
         "I click Create Case for Event Participant",
         () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_CASE_BUTTON));
@@ -886,6 +890,36 @@ public class EventDirectorySteps implements En {
                             webDriverHelpers.getTextFromPresentWebElement(TOTAL_EVENTS_COUNTER)),
                         number.intValue(),
                         "Number of displayed cases is not correct")));
+
+    Then(
+        "I check the if Event is displayed correctly in Events Directory table",
+        () -> {
+          List<Map<String, String>> tableRowsData = getTableRowsData();
+          softly.assertEquals(
+              apiState.getCreatedEvent().getUuid().toUpperCase().substring(0, 6),
+              tableRowsData.get(0).get(EventsTableColumnsHeaders.EVENT_ID_HEADER.toString()),
+              "Event IDs are not equal");
+          softly.assertEquals(
+              DiseasesValues.getCaptionForName(apiState.getCreatedEvent().getDisease()),
+              tableRowsData.get(0).get(EventsTableColumnsHeaders.DISEASE_HEADER.toString()),
+              "Diseases are not equal");
+          softly.assertEquals(
+              RegionsValues.getNameValueForUuid(
+                  apiState.getCreatedEvent().getEventLocation().getRegion().getUuid()),
+              tableRowsData.get(0).get(EventsTableColumnsHeaders.REGION_HEADER.toString()),
+              "Regions are not equal");
+          softly.assertEquals(
+              DistrictsValues.getNameValueForUuid(
+                  apiState.getCreatedEvent().getEventLocation().getDistrict().getUuid()),
+              tableRowsData.get(0).get(EventsTableColumnsHeaders.DISTRICT_HEADER.toString()),
+              "Districts are not equal");
+          softly.assertEquals(
+              CommunityValues.getNameValueForUuid(
+                  apiState.getCreatedEvent().getEventLocation().getCommunity().getUuid()),
+              tableRowsData.get(0).get(EventsTableColumnsHeaders.COMMUNITY_HEADER.toString()),
+              "Communities are not equal");
+          softly.assertAll();
+        });
 
     When(
         "I click on the Import button from Events directory",

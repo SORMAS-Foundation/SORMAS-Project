@@ -44,6 +44,9 @@ public class EditEventPage {
   public static final By EVENT_INVESTIGATION_STATUS_OPTIONS =
       By.cssSelector("#eventInvestigationStatus label");
   public static final By DISEASE_COMBOBOX = By.cssSelector("#disease div");
+  public static final By FACILITY_TYPE_COMBOBOX = By.cssSelector("#facilityType div");
+  public static final By FACILITY_CATEGORY_COMBOBOX = By.cssSelector("#typeGroup div");
+  public static final By PLACE_OF_STAY_COMBOBOX = By.cssSelector("#typeOfPlace div");
   public static final By SOURCE_TYPE_COMBOBOX = By.cssSelector("#srcType div");
   public static final By TYPE_OF_PLACE_COMBOBOX = By.cssSelector(" #typeOfPlace div");
   public static final By NEW_ACTION_BUTTON = By.id("actionNewAction");

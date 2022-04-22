@@ -3,6 +3,7 @@ package de.symeda.sormas.backend.dashboard;
 import static de.symeda.sormas.api.dashboard.DashboardContactStatisticDto.CURRENT_CONTACTS;
 import static de.symeda.sormas.api.dashboard.DashboardContactStatisticDto.PREVIOUS_CONTACTS;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
@@ -23,6 +24,7 @@ import javax.ejb.Stateless;
 
 import org.apache.commons.lang3.time.DateUtils;
 
+import de.symeda.sormas.api.CaseMeasure;
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseReferenceDefinition;
@@ -31,6 +33,7 @@ import de.symeda.sormas.api.contact.ContactCriteria;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.dashboard.DashboardCaseDto;
+import de.symeda.sormas.api.dashboard.DashboardCaseMeasureDto;
 import de.symeda.sormas.api.dashboard.DashboardCaseStatisticDto;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
 import de.symeda.sormas.api.dashboard.DashboardContactFollowUpDto;
@@ -46,15 +49,18 @@ import de.symeda.sormas.api.disease.DiseaseBurdenDto;
 import de.symeda.sormas.api.event.EventCriteria;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.outbreak.OutbreakCriteria;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.criteria.CriteriaDateType;
 import de.symeda.sormas.api.visit.VisitStatus;
+import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb;
@@ -83,6 +89,9 @@ public class DashboardFacadeEjb implements DashboardFacade {
 
 	@EJB
 	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
+
+	@EJB
+	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
 
 	@EJB
 	private DashboardService dashboardService;
@@ -169,6 +178,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 		return epiCurveSeriesElements;
 	}
 
+	@RolesAllowed(UserRight._DASHBOARD_SURVEILLANCE_VIEW)
 	public Map<Date, Map<ContactClassification, Long>> getEpiCurveSeriesElementsPerContactClassification(DashboardCriteria dashboardCriteria) {
 		Map<Date, Map<ContactClassification, Long>> epiCurveSeriesElements = new TreeMap<>();
 		List<Date> criteriaIntervalStartDates = buildListOfFilteredDates(
@@ -190,6 +200,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 
 	}
 
+	@RolesAllowed(UserRight._DASHBOARD_SURVEILLANCE_VIEW)
 	public Map<Date, Map<String, Long>> getEpiCurveSeriesElementsPerContactFollowUpStatus(DashboardCriteria dashboardCriteria) {
 		Map<Date, Map<String, Long>> epiCurveSeriesElements = new TreeMap<>();
 		List<Date> criteriaIntervalStartDates = buildListOfFilteredDates(
@@ -215,6 +226,7 @@ public class DashboardFacadeEjb implements DashboardFacade {
 
 	}
 
+	@RolesAllowed(UserRight._DASHBOARD_SURVEILLANCE_VIEW)
 	public Map<Date, Integer> getEpiCurveSeriesElementsPerContactFollowUpUntil(DashboardCriteria dashboardCriteria) {
 		Map<Date, Integer> epiCurveSeriesElements = new TreeMap<>();
 		List<Date> criteriaIntervalStartDates = buildListOfFilteredDates(
@@ -232,6 +244,59 @@ public class DashboardFacadeEjb implements DashboardFacade {
 			epiCurveSeriesElements.put(intervalStartDate, contactFacade.getFollowUpUntilCount(contactCriteria));
 		});
 		return epiCurveSeriesElements;
+	}
+
+	@RolesAllowed(UserRight._DASHBOARD_SURVEILLANCE_VIEW)
+	public DashboardCaseMeasureDto getCaseMeasurePerDistrict(DashboardCriteria dashboardCriteria) {
+		Map<DistrictDto, BigDecimal> caseMeasurePerDistrictMap = new LinkedHashMap<>();
+		BigDecimal districtValuesLowerQuartile;
+		BigDecimal districtValuesMedianQuartile;
+		BigDecimal districtValuesUpperQuartile;
+
+		List<DataHelper.Pair<DistrictDto, BigDecimal>> caseMeasurePerDistrict = caseFacade.getCaseMeasurePerDistrict(
+			dashboardCriteria.getDateFrom(),
+			dashboardCriteria.getDateTo(),
+			dashboardCriteria.getDisease(),
+			dashboardCriteria.getCaseMeasure());
+
+		if (dashboardCriteria.getCaseMeasure() == CaseMeasure.CASE_COUNT) {
+			caseMeasurePerDistrictMap =
+				caseMeasurePerDistrict.stream().collect(Collectors.toMap(DataHelper.Pair::getElement0, DataHelper.Pair::getElement1));
+
+			districtValuesLowerQuartile =
+				caseMeasurePerDistrict.size() > 0 ? caseMeasurePerDistrict.get((int) (caseMeasurePerDistrict.size() * 0.25)).getElement1() : null;
+			districtValuesMedianQuartile =
+				caseMeasurePerDistrict.size() > 0 ? caseMeasurePerDistrict.get((int) (caseMeasurePerDistrict.size() * 0.5)).getElement1() : null;
+			districtValuesUpperQuartile =
+				caseMeasurePerDistrict.size() > 0 ? caseMeasurePerDistrict.get((int) (caseMeasurePerDistrict.size() * 0.75)).getElement1() : null;
+
+		} else {
+			// For case incidence, districts without or with a population <= 0 should not be
+			// used for the calculation of the quartiles because they will falsify the
+			// result
+			List<DataHelper.Pair<DistrictDto, BigDecimal>> measurePerDistrictWithoutMissingPopulations = new ArrayList<>();
+			measurePerDistrictWithoutMissingPopulations.addAll(caseMeasurePerDistrict);
+			measurePerDistrictWithoutMissingPopulations.removeIf(d -> d.getElement1() == null || d.getElement1().intValue() <= 0);
+
+			caseMeasurePerDistrictMap = measurePerDistrictWithoutMissingPopulations.stream()
+				.collect(Collectors.toMap(DataHelper.Pair::getElement0, DataHelper.Pair::getElement1));
+
+			districtValuesLowerQuartile = measurePerDistrictWithoutMissingPopulations.size() > 0
+				? measurePerDistrictWithoutMissingPopulations.get((int) (measurePerDistrictWithoutMissingPopulations.size() * 0.25)).getElement1()
+				: null;
+			districtValuesMedianQuartile = measurePerDistrictWithoutMissingPopulations.size() > 0
+				? measurePerDistrictWithoutMissingPopulations.get((int) (measurePerDistrictWithoutMissingPopulations.size() * 0.5)).getElement1()
+				: null;
+			districtValuesUpperQuartile = measurePerDistrictWithoutMissingPopulations.size() > 0
+				? measurePerDistrictWithoutMissingPopulations.get((int) (measurePerDistrictWithoutMissingPopulations.size() * 0.75)).getElement1()
+				: null;
+		}
+
+		return new DashboardCaseMeasureDto(
+			caseMeasurePerDistrictMap,
+			districtValuesLowerQuartile,
+			districtValuesMedianQuartile,
+			districtValuesUpperQuartile);
 	}
 
 	@Override
