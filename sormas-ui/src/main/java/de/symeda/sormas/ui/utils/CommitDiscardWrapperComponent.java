@@ -540,9 +540,11 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		return null;
 	}
 
-	public void commitAndHandle() {
+	@Override
+	public boolean commitAndHandle() {
 		try {
 			commit();
+			return true;
 		} catch (InvalidValueException ex) {
 			StringBuilder htmlMsg = new StringBuilder();
 			String message = ex.getMessage();
@@ -588,6 +590,8 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 			new Notification(I18nProperties.getString(Strings.messageCheckInputData), htmlMsg.toString(), Type.ERROR_MESSAGE, true)
 				.show(Page.getCurrent());
+
+			return false;
 		}
 	}
 

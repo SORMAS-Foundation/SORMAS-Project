@@ -313,11 +313,12 @@ public class VisitFacadeEjb implements VisitFacade {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<VisitIndexDto> cq = cb.createQuery(VisitIndexDto.class);
+		
 		Root<Visit> visit = cq.from(Visit.class);
-		Join<Visit, Symptoms> symptoms = visit.join(Visit.SYMPTOMS, JoinType.LEFT);
-		Join<Visit, Case> caseJoin = visit.join(Visit.CAZE, JoinType.LEFT);
-		Join<Visit, Contact> contactJoin = visit.join(Visit.CONTACTS, JoinType.LEFT);
-		Join<Visit, User> visitUser = visit.join(Visit.VISIT_USER, JoinType.LEFT);
+		
+		VisitJoins visitJoins = new VisitJoins(visit, JoinType.LEFT);
+		Join<Visit, Symptoms> symptoms = visitJoins.getSymptoms();
+		Join<Visit, User> visitUser = visitJoins.getUser();
 
 		cq.multiselect(
 			visit.get(Visit.ID),
@@ -333,7 +334,7 @@ public class VisitFacadeEjb implements VisitFacade {
 			visitUser.get(User.UUID),
 			visitUser.get(User.FIRST_NAME),
 			visitUser.get(User.LAST_NAME),
-			jurisdictionSelector(cq, cb, caseJoin, contactJoin));
+			jurisdictionSelector(cq, cb, visitJoins));
 
 		cq.distinct(true);
 		cq.where(visitService.buildCriteriaFilter(visitCriteria, cb, visit));
@@ -408,11 +409,11 @@ public class VisitFacadeEjb implements VisitFacade {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<VisitExportDto> cq = cb.createQuery(VisitExportDto.class);
 		final Root<Visit> visitRoot = cq.from(Visit.class);
-		final Join<Visit, Symptoms> symptomsJoin = visitRoot.join(Visit.SYMPTOMS, JoinType.LEFT);
-		final Join<Visit, Person> personJoin = visitRoot.join(Visit.PERSON, JoinType.LEFT);
-		final Join<Visit, User> userJoin = visitRoot.join(Visit.VISIT_USER, JoinType.LEFT);
-		final Join<Visit, Case> caseJoin = visitRoot.join(Visit.CAZE, JoinType.LEFT);
-		final Join<Visit, Contact> contactJoin = visitRoot.join(Visit.CONTACTS, JoinType.LEFT);
+
+		final VisitJoins visitJoins = new VisitJoins(visitRoot, JoinType.LEFT);
+		final Join<Visit, Symptoms> symptomsJoin = visitJoins.getSymptoms();
+		final Join<Visit, User> userJoin = visitJoins.getUser();
+		final Join<Visit, Person> personJoin = visitJoins.getPerson();
 
 		cq.multiselect(
 			visitRoot.get(Visit.ID),
@@ -430,7 +431,7 @@ public class VisitFacadeEjb implements VisitFacade {
 			visitRoot.get(Visit.REPORT_LON),
 			visitRoot.get(Visit.ORIGIN),
 			personJoin.get(Person.UUID),
-			jurisdictionSelector(cq, cb, caseJoin, contactJoin));
+			jurisdictionSelector(cq, cb, visitJoins));
 
 		Predicate filter = visitService.buildCriteriaFilter(visitCriteria, cb, visitRoot);
 		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, visitRoot.get(Visit.UUID));
@@ -480,13 +481,12 @@ public class VisitFacadeEjb implements VisitFacade {
 	private Expression<Object> jurisdictionSelector(
 		CriteriaQuery cq,
 		CriteriaBuilder cb,
-		Join<Visit, Case> caseJoin,
-		Join<Visit, Contact> contactJoin) {
+		VisitJoins visitJoins) {
 		return JurisdictionHelper.booleanSelector(
 			cb,
 			cb.or(
-				caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, caseJoin)),
-				contactService.inJurisdictionOrOwned(new ContactQueryContext(cb, cq, contactJoin))));
+				caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, visitJoins.getCaseJoins())),
+				contactService.inJurisdictionOrOwned(new ContactQueryContext(cb, cq, visitJoins.getContactJoins()))));
 	}
 
 	public Visit fromDto(@NotNull VisitDto source, boolean checkChangeDate) {

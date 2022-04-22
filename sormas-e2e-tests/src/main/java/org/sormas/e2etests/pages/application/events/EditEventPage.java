@@ -44,6 +44,9 @@ public class EditEventPage {
   public static final By EVENT_INVESTIGATION_STATUS_OPTIONS =
       By.cssSelector("#eventInvestigationStatus label");
   public static final By DISEASE_COMBOBOX = By.cssSelector("#disease div");
+  public static final By FACILITY_TYPE_COMBOBOX = By.cssSelector("#facilityType div");
+  public static final By FACILITY_CATEGORY_COMBOBOX = By.cssSelector("#typeGroup div");
+  public static final By PLACE_OF_STAY_COMBOBOX = By.cssSelector("#typeOfPlace div");
   public static final By SOURCE_TYPE_COMBOBOX = By.cssSelector("#srcType div");
   public static final By TYPE_OF_PLACE_COMBOBOX = By.cssSelector(" #typeOfPlace div");
   public static final By NEW_ACTION_BUTTON = By.id("actionNewAction");
@@ -69,7 +72,7 @@ public class EditEventPage {
       By.cssSelector(".popupContent [id='Cancel']");
   public static final By UNLINK_EVENT_BUTTON = By.id("unlink-event-1");
   public static final By EDIT_EVENT_GROUP_BUTTON = By.id("add-event-0");
-  public static final By NAVIGATE_TO_EVENT_DIRECTORY_EVENT_GROUP_BUTTON = By.id("tab-events");
+  public static final By NAVIGATE_TO_EVENT_DIRECTORY_EVENT_GROUP_BUTTON = By.id("list-events-0");
   public static final By SAVE_BUTTON_FOR_EDIT_EVENT_GROUP = By.id("commit");
   public static final By FIRST_GROUP_ID = By.xpath("//table/tbody/tr[1]/td[2]");
   public static final By TOTAL_ACTIONS_COUNTER = By.cssSelector(".badge");

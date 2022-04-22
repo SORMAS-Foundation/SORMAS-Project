@@ -44,7 +44,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import de.symeda.sormas.api.infrastructure.pointofentry.PointOfEntryReferenceDto;
+import de.symeda.sormas.api.sample.SampleDto;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -1320,10 +1320,14 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 
 			if (caseFollowUpEnabled) {
 				// Add follow-up until validator
-				FollowUpPeriodDto followUpPeriod = CaseLogic.getFollowUpStartDate(
+				List<SampleDto> samples = Collections.emptyList();
+				if (UserProvider.getCurrent().hasAllUserRights(UserRight.SAMPLE_VIEW)) {
+					samples = FacadeProvider.getSampleFacade().getByCaseUuids(Collections.singletonList(caseUuid));
+				}
+				FollowUpPeriodDto followUpPeriod = CaseLogic.getFollowUpStartDate(					
 					symptoms.getOnsetDate(),
 					reportDate.getValue(),
-					FacadeProvider.getSampleFacade().getByCaseUuids(Collections.singletonList(caseUuid)));
+					samples);
 				Date minimumFollowUpUntilDate =
 					FollowUpLogic
 						.calculateFollowUpUntilDate(

@@ -28,7 +28,6 @@ public class LabMessageCriteria extends BaseCriteria implements Serializable {
 	private Date messageDateTo;
 	private Date birthDateFrom;
 	private Date birthDateTo;
-	private Boolean deleted = Boolean.FALSE;
 	private UserReferenceDto assignee;
 
 	public String getUuid() {
@@ -102,14 +101,6 @@ public class LabMessageCriteria extends BaseCriteria implements Serializable {
 
 	public void setBirthDateTo(Date birthDateTo) {
 		this.birthDateTo = birthDateTo;
-	}
-
-	public Boolean getDeleted() {
-		return deleted;
-	}
-
-	public void setDeleted(Boolean deleted) {
-		this.deleted = deleted;
 	}
 
 	public UserReferenceDto getAssignee() {

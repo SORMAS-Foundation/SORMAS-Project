@@ -209,6 +209,13 @@ public class EditCasePersonSteps implements En {
                   "city",
                   "areaType"));
         });
+
+    When(
+        "I set Facility Category to {string} and  Facility Type to {string}",
+        (String facilityCategory, String facilityType) -> {
+          selectFacilityCategory(facilityCategory);
+          selectFacilityType(facilityType);
+        });
   }
 
   private void selectCountry(String country) {

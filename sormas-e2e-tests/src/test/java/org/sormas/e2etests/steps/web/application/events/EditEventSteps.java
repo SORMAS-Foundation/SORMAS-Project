@@ -43,6 +43,8 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_S
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EXPLORATIVE_SURVEY_OF_AFFECTED_PEOPLE_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EXPRESSED_BY_THE_DISEASE_PERSON_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EXPRESSED_BY_THE_HEALTH_DEPARTMENT_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.FACILITY_CATEGORY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.FACILITY_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_GROUP_ID;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.GROUP_EVENT_NAME_POPUP_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.GROUP_EVENT_UUID;
@@ -57,6 +59,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.OTHER_L
 import static org.sormas.e2etests.pages.application.events.EditEventPage.PATHOGEN_FINE_TYPING_COMPLIANT_WITH_THE_ONE_OF_CASES_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.PERSON_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.PRIMARY_MODE_OF_TRANSMISSION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.PLACE_OF_STAY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.REPORT_DATE_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.RISK_LEVEL_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.RISK_LEVEL_INPUT;
@@ -749,6 +752,21 @@ public class EditEventSteps implements En {
                           + path.toAbsolutePath()),
               120);
         });
+    When(
+        "I set Place of stay to {string}, Facility Category to {string} and  Facility Type to {string} in Edit Event directory",
+        (String placeOfStay, String facilityCategory, String facilityType) -> {
+          selectPlaceOfStay(placeOfStay);
+          selectFacilityCategory(facilityCategory);
+          selectFacilityType(facilityType);
+        });
+
+    When(
+        "I click on Save Button in Edit Event directory",
+        () -> {
+          webDriverHelpers.scrollToElement(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_DATA_SAVED_MESSAGE);
+        });
   }
 
   private Person collectPersonUuid() {
@@ -851,6 +869,18 @@ public class EditEventSteps implements En {
 
   private void selectDisease(String disease) {
     webDriverHelpers.selectFromCombobox(DISEASE_COMBOBOX, disease);
+  }
+
+  private void selectFacilityType(String facilityType) {
+    webDriverHelpers.selectFromCombobox(FACILITY_TYPE_COMBOBOX, facilityType);
+  }
+
+  private void selectFacilityCategory(String facilityCategory) {
+    webDriverHelpers.selectFromCombobox(FACILITY_CATEGORY_COMBOBOX, facilityCategory);
+  }
+
+  private void selectPlaceOfStay(String placeOfStay) {
+    webDriverHelpers.selectFromCombobox(PLACE_OF_STAY_COMBOBOX, placeOfStay);
   }
 
   private void fillTitle(String title) {
