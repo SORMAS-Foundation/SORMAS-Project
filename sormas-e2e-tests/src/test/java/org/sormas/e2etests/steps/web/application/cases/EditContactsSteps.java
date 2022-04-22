@@ -171,6 +171,7 @@ public class EditContactsSteps implements En {
               new File(userDirPath + "/downloads/sormas_kontakte_" + LocalDate.now() + "_.csv");
           toDelete.deleteOnExit();
         });
+
     When(
         "^I create a new contact from Cases Contacts tab$",
         () -> {

@@ -55,6 +55,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.COMMUNITY
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.COMMUNITY_COMBOBOX_BY_PLACE_OF_STAY;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.COMMUNITY_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_TEMPLATES;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_QUARANTINE_ORDER_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CURRENT_HOSPITALIZATION_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DATE_OFFICIAL_QUARANTINE_ORDER_WAS_SENT;
@@ -85,6 +86,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.FACILITY_
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.FACILITY_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.FOLLOW_UP_TAB;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERAL_COMMENT_TEXTAREA;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.HOME_BASED_QUARANTINE_POSSIBLE_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.HOSPITALIZATION_TAB;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.INVESTIGATED_DATE_FIELD;
@@ -116,6 +118,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTIN
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDERED_BY_DOCUMENT_DATE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDERED_VERBALLY_CHECKBOX_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDERED_VERBALLY_CHECKBOX_LABEL;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_POPUP_DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_POPUP_MESSAGE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_POPUP_SAVE_BUTTON;
@@ -136,6 +139,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_AND_
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SEQUELAE_DETAILS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SEQUELAE_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SYMPTOMS_TAB;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.UPLOAD_DOCUMENT_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.USER_INFORMATION;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.VACCINATION_STATUS_FOR_THIS_DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CONTACT_TO_BODY_FLUIDS_OPTONS;
@@ -172,6 +176,7 @@ import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.contacts.ContactDirectorySteps.exposureData;
 
 import cucumber.api.java8.En;
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -328,6 +333,66 @@ public class EditCaseSteps implements En {
     And(
         "I navigate to case person tab",
         () -> webDriverHelpers.clickOnWebElementBySelector(CASE_PERSON_TAB));
+    And(
+        "I click on Create button in Document Templates box in Edit Case directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_DOCUMENT_TEMPLATES));
+    And(
+        "I click on checkbox to upload generated document to entity in Create Quarantine Order form in Edit Case directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(UPLOAD_DOCUMENT_CHECKBOX));
+    When(
+        "I select {string} Quarantine Order in Create Quarantine Order form in Edit Case directory",
+        (String name) -> {
+          webDriverHelpers.selectFromCombobox(QUARANTINE_ORDER_COMBOBOX, name);
+        });
+    When(
+        "I check if downloaded file is correct for {string} Quarantine Order in Edit Case directory",
+        (String name) -> {
+          String uuid = apiState.getCreatedCase().getUuid();
+          Path path =
+              Paths.get(
+                  userDirPath + "/downloads/" + uuid.substring(0, 6).toUpperCase() + "-" + name);
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertTrue(
+                      Files.exists(path),
+                      "Quarantine order document was not downloaded. Path used for check: "
+                          + path.toAbsolutePath()),
+              120);
+        });
+    When(
+        "I check if generated document based on {string} appeared in Documents tab for API created case in Edit Case directory",
+        (String name) -> {
+          String uuid = apiState.getCreatedCase().getUuid();
+          String path = uuid.substring(0, 6).toUpperCase() + "-" + name;
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertEquals(
+                      path, webDriverHelpers.getTextFromWebElement(GENERATED_DOCUMENT_NAME)),
+              120);
+        });
+    When(
+        "I check if generated document based on {string} appeared in Documents tab for UI created case in Edit Case directory",
+        (String name) -> {
+          String uuid = EditCaseSteps.aCase.getUuid();
+          String path = uuid.substring(0, 6).toUpperCase() + "-" + name;
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertEquals(
+                      path, webDriverHelpers.getTextFromWebElement(GENERATED_DOCUMENT_NAME)),
+              120);
+        });
+    When(
+        "I delete downloaded file created from {string} Document Template",
+        (String name) -> {
+          String uuid = apiState.getCreatedCase().getUuid();
+          File toDelete =
+              new File(
+                  userDirPath + "/downloads/" + uuid.substring(0, 6).toUpperCase() + "-" + name);
+          toDelete.deleteOnExit();
+        });
+    And(
+        "I click on Create button in Create Quarantine Order form",
+        () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_QUARANTINE_ORDER_BUTTON));
 
     When(
         "I check the created data is correctly displayed on Edit case page",
@@ -1600,7 +1665,7 @@ public class EditCaseSteps implements En {
   }
 
   private void selectQuarantineOrderTemplate(String templateName) {
-    webDriverHelpers.selectFromCombobox(EditCasePage.QUARANTINE_ORDER_COMBOBOX, templateName);
+    webDriverHelpers.selectFromCombobox(QUARANTINE_ORDER_COMBOBOX, templateName);
   }
 
   private void fillExtraComment(String extraComment) {

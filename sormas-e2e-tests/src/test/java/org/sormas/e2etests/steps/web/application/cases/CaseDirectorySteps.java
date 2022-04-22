@@ -22,6 +22,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALLB
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALL_RESULTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS_VALUES;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_CREATE_QUARANTINE_ORDER;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASES_FROM_OTHER_INSTANCES_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASES_FROM_OTHER_JURISDICTIONS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASES_HELP_NEEDED_IN_QUARANTINE_CHECKBOX;
@@ -77,6 +78,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.IMPO
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.INVESTIGATION_DISCARDED_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.INVESTIGATION_DONE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.INVESTIGATION_PENDING_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.LEAVE_BULK_EDIT_MODE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.LINE_LISTING_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MORE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NAME_UUID_EPID_NUMBER_LIKE_INPUT;
@@ -87,7 +89,9 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.RESU
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SEARCH_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHOW_MORE_LESS_FILTERS;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.TOTAL_CASES_COUNTER;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getCaseResultsUuidLocator;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getCheckboxByIndex;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getResultByIndex;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_CASES_BUTTON;
@@ -101,6 +105,7 @@ import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOU
 import com.github.javafaker.Faker;
 import com.google.common.truth.Truth;
 import cucumber.api.java8.En;
+import java.io.File;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
@@ -169,6 +174,26 @@ public class CaseDirectorySteps implements En {
         });
 
     When(
+        "I check if downloaded zip file for Quarantine Order is correct in Case directory",
+        () -> {
+          Path path =
+              Paths.get(userDirPath + "/downloads/sormas_dokumente_" + LocalDate.now() + "_.zip");
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertTrue(
+                      Files.exists(path),
+                      "Quarantine order document was not downloaded. Path used for check: "
+                          + path.toAbsolutePath()),
+              120);
+        });
+    When(
+        "I delete downloaded file created from Quarantine order in Case Directory",
+        () -> {
+          File toDelete =
+              new File(userDirPath + "/downloads/sormas_dokumente_" + LocalDate.now() + "_.zip");
+          toDelete.deleteOnExit();
+        });
+    When(
         "I search for the last case uuid created via Api in the CHOOSE SOURCE Contact window",
         () -> {
           webDriverHelpers.fillInWebElement(
@@ -205,11 +230,32 @@ public class CaseDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(ENTER_BULK_EDIT_MODE);
         });
     When(
+        "I click Leave Bulk Edit Mode on Case directory page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(LEAVE_BULK_EDIT_MODE);
+        });
+    When(
         "I click checkbox to choose all Case results",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ALL_RESULTS_CHECKBOX);
         });
 
+    And(
+        "I click on close button in Create Quarantine Order form",
+        () ->
+            webDriverHelpers.clickOnWebElementBySelector(
+                By.xpath("//div[@class='v-window-closebox']")));
+
+    When(
+        "^I select first (\\d+) results in grid in Case Directory$",
+        (Integer number) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          for (int i = 2; i <= number + 1; i++) {
+            webDriverHelpers.scrollToElement(getCheckboxByIndex(String.valueOf(i)));
+            webDriverHelpers.clickOnWebElementBySelector(getCheckboxByIndex(String.valueOf(i)));
+          }
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
     When(
         "I click on the Epidemiological data button tab in Case form",
         () -> {
@@ -224,6 +270,13 @@ public class CaseDirectorySteps implements En {
         "I click on Link to Event from Bulk Actions combobox on Case Directory Page",
         () -> webDriverHelpers.clickOnWebElementBySelector(BULK_ACTIONS_VALUES));
 
+    And(
+        "I click on Create Quarantine Order from Bulk Actions combobox on Case Directory Page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(BULK_CREATE_QUARANTINE_ORDER));
+
+    And(
+        "I click on checkbox to upload generated document to entities in Create Quarantine Order form in Case directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX));
     And(
         "I click on New Event option in Link to Event Form",
         () -> webDriverHelpers.clickOnWebElementBySelector(NEW_EVENT_CHECKBOX));
@@ -531,7 +584,7 @@ public class CaseDirectorySteps implements En {
               DATE_FROM_COMBOBOX,
               formatter.format(
                   LocalDate.ofInstant(
-                          apiState.getCreatedCases().get(0).getReportDate().toInstant(),
+                          apiState.getCreatedCase().getReportDate().toInstant(),
                           ZoneId.systemDefault())
                       .minusDays(number)));
         });

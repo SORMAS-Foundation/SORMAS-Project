@@ -182,4 +182,10 @@ public class EditCasePage {
       By.xpath("//*[contains(text(),'Current hospitalization')]");
   public static final By SAVE_AND_OPEN_HOSPITALIZATION_BUTTON =
       By.cssSelector(".popupContent #actionConfirm");
+  public static final By CREATE_DOCUMENT_TEMPLATES = By.id("Create");
+  public static final By UPLOAD_DOCUMENT_CHECKBOX =
+      By.xpath("//label[text()='Also upload the generated document to this entity']");
+  public static final By GENERATED_DOCUMENT_NAME =
+      By.xpath(
+          "//div[text()='Documents']/../parent::div/../../following-sibling::div//div[@class='v-label v-widget caption-truncated v-label-caption-truncated v-label-undef-w']");
 }

@@ -188,9 +188,11 @@ public class ContactDirectorySteps implements En {
 
     When(
         "I click on the NEW CONTACT button",
-        () ->
-            webDriverHelpers.clickWhileOtherButtonIsDisplayed(
-                NEW_CONTACT_BUTTON, FIRST_NAME_OF_CONTACT_PERSON_INPUT));
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEW_CONTACT_BUTTON);
+          webDriverHelpers.clickWhileOtherButtonIsDisplayed(
+              NEW_CONTACT_BUTTON, FIRST_NAME_OF_CONTACT_PERSON_INPUT);
+        });
 
     When(
         "I click on save Contact button",
