@@ -228,11 +228,13 @@ public class CaseDirectorySteps implements En {
         "I click Enter Bulk Edit Mode on Case directory page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ENTER_BULK_EDIT_MODE);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
         });
     When(
         "I click Leave Bulk Edit Mode on Case directory page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(LEAVE_BULK_EDIT_MODE);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
         });
     When(
         "I click checkbox to choose all Case results",

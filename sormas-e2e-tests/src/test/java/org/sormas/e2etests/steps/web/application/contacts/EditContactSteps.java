@@ -111,6 +111,17 @@ public class EditContactSteps implements En {
         });
 
     When(
+        "I check if generated document based on {string} appeared in Documents tab for UI created contact in Edit Contact directory",
+        (String name) -> {
+          String uuid = collectedContact.getUuid();
+          String path = uuid.substring(0, 6).toUpperCase() + "-" + name;
+          assertHelpers.assertWithPoll(
+              () ->
+                  Assert.assertEquals(
+                      path, webDriverHelpers.getTextFromWebElement(GENERATED_DOCUMENT_NAME)),
+              120);
+        });
+    When(
         "I check the created data is correctly displayed on Edit Contact page",
         () -> {
           collectedContact = collectContactData();
@@ -233,6 +244,7 @@ public class EditContactSteps implements En {
         "I open the last created UI Contact",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(FIRST_CASE_ID_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
         });
 
     When(

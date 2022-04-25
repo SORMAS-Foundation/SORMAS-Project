@@ -396,26 +396,25 @@ Feature: Contacts end to end tests
     And API: I check that POST call status code is 200
     Given I log in as a Admin User
     And I click on the Contacts button from navbar
-#    And I click on the NEW CONTACT button
-#    When I fill a new contact form
-#    And I click on SAVE new contact button
-#    Then I check the created data is correctly displayed on Edit Contact page
-#    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    When I fill a new contact form
+    And I click on SAVE new contact button
+    Then I check the created data is correctly displayed on Edit Contact page
+    And I click on the Contacts button from navbar
     And I click on the More button on Case directory page
     And I click Enter Bulk Edit Mode on Case directory page
     And I select first 2 results in grid in Case Directory
     And I click on Bulk Actions combobox on Case Directory Page
-    And I click on Create Quarantine Order from Bulk Actions combobox on Case Directory Page
+    And I click on Create Quarantine Order from Bulk Actions combobox on Contact Directory Page
     And I click on checkbox to upload generated document to entities in Create Quarantine Order form in Case directory
-    And I select "ExampleDocumentTemplateCases.docx" Quarantine Order in Create Quarantine Order form in Edit Case directory
+    And I select "ExampleDocumentTemplateContacts.docx" Quarantine Order in Create Quarantine Order form in Edit Contact directory
     And I click on Create button in Create Quarantine Order form
     And I click on close button in Create Quarantine Order form
     And I check if downloaded zip file for Quarantine Order is correct in Case directory
+    And I click on the More button on Case directory page
     Then I click Leave Bulk Edit Mode on Case directory page
-    And I open the last created Case via API
-    And I check if generated document based on "ExampleDocumentTemplateCases.docx" appeared in Documents tab for API created case in Edit Case directory
-    Then I click on the Cases button from navbar
-    And I filter by CaseID of last created UI Case on Case directory page
-    Then I open last created case
-    And I check if generated document based on "ExampleDocumentTemplateCases.docx" appeared in Documents tab for UI created case in Edit Case directory
+    Then I navigate to the last created UI contact via the url
+    And I check if generated document based on "ExampleDocumentTemplateContacts.docx" appeared in Documents tab for UI created contact in Edit Contact directory
+    And I navigate to the last created contact via the url
+    And I check if generated document based on "ExampleDocumentTemplateContacts.docx" appeared in Documents tab in Edit Contact directory
     And I delete downloaded file created from Quarantine order in Case Directory

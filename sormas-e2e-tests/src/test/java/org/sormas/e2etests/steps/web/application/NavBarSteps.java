@@ -16,6 +16,7 @@
 package org.sormas.e2etests.steps.web.application;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.NEW_CASE_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditContactsPage.NEW_CONTACT_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.NEW_CONTACT_PAGE_BUTTON;
 import static org.sormas.e2etests.pages.application.dashboard.Contacts.ContactsDashboardPage.CONTACTS_DASHBOARD_NAME;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.CONTACTS_BUTTON;
@@ -72,6 +73,7 @@ public class NavBarSteps implements En {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.CONTACTS_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEW_CONTACT_BUTTON);
         });
 
     When(

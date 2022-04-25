@@ -68,6 +68,7 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.ALL_BUTTON_CONTACT;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.BULK_ACTIONS_CONTACT_VALUES;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.BULK_CREATE_QUARANTINE_ORDER;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_FROM_OTHER_INSTANCES_CHECKBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_ONLY_HIGH_PRIOROTY_CHECKBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_WITH_EXTENDED_QUARANTINE_CHECKBOX;
@@ -179,6 +180,16 @@ public class ContactDirectorySteps implements En {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
         });
     When(
+        "^I navigate to the last created UI contact via the url$",
+        () -> {
+          String LAST_CREATED_CONTACT_URL =
+              environmentManager.getEnvironmentUrlForMarket(locale)
+                  + "/sormas-webdriver/#!contacts/data/"
+                  + collectedContact.getUuid();
+          webDriverHelpers.accessWebSite(LAST_CREATED_CONTACT_URL);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
+        });
+    When(
         "I apply Id of last created Contact on Contact Directory Page",
         () -> {
           String contactUuid = collectedContact.getUuid();
@@ -189,10 +200,12 @@ public class ContactDirectorySteps implements En {
     When(
         "I click on the NEW CONTACT button",
         () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NEW_CONTACT_BUTTON);
           webDriverHelpers.clickWhileOtherButtonIsDisplayed(
               NEW_CONTACT_BUTTON, FIRST_NAME_OF_CONTACT_PERSON_INPUT);
         });
+    And(
+        "I click on Create Quarantine Order from Bulk Actions combobox on Contact Directory Page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(BULK_CREATE_QUARANTINE_ORDER));
 
     When(
         "I click on save Contact button",
