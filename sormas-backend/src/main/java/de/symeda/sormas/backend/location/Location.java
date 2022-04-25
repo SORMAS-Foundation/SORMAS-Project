@@ -66,6 +66,7 @@ public class Location extends AbstractDomainObject {
 	public static final String COMMUNITY = "community";
 	public static final String LATITUDE = "latitude";
 	public static final String LONGITUDE = "longitude";
+	public static final String LATLONACCURACY = "latLonAccuracy";
 	public static final String POSTAL_CODE = "postalCode";
 	public static final String STREET = "street";
 	public static final String HOUSE_NUMBER = "houseNumber";
@@ -347,7 +348,7 @@ public class Location extends AbstractDomainObject {
 		this.person = person;
 	}
 
-	public String buildGpsCoordinatesCaption() {
+	public static String buildGpsCoordinatesCaption(Double latitude, Double longitude, Float latLonAccuracy) {
 		if (latitude == null && longitude == null) {
 			return "";
 		} else if (latitude == null || longitude == null) {
@@ -357,6 +358,10 @@ public class Location extends AbstractDomainObject {
 		} else {
 			return latitude + ", " + longitude + " +-" + Math.round(latLonAccuracy) + "m";
 		}
+	}
+
+	public String buildGpsCoordinatesCaption() {
+		return buildGpsCoordinatesCaption(latitude, longitude, latLonAccuracy);
 	}
 
 	@Override

@@ -119,9 +119,7 @@ public class CaseExportDto implements Serializable {
 	private String country;
 	private long id;
 	private long personId;
-	private long personAddressId;
 	private long epiDataId;
-	private long symptomsId;
 	private long hospitalizationId;
 	private long healthConditionsId;
 	private String uuid;
@@ -348,14 +346,13 @@ public class CaseExportDto implements Serializable {
 	private Boolean isInJurisdiction;
 
 	//@formatter:off
-	public CaseExportDto(long id, long personId, long personAddressId, long epiDataId, long symptomsId,
+	public CaseExportDto(long id, long personId, String addressGpsCoordinates, long epiDataId, SymptomsDto symptoms,
 						 long hospitalizationId, long healthConditionsId, String uuid, String epidNumber,
 						 Disease disease, DiseaseVariant diseaseVariant, String diseaseDetails, String diseaseVariantDetails,
 						 String personUuid, String firstName, String lastName, Salutation salutation, String otherSalutation, Sex sex, YesNoUnknown pregnant,
-						 Integer approximateAge, ApproximateAgeType approximateAgeType, Integer birthdateDD, Integer birthdateMM,
-						 Integer birthdateYYYY, Date reportDate, String region, String district, String community,
-						 FacilityType facilityType, String healthFacility, String healthFacilityUuid, String healthFacilityDetails, String pointOfEntry,
-						 String pointOfEntryUuid, String pointOfEntryDetails, CaseClassification caseClassification,
+						 String approximateAge, String ageGroup,  BirthDateDto birthdate, Date reportDate, String region, String district, String community,
+						 FacilityType facilityType, String healthFacility, String healthFacilityDetails, String pointOfEntry,
+						 String pointOfEntryDetails, CaseClassification caseClassification,
 						 YesNoUnknown clinicalConfirmation, YesNoUnknown epidemiologicalConfirmation, YesNoUnknown laboratoryDiagnosticConfirmation,
 						 Boolean notACaseReasonNegativeTest, Boolean notACaseReasonPhysicianInformation, Boolean notACaseReasonDifferentPathogen, Boolean notACaseReasonOther,
 						 String notACaseReasonDetails, InvestigationStatus investigationStatus, Date investigatedDate,
@@ -365,7 +362,7 @@ public class CaseExportDto implements Serializable {
 						 FollowUpStatus followUpStatus, Date followUpUntil,
 						 Boolean nosocomialOutbreak, InfectionSetting infectionSetting,
 						 YesNoUnknown prohibitionToWork, Date prohibitionToWorkFrom, Date prohibitionToWorkUntil,
-						 YesNoUnknown reInfection, Date previousInfectionDate, ReinfectionStatus reinfectionStatus, Object reinfectionDetails,
+						 YesNoUnknown reInfection, Date previousInfectionDate, ReinfectionStatus reinfectionStatus, String reinfectionDetails,
 						 // Quarantine
 						 QuarantineType quarantine, String quarantineTypeDetails, Date quarantineFrom, Date quarantineTo,
 						 String quarantineHelpNeeded,
@@ -373,15 +370,15 @@ public class CaseExportDto implements Serializable {
 						 Date quarantineOrderedOfficialDocumentDate, boolean quarantineExtended, boolean quarantineReduced,
 						 boolean quarantineOfficialOrderSent, Date quarantineOfficialOrderSentDate,
 						 YesNoUnknown admittedToHealthFacility, Date admissionDate, Date dischargeDate, YesNoUnknown leftAgainstAdvice, PresentCondition presentCondition,
-						 Date deathDate, Date burialDate, BurialConductor burialConductor, String burialPlaceDescription,
+						 Date deathDate, BurialInfoDto burialInfo,
 						 String addressRegion, String addressDistrict, String addressCommunity, String city, String street, String houseNumber, String additionalInformation, String postalCode,
-						 String facility, String facilityUuid, String facilityDetails,
+						 String facility, String facilityDetails,
 						 String phone, String phoneOwner, String emailAddress, String otherContactDetails, EducationType educationType, String educationDetails,
-						 OccupationType occupationType, String occupationDetails, ArmedForcesRelationType ArmedForcesRelationType, YesNoUnknown contactWithSourceCaseKnown,
+						 OccupationType occupationType, String occupationDetails, ArmedForcesRelationType armedForcesRelationType, YesNoUnknown contactWithSourceCaseKnown,
 						 //Date onsetDate,
 						 VaccinationStatus vaccinationStatus, YesNoUnknown postpartum, Trimester trimester,
 						 long eventCount, String externalID, String externalToken, String internalToken,
-						 String birthName, String birthCountryIsoCode, String birthCountryName, String citizenshipIsoCode, String citizenshipCountryName,
+						 String birthName, String birthCountry, String citizenship,
 						 CaseIdentificationSource caseIdentificationSource, ScreeningType screeningType,
 						 // responsible jurisdiction
 						 String responsibleRegion, String responsibleDistrict, String responsibleCommunity,
@@ -396,14 +393,14 @@ public class CaseExportDto implements Serializable {
 
 		this.id = id;
 		this.personId = personId;
-		this.personAddressId = personAddressId;
+		this.addressGpsCoordinates = addressGpsCoordinates;
 		this.epiDataId = epiDataId;
-		this.symptomsId = symptomsId;
+		this.symptoms = symptoms;
 		this.hospitalizationId = hospitalizationId;
 		this.healthConditionsId = healthConditionsId;
 		this.uuid = uuid;
 		this.epidNumber = epidNumber;
-		this.armedForcesRelationType = ArmedForcesRelationType;
+		this.armedForcesRelationType = armedForcesRelationType;
 		this.disease = disease;
 		this.diseaseDetails = diseaseDetails;
 		this.diseaseVariant = diseaseVariant;
@@ -415,9 +412,9 @@ public class CaseExportDto implements Serializable {
 		this.otherSalutation = otherSalutation;
 		this.sex = sex;
 		this.pregnant = pregnant;
-		this.approximateAge = ApproximateAgeHelper.formatApproximateAge(approximateAge, approximateAgeType);
-		this.ageGroup = ApproximateAgeHelper.getAgeGroupFromAge(approximateAge, approximateAgeType);
-		this.birthdate = new BirthDateDto(birthdateDD, birthdateMM, birthdateYYYY);
+		this.approximateAge = approximateAge;
+		this.ageGroup = ageGroup;
+		this.birthdate = birthdate;
 		this.reportDate = reportDate;
 		this.region = region;
 		this.district = district;
@@ -446,7 +443,7 @@ public class CaseExportDto implements Serializable {
 		this.reInfection = reInfection;
 		this.previousInfectionDate = previousInfectionDate;
 		this.reinfectionStatus = reinfectionStatus;
-		this.reinfectionDetails = DataHelper.buildStringFromTrueValues((Map<ReinfectionDetail, Boolean>) reinfectionDetails);
+		this.reinfectionDetails = reinfectionDetails;
 		this.quarantine = quarantine;
 		this.quarantineTypeDetails = quarantineTypeDetails;
 		this.quarantineFrom = quarantineFrom;
@@ -461,9 +458,9 @@ public class CaseExportDto implements Serializable {
 		this.quarantineOfficialOrderSent = quarantineOfficialOrderSent;
 		this.quarantineOfficialOrderSentDate = quarantineOfficialOrderSentDate;
 		this.facilityType = facilityType;
-		this.healthFacility = FacilityHelper.buildFacilityString(healthFacilityUuid, healthFacility);
+		this.healthFacility = healthFacility;
 		this.healthFacilityDetails = healthFacilityDetails;
-		this.pointOfEntry = InfrastructureHelper.buildPointOfEntryString(pointOfEntryUuid, pointOfEntry);
+		this.pointOfEntry = pointOfEntry;
 		this.pointOfEntryDetails = pointOfEntryDetails;
 		this.admittedToHealthFacility = admittedToHealthFacility;
 		this.admissionDate = admissionDate;
@@ -471,7 +468,7 @@ public class CaseExportDto implements Serializable {
 		this.leftAgainstAdvice = leftAgainstAdvice;
 		this.presentCondition = presentCondition;
 		this.deathDate = deathDate;
-		this.burialInfo = new BurialInfoDto(burialDate, burialConductor, burialPlaceDescription);
+		this.burialInfo = burialInfo;
 		this.addressRegion = addressRegion;
 		this.addressDistrict = addressDistrict;
 		this.addressCommunity = addressCommunity;
@@ -480,7 +477,7 @@ public class CaseExportDto implements Serializable {
 		this.houseNumber = houseNumber;
 		this.additionalInformation = additionalInformation;
 		this.postalCode = postalCode;
-		this.facility = FacilityHelper.buildFacilityString(facilityUuid, facility);
+		this.facility = facility;
 		this.facilityDetails = facilityDetails;
 		this.phone = phone;
 		this.phoneOwner = phoneOwner;
@@ -503,8 +500,8 @@ public class CaseExportDto implements Serializable {
 		this.externalToken = externalToken;
 		this.internalToken = internalToken;
 		this.birthName = birthName;
-		this.birthCountry = I18nProperties.getCountryName(birthCountryIsoCode, birthCountryName);
-		this.citizenship = I18nProperties.getCountryName(citizenshipIsoCode, citizenshipCountryName);
+		this.birthCountry = birthCountry;
+		this.citizenship = citizenship;
 		this.caseIdentificationSource = caseIdentificationSource;
 		this.screeningType = screeningType;
 
@@ -557,16 +554,8 @@ public class CaseExportDto implements Serializable {
 		return personId;
 	}
 
-	public long getPersonAddressId() {
-		return personAddressId;
-	}
-
 	public long getEpiDataId() {
 		return epiDataId;
-	}
-
-	public long getSymptomsId() {
-		return symptomsId;
 	}
 
 	public long getHospitalizationId() {
@@ -2371,16 +2360,8 @@ public class CaseExportDto implements Serializable {
 		this.personId = personId;
 	}
 
-	public void setPersonAddressId(long personAddressId) {
-		this.personAddressId = personAddressId;
-	}
-
 	public void setEpiDataId(long epiDataId) {
 		this.epiDataId = epiDataId;
-	}
-
-	public void setSymptomsId(long symptomsId) {
-		this.symptomsId = symptomsId;
 	}
 
 	public void setHospitalizationId(long hospitalizationId) {

@@ -211,6 +211,7 @@ import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfoFacadeEjb.Port
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportFacadeEjb;
 import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReportService;
+import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb.ClinicalCourseFacadeEjbLocal;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalVisit;
@@ -310,6 +311,7 @@ import de.symeda.sormas.backend.therapy.Prescription;
 import de.symeda.sormas.backend.therapy.PrescriptionFacadeEjb;
 import de.symeda.sormas.backend.therapy.PrescriptionFacadeEjb.PrescriptionFacadeEjbLocal;
 import de.symeda.sormas.backend.therapy.PrescriptionService;
+import de.symeda.sormas.backend.therapy.Therapy;
 import de.symeda.sormas.backend.therapy.TherapyFacadeEjb;
 import de.symeda.sormas.backend.therapy.TherapyFacadeEjb.TherapyFacadeEjbLocal;
 import de.symeda.sormas.backend.therapy.Treatment;
@@ -712,13 +714,15 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		ExportConfigurationDto exportConfiguration,
 		Language userLanguage) {
 
+		long startTime = System.currentTimeMillis();
+
 		Boolean previousCaseManagementDataCriteria = caseCriteria.getMustHaveCaseManagementData();
 		if (CaseExportType.CASE_MANAGEMENT == exportType) {
 			caseCriteria.setMustHaveCaseManagementData(Boolean.TRUE);
 		}
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<CaseExportDto> cq = cb.createQuery(CaseExportDto.class);
+		CriteriaQuery<CaseExportMapperDto> cq = cb.createQuery(CaseExportMapperDto.class);
 		Root<Case> caseRoot = cq.from(Case.class);
 
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caseRoot);
@@ -737,9 +741,36 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				cb.isFalse(eventCountRoot.get(EventParticipant.DELETED))));
 		eventCountSq.select(cb.countDistinct(event.get(Event.ID)));
 
+		Subquery<Long> prescriptionCountSq = cq.subquery(Long.class);
+		Root<Prescription> prescriptionCountRoot = prescriptionCountSq.from(Prescription.class);
+		Join<Prescription, Therapy> prescriptionTherapyJoin = prescriptionCountRoot.join(Prescription.THERAPY, JoinType.LEFT);
+		prescriptionCountSq.where(
+				cb.and(cb.equal(prescriptionTherapyJoin.get(Therapy.ID), caseRoot.get(Case.THERAPY).get(Therapy.ID))));
+		prescriptionCountSq.select(cb.countDistinct(prescriptionCountRoot.get(Prescription.ID)));
+
+		Subquery<Long> treatmentCountSq = cq.subquery(Long.class);
+		Root<Treatment> treatmentCountRoot = treatmentCountSq.from(Treatment.class);
+		Join<Treatment, Therapy> treatmentTherapyJoin = treatmentCountRoot.join(Treatment.THERAPY, JoinType.LEFT);
+		treatmentCountSq.where(
+				cb.and(cb.equal(treatmentTherapyJoin.get(Therapy.ID), caseRoot.get(Case.THERAPY).get(Therapy.ID))));
+		treatmentCountSq.select(cb.countDistinct(treatmentCountRoot.get(Treatment.ID)));
+
+		boolean exportGpsCoordinates = ExportHelper.shouldExportFields(exportConfiguration, PersonDto.ADDRESS, CaseExportDto.ADDRESS_GPS_COORDINATES);
+		boolean exportPrescriptionNumber = (exportType == null || exportType == CaseExportType.CASE_MANAGEMENT)
+			&& ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.NUMBER_OF_PRESCRIPTIONS);
+		boolean exportTreatmentNumber = (exportType == null || exportType == CaseExportType.CASE_MANAGEMENT)
+			&& ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.NUMBER_OF_TREATMENTS);
+		boolean exportClinicalVisitNumber = (exportType == null || exportType == CaseExportType.CASE_MANAGEMENT)
+			&& ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.NUMBER_OF_CLINICAL_VISITS);
+
 		//@formatter:off
-		cq.multiselect(caseRoot.get(Case.ID), joins.getPerson().get(Person.ID), joins.getPersonAddress().get(Location.ID),
-				joins.getEpiData().get(EpiData.ID), joins.getSymptoms().get(Symptoms.ID), joins.getHospitalization().get(Hospitalization.ID),
+		cq.multiselect(caseRoot.get(Case.ID), joins.getPerson().get(Person.ID),
+				exportGpsCoordinates ? joins.getPersonAddress().get(Location.LATITUDE) : cb.nullLiteral(Double.class),
+				exportGpsCoordinates ? joins.getPersonAddress().get(Location.LONGITUDE) : cb.nullLiteral(Double.class),
+				exportGpsCoordinates ? joins.getPersonAddress().get(Location.LATLONACCURACY) : cb.nullLiteral(Float.class),
+				joins.getEpiData().get(EpiData.ID),
+				ExportHelper.shouldExportFields(exportConfiguration, CaseDataDto.SYMPTOMS) ? joins.getSymptoms() : null,
+				joins.getHospitalization().get(Hospitalization.ID),
 				joins.getHealthConditions().get(HealthConditions.ID), caseRoot.get(Case.UUID),
 				caseRoot.get(Case.EPID_NUMBER), caseRoot.get(Case.DISEASE), caseRoot.get(Case.DISEASE_VARIANT), caseRoot.get(Case.DISEASE_DETAILS),
 				caseRoot.get(Case.DISEASE_VARIANT_DETAILS), joins.getPerson().get(Person.UUID), joins.getPerson().get(Person.FIRST_NAME), joins.getPerson().get(Person.LAST_NAME),
@@ -796,6 +827,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				joins.getPerson().get(Person.OCCUPATION_DETAILS), joins.getPerson().get(Person.ARMED_FORCES_RELATION_TYPE), joins.getEpiData().get(EpiData.CONTACT_WITH_SOURCE_CASE_KNOWN),
 				caseRoot.get(Case.VACCINATION_STATUS), caseRoot.get(Case.POSTPARTUM), caseRoot.get(Case.TRIMESTER),
 				eventCountSq,
+				exportPrescriptionNumber ? prescriptionCountSq : cb.nullLiteral(Long.class),
+				exportTreatmentNumber ? treatmentCountSq : cb.nullLiteral(Long.class),
+				exportClinicalVisitNumber ? clinicalVisitSq(cb, cq, caseRoot) : cb.nullLiteral(Long.class),
 				caseRoot.get(Case.EXTERNAL_ID),
 				caseRoot.get(Case.EXTERNAL_TOKEN),
 				caseRoot.get(Case.INTERNAL_TOKEN),
@@ -840,53 +874,24 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		 */
 		cq.orderBy(cb.desc(caseRoot.get(Case.REPORT_DATE)), cb.desc(caseRoot.get(Case.ID)));
 
-		List<CaseExportDto> resultList = QueryHelper.getResultList(em, cq, first, max);
+		List<CaseExportMapperDto> caseExportMapperDtos = QueryHelper.getResultList(em, cq, first, max);
+		List<CaseExportDto> resultList = caseExportMapperDtos.stream().map(caseExportMapperDto -> caseExportMapperDto.toCaseExportDto()).collect(Collectors.toList());
+
+		long timestamp1 = System.currentTimeMillis();
+		System.out.println(">>*<< Main query time: " + (timestamp1 - startTime));
+
 		List<Long> resultCaseIds = resultList.stream().map(CaseExportDto::getId).collect(Collectors.toList());
-
+		long timestamp13 = 0l;
 		if (!resultList.isEmpty()) {
-			Map<Long, Symptoms> symptoms = null;
-			if (ExportHelper.shouldExportFields(exportConfiguration, CaseDataDto.SYMPTOMS)) {
-				List<Symptoms> symptomsList = null;
-				CriteriaQuery<Symptoms> symptomsCq = cb.createQuery(Symptoms.class);
-				Root<Symptoms> symptomsRoot = symptomsCq.from(Symptoms.class);
-				Expression<String> symptomsIdsExpr = symptomsRoot.get(Symptoms.ID);
-				symptomsCq.where(symptomsIdsExpr.in(resultList.stream().map(CaseExportDto::getSymptomsId).collect(Collectors.toList())));
-				symptomsList = em.createQuery(symptomsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
-				symptoms = symptomsList.stream().collect(Collectors.toMap(Symptoms::getId, Function.identity()));
-			}
 
-			Map<Long, Location> personAddresses = null;
-			if (ExportHelper.shouldExportFields(exportConfiguration, PersonDto.ADDRESS, CaseExportDto.ADDRESS_GPS_COORDINATES)) {
-				CriteriaQuery<Location> personAddressesCq = cb.createQuery(Location.class);
-				Root<Location> personAddressesRoot = personAddressesCq.from(Location.class);
-				Expression<String> personAddressesIdsExpr = personAddressesRoot.get(Location.ID);
-				personAddressesCq
-					.where(personAddressesIdsExpr.in(resultList.stream().map(CaseExportDto::getPersonAddressId).collect(Collectors.toList())));
-				List<Location> personAddressesList =
-					em.createQuery(personAddressesCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
-				personAddresses = personAddressesList.stream().collect(Collectors.toMap(Location::getId, Function.identity()));
-			}
+			long timestamp2 = System.currentTimeMillis();
+			System.out.println(">>*<< Symptoms query time: " + (timestamp2 - timestamp1));
 
-			Map<Long, Integer> prescriptionCounts = null;
-			Map<Long, Integer> treatmentCounts = null;
-			Map<Long, Integer> clinicalVisitCounts = null;
+			long timestamp3 = System.currentTimeMillis();
+			System.out.println(">>*<< Person addresses query time: " + (timestamp3 - timestamp2));
+
 			Map<Long, HealthConditions> healthConditions = null;
 			if (exportType == null || exportType == CaseExportType.CASE_MANAGEMENT) {
-				if (ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.NUMBER_OF_PRESCRIPTIONS)) {
-					prescriptionCounts = prescriptionService.getPrescriptionCountByCases(resultCaseIds)
-						.stream()
-						.collect(Collectors.toMap(e -> (Long) e[0], e -> ((Long) e[1]).intValue()));
-				}
-				if (ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.NUMBER_OF_TREATMENTS)) {
-					treatmentCounts = treatmentService.getTreatmentCountByCases(resultCaseIds)
-						.stream()
-						.collect(Collectors.toMap(e -> (Long) e[0], e -> ((Long) e[1]).intValue()));
-				}
-				if (ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.NUMBER_OF_CLINICAL_VISITS)) {
-					clinicalVisitCounts = clinicalVisitService.getClinicalVisitCountByCases(resultCaseIds)
-						.stream()
-						.collect(Collectors.toMap(e -> (Long) e[0], e -> ((Long) e[1]).intValue()));
-				}
 				if (ExportHelper.shouldExportFields(exportConfiguration, CaseDataDto.HEALTH_CONDITIONS)) {
 					List<HealthConditions> healthConditionsList = null;
 					CriteriaQuery<HealthConditions> healthConditionsCq = cb.createQuery(HealthConditions.class);
@@ -898,6 +903,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					healthConditions = healthConditionsList.stream().collect(Collectors.toMap(HealthConditions::getId, Function.identity()));
 				}
 			}
+
+			long timestamp4 = System.currentTimeMillis();
+			System.out.println(">>*<< Pres Treat Clin HealthCond query time: " + (timestamp4 - timestamp3));
 
 			Map<Long, PreviousHospitalization> firstPreviousHospitalizations = null;
 			if (ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.INITIAL_DETECTION_PLACE)) {
@@ -915,6 +923,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					prevHospsList.stream().collect(Collectors.toMap(p -> p.getHospitalization().getId(), Function.identity(), (id1, id2) -> id1));
 			}
 
+			long timestamp5 = System.currentTimeMillis();
+			System.out.println(">>*<< Prev hosp query time: " + (timestamp5 - timestamp4));
+
 			Map<Long, CaseClassification> sourceCaseClassifications = null;
 			if (ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.MAX_SOURCE_CASE_CLASSIFICATION)) {
 				sourceCaseClassifications = contactService.getSourceCaseClassifications(resultCaseIds)
@@ -924,10 +935,16 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 							.toMap(e -> (Long) e[0], e -> (CaseClassification) e[1], (c1, c2) -> c1.getSeverity() >= c2.getSeverity() ? c1 : c2));
 			}
 
+			long timestamp6 = System.currentTimeMillis();
+			System.out.println(">>*<< Source CaseClassifications query time: " + (timestamp6 - timestamp5));
+
 			List<Long> caseIdsWithOutbreak = null;
 			if (ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.ASSOCIATED_WITH_OUTBREAK)) {
 				caseIdsWithOutbreak = outbreakService.getCaseIdsWithOutbreak(resultCaseIds);
 			}
+
+			long timestamp7 = System.currentTimeMillis();
+			System.out.println(">>*<< caseIdsWithOutbreak query time: " + (timestamp7 - timestamp6));
 
 			Map<Long, List<Exposure>> exposures = null;
 			if ((exportType == null || exportType == CaseExportType.CASE_SURVEILLANCE)
@@ -948,6 +965,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				exposures = exposureList.stream().collect(Collectors.groupingBy(e -> e.getEpiData().getId()));
 			}
 
+			long timestamp8 = System.currentTimeMillis();
+			System.out.println(">>*<< exposures query time: " + (timestamp8 - timestamp7));
+
 			Map<Long, List<Sample>> samples = null;
 			if ((exportType == null || exportType == CaseExportType.CASE_SURVEILLANCE)
 				&& ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.SAMPLE_INFORMATION)) {
@@ -960,6 +980,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				samplesList = em.createQuery(samplesCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
 				samples = samplesList.stream().collect(Collectors.groupingBy(s -> s.getAssociatedCase().getId()));
 			}
+
+			long timestamp9 = System.currentTimeMillis();
+			System.out.println(">>*<< samples query time: " + (timestamp9 - timestamp8));
 
 			List<VisitSummaryExportDetails> visitSummaries = null;
 			if (featureConfigurationFacade.isFeatureEnabled(FeatureType.CASE_FOLLOWUP)
@@ -986,6 +1009,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				visitSummaries = em.createQuery(visitsCq).getResultList();
 			}
 
+			long timestamp10 = System.currentTimeMillis();
+			System.out.println(">>*<< visitsummaries query time: " + (timestamp10 - timestamp9));
+
 			Map<Long, List<Immunization>> immunizations = null;
 			if ((exportType == null || exportType == CaseExportType.CASE_SURVEILLANCE)
 				&& (exportConfiguration == null
@@ -1009,6 +1035,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				immunizations = immunizationList.stream().collect(Collectors.groupingBy(i -> i.getPerson().getId()));
 			}
 
+			long timestamp11 = System.currentTimeMillis();
+			System.out.println(">>*<< immunizations query time: " + (timestamp11 - timestamp10));
+
 			// Load latest events info
 			// Adding a second query here is not perfect, but selecting the last event with a criteria query
 			// doesn't seem to be possible and using a native query is not an option because of user filters
@@ -1022,7 +1051,13 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				eventSummaries = eventService.getEventSummaryDetailsByCases(resultCaseIds);
 			}
 
+			long timestamp12 = System.currentTimeMillis();
+			System.out.println(">>*<< eventSummaries query time: " + (timestamp12 - timestamp11));
+
 			Map<Long, UserReference> caseUsers = getCaseUsersForExport(resultList, exportConfiguration);
+
+			timestamp13 = System.currentTimeMillis();
+			System.out.println(">>*<< caseUsers query time: " + (timestamp13 - timestamp12));
 
 			Pseudonymizer pseudonymizer = getPseudonymizerForDtoWithClinician(I18nProperties.getCaption(Captions.inaccessibleValue));
 
@@ -1031,26 +1066,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 				if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.COUNTRY)) {
 					exportDto.setCountry(configFacade.getEpidPrefix());
-				}
-				if (symptoms != null) {
-					Optional.ofNullable(symptoms.get(exportDto.getSymptomsId()))
-						.ifPresent(symptom -> exportDto.setSymptoms(SymptomsFacadeEjb.toDto(symptom)));
-				}
-				if (personAddresses != null || exportConfiguration.getProperties().contains(CaseExportDto.ADDRESS_GPS_COORDINATES)) {
-					Optional.ofNullable(personAddresses.get(exportDto.getPersonAddressId()))
-						.ifPresent(personAddress -> exportDto.setAddressGpsCoordinates(personAddress.buildGpsCoordinatesCaption()));
-				}
-				if (prescriptionCounts != null) {
-					Optional.ofNullable(prescriptionCounts.get(exportDto.getId()))
-						.ifPresent(prescriptionCount -> exportDto.setNumberOfPrescriptions(prescriptionCount));
-				}
-				if (treatmentCounts != null) {
-					Optional.ofNullable(treatmentCounts.get(exportDto.getId()))
-						.ifPresent(treatmentCount -> exportDto.setNumberOfTreatments(treatmentCount));
-				}
-				if (clinicalVisitCounts != null) {
-					Optional.ofNullable(clinicalVisitCounts.get(exportDto.getId()))
-						.ifPresent(clinicalVisitCount -> exportDto.setNumberOfClinicalVisits(clinicalVisitCount));
 				}
 				if (healthConditions != null) {
 					Optional.ofNullable(healthConditions.get(exportDto.getHealthConditionsId()))
@@ -1235,8 +1250,23 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			}
 		}
 
+		long timestamp14 = System.currentTimeMillis();
+		System.out.println(">>*<< applying subqueris to main dto + pseudonymization time: " + (timestamp14 - timestamp13));
+
 		caseCriteria.setMustHaveCaseManagementData(previousCaseManagementDataCriteria);
+
+		System.out.println(">>*<< Total export queries time: " + (System.currentTimeMillis() - startTime));
 		return resultList;
+	}
+
+	private Subquery<Long> clinicalVisitSq(CriteriaBuilder cb, CriteriaQuery<CaseExportMapperDto> cq, Root<Case> caseRoot) {
+		Subquery<Long> clinicalVisitCountSq = cq.subquery(Long.class);
+		Root<ClinicalVisit> clinicalVisitRoot = clinicalVisitCountSq.from(ClinicalVisit.class);
+		Join<ClinicalVisit, ClinicalCourse> clinicalVisitClinicalCourseJoin = clinicalVisitRoot.join(ClinicalVisit.CLINICAL_COURSE, JoinType.LEFT);
+		clinicalVisitCountSq.where(
+				cb.and(cb.equal(clinicalVisitClinicalCourseJoin.get(ClinicalCourse.ID), caseRoot.get(Case.CLINICAL_COURSE).get(ClinicalCourse.ID))));
+		clinicalVisitCountSq.select(cb.countDistinct(clinicalVisitRoot.get(ClinicalVisit.ID)));
+		return clinicalVisitCountSq;
 	}
 
 	private Map<Long, UserReference> getCaseUsersForExport(List<CaseExportDto> resultList, ExportConfigurationDto exportConfiguration) {

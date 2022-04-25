@@ -692,6 +692,41 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testCaseExportWithPrescriptionsTreatmentsVisits() {
+		RDCFEntities rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		RDCF rdcf = new RDCF(rdcfEntities);
+		UserDto user = getUser(rdcfEntities);
+
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+        CaseDataDto caze = getCaze(user, cazePerson, rdcfEntities);
+		cazePerson.getAddress().setCity("City");
+		getPersonFacade().savePerson(cazePerson);
+
+		ExposureDto exposure = ExposureDto.build(ExposureType.TRAVEL);
+		exposure.getLocation().setDetails("Ghana");
+		exposure.setStartDate(new Date());
+		exposure.setEndDate(new Date());
+		caze.getEpiData().getExposures().add(exposure);
+		caze.getSymptoms().setAbdominalPain(SymptomState.YES);
+		caze = getCaseFacade().save(caze);
+		creator.createPrescription(caze);
+		creator.createTreatment(caze);
+		creator.createTreatment(caze);
+		creator.createClinicalVisit(caze);
+
+		getPersonFacade().savePerson(cazePerson);
+
+		List<CaseExportDto> results =
+			getCaseFacade().getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_MANAGEMENT, 0, 100, null, Language.EN);
+		assertEquals(1, results.size());
+		CaseExportDto exportDto = results.get(0);
+		assertNotNull(exportDto.getSymptoms());
+		assertEquals(1, exportDto.getNumberOfPrescriptions());
+		assertEquals(2, exportDto.getNumberOfTreatments());
+		assertEquals(1, exportDto.getNumberOfClinicalVisits());
+	}
+
+	@Test
 	public void testGetExportListWithRelevantVaccinations() {
 		RDCFEntities rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		RDCF rdcf = new RDCF(rdcfEntities);
@@ -909,7 +944,11 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
 
-		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		PersonDto cazePerson = creator.createPerson("Case", "Person", p -> {
+			p.getAddress().setLatitude(50.0);
+			p.getAddress().setLongitude(10.0);
+			p.getAddress().setLatLonAccuracy(3F);
+		});
 		cazePerson.getAddress().setCity("City");
 		getPersonFacade().savePerson(cazePerson);
 
@@ -946,6 +985,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertThat(result, hasSize(1));
 		CaseExportDto exportDto = result.get(0);
 		assertNotNull(exportDto.getEpiDataId());
+		assertEquals("50.0, 10.0 +-3m", exportDto.getAddressGpsCoordinates());
 		assertThat(exportDto.getUuid(), equalTo(caze.getUuid()));
 		assertTrue(exportDto.isTraveled());
 	}
