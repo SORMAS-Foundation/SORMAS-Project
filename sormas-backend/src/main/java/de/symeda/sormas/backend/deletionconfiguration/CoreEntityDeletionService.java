@@ -8,7 +8,11 @@ import javax.ejb.LocalBean;
 import javax.ejb.Singleton;
 import javax.inject.Inject;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
@@ -18,6 +22,7 @@ import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureCon
 import de.symeda.sormas.backend.immunization.ImmunizationFacadeEjb;
 import de.symeda.sormas.backend.person.PersonService;
 import de.symeda.sormas.backend.travelentry.TravelEntryFacadeEjb;
+import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.visit.VisitService;
 
 @LocalBean
@@ -25,6 +30,8 @@ import de.symeda.sormas.backend.visit.VisitService;
 public class CoreEntityDeletionService {
 
 	private static final int DELETE_BATCH_SIZE = 200;
+
+	private final Logger logger = LoggerFactory.getLogger(getClass());
 
 	private final List<EntityTypeFacadePair> coreEntityFacades = new ArrayList<>();
 
@@ -58,6 +65,8 @@ public class CoreEntityDeletionService {
 
 	public void executeAutomaticDeletion() {
 
+		long startTime = DateHelper.startTime();
+
 		coreEntityFacades.forEach(entityTypeFacadePair -> {
 			List<DeletionConfiguration> coreEntityTypeConfigs =
 				deletionConfigurationService.getCoreEntityTypeConfigs(entityTypeFacadePair.coreEntityType);
@@ -68,7 +77,12 @@ public class CoreEntityDeletionService {
 			});
 		});
 
-		personService.deleteUnreferencedPersons(DELETE_BATCH_SIZE);
+		// Delete non referenced Persons
+		List<String> nonReferencedPersonUuids = personService.getAllNonReferencedPersonUuids();
+		logger.debug("executeAutomaticDeletion(): Detected non referenced persons: n={}", nonReferencedPersonUuids.size());
+		IterableHelper.executeBatched(nonReferencedPersonUuids, DELETE_BATCH_SIZE, batchedUuids -> personService.deletePermanent(batchedUuids));
+
+		logger.debug("executeAutomaticDeletion() finished. {}s", DateHelper.durationSeconds(startTime));
 	}
 
 	private static final class EntityTypeFacadePair {
