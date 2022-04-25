@@ -63,17 +63,25 @@ public class CoreEntityDeletionService {
 		coreEntityFacades.add(EntityTypeFacadePair.of(CoreEntityType.TRAVEL_ENTRY, travelEntryFacadeEjb));
 	}
 
+	@SuppressWarnings("unchecked")
 	public void executeAutomaticDeletion() {
 
 		long startTime = DateHelper.startTime();
 
+		// Delete CoreEntities by type
 		coreEntityFacades.forEach(entityTypeFacadePair -> {
 			List<DeletionConfiguration> coreEntityTypeConfigs =
 				deletionConfigurationService.getCoreEntityTypeConfigs(entityTypeFacadePair.coreEntityType);
 
 			coreEntityTypeConfigs.stream().filter(c -> c.getDeletionReference() != null && c.getDeletionPeriod() != null).forEach(c -> {
-				entityTypeFacadePair.entityFacade
-					.executeAutomaticDeletion(c, supportsPermanentDeletion(entityTypeFacadePair.coreEntityType), DELETE_BATCH_SIZE);
+
+				List<String> deleteUuids = entityTypeFacadePair.entityFacade.getUuidsForAutomaticDeletion(c);
+				logger.debug("executeAutomaticDeletion(): Detected deletable entities of type {}: n={}", c.getEntityType(), deleteUuids.size());
+				IterableHelper.executeBatched(
+					deleteUuids,
+					DELETE_BATCH_SIZE,
+					batchedUuids -> entityTypeFacadePair.entityFacade
+						.doAutomaticDeletion(batchedUuids, supportsPermanentDeletion(entityTypeFacadePair.coreEntityType)));
 			});
 		});
 
@@ -85,6 +93,7 @@ public class CoreEntityDeletionService {
 		logger.debug("executeAutomaticDeletion() finished. {}s", DateHelper.durationSeconds(startTime));
 	}
 
+	@SuppressWarnings("rawtypes")
 	private static final class EntityTypeFacadePair {
 
 		private final CoreEntityType coreEntityType;
