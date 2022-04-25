@@ -24,6 +24,4 @@ public class LoginPage {
   public static final By USER_NAME_INPUT = By.id("username");
   public static final By USER_PASSWORD_INPUT = By.id("password");
   public static final By LOGIN_BUTTON = By.id("Login.doLogIn");
-  // public static final By LOGIN_BUTTON = By.id("input#kc-login"); //to use on env when you have
-  // keyclock
 }

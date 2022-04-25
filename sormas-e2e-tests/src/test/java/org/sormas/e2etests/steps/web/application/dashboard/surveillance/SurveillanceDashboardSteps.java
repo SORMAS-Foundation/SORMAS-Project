@@ -197,7 +197,6 @@ public class SurveillanceDashboardSteps implements En {
               SurveillanceDashboardPage.SHOW_ALL_DISEASES);
           TimeUnit.SECONDS.sleep(2);
           webDriverHelpers.clickOnWebElementBySelector(SurveillanceDashboardPage.SHOW_ALL_DISEASES);
-          // webDriverHelpers.javaScriptClickElement(SurveillanceDashboardPage.SHOW_ALL_DISEASES);
           webDriverHelpers.waitUntilAListOfElementsIsPresent(
               SurveillanceDashboardPage.SHOW_ALL_DISEASES, 7);
         });
