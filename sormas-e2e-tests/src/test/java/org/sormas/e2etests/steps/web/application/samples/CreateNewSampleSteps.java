@@ -364,7 +364,7 @@ public class CreateNewSampleSteps implements En {
     When(
         "I confirm the Create case from event participant with positive test result",
         () -> {
-          TimeUnit.SECONDS.sleep(2); // weak performance, wait for popup
+          TimeUnit.SECONDS.sleep(5); // weak performance, wait for popup
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONFIRM_BUTTON);
           String displayedText =
               webDriverHelpers.getTextFromWebElement(CREATE_CASE_POSITIVE_TEST_RESULT_LABEL);
