@@ -35,6 +35,7 @@ import java.util.List;
 import com.google.common.collect.Sets;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.Sizeable;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.ErrorLevel;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
@@ -628,12 +629,19 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 									I18nProperties.getString(Strings.messageContactToCaseConfirmationRequired));
 							} else {
 								if (getValue().getFollowUpComment() != null) {
-									int finalFollowUpCommentLenght = getValue().getFollowUpComment().length()
-										+ I18nProperties.getString(Strings.messageSystemFollowUpCanceled).length();
+									int finalFollowUpCommentLenght =
+										ContactLogic
+											.extendFollowUpStatusComment(
+												getValue().getFollowUpComment(),
+												I18nProperties.getString(Strings.messageSystemFollowUpCanceled))
+											.length();
 									if (finalFollowUpCommentLenght > FieldConstraints.CHARACTER_LIMIT_BIG) {
 										VerticalLayout verticalLayout = new VerticalLayout();
-										Label contentLabel =
-											new Label(I18nProperties.getString(Strings.messageContactConversionFollowUpCommentLarge));
+										Label contentLabel = new Label(
+											String.format(
+												I18nProperties.getString(Strings.messageContactConversionFollowUpCommentLarge),
+												I18nProperties.getString(Strings.messageSystemFollowUpCanceled)),
+											ContentMode.HTML);
 										contentLabel.setWidth(100, Sizeable.Unit.PERCENTAGE);
 										verticalLayout.addComponent(contentLabel);
 										verticalLayout.setMargin(false);
@@ -643,7 +651,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 											verticalLayout,
 											I18nProperties.getString(Strings.messageContactConversionFollowUpCommentLargeOmitMessage),
 											I18nProperties.getString(Strings.messageContactConversionFollowUpCommentLargeAdjustComment),
-											640,
+											770,
 											confirm -> {
 												if (Boolean.TRUE.equals(confirm)) {
 													ControllerProvider.getCaseController().createFromContact(getValue());
