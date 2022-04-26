@@ -871,7 +871,7 @@ Feature: Case end to end tests
     And I click on SAVE new contact button in the CHOOSE SOURCE popup of Create Contact window
     Then I check that Selected case is listed as Source Case in the CONTACTS WITH SOURCE CASE Box
 
-  @issue=SORDEV-9124 @env_main
+  @issue=SORDEV-9124 @env_main @check
   Scenario: Document Templates create quarantine order
     When API: I create a new person
     Then API: I check that POST call body is "OK"

@@ -367,7 +367,7 @@ Feature: Contacts end to end tests
     And I click on save button in Exposure for Epidemiological data tab in Contacts
     And I click on save button from Epidemiological Data
 
-  @issue=SORDEV-9124 @env_main
+  @issue=SORDEV-9124 @env_main @check
   Scenario: Document Templates create quarantine order in Contacts
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
