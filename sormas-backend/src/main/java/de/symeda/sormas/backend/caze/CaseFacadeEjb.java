@@ -1399,7 +1399,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@Override
 	@RolesAllowed({
 		UserRight._CASE_CREATE,
-		UserRight._CASE_EDIT })
+		UserRight._CASE_EDIT,
+		UserRight._EXTERNAL_VISITS })
 	public CaseDataDto save(@Valid @NotNull CaseDataDto dto, boolean systemSave) throws ValidationRuntimeException {
 		return save(dto, true, true, true, systemSave);
 	}
@@ -2659,6 +2660,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return dto;
 	}
 
+	@RolesAllowed({
+		UserRight._CASE_VIEW,
+		UserRight._EXTERNAL_VISITS })
 	public CaseDataDto toDto(Case source) {
 		return toCaseDto(source);
 	}
@@ -3797,13 +3801,15 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	@RolesAllowed({
-		UserRight._CASE_EDIT,
-		UserRight._CASE_EDIT })
+	@RolesAllowed(UserRight._CASE_EDIT)
 	public FollowUpPeriodDto calculateFollowUpUntilDate(CaseDataDto caseDto, boolean ignoreOverwrite) {
+		List<SampleDto> samples = Collections.emptyList();
+		if (userService.hasRight(UserRight.SAMPLE_VIEW)) {
+			samples = sampleFacade.getByCaseUuids(Collections.singletonList(caseDto.getUuid()));
+		}
 		return CaseLogic.calculateFollowUpUntilDate(
 			caseDto,
-			CaseLogic.getFollowUpStartDate(caseDto, sampleFacade.getByCaseUuids(Collections.singletonList(caseDto.getUuid()))),
+			CaseLogic.getFollowUpStartDate(caseDto, samples),
 			visitFacade.getVisitsByCase(caseDto.toReference()),
 			diseaseConfigurationFacade.getCaseFollowUpDuration(caseDto.getDisease()),
 			ignoreOverwrite,

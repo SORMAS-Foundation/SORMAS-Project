@@ -35,6 +35,7 @@ import java.util.List;
 import com.google.common.collect.Sets;
 import com.vaadin.server.ErrorMessage;
 import com.vaadin.server.Sizeable;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.ErrorLevel;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
@@ -85,6 +86,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.api.utils.ExtendedReduced;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -626,26 +628,38 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 									I18nProperties.getString(Strings.headingContactConfirmationRequired),
 									I18nProperties.getString(Strings.messageContactToCaseConfirmationRequired));
 							} else {
-								int finalFollowUpCommentLenght =
-									getValue().getFollowUpComment().length() + Strings.messageSystemFollowUpCanceled.length();
-								if (getValue().getFollowUpComment() != null && finalFollowUpCommentLenght > 4096) {
-									VerticalLayout verticalLayout = new VerticalLayout();
-									Label contentLabel = new Label(I18nProperties.getString(Strings.messageContactConversionFollowUpCommentLarge));
-									contentLabel.setWidth(100, Sizeable.Unit.PERCENTAGE);
-									verticalLayout.addComponent(contentLabel);
-									verticalLayout.setMargin(false);
+								if (getValue().getFollowUpComment() != null) {
+									int finalFollowUpCommentLenght =
+										ContactLogic
+											.extendFollowUpStatusComment(
+												getValue().getFollowUpComment(),
+												I18nProperties.getString(Strings.messageSystemFollowUpCanceled))
+											.length();
+									if (finalFollowUpCommentLenght > FieldConstraints.CHARACTER_LIMIT_BIG) {
+										VerticalLayout verticalLayout = new VerticalLayout();
+										Label contentLabel = new Label(
+											String.format(
+												I18nProperties.getString(Strings.messageContactConversionFollowUpCommentLarge),
+												I18nProperties.getString(Strings.messageSystemFollowUpCanceled)),
+											ContentMode.HTML);
+										contentLabel.setWidth(100, Sizeable.Unit.PERCENTAGE);
+										verticalLayout.addComponent(contentLabel);
+										verticalLayout.setMargin(false);
 
-									VaadinUiUtil.showConfirmationPopup(
-										I18nProperties.getString(Strings.headingContactConversionFollowUpCommentLarge),
-										verticalLayout,
-										I18nProperties.getString(Strings.messageContactConversionFollowUpCommentLargeOmitMessage),
-										I18nProperties.getString(Strings.messageContactConversionFollowUpCommentLargeAdjustComment),
-										640,
-										confirm -> {
-											if (Boolean.TRUE.equals(confirm)) {
-												ControllerProvider.getCaseController().createFromContact(getValue());
-											}
-										});
+										VaadinUiUtil.showConfirmationPopup(
+											I18nProperties.getString(Strings.headingContactConversionFollowUpCommentLarge),
+											verticalLayout,
+											I18nProperties.getString(Strings.messageContactConversionFollowUpCommentLargeOmitMessage),
+											I18nProperties.getString(Strings.messageContactConversionFollowUpCommentLargeAdjustComment),
+											770,
+											confirm -> {
+												if (Boolean.TRUE.equals(confirm)) {
+													ControllerProvider.getCaseController().createFromContact(getValue());
+												}
+											});
+									} else {
+										ControllerProvider.getCaseController().createFromContact(getValue());
+									}
 								} else {
 									ControllerProvider.getCaseController().createFromContact(getValue());
 								}
