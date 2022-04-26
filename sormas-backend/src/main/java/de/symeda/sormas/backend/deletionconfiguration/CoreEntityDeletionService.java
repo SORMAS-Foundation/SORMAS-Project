@@ -88,7 +88,8 @@ public class CoreEntityDeletionService {
 		// Delete non referenced Persons
 		List<String> nonReferencedPersonUuids = personService.getAllNonReferencedPersonUuids();
 		logger.debug("executeAutomaticDeletion(): Detected non referenced persons: n={}", nonReferencedPersonUuids.size());
-		IterableHelper.executeBatched(nonReferencedPersonUuids, DELETE_BATCH_SIZE, batchedUuids -> personService.deletePermanent(batchedUuids));
+		IterableHelper
+			.executeBatched(nonReferencedPersonUuids, DELETE_BATCH_SIZE, batchedUuids -> personService.deletePermanentByUuids(batchedUuids));
 
 		logger.debug("executeAutomaticDeletion() finished. {}s", DateHelper.durationSeconds(startTime));
 	}
