@@ -445,20 +445,14 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new CommunityDtoHelper().pullEntities(false, context);
 		new FacilityDtoHelper().pullEntities(false, context);
 		new PointOfEntryDtoHelper().pullEntities(false, context);
+		new UserRoleDtoHelper().pullEntities(false, context);
 		new UserDtoHelper().pullEntities(false, context);
 		new DiseaseClassificationDtoHelper().pullEntities(false, context);
 		new DiseaseConfigurationDtoHelper().pullEntities(false, context);
 		new CustomizableEnumValueDtoHelper().pullEntities(false, context);
 
-		// user role configurations may be removed, so have to pull the deleted uuids
+		// feature configurations may be removed, so have to pull the deleted uuids
 		// this may be applied to other entities later as well
-		Date latestChangeDate = DatabaseHelper.getUserRoleDao().getLatestChangeDate();
-		List<String> userRoleConfigUuids =
-			executeUuidCall(RetroProvider.getUserRoleFacade().pullDeletedUuidsSince(latestChangeDate != null ? latestChangeDate.getTime() : 0));
-		DatabaseHelper.getUserRoleDao().delete(userRoleConfigUuids);
-
-		new UserRoleDtoHelper().pullEntities(false, context);
-
 		Date featureConfigurationChangeDate = DatabaseHelper.getFeatureConfigurationDao().getLatestChangeDate();
 		List<String> featureConfigurationConfigUuids = executeUuidCall(
 			RetroProvider.getFeatureConfigurationFacade()

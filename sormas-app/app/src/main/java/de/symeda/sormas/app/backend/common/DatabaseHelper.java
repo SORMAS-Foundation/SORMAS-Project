@@ -267,6 +267,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			if (clearInfrastructure) {
 				TableUtils.clearTable(connectionSource, User.class);
 				TableUtils.clearTable(connectionSource, UserRole.class);
+				TableUtils.clearTable(connectionSource, UserUserRole.class);
 				TableUtils.clearTable(connectionSource, DiseaseConfiguration.class);
 				TableUtils.clearTable(connectionSource, CustomizableEnumValue.class);
 				TableUtils.clearTable(connectionSource, FeatureConfiguration.class);
@@ -324,6 +325,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 			TableUtils.createTable(connectionSource, Facility.class);
 			TableUtils.createTable(connectionSource, PointOfEntry.class);
 			TableUtils.createTable(connectionSource, UserRole.class);
+			TableUtils.createTable(connectionSource, UserUserRole.class);
 			TableUtils.createTable(connectionSource, DiseaseConfiguration.class);
 			TableUtils.createTable(connectionSource, CustomizableEnumValue.class);
 			TableUtils.createTable(connectionSource, FeatureConfiguration.class);
@@ -2970,19 +2972,18 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(User.class).executeRaw("ALTER TABLE users ADD COLUMN jurisdictionLevel varchar(255);");
 				fillJurisdictionLevels();
 
-				// ATTENTION: break should only be done after last version
-				break;
-
 			case 334:
 				currentVersion = 334;
 				getDao(UserRole.class).executeRaw("DROP TABLE userrolesconfig;");
 				getDao(UserRole.class).executeRaw(
-					"CREATE TABLE userroles(" + "id integer primary key autoincrement," + "uuid varchar(36)," + "changeDate timestamp,"
-						+ "creationDate timestamp," + "lastOpenedDate timestamp," + "localChangeDate timestamp," + "modified integer,"
-						+ "snapshot integer);");
+					"CREATE TABLE userRoles(id integer primary key autoincrement, uuid varchar(36), changeDate timestamp, creationDate timestamp, lastOpenedDate timestamp, "
+						+ "localChangeDate timestamp, modified integer, snapshot integer, userRights varchar(1024), enabled boolean, caption varchar(512), description varchar(4096), "
+						+ "hasOptionalHealthFacility boolean, hasAssociatedOfficer boolean, portHealthUser boolean, jurisdictionLevel varchar(255));");
 				getDao(UserRole.class).executeRaw(
-					"CREATE TABLE users_userroles(id integer primary key autoincrement, uuid varchar(36), changeDate timestamp, creationDate timestamp,"
-						+ "lastOpenedDate timestamp, localChangeDate timestamp, modified integer, snapshot integer, user_id integer, userRole_id integer);");
+					"CREATE TABLE users_userRoles(user_id integer, userRole_id integer, CONSTRAINT fk_user_id FOREIGN KEY (user_id) REFERENCES users (id) ON DELETE CASCADE), "
+						+ "CONSTRAINT fk_userRole_id FOREIGN KEY (userRole_id) REFERENCES userRoles (id) ON DELETE CASCADE);");
+				// ATTENTION: break should only be done after last version
+				break;
 
 			default:
 				throw new IllegalStateException("onUpgrade() with unknown oldVersion " + oldVersion);

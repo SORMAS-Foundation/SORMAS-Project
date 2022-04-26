@@ -651,11 +651,12 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 					continue;
 
 				// we now have to write the value from source into target and base
-				// there are four types of properties:
+				// there are five types of properties:
 
+				// 1. Properties that are simply copied
 				if (property.getReadMethod().isAnnotationPresent(MetaProperty.class)) {
 					property.getWriteMethod().invoke(current, property.getReadMethod().invoke(source));
-					// 1. embedded domain objects like a Location or Symptoms
+					// 2. embedded domain objects like a Location or Symptoms
 					// -> call merge for the object
 				} else if (AdoPropertyHelper.hasEmbeddedAnnotation(property)) {
 
@@ -674,9 +675,9 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 						property.getWriteMethod().invoke(current, embeddedCurrent);
 					}
 				}
-				// 2. "value" types like String, Date, Enum, ...
+				// 3. "value" types like String, Date, Enum, ...
 				// -> just copy value from source into target and base
-				// 3. reference domain objects like a reference to a Person or a District
+				// 4. reference domain objects like a reference to a Person or a District
 				// -> just copy reference value from source into target and base
 				else if (DataHelper.isValueType(property.getPropertyType())
 					|| AbstractDomainObject.class.isAssignableFrom(property.getPropertyType())) {
@@ -724,7 +725,7 @@ public abstract class AbstractAdoDao<ADO extends AbstractDomainObject> {
 					// update result
 					property.getWriteMethod().invoke(current, sourceFieldValue);
 				}
-				// 4. lists of embedded domain objects
+				// 5. lists of embedded domain objects
 				else if (Collection.class.isAssignableFrom(property.getPropertyType())) {
 
 					// merging lists is done after entity is saved

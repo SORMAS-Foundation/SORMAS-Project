@@ -24,6 +24,8 @@ import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.Transient;
 
 import com.google.gson.Gson;
@@ -40,7 +42,7 @@ public class UserRole extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 9053095630718041842L;
 
-	public static final String TABLE_NAME = "userroles";
+	public static final String TABLE_NAME = "userRoles";
 	public static final String I18N_PREFIX = "UserRole";
 
 	public static final String USER_RIGHTS = "userRights";
@@ -50,12 +52,19 @@ public class UserRole extends AbstractDomainObject {
 
 	// initialized from userRightsJson
 	private Set<UserRight> userRights;
+	@Column
 	private boolean enabled = true;
+	@Column
 	private String caption;
+	@Column
 	private String description;
+	@Column
 	private boolean hasOptionalHealthFacility;
+	@Column
 	private boolean hasAssociatedOfficer;
+	@Column
 	private boolean portHealthUser;
+	@Enumerated(EnumType.STRING)
 	private JurisdictionLevel jurisdictionLevel;
 
 	public String getUserRightsJson() {

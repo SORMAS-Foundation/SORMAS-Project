@@ -22,7 +22,6 @@ import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.Transient;
 
 import com.j256.ormlite.field.DatabaseField;
 import com.j256.ormlite.table.DatabaseTable;
@@ -37,6 +36,7 @@ import de.symeda.sormas.app.backend.location.Location;
 import de.symeda.sormas.app.backend.region.Community;
 import de.symeda.sormas.app.backend.region.District;
 import de.symeda.sormas.app.backend.region.Region;
+import de.symeda.sormas.app.util.MetaProperty;
 
 @Entity(name = User.TABLE_NAME)
 @DatabaseTable(tableName = User.TABLE_NAME)
@@ -225,7 +225,7 @@ public class User extends AbstractDomainObject {
 		this.language = language;
 	}
 
-	@Transient // Needed for merge logic
+	@MetaProperty
 	public Set<UserRole> getUserRoles() {
 		return userRoles;
 	}
@@ -246,7 +246,7 @@ public class User extends AbstractDomainObject {
 				if (result.length() > 0) {
 					result.append(", ");
 				}
-				result.append(userRole.toString());
+				result.append(userRole.getCaption());
 			}
 		}
 		return result.toString();
@@ -270,7 +270,7 @@ public class User extends AbstractDomainObject {
 
 		StringBuilder result = new StringBuilder();
 		result.append(getFirstName()).append(" ").append(getLastName().toUpperCase());
-		if (getUserRoles().size() > 0) {
+		if (getUserRoles() != null && getUserRoles().size() > 0) {
 			result.append(" - ");
 			result.append(getUserRolesString());
 		}

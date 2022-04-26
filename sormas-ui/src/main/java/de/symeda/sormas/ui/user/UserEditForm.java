@@ -24,6 +24,8 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocsCss;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 
 import java.util.Comparator;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import com.vaadin.ui.Label;
@@ -86,6 +88,8 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
                     fluidRowLocs(UserDto.LIMITED_DISEASE, "", "");
     //@formatter:off
 
+    Map<UserRoleReferenceDto, UserRoleDto> userRoleMap;
+    
     public UserEditForm(boolean create) {
 
         super(UserDto.class, UserDto.I18N_PREFIX, true, new FieldVisibilityCheckers(), UiFieldAccessCheckers.getNoop());
@@ -135,13 +139,12 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
         addField(UserDto.ACTIVE, CheckBox.class);
         addField(UserDto.USER_NAME, TextField.class);
-        OptionGroup userRoles = new OptionGroup();
-        userRoles.setCaption(I18nProperties.getPrefixCaption(UserDto.I18N_PREFIX, UserDto.USER_ROLES));
-        userRoles.addItems(FacadeProvider.getUserRoleFacade().getEnabledUserRoles().stream().map(UserRoleDto::toReference).sorted(Comparator.comparing(UserRoleReferenceDto::getCaption)).collect(Collectors.toList()));
+        OptionGroup userRoles = addField(UserDto.USER_ROLES, OptionGroup.class);
+        userRoleMap = FacadeProvider.getUserRoleFacade().getEnabledUserRoles().stream().collect(Collectors.toMap(userRole -> userRole.toReference(), userRole -> userRole));
+        userRoles.addItems(userRoleMap.keySet().stream().sorted(Comparator.comparing(UserRoleReferenceDto::getCaption)).collect(Collectors.toList()));
         userRoles.addValidator(new UserRolesValidator());
         userRoles.setMultiSelect(true);
         CssStyles.style(CssStyles.CAPTION_ON_TOP);
-        getContent().addComponent(userRoles, UserDto.USER_ROLES);
 
         ComboBox region = addInfrastructureField(UserDto.REGION);
         ComboBox community = addInfrastructureField(UserDto.COMMUNITY);
@@ -197,7 +200,8 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
 
 		final Field userRolesField = getFieldGroup().getField(UserDto.USER_ROLES);
 
-		final JurisdictionLevel jurisdictionLevel = UserProvider.getCurrent().getJurisdictionLevel();
+        Set<UserRoleReferenceDto> userRolesFieldValue = (Set<UserRoleReferenceDto>) userRolesField.getValue();
+        final JurisdictionLevel jurisdictionLevel = UserRoleDto.getJurisdictionLevel(userRolesFieldValue.stream().map(userRole -> userRoleMap.get(userRole)).collect(Collectors.toSet()));
 
 		final boolean hasAssociatedOfficer = UserProvider.getCurrent().hasAssociatedOfficer();
 		final boolean hasOptionalHealthFacility = UserProvider.getCurrent().hasOptionalHealthFacility();

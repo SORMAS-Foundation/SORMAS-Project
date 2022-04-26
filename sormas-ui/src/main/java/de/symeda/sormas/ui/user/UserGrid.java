@@ -35,6 +35,7 @@ import de.symeda.sormas.api.user.UserCriteria;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRoleDto;
+import de.symeda.sormas.api.user.UserRoleReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.UserProvider;
@@ -146,7 +147,7 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 			if (value != null) {
 				StringBuilder sb = new StringBuilder();
 				AtomicBoolean first = new AtomicBoolean(true);
-				((Collection<UserRoleDto>) value).stream().forEach(u -> {
+				((Collection<UserRoleReferenceDto>) value).stream().forEach(u -> {
 					if (!first.get()) {
 						sb.append(", ");
 					}

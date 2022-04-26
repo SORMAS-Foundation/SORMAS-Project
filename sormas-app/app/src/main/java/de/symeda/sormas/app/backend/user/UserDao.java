@@ -78,15 +78,19 @@ public class UserDao extends AbstractAdoDao<User> {
 	}
 
 	private void loadUserRoles(User user) {
+		user.setUserRoles(
+			loadUserUserRoles(user.getId()).stream()
+				.map(userUserRole -> DatabaseHelper.getUserRoleDao().queryForId(userUserRole.getUserRole().getId()))
+				.collect(Collectors.toSet()));
+	}
+
+	private List<UserUserRole> loadUserUserRoles(Long userId) {
 		try {
 			QueryBuilder builder = userUserRoleDao.queryBuilder();
 			Where where = builder.where();
-			where.eq(UserUserRole.USER + "_id", user.getId());
-			List<UserUserRole> userUserRoles = (List<UserUserRole>) builder.query();
-			user.setUserRoles(userUserRoles.stream().map(userUserRole -> userUserRole.getUserRole()).collect(Collectors.toSet()));
-		} catch (
-
-		SQLException e) {
+			where.eq(UserUserRole.USER + "_id", userId);
+			return (List<UserUserRole>) builder.query();
+		} catch (SQLException e) {
 			Log.e(getTableName(), "Could not perform loadUserRoles");
 			throw new RuntimeException(e);
 		}
@@ -235,5 +239,61 @@ public class UserDao extends AbstractAdoDao<User> {
 		QueryBuilder userrolesQB = userUserRoleDao.queryBuilder();
 		userrolesQB.where().in(UserUserRole.USER_ROLE, roles);
 		userQB.join(userrolesQB);
+	}
+
+	@Override
+	public void create(User data) throws SQLException {
+		if (data == null)
+			return;
+		super.create(data);
+		if (data.getUserRoles() != null) {
+			for (UserRole userRole : data.getUserRoles()) {
+				int resultRowCount = userUserRoleDao.create(new UserUserRole(data, userRole));
+				if (resultRowCount < 1)
+					throw new SQLException(
+						"Database entry was not created - go back and try again.\n" + "Type: " + UserUserRole.class.getSimpleName() + ", User-UUID: "
+							+ data.getUuid());
+			}
+		}
+	}
+
+	@Override
+	public void delete(User data) throws SQLException {
+		if (data == null)
+			return;
+		loadUserRoles(data); // Make sure user roles are up to date
+		if (data.getUserRoles() != null) {
+			int resultRowCount =
+				userUserRoleDao.delete(data.getUserRoles().stream().map(userRole -> new UserUserRole(data, userRole)).collect(Collectors.toSet()));
+			if (resultRowCount < data.getUserRoles().size())
+				throw new SQLException(
+					"Database entry was not deleted - go back and try again.\n" + "Type: " + UserUserRole.class.getSimpleName() + ", User-UUID: "
+						+ data.getUuid());
+		}
+		super.delete(data);
+	}
+
+	@Override
+	protected void update(User data) throws SQLException {
+		if (data == null)
+			return;
+		super.update(data);
+		// 1. Delete existing UserUserRoles
+		List<UserUserRole> existingUserUserRoles = loadUserUserRoles(data.getId());
+		int resultRowCount = userUserRoleDao.delete(existingUserUserRoles);
+		if (resultRowCount < existingUserUserRoles.size())
+			throw new SQLException(
+				"Database entry was not deleted - go back and try again.\n" + "Type: " + UserUserRole.class.getSimpleName() + ", User-UUID: "
+					+ data.getUuid());
+		// 2. Create new UserUserRoles
+		if (data.getUserRoles() != null) {
+			for (UserRole userRole : data.getUserRoles()) {
+				resultRowCount = userUserRoleDao.create(new UserUserRole(data, userRole));
+				if (resultRowCount < 1)
+					throw new SQLException(
+						"Database entry was not created - go back and try again.\n" + "Type: " + UserUserRole.class.getSimpleName() + ", User-UUID: "
+							+ data.getUuid());
+			}
+		}
 	}
 }
