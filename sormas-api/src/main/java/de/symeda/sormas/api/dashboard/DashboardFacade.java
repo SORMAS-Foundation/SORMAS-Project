@@ -51,6 +51,8 @@ public interface DashboardFacade {
 
 	Map<Date, Integer> getEpiCurveSeriesElementsPerContactFollowUpUntil(DashboardCriteria dashboardCriteria);
 
+	DashboardCaseMeasureDto getCaseMeasurePerDistrict(DashboardCriteria dashboardCriteria);
+
 	List<DiseaseBurdenDto> getDiseaseBurden(
 		RegionReferenceDto region,
 		DistrictReferenceDto district,

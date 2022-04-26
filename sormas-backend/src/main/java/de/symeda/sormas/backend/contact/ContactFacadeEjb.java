@@ -1597,6 +1597,9 @@ public class ContactFacadeEjb
 		return source.toReference();
 	}
 
+	@RolesAllowed({
+		UserRight._CONTACT_VIEW,
+		UserRight._EXTERNAL_VISITS })
 	public ContactDto toDto(Contact source) {
 		return toContactDto(source);
 	}

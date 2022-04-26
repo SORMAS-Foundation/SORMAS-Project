@@ -15,6 +15,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.MapCaseDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.MapContactDto;
+import de.symeda.sormas.api.dashboard.DashboardCaseMeasureDto;
 import de.symeda.sormas.api.dashboard.DashboardCaseStatisticDto;
 import de.symeda.sormas.api.dashboard.DashboardContactStatisticDto;
 import de.symeda.sormas.api.dashboard.DashboardCriteria;
@@ -94,6 +95,12 @@ public class DashboardResource extends EntityDtoResource {
 	@Path("/epiCurveElementsContactFollowUpUntil")
 	public Map<Date, Integer> getEpiCurveSeriesElementsPerContactFollowUpUntil(@RequestBody DashboardCriteria dashboardCriteria) {
 		return FacadeProvider.getDashboardFacade().getEpiCurveSeriesElementsPerContactFollowUpUntil(dashboardCriteria);
+	}
+
+	@POST
+	@Path("/caseMeasurePerDistrict")
+	public DashboardCaseMeasureDto getCaseMeasurePerDistrict(@RequestBody DashboardCriteria dashboardCriteria) {
+		return FacadeProvider.getDashboardFacade().getCaseMeasurePerDistrict(dashboardCriteria);
 	}
 
 	@POST
