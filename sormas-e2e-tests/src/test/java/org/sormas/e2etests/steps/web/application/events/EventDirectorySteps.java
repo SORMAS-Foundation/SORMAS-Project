@@ -811,7 +811,7 @@ public class EventDirectorySteps implements En {
                   Assert.assertEquals(
                       webDriverHelpers.getTextFromWebElement(EVENT_MANAGEMENT_STATUS_CHECK),
                       eventManagementStatus,
-                      "Number of displayed cases is not correct"));
+                      "Event Management status is not correct"));
         });
 
     When(
