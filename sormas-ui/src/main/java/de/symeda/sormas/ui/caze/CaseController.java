@@ -66,7 +66,6 @@ import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.SimilarContactDto;
@@ -201,10 +200,7 @@ public class CaseController {
 			if (updatedEventparticipant.getResultingCase() != null) {
 				String caseUuid = updatedEventparticipant.getResultingCase().getUuid();
 				CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
-				Date relevantDate = event.getStartDate() != null
-					? event.getStartDate()
-					: (event.getEndDate() != null ? event.getEndDate() : event.getReportDateTime());
-				convertSamePersonContactsAndEventparticipants(caze, relevantDate);
+				convertSamePersonContactsAndEventparticipants(caze);
 			}
 		});
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
@@ -243,9 +239,7 @@ public class CaseController {
 					if (contactDto.getResultingCase() != null) {
 						String caseUuid = contactDto.getResultingCase().getUuid();
 						CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
-						convertSamePersonContactsAndEventparticipants(
-							caze,
-							ContactLogic.getStartDate(contactDto.getLastContactDate(), contactDto.getReportDateTime()));
+						convertSamePersonContactsAndEventparticipants(caze);
 					}
 				});
 				VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
@@ -262,9 +256,7 @@ public class CaseController {
 
 				FacadeProvider.getCaseFacade().setSampleAssociations(updatedContact.toReference(), selectedCase.toReference());
 
-				convertSamePersonContactsAndEventparticipants(
-					selectedCase,
-					ContactLogic.getStartDate(updatedContact.getLastContactDate(), updatedContact.getReportDateTime()));
+				convertSamePersonContactsAndEventparticipants(selectedCase);
 
 				navigateToView(CaseDataView.VIEW_NAME, selectedCase.getUuid(), null);
 			}
@@ -295,7 +287,12 @@ public class CaseController {
 		});
 	}
 
-	private void convertSamePersonContactsAndEventparticipants(CaseDataDto caze, Date relevantDate) {
+	private void convertSamePersonContactsAndEventparticipants(CaseDataDto caze) {
+
+		if (!UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)
+			|| !UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_VIEW)) {
+			return;
+		}
 
 		ContactSimilarityCriteria contactCriteria = new ContactSimilarityCriteria().withPerson(caze.getPerson())
 			.withDisease(caze.getDisease())
