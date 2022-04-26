@@ -869,7 +869,6 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			setReadOnly(!UserProvider.getCurrent().hasUserRight(UserRight.CASE_SHARE), CaseDataDto.SHARED_TO_COUNTRY);
 		}
 
-
 		ComboBox pointOfEntry = addInfrastructureField(CaseDataDto.POINT_OF_ENTRY);
 		addField(CaseDataDto.POINT_OF_ENTRY_DETAILS, TextField.class);
 
@@ -1324,10 +1323,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 				if (UserProvider.getCurrent().hasAllUserRights(UserRight.SAMPLE_VIEW)) {
 					samples = FacadeProvider.getSampleFacade().getByCaseUuids(Collections.singletonList(caseUuid));
 				}
-				FollowUpPeriodDto followUpPeriod = CaseLogic.getFollowUpStartDate(					
-					symptoms.getOnsetDate(),
-					reportDate.getValue(),
-					samples);
+				FollowUpPeriodDto followUpPeriod = CaseLogic.getFollowUpStartDate(symptoms.getOnsetDate(), reportDate.getValue(), samples);
 				Date minimumFollowUpUntilDate =
 					FollowUpLogic
 						.calculateFollowUpUntilDate(
@@ -1655,7 +1651,7 @@ public class CaseDataForm extends AbstractEditForm<CaseDataDto> {
 			}
 		}
 
-		if (caseFollowUpEnabled) {
+		if (caseFollowUpEnabled && UserProvider.getCurrent().hasUserRight(UserRight.CASE_EDIT)) {
 			FollowUpPeriodDto followUpPeriodDto = FacadeProvider.getCaseFacade().calculateFollowUpUntilDate(newFieldValue, true);
 			tfExpectedFollowUpUntilDate
 				.setValue(DateHelper.formatLocalDate(followUpPeriodDto.getFollowUpEndDate(), I18nProperties.getUserLanguage()));
