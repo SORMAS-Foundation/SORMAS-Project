@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,10 +31,15 @@ public class EventParticipantsPage {
       By.cssSelector(".v-window [location='sex'] [role='combobox'] div");
   public static final By PICK_OR_CREATE_PERSON_POPUP =
       By.xpath("//*[contains(text(),'Pick or create person')]");
+  public static final By PICK_OR_CREATE_CONTACT_POPUP =
+      By.xpath("//*[contains(text(),'Pick or create contact')]");
   public static final By CREATE_NEW_PERSON_RADIO_BUTTON =
       By.xpath("//label[contains(text(),'Create a new person')]");
   public static final By EVENT_PARTICIPANTS_TAB = By.id("tab-events-eventparticipants");
   public static final By PICK_OR_CREATE_POPUP_SAVE_BUTTON = By.cssSelector("#commit");
   public static final By ERROR_MESSAGE_TEXT = By.cssSelector("p.v-Notification-description");
   public static final By DISCARD_BUTTON = By.id("discard");
+  public static final By APPLY_FILTERS_BUTTON = By.id("actionApplyFilters");
+  public static final By EXPORT_EVENT_PARTICIPANT_CONFIGURATION_DATA_REGION_CHECKBOX =
+      By.xpath("//label[text()='Region']");
 }

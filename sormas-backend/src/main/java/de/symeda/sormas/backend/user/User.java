@@ -27,6 +27,7 @@ import javax.persistence.CollectionTable;
 import javax.persistence.Column;
 import javax.persistence.ElementCollection;
 import javax.persistence.Entity;
+import javax.persistence.EntityListeners;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
@@ -57,6 +58,7 @@ import de.symeda.sormas.backend.location.Location;
 
 @Entity(name = User.TABLE_NAME)
 @Audited
+@EntityListeners(User.UserListener.class)
 public class User extends AbstractDomainObject {
 
 	private static final long serialVersionUID = -629432920970152112L;
@@ -84,6 +86,7 @@ public class User extends AbstractDomainObject {
 	public static final String LANGUAGE = "language";
 	public static final String HAS_CONSENTED_TO_GDPR = "hasConsentedToGdpr";
 	public static final String JURISDICTION_LEVEL = "jurisdictionLevel";
+	public static final String LIMITED_DISEASE = "limitedDisease";
 
 	private String userName;
 	private String password;
@@ -356,6 +359,13 @@ public class User extends AbstractDomainObject {
 	}
 
 	/**
+	 * Checks if the User possesses the specified userRole
+	 */
+	public boolean hasUserRole(UserRole userRole) {
+		return getUserRoles().contains(userRole);
+	}
+
+	/**
 	 * Deprecated: Use getJurisdictionLevel instead
 	 * 
 	 * @return
@@ -376,5 +386,14 @@ public class User extends AbstractDomainObject {
 			caption += " (" + user.getUserEmail() + ")";
 		}
 		return caption;
+	}
+
+	static class UserListener {
+
+		@PrePersist
+		@PreUpdate
+		private void beforeAnyUpdate(User user) {
+			UserCache.getInstance().remove(user.getUserName());
+		}
 	}
 }

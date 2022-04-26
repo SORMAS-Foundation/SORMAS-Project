@@ -18,6 +18,7 @@ package de.symeda.sormas.ui.labmessage;
 import java.util.Date;
 
 import com.vaadin.v7.data.Validator;
+import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
 import com.vaadin.v7.ui.Field;
 import com.vaadin.v7.ui.TextField;
@@ -27,6 +28,7 @@ import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.labmessage.ExternalMessageType;
 import de.symeda.sormas.api.labmessage.LabMessageCriteria;
 import de.symeda.sormas.api.labmessage.LabMessageIndexDto;
 import de.symeda.sormas.api.user.UserDto;
@@ -52,6 +54,7 @@ public class LabMessageGridFilterForm extends AbstractFilterForm<LabMessageCrite
 		return new String[] {
 			LabMessageCriteria.SEARCH_FIELD_LIKE,
 			LabMessageCriteria.ASSIGNEE,
+			LabMessageCriteria.TYPE,
 			LabMessageCriteria.MESSAGE_DATE_FROM,
 			LabMessageCriteria.MESSAGE_DATE_TO,
 			LabMessageCriteria.BIRTH_DATE_FROM,
@@ -69,8 +72,11 @@ public class LabMessageGridFilterForm extends AbstractFilterForm<LabMessageCrite
 
 		ComboBoxWithPlaceholder assignee = addField(LabMessageCriteria.ASSIGNEE, ComboBoxWithPlaceholder.class);
 		assignee.addItem(new UserReferenceDto(ReferenceDto.NO_REFERENCE_UUID, I18nProperties.getCaption(Captions.unassigned), "", null));
-		assignee.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRight(user.getRegion(), UserRight.LAB_MESSAGES));
+		assignee.addItems(FacadeProvider.getUserFacade().getUsersByRegionAndRights(user.getRegion(), null, UserRight.LAB_MESSAGES));
 		assignee.setNullSelectionAllowed(true);
+
+		ComboBox type = addField(LabMessageCriteria.TYPE, ComboBox.class);
+		type.addItems((Object) ExternalMessageType.values());
 
 		DateTimeField messageDateFrom = addField(LabMessageCriteria.MESSAGE_DATE_FROM, DateTimeField.class);
 		messageDateFrom.setCaption(I18nProperties.getPrefixCaption(LabMessageCriteria.I18N_PREFIX, LabMessageCriteria.MESSAGE_DATE_FROM));

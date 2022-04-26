@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -48,4 +48,11 @@ public class HospitalizationTabPage {
   public static final By SUCCESSFUL_SAVE_POPUP = By.cssSelector(".v-Notification-caption");
   public static final By BLUE_ERROR_EXCLAMATION_MARK =
       By.xpath("//span[@class='v-errorindicator v-errorindicator-info']");
+  public static final By BLUE_ERROR_EXCLAMATION_MARK_TEXT = By.xpath("//div[@class='gwt-HTML']");
+  public static final By PLACE_OF_STAY_IN_HOSPITAL_POPUP =
+      By.xpath("//*[contains(text(),'Place of stay in hospital')]");
+  public static final By FACILITY_POPUP_CHECKBOX =
+      By.cssSelector(".v-window-contents #healthFacility div");
+  public static final By PLACE_OF_STAY_IN_HOSPITAL_POPUP_SAVE_BUTTON =
+      By.cssSelector(".v-window-contents #commit");
 }

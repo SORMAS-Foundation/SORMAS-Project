@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui;
 
 import java.util.Arrays;
+import java.util.List;
 import java.util.Objects;
 import java.util.Set;
 
@@ -33,9 +34,17 @@ import de.symeda.sormas.api.user.UserRole;
 
 public class UserProvider {
 
+	private static final List configurationUserRoles = Arrays.asList(
+		UserRight.DOCUMENT_TEMPLATE_MANAGEMENT,
+		UserRight.INFRASTRUCTURE_VIEW,
+		UserRight.LINE_LISTING_CONFIGURE,
+		UserRight.OUTBREAK_VIEW,
+		UserRight.POPULATION_MANAGE);
+
 	private UserDto user;
 	private UserReferenceDto userReference;
 	private Set<UserRight> userRights;
+	private JurisdictionLevel jurisdictionLevel;
 
 	public UserDto getUser() {
 
@@ -48,7 +57,7 @@ public class UserProvider {
 	public Set<UserRight> getUserRights() {
 
 		if (userRights == null) {
-			userRights = FacadeProvider.getUserRoleConfigFacade().getEffectiveUserRights(getUser().getUserRoles().toArray(new UserRole[] {}));
+			userRights = FacadeProvider.getUserRoleConfigFacade().getEffectiveUserRights(getUser().getUserRoles());
 		}
 		return userRights;
 	}
@@ -57,16 +66,16 @@ public class UserProvider {
 		return getUser().getUserRoles();
 	}
 
-	public boolean hasUserRole(UserRole userRole) {
-		return getUser().getUserRoles().contains(userRole);
+	public JurisdictionLevel getJurisdictionLevel() {
+		if (jurisdictionLevel == null) {
+			jurisdictionLevel = UserRole.getJurisdictionLevel(getUser().getUserRoles());
+		}
+		return jurisdictionLevel;
 	}
 
-	/**
-	 * Checks if the User possesses any of the specified userRoles
-	 */
-	public boolean hasAnyUserRole(UserRole... userRoles) {
-		Set<UserRole> currentUserRoles = getUser().getUserRoles();
-		return Arrays.stream(userRoles).anyMatch(currentUserRoles::contains);
+	public boolean hasConfigurationAccess() {
+		Set<UserRight> currentUserRights = getUserRights();
+		return configurationUserRoles.stream().anyMatch(currentUserRights::contains);
 	}
 
 	public boolean hasUserRight(UserRight userRight) {
@@ -77,8 +86,25 @@ public class UserProvider {
 		return getUserRights().containsAll(Arrays.asList(userRights));
 	}
 
-	public boolean hasNationalJurisdictionLevel() {
-		return UserRole.getJurisdictionLevel(getCurrent().getUserRoles()) == JurisdictionLevel.NATION;
+	public boolean hasNationJurisdictionLevel() {
+		return getJurisdictionLevel() == JurisdictionLevel.NATION;
+	}
+
+	public boolean hasRegionJurisdictionLevel() {
+		return getJurisdictionLevel() == JurisdictionLevel.REGION;
+	}
+
+	public boolean hasNoneJurisdictionLevel() {
+		return getJurisdictionLevel() == JurisdictionLevel.NONE;
+	}
+
+	public boolean hasLaboratoryOrExternalLaboratoryJurisdictionLevel() {
+		JurisdictionLevel jurisdictionLevel = getJurisdictionLevel();
+		return jurisdictionLevel == JurisdictionLevel.LABORATORY || jurisdictionLevel == jurisdictionLevel.EXTERNAL_LABORATORY;
+	}
+
+	public boolean hasExternalLaboratoryJurisdictionLevel() {
+		return getJurisdictionLevel() == jurisdictionLevel.EXTERNAL_LABORATORY;
 	}
 
 	public boolean hasRegion(RegionReferenceDto regionReference) {

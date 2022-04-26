@@ -62,7 +62,7 @@ public class SyncFacadeEjb implements SyncFacade {
 	}
 
 	@Override
-	public boolean atLeastOneSuccessfullSyncOf(SystemEventType type) {
+	public boolean hasAtLeastOneSuccessfullSyncOf(SystemEventType type) {
 		SystemEventDto latestSuccessEvent = systemEventFacade.getLatestSuccessByType(type);
 		return latestSuccessEvent != null;
 	}

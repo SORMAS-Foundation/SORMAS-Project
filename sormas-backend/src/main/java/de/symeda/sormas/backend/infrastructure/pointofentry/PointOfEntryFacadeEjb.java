@@ -20,7 +20,7 @@ import javax.persistence.criteria.Root;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
+import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureFacadeEjb;
 import org.apache.commons.collections.CollectionUtils;
 import de.symeda.sormas.backend.user.UserService;
 import org.apache.commons.lang3.StringUtils;
@@ -50,7 +50,7 @@ import de.symeda.sormas.backend.util.QueryHelper;
 @Stateless(name = "PointOfEntryFacade")
 public class PointOfEntryFacadeEjb
 	extends
-	AbstractInfrastructureEjb<PointOfEntry, PointOfEntryDto, PointOfEntryDto, PointOfEntryReferenceDto, PointOfEntryService, PointOfEntryCriteria>
+        AbstractInfrastructureFacadeEjb<PointOfEntry, PointOfEntryDto, PointOfEntryDto, PointOfEntryReferenceDto, PointOfEntryService, PointOfEntryCriteria>
 	implements PointOfEntryFacade {
 
 	@EJB
@@ -128,7 +128,7 @@ public class PointOfEntryFacadeEjb
 	}
 
 	@Override
-	public List<PointOfEntryReferenceDto> getByExternalId(String name, boolean includeArchivedEntities) {
+	public List<PointOfEntryReferenceDto> getReferencesByExternalId(String name, boolean includeArchivedEntities) {
 		return service.getByExternalId(name, includeArchivedEntities)
 			.stream()
 			.map(PointOfEntryFacadeEjb::toReferenceDto)

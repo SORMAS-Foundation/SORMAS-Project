@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
+import static java.util.Objects.nonNull;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -25,6 +27,8 @@ import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
 import javax.naming.CannotProceedException;
+
+import org.apache.commons.lang3.ArrayUtils;
 
 import com.vaadin.event.Action.Notifier;
 import com.vaadin.event.ShortcutAction.KeyCode;
@@ -61,11 +65,14 @@ import de.symeda.sormas.ui.location.AccessibleTextField;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.person.PersonEditForm;
 
-import static java.util.Objects.nonNull;
-
 public class CommitDiscardWrapperComponent<C extends Component> extends VerticalLayout implements DirtyStateComponent, Buffered {
 
 	private static final long serialVersionUID = 1L;
+
+	public static interface PreCommitListener {
+
+		void onPreCommit(Runnable successCallback);
+	}
 
 	public static interface CommitListener {
 
@@ -87,6 +94,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		void onDelete();
 	}
 
+	private transient PreCommitListener preCommitListener;
 	private transient List<CommitListener> commitListeners = new ArrayList<>();
 	private transient List<DiscardListener> discardListeners = new ArrayList<>();
 	private transient List<DoneListener> doneListeners = new ArrayList<>();
@@ -434,7 +442,17 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	}
 
 	@Override
-	public void commit() throws InvalidValueException, SourceException, CommitRuntimeException {
+	public void commit() {
+
+		if (preCommitListener != null) {
+			preCommitListener.onPreCommit(this::doCommit);
+		} else {
+			doCommit();
+		}
+
+	}
+
+	private void doCommit() throws InvalidValueException, SourceException, CommitRuntimeException {
 		if (fieldGroups != null) {
 			if (fieldGroups.size() > 1) {
 				List<InvalidValueException> invalidValueExceptions =
@@ -522,9 +540,11 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		return null;
 	}
 
-	public void commitAndHandle() {
+	@Override
+	public boolean commitAndHandle() {
 		try {
 			commit();
+			return true;
 		} catch (InvalidValueException ex) {
 			StringBuilder htmlMsg = new StringBuilder();
 			String message = ex.getMessage();
@@ -570,6 +590,8 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 			new Notification(I18nProperties.getString(Strings.messageCheckInputData), htmlMsg.toString(), Type.ERROR_MESSAGE, true)
 				.show(Page.getCurrent());
+
+			return false;
 		}
 	}
 
@@ -620,6 +642,10 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 		}
 	}
 
+	public void setPreCommitListener(PreCommitListener listener) {
+		this.preCommitListener = listener;
+	}
+
 	public void addCommitListener(CommitListener listener) {
 		if (!commitListeners.contains(listener))
 			commitListeners.add(listener);
@@ -641,12 +667,13 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	private void onCommit() {
 
-		for (CommitListener listener : commitListeners)
+		for (CommitListener listener : commitListeners) {
 			try {
 				listener.onCommit();
 			} catch (CannotProceedException e) {
 				break;
 			}
+		}
 	}
 
 	/**
@@ -804,5 +831,18 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 
 	public void setDirty(boolean dirty) {
 		this.dirty = dirty;
+	}
+
+	//excludedButtons: contains the buttons attached to the CommitDiscardWrapperComponent which we intend to
+	// exclude from applying a new editable status
+	public void setEditable(boolean editable, String... excludedButtons) {
+		wrappedComponent.setEnabled(editable);
+
+		for (int i = 0; i < buttonsPanel.getComponentCount(); i++) {
+			Component button = buttonsPanel.getComponent(i);
+			if (!ArrayUtils.contains(excludedButtons, button.getId())) {
+				button.setEnabled(editable);
+			}
+		}
 	}
 }

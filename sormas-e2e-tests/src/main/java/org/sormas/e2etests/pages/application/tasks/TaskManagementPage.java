@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -31,4 +31,7 @@ public class TaskManagementPage {
   public static final By TABLE_DATA = By.tagName("td");
   public static final By TASK_CONTEXT_COMBOBOX = By.cssSelector("#taskContext div");
   public static final By TASK_STATUS_COMBOBOX = By.cssSelector("#taskStatus div");
+  public static final By SHOW_MORE_FILTERS = By.cssSelector("#showHideMoreFilters");
+  public static final By ASSIGNED_USER_FILTER_INPUT = By.cssSelector("#assigneeUserLike");
+  public static final By APPLY_FILTERS_BUTTON = By.cssSelector("#actionApplyFilters");
 }

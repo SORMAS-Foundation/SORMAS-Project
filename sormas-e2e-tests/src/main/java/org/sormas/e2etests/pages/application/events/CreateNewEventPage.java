@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -72,6 +72,8 @@ public class CreateNewEventPage {
   public static final By REPORT_DATE_INPUT = By.cssSelector(".popupContent #reportDateTime input");
   public static final By NEW_EVENT_CREATED_MESSAGE =
       By.xpath("//*[contains(text(),'New event created')]");
+  public static final By NEW_EVENT_CREATED_DE_MESSAGE =
+      By.xpath("//*[contains(text(),'Neues Ereignis erstellt')]");
   public static final By EVENT_REGION = By.cssSelector(".v-window #region div");
   public static final By EVENT_DISTRICT = By.cssSelector(".v-window #district div");
   public static final By EVENT_COMMUNITY = By.cssSelector(".v-window #community div");

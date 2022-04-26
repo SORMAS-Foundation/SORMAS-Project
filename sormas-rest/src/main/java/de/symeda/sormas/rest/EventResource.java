@@ -20,7 +20,6 @@ package de.symeda.sormas.rest;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -46,21 +45,18 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 @Path("/events")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
-@RolesAllowed({
-	"USER",
-	"REST_USER" })
 public class EventResource extends EntityDtoResource {
 
 	@GET
 	@Path("/all/{since}")
 	public List<EventDto> getAllEvents(@PathParam("since") long since) {
-		return FacadeProvider.getEventFacade().getAllActiveEventsAfter(new Date(since));
+		return FacadeProvider.getEventFacade().getAllAfter(new Date(since));
 	}
 
 	@GET
 	@Path("/all/{since}/{size}/{lastSynchronizedUuid}")
 	public List<EventDto> getAllEvents(@PathParam("since") long since, @PathParam("size") int size, @PathParam("lastSynchronizedUuid") String lastSynchronizedUuid) {
-		return FacadeProvider.getEventFacade().getAllActiveEventsAfter(new Date(since), size, lastSynchronizedUuid);
+		return FacadeProvider.getEventFacade().getAllAfter(new Date(since), size, lastSynchronizedUuid);
 	}
 
 	/**
@@ -87,7 +83,7 @@ public class EventResource extends EntityDtoResource {
 	@POST
 	@Path("/push")
 	public List<PushResult> postEvents(@Valid List<EventDto> dtos) {
-		return savePushedDto(dtos, FacadeProvider.getEventFacade()::saveEvent);
+		return savePushedDto(dtos, FacadeProvider.getEventFacade()::save);
 	}
 
 	@GET

@@ -1,6 +1,8 @@
 package org.sormas.e2etests.steps.web.application.contacts;
 
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.*;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CONTACT_DATA_TITLE;
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
 import java.util.ArrayList;
@@ -10,10 +12,12 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
+import org.openqa.selenium.By;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.enums.ContactOutcome;
-import org.sormas.e2etests.enums.TestDataUser;
+import org.sormas.e2etests.enums.UserRoles;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
@@ -30,7 +34,8 @@ public class ContactsDetailedTableViewSteps implements En {
       BaseSteps baseSteps,
       ApiState apiState,
       DataOperations dataOperations,
-      SoftAssert softly) {
+      SoftAssert softly,
+      EnvironmentManager environmentManager) {
     this.webDriverHelpers = webDriverHelpers;
     this.baseSteps = baseSteps;
 
@@ -100,9 +105,45 @@ public class ContactsDetailedTableViewSteps implements En {
           softly.assertEquals(
               detailedContactDTableRow.get(
                   ContactsDetailedTableViewHeaders.REPORTING_USER.toString()),
-              TestDataUser.REST_AUTOMATION.getUserRole(),
+              environmentManager.getUserByRole(locale, UserRoles.RestUser.getRole()).getUserRole(),
               "Reporting user is not correct");
           softly.assertAll();
+        });
+
+    When(
+        "I check that Person ID column is between Contact Status and First Name of Contact Person columns",
+        () -> {
+          Map<String, Integer> headers = extractColumnHeadersHashMap();
+          Integer investigationStatusKey = headers.get("CONTACT STATUS");
+          Integer personIDKey = headers.get("PERSON ID");
+          Integer firstNameKey = headers.get("FIRST NAME OF CONTACT PERSON");
+          softly.assertTrue(
+              investigationStatusKey == personIDKey - 1 && firstNameKey == personIDKey + 1);
+          softly.assertAll();
+        });
+
+    When(
+        "I click on the first Person ID from Contacts Directory",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_PERSON_ID);
+        });
+
+    When(
+        "I check that I get navigated to the Edit Contact page",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CONTACT_DATA_TITLE);
+        });
+
+    When(
+        "I click on the first Contact ID from Contacts Directory",
+        () -> {
+          if (webDriverHelpers.isElementVisibleWithTimeout(
+              By.xpath("//*[contains(text(),'Confirm navigation')]"), 5)) {
+            webDriverHelpers.clickOnWebElementBySelector(By.id("actionCancel"));
+            webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+          }
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_CONTACT_ID);
         });
   }
 

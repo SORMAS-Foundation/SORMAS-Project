@@ -20,6 +20,7 @@ package de.symeda.sormas.backend.common.messaging;
 import java.io.IOException;
 import java.util.Date;
 import java.util.Map;
+import java.util.function.Function;
 import java.util.function.Supplier;
 
 import javax.ejb.EJB;
@@ -32,12 +33,10 @@ import org.slf4j.LoggerFactory;
 
 import com.nexmo.client.NexmoClientException;
 
-import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
-import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -62,62 +61,34 @@ public class MessagingService {
 	@EJB
 	private ManualMessageLogService manualMessageLogService;
 	@EJB
-	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
-	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 
-	public void sendMessages(Supplier<Map<User, String>> userMessagesSupplier, MessageSubject subject, MessageType... messageTypes)
+	public void sendEmail(Map<User, String> userMessages, MessageSubject subject, Object[] subjectParameters)
 		throws NotificationDeliveryFailedException {
 
-		if (relatedFeatureEnabled(subject.getRelatedFeatureType())) {
-			for (Map.Entry<User, String> entry : userMessagesSupplier.get().entrySet()) {
-				final User user = entry.getKey();
-				final String messageContent = entry.getValue();
-				sendMessage(user, I18nProperties.getEnumCaption(subject), messageContent, messageTypes);
-			}
-		}
+		sendMessage(userMessages, subject, subjectParameters, User::getUserEmail, this::sendEmail);
 	}
 
-	public void sendMessages(
-		Supplier<Map<User, String>> userMessagesSupplier,
-		MessageSubject subject,
-		Object[] subjectParameters,
-		MessageType... messageTypes)
+	public void sendSms(Map<User, String> userMessages, MessageSubject subject, Object[] subjectParameters)
 		throws NotificationDeliveryFailedException {
 
-		if (relatedFeatureEnabled(subject.getRelatedFeatureType())) {
-			for (Map.Entry<User, String> entry : userMessagesSupplier.get().entrySet()) {
-				final User user = entry.getKey();
-				final String messageContent = entry.getValue();
-				sendMessage(user, String.format(I18nProperties.getEnumCaption(subject), subjectParameters), messageContent, messageTypes);
-			}
-		}
+		sendMessage(userMessages, subject, subjectParameters, User::getPhone, this::sendSms);
 	}
 
-	private boolean relatedFeatureEnabled(FeatureType relatedFeatureType) {
-		return featureConfigurationFacade.isFeatureEnabled(relatedFeatureType);
-	}
-
-	private void sendMessage(User recipient, String subject, String messageContent, MessageType... messageTypes)
-		throws NotificationDeliveryFailedException {
-		// Don't send notifications to users that initiated an action
-		if (recipient.equals(userService.getCurrentUser()) || !recipient.isActive()) {
-			return;
-		}
-
-		final String emailAddress = recipient.getUserEmail();
-		final String phoneNumber = recipient.getPhone();
-		final String recipientUuid = recipient.getUuid();
-		sendMessage(subject, messageContent, emailAddress, phoneNumber, recipientUuid, "user", messageTypes);
-	}
-
-	public void sendMessage(Person recipient, String subject, String messageContent, MessageType... messageTypes)
+	public void sendManualMessage(Person recipient, String subject, String messageContent, MessageType... messageTypes)
 		throws NotificationDeliveryFailedException {
 		final String emailAddress = recipient.getEmailAddress();
 		final String phoneNumber = recipient.getPhone();
 		final String recipientUuid = recipient.getUuid();
+		final String recipientType = "person";
+
 		for (MessageType messageType : messageTypes) {
-			sendMessage(subject, messageContent, emailAddress, phoneNumber, recipientUuid, "person", messageType);
+			if (messageType == MessageType.EMAIL) {
+				sendEmail(subject, messageContent, emailAddress, recipientUuid, recipientType);
+			} else if (messageType == MessageType.SMS) {
+				sendSms(subject, messageContent, phoneNumber, recipientUuid, recipientType);
+			}
+
 			final ManualMessageLog manualMessageLog = new ManualMessageLog();
 			manualMessageLog.setMessageType(messageType);
 			manualMessageLog.setRecipientPerson(recipient);
@@ -128,43 +99,77 @@ public class MessagingService {
 	}
 
 	private void sendMessage(
-		String subject,
-		String messageContent,
-		String emailAddress,
-		String phoneNumber,
-		String recipientUuid,
-		final String recipientType,
-		MessageType... messageTypes)
+		Map<User, String> userMessages,
+		MessageSubject subject,
+		Object[] subjectParameters,
+		Function<User, String> contactInfoSupplier,
+		Messenger messenger)
+		throws NotificationDeliveryFailedException {
+
+		for (Map.Entry<User, String> entry : userMessages.entrySet()) {
+			final User recipient = entry.getKey();
+			final String messageContent = entry.getValue();
+
+			// Don't send notifications to users that initiated an action
+			if (recipient.equals(userService.getCurrentUser()) || !recipient.isActive()) {
+				return;
+			}
+
+			final String recipientUuid = recipient.getUuid();
+
+			messenger.send(
+				String.format(I18nProperties.getEnumCaption(subject), subjectParameters),
+				messageContent,
+				contactInfoSupplier.apply(recipient),
+				recipientUuid,
+				"user");
+		}
+	}
+
+	private void sendEmail(String subject, String messageContent, String emailAddress, String recipientUuid, final String recipientType)
+		throws NotificationDeliveryFailedException {
+
+		if (DataHelper.isNullOrEmpty(emailAddress)) {
+			logger.info(String.format("Tried to send an email to a %s without an email address (UUID: %s).", recipientType, recipientUuid));
+		} else {
+			try {
+				emailService.sendEmail(emailAddress, subject, messageContent);
+			} catch (MessagingException e) {
+				logError(recipientUuid, recipientType, MessageType.EMAIL);
+				throw new NotificationDeliveryFailedException("Email could not be sent due to an unexpected error.", MessageType.EMAIL, e);
+			}
+		}
+	}
+
+	private void sendSms(String subject, String messageContent, String phoneNumber, String recipientUuid, final String recipientType)
 		throws NotificationDeliveryFailedException {
 
 		boolean isSmsServiceSetUp = configFacade.isSmsServiceSetUp();
-		for (MessageType messageType : messageTypes) {
-			if (messageType == MessageType.EMAIL && DataHelper.isNullOrEmpty(emailAddress)) {
-				logger.info(String.format("Tried to send an email to a %s without an email address (UUID: %s).", recipientType, recipientUuid));
-			} else if (isSmsServiceSetUp && messageType == MessageType.SMS && DataHelper.isNullOrEmpty(phoneNumber)) {
-				logger.info(String.format("Tried to send an SMS to a %s without a phone number (UUID: %s).", recipientType, recipientUuid));
-			} else {
-				try {
-					if (messageType == MessageType.EMAIL) {
-						emailService.sendEmail(emailAddress, subject, messageContent);
-					} else if (isSmsServiceSetUp && messageType == MessageType.SMS) {
-						smsService.sendSms(phoneNumber, messageContent);
-					}
-				} catch (MessagingException e) {
-					logError(recipientUuid, recipientType, messageType);
-					throw new NotificationDeliveryFailedException("Email could not be sent due to an unexpected error.", MessageType.EMAIL, e);
-				} catch (IOException | NexmoClientException e) {
-					logError(recipientUuid, recipientType, messageType);
-					throw new NotificationDeliveryFailedException("SMS could not be sent due to an unexpected error.", MessageType.SMS, e);
-				} catch (InvalidPhoneNumberException e) {
-					logError(recipientUuid, recipientType, messageType);
-					throw new NotificationDeliveryFailedException("SMS could not be sent because of an invalid phone number.", MessageType.SMS, e);
+
+		if (isSmsServiceSetUp && DataHelper.isNullOrEmpty(phoneNumber)) {
+			logger.info(String.format("Tried to send an SMS to a %s without a phone number (UUID: %s).", recipientType, recipientUuid));
+		} else {
+			try {
+				if (isSmsServiceSetUp) {
+					smsService.sendSms(phoneNumber, messageContent);
 				}
+			} catch (IOException | NexmoClientException e) {
+				logError(recipientUuid, recipientType, MessageType.SMS);
+				throw new NotificationDeliveryFailedException("SMS could not be sent due to an unexpected error.", MessageType.SMS, e);
+			} catch (InvalidPhoneNumberException e) {
+				logError(recipientUuid, recipientType, MessageType.SMS);
+				throw new NotificationDeliveryFailedException("SMS could not be sent because of an invalid phone number.", MessageType.SMS, e);
 			}
 		}
 	}
 
 	private void logError(String recipientUuid, String recipientType, MessageType messageType) {
 		logger.error(String.format("Failed to send %s to %s with UUID %s.", messageType, recipientType, recipientUuid));
+	}
+
+	interface Messenger {
+
+		void send(String subject, String messageContent, String contactInfo, String recipientUuid, String recipientType)
+			throws NotificationDeliveryFailedException;
 	}
 }

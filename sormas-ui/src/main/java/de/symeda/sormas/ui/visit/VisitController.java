@@ -40,7 +40,6 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
@@ -58,7 +57,7 @@ public class VisitController {
 		VisitDto visit = FacadeProvider.getVisitFacade().getVisitByUuid(visitUuid);
 		VisitEditForm editForm;
 		if (contactRef != null) {
-			ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid());
+			ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactRef.getUuid());
 			PersonDto visitPerson = FacadeProvider.getPersonFacade().getPersonByUuid(visit.getPerson().getUuid());
 			editForm = new VisitEditForm(visit.getDisease(), contact, visitPerson, false, !contact.isPseudonymized());
 		} else if (caseRef != null) {
@@ -99,7 +98,7 @@ public class VisitController {
 			}
 		});
 
-		if (UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.VISIT_DELETE)) {
 			editView.addDeleteListener(() -> {
 				FacadeProvider.getVisitFacade().deleteVisit(visitRef.getUuid());
 				UI.getCurrent().removeWindow(window);
@@ -134,7 +133,7 @@ public class VisitController {
 	
 	public void createVisit(ContactReferenceDto contactRef, Consumer<VisitReferenceDto> doneConsumer) {
 		VisitDto visit = createNewVisit(contactRef);
-		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid());
+		ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactRef.getUuid());
 		PersonDto contactPerson = FacadeProvider.getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
 		VisitEditForm createForm = new VisitEditForm(visit.getDisease(), contact, contactPerson, true, true);
 		createForm.setValue(visit);
@@ -160,7 +159,7 @@ public class VisitController {
 	}
 
 	private VisitDto createNewVisit(ContactReferenceDto contactRef) {
-		ContactDto contact = FacadeProvider.getContactFacade().getContactByUuid(contactRef.getUuid());
+		ContactDto contact = FacadeProvider.getContactFacade().getByUuid(contactRef.getUuid());
 		return createNewVisit(contact.getPerson(), contact.getDisease());
 	}
 

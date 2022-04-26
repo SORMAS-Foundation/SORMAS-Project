@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -29,10 +29,10 @@ import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
+import org.sormas.e2etests.entities.pojo.web.Contact;
+import org.sormas.e2etests.entities.pojo.web.Person;
+import org.sormas.e2etests.entities.services.PersonService;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.web.Contact;
-import org.sormas.e2etests.pojo.web.Person;
-import org.sormas.e2etests.services.PersonService;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.asserts.SoftAssert;
 
@@ -51,6 +51,33 @@ public class EditContactPersonSteps implements En {
       SoftAssert softly,
       BaseSteps baseSteps) {
     this.webDriverHelpers = webDriverHelpers;
+
+    When(
+        "I check the created data for DE version is correctly displayed on Edit Contact Person page",
+        () -> {
+          aPerson = collectPersonDataDE();
+          createdContact = CreateNewContactSteps.contact;
+          softly.assertEquals(
+              aPerson.getFirstName(), createdContact.getFirstName(), "First name is not correct");
+          softly.assertEquals(
+              aPerson.getLastName(),
+              createdContact.getLastName().toUpperCase(),
+              "Last name is not correct");
+          softly.assertEquals(
+              aPerson.getDateOfBirth(),
+              createdContact.getDateOfBirth(),
+              "Date of birth is not correct");
+          softly.assertEquals(aPerson.getSex(), createdContact.getSex(), "Sex is not correct");
+          softly.assertEquals(
+              aPerson.getEmailAddress(),
+              createdContact.getPrimaryEmailAddress(),
+              "Primary email address is not correct");
+          softly.assertEquals(
+              aPerson.getPhoneNumber(),
+              createdContact.getPrimaryPhoneNumber(),
+              "Phone number is not correct");
+          softly.assertAll();
+        });
 
     When(
         "I check the created data is correctly displayed on Edit Contact Person page",
@@ -83,6 +110,7 @@ public class EditContactPersonSteps implements En {
         "I complete all default empty fields from Contact Person tab",
         () -> {
           newGeneratedPerson = personService.buildGeneratedPerson();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           fillSalutation(newGeneratedPerson.getSalutation());
           fillDateOfBirth(newGeneratedPerson.getDateOfBirth());
           selectSex(newGeneratedPerson.getSex());
@@ -91,8 +119,9 @@ public class EditContactPersonSteps implements En {
           fillExternalToken(newGeneratedPerson.getExternalToken());
           fillExternalToken(newGeneratedPerson.getExternalToken());
           selectTypeOfOccupation(newGeneratedPerson.getTypeOfOccupation());
-          TimeUnit.SECONDS.sleep(3);
+
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+
           selectStaffOfArmedForces(newGeneratedPerson.getStaffOfArmedForces());
           selectRegion(newGeneratedPerson.getRegion());
           selectDistrict(newGeneratedPerson.getDistrict());
@@ -124,7 +153,7 @@ public class EditContactPersonSteps implements En {
         "I click on save button from Contact Person tab",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(120);
           Person contactInfo = getPersonInformation();
           fullyDetailedPerson =
               personService.updateExistentPerson(
@@ -166,13 +195,14 @@ public class EditContactPersonSteps implements En {
   @SneakyThrows
   private void fillExternalToken(String token) {
     webDriverHelpers.fillInWebElement(EXTERNAL_TOKEN_INPUT, token);
-    // TODO validate if this fix is stable in Jenkins run
-    TimeUnit.SECONDS.sleep(3);
-    webDriverHelpers.waitForPageLoadingSpinnerToDisappear(15);
+    webDriverHelpers.waitForPageLoadingSpinnerToDisappear(30);
+    TimeUnit.SECONDS.sleep(5); // fix for weird behaviour in UI
   }
 
+  @SneakyThrows
   private void selectTypeOfOccupation(String occupation) {
     webDriverHelpers.selectFromCombobox(TYPE_OF_OCCUPATION_COMBOBOX, occupation);
+    TimeUnit.SECONDS.sleep(1); // fix for weird behaviour in UI
   }
 
   private void selectStaffOfArmedForces(String armedForces) {
@@ -260,8 +290,35 @@ public class EditContactPersonSteps implements En {
         .build();
   }
 
+  private Person collectPersonDataDE() {
+    Person contactInfo = getPersonInformationDE();
+
+    return Person.builder()
+        .firstName(contactInfo.getFirstName())
+        .lastName(contactInfo.getLastName())
+        .dateOfBirth(contactInfo.getDateOfBirth())
+        .sex(webDriverHelpers.getValueFromWebElement(SEX_INPUT))
+        .emailAddress(webDriverHelpers.getTextFromPresentWebElement(EMAIL_FIELD))
+        .phoneNumber(webDriverHelpers.getTextFromPresentWebElement(PHONE_FIELD))
+        .build();
+  }
+
   private Person getPersonInformation() {
     DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
+    String contactInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
+    String uuid = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
+    String[] personInfo = contactInfo.split(" ");
+    LocalDate localDate = LocalDate.parse(personInfo[3].replace(")", ""), formatter);
+    return Person.builder()
+        .firstName(personInfo[0])
+        .lastName(personInfo[1])
+        .dateOfBirth(localDate)
+        .uuid(uuid)
+        .build();
+  }
+
+  private Person getPersonInformationDE() {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d.M.yyyy");
     String contactInfo = webDriverHelpers.getTextFromWebElement(USER_INFORMATION);
     String uuid = webDriverHelpers.getValueFromWebElement(UUID_INPUT);
     String[] personInfo = contactInfo.split(" ");

@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -60,10 +60,41 @@ public enum CaseClassification {
     throw new Exception("Unable to find " + option + " value in CaseClassification Enum");
   }
 
+  @SneakyThrows
+  public static String getUIValueForGivenAPIValue(String option) {
+    CaseClassification[] classifications = CaseClassification.values();
+    for (CaseClassification value : classifications) {
+      if (value.getClassificationAPIvalue().equalsIgnoreCase(option))
+        return value.getClassificationUIvalue();
+    }
+    throw new Exception("Unable to find " + option + " value in CaseClassification Enum");
+  }
+
+  @SneakyThrows
+  public static String getCaptionValueFor(String option) {
+    CaseClassification[] classifications = CaseClassification.values();
+    for (CaseClassification value : classifications) {
+      if (value.getClassificationAPIvalue().equalsIgnoreCase(option))
+        return value.getClassificationUIvalue();
+    }
+    throw new Exception("Unable to find " + option + " value in CaseClassification Enum");
+  }
+
   public static String getRandomUIClassification() {
     Random random = new Random();
     return String.valueOf(
         CaseClassification.values()[random.nextInt(values().length)].classificationUIvalue);
+  }
+
+  @SneakyThrows
+  public static String getRandomUIClassificationDifferentThan(String excludedOption) {
+    CaseClassification[] caseClassifications = CaseClassification.values();
+    for (CaseClassification value : caseClassifications) {
+      if (!value.getClassificationUIvalue().equalsIgnoreCase(excludedOption)
+          && !value.getClassificationAPIvalue().equalsIgnoreCase(excludedOption))
+        return value.getClassificationUIvalue();
+    }
+    throw new Exception("Unable to provide option different than: " + excludedOption);
   }
 
   public static String getRandomAPIClassification() {

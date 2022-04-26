@@ -76,7 +76,9 @@ import de.symeda.sormas.api.utils.PersonalData;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.backend.caze.maternalhistory.MaternalHistory;
 import de.symeda.sormas.backend.caze.porthealthinfo.PortHealthInfo;
+import de.symeda.sormas.backend.caze.surveillancereport.SurveillanceReport;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
+import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.disease.DiseaseVariantConverter;
@@ -149,6 +151,9 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	public static final String CLINICAL_COURSE = "clinicalCourse";
 	public static final String MATERNAL_HISTORY = "maternalHistory";
 	public static final String PORT_HEALTH_INFO = "portHealthInfo";
+
+	public static final String HEALTH_CONDITIONS = "healthConditions";
+
 	public static final String PREGNANT = "pregnant";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
 	public static final String EPID_NUMBER = "epidNumber";
@@ -159,7 +164,7 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	public static final String SEQUELAE = "sequelae";
 	public static final String SEQUELAE_DETAILS = "sequelaeDetails";
 	public static final String CASE_AGE = "caseAge";
-	public static final String ARCHIVED = "archived";
+
 	public static final String THERAPY = "therapy";
 	public static final String CLINICIAN_DETAILS = "clinicianDetails";
 	public static final String CASE_ORIGIN = "caseOrigin";
@@ -201,6 +206,7 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	public static final String FOLLOW_UP_UNTIL = "followUpUntil";
 	public static final String OVERWRITE_FOLLOW_UP_UNTIL = "overwriteFollowUpUntil";
 	public static final String VISITS = "visits";
+	public static final String SURVEILLANCE_REPORTS = "surveillanceReports";
 	public static final String FACILITY_TYPE = "facilityType";
 	public static final String CONTACTS = "contacts";
 	public static final String CONVERTED_FROM_CONTACT = "convertedContact";
@@ -234,6 +240,7 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	public static final String CASE_REFERENCE_DEFINITION = "caseReferenceDefinition";
 	public static final String PREVIOUS_QUARANTINE_TO = "previousQuarantineTo";
 	public static final String QUARANTINE_CHANGE_COMMENT = "quarantineChangeComment";
+	public static final String DUPLICATE_OF = "duplicateOf";
 
 	private Person person;
 	private String description;
@@ -298,6 +305,8 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 
 	private Symptoms symptoms;
 
+	private HealthConditions healthConditions;
+
 	private YesNoUnknown pregnant;
 
 	private VaccinationStatus vaccinationStatus;
@@ -314,7 +323,6 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 
 	private Integer caseAge;
 
-	private boolean archived;
 	private String creationVersion;
 	private Case duplicateOf;
 
@@ -359,6 +367,7 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	private List<Task> tasks;
 	private Set<Sample> samples = new HashSet<>();
 	private Set<Visit> visits = new HashSet<>();
+	private Set<SurveillanceReport> surveillanceReports = new HashSet<>();
 	private Set<EventParticipant> eventParticipants;
 	private List<Contact> contacts;
 	private List<Contact> convertedContact;
@@ -872,6 +881,16 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 		this.convertedContact = convertedContact;
 	}
 
+	@OneToOne(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@AuditedIgnore
+	public HealthConditions getHealthConditions() {
+		return healthConditions;
+	}
+
+	public void setHealthConditions(HealthConditions healthConditions) {
+		this.healthConditions = healthConditions;
+	}
+
 	@Enumerated(EnumType.STRING)
 	public YesNoUnknown getPregnant() {
 		return pregnant;
@@ -953,6 +972,16 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 
 	public void setVisits(Set<Visit> visits) {
 		this.visits = visits;
+	}
+
+	@AuditedIgnore
+	@OneToMany(mappedBy = SurveillanceReport.CAZE, fetch = FetchType.LAZY)
+	public Set<SurveillanceReport> getSurveillanceReports() {
+		return surveillanceReports;
+	}
+
+	public void setSurveillanceReports(Set<SurveillanceReport> surveillanceReports) {
+		this.surveillanceReports = surveillanceReports;
 	}
 
 	@OneToMany(mappedBy = Sample.ASSOCIATED_CASE, fetch = FetchType.LAZY)
@@ -1067,15 +1096,6 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 
 	public void setCaseAge(Integer caseAge) {
 		this.caseAge = caseAge;
-	}
-
-	@Column
-	public boolean isArchived() {
-		return archived;
-	}
-
-	public void setArchived(boolean archived) {
-		this.archived = archived;
 	}
 
 	@Column(length = 32)
@@ -1632,7 +1652,11 @@ public class Case extends CoreAdo implements SormasToSormasShareable, HasExterna
 	}
 
 	@Override
-	@ManyToOne(cascade = CascadeType.ALL)
+	@ManyToOne(cascade = {
+		CascadeType.PERSIST,
+		CascadeType.MERGE,
+		CascadeType.DETACH,
+		CascadeType.REFRESH })
 	@AuditedIgnore
 	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;

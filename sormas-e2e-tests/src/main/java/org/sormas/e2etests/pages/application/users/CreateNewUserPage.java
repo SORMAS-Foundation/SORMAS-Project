@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -50,5 +50,20 @@ public class CreateNewUserPage {
   public static final By LIMITED_DISEASE_COMBOBOX = By.cssSelector("#limitedDisease > div");
   public static final By DISCARD_BUTTON = By.id("discard");
   public static final By SAVE_BUTTON = By.id("commit");
+  public static final By PASSWORD_FIELD =
+      By.xpath(
+          "//div[contains(@class, 'popupContent')]//div[@class='v-label v-widget h2 v-label-h2 v-label-undef-w']");
   public static final By CLOSE_DIALOG_BUTTON = By.className("v-window-closebox");
+  public static final By USER_INPUT_SEARCH = By.id("search");
+  public static final By ENABLE_BULK_ACTIONS_VALUES = By.id("bulkActions-3");
+  public static final By DISABLE_BULK_ACTIONS_VALUES = By.id("bulkActions-4");
+  public static final By CONFIRM_POP_UP = By.id("actionConfirm");
+  public static final By AMOUNT_OF_CHOSEN_USERS =
+      By.xpath(
+          "//div[@class='v-label v-widget v-label-undef-w bold v-label-bold vspace-top-none v-label-vspace-top-none align-right v-label-align-right']");
+  public static final By AMOUNT_ACTIVE_INACTIVE_USERS =
+      By.xpath(
+          "//div[@class='v-label v-widget bold v-label-bold vspace-top-none v-label-vspace-top-none align-right v-label-align-right v-label-undef-w']");
+  public static final By ACTIVE_USER_COMBOBOX =
+      By.cssSelector("[id='active'] [class='v-filterselect-button']");
 }

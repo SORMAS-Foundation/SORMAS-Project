@@ -2,7 +2,6 @@ package de.symeda.sormas.rest;
 
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -27,9 +26,6 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 @Path("/travelentries")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
-@RolesAllowed({
-	"USER",
-	"REST_USER" })
 public class TravelEntryResource extends EntityDtoResource {
 
 	@POST
@@ -58,7 +54,7 @@ public class TravelEntryResource extends EntityDtoResource {
 	@DELETE
 	@Path("/{uuid}")
 	public Response delete(@PathParam("uuid") String uuid) {
-		FacadeProvider.getTravelEntryFacade().deleteTravelEntry(uuid);
+		FacadeProvider.getTravelEntryFacade().delete(uuid);
 		return Response.ok("OK").build();
 	}
 

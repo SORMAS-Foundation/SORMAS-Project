@@ -126,11 +126,11 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 		contactDto.setQuarantineFrom(parseDate("10/09/2020"));
 		contactDto.setQuarantineTo(parseDate("24/09/2020"));
 		contactDto.setQuarantineOrderedOfficialDocumentDate(parseDate("09/09/2020"));
-		getContactFacade().saveContact(contactDto);
+		getContactFacade().save(contactDto);
 
 		eventDto = creator.createEvent(userDto.toReference());
 		eventDto.setEventTitle("An event");
-		getEventFacade().saveEvent(eventDto);
+		getEventFacade().save(eventDto);
 		eventParticipantDto = creator.createEventParticipant(eventDto.toReference(), personDto, "participated", userDto.toReference());
 
 		sampleDto = SampleDto.build(userDto.toReference(), caseDataDto.toReference());
@@ -152,6 +152,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 		travelEntryDto.setUuid("VQCJU2-DZPOBO-7FWMLV-G3F3SACI");
 		travelEntryDto.setReportDate(parseDate("09/01/2021"));
 		travelEntryDto.setReportingUser(userDto.toReference());
+		travelEntryDto.setDateOfArrival(new Date());
 		travelEntryDto.setPointOfEntry(rdcf.pointOfEntry);
 		// To survive validation:
 		travelEntryDto.setDisease(Disease.CORONAVIRUS);
@@ -243,7 +244,6 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 	@Test
 	public void testBulkContactDocumentCreation() throws DocumentTemplateException, IOException {
 		ReferenceDto rootEntityReference = contactDto.toReference();
-
 		Properties properties = new Properties();
 		properties.setProperty("extraremark1", "the first remark");
 		properties.setProperty("extra.remark.no3", "the third remark");

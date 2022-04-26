@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -19,6 +19,8 @@
 package org.sormas.e2etests.steps.web.application.cases;
 
 import static org.sormas.e2etests.pages.application.cases.FollowUpTabPage.*;
+import static org.sormas.e2etests.pages.application.cases.HospitalizationTabPage.BLUE_ERROR_EXCLAMATION_MARK;
+import static org.sormas.e2etests.pages.application.cases.HospitalizationTabPage.BLUE_ERROR_EXCLAMATION_MARK_TEXT;
 
 import com.github.javafaker.Faker;
 import cucumber.api.java8.En;
@@ -29,11 +31,11 @@ import java.util.List;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.FollowUpVisit;
+import org.sormas.e2etests.entities.pojo.web.Visit;
+import org.sormas.e2etests.entities.services.FollowUpVisitService;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.pojo.web.FollowUpVisit;
-import org.sormas.e2etests.pojo.web.Visit;
-import org.sormas.e2etests.services.FollowUpVisitService;
 import org.testng.asserts.SoftAssert;
 
 public class FollowUpStep implements En {
@@ -114,7 +116,7 @@ public class FollowUpStep implements En {
         () -> {
           webDriverHelpers.scrollToElement(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(
@@ -154,7 +156,7 @@ public class FollowUpStep implements En {
     When(
         "I fill specific data of symptoms with ([^\"]*) option to all Clinical Signs and Symptoms",
         (String parameter) -> {
-          visit = followUpVisitService.buildTemperatureOnlySymptoms("36.6");
+          visit = followUpVisitService.buildTemperatureOnlySymptoms("36,6");
           selectCurrentTemperature(visit.getCurrentBodyTemperature());
           selectSourceOfTemperature(visit.getSourceOfBodyTemperature());
           webDriverHelpers.clickOnWebElementBySelector(CLEAR_ALL);
@@ -188,14 +190,38 @@ public class FollowUpStep implements En {
 
     When(
         "I set First Symptom as ([^\"]*)",
-        (String parameter) -> {
-          webDriverHelpers.selectFromCombobox(FIRST_SYMPTOM_COMBOBOX, parameter);
-        });
+        (String parameter) ->
+            webDriverHelpers.selectFromCombobox(FIRST_SYMPTOM_COMBOBOX, parameter));
 
     When(
         "I set Date of symptom onset",
         () -> {
           fillDateOfSymptoms(LocalDate.now());
+        });
+
+    When(
+        "I set Maximum body temperature as a ([^\"]*)",
+        (String temperature) -> {
+          visit = followUpVisitService.buildTemperatureOnlySymptoms(temperature);
+          selectCurrentTemperature(visit.getCurrentBodyTemperature());
+          selectSourceOfTemperature(visit.getSourceOfBodyTemperature());
+        });
+
+    When(
+        "I check if popup is displayed next to Fever in Symptoms if temperature is ([^\"]*)",
+        (String temp) -> {
+          String expectedForLowerThan =
+              "A body temperature of less than 38 C has been specified. It is recommended to also set Fever to \"No\".";
+          String expectedForHigherThan =
+              "A body temperature of at least 38 C has been specified. It is recommended to also set Fever to \"Yes\".";
+          webDriverHelpers.hoverToElement(BLUE_ERROR_EXCLAMATION_MARK);
+          String displayedText =
+              webDriverHelpers.getTextFromWebElement(BLUE_ERROR_EXCLAMATION_MARK_TEXT);
+          if (temp.equals(">=38"))
+            softly.assertEquals(expectedForHigherThan, (displayedText.replaceAll("\\u00B0", "")));
+          else if (temp.equals("<=38"))
+            softly.assertEquals(expectedForLowerThan, (displayedText.replaceAll("\\u00B0", "")));
+          softly.assertAll();
         });
 
     When(

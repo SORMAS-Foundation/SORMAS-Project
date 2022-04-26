@@ -33,17 +33,18 @@ import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.infrastructure.facility.FacilityCriteria;
-import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityExportDto;
-import de.symeda.sormas.api.infrastructure.facility.FacilityType;
-import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityCriteria;
+import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityExportDto;
+import de.symeda.sormas.api.infrastructure.facility.FacilityType;
+import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -66,13 +67,14 @@ import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class FacilitiesView extends AbstractConfigurationView {
 
-	private static final long serialVersionUID = -2015225571046243640L;
-
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/facilities";
-
+	private static final long serialVersionUID = -2015225571046243640L;
+	protected FacilitiesGrid grid;
+	protected Button importButton;
+	protected Button createButton;
+	protected PopupButton exportPopupButton;
 	private FacilityCriteria criteria;
 	private ViewConfiguration viewConfiguration;
-
 	// Filter
 	private SearchField searchField;
 	private ComboBox typeGroupFilter;
@@ -83,14 +85,9 @@ public class FacilitiesView extends AbstractConfigurationView {
 	private ComboBox communityFilter;
 	private ComboBox relevanceStatusFilter;
 	private Button resetButton;
-
 	//	private HorizontalLayout headerLayout;
 	private HorizontalLayout filterLayout;
 	private VerticalLayout gridLayout;
-	protected FacilitiesGrid grid;
-	protected Button importButton;
-	protected Button createButton;
-	protected PopupButton exportPopupButton;
 	private MenuBar bulkOperationsDropdown;
 	private RowCount rowCount;
 
@@ -270,6 +267,15 @@ public class FacilitiesView extends AbstractConfigurationView {
 			grid.reload();
 			rowCount.update(grid.getItemCount());
 		}, regionFilter);
+		countryFilter.addValueChangeListener(country -> {
+			CountryReferenceDto countryReferenceDto = (CountryReferenceDto) country.getProperty().getValue();
+			criteria.country(countryReferenceDto);
+			navigateTo(criteria);
+			FieldHelper.updateItems(
+				regionFilter,
+				countryReferenceDto != null ? FacadeProvider.getRegionFacade().getAllActiveByCountry(countryReferenceDto.getUuid()) : null);
+
+		});
 
 		regionFilter = ComboBoxHelper.createComboBoxV7();
 		regionFilter.setId(FacilityDto.REGION);
@@ -343,32 +349,40 @@ public class FacilitiesView extends AbstractConfigurationView {
 				if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(
 						Captions.bulkActions,
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE, selectedItem -> {
-							ControllerProvider.getInfrastructureController()
-								.archiveOrDearchiveAllSelectedItems(
-									true,
-									grid.asMultiSelect().getSelectedItems(),
-									InfrastructureType.FACILITY,
-									new Runnable() {
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.actionArchiveInfrastructure),
+							VaadinIcons.ARCHIVE,
+							selectedItem -> {
+								ControllerProvider.getInfrastructureController()
+									.archiveOrDearchiveAllSelectedItems(
+										true,
+										grid.asMultiSelect().getSelectedItems(),
+										InfrastructureType.FACILITY,
+										new Runnable() {
 
-										public void run() {
-											navigateTo(criteria);
-										}
-									});
-						}, EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchive), VaadinIcons.ARCHIVE, selectedItem -> {
-							ControllerProvider.getInfrastructureController()
-								.archiveOrDearchiveAllSelectedItems(
-									false,
-									grid.asMultiSelect().getSelectedItems(),
-									InfrastructureType.FACILITY,
-									new Runnable() {
+											public void run() {
+												navigateTo(criteria);
+											}
+										});
+							},
+							EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.actionDearchiveInfrastructure),
+							VaadinIcons.ARCHIVE,
+							selectedItem -> {
+								ControllerProvider.getInfrastructureController()
+									.archiveOrDearchiveAllSelectedItems(
+										false,
+										grid.asMultiSelect().getSelectedItems(),
+										InfrastructureType.FACILITY,
+										new Runnable() {
 
-										public void run() {
-											navigateTo(criteria);
-										}
-									});
-						}, EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
+											public void run() {
+												navigateTo(criteria);
+											}
+										});
+							},
+							EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
 					bulkOperationsDropdown
 						.setVisible(viewConfiguration.isInEagerMode() && !EntityRelevanceStatus.ALL.equals(criteria.getRelevanceStatus()));

@@ -37,6 +37,7 @@ import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.InfrastructureType;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictCriteria;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -50,6 +51,7 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.ExportEntityName;
+import de.symeda.sormas.ui.utils.FieldHelper;
 import de.symeda.sormas.ui.utils.GridExportStreamResource;
 import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.RowCount;
@@ -58,25 +60,21 @@ import de.symeda.sormas.ui.utils.ViewConfiguration;
 
 public class DistrictsView extends AbstractConfigurationView {
 
-	private static final long serialVersionUID = -3487830069266335042L;
-
 	public static final String VIEW_NAME = ROOT_VIEW_NAME + "/districts";
-
+	private static final long serialVersionUID = -3487830069266335042L;
+	protected Button createButton;
+	protected Button importButton;
 	private DistrictCriteria criteria;
 	private ViewConfiguration viewConfiguration;
-
 	// Filter
 	private SearchField searchField;
 	private ComboBox countryFilter;
 	private ComboBox regionFilter;
 	private ComboBox relevanceStatusFilter;
 	private Button resetButton;
-
 	private HorizontalLayout filterLayout;
 	private VerticalLayout gridLayout;
 	private DistrictsGrid grid;
-	protected Button createButton;
-	protected Button importButton;
 	private MenuBar bulkOperationsDropdown;
 
 	public DistrictsView() {
@@ -102,7 +100,7 @@ public class DistrictsView extends AbstractConfigurationView {
 		gridLayout.setStyleName("crud-main-layout");
 
 		boolean infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
-		
+
 		if (infrastructureDataEditable && UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_IMPORT)) {
 			importButton = ButtonHelper.createIconButton(Captions.actionImport, VaadinIcons.UPLOAD, e -> {
 				Window window = VaadinUiUtil.showPopupWindow(new InfrastructureImportLayout(InfrastructureType.DISTRICT));
@@ -193,6 +191,15 @@ public class DistrictsView extends AbstractConfigurationView {
 			criteria.country(country);
 			grid.reload();
 		}, regionFilter);
+		countryFilter.addValueChangeListener(country -> {
+			CountryReferenceDto countryReferenceDto = (CountryReferenceDto) country.getProperty().getValue();
+			criteria.country(countryReferenceDto);
+			navigateTo(criteria);
+			FieldHelper.updateItems(
+				regionFilter,
+				countryReferenceDto != null ? FacadeProvider.getRegionFacade().getAllActiveByCountry(countryReferenceDto.getUuid()) : null);
+
+		});
 
 		regionFilter = ComboBoxHelper.createComboBoxV7();
 		regionFilter.setId(DistrictDto.REGION);
@@ -236,32 +243,40 @@ public class DistrictsView extends AbstractConfigurationView {
 				if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
 					bulkOperationsDropdown = MenuBarHelper.createDropDown(
 						Captions.bulkActions,
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionArchive), VaadinIcons.ARCHIVE, selectedItem -> {
-							ControllerProvider.getInfrastructureController()
-								.archiveOrDearchiveAllSelectedItems(
-									true,
-									grid.asMultiSelect().getSelectedItems(),
-									InfrastructureType.DISTRICT,
-									new Runnable() {
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.actionArchiveInfrastructure),
+							VaadinIcons.ARCHIVE,
+							selectedItem -> {
+								ControllerProvider.getInfrastructureController()
+									.archiveOrDearchiveAllSelectedItems(
+										true,
+										grid.asMultiSelect().getSelectedItems(),
+										InfrastructureType.DISTRICT,
+										new Runnable() {
 
-										public void run() {
-											navigateTo(criteria);
-										}
-									});
-						}, EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
-						new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.actionDearchive), VaadinIcons.ARCHIVE, selectedItem -> {
-							ControllerProvider.getInfrastructureController()
-								.archiveOrDearchiveAllSelectedItems(
-									false,
-									grid.asMultiSelect().getSelectedItems(),
-									InfrastructureType.DISTRICT,
-									new Runnable() {
+											public void run() {
+												navigateTo(criteria);
+											}
+										});
+							},
+							EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())),
+						new MenuBarHelper.MenuBarItem(
+							I18nProperties.getCaption(Captions.actionDearchiveInfrastructure),
+							VaadinIcons.ARCHIVE,
+							selectedItem -> {
+								ControllerProvider.getInfrastructureController()
+									.archiveOrDearchiveAllSelectedItems(
+										false,
+										grid.asMultiSelect().getSelectedItems(),
+										InfrastructureType.DISTRICT,
+										new Runnable() {
 
-										public void run() {
-											navigateTo(criteria);
-										}
-									});
-						}, EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
+											public void run() {
+												navigateTo(criteria);
+											}
+										});
+							},
+							EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 
 					bulkOperationsDropdown.setVisible(isBulkOperationsDropdownVisible());
 					actionButtonsLayout.addComponent(bulkOperationsDropdown);
@@ -309,7 +324,7 @@ public class DistrictsView extends AbstractConfigurationView {
 		boolean infrastructureDataEditable = FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EDIT_INFRASTRUCTURE_DATA);
 
 		return viewConfiguration.isInEagerMode()
-				&& (EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())
+			&& (EntityRelevanceStatus.ACTIVE.equals(criteria.getRelevanceStatus())
 				|| (infrastructureDataEditable && EntityRelevanceStatus.ARCHIVED.equals(criteria.getRelevanceStatus())));
 	}
 }

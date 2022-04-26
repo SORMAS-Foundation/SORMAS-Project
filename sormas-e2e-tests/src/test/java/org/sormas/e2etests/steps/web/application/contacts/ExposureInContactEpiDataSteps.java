@@ -5,16 +5,17 @@ import static org.sormas.e2etests.pages.application.contacts.EditEpidemiological
 import static org.sormas.e2etests.pages.application.contacts.EditEpidemiologicalDataContactPage.EXPOSURE_DETAILS_NEW_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditEpidemiologicalDataContactPage.LARGE_OUTBREAKS_AREA_CHECKBOX;
 import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPage.*;
+import static org.sormas.e2etests.steps.BaseSteps.locale;
 
 import cucumber.api.java8.En;
 import javax.inject.Inject;
-import javax.inject.Named;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.ExposureDetails;
+import org.sormas.e2etests.entities.pojo.web.ExposureInvestigation;
+import org.sormas.e2etests.entities.services.ExposureDetailsService;
+import org.sormas.e2etests.entities.services.ExposureInvestigationService;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.pojo.web.ExposureDetails;
-import org.sormas.e2etests.pojo.web.ExposureInvestigation;
-import org.sormas.e2etests.services.ExposureDetailsService;
-import org.sormas.e2etests.services.ExposureInvestigationService;
 import org.sormas.e2etests.state.ApiState;
 
 public class ExposureInContactEpiDataSteps implements En {
@@ -31,14 +32,14 @@ public class ExposureInContactEpiDataSteps implements En {
       ExposureInvestigationService exposureInvestigationService,
       ExposureDetailsService exposureDetailsService,
       ApiState apiState,
-      @Named("ENVIRONMENT_URL") String environmentUrl) {
+      EnvironmentManager environmentManager) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
         "I am accessing the Epidemiological tab using of created contact via api",
         () -> {
           EPIDATA_FOR_LAST_CREATED_CONTACT_URL =
-              environmentUrl
+              environmentManager.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!contacts/epidata/"
                   + apiState.getCreatedContact().getUuid();
           webDriverHelpers.accessWebSite(EPIDATA_FOR_LAST_CREATED_CONTACT_URL);

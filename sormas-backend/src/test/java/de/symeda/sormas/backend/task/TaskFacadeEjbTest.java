@@ -31,12 +31,16 @@ import java.util.Arrays;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.user.UserReferenceDto;
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
@@ -51,6 +55,7 @@ import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.task.TaskDto;
+import de.symeda.sormas.api.task.TaskIndexDto;
 import de.symeda.sormas.api.task.TaskStatus;
 import de.symeda.sormas.api.task.TaskType;
 import de.symeda.sormas.api.user.UserDto;
@@ -69,7 +74,7 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ad", "Min", UserRole.ADMIN);
+		UserDto admin = getUserFacade().getByUserName("admin");
 		String adminUuid = admin.getUuid();
 		TaskDto task = creator.createTask(
 			TaskContext.GENERAL,
@@ -173,15 +178,15 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(6, getTaskFacade().getAllActiveTasksAfter(null).size());
 		assertEquals(6, getTaskFacade().getAllActiveUuids().size());
 
-		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), true);
-		getEventFacade().archiveOrDearchiveEvent(event.getUuid(), true);
+		getCaseFacade().archive(caze.getUuid(), null);
+		getEventFacade().archive(event.getUuid(), null);
 
 		// getAllActiveTasks and getAllUuids should return length 1
 		assertEquals(1, getTaskFacade().getAllActiveTasksAfter(null).size());
 		assertEquals(1, getTaskFacade().getAllActiveUuids().size());
 
-		getCaseFacade().archiveOrDearchiveCase(caze.getUuid(), false);
-		getEventFacade().archiveOrDearchiveEvent(event.getUuid(), false);
+		getCaseFacade().dearchive(Collections.singletonList(caze.getUuid()), null);
+		getEventFacade().dearchive(Collections.singletonList(event.getUuid()), null);
 
 		// getAllActiveTasks and getAllUuids should return length 5 + 1 (contact investigation)
 		assertEquals(6, getTaskFacade().getAllActiveTasksAfter(null).size());
@@ -367,6 +372,45 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testGetAllTasksForUsersWithoutRights() {
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, UserRole.ADMIN, UserRole.NATIONAL_USER);
+		UserDto userCaseOfficer = creator.createUser(rdcf, UserRole.CASE_OFFICER);
+		loginWith(user);
+
+		PersonDto person = creator.createPerson("case person", "ln");
+		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
+
+		ContactDto contact = creator.createContact(
+				user.toReference(),
+				person.toReference(),
+				caze.getDisease(),
+				contactDto -> contactDto.setResultingCase(caze.toReference()));
+
+
+		creator.createTask(TaskContext.CONTACT, contact.toReference(), t -> {
+			t.setTaskStatus(TaskStatus.PENDING);
+			t.setAssigneeUser(user.toReference());
+		});
+
+		creator.createTask(TaskContext.CONTACT, contact.toReference(), t -> {
+			t.setTaskStatus(TaskStatus.PENDING);
+			t.setAssigneeUser(userCaseOfficer.toReference());
+		});
+
+		List<TaskIndexDto> tasks = getTaskFacade().getIndexList(null, 0, 100, null);
+		List<TaskIndexDto> contactTasks = tasks.stream().filter(t -> t.getTaskContext().equals(TaskContext.CONTACT)).collect(Collectors.toList());
+		assertEquals(2, contactTasks.size());
+
+		loginWith(userCaseOfficer);
+
+		tasks = getTaskFacade().getIndexList(null, 0, 100, null);
+		contactTasks = tasks.stream().filter(t -> t.getTaskContext().equals(TaskContext.CONTACT)).collect(Collectors.toList());
+		assertEquals(1, contactTasks.size());
+
+	}
+
+	@Test
 	public void testGetPendingTaskCountPerUser() {
 
 		List<String> userUuids;
@@ -379,8 +423,8 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 
 		// 1. one user with tasks, one without
 		RDCF rdcf = new RDCF(creator.createRDCFEntities());
-		UserDto user1 = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
-		UserDto user2 = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user1 = creator.createUser(rdcf, "First", "User", UserRole.SURVEILLANCE_SUPERVISOR);
+		UserDto user2 = creator.createUser(rdcf, "Second", "User", UserRole.SURVEILLANCE_SUPERVISOR);
 
 		creator.createTask(user1.toReference());
 
@@ -397,5 +441,31 @@ public class TaskFacadeEjbTest extends AbstractBeanTest {
 		assertThat(taskCounts.size(), is(2));
 		assertThat(taskCounts.get(user1.getUuid()), is(2L));
 		assertThat(taskCounts.get(user2.getUuid()), is(1L));
+	}
+
+	@Test
+	public void testAllTaskAndDispalyCaseResponsibleRegion() {
+		RDCF rdcf1 = new RDCF(creator.createRDCFEntities("Region1", "District1", "Community1", "Facility1"));
+		RDCF rdcf2 = new RDCF(creator.createRDCFEntities("Region2", "District2", "Community2", "Facility2"));
+
+		UserDto user = creator.createUser(rdcf1, UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto person = creator.createPerson();
+		creator.createCase(user.toReference(), rdcf1, (c) -> {
+			c.setPerson(person.toReference());
+			c.setDisease(Disease.CORONAVIRUS);
+			c.setRegion(rdcf1.region);
+			c.setDistrict(rdcf1.district);
+			c.setCommunity(rdcf1.community);
+			c.setResponsibleRegion(rdcf2.region);
+			c.setResponsibleDistrict(rdcf2.district);
+			c.setResponsibleCommunity(rdcf2.community);
+			c.setReportDate(new Date());
+		});
+
+		List<TaskIndexDto> taskIndexDtos = getTaskFacade().getIndexList(null, 0, 100, null);
+		assertEquals(1, taskIndexDtos.size());
+		assertEquals(rdcf2.region.getCaption(), taskIndexDtos.get(0).getRegion());
+		assertEquals(rdcf2.district.getCaption(), taskIndexDtos.get(0).getDistrict());
+		assertEquals(rdcf2.community.getCaption(), taskIndexDtos.get(0).getCommunity());
 	}
 }

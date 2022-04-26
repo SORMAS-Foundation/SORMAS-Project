@@ -20,7 +20,6 @@ package de.symeda.sormas.rest;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -41,6 +40,8 @@ import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.person.PersonCriteria;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonIndexDto;
+import de.symeda.sormas.api.person.PersonSimilarityCriteria;
+import de.symeda.sormas.api.person.SimilarPersonDto;
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
 
 /**
@@ -54,9 +55,6 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 @Path("/persons")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
-@RolesAllowed({
-	"USER",
-	"REST_USER" })
 public class PersonResource extends EntityDtoResource {
 
 	@GET
@@ -123,5 +121,11 @@ public class PersonResource extends EntityDtoResource {
 		} catch (ExternalDataUpdateException e) {
 			return Response.status(Response.Status.BAD_REQUEST).entity(e.getMessage()).build();
 		}
+	}
+
+	@POST
+	@Path("/similarPersons")
+	public List<SimilarPersonDto> getSimilarPersons(@RequestBody PersonSimilarityCriteria criteria) {
+		return FacadeProvider.getPersonFacade().getSimilarPersonDtos(criteria);
 	}
 }

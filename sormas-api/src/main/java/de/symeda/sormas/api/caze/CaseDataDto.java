@@ -15,10 +15,13 @@
 
 package de.symeda.sormas.api.caze;
 
+import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_FRANCE;
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_GERMANY;
 import static de.symeda.sormas.api.CountryHelper.COUNTRY_CODE_SWITZERLAND;
 import static de.symeda.sormas.api.utils.FieldConstraints.CHARACTER_LIMIT_BIG;
 
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DependingOnUserRight;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -123,6 +126,7 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	public static final String CLINICAL_COURSE = "clinicalCourse";
 	public static final String MATERNAL_HISTORY = "maternalHistory";
 	public static final String PORT_HEALTH_INFO = "portHealthInfo";
+	public static final String HEALTH_CONDITIONS = "healthConditions";
 	public static final String PREGNANT = "pregnant";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
 	public static final String SMALLPOX_VACCINATION_SCAR = "smallpoxVaccinationScar";
@@ -250,9 +254,21 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	@Outbreaks
 	@Required
 	private UserReferenceDto reportingUser;
+	@HideForCountries(countries = {
+		COUNTRY_CODE_FRANCE,
+		COUNTRY_CODE_GERMANY,
+		COUNTRY_CODE_SWITZERLAND })
 	private Date regionLevelDate;
+	@HideForCountries(countries = {
+		COUNTRY_CODE_FRANCE,
+		COUNTRY_CODE_GERMANY,
+		COUNTRY_CODE_SWITZERLAND })
 	private Date nationalLevelDate;
 	@Outbreaks
+	@HideForCountries(countries = {
+		COUNTRY_CODE_FRANCE,
+		COUNTRY_CODE_GERMANY,
+		COUNTRY_CODE_SWITZERLAND })
 	private Date districtLevelDate;
 	@Outbreaks
 	@Required
@@ -320,6 +336,10 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String healthFacilityDetails;
+
+	@Valid
+	private HealthConditionsDto healthConditions;
+
 	private YesNoUnknown pregnant;
 	@Diseases({
 		Disease.AFP,
@@ -349,12 +369,15 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	private UserReferenceDto surveillanceOfficer;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@DependingOnUserRight(UserRight.CASE_CLINICIAN_VIEW)
 	private String clinicianName;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@DependingOnUserRight(UserRight.CASE_CLINICIAN_VIEW)
 	private String clinicianPhone;
 	@SensitiveData
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
+	@DependingOnUserRight(UserRight.CASE_CLINICIAN_VIEW)
 	private String clinicianEmail;
 	@Diseases({
 		Disease.CONGENITAL_RUBELLA })
@@ -558,7 +581,7 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 	private Map<String, String> externalData;
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease) {
-		return build(person, disease, null);
+		return build(person, disease, HealthConditionsDto.build());
 	}
 
 	public static CaseDataDto build(PersonReferenceDto person, Disease disease, HealthConditionsDto healthConditions) {
@@ -569,13 +592,8 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 		caze.setEpiData(EpiDataDto.build());
 		caze.setSymptoms(SymptomsDto.build());
 		caze.setTherapy(TherapyDto.build());
-
-		if (healthConditions == null) {
-			caze.setClinicalCourse(ClinicalCourseDto.build());
-		} else {
-			caze.setClinicalCourse(ClinicalCourseDto.build(healthConditions));
-		}
-
+		caze.setHealthConditions(healthConditions);
+		caze.setClinicalCourse(ClinicalCourseDto.build());
 		caze.setMaternalHistory(MaternalHistoryDto.build());
 		caze.setPortHealthInfo(PortHealthInfoDto.build());
 		caze.setDisease(disease);
@@ -640,6 +658,8 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 		CaseDataDto caseData = CaseDataDto.build(person.toReference(), travelEntry.getDisease());
 
 		caseData.setCaseOrigin(CaseOrigin.POINT_OF_ENTRY);
+		caseData.setDiseaseVariant(travelEntry.getDiseaseVariant());
+		caseData.setDiseaseDetails(travelEntry.getDiseaseVariantDetails());
 		caseData.setResponsibleRegion(travelEntry.getResponsibleRegion());
 		caseData.setResponsibleDistrict(travelEntry.getResponsibleDistrict());
 		caseData.setResponsibleCommunity(travelEntry.getResponsibleCommunity());
@@ -1656,6 +1676,14 @@ public class CaseDataDto extends SormasToSormasShareableDto {
 
 	public void setExternalData(Map<String, String> externalData) {
 		this.externalData = externalData;
+	}
+
+	public HealthConditionsDto getHealthConditions() {
+		return healthConditions;
+	}
+
+	public void setHealthConditions(HealthConditionsDto healthConditions) {
+		this.healthConditions = healthConditions;
 	}
 
 	@Override

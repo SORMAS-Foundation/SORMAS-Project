@@ -35,6 +35,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonHelper;
 import de.symeda.sormas.api.person.PersonSimilarityCriteria;
 import de.symeda.sormas.api.person.SimilarPersonDto;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
@@ -56,6 +57,12 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 	private RadioButtonGroup<String> rbCreatePerson;
 	protected PersonSelectionFilterForm filterForm;
 	private PersonDto referencePerson;
+	private boolean hasMatches;
+	private FieldVisibilityCheckers fieldVisibilityCheckers;
+
+	public PersonSelectionField(PersonDto referencePerson, String infoText) {
+		this(referencePerson, infoText, null);
+	}
 
 	/**
 	 * Generate a selection field which contains a grid containing all similar persons to the `referencePerson`.
@@ -64,12 +71,24 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 	 *            The person for which similar persons are searched and displayed.
 	 * @param infoText
 	 *            Information displayed to the user.
+	 * @param infoTextWithoutMatches
+	 *            Information displayed to the user if the field is shown without matches.
 	 */
-	public PersonSelectionField(PersonDto referencePerson, String infoText) {
+	public PersonSelectionField(PersonDto referencePerson, String infoText, String infoTextWithoutMatches) {
 		this.referencePerson = referencePerson;
-		this.infoText = infoText;
+
+		fieldVisibilityCheckers = FieldVisibilityCheckers.withCountry(FacadeProvider.getConfigFacade().getCountryLocale());
 
 		initializeGrid();
+
+		this.hasMatches = referencePerson == null
+			? false
+			: FacadeProvider.getPersonFacade().checkMatchingNameInDatabase(UserProvider.getCurrent().getUserReference(), defaultCriteria);
+		if (infoTextWithoutMatches == null) {
+			this.infoText = infoText;
+		} else {
+			this.infoText = hasMatches ? infoText : infoTextWithoutMatches;
+		}
 	}
 
 	protected void addInfoComponent() {
@@ -80,20 +99,9 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 		HorizontalLayout personDetailsLayout1 = new HorizontalLayout();
 		personDetailsLayout1.setSpacing(true);
 
-		Label lblFirstName = new Label(referencePerson.getFirstName());
-		lblFirstName.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.FIRST_NAME));
-		lblFirstName.setWidthUndefined();
-		personDetailsLayout1.addComponent(lblFirstName);
-
-		Label lblLastName = new Label(referencePerson.getLastName());
-		lblLastName.setWidthUndefined();
-		lblLastName.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.LAST_NAME));
-		personDetailsLayout1.addComponent(lblLastName);
-
-		Label lblNickname = new Label(referencePerson.getNickname());
-		lblNickname.setWidthUndefined();
-		lblNickname.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.NICKNAME));
-		personDetailsLayout1.addComponent(lblNickname);
+		addLabelIfVisible(personDetailsLayout1, referencePerson.getFirstName(), PersonDto.I18N_PREFIX, PersonDto.FIRST_NAME, PersonDto.class);
+		addLabelIfVisible(personDetailsLayout1, referencePerson.getLastName(), PersonDto.I18N_PREFIX, PersonDto.LAST_NAME, PersonDto.class);
+		addLabelIfVisible(personDetailsLayout1, referencePerson.getNickname(), PersonDto.I18N_PREFIX, PersonDto.NICKNAME, PersonDto.class);
 
 		Label lblBirthDateAndAge = new Label(
 			PersonHelper.getAgeAndBirthdateString(
@@ -106,79 +114,99 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 		lblBirthDateAndAge.setCaption(I18nProperties.getCaption(Captions.personAgeAndBirthdate));
 		personDetailsLayout1.addComponent(lblBirthDateAndAge);
 
-		Label lblSex = new Label(referencePerson.getSex() != null ? referencePerson.getSex().toString() : "");
-		lblSex.setWidthUndefined();
-		lblSex.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.SEX));
-		personDetailsLayout1.addComponent(lblSex);
+		addLabelIfVisible(
+			personDetailsLayout1,
+			referencePerson.getSex() != null ? referencePerson.getSex().toString() : "",
+			PersonDto.I18N_PREFIX,
+			PersonDto.SEX,
+			PersonDto.class);
 
-		Label lblPresentCondition = new Label(referencePerson.getPresentCondition() != null ? referencePerson.getPresentCondition().toString() : "");
-		lblPresentCondition.setWidthUndefined();
-		lblPresentCondition.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PRESENT_CONDITION));
-		personDetailsLayout1.addComponent(lblPresentCondition);
+		addLabelIfVisible(
+			personDetailsLayout1,
+			referencePerson.getPresentCondition() != null ? referencePerson.getPresentCondition().toString() : "",
+			PersonDto.I18N_PREFIX,
+			PersonDto.PRESENT_CONDITION,
+			PersonDto.class);
 
-		Label lblPhone = new Label(referencePerson.getPhone());
-		lblPhone.setWidthUndefined();
-		lblPhone.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PHONE));
-		personDetailsLayout1.addComponent(lblPhone);
+		addLabelIfVisible(personDetailsLayout1, referencePerson.getPhone(), PersonDto.I18N_PREFIX, PersonDto.PHONE, PersonDto.class);
 
 		mainLayout.addComponent(personDetailsLayout1);
 
 		HorizontalLayout personDetailsLayout2 = new HorizontalLayout();
 		personDetailsLayout2.setSpacing(true);
 
-		Label lblDistrict =
-			new Label(referencePerson.getAddress().getDistrict() != null ? referencePerson.getAddress().getDistrict().toString() : "");
-		lblDistrict.setWidthUndefined();
-		lblDistrict.setCaption(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.DISTRICT));
-		personDetailsLayout2.addComponent(lblDistrict);
+		addLabelIfVisible(
+			personDetailsLayout2,
+			referencePerson.getAddress().getDistrict() != null ? referencePerson.getAddress().getDistrict().toString() : "",
+			LocationDto.I18N_PREFIX,
+			LocationDto.DISTRICT,
+			LocationDto.class);
 
-		Label lblCommunity =
-			new Label(referencePerson.getAddress().getCommunity() != null ? referencePerson.getAddress().getCommunity().toString() : "");
-		lblCommunity.setWidthUndefined();
-		lblCommunity.setCaption(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.COMMUNITY));
-		personDetailsLayout2.addComponent(lblCommunity);
+		addLabelIfVisible(
+			personDetailsLayout2,
+			referencePerson.getAddress().getCommunity() != null ? referencePerson.getAddress().getCommunity().toString() : "",
+			LocationDto.I18N_PREFIX,
+			LocationDto.COMMUNITY,
+			LocationDto.class);
 
-		Label lblPostalCode = new Label(referencePerson.getAddress().getPostalCode());
-		lblPostalCode.setWidthUndefined();
-		lblPostalCode.setCaption(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.POSTAL_CODE));
-		personDetailsLayout2.addComponent(lblPostalCode);
+		addLabelIfVisible(
+			personDetailsLayout2,
+			referencePerson.getAddress().getPostalCode(),
+			LocationDto.I18N_PREFIX,
+			LocationDto.POSTAL_CODE,
+			LocationDto.class);
 
-		Label lblCity = new Label(referencePerson.getAddress().getCity());
-		lblCity.setWidthUndefined();
-		lblCity.setCaption(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.CITY));
-		personDetailsLayout2.addComponent(lblCity);
+		addLabelIfVisible(personDetailsLayout2, referencePerson.getAddress().getCity(), LocationDto.I18N_PREFIX, LocationDto.CITY, LocationDto.class);
 
-		Label lblStreet = new Label(referencePerson.getAddress().getStreet());
-		lblStreet.setWidthUndefined();
-		lblStreet.setCaption(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.STREET));
-		personDetailsLayout2.addComponent(lblStreet);
+		addLabelIfVisible(
+			personDetailsLayout2,
+			referencePerson.getAddress().getStreet(),
+			LocationDto.I18N_PREFIX,
+			LocationDto.STREET,
+			LocationDto.class);
 
-		Label lblHouseNumber = new Label(referencePerson.getAddress().getHouseNumber());
-		lblHouseNumber.setWidthUndefined();
-		lblHouseNumber.setCaption(I18nProperties.getPrefixCaption(LocationDto.I18N_PREFIX, LocationDto.HOUSE_NUMBER));
-		personDetailsLayout2.addComponent(lblHouseNumber);
+		addLabelIfVisible(
+			personDetailsLayout2,
+			referencePerson.getAddress().getHouseNumber(),
+			LocationDto.I18N_PREFIX,
+			LocationDto.HOUSE_NUMBER,
+			LocationDto.class);
 
 		mainLayout.addComponent(personDetailsLayout2);
 
 		HorizontalLayout personDetailsLayout3 = new HorizontalLayout();
 		personDetailsLayout3.setSpacing(true);
 
-		Label lblNationalHealthId = new Label(referencePerson.getNationalHealthId());
-		lblNationalHealthId.setWidthUndefined();
-		lblNationalHealthId.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.NATIONAL_HEALTH_ID));
-		personDetailsLayout3.addComponent(lblNationalHealthId);
-
-		Label lblPassportNumber = new Label(referencePerson.getPassportNumber());
-		lblPassportNumber.setWidthUndefined();
-		lblPassportNumber.setCaption(I18nProperties.getPrefixCaption(PersonDto.I18N_PREFIX, PersonDto.PASSPORT_NUMBER));
-		personDetailsLayout3.addComponent(lblPassportNumber);
+		addLabelIfVisible(
+			personDetailsLayout3,
+			referencePerson.getNationalHealthId(),
+			PersonDto.I18N_PREFIX,
+			PersonDto.NATIONAL_HEALTH_ID,
+			PersonDto.class);
+		addLabelIfVisible(
+			personDetailsLayout3,
+			referencePerson.getPassportNumber(),
+			PersonDto.I18N_PREFIX,
+			PersonDto.PASSPORT_NUMBER,
+			PersonDto.class);
 
 		mainLayout.addComponent(personDetailsLayout3);
 	}
 
+	private void addLabelIfVisible(HorizontalLayout layout, String text, String i18nPrefix, String captionKey, Class<?> clazz) {
+		if (fieldVisibilityCheckers.isVisible(clazz, captionKey)) {
+			Label label = new Label(text);
+			label.setCaption(I18nProperties.getPrefixCaption(i18nPrefix, captionKey));
+			label.setWidthUndefined();
+			layout.addComponent(label);
+		}
+	}
+
 	private void addSelectPersonRadioGroup() {
 		List<String> selectPersonOption = new ArrayList<>();
-		selectPersonOption.add(SELECT_PERSON);
+		if (hasMatches) {
+			selectPersonOption.add(SELECT_PERSON);
+		}
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.PERSON_DUPLICATE_CUSTOM_SEARCH)) {
 			selectPersonOption.add(SEARCH_AND_SELECT_PERSON);
 		}
@@ -199,11 +227,15 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 
 				if (SELECT_PERSON.equals(value)) {
 					filterForm.setVisible(false);
-					personGrid.loadData(defaultCriteria);
+					if (filterForm.validateFields()) {
+						personGrid.loadData(defaultCriteria);
+					}
 					selectBestMatch();
 				} else {
 					filterForm.setVisible(true);
-					personGrid.loadData(filterForm.getValue());
+					if (filterForm.validateFields()) {
+						personGrid.loadData(filterForm.getValue());
+					}
 					setValue(null);
 				}
 			}
@@ -214,7 +246,6 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 
 	protected void addFilterForm() {
 		filterForm = new PersonSelectionFilterForm();
-		filterForm.setVisible(false);
 
 		final PersonSimilarityCriteria searchCriteria = new PersonSimilarityCriteria();
 		if (referencePerson != null) {
@@ -227,7 +258,10 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 				personGrid.loadData(filterForm.getValue());
 			}
 		});
-		filterForm.addResetHandler((e) -> filterForm.setValue(new PersonSimilarityCriteria()));
+		filterForm.addResetHandler((e) -> {
+			filterForm.setValue(new PersonSimilarityCriteria());
+			filterForm.clearValidation();
+		});
 
 		mainLayout.addComponent(filterForm);
 	}
@@ -266,10 +300,14 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 				rbSelectPerson.setValue(null);
 				personGrid.deselectAll();
 				personGrid.setEnabled(false);
+				personGrid.setHeightByRows(1);
 				if (selectionChangeCallback != null) {
 					selectionChangeCallback.accept(true);
 				}
 			}
+		});
+		rbCreatePerson.addValueChangeListener(e -> {
+			filterForm.setVisible(!CREATE_PERSON.equals(e.getValue()));
 		});
 
 		mainLayout.addComponent(rbCreatePerson);
@@ -291,7 +329,11 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 		mainLayout.addComponent(personGrid);
 		addCreatePersonRadioGroup();
 
-		rbSelectPerson.setValue(SELECT_PERSON);
+		if (hasMatches) {
+			rbSelectPerson.setValue(SELECT_PERSON);
+		} else {
+			rbCreatePerson.setValue(CREATE_PERSON);
+		}
 
 		return mainLayout;
 	}
@@ -323,7 +365,7 @@ public class PersonSelectionField extends CustomField<SimilarPersonDto> {
 	}
 
 	public boolean hasMatches() {
-		return FacadeProvider.getPersonFacade().checkMatchingNameInDatabase(UserProvider.getCurrent().getUserReference(), defaultCriteria);
+		return hasMatches;
 	}
 
 	/**

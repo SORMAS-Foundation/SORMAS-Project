@@ -20,6 +20,7 @@ import java.math.BigInteger;
 import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Comparator;
 import java.util.Date;
 import java.util.HashMap;
@@ -58,6 +59,8 @@ import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
 import de.symeda.sormas.api.person.PersonContactDetailType;
+import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.app.backend.activityascase.ActivityAsCase;
@@ -183,7 +186,7 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	public static final String DATABASE_NAME = "sormas.db";
 	// any time you make changes to your database objects, you may have to increase the database version
 
-	public static final int DATABASE_VERSION = 331;
+	public static final int DATABASE_VERSION = 334;
 
 	private static DatabaseHelper instance = null;
 
@@ -1763,21 +1766,29 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 						DataType.INTEGER });
 
 				for (Object[] result : rawResult) {
-					if (DataHelper.isNullOrEmpty((String) result[4])) {
-						Array.set(result, 4, null);
-					} else {
-						Array.set(result, 4, "'" + result[4] + "'");
-					}
-					if (!DataHelper.isNullOrEmpty((String) result[5])) {
-						Array.set(result, 5, "'" + result[5] + "'");
-					}
-					String query =
-						"INSERT INTO location (uuid, changeDate, localChangeDate, creationDate, region_id, district_id, community_id, facility_id, facilityDetails, facilityType, addressType, person_id, pseudonymized, modified, snapshot) VALUES ('"
-							+ DataHelper.createUuid()
-							+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
-							+ result[0] + ", " + result[1] + ", " + result[2] + ", " + result[3] + ", " + result[4] + ", " + result[5]
-							+ ", 'PLACE_OF_WORK', " + result[6] + ", 0, 0, 0);";
-					getDao(Location.class).executeRaw(query);
+
+					doNullCheckOnString(result, 4);
+
+					String query = "INSERT INTO location "
+						+ "(uuid, changeDate, localChangeDate, creationDate, region_id, district_id, community_id, facility_id, facilityDetails, facilityType, addressType, person_id, pseudonymized, modified, snapshot) "
+						+ "VALUES (?, ?, " + generateDateNowSQL() + ", " + generateDateNowSQL() + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+					executeRaw(
+						Location.class,
+						query,
+						DataHelper.createUuid(),
+						0,
+						result[0],
+						result[1],
+						result[2],
+						result[3],
+						result[4],
+						result[5],
+						"PLACE_OF_WORK",
+						result[6],
+						0,
+						0,
+						0);
 				}
 
 				Cursor personDbCursor = db.query(Person.TABLE_NAME, null, null, null, null, null, null);
@@ -2935,6 +2946,30 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				getDao(EventParticipant.class).executeRaw(
 					"UPDATE eventParticipants SET reportingUser_id = (SELECT reportingUser_id FROM events WHERE events.id = eventParticipants.event_id) WHERE reportingUser_id IS NULL;");
 
+			case 331:
+				currentVersion = 331;
+				getDao(Case.class).executeRaw("ALTER TABLE cases ADD COLUMN healthConditions_id BIGINT REFERENCES healthConditions(id);");
+				getDao(Case.class).executeRaw(
+					"UPDATE cases SET healthConditions_id = (SELECT healthConditions_id from clinicalCourse where clinicalCourse.id = cases.clinicalCourse_id);");
+
+			case 332:
+				currentVersion = 332;
+				getDao(ClinicalCourse.class).executeRaw("ALTER TABLE clinicalCourse RENAME TO tmp_clinicalCourse");
+				getDao(ClinicalCourse.class).executeRaw(
+					"CREATE TABLE clinicalCourse(" + "id integer primary key autoincrement," + "uuid varchar(36) not null,"
+						+ "changeDate timestamp not null," + "creationDate timestamp not null," + "lastOpenedDate timestamp,"
+						+ "localChangeDate timestamp not null," + "modified SMALLINT DEFAULT 0," + "snapshot SMALLINT DEFAULT 0,"
+						+ "UNIQUE(snapshot, uuid));");
+				getDao(ClinicalCourse.class).executeRaw(
+					"INSERT INTO clinicalCourse(id, uuid, changeDate, creationDate, lastOpenedDate, " + "localChangeDate, modified, snapshot) "
+						+ "SELECT id, uuid, changeDate, creationDate, lastOpenedDate, localChangeDate, modified, snapshot FROM tmp_clinicalCourse");
+				getDao(ClinicalCourse.class).executeRaw("DROP TABLE tmp_clinicalCourse;");
+
+			case 333:
+				currentVersion = 333;
+				getDao(User.class).executeRaw("ALTER TABLE users ADD COLUMN jurisdictionLevel varchar(255);");
+				fillJurisdictionLevels();
+
 				// ATTENTION: break should only be done after last version
 				break;
 
@@ -2948,18 +2983,46 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		}
 	}
 
+	private void fillJurisdictionLevels() throws SQLException {
+		getDao(User.class).queryForAll().forEach(user -> {
+			try {
+				getDao(User.class).executeRaw(
+					"UPDATE users SET jurisdictionLevel = '" + getJurisdictionLevel(user.getUserRoles()).name() + "' WHERE id = " + user.getId()
+						+ ";");
+			} catch (SQLException e) {
+				throw new RuntimeException(e);
+			}
+		});
+	}
+
+	/**
+	 * Returns the jurisdiction level of a user based on its user roles; has to be replicated here
+	 * because UserDao can't be properly accessed while setting up the database.
+	 */
+	private JurisdictionLevel getJurisdictionLevel(Collection<UserRole> roles) {
+
+		boolean laboratoryJurisdictionPresent = false;
+		for (UserRole role : roles) {
+			final JurisdictionLevel jurisdictionLevel = role.getJurisdictionLevel();
+			if (roles.size() == 1 || (jurisdictionLevel != JurisdictionLevel.NONE && jurisdictionLevel != JurisdictionLevel.LABORATORY)) {
+				return jurisdictionLevel;
+			} else if (jurisdictionLevel == JurisdictionLevel.LABORATORY) {
+				laboratoryJurisdictionPresent = true;
+			}
+		}
+
+		return laboratoryJurisdictionPresent ? JurisdictionLevel.LABORATORY : JurisdictionLevel.NONE;
+	}
+
 	private boolean columnDoesNotExist(String tableName, String columnName) throws SQLException {
 		GenericRawResults<String[]> tableColumns = getDao(User.class).queryRaw("pragma table_info(" + tableName + ")");
 		int nameColumnIndex = Arrays.asList(tableColumns.getColumnNames()).indexOf("name");
 		return tableColumns.getResults().stream().noneMatch(columnRowData -> columnName.equals(columnRowData[nameColumnIndex]));
 	}
 
-	private void formatRawResultString(Object[] result, int index, boolean doNullCheck) {
-		if (doNullCheck && DataHelper.isNullOrEmpty((String) result[index])) {
+	private void doNullCheckOnString(Object[] result, int index) {
+		if (DataHelper.isNullOrEmpty((String) result[index])) {
 			Array.set(result, index, null);
-		}
-		if (!DataHelper.isNullOrEmpty((String) result[index])) {
-			Array.set(result, index, "'" + result[index] + "'");
 		}
 	}
 
@@ -2972,6 +3035,16 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				Array.set(result, index, time);
 			}
 		}
+	}
+
+	private String generateDateNowSQL() {
+		return "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
+	}
+
+	private <T> int executeRaw(Class<T> clazz, String statement, Object... parameters) throws SQLException {
+		String[] parametersStringed = Arrays.stream(parameters).map(parameter -> Objects.toString(parameter, null)).toArray(String[]::new);
+
+		return getDao(clazz).executeRaw(statement, parametersStringed);
 	}
 
 	private void migrateVaccinationInfo() throws SQLException {
@@ -3013,17 +3086,14 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		List<Object[]> caseInfoList = caseInfoResult.getResults();
 
 		for (Object[] caseInfo : caseInfoList) {
-			formatRawResultString(caseInfo, 3, true);
-			formatRawResultString(caseInfo, 14, true);
-			formatRawResultString(caseInfo, 15, true);
-			formatRawResultString(caseInfo, 17, true);
-			formatRawResultString(caseInfo, 18, false);
-			formatRawResultString(caseInfo, 19, true);
-			formatRawResultString(caseInfo, 20, true);
-			formatRawResultString(caseInfo, 21, true);
-			formatRawResultString(caseInfo, 22, true);
-			formatRawResultString(caseInfo, 23, false);
-			formatRawResultString(caseInfo, 24, false);
+			doNullCheckOnString(caseInfo, 3);
+			doNullCheckOnString(caseInfo, 14);
+			doNullCheckOnString(caseInfo, 15);
+			doNullCheckOnString(caseInfo, 17);
+			doNullCheckOnString(caseInfo, 19);
+			doNullCheckOnString(caseInfo, 20);
+			doNullCheckOnString(caseInfo, 21);
+			doNullCheckOnString(caseInfo, 22);
 			formatRawResultDate(caseInfo, 4);
 			formatRawResultDate(caseInfo, 9);
 			formatRawResultDate(caseInfo, 10);
@@ -3131,16 +3201,34 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		// Create immunizations and vaccinations for each case
 		for (Object[] caseInfo : filteredCaseInfo) {
 			// Create immunization
-			String immunizationInsertQuery = "INSERT INTO immunization(uuid, changeDate, localChangeDate, creationDate, person_id,"
-				+ "disease, diseaseDetails, reportDate, reportingUser_id, immunizationStatus, meansOfImmunization, immunizationManagementStatus,"
-				+ "responsibleRegion_id, responsibleDistrict_id, responsibleCommunity_id, startDate, endDate, numberOfDoses, pseudonymized,"
-				+ "modified, snapshot) VALUES ('" + DataHelper.createUuid()
-				+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
-				+ "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), " + caseInfo[1] + ", '" + caseInfo[2] + "', " + caseInfo[3] + ", "
-				+ caseInfo[4] + ", " + caseInfo[5] + ", '" + ImmunizationStatus.ACQUIRED.name() + "', '" + MeansOfImmunization.VACCINATION.name()
-				+ "', '" + ImmunizationManagementStatus.COMPLETED.name() + "', " + caseInfo[6] + ", " + caseInfo[7] + ", " + caseInfo[8] + ", "
-				+ caseInfo[10] + ", " + caseInfo[11] + ", " + caseInfo[12] + ", 0, 1, 0);";
-			getDao(Immunization.class).executeRaw(immunizationInsertQuery);
+			String immunizationInsertQuery = "INSERT INTO immunization " + "(" + "		uuid, changeDate, localChangeDate, creationDate, person_id,"
+				+ "		disease, diseaseDetails, reportDate, reportingUser_id, immunizationStatus, meansOfImmunization, immunizationManagementStatus,"
+				+ "		responsibleRegion_id, responsibleDistrict_id, responsibleCommunity_id, startDate, endDate, numberOfDoses, pseudonymized,"
+				+ "		modified, snapshot" + ")" + "VALUES (?, ?, " + generateDateNowSQL() + ", " + generateDateNowSQL()
+				+ ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+			executeRaw(
+				Immunization.class,
+				immunizationInsertQuery,
+				DataHelper.createUuid(),
+				0,
+				caseInfo[1],
+				caseInfo[2],
+				caseInfo[3],
+				caseInfo[4],
+				caseInfo[5],
+				ImmunizationStatus.ACQUIRED.name(),
+				MeansOfImmunization.VACCINATION.name(),
+				ImmunizationManagementStatus.COMPLETED.name(),
+				caseInfo[6],
+				caseInfo[7],
+				caseInfo[8],
+				caseInfo[10],
+				caseInfo[11],
+				caseInfo[12],
+				0,
+				1,
+				0);
 
 			if (caseInfo[12] == null) {
 				// No vaccination doses specified
@@ -3204,9 +3292,8 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 	}
 
 	private void cloneHealthConditions(Object healthConditionsId) throws SQLException {
-		getDao(HealthConditions.class)
-			.executeRaw("CREATE TEMPORARY TABLE tmp AS SELECT * FROM healthConditions WHERE id = " + healthConditionsId + ";");
-		getDao(HealthConditions.class).executeRaw("UPDATE tmp SET id = NULL, uuid = '" + DataHelper.createUuid() + "';");
+		executeRaw(HealthConditions.class, "CREATE TEMPORARY TABLE tmp AS SELECT * FROM healthConditions WHERE id = ?;", healthConditionsId);
+		executeRaw(HealthConditions.class, "UPDATE tmp SET id = NULL, uuid = ?;", DataHelper.createUuid());
 		getDao(HealthConditions.class).executeRaw("INSERT INTO healthConditions SELECT * FROM tmp;");
 		getDao(HealthConditions.class).executeRaw("DROP TABLE tmp;");
 	}
@@ -3219,21 +3306,41 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 		Object vaccinationDate)
 		throws SQLException {
 
-		long immunizationId = getDao(Immunization.class).queryRawValue("SELECT MAX(id) FROM immunization;");
-		long healthConditionsId = getDao(HealthConditions.class).queryRawValue("SELECT MAX(id) FROM healthConditions;");
-		String vaccineNameString = vaccineName != null ? "'" + vaccineName.name() + "'" : null;
-		String vaccineManufacturerString = vaccineManufacturer != null ? "'" + vaccineManufacturer.name() + "'" : null;
+		Long immunizationId = getDao(Immunization.class).queryRawValue("SELECT MAX(id) FROM immunization;");
+		Long healthConditionsId = getDao(HealthConditions.class).queryRawValue("SELECT MAX(id) FROM healthConditions;");
+		String vaccineNameString = vaccineName != null ? vaccineName.name() : null;
+		String vaccineManufacturerString = vaccineManufacturer != null ? vaccineManufacturer.name() : null;
 		String vaccinationInsertQuery =
-			"INSERT INTO vaccination(uuid, changeDate, localChangeDate, creationDate, immunization_id, healthConditions_id, "
-				+ "reportDate, reportingUser_id, vaccinationDate, vaccineName, otherVaccineName, vaccineManufacturer, otherVaccineManufacturer, "
-				+ "vaccinationInfoSource, vaccineInn, vaccineBatchNumber, vaccineUniiCode, vaccineAtcCode, pregnant, trimester, pseudonymized, "
-				+ "modified, snapshot) VALUES ('" + DataHelper.createUuid()
-				+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
-				+ "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), " + immunizationId + ", " + healthConditionsId + ", "
-				+ caseInfo[4] + ", " + caseInfo[5] + ", " + vaccinationDate + ", " + vaccineNameString + ", " + otherVaccineName + ", "
-				+ vaccineManufacturerString + ", " + caseInfo[17] + ", " + caseInfo[18] + ", " + caseInfo[19] + ", " + caseInfo[20] + ", "
-				+ caseInfo[21] + ", " + caseInfo[22] + ", " + caseInfo[23] + ", " + caseInfo[24] + ", 0, 1, 0);";
-		getDao(Vaccination.class).executeRaw(vaccinationInsertQuery);
+			"INSERT INTO vaccination" + "(" + "		uuid, changeDate, localChangeDate, creationDate, immunization_id, healthConditions_id, "
+				+ "		reportDate, reportingUser_id, vaccinationDate, vaccineName, otherVaccineName, vaccineManufacturer, otherVaccineManufacturer, "
+				+ "		vaccinationInfoSource, vaccineInn, vaccineBatchNumber, vaccineUniiCode, vaccineAtcCode, pregnant, trimester, pseudonymized, "
+				+ "		modified, snapshot" + ")" + "VALUES (?, ?, " + generateDateNowSQL() + ", " + generateDateNowSQL()
+				+ ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+		executeRaw(
+			Vaccination.class,
+			vaccinationInsertQuery,
+			DataHelper.createUuid(),
+			0,
+			immunizationId,
+			healthConditionsId,
+			caseInfo[4],
+			caseInfo[5],
+			vaccinationDate,
+			vaccineNameString,
+			otherVaccineName,
+			vaccineManufacturerString,
+			caseInfo[17],
+			caseInfo[18],
+			caseInfo[19],
+			caseInfo[20],
+			caseInfo[21],
+			caseInfo[22],
+			caseInfo[23],
+			caseInfo[24],
+			0,
+			1,
+			0);
 	}
 
 	private void migrateEpiData() throws SQLException {
@@ -3302,29 +3409,40 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				DataType.DATE_LONG });
 
 		for (Object[] result : lastExposureInfo) {
-			formatRawResultString(result, 2, true);
-			formatRawResultString(result, 3, false);
-			formatRawResultString(result, 5, false);
+			doNullCheckOnString(result, 2);
 			formatRawResultDate(result, 1);
 			formatRawResultDate(result, 6);
 
-			long locationId = insertLocation((String) result[2]);
+			Long locationId = insertLocation((String) result[2]);
 			VaccinationStatus vaccinationStatus = result[4] != null ? VaccinationStatus.valueOf((String) result[4]) : null;
 
-			String exposureQuery = "INSERT INTO exposures(uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, exposureType, "
-				+ "startDate, endDate, animalCondition, animalVaccinated, prophylaxis, prophylaxisDate, description, pseudonymized, modified, snapshot) VALUES ('"
-				+ DataHelper.createUuid()
-				+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
-				+ result[0] + ", " + locationId + ", '" + ExposureType.ANIMAL_CONTACT.name() + "', " + result[1] + ", " + result[1] + ", " + result[3]
-				+ ", "
-				+ (vaccinationStatus == VaccinationStatus.VACCINATED
-					? "'" + YesNoUnknown.YES.name() + "'"
+			String exposureQuery = "INSERT INTO exposures" + "("
+				+ "		uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, exposureType, "
+				+ "		startDate, endDate, animalCondition, animalVaccinated, prophylaxis, prophylaxisDate, description, pseudonymized, modified, snapshot"
+				+ ")" + "VALUES (?, ?, " + generateDateNowSQL() + ", " + generateDateNowSQL() + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+			executeRaw(
+				Exposure.class,
+				exposureQuery,
+				DataHelper.createUuid(),
+				0,
+				result[0],
+				locationId,
+				ExposureType.ANIMAL_CONTACT.name(),
+				result[1],
+				result[1],
+				result[3],
+				(vaccinationStatus == VaccinationStatus.VACCINATED
+					? YesNoUnknown.YES.name()
 					: vaccinationStatus == VaccinationStatus.UNVACCINATED
-						? "'" + YesNoUnknown.NO.name() + "'"
-						: vaccinationStatus == VaccinationStatus.UNKNOWN ? "'" + YesNoUnknown.UNKNOWN.name() + "'" : null)
-				+ ", " + result[5] + ", " + result[6] + ", "
-				+ "'Automatic epi data migration based on last exposure details; this exposure may be merged with another exposure with animal contact', 0, 0, 0);";
-			getDao(Exposure.class).executeRaw(exposureQuery);
+						? YesNoUnknown.NO.name()
+						: vaccinationStatus == VaccinationStatus.UNKNOWN ? YesNoUnknown.UNKNOWN.name() : null),
+				result[5],
+				result[6],
+				"Automatic epi data migration based on last exposure details; this exposure may be merged with another exposure with animal contact",
+				0,
+				0,
+				0);
 		}
 
 		getDao(Exposure.class).executeRaw(
@@ -3372,30 +3490,42 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				DataType.STRING });
 
 		for (Object[] result : epiDataInfo) {
-			formatRawResultString(result, 3, true);
-			formatRawResultString(result, 4, true);
+			doNullCheckOnString(result, 3);
+			doNullCheckOnString(result, 4);
 			formatRawResultDate(result, 1);
 			formatRawResultDate(result, 2);
 
-			long locationId = insertLocation((String) result[4]);
+			Long locationId = insertLocation((String) result[4]);
 
-			String exposureQuery = "INSERT INTO exposures(uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, exposureType, "
-				+ exposuresFieldName + ", " + "startDate, endDate, description, pseudonymized, modified, snapshot) VALUES ('"
-				+ DataHelper.createUuid()
-				+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
-				+ result[0] + ", " + locationId + ", '" + exposureType.name() + "', '" + exposuresFieldValue.name() + "', " + result[1] + ", "
-				+ result[2] + ", " + result[3] + ", 0, 0, 0);";
-			getDao(Exposure.class).executeRaw(exposureQuery);
+			String exposureQuery =
+				"INSERT INTO exposures" + "(" + "		uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, exposureType, "
+					+ exposuresFieldName + ", " + "startDate, endDate, description, pseudonymized, modified, snapshot" + ") VALUES (?, ?, "
+					+ generateDateNowSQL() + ", " + generateDateNowSQL() + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+			executeRaw(
+				Exposure.class,
+				exposureQuery,
+				DataHelper.createUuid(),
+				0,
+				result[0],
+				locationId,
+				exposureType.name(),
+				exposuresFieldValue.name(),
+				result[1],
+				result[2],
+				result[3],
+				0,
+				0,
+				0);
 		}
 	}
 
 	private long insertLocation(String locationDetails) throws SQLException {
 		String locationQuery =
-			"INSERT INTO location (uuid, changeDate, localChangeDate, creationDate, details, pseudonymized, modified, snapshot) VALUES ('"
-				+ DataHelper.createUuid()
-				+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
-				+ locationDetails + ", 0, 0, 0);";
-		getDao(Location.class).executeRaw(locationQuery);
+			"INSERT INTO location " + "(uuid, changeDate, localChangeDate, creationDate, details, pseudonymized, modified, snapshot) "
+				+ "VALUES (?, ?, " + generateDateNowSQL() + ", " + generateDateNowSQL() + ", ?, ?, ?, ?);";
+
+		executeRaw(Location.class, locationQuery, DataHelper.createUuid(), 0, locationDetails, 0, 0, 0);
 
 		return getDao(Location.class).queryRawValue("SELECT MAX(id) FROM location;");
 	}
@@ -3411,15 +3541,12 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				DataType.STRING });
 
 		for (Object[] pcd : newPersons) {
-			formatRawResultString(pcd, 1, false);
-			formatRawResultString(pcd, 2, false);
-			formatRawResultString(pcd, 3, false);
-			formatRawResultString(pcd, 4, false);
 
-			final String dateNowString = "CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER)";
-			final String insertPart =
-				"INSERT INTO personContactDetail(uuid, changeDate, localChangeDate, creationDate, person_id, primaryContact, personContactDetailType, phoneNumberType, "
-					+ "contactInformation, additionalInformation, thirdParty, thirdPartyRole, thirdPartyName, snapshot) ";
+			final String insertQuery =
+				"INSERT INTO personContactDetail " + "(" + "		uuid, changeDate, localChangeDate, creationDate, person_id, primaryContact, "
+					+ "		personContactDetailType, phoneNumberType, contactInformation, additionalInformation, "
+					+ "		thirdParty, thirdPartyRole, thirdPartyName, snapshot" + ") " + "VALUES (?, ?, " + generateDateNowSQL() + ", "
+					+ generateDateNowSQL() + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?);";
 
 			BigInteger personId = (BigInteger) pcd[0];
 			String phone = (String) pcd[1];
@@ -3429,25 +3556,57 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			if (StringUtils.isNotEmpty(phone)) {
 				boolean phoneOwnerEmpty = StringUtils.isEmpty(phoneOwner);
-				getDao(PersonContactDetail.class).executeRaw(
-					insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
-						+ (phoneOwnerEmpty ? "1" : "0") + ", \'" + PersonContactDetailType.PHONE.name() + "\', " + "null" + ", " + phone + ", "
-						+ "null" + ", " + (phoneOwnerEmpty ? "0" : "1") + ", " + "null" + ", " + (phoneOwnerEmpty ? "null" : phoneOwner) + ", "
-						+ "0);");
+				executeRaw(
+					PersonContactDetail.class,
+					insertQuery,
+					DataHelper.createUuid(),
+					0,
+					personId,
+					(phoneOwnerEmpty ? 1 : 0),
+					PersonContactDetailType.PHONE.name(),
+					null,
+					phone,
+					null,
+					(phoneOwnerEmpty ? 0 : 1),
+					null,
+					(phoneOwnerEmpty ? null : phoneOwner),
+					0);
 			}
 
 			if (StringUtils.isNotEmpty(emailAddress)) {
-				getDao(PersonContactDetail.class).executeRaw(
-					insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
-						+ "1" + ", \'" + PersonContactDetailType.EMAIL.name() + "\', " + "null" + ", " + emailAddress + ", " + "null" + ", " + "0"
-						+ ", " + "null" + ", " + "null" + ", " + "0);");
+				executeRaw(
+					PersonContactDetail.class,
+					insertQuery,
+					DataHelper.createUuid(),
+					0,
+					personId,
+					1,
+					PersonContactDetailType.EMAIL.name(),
+					null,
+					emailAddress,
+					null,
+					0,
+					null,
+					null,
+					0);
 			}
 
 			if (StringUtils.isNotEmpty(generalPractitionerDetails)) {
-				getDao(PersonContactDetail.class).executeRaw(
-					insertPart + "VALUES ('" + DataHelper.createUuid() + "', 0, " + dateNowString + ", " + dateNowString + ", " + personId + ", "
-						+ "0" + ", \'" + PersonContactDetailType.OTHER.name() + "\', " + "null" + ", " + "null" + ", " + generalPractitionerDetails
-						+ ", " + "1" + ", " + "\'General practitioner\'" + ", " + generalPractitionerDetails + ", " + "0);");
+				executeRaw(
+					PersonContactDetail.class,
+					insertQuery,
+					DataHelper.createUuid(),
+					0,
+					personId,
+					0,
+					PersonContactDetailType.OTHER.name(),
+					null,
+					null,
+					generalPractitionerDetails,
+					1,
+					"General practitioner",
+					generalPractitionerDetails,
+					0);
 			}
 		}
 	}
@@ -3467,21 +3626,33 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				DataType.DATE_LONG });
 
 		for (Object[] burial : newBurials) {
-			formatRawResultString(burial, 2, true);
-			formatRawResultString(burial, 3, true);
-			formatRawResultString(burial, 4, false);
-			formatRawResultString(burial, 5, false);
+			doNullCheckOnString(burial, 2);
+			doNullCheckOnString(burial, 3);
 			formatRawResultDate(burial, 6);
 			formatRawResultDate(burial, 7);
 
-			String burialQuery =
-				"INSERT INTO exposures(uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, deceasedPersonName, deceasedPersonRelation, "
-					+ "physicalContactWithBody, deceasedPersonIll, startDate, endDate, exposureType, pseudonymized, modified, snapshot) VALUES ('"
-					+ DataHelper.createUuid()
-					+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
-					+ burial[0] + ", " + burial[1] + ", " + burial[2] + ", " + burial[3] + ", " + burial[4] + ", " + burial[5] + ", " + burial[6]
-					+ ", " + burial[7] + ", 'BURIAL', 0, 0, 0);";
-			getDao(Exposure.class).executeRaw(burialQuery);
+			String burialQuery = "INSERT INTO exposures" + "("
+				+ "		uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, deceasedPersonName, deceasedPersonRelation, "
+				+ "		physicalContactWithBody, deceasedPersonIll, startDate, endDate, exposureType, pseudonymized, modified, snapshot" + ")"
+				+ "VALUES (?, ?, " + generateDateNowSQL() + ", " + generateDateNowSQL() + ", ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+			executeRaw(
+				Exposure.class,
+				burialQuery,
+				DataHelper.createUuid(),
+				0,
+				burial[0],
+				burial[1],
+				burial[2],
+				burial[3],
+				burial[4],
+				burial[5],
+				burial[6],
+				burial[7],
+				"BURIAL",
+				0,
+				0,
+				0);
 		}
 
 		GenericRawResults<Object[]> newGatherings = getDao(EpiData.class).queryRaw(
@@ -3493,16 +3664,28 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				DataType.STRING });
 
 		for (Object[] gathering : newGatherings) {
-			formatRawResultString(gathering, 3, true);
+			doNullCheckOnString(gathering, 3);
 			formatRawResultDate(gathering, 2);
 
 			String gatheringQuery =
-				"INSERT INTO exposures(uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, startDate, endDate, "
-					+ "description, exposureType, pseudonymized, modified, snapshot) VALUES ('" + DataHelper.createUuid()
-					+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
-					+ gathering[0] + ", " + gathering[1] + ", " + gathering[2] + ", " + gathering[2] + ", " + gathering[3]
-					+ ", 'GATHERING', 0, 0, 0);";
-			getDao(Exposure.class).executeRaw(gatheringQuery);
+				"INSERT INTO exposures" + "(uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, startDate, endDate, "
+					+ "		description, exposureType, pseudonymized, modified, snapshot" + ")" + "VALUES (?, ?, " + generateDateNowSQL() + ", "
+					+ generateDateNowSQL() + ", ?, ?, ?, ?, ?, ?, ?, ?, ?)";
+
+			executeRaw(
+				Exposure.class,
+				gatheringQuery,
+				DataHelper.createUuid(),
+				0,
+				gathering[0],
+				gathering[1],
+				gathering[2],
+				gathering[2],
+				gathering[3],
+				"GATHERING",
+				0,
+				0,
+				0);
 		}
 
 		GenericRawResults<Object[]> newTravels = getDao(EpiData.class).queryRaw(
@@ -3522,25 +3705,20 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 				.filter(Objects::nonNull)
 				.collect(Collectors.joining(", "));
 
-			if (detailsString != null) {
-				detailsString = "'" + detailsString + "'";
-			}
-
 			String locationQuery =
-				"INSERT INTO location (uuid, changeDate, localChangeDate, creationDate, details, pseudonymized, modified, snapshot) VALUES ('"
-					+ DataHelper.createUuid()
-					+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
-					+ detailsString + ", 0, 0, 0);";
-			getDao(Location.class).executeRaw(locationQuery);
+				"INSERT INTO location" + "(uuid, changeDate, localChangeDate, creationDate, details, pseudonymized, modified, snapshot)"
+					+ "VALUES (?, ?, " + generateDateNowSQL() + ", " + generateDateNowSQL() + ", ?, ?, ?, ?)";
 
-			long locationId = getDao(Location.class).queryRawValue("SELECT MAX(id) FROM location;");
+			executeRaw(Location.class, locationQuery, DataHelper.createUuid(), 0, detailsString, 0, 0, 0);
 
-			String travelQuery =
-				"INSERT INTO exposures(uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, startDate, endDate, exposureType, "
-					+ "pseudonymized, modified, snapshot) VALUES ('" + DataHelper.createUuid()
-					+ "', 0, CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), CAST(ROUND((julianday('now') - 2440587.5)*86400000) As INTEGER), "
-					+ travel[0] + ", " + locationId + ", " + travel[1] + ", " + travel[2] + ", 'TRAVEL', 0, 0, 0);";
-			getDao(Exposure.class).executeRaw(travelQuery);
+			Long locationId = getDao(Location.class).queryRawValue("SELECT MAX(id) FROM location;");
+
+			String travelQuery = "INSERT INTO exposures" + "("
+				+ "		uuid, changeDate, localChangeDate, creationDate, epiData_id, location_id, startDate, endDate, exposureType, "
+				+ "		pseudonymized, modified, snapshot" + ")" + "VALUES (?, ?, " + generateDateNowSQL() + ", " + generateDateNowSQL()
+				+ ", ?, ?, ?, ?, ?, ?, ?, ?)";
+
+			executeRaw(Exposure.class, travelQuery, DataHelper.createUuid(), 0, travel[0], locationId, travel[1], travel[2], "TRAVEL", 0, 0, 0);
 		}
 	}
 

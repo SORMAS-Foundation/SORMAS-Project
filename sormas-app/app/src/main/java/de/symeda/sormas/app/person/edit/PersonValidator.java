@@ -44,11 +44,33 @@ public final class PersonValidator {
 					return true;
 				}
 			}
+			if (contentBinding.personDeathDate.getValue() != null && contentBinding.personBurialDate.getValue() != null) {
+				if (DateTimeComparator.getDateOnlyInstance().compare(contentBinding.personBurialDate.getValue(), contentBinding.personDeathDate.getValue()) < 0) {
+					contentBinding.personDeathDate.enableErrorState(
+							I18nProperties.getValidationError(
+									Validations.beforeDate,
+									contentBinding.personDeathDate.getCaption(),
+									contentBinding.personBurialDate.getCaption()));
+					return true;
+				}
+			}
 
 			return false;
 		};
 
 		ResultCallback<Boolean> burialDateCallback = () -> {
+			Date birthDate = PersonEditFragment.calculateBirthDateValue(contentBinding);
+			if (contentBinding.personBurialDate.getValue() != null && birthDate != null) {
+				if (DateTimeComparator.getDateOnlyInstance().compare(contentBinding.personBurialDate.getValue(), birthDate) < 0) {
+					contentBinding.personBurialDate.enableErrorState(
+						I18nProperties.getValidationError(
+							Validations.afterDate,
+							contentBinding.personBurialDate.getCaption(),
+							contentBinding.personBirthdateLabel.getText()));
+					return true;
+				}
+			}
+
 			if (contentBinding.personBurialDate.getValue() != null && contentBinding.personDeathDate.getValue() != null) {
 				if (DateTimeComparator.getDateOnlyInstance()
 					.compare(contentBinding.personBurialDate.getValue(), contentBinding.personDeathDate.getValue())
@@ -81,6 +103,43 @@ public final class PersonValidator {
 		contentBinding.personDeathDate.setValidationCallback(deathDateCallback);
 		contentBinding.personBurialDate.setValidationCallback(burialDateCallback);
 		contentBinding.personApproximateAge.setValidationCallback(approximateAgeCallback);
+
+		contentBinding.personDeathDate.addValueChangedListener( v -> {
+			if(!burialDateCallback.call()){
+				contentBinding.personBurialDate.disableErrorState();
+			}
+		});
+
+		contentBinding.personBurialDate.addValueChangedListener( v -> {
+			if(!deathDateCallback.call()){
+				contentBinding.personDeathDate.disableErrorState();
+			}
+		});
+
+		contentBinding.personBirthdateYYYY.addValueChangedListener(v -> {
+			if(!deathDateCallback.call()){
+				contentBinding.personDeathDate.disableErrorState();
+			}
+			if(!burialDateCallback.call()){
+				contentBinding.personBurialDate.disableErrorState();
+			}
+		});
+		contentBinding.personBirthdateMM.addValueChangedListener(v -> {
+			if(!deathDateCallback.call()){
+				contentBinding.personDeathDate.disableErrorState();
+			}
+			if(!burialDateCallback.call()){
+				contentBinding.personBurialDate.disableErrorState();
+			}
+		});
+		contentBinding.personBirthdateDD.addValueChangedListener(v -> {
+			if(!deathDateCallback.call()){
+				contentBinding.personDeathDate.disableErrorState();
+			}
+			if(!burialDateCallback.call()){
+				contentBinding.personBurialDate.disableErrorState();
+			}
+		});
 	}
 
 	public static void initializeBirthDateValidation(

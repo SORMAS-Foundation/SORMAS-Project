@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,23 +18,178 @@
 
 package org.sormas.e2etests.steps.web.application.users;
 
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALL_RESULTS_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DETAILED_COLUMN_HEADERS;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DETAILED_TABLE_DATA;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DETAILED_TABLE_ROWS;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ENTER_BULK_EDIT_MODE;
+import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.LOGOUT_BUTTON;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.*;
+import static org.sormas.e2etests.pages.application.users.UserManagementPage.NEW_USER_BUTTON;
 
 import cucumber.api.java8.En;
+import java.util.*;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
+import org.openqa.selenium.WebElement;
+import org.sormas.e2etests.entities.pojo.User;
+import org.sormas.e2etests.entities.services.UserService;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.LoginPage;
 import org.sormas.e2etests.pages.application.users.CreateNewUserPage;
-import org.sormas.e2etests.pojo.User;
-import org.sormas.e2etests.services.UserService;
+import org.sormas.e2etests.steps.BaseSteps;
+import org.sormas.e2etests.steps.web.application.cases.CaseDetailedTableViewHeaders;
+import org.testng.asserts.SoftAssert;
 
 public class CreateNewUserSteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   public static User user;
   public static User editUser;
+  public static String userName;
+  public static String userPass;
+  private final BaseSteps baseSteps;
+  private static int amountOfRecords;
 
   @Inject
-  public CreateNewUserSteps(WebDriverHelpers webDriverHelpers, UserService userService) {
+  public CreateNewUserSteps(
+      WebDriverHelpers webDriverHelpers,
+      UserService userService,
+      BaseSteps baseSteps,
+      SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
+    this.baseSteps = baseSteps;
+
+    When(
+        "^I pick and count amount a users that was created on the same period of time$",
+        () -> {
+          String userNameFromEditUser = user.getUserName().substring(0, 19);
+          webDriverHelpers.fillInWebElement(USER_INPUT_SEARCH, userNameFromEditUser);
+          TimeUnit.SECONDS.sleep(5); // wait for page loaded
+          String amountOfUsers = webDriverHelpers.getTextFromWebElement(AMOUNT_OF_CHOSEN_USERS);
+          amountOfRecords = Integer.parseInt(amountOfUsers);
+        });
+
+    When(
+        "I click Enter Bulk Edit Mode on Users directory page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ENTER_BULK_EDIT_MODE);
+        });
+
+    When(
+        "I click checkbox to choose all User results",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(ALL_RESULTS_CHECKBOX);
+        });
+
+    When(
+        "I pick {string} value for Active filter in User Directory",
+        (String activeValue) -> {
+          webDriverHelpers.selectFromCombobox(ACTIVE_USER_COMBOBOX, activeValue);
+          TimeUnit.SECONDS.sleep(3); // waiting for all users to pick
+        });
+
+    When(
+        "I click on Bulk Actions combobox on User Directory Page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(BULK_ACTIONS);
+          TimeUnit.SECONDS.sleep(3); // waiting for all users to pick
+        });
+
+    When(
+        "I click on {string} from Bulk Actions combobox on User Directory Page",
+        (String action) -> {
+          switch (action) {
+            case "Enable":
+              webDriverHelpers.clickOnWebElementBySelector(ENABLE_BULK_ACTIONS_VALUES);
+              webDriverHelpers.clickOnWebElementBySelector(CONFIRM_POP_UP);
+              break;
+            case "Disable":
+              webDriverHelpers.clickOnWebElementBySelector(DISABLE_BULK_ACTIONS_VALUES);
+              webDriverHelpers.clickOnWebElementBySelector(CONFIRM_POP_UP);
+              break;
+          }
+        });
+
+    And(
+        "I check that all Users are changed Active field value to opposite",
+        () -> {
+          String amountOfCheckboxes =
+              webDriverHelpers.getTextFromWebElement(AMOUNT_ACTIVE_INACTIVE_USERS);
+          Integer optionsRecords = Integer.parseInt(amountOfCheckboxes);
+          softly.assertEquals(
+              Integer.valueOf(amountOfRecords),
+              optionsRecords,
+              "Not all Active fields value are changed");
+          softly.assertAll();
+        });
+
+    When(
+        "I create new ([^\"]*) with limited disease to ([^\"]*)",
+        (String role, String disease) -> {
+          user = userService.buildGeneratedUserWithRoleAndDisease(role, disease);
+          fillFirstName(user.getFirstName());
+          fillLastName(user.getLastName());
+          fillEmailAddress(user.getEmailAddress());
+          fillPhoneNumber(user.getPhoneNumber());
+          selectLanguage(user.getLanguage());
+          selectCountry(user.getCountry());
+          selectRegion(user.getRegion());
+          selectDistrict(user.getDistrict());
+          selectCommunity(user.getCommunity());
+          selectFacilityCategory(user.getFacilityCategory());
+          selectFacilityType(user.getFacilityType());
+          selectFacility(user.getFacility());
+          fillFacilityNameAndDescription(user.getFacilityNameAndDescription());
+          fillStreet(user.getStreet());
+          fillHouseNr(user.getHouseNumber());
+          fillAdditionalInformation(user.getAdditionalInformation());
+          fillPostalCode(user.getPostalCode());
+          fillCity(user.getCity());
+          selectAreaType(user.getAreaType());
+          fillGpsLatitude(user.getGpsLatitude());
+          fillGpsLongitude(user.getGpsLongitude());
+          fillGpsAccuracy(user.getGpsAccuracy());
+          selectActive(user.getActive());
+          fillUserName(user.getUserName());
+          selectUserRole(role);
+          selectLimitedDisease(user.getLimitedDisease());
+          userName = user.getUserName();
+          webDriverHelpers.scrollToElement(SAVE_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          userPass = webDriverHelpers.getTextFromWebElement(PASSWORD_FIELD);
+          closeNewPasswordPopUp();
+        });
+
+    When(
+        "As a new created user with limited disease view I log in",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(LoginPage.USER_NAME_INPUT);
+          webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, userName);
+          webDriverHelpers.fillInWebElement(LoginPage.USER_PASSWORD_INPUT, userPass);
+          webDriverHelpers.clickOnWebElementBySelector(LoginPage.LOGIN_BUTTON);
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(LOGOUT_BUTTON, 30);
+        });
+
+    When(
+        "I check if user have limited disease view to ([^\"]*) only",
+        (String disease) -> {
+          List<Map<String, String>> tableRowsData = getTableRowsData();
+          for (int i = 0; i < tableRowsData.size(); i++) {
+            Map<String, String> detailedCaseDTableRow = tableRowsData.get(i);
+            softly.assertTrue(
+                detailedCaseDTableRow
+                    .get(CaseDetailedTableViewHeaders.DISEASE.toString())
+                    .contains(disease),
+                "Disease is not correct");
+            softly.assertAll();
+          }
+        });
+
     When(
         "^I create a new user with ([^\"]*)$",
         (String role) -> {
@@ -69,6 +224,47 @@ public class CreateNewUserSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
           closeNewPasswordPopUp();
+        });
+
+    When(
+        "I create {int} new users with National User via UI",
+        (Integer users) -> {
+          List<User> userList = new ArrayList<>();
+          for (int i = 0; i < users; i++) {
+            webDriverHelpers.clickWhileOtherButtonIsDisplayed(
+                NEW_USER_BUTTON, FIRST_NAME_OF_USER_INPUT);
+            user = userService.buildGeneratedUserWithRole("National User");
+            fillFirstName(user.getFirstName());
+            fillLastName(user.getLastName());
+            fillEmailAddress(user.getEmailAddress());
+            fillPhoneNumber(user.getPhoneNumber());
+            selectLanguage(user.getLanguage());
+            selectCountry(user.getCountry());
+            selectRegion(user.getRegion());
+            selectDistrict(user.getDistrict());
+            selectCommunity(user.getCommunity());
+            selectFacilityCategory(user.getFacilityCategory());
+            selectFacilityType(user.getFacilityType());
+            selectFacility(user.getFacility());
+            fillFacilityNameAndDescription(user.getFacilityNameAndDescription());
+            fillStreet(user.getStreet());
+            fillHouseNr(user.getHouseNumber());
+            fillAdditionalInformation(user.getAdditionalInformation());
+            fillPostalCode(user.getPostalCode());
+            fillCity(user.getCity());
+            selectAreaType(user.getAreaType());
+            fillGpsLatitude(user.getGpsLatitude());
+            fillGpsLongitude(user.getGpsLongitude());
+            fillGpsAccuracy(user.getGpsAccuracy());
+            selectActive(user.getActive());
+            fillUserName(user.getUserName());
+            selectUserRole("National User");
+            selectLimitedDisease(user.getLimitedDisease());
+            webDriverHelpers.scrollToElement(SAVE_BUTTON);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+            webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+            closeNewPasswordPopUp();
+          }
         });
 
     And(
@@ -230,5 +426,53 @@ public class CreateNewUserSteps implements En {
   private void selectLimitedDisease(String limitedDisease) {
     webDriverHelpers.scrollToElement(LIMITED_DISEASE_COMBOBOX);
     webDriverHelpers.selectFromCombobox(LIMITED_DISEASE_COMBOBOX, limitedDisease);
+  }
+
+  private List<Map<String, String>> getTableRowsData() {
+    Map<String, Integer> headers = extractColumnHeadersHashMap();
+    List<WebElement> tableRows = getTableRows();
+    List<HashMap<Integer, String>> tableDataList = new ArrayList<>();
+    tableRows.forEach(
+        table -> {
+          HashMap<Integer, String> indexWithData = new HashMap<>();
+          AtomicInteger atomicInt = new AtomicInteger();
+          List<WebElement> tableData = table.findElements(CASE_DETAILED_TABLE_DATA);
+          tableData.forEach(
+              dataText -> {
+                webDriverHelpers.scrollToElementUntilIsVisible(dataText);
+                indexWithData.put(atomicInt.getAndIncrement(), dataText.getText());
+              });
+          tableDataList.add(indexWithData);
+        });
+    List<Map<String, String>> tableObjects = new ArrayList<>();
+    tableDataList.forEach(
+        row -> {
+          ConcurrentHashMap<String, String> objects = new ConcurrentHashMap<>();
+          headers.forEach((headerText, index) -> objects.put(headerText, row.get(index)));
+          tableObjects.add(objects);
+        });
+    return tableObjects;
+  }
+
+  private List<WebElement> getTableRows() {
+    webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CASE_DETAILED_COLUMN_HEADERS);
+    return baseSteps.getDriver().findElements(CASE_DETAILED_TABLE_ROWS);
+  }
+
+  private Map<String, Integer> extractColumnHeadersHashMap() {
+    AtomicInteger atomicInt = new AtomicInteger();
+    HashMap<String, Integer> headerHashmap = new HashMap<>();
+    webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CASE_DETAILED_COLUMN_HEADERS);
+    webDriverHelpers.waitUntilAListOfWebElementsAreNotEmpty(CASE_DETAILED_COLUMN_HEADERS);
+    webDriverHelpers.scrollToElementUntilIsVisible(CASE_DETAILED_COLUMN_HEADERS);
+    baseSteps
+        .getDriver()
+        .findElements(CASE_DETAILED_COLUMN_HEADERS)
+        .forEach(
+            webElement -> {
+              webDriverHelpers.scrollToElementUntilIsVisible(webElement);
+              headerHashmap.put(webElement.getText(), atomicInt.getAndIncrement());
+            });
+    return headerHashmap;
   }
 }

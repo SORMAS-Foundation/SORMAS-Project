@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,6 +21,7 @@ package org.sormas.e2etests.pages.application.cases;
 import org.openqa.selenium.By;
 
 public class EditContactsPage {
+  public static final By CONTACTS_TAB_BUTTON = By.id("tab-cases-contacts");
   public static final By NEW_CONTACT_BUTTON = By.id("contactNewContact");
   public static final String CONTACT_RESULTS_UUID_LOCATOR = "[title = '%s']";
   public static final By RESPONSIBLE_REGION_COMBOBOX = By.cssSelector("#region input + div");
@@ -32,4 +33,17 @@ public class EditContactsPage {
   public static final By RESPONSIBLE_DISTRICT_INPUT = By.cssSelector("#district input");
   public static final By RESPONSIBLE_COMMUNITY_INPUT = By.cssSelector("#community input");
   public static final By RELATIONSHIP_WITH_CASE_INPUT = By.cssSelector("#relationToCase input");
+  public static final By CASE_CONTACT_EXPORT = By.cssSelector("#export");
+  public static final By DETAILED_EXPORT_CASE_CONTACT_BUTTON = By.id("exportDetailed");
+  public static final By CLOSE_POPUP_BUTTON = By.cssSelector(".v-window-closebox");
+  public static final By IMPORT_CASE_CONTACTS_BUTTON = By.id("actionImport");
+  public static final By IMPORT_POPUP_BUTTON = By.cssSelector("[class='v-button']");
+  public static final By COMMIT_BUTTON = By.id("commit");
+  public static final By IMPORT_SUCCESS = By.xpath("//*[text()='Import successful!']");
+  public static final By RESULTS_IN_GRID_IMPORT_POPUP =
+      By.xpath(
+          " //div[contains(@class, 'popupContent')]//tr[contains(@class, 'v-grid-row-has-data')]");
+  public static final By FIRST_RESULT_IN_GRID_IMPORT_POPUP =
+      By.xpath(
+          " //div[contains(@class, 'popupContent')]//tr[contains(@class, 'v-grid-row-has-data')]//td");
 }

@@ -77,7 +77,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ad", "Min", UserRole.ADMIN);
+		UserDto admin = getUserFacade().getByUserName("admin");
 		EventDto event = creator.createEvent(
 			EventStatus.SIGNAL,
 			EventInvestigationStatus.PENDING,
@@ -102,7 +102,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		assertNotNull(getEventParticipantFacade().getEventParticipantByUuid(eventParticipant.getUuid()));
 		assertNotNull(getActionFacade().getByUuid(action.getUuid()));
 
-		getEventFacade().deleteEvent(event.getUuid());
+		getEventFacade().delete(event.getUuid());
 
 		// Event should be marked as deleted; Event participant should be deleted
 		assertTrue(getEventFacade().getDeletedUuidsSince(since).contains(event.getUuid()));
@@ -116,7 +116,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
 		UserDto user = creator
 			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		UserDto admin = creator.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Ad", "Min", UserRole.ADMIN);
+		UserDto admin = getUserFacade().getByUserName("admin");
 		EventDto event = creator.createEvent(
 			EventStatus.SIGNAL,
 			EventInvestigationStatus.PENDING,
@@ -138,7 +138,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		event.setEventDesc(testDescription);
 		event.setStartDate(startDate);
 
-		final EventDto updatedEvent = getEventFacade().saveEvent(event);
+		final EventDto updatedEvent = getEventFacade().save(event);
 		Assert.assertEquals(testDescription, updatedEvent.getEventDesc());
 		Assert.assertEquals(startDate, updatedEvent.getStartDate());
 	}
@@ -252,15 +252,15 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		Date testStartDate = new Date();
 
 		// getAllActiveEvents/getAllActiveEventParticipants and getAllUuids should return length 1
-		assertEquals(1, getEventFacade().getAllActiveEventsAfter(null).size());
+		assertEquals(1, getEventFacade().getAllAfter(null).size());
 		assertEquals(1, getEventFacade().getAllActiveUuids().size());
 		assertEquals(1, getEventParticipantFacade().getAllActiveEventParticipantsAfter(null).size());
 		assertEquals(1, getEventParticipantFacade().getAllActiveUuids().size());
 
-		getEventFacade().archiveOrDearchiveEvent(event.getUuid(), true);
+		getEventFacade().archive(event.getUuid(), null);
 
 		// getAllActiveEvents/getAllActiveEventParticipants and getAllUuids should return length 0
-		assertEquals(0, getEventFacade().getAllActiveEventsAfter(null).size());
+		assertEquals(0, getEventFacade().getAllAfter(null).size());
 		assertEquals(0, getEventFacade().getAllActiveUuids().size());
 		assertEquals(0, getEventParticipantFacade().getAllActiveEventParticipantsAfter(null).size());
 		assertEquals(0, getEventParticipantFacade().getAllActiveUuids().size());
@@ -268,10 +268,10 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		// getArchivedUuidsSince should return length 1
 		assertEquals(1, getEventFacade().getArchivedUuidsSince(testStartDate).size());
 
-		getEventFacade().archiveOrDearchiveEvent(event.getUuid(), false);
+		getEventFacade().dearchive(Collections.singletonList(event.getUuid()), null);
 
 		// getAllActiveEvents/getAllActiveEventParticipants and getAllUuids should return length 1
-		assertEquals(1, getEventFacade().getAllActiveEventsAfter(null).size());
+		assertEquals(1, getEventFacade().getAllAfter(null).size());
 		assertEquals(1, getEventFacade().getAllActiveUuids().size());
 		assertEquals(1, getEventParticipantFacade().getAllActiveEventParticipantsAfter(null).size());
 		assertEquals(1, getEventParticipantFacade().getAllActiveUuids().size());
@@ -304,7 +304,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 			Disease.ANTHRAX,
 			rdcf.district);
 		EventFacadeEjbLocal cut = getBean(EventFacadeEjbLocal.class);
-		cut.archiveOrDearchiveEvent(event1.getUuid(), true);
+		cut.archive(event1.getUuid(), null);
 
 		// One other event
 		EventDto event2 = creator.createEvent(
@@ -347,7 +347,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		event.setEventTitle("Test event");
 		event.setEventLocation(new LocationDto());
 
-		EventDto savedEvent = getEventFacade().saveEvent(event);
+		EventDto savedEvent = getEventFacade().save(event);
 
 		MatcherAssert.assertThat(savedEvent.getUuid(), not(isEmptyOrNullString()));
 		MatcherAssert.assertThat(savedEvent.getEventLocation().getUuid(), not(isEmptyOrNullString()));
@@ -396,7 +396,7 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		getExternalShareInfoService().ensurePersisted(shareInfo);
 
 		sharedEvent.setEventDesc("Dummy description");
-		getEventFacade().saveEvent(sharedEvent);
+		getEventFacade().save(sharedEvent);
 
 		creator.createEvent(user.toReference());
 		creator.createEvent(user.toReference());
@@ -494,5 +494,24 @@ public class EventFacadeEjbTest extends AbstractBeanTest {
 		MatcherAssert.assertThat(
 			subordinateEventUuids.toArray(new String[] {}),
 			Matchers.arrayContainingInAnyOrder(subordinateEvent_1_1.getUuid(), subordinateEvent_1_2.getUuid(), subordinateEvent_2_1.getUuid()));
+	}
+
+	@Test
+	public void testGetEventUsersWithoutUsesLimitedToOthersDiseses() {
+		RDCF rdcf = creator.createRDCF();
+		useNationalUserLogin();
+		UserDto userDto = creator.createUser(rdcf, UserRole.NATIONAL_USER);
+		EventDto event = creator.createEvent(userDto.toReference(), Disease.CORONAVIRUS);
+
+		UserDto limitedCovidNationalUser =
+			creator.createUser(rdcf, "Limited Disease Covid", "National User", Disease.CORONAVIRUS, UserRole.NATIONAL_USER);
+		UserDto limitedDengueNationalUser =
+			creator.createUser(rdcf, "Limited Disease Dengue", "National User", Disease.DENGUE, UserRole.NATIONAL_USER);
+
+		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUsersHavingEventInJurisdiction(event.toReference());
+		Assert.assertNotNull(userReferenceDtos);
+		Assert.assertTrue(userReferenceDtos.contains(userDto));
+		Assert.assertTrue(userReferenceDtos.contains(limitedCovidNationalUser));
+		Assert.assertFalse(userReferenceDtos.contains(limitedDengueNationalUser));
 	}
 }

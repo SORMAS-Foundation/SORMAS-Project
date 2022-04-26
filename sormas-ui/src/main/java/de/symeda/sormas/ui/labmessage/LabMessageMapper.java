@@ -211,7 +211,12 @@ public class LabMessageMapper {
 							pathogenTest::setPreliminary,
 							pathogenTest.getPreliminary(),
 							sourceTestReport.getPreliminary(),
-							PathogenTestDto.PRELIMINARY))));
+							PathogenTestDto.PRELIMINARY),
+						Mapping.of(
+							pathogenTest::setPcrTestSpecification,
+							pathogenTest.getPcrTestSpecification(),
+							sourceTestReport.getTestPcrTestSpecification(),
+							PathogenTestDto.PCR_TEST_SPECIFICATION))));
 		}
 
 		changedFields.addAll(

@@ -1,17 +1,18 @@
 package de.symeda.sormas.ui.immunization;
 
-import com.vaadin.ui.CustomLayout;
 import com.vaadin.ui.VerticalLayout;
 
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.immunization.components.form.ImmunizationDataForm;
 import de.symeda.sormas.ui.sormastosormas.SormasToSormasListComponent;
+import de.symeda.sormas.ui.utils.ArchivingController;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
-import de.symeda.sormas.ui.utils.LayoutUtil;
+import de.symeda.sormas.ui.utils.LayoutWithSidePanel;
 
 public class ImmunizationDataView extends AbstractImmunizationView {
 
@@ -34,28 +35,18 @@ public class ImmunizationDataView extends AbstractImmunizationView {
 	protected void initView(String params) {
 		setHeightUndefined();
 
-		String htmlLayout = LayoutUtil
-			.fluidRow(LayoutUtil.fluidColumnLoc(8, 0, 12, 0, IMMUNIZATION_LOC), LayoutUtil.fluidColumnLoc(4, 0, 6, 0, SORMAS_TO_SORMAS_LOC));
+		ImmunizationDto immunization = FacadeProvider.getImmunizationFacade().getByUuid(getReference().getUuid());
+
+		editComponent = ControllerProvider.getImmunizationController().getImmunizationDataEditComponent(immunization);
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
 		container.setMargin(true);
 		setSubComponent(container);
-		CustomLayout layout = new CustomLayout();
-		layout.addStyleName(CssStyles.ROOT_COMPONENT);
-		layout.setTemplateContents(htmlLayout);
-		layout.setWidth(100, Unit.PERCENTAGE);
-		layout.setHeightUndefined();
+
+		LayoutWithSidePanel layout = new LayoutWithSidePanel(editComponent, SORMAS_TO_SORMAS_LOC);
+
 		container.addComponent(layout);
-
-		ImmunizationDto immunization = FacadeProvider.getImmunizationFacade().getByUuid(getReference().getUuid());
-
-		editComponent = ControllerProvider.getImmunizationController().getImmunizationDataEditComponent(immunization);
-		editComponent.setMargin(false);
-		editComponent.setWidth(100, Unit.PERCENTAGE);
-		editComponent.getWrappedComponent().setWidth(100, Unit.PERCENTAGE);
-		editComponent.addStyleName(CssStyles.MAIN_COMPONENT);
-		layout.addComponent(editComponent, IMMUNIZATION_LOC);
 
 		boolean sormasToSormasEnabled = FacadeProvider.getSormasToSormasFacade().isFeatureEnabledForUser();
 		if (sormasToSormasEnabled || immunization.getSormasToSormasOriginInfo() != null) {
@@ -70,6 +61,12 @@ public class ImmunizationDataView extends AbstractImmunizationView {
 			layout.addComponent(sormasToSormasLocLayout, SORMAS_TO_SORMAS_LOC);
 		}
 
-		setImmunizationEditPermission(container);
+		EditPermissionType immunizationEditAllowed = FacadeProvider.getImmunizationFacade().isImmunizationEditAllowed(immunization.getUuid());
+
+		if (immunizationEditAllowed.equals(EditPermissionType.ARCHIVING_STATUS_ONLY)) {
+			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
+		} else if (immunizationEditAllowed.equals(EditPermissionType.REFUSED)) {
+			layout.disable();
+		}
 	}
 }

@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,25 +26,37 @@ import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.List;
+import java.util.Locale;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Sample;
+import org.sormas.e2etests.entities.pojo.web.SampleAdditionalTest;
+import org.sormas.e2etests.entities.services.SampleAdditionalTestService;
+import org.sormas.e2etests.entities.services.SampleService;
+import org.sormas.e2etests.enums.PathogenTestResults;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.pojo.web.Sample;
-import org.sormas.e2etests.services.SampleService;
+import org.testng.asserts.SoftAssert;
 
 public class CreateNewSampleSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
+  public static final DateTimeFormatter DATE_FORMATTER_DE = DateTimeFormatter.ofPattern("d.M.yyyy");
   public static final DateTimeFormatter TIME_FORMATTER = DateTimeFormatter.ofPattern("HH:mm");
   public static Sample sample;
   public static Sample sampleTestResult;
+  public static SampleAdditionalTest additionalTestResult;
   public static String sampleId;
   private final WebDriverHelpers webDriverHelpers;
   private final Faker faker;
 
   @Inject
   public CreateNewSampleSteps(
-      WebDriverHelpers webDriverHelpers, SampleService sampleService, Faker faker) {
+      WebDriverHelpers webDriverHelpers,
+      SampleService sampleService,
+      SampleAdditionalTestService sampleAdditionalTestService,
+      Faker faker,
+      SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
     this.faker = faker;
 
@@ -66,6 +78,7 @@ public class CreateNewSampleSteps implements En {
           fillLabSampleId(sample.getLabSampleId());
           fillCommentsOnSample(sample.getCommentsOnSample());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
         });
 
     When(
@@ -79,6 +92,84 @@ public class CreateNewSampleSteps implements En {
           selectReasonForSample(sample.getReasonForSample());
           fillSampleID(sample.getSampleID());
           fillCommentsOnSample(sample.getCommentsOnSample());
+        });
+
+    When(
+        "^I create a new Sample with positive test result for DE version$",
+        () -> {
+          sample = sampleService.buildGeneratedPositiveSampleDE();
+          selectPurposeOfSample(sample.getPurposeOfTheSample(), SAMPLE_PURPOSE_OPTIONS);
+          fillDateOfCollectionDE(sample.getDateOfCollection());
+          selectSampleType(sample.getSampleType());
+          webDriverHelpers.clickOnWebElementBySelector(ADD_PATHOGEN_TEST_BUTTON_DE);
+          selectTestedDisease(sample.getTestedDisease());
+          selectTestResult(sample.getSampleTestResults());
+          selectLaboratory(sample.getLaboratory());
+          selectResultVerifiedByLabSupervisor(
+              sample.getResultVerifiedByLabSupervisor(), RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
+        });
+
+    When(
+        "I select the German words for Antigen Detection Test as Type of Test in the Create New Sample popup",
+        () -> {
+          selectTypeOfTest("Antigen-Nachweistest");
+        });
+
+    When(
+        "I select the German words for Rapid Antigen Detection Test as Type of Test in the Create New Sample popup",
+        () -> {
+          selectTypeOfTest("Antigen Nachweistest (Schnelltest)");
+        });
+
+    When(
+        "I select the German words for Isolation as Type of Test in the Create New Sample popup",
+        () -> {
+          selectTypeOfTest("Isolation");
+        });
+
+    When(
+        "I select the German words for PCR RT-PCR as Type of Test in the Create New Sample popup",
+        () -> {
+          selectTypeOfTest("Nukleins\u00E4ure-Nachweis (z.B. PCR)");
+        });
+
+    When(
+        "^I create a new Sample with for COVID alternative purpose$",
+        () -> {
+          sample = sampleService.buildGeneratedSample();
+          selectPurposeOfSample(sample.getPurposeOfTheSample(), SAMPLE_PURPOSE_OPTIONS);
+          fillDateOfCollection(sample.getDateOfCollection());
+          fillTimeOfCollection(sample.getTimeOfCollection());
+          selectSampleType(sample.getSampleType());
+          selectReasonForSample(sample.getReasonForSample());
+          fillSampleID(sample.getSampleID());
+          selectLaboratory(sample.getLaboratory());
+          selectLaboratoryName(sample.getLaboratoryName());
+          webDriverHelpers.clickOnWebElementBySelector(REQUEST_PATHOGEN_OPTION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ANTIGEN_DETECTION_TEST_OPTION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ISOLATION_TEST_OPTION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(PCR_RTP_PCR_TEST_OPTION_BUTTON);
+          webDriverHelpers.selectFromCombobox(
+              FINAL_LABORATORY_RESULT_COMBOBOX, PathogenTestResults.POSITIVE.getPathogenResults());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    When(
+        "I fill all fields from Pathogen test for COVID-19 disease result popup and save",
+        () -> {
+          sampleTestResult = sampleService.buildGeneratedSampleTestResultForCovid();
+          fillReportDate(sampleTestResult.getReportDate(), Locale.ENGLISH);
+          selectTypeOfTest(sampleTestResult.getTypeOfTest());
+          selectTestedDisease(sampleTestResult.getTestedDisease());
+          selectPathogenLaboratory(sampleTestResult.getLaboratory());
+          selectTestResult(sampleTestResult.getSampleTestResults());
+          fillDateOfResult(sampleTestResult.getDateOfResult(), Locale.ENGLISH);
+          fillTimeOfResult(sampleTestResult.getTimeOfResult());
+          selectResultVerifiedByLabSupervisor(
+              sampleTestResult.getResultVerifiedByLabSupervisor(),
+              RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
+          fillTestResultsComment(sampleTestResult.getTestResultsComment());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
         });
 
     When(
@@ -105,12 +196,12 @@ public class CreateNewSampleSteps implements En {
         "^I complete all fields from Pathogen test result popup and save$",
         () -> {
           sampleTestResult = sampleService.buildPathogenTestResult();
-          fillReportDate(sampleTestResult.getReportDate());
+          fillReportDate(sampleTestResult.getReportDate(), Locale.ENGLISH);
           selectTypeOfTest(sampleTestResult.getTypeOfTest());
           selectTestedDisease(sampleTestResult.getTestedDisease());
           selectPathogenLaboratory(sampleTestResult.getLaboratory());
           selectTestResult(sampleTestResult.getSampleTestResults());
-          fillDateOfResult(sampleTestResult.getDateOfResult());
+          fillDateOfResult(sampleTestResult.getDateOfResult(), Locale.ENGLISH);
           fillTimeOfResult(sampleTestResult.getTimeOfResult());
           selectResultVerifiedByLabSupervisor(
               sampleTestResult.getResultVerifiedByLabSupervisor(),
@@ -118,11 +209,75 @@ public class CreateNewSampleSteps implements En {
           fillTestResultsComment(sampleTestResult.getTestResultsComment());
           webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
         });
+    When(
+        "^I complete all fields from Additional test result popup and save$",
+        () -> {
+          additionalTestResult = sampleAdditionalTestService.buildSampleAdditionalTestResult();
+          fillDateOfResult(additionalTestResult.getDateOfResult(), Locale.ENGLISH);
+          fillTimeOfResult(additionalTestResult.getTimeOfResult());
+          selectHaemoglobinInUrine(additionalTestResult.getHaemoglobinInUrine());
+          selectProteinInUrine(additionalTestResult.getProteinInUrine());
+          selectCellsInUrine(additionalTestResult.getRedBloodCellsInUrine());
+          fillPh(additionalTestResult.getPh());
+          fillPCO2(additionalTestResult.getPCO2());
+          fillPAO2(additionalTestResult.getPAO2());
+          fillHCO3(additionalTestResult.getHCO3());
+          fillOxygenTherapy(additionalTestResult.getOxygen());
+          fillSgpt(additionalTestResult.getSgpt());
+          fillTotalBilirubin(additionalTestResult.getTotalBilirubin());
+          fillSgot(additionalTestResult.getSgot());
+          fillConjBilirubin(additionalTestResult.getConjBilirubin());
+          fillCretinine(additionalTestResult.getCreatine());
+          fillWbc(additionalTestResult.getWbc());
+          fillPotassium(additionalTestResult.getPotassium());
+          fillPlatelets(additionalTestResult.getPlatelets());
+          fillUrea(additionalTestResult.getUrea());
+          fillProthrombin(additionalTestResult.getProthrombin());
+          fillHaemoglobin(additionalTestResult.getHaemoglobin());
+          fillOtherTests(additionalTestResult.getOtherResults());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
 
     When(
         "^I complete all fields from Pathogen test result popup for IgM test type and save$",
         () -> {
           simplePathogenBuilderResult("IgM serum antibody");
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    When(
+        "I check if Pathogen test result in Samples is displayed correctly and save",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_PATHOGEN_TEST_BUTTON);
+          final Sample actualSampleTestResult = collectPathogenTestResultsData();
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              sampleTestResult,
+              actualSampleTestResult,
+              List.of(
+                  "laboratory",
+                  "sampleTestResults",
+                  "reportDate",
+                  "typeOfTest",
+                  "testedDisease",
+                  "dateOfResult",
+                  "timeOfResult",
+                  "resultVerifiedByLabSupervisor",
+                  "testResultsComment"));
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    When(
+        "I complete all fields from Pathogen test result popup for IgM test type for DE version and save",
+        () -> {
+          buildPathogenTestDE("IgM Serum Antik\u00F6rper");
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    When(
+        "I complete all fields from Pathogen test result popup for IgM test type with positive verified test result$",
+        () -> {
+          simplePathogenBuilderVerifiedResult("IgG serum antibody");
           webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
         });
 
@@ -173,11 +328,51 @@ public class CreateNewSampleSteps implements En {
         () -> sampleId = collectSampleUuid());
 
     When(
-        "^I check that the created Pathogen is correctly displayed",
+        "^I check that the created Pathogen is correctly displayed$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(EDIT_TEST_RESULTS_BUTTON);
           final Sample actualSampleTestResult = collectPathogenTestResultsData();
           ComparisonHelper.compareEqualEntities(sampleTestResult, actualSampleTestResult);
+        });
+
+    When(
+        "^I check that the created Additional test is correctly displayed$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_ADDITIONAL_TEST_RESULTS_BUTTON);
+          final SampleAdditionalTest actualAdditionalTestResult =
+              collectAdditionalTestResultsData();
+          ComparisonHelper.compareEqualEntities(additionalTestResult, actualAdditionalTestResult);
+        });
+
+    When(
+        "^I check that the created Pathogen is correctly displayed for DE version$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EDIT_TEST_RESULTS_BUTTON);
+          final Sample actualSampleTestResult = collectPathogenTestResultsDataDE();
+          ComparisonHelper.compareEqualEntities(sampleTestResult, actualSampleTestResult);
+        });
+
+    When(
+        "I confirm the Create case from contact with positive test result",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONFIRM_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
+        });
+
+    When(
+        "I confirm the Create case from event participant with positive test result",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONFIRM_BUTTON);
+          String displayedText =
+              webDriverHelpers.getTextFromWebElement(CREATE_CASE_POSITIVE_TEST_RESULT_LABEL);
+          String expectedText = "Create case from event participant with positive test result?";
+          softly.assertEquals(
+              displayedText,
+              expectedText,
+              "Case creation confirmation popup message is not correct");
+          softly.assertAll();
+          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
         });
   }
 
@@ -192,6 +387,11 @@ public class CreateNewSampleSteps implements En {
   private void fillDateOfCollection(LocalDate dateOfCollection) {
     webDriverHelpers.clearAndFillInWebElement(
         DATE_SAMPLE_COLLECTED, DATE_FORMATTER.format(dateOfCollection));
+  }
+
+  private void fillDateOfCollectionDE(LocalDate dateOfCollection) {
+    webDriverHelpers.clearAndFillInWebElement(
+        DATE_SAMPLE_COLLECTED, DATE_FORMATTER_DE.format(dateOfCollection));
   }
 
   private void fillTimeOfCollection(LocalTime timeOfCollection) {
@@ -252,9 +452,14 @@ public class CreateNewSampleSteps implements En {
     webDriverHelpers.clickOnWebElementBySelector(SAMPLE_TEST_RESULT_BUTTON);
   }
 
-  private void fillReportDate(LocalDate dateOfCollection) {
-    webDriverHelpers.clearAndFillInWebElement(
-        DATE_TEST_REPORT, DATE_FORMATTER.format(dateOfCollection));
+  private void fillReportDate(LocalDate dateOfCollection, Locale locale) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d.M.yyyy");
+    if (locale.equals(Locale.GERMAN))
+      webDriverHelpers.clearAndFillInWebElement(
+          DATE_TEST_REPORT, formatter.format(dateOfCollection));
+    else
+      webDriverHelpers.clearAndFillInWebElement(
+          DATE_TEST_REPORT, DATE_FORMATTER.format(dateOfCollection));
   }
 
   private void selectTypeOfTest(String typeOfTest) {
@@ -265,9 +470,13 @@ public class CreateNewSampleSteps implements En {
     webDriverHelpers.selectFromCombobox(TESTED_DISEASE_COMBOBOX, typeOfDisease);
   }
 
-  private void fillDateOfResult(LocalDate dateOfCollection) {
-    webDriverHelpers.clearAndFillInWebElement(
-        DATE_OF_RESULT, DATE_FORMATTER.format(dateOfCollection));
+  private void fillDateOfResult(LocalDate dateOfCollection, Locale locale) {
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("d.M.yyyy");
+    if (locale.equals(Locale.GERMAN))
+      webDriverHelpers.clearAndFillInWebElement(DATE_OF_RESULT, formatter.format(dateOfCollection));
+    else
+      webDriverHelpers.clearAndFillInWebElement(
+          DATE_OF_RESULT, DATE_FORMATTER.format(dateOfCollection));
   }
 
   private void fillTimeOfResult(LocalTime timeOfCollection) {
@@ -281,6 +490,86 @@ public class CreateNewSampleSteps implements En {
 
   private void fillTestResultsComment(String testResultsComment) {
     webDriverHelpers.clearAndFillInWebElement(TEST_RESULTS_COMMENT_AREA_INPUT, testResultsComment);
+  }
+
+  private void selectHaemoglobinInUrine(String haemoglobinInUrine) {
+    webDriverHelpers.selectFromCombobox(HAEMOGLOBIN_IN_URINE_COMBOBOX, haemoglobinInUrine);
+  }
+
+  private void selectProteinInUrine(String proteinInUrine) {
+    webDriverHelpers.selectFromCombobox(PROTEIN_IN_URINE_COMBOBOX, proteinInUrine);
+  }
+
+  private void selectCellsInUrine(String cellsInUrine) {
+    webDriverHelpers.selectFromCombobox(CELLS_IN_URINE_COMBOBOX, cellsInUrine);
+  }
+
+  private void fillPh(String ph) {
+    webDriverHelpers.clearAndFillInWebElement(PH_INPUT, ph);
+  }
+
+  private void fillPCO2(String pCO2) {
+    webDriverHelpers.clearAndFillInWebElement(PCO2_INPUT, pCO2);
+  }
+
+  private void fillPAO2(String pAO2) {
+    webDriverHelpers.clearAndFillInWebElement(PAO2_INPUT, pAO2);
+  }
+
+  private void fillHCO3(String hCO3) {
+    webDriverHelpers.clearAndFillInWebElement(HCO3_INPUT, hCO3);
+  }
+
+  private void fillOxygenTherapy(String oxygenTherapy) {
+    webDriverHelpers.clearAndFillInWebElement(OXYGEN_INPUT, oxygenTherapy);
+  }
+
+  private void fillSgpt(String sgpt) {
+    webDriverHelpers.clearAndFillInWebElement(SGPT_INPUT, sgpt);
+  }
+
+  private void fillTotalBilirubin(String totalBilirubin) {
+    webDriverHelpers.clearAndFillInWebElement(TOTAL_BILIRUBIN_INPUT, totalBilirubin);
+  }
+
+  private void fillSgot(String sgot) {
+    webDriverHelpers.clearAndFillInWebElement(SGOT_INPUT, sgot);
+  }
+
+  private void fillConjBilirubin(String conjBilirubin) {
+    webDriverHelpers.clearAndFillInWebElement(CONJ_BILIRUBIN_INPUT, conjBilirubin);
+  }
+
+  private void fillCretinine(String creatinine) {
+    webDriverHelpers.clearAndFillInWebElement(CREATININE_INPUT, creatinine);
+  }
+
+  private void fillWbc(String wbc) {
+    webDriverHelpers.clearAndFillInWebElement(WBC_INPUT, wbc);
+  }
+
+  private void fillPotassium(String potassium) {
+    webDriverHelpers.clearAndFillInWebElement(POTASSIUM_INPUT, potassium);
+  }
+
+  private void fillPlatelets(String platelets) {
+    webDriverHelpers.clearAndFillInWebElement(PLATELETS_INPUT, platelets);
+  }
+
+  private void fillUrea(String urea) {
+    webDriverHelpers.clearAndFillInWebElement(UREA_INPUT, urea);
+  }
+
+  private void fillProthrombin(String prothrombin) {
+    webDriverHelpers.clearAndFillInWebElement(PROTHROMBIN_INPUT, prothrombin);
+  }
+
+  private void fillHaemoglobin(String haemoglobin) {
+    webDriverHelpers.clearAndFillInWebElement(HAEMOGLOBIN_INPUT, haemoglobin);
+  }
+
+  private void fillOtherTests(String otherTests) {
+    webDriverHelpers.clearAndFillInWebElement(OTHER_TESTS_INPUT, otherTests);
   }
 
   private Sample collectSampleData() {
@@ -380,9 +669,17 @@ public class CreateNewSampleSteps implements En {
     return webDriverHelpers.getTextFromWebElement(SAMPLE_TEST_RESULT_BUTTON);
   }
 
-  private LocalDate getReportDate() {
-    return LocalDate.parse(
-        webDriverHelpers.getValueFromWebElement(DATE_TEST_REPORT), DATE_FORMATTER);
+  private void selectLaboratoryNamePopup(String laboratoryName) {
+    webDriverHelpers.clearAndFillInWebElement(LABORATORY_NAME_POPUP_INPUT, laboratoryName);
+  }
+
+  private LocalDate getReportDate(Locale locale) {
+    if (locale.equals(Locale.GERMAN))
+      return LocalDate.parse(
+          webDriverHelpers.getValueFromWebElement(DATE_TEST_REPORT), DATE_FORMATTER_DE);
+    else
+      return LocalDate.parse(
+          webDriverHelpers.getValueFromWebElement(DATE_TEST_REPORT), DATE_FORMATTER);
   }
 
   private String getTypeOfTest() {
@@ -393,8 +690,13 @@ public class CreateNewSampleSteps implements En {
     return webDriverHelpers.getValueFromWebElement(TESTED_DISEASE_INPUT);
   }
 
-  private LocalDate getDateOfResult() {
-    return LocalDate.parse(webDriverHelpers.getValueFromWebElement(DATE_OF_RESULT), DATE_FORMATTER);
+  private LocalDate getDateOfResult(Locale locale) {
+    if (locale.equals(Locale.GERMAN))
+      return LocalDate.parse(
+          webDriverHelpers.getValueFromWebElement(DATE_OF_RESULT), DATE_FORMATTER_DE);
+    else
+      return LocalDate.parse(
+          webDriverHelpers.getValueFromWebElement(DATE_OF_RESULT), DATE_FORMATTER);
   }
 
   private LocalTime getTimeOfResult() {
@@ -411,15 +713,137 @@ public class CreateNewSampleSteps implements En {
         RESULT_VERIFIED_BY_LAB_SUPERVISOR_EDIT_OPTIONS);
   }
 
+  private String getHaemoglobinInUrine() {
+    return webDriverHelpers.getValueFromWebElement(HAEMOGLOBIN_IN_URINE_INPUT);
+  }
+
+  private String getProteinInUrine() {
+    return webDriverHelpers.getValueFromWebElement(PROTEIN_IN_URINE_INPUT);
+  }
+
+  private String getCellsInUrine() {
+    return webDriverHelpers.getValueFromWebElement(CELLS_IN_URINE_INPUT);
+  }
+
+  private String getPh() {
+    return webDriverHelpers.getValueFromWebElement(PH_INPUT);
+  }
+
+  private String getPCO2() {
+    return webDriverHelpers.getValueFromWebElement(PCO2_INPUT);
+  }
+
+  private String getPAO2() {
+    return webDriverHelpers.getValueFromWebElement(PAO2_INPUT);
+  }
+
+  private String getHC03() {
+    return webDriverHelpers.getValueFromWebElement(HCO3_INPUT);
+  }
+
+  private String getOxygen() {
+    return webDriverHelpers.getValueFromWebElement(OXYGEN_INPUT);
+  }
+
+  private String getSgpt() {
+    return webDriverHelpers.getValueFromWebElement(SGPT_INPUT);
+  }
+
+  private String getTotalBilirubin() {
+    return webDriverHelpers.getValueFromWebElement(TOTAL_BILIRUBIN_INPUT);
+  }
+
+  private String getSgot() {
+    return webDriverHelpers.getValueFromWebElement(SGOT_INPUT);
+  }
+
+  private String getConjBilirubin() {
+    return webDriverHelpers.getValueFromWebElement(CONJ_BILIRUBIN_INPUT);
+  }
+
+  private String getCreatine() {
+    return webDriverHelpers.getValueFromWebElement(CREATININE_INPUT);
+  }
+
+  private String getWbc() {
+    return webDriverHelpers.getValueFromWebElement(WBC_INPUT);
+  }
+
+  private String getPotassium() {
+    return webDriverHelpers.getValueFromWebElement(POTASSIUM_INPUT);
+  }
+
+  private String getPlatelets() {
+    return webDriverHelpers.getValueFromWebElement(PLATELETS_INPUT);
+  }
+
+  private String getUrea() {
+    return webDriverHelpers.getValueFromWebElement(UREA_INPUT);
+  }
+
+  private String getProthrombin() {
+    return webDriverHelpers.getValueFromWebElement(PROTHROMBIN_INPUT);
+  }
+
+  private String getHaemoglobin() {
+    return webDriverHelpers.getValueFromWebElement(HAEMOGLOBIN_INPUT);
+  }
+
+  private String getOtherResults() {
+    return webDriverHelpers.getValueFromWebElement(OTHER_TESTS_INPUT);
+  }
+
   private Sample collectPathogenTestResultsData() {
     return Sample.builder()
         .sampleTestResults(getPathogenPopupTestResult())
-        .reportDate(getReportDate())
+        .reportDate(getReportDate(Locale.ENGLISH))
         .typeOfTest(getTypeOfTest())
         .testedDisease(getTestedDisease())
-        .dateOfResult(getDateOfResult())
+        .dateOfResult(getDateOfResult(Locale.ENGLISH))
         .timeOfResult(getTimeOfResult())
         .laboratory(getPathogenPopupLaboratory())
+        .resultVerifiedByLabSupervisor(getResultVerifiedByLabSupervisor())
+        .testResultsComment(getTestResultComment())
+        .build();
+  }
+
+  private SampleAdditionalTest collectAdditionalTestResultsData() {
+    return SampleAdditionalTest.builder()
+        .dateOfResult(getDateOfResult(Locale.ENGLISH))
+        .timeOfResult(getTimeOfResult())
+        .haemoglobinInUrine(getHaemoglobinInUrine())
+        .proteinInUrine(getProteinInUrine())
+        .redBloodCellsInUrine(getCellsInUrine())
+        .ph(getPh())
+        .pCO2(getPCO2())
+        .pAO2(getPAO2())
+        .hCO3(getHC03())
+        .oxygen(getOxygen())
+        .sgpt(getSgpt())
+        .totalBilirubin(getTotalBilirubin())
+        .sgot(getSgot())
+        .conjBilirubin(getConjBilirubin())
+        .creatine(getCreatine())
+        .wbc(getWbc())
+        .potassium(getPotassium())
+        .platelets(getPlatelets())
+        .urea(getUrea())
+        .prothrombin(getProthrombin())
+        .haemoglobin(getHaemoglobin())
+        .otherResults(getOtherResults())
+        .build();
+  }
+
+  private Sample collectPathogenTestResultsDataDE() {
+    return Sample.builder()
+        .sampleTestResults(getPathogenPopupTestResult())
+        .reportDate(getReportDate(Locale.GERMAN))
+        .typeOfTest(getTypeOfTest())
+        .testedDisease(getTestedDisease())
+        .dateOfResult(getDateOfResult(Locale.GERMAN))
+        .timeOfResult(getTimeOfResult())
+        .laboratory(getPathogenPopupLaboratory())
+        .laboratoryName(getLaboratoryName())
         .resultVerifiedByLabSupervisor(getResultVerifiedByLabSupervisor())
         .testResultsComment(getTestResultComment())
         .build();
@@ -428,12 +852,48 @@ public class CreateNewSampleSteps implements En {
   private Sample simplePathogenBuilderResult(String testType) {
     SampleService sampleService = new SampleService(faker);
     sampleTestResult = sampleService.buildPathogenTestResultType(testType);
-    fillReportDate(sampleTestResult.getReportDate());
+    fillReportDate(sampleTestResult.getReportDate(), Locale.ENGLISH);
     selectTypeOfTest(sampleTestResult.getTypeOfTest());
     selectTestedDisease(sampleTestResult.getTestedDisease());
     selectPathogenLaboratory(sampleTestResult.getLaboratory());
     selectTestResult(sampleTestResult.getSampleTestResults());
-    fillDateOfResult(sampleTestResult.getDateOfResult());
+    fillDateOfResult(sampleTestResult.getDateOfResult(), Locale.ENGLISH);
+    fillTimeOfResult(sampleTestResult.getTimeOfResult());
+    selectResultVerifiedByLabSupervisor(
+        sampleTestResult.getResultVerifiedByLabSupervisor(),
+        RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
+    fillTestResultsComment(sampleTestResult.getTestResultsComment());
+    return sampleTestResult;
+  }
+
+  private Sample simplePathogenBuilderVerifiedResult(String testType) {
+    SampleService sampleService = new SampleService(faker);
+    sampleTestResult = sampleService.buildPathogenTestResultTypeVerified(testType);
+    fillReportDate(sampleTestResult.getReportDate(), Locale.ENGLISH);
+    selectTypeOfTest(sampleTestResult.getTypeOfTest());
+    selectTestedDisease(sampleTestResult.getTestedDisease());
+    selectPathogenLaboratory(sampleTestResult.getLaboratory());
+    selectLaboratoryNamePopup(sampleTestResult.getLaboratoryName());
+    selectTestResult(sampleTestResult.getSampleTestResults());
+    fillDateOfResult(sampleTestResult.getDateOfResult(), Locale.ENGLISH);
+    fillTimeOfResult(sampleTestResult.getTimeOfResult());
+    selectResultVerifiedByLabSupervisor(
+        sampleTestResult.getResultVerifiedByLabSupervisor(),
+        RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
+    fillTestResultsComment(sampleTestResult.getTestResultsComment());
+    return sampleTestResult;
+  }
+
+  private Sample buildPathogenTestDE(String testType) {
+    SampleService sampleService = new SampleService(faker);
+    sampleTestResult = sampleService.buildPathogenTestUnverifiedDE(testType);
+    fillReportDate(sampleTestResult.getReportDate(), Locale.GERMAN);
+    selectTypeOfTest(sampleTestResult.getTypeOfTest());
+    selectTestedDisease(sampleTestResult.getTestedDisease());
+    selectPathogenLaboratory(sampleTestResult.getLaboratory());
+    selectLaboratoryNamePopup(sampleTestResult.getLaboratoryName());
+    selectTestResult(sampleTestResult.getSampleTestResults());
+    fillDateOfResult(sampleTestResult.getDateOfResult(), Locale.GERMAN);
     fillTimeOfResult(sampleTestResult.getTimeOfResult());
     selectResultVerifiedByLabSupervisor(
         sampleTestResult.getResultVerifiedByLabSupervisor(),

@@ -24,12 +24,16 @@ import java.util.Map;
 
 import javax.ejb.Remote;
 import javax.validation.Valid;
+import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.CoreFacade;
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.Language;
+import de.symeda.sormas.api.caze.CoreAndPersonDto;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
@@ -37,46 +41,37 @@ import de.symeda.sormas.api.importexport.ExportConfigurationDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
+import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.visit.VisitSummaryExportDto;
 
 @Remote
-public interface ContactFacade {
+public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, ContactReferenceDto, ContactCriteria> {
 
-	List<ContactDto> getAllActiveContactsAfter(Date date);
+	ContactDto save(@Valid ContactDto dto, boolean handleChanges, boolean handleCaseChanges);
 
-	ContactDto getContactByUuid(String uuid);
-
-	Boolean isValidContactUuid(String uuid);
-
-	ContactDto saveContact(@Valid ContactDto dto);
-
-	ContactDto saveContact(@Valid ContactDto dto, boolean handleChanges, boolean handleCaseChanges);
-
-	ContactReferenceDto getReferenceByUuid(String uuid);
+	CoreAndPersonDto<ContactDto> save(@Valid @NotNull CoreAndPersonDto<ContactDto> coreAndPersonDto) throws ValidationRuntimeException;
 
 	List<String> getAllActiveUuids();
 
 	void generateContactFollowUpTasks();
 
-	List<ContactDto> getAllActiveContactsAfter(Date date, Integer batchSize, String lastSynchronizedUuid);
-
-	List<ContactDto> getByUuids(List<String> uuids);
-
 	Long countContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
 
 	List<MapContactDto> getContactsForMap(RegionReferenceDto regionRef, DistrictReferenceDto districtRef, Disease disease, Date from, Date to);
 
-	void deleteContact(String contactUuid);
-
 	List<String> deleteContacts(List<String> contactUuids);
 
-	FollowUpPeriodDto calculateFollowUpUntilDate(ContactDto contactDto, boolean ignoreOverwrite);
-
-	List<ContactIndexDto> getIndexList(ContactCriteria contactCriteria, Integer first, Integer max, List<SortProperty> sortProperties);
+	FollowUpPeriodDto getCalculatedFollowUpUntilDate(ContactDto contactDto, boolean ignoreOverwrite);
 
 	List<ContactListEntryDto> getEntriesList(String personUuid, Integer first, Integer max);
 
 	Page<ContactIndexDto> getIndexPage(ContactCriteria contactCriteria, Integer offset, Integer size, List<SortProperty> sortProperties);
+
+	Page<ContactIndexDetailedDto> getIndexDetailedPage(
+		@NotNull ContactCriteria contactCriteria,
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties);
 
 	List<ContactIndexDetailedDto> getIndexDetailedList(
 		ContactCriteria contactCriteria,
@@ -116,7 +111,9 @@ public interface ContactFacade {
 
 	int getFollowUpUntilCount(ContactCriteria contactCriteria);
 
-	long count(ContactCriteria contactCriteria);
+	List<String> getArchivedUuidsSince(Date since);
+
+	void archiveAllArchivableContacts(int daysAfterContactsGetsArchived);
 
 	List<String> getDeletedUuidsSince(Date since);
 
@@ -143,9 +140,7 @@ public interface ContactFacade {
 
 	List<SimilarContactDto> getMatchingContacts(ContactSimilarityCriteria criteria);
 
-	boolean isContactEditAllowed(String contactUuid);
-
-	boolean exists(String uuid);
+	EditPermissionType isContactEditAllowed(String contactUuid);
 
 	boolean doesExternalTokenExist(String externalToken, String contactUuid);
 
@@ -161,5 +156,11 @@ public interface ContactFacade {
 
 	void updateExternalData(@Valid List<ExternalDataDto> externalData) throws ExternalDataUpdateException;
 
-	AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid);
+	int saveBulkContacts(
+		List<String> contactUuidlist,
+		@Valid ContactBulkEditData updatedContacBulkEditData,
+		boolean classificationChange,
+		boolean contactOfficerChange);
+
+	long getContactCount(CaseReferenceDto caze);
 }

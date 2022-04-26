@@ -1,19 +1,16 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.backend.info;
@@ -33,8 +30,10 @@ import de.symeda.sormas.api.utils.Required;
 import de.symeda.sormas.api.utils.SensitiveData;
 import java.lang.reflect.Field;
 import java.lang.reflect.ParameterizedType;
+import java.lang.reflect.Type;
 import java.util.Collection;
 import java.util.Date;
+import java.util.Map;
 import java.util.function.Function;
 
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -42,27 +41,38 @@ import org.apache.commons.lang3.reflect.TypeUtils;
 
 public enum EntityColumn {
 
-	FIELD_ID(256 * 30, EntityColumn::getFieldId, false),
-	FIELD(256 * 30, EntityColumn::getFieldName, false),
-	TYPE(256 * 30, EntityColumn::getFieldType, true),
-	DATA_PROTECTION(256 * 30, EntityColumn::getDataProtection, false),
-	CAPTION(256 * 30, EntityColumn::getCaption, false),
-	DESCRIPTION(256 * 60, EntityColumn::getDescription, true),
-	REQUIRED(256 * 10, EntityColumn::getRequired, false),
-	NEW_DISEASE(256 * 8, EntityColumn::getNewDisease, false),
-	DISEASES(256 * 45, EntityColumn::getDiseases, true),
-	OUTBREAKS(256 * 10, EntityColumn::getOutbreaks, false),
-	IGNORED_COUNTRIES(256 * 20, EntityColumn::getIgnoredCountries, false),
-	EXCLUSIVE_COUNTRIES(256 * 20, EntityColumn::getExclusiveCountries, false);
+	ENTITY(256 * 30, EntityColumn::getEntity, false, true, true),
+	FIELD_ID(256 * 30, EntityColumn::getFieldId, false, true, false),
+	FIELD(256 * 30, EntityColumn::getFieldName, false, true, false),
+	TYPE(256 * 30, EntityColumn::getFieldType, true, true, false),
+	DATA_PROTECTION(256 * 30, EntityColumn::getDataProtection, false, true, false),
+	CAPTION(256 * 30, EntityColumn::getCaption, false, true, false),
+	DESCRIPTION(256 * 60, EntityColumn::getDescription, true, true, false),
+	REQUIRED(256 * 10, EntityColumn::getRequired, false, true, false),
+	NEW_DISEASE(256 * 8, EntityColumn::getNewDisease, false, true, false),
+	DISEASES(256 * 45, EntityColumn::getDiseases, true, true, false),
+	OUTBREAKS(256 * 10, EntityColumn::getOutbreaks, false, true, false),
+	IGNORED_COUNTRIES(256 * 20, EntityColumn::getIgnoredCountries, false, false, false),
+	EXCLUSIVE_COUNTRIES(256 * 20, EntityColumn::getExclusiveCountries, false, false, false);
 
 	private final int width;
 	private final Function<FieldData, String> getValueFromField;
 	private final boolean hasDefaultStyle;
+	private final boolean isDataProtectionColumn;
+	private final boolean isColumnForAllFieldsSheet;
 
-	EntityColumn(int width, Function<FieldData, String> getValueFromField, boolean hasDefaultStyle) {
+	EntityColumn(
+		int width,
+		Function<FieldData, String> getValueFromField,
+		boolean hasDefaultStyle,
+		boolean isDataProtectionColumn,
+		boolean isColumnForAllFieldsSheet) {
+
 		this.width = width;
 		this.getValueFromField = getValueFromField;
 		this.hasDefaultStyle = hasDefaultStyle;
+		this.isDataProtectionColumn = isDataProtectionColumn;
+		this.isColumnForAllFieldsSheet = isColumnForAllFieldsSheet;
 	}
 
 	public int getWidth() {
@@ -77,8 +87,20 @@ public enum EntityColumn {
 		return hasDefaultStyle;
 	}
 
+	public boolean isDataProtectionColumn() {
+		return isDataProtectionColumn;
+	}
+
+	public boolean isColumnForAllFieldsSheet() {
+		return isColumnForAllFieldsSheet;
+	}
+
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
+	}
+
+	private static String getEntity(FieldData fieldData) {
+		return DataHelper.getHumanClassName(fieldData.getEntityClass());
 	}
 
 	private static String getFieldId(FieldData fieldData) {
@@ -108,11 +130,20 @@ public enum EntityColumn {
 			return Boolean.TRUE + ", " + Boolean.FALSE;
 		} else if (Collection.class.isAssignableFrom(fieldType)) {
 			return TypeUtils.getTypeArguments((ParameterizedType) fieldData.getField().getGenericType())
-					.values()
-					.stream()
-					.findFirst()
-					.map(type -> String.format(I18nProperties.getString(Strings.listOf), DataHelper.getHumanClassName((Class<?>) type)))
-					.orElseGet(fieldType::getSimpleName);
+				.values()
+				.stream()
+				.findFirst()
+				.map(type -> String.format(I18nProperties.getString(Strings.listOf), DataHelper.getHumanClassName((Class<?>) type)))
+				.orElseGet(fieldType::getSimpleName);
+		} else if (Map.class.isAssignableFrom(fieldType)) {
+			Type[] generics = TypeUtils.getTypeArguments((ParameterizedType) fieldData.getField().getGenericType()).values().toArray(new Type[0]);
+			if (generics.length != 2) {
+				throw new IllegalStateException("Could not clearly determine key and value generics.");
+			}
+			return String.format(
+				I18nProperties.getString(Strings.mapOf),
+				DataHelper.getHumanClassName((Class<?>) generics[0]),
+				DataHelper.getHumanClassName((Class<?>) generics[1]));
 		}
 
 		return fieldType.getSimpleName();

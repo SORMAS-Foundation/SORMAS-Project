@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.api.caze;
 
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DependingOnUserRight;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -28,7 +30,6 @@ import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.CountryHelper;
 import de.symeda.sormas.api.Disease;
-import de.symeda.sormas.api.clinicalcourse.ClinicalCourseDto;
 import de.symeda.sormas.api.clinicalcourse.HealthConditionsDto;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.QuarantineType;
@@ -62,6 +63,7 @@ import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -323,10 +325,13 @@ public class CaseExportDto implements Serializable {
 	private String responsibleCommunity;
 
 	@SensitiveData
+	@DependingOnUserRight(UserRight.CASE_CLINICIAN_VIEW)
 	private String clinicianName;
 	@SensitiveData
+	@DependingOnUserRight(UserRight.CASE_CLINICIAN_VIEW)
 	private String clinicianPhone;
 	@SensitiveData
+	@DependingOnUserRight(UserRight.CASE_CLINICIAN_VIEW)
 	private String clinicianEmail;
 
 	private Long reportingUserId;
@@ -1425,6 +1430,7 @@ public class CaseExportDto implements Serializable {
 		CaseExportType.CASE_SURVEILLANCE })
 	@ExportProperty(BURIAL_INFO)
 	@ExportGroup(ExportGroupType.SENSITIVE)
+	@HideForCountries
 	public BurialInfoDto getBurialInfo() {
 		return burialInfo;
 	}
@@ -1640,6 +1646,9 @@ public class CaseExportDto implements Serializable {
 		CaseDataDto.PERSON,
 		PersonDto.EDUCATION_TYPE })
 	@ExportGroup(ExportGroupType.PERSON)
+	@HideForCountries(countries = {
+		CountryHelper.COUNTRY_CODE_GERMANY,
+		CountryHelper.COUNTRY_CODE_FRANCE })
 	public EducationType getEducationType() {
 		return educationType;
 	}
@@ -1900,8 +1909,8 @@ public class CaseExportDto implements Serializable {
 	@Order(122)
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_MANAGEMENT })
-	@ExportProperty(ClinicalCourseDto.HEALTH_CONDITIONS)
-	@ExportGroup(ExportGroupType.CASE_MANAGEMENT)
+	@ExportProperty(CaseDataDto.HEALTH_CONDITIONS)
+	@ExportGroup(ExportGroupType.CLINICAL_COURSE)
 	public HealthConditionsDto getHealthConditions() {
 		return healthConditions;
 	}
@@ -1910,7 +1919,7 @@ public class CaseExportDto implements Serializable {
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_MANAGEMENT })
 	@ExportProperty(NUMBER_OF_PRESCRIPTIONS)
-	@ExportGroup(ExportGroupType.CASE_MANAGEMENT)
+	@ExportGroup(ExportGroupType.THERAPY)
 	public int getNumberOfPrescriptions() {
 		return numberOfPrescriptions;
 	}
@@ -1919,7 +1928,7 @@ public class CaseExportDto implements Serializable {
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_MANAGEMENT })
 	@ExportProperty(NUMBER_OF_TREATMENTS)
-	@ExportGroup(ExportGroupType.CASE_MANAGEMENT)
+	@ExportGroup(ExportGroupType.THERAPY)
 	public int getNumberOfTreatments() {
 		return numberOfTreatments;
 	}
@@ -1928,7 +1937,7 @@ public class CaseExportDto implements Serializable {
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_MANAGEMENT })
 	@ExportProperty(NUMBER_OF_CLINICAL_VISITS)
-	@ExportGroup(ExportGroupType.CASE_MANAGEMENT)
+	@ExportGroup(ExportGroupType.CLINICAL_COURSE)
 	public int getNumberOfClinicalVisits() {
 		return numberOfClinicalVisits;
 	}

@@ -20,7 +20,6 @@ package de.symeda.sormas.rest;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -50,9 +49,6 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 @Path("/eventparticipants")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
-@RolesAllowed({
-	"USER",
-	"REST_USER" })
 public class EventParticipantResource extends EntityDtoResource {
 
 	@GET
@@ -103,7 +99,7 @@ public class EventParticipantResource extends EntityDtoResource {
 	@Path("/push")
 	public List<PushResult> postEventParticipants(@Valid List<EventParticipantDto> dtos) {
 
-		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getEventParticipantFacade()::saveEventParticipant);
+		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getEventParticipantFacade()::save);
 		return result;
 	}
 
@@ -121,6 +117,12 @@ public class EventParticipantResource extends EntityDtoResource {
 		@QueryParam("size") int size) {
 		return FacadeProvider.getEventParticipantFacade()
 			.getIndexPage(criteriaWithSorting.getCriteria(), offset, size, criteriaWithSorting.getSortProperties());
+	}
+
+	@GET
+	@Path("/archived/{since}")
+	public List<String> getArchivedUuidsSince(@PathParam("since") long since) {
+		return FacadeProvider.getEventParticipantFacade().getArchivedUuidsSince(new Date(since));
 	}
 
 	@GET

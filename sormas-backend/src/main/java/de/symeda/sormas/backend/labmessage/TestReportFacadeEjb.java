@@ -4,6 +4,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -13,9 +14,11 @@ import javax.validation.constraints.NotNull;
 import de.symeda.sormas.api.labmessage.LabMessageReferenceDto;
 import de.symeda.sormas.api.labmessage.TestReportDto;
 import de.symeda.sormas.api.labmessage.TestReportFacade;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "TestReportFacade")
+@RolesAllowed(UserRight._LAB_MESSAGES)
 public class TestReportFacadeEjb implements TestReportFacade {
 
 	@EJB
@@ -78,6 +81,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setTestedDiseaseVariant(source.getTestedDiseaseVariant());
 		target.setTestedDiseaseVariantDetails(source.getTestedDiseaseVariantDetails());
 		target.setPreliminary(source.getPreliminary());
+		target.setTestPcrTestSpecification(source.getTestPcrTestSpecification());
 
 		return target;
 	}
@@ -101,6 +105,7 @@ public class TestReportFacadeEjb implements TestReportFacade {
 		target.setTestedDiseaseVariant(source.getTestedDiseaseVariant());
 		target.setTestedDiseaseVariantDetails(source.getTestedDiseaseVariantDetails());
 		target.setPreliminary(source.getPreliminary());
+		target.setTestPcrTestSpecification(source.getTestPcrTestSpecification());
 
 		return target;
 	}

@@ -31,8 +31,10 @@ import javax.persistence.Table;
 import javax.persistence.Transient;
 import javax.persistence.UniqueConstraint;
 
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import org.hibernate.annotations.Immutable;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 
@@ -47,10 +49,17 @@ public class UserReference extends AbstractDomainObject {
 
 	private static final long serialVersionUID = 9025694116880610101L;
 
+	public static final String ACTIVE = "active";
+	public static final String FIRST_NAME = "firstName";
+	public static final String LAST_NAME = "lastName";
+	public static final String USER_ROLES = "userRoles";
+	public static final String JURISDICTION_LEVEL = "jurisdictionLevel";
+
 	private boolean active;
 	private String firstName;
 	private String lastName;
 	private Set<UserRole> userRoles;
+	private JurisdictionLevel jurisdictionLevel;
 
 	public boolean isActive() {
 		return active;
@@ -90,6 +99,16 @@ public class UserReference extends AbstractDomainObject {
 
 	public void setUserRoles(Set<UserRole> userRoles) {
 		this.userRoles = userRoles;
+	}
+
+	@Enumerated(EnumType.STRING)
+	@Column(nullable = false)
+	public JurisdictionLevel getJurisdictionLevel() {
+		return jurisdictionLevel;
+	}
+
+	public void setJurisdictionLevel(JurisdictionLevel jurisdictionLevel) {
+		this.jurisdictionLevel = jurisdictionLevel;
 	}
 
 	@Transient
