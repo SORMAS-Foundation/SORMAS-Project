@@ -316,7 +316,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	public void deletePermanent(List<String> uuids) {
+	public void deletePermanentByUuids(List<String> uuids) {
 		uuids.forEach(uuid -> deletePermanent(getByUuid(uuid)));
 	}
 
