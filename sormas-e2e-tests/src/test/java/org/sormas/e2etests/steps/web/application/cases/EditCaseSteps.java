@@ -344,8 +344,8 @@ public class EditCaseSteps implements En {
         "I select {string} Quarantine Order in Create Quarantine Order form in Edit Case directory",
         (String name) -> {
           webDriverHelpers.selectFromCombobox(QUARANTINE_ORDER_COMBOBOX, name);
-            webDriverHelpers.waitUntilANumberOfElementsAreVisibleAndClickable(
-                    By.cssSelector(".popupContent input"), 5);
+          webDriverHelpers.waitUntilANumberOfElementsAreVisibleAndClickable(
+              By.cssSelector(".popupContent input"), 5);
         });
     When(
         "I check if downloaded file is correct for {string} Quarantine Order in Edit Case directory",
@@ -366,7 +366,7 @@ public class EditCaseSteps implements En {
         (String name) -> {
           String uuid = apiState.getCreatedCase().getUuid();
           String path = uuid.substring(0, 6).toUpperCase() + "-" + name;
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(GENERATED_DOCUMENT_NAME);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(By.xpath("(//div[contains(@location, 'documents')]//span[@class=\"v-button-wrap\"]//span)[3]"));
           assertHelpers.assertWithPoll(
               () ->
                   Assert.assertEquals(
