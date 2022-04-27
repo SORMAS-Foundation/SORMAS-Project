@@ -344,6 +344,8 @@ public class EditCaseSteps implements En {
         "I select {string} Quarantine Order in Create Quarantine Order form in Edit Case directory",
         (String name) -> {
           webDriverHelpers.selectFromCombobox(QUARANTINE_ORDER_COMBOBOX, name);
+            webDriverHelpers.waitUntilANumberOfElementsAreVisibleAndClickable(
+                    By.cssSelector(".popupContent input"), 5);
         });
     When(
         "I check if downloaded file is correct for {string} Quarantine Order in Edit Case directory",
@@ -394,8 +396,6 @@ public class EditCaseSteps implements En {
     And(
         "I click on Create button in Create Quarantine Order form",
         () -> {
-          webDriverHelpers.waitUntilANumberOfElementsAreVisibleAndClickable(
-              By.cssSelector(".popupContent input"), 5);
           webDriverHelpers.clickOnWebElementBySelector(CREATE_QUARANTINE_ORDER_BUTTON);
         });
 
