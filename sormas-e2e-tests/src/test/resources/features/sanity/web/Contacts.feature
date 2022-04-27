@@ -382,6 +382,7 @@ Feature: Contacts end to end tests
     And I click on checkbox to upload generated document to entity in Create Quarantine Order form in Edit Contact directory
     And I select "ExampleDocumentTemplateContacts.docx" Quarantine Order in Create Quarantine Order form in Edit Contact directory
     And I click on Create button in Create Quarantine Order form
+    Then I navigate to the last created contact via the url
     And I check if downloaded file is correct for "ExampleDocumentTemplateContacts.docx" Quarantine Order in Edit Contact directory
     And I check if generated document based on "ExampleDocumentTemplateContacts.docx" appeared in Documents tab in Edit Contact directory
     And I delete downloaded file created from "ExampleDocumentTemplateContacts.docx" Document Template for Contact
