@@ -24,6 +24,7 @@ import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.followup.FollowUpPeriodDto;
 import de.symeda.sormas.api.followup.FollowUpStartDateType;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.visit.VisitDto;
 
 public final class ContactLogic {
@@ -82,5 +83,11 @@ public final class ContactLogic {
 
 		Date overwriteUntilDate = !ignoreOverwrite && contact.isOverwriteFollowUpUntil() ? contact.getFollowUpUntil() : null;
 		return FollowUpLogic.calculateFollowUpUntilDate(followUpPeriod, overwriteUntilDate, visits, followUpDuration, allowFreeOverwrite);
+	}
+
+	public static String extendFollowUpStatusComment(String followUpComment, String extensionComment) {
+		return extensionComment != null && extensionComment.equals(followUpComment)
+			? followUpComment
+			: DataHelper.joinStrings("\n", followUpComment, extensionComment);
 	}
 }

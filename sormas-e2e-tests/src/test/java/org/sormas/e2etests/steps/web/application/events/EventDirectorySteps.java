@@ -967,6 +967,8 @@ public class EventDirectorySteps implements En {
     When(
         "I check that four new events have appeared in Events directory",
         () -> {
+          TimeUnit.SECONDS.sleep(2); // wait for spinner
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
           List<String> eventUUIDs = new ArrayList<>();
           List<String> eventTitles = new ArrayList<>();
           List<Map<String, String>> tableRowsData = getTableRowsData();

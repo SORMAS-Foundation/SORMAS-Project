@@ -167,7 +167,7 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 		target.setConjBilirubin(source.getConjBilirubin());
 		target.setWbcCount(source.getWbcCount());
 		target.setPlatelets(source.getPlatelets());
-		target.setProthrombinTime(source.getPlatelets());
+		target.setProthrombinTime(source.getProthrombinTime());
 		target.setOtherTestResults(source.getOtherTestResults());
 
 		return target;
@@ -202,7 +202,7 @@ public class AdditionalTestFacadeEjb implements AdditionalTestFacade {
 		target.setConjBilirubin(source.getConjBilirubin());
 		target.setWbcCount(source.getWbcCount());
 		target.setPlatelets(source.getPlatelets());
-		target.setProthrombinTime(source.getPlatelets());
+		target.setProthrombinTime(source.getProthrombinTime());
 		target.setOtherTestResults(source.getOtherTestResults());
 
 		return target;

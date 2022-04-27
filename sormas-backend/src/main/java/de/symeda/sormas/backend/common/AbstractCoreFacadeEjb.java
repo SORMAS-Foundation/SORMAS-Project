@@ -50,9 +50,7 @@ import de.symeda.sormas.backend.deletionconfiguration.DeletionConfiguration;
 import de.symeda.sormas.backend.deletionconfiguration.DeletionConfigurationService;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
-import de.symeda.sormas.backend.util.IterableHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
-import de.symeda.sormas.backend.util.QueryHelper;
 
 public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends EntityDto, INDEX_DTO extends Serializable, REF_DTO extends ReferenceDto, SRV extends AbstractCoreAdoService<ADO>, CRITERIA extends BaseCriteria>
 	extends AbstractBaseEjb<ADO, DTO, INDEX_DTO, REF_DTO, SRV, CRITERIA>
@@ -137,10 +135,10 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		return dto;
 	}
 
-	public void executeAutomaticDeletion(DeletionConfiguration entityConfig, boolean deletePermanent, int batchSize) {
+	public List<String> getUuidsForAutomaticDeletion(DeletionConfiguration entityConfig) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<ADO> cq = cb.createQuery(adoClass);
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<ADO> from = cq.from(adoClass);
 
 		Date referenceDeletionDate = DateHelper.subtractDays(new Date(), entityConfig.getDeletionPeriod());
@@ -151,15 +149,18 @@ public abstract class AbstractCoreFacadeEjb<ADO extends CoreAdo, DTO extends Ent
 		}
 		cq.where(filter);
 
-		List<ADO> toDeleteEntities = QueryHelper.getResultList(em, cq, null, null);
+		cq.select(from.get(DeletableAdo.UUID));
+		cq.distinct(true);
 
-		IterableHelper.executeBatched(toDeleteEntities, batchSize, batchedEntities -> doAutomaticDeletion(batchedEntities, deletePermanent));
+		List<String> toDeleteUuids = em.createQuery(cq).getResultList();
+		return toDeleteUuids;
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	private void doAutomaticDeletion(List<ADO> toDeleteEntities, boolean deletePermanent) {
+	public void doAutomaticDeletion(List<String> toDeleteUuids, boolean deletePermanent) {
 
-		toDeleteEntities.forEach(ado -> {
+		toDeleteUuids.forEach(uuid -> {
+			ADO ado = service.getByUuid(uuid);
 			if (deletePermanent) {
 				service.deletePermanent(ado);
 			} else {
