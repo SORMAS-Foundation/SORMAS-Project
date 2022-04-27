@@ -239,7 +239,7 @@ public class CreateNewTravelEntrySteps implements En {
               "Communities are not equal");
           softly.assertEquals(
               aCase.getPointOfEntry(),
-              travelEntry.getPointOfEntry() + " (Inaktiv)",
+              travelEntry.getPointOfEntry(),
               "Point of entries are not equal");
           softly.assertEquals(
               aCase.getFirstName().toLowerCase(Locale.GERMAN),

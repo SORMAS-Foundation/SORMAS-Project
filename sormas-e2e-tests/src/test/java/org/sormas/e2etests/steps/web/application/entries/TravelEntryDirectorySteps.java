@@ -34,6 +34,7 @@ import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.STAR
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.TRAVEL_ENTRY_AGGREGATION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.TRAVEL_ENTRY_DIRECTORY_PAGE_APPLY_FILTER_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.TRAVEL_ENTRY_DIRECTORY_PAGE_SHOW_MORE_FILTERS_BUTTON;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.TRAVEL_ENTRY_FIRST_RECORD_IN_TABLE;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.TRAVEL_ENTRY_GRID_RESULTS_ROWS;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.VACCINATED_ENTRIES;
 
@@ -179,5 +180,12 @@ public class TravelEntryDirectorySteps implements En {
         "I apply {string} to aggregation combobox on Travel Entry directory page",
         (String value) ->
             webDriverHelpers.selectFromCombobox(TRAVEL_ENTRY_AGGREGATION_COMBOBOX, value));
+    When(
+        "I click on first filtered record in Travel Entry",
+        () -> {
+          TimeUnit.SECONDS.sleep(2); // wait for filter
+          webDriverHelpers.scrollToElement(TRAVEL_ENTRY_FIRST_RECORD_IN_TABLE);
+          webDriverHelpers.doubleClickOnWebElementBySelector(TRAVEL_ENTRY_FIRST_RECORD_IN_TABLE);
+        });
   }
 }
