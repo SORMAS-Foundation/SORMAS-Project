@@ -351,13 +351,12 @@ public class EditCaseSteps implements En {
           Path path =
               Paths.get(
                   userDirPath + "/downloads/" + uuid.substring(0, 6).toUpperCase() + "-" + name);
-          assertHelpers.assertWithPoll(
+          assertHelpers.assertWithPoll20Second(
               () ->
                   Assert.assertTrue(
                       Files.exists(path),
                       "Quarantine order document was not downloaded. Path used for check: "
-                          + path.toAbsolutePath()),
-              120);
+                          + path.toAbsolutePath()));
         });
     When(
         "I check if generated document based on {string} appeared in Documents tab for API created case in Edit Case directory",
