@@ -364,6 +364,7 @@ public class EditCaseSteps implements En {
         (String name) -> {
           String uuid = apiState.getCreatedCase().getUuid();
           String path = uuid.substring(0, 6).toUpperCase() + "-" + name;
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(GENERATED_DOCUMENT_NAME);
           assertHelpers.assertWithPoll(
               () ->
                   Assert.assertEquals(
