@@ -124,4 +124,8 @@ public class EditPersonPage {
   public static By getByImmunizationUuid(String immunizationUuid) {
     return By.id("edit-immunization-" + immunizationUuid);
   }
+
+  public static By getByTravelEntryPersonUuid(String personUuid) {
+    return By.id(String.format("edit-travelEntry-%s", personUuid));
+  }
 }

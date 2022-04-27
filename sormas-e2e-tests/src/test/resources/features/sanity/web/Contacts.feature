@@ -386,7 +386,8 @@ Feature: Contacts end to end tests
     And I click on the person search button in create new contact form
     And I search for the last created person via Api by uuid in popup on Select Person window
     And I open the first found result in the popup of Select Person window
-    Then I click on Save button in Case form
+    And I click on SAVE new contact button
+    Then I check the created data without personal data is correctly displayed on Edit Contact page
     When I click on the Persons button from navbar
     And I open the last created Person via API
     And I check that SEE CASES FOR THIS PERSON button is visible and clickable

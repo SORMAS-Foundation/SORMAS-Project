@@ -68,12 +68,25 @@ public class CreateNewCasePage {
   public static final By PERSON_SEARCH_LOCATOR_BUTTON = By.id("personSearchLoc");
   public static final By UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE_INPUT =
       By.id("uuidExternalIdExternalTokenLike");
+  public static final By FIRST_NAME_LIKE_INPUT =
+      By.xpath("//div[@class= 'filters-container']//div[contains(@location, 'firstName')]//input");
+  public static final By LAST_NAME_LIKE_INPUT =
+      By.xpath("//div[@class= 'filters-container']//div[contains(@location, 'lastName')]//input");
+
   public static final By PERSON_CASE_WINDOW_SEARCH_CASE_BUTTON = By.id("actionSearch");
   public static final By PICK_A_EXISTING_CASE = By.xpath("//*[text()='Pick an existing case']");
   public static final By SELECT_PERSON_WINDOW_CONFIRM_BUTTON =
       By.xpath(
           "//div[contains(@class, 'popupContent')]//span[contains(text(), 'Confirm')]//ancestor::div[@id='commit']");
+  public static final By SELECT_PERSON_WINDOW_CONFIRM_BUTTON_DE =
+      By.xpath(
+          "//div[contains(@class, 'popupContent')]//span[contains(text(), 'Best\u00E4tigen')]//ancestor::div[@id='commit']");
   public static final By PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION =
       By.xpath(
           "//*[@id=\"sormasui-1655777373-overlays\"]/div[5]/div/div/div[3]/div/div/div[1]/div/div[2]/div/div/div[5]/div/div[3]/table/tbody/tr");
+  //  public static final By PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION =
+  //      By.xpath(
+  //
+  // "//div[@class=\"v-grid-tablewrapper\"]//tbody[@class=\"v-grid-body\"]//tr[@class=\"v-grid-row
+  // v-grid-row-has-data v-grid-row-focused v-grid-row-selected\"][1]");
 }

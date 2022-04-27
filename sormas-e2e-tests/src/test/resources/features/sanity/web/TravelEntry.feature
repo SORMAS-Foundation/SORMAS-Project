@@ -90,3 +90,27 @@ Feature: Create travel entries
     Then I click on the Entries button from navbar
     And I click on the New Travel Entry button from Travel Entries directory
     Then I check if archived district is unavailable
+
+  @issue=SORDEV-9477 @env_de
+  Scenario: Add a person search option on creation forms
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data for DE version
+    Then I check the created data is correctly displayed on Edit case page for DE version
+    And I click on the Entries button from navbar
+    And I click on the New Travel Entry button from Travel Entries directory
+    When I fill the required fields in a new travel entry form without personal data
+    Then I click on the person search button in create new travel entry form
+    And I search for the last created person by First Name and Last Name in popup on Select Person window
+    And I open the first found result in the popup of Select Person window for DE version
+    And I click on the clear button in new case form
+    And I click on the person search button in new case form
+    And I search for the last created person by First Name and Last Name in popup on Select Person window
+    And I open the first found result in the popup of Select Person window for DE version
+    And I click on Save button from the new travel entry form
+    And I collect travel UUID from travel entry
+    And I check the created data is correctly displayed on Edit travel entry page for DE version
+    When I click on the Persons button from navbar
+    And I open the last created person linked with Case
+    And I check that EDIT TRAVEL ENTRY button is visible and clickable

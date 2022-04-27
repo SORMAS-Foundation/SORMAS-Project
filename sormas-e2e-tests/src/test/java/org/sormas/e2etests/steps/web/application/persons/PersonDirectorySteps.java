@@ -24,6 +24,8 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePersonPage.DAT
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.*;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.*;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
+import static org.sormas.e2etests.steps.web.application.entries.CreateNewTravelEntrySteps.TravelEntryUuid;
+import static org.sormas.e2etests.steps.web.application.entries.CreateNewTravelEntrySteps.aCase;
 
 import com.github.javafaker.Faker;
 import com.google.common.truth.Truth;
@@ -44,6 +46,7 @@ import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
 import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
 import org.testng.Assert;
@@ -86,6 +89,19 @@ public class PersonDirectorySteps implements En {
           webDriverHelpers.isElementVisibleWithTimeout(UUID_INPUT, 20);
         });
 
+    Then(
+        "I open the last created person linked with Case",
+        () -> {
+          aCase = EditCaseSteps.aCase;
+          String PersonFullName = aCase.getFirstName() + " " + aCase.getLastName();
+          TimeUnit.SECONDS.sleep(5); // waiting for event table grid reloaded
+          webDriverHelpers.fillAndSubmitInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, PersonFullName);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              PERSON_RESULTS_UUID_LOCATOR_FROM_GRID);
+          webDriverHelpers.clickOnWebElementBySelector(PERSON_RESULTS_UUID_LOCATOR_FROM_GRID);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
+        });
+
     When(
         "^I open the last created Person via API",
         () -> {
@@ -96,6 +112,13 @@ public class PersonDirectorySteps implements En {
               getPersonResultsUuidLocator(personUUID));
           webDriverHelpers.clickOnWebElementBySelector(getPersonResultsUuidLocator(personUUID));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(60);
+        });
+
+    When(
+        "^I check that EDIT TRAVEL ENTRY button is visible and clickable",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              getByTravelEntryPersonUuid(TravelEntryUuid.getUuid()));
         });
 
     Then(

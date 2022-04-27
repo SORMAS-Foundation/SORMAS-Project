@@ -451,6 +451,14 @@ public class CreateNewCaseSteps implements En {
         });
 
     When(
+        "^I search for the last created person by First Name and Last Name in popup on Select Person window$",
+        () -> {
+          webDriverHelpers.fillInWebElement(FIRST_NAME_LIKE_INPUT, aCase.getFirstName());
+          webDriverHelpers.fillInWebElement(LAST_NAME_LIKE_INPUT, aCase.getLastName());
+          webDriverHelpers.clickOnWebElementBySelector(PERSON_CASE_WINDOW_SEARCH_CASE_BUTTON);
+        });
+
+    When(
         "^I open the first found result in the popup of Select Person window$",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
@@ -461,6 +469,19 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               SELECT_PERSON_WINDOW_CONFIRM_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SELECT_PERSON_WINDOW_CONFIRM_BUTTON);
+        });
+
+    When(
+        "^I open the first found result in the popup of Select Person window for DE version$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION);
+          webDriverHelpers.clickOnWebElementBySelector(
+              PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION);
+          webDriverHelpers.waitForRowToBeSelected(PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SELECT_PERSON_WINDOW_CONFIRM_BUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(SELECT_PERSON_WINDOW_CONFIRM_BUTTON_DE);
         });
 
     When(

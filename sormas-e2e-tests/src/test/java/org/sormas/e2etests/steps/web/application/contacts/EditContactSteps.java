@@ -131,6 +131,31 @@ public class EditContactSteps implements En {
         });
 
     When(
+        "I check the created data without personal data is correctly displayed on Edit Contact page",
+        () -> {
+          collectedContact = collectContactData();
+          createdContact = CreateNewContactSteps.contact;
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              collectedContact,
+              createdContact,
+              List.of(
+                  "returningTraveler",
+                  "reportDate",
+                  "diseaseOfSourceCase",
+                  "caseIdInExternalSystem",
+                  "dateOfLastContact",
+                  "caseOrEventInformation",
+                  "responsibleRegion",
+                  "responsibleDistrict",
+                  "responsibleCommunity",
+                  "additionalInformationOnContactType",
+                  "typeOfContact",
+                  "contactCategory",
+                  "relationshipWithCase",
+                  "descriptionOfHowContactTookPlace"));
+        });
+
+    When(
         "I check the created data is correctly displayed on Edit Contact page related with CHOSEN SOURCE CASE",
         () -> {
           collectedContact = collectContactDataRelatedWithChooseSourceCase();

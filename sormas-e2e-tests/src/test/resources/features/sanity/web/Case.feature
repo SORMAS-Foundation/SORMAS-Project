@@ -885,7 +885,7 @@ Feature: Case end to end tests
     And I log in with National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
-   And I fill new case form with chosen data without personal data on Case directory page
+    And I fill new case form with chosen data without personal data on Case directory page
     And I click on the person search button in new case form
     And I search for the last created person via Api by uuid in popup on Select Person window
     And I open the first found result in the popup of Select Person window
@@ -893,8 +893,12 @@ Feature: Case end to end tests
     And I click on the person search button in new case form
     And I search for the last created person via Api by uuid in popup on Select Person window
     And I open the first found result in the popup of Select Person window
+    And I check the created data for existing person is correctly displayed on Edit case page
     Then I click on Save button in Case form
+#    And I check the created data for existing person is correctly displayed on Edit case page
     And I Pick an existing case in Pick or create person popup in Case entry
+#    And I check the created data for existing person is correctly displayed on Edit case page
+    And I click on Save button in Case form
     When I click on the Persons button from navbar
     And I open the last created Person via API
     And I check that SEE CASES FOR THIS PERSON button is visible and clickable
