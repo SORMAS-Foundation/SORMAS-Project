@@ -188,6 +188,7 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.openqa.selenium.By;
 import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Case;
@@ -391,7 +392,11 @@ public class EditCaseSteps implements En {
         });
     And(
         "I click on Create button in Create Quarantine Order form",
-        () -> webDriverHelpers.clickOnWebElementBySelector(CREATE_QUARANTINE_ORDER_BUTTON));
+        () -> {
+          webDriverHelpers.waitUntilANumberOfElementsAreVisibleAndClickable(
+              By.cssSelector(".popupContent input"), 5);
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_QUARANTINE_ORDER_BUTTON);
+        });
 
     When(
         "I check the created data is correctly displayed on Edit case page",
