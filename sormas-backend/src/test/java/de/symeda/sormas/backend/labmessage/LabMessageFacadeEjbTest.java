@@ -82,13 +82,6 @@ public class LabMessageFacadeEjbTest extends AbstractBeanTest {
 
 		LabMessageDto result = getLabMessageFacade().getByUuid(labMessage.getUuid());
 		assertThat(result, equalTo(labMessage));
-
-		getLabMessageFacade().deleteLabMessage(labMessage.getUuid());
-
-		// deleted lab messages shall still be returned
-		result = getLabMessageFacade().getByUuid(labMessage.getUuid());
-		assertThat(result, equalTo(labMessage));
-
 	}
 
 	@Test
@@ -112,16 +105,12 @@ public class LabMessageFacadeEjbTest extends AbstractBeanTest {
 		});
 
 		assertTrue(getLabMessageFacade().existsForwardedLabMessageWith(reportId));
-
-		getLabMessageFacade().deleteLabMessage(forwardedMessage.getUuid());
-
-		assertTrue(getLabMessageFacade().existsForwardedLabMessageWith(reportId));
 	}
 
 	@Test
 	public void testExistsLabMessageForEntityCase() {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 
@@ -147,7 +136,7 @@ public class LabMessageFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testExistsLabMessageForEntityContact() {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson();
 		ContactDto contact = creator.createContact(user.toReference(), person.toReference());
 
@@ -173,7 +162,7 @@ public class LabMessageFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testExistsLabMessageForEntityEventParticipant() {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson();
 		EventDto event = creator.createEvent(user.toReference());
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, user.toReference());

@@ -1,6 +1,6 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,7 +21,6 @@ import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.and;
 import static de.symeda.sormas.backend.common.CriteriaBuilderHelper.or;
 import static de.symeda.sormas.backend.visit.VisitLogic.getVisitResult;
 
-import de.symeda.sormas.api.utils.fieldaccess.checkers.UserRightFieldAccessChecker;
 import java.math.BigDecimal;
 import java.sql.Timestamp;
 import java.time.Duration;
@@ -48,6 +47,7 @@ import java.util.stream.Collectors;
 
 import javax.annotation.Nullable;
 import javax.annotation.Resource;
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -198,6 +198,7 @@ import de.symeda.sormas.api.utils.InfoProvider;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.api.utils.fieldaccess.checkers.UserRightFieldAccessChecker;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.api.visit.VisitResultDto;
@@ -1403,7 +1404,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@Override
 	@RolesAllowed({
 		UserRight._CASE_CREATE,
-		UserRight._CASE_EDIT })
+		UserRight._CASE_EDIT,
+		UserRight._EXTERNAL_VISITS })
 	public CaseDataDto save(@Valid @NotNull CaseDataDto dto, boolean systemSave) throws ValidationRuntimeException {
 		return save(dto, true, true, true, systemSave);
 	}
@@ -1673,6 +1675,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 					sampleFacade.cloneSampleForCase(sample, caze);
 				}
 			});
+
+			// The samples for case are not persisted yet, so use the samples from event participant since they are the same
+			caze.setFollowUpUntil(service.computeFollowUpuntilDate(caze, eventParticipant.getSamples()));
 		}
 	}
 
@@ -1690,6 +1695,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			} else {
 				sampleFacade.cloneSampleForCase(sample, caze);
 			}
+
+			// The samples for case are not persisted yet, so use the samples from event participant since they are the same
+			caze.setFollowUpUntil(service.computeFollowUpuntilDate(caze, eventParticipant.getSamples()));
 		});
 
 	}
@@ -1896,7 +1904,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		}
 	}
 
-	@RolesAllowed(UserRight._CASE_EDIT)
+	@PermitAll
 	public void onCaseSampleChanged(Case associatedCase) {
 		// Update case classification if the feature is enabled
 		if (configFacade.isFeatureAutomaticCaseClassification()) {
@@ -1929,16 +1937,12 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	 * Handles potential changes, processes and backend logic that needs to be done
 	 * after a case has been created/saved
 	 */
-	@RolesAllowed({
-		UserRight._CASE_EDIT,
-		UserRight._CASE_EDIT })
+	@PermitAll
 	public void onCaseChanged(CaseDataDto existingCase, Case newCase) {
 		onCaseChanged(existingCase, newCase, true);
 	}
 
-	@RolesAllowed({
-		UserRight._CASE_EDIT,
-		UserRight._EXTERNAL_VISITS })
+	@PermitAll
 	public void onCaseChanged(CaseDataDto existingCase, Case newCase, boolean syncShares) {
 
 		// If its a new case and the case is new and the geo coordinates of the case's
@@ -2661,6 +2665,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		return dto;
 	}
 
+	@RolesAllowed({
+		UserRight._CASE_VIEW,
+		UserRight._EXTERNAL_VISITS })
 	public CaseDataDto toDto(Case source) {
 		return toCaseDto(source);
 	}
@@ -3798,13 +3805,15 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	@Override
-	@RolesAllowed({
-		UserRight._CASE_EDIT,
-		UserRight._CASE_EDIT })
+	@RolesAllowed(UserRight._CASE_EDIT)
 	public FollowUpPeriodDto calculateFollowUpUntilDate(CaseDataDto caseDto, boolean ignoreOverwrite) {
+		List<SampleDto> samples = Collections.emptyList();
+		if (userService.hasRight(UserRight.SAMPLE_VIEW)) {
+			samples = sampleFacade.getByCaseUuids(Collections.singletonList(caseDto.getUuid()));
+		}
 		return CaseLogic.calculateFollowUpUntilDate(
 			caseDto,
-			CaseLogic.getFollowUpStartDate(caseDto, sampleFacade.getByCaseUuids(Collections.singletonList(caseDto.getUuid()))),
+			CaseLogic.getFollowUpStartDate(caseDto, samples),
 			visitFacade.getVisitsByCase(caseDto.toReference()),
 			diseaseConfigurationFacade.getCaseFollowUpDuration(caseDto.getDisease()),
 			ignoreOverwrite,
@@ -4068,10 +4077,11 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		save(cazeDto, true);
 	}
 
-	private Pseudonymizer getPseudonymizerForDtoWithClinician(@Nullable String pseudonymizedValue){
+	private Pseudonymizer getPseudonymizerForDtoWithClinician(@Nullable String pseudonymizedValue) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, pseudonymizedValue);
 
-		UserRightFieldAccessChecker clinicianViewRightChecker = new UserRightFieldAccessChecker(UserRight.CASE_CLINICIAN_VIEW, userService.hasRight(UserRight.CASE_CLINICIAN_VIEW));
+		UserRightFieldAccessChecker clinicianViewRightChecker =
+			new UserRightFieldAccessChecker(UserRight.CASE_CLINICIAN_VIEW, userService.hasRight(UserRight.CASE_CLINICIAN_VIEW));
 		pseudonymizer.addFieldAccessChecker(clinicianViewRightChecker, clinicianViewRightChecker);
 
 		return pseudonymizer;

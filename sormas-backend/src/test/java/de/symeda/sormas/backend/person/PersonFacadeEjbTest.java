@@ -58,7 +58,6 @@ import de.symeda.sormas.api.person.PhoneNumberType;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.person.SymptomJournalStatus;
-import de.symeda.sormas.api.travelentry.TravelEntryDto;
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.api.user.UserReferenceDto;
@@ -92,45 +91,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Nat",
 			"User",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
-	}
-
-	// todo - update this test case as CoreEntityDeletionService permanently deletes other core entities
-	@Test
-	public void testPermanentDelete() {
-		final UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
-		user.setRegion(new RegionReferenceDto(rdcf.region.getUuid()));
-		getUserFacade().saveUser(user);
-		loginWith(user);
-
-		final PersonDto person = creator.createPerson("James", "Smith", Sex.MALE, 1920, 1, 1);
-
-		ImmunizationDto immunization = creator.createImmunization(
-			Disease.CORONAVIRUS,
-			person.toReference(),
-			user.toReference(),
-			ImmunizationStatus.ACQUIRED,
-			MeansOfImmunization.VACCINATION,
-			ImmunizationManagementStatus.COMPLETED,
-			rdcf);
-
-		TravelEntryDto travelEntry =
-			creator.createTravelEntry(person.toReference(), user.toReference(), Disease.CORONAVIRUS, rdcf.region, rdcf.district, rdcf.pointOfEntry);
-
-		Assert.assertEquals(1, getPersonFacade().count(new PersonCriteria()));
-
-		getImmunizationFacade().delete(immunization.getUuid());
-		getCoreEntityDeletionService().executePermanentDeletion();
-
-		Assert.assertEquals(1, getPersonFacade().count(new PersonCriteria()));
-		Assert.assertTrue(getPersonFacade().exists(person.getUuid()));
-
-		getTravelEntryFacade().delete(travelEntry.getUuid());
-
-		getCoreEntityDeletionService().executePermanentDeletion();
-
-		Assert.assertEquals(0, getPersonFacade().count(new PersonCriteria()));
-		Assert.assertFalse(getPersonFacade().exists(person.getUuid()));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
 	}
 
 	/**
@@ -151,7 +112,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 			null,
 			"Surv",
 			"Sup",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		loginWith(user);
 
 		// 1a. Test for all available PersonAssociations
@@ -252,7 +213,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetIndexListByPresentCondition() {
-		final UserDto user = creator.createUser(rdcfEntities, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		final UserDto user = creator.createUser(rdcfEntities, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		final PersonDto person1 = creator.createPerson("James", "Smith", Sex.MALE, 1920, 1, 1);
 		creator.createCase(
 			user.toReference(),
@@ -280,7 +241,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetIndexListByName() {
-		final UserDto user = creator.createUser(rdcfEntities, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		final UserDto user = creator.createUser(rdcfEntities, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		user.setRegion(new RegionReferenceDto(rdcfEntities.region.getUuid()));
 		user.setLimitedDisease(Disease.EVD);
 		getUserFacade().saveUser(user);
@@ -315,7 +276,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetIndexListPersonNotConsideredIfAssociatedEntitiesDeleted() throws ExternalSurveillanceToolException {
-		final UserDto user = creator.createUser(rdcfEntities, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		final UserDto user = creator.createUser(rdcfEntities, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		final PersonDto person1 = creator.createPerson("James", "Smith", Sex.MALE, 1920, 1, 1);
 		person1.setPresentCondition(PresentCondition.DEAD);
@@ -358,7 +319,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetMatchingNameDtos() {
-		UserDto user = creator.createUser(rdcfEntities, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto user = creator.createUser(rdcfEntities, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		// 1-3 = Active persons; 4 = Person without reference; 5-7 = Inactive persons
 		PersonDto person1 = creator.createPerson("James", "Smith", Sex.MALE, 1980, 1, 1);
@@ -473,7 +434,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	 * https://gitter.im/SORMAS-Project!
 	 */
 	public void testGetFollowUpEndDatesContactsOnly() {
-		UserDto user = creator.createUser(rdcfEntities, creator.getUserRoleDtoMap().get(DefaultUserRole.REST_EXTERNAL_VISITS_USER));
+		UserDto user = creator.createUser(rdcfEntities, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.REST_EXTERNAL_VISITS_USER));
 
 		creator.createPerson(); // Person without contact
 		final PersonDto person1 = creator.createPerson();
@@ -516,7 +477,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	 * https://gitter.im/SORMAS-Project!
 	 */
 	public void testGetPersonForJournal() {
-		UserDto user = creator.createUser(rdcfEntities, creator.getUserRoleDtoMap().get(DefaultUserRole.CONTACT_SUPERVISOR));
+		UserDto user = creator.createUser(rdcfEntities, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.CONTACT_SUPERVISOR));
 
 		String phoneNumber = "+496211218490";
 		String internationalPhoneNumber = "+49 621 1218490";
@@ -558,7 +519,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetFollowUpEndDatesCasesOnly() {
-		UserDto user = creator.createUser(rdcfEntities, creator.getUserRoleDtoMap().get(DefaultUserRole.REST_EXTERNAL_VISITS_USER));
+		UserDto user = creator.createUser(rdcfEntities, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.REST_EXTERNAL_VISITS_USER));
 
 		creator.createPerson(); // Person without contact
 		final PersonDto person1 = creator.createPerson();
@@ -598,7 +559,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetFollowUpEndDatesContactsAndCases() {
-		UserDto user = creator.createUser(rdcfEntities, creator.getUserRoleDtoMap().get(DefaultUserRole.REST_EXTERNAL_VISITS_USER));
+		UserDto user = creator.createUser(rdcfEntities, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.REST_EXTERNAL_VISITS_USER));
 		Date now = new Date();
 
 		final PersonDto person1 = creator.createPerson();
@@ -701,9 +662,8 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		PersonDto person3 = creator.createPerson();
 		person3 = getPersonFacade().savePerson(person3);
 
-		TravelEntryDto travelEntry = creator
+		creator
 			.createTravelEntry(person3.toReference(), nationalUser.toReference(), Disease.CORONAVIRUS, rdcf.region, rdcf.district, rdcf.pointOfEntry);
-		getTravelEntryFacade().save(travelEntry);
 
 		personsAfterT1 = getPersonFacade().getPersonsAfter(t1);
 		assertEquals(3, personsAfterT1.size());
@@ -761,7 +721,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetMostRelevantFollowUpStatusByUuid() {
 		PersonDto person = creator.createPerson();
-		UserDto user = creator.createUser(rdcfEntities, creator.getUserRoleDtoMap().get(DefaultUserRole.REST_EXTERNAL_VISITS_USER));
+		UserDto user = creator.createUser(rdcfEntities, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.REST_EXTERNAL_VISITS_USER));
 
 		ContactDto contact1 = creator.createContact(user.toReference(), person.toReference());
 
@@ -937,7 +897,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 
 	@Test
 	public void testGetExportList() {
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.REST_EXTERNAL_VISITS_USER));
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.REST_EXTERNAL_VISITS_USER));
 
 		PersonDto casePerson = creator.createPerson("Test Fname", "Test Lname", p -> {
 			p.setBirthdateYYYY(1999);
@@ -1019,7 +979,7 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetPersonByContext() {
 		UserReferenceDto userRef =
-			creator.createUser(rdcfEntities, creator.getUserRoleDtoMap().get(DefaultUserRole.REST_EXTERNAL_VISITS_USER)).toReference();
+			creator.createUser(rdcfEntities, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.REST_EXTERNAL_VISITS_USER)).toReference();
 		PersonDto casePerson = creator.createPerson();
 		CaseDataDto caze = creator.createCase(userRef, casePerson.toReference(), rdcfEntities);
 		assertThat(getPersonFacade().getByContext(PersonContext.CASE, caze.getUuid()), equalTo(casePerson));
@@ -1069,8 +1029,12 @@ public class PersonFacadeEjbTest extends AbstractBeanTest {
 		assertTrue(firstNames.contains(personWithDengue.getFirstName()));
 
 		//login with a user wiht limieted disease restrictions
-		final UserDto user = creator
-			.createUser(rdcf, "Limieted Disease", "National User", Disease.DENGUE, creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
+		final UserDto user = creator.createUser(
+			rdcf,
+			"Limieted Disease",
+			"National User",
+			Disease.DENGUE,
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
 		loginWith(user);
 
 		personIndexDtos = getPersonFacade().getIndexList(criteria, 0, 100, null);

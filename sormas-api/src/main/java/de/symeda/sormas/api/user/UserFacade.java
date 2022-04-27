@@ -51,6 +51,18 @@ public interface UserFacade {
 
 	UserDto getByUserName(String userName);
 
+	/**
+	 * 
+	 * @param regionRef
+	 *            reference of the region to be filtered for. When this region is null, it is not filtered in this regard.
+	 *            NOTE: some users don't have a region (often users with NATIONAL_USER role, for example). They will
+	 *            not be included when a region is specified, but otherwise they will.
+	 * @param limitedDisease
+	 *            can be used to remove users from the return value that are limited to diseases other that limitedDisease.
+	 * @param userRights
+	 *            user rights to be filtered for.
+	 * @return
+	 */
 	List<UserReferenceDto> getUsersByRegionAndRights(RegionReferenceDto regionRef, Disease limitedDisease, UserRight... userRights);
 
 	List<UserReferenceDto> getUsersWithSuperiorJurisdiction(UserDto user);
@@ -62,17 +74,29 @@ public interface UserFacade {
 	long count(UserCriteria userCriteria);
 
 	/**
+	 * 
 	 * @param district
+	 *            reference of the district to be filtered for. When this district is null, it is not filtered in this regard.
+	 *            NOTE: some users don't have a district (often users with NATIONAL_USER role, for example). They will
+	 *            not be included when a district is specified, but otherwise they will.
+	 * @param limitedDisease
+	 *            can be used to remove users from the return value that are limited to diseases other that limitedDisease.
 	 * @param userRights
-	 *            rights of the users by district
+	 *            user rights to be filtered for.
 	 * @return
 	 */
 	List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto district, Disease limitedDisease, UserRight... userRights);
 
 	/**
+	 * 
 	 * @param district
+	 *            reference of the district to be filtered for. When this district is null, it is not filtered in this regard.
+	 *            NOTE: some users don't have a district (often users with NATIONAL_USER role, for example). They will
+	 *            * not be included when a district is specified, but otherwise they will.
+	 * @param excludeLimitedDiseaseUsers
+	 *            if true, all users limited to diseases are excluded from the return value.
 	 * @param userRights
-	 *            rights of the users by district
+	 *            user rights to be filtered for.
 	 * @return
 	 */
 	List<UserReferenceDto> getUserRefsByDistrict(DistrictReferenceDto district, boolean excludeLimitedDiseaseUsers, UserRight... userRights);

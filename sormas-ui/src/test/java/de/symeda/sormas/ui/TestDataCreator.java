@@ -179,7 +179,7 @@ public class TestDataCreator {
 		eventParticipant.setPerson(eventPerson);
 		eventParticipant.setInvolvementDescription(involvementDescription);
 
-		eventParticipant = FacadeProviderMock.getEventParticipantFacade().saveEventParticipant(eventParticipant);
+		eventParticipant = FacadeProviderMock.getEventParticipantFacade().save(eventParticipant);
 		return eventParticipant;
 	}
 

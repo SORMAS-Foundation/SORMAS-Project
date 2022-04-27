@@ -577,7 +577,7 @@ public class SampleFacadeEjb implements SampleFacade {
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 			filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, sampleRoot.get(AbstractDomainObject.UUID));
 		} else if (caseCriteria != null) {
-			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, new CaseQueryContext(cb, cq, joins.getCaze()));
+			Predicate criteriaFilter = caseService.createCriteriaFilter(caseCriteria, new CaseQueryContext(cb, cq, joins.getCaseJoins()));
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.isFalse(sampleRoot.get(CoreAdo.DELETED)));
 			filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, joins.getCaze().get(AbstractDomainObject.UUID));

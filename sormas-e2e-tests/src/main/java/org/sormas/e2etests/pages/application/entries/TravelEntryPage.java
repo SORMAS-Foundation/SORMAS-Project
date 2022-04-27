@@ -41,4 +41,5 @@ public class TravelEntryPage {
       By.id("showHideMoreFilters");
   public static final By TRAVEL_ENTRY_AGGREGATION_COMBOBOX =
       By.cssSelector("[id='relevanceStatus'] [class='v-filterselect-button']");
+  public static final By TRAVEL_ENTRY_FIRST_RECORD_IN_TABLE = By.cssSelector("[role='gridcell'] a");
 }

@@ -53,7 +53,7 @@ public class HospitalizationFacadeEjbPseudonymizationTest extends AbstractBeanTe
 			rdcf1.facility.getUuid(),
 			"Surv",
 			"Off1",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2", "Point of entry 2");
 		user2 = creator.createUser(
@@ -62,7 +62,7 @@ public class HospitalizationFacadeEjbPseudonymizationTest extends AbstractBeanTe
 			rdcf2.facility.getUuid(),
 			"Surv",
 			"Off2",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
 	}

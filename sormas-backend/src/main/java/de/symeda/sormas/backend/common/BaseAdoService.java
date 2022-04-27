@@ -44,12 +44,12 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.user.UserRight;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.User;
@@ -316,8 +316,8 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 	}
 
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
-	protected void deletePermanent(List<String> uuids) {
-		uuids.forEach(uuid-> deletePermanent(getByUuid(uuid)));
+	public void deletePermanentByUuids(List<String> uuids) {
+		uuids.forEach(uuid -> deletePermanent(getByUuid(uuid)));
 	}
 
 	@Override

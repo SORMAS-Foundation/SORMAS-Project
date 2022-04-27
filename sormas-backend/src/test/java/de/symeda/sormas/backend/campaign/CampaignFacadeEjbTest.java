@@ -23,7 +23,7 @@ public class CampaignFacadeEjbTest extends AbstractBeanTest {
 	public void testGetLastStartedCampaign() {
 
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		final UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		final UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		final CampaignDto campaign1 = creator.createCampaign(user);
 		campaign1.setStartDate(new Date(System.currentTimeMillis() - 7 * ONE_DAY_IN_MILLIS)); // last week
 		getCampaignFacade().save(campaign1);
@@ -42,7 +42,7 @@ public class CampaignFacadeEjbTest extends AbstractBeanTest {
 	public void testCampaignDashboardElementsValidation() {
 
 		final TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
-		final UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		final UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		final CampaignDto campaign = creator.createCampaign(user);
 		final ArrayList<CampaignDashboardElement> campaignDashboardElements = new ArrayList<>();

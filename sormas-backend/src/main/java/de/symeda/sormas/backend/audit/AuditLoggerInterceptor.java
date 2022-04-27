@@ -35,13 +35,7 @@ import de.symeda.sormas.backend.user.UserFacadeEjb;
 public class AuditLoggerInterceptor {
 
 	@EJB
-	AuditLogger auditLogger;
-	@EJB
-	CurrentUserService currentUserService;
-
-	// todo we need the session context in addition to the UserService as SYSTEM/ANONYMOUS do return null in the currentUserService
-	@Resource
-	private SessionContext sessionContext;
+	AuditLoggerEjb.AuditLoggerEjbLocal auditLogger;
 
 	/**
 	 * Cache to track all classes that should be ignored and those who must be audited. False indicates audit, True ignore
@@ -58,6 +52,7 @@ public class AuditLoggerInterceptor {
 				CurrentUserService.class,
 				AuditContextProducer.class,
 				AuditLogServiceBean.class,
+				AuditLoggerEjb.class,
 				I18nFacadeEjb.class)));
 
 	/**
@@ -72,7 +67,8 @@ public class AuditLoggerInterceptor {
 					Arrays.asList(
 						ContinentFacadeEjb.class.getMethod("getByDefaultName", String.class, boolean.class),
 						SubcontinentFacadeEjb.class.getMethod("getByDefaultName", String.class, boolean.class),
-						UserFacadeEjb.class.getMethod("getCurrentUser"))));
+						UserFacadeEjb.class.getMethod("getCurrentUser"),
+						UserFacadeEjb.class.getMethod("getValidLoginRights", String.class, String.class))));
 		} catch (NoSuchMethodException e) {
 			throw new RuntimeException(e);
 		}
@@ -81,7 +77,7 @@ public class AuditLoggerInterceptor {
 	@AroundInvoke
 	public Object logAudit(InvocationContext context) throws Exception {
 
-		if (AuditLogger.isLoggingDisabled()) {
+		if (AuditLoggerEjb.isLoggingDisabled()) {
 			return context.proceed();
 		}
 
@@ -115,15 +111,12 @@ public class AuditLoggerInterceptor {
 		Date start = Calendar.getInstance(TimeZone.getDefault()).getTime();
 		List<String> parameters = getParameters(context);
 
-		User currentUser = currentUserService.getCurrentUser();
-		String agentUuid = currentUser == null ? null : currentUser.getUuid();
-
 		// do the actual call
 		Object result = context.proceed();
 
 		String returnValue = printObject(result);
 
-		auditLogger.logBackendCall(sessionContext.getCallerPrincipal().getName(), agentUuid, calledMethod, parameters, returnValue, start);
+		auditLogger.logBackendCall(calledMethod, parameters, returnValue, start);
 
 		return result;
 	}

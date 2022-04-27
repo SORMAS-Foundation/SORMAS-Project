@@ -94,7 +94,7 @@ public class QuarantineOrderFacadeEjbTest extends AbstractDocGenerationTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		loginWith(userDto);
 
 		quarantineOrderFacadeEjb = getQuarantineOrderFacade();

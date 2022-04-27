@@ -87,8 +87,8 @@ public class NotificationServiceTest extends AbstractBeanTest {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		Region region = getRegionService().getByReferenceDto(rdcf.region);
 
-		UserDto survSup = creator.createUser(rdcf, "Surv", "Sup", creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
-		UserDto caseSup = creator.createUser(rdcf, "Case", "Sup", creator.getUserRoleDtoMap().get(DefaultUserRole.CASE_SUPERVISOR));
+		UserDto survSup = creator.createUser(rdcf, "Surv", "Sup", creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto caseSup = creator.createUser(rdcf, "Case", "Sup", creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.CASE_SUPERVISOR));
 
 		Mockito.when(userService.getAllByRegionsAndNotificationTypes(any(), any(), any())).then(invocation -> {
 			return getUserService().getAllByRegionsAndNotificationTypes(
@@ -122,8 +122,8 @@ public class NotificationServiceTest extends AbstractBeanTest {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 		Region region = getRegionService().getByReferenceDto(rdcf.region);
 
-		UserDto survSup = creator.createUser(rdcf, "Surv", "Sup", creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
-		UserDto survOff = creator.createUser(rdcf, "Case", "Sup", creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
+		UserDto survSup = creator.createUser(rdcf, "Surv", "Sup", creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto survOff = creator.createUser(rdcf, "Case", "Sup", creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		User survOffUser = getUserService().getByUuid(survOff.getUuid());
 
@@ -160,9 +160,9 @@ public class NotificationServiceTest extends AbstractBeanTest {
 	public void testSendNotifications_filterUserMessagesByroles() throws NotificationDeliveryFailedException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 
-		UserDto survSup = creator.createUser(rdcf, "Surv", "Sup", creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
-		UserDto caseSup = creator.createUser(rdcf, "Case", "Sup", creator.getUserRoleDtoMap().get(DefaultUserRole.CASE_SUPERVISOR));
-		UserDto contSup = creator.createUser(rdcf, "Cont", "Sup", creator.getUserRoleDtoMap().get(DefaultUserRole.CONTACT_SUPERVISOR));
+		UserDto survSup = creator.createUser(rdcf, "Surv", "Sup", creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto caseSup = creator.createUser(rdcf, "Case", "Sup", creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.CASE_SUPERVISOR));
+		UserDto contSup = creator.createUser(rdcf, "Cont", "Sup", creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.CONTACT_SUPERVISOR));
 
 		User survSupUser = getUserService().getByReferenceDto(survSup.toReference());
 		User survOffUser = getUserService().getByReferenceDto(caseSup.toReference());
@@ -195,7 +195,7 @@ public class NotificationServiceTest extends AbstractBeanTest {
 	public void testSendNotifications_notificationFeatureNotAllowed() throws NotificationDeliveryFailedException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
 
-		UserDto survSup = creator.createUser(rdcf, "Surv", "Sup", creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto survSup = creator.createUser(rdcf, "Surv", "Sup", creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		User survSupUser = getUserService().getByReferenceDto(survSup.toReference());
 

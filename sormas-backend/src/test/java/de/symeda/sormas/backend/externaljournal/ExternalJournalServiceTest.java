@@ -90,7 +90,7 @@ public class ExternalJournalServiceTest extends AbstractBeanTest {
 	@Before
 	public void init() {
 		super.init();
-		natUser = creator.createUser("", "", "", "Nat", "Usr", creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
+		natUser = creator.createUser("", "", "", "Nat", "Usr", creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
 		rdcf = creator.createRDCF("Region 1", "District 1", "Community 1", "Facility 1");
 		when(MockProducer.getPrincipal().getName()).thenReturn("NatUsr");
 

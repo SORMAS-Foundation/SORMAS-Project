@@ -61,7 +61,7 @@ public class EventFacadeEjbUserFilterTest extends AbstractBeanTest {
 			rdcf1.facility.getUuid(),
 			"Nat",
 			"User",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
 
 		districtUser1 = creator.createUser(
 			rdcf1.region.getUuid(),
@@ -69,7 +69,7 @@ public class EventFacadeEjbUserFilterTest extends AbstractBeanTest {
 			rdcf1.facility.getUuid(),
 			"Surv",
 			"Off1",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		districtUser2 = creator.createUser(
 			rdcf2.region.getUuid(),
@@ -77,7 +77,7 @@ public class EventFacadeEjbUserFilterTest extends AbstractBeanTest {
 			rdcf2.facility.getUuid(),
 			"Surv",
 			"Off2",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
 	}
 
 	@Test

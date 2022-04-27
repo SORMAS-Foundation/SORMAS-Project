@@ -86,6 +86,7 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LI
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LINK_EVENT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LINK_EVENT_BUTTON_EDIT_PAGE;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.MORE_BUTTON_EVENT_DIRECTORY;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.NEW_EVENT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.RESET_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SAVE_BUTTON_IN_LINK_FORM;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SEARCH_EVENT_BY_FREE_TEXT;
@@ -164,6 +165,7 @@ public class EventDirectorySteps implements En {
               SEARCH_EVENT_BY_FREE_TEXT,
               dataOperations.getPartialUuidFromAssociatedLink(eventUuid));
         });
+
     When(
         "I navigate to the last created through API Event page via URL",
         () -> {
@@ -323,12 +325,6 @@ public class EventDirectorySteps implements En {
         });
 
     When(
-        "^I click on ([^\"]*) Radiobutton on Event Directory Page$",
-        (String buttonName) -> {
-          webDriverHelpers.clickWebElementByText(EVENTS_RADIO_BUTTON, buttonName);
-          webDriverHelpers.waitForPageLoaded();
-        });
-    When(
         "I check that name appearing in hover is equal to name of linked Event group",
         () -> {
           EventGroup createdGroup = EditEventSteps.groupEvent;
@@ -342,6 +338,13 @@ public class EventDirectorySteps implements En {
         });
 
     When(
+        "^I click on ([^\"]*) Radiobutton on Event Directory Page$",
+        (String buttonName) -> {
+          webDriverHelpers.clickWebElementByText(EVENTS_RADIO_BUTTON, buttonName);
+          webDriverHelpers.waitForPageLoaded();
+        });
+
+    When(
         "^I click on Link Event button on Event Directory Page$",
         () -> webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON));
     When(
@@ -351,6 +354,7 @@ public class EventDirectorySteps implements En {
     When(
         "^I click on Unlink Event button on Event Directory Page$",
         () -> webDriverHelpers.clickOnWebElementBySelector(UNLINK_EVENT_BUTTON));
+
     When(
         "^I fill Id filter with Id of last created event in Link Event to group form$",
         () ->
@@ -693,8 +697,9 @@ public class EventDirectorySteps implements En {
     When(
         "^I search for specific event in event directory",
         () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(RESET_FILTER, 35);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NEW_EVENT_BUTTON, 35);
           webDriverHelpers.clickOnWebElementBySelector(RESET_FILTER);
+          TimeUnit.SECONDS.sleep(3);
           final String eventUuid = CreateNewEventSteps.newEvent.getUuid();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               SEARCH_EVENT_BY_FREE_TEXT_INPUT, 20);
@@ -787,6 +792,10 @@ public class EventDirectorySteps implements En {
 
     When(
         "I open the first event from events list",
+        () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_ID_BUTTON));
+
+    When(
+        "I open the first event group from events list group",
         () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_ID_BUTTON));
 
     And(
@@ -882,6 +891,36 @@ public class EventDirectorySteps implements En {
                         number.intValue(),
                         "Number of displayed cases is not correct")));
 
+    Then(
+        "I check the if Event is displayed correctly in Events Directory table",
+        () -> {
+          List<Map<String, String>> tableRowsData = getTableRowsData();
+          softly.assertEquals(
+              apiState.getCreatedEvent().getUuid().toUpperCase().substring(0, 6),
+              tableRowsData.get(0).get(EventsTableColumnsHeaders.EVENT_ID_HEADER.toString()),
+              "Event IDs are not equal");
+          softly.assertEquals(
+              DiseasesValues.getCaptionForName(apiState.getCreatedEvent().getDisease()),
+              tableRowsData.get(0).get(EventsTableColumnsHeaders.DISEASE_HEADER.toString()),
+              "Diseases are not equal");
+          softly.assertEquals(
+              RegionsValues.getNameValueForUuid(
+                  apiState.getCreatedEvent().getEventLocation().getRegion().getUuid()),
+              tableRowsData.get(0).get(EventsTableColumnsHeaders.REGION_HEADER.toString()),
+              "Regions are not equal");
+          softly.assertEquals(
+              DistrictsValues.getNameValueForUuid(
+                  apiState.getCreatedEvent().getEventLocation().getDistrict().getUuid()),
+              tableRowsData.get(0).get(EventsTableColumnsHeaders.DISTRICT_HEADER.toString()),
+              "Districts are not equal");
+          softly.assertEquals(
+              CommunityValues.getNameValueForUuid(
+                  apiState.getCreatedEvent().getEventLocation().getCommunity().getUuid()),
+              tableRowsData.get(0).get(EventsTableColumnsHeaders.COMMUNITY_HEADER.toString()),
+              "Communities are not equal");
+          softly.assertAll();
+        });
+
     When(
         "I click on the Import button from Events directory",
         () -> {
@@ -928,6 +967,8 @@ public class EventDirectorySteps implements En {
     When(
         "I check that four new events have appeared in Events directory",
         () -> {
+          TimeUnit.SECONDS.sleep(2); // wait for spinner
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
           List<String> eventUUIDs = new ArrayList<>();
           List<String> eventTitles = new ArrayList<>();
           List<Map<String, String>> tableRowsData = getTableRowsData();

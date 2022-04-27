@@ -28,6 +28,7 @@ import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
@@ -35,6 +36,7 @@ import org.sormas.e2etests.entities.pojo.web.Sample;
 import org.sormas.e2etests.entities.pojo.web.SampleAdditionalTest;
 import org.sormas.e2etests.entities.services.SampleAdditionalTestService;
 import org.sormas.e2etests.entities.services.SampleService;
+import org.sormas.e2etests.enums.PathogenTestResults;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.testng.asserts.SoftAssert;
 
@@ -127,9 +129,48 @@ public class CreateNewSampleSteps implements En {
         });
 
     When(
-        "I select the German words for PCR / RT-PCR as Type of Test in the Create New Sample popup",
+        "I select the German words for PCR RT-PCR as Type of Test in the Create New Sample popup",
         () -> {
           selectTypeOfTest("Nukleins\u00E4ure-Nachweis (z.B. PCR)");
+        });
+
+    When(
+        "^I create a new Sample with for COVID alternative purpose$",
+        () -> {
+          sample = sampleService.buildGeneratedSample();
+          selectPurposeOfSample(sample.getPurposeOfTheSample(), SAMPLE_PURPOSE_OPTIONS);
+          fillDateOfCollection(sample.getDateOfCollection());
+          fillTimeOfCollection(sample.getTimeOfCollection());
+          selectSampleType(sample.getSampleType());
+          selectReasonForSample(sample.getReasonForSample());
+          fillSampleID(sample.getSampleID());
+          selectLaboratory(sample.getLaboratory());
+          selectLaboratoryName(sample.getLaboratoryName());
+          webDriverHelpers.clickOnWebElementBySelector(REQUEST_PATHOGEN_OPTION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ANTIGEN_DETECTION_TEST_OPTION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(ISOLATION_TEST_OPTION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(PCR_RTP_PCR_TEST_OPTION_BUTTON);
+          webDriverHelpers.selectFromCombobox(
+              FINAL_LABORATORY_RESULT_COMBOBOX, PathogenTestResults.POSITIVE.getPathogenResults());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
+        });
+
+    When(
+        "I fill all fields from Pathogen test for COVID-19 disease result popup and save",
+        () -> {
+          sampleTestResult = sampleService.buildGeneratedSampleTestResultForCovid();
+          fillReportDate(sampleTestResult.getReportDate(), Locale.ENGLISH);
+          selectTypeOfTest(sampleTestResult.getTypeOfTest());
+          selectTestedDisease(sampleTestResult.getTestedDisease());
+          selectPathogenLaboratory(sampleTestResult.getLaboratory());
+          selectTestResult(sampleTestResult.getSampleTestResults());
+          fillDateOfResult(sampleTestResult.getDateOfResult(), Locale.ENGLISH);
+          fillTimeOfResult(sampleTestResult.getTimeOfResult());
+          selectResultVerifiedByLabSupervisor(
+              sampleTestResult.getResultVerifiedByLabSupervisor(),
+              RESULT_VERIFIED_BY_LAB_SUPERVISOR_OPTIONS);
+          fillTestResultsComment(sampleTestResult.getTestResultsComment());
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_SAMPLE_BUTTON);
         });
 
     When(
@@ -323,6 +364,7 @@ public class CreateNewSampleSteps implements En {
     When(
         "I confirm the Create case from event participant with positive test result",
         () -> {
+          TimeUnit.SECONDS.sleep(5); // weak performance, wait for popup
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONFIRM_BUTTON);
           String displayedText =
               webDriverHelpers.getTextFromWebElement(CREATE_CASE_POSITIVE_TEST_RESULT_LABEL);

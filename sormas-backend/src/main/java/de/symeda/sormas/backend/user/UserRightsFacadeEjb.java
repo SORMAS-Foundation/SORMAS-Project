@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -132,17 +132,22 @@ public class UserRightsFacadeEjb implements UserRightsFacade {
 		Cell userRightHeadlineCell = headerRow.createCell(0);
 		userRightHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.userRight));
 		userRightHeadlineCell.setCellStyle(boldStyle);
-		Cell descHeadlineCell = headerRow.createCell(1);
+		Cell captionHeadlineCell = headerRow.createCell(1);
+		captionHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRight_caption));
+		captionHeadlineCell.setCellStyle(boldStyle);
+		Cell descHeadlineCell = headerRow.createCell(2);
 		descHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRight_description));
 		descHeadlineCell.setCellStyle(boldStyle);
 		sheet.setColumnWidth(0, 256 * 35);
 		sheet.setColumnWidth(1, 256 * 50);
+		sheet.setColumnWidth(2, 256 * 75);
+		sheet.createFreezePane(2, 2, 2, 2);
 		for (DefaultUserRole userRole : DefaultUserRole.values()) {
 			String columnCaption = userRole.toString();
-			Cell headerCell = headerRow.createCell(userRole.ordinal() + 2);
+			Cell headerCell = headerRow.createCell(userRole.ordinal() + 3);
 			headerCell.setCellValue(columnCaption);
 			headerCell.setCellStyle(boldStyle);
-			sheet.setColumnWidth(userRole.ordinal() + 2, 256 * 14);
+			sheet.setColumnWidth(userRole.ordinal() + 3, 256 * 14);
 		}
 
 		// Jurisdiction row (header)
@@ -155,7 +160,7 @@ public class UserRightsFacadeEjb implements UserRightsFacade {
 		jurDescHeadlineCell.setCellStyle(boldStyle);
 		for (DefaultUserRole userRole : DefaultUserRole.values()) {
 			final String columnCaption = userRole.getJurisdictionLevel().toString();
-			final Cell headerCell = jurisdictionRow.createCell(userRole.ordinal() + 2);
+			final Cell headerCell = jurisdictionRow.createCell(userRole.ordinal() + 3);
 			headerCell.setCellValue(columnCaption);
 			headerCell.setCellStyle(boldStyle);
 		}
@@ -169,9 +174,13 @@ public class UserRightsFacadeEjb implements UserRightsFacade {
 			nameCell.setCellValue(userRight.name());
 			nameCell.setCellStyle(boldStyle);
 
+			// User right caption
+			Cell captionCell = row.createCell(1);
+			captionCell.setCellValue(userRight.toString());
+
 			// User right description
-			Cell descCell = row.createCell(1);
-			descCell.setCellValue(userRight.toString());
+			Cell descCell = row.createCell(2);
+			descCell.setCellValue(userRight.getDescription());
 
 			// Add styled cells for all user roles
 			ArrayList<UserRoleDto> userRoles = (ArrayList<UserRoleDto>) userRoleFacade.getAll();

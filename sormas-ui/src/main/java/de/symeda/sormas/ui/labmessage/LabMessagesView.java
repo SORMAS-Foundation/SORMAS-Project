@@ -157,6 +157,7 @@ public class LabMessagesView extends AbstractView {
 			this.navigateTo(null, true);
 		});
 		filterForm.addApplyHandler(e -> {
+			SormasUI.get().getNavigator().navigateTo(LabMessagesView.VIEW_NAME);
 			grid.reload();
 		});
 		filterLayout.addComponent(filterForm);

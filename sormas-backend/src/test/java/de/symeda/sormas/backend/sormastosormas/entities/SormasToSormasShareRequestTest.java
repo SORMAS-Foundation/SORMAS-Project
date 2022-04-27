@@ -73,7 +73,8 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person = creator.createPerson("John", "Doe", Sex.MALE, 1964, 4, 12);
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		UserReferenceDto officer =
+			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		CaseDataDto caze = creator.createCase(officer, rdcf, dto -> {
 			dto.setPerson(person.toReference());
 			dto.setDisease(Disease.CORONAVIRUS);
@@ -135,7 +136,8 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person = creator.createPerson("John", "Doe", Sex.MALE, 1964, 4, 12);
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		UserReferenceDto officer =
+			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		CaseDataDto caze = creator.createCase(officer, rdcf, dto -> {
 			dto.setPerson(person.toReference());
 			dto.setDisease(Disease.CORONAVIRUS);
@@ -206,7 +208,8 @@ public class SormasToSormasShareRequestTest extends SormasToSormasTest {
 		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person = creator.createPerson("John", "Doe", Sex.MALE, 1964, 4, 12);
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		UserReferenceDto officer =
+			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		CaseDataDto caze = creator.createCase(officer, rdcf, dto -> {
 			dto.setPerson(person.toReference());
 			dto.setDisease(Disease.CORONAVIRUS);

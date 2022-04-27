@@ -54,6 +54,7 @@ import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.InvestigationStatus;
+import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.caze.Vaccine;
 import de.symeda.sormas.api.caze.VaccineManufacturer;
@@ -84,6 +85,7 @@ import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
@@ -141,7 +143,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -202,7 +204,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -249,7 +251,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -284,7 +286,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -330,7 +332,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -387,14 +389,14 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		UserDto contactOfficer = creator.createUser(
 			rdcf.region.getUuid(),
 			rdcf.district.getUuid(),
 			rdcf.facility.getUuid(),
 			"Cont",
 			"Off",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.CONTACT_OFFICER));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.CONTACT_OFFICER));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -490,14 +492,14 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		UserDto admin = creator.createUser(
 			rdcf.region.getUuid(),
 			rdcf.district.getUuid(),
 			rdcf.facility.getUuid(),
 			"Another",
 			"Admin",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.ADMIN));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.ADMIN));
 		String adminUuid = admin.getUuid();
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
@@ -560,7 +562,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -587,7 +589,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -601,7 +603,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		ContactDto contact =
 			creator.createContact(user.toReference(), user.toReference(), contactPerson.toReference(), caze, new Date(), new Date(), null);
 
-		UserDto labUser = creator.createUser(null, null, null, "Lab", "Off", creator.getUserRoleDtoMap().get(DefaultUserRole.LAB_USER));
+		UserDto labUser = creator.createUser(null, null, null, "Lab", "Off", creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.LAB_USER));
 		FacilityReferenceDto laboratory = new FacilityReferenceDto(rdcf.facility.getUuid(), rdcf.facility.toString(), rdcf.facility.getExternalID());
 		labUser.setLaboratory(laboratory);
 		getUserFacade().saveUser(labUser);
@@ -637,7 +639,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		loginWith(mainUser);
 
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
@@ -698,7 +700,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			rdcf2.facility.getUuid(),
 			"Surv2",
 			"Sup2",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		loginWith(user2);
 
 		// 4) contact created by different user, jurisdiction same with main user, no case linked
@@ -788,7 +790,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		PersonDto person1 = creator.createPerson();
 		PersonDto person2 = creator.createPerson();
@@ -824,7 +826,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			rdcf);
 
 		event1Participant1.setResultingCase(case1.toReference());
-		getEventParticipantFacade().saveEventParticipant(event1Participant1);
+		getEventParticipantFacade().save(event1Participant1);
 
 		creator.createContact(user.toReference(), person1.toReference(), case1);
 		creator.createContact(user.toReference(), person1.toReference(), case2);
@@ -862,7 +864,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -972,7 +974,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto person = creator.createPerson("Case", "Person");
 		Disease disease = Disease.OTHER;
 
@@ -1085,7 +1087,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -1106,28 +1108,15 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetExportList() {
-
-		TestDataCreator.RDCF rdcf = creator.createRDCF("Region", "District", "Community", "Facility");
+	public void testGetExportListWithRelevantVaccinations() {
+		RDCFEntities rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		RDCF rdcf = new RDCF(rdcfEntities);
 		UserDto user = useSurveillanceOfficerLogin(rdcf);
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
-		CaseDataDto caze = creator.createCase(
-			user.toReference(),
-			cazePerson.toReference(),
-			Disease.EVD,
-			CaseClassification.PROBABLE,
-			InvestigationStatus.PENDING,
-			new Date(),
-			rdcf);
-		ContactDto contact = creator.createContact(
-			user.toReference(),
-			user.toReference(),
-			creator.createPerson("Contact", "Person").toReference(),
-			caze,
-			new Date(),
-			new Date(),
-			null,
-			rdcf);
+
+		CaseDataDto caze = createCaze(user, cazePerson, rdcfEntities);
+		ContactDto contact = createContact(user, caze, rdcf);
+
 		PersonDto contactPerson = getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
 		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
 		EpiDataDto epiData = contact.getEpiData();
@@ -1186,13 +1175,15 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			DateHelper.subtractDays(new Date(), 7),
 			Vaccine.OXFORD_ASTRA_ZENECA,
 			VaccineManufacturer.ASTRA_ZENECA);
-		creator.createVaccination(
+
+		VaccinationDto secondVaccination = creator.createVaccination(
 			contact.getReportingUser(),
 			immunization.toReference(),
 			HealthConditionsDto.build(),
 			DateHelper.subtractDays(new Date(), 4),
 			Vaccine.MRNA_1273,
 			VaccineManufacturer.MODERNA);
+
 		VaccinationDto thirdVaccination = creator.createVaccination(
 			contact.getReportingUser(),
 			immunization.toReference(),
@@ -1218,9 +1209,14 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals("Test information", exportDto.getAdditionalInformation());
 		assertEquals("1234", exportDto.getPostalCode());
 		assertEquals(VaccinationStatus.VACCINATED, exportDto.getVaccinationStatus());
-		assertEquals(thirdVaccination.getVaccineName(), exportDto.getVaccineName());
 		assertEquals(firstVaccination.getVaccinationDate(), exportDto.getFirstVaccinationDate());
-		assertEquals(thirdVaccination.getVaccinationDate(), exportDto.getLastVaccinationDate());
+		assertEquals(secondVaccination.getVaccineName(), exportDto.getVaccineName());
+		assertEquals(secondVaccination.getVaccinationDate(), exportDto.getLastVaccinationDate());
+		assertEquals(secondVaccination.getVaccinationInfoSource(), exportDto.getVaccinationInfoSource());
+		assertEquals(secondVaccination.getVaccineInn(), exportDto.getVaccineInn());
+		assertEquals(secondVaccination.getVaccineBatchNumber(), exportDto.getVaccineBatchNumber());
+		assertEquals(secondVaccination.getVaccineAtcCode(), exportDto.getVaccineAtcCode());
+		assertEquals(secondVaccination.getVaccineDose(), exportDto.getNumberOfDoses());
 
 		assertNotNull(exportDto.getLastCooperativeVisitDate());
 		assertTrue(StringUtils.isNotEmpty(exportDto.getLastCooperativeVisitSymptoms()));
@@ -1236,7 +1232,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 				exposure.getEndDate(),
 				Language.EN),
 			exportDto.getTravelHistory());
-		assertThat(exportDto.getEventCount(), equalTo(0L));
+		assertTrue(exportDto.getEventCount().equals(0L));
 
 		// one Contact with 2 Events
 		UserReferenceDto reportingUser = new UserReferenceDto(user.getUuid());
@@ -1246,12 +1242,132 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		creator.createEventParticipant(new EventReferenceDto(event1.getUuid()), contactPerson, reportingUser);
 
 		results = getContactFacade().getExportList(null, Collections.emptySet(), 0, 100, null, Language.EN);
-		assertThat(results, hasSize(1));
+		assertEquals(results.size(), 1);
 		{
 			ContactExportDto dto = results.get(0);
-			assertThat(dto.getLatestEventId(), equalTo(event2.getUuid()));
-			assertThat(dto.getLatestEventTitle(), equalTo(event2.getEventTitle()));
-			assertThat(dto.getEventCount(), equalTo(2L));
+			assertEquals(dto.getLatestEventId(), event2.getUuid());
+			assertEquals(dto.getLatestEventTitle(), event2.getEventTitle());
+			assertTrue(dto.getEventCount().equals(2L));
+		}
+	}
+
+	@Test
+	public void testGetExportListWithoutRelevantVaccinations() {
+		RDCFEntities rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		RDCF rdcf = new RDCF(rdcfEntities);
+		UserDto user = useSurveillanceOfficerLogin(rdcf);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+
+		CaseDataDto caze = createCaze(user, cazePerson, rdcfEntities);
+		ContactDto contact = createContact(user, caze, rdcf);
+
+		PersonDto contactPerson = getPersonFacade().getPersonByUuid(contact.getPerson().getUuid());
+		VisitDto visit = creator.createVisit(caze.getDisease(), contactPerson.toReference(), new Date(), VisitStatus.COOPERATIVE, VisitOrigin.USER);
+		EpiDataDto epiData = contact.getEpiData();
+		epiData.setExposureDetailsKnown(YesNoUnknown.YES);
+		List<ExposureDto> travels = new ArrayList<>();
+		ExposureDto exposure = ExposureDto.build(ExposureType.TRAVEL);
+		exposure.getLocation().setDetails("Mallorca");
+		exposure.setStartDate(DateHelper.subtractDays(new Date(), 15));
+		exposure.setEndDate(DateHelper.subtractDays(new Date(), 7));
+		caze.getEpiData().getExposures().add(exposure);
+		travels.add(exposure);
+		epiData.setExposures(travels);
+		contact.setEpiData(epiData);
+		getContactFacade().save(contact);
+
+		contactPerson.getAddress().setRegion(new RegionReferenceDto(rdcf.region.getUuid(), null, null));
+		contactPerson.getAddress().setDistrict(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
+		contactPerson.getAddress().setCity("City");
+		contactPerson.getAddress().setStreet("Test street");
+		contactPerson.getAddress().setHouseNumber("Test number");
+		contactPerson.getAddress().setAdditionalInformation("Test information");
+		contactPerson.getAddress().setPostalCode("1234");
+		getPersonFacade().savePerson(contactPerson);
+
+		visit.getSymptoms().setAbdominalPain(SymptomState.YES);
+		getVisitFacade().saveVisit(visit);
+
+		ImmunizationDto immunization = creator.createImmunization(
+			contact.getDisease(),
+			contact.getPerson(),
+			contact.getReportingUser(),
+			ImmunizationStatus.ACQUIRED,
+			MeansOfImmunization.VACCINATION,
+			ImmunizationManagementStatus.COMPLETED,
+			rdcf,
+			DateHelper.subtractDays(new Date(), 10),
+			DateHelper.subtractDays(new Date(), 5),
+			DateHelper.subtractDays(new Date(), 1),
+			null);
+
+		VaccinationDto vaccination = creator.createVaccinationWithDetails(
+			caze.getReportingUser(),
+			immunization.toReference(),
+			HealthConditionsDto.build(),
+			DateHelper.addDays(new Date(), 1),
+			Vaccine.MRNA_1273,
+			VaccineManufacturer.MODERNA,
+			VaccinationInfoSource.UNKNOWN,
+			"inn2",
+			"456",
+			"code456",
+			"2");
+
+		List<ContactExportDto> results;
+		results = getContactFacade().getExportList(null, Collections.emptySet(), 0, 100, null, Language.EN);
+
+		// Database should contain one contact, associated visit and task
+		assertEquals(1, results.size());
+
+		// Make sure that everything that is added retrospectively (address, last cooperative visit date and symptoms) is present
+		ContactExportDto exportDto = results.get(0);
+
+		assertEquals(rdcf.region.getCaption(), exportDto.getAddressRegion());
+		assertEquals(rdcf.district.getCaption(), exportDto.getAddressDistrict());
+		assertEquals("City", exportDto.getCity());
+		assertEquals("Test street", exportDto.getStreet());
+		assertEquals("Test number", exportDto.getHouseNumber());
+		assertEquals("Test information", exportDto.getAdditionalInformation());
+		assertEquals("1234", exportDto.getPostalCode());
+		assertNull(exportDto.getFirstVaccinationDate());
+		assertNull(exportDto.getVaccineName());
+		assertNull(exportDto.getLastVaccinationDate());
+		assertNull(exportDto.getVaccinationInfoSource());
+		assertNull(exportDto.getVaccineInn());
+		assertNull(exportDto.getVaccineBatchNumber());
+		assertNull(exportDto.getVaccineAtcCode());
+		assertEquals(exportDto.getNumberOfDoses(), "");
+		assertNotNull(exportDto.getLastCooperativeVisitDate());
+		assertTrue(StringUtils.isNotEmpty(exportDto.getLastCooperativeVisitSymptoms()));
+		assertEquals(YesNoUnknown.YES, exportDto.getLastCooperativeVisitSymptomatic());
+
+		assertNotNull(exportDto.getEpiDataId());
+		assertTrue(exportDto.isTraveled());
+		assertEquals(
+			EpiDataHelper.buildDetailedTravelString(
+				exposure.getLocation().toString(),
+				exposure.getDescription(),
+				exposure.getStartDate(),
+				exposure.getEndDate(),
+				Language.EN),
+			exportDto.getTravelHistory());
+		assertTrue(exportDto.getEventCount().equals(0L));
+
+		// one Contact with 2 Events
+		UserReferenceDto reportingUser = new UserReferenceDto(user.getUuid());
+		EventDto event1 = creator.createEvent(reportingUser, DateHelper.subtractDays(new Date(), 1));
+		EventDto event2 = creator.createEvent(reportingUser, new Date());
+		creator.createEventParticipant(new EventReferenceDto(event2.getUuid()), contactPerson, reportingUser);
+		creator.createEventParticipant(new EventReferenceDto(event1.getUuid()), contactPerson, reportingUser);
+
+		results = getContactFacade().getExportList(null, Collections.emptySet(), 0, 100, null, Language.EN);
+		assertEquals(results.size(), 1);
+		{
+			ContactExportDto dto = results.get(0);
+			assertEquals(dto.getLatestEventId(), event2.getUuid());
+			assertEquals(dto.getLatestEventTitle(), event2.getEventTitle());
+			assertTrue(dto.getEventCount().equals(2L));
 		}
 	}
 
@@ -1265,7 +1381,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		String userUuid = user.getUuid();
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
@@ -1363,7 +1479,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -1410,7 +1526,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),
@@ -1452,7 +1568,8 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testUpdateContactVisitAssociations() {
 
-		UserDto user = creator.createUser(creator.createRDCFEntities(), creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto user =
+			creator.createUser(creator.createRDCFEntities(), creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto person = creator.createPerson();
 		VisitDto visit = creator.createVisit(Disease.EVD, person.toReference());
 		ContactDto contact = creator.createContact(user.toReference(), person.toReference());
@@ -1511,7 +1628,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 	public void testSearchContactsWithExtendedQuarantine() {
 		RDCF rdcf = creator.createRDCF();
 		ContactDto contact = creator.createContact(
-			creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference(),
+			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference(),
 			creator.createPerson().toReference());
 		contact.setQuarantineExtended(true);
 		getContactFacade().save(contact);
@@ -1530,7 +1647,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 	public void testSearchContactsWithReducedQuarantine() {
 		RDCF rdcf = creator.createRDCF();
 		ContactDto contact = creator.createContact(
-			creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference(),
+			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference(),
 			creator.createPerson().toReference());
 		contact.setQuarantineReduced(true);
 		getContactFacade().save(contact);
@@ -1551,7 +1668,8 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 
 		ContactDto contact = new ContactDto();
 		contact.setReportDateTime(new Date());
-		contact.setReportingUser(creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference());
+		contact
+			.setReportingUser(creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference());
 		contact.setDisease(Disease.CORONAVIRUS);
 		contact.setPerson(creator.createPerson().toReference());
 		contact.setRegion(rdcf.region);
@@ -1568,7 +1686,8 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 	public void testGetContactsByPersonUuids() {
 
 		UserReferenceDto user =
-			creator.createUser(creator.createRDCFEntities(), creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR)).toReference();
+			creator.createUser(creator.createRDCFEntities(), creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR))
+				.toReference();
 
 		PersonReferenceDto person1 = creator.createPerson().toReference();
 		ContactDto contact1 = getContactFacade().save(creator.createContact(user, person1));
@@ -1587,6 +1706,75 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(2, contactsByPerson.size());
 		assertEquals(contact1.getUuid(), contactsByPerson.get(0).getUuid());
 		assertEquals(contact2.getUuid(), contactsByPerson.get(1).getUuid());
+	}
+
+	@Test
+	public void testMergeContactDoesNotDuplicateSystemComment() throws IOException {
+
+		useNationalUserLogin();
+
+		UserDto leadUser = creator.createUser("", "", "", "First", "User");
+		UserReferenceDto leadUserReference = new UserReferenceDto(leadUser.getUuid());
+		PersonDto leadPerson = creator.createPerson("Alex", "Miller");
+		PersonReferenceDto leadPersonReference = new PersonReferenceDto(leadPerson.getUuid());
+		RDCF leadRdcf = creator.createRDCF();
+		CaseDataDto sourceCase = creator.createCase(
+			leadUserReference,
+			leadPersonReference,
+			Disease.CORONAVIRUS,
+			CaseClassification.SUSPECT,
+			InvestigationStatus.PENDING,
+			new Date(),
+			leadRdcf);
+		ContactDto leadContact = creator.createContact(
+			leadUserReference,
+			leadUserReference,
+			leadPersonReference,
+			sourceCase,
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			leadRdcf);
+		getContactFacade().save(leadContact);
+
+		// Create otherContact
+		UserDto otherUser = creator.createUser("", "", "", "Some", "User");
+		UserReferenceDto otherUserReference = new UserReferenceDto(otherUser.getUuid());
+		PersonDto otherPerson = creator.createPerson("Max", "Smith");
+		PersonReferenceDto otherPersonReference = new PersonReferenceDto(otherPerson.getUuid());
+		RDCF otherRdcf = creator.createRDCF();
+		ContactDto otherContact = creator.createContact(
+			otherUserReference,
+			otherUserReference,
+			otherPersonReference,
+			sourceCase,
+			new Date(),
+			new Date(),
+			Disease.CORONAVIRUS,
+			otherRdcf);
+		ContactReferenceDto otherContactReference = getContactFacade().getReferenceByUuid(otherContact.getUuid());
+		ContactDto contact =
+			creator.createContact(otherUserReference, otherUserReference, otherPersonReference, sourceCase, new Date(), new Date(), null);
+		Region region = creator.createRegion("");
+		District district = creator.createDistrict("", region);
+		Facility facility = creator.createFacility("", region, district, creator.createCommunity("", district));
+
+		CaseDataDto resultingCase = getCaseFacade().save(
+			creator.createCase(
+				otherUserReference,
+				otherPersonReference,
+				Disease.CORONAVIRUS,
+				CaseClassification.CONFIRMED_NO_SYMPTOMS,
+				InvestigationStatus.DONE,
+				new Date(),
+				otherRdcf));
+		otherContact.setResultingCase(resultingCase.toReference());
+		getContactFacade().save(otherContact);
+
+		getContactFacade().mergeContact(leadContact.getUuid(), otherContact.getUuid());
+
+		ContactDto mergedContact = getContactFacade().getByUuid(leadContact.getUuid());
+		assertEquals(I18nProperties.getString(Strings.messageSystemFollowUpCanceled), mergedContact.getFollowUpComment());
 	}
 
 	@Test
@@ -1716,8 +1904,8 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(otherPerson.getBirthWeight(), mergedPerson.getBirthWeight());
 
 		// Check merge comments
-		assertEquals(mergedContact.getAdditionalDetails(), "Test additional details Test other additional details");
-		assertEquals(mergedContact.getFollowUpComment(), "Test followup comment Test other followup comment");
+		assertEquals("Test additional details Test other additional details", mergedContact.getAdditionalDetails());
+		assertEquals("Test followup comment Test other followup comment", mergedContact.getFollowUpComment());
 
 		// 4. Test Reference Changes
 		// 4.1 Samples
@@ -1754,7 +1942,7 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf = creator.createRDCF();
 		useNationalUserLogin();
 
-		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
+		UserDto userDto = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
 		PersonDto personDto = creator.createPerson();
 		CaseDataDto caze = creator.createCase(
 			userDto.toReference(),
@@ -1773,18 +1961,41 @@ public class ContactFacadeEjbTest extends AbstractBeanTest {
 			"Limited Disease Covid",
 			"National User",
 			Disease.CORONAVIRUS,
-			creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
 		UserDto limitedDengueNationalUser = creator.createUser(
 			rdcf,
 			"Limited Disease Dengue",
 			"National User",
 			Disease.DENGUE,
-			creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
 
 		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUsersHavingContactInJurisdiction(contact.toReference());
 		Assert.assertNotNull(userReferenceDtos);
 		Assert.assertTrue(userReferenceDtos.contains(userDto));
 		Assert.assertTrue(userReferenceDtos.contains(limitedCovidNationalUser));
 		Assert.assertFalse(userReferenceDtos.contains(limitedDengueNationalUser));
+	}
+
+	private CaseDataDto createCaze(UserDto user, PersonDto cazePerson, RDCFEntities rdcf) {
+		return creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			new Date(),
+			rdcf);
+	}
+
+	private ContactDto createContact(UserDto user, CaseDataDto caze, RDCF rdcf) {
+		return creator.createContact(
+			user.toReference(),
+			user.toReference(),
+			creator.createPerson("Contact", "Person").toReference(),
+			caze,
+			new Date(),
+			new Date(),
+			null,
+			rdcf);
 	}
 }

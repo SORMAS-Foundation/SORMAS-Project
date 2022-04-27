@@ -57,7 +57,7 @@ public class EventFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			rdcf1.facility.getUuid(),
 			"Surv",
 			"Off1",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2", "Point of entry 2");
 		user2 = creator.createUser(
@@ -66,10 +66,10 @@ public class EventFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			rdcf2.facility.getUuid(),
 			"Surv",
 			"Off2",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
 
-		observerUser =
-			creator.createUser(null, null, null, null, "National", "Observer", creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_OBSERVER));
+		observerUser = creator
+			.createUser(null, null, null, null, "National", "Observer", creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_OBSERVER));
 
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
 	}

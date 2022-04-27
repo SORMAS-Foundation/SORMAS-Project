@@ -23,6 +23,7 @@ import javax.persistence.criteria.JoinType;
 
 import de.symeda.sormas.backend.common.QueryJoins;
 import de.symeda.sormas.backend.event.Event;
+import de.symeda.sormas.backend.event.EventJoins;
 import de.symeda.sormas.backend.user.User;
 
 public class ActionJoins extends QueryJoins<Action> {
@@ -30,6 +31,8 @@ public class ActionJoins extends QueryJoins<Action> {
 	private Join<Action, Event> event;
 	private Join<Action, User> creator;
 	private Join<Action, User> lastModifiedBy;
+
+	private EventJoins eventJoins;
 
 	public ActionJoins(From<?, Action> root) {
 		super(root);
@@ -43,6 +46,14 @@ public class ActionJoins extends QueryJoins<Action> {
 		this.event = event;
 	}
 
+	public EventJoins getEventJoins() {
+		return getOrCreate(eventJoins, () -> new EventJoins(getEvent(JoinType.INNER)), this::setEventJoins);
+	}
+
+	private void setEventJoins(EventJoins eventJoins) {
+		this.eventJoins = eventJoins;
+	}
+
 	public Join<Action, User> getCreator() {
 		return getOrCreate(creator, Action.CREATOR_USER, JoinType.LEFT, this::setCreator);
 	}
@@ -52,7 +63,7 @@ public class ActionJoins extends QueryJoins<Action> {
 	}
 
 	public Join<Action, User> getLastModifiedBy() {
-		return getOrCreate(creator, Action.LAST_MODIFIED_BY, JoinType.LEFT, this::setLastModifiedBy);
+		return getOrCreate(lastModifiedBy, Action.LAST_MODIFIED_BY, JoinType.LEFT, this::setLastModifiedBy);
 	}
 
 	private void setLastModifiedBy(Join<Action, User> lastModifiedBy) {

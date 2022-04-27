@@ -60,7 +60,7 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 			rdcf1.facility.getUuid(),
 			"Surv",
 			"Off1",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2", "Point of entry 2");
 		user2 = creator.createUser(
@@ -69,7 +69,7 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 			rdcf2.facility.getUuid(),
 			"Surv",
 			"Off2",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
 	}
@@ -136,7 +136,7 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 		assertThat(savedPerson.getAddress().getAdditionalInformation(), is(nullValue()));
 		assertThat(savedPerson.getAddress().getCity(), is(nullValue()));
 
-		getEventParticipantFacade().saveEventParticipant(participant);
+		getEventParticipantFacade().save(participant);
 		EventParticipant savedParticipant = getEventParticipantService().getByUuid(participant.getUuid());
 
 //		assertThat(savedParticipant.getInvolvementDescription(), is("Test involvement descr"));
@@ -158,7 +158,7 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 		participant.getPerson().getAddress().setAdditionalInformation(null);
 		participant.getPerson().getAddress().setCity(null);
 
-		getEventParticipantFacade().saveEventParticipant(participant);
+		getEventParticipantFacade().save(participant);
 
 		EventParticipant saved = getEventParticipantService().getByUuid(participant.getUuid());
 

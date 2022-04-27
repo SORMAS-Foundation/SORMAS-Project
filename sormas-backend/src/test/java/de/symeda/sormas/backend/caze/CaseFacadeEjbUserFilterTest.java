@@ -66,7 +66,7 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 			rdcf1.facility.getUuid(),
 			"Surv",
 			"Off1",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2", "Point of entry 2");
 		districtUser2 = creator.createUser(
@@ -75,7 +75,7 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 			rdcf2.facility.getUuid(),
 			"Surv",
 			"Off2",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		nationalUser = creator.createUser(
 			rdcf2.region.getUuid(),
@@ -84,7 +84,7 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 			rdcf2.facility.getUuid(),
 			"Nat",
 			"User2",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
 		regionUser = creator.createUser(
 			rdcf2.region.getUuid(),
 			rdcf2.district.getUuid(),
@@ -92,7 +92,7 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 			rdcf2.facility.getUuid(),
 			"Surv",
 			"Sup2",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		communityUser = creator.createUser(
 			rdcf2.region.getUuid(),
 			rdcf2.district.getUuid(),
@@ -100,7 +100,7 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 			rdcf2.facility.getUuid(),
 			"Com",
 			"Off2",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.COMMUNITY_OFFICER));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.COMMUNITY_OFFICER));
 		facilityUser = creator.createUser(
 			rdcf2.region.getUuid(),
 			rdcf2.district.getUuid(),
@@ -108,9 +108,9 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 			rdcf2.facility.getUuid(),
 			"Hosp",
 			"Inf2",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.HOSPITAL_INFORMANT));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.HOSPITAL_INFORMANT));
 
-		labUser = creator.createUser(null, null, null, "Lab", "Off", creator.getUserRoleDtoMap().get(DefaultUserRole.LAB_USER));
+		labUser = creator.createUser(null, null, null, "Lab", "Off", creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.LAB_USER));
 		labUser.setLaboratory(rdcf1.facility);
 		getUserFacade().saveUser(labUser);
 
@@ -157,8 +157,8 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 
 		CaseDataDto caze = createCase(rdcf1, districtUser1);
 
-		UserDto inactiveUser =
-			creator.createUser(rdcf1, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR), user -> user.setActive(false));
+		UserDto inactiveUser = creator
+			.createUser(rdcf1, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR), user -> user.setActive(false));
 
 		List<UserReferenceDto> usersHavingCaseInJurisdiction = getUserFacade().getUsersHavingCaseInJurisdiction(caze.toReference());
 		Assert.assertNotNull(usersHavingCaseInJurisdiction);
@@ -290,13 +290,13 @@ public class CaseFacadeEjbUserFilterTest extends AbstractBeanTest {
 			"Limited Disease Covid",
 			"National User",
 			Disease.CORONAVIRUS,
-			creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
 		UserDto limitedDengueNationalUser = creator.createUser(
 			rdcf1,
 			"Limited Disease Dengue",
 			"National User",
 			Disease.DENGUE,
-			creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
 
 		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUsersHavingCaseInJurisdiction(caze.toReference());
 		Assert.assertNotNull(userReferenceDtos);

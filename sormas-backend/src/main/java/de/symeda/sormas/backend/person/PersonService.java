@@ -255,7 +255,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			caseService.createDefaultFilter(cb, joins.getCaze()));
 		final Supplier<Predicate> contactFilter = () -> {
 			final Predicate contactUserFilter = contactService.createUserFilterForJoin(
-				new ContactQueryContext(cb, cq, joins.getContact()),
+				new ContactQueryContext(cb, cq, joins.getContactJoins()),
 				new ContactCriteria().includeContactsFromOtherJurisdictions(false));
 			return CriteriaBuilderHelper.and(cb, contactUserFilter, contactService.createDefaultFilter(cb, joins.getContact()));
 		};
@@ -894,11 +894,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		return persons;
 	}
 
-	public void executePermanentDeletion(int batchSize) {
-		IterableHelper.executeBatched(getAllNonReferencedPersonUuids(), batchSize, batchedUuids -> deletePermanent(batchedUuids));
-	}
-
-	private List<String> getAllNonReferencedPersonUuids() {
+	public List<String> getAllNonReferencedPersonUuids() {
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<String> cq = cb.createQuery(String.class);

@@ -58,7 +58,8 @@ public class ContactServiceTest extends AbstractBeanTest {
 	@Test
 	public void testGetAllRelevantContacts() {
 
-		UserDto user = creator.createUser(creator.createRDCFEntities(), creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto user =
+			creator.createUser(creator.createRDCFEntities(), creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		Date referenceDate = DateHelper.subtractDays(new Date(), FollowUpLogic.ALLOWED_DATE_OFFSET * 2);
 		PersonDto contactPerson = creator.createPerson();
@@ -142,7 +143,7 @@ public class ContactServiceTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		CaseDataDto caze = creator.createCase(
 			user.toReference(),

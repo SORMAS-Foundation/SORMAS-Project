@@ -86,7 +86,8 @@ public class ExternalSurveillanceToolGatewayFacadeEjbTest extends AbstractBeanTe
 	@Test
 	public void testSendingCasesOk() throws ExternalSurveillanceToolException {
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserReferenceDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		UserReferenceDto user =
+			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		CaseDataDto case1 = creator.createCase(user, rdcf, null);
 		CaseDataDto case2 = creator.createCase(user, rdcf, null);
 

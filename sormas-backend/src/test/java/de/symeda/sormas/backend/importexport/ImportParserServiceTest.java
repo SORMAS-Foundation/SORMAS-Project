@@ -191,7 +191,7 @@ public class ImportParserServiceTest extends AbstractBeanTest {
 
 	@Test
 	public void testParseUserFieldValue() throws IntrospectionException, ImportErrorException {
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
 
 		Object parsed = getImportParserService().parseValue(
 			new PropertyDescriptor(EventDto.REPORTING_USER, EventDto.class),

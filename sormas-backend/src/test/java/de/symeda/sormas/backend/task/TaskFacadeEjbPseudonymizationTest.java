@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.task;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.mockito.Mockito.when;
@@ -68,7 +69,7 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			rdcf1.facility.getUuid(),
 			"Surv",
 			"Off1",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2", "Point of entry 2");
 		user2 = creator.createUser(
@@ -77,7 +78,7 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			rdcf2.facility.getUuid(),
 			"Surv",
 			"Off2",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
 	}
@@ -116,7 +117,7 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		TaskDto task = createContactTask(contact);
 
 		TaskDto savedTask = getTaskFacade().getByUuid(task.getUuid());
-		assertThat(savedTask.getContact().getCaption(), is("James SMITH to case John Doe"));
+		assertThat(savedTask.getContact().getCaption(), containsString("James SMITH to case John Doe"));
 	}
 
 	@Test
@@ -178,7 +179,7 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(index2.getCaze().getLastName(), isEmptyString());
 
 		TaskIndexDto index3 = indexList.stream().filter(t -> t.getUuid().equals(task3.getUuid())).findFirst().get();
-		assertThat(index3.getContact().getCaption(), is("John SMITH"));
+		assertThat(index3.getContact().getCaption(), containsString("John SMITH"));
 
 		TaskIndexDto index4 = indexList.stream().filter(t -> t.getUuid().equals(task4.getUuid())).findFirst().get();
 		assertThat(index4.getContact().getCaption(), is(DataHelper.getShortUuid(index4.getContact().getUuid())));
@@ -275,7 +276,7 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(active2.getCaze().getLastName(), isEmptyString());
 
 		TaskDto active3 = activeTasks.stream().filter(t -> t.getUuid().equals(task3.getUuid())).findFirst().get();
-		assertThat(active3.getContact().getCaption(), is("John SMITH"));
+		assertThat(active3.getContact().getCaption(), containsString("John SMITH"));
 
 		TaskDto active4 = activeTasks.stream().filter(t -> t.getUuid().equals(task4.getUuid())).findFirst().get();
 		assertThat(active4.getContact().getCaption(), is(DataHelper.getShortUuid(task4.getContact().getUuid())));
@@ -322,7 +323,7 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(active2.getCaze().getLastName(), isEmptyString());
 
 		TaskDto active3 = activeTasks.stream().filter(t -> t.getUuid().equals(task3.getUuid())).findFirst().get();
-		assertThat(active3.getContact().getCaption(), is("John SMITH"));
+		assertThat(active3.getContact().getCaption(), containsString("John SMITH"));
 
 		TaskDto active4 = activeTasks.stream().filter(t -> t.getUuid().equals(task4.getUuid())).findFirst().get();
 		assertThat(active4.getContact().getCaption(), is(DataHelper.getShortUuid(task4.getContact().getUuid())));
@@ -384,7 +385,7 @@ public class TaskFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 
 		List<TaskDto> contact1Tasks = getTaskFacade().getAllByContact(contact1.toReference());
 		TaskDto active1 = contact1Tasks.stream().filter(t -> t.getUuid().equals(task3.getUuid())).findFirst().get();
-		assertThat(active1.getContact().getCaption(), is("John SMITH"));
+		assertThat(active1.getContact().getCaption(), containsString("John SMITH"));
 
 		List<TaskDto> contact2Tasks = getTaskFacade().getAllByContact(contact2.toReference());
 		TaskDto active2 = contact2Tasks.stream().filter(t -> t.getUuid().equals(task4.getUuid())).findFirst().get();

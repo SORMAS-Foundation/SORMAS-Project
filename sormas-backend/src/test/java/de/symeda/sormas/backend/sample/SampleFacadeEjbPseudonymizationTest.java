@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.sample;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.notNullValue;
@@ -75,7 +76,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			rdcf1.facility.getUuid(),
 			"Surv",
 			"Off1",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2", "Point of entry 2");
 		user2 = creator.createUser(
@@ -84,13 +85,13 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 			rdcf2.facility.getUuid(),
 			"Surv",
 			"Off2",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
-		labUser = creator.createUser(null, null, null, "Lab", "Off", creator.getUserRoleDtoMap().get(DefaultUserRole.LAB_USER));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
+		labUser = creator.createUser(null, null, null, "Lab", "Off", creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.LAB_USER));
 		labUser.setLaboratory(rdcf1.facility);
 		getUserFacade().saveUser(labUser);
 
-		observerUser =
-			creator.createUser(null, null, null, null, "National", "Observer", creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_OBSERVER));
+		observerUser = creator
+			.createUser(null, null, null, null, "National", "Observer", creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_OBSERVER));
 
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvOff2");
 	}
@@ -164,7 +165,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		SampleDto sample = createContactSample(contact);
 
 		SampleDto savedSample = getSampleFacade().getSampleByUuid(sample.getUuid());
-		assertThat(savedSample.getAssociatedContact().getCaption(), is("James SMITH to case John Doe"));
+		assertThat(savedSample.getAssociatedContact().getCaption(), containsString("James SMITH to case John Doe"));
 	}
 
 	@Test
@@ -224,7 +225,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(index2.getAssociatedCase().getLastName(), isEmptyString());
 
 		SampleIndexDto index3 = indexList.stream().filter(t -> t.getUuid().equals(sample3.getUuid())).findFirst().get();
-		assertThat(index3.getAssociatedContact().getCaption(), is("John SMITH"));
+		assertThat(index3.getAssociatedContact().getCaption(), containsString("John SMITH"));
 
 		SampleIndexDto index4 = indexList.stream().filter(t -> t.getUuid().equals(sample4.getUuid())).findFirst().get();
 		assertThat(index4.getAssociatedContact().getCaption(), is(DataHelper.getShortUuid(index4.getAssociatedContact().getUuid())));

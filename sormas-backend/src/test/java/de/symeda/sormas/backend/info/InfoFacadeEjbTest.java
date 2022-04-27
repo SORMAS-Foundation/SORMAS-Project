@@ -65,7 +65,7 @@ public class InfoFacadeEjbTest extends AbstractBeanTest {
 			throw new RuntimeException("Could not set custom files path", e);
 		}
 
-		UserDto admin = creator.createUser(creator.createRDCF(), creator.getUserRoleDtoMap().get(DefaultUserRole.ADMIN));
+		UserDto admin = creator.createUser(creator.createRDCF(), creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.ADMIN));
 		loginWith(admin);
 	}
 

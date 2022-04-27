@@ -33,8 +33,10 @@ import java.util.Set;
 import java.util.TimeZone;
 
 import javax.annotation.PostConstruct;
+import javax.annotation.Resource;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
+import javax.ejb.SessionContext;
 import javax.ejb.Singleton;
 
 import org.hl7.fhir.r4.model.AuditEvent;
@@ -51,20 +53,37 @@ import org.slf4j.LoggerFactory;
 
 import ca.uhn.fhir.context.FhirContext;
 import ca.uhn.fhir.parser.IParser;
+import de.symeda.sormas.api.audit.AuditLoggerFacade;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb;
+import de.symeda.sormas.backend.user.CurrentUserService;
+import de.symeda.sormas.backend.user.User;
 
-@Singleton
-@LocalBean
-public class AuditLogger {
+@Singleton(name = "AuditLoggerFacade")
+public class AuditLoggerEjb implements AuditLoggerFacade {
 
-	private static final Logger logger = LoggerFactory.getLogger(AuditLogger.class);
+	private static final Logger logger = LoggerFactory.getLogger(AuditLoggerEjb.class);
 	private String auditSourceSite;
-	private Map<String, AuditEvent.AuditEventAction> actionMap;
+	private Map<String, AuditEvent.AuditEventAction> actionBackendMap;
+	private static final Map<String, AuditEvent.AuditEventAction> actionRestMap = new HashMap<String, AuditEvent.AuditEventAction>() {
+
+		{
+			put("PUT", AuditEvent.AuditEventAction.C);
+			put("GET", AuditEvent.AuditEventAction.R);
+			put("POST", AuditEvent.AuditEventAction.U);
+			put("DELETE", AuditEvent.AuditEventAction.D);
+		}
+	};
 
 	@EJB
 	private ConfigFacadeEjb.ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private LogSink auditLogger;
+	@EJB
+	private CurrentUserService currentUserService;
+
+	// todo we need the session context in addition to the UserService as SYSTEM/ANONYMOUS do return null in the currentUserService
+	@Resource
+	private SessionContext sessionContext;
 
 	private static boolean loggingDisabled = false;
 
@@ -87,7 +106,7 @@ public class AuditLogger {
 			loggingDisabled = true;
 		}
 
-		actionMap = new HashMap<>();
+		actionBackendMap = new HashMap<>();
 	}
 
 	private void accept(AuditEvent event) {
@@ -147,13 +166,10 @@ public class AuditLogger {
 		accept(applicationStartAudit);
 	}
 
-	public void logBackendCall(String agentName, String agentUuid, Method calledMethod, List<String> params, String returnValue, Date start) {
+	public void logBackendCall(Method calledMethod, List<String> params, String returnValue, Date start) {
 		AuditEvent backendCall = new AuditEvent();
 
-		// backendCall.setType();
-		// backendCall.setSubType();
-
-		backendCall.setAction(inferAction(calledMethod.getName()));
+		backendCall.setAction(inferBackendAction(calledMethod.getName()));
 		Period period = new Period();
 		period.setStart(start);
 		Date end = Calendar.getInstance(TimeZone.getDefault()).getTime();
@@ -167,7 +183,9 @@ public class AuditLogger {
 		AuditEvent.AuditEventAgentComponent agent = new AuditEvent.AuditEventAgentComponent();
 		CodeableConcept codeableConcept = new CodeableConcept();
 
-		if (agentName.equals("SYSTEM") || agentName.equals("ANONYMOUS")) {
+		AgentDetails agentDetails = new AgentDetails(currentUserService, sessionContext);
+
+		if (agentDetails.name.equals("SYSTEM") || agentDetails.name.equals("ANONYMOUS")) {
 			codeableConcept.addCoding(new Coding("https://www.hl7.org/fhir/valueset-participation-role-type.html", "110150", "Application"));
 			agent.setType(codeableConcept);
 		} else {
@@ -175,11 +193,11 @@ public class AuditLogger {
 			agent.setType(codeableConcept);
 		}
 
-		agent.setName(agentName);
+		agent.setName(agentDetails.name);
 		Reference who = new Reference();
 		Identifier identifier = new Identifier();
-		if (!agentName.equals("SYSTEM") && !agentName.equals("ANONYMOUS")) {
-			identifier.setValue(agentUuid);
+		if (!agentDetails.name.equals("SYSTEM") && !agentDetails.name.equals("ANONYMOUS")) {
+			identifier.setValue(agentDetails.uuid);
 		}
 
 		who.setIdentifier(identifier);
@@ -204,19 +222,14 @@ public class AuditLogger {
 		});
 
 		entity.setDetail(details);
-
-		// System Object
-		//AuditEntityType entityType = AuditEntityType._2;
-		//entity.setType(new Coding(entityType.getSystem(), entityType.toCode(), entityType.getDisplay()));
-
 		backendCall.addEntity(entity);
 
 		accept(backendCall);
 	}
 
-	private AuditEvent.AuditEventAction inferAction(String calledMethod) {
+	private AuditEvent.AuditEventAction inferBackendAction(String calledMethod) {
 
-		AuditEvent.AuditEventAction cached = actionMap.get(calledMethod);
+		AuditEvent.AuditEventAction cached = actionBackendMap.get(calledMethod);
 		if (cached != null) {
 			return cached;
 		}
@@ -235,7 +248,7 @@ public class AuditLogger {
 		} else {
 			inferred = AuditEvent.AuditEventAction.E;
 		}
-		actionMap.put(calledMethod, inferred);
+		actionBackendMap.put(calledMethod, inferred);
 		return inferred;
 	}
 
@@ -243,4 +256,133 @@ public class AuditLogger {
 		return prefixes.stream().anyMatch(methodName::startsWith);
 	}
 
+	@Override
+	public void logRestCall(String path, String method) {
+		AuditEvent restCall = new AuditEvent();
+
+		restCall.setType(new Coding("https://hl7.org/fhir/R4/valueset-audit-event-type.html", "rest", "RESTful Operation"));
+		restCall.setAction(inferRestAction(method));
+
+		restCall.setRecorded(Calendar.getInstance(TimeZone.getDefault()).getTime());
+
+		// agent
+		AuditEvent.AuditEventAgentComponent agent = new AuditEvent.AuditEventAgentComponent();
+
+		AgentDetails agentDetails = new AgentDetails(currentUserService, sessionContext);
+
+		agent.setName(agentDetails.name);
+		Reference who = new Reference();
+		Identifier identifier = new Identifier();
+		identifier.setValue(agentDetails.uuid);
+		who.setIdentifier(identifier);
+		agent.setWho(who);
+		restCall.addAgent(agent);
+
+		// source
+		AuditEvent.AuditEventSourceComponent source = new AuditEvent.AuditEventSourceComponent();
+		source.setSite(String.format("%s - SORMAS REST API", auditSourceSite));
+
+		// Web Server
+		AuditSourceType auditSourceType = AuditSourceType._3;
+		source.addType(new Coding(auditSourceType.getSystem(), auditSourceType.toCode(), auditSourceType.getDisplay()));
+		restCall.setSource(source);
+
+		// entity
+		AuditEvent.AuditEventEntityComponent entity = new AuditEvent.AuditEventEntityComponent();
+		entity.setWhat(new Reference(path));
+		restCall.addEntity(entity);
+
+		accept(restCall);
+	}
+
+	private AuditEvent.AuditEventAction inferRestAction(String actionMethod) {
+		AuditEvent.AuditEventAction action = actionRestMap.get(actionMethod);
+		if (action != null) {
+			return action;
+		} else {
+			return AuditEvent.AuditEventAction.E;
+		}
+	}
+
+	@Override
+	public void logFailedRestLogin(String caller, String method, String pathInfo) {
+		AuditEvent restLoginFail = new AuditEvent();
+
+		restLoginFail.setType(new Coding("https://hl7.org/fhir/R4/valueset-audit-event-type.html", "110114", "User Authentication"));
+		restLoginFail
+			.setSubtype(Collections.singletonList(new Coding("https://hl7.org/fhir/R4/valueset-audit-event-sub-type.html", "110122", "Login")));
+		restLoginFail.setAction(AuditEvent.AuditEventAction.E);
+
+		restLoginFail.setRecorded(Calendar.getInstance(TimeZone.getDefault()).getTime());
+
+		restLoginFail.setOutcome(AuditEvent.AuditEventOutcome._4);
+		restLoginFail.setOutcomeDesc("Authentication failed");
+
+		AuditEvent.AuditEventAgentComponent agent = new AuditEvent.AuditEventAgentComponent();
+
+		agent.setName(caller);
+
+		restLoginFail.addAgent(agent);
+
+		AuditEvent.AuditEventSourceComponent source = new AuditEvent.AuditEventSourceComponent();
+		source.setSite(String.format("%s - REST MultiAuthenticationMechanism", auditSourceSite));
+
+		AuditEvent.AuditEventEntityComponent entity = new AuditEvent.AuditEventEntityComponent();
+		entity.setWhat(new Reference(String.format("%s %s", method, pathInfo)));
+		restLoginFail.addEntity(entity);
+
+		accept(restLoginFail);
+	}
+
+	@Override
+	public void logFailedUiLogin(String caller, String method, String pathInfo) {
+		AuditEvent uiLoginFail = new AuditEvent();
+
+		uiLoginFail.setType(new Coding("https://hl7.org/fhir/R4/valueset-audit-event-type.html", "110114", "User Authentication"));
+		uiLoginFail
+			.setSubtype(Collections.singletonList(new Coding("https://hl7.org/fhir/R4/valueset-audit-event-sub-type.html", "110122", "Login")));
+		uiLoginFail.setAction(AuditEvent.AuditEventAction.E);
+
+		uiLoginFail.setRecorded(Calendar.getInstance(TimeZone.getDefault()).getTime());
+
+		uiLoginFail.setOutcome(AuditEvent.AuditEventOutcome._4);
+		uiLoginFail.setOutcomeDesc("Authentication failed");
+
+		AuditEvent.AuditEventAgentComponent agent = new AuditEvent.AuditEventAgentComponent();
+		agent.setName(caller);
+		uiLoginFail.addAgent(agent);
+
+		AuditEvent.AuditEventSourceComponent source = new AuditEvent.AuditEventSourceComponent();
+		source.setSite(String.format("%s - UI MultiAuthenticationMechanism", auditSourceSite));
+
+		AuditEvent.AuditEventEntityComponent entity = new AuditEvent.AuditEventEntityComponent();
+		entity.setWhat(new Reference(String.format("%s %s", method, pathInfo)));
+		uiLoginFail.addEntity(entity);
+
+		accept(uiLoginFail);
+	}
+
+	private class AgentDetails {
+
+		final String uuid;
+		final String name;
+
+		public AgentDetails(CurrentUserService currentUserService, SessionContext sessionContext) {
+			User currentUser = currentUserService.getCurrentUser();
+			uuid = currentUser == null ? null : currentUser.getUuid();
+			String tmpName = currentUser == null ? null : currentUser.getUserName();
+
+			if (tmpName == null) {
+				// in case the user is SYSTEM or ANONYMOUS, current user service will not help
+				tmpName = sessionContext.getCallerPrincipal().getName();
+			}
+			name = tmpName;
+		}
+	}
+
+	@LocalBean
+	@Singleton
+	public static class AuditLoggerEjbLocal extends AuditLoggerEjb {
+
+	}
 }

@@ -7,6 +7,7 @@ import static de.symeda.sormas.api.user.DefaultUserRole.CONTACT_SUPERVISOR;
 import static de.symeda.sormas.api.user.DefaultUserRole.DISTRICT_OBSERVER;
 import static de.symeda.sormas.api.user.DefaultUserRole.NATIONAL_USER;
 import static de.symeda.sormas.api.user.DefaultUserRole.POE_INFORMANT;
+import static de.symeda.sormas.api.user.DefaultUserRole.REST_USER;
 import static de.symeda.sormas.api.user.DefaultUserRole.SURVEILLANCE_OFFICER;
 import static de.symeda.sormas.api.user.DefaultUserRole.SURVEILLANCE_SUPERVISOR;
 import static org.hamcrest.CoreMatchers.equalTo;
@@ -77,28 +78,59 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetUsersByRegionAndRight() {
+	public void testGetUsersByRegionAndRights() {
 		RDCF rdcf = creator.createRDCF();
 		RegionReferenceDto region = rdcf.region;
 		RegionFacadeEjb.RegionFacadeEjbLocal regionFacade = (RegionFacadeEjb.RegionFacadeEjbLocal) getRegionFacade();
 
+		// given region and right
 		List<UserReferenceDto> result = getUserFacade().getUsersByRegionAndRights(region, null, UserRight.LAB_MESSAGES);
 
 		assertTrue(result.isEmpty());
 
-		// Has LAB_MASSAGES right
-		UserDto natUser = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(NATIONAL_USER));
-		// Does not have LAB_MASSAGES right
-		creator.createUser(rdcf, "Some", "User", creator.getUserRoleDtoMap().get(POE_INFORMANT));
+		UserDto natUser = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(NATIONAL_USER)); // Has LAB_MASSAGES and TRAVEL_ENTRY_MANAGEMENT_ACCESS rights
+		UserDto poeUser = creator.createUser(rdcf, "Some", "User", creator.getUserRoleReferenceDtoMap().get(POE_INFORMANT)); // Does not have LAB_MASSAGES right, but has TRAVEL_ENTRY_MANAGEMENT_ACCESS.
+		creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(REST_USER)); // Has neither LAB_MASSAGES nor TRAVEL_ENTRY_MANAGEMENT_ACCESS right
 		result = getUserFacade().getUsersByRegionAndRights(region, null, UserRight.LAB_MESSAGES);
 
+		assertThat(result, hasSize(1));
 		assertThat(result, contains(equalTo(natUser.toReference())));
 
-		UserDto natUser2 = creator.createUser(rdcf, "Nat", "User2", creator.getUserRoleDtoMap().get(NATIONAL_USER));
+		UserDto natUser2 = creator.createUser(rdcf, "Nat", "User2", creator.getUserRoleReferenceDtoMap().get(NATIONAL_USER)); // Has LAB_MASSAGES right
 		result = getUserFacade().getUsersByRegionAndRights(region, null, UserRight.LAB_MESSAGES);
 
 		assertThat(result, hasSize(2));
 		assertThat(result, hasItems(equalTo(natUser.toReference()), equalTo(natUser2.toReference())));
+
+		// given different region and right
+		Region region2 = creator.createRegion("region2");
+		result = getUserFacade().getUsersByRegionAndRights(regionFacade.toRefDto(region2), null, UserRight.LAB_MESSAGES);
+
+		assertTrue(result.isEmpty());
+
+		// given no region and right
+		result = getUserFacade().getUsersByRegionAndRights(null, null, UserRight.LAB_MESSAGES);
+
+		assertThat(result, hasSize(3)); // there is an admin user with NATIONAL_USER role created at the init of the AbstractBeanTest
+		assertThat(result, hasItems(equalTo(natUser.toReference()), equalTo(natUser2.toReference())));
+
+		// given region and multiple rights
+		result = getUserFacade().getUsersByRegionAndRights(region, null, UserRight.LAB_MESSAGES, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS);
+
+		assertThat(result, hasSize(3));
+		assertThat(result, hasItems(equalTo(natUser.toReference()), equalTo(natUser2.toReference()), equalTo(poeUser.toReference())));
+
+		// given different region and multiple rights
+		result = getUserFacade()
+			.getUsersByRegionAndRights(regionFacade.toRefDto(region2), null, UserRight.LAB_MESSAGES, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS);
+
+		assertTrue(result.isEmpty());
+
+		// given no region and multiple rights
+		result = getUserFacade().getUsersByRegionAndRights(null, null, UserRight.LAB_MESSAGES, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS);
+
+		assertThat(result, hasSize(4)); // there is an admin user with NATIONAL_USER role created at the init of the AbstractBeanTest
+		assertThat(result, hasItems(equalTo(natUser.toReference()), equalTo(natUser2.toReference()), equalTo(poeUser.toReference())));
 
 	}
 
@@ -114,21 +146,26 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		creator.createDistrict("district 2", region);
 
 		// user with a 2 districts region, 2 user roles
-		creator.createUser(rdcf, "my", "User", creator.getUserRoleDtoMap().get(CASE_OFFICER), creator.getUserRoleDtoMap().get(CONTACT_OFFICER));
+		creator.createUser(
+			rdcf,
+			"my",
+			"User",
+			creator.getUserRoleReferenceDtoMap().get(CASE_OFFICER),
+			creator.getUserRoleReferenceDtoMap().get(CONTACT_OFFICER));
 
 		// some other users to be filtered out
 		creator.createUser(
 			rdcf,
 			"Some",
 			"User",
-			creator.getUserRoleDtoMap().get(SURVEILLANCE_SUPERVISOR),
-			creator.getUserRoleDtoMap().get(CONTACT_SUPERVISOR));
+			creator.getUserRoleReferenceDtoMap().get(SURVEILLANCE_SUPERVISOR),
+			creator.getUserRoleReferenceDtoMap().get(CONTACT_SUPERVISOR));
 		creator.createUser(
 			rdcf,
 			"Other",
 			"User",
-			creator.getUserRoleDtoMap().get(SURVEILLANCE_OFFICER),
-			creator.getUserRoleDtoMap().get(DISTRICT_OBSERVER));
+			creator.getUserRoleReferenceDtoMap().get(SURVEILLANCE_OFFICER),
+			creator.getUserRoleReferenceDtoMap().get(DISTRICT_OBSERVER));
 
 		List<UserDto> result;
 
@@ -163,7 +200,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		Mockito.when(AuthProvider.getProvider(any())).thenReturn(authProvider);
 
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(SURVEILLANCE_SUPERVISOR));
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(SURVEILLANCE_SUPERVISOR));
 		String password = getUserFacade().resetPassword(user.getUuid());
 
 		Set<UserRight> validLoginRights = getUserFacade().getValidLoginRights(user.getUserName(), password);
@@ -248,7 +285,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		assertNull(userFacade.getByUserName("HansPeter"));
 
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, "Hans", "Peter", creator.getUserRoleDtoMap().get(SURVEILLANCE_OFFICER));
+		UserDto user = creator.createUser(rdcf, "Hans", "Peter", creator.getUserRoleReferenceDtoMap().get(SURVEILLANCE_OFFICER));
 
 		assertEquals(user, userFacade.getByUserName("HANSPETER"));
 		assertEquals(user, userFacade.getByUserName("hanspeter"));
@@ -262,7 +299,7 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		assertNull(userFacade.getByUserName("HansPeter"));
 
 		RDCF rdcf = creator.createRDCF();
-		creator.createUser(rdcf, "Hans", "Peter", creator.getUserRoleDtoMap().get(SURVEILLANCE_OFFICER));
+		creator.createUser(rdcf, "Hans", "Peter", creator.getUserRoleReferenceDtoMap().get(SURVEILLANCE_OFFICER));
 
 		assertTrue(userFacade.isLoginUnique(String.valueOf(UUID.randomUUID()), "MarieLisa"));
 		assertFalse(userFacade.isLoginUnique(String.valueOf(UUID.randomUUID()), "HansPeter"));
@@ -275,19 +312,19 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		assertNull(userFacade.getByUserName("HansPeter"));
 
 		RDCF rdcf = creator.createRDCF();
-		creator.createUser(rdcf, "Hans", "Peter", creator.getUserRoleDtoMap().get(SURVEILLANCE_OFFICER));
+		creator.createUser(rdcf, "Hans", "Peter", creator.getUserRoleReferenceDtoMap().get(SURVEILLANCE_OFFICER));
 		assertThrows(
 			"User name is not unique!",
 			ValidationException.class,
-			() -> creator.createUser(rdcf, "Hans", "Peter", creator.getUserRoleDtoMap().get(SURVEILLANCE_OFFICER)));
+			() -> creator.createUser(rdcf, "Hans", "Peter", creator.getUserRoleReferenceDtoMap().get(SURVEILLANCE_OFFICER)));
 		assertThrows(
 			"User name is not unique!",
 			ValidationException.class,
-			() -> creator.createUser(rdcf, "hans", "peter", creator.getUserRoleDtoMap().get(SURVEILLANCE_OFFICER)));
+			() -> creator.createUser(rdcf, "hans", "peter", creator.getUserRoleReferenceDtoMap().get(SURVEILLANCE_OFFICER)));
 		assertThrows(
 			"User name is not unique!",
 			ValidationException.class,
-			() -> creator.createUser(rdcf, "HANS", "PETER", creator.getUserRoleDtoMap().get(SURVEILLANCE_OFFICER)));
+			() -> creator.createUser(rdcf, "HANS", "PETER", creator.getUserRoleReferenceDtoMap().get(SURVEILLANCE_OFFICER)));
 	}
 
 	@Test
@@ -296,9 +333,13 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf = creator.createRDCF();
 
 		UserDto generalSurveillanceOfficer =
-			creator.createUser(rdcf, "General ", "SURVEILLANCE_OFFICER", creator.getUserRoleDtoMap().get(SURVEILLANCE_OFFICER));
-		UserDto limitedSurveillanceOfficer =
-			creator.createUser(rdcf, "Limited Dengue", "SURVEILLANCE_OFFICER", Disease.DENGUE, creator.getUserRoleDtoMap().get(SURVEILLANCE_OFFICER));
+			creator.createUser(rdcf, "General ", "SURVEILLANCE_OFFICER", creator.getUserRoleReferenceDtoMap().get(SURVEILLANCE_OFFICER));
+		UserDto limitedSurveillanceOfficer = creator.createUser(
+			rdcf,
+			"Limited Dengue",
+			"SURVEILLANCE_OFFICER",
+			Disease.DENGUE,
+			creator.getUserRoleReferenceDtoMap().get(SURVEILLANCE_OFFICER));
 
 		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUserRefsByDistricts(Arrays.asList(rdcf.district), Disease.CORONAVIRUS);
 
@@ -314,15 +355,135 @@ public class UserFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf = creator.createRDCF();
 
 		UserDto generalSurveillanceOfficer =
-			creator.createUser(rdcf, "General ", "SURVEILLANCE_OFFICER", creator.getUserRoleDtoMap().get(SURVEILLANCE_OFFICER));
-		UserDto limitedSurveillanceOfficer =
-			creator.createUser(rdcf, "Limited Dengue", "SURVEILLANCE_OFFICER", Disease.DENGUE, creator.getUserRoleDtoMap().get(SURVEILLANCE_OFFICER));
+			creator.createUser(rdcf, "General ", "SURVEILLANCE_OFFICER", creator.getUserRoleReferenceDtoMap().get(SURVEILLANCE_OFFICER)); // has TRAVEL_ENTRY_MANAGEMENT_ACCESS, but not the LAB_MESSAGES right
+		UserDto limitedSurveillanceOfficer = creator.createUser(
+			rdcf,
+			"Limited Dengue",
+			"SURVEILLANCE_OFFICER",
+			Disease.DENGUE,
+			creator.getUserRoleReferenceDtoMap().get(SURVEILLANCE_OFFICER)); // has TRAVEL_ENTRY_MANAGEMENT_ACCESS, but not the LAB_MESSAGES right
 
+		// given district and disease
 		List<UserReferenceDto> userReferenceDtos = getUserFacade().getUserRefsByDistrict(rdcf.district, Disease.CORONAVIRUS);
 
-		assertNotNull(userReferenceDtos);
+		assertThat(userReferenceDtos, hasSize(1));
 		assertTrue(userReferenceDtos.contains(generalSurveillanceOfficer));
-		assertFalse(userReferenceDtos.contains(limitedSurveillanceOfficer));
+
+		// given disease
+		userReferenceDtos = getUserFacade().getUserRefsByDistrict(null, Disease.CORONAVIRUS);
+
+		assertThat(userReferenceDtos, hasSize(2)); // there is an admin user created at the init of the AbstractBeanTest
+		assertTrue(userReferenceDtos.contains(generalSurveillanceOfficer));
+
+		// given only null parameters
+		userReferenceDtos = getUserFacade().getUserRefsByDistrict(null, null);
+
+		assertThat(userReferenceDtos, hasSize(3)); // there is an admin user created at the init of the AbstractBeanTest
+		assertThat(userReferenceDtos, hasItems(equalTo(generalSurveillanceOfficer.toReference()), equalTo(limitedSurveillanceOfficer.toReference())));
+
+		// given district, disease and right
+		userReferenceDtos = getUserFacade().getUserRefsByDistrict(rdcf.district, Disease.CORONAVIRUS, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS);
+
+		assertThat(userReferenceDtos, hasSize(1));
+		assertTrue(userReferenceDtos.contains(generalSurveillanceOfficer));
+
+		userReferenceDtos = getUserFacade().getUserRefsByDistrict(rdcf.district, Disease.CORONAVIRUS, UserRight.LAB_MESSAGES);
+
+		assertTrue(userReferenceDtos.isEmpty());
+
+		// given disease and right
+		userReferenceDtos = getUserFacade().getUserRefsByDistrict(null, Disease.CORONAVIRUS, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS);
+
+		assertThat(userReferenceDtos, hasSize(2)); // there is an admin user with NATIONAL_USER role created at the init of the AbstractBeanTest
+		assertTrue(userReferenceDtos.contains(generalSurveillanceOfficer));
+
+		userReferenceDtos = getUserFacade().getUserRefsByDistrict(null, Disease.CORONAVIRUS, UserRight.LAB_MESSAGES);
+
+		assertThat(userReferenceDtos, hasSize(1)); // there is an admin user with NATIONAL_USER role created at the init of the AbstractBeanTest
+
+		// given only null parameters except for right
+		userReferenceDtos = getUserFacade().getUserRefsByDistrict(null, null, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS);
+
+		assertThat(userReferenceDtos, hasSize(3)); // there is an admin user with NATIONAL_USER role created at the init of the AbstractBeanTest
+		assertThat(userReferenceDtos, hasItems(equalTo(generalSurveillanceOfficer.toReference()), equalTo(limitedSurveillanceOfficer.toReference())));
+
+		userReferenceDtos = getUserFacade().getUserRefsByDistrict(null, null, UserRight.LAB_MESSAGES);
+
+		assertThat(userReferenceDtos, hasSize(1)); // there is an admin user with NATIONAL_USER role created at the init of the AbstractBeanTest
+
+	}
+
+	@Test
+	public void testGetUserRefsByDistrictsWithExcludeLimitedDiseaseUsersAndSingleDistrict() {
+
+		RDCF rdcf = creator.createRDCF();
+
+		UserDto generalSurveillanceOfficer =
+			creator.createUser(rdcf, "General ", "SURVEILLANCE_OFFICER", creator.getUserRoleReferenceDtoMap().get(SURVEILLANCE_OFFICER)); // has TRAVEL_ENTRY_MANAGEMENT_ACCESS
+		UserDto limitedSurveillanceOfficer = creator.createUser(
+			rdcf,
+			"Limited Dengue",
+			"SURVEILLANCE_OFFICER",
+			Disease.DENGUE,
+			creator.getUserRoleReferenceDtoMap().get(SURVEILLANCE_OFFICER)); // has TRAVEL_ENTRY_MANAGEMENT_ACCESS
+		UserDto generalRestUser = creator.createUser(rdcf, "REST", "USER", creator.getUserRoleReferenceDtoMap().get(REST_USER)); // does not have TRAVEL_ENTRY_MANAGEMENT_ACCESS
+
+		// given district and one right
+		List<UserReferenceDto> userReferenceDtos =
+			getUserFacade().getUserRefsByDistrict(rdcf.district, true, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS);
+
+		assertThat(userReferenceDtos, hasSize(1));
+		assertTrue(userReferenceDtos.contains(generalSurveillanceOfficer));
+
+		userReferenceDtos = getUserFacade().getUserRefsByDistrict(rdcf.district, false, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS);
+
+		assertThat(userReferenceDtos, hasSize(2));
+		assertThat(userReferenceDtos, hasItems(equalTo(generalSurveillanceOfficer.toReference()), equalTo(limitedSurveillanceOfficer.toReference())));
+
+		// given no district and one right
+		userReferenceDtos = getUserFacade().getUserRefsByDistrict(null, true, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS);
+
+		assertThat(userReferenceDtos, hasSize(2)); // there is an admin user created at the init of the AbstractBeanTest
+		assertTrue(userReferenceDtos.contains(generalSurveillanceOfficer));
+
+		userReferenceDtos = getUserFacade().getUserRefsByDistrict(null, false, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS);
+
+		assertThat(userReferenceDtos, hasSize(3)); // there is an admin user created at the init of the AbstractBeanTest
+		assertThat(userReferenceDtos, hasItems(equalTo(generalSurveillanceOfficer.toReference()), equalTo(limitedSurveillanceOfficer.toReference())));
+
+		// given district and multiple rights
+		userReferenceDtos =
+			getUserFacade().getUserRefsByDistrict(rdcf.district, true, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS, UserRight.SORMAS_REST);
+
+		assertThat(userReferenceDtos, hasSize(2));
+		assertThat(userReferenceDtos, hasItems(equalTo(generalSurveillanceOfficer.toReference()), equalTo(generalRestUser.toReference())));
+
+		userReferenceDtos =
+			getUserFacade().getUserRefsByDistrict(rdcf.district, false, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS, UserRight.SORMAS_REST);
+
+		assertThat(userReferenceDtos, hasSize(3));
+		assertThat(
+			userReferenceDtos,
+			hasItems(
+				equalTo(generalSurveillanceOfficer.toReference()),
+				equalTo(limitedSurveillanceOfficer.toReference()),
+				equalTo(generalRestUser.toReference())));
+
+		// given no district and multiple rights
+		userReferenceDtos = getUserFacade().getUserRefsByDistrict(null, true, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS, UserRight.SORMAS_REST);
+
+		assertThat(userReferenceDtos, hasSize(3)); // there is an admin user created at the init of the AbstractBeanTest
+		assertThat(userReferenceDtos, hasItems(equalTo(generalSurveillanceOfficer.toReference()), equalTo(generalRestUser.toReference())));
+
+		userReferenceDtos = getUserFacade().getUserRefsByDistrict(null, false, UserRight.TRAVEL_ENTRY_MANAGEMENT_ACCESS, UserRight.SORMAS_REST);
+
+		assertThat(userReferenceDtos, hasSize(4)); // there is an admin user created at the init of the AbstractBeanTest
+		assertThat(
+			userReferenceDtos,
+			hasItems(
+				equalTo(generalSurveillanceOfficer.toReference()),
+				equalTo(limitedSurveillanceOfficer.toReference()),
+				equalTo(generalRestUser.toReference())));
 
 	}
 }

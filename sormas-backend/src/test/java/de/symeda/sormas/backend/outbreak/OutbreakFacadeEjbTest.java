@@ -45,7 +45,7 @@ public class OutbreakFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		when(MockProducer.getPrincipal().getName()).thenReturn("SurvSup");
 	}

@@ -45,7 +45,7 @@ public class EventServiceTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Nat",
 			"User",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
 	}
 
 	@Test

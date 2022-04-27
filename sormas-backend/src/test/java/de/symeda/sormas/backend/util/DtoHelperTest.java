@@ -40,7 +40,7 @@ public class DtoHelperTest extends AbstractBeanTest {
 		RDCFEntities rdcf2 = creator.createRDCFEntities();
 		rdcf2.facility.setType(FacilityType.LABORATORY);
 
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.ADMIN));
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.ADMIN));
 
 		// Test simple values
 		{

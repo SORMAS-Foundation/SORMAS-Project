@@ -166,7 +166,7 @@ public class TestDataCreator {
 		});
 	}
 
-	public Map<DefaultUserRole, UserRoleReferenceDto> getUserRoleDtoMap() {
+	public Map<DefaultUserRole, UserRoleReferenceDto> getUserRoleReferenceDtoMap() {
 		if (userRoleDtoMap.isEmpty()) {
 			createUserRoles();
 		}
@@ -419,7 +419,7 @@ public class TestDataCreator {
 				rdcf.facility.getUuid(),
 				"Surv",
 				"Sup",
-				getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+				getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		}
 
 		PersonDto cazePerson = createPerson("Case", "Person", Sex.UNKNOWN);
@@ -874,6 +874,19 @@ public class TestDataCreator {
 		return createTask(TaskContext.GENERAL, TaskType.OTHER, TaskStatus.PENDING, null, null, null, new Date(), assigneeUser);
 	}
 
+	public TaskDto createTask(TaskContext context, ReferenceDto entityRef, Consumer<TaskDto> customConfig) {
+
+		TaskDto task = TaskDto.build(context, entityRef);
+
+		if (customConfig != null) {
+			customConfig.accept(task);
+		}
+
+		task = beanTest.getTaskFacade().saveTask(task);
+
+		return task;
+	}
+
 	public TaskDto createTask(
 		TaskContext context,
 		TaskType type,
@@ -1096,7 +1109,7 @@ public class TestDataCreator {
 			eventParticipant.setDistrict(rdcf.district);
 		}
 
-		eventParticipant = beanTest.getEventParticipantFacade().saveEventParticipant(eventParticipant);
+		eventParticipant = beanTest.getEventParticipantFacade().save(eventParticipant);
 		return eventParticipant;
 	}
 

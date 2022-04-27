@@ -60,7 +60,7 @@ public class ShareDataBuilderHelperTest extends SormasToSormasTest {
 	public void testClearIgnoredPropertiesForCase() {
 		PersonDto personDto = creator.createPerson();
 		UserReferenceDto officerReferenceDto =
-			creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		CaseDataDto caseDataDto = creator.createCase(officerReferenceDto, rdcf, dto -> {
 			dto.setPerson(personDto.toReference());
 			dto.setSurveillanceOfficer(officerReferenceDto);
@@ -90,7 +90,7 @@ public class ShareDataBuilderHelperTest extends SormasToSormasTest {
 
 		PersonDto personDto = creator.createPerson();
 		UserReferenceDto officerReferenceDto =
-			creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		CaseDataDto caseDataDto = creator.createCase(officerReferenceDto, rdcf, dto -> {
 			dto.setPerson(personDto.toReference());
 			dto.setSurveillanceOfficer(officerReferenceDto);
@@ -115,7 +115,7 @@ public class ShareDataBuilderHelperTest extends SormasToSormasTest {
 
 		PersonReferenceDto personReferenceDto = creator.createPerson().toReference();
 		UserReferenceDto officerReferenceDto =
-			creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		ContactDto contactDto = creator.createContact(officerReferenceDto, personReferenceDto);
 		contactDto.setAdditionalDetails("additionalDetails");
 		contactDto.setExternalID("externalId");
@@ -141,7 +141,7 @@ public class ShareDataBuilderHelperTest extends SormasToSormasTest {
 
 		PersonReferenceDto personReferenceDto = creator.createPerson().toReference();
 		UserReferenceDto officerReferenceDto =
-			creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		ContactDto contactDto = creator.createContact(officerReferenceDto, personReferenceDto);
 		contactDto.setAdditionalDetails("additionalDetails");
 		contactDto.setExternalID("externalId");
@@ -161,7 +161,7 @@ public class ShareDataBuilderHelperTest extends SormasToSormasTest {
 	public void testClearIgnoredPropertiesForEvent() {
 
 		UserReferenceDto officerReferenceDto =
-			creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		EventDto eventDto = creator.createEvent(officerReferenceDto);
 		eventDto.setDisease(Disease.CORONAVIRUS);
 		eventDto.setExternalId("externalId");
@@ -185,7 +185,7 @@ public class ShareDataBuilderHelperTest extends SormasToSormasTest {
 		MockProducer.getProperties().setProperty(SormasToSormasConfig.SORMAS2SORMAS_IGNORE_INTERNAL_TOKEN, Boolean.FALSE.toString());
 
 		UserReferenceDto officerReferenceDto =
-			creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		EventDto eventDto = creator.createEvent(officerReferenceDto);
 		eventDto.setDisease(Disease.CORONAVIRUS);
 		eventDto.setExternalId("externalId");
@@ -245,7 +245,7 @@ public class ShareDataBuilderHelperTest extends SormasToSormasTest {
 
 		PersonReferenceDto personReferenceDto = creator.createPerson().toReference();
 		UserReferenceDto officerReferenceDto =
-			creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		ImmunizationDto immunizationDto = creator.createImmunization(
 			Disease.CORONAVIRUS,
 			personReferenceDto,
@@ -279,7 +279,7 @@ public class ShareDataBuilderHelperTest extends SormasToSormasTest {
 
 		PersonReferenceDto personReferenceDto = creator.createPerson().toReference();
 		UserReferenceDto officerReferenceDto =
-			creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		ImmunizationDto immunizationDto = creator.createImmunization(
 			Disease.CORONAVIRUS,
 			personReferenceDto,
@@ -308,7 +308,7 @@ public class ShareDataBuilderHelperTest extends SormasToSormasTest {
 
 		PersonDto personDto = creator.createPerson();
 		UserReferenceDto officerReferenceDto =
-			creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		CaseDataDto caseDataDto = creator.createCase(officerReferenceDto, rdcf, dto -> {
 			dto.setPerson(personDto.toReference());
 			dto.setSurveillanceOfficer(officerReferenceDto);
@@ -340,7 +340,7 @@ public class ShareDataBuilderHelperTest extends SormasToSormasTest {
 
 		PersonDto personDto = creator.createPerson();
 		UserReferenceDto officerReferenceDto =
-			creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		CaseDataDto caseDataDto = creator.createCase(officerReferenceDto, rdcf, dto -> {
 			dto.setPerson(personDto.toReference());
 			dto.setSurveillanceOfficer(officerReferenceDto);

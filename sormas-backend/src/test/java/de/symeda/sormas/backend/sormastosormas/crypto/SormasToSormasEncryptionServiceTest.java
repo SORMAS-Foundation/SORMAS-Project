@@ -41,7 +41,8 @@ public class SormasToSormasEncryptionServiceTest extends SormasToSormasTest {
 	public void testEncryptDecrypt() throws SormasToSormasException {
 		useSurveillanceOfficerLogin(rdcf);
 		PersonDto person = creator.createPerson("FirstName", "LastName");
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		UserReferenceDto officer =
+			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		CaseDataDto caze = creator.createCase(officer, rdcf, dto -> {
 			dto.setPerson(person.toReference());
 			dto.setSurveillanceOfficer(officer);

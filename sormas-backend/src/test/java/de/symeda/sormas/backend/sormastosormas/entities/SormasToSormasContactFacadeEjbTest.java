@@ -82,7 +82,8 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person = creator.createPerson();
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		UserReferenceDto officer =
+			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		ContactDto contact = creator
 			.createContact(officer, officer, person.toReference(), null, new Date(), null, null, rdcf, dto -> dto.setResultingCaseUser(officer));
 
@@ -134,7 +135,8 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person = creator.createPerson();
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		UserReferenceDto officer =
+			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 		ContactDto contact = creator.createContact(officer, officer, person.toReference(), null, new Date(), null, null, rdcf);
 
 		Date sampleDateTime = new Date();
@@ -259,7 +261,8 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 		useSurveillanceOfficerLogin(rdcf);
 
 		PersonDto person = creator.createPerson();
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		UserReferenceDto officer =
+			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 
 		ContactDto contact =
 			creator.createContact(officer, officer, person.toReference(), null, new Date(), new Date(), Disease.CORONAVIRUS, rdcf, c -> {
@@ -305,7 +308,8 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testSaveReturnedContact() throws SormasToSormasException, SormasToSormasValidationException {
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		UserReferenceDto officer =
+			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 
 		PersonDto contactPerson = creator.createPerson();
 		ContactDto contact = creator.createContact(rdcf, officer, contactPerson.toReference());
@@ -363,7 +367,8 @@ public class SormasToSormasContactFacadeEjbTest extends SormasToSormasTest {
 
 	@Test
 	public void testSyncContacts() throws SormasToSormasValidationException, SormasToSormasException {
-		UserReferenceDto officer = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
+		UserReferenceDto officer =
+			creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER)).toReference();
 
 		PersonDto contactPerson = creator.createPerson();
 		ContactDto contact =

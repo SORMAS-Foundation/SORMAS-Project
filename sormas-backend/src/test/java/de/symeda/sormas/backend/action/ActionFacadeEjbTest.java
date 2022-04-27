@@ -56,7 +56,7 @@ public class ActionFacadeEjbTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Surv",
 			"Sup",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 
 		EventDto eventDto = creator.createEvent(
 			EventStatus.SIGNAL,

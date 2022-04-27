@@ -39,7 +39,7 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 	public void testGetBySampleUuids() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 
@@ -62,7 +62,7 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 	public void testSaveAndUpdatePathogenTestAssociatedToCase() {
 
 		final RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		final UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		final UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		final PersonDto person = creator.createPerson();
 		final CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 		final SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
@@ -76,7 +76,7 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 	public void testSaveAndUpdatePathogenTestAssociatedToContact() {
 
 		final RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		final UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		final UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		final PersonDto person = creator.createPerson();
 		final CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 		final ContactDto contact = creator.createContact(user.toReference(), person.toReference(), caze);
@@ -92,7 +92,7 @@ public class PathogenTestFacadeEjbTest extends AbstractBeanTest {
 	public void testSaveAndUpdatePathogenTestAssociatedToBothCaseAndContact() {
 
 		final RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		final UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+		final UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		final PersonDto person = creator.createPerson();
 		final CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 		final ContactDto contact = creator.createContact(user.toReference(), person.toReference(), caze);

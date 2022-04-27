@@ -14,6 +14,7 @@ import de.symeda.sormas.api.contact.ContactDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
+import de.symeda.sormas.api.labmessage.TestReportDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
@@ -40,7 +41,7 @@ public class LabMessageServiceTest extends AbstractBeanTest {
 			rdcf.facility.getUuid(),
 			"Nat",
 			"User",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 		Date sampleDate = new Date(1624952153848L);
@@ -99,7 +100,7 @@ public class LabMessageServiceTest extends AbstractBeanTest {
 		LabMessageService sut = getLabMessageService();
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson();
 		CaseDataDto caze = creator.createCase(user.toReference(), person.toReference(), rdcf);
 
@@ -128,7 +129,7 @@ public class LabMessageServiceTest extends AbstractBeanTest {
 		LabMessageService sut = getLabMessageService();
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson();
 		ContactDto contact = creator.createContact(user.toReference(), person.toReference());
 
@@ -157,7 +158,7 @@ public class LabMessageServiceTest extends AbstractBeanTest {
 		LabMessageService sut = getLabMessageService();
 
 		TestDataCreator.RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, creator.getUserRoleDtoMap().get(DefaultUserRole.NATIONAL_USER));
+		UserDto user = creator.createUser(rdcf, creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.NATIONAL_USER));
 		PersonDto person = creator.createPerson();
 		EventDto event = creator.createEvent(user.toReference());
 		EventParticipantDto eventParticipant = creator.createEventParticipant(event.toReference(), person, user.toReference());
@@ -179,6 +180,17 @@ public class LabMessageServiceTest extends AbstractBeanTest {
 		assertEquals(3L, sut.countForEventParticipant(eventParticipant.getUuid()));
 		assertEquals(0L, sut.countForContact(eventParticipant.getUuid()));
 		assertEquals(0L, sut.countForCase(eventParticipant.getUuid()));
+	}
 
+	@Test
+	public void testLabMessagePermanentDeletion() {
+
+		LabMessageDto labMessage = creator.createLabMessage(null);
+		TestReportDto testReport = creator.createTestReport(labMessage.toReference());
+
+		getLabMessageFacade().deleteLabMessage(labMessage.getUuid());
+
+		assertEquals(0, getLabMessageService().count());
+		assertEquals(0, getTestReportService().count());
 	}
 }

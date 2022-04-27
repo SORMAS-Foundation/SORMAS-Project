@@ -58,7 +58,7 @@ public class CaseFacadeEditRightsTest extends AbstractBeanTest {
 			rdcf1.facility.getUuid(),
 			"Surv",
 			"Off1",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2", "Point of entry 2");
 		districtUser2 = creator.createUser(
@@ -67,7 +67,7 @@ public class CaseFacadeEditRightsTest extends AbstractBeanTest {
 			rdcf2.facility.getUuid(),
 			"Surv",
 			"Off2",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_OFFICER));
 
 		regionUser = creator.createUser(
 			rdcf2.region.getUuid(),
@@ -76,7 +76,7 @@ public class CaseFacadeEditRightsTest extends AbstractBeanTest {
 			rdcf2.facility.getUuid(),
 			"Surv",
 			"Sup2",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR));
 		communityUser = creator.createUser(
 			rdcf2.region.getUuid(),
 			rdcf2.district.getUuid(),
@@ -84,7 +84,7 @@ public class CaseFacadeEditRightsTest extends AbstractBeanTest {
 			rdcf2.facility.getUuid(),
 			"Com",
 			"Off2",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.COMMUNITY_OFFICER));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.COMMUNITY_OFFICER));
 		facilityUser = creator.createUser(
 			rdcf2.region.getUuid(),
 			rdcf2.district.getUuid(),
@@ -92,7 +92,7 @@ public class CaseFacadeEditRightsTest extends AbstractBeanTest {
 			rdcf2.facility.getUuid(),
 			"Hosp",
 			"Inf2",
-			creator.getUserRoleDtoMap().get(DefaultUserRole.HOSPITAL_INFORMANT));
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.HOSPITAL_INFORMANT));
 
 	}
 
