@@ -377,6 +377,7 @@ public class EditContactSteps implements En {
         (String name) -> {
           String uuid = apiState.getCreatedContact().getUuid();
           String path = uuid.substring(0, 6).toUpperCase() + "-" + name;
+            webDriverHelpers.waitUntilElementIsVisibleAndClickable(GENERATED_DOCUMENT_NAME);
           assertHelpers.assertWithPoll(
               () ->
                   Assert.assertEquals(
