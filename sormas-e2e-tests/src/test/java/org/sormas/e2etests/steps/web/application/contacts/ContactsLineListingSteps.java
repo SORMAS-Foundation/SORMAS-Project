@@ -18,20 +18,42 @@
 
 package org.sormas.e2etests.steps.web.application.contacts;
 
-import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.*;
-import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.*;
-
 import cucumber.api.java8.En;
+import org.sormas.e2etests.entities.pojo.web.ContactsLineListing;
+import org.sormas.e2etests.entities.services.ContactsLineListingService;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.testng.asserts.SoftAssert;
+
+import javax.inject.Inject;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
-import javax.inject.Inject;
-import org.sormas.e2etests.entities.pojo.web.ContactsLineListing;
-import org.sormas.e2etests.entities.services.ContactsLineListingService;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.testng.asserts.SoftAssert;
+
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.APPLY_FILTERS_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.DISEASE_COLUMNS;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.FIRST_CONTACT_ID_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.FIRST_NAME_COLUMNS;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.LAST_NAME_COLUMNS;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.PERSON_LIKE_SEARCH_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.TYPE_OF_CONTACT_COLUMNS;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.CONTACT_CHOOSE_CASE;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_ACTION_SAVE;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_BIRTHDATE_DAY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_BIRTHDATE_MONTH_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_BIRTHDATE_YEAR_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_DATE_LAST_CONTACT_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_DATE_REPORT_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_DISEASE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_DISTRICT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_FIRST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_LAST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_REGION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_RELATIONSHIP_TO_CASE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_SEX_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_TYPE_OF_CONTACT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.getLineListingDateReportInputByIndex;
 
 public class ContactsLineListingSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
@@ -65,21 +87,15 @@ public class ContactsLineListingSteps implements En {
     When(
         "^I create a new Contact with specific data through Line Listing$",
         () -> {
-          contactsLineListing = contactsLineListingService.buildGeneratedLineListingContacts();
-          selectDisease(contactsLineListing.getDisease());
-          selectRegion(contactsLineListing.getRegion());
-          selectDistrict(contactsLineListing.getDistrict());
-          fillDateOfReport(contactsLineListing.getDateOfReport(), Locale.ENGLISH);
-          fillDateOfLastContact(contactsLineListing.getDateOfLastContact(), Locale.ENGLISH);
-          selectTypeOfContact(contactsLineListing.getTypeOfContact());
-          selectRelationshipWithCase(contactsLineListing.getRelationshipWithCase());
-          fillFirstName(contactsLineListing.getFirstName());
-          fillLastName(contactsLineListing.getLastName());
-          selectBirthYear(contactsLineListing.getBirthYear());
-          selectBirthMonth(contactsLineListing.getBirthMonth());
-          selectBirthDay(contactsLineListing.getBirthDay());
-          selectSex(contactsLineListing.getSex());
+          createNewContactTroughLineListing(contactsLineListingService, false);
         });
+
+    When(
+        "^I create a new Contact with specific data through Line Listing when disease prefilled$",
+        () -> {
+          createNewContactTroughLineListing(contactsLineListingService, true);
+        });
+
     When(
         "^I create a new Contacts from Event Participants using Line Listing$",
         () -> {
@@ -137,6 +153,33 @@ public class ContactsLineListingSteps implements En {
               "Last name is not correct");
           softly.assertAll();
         });
+
+    When(
+        "^I click Choose Case button from Contact Directory Line Listing popup window$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CONTACT_CHOOSE_CASE);
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_CHOOSE_CASE);
+        });
+  }
+
+  private void createNewContactTroughLineListing(
+      ContactsLineListingService contactsLineListingService, boolean diseasePrefilled) {
+    contactsLineListing = contactsLineListingService.buildGeneratedLineListingContacts();
+    if (!diseasePrefilled) {
+      selectDisease(contactsLineListing.getDisease());
+    }
+    selectRegion(contactsLineListing.getRegion());
+    selectDistrict(contactsLineListing.getDistrict());
+    fillDateOfReport(contactsLineListing.getDateOfReport(), Locale.ENGLISH);
+    fillDateOfLastContact(contactsLineListing.getDateOfLastContact(), Locale.ENGLISH);
+    selectTypeOfContact(contactsLineListing.getTypeOfContact());
+    selectRelationshipWithCase(contactsLineListing.getRelationshipWithCase());
+    fillFirstName(contactsLineListing.getFirstName());
+    fillLastName(contactsLineListing.getLastName());
+    selectBirthYear(contactsLineListing.getBirthYear());
+    selectBirthMonth(contactsLineListing.getBirthMonth());
+    selectBirthDay(contactsLineListing.getBirthDay());
+    selectSex(contactsLineListing.getSex());
   }
 
   private void selectDisease(String disease) {
