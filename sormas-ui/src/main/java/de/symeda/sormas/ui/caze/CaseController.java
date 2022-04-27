@@ -17,6 +17,7 @@ package de.symeda.sormas.ui.caze;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -289,24 +290,29 @@ public class CaseController {
 
 	private void convertSamePersonContactsAndEventparticipants(CaseDataDto caze) {
 
-		if (!UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)
-			|| !UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_VIEW)) {
-			return;
+		List<SimilarContactDto> matchingContacts;
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
+			ContactSimilarityCriteria contactCriteria = new ContactSimilarityCriteria().withPerson(caze.getPerson())
+				.withDisease(caze.getDisease())
+				.withContactClassification(ContactClassification.CONFIRMED)
+				.withExcludePseudonymized(true)
+				.withNoResultingCase(true);
+			matchingContacts = FacadeProvider.getContactFacade().getMatchingContacts(contactCriteria);
+		} else {
+			matchingContacts = Collections.emptyList();
 		}
 
-		ContactSimilarityCriteria contactCriteria = new ContactSimilarityCriteria().withPerson(caze.getPerson())
-			.withDisease(caze.getDisease())
-			.withContactClassification(ContactClassification.CONFIRMED)
-			.withExcludePseudonymized(true)
-			.withNoResultingCase(true);
-		List<SimilarContactDto> matchingContacts = FacadeProvider.getContactFacade().getMatchingContacts(contactCriteria);
+		List<SimilarEventParticipantDto> matchingEventParticipants ;
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_VIEW)) {
+			EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria().withPerson(caze.getPerson())
+				.withDisease(caze.getDisease())
+				.withExcludePseudonymized(true)
+				.withNoResultingCase(true);
 
-		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria().withPerson(caze.getPerson())
-			.withDisease(caze.getDisease())
-			.withExcludePseudonymized(true)
-			.withNoResultingCase(true);
-		List<SimilarEventParticipantDto> matchingEventParticipants =
-			FacadeProvider.getEventParticipantFacade().getMatchingEventParticipants(eventParticipantCriteria);
+			matchingEventParticipants = FacadeProvider.getEventParticipantFacade().getMatchingEventParticipants(eventParticipantCriteria);
+		} else {
+			matchingEventParticipants = Collections.emptyList();
+		}
 
 		if (matchingContacts.size() > 0 || matchingEventParticipants.size() > 0) {
 			String infoText = matchingEventParticipants.isEmpty()
