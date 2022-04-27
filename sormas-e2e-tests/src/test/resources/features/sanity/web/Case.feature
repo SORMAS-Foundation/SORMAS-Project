@@ -886,6 +886,7 @@ Feature: Case end to end tests
     And I click on checkbox to upload generated document to entity in Create Quarantine Order form in Edit Case directory
     And I select "ExampleDocumentTemplateCases.docx" Quarantine Order in Create Quarantine Order form in Edit Case directory
     And I click on Create button in Create Quarantine Order form
+    And I click on Create button in Create Quarantine Order form
     And I check if downloaded file is correct for "ExampleDocumentTemplateCases.docx" Quarantine Order in Edit Case directory
     And I check if generated document based on "ExampleDocumentTemplateCases.docx" appeared in Documents tab for API created case in Edit Case directory
     And I delete downloaded file created from "ExampleDocumentTemplateCases.docx" Document Template
