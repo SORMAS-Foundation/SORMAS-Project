@@ -26,6 +26,9 @@ import static de.symeda.sormas.ui.utils.LayoutUtil.fluidRowLocs;
 import static de.symeda.sormas.ui.utils.LayoutUtil.loc;
 import static de.symeda.sormas.ui.utils.LayoutUtil.locCss;
 
+import java.math.BigDecimal;
+import java.math.MathContext;
+import java.math.RoundingMode;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -651,7 +654,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 											verticalLayout,
 											I18nProperties.getString(Strings.messageContactConversionFollowUpCommentLargeOmitMessage),
 											I18nProperties.getString(Strings.messageContactConversionFollowUpCommentLargeAdjustComment),
-											770,
 											confirm -> {
 												if (Boolean.TRUE.equals(confirm)) {
 													ControllerProvider.getCaseController().createFromContact(getValue());
