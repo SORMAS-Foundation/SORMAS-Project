@@ -335,7 +335,9 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 		if (eventCriteria != null) {
 			if (eventCriteria.getUserFilterIncluded()) {
-				filter = service.createUserFilter(cb, cq, event);
+				EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
+				eventUserFilterCriteria.includeUserCaseAndEventParticipantFilter(true);
+				filter = service.createUserFilter(cb, cq, event, eventUserFilterCriteria);
 			}
 
 			Predicate criteriaFilter = service.buildCriteriaFilter(eventCriteria, new EventQueryContext(cb, cq, event));
