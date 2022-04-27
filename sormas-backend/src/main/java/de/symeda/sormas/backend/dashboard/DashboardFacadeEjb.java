@@ -121,21 +121,8 @@ public class DashboardFacadeEjb implements DashboardFacade {
 	}
 
 	@Override
-	@RolesAllowed({
-		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
-		UserRight._DASHBOARD_CONTACT_VIEW })
-	public Map<PathogenTestResultType, Long> getTestResultCountByResultType(List<DashboardCaseDto> cases) {
-		if (cases.isEmpty()) {
-			return Collections.emptyMap();
-		}
-		return sampleFacade.getNewTestResultCountByResultType(cases.stream().map(DashboardCaseDto::getId).collect(Collectors.toList()));
-	}
-
-	@RolesAllowed({
-		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
-		UserRight._DASHBOARD_CONTACT_VIEW })
 	public Map<PathogenTestResultType, Long> getTestResultCountByResultType(DashboardCriteria dashboardCriteria) {
-		return getTestResultCountByResultType(getCases(dashboardCriteria));
+		return dashboardService.getNewTestResultCountByResultType(dashboardCriteria);
 	}
 
 	@RolesAllowed({

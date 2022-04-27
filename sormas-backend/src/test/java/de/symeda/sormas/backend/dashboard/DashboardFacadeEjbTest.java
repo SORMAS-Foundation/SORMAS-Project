@@ -6,8 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
-import de.symeda.sormas.api.person.PresentCondition;
-import de.symeda.sormas.api.user.UserReferenceDto;
+import org.junit.Assert;
 import org.junit.Test;
 
 import de.symeda.sormas.api.Disease;
@@ -23,9 +22,15 @@ import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.event.TypeOfPlace;
-import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.infrastructure.community.CommunityDto;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.sample.SampleMaterial;
+import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.UserDto;
+import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.AbstractBeanTest;
@@ -70,6 +75,82 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 
 		// List should have only one entry; shared case should not appear
 		assertEquals(1, dashboardCaseDtos.size());
+	}
+
+
+	@Test
+	public void testGetTestResultCountByResultType() {
+
+		TestDataCreator.RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		UserDto user = creator
+			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		Date reportAndOnsetDate = new Date();
+		CaseDataDto caze = creator.createCase(
+			user.toReference(),
+			cazePerson.toReference(),
+			Disease.EVD,
+			CaseClassification.PROBABLE,
+			InvestigationStatus.PENDING,
+			reportAndOnsetDate,
+			rdcf);
+
+		SampleDto sample = creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+		sample.setPathogenTestResult(PathogenTestResultType.NEGATIVE);
+		sample.setSpecimenCondition(SpecimenCondition.ADEQUATE);
+
+		getSampleFacade().saveSample(sample);
+
+		DashboardCriteria dashboardCriteria = new DashboardCriteria().region(caze.getResponsibleRegion())
+			.district(caze.getDistrict())
+			.disease(caze.getDisease())
+			.newCaseDateType(NewCaseDateType.REPORT)
+			.dateBetween(DateHelper.subtractDays(reportAndOnsetDate, 1), DateHelper.addDays(reportAndOnsetDate, 1));
+
+		Map<PathogenTestResultType, Long> testResultCountByResultType = getDashboardFacade().getTestResultCountByResultType(dashboardCriteria);
+		Assert.assertNotNull(testResultCountByResultType);
+		Assert.assertEquals(1, (long) testResultCountByResultType.get(PathogenTestResultType.NEGATIVE));
+		Assert.assertNull(testResultCountByResultType.get(PathogenTestResultType.INDETERMINATE));
+		Assert.assertNull(testResultCountByResultType.get(PathogenTestResultType.NOT_DONE));
+		Assert.assertNull(testResultCountByResultType.get(PathogenTestResultType.PENDING));
+		Assert.assertNull(testResultCountByResultType.get(PathogenTestResultType.POSITIVE));
+
+		SampleDto sample2 = creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+		sample2.setPathogenTestResult(PathogenTestResultType.POSITIVE);
+		sample2.setSpecimenCondition(SpecimenCondition.ADEQUATE);
+
+		getSampleFacade().saveSample(sample2);
+
+		Map<PathogenTestResultType, Long> testResultCountByResultType2 = getDashboardFacade().getTestResultCountByResultType(dashboardCriteria);
+		Assert.assertNotNull(testResultCountByResultType2);
+		Assert.assertNull(testResultCountByResultType2.get(PathogenTestResultType.NEGATIVE));
+		Assert.assertNull(testResultCountByResultType2.get(PathogenTestResultType.INDETERMINATE));
+		Assert.assertNull(testResultCountByResultType2.get(PathogenTestResultType.NOT_DONE));
+		Assert.assertNull(testResultCountByResultType2.get(PathogenTestResultType.PENDING));
+		Assert.assertEquals(1, (long) testResultCountByResultType2.get(PathogenTestResultType.POSITIVE));
+
+		CaseDataDto caze2 = creator.createCase(
+				user.toReference(),
+				cazePerson.toReference(),
+				Disease.EVD,
+				CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING,
+				reportAndOnsetDate,
+				rdcf);
+
+		SampleDto sample3 = creator.createSample(caze2.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
+		sample3.setPathogenTestResult(PathogenTestResultType.NEGATIVE);
+		sample3.setSpecimenCondition(SpecimenCondition.ADEQUATE);
+
+		getSampleFacade().saveSample(sample3);
+
+		Map<PathogenTestResultType, Long> testResultCountByResultType3 = getDashboardFacade().getTestResultCountByResultType(dashboardCriteria);
+		Assert.assertNotNull(testResultCountByResultType3);
+		Assert.assertEquals(1, (long) testResultCountByResultType3.get(PathogenTestResultType.NEGATIVE));
+		Assert.assertNull(testResultCountByResultType3.get(PathogenTestResultType.INDETERMINATE));
+		Assert.assertNull(testResultCountByResultType3.get(PathogenTestResultType.NOT_DONE));
+		Assert.assertNull(testResultCountByResultType3.get(PathogenTestResultType.PENDING));
+		Assert.assertEquals(1, (long) testResultCountByResultType3.get(PathogenTestResultType.POSITIVE));
 	}
 
 	@Test

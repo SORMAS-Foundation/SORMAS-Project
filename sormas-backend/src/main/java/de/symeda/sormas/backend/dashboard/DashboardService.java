@@ -1,6 +1,8 @@
 package de.symeda.sormas.backend.dashboard;
 
+import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -32,6 +34,8 @@ import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.dashboard.DashboardEventDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseJoins;
@@ -44,11 +48,12 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventJoins;
 import de.symeda.sormas.backend.event.EventQueryContext;
 import de.symeda.sormas.backend.event.EventService;
-import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -102,6 +107,85 @@ public class DashboardService {
 		}
 
 		return result;
+	}
+	
+	public Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(DashboardCriteria dashboardCriteria) {
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<CaseTestsDto> cq = cb.createQuery(CaseTestsDto.class);
+		final Root<Case> caze = cq.from(Case.class);
+		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
+		final CaseJoins joins = caseQueryContext.getJoins();
+		final Join<Case, Sample> samples = joins.getSamples();
+
+		cq.multiselect(caze.get(Case.ID), samples.get(Sample.PATHOGEN_TEST_RESULT), samples.get(Sample.SAMPLE_DATE_TIME));
+		cq.distinct(true);
+
+		Predicate filter = caseService.createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
+		final Predicate criteriaFilter = createCaseCriteriaFilter(dashboardCriteria, caseQueryContext);
+		final Predicate sampleFilter = cb.and(
+			cb.isFalse(samples.get(Sample.DELETED)),
+			cb.or(cb.isNull(samples.get(Sample.SPECIMEN_CONDITION)), cb.equal(samples.get(Sample.SPECIMEN_CONDITION), SpecimenCondition.ADEQUATE)));
+		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter, sampleFilter);
+
+		cq.where(filter);
+
+		final List<CaseTestsDto> queryResult = QueryHelper.getResultList(em, cq, null, null);
+
+		final Map<PathogenTestResultType, Long> result = new HashMap<>();
+		final Map<Long, CaseTestsDto> caseTestsMap = new HashMap<>();
+		queryResult.forEach(caseTestsDto -> {
+			final Long caseId = caseTestsDto.getCaseId();
+			if (!caseTestsMap.containsKey(caseId) || caseTestsMap.get(caseId).getSampleDateTime().before(caseTestsDto.getSampleDateTime())) {
+				caseTestsMap.put(caseId, caseTestsDto);
+			}
+		});
+		final Collection<CaseTestsDto> caseTestsDtos = caseTestsMap.values();
+		for (PathogenTestResultType pathogenTestResultType : PathogenTestResultType.values()) {
+			long count = caseTestsDtos.stream().filter(caseTestsDto -> caseTestsDto.getPathogenTestResultType() == pathogenTestResultType).count();
+			if (count > 0) {
+				result.put(pathogenTestResultType, count);
+			}
+		}
+
+		return result;
+	}
+
+	public static class CaseTestsDto implements Serializable {
+
+		private Long caseId;
+		private PathogenTestResultType pathogenTestResultType;
+		private Date sampleDateTime;
+
+		public CaseTestsDto(Long caseId, PathogenTestResultType pathogenTestResultType, Date sampleDateTime) {
+			this.caseId = caseId;
+			this.pathogenTestResultType = pathogenTestResultType;
+			this.sampleDateTime = sampleDateTime;
+		}
+
+		public Long getCaseId() {
+			return caseId;
+		}
+
+		public void setCaseId(Long caseId) {
+			this.caseId = caseId;
+		}
+
+		public PathogenTestResultType getPathogenTestResultType() {
+			return pathogenTestResultType;
+		}
+
+		public void setPathogenTestResultType(PathogenTestResultType pathogenTestResultType) {
+			this.pathogenTestResultType = pathogenTestResultType;
+		}
+
+		public Date getSampleDateTime() {
+			return sampleDateTime;
+		}
+
+		public void setSampleDateTime(Date sampleDateTime) {
+			this.sampleDateTime = sampleDateTime;
+		}
 	}
 
 	public Map<CaseClassification, Integer> getCasesCountByClassification(DashboardCriteria dashboardCriteria) {

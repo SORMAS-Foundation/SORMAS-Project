@@ -25,7 +25,7 @@ public interface DashboardFacade {
 
 	String getLastReportedDistrictName(DashboardCriteria dashboardCriteria);
 
-	Map<PathogenTestResultType, Long> getTestResultCountByResultType(List<DashboardCaseDto> cases);
+	Map<PathogenTestResultType, Long> getTestResultCountByResultType(DashboardCriteria dashboardCriteria);
 
 	long countCasesConvertedFromContacts(DashboardCriteria dashboardCriteria);
 
@@ -38,8 +38,6 @@ public interface DashboardFacade {
 	DashboardCaseStatisticDto getDashboardCaseStatistic(DashboardCriteria dashboardCriteria);
 
 	DashboardContactStatisticDto getDashboardContactStatistic(DashboardCriteria dashboardCriteria);
-
-	Map<PathogenTestResultType, Long> getTestResultCountByResultType(DashboardCriteria dashboardCriteria);
 
 	Map<Date, Map<CaseClassification, Integer>> getEpiCurveSeriesElementsPerCaseClassification(DashboardCriteria dashboardCriteria);
 

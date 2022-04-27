@@ -37,6 +37,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.caze.NewCaseDateType;
+import de.symeda.sormas.api.dashboard.DashboardCriteria;
+import de.symeda.sormas.api.dashboard.DashboardFacade;
 import org.hamcrest.MatcherAssert;
 import org.junit.Assert;
 import org.junit.Test;
@@ -535,11 +538,16 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		CaseDataDto case1 = creator.createCase(user, person1, rdcf);
 		CaseDataDto case2 = creator.createCase(user, person2, rdcf);
 
-		List<Long> caseIds = getCaseService().getAllIds(null);
+		Date date = new Date();
+		DashboardCriteria dashboardCriteria = new DashboardCriteria().region(case1.getResponsibleRegion())
+				.district(case1.getDistrict())
+				.disease(case1.getDisease())
+				.newCaseDateType(NewCaseDateType.REPORT)
+				.dateBetween(DateHelper.subtractDays(date, 1), DateHelper.addDays(date, 1));
 
+		DashboardFacade dashboardFacade = getDashboardFacade();
 		// no existing samples
-		SampleFacade sampleFacade = getSampleFacade();
-		Map<PathogenTestResultType, Long> resultMap = sampleFacade.getNewTestResultCountByResultType(caseIds);
+		Map<PathogenTestResultType, Long> resultMap = dashboardFacade.getTestResultCountByResultType(dashboardCriteria);
 		assertEquals(new Long(0), resultMap.values().stream().collect(Collectors.summingLong(Long::longValue)));
 		assertNull(resultMap.getOrDefault(PathogenTestResultType.INDETERMINATE, null));
 		assertNull(resultMap.getOrDefault(PathogenTestResultType.NEGATIVE, null));
@@ -550,7 +558,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		Facility lab = creator.createFacility("facility", rdcf.region, rdcf.district, rdcf.community);
 		creator.createSample(case1.toReference(), user, lab);
 
-		resultMap = sampleFacade.getNewTestResultCountByResultType(caseIds);
+		resultMap = dashboardFacade.getTestResultCountByResultType(dashboardCriteria);
 		assertEquals(new Long(1), resultMap.values().stream().collect(Collectors.summingLong(Long::longValue)));
 		assertNull(resultMap.getOrDefault(PathogenTestResultType.INDETERMINATE, null));
 		assertNull(resultMap.getOrDefault(PathogenTestResultType.NEGATIVE, null));
@@ -560,7 +568,7 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		// one pending sample in each of two cases
 		creator.createSample(case2.toReference(), user, lab);
 
-		resultMap = sampleFacade.getNewTestResultCountByResultType(caseIds);
+		resultMap = dashboardFacade.getTestResultCountByResultType(dashboardCriteria);
 		assertEquals(new Long(2), resultMap.values().stream().collect(Collectors.summingLong(Long::longValue)));
 		assertNull(resultMap.getOrDefault(PathogenTestResultType.INDETERMINATE, null));
 		assertNull(resultMap.getOrDefault(PathogenTestResultType.NEGATIVE, null));
@@ -571,9 +579,9 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 		// and one positive sample in one of the two cases
 		SampleDto sample = creator.createSample(case1.toReference(), user, lab);
 		sample.setPathogenTestResult(PathogenTestResultType.POSITIVE);
-		sampleFacade.saveSample(sample);
+		getSampleFacade().saveSample(sample);
 
-		resultMap = sampleFacade.getNewTestResultCountByResultType(caseIds);
+		resultMap = dashboardFacade.getTestResultCountByResultType(dashboardCriteria);
 		assertEquals(new Long(2), resultMap.values().stream().collect(Collectors.summingLong(Long::longValue)));
 		assertNull(resultMap.getOrDefault(PathogenTestResultType.INDETERMINATE, null));
 		assertNull(resultMap.getOrDefault(PathogenTestResultType.NEGATIVE, null));
