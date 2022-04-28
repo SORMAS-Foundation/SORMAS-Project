@@ -19,6 +19,7 @@
 package org.sormas.e2etests.steps.web.application.contacts;
 
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FIRST_CASE_ID_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_DOCUMENT_TEMPLATES;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.GENERATED_DOCUMENT_NAME;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_ORDER_COMBOBOX;
@@ -110,6 +111,9 @@ public class EditContactSteps implements En {
                   "descriptionOfHowContactTookPlace"));
         });
 
+    And(
+        "I click on checkbox to upload generated document to entities in Create Quarantine Order form in Contact directory",
+        () -> webDriverHelpers.clickOnWebElementBySelector(UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX));
     When(
         "I check if generated document based on {string} appeared in Documents tab for UI created contact in Edit Contact directory",
         (String name) -> {
@@ -354,7 +358,6 @@ public class EditContactSteps implements En {
         "I select {string} Quarantine Order in Create Quarantine Order form in Edit Contact directory",
         (String name) -> {
           webDriverHelpers.selectFromCombobox(QUARANTINE_ORDER_COMBOBOX, name);
-
         });
     When(
         "I check if downloaded file is correct for {string} Quarantine Order in Edit Contact directory",

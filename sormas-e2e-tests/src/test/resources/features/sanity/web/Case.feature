@@ -871,7 +871,7 @@ Feature: Case end to end tests
     And I click on SAVE new contact button in the CHOOSE SOURCE popup of Create Contact window
     Then I check that Selected case is listed as Source Case in the CONTACTS WITH SOURCE CASE Box
 
-  @issue=SORDEV-9124 @env_main @check
+  @issue=SORDEV-9124 @env_main
   Scenario: Document Templates create quarantine order
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -912,14 +912,15 @@ Feature: Case end to end tests
     And I click SHOW MORE FILTERS button on Case directory page
     And I click on the More button on Case directory page
     And I click Enter Bulk Edit Mode on Case directory page
-    And I select first 2 results in grid in Case Directory
+    And I select last created UI result in grid in Case Directory for Bulk Action
+    And I select last created API result in grid in Case Directory for Bulk Action
     And I click on Bulk Actions combobox on Case Directory Page
     And I click on Create Quarantine Order from Bulk Actions combobox on Case Directory Page
     And I click on checkbox to upload generated document to entities in Create Quarantine Order form in Case directory
     And I select "ExampleDocumentTemplateCases.docx" Quarantine Order in Create Quarantine Order form in Edit Case directory
     And I click on Create button in Create Quarantine Order form
     And I click on close button in Create Quarantine Order form
-    And I check if downloaded zip file for Quarantine Order is correct in Case directory
+    And I check if downloaded zip file for Quarantine Order is correct
     Then I click Leave Bulk Edit Mode on Case directory page
     And I open the last created Case via API
     And I check if generated document based on "ExampleDocumentTemplateCases.docx" appeared in Documents tab for API created case in Edit Case directory
@@ -927,5 +928,5 @@ Feature: Case end to end tests
     And I filter by CaseID of last created UI Case on Case directory page
     Then I open last created case
     And I check if generated document based on "ExampleDocumentTemplateCases.docx" appeared in Documents tab for UI created case in Edit Case directory
-    And I delete downloaded file created from Quarantine order in Case Directory
+    And I delete downloaded file created from Quarantine order
 

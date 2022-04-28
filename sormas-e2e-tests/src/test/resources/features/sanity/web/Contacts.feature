@@ -367,7 +367,7 @@ Feature: Contacts end to end tests
     And I click on save button in Exposure for Epidemiological data tab in Contacts
     And I click on save button from Epidemiological Data
 
-  @issue=SORDEV-9124 @env_main @check
+  @issue=SORDEV-9124 @env_main
   Scenario: Document Templates create quarantine order in Contacts
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -402,20 +402,21 @@ Feature: Contacts end to end tests
     And I click on SAVE new contact button
     Then I check the created data is correctly displayed on Edit Contact page
     And I click on the Contacts button from navbar
-    And I click on the More button on Case directory page
-    And I click Enter Bulk Edit Mode on Case directory page
-    And I select first 2 results in grid in Case Directory
-    And I click on Bulk Actions combobox on Case Directory Page
+    And I click on the More button on Contact directory page
+    And I click Enter Bulk Edit Mode on Contact directory page
+    And I select last created UI result in grid in Contact Directory for Bulk Action
+    And I select last created API result in grid in Contact Directory for Bulk Action
+    And I click on Bulk Actions combobox on Contact Directory Page
     And I click on Create Quarantine Order from Bulk Actions combobox on Contact Directory Page
-    And I click on checkbox to upload generated document to entities in Create Quarantine Order form in Case directory
+    And I click on checkbox to upload generated document to entities in Create Quarantine Order form in Contact directory
     And I select "ExampleDocumentTemplateContacts.docx" Quarantine Order in Create Quarantine Order form in Edit Contact directory
     And I click on Create button in Create Quarantine Order form
     And I click on close button in Create Quarantine Order form
-    And I check if downloaded zip file for Quarantine Order is correct in Case directory
-    And I click on the More button on Case directory page
-    Then I click Leave Bulk Edit Mode on Case directory page
+    And I check if downloaded zip file for Quarantine Order is correct
+    And I click on the More button on Contact directory page
+    Then I click Leave Bulk Edit Mode on Contact directory page
     Then I navigate to the last created UI contact via the url
     And I check if generated document based on "ExampleDocumentTemplateContacts.docx" appeared in Documents tab for UI created contact in Edit Contact directory
     And I navigate to the last created contact via the url
     And I check if generated document based on "ExampleDocumentTemplateContacts.docx" appeared in Documents tab in Edit Contact directory
-    And I delete downloaded file created from Quarantine order in Case Directory
+    And I delete downloaded file created from Quarantine order

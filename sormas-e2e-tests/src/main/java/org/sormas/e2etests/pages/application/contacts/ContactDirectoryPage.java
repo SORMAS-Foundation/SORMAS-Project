@@ -88,4 +88,11 @@ public class ContactDirectoryPage {
   public static final By FIRST_PERSON_ID = By.xpath("//td[8]//a");
   public static final By FIRST_CONTACT_ID = By.xpath("//td[1]//a");
   public static final By BULK_CREATE_QUARANTINE_ORDER = By.id("bulkActions-8");
+
+  public static By getCheckboxByUUID(String uuid) {
+    return By.xpath(
+        String.format(
+            "//td//a[text()=\"%s\"]/../preceding-sibling::td//input[@type=\"checkbox\"]",
+            uuid.substring(0, 6).toUpperCase()));
+  }
 }

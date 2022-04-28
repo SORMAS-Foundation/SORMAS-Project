@@ -344,7 +344,6 @@ public class EditCaseSteps implements En {
         "I select {string} Quarantine Order in Create Quarantine Order form in Edit Case directory",
         (String name) -> {
           webDriverHelpers.selectFromCombobox(QUARANTINE_ORDER_COMBOBOX, name);
-
         });
     When(
         "I check if downloaded file is correct for {string} Quarantine Order in Edit Case directory",

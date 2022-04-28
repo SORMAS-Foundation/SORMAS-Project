@@ -99,6 +99,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFERENCE
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.NEW_ENTRY_POPUP;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.getCheckboxByUUID;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_CASE_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
@@ -178,7 +179,7 @@ public class CaseDirectorySteps implements En {
         });
 
     When(
-        "I check if downloaded zip file for Quarantine Order is correct in Case directory",
+        "I check if downloaded zip file for Quarantine Order is correct",
         () -> {
           Path path =
               Paths.get(userDirPath + "/downloads/sormas_dokumente_" + LocalDate.now() + "_.zip");
@@ -191,7 +192,7 @@ public class CaseDirectorySteps implements En {
               120);
         });
     When(
-        "I delete downloaded file created from Quarantine order in Case Directory",
+        "I delete downloaded file created from Quarantine order",
         () -> {
           File toDelete =
               new File(userDirPath + "/downloads/sormas_dokumente_" + LocalDate.now() + "_.zip");
@@ -262,6 +263,25 @@ public class CaseDirectorySteps implements En {
           }
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
+    When(
+        "^I select last created UI result in grid in Case Directory for Bulk Action$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.scrollToElement(getCheckboxByUUID(EditCaseSteps.aCase.getUuid()));
+          webDriverHelpers.clickOnWebElementBySelector(
+              getCheckboxByUUID(EditCaseSteps.aCase.getUuid()));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+    When(
+        "^I select last created API result in grid in Case Directory for Bulk Action$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.scrollToElement(getCheckboxByUUID(apiState.getCreatedCase().getUuid()));
+          webDriverHelpers.clickOnWebElementBySelector(
+              getCheckboxByUUID(apiState.getCreatedCase().getUuid()));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
     When(
         "I click on the Epidemiological data button tab in Case form",
         () -> {
