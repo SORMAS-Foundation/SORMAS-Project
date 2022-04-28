@@ -929,4 +929,3 @@ Feature: Case end to end tests
     Then I open last created case
     And I check if generated document based on "ExampleDocumentTemplateCases.docx" appeared in Documents tab for UI created case in Edit Case directory
     And I delete downloaded file created from Quarantine order
-
