@@ -106,6 +106,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PLACE_OF_STAY_SELECTED_VALUE;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.POPUPS_INPUTS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PROHIBITION_TO_WORK_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_CHANGE_COMMENT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.QUARANTINE_COMBOBOX;
@@ -346,7 +347,7 @@ public class EditCaseSteps implements En {
 
           webDriverHelpers.selectFromCombobox(QUARANTINE_ORDER_COMBOBOX, name);
             webDriverHelpers.waitUntilANumberOfElementsAreVisibleAndClickable(
-                    By.cssSelector(".popupContent input"), 5);
+                    POPUPS_INPUTS, 5);
         });
       When(
               "I select {string} Quarantine Order in Create Quarantine Order form in Case directory",

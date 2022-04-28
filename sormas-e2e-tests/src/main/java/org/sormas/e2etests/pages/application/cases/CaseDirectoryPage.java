@@ -162,11 +162,11 @@ public class CaseDirectoryPage {
   public static final By CASE_ACTION_CANCEL = By.id("actionCancel");
   public static final By UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX =
       By.xpath("//label[text()='Also upload the generated documents to the selected entities']");
+  public static final By CLOSE_FORM_BUTTON = By.xpath("//div[@class='v-window-closebox']");
 
   public static By getCheckboxByIndex(String idx) {
     return By.xpath(String.format("(//input[@type=\"checkbox\"])[%s]", idx));
   }
-
   public static By getResultByIndex(String rowNumber) {
     return By.xpath(String.format("//tr[%s]//a", rowNumber));
   }

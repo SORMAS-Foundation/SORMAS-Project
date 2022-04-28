@@ -64,6 +64,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_SURVOFF_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_VACCINATION_STATUS_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_YEAR_FILTER;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CLOSE_FORM_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_FROM_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_TO_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DETAILED_IMPORT_BUTTON;
@@ -251,7 +252,7 @@ public class CaseDirectorySteps implements En {
         "I click on close button in Create Quarantine Order form",
         () ->
             webDriverHelpers.clickOnWebElementBySelector(
-                By.xpath("//div[@class='v-window-closebox']")));
+                    CLOSE_FORM_BUTTON));
 
     When(
         "^I select first (\\d+) results in grid in Case Directory$",
