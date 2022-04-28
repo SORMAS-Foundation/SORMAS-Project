@@ -92,7 +92,6 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getR
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DATE_OF_REPORT_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_CASES_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.REFERENCE_DEFINITION_TEXT;
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.REINFECTION_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_NEW_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_AS_CASE_OPTIONS;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.NEW_ENTRY_POPUP;
@@ -837,13 +836,6 @@ public class CaseDirectorySteps implements En {
                           "SORMAS_Import_Guide was not downloaded. Searching path was: %s",
                           path.toAbsolutePath())),
               20);
-        });
-
-    When(
-        "I choose ([^\"]*) option in reinfection",
-        (String reinfection) -> {
-          webDriverHelpers.scrollToElement(REINFECTION_OPTIONS);
-          webDriverHelpers.clickWebElementByText(REINFECTION_OPTIONS, reinfection);
         });
   }
 

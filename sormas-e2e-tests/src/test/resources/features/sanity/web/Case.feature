@@ -870,13 +870,3 @@ Feature: Case end to end tests
     And I open the first found result in the CHOOSE SOURCE popup of Create Contact window
     And I click on SAVE new contact button in the CHOOSE SOURCE popup of Create Contact window
     Then I check that Selected case is listed as Source Case in the CONTACTS WITH SOURCE CASE Box
-
-
-  @issue=SORDEV-9153 @env_de
-  Scenario: Test Add reinfection details and status to cases
-    Given I log in with National User
-    And I click on the Cases button from navbar
-    And I click on the NEW CASE button
-    When I create a new case with specific data for DE version
-    Then I check the created data is correctly displayed on Edit case page for DE version
-    Then I choose JA option in reinfection
