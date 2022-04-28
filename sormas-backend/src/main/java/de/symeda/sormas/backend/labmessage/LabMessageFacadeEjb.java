@@ -317,7 +317,9 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			whereFilter = labMessageService.buildCriteriaFilter(cb, labMessage, criteria);
 		}
 
-		cq.where(whereFilter);
+		if(whereFilter != null) {
+			cq.where(whereFilter);
+		}
 
 		// Distinct is necessary here to avoid duplicate results due to the user role join in taskService.createAssigneeFilter
 		cq.distinct(true);

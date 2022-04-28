@@ -1,459 +1,434 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
- * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+ * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
- * along with this program.  If not, see <https://www.gnu.org/licenses/>.
+ * along with this program. If not, see <https://www.gnu.org/licenses/>.
  */
 
 package de.symeda.sormas.ui.labmessage;
 
-import static java.util.concurrent.CompletableFuture.completedFuture;
+import static de.symeda.sormas.ui.labmessage.processing.LabMessageProcessingUIHelper.showFormWithLabMessage;
 
+import de.symeda.sormas.ui.labmessage.processing.AbstractLabMessageProcessingFlow;
+import de.symeda.sormas.ui.labmessage.processing.LabMessageProcessingHelper;
+import de.symeda.sormas.ui.labmessage.processing.LabMessageProcessingUIHelper;
+import de.symeda.sormas.ui.labmessage.processing.PickOrCreateEntryResult;
+import de.symeda.sormas.ui.labmessage.processing.PickOrCreateEventResult;
+import de.symeda.sormas.ui.labmessage.processing.PickOrCreateSampleResult;
+import de.symeda.sormas.ui.labmessage.processing.SampleAndPathogenTests;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
-import java.util.concurrent.ExecutionException;
-import java.util.function.Function;
+
+import com.vaadin.server.Sizeable;
+import com.vaadin.shared.Registration;
+import com.vaadin.ui.Component;
+import com.vaadin.ui.Label;
+import com.vaadin.ui.Notification;
+import com.vaadin.ui.UI;
+import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Window;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.caze.CaseCriteria;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseSelectionDto;
-import de.symeda.sormas.api.caze.CaseSimilarityCriteria;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.SimilarContactDto;
-import de.symeda.sormas.api.event.EventParticipantCriteria;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventIndexDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.i18n.Captions;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
-import de.symeda.sormas.api.labmessage.SimilarEntriesDto;
 import de.symeda.sormas.api.person.PersonDto;
-import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
-import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.UserProvider;
+import de.symeda.sormas.ui.caze.CaseCreateForm;
+import de.symeda.sormas.ui.contact.ContactCreateForm;
+import de.symeda.sormas.ui.events.EventDataForm;
+import de.symeda.sormas.ui.events.EventParticipantEditForm;
+import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
+import de.symeda.sormas.ui.labmessage.EntrySelectionField;
+import de.symeda.sormas.ui.labmessage.LabMessageMapper;
+import de.symeda.sormas.ui.labmessage.LabMessageUiHelper;
+import de.symeda.sormas.ui.samples.PathogenTestForm;
+import de.symeda.sormas.ui.samples.SampleController;
+import de.symeda.sormas.ui.samples.SampleCreateForm;
+import de.symeda.sormas.ui.samples.SampleSelectionField;
+import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
+import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
-public abstract class LabMessageProcessingFlow {
+public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 
-	private final UserReferenceDto userRef;
-
-	/*
-	 * *** checkDisease
-	 * checkRelatedForwardedMessages
-	 * handleRelatedLabMessages
-	 * pickOrCreatePerson
-	 * pickOrCreateEntry
-	 * createCase
-	 * createContact
-	 * pickOrCreateEvent
-	 * createEventParticipant
-	 * createSample(eventParticipant)
-	 * pickOrCreateSample(eventParticipant)
-	 * ...
-	 * createSample
-	 * pickOrCreateSample(caze)
-	 * editSample
-	 * createSample(caze)
-	 * createSample(contact)
-	 * createSample(eventParticipant)
-	 * pickOrCreateSample(contact)
-	 * ....
-	 * pickOrCreateSample(eventParticipant)
-	 * ....
-	 */
-
-	public LabMessageProcessingFlow(UserReferenceDto userRef) {
-		this.userRef = userRef;
+	public LabMessageProcessingFlow() {
+		super(UserProvider.getCurrent().getUser(), FacadeProvider.getCountryFacade().getServerCountry());
 	}
 
-	public ResultStatus run(LabMessageDto labMessage, RelatedLabMessageHandler relatedLabMessageHandler)
-		throws ExecutionException, InterruptedException {
-
-		return new FlowThen<Void>().then((ignored) -> checkDisease(labMessage))
-			.then((ignored) -> checkRelatedForwardedMessages(labMessage))
-			.then((ignored) -> handleRelatedLabMessages(relatedLabMessageHandler, labMessage))
-			.then((ignored) -> pickOrCreatePerson(labMessage))
-			.then((personResult) -> pickOrCreateEntry(personResult.getData(), labMessage))
-			.thenSwitch()
-			.when(
-				entryResult -> entryResult.getSimilarEntrySelection().isNewCase(),
-				(f) -> f.then((personResult) -> createCase(personResult.getData().getPersonDto(), labMessage))
-					.then((caseResult) -> createSample(caseResult.getData(), labMessage)))
-			.when(
-				entryResult -> entryResult.getSimilarEntrySelection().isNewContact(),
-				(f) -> f.then((ignored) -> createContact(labMessage)).then((contactResult) -> createSample(contactResult.getData(), labMessage)))
-			.then((ignored) -> Result.completedStatus(ResultStatus.DONE))
-			.getResult()
-			.getStatus();
+	@Override
+	protected CompletionStage<Boolean> handleMissingDisease() {
+		return VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getCaption(Captions.labMessageNoDisease),
+			new Label(I18nProperties.getString(Strings.messageDiseaseNotSpecifiedInLabMessage)),
+			I18nProperties.getCaption(Captions.actionContinue),
+			I18nProperties.getCaption(Captions.actionCancel),
+			null);
 	}
 
-	private CompletionStage<Result<Void>> checkDisease(LabMessageDto labMessage) {
-		if (labMessage.getTestedDisease() == null) {
-			return handleMissingDisease().thenCompose(next -> Result.completedStatus(next ? ResultStatus.CONTINUE : ResultStatus.CANCELED));
-		} else {
-			return Result.completedContinue();
-		}
+	@Override
+	protected CompletionStage<Boolean> handleRelatedForwardedMessages() {
+		return VaadinUiUtil.showConfirmationPopup(
+			I18nProperties.getCaption(Captions.labMessageForwardedMessageFound),
+			new Label(I18nProperties.getString(Strings.messageForwardedLabMessageFound)),
+			I18nProperties.getCaption(Captions.actionYes),
+			I18nProperties.getCaption(Captions.actionCancel),
+			null);
 	}
 
-	abstract CompletionStage<Boolean> handleMissingDisease();
-
-	private CompletionStage<Result<Void>> checkRelatedForwardedMessages(LabMessageDto labMessage) {
-		if (FacadeProvider.getLabMessageFacade().existsForwardedLabMessageWith(labMessage.getReportId())) {
-			return handleRelatedForwardedMessages().thenCompose(next -> Result.completedStatus(next ? ResultStatus.CONTINUE : ResultStatus.CANCELED));
-		} else {
-			return Result.completedStatus(ResultStatus.CONTINUE);
-		}
-	}
-
-	protected abstract CompletionStage<Boolean> handleRelatedForwardedMessages();
-
-	private CompletionStage<Result<Void>> handleRelatedLabMessages(RelatedLabMessageHandler relatedLabMessageHandler, LabMessageDto labMessage) {
-		return relatedLabMessageHandler.handle(labMessage).thenCompose((result) -> {
-			if (result == RelatedLabMessageHandler.HandlerResult.CANCELED) {
-				return Result.completedStatus(ResultStatus.CANCELED);
-			}
-
-			if (result == RelatedLabMessageHandler.HandlerResult.CANCELED_WITH_UPDATES) {
-				return Result.completedStatus(ResultStatus.CANCELED_WITH_CORRECTIONS);
-			}
-
-			if (result == RelatedLabMessageHandler.HandlerResult.HANDLED) {
-				return Result.completedStatus(ResultStatus.DONE);
-			}
-
-			return Result.completedContinue();
-		});
-	}
-
-	private CompletionStage<Result<PersonDto>> pickOrCreatePerson(LabMessageDto labMessage) {
-		return handlePickOrCreatePerson(labMessage)
-			.thenCompose(person -> person != null ? Result.completedContinue(person) : Result.completedStatus(ResultStatus.CANCELED));
-	}
-
-	protected abstract CompletionStage<PersonDto> handlePickOrCreatePerson(LabMessageDto labMessage);
-
-	private CompletionStage<Result<PersonAndSimilarEntrySelection>> pickOrCreateEntry(PersonDto person, LabMessageDto labMessage) {
-		PersonReferenceDto personRef = person.toReference();
-		List<CaseSelectionDto> similarCases = getSimilarCases(personRef, labMessage);
-		List<SimilarContactDto> similarContacts = getSimilarContacts(personRef, labMessage);
-		List<SimilarEventParticipantDto> similarEventParticipants = getSimilarEventParticipants(labMessage, personRef);
-
-		return handlePickOrCreateEntry(labMessage, similarCases, similarContacts, similarEventParticipants)
-			.thenCompose(similarEntrySelection -> Result.completedContinue(new PersonAndSimilarEntrySelection(person, similarEntrySelection)));
-	}
-
-	protected abstract CompletionStage<SimilarEntriesDto> handlePickOrCreateEntry(
-		LabMessageDto labMessageDto,
-		List<CaseSelectionDto> similarCases,
-		List<SimilarContactDto> similarContacts,
-		List<SimilarEventParticipantDto> similarEventParticipants);
-
-	private List<CaseSelectionDto> getSimilarCases(PersonReferenceDto selectedPerson, LabMessageDto labMessage) {
-		CaseCriteria caseCriteria = new CaseCriteria();
-		caseCriteria.person(selectedPerson);
-		caseCriteria.disease(labMessage.getTestedDisease());
-		CaseSimilarityCriteria caseSimilarityCriteria = new CaseSimilarityCriteria();
-		caseSimilarityCriteria.caseCriteria(caseCriteria);
-		caseSimilarityCriteria.personUuid(selectedPerson.getUuid());
-
-		return FacadeProvider.getCaseFacade().getSimilarCases(caseSimilarityCriteria);
-	}
-
-	private List<SimilarContactDto> getSimilarContacts(PersonReferenceDto selectedPerson, LabMessageDto labMessage) {
-		ContactSimilarityCriteria contactSimilarityCriteria = new ContactSimilarityCriteria();
-		contactSimilarityCriteria.setPerson(selectedPerson);
-		contactSimilarityCriteria.setDisease(labMessage.getTestedDisease());
-
-		return FacadeProvider.getContactFacade().getMatchingContacts(contactSimilarityCriteria);
-	}
-
-	private List<SimilarEventParticipantDto> getSimilarEventParticipants(LabMessageDto labMessage, PersonReferenceDto selectedPerson) {
-		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria();
-		eventParticipantCriteria.setPerson(selectedPerson);
-		eventParticipantCriteria.setDisease(labMessage.getTestedDisease());
-
-		return FacadeProvider.getEventParticipantFacade().getMatchingEventParticipants(eventParticipantCriteria);
-	}
-
-	private CompletionStage<Result<CaseDataDto>> createCase(PersonDto person, LabMessageDto labMessage) {
-		CaseDataDto caze = buildCase(person, labMessage);
-
-		return handleCreateCase(caze, person, labMessage).thenCompose(
-			(createdCase) -> createdCase != null ? Result.completedContinue(createdCase) : Result.completedStatus(ResultStatus.CANCELED));
-	}
-
-	protected abstract CompletionStage<CaseDataDto> handleCreateCase(CaseDataDto caze, PersonDto person, LabMessageDto labMessage);
-
-	private CaseDataDto buildCase(PersonDto person, LabMessageDto labMessage) {
-		CaseDataDto caseDto = CaseDataDto.build(person.toReference(), labMessage.getTestedDisease());
-		caseDto.setReportingUser(userRef);
-		return caseDto;
-	}
-
-	private CompletionStage<Result<SampleDto>> createSample(CaseDataDto caze, LabMessageDto labMessage) {
-		SampleDto sample = SampleDto.build(userRef, caze.toReference());
-		LabMessageMapper.forLabMessage(labMessage).mapToSample(sample);
-
-		return handleCreateSample(sample, caze.getDisease(), labMessage).thenCompose(Result::completedContinue);
-	}
-
-	private CompletionStage<Result<SampleDto>> createSample(ContactDto contact, LabMessageDto labMessage) {
-		SampleDto sample = SampleDto.build(userRef, contact.toReference());
-		LabMessageMapper.forLabMessage(labMessage).mapToSample(sample);
-
-		return handleCreateSample(sample, contact.getDisease(), labMessage).thenCompose(Result::completedContinue);
-	}
-
-	protected abstract CompletionStage<SampleDto> handleCreateSample(SampleDto sample, Disease disease, LabMessageDto labMessage);
-
-	private CompletionStage<Result<ContactDto>> createContact(LabMessageDto labMessageDto) {
-		return null;
-	}
-
-	enum ResultStatus {
-
-		CONTINUE(false, false),
-		CANCELED(true, false),
-		CANCELED_WITH_CORRECTIONS(true, false),
-		DONE(false, true);
-
-		private final boolean canceled;
-		private final boolean done;
-
-		ResultStatus(boolean canceled, boolean done) {
-			this.canceled = canceled;
-			this.done = done;
-		}
-
-		public boolean isCanceled() {
-			return canceled;
-		}
-
-		public boolean isDone() {
-			return done;
-		}
-	}
-
-	private static class Result<T> {
-
-		private final ResultStatus status;
-
-		private final T data;
-
-		public static <TT> CompletableFuture<Result<TT>> completedStatus(ResultStatus status) {
-			return completedFuture(withStatus(status));
-		}
-
-		public static CompletableFuture<Result<Void>> completedContinue() {
-			return completedFuture(withStatus(ResultStatus.CONTINUE));
-		}
-
-		public static <TT> CompletableFuture<Result<TT>> completedContinue(TT data) {
-			return completedFuture(continueWith(data));
-		}
-
-		public static <TT> Result<TT> withStatus(ResultStatus status) {
-			return new Result<>(status, null);
-		}
-
-		public static <TT> Result<TT> continueWith(TT data) {
-			return new Result<>(ResultStatus.CONTINUE, data);
-		}
-
-		private Result(ResultStatus status, T data) {
-			this.status = status;
-			this.data = data;
-		}
-
-		public ResultStatus getStatus() {
-			return status;
-		}
-
-		public T getData() {
-			return data;
-		}
-	}
-
-	private interface IFlowThen<R> {
-
-		<RR> IFlowThen<RR> then(Function<Result<R>, CompletionStage<Result<RR>>> actionSupplier) throws ExecutionException, InterruptedException;
-
-		<RR> IThenSwitch<R, RR> thenSwitch() throws ExecutionException, InterruptedException;
-
-		Result<R> getResult();
-	}
-
-	private interface IThenSwitch<T, R> {
-
-		<RR> IThenSwitch<T, RR> when(Function<T, Boolean> condition, SwitchFlow<T, RR> switchFlow) throws ExecutionException, InterruptedException;
-
-		<RR> IFlowThen<RR> then(Function<Result<R>, CompletionStage<Result<RR>>> actionSupplier) throws ExecutionException, InterruptedException;
-	}
-
-	private static class FlowThen<R> implements IFlowThen<R> {
-
-		private final Result<R> currentResult;
-
-		public FlowThen() {
-			this(null);
-		}
-
-		private FlowThen(Result<R> currentResult) {
-			this.currentResult = currentResult;
-		}
-
-		public <RR> IFlowThen<RR> then(Function<Result<R>, CompletionStage<Result<RR>>> actionSupplier)
-			throws ExecutionException, InterruptedException {
-			CompletionStage<Result<RR>> action = actionSupplier.apply(currentResult);
-
-			Result<RR> result = action.toCompletableFuture().get();
-
-			ResultStatus status = result.getStatus();
-			if (status.isCanceled() || status.isDone()) {
-				return new FlowStopped<>(status);
-			}
-
-			return new FlowThen<>(result);
-		}
-
-		@Override
-		public <RR> IThenSwitch<R, RR> thenSwitch() throws ExecutionException, InterruptedException {
-			ResultStatus status = currentResult.getStatus();
-			if (status.isCanceled() || status.isDone()) {
-				return new ThenSwitchStopped<>(status);
-			}
-
-			return new ThenSwitch<>(currentResult);
-		}
-
-		public Result<R> getResult() {
-			return currentResult;
-		}
-	}
-
-	private static class ThenSwitch<T, R> implements IThenSwitch<T, R> {
-
-		private final Result<T> currentResult;
-		private final Result<R> switchResult;
-
-		public ThenSwitch(Result<T> currentResult) {
-			this(currentResult, null);
-		}
-
-		private ThenSwitch(Result<T> currentResult, Result<R> switchResult) {
-			this.currentResult = currentResult;
-			this.switchResult = switchResult;
-		}
-
-		@Override
-		public <RR> IThenSwitch<T, RR> when(Function<T, Boolean> condition, SwitchFlow<T, RR> switchFlow)
-			throws ExecutionException, InterruptedException {
-			if (condition.apply(currentResult.getData())) {
-				Result<RR> result = switchFlow.apply(new FlowThen<>(currentResult)).getResult();
-
-				ResultStatus status = result.getStatus();
-				if (status.isCanceled() || status.isDone()) {
-					return new ThenSwitchStopped<>(status);
+	@Override
+	protected void handlePickOrCreatePerson(PersonDto person, HandlerCallback<PersonDto> callback) {
+		ControllerProvider.getPersonController()
+			.selectOrCreatePerson(person, I18nProperties.getString(Strings.infoSelectOrCreatePersonForLabMessage), selectedPersonRef -> {
+				PersonDto selectedPersonDto = null;
+				if (selectedPersonRef != null) {
+					if (selectedPersonRef.getUuid().equals(person.getUuid())) {
+						selectedPersonDto = person;
+					} else {
+						selectedPersonDto = FacadeProvider.getPersonFacade().getPersonByUuid(selectedPersonRef.getUuid());
+					}
 				}
 
-				return new ThenSwitch<>(currentResult, result);
+				callback.done(selectedPersonDto);
+			},
+				callback::cancel,
+				false,
+				FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.PERSON_DUPLICATE_CUSTOM_SEARCH)
+					? I18nProperties.getString(Strings.infoSelectOrCreatePersonForLabMessageWithoutMatches)
+					: null);
+	}
+
+	@Override
+	protected void handlePickOrCreateEntry(
+		List<CaseSelectionDto> similarCases,
+		List<SimilarContactDto> similarContacts,
+		List<SimilarEventParticipantDto> similarEventParticipants,
+		LabMessageDto labMessage,
+		HandlerCallback<PickOrCreateEntryResult> callback) {
+		EntrySelectionField selectField = new EntrySelectionField(labMessage, similarCases, similarContacts, similarEventParticipants);
+
+		final CommitDiscardWrapperComponent<EntrySelectionField> selectionField = new CommitDiscardWrapperComponent<>(selectField);
+		selectionField.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
+		selectionField.setWidth(1280, Sizeable.Unit.PIXELS);
+
+		selectionField.addCommitListener(() -> callback.done(selectField.getValue()));
+		selectionField.addDiscardListener(callback::cancel);
+
+		selectField.setSelectionChangeCallback((commitAllowed) -> selectionField.getCommitButton().setEnabled(commitAllowed));
+		selectionField.getCommitButton().setEnabled(false);
+
+		VaadinUiUtil.showModalPopupWindow(selectionField, I18nProperties.getString(Strings.headingPickOrCreateEntry), true);
+	}
+
+	@Override
+	protected void handleCreateCase(CaseDataDto caze, PersonDto person, LabMessageDto labMessage, HandlerCallback<CaseDataDto> callback) {
+		Window window = VaadinUiUtil.createPopupWindow();
+
+		CommitDiscardWrapperComponent<CaseCreateForm> caseCreateComponent =
+			ControllerProvider.getCaseController().getCaseCreateComponent(null, null, null, null, true);
+		caseCreateComponent.addCommitListener(() -> {
+			updateAddressAndSavePerson(
+				FacadeProvider.getPersonFacade().getPersonByUuid(caseCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
+				labMessage);
+
+			callback.done(caseCreateComponent.getWrappedComponent().getValue());
+
+		});
+		caseCreateComponent.addDiscardListener(callback::cancel);
+
+		caseCreateComponent.getWrappedComponent().setValue(caze);
+		if (FacadeProvider.getPersonFacade().isValidPersonUuid(person.getUuid())) {
+			caseCreateComponent.getWrappedComponent().setSearchedPerson(person);
+		}
+		caseCreateComponent.getWrappedComponent().setPerson(person);
+
+		showFormWithLabMessage(labMessage, caseCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewCase), false);
+	}
+
+	@Override
+	protected void handleCreateSampleAndPathogenTests(
+		SampleDto sample,
+		List<PathogenTestDto> pathogenTests,
+		Disease disease,
+		LabMessageDto labMessage,
+		boolean entityCreated,
+		HandlerCallback<SampleAndPathogenTests> callback) {
+
+		Window window = VaadinUiUtil.createPopupWindow();
+		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent =
+			getSampleCreateComponent(sample, pathogenTests, labMessage, disease, window);
+
+		sampleCreateComponent.addCommitListener(() -> {
+			List<PathogenTestDto> createdPathogenTests = new ArrayList<>();
+			for (int i = 0; i < sampleCreateComponent.getComponentCount(); i++) {
+				Component component = sampleCreateComponent.getComponent(i);
+				if (PathogenTestForm.class.isAssignableFrom(component.getClass())) {
+					createdPathogenTests.add(((PathogenTestForm) component).getValue());
+				}
 			}
 
-			return new ThenSwitch(currentResult, switchResult);
-		}
+			callback.done(new SampleAndPathogenTests(sampleCreateComponent.getWrappedComponent().getValue(), createdPathogenTests));
+		});
+		sampleCreateComponent.addDiscardListener(callback::cancel);
 
-		@Override
-		public <RR> IFlowThen<RR> then(Function<Result<R>, CompletionStage<Result<RR>>> actionSupplier)
-			throws ExecutionException, InterruptedException {
-			return new FlowThen<>(switchResult).then(actionSupplier);
-		}
+		showFormWithLabMessage(labMessage, sampleCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewSample), entityCreated);
 	}
 
-	private static class FlowStopped<R> implements IFlowThen<R> {
+	@Override
+	protected void handleCreateContact(ContactDto contact, PersonDto person, LabMessageDto labMessage, HandlerCallback<ContactDto> callback) {
+		Window window = VaadinUiUtil.createPopupWindow();
 
-		private final ResultStatus status;
+		CommitDiscardWrapperComponent<ContactCreateForm> contactCreateComponent =
+			ControllerProvider.getContactController().getContactCreateComponent(null, false, null, true);
 
-		public FlowStopped(ResultStatus status) {
-			if (!status.isCanceled() && !status.isDone()) {
-				throw new IllegalArgumentException("FlowCanceled should be created only with canceled or done status");
+		contactCreateComponent.addCommitListener(() -> {
+			updateAddressAndSavePerson(
+				FacadeProvider.getPersonFacade().getPersonByUuid(contactCreateComponent.getWrappedComponent().getValue().getPerson().getUuid()),
+				labMessage);
+
+			callback.done(contactCreateComponent.getWrappedComponent().getValue());
+		});
+		contactCreateComponent.addDiscardListener(callback::cancel);
+
+		contactCreateComponent.getWrappedComponent().setValue(contact);
+		contactCreateComponent.getWrappedComponent().setPerson(person);
+
+		showFormWithLabMessage(labMessage, contactCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewContact), false);
+	}
+
+	@Override
+	protected void handlePickOrCreateEvent(LabMessageDto labMessage, HandlerCallback<PickOrCreateEventResult> callback) {
+		EventSelectionField eventSelect =
+			new EventSelectionField(labMessage.getTestedDisease(), I18nProperties.getString(Strings.infoPickOrCreateEventForLabMessage), null);
+		eventSelect.setWidth(1024, Sizeable.Unit.PIXELS);
+
+		Window window = VaadinUiUtil.createPopupWindow();
+
+		final CommitDiscardWrapperComponent<EventSelectionField> component = new CommitDiscardWrapperComponent<>(eventSelect);
+		component.addCommitListener(() -> {
+			PickOrCreateEventResult result = new PickOrCreateEventResult();
+			EventIndexDto selectedEvent = eventSelect.getValue();
+			if (selectedEvent != null) {
+				result.setEvent(selectedEvent);
+			} else {
+				result.setNewEvent(true);
 			}
 
-			this.status = status;
-		}
+			callback.done(result);
+		});
+		component.addDiscardListener(callback::cancel);
+		Registration closeListener = window.addCloseListener((e -> component.discard()));
+		component.addDoneListener(() -> {
+			closeListener.remove();
+			window.close();
+		});
 
-		@Override
-		public <RR> IFlowThen<RR> then(Function<Result<R>, CompletionStage<Result<RR>>> actionSupplier)
-			throws ExecutionException, InterruptedException {
-			return new FlowStopped<>(status);
-		}
+		eventSelect.setSelectionChangeCallback((commitAllowed) -> component.getCommitButton().setEnabled(commitAllowed));
 
-		@Override
-		public <RR> IThenSwitch<R, RR> thenSwitch() throws ExecutionException, InterruptedException {
-			return new ThenSwitchStopped<>(status);
-		}
-
-		@Override
-		public Result<R> getResult() {
-			return Result.withStatus(status);
-		}
+		window.setContent(component);
+		window.setCaption(I18nProperties.getString(Strings.headingPickOrCreateEvent));
+		UI.getCurrent().addWindow(window);
 	}
 
-	private static class ThenSwitchStopped<T, R> implements IThenSwitch<T, R> {
+	@Override
+	protected void handleCreateEvent(EventDto event, HandlerCallback<EventDto> callback) {
+		EventDataForm eventCreateForm = new EventDataForm(true, false);
+		eventCreateForm.setValue(event);
+		eventCreateForm.getField(EventDto.DISEASE).setReadOnly(true);
+		final CommitDiscardWrapperComponent<EventDataForm> editView = new CommitDiscardWrapperComponent<>(
+			eventCreateForm,
+			UserProvider.getCurrent().hasUserRight(UserRight.EVENT_CREATE),
+			eventCreateForm.getFieldGroup());
 
-		private final ResultStatus status;
+		Window window = VaadinUiUtil.createPopupWindow();
+		editView.addCommitListener(() -> {
+			if (!eventCreateForm.getFieldGroup().isModified()) {
+				EventDto dto = eventCreateForm.getValue();
 
-		public ThenSwitchStopped(ResultStatus status) {
-			if (!status.isCanceled() && !status.isDone()) {
-				throw new IllegalArgumentException("FlowCanceled should be created only with canceled or done status");
+				EventDto savedEvent = FacadeProvider.getEventFacade().save(dto);
+				Notification.show(I18nProperties.getString(Strings.messageEventCreated), Notification.Type.WARNING_MESSAGE);
+
+				callback.done(savedEvent);
+			}
+		});
+		editView.addDiscardListener(callback::cancel);
+		Registration closeListener = window.addCloseListener((e -> editView.discard()));
+		editView.addDoneListener(() -> {
+			closeListener.remove();
+			window.close();
+		});
+
+		window.setContent(editView);
+		window.setCaption(I18nProperties.getString(Strings.headingCreateNewEvent));
+		UI.getCurrent().addWindow(window);
+	}
+
+	@Override
+	protected void handleCreateEventParticipant(
+		EventParticipantDto eventParticipant,
+		EventDto event,
+		LabMessageDto labMessage,
+		HandlerCallback<EventParticipantDto> callback) {
+		Window window = VaadinUiUtil.createPopupWindow();
+
+		EventParticipantEditForm createForm = new EventParticipantEditForm(event, false, eventParticipant.getPerson().isPseudonymized(), false);
+		createForm.setValue(eventParticipant);
+		final CommitDiscardWrapperComponent<EventParticipantEditForm> createComponent = new CommitDiscardWrapperComponent<>(
+			createForm,
+			UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE),
+			createForm.getFieldGroup());
+
+		createComponent.addCommitListener(() -> {
+			if (!createForm.getFieldGroup().isModified()) {
+				final EventParticipantDto dto = createForm.getValue();
+
+				FacadeProvider.getPersonFacade().savePerson(dto.getPerson());
+				EventParticipantDto savedDto = FacadeProvider.getEventParticipantFacade().save(dto);
+				Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Notification.Type.ASSISTIVE_NOTIFICATION);
+
+				callback.done(savedDto);
+			}
+		});
+		createComponent.addDiscardListener(callback::cancel);
+
+		showFormWithLabMessage(labMessage, createComponent, window, I18nProperties.getString(Strings.headingCreateNewEventParticipant), false);
+	}
+
+	@Override
+	protected CompletionStage<Boolean> confirmPickExistingEventParticipant() {
+		CompletableFuture<Boolean> ret = new CompletableFuture<>();
+
+		CommitDiscardWrapperComponent<VerticalLayout> commitDiscardWrapperComponent =
+			new CommitDiscardWrapperComponent<>(new VerticalLayout(new Label(I18nProperties.getString(Strings.infoEventParticipantAlreadyExisting))));
+		commitDiscardWrapperComponent.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionContinue));
+		commitDiscardWrapperComponent.getDiscardButton().setCaption(I18nProperties.getCaption(Captions.actionBack));
+
+		commitDiscardWrapperComponent.addCommitListener(() -> ret.complete(true));
+		commitDiscardWrapperComponent.addDiscardListener(() -> ret.complete(false));
+
+		VaadinUiUtil.showModalPopupWindow(commitDiscardWrapperComponent, I18nProperties.getCaption(Captions.info), true);
+
+		return ret;
+	}
+
+	@Override
+	protected void handlePickOrCreateSample(
+		List<SampleDto> samples,
+		LabMessageDto labMessage,
+		HandlerCallback<PickOrCreateSampleResult> callback) {
+		SampleSelectionField selectField = new SampleSelectionField(samples, I18nProperties.getString(Strings.infoPickOrCreateSample));
+
+		Window window = VaadinUiUtil.createPopupWindow();
+
+		final CommitDiscardWrapperComponent<SampleSelectionField> selectionField = new CommitDiscardWrapperComponent<>(selectField);
+		selectionField.getCommitButton().setCaption(I18nProperties.getCaption(Captions.actionConfirm));
+		selectionField.setWidth(1280, Sizeable.Unit.PIXELS);
+		selectionField.addCommitListener(() -> {
+			PickOrCreateSampleResult result = new PickOrCreateSampleResult();
+
+			SampleDto sampleDto = selectField.getValue();
+			if (sampleDto != null) {
+				result.setSample(sampleDto);
+			} else {
+				result.setNewSample(true);
 			}
 
-			this.status = status;
+			callback.done(result);
+		});
+		selectionField.addDiscardListener(callback::cancel);
+
+		selectField.setSelectionChangeCallback((commitAllowed) -> selectionField.getCommitButton().setEnabled(commitAllowed));
+		selectionField.getCommitButton().setEnabled(false);
+
+		showFormWithLabMessage(labMessage, selectionField, window, I18nProperties.getString(Strings.headingPickOrCreateSample), false);
+	}
+
+	@Override
+	protected void handleEditSample(
+		SampleDto sample,
+		List<PathogenTestDto> newPathogenTests,
+		LabMessageDto labMessage,
+		HandlerCallback<SampleAndPathogenTests> callback) {
+
+		LabMessageProcessingUIHelper.showEditSampleWindow(sample, newPathogenTests, labMessage, callback::done, callback::cancel);
+	}
+
+	private CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(
+			SampleDto sample,
+			List<PathogenTestDto> pathogenTests,
+			LabMessageDto labMessageDto,
+			Disease disease,
+			Window window) {
+		SampleController sampleController = ControllerProvider.getSampleController();
+		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent = sampleController.getSampleCreateComponent(sample, disease, () -> {
+		});
+
+		// add pathogen test create components
+		addPathogenTests(pathogenTests, labMessageDto, sampleCreateComponent);
+		// add option to create additional pathogen tests
+		sampleController.addPathogenTestButton(sampleCreateComponent, true);
+
+		sampleCreateComponent.addCommitListener(window::close);
+		sampleCreateComponent.addDiscardListener(window::close);
+
+		LabMessageUiHelper.establishFinalCommitButtons(sampleCreateComponent);
+
+		return sampleCreateComponent;
+	}
+
+	public void addPathogenTests(
+			List<PathogenTestDto> pathogenTests,
+			LabMessageDto labMessage,
+			CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent) {
+
+		SampleController sampleController = ControllerProvider.getSampleController();
+		SampleDto sample = sampleCreateComponent.getWrappedComponent().getValue();
+		int caseSampleCount = sampleController.caseSampleCountOf(sample);
+
+		List<PathogenTestDto> pathogenTestsToAdd = new ArrayList<>(pathogenTests);
+		// always build at least one PathogenTestDto
+		if (pathogenTestsToAdd.isEmpty()) {
+			pathogenTestsToAdd.add(LabMessageProcessingHelper.buildPathogenTest(null, labMessage, sample, user));
 		}
 
-		@Override
-		public <RR> IThenSwitch<T, RR> when(Function<T, Boolean> condition, SwitchFlow<T, RR> switchFlow) {
-			return new ThenSwitchStopped<>(status);
-		}
-
-		@Override
-		public <RR> IFlowThen<RR> then(Function<Result<R>, CompletionStage<Result<RR>>> actionSupplier)
-			throws ExecutionException, InterruptedException {
-			return new FlowStopped<>(status);
+		for (PathogenTestDto pathogenTest : pathogenTestsToAdd) {
+			PathogenTestForm pathogenTestCreateComponent =
+					sampleController.addPathogenTestComponent(sampleCreateComponent, pathogenTest, caseSampleCount);
+			sampleController.setViaLimsFieldChecked(pathogenTestCreateComponent);
 		}
 	}
 
-	interface SwitchFlow<T, R> {
-
-		IFlowThen<R> apply(IFlowThen<T> flow) throws ExecutionException, InterruptedException;
-	}
-
-	private static final class PersonAndSimilarEntrySelection {
-
-		private final PersonDto personDto;
-		private final SimilarEntriesDto similarEntrySelection;
-
-		public PersonAndSimilarEntrySelection(PersonDto personDto, SimilarEntriesDto similarEntrySelection) {
-			this.personDto = personDto;
-			this.similarEntrySelection = similarEntrySelection;
+	private void updateAddressAndSavePerson(PersonDto personDto, LabMessageDto labMessageDto) {
+		if (personDto.getAddress().getCity() == null
+				&& personDto.getAddress().getHouseNumber() == null
+				&& personDto.getAddress().getPostalCode() == null
+				&& personDto.getAddress().getStreet() == null) {
+			LabMessageMapper.forLabMessage(labMessageDto).mapToLocation(personDto.getAddress());
 		}
-
-		public PersonDto getPersonDto() {
-			return personDto;
-		}
-
-		public SimilarEntriesDto getSimilarEntrySelection() {
-			return similarEntrySelection;
-		}
+		FacadeProvider.getPersonFacade().savePerson(personDto);
 	}
 }

@@ -15,6 +15,10 @@
 
 package de.symeda.sormas.api.event;
 
+import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
+import de.symeda.sormas.api.user.UserDto;
 import java.util.Date;
 import java.util.Map;
 
@@ -226,6 +230,17 @@ public class EventDto extends SormasToSormasShareableDto {
 		event.setEventInvestigationStatus(EventInvestigationStatus.PENDING);
 		event.setEventLocation(LocationDto.build());
 		event.setReportDateTime(new Date());
+
+		return event;
+	}
+
+	public static EventDto build(CountryReferenceDto country, UserDto user, Disease disease) {
+		EventDto event = build();
+
+		event.getEventLocation().setCountry(country);
+		event.getEventLocation().setRegion(user.getRegion());
+		event.setReportingUser(user.toReference());
+		event.setDisease(disease);
 
 		return event;
 	}
