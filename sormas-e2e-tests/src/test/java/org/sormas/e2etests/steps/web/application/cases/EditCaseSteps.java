@@ -354,6 +354,39 @@ public class EditCaseSteps implements En {
         });
 
     When(
+        "I check the created data for existing person is correctly displayed on Edit case page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
+          aCase = collectCasePersonDataForExistingPerson();
+          createdCase =
+              CreateNewCaseSteps.caze.toBuilder()
+                  .firstName(apiState.getLastCreatedPerson().getFirstName())
+                  .lastName(apiState.getLastCreatedPerson().getLastName())
+                  .dateOfBirth(
+                      LocalDate.of(
+                          apiState.getLastCreatedPerson().getBirthdateYYYY(),
+                          apiState.getLastCreatedPerson().getBirthdateMM(),
+                          apiState.getLastCreatedPerson().getBirthdateDD()))
+                  .build();
+
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              aCase,
+              createdCase,
+              List.of(
+                  "dateOfReport",
+                  "disease",
+                  "externalId",
+                  "responsibleRegion",
+                  "responsibleDistrict",
+                  "responsibleCommunity",
+                  "placeOfStay",
+                  "placeDescription",
+                  "firstName",
+                  "lastName",
+                  "dateOfBirth"));
+        });
+
+    When(
         "I check the created data is correctly displayed on Edit case page for DE version",
         () -> {
           aCase = collectCasePersonDataDE();
@@ -1392,6 +1425,25 @@ public class EditCaseSteps implements En {
         .continent(webDriverHelpers.getValueFromCombobox(CONTINENT_COMBOBOX))
         .subcontinent(webDriverHelpers.getValueFromCombobox(SUBCONTINENT_COMBOBOX))
         .country(webDriverHelpers.getValueFromCombobox(COUNTRY_COMBOBOX))
+        .build();
+  }
+
+  private Case collectCasePersonDataForExistingPerson() {
+    Case userInfo = getUserInformation();
+
+    return Case.builder()
+        .dateOfReport(getDateOfReport())
+        .firstName(userInfo.getFirstName())
+        .lastName(userInfo.getLastName())
+        .dateOfBirth(userInfo.getDateOfBirth())
+        .externalId(webDriverHelpers.getValueFromWebElement(EXTERNAL_ID_INPUT))
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+        .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
+        .placeDescription(webDriverHelpers.getValueFromWebElement(PLACE_DESCRIPTION_INPUT))
+        .responsibleRegion(webDriverHelpers.getValueFromWebElement(REGION_INPUT))
+        .responsibleDistrict(webDriverHelpers.getValueFromWebElement(DISTRICT_INPUT))
+        .responsibleCommunity(webDriverHelpers.getValueFromWebElement(COMMUNITY_INPUT))
+        .placeOfStay(webDriverHelpers.getTextFromWebElement(PLACE_OF_STAY_SELECTED_VALUE))
         .build();
   }
 

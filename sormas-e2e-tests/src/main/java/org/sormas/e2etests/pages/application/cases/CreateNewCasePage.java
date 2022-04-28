@@ -74,6 +74,7 @@ public class CreateNewCasePage {
       By.xpath("//div[@class= 'filters-container']//div[contains(@location, 'lastName')]//input");
   public static final By PERSON_CASE_WINDOW_SEARCH_CASE_BUTTON = By.id("actionSearch");
   public static final By PICK_A_EXISTING_CASE = By.xpath("//*[text()='Pick an existing case']");
+  public static final By CREATE_A_NEW_CASE = By.xpath("//*[text()='Create a new case']");
   public static final By SELECT_PERSON_WINDOW_CONFIRM_BUTTON =
       By.xpath(
           "//div[contains(@class, 'popupContent')]//span[contains(text(), 'Confirm')]//ancestor::div[@id='commit']");

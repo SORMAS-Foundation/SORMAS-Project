@@ -119,6 +119,7 @@ public class CreateNewContactSteps implements En {
           fillPrimaryPhoneNumber(contact.getPrimaryPhoneNumber());
           fillPrimaryEmailAddress(contact.getPrimaryEmailAddress());
           selectReturningTraveler(contact.getReturningTraveler());
+          fillDateOfReport(contact.getReportDate(), Locale.ENGLISH);
           fillDateOfLastContact(contact.getDateOfLastContact(), Locale.ENGLISH);
           selectResponsibleRegion(contact.getResponsibleRegion());
           selectResponsibleDistrict(contact.getResponsibleDistrict());

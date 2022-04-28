@@ -138,8 +138,8 @@ public class EditContactSteps implements En {
           collectedContact = collectContactData();
           createdContact =
               CreateNewContactSteps.contact.toBuilder()
-                      .firstName(apiState.getLastCreatedPerson().getFirstName())
-                      .lastName(apiState.getLastCreatedPerson().getLastName())
+                  .firstName(apiState.getLastCreatedPerson().getFirstName())
+                  .lastName(apiState.getLastCreatedPerson().getLastName())
                   .build();
           ComparisonHelper.compareEqualFieldsOfEntities(
               collectedContact,
@@ -171,8 +171,8 @@ public class EditContactSteps implements En {
               CreateNewContactSteps.contact.toBuilder()
                   .firstName(apiState.getLastCreatedPerson().getFirstName())
                   .lastName(apiState.getLastCreatedPerson().getLastName())
-                  // .reportDate(apiState.getLastCreatedPerson().)
                   .build();
+
           ComparisonHelper.compareEqualFieldsOfEntities(
               collectedContact,
               createdContact,
