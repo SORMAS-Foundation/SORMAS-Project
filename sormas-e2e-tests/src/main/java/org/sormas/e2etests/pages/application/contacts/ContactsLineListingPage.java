@@ -63,6 +63,11 @@ public class ContactsLineListingPage {
   public static final By ADD_LINE = By.cssSelector("[id='lineListingAddLine']");
   public static final By LINE_LISTING_ACTION_SAVE = By.cssSelector("[id='actionSave']");
   public static final By CONTACT_CHOOSE_CASE = By.id("contactChooseCase");
+  public static final By LINE_LISTING_SELECTED_SOURCE_CASE_NAME_AND_ID_TEXT =
+      By.cssSelector("div[class='v-slot'] div[class='v-label v-widget v-label-undef-w']");
+  public static final By LINE_LISTING_DISEASE_OF_SOURCE_CASE =
+      By.cssSelector(
+          "div#lineListingSharedInfoField > .v-has-width.v-layout.v-vertical.v-verticallayout.v-widget div#disease > .v-filterselect-input");
 
   public static By getLineListingDateReportInputByIndex(String dateOfReportNumber) {
     return By.xpath(String.format("(//div[@id='dateOfReport']//input)[%s]", dateOfReportNumber));
