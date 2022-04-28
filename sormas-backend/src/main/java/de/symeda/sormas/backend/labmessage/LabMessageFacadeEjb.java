@@ -9,6 +9,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.PermitAll;
 import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
@@ -73,6 +74,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 
 	public static final List<String> VALID_SORT_PROPERTY_NAMES = Arrays.asList(
 		LabMessageIndexDto.UUID,
+		LabMessageIndexDto.TYPE,
 		LabMessageIndexDto.PERSON_FIRST_NAME,
 		LabMessageIndexDto.PERSON_LAST_NAME,
 		LabMessageIndexDto.PERSON_POSTAL_CODE,
@@ -312,13 +314,14 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			userJoin.get(User.FIRST_NAME),
 			userJoin.get(User.LAST_NAME));
 
-		Predicate whereFilter = null;
+		Predicate filter = null;
+
 		if (criteria != null) {
-			whereFilter = labMessageService.buildCriteriaFilter(cb, labMessage, criteria);
+			filter = labMessageService.buildCriteriaFilter(cb, labMessage, criteria);
 		}
 
-		if(whereFilter != null) {
-			cq.where(whereFilter);
+		if (filter != null) {
+			cq.where(filter);
 		}
 
 		// Distinct is necessary here to avoid duplicate results due to the user role join in taskService.createAssigneeFilter
@@ -416,6 +419,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	}
 
 	@Override
+	@PermitAll
 	public String getLabMessagesAdapterVersion() throws NamingException {
 		ExternalLabResultsFacade labResultsFacade = getExternalLabResultsFacade();
 		return labResultsFacade.getVersion();

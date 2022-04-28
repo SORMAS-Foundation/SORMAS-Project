@@ -894,11 +894,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		return persons;
 	}
 
-	public void deleteUnreferencedPersons(int batchSize) {
-		IterableHelper.executeBatched(getAllNonReferencedPersonUuids(), batchSize, batchedUuids -> deletePermanent(batchedUuids));
-	}
-
-	private List<String> getAllNonReferencedPersonUuids() {
+	public List<String> getAllNonReferencedPersonUuids() {
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<String> cq = cb.createQuery(String.class);

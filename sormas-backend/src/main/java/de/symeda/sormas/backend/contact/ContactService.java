@@ -46,7 +46,6 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.utils.FieldConstraints;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -78,6 +77,7 @@ import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
@@ -260,12 +260,19 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	public List<Contact> getAllByResultingCase(Case caze) {
+		return getAllByResultingCase(caze, false);
+	}
+
+	public List<Contact> getAllByResultingCase(Case caze, boolean includeDeleted) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Contact> cq = cb.createQuery(getElementClass());
 		Root<Contact> from = cq.from(getElementClass());
 
-		cq.where(cb.and(createDefaultFilter(cb, from), cb.equal(from.get(Contact.RESULTING_CASE), caze)));
+		Predicate filter = includeDeleted ? null : createDefaultFilter(cb, from);
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Contact.RESULTING_CASE), caze));
+		cq.where(filter);
+
 		cq.orderBy(cb.desc(from.get(Contact.REPORT_DATE_TIME)));
 
 		return em.createQuery(cq).getResultList();
@@ -915,21 +922,16 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 	public void cancelFollowUp(Contact contact, String comment) {
 		contact.setFollowUpStatus(FollowUpStatus.CANCELED);
-		int finalFollowUpCommentLenght = contact.getFollowUpComment() == null
-			? I18nProperties.getString(Strings.messageSystemFollowUpCanceled).length()
-			: contact.getFollowUpComment().length() + I18nProperties.getString(Strings.messageSystemFollowUpCanceled).length();
-		if (finalFollowUpCommentLenght <= FieldConstraints.CHARACTER_LIMIT_BIG) {
-			addToFollowUpStatusComment(contact, comment);
-		}
+		addToFollowUpStatusComment(contact, comment);
 		externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
 		ensurePersisted(contact);
 	}
 
 	private void addToFollowUpStatusComment(Contact contact, String comment) {
-		contact.setFollowUpComment(
-			comment != null && comment.equals(contact.getFollowUpComment())
-				? contact.getFollowUpComment()
-				: DataHelper.joinStrings("\n", contact.getFollowUpComment(), comment));
+		String finalFollowUpComment = ContactLogic.extendFollowUpStatusComment(contact.getFollowUpComment(), comment);
+		if (finalFollowUpComment.length() <= FieldConstraints.CHARACTER_LIMIT_BIG) {
+			contact.setFollowUpComment(finalFollowUpComment);
+		}
 	}
 
 	// Used only for testing; directly retrieve the contacts from the visit instead

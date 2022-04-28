@@ -135,11 +135,7 @@ public class AboutView extends VerticalLayout implements View {
 
 		if (InfoProvider.get().isSnapshotVersion()) {
 			Link commitLink = new Link(
-				String.format(
-					"%s (%s)",
-					versionLabel.getValue(),
-					InfoProvider.get()
-						.getLastCommitShortId()),
+				String.format("%s (%s)", versionLabel.getValue(), InfoProvider.get().getLastCommitShortId()),
 				new ExternalResource(InfoProvider.get().getLastCommitHistoryUrl()));
 			commitLink.setTargetName("_blank");
 			CssStyles.style(commitLink, CssStyles.VSPACE_3);

@@ -7,6 +7,15 @@ Please consult this collection of solutions to common problems if you have any i
 **Q:** I don't see a logout option anywhere in the mobile app. How can I change my user?  
 **A:** The logout option is hidden by default because users in the field often don't know their own passwords, but their devices are instead set up by a supervisor. If you want to change your user, go to the Settings screen and tap the version number five times to bring up additional options, including the logout option.
 
+**Q:** The app crashes. How can I get a log file?  
+**A:** If you are using a release version of the app and need to get error logs, you can do the following:  
+
+1. [Enable developer options in the Android device's settings](https://developer.android.com/studio/debug/dev-options)
+2. Use the "Take Bug Report" option. The full report is not needed.
+3. The zip file that is created will have a dumpstate-<current date>.txt file that contains the log and some more information
+4. Open it and search for de.symeda.sormas to identify the process id. E.g. `de.symeda.sormas.app/de.symeda.sormas.app.login.LoginActivity$_11109#0` -> 11109 is the id
+5. Search for all occurences of the process id to filter the file down to lines that contain the actual log of sormas
+
 ## Debugging Performance Problems
 
 Performance logging can be used to find out which part of the code or system might be responsible for long-running functions in the application. This helps the developers to identify the source of the problems quicker and find out whether there are several problems at once or performance problems that manifest in Java execution time instead of slow SQL queries.

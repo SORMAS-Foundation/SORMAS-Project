@@ -28,7 +28,6 @@ import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.CoreFacade;
-import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
@@ -39,8 +38,6 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 
 @Remote
 public interface EventFacade extends CoreFacade<EventDto, EventIndexDto, EventReferenceDto, EventCriteria> {
-
-	Map<Disease, Long> getEventCountByDisease(EventCriteria eventCriteria);
 
 	EventDto getEventByUuid(String uuid, boolean detailedReferences);
 

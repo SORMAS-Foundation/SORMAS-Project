@@ -254,6 +254,10 @@ public class EventDataView extends AbstractEventView {
 
 		layout.addSidePanelComponent(shortcutLinksLayout, SHORTCUT_LINKS_LOC);
 
+		if(!UserProvider.getCurrent().hasUserRight(UserRight.EVENT_EDIT)){
+			layout.setEnabled(false);
+		}
+
 		EditPermissionType eventEditAllowed = FacadeProvider.getEventFacade().isEventEditAllowed(event.getUuid());
 
 		if (eventEditAllowed == EditPermissionType.ARCHIVING_STATUS_ONLY) {

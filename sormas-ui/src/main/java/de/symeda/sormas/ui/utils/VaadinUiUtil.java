@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Consumer;
@@ -203,6 +205,22 @@ public final class VaadinUiUtil {
 		column.setWidth(20);
 		column.setSortable(false);
 		column.setHeaderCaption("");
+	}
+
+	public static Window showConfirmationPopup(
+		String caption,
+		Component content,
+		String confirmCaption,
+		String cancelCaption,
+		Consumer<Boolean> resultConsumer) {
+
+		return showConfirmationPopup(caption, content, confirmCaption, cancelCaption, getEstimatedWidth(caption.length()), resultConsumer);
+	}
+
+	public static Integer getEstimatedWidth(int length) {
+		BigDecimal width = new BigDecimal(length).multiply(BigDecimal.valueOf(13.6));
+		width = width.setScale(0, RoundingMode.HALF_UP);
+		return width.intValue();
 	}
 
 	public static Window showConfirmationPopup(
