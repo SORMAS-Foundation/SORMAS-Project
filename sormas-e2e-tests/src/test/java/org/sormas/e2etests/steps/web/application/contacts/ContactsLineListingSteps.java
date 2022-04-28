@@ -18,19 +18,6 @@
 
 package org.sormas.e2etests.steps.web.application.contacts;
 
-import cucumber.api.java8.En;
-import org.sormas.e2etests.entities.pojo.web.ContactsLineListing;
-import org.sormas.e2etests.entities.services.ContactsLineListingService;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.testng.asserts.SoftAssert;
-
-import javax.inject.Inject;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.time.format.TextStyle;
-import java.util.Locale;
-import java.util.concurrent.TimeUnit;
-
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.DISEASE_COLUMNS;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.FIRST_CONTACT_ID_BUTTON;
@@ -46,14 +33,30 @@ import static org.sormas.e2etests.pages.application.contacts.ContactsLineListing
 import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_DATE_LAST_CONTACT_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_DATE_REPORT_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_DISEASE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_DISEASE_OF_SOURCE_CASE;
 import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_DISTRICT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_FIRST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_LAST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_RELATIONSHIP_TO_CASE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_SELECTED_SOURCE_CASE_NAME_AND_ID_TEXT;
 import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_SEX_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_TYPE_OF_CONTACT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.getLineListingDateReportInputByIndex;
+
+import cucumber.api.java8.En;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.time.format.TextStyle;
+import java.util.Locale;
+import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
+import org.sormas.e2etests.entities.pojo.web.ContactsLineListing;
+import org.sormas.e2etests.entities.services.ContactsLineListingService;
+import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.state.ApiState;
+import org.testng.asserts.SoftAssert;
 
 public class ContactsLineListingSteps implements En {
   public static final DateTimeFormatter DATE_FORMATTER = DateTimeFormatter.ofPattern("M/d/yyyy");
@@ -65,7 +68,8 @@ public class ContactsLineListingSteps implements En {
   public ContactsLineListingSteps(
       WebDriverHelpers webDriverHelpers,
       ContactsLineListingService contactsLineListingService,
-      SoftAssert softly) {
+      SoftAssert softly,
+      ApiState apiState) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -159,6 +163,35 @@ public class ContactsLineListingSteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CONTACT_CHOOSE_CASE);
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_CHOOSE_CASE);
+        });
+
+    When(
+        "^I check the name and uuid of selected case information is correctly displayed in new Contact Line Listing popup window$",
+        () -> {
+          String displayedCaseNameAndId =
+              webDriverHelpers.getTextFromWebElement(
+                  LINE_LISTING_SELECTED_SOURCE_CASE_NAME_AND_ID_TEXT);
+          String caseNameAndId =
+              "Selected source case:\n"
+                  + apiState.getLastCreatedPerson().getFirstName()
+                  + " "
+                  + apiState.getLastCreatedPerson().getLastName()
+                  + " ("
+                  + apiState.getCreatedCase().getUuid().substring(0, 6).toUpperCase()
+                  + ")";
+          softly.assertEquals(
+              displayedCaseNameAndId, caseNameAndId, "Person name or ID is not correct");
+          softly.assertAll();
+        });
+
+    When(
+        "^I check disease dropdown is automatically filled with disease of selected Case in new Contact Line Listing popup window$",
+        () -> {
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(LINE_LISTING_DISEASE_OF_SOURCE_CASE),
+              DiseasesValues.getCaptionForName(apiState.getCreatedCase().getDisease()),
+              "Displayed disease is not correct");
+          softly.assertAll();
         });
   }
 
