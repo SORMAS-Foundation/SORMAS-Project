@@ -1,4 +1,9 @@
-persons/push=1250/
-persons/push=1344/
-persons/push=1002/
-persons/push=1303/
+Contacts page=Couldn't load page under 20s/
+Persons page=Couldn't load page under 20s/
+Immunizations page=Couldn't load page under 20s/
+Events page=Couldn't load page under 20s/
+Samples page=Couldn't load page under 20s/
+Surveillance Dashboard page=Couldn't load page under 20s/
+Cases page=19.697/
+Tasks page=30.694/
+Contacts Dashboard page=0.343/

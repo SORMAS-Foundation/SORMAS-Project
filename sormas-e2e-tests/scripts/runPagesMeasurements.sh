@@ -33,5 +33,4 @@ cat /dev/null > ./customReports/pagesMeasurements/data/results.txt
 echo "Executing gradle clean..."
 ./gradlew clean goJF
 echo "Starting all BDD tests under @PagesMeasurements tag..."
-#./gradlew startTests -Dcucumber.tags="@PagesMeasurements" -Dheadless=true -Dcourgette.threads=9 -DenvConfig=/srv/dockerdata/jenkins_new/sormas-files/envData.json --stacktrace --debug --scan
-./gradlew startTests -Dcucumber.tags="@PagesMeasurements" -Dheadless=true -Dcourgette.threads=9 -DenvConfig=C:/Users/Razvan/Desktop/envData.json
+./gradlew startTests -Dcucumber.tags="@PagesMeasurements" -Dheadless=true -Dcourgette.threads=9 -DenvConfig=/srv/dockerdata/jenkins_new/sormas-files/envData.json --stacktrace --debug --scan
