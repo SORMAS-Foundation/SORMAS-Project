@@ -1,19 +1,27 @@
 package de.symeda.sormas.ui.travelentry;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Objects;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.navigator.ViewChangeListener;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
+import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
+import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
+import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.ui.ComboBox;
 
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.common.CoreEntityType;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -28,7 +36,9 @@ import de.symeda.sormas.ui.utils.ButtonHelper;
 import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.FilteredGrid;
+import de.symeda.sormas.ui.utils.MenuBarHelper;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
+import de.symeda.sormas.ui.utils.ViewConfiguration;
 import de.symeda.sormas.ui.utils.components.expandablebutton.ExpandableButton;
 
 public class TravelEntriesView extends AbstractView {
@@ -36,6 +46,7 @@ public class TravelEntriesView extends AbstractView {
 	public static final String VIEW_NAME = "travelEntries";
 
 	private final TravelEntryCriteria criteria;
+	private ViewConfiguration viewConfiguration;
 	private final FilteredGrid<?, TravelEntryCriteria> grid;
 	private TravelEntryFilterForm filterForm;
 
@@ -43,8 +54,13 @@ public class TravelEntriesView extends AbstractView {
 	private Label relevanceStatusInfoLabel;
 	private ComboBox relevanceStatusFilter;
 
+	// Bulk operations
+	private MenuBar bulkOperationsDropdown;
+
 	public TravelEntriesView() {
 		super(VIEW_NAME);
+
+		viewConfiguration = ViewModelProviders.of(getClass()).get(ViewConfiguration.class);
 
 		criteria = ViewModelProviders.of(TravelEntriesView.class).get(TravelEntryCriteria.class);
 		if (criteria.getRelevanceStatus() == null) {
@@ -76,9 +92,38 @@ public class TravelEntriesView extends AbstractView {
 			long countTravelEntries = FacadeProvider.getTravelEntryFacade().count(new TravelEntryCriteria(), true);
 			if (countTravelEntries > 0) {
 				final ExpandableButton createButton =
-					new ExpandableButton(Captions.travelEntryNewTravelEntry).expand(e -> ControllerProvider.getTravelEntryController().create(null));
+					new ExpandableButton(Captions.travelEntryNewTravelEntry).expand(e -> ControllerProvider.getTravelEntryController().create());
 				addHeaderComponent(createButton);
 			}
+		}
+
+
+		if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_DELETE)
+				&& UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+
+			Button btnEnterBulkEditMode = ButtonHelper.createIconButton(Captions.actionEnterBulkEditMode, VaadinIcons.CHECK_SQUARE_O, null);
+			btnEnterBulkEditMode.setVisible(!viewConfiguration.isInEagerMode());
+			addHeaderComponent(btnEnterBulkEditMode);
+
+			Button btnLeaveBulkEditMode =
+					ButtonHelper.createIconButton(Captions.actionLeaveBulkEditMode, VaadinIcons.CLOSE, null, ValoTheme.BUTTON_PRIMARY);
+			btnLeaveBulkEditMode.setVisible(viewConfiguration.isInEagerMode());
+			addHeaderComponent(btnLeaveBulkEditMode);
+
+			btnEnterBulkEditMode.addClickListener(e -> {
+				bulkOperationsDropdown.setVisible(true);
+				ViewModelProviders.of(TravelEntriesView.class).get(ViewConfiguration.class).setInEagerMode(true);
+				btnEnterBulkEditMode.setVisible(false);
+				btnLeaveBulkEditMode.setVisible(true);
+				((TravelEntryGrid) grid).reload();
+			});
+			btnLeaveBulkEditMode.addClickListener(e -> {
+				bulkOperationsDropdown.setVisible(false);
+				ViewModelProviders.of(TravelEntriesView.class).get(ViewConfiguration.class).setInEagerMode(false);
+				btnLeaveBulkEditMode.setVisible(false);
+				btnEnterBulkEditMode.setVisible(true);
+				navigateTo(criteria);
+			});
 		}
 	}
 
@@ -89,6 +134,12 @@ public class TravelEntriesView extends AbstractView {
 			params = params.substring(1);
 			criteria.fromUrlParams(params);
 		}
+
+		if (viewConfiguration.isInEagerMode()) {
+			TravelEntryGrid travelEntryGrid = (TravelEntryGrid) this.grid;
+			travelEntryGrid.setEagerDataProvider();
+		}
+
 		updateFilterComponents();
 	}
 
@@ -141,28 +192,41 @@ public class TravelEntriesView extends AbstractView {
 
 		// Show active/archived/all dropdown
 		if (Objects.nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_VIEW)) {
-			int daysAfterTravelEntryGetsArchived = FacadeProvider.getConfigFacade().getDaysAfterTravelEntryGetsArchived();
-			if (daysAfterTravelEntryGetsArchived > 0) {
-				relevanceStatusInfoLabel = new Label(
-					VaadinIcons.INFO_CIRCLE.getHtml() + " "
-						+ String.format(I18nProperties.getString(Strings.infoArchivedTravelEntries), daysAfterTravelEntryGetsArchived),
-					ContentMode.HTML);
-				relevanceStatusInfoLabel.setVisible(false);
-				relevanceStatusInfoLabel.addStyleName(CssStyles.LABEL_VERTICAL_ALIGN_SUPER);
-				actionButtonsLayout.addComponent(relevanceStatusInfoLabel);
-				actionButtonsLayout.setComponentAlignment(relevanceStatusInfoLabel, Alignment.MIDDLE_RIGHT);
+
+			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.TRAVEL_ENTRY)) {
+
+				int daysAfterTravelEntryGetsArchived = FacadeProvider.getFeatureConfigurationFacade()
+						.getProperty(
+								FeatureType.AUTOMATIC_ARCHIVING,
+								CoreEntityType.TRAVEL_ENTRY,
+								FeatureTypeProperty.THRESHOLD_IN_DAYS,
+								Integer.class);
+				if (daysAfterTravelEntryGetsArchived > 0) {
+					relevanceStatusInfoLabel = new Label(
+							VaadinIcons.INFO_CIRCLE.getHtml() + " "
+									+ String.format(I18nProperties.getString(Strings.infoArchivedTravelEntries), daysAfterTravelEntryGetsArchived),
+							ContentMode.HTML);
+					relevanceStatusInfoLabel.setVisible(false);
+					relevanceStatusInfoLabel.addStyleName(CssStyles.LABEL_VERTICAL_ALIGN_SUPER);
+					actionButtonsLayout.addComponent(relevanceStatusInfoLabel);
+					actionButtonsLayout.setComponentAlignment(relevanceStatusInfoLabel, Alignment.MIDDLE_RIGHT);
+				}
 			}
 			relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
 			relevanceStatusFilter.setId("relevanceStatus");
 			relevanceStatusFilter.setWidth(140, Unit.PIXELS);
 			relevanceStatusFilter.setNullSelectionAllowed(false);
+			relevanceStatusFilter.setTextInputAllowed(false);
 			relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
 			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(Captions.travelEntryActiveTravelEntries));
 			relevanceStatusFilter
 				.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(Captions.travelEntryArchivedTravelEntries));
 			relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(Captions.travelEntryAllTravelEntries));
+			relevanceStatusFilter.setCaption("");
 			relevanceStatusFilter.addValueChangeListener(e -> {
-				relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
+				if (relevanceStatusInfoLabel != null) {
+					relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
+				}
 				criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
 				navigateTo(criteria);
 			});
@@ -171,6 +235,25 @@ public class TravelEntriesView extends AbstractView {
 		statusFilterLayout.addComponent(actionButtonsLayout);
 		statusFilterLayout.setComponentAlignment(actionButtonsLayout, Alignment.TOP_RIGHT);
 		statusFilterLayout.setExpandRatio(actionButtonsLayout, 1);
+
+		// Bulk operation dropdown
+		if (UserProvider.getCurrent().hasUserRight(UserRight.TRAVEL_ENTRY_DELETE)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+			List<MenuBarHelper.MenuBarItem> bulkActions = new ArrayList<>();
+			bulkActions.add(
+				new MenuBarHelper.MenuBarItem(
+					I18nProperties.getCaption(Captions.bulkDelete),
+					VaadinIcons.TRASH,
+					mi -> grid.bulkActionHandler(
+						items -> ControllerProvider.getTravelEntryController().deleteAllSelectedItems(items, () -> navigateTo(criteria)),
+						true)));
+
+			bulkOperationsDropdown = MenuBarHelper.createDropDown(Captions.bulkActions, bulkActions);
+
+			bulkOperationsDropdown.setVisible(viewConfiguration.isInEagerMode());
+			bulkOperationsDropdown.setCaption("");
+			actionButtonsLayout.addComponent(bulkOperationsDropdown);
+		}
 
 		return statusFilterLayout;
 	}

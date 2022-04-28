@@ -14,13 +14,15 @@ import static org.junit.Assert.assertTrue;
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.mockStatic;
-import static org.mockito.Mockito.when;
 
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import de.symeda.sormas.api.user.JurisdictionLevel;
+import de.symeda.sormas.api.user.UserRight;
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
 import org.junit.Test;
@@ -44,7 +46,6 @@ public class UserServiceTest extends AbstractBeanTest {
 		mockAuthProvider = mockStatic(AuthProvider.class);
 		assertNotNull(mockAuthProvider);
 		Mockito.when(AuthProvider.getProvider(any())).thenReturn(authProvider);
-		when(authProvider.isUsernameCaseSensitive()).thenReturn(true);
 	}
 
 	@AfterClass
@@ -55,74 +56,62 @@ public class UserServiceTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetReferenceList() {
+	public void testGetUserReferencesByJurisdictions() {
 
 		List<String> regionUuids = null;
 		List<String> districtUuids = null;
 		List<String> communityUuids = null;
-		boolean includeSupervisors = false;
-		boolean filterByJurisdiction = false;
-		boolean activeOnly = false;
-		List<UserRole> userRoles = null;
+		List<JurisdictionLevel> jurisdictionLevels = null;
 
 		// 0. No conditions, test signature with userRoles varArg parameter
 		List<UserReference> result =
-			getUserService().getReferenceList(regionUuids, districtUuids, includeSupervisors, filterByJurisdiction, activeOnly);
+			getUserService().getUserReferencesByJurisdictions(regionUuids, districtUuids, null,  null, null);
 		assertThat(result, hasSize(1));
 		UserReference admin = result.get(0);
 		assertThat(admin.getUserRoles(), containsInAnyOrder(UserRole.ADMIN, UserRole.NATIONAL_USER));
 
 		// 1a. Find admin with several conditions
-		activeOnly = true;
-		userRoles = Arrays.asList(UserRole.ADMIN);
-		result = getUserService().getReferenceList(regionUuids, districtUuids, communityUuids, includeSupervisors, filterByJurisdiction, activeOnly, userRoles);
+		jurisdictionLevels = Arrays.asList(JurisdictionLevel.NATION);
+		result = getUserService().getUserReferencesByJurisdictions(regionUuids, districtUuids, communityUuids, jurisdictionLevels, null);
 		assertThat(result, contains(admin));
-		userRoles = Arrays.asList(UserRole.NATIONAL_USER);
-		result = getUserService().getReferenceList(regionUuids, districtUuids, communityUuids, includeSupervisors, filterByJurisdiction, activeOnly, userRoles);
-		assertThat(result, contains(admin));
-		userRoles = Arrays.asList(UserRole.ADMIN, UserRole.CASE_OFFICER);
-		result = getUserService().getReferenceList(regionUuids, districtUuids, communityUuids, includeSupervisors, filterByJurisdiction, activeOnly, userRoles);
+		jurisdictionLevels = Arrays.asList(JurisdictionLevel.NATION, JurisdictionLevel.DISTRICT);
+		result = getUserService().getUserReferencesByJurisdictions(regionUuids, districtUuids, communityUuids, jurisdictionLevels, null);
 		assertThat(result, contains(admin));
 
 		// 1b. Exclude admin by role
-		userRoles = Arrays.asList(UserRole.CASE_OFFICER);
-		result = getUserService().getReferenceList(regionUuids, districtUuids, communityUuids, includeSupervisors, filterByJurisdiction, activeOnly, userRoles);
+		jurisdictionLevels = Arrays.asList(JurisdictionLevel.DISTRICT);
+		result = getUserService().getUserReferencesByJurisdictions(regionUuids, districtUuids, communityUuids, jurisdictionLevels, null);
 		assertThat(result, is(empty()));
 
-		// 2. Include supervisors
-		userRoles = Arrays.asList(UserRole.CONTACT_OFFICER);
+		// 2. Exclude inactive user as overall condition
 		RDCF rdcf = creator.createRDCF();
 		UserDto supervisor = creator.createUser(rdcf, UserRole.CONTACT_SUPERVISOR);
-		result = getUserService().getReferenceList(regionUuids, districtUuids, communityUuids, includeSupervisors, filterByJurisdiction, activeOnly, userRoles);
-		assertThat(result, is(empty()));
-		includeSupervisors = true;
-		result = getUserService().getReferenceList(regionUuids, districtUuids, communityUuids, includeSupervisors, filterByJurisdiction, activeOnly, userRoles);
-		assertThat(result, hasSize(1));
+		jurisdictionLevels = Arrays.asList(JurisdictionLevel.REGION);
+		result = getUserService().getUserReferencesByJurisdictions(regionUuids, districtUuids, communityUuids, jurisdictionLevels, null);
 		assertThat(result.get(0).getUuid(), equalTo(supervisor.getUuid()));
-
-		// 3. Exclude inactive user as overall condition
 		getUserFacade().disableUsers(Arrays.asList(supervisor.getUuid()));
-		result = getUserService().getReferenceList(regionUuids, districtUuids, communityUuids, includeSupervisors, filterByJurisdiction, activeOnly, userRoles);
+		result = getUserService().getUserReferencesByJurisdictions(regionUuids, districtUuids, communityUuids, jurisdictionLevels, null);
 		assertThat(result, is(empty()));
 
-		// 4. filterByJurisdiction to test that the invocation works and filters correctly concerning activeOnly
-		filterByJurisdiction = true;
-		result = getUserService().getReferenceList(regionUuids, districtUuids, communityUuids, includeSupervisors, filterByJurisdiction, activeOnly, userRoles);
-		assertThat(result, is(empty()));
-		activeOnly = false;
-		result = getUserService().getReferenceList(regionUuids, districtUuids, communityUuids, includeSupervisors, filterByJurisdiction, activeOnly, userRoles);
+		// 3. regions filter
+		getUserFacade().enableUsers(Arrays.asList(supervisor.getUuid()));
+		result = getUserService().getUserReferencesByJurisdictions(Arrays.asList(rdcf.region.getUuid()), null, null, null, null);
 		assertThat(result, hasSize(1));
 		assertThat(result.get(0).getUuid(), equalTo(supervisor.getUuid()));
 
-		// 5. regions filter
-		result = getUserService().getReferenceList(Arrays.asList(rdcf.region.getUuid()), null, false, false, false);
-		assertThat(result, hasSize(1));
+		UserDto officer = creator.createUser(rdcf, UserRole.CONTACT_OFFICER);
+		result = getUserService().getUserReferencesByJurisdictions(Arrays.asList(rdcf.region.getUuid()), null, null, null, null);
+		assertThat(result, hasSize(2));
+
+		// 4. districts filter
+		result = getUserService().getUserReferencesByJurisdictions(null, Arrays.asList(rdcf.district.getUuid()), null, null, null);
+		assertThat(result, hasSize(2));
 		assertThat(result.get(0).getUuid(), equalTo(supervisor.getUuid()));
 
-		// 6. districts filter
-		result = getUserService().getReferenceList(null, Arrays.asList(rdcf.district.getUuid()), false, false, false);
+		// 5. user rights
+		result = getUserService().getUserReferencesByJurisdictions(null, Arrays.asList(rdcf.district.getUuid()), null, null, Arrays.asList(UserRight.CONTACT_RESPONSIBLE));
 		assertThat(result, hasSize(1));
-		assertThat(result.get(0).getUuid(), equalTo(supervisor.getUuid()));
+		assertThat(result.get(0).getUuid(), equalTo(officer.getUuid()));
 	}
 
 	@Test

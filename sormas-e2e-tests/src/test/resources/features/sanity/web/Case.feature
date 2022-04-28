@@ -1,6 +1,7 @@
 @UI @Sanity @Case
 Feature: Case end to end tests
 
+  @env_main
   Scenario: Check a new case data
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -9,6 +10,7 @@ Feature: Case end to end tests
     Then I check the created data is correctly displayed on Edit case page
     And I check the created data is correctly displayed on Edit case person page
 
+  @env_main
   Scenario: Check that double clicking NEW CASE button does not cause a redundant action
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -19,6 +21,7 @@ Feature: Case end to end tests
     Then I check the created data is correctly displayed on Edit case page
     And I check the created data is correctly displayed on Edit case person page
 
+  @env_main @ignore #un-ignore this when dataReceived fields are fixed in test-auto
   Scenario: Edit, save and check all fields of a new case
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -29,7 +32,7 @@ Feature: Case end to end tests
     And I open last edited case by link
     And I check the edited data is correctly displayed on Edit case page
 
-  @issue=SORDEV-7868
+  @issue=SORDEV-7868 @env_main
   Scenario: Fill the case tab
     Given I log in with National User
     And I click on the Cases button from navbar
@@ -90,6 +93,68 @@ Feature: Case end to end tests
     And I click on save button from Edit Case page with current hospitalization
     Then I check if the specific data is correctly displayed
 
+  @issue=SORDEV-5517 @env_de
+  Scenario: Fill the case tab (DE specific)
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data for DE version
+    Then I select German Investigation Status Done
+    And I check if date of investigation filed is available
+    Then I select German Investigation Status Pending
+    Then I select German Investigation Status Discarded
+    And I check if date of investigation filed is available
+    Then I select German Investigation Status Pending
+    Then I select German Outcome Of Case Status Deceased
+    And I check if date of outcome filed is available
+    Then I select German Outcome Of Case Status Recovered
+    And I check if date of outcome filed is available
+    And I click on the German option for Yes in Sequelae
+    And I check if Sequelae Details field is available
+    And I click on the German option for No in Sequelae
+    And I click on the German option for Unknown in Sequelae
+    Then I select German Outcome Of Case Status Unknown
+    And I check if date of outcome filed is available
+    And I click on the German option for Yes in Sequelae
+    And I check if Sequelae Details field is available
+    And I click on the German option for No in Sequelae
+    And I click on the German option for Unknown in Sequelae
+    Then I click on Place of stay of this case differs from its responsible jurisdiction
+    And I check if region combobox is available and I select Responsible Region
+    And I check if district combobox is available and i select Responsible District
+    And I check if community combobox is available
+    Then I click on Facility as German place of stay
+    And I check if Facility Category combobox is available
+    And I check if Facility Type combobox is available
+    Then I set Facility in German as a Other facility
+    And I fill Facility name and description filed by dummy description
+    And I check if Facility name and description field is available
+    Then I set German Quarantine Home
+    And I check if Quarantine start field is available
+    And I check if Quarantine end field is available
+    Then I select Quarantine ordered verbally checkbox
+    And I check if Date of verbal order field is available
+    Then I select Quarantine ordered by official document checkbox
+    And I check if Date of the official document ordered field is available
+    Then I select Official quarantine order sent
+    And I check if Date official quarantine order was sent field is available
+    Then I set German Quarantine Institutional
+    And I check if Quarantine start field is available
+    And I check if Quarantine end field is available
+    And I check if Date of verbal order field is available
+    And I check if Date of the official document ordered field is available
+    And I check if Date official quarantine order was sent field is available
+    Then I set German Quarantine None
+    Then I set German Quarantine Unknown
+    Then I set German Quarantine Other
+    And I check if Quarantine details field is available
+    Then I set German Vaccination Status as vaccinated
+    Then I set German Vaccination Status as unvaccinated
+    Then I set German Vaccination Status as unknown
+    And I click on save button from Edit Case page with current hospitalization
+    Then I check if the specific data is correctly displayed
+
+  @env_main
   Scenario: Delete created case
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -103,6 +168,7 @@ Feature: Case end to end tests
     And I delete the case
     Then I check that number of displayed cases results is 0
 
+  @issue=SORDEV-5530 @env_main
   Scenario: Edit all fields from Case Contacts tab
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -117,6 +183,7 @@ Feature: Case end to end tests
     And I open the Case Contacts tab of the created case via api
     And I verify that created contact from Case Contacts tab is correctly displayed
 
+  @issue=SORQA-100 @env_main
   Scenario: Edit all fields from Symptoms tab
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -131,16 +198,16 @@ Feature: Case end to end tests
     When I am accessing the Symptoms tab using of created case via api
     And I check the created data is correctly displayed on Symptoms tab page
 
-@issue=SORDEV-5496 @Mock
-  Scenario: Generate case document
+  @issue=SORDEV-5496 @env_main
+  Scenario: Generate and download Case document
     Given I log in with National User
     And I click on the Cases button from navbar
     And I open last created case
     And I click on the Create button from Case Document Templates
-    When I create a case document from template
+    When I create and download a case document from template
     Then I verify that the case document is downloaded and correctly named
 
-  @issue=SORDEV-5527
+  @issue=SORDEV-5527 @env_main
   Scenario: Fill the therapy tab
     When API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -157,7 +224,7 @@ Feature: Case end to end tests
     And I choose Antiviral option as a Type of drug
     And I choose Other option as a Type of drug
     And I choose Other option as a Prescription type
-    Then I click on the popup Save button
+    Then I click on Save button from New Prescription popup
     Then I check if created data is correctly displayed in Perscription section
     And I choose Oral rehydration salts option as a Prescription type
     And I choose Blood transfusion option as a Prescription type
@@ -166,15 +233,15 @@ Feature: Case end to end tests
     And I choose Oxygen therapy option as a Prescription type
     And I choose Invasive mechanical ventilation option as a Prescription type
     And I choose Vasopressors/Inotropes option as a Prescription type
-    Then I click on the popup Save button
+    Then I click on Save button from New Prescription popup
     Then I check if created data is correctly displayed in Perscription section
-    And I click on the popup Save button
+    And I click on Save button from New Prescription popup
     Then I create and fill Treatment with specific data for drug intake
     And I choose Antimicrobial option as a Type of drug
     And I choose Antiviral option as a Type of drug
     And I choose Other option as a Type of drug
     And I choose Other option as a Treatment type
-    Then I click on the popup Save button
+    Then I click on Save button from New Treatment popup
     Then I check if created data is correctly displayed in Treatment section
     And I choose Oral rehydration salts option as a Treatment type
     And I choose Blood transfusion option as a Treatment type
@@ -183,15 +250,15 @@ Feature: Case end to end tests
     And I choose Oxygen therapy option as a Treatment type
     And I choose Invasive mechanical ventilation option as a Treatment type
     And I choose Vasopressors/Inotropes option as a Treatment type
-    Then I click on the popup Save button
+    Then I click on Save button from New Treatment popup
     Then I check if created data is correctly displayed in Treatment section
 
-    @issue=SORDEV-5518 @DE
+  @issue=SORDEV-5518 @env_main
   Scenario: Fill the case person tab
     Given I log in with National User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
-    When I create a new case with specific data
+    When I create a new case with disease "ANTHRAX"
     Then I check the created data is correctly displayed on Edit case page
     And I check the created data is correctly displayed on Edit case person page
     Then I set Present condition of Person to Dead in Case Person tab
@@ -202,3 +269,604 @@ Feature: Case end to end tests
     Then I click on Geocode button to get GPS coordinates in Case Person Tab
     And I click on save button to Save Person data in Case Person Tab
     Then I check if saved Person data is correct
+
+  @issue=SORDEV-5529 @env_main
+  Scenario: Fill the clinical course tab
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    Then I click on Clinical Course tab from Edit Case page
+    And I click on New Clinical Assesement button on Clinical Course page
+    And I fill the specific data of clinical visit with Set cleared to No option to all symptoms
+    Then I click Save button in New Clinical Assessement popup
+    Then I navigate to symptoms tab
+    And I check if created data is correctly displayed in Symptoms tab for Set cleared to NO
+    Then I clear Clinical Signs and Symptoms list
+    Then I click on Clinical Course tab from Edit Case page
+    And I am saving clear Clinical Signs and Symptoms list
+    And I click on Edit Clinical Visit button
+    And I fill the specific data of clinical visit with Set cleared to Unknown option to all symptoms
+    Then I click Save button in New Clinical Assessement popup
+    Then I navigate to symptoms tab
+    And I check if created data is correctly displayed in Symptoms tab for Set cleared to Unknown
+    Then I click on Clinical Course tab from Edit Case page
+
+  @issue=SORDEV-8412 @env_main
+  Scenario: Change of Isolation/Quarantine should be documented
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    Then I set place for Quarantine as Home
+    And I set Start date of Quarantine 2 days ago
+    And I set End date of Quarantine to 5 days
+    Then I click on save case button
+    And I set End date of Quarantine to 4 days
+    And I check if Reduce quarantine popup is displayed
+    Then I click on yes quarantine popup button
+    Then I click on save case button
+    And I set End date of Quarantine to 6 days
+    And I check if Extend quarantine popup is displayed
+    Then I discard changes in quarantine popup
+    And I check if Quarantine End date stayed reduce to 4 days
+    And I set the quarantine end to a date 1 day after the Follow-up until date
+    Then I click on yes quarantine popup button
+    Then I click on yes Extend follow up period popup button
+    Then I click on save case button
+    And I check if Quarantine Follow up until date was extended to 1 day
+    And I fill Quarantine change comment field
+    Then I click on save case button
+    And I check if Quarantine change comment field was saved correctly
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I click on the Contacts button from navbar
+    Then I search after last created contact via API by UUID and open
+    Then I set place for Quarantine as Home
+    And I set Start date of Quarantine 2 days ago
+    And I set End date of Quarantine to 5 days
+    Then I click on save Contact button
+    And I set End date of Quarantine to 4 days
+    And I check if Reduce quarantine popup is displayed
+    Then I click on yes quarantine popup button
+    Then I click on save Contact button
+    And I set End date of Quarantine to 6 days
+    And I check if Extend quarantine popup is displayed
+    Then I discard changes in quarantine popup
+    And I check if Quarantine End date stayed reduce to 4 days
+    And I set the quarantine end to a date 1 day after the Follow-up until date
+    Then I click on yes quarantine popup button
+    Then I click on yes Extend follow up period popup button
+    Then I click on save Contact button
+    And I check if Quarantine Follow up until date was extended to 1 day
+    And I fill Quarantine change comment field
+    Then I click on save Contact button
+    And I check if Quarantine change comment field was saved correctly
+
+  @issue=SORDEV-9033 @env_main
+  Scenario: Create case with directly entered home address
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I fill new case form with specific data
+    When I click on Enter Home Address of the Case Person Now in the Create New Case popup
+    And I fill specific address data in Case Person tab
+    Then I click on save case button
+    And I navigate to case person tab
+    And I check if saved Person data is correct
+
+  @issue=SORDEV-7452 @env_main
+  Scenario: Bulk mode for linking/adding cases to new Event
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    When API: I create 2 new cases
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I apply Date type filter to "Case report date" on Case directory page
+    And I fill Cases from input to 1 days before mocked Cases created on Case directory page
+    And I apply uuid filter for last created via API Person in Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I click on the More button on Case directory page
+    And I click Enter Bulk Edit Mode on Case directory page
+    And I click checkbox to choose all Case results
+    And I click on Bulk Actions combobox on Case Directory Page
+    And I click on Link to Event from Bulk Actions combobox on Case Directory Page
+    And I click on New Event option in Link to Event Form
+    And I click on SAVE button in Link Event to group form
+    And I create a new event with status CLUSTER
+    And I navigate to the last created Event page via URL
+    And I check that number of displayed Event Participants is 1
+
+  @issue=SORDEV-7452 @env_main
+  Scenario: Bulk mode for linking/adding case to existing Event
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    When API: I create 2 new cases
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I apply Date type filter to "Case report date" on Case directory page
+    And I fill Cases from input to 1 days before mocked Cases created on Case directory page
+    And I apply uuid filter for last created via API Person in Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I click on the More button on Case directory page
+    And I click Enter Bulk Edit Mode on Case directory page
+    And I click checkbox to choose all Case results
+    And I click on Bulk Actions combobox on Case Directory Page
+    And I click on Link to Event from Bulk Actions combobox on Case Directory Page
+    And I fill Event Id filter in Link to Event form with last created via API Event uuid
+    And I click first result in grid on Link to Event form
+    And I click on SAVE button in Link Event to group form
+    And I navigate to the last created through API Event page via URL
+    And I check that number of displayed Event Participants is 1
+
+  @issue=SORDEV-6843 @env_main
+  Scenario: Refine the update mechanism between case outcome and case filters
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I fill new case with for one person with specified date for month ago
+    Then I click on save case button
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    Then I fill second new case with for one person with specified date for present day
+    And I confirm changes in selected Case
+    And I confirm Pick person in Case
+    Then I click on the Cases button from navbar
+    And I filter Cases by created person name
+    Then I select first created case for person from Cases list
+    And I select Deceased as Outcome Of Case Status
+    Then I confirm changes in selected Case
+    And I back to the cases list from edit case
+    Then I reset filter from Case Directory
+    Then I filter by Dead user condition
+    Then I filter with first Case ID
+    And I check if created person is on filtered list with Deceased status
+    Then I reset filter from Case Directory
+    Then I filter by Dead user condition
+    Then I select second created case for person from Cases list
+    And I select Recovered as Outcome Of Case Status
+    Then I confirm changes in selected Case
+    And I back to the cases list from edit case
+    Then I filter by unspecified user condition
+    Then I filter with second Case ID
+    And I check if created person is on filtered list with Recovered status
+    Then I reset filter from Case Directory
+    Then I select first created case for person from Cases list
+    And I select Recovered as Outcome Of Case Status
+    Then I confirm changes in selected Case
+    And I back to the cases list from edit case
+    Then I reset filter from Case Directory
+    Then I select second created case for person from Cases list
+    And I select Deceased as Outcome Of Case Status
+    Then I confirm changes in selected Case
+    And I back to the cases list from edit case
+    Then I reset filter from Case Directory
+    Then I filter with second Case ID
+    And I check if created person is on filtered list with Deceased status
+    Then I reset filter from Case Directory
+    Then I select first created case for person from Cases list
+    And I select No outcome yet as Outcome Of Case Status
+    Then I confirm changes in selected Case
+    And I back to the cases list from edit case
+    Then I reset filter from Case Directory
+    Then I select second created case for person from Cases list
+    And I select No outcome yet as Outcome Of Case Status
+    Then I confirm changes in selected Case
+    And I back to the cases list from edit case
+    Then I click on the Persons button from navbar
+    And I filter Persons by created person name in cases
+    And I click on first person in person directory
+    And I set Present condition of Person to Dead in Person tab
+    Then I set death date for person 1 month ago
+    And I click on save button from Edit Person page
+    Then I click on the Cases button from navbar
+    And I filter Cases by created person name
+    Then I filter by Dead user condition
+    Then I select first created case for person from Cases list
+    And I back to the cases list from edit case
+    And I check if created person is on filtered list with No Outcome Yet status
+    Then I reset filter from Case Directory
+    Then I select second created case for person from Cases list
+    And I back to the cases list from edit case
+    Then I filter by Dead user condition
+    And I check if created person is on filtered list with No Outcome Yet status
+
+  @issue=SORDEV-6843 @env_main
+  Scenario: Refine the update mechanism between case outcome and person death date
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I fill new case with for one person with specified date for month ago
+    Then I click on save case button
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    Then I fill second new case with for one person with specified date for present day
+    And I confirm changes in selected Case
+    And I confirm Pick person in Case
+    Then I click on the Cases button from navbar
+    And I filter Cases by created person name
+    Then I select second created case for person from Cases list
+    And I select Deceased as Outcome Of Case Status
+    Then I fill the Date of outcome to yesterday
+    Then I confirm changes in selected Case
+    Then I click on the Persons button from navbar
+    And I filter Persons by created person name in cases
+    And I click on first person in person directory
+    And I check if Date of dead for specified case is correct
+    And I check if Cause of death is Epidemic disease
+    Then I set death date for person 1 month ago
+    And I click on save button from Edit Person page
+    Then I click on the Cases button from navbar
+    And I filter Cases by created person name
+    Then I filter by Dead user condition
+    Then I select second created case for person from Cases list
+    And I check if date of outcome is updated for 1 month ago
+    Then I fill the Date of outcome to yesterday
+    Then I confirm changes in selected Case
+    Then I click on the Persons button from navbar
+    And I filter Persons by created person name in cases
+    And I click on first person in person directory
+    And I check if Date of dead for specified case is correct
+
+  @issue=SORDEV-6843 @env_main
+  Scenario: Refine the update mechanism between case outcome and person other cause date
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I fill new case with for one person with specified date for month ago
+    Then I click on save case button
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    Then I fill second new case with for one person with specified date for present day
+    And I confirm changes in selected Case
+    And I confirm Pick person in Case
+    Then I click on the Cases button from navbar
+    And I filter Cases by created person name
+    Then I select second created case for person from Cases list
+    And I select Deceased as Outcome Of Case Status
+    Then I fill the Date of outcome to yesterday
+    Then I confirm changes in selected Case
+    Then I click on the Persons button from navbar
+    And I filter Persons by created person name in cases
+    And I click on first person in person directory
+    And I check if Date of dead for specified case is correct
+    And I change Cause of death to Other cause
+    Then I set death date for person 20 days ago
+    And I click on save button from Edit Person page
+    Then I click on the Cases button from navbar
+    And I filter Cases by created person name
+    Then I filter by Dead user condition
+    Then I select second created case for person from Cases list
+    And I check if date of outcome is updated for 20 days ago
+    Then I fill the Date of outcome to yesterday
+    Then I confirm changes in selected Case
+    Then I click on the Persons button from navbar
+    And I filter Persons by created person name in cases
+    And I click on first person in person directory
+    And I check if Cause of death is Other cause
+    And I check if Date of dead for specified case is correct
+
+  @issue=SORDEV-6612 @env_main
+  Scenario: Manually triggered calculation of case classification
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    Then I click on INFO button on Case Edit page
+    When I am accessing the Symptoms tab using of created case via api
+    And I change all symptoms fields to "YES" option field and save
+    And I am accessing the Symptoms tab using of created case via api
+    And I check the created data is correctly displayed on Symptoms tab page
+    And I click on Case tab from Symptoms tab directory
+    And I check that Case Classification has "Suspect case" value
+    Then I click on save case button
+    Then I navigate to symptoms tab
+    Then I change Other symptoms to "YES" option
+    And I click on Clear all button From Symptoms tab
+    And I change all symptoms fields to "NO_AND_OTHER_SYMPTOMS_TO_YES" option field and save
+    And I am accessing the Symptoms tab using of created case via api
+    And I check the created data that describes Clinical signs and Symptoms are correctly displayed for No or UNKNOWN option in Symptoms tab page
+    And  I click on Case tab from Symptoms tab directory
+    And I check that Case Classification has "Not yet classified" value
+    Then I click on save case button
+    When I am accessing the Symptoms tab using of created case via api
+    And I click on Clear all button From Symptoms tab
+    And I change all symptoms fields to "YES" option field and save
+    When I am accessing the Symptoms tab using of created case via api
+    And I check the created data is correctly displayed on Symptoms tab page
+    And I click on Case tab from Symptoms tab directory
+    And I change Epidemiological confirmation Combobox to "Yes" option
+    Then I click on save case button
+    And I check that Case Classification has "Probable case" value
+    Then I click on save case button
+    When I am accessing the Symptoms tab using of created case via api
+    And I click on Clear all button From Symptoms tab
+    And I change all symptoms fields to "YES" option field and save
+    When I am accessing the Symptoms tab using of created case via api
+    And I check the created data is correctly displayed on Symptoms tab page
+    And I click on Case tab from Symptoms tab directory
+    Then I click on save case button
+    And I collect the case person UUID displayed on Edit case page
+    And I click on New Sample
+    When I collect the sample UUID displayed on create new sample page
+    And I create a new Sample with for COVID alternative purpose
+    And I click on edit Sample
+    And I click on the new pathogen test from the Edit Sample page
+    And I fill all fields from Pathogen test for COVID-19 disease result popup and save
+    Then I check that the created Pathogen is correctly displayed
+    And I save the created sample
+    And I click on Case tab from Symptoms tab directory
+    Then I click on save case button in Symptoms tab
+    And I check that Case Classification has "Confirmed case" value
+    When I am accessing the Symptoms tab using of created case via api
+    And I click on Clear all button From Symptoms tab
+    And I change all symptoms fields to "NO" option field and save
+    When I am accessing the Symptoms tab using of created case via api
+    And I check the created data that describes Clinical signs and Symptoms are correctly displayed for No or UNKNOWN option in Symptoms tab page
+    Then I click on save case button in Symptoms tab
+    And I click on Case tab from Symptoms tab directory
+    And I collect the case person UUID displayed on Edit case page
+    And I click on Case tab from Symptoms tab directory
+    Then I click on save case button in Symptoms tab
+    And I check that Case Classification has "Confirmed case with no symptoms" value
+    When I am accessing the Symptoms tab using of created case via api
+    And I click on Clear all button From Symptoms tab
+    And I change all symptoms fields to "UNKNOWN" option field and save
+    When I am accessing the Symptoms tab using of created case via api
+    And I check the created data that describes Clinical signs and Symptoms are correctly displayed for No or UNKNOWN option in Symptoms tab page
+    And I click on Case tab from Symptoms tab directory
+    Then I click on save case button in Symptoms tab
+    And I collect the case person UUID displayed on Edit case page
+    And I click on Case tab from Symptoms tab directory
+    Then I click on save case button
+    And I check that Case Classification has "Confirmed case with unknown symptoms" value
+    When I am accessing the Symptoms tab using of created case via api
+    And I click on Clear all button From Symptoms tab
+    And I change all symptoms fields and save
+    And I am accessing the Symptoms tab using of created case via api
+    And I check the created data is correctly displayed on Symptoms tab page
+    And I click on Case tab from Symptoms tab directory
+    And I check that Case Classification has "Confirmed case" value
+    Then I click on save case button
+    And I change the Case Classification field for "NOT_CLASSIFIED" value
+    And I click on save case button
+    And From Case page I click on Calculate Case Classification button
+    And I click on save case button
+    And I check that Case Classification has "Confirmed case" value
+
+    #TODO separate into 3 tests - test doesn't reflect test case steps
+  @issue=SORDEV-8048 @env_de @ignore
+  @issue=SORDEV-8048 @env_de
+  Scenario: Test Default value for disease if only one is used by the server
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data for DE version
+    Then I check the created data is correctly displayed on Edit case page for DE version
+    Then I back to Case Directory using case list button
+    And I click on Case Line Listing button
+    Then I create a new case in line listing feature popup for DE version
+    And I save the new line listing case
+    Then I click on the Cases button from navbar
+    And I check that case created from Line Listing for DE version is saved and displayed in results grid
+    Then I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    And I fill a new contact form for DE version
+    Then I click on SAVE new contact button
+    Then I check the created data for DE version is correctly displayed on Edit Contact page
+    Then I click on the Contacts button from navbar
+    Then I click on Line Listing button
+    And I create a new Contact with specific data for DE version through Line Listing
+    And I save the new contact using line listing feature
+    Then I click on the Contacts button from navbar
+    And I check that contact created from Line Listing is saved and displayed in results grid
+    Then I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    When I create a new event with specific data for DE version
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    Then I check the created data for DE version is correctly displayed in event edit page
+    Then I click on the Sample button from navbar
+    When I open created Sample
+    Then I click on the new pathogen test from the Edit Sample page for DE version
+    And I complete all fields from Pathogen test result popup for IgM test type for DE version and save
+
+  @issue=SORDEV-9353 @env_main
+  Scenario: Deselecting the "Enter home address of the case person now" test regression
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I fill new case form with specific data
+    When I click on Enter Home Address of the Case Person Now in the Create New Case popup
+    And I fill specific address data in Case Person tab
+    Then I click on Enter Home Address of the Case Person Now in the Create New Case popup
+    Then I click on save case button
+    Then I check the created data is correctly displayed on Edit case page
+    And I check the created data is correctly displayed on Edit case person page
+
+  @issue=SORDEV-7466 @env_de
+  Scenario: Check reference definition for cases
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with only the required data for DE version
+    Then I check that case classification is set to not yet classified in German on Edit case page
+    And I check that case reference definition is not editable on Edit case page
+    And I check that case reference definition is set to not fulfilled in German on Edit case page
+    When I click on New Sample in German
+    And I create a new Sample with positive test result for DE version
+    And I select the German words for Antigen Detection Test as Type of Test in the Create New Sample popup
+    And I save the created sample
+    Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
+    And I check that case reference definition is set to not fulfilled in German on Edit case page
+    When I click on New Sample in German
+    And I create a new Sample with positive test result for DE version
+    And I select the German words for Rapid Antigen Detection Test as Type of Test in the Create New Sample popup
+    And I save the created sample
+    Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
+    And I check that case reference definition is set to not fulfilled in German on Edit case page
+    When I click on New Sample in German
+    And I create a new Sample with positive test result for DE version
+    And I select the German words for Isolation as Type of Test in the Create New Sample popup
+    And I save the created sample
+    Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
+    And I check that case reference definition is set to fulfilled in German on Edit case page
+    When I click on New Sample in German
+    And I create a new Sample with positive test result for DE version
+    And I select the German words for PCR RT-PCR as Type of Test in the Create New Sample popup
+    And I save the created sample
+    Then I check that case classification is set to one of the confirmed classifications in German on Edit case page
+    And I check that case reference definition is set to fulfilled in German on Edit case page
+    When I click on the Cases button from navbar
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I click Only cases with fulfilled reference definition checkbox in Cases directory additional filters
+    And I click APPLY BUTTON in Case Directory Page
+    Then I check that only cases with fulfilled reference definition are being shown in Cases directory
+    When I click on the Dashboard button from navbar and access Surveillance Dashboard
+    And I click on the Time Period combobox from Surveillance Dashboard
+    And I choose yesterday from the Surveillance Dashboard Time Period combobox
+    And I click on the APPLY FILTERS button
+    Then I check that the number of cases fulfilling the reference definition is larger than 0
+
+  @issue=SORDEV-5479 @env_main
+  Scenario: Test for exporting and importing case contact
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    When I open the Case Contacts tab
+    Then I click on new contact button from Case Contacts tab
+    And I create a new basic contact to export from Cases Contacts tab
+    And I open the Case Contacts tab
+    And I click Export button in Case Contacts Directory
+    And I click on Detailed Export button in Case Contacts Directory
+    And I close popup after export in Case Contacts directory
+    Then I click on the Import button from Case Contacts directory
+    And I select the case contact CSV file in the file picker
+    And I click on the "START DATA IMPORT" button from the Import Case Contacts popup
+    And I select first existing person from the Case Contact Import popup
+    And I confirm the save Case Contact Import popup
+    And I select first existing contact from the Case Contact Import popup
+    And I check that an import success notification appears in the Import Case Contact popup
+    Then I delete exported file from Case Contact Directory
+
+
+  @issue=SORDEV-7456 @env_de
+  Scenario: Check different facility types depending on type of place in Epidemiological Tab
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data for DE version
+    And I navigate to Epidemiological Data tab on Edit Case Page
+    And I click on JA Radiobutton on Epidemiological Data Page
+    And I click on new entry button from Epidemiological Data tab
+    And I set Facility to "Einrichtung (§ 23 IfSG)" from New Entry popup
+    And I set Facility Type to "Krankenhaus" from New Entry popup
+    And I set Facility Type to "Einrichtung für ambulantes Operieren" from New Entry popup
+    And I set Facility Type to "Reha Einrichtung" from New Entry popup
+    And I set Facility Type to "Dialyseeinrichtung" from New Entry popup
+    And I set Facility Type to "Tagesklinik" from New Entry popup
+    And I set Facility Type to "Entbindungseinrichtung" from New Entry popup
+    And I set Facility Type to "Andere medizinische Einrichtung" from New Entry popup
+    And I set Facility Type to "Arztpraxis" from New Entry popup
+    And I set Facility Type to "Zahnarztpraxis" from New Entry popup
+    And I set Facility Type to "Praxis sonstiger humanmedizinischer Heilberufe" from New Entry popup
+    And I set Facility Type to "Einrichtung des ÖGD zur Diagnostik, Prävention, Therapie" from New Entry popup
+    And I set Facility Type to "Mobiler/Ambulanter Pflegedienst" from New Entry popup
+    And I set Facility Type to "Rettungsdienst" from New Entry popup
+    And I set Facility to "Gemeinschaftseinrichtung (§ 33 IfSG)" from New Entry popup
+    And I set Facility Type to "Kindertageseinrichtung" from New Entry popup
+    And I set Facility Type to "Kindertagespflege" from New Entry popup
+    And I set Facility Type to "Schule" from New Entry popup
+    And I set Facility Type to "Kinderheim" from New Entry popup
+    And I set Facility Type to "Ferienlager" from New Entry popup
+    And I set Facility Type to "Kinderhort" from New Entry popup
+    And I set Facility Type to "Andere Betreuungs- und Bildungseinrichtung" from New Entry popup
+    And I set Facility to "Einrichtung (§ 36 IfSG)" from New Entry popup
+    And I set Facility Type to "Andere Pflegeeinrichtung" from New Entry popup
+    And I set Facility Type to "Pflegeeinrichtung für ältere Menschen" from New Entry popup
+    And I set Facility Type to "Pflegeeinrichtung für Menschen mit Behinderung" from New Entry popup
+    And I set Facility Type to "Pflegeeinrichtung für pflegebedürftige Menschen" from New Entry popup
+    And I set Facility Type to "Obdachlosenunterkunft" from New Entry popup
+    And I set Facility Type to "Flüchtlingsunterkunft/Erstaufnahmeeinrichtung" from New Entry popup
+    And I set Facility Type to "Massenunterkunft (z.B. Gast- und Erntearbeiter)" from New Entry popup
+    And I set Facility Type to "Justizvollzugsanstalt" from New Entry popup
+    And I set Facility Type to "Mobiler/Ambulanter Pflegedienst" from New Entry popup
+    And I set Facility Type to "Aufsuchende ambulante Hilfen" from New Entry popup
+    And And I click on Discard button from New Entry popup
+
+  @issue=SORQA-123 @env_main
+  Scenario: Import Documentation for Cases Test
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the import button for Cases in Case tab
+    Then I click on the detailed button from import Case tab
+    And I click on the Download Import Guide button in Import Cases
+    Then I check if Import Guide for cases was downloaded correctly
+    And And I click on the Download Data Dictionary button in Import Cases
+    Then I check if Data Dictionary for cases was downloaded correctly
+
+  @issue=SORDEV-5526 @env_main
+    Scenario: Create a contact with source case
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And API: I create a new case
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And I log in with National User
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    And I navigate to Epidemiological Data tab on Edit Case Page
+    When I select NO from Contacts With Source Case Known
+    Then I check that Contacts of Source filed is not available
+    When I select UNKNOWN from Contacts With Source Case Known
+    Then I check that Contacts of Source filed is not available
+    When I select YES from Contacts With Source Case Known
+    Then I check if Contacts of Source filed is available
+    When I click on the NEW CONTACT button on Epidemiological Data Tab of Edit Case Page
+    And I click on the CHOOSE SOURCE CASE button from CONTACT page
+    And I click yes on the DISCARD UNSAVED CHANGES popup if it appears
+    And I click on the CHOOSE CASE button in Create new contact form in Exposure for Epidemiological data tab in Cases
+    And I search for the last case uuid in the CHOOSE SOURCE popup of Create Contact window
+    And I open the first found result in the CHOOSE SOURCE popup of Create Contact window
+    And I click on SAVE new contact button in the CHOOSE SOURCE popup of Create Contact window
+    Then I check that Selected case is listed as Source Case in the CONTACTS WITH SOURCE CASE Box

@@ -51,10 +51,10 @@ import javax.persistence.criteria.ParameterExpression;
 import javax.persistence.criteria.Path;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -81,7 +81,9 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.ConfigFacadeEjb.ConfigFacadeEjbLocal;
+import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.messaging.ManualMessageLogService;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -127,6 +129,8 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 	private ConfigFacadeEjbLocal configFacade;
 	@EJB
 	private FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	@EJB
+	private ManualMessageLogService manualMessageLogService;
 
 	public PersonService() {
 		super(Person.class);
@@ -251,7 +255,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			caseService.createDefaultFilter(cb, joins.getCaze()));
 		final Supplier<Predicate> contactFilter = () -> {
 			final Predicate contactUserFilter = contactService.createUserFilterForJoin(
-				new ContactQueryContext(cb, cq, joins.getContact()),
+				new ContactQueryContext(cb, cq, joins.getContactJoins()),
 				new ContactCriteria().includeContactsFromOtherJurisdictions(false));
 			return CriteriaBuilderHelper.and(cb, contactUserFilter, contactService.createDefaultFilter(cb, joins.getContact()));
 		};
@@ -335,14 +339,8 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 					CriteriaBuilderHelper.unaccentedIlike(cb, personFrom.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, personFrom.get(Person.LAST_NAME), textFilter),
 					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.UUID), textFilter),
-					CriteriaBuilderHelper.ilike(
-						cb,
-						(Expression<String>) personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY),
-						textFilter),
-					phoneNumberPredicate(
-						cb,
-						(Expression<String>) personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY),
-						textFilter),
+					CriteriaBuilderHelper.ilike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY), textFilter),
+					phoneNumberPredicate(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.STREET), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
 					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter),
@@ -361,28 +359,30 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 	}
 
 	@Override
-	public List<Person> getAllAfter(Date date, User user) {
-		return getAllAfter(date, user, null, null);
+	public List<Person> getAllAfter(Date date) {
+		return getAllAfter(date, null, null);
 	}
 
 	@Override
 	// todo refactor this to use the create user filter form persons
-	public List<Person> getAllAfter(Date date, User user, Integer batchSize, String lastSynchronizedUuid) {
+	public List<Person> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+
+		User user = getCurrentUser();
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 
-		// persons by LGA
+		// persons by district
 		CriteriaQuery<Person> personsQuery = cb.createQuery(Person.class);
 		Root<Person> personsRoot = personsQuery.from(Person.class);
 		Join<Person, Location> address = personsRoot.join(Person.ADDRESS);
-		Predicate lgaFilter = cb.equal(address.get(Location.DISTRICT), user.getDistrict());
+		Predicate districtFilter = cb.equal(address.get(Location.DISTRICT), user.getDistrict());
 		// date range
 		if (date != null) {
 			Predicate dateFilter = createChangeDateFilter(cb, personsRoot, DateHelper.toTimestampUpper(date), lastSynchronizedUuid);
-			lgaFilter = cb.and(lgaFilter, dateFilter);
+			districtFilter = cb.and(districtFilter, dateFilter);
 		}
-		personsQuery.where(lgaFilter);
-		List<Person> lgaResultList = getBatchedQueryResults(cb, personsQuery, personsRoot, batchSize);
+		personsQuery.where(districtFilter);
+		List<Person> districtResultList = getBatchedQueryResults(cb, personsQuery, personsRoot, batchSize);
 
 		// persons by case
 		CriteriaQuery<Person> casePersonsQuery = cb.createQuery(Person.class);
@@ -507,7 +507,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 
 		return Stream
 			.of(
-				lgaResultList,
+				districtResultList,
 				casePersonsResultList,
 				contactPersonsResultList,
 				eventPersonsResultList,
@@ -625,7 +625,10 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		if (limit != null) {
 			query.setMaxResults(limit);
 		}
-		return query.getResultList().stream().map(this::toSimilarPersonDto).collect(Collectors.toList());
+
+		List<Person> persons = query.getResultList();
+		List<Long> personsInJurisdiction = getInJurisdictionIDs(persons);
+		return persons.stream().filter(p -> personsInJurisdiction.contains(p.getId())).map(this::toSimilarPersonDto).collect(Collectors.toList());
 	}
 
 	private SimilarPersonDto toSimilarPersonDto(Person entity) {
@@ -739,6 +742,16 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			String name = criteria.getFirstName() + " " + criteria.getLastName();
 
 			filter = and(cb, filter, cb.isTrue(cb.function(SIMILARITY_OPERATOR, boolean.class, nameExpr, cb.literal(name))));
+		} else if (!StringUtils.isBlank(criteria.getFirstName())) {
+			filter = and(
+				cb,
+				filter,
+				cb.isTrue(cb.function(SIMILARITY_OPERATOR, boolean.class, personFrom.get(Person.FIRST_NAME), cb.literal(criteria.getFirstName()))));
+		} else if (!StringUtils.isBlank(criteria.getLastName())) {
+			filter = and(
+				cb,
+				filter,
+				cb.isTrue(cb.function(SIMILARITY_OPERATOR, boolean.class, personFrom.get(Person.LAST_NAME), cb.literal(criteria.getLastName()))));
 		}
 
 		if (criteria.getSex() != null) {
@@ -848,20 +861,6 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		ExternalDataUtil.updateExternalData(externalData, this::getByUuids, this::ensurePersisted);
 	}
 
-	public List<Person> getByExternalIdsBatched(List<String> externalIds) {
-		if (CollectionUtils.isEmpty(externalIds)) {
-			// Avoid empty IN clause
-			return Collections.emptyList();
-		} else if (externalIds.size() > ModelConstants.PARAMETER_LIMIT) {
-			List<Person> persons = new LinkedList<>();
-			IterableHelper
-				.executeBatched(externalIds, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> persons.addAll(getByExternalIds(externalIds)));
-			return persons;
-		} else {
-			return getByExternalIds(externalIds);
-		}
-	}
-
 	public Long getIdByUuid(@NotNull String uuid) {
 
 		if (uuid == null) {
@@ -880,16 +879,65 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		return q.getResultList().stream().findFirst().orElse(null);
 	}
 
-	private List<Person> getByExternalIds(List<String> externalIds) {
-		if (externalIds == null || externalIds.isEmpty()) {
-			return null;
-		}
+	public List<Person> getByExternalIds(List<String> externalIds) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Person> cq = cb.createQuery(getElementClass());
-		Root<Person> from = cq.from(getElementClass());
-		cq.where(from.get(Person.EXTERNAL_ID).in(externalIds));
+		List<Person> persons = new LinkedList<>();
+		IterableHelper.executeBatched(externalIds, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Person> cq = cb.createQuery(getElementClass());
+			Root<Person> from = cq.from(getElementClass());
+
+			cq.where(from.get(Person.EXTERNAL_ID).in(externalIds));
+
+			persons.addAll(em.createQuery(cq).getResultList());
+		});
+		return persons;
+	}
+
+	public List<String> getAllNonReferencedPersonUuids() {
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<String> cq = cb.createQuery(String.class);
+		final Root<Person> personRoot = cq.from(getElementClass());
+
+		final Subquery<String> caseSubquery = createSubquery(cb, cq, personRoot, Case.class, Case.PERSON);
+		final Subquery<String> contactSubquery = createSubquery(cb, cq, personRoot, Contact.class, Contact.PERSON);
+		final Subquery<String> eventParticipantSubquery = createSubquery(cb, cq, personRoot, EventParticipant.class, EventParticipant.PERSON);
+		final Subquery<String> immunizationSubquery = createSubquery(cb, cq, personRoot, Immunization.class, Immunization.PERSON);
+		final Subquery<String> travelEntrySubquery = createSubquery(cb, cq, personRoot, TravelEntry.class, TravelEntry.PERSON);
+
+		cq.where(
+			cb.and(
+				cb.not(cb.exists(caseSubquery)),
+				cb.not(cb.exists(contactSubquery)),
+				cb.not(cb.exists(eventParticipantSubquery)),
+				cb.not(cb.exists(immunizationSubquery)),
+				cb.not(cb.exists(travelEntrySubquery))));
+
+		cq.select(personRoot.get(Person.UUID));
+		cq.distinct(true);
 
 		return em.createQuery(cq).getResultList();
+	}
+
+	private Subquery<String> createSubquery(
+		CriteriaBuilder cb,
+		CriteriaQuery<String> cq,
+		Root<Person> personRoot,
+		Class<? extends CoreAdo> subqueryClass,
+		String personField) {
+		final Subquery<String> subquery = cq.subquery(String.class);
+		final Root<? extends CoreAdo> from = subquery.from(subqueryClass);
+		subquery.where(cb.equal(from.get(personField), personRoot));
+		subquery.select(from.get(AbstractDomainObject.UUID));
+		return subquery;
+	}
+
+	@Override
+	public void deletePermanent(Person person) {
+		manualMessageLogService.getByPersonUuid(person.getUuid())
+			.forEach(manualMessageLog -> manualMessageLogService.deletePermanent(manualMessageLog));
+
+		super.deletePermanent(person);
 	}
 }

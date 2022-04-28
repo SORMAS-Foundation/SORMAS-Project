@@ -189,7 +189,7 @@ public class EventGroupController {
 			new CommitDiscardWrapperComponent<>(eventGroupEditForm, user.hasUserRight(UserRight.EVENTGROUP_EDIT), eventGroupEditForm.getFieldGroup());
 
 		List<RegionReferenceDto> regions = FacadeProvider.getEventGroupFacade().getEventGroupRelatedRegions(uuid);
-		boolean hasRegion = user.hasNationalJurisdictionLevel() || regions.stream().allMatch(user::hasRegion);
+		boolean hasRegion = user.hasNationJurisdictionLevel() || regions.stream().allMatch(user::hasRegion);
 		editView.setReadOnly(hasRegion);
 
 		if (user.hasUserRight(UserRight.EVENTGROUP_EDIT) && hasRegion) {
@@ -213,9 +213,10 @@ public class EventGroupController {
 		// Initialize 'Archive' button
 		if (user.hasUserRight(UserRight.EVENTGROUP_ARCHIVE) && hasRegion) {
 			boolean archived = FacadeProvider.getEventGroupFacade().isArchived(uuid);
-			Button archiveEventButton = ButtonHelper.createButton(archived ? Captions.actionDearchive : Captions.actionArchive, e -> {
-				archiveOrDearchiveEventGroup(uuid, !archived);
-			}, ValoTheme.BUTTON_LINK);
+			Button archiveEventButton =
+				ButtonHelper.createButton(archived ? Captions.actionDearchiveInfrastructure : Captions.actionArchiveInfrastructure, e -> {
+					archiveOrDearchiveEventGroup(uuid, !archived);
+				}, ValoTheme.BUTTON_LINK);
 
 			editView.getButtonsPanel().addComponentAsFirst(archiveEventButton);
 			editView.getButtonsPanel().setComponentAlignment(archiveEventButton, Alignment.BOTTOM_LEFT);
@@ -321,7 +322,7 @@ public class EventGroupController {
 		List<EventReferenceDto> eventReferences = selectedItems.stream().map(EventIndexDto::toReference).collect(Collectors.toList());
 		List<String> eventUuids = eventReferences.stream().map(EventReferenceDto::getUuid).collect(Collectors.toList());
 
-		if (!user.hasNationalJurisdictionLevel()) {
+		if (!user.hasNationJurisdictionLevel()) {
 			Set<RegionReferenceDto> regions = FacadeProvider.getEventFacade().getAllRegionsRelatedToEventUuids(eventUuids);
 			for (RegionReferenceDto region : regions) {
 				if (!user.hasRegion(region)) {

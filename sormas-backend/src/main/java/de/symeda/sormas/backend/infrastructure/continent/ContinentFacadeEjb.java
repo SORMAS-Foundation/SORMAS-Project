@@ -47,7 +47,7 @@ import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.subcontinent.SubcontinentReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
+import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.infrastructure.country.CountryService;
 import de.symeda.sormas.backend.infrastructure.subcontinent.Subcontinent;
@@ -58,7 +58,7 @@ import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "ContinentFacade")
 public class ContinentFacadeEjb
-	extends AbstractInfrastructureEjb<Continent, ContinentDto, ContinentIndexDto, ContinentReferenceDto, ContinentService, ContinentCriteria>
+	extends AbstractInfrastructureFacadeEjb<Continent, ContinentDto, ContinentIndexDto, ContinentReferenceDto, ContinentService, ContinentCriteria>
 	implements ContinentFacade {
 
 	@EJB
@@ -213,7 +213,7 @@ public class ContinentFacadeEjb
 	}
 
 	@Override
-	public List<ContinentReferenceDto> getByExternalId(String externalId, boolean includeArchived) {
+	public List<ContinentReferenceDto> getReferencesByExternalId(String externalId, boolean includeArchived) {
 		return service.getByExternalId(externalId, includeArchived).stream().map(ContinentFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 

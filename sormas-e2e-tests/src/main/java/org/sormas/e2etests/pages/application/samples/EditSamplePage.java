@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -23,6 +23,9 @@ import org.openqa.selenium.By;
 public class EditSamplePage {
 
   public static final By PATHOGEN_NEW_TEST_RESULT_BUTTON = By.cssSelector("[id='New test result']");
+  public static final By ADDIITONAL_NEW_TEST_RESULT_BUTTON =
+      By.cssSelector("[id='additionalTestNewTest']");
+  public static final By NEW_TEST_RESULT_DE = By.cssSelector("[id='Neues Testresultat']");
   public static final By COLLECTED_DATE_TIME_COMBOBOX =
       By.cssSelector("[id='sampleDateTime_time'] [class='v-filterselect-button']");
   public static final By COMMENT_AREA_INPUT = By.cssSelector("[id='comment']");

@@ -24,13 +24,13 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
+import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.facility.FacilityTypeGroup;
-import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
-import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 
 public class InfrastructureFieldsHelper {
@@ -182,6 +182,20 @@ public class InfrastructureFieldsHelper {
 
 		if (extraConfig != null) {
 			extraConfig.accept(isNoCountryOrServerCountry);
+		}
+	}
+
+	public static void initPointOfEntry(ComboBox districtCombo, ComboBox pointOfEntryCombo) {
+		if (districtCombo != null) {
+			districtCombo.addValueChangeListener(e -> {
+				DistrictReferenceDto districtDto = (DistrictReferenceDto) e.getProperty().getValue();
+
+				if (pointOfEntryCombo != null) {
+					FieldHelper.updateItems(
+						pointOfEntryCombo,
+						districtDto != null ? FacadeProvider.getPointOfEntryFacade().getAllActiveByDistrict(districtDto.getUuid(), true) : null);
+				}
+			});
 		}
 	}
 

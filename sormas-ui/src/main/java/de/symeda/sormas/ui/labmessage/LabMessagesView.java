@@ -157,6 +157,7 @@ public class LabMessagesView extends AbstractView {
 			this.navigateTo(null, true);
 		});
 		filterForm.addApplyHandler(e -> {
+			SormasUI.get().getNavigator().navigateTo(LabMessagesView.VIEW_NAME);
 			grid.reload();
 		});
 		filterLayout.addComponent(filterForm);
@@ -282,7 +283,7 @@ public class LabMessagesView extends AbstractView {
 	}
 
 	private void askForSinceDateAndFetch() {
-		boolean atLeastOneFetchExecuted = FacadeProvider.getSyncFacade().atLeastOneSuccessfullSyncOf(SystemEventType.FETCH_LAB_MESSAGES);
+		boolean atLeastOneFetchExecuted = FacadeProvider.getSyncFacade().hasAtLeastOneSuccessfullSyncOf(SystemEventType.FETCH_LAB_MESSAGES);
 		if (atLeastOneFetchExecuted) {
 			fetchLabMessages(null);
 		} else {

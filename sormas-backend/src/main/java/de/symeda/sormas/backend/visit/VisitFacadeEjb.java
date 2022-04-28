@@ -22,7 +22,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -31,6 +30,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -61,13 +61,12 @@ import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
 import de.symeda.sormas.api.importexport.ExportConfigurationDto;
-import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonReferenceDto;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.symptoms.SymptomsHelper;
+import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
@@ -81,14 +80,13 @@ import de.symeda.sormas.api.visit.VisitIndexDto;
 import de.symeda.sormas.api.visit.VisitReferenceDto;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
-import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.NotificationService;
 import de.symeda.sormas.backend.common.messaging.MessageContents;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
-import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
@@ -109,6 +107,9 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "VisitFacade")
+@RolesAllowed({
+	UserRight._CONTACT_VIEW,
+	UserRight._CASE_VIEW })
 public class VisitFacadeEjb implements VisitFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -131,7 +132,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	@EJB
 	private SymptomsFacadeEjbLocal symptomsFacade;
 	@EJB
-	private MessagingService messagingService;
+	private NotificationService notificationService;
 
 	@Override
 	public List<String> getAllActiveUuids() {
@@ -211,6 +212,9 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._VISIT_CREATE,
+		UserRight._VISIT_EDIT })
 	public VisitDto saveVisit(@Valid VisitDto dto) {
 		final String visitUuid = dto.getUuid();
 		final Visit existingVisit = visitUuid != null ? visitService.getByUuid(visitUuid) : null;
@@ -235,6 +239,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
+	@RolesAllowed(UserRight._EXTERNAL_VISITS)
 	public ExternalVisitDto saveExternalVisit(@Valid final ExternalVisitDto dto) {
 
 		final String personUuid = dto.getPersonUuid();
@@ -288,6 +293,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
+	@RolesAllowed(UserRight._VISIT_DELETE)
 	public void deleteVisit(String visitUuid) {
 
 		if (!userService.hasRight(UserRight.VISIT_DELETE)) {
@@ -295,7 +301,7 @@ public class VisitFacadeEjb implements VisitFacade {
 		}
 
 		Visit visit = visitService.getByUuid(visitUuid);
-		visitService.delete(visit);
+		visitService.deletePermanent(visit);
 	}
 
 	@Override
@@ -307,11 +313,12 @@ public class VisitFacadeEjb implements VisitFacade {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<VisitIndexDto> cq = cb.createQuery(VisitIndexDto.class);
+		
 		Root<Visit> visit = cq.from(Visit.class);
-		Join<Visit, Symptoms> symptoms = visit.join(Visit.SYMPTOMS, JoinType.LEFT);
-		Join<Visit, Case> caseJoin = visit.join(Visit.CAZE, JoinType.LEFT);
-		Join<Visit, Contact> contactJoin = visit.join(Visit.CONTACTS, JoinType.LEFT);
-		Join<Visit, User> visitUser = visit.join(Visit.VISIT_USER, JoinType.LEFT);
+		
+		VisitJoins visitJoins = new VisitJoins(visit, JoinType.LEFT);
+		Join<Visit, Symptoms> symptoms = visitJoins.getSymptoms();
+		Join<Visit, User> visitUser = visitJoins.getUser();
 
 		cq.multiselect(
 			visit.get(Visit.ID),
@@ -327,7 +334,7 @@ public class VisitFacadeEjb implements VisitFacade {
 			visitUser.get(User.UUID),
 			visitUser.get(User.FIRST_NAME),
 			visitUser.get(User.LAST_NAME),
-			jurisdictionSelector(cq, cb, caseJoin, contactJoin));
+			jurisdictionSelector(cq, cb, visitJoins));
 
 		cq.distinct(true);
 		cq.where(visitService.buildCriteriaFilter(visitCriteria, cb, visit));
@@ -402,11 +409,11 @@ public class VisitFacadeEjb implements VisitFacade {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<VisitExportDto> cq = cb.createQuery(VisitExportDto.class);
 		final Root<Visit> visitRoot = cq.from(Visit.class);
-		final Join<Visit, Symptoms> symptomsJoin = visitRoot.join(Visit.SYMPTOMS, JoinType.LEFT);
-		final Join<Visit, Person> personJoin = visitRoot.join(Visit.PERSON, JoinType.LEFT);
-		final Join<Visit, User> userJoin = visitRoot.join(Visit.VISIT_USER, JoinType.LEFT);
-		final Join<Visit, Case> caseJoin = visitRoot.join(Visit.CAZE, JoinType.LEFT);
-		final Join<Visit, Contact> contactJoin = visitRoot.join(Visit.CONTACTS, JoinType.LEFT);
+
+		final VisitJoins visitJoins = new VisitJoins(visitRoot, JoinType.LEFT);
+		final Join<Visit, Symptoms> symptomsJoin = visitJoins.getSymptoms();
+		final Join<Visit, User> userJoin = visitJoins.getUser();
+		final Join<Visit, Person> personJoin = visitJoins.getPerson();
 
 		cq.multiselect(
 			visitRoot.get(Visit.ID),
@@ -424,7 +431,7 @@ public class VisitFacadeEjb implements VisitFacade {
 			visitRoot.get(Visit.REPORT_LON),
 			visitRoot.get(Visit.ORIGIN),
 			personJoin.get(Person.UUID),
-			jurisdictionSelector(cq, cb, caseJoin, contactJoin));
+			jurisdictionSelector(cq, cb, visitJoins));
 
 		Predicate filter = visitService.buildCriteriaFilter(visitCriteria, cb, visitRoot);
 		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, visitRoot.get(Visit.UUID));
@@ -474,13 +481,12 @@ public class VisitFacadeEjb implements VisitFacade {
 	private Expression<Object> jurisdictionSelector(
 		CriteriaQuery cq,
 		CriteriaBuilder cb,
-		Join<Visit, Case> caseJoin,
-		Join<Visit, Contact> contactJoin) {
+		VisitJoins visitJoins) {
 		return JurisdictionHelper.booleanSelector(
 			cb,
 			cb.or(
-				caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, caseJoin)),
-				contactService.inJurisdictionOrOwned(new ContactQueryContext(cb, cq, contactJoin))));
+				caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, visitJoins.getCaseJoins())),
+				contactService.inJurisdictionOrOwned(new ContactQueryContext(cb, cq, visitJoins.getContactJoins()))));
 	}
 
 	public Visit fromDto(@NotNull VisitDto source, boolean checkChangeDate) {
@@ -602,19 +608,14 @@ public class VisitFacadeEjb implements VisitFacade {
 							DataHelper.getShortUuid(contact.getUuid()));
 					}
 
-					messagingService.sendMessages(() -> {
-						final Map<User, String> mapToReturn = new HashMap<>();
-						userService
-							.getAllByRegionsAndUserRoles(
-								JurisdictionHelper.getContactRegions(contact),
-								UserRole.SURVEILLANCE_SUPERVISOR,
-								UserRole.CONTACT_SUPERVISOR)
-							.forEach(user -> mapToReturn.put(user, messageContent));
-						return mapToReturn;
-					}, MessageSubject.CONTACT_SYMPTOMATIC, MessageType.EMAIL, MessageType.SMS);
+					notificationService.sendNotifications(
+						NotificationType.CONTACT_SYMPTOMATIC,
+						JurisdictionHelper.getContactRegions(contact),
+						null,
+						MessageSubject.CONTACT_SYMPTOMATIC,
+						messageContent);
 				} catch (NotificationDeliveryFailedException e) {
-					logger.error(
-						String.format("EmailDeliveryFailedException when trying to notify supervisors about a contact that has become symptomatic."));
+					logger.error("EmailDeliveryFailedException when trying to notify supervisors about a contact that has become symptomatic.");
 				}
 			}
 		}
@@ -627,10 +628,7 @@ public class VisitFacadeEjb implements VisitFacade {
 
 		if (newVisit.getCaze() != null) {
 			// Update case symptoms
-			CaseDataDto caze = CaseFacadeEjb.toDto(newVisit.getCaze());
-			SymptomsDto caseSymptoms = caze.getSymptoms();
-			SymptomsHelper.updateSymptoms(toDto(newVisit).getSymptoms(), caseSymptoms);
-			caseFacade.saveCase(caze, true);
+			caseFacade.updateSymptomsByVisit(newVisit);
 		}
 	}
 

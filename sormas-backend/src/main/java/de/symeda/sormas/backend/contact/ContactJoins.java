@@ -20,7 +20,9 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
+import de.symeda.sormas.backend.common.QueryJoins;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
@@ -32,64 +34,45 @@ import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.person.PersonJoins;
 import de.symeda.sormas.backend.sample.Sample;
+import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 import de.symeda.sormas.backend.visit.Visit;
+import de.symeda.sormas.backend.visit.VisitJoins;
 
-public class ContactJoins<T> extends AbstractDomainObjectJoins<T, Contact> {
+public class ContactJoins extends QueryJoins<Contact> {
 
 	private Join<Contact, Person> person;
-//	private CaseJoins<Contact> caseJoins;
 	private Join<Contact, Case> caze;
 	private Join<Contact, Case> resultingCase;
-	private Join<Case, Person> casePerson;
-	private Join<Case, User> caseReportingUser;
-	private Join<Case, Region> caseResponsibleRegion;
-	private Join<Case, District> caseResponsibleDistrict;
-	private Join<Case, Community> caseResponsibleCommunity;
-	private Join<Case, Region> caseRegion;
-	private Join<Case, District> caseDistrict;
-	private Join<Case, Community> caseCommunity;
-	private Join<Case, Facility> caseHealthFacility;
-	private Join<Case, PointOfEntry> caseasePointOfEntry;
+
 	private Join<Contact, User> contactOfficer;
-	private Join<Person, Location> address;
 	private Join<Contact, Region> region;
 	private Join<Contact, District> district;
 	private Join<Contact, Community> community;
 	private Join<Contact, User> reportingUser;
-	private Join<Location, Region> addressRegion;
-	private Join<Location, District> addressDistrict;
-	private Join<Location, Community> addressCommunity;
-	private Join<Location, Facility> addressFacility;
-	private Join<Person, Facility> occupationFacility;
 	private Join<Contact, EpiData> epiData;
-	private Join<Person, EventParticipant> eventParticipants;
-	private Join<Case, EventParticipant> caseEventParticipants;
 	private Join<EventParticipant, Event> event;
 	private Join<EventParticipant, Event> caseEvent;
 
 	private Join<Contact, Sample> samples;
-	private Join<Sample, Facility> sampleLabs;
 
 	private Join<Contact, Visit> visits;
-	private Join<Visit, Symptoms> visitSymptoms;
 	private Join<Contact, HealthConditions> healthConditions;
-	private Join<Person, Location> personAddress;
-
-	private Join<Person, Country> personBirthCountry;
-	private Join<Person, Country> personCitizenship;
 
 	private Join<Contact, District> reportingDistrict;
 
 	private Join<Contact, User> followUpStatusChangeUser;
 
-	public ContactJoins(From<T, Contact> contact) {
-		super(contact);
+	private CaseJoins caseJoins;
+	private PersonJoins personJoins;
+	private SampleJoins sampleJoins;
+	private VisitJoins visitJoins;
 
-//		this.caseJoins = new CaseJoins<>(contact.join(Contact.CAZE));
+	public ContactJoins(From<?, Contact> contact) {
+		super(contact);
 	}
 
 	public Join<Contact, Person> getPerson() {
@@ -117,83 +100,43 @@ public class ContactJoins<T> extends AbstractDomainObjectJoins<T, Contact> {
 	}
 
 	public Join<Case, Person> getCasePerson() {
-		return getOrCreate(casePerson, Case.PERSON, JoinType.LEFT, getCaze(), this::setCasePerson);
-	}
-
-	private void setCasePerson(Join<Case, Person> casePerson) {
-		this.casePerson = casePerson;
+		return getCaseJoins().getPerson();
 	}
 
 	public Join<Case, User> getCaseReportingUser() {
-		return getOrCreate(caseReportingUser, Case.REPORTING_USER, JoinType.LEFT, getCaze(), this::setCaseReportingUser);
-	}
-
-	private void setCaseReportingUser(Join<Case, User> caseReportingUser) {
-		this.caseReportingUser = caseReportingUser;
+		return getCaseJoins().getReportingUser();
 	}
 
 	public Join<Case, Region> getCaseResponsibleRegion() {
-		return getOrCreate(caseResponsibleRegion, Case.RESPONSIBLE_REGION, JoinType.LEFT, getCaze(), this::setCaseResponsibleRegion);
-	}
-
-	private void setCaseResponsibleRegion(Join<Case, Region> caseResponsibleRegion) {
-		this.caseResponsibleRegion = caseResponsibleRegion;
+		return getCaseJoins().getResponsibleRegion();
 	}
 
 	public Join<Case, District> getCaseResponsibleDistrict() {
-		return getOrCreate(caseResponsibleDistrict, Case.RESPONSIBLE_DISTRICT, JoinType.LEFT, getCaze(), this::setCaseResponsibleDistrict);
-	}
-
-	private void setCaseResponsibleDistrict(Join<Case, District> caseResponsibleDistrict) {
-		this.caseResponsibleDistrict = caseResponsibleDistrict;
+		return getCaseJoins().getResponsibleDistrict();
 	}
 
 	public Join<Case, Community> getCaseResponsibleCommunity() {
-		return getOrCreate(caseResponsibleCommunity, Case.RESPONSIBLE_COMMUNITY, JoinType.LEFT, getCaze(), this::setCaseResponsibleCommunity);
-	}
-
-	private void setCaseResponsibleCommunity(Join<Case, Community> caseResponsibleCommunity) {
-		this.caseResponsibleCommunity = caseResponsibleCommunity;
+		return getCaseJoins().getResponsibleCommunity();
 	}
 
 	public Join<Case, Region> getCaseRegion() {
-		return getOrCreate(caseRegion, Case.REGION, JoinType.LEFT, getCaze(), this::setCaseRegion);
-	}
-
-	private void setCaseRegion(Join<Case, Region> caseRegion) {
-		this.caseRegion = caseRegion;
+		return getCaseJoins().getRegion();
 	}
 
 	public Join<Case, District> getCaseDistrict() {
-		return getOrCreate(caseDistrict, Case.DISTRICT, JoinType.LEFT, getCaze(), this::setCaseDistrict);
-	}
-
-	private void setCaseDistrict(Join<Case, District> caseDistrict) {
-		this.caseDistrict = caseDistrict;
+		return getCaseJoins().getDistrict();
 	}
 
 	public Join<Case, Community> getCaseCommunity() {
-		return getOrCreate(caseCommunity, Case.COMMUNITY, JoinType.LEFT, getCaze(), this::setCaseCommunity);
-	}
-
-	private void setCaseCommunity(Join<Case, Community> caseCommunity) {
-		this.caseCommunity = caseCommunity;
+		return getCaseJoins().getCommunity();
 	}
 
 	public Join<Case, Facility> getCaseHealthFacility() {
-		return getOrCreate(caseHealthFacility, Case.HEALTH_FACILITY, JoinType.LEFT, getCaze(), this::setCaseHealthFacility);
-	}
-
-	private void setCaseHealthFacility(Join<Case, Facility> caseHealthFacility) {
-		this.caseHealthFacility = caseHealthFacility;
+		return getCaseJoins().getFacility();
 	}
 
 	public Join<Case, PointOfEntry> getCaseasePointOfEntry() {
-		return getOrCreate(caseasePointOfEntry, Case.POINT_OF_ENTRY, JoinType.LEFT, getCaze(), this::setCaseasePointOfEntry);
-	}
-
-	private void setCaseasePointOfEntry(Join<Case, PointOfEntry> caseasePointOfEntry) {
-		this.caseasePointOfEntry = caseasePointOfEntry;
+		return getCaseJoins().getPointOfEntry();
 	}
 
 	public Join<Contact, User> getContactOfficer() {
@@ -205,11 +148,7 @@ public class ContactJoins<T> extends AbstractDomainObjectJoins<T, Contact> {
 	}
 
 	public Join<Person, Location> getAddress() {
-		return getOrCreate(address, Person.ADDRESS, JoinType.LEFT, getPerson(), this::setAddress);
-	}
-
-	private void setAddress(Join<Person, Location> address) {
-		this.address = address;
+		return getPersonJoins().getAddress();
 	}
 
 	public Join<Contact, Region> getRegion() {
@@ -245,35 +184,19 @@ public class ContactJoins<T> extends AbstractDomainObjectJoins<T, Contact> {
 	}
 
 	public Join<Location, Region> getAddressRegion() {
-		return getOrCreate(addressRegion, Location.REGION, JoinType.LEFT, getAddress(), this::setAddressRegion);
-	}
-
-	private void setAddressRegion(Join<Location, Region> addressRegion) {
-		this.addressRegion = addressRegion;
+		return getPersonJoins().getAddressJoins().getRegion();
 	}
 
 	public Join<Location, District> getAddressDistrict() {
-		return getOrCreate(addressDistrict, Location.DISTRICT, JoinType.LEFT, getAddress(), this::setAddressDistrict);
-	}
-
-	private void setAddressDistrict(Join<Location, District> addressDistrict) {
-		this.addressDistrict = addressDistrict;
+		return getPersonJoins().getAddressJoins().getDistrict();
 	}
 
 	public Join<Location, Community> getAddressCommunity() {
-		return getOrCreate(addressCommunity, Location.COMMUNITY, JoinType.LEFT, getAddress(), this::setAddressCommunity);
-	}
-
-	private void setAddressCommunity(Join<Location, Community> addressCommunity) {
-		this.addressCommunity = addressCommunity;
+		return getPersonJoins().getAddressJoins().getCommunity();
 	}
 
 	public Join<Location, Facility> getAddressFacility() {
-		return getOrCreate(addressFacility, Location.FACILITY, JoinType.LEFT, getAddress(), this::setAddressFacility);
-	}
-
-	private void setAddressFacility(Join<Location, Facility> addressFacility) {
-		this.addressFacility = addressFacility;
+		return getPersonJoins().getAddressJoins().getFacility();
 	}
 
 	public Join<Contact, EpiData> getEpiData() {
@@ -293,11 +216,7 @@ public class ContactJoins<T> extends AbstractDomainObjectJoins<T, Contact> {
 	}
 
 	public Join<Visit, Symptoms> getVisitSymptoms() {
-		return getOrCreate(visitSymptoms, Visit.SYMPTOMS, JoinType.LEFT, getVisits(), this::setVisitSymptoms);
-	}
-
-	private void setVisitSymptoms(Join<Visit, Symptoms> visitSymptoms) {
-		this.visitSymptoms = visitSymptoms;
+		return getVisitJoins().getSymptoms();
 	}
 
 	public Join<Contact, HealthConditions> getHealthConditions() {
@@ -308,28 +227,12 @@ public class ContactJoins<T> extends AbstractDomainObjectJoins<T, Contact> {
 		this.healthConditions = healthConditions;
 	}
 
-	public Join<Person, Location> getPersonAddress() {
-		return getOrCreate(personAddress, Person.ADDRESS, JoinType.LEFT, getPerson(), this::setPersonAddress);
-	}
-
-	private void setPersonAddress(Join<Person, Location> personAddress) {
-		this.personAddress = personAddress;
-	}
-
-	private void setEventParticipants(Join<Person, EventParticipant> eventParticipants) {
-		this.eventParticipants = eventParticipants;
-	}
-
 	public Join<Person, EventParticipant> getEventParticipants() {
-		return getOrCreate(eventParticipants, Person.EVENT_PARTICIPANTS, JoinType.LEFT, getPerson(), this::setEventParticipants);
-	}
-
-	private void setCaseEventParticipants(Join<Case, EventParticipant> caseEventParticipants) {
-		this.caseEventParticipants = caseEventParticipants;
+		return getPersonJoins().getEventParticipant();
 	}
 
 	public Join<Case, EventParticipant> getCaseEventParticipants() {
-		return getOrCreate(caseEventParticipants, Case.EVENT_PARTICIPANTS, JoinType.LEFT, getCaze(), this::setCaseEventParticipants);
+		return getCaseJoins().getEventParticipants();
 	}
 
 	private void setEvent(Join<EventParticipant, Event> event) {
@@ -349,19 +252,11 @@ public class ContactJoins<T> extends AbstractDomainObjectJoins<T, Contact> {
 	}
 
 	public Join<Person, Country> getPersonBirthCountry() {
-		return getOrCreate(personBirthCountry, Person.BIRTH_COUNTRY, JoinType.LEFT, getPerson(), this::setPersonBirthCountry);
-	}
-
-	private void setPersonBirthCountry(Join<Person, Country> personBirthCountry) {
-		this.personBirthCountry = personBirthCountry;
+		return getPersonJoins().getBirthCountry();
 	}
 
 	public Join<Person, Country> getPersonCitizenship() {
-		return getOrCreate(personCitizenship, Person.CITIZENSHIP, JoinType.LEFT, getPerson(), this::setPersonCitizenship);
-	}
-
-	public void setPersonCitizenship(Join<Person, Country> personCitizenship) {
-		this.personCitizenship = personCitizenship;
+		return getPersonJoins().getCitizenship();
 	}
 
 	public Join<Contact, District> getReportingDistrict() {
@@ -381,11 +276,7 @@ public class ContactJoins<T> extends AbstractDomainObjectJoins<T, Contact> {
 	}
 
 	public Join<Sample, Facility> getSampleLabs() {
-		return getOrCreate(sampleLabs, Sample.LAB, JoinType.LEFT, getSamples(), this::setSampleLabs);
-	}
-
-	private void setSampleLabs(Join<Sample, Facility> sampleLabs) {
-		this.sampleLabs = sampleLabs;
+		return getSampleJoins().getLab();
 	}
 
 	public Join<Contact, User> getFollowUpStatusChangeUser() {
@@ -394,5 +285,37 @@ public class ContactJoins<T> extends AbstractDomainObjectJoins<T, Contact> {
 
 	private void setFollowUpStatusChangeUser(Join<Contact, User> followUpStatusChangeUser) {
 		this.followUpStatusChangeUser = followUpStatusChangeUser;
+	}
+
+	public CaseJoins getCaseJoins() {
+		return getOrCreate(caseJoins, () -> new CaseJoins(getCaze()), this::setCaseJoins);
+	}
+
+	private void setCaseJoins(CaseJoins caseJoins) {
+		this.caseJoins = caseJoins;
+	}
+
+	public PersonJoins getPersonJoins() {
+		return getOrCreate(personJoins, () -> new PersonJoins(getPerson()), this::setPersonJoins);
+	}
+
+	private void setPersonJoins(PersonJoins personJoins) {
+		this.personJoins = personJoins;
+	}
+
+	public SampleJoins getSampleJoins() {
+		return getOrCreate(sampleJoins, () -> new SampleJoins(getSamples()), this::setSampleJoins);
+	}
+
+	private void setSampleJoins(SampleJoins sampleJoins) {
+		this.sampleJoins = sampleJoins;
+	}
+
+	public VisitJoins getVisitJoins() {
+		return getOrCreate(visitJoins, () -> new VisitJoins(getVisits(), JoinType.LEFT), this::setVisitJoins);
+	}
+
+	private void setVisitJoins(VisitJoins visitJoins) {
+		this.visitJoins = visitJoins;
 	}
 }

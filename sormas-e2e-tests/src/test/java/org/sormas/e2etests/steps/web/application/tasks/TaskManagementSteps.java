@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -21,8 +21,7 @@ package org.sormas.e2etests.steps.web.application.tasks;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.APPLY_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.RESET_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
-import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.TASK_POPUP;
-import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.TASK_TYPE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.tasks.CreateNewTaskPage.*;
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.*;
 
 import cucumber.api.java8.En;
@@ -33,17 +32,20 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
+import lombok.SneakyThrows;
+import lombok.extern.slf4j.Slf4j;
 import org.apache.commons.lang3.StringUtils;
 import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
+import org.sormas.e2etests.entities.pojo.web.Task;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.web.Task;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
 import org.testng.asserts.SoftAssert;
 
+@Slf4j
 public class TaskManagementSteps implements En {
 
   private final WebDriverHelpers webDriverHelpers;
@@ -66,31 +68,49 @@ public class TaskManagementSteps implements En {
             webDriverHelpers.clickWhileOtherButtonIsDisplayed(NEW_TASK_BUTTON, TASK_TYPE_COMBOBOX));
 
     When(
-        "^I open last created task$",
+        "^I open last created task from Tasks Directory$",
         () -> {
           By lastTaskEditButton =
               By.xpath(
                   String.format(
-                      EDIT_BUTTON_XPATH_BY_TEXT, CreateNewTaskSteps.task.getCommentsOnTask()));
-          do {
-            webDriverHelpers.scrollInTable(10);
-          } while (!webDriverHelpers.isElementVisibleWithTimeout(lastTaskEditButton, 2));
-          webDriverHelpers.clickOnWebElementBySelector(lastTaskEditButton);
-          webDriverHelpers.isElementVisibleWithTimeout(TASK_POPUP, 5);
+                      EDIT_BUTTON_XPATH_BY_TEXT, CreateNewTaskSteps.task.getCommentsOnExecution()));
+          webDriverHelpers.clickOnWebElementBySelector(SHOW_MORE_FILTERS);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              ASSIGNED_USER_FILTER_INPUT);
+          String assignedUser = CreateNewTaskSteps.task.getAssignedTo();
+          int indexToSubstring = assignedUser.indexOf("-");
+          webDriverHelpers.fillInWebElement(
+              ASSIGNED_USER_FILTER_INPUT, assignedUser.substring(0, indexToSubstring).trim());
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(lastTaskEditButton, 40);
+          webDriverHelpers.clickElementSeveralTimesUntilNextElementIsDisplayed(
+              lastTaskEditButton, TASK_STATUS_OPTIONS, 5);
         });
 
     When(
-        "^I search last created task by Case UUID$",
+        "^I search last created task by Case UUID and open it$",
         () -> {
+          String lastCreatedCaseWithTaskUUID = EditCaseSteps.aCase.getUuid();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               GENERAL_SEARCH_INPUT, 50);
           webDriverHelpers.fillAndSubmitInWebElement(
-              GENERAL_SEARCH_INPUT, EditCaseSteps.aCase.getUuid());
+              GENERAL_SEARCH_INPUT, lastCreatedCaseWithTaskUUID);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
+
+          By lastTaskEditButton =
+              By.xpath(
+                  String.format(
+                      EDIT_BUTTON_XPATH_BY_TEXT, CreateNewTaskSteps.task.getCommentsOnTask()));
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(lastTaskEditButton, 20);
+          webDriverHelpers.clickOnWebElementBySelector(lastTaskEditButton);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              COMMENTS_ON_EXECUTION_TEXTAREA);
         });
 
     When(
         "^I am checking if the associated linked event appears in task management and click on it$",
         () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(70);
           String eventUuid = apiState.getCreatedEvent().getUuid();
           webDriverHelpers.fillAndSubmitInWebElement(GENERAL_SEARCH_INPUT, eventUuid);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(15);
@@ -163,7 +183,7 @@ public class TaskManagementSteps implements En {
     When(
         "^I am checking if all the fields are correctly displayed in the Task Management table$",
         () -> {
-          org.sormas.e2etests.pojo.api.Task expectedTask = apiState.getCreatedTask();
+          org.sormas.e2etests.entities.pojo.api.Task expectedTask = apiState.getCreatedTask();
           Task actualTask = taskTableRows.get(1);
           softly.assertTrue(
               apiState
@@ -228,6 +248,7 @@ public class TaskManagementSteps implements En {
     When(
         "^I collect the task column objects$",
         () -> {
+          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           List<Map<String, String>> tableRowsData = getTableRowsData();
           taskTableRows = new ArrayList<>();
@@ -307,14 +328,20 @@ public class TaskManagementSteps implements En {
     return headerHashmap;
   }
 
+  @SneakyThrows
   private LocalDateTime getLocalDateTimeFromColumns(String date) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy h:mm a");
+    if (date.isEmpty()) {
+      throw new Exception(String.format("Provided date to be parsed: %s, is empty!", date));
+    }
+    DateTimeFormatter formatter =
+        DateTimeFormatter.ofPattern("M/d/yyyy h:m a").localizedBy(Locale.ENGLISH);
     try {
+      log.info("Parsing date: [{}]", date);
       return LocalDateTime.parse(date.trim(), formatter);
     } catch (Exception e) {
       throw new WebDriverException(
           String.format(
-              "Unable to parse date: %s due to caught exception: %s", date, e.getMessage()));
+              "Unable to parse date: [ %s ] due to caught exception: %s", date, e.getMessage()));
     }
   }
 

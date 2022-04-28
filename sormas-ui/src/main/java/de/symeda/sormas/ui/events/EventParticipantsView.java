@@ -19,10 +19,10 @@ package de.symeda.sormas.ui.events;
 
 import static de.symeda.sormas.ui.docgeneration.DocGenerationHelper.isDocGenerationAllowed;
 
-import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -31,9 +31,11 @@ import org.vaadin.hene.popupbutton.PopupButton;
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Page;
 import com.vaadin.server.StreamResource;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.MenuBar;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.UI;
@@ -41,11 +43,17 @@ import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.Window;
 import com.vaadin.ui.components.grid.MultiSelectionModelImpl;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.ComboBox;
 
+import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantIndexDto;
+import de.symeda.sormas.api.event.EventParticipantReferenceDto;
+import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.Descriptions;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -59,6 +67,7 @@ import de.symeda.sormas.ui.ViewModelProviders;
 import de.symeda.sormas.ui.customexport.ExportConfigurationsLayout;
 import de.symeda.sormas.ui.events.eventparticipantimporter.EventParticipantImportLayout;
 import de.symeda.sormas.ui.utils.ButtonHelper;
+import de.symeda.sormas.ui.utils.ComboBoxHelper;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.DetailSubComponentWrapper;
 import de.symeda.sormas.ui.utils.EventParticipantDownloadUtil;
@@ -83,6 +92,9 @@ public class EventParticipantsView extends AbstractEventView {
 	private Button activeStatusButton;
 	private EventParticipantsFilterForm filterForm;
 
+	private Label relevanceStatusInfoLabel;
+	private ComboBox eventParticipantRelevanceStatusFilter;
+
 	public EventParticipantsView() {
 		super(VIEW_NAME);
 
@@ -90,6 +102,10 @@ public class EventParticipantsView extends AbstractEventView {
 		addStyleName("crud-view");
 
 		criteria = ViewModelProviders.of(EventParticipantsView.class).get(EventParticipantCriteria.class);
+
+		if (criteria.getRelevanceStatus() == null) {
+			criteria.relevanceStatus(EntityRelevanceStatus.ACTIVE);
+		}
 	}
 
 	public HorizontalLayout createTopBar() {
@@ -185,7 +201,7 @@ public class EventParticipantsView extends AbstractEventView {
 		topLayout.addComponent(filterForm);
 
 		// Bulk operation dropdown
-		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT)) {
 			topLayout.setWidth(100, Unit.PERCENTAGE);
 
 			List<MenuBarHelper.MenuBarItem> bulkActions = new ArrayList<>();
@@ -196,11 +212,13 @@ public class EventParticipantsView extends AbstractEventView {
 						ControllerProvider.getContactController().openLineListingWindow(eventDto, items);
 					}, true);
 				}));
-			bulkActions.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
-				grid.bulkActionHandler(items -> {
-					ControllerProvider.getEventParticipantController().deleteAllSelectedItems(items, () -> navigateTo(criteria));
-				}, true);
-			}));
+			if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_DELETE)) {
+				bulkActions.add(new MenuBarHelper.MenuBarItem(I18nProperties.getCaption(Captions.bulkDelete), VaadinIcons.TRASH, mi -> {
+					grid.bulkActionHandler(items -> {
+						ControllerProvider.getEventParticipantController().deleteAllSelectedItems(items, () -> navigateTo(criteria));
+					}, true);
+				}));
+			}
 
 			if (isDocGenerationAllowed()) {
 				bulkActions
@@ -263,6 +281,7 @@ public class EventParticipantsView extends AbstractEventView {
 			gridLayout.setStyleName("crud-main-layout");
 			grid.getDataProvider().addDataProviderListener(e -> updateStatusButtons());
 			setSubComponent(gridLayout);
+			gridLayout.setEnabled(isEventEditAllowed());
 		}
 
 		if (params.startsWith("?")) {
@@ -288,16 +307,77 @@ public class EventParticipantsView extends AbstractEventView {
 		statusFilterLayout.addComponent(statusAll);
 		activeStatusButton = statusAll;
 
+		HorizontalLayout actionButtonsLayout = new HorizontalLayout();
+		actionButtonsLayout.setSpacing(true);
+
+		// Show active/archived/all dropdown
+		if (Objects.nonNull(UserProvider.getCurrent()) && UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_VIEW)) {
+
+			if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AUTOMATIC_ARCHIVING, CoreEntityType.EVENT_PARTICIPANT)) {
+				int daysAfterEventParticipantGetsArchived = FacadeProvider.getFeatureConfigurationFacade()
+					.getProperty(
+						FeatureType.AUTOMATIC_ARCHIVING,
+						CoreEntityType.EVENT_PARTICIPANT,
+						FeatureTypeProperty.THRESHOLD_IN_DAYS,
+						Integer.class);
+				if (daysAfterEventParticipantGetsArchived > 0) {
+					relevanceStatusInfoLabel =
+						new Label(
+							VaadinIcons.INFO_CIRCLE.getHtml() + " "
+								+ String
+									.format(I18nProperties.getString(Strings.infoArchivedEventParticipants), daysAfterEventParticipantGetsArchived),
+							ContentMode.HTML);
+					relevanceStatusInfoLabel.setVisible(false);
+					relevanceStatusInfoLabel.addStyleName(CssStyles.LABEL_VERTICAL_ALIGN_SUPER);
+					actionButtonsLayout.addComponent(relevanceStatusInfoLabel);
+					actionButtonsLayout.setComponentAlignment(relevanceStatusInfoLabel, Alignment.MIDDLE_RIGHT);
+				}
+			}
+
+			eventParticipantRelevanceStatusFilter = buildRelevanceStatusFilter(
+				Captions.eventParticipantActiveEventParticipants,
+				Captions.eventParticipantArchivedEventParticipants,
+				Captions.eventParticipantAllEventParticipants);
+
+			eventParticipantRelevanceStatusFilter.addValueChangeListener(e -> {
+				if (relevanceStatusInfoLabel != null) {
+					relevanceStatusInfoLabel.setVisible(EntityRelevanceStatus.ARCHIVED.equals(e.getProperty().getValue()));
+				}
+				criteria.relevanceStatus((EntityRelevanceStatus) e.getProperty().getValue());
+				navigateTo(criteria);
+			});
+			actionButtonsLayout.addComponent(eventParticipantRelevanceStatusFilter);
+		}
+
 		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_CREATE)) {
 			addButton = ButtonHelper.createIconButton(Captions.eventParticipantAddPerson, VaadinIcons.PLUS_CIRCLE, e -> {
 				ControllerProvider.getEventParticipantController().createEventParticipant(this.getEventRef(), r -> navigateTo(criteria));
 			}, ValoTheme.BUTTON_PRIMARY);
 
-			statusFilterLayout.addComponent(addButton);
-			statusFilterLayout.setComponentAlignment(addButton, Alignment.MIDDLE_RIGHT);
+			actionButtonsLayout.addComponent(addButton);
 		}
 
+		statusFilterLayout.addComponent(actionButtonsLayout);
+		statusFilterLayout.setComponentAlignment(actionButtonsLayout, Alignment.MIDDLE_RIGHT);
+		statusFilterLayout.setExpandRatio(actionButtonsLayout, 1);
+
 		return statusFilterLayout;
+	}
+
+	private ComboBox buildRelevanceStatusFilter(
+		String eventParticipantActiveCaption,
+		String eventParticipantArchivedCaption,
+		String eventParticipantAllCaption) {
+
+		ComboBox relevanceStatusFilter = ComboBoxHelper.createComboBoxV7();
+		relevanceStatusFilter.setId("relevanceStatusFilter");
+		relevanceStatusFilter.setWidth(200, Unit.PIXELS);
+		relevanceStatusFilter.setNullSelectionAllowed(false);
+		relevanceStatusFilter.addItems((Object[]) EntityRelevanceStatus.values());
+		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ACTIVE, I18nProperties.getCaption(eventParticipantActiveCaption));
+		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ARCHIVED, I18nProperties.getCaption(eventParticipantArchivedCaption));
+		relevanceStatusFilter.setItemCaption(EntityRelevanceStatus.ALL, I18nProperties.getCaption(eventParticipantAllCaption));
+		return relevanceStatusFilter;
 	}
 
 	public void updateFilterComponents() {
@@ -306,6 +386,10 @@ public class EventParticipantsView extends AbstractEventView {
 		applyingCriteria = true;
 
 		updateStatusButtons();
+
+		if (eventParticipantRelevanceStatusFilter != null) {
+			eventParticipantRelevanceStatusFilter.setValue(criteria.getRelevanceStatus());
+		}
 
 		filterForm.setValue(criteria);
 

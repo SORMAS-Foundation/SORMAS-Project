@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -18,19 +18,34 @@
 package org.sormas.e2etests.enums;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 @Getter
 public enum CountryUUIDs {
-  Germany("SUSZ6P-4YQIB3-WMSLMG-IAPRKJ4Y");
+  Germany("SUSZ6P-4YQIB3-WMSLMG-IAPRKJ4Y", "XZGQNV-LR5PHR-XGX55Q-PXD4CJMI");
 
-  private final String option;
+  private final String uuidMain;
+  private final String uuidDe;
 
-  CountryUUIDs(String option) {
-    this.option = option;
+  CountryUUIDs(String uuidMain, String uuidDe) {
+    this.uuidMain = uuidMain;
+    this.uuidDe = uuidDe;
   }
 
-  @Override
-  public String toString() {
-    return this.option;
+  @SneakyThrows
+  public static String getUuidValueForLocale(String country, String locale) {
+    CountryUUIDs[] countryUUIDs = CountryUUIDs.values();
+    for (CountryUUIDs value : countryUUIDs) {
+      if (value.name().equalsIgnoreCase(country)) {
+        if (locale.equalsIgnoreCase("main") || locale.equalsIgnoreCase("performance")) {
+          return value.getUuidMain();
+        }
+        if (locale.equalsIgnoreCase("DE")) {
+          return value.getUuidDe();
+        }
+      }
+    }
+    throw new Exception(
+        String.format("Unable to find uuid for country: %s and locale: %s", country, locale));
   }
 }

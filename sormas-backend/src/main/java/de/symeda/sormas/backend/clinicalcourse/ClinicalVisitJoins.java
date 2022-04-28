@@ -23,6 +23,8 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseJoins;
+import de.symeda.sormas.backend.common.QueryJoins;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import de.symeda.sormas.backend.infrastructure.pointofentry.PointOfEntry;
 import de.symeda.sormas.backend.person.Person;
@@ -31,25 +33,16 @@ import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.user.User;
-import de.symeda.sormas.backend.util.AbstractDomainObjectJoins;
 
-public class ClinicalVisitJoins extends AbstractDomainObjectJoins<ClinicalVisit, ClinicalVisit> {
+public class ClinicalVisitJoins extends QueryJoins<ClinicalVisit> {
+
 	private Join<ClinicalVisit, Symptoms> symptoms;
 	private Join<ClinicalVisit, ClinicalCourse> clinicalCourse;
 	private Join<ClinicalCourse, Case> caze;
-	private Join<Case, Person> casePerson;
-	private Join<Case, User> caseReportingUser;
-	private Join<Case, Region> caseResponsibleRegion;
-	private Join<Case, District> caseResponsibleDistrict;
-	private Join<Case, Community> caseResponsibleCommunity;
-	private Join<Case, Region> caseRegion;
-	private Join<Case, District> caseDistrict;
-	private Join<Case, Community> caseCommunity;
-	private Join<Case, Facility> caseHealthFacility;
-	private Join<Case, PointOfEntry> casePointOfEntry;
 
+	private CaseJoins caseJoins;
 
-	public ClinicalVisitJoins(From<ClinicalVisit, ClinicalVisit> root) {
+	public ClinicalVisitJoins(From<?, ClinicalVisit> root) {
 		super(root);
 	}
 
@@ -77,83 +70,51 @@ public class ClinicalVisitJoins extends AbstractDomainObjectJoins<ClinicalVisit,
 		this.caze = caze;
 	}
 
-	public Join<Case, Person> getCasePerson() {
-		return getOrCreate(casePerson, Case.PERSON, JoinType.LEFT, getCaze(), this::setCasePerson);
+	public CaseJoins getCaseJoins() {
+		return getOrCreate(caseJoins, () -> new CaseJoins(getCaze()), this::setCaseJoins);
 	}
 
-	private void setCasePerson(Join<Case, Person> casePerson) {
-		this.casePerson = casePerson;
+	private void setCaseJoins(CaseJoins caseJoins) {
+		this.caseJoins = caseJoins;
+	}
+
+	public Join<Case, Person> getCasePerson() {
+		return getCaseJoins().getPerson();
 	}
 
 	public Join<Case, User> getCaseReportingUser() {
-		return getOrCreate(caseReportingUser, Case.REPORTING_USER, JoinType.LEFT, getCaze(), this::setCaseReportingUser);
-	}
-
-	private void setCaseReportingUser(Join<Case, User> caseReportingUser) {
-		this.caseReportingUser = caseReportingUser;
+		return getCaseJoins().getReportingUser();
 	}
 
 	public Join<Case, Region> getCaseResponsibleRegion() {
-		return getOrCreate(caseResponsibleRegion, Case.RESPONSIBLE_REGION, JoinType.LEFT, getCaze(), this::setCaseResponsibleRegion);
-	}
-
-	private void setCaseResponsibleRegion(Join<Case, Region> caseResponsibleRegion) {
-		this.caseResponsibleRegion = caseResponsibleRegion;
+		return getCaseJoins().getResponsibleRegion();
 	}
 
 	public Join<Case, District> getCaseResponsibleDistrict() {
-		return getOrCreate(caseResponsibleDistrict, Case.RESPONSIBLE_DISTRICT, JoinType.LEFT, getCaze(), this::setCaseResponsibleDistrict);
-	}
-
-	private void setCaseResponsibleDistrict(Join<Case, District> caseResponsibleDistrict) {
-		this.caseResponsibleDistrict = caseResponsibleDistrict;
+		return getCaseJoins().getResponsibleDistrict();
 	}
 
 	public Join<Case, Community> getCaseResponsibleCommunity() {
-		return getOrCreate(caseResponsibleCommunity, Case.RESPONSIBLE_COMMUNITY, JoinType.LEFT, getCaze(), this::setCaseResponsibleCommunity);
-	}
-
-	private void setCaseResponsibleCommunity(Join<Case, Community> caseResponsibleCommunity) {
-		this.caseResponsibleCommunity = caseResponsibleCommunity;
+		return getCaseJoins().getResponsibleCommunity();
 	}
 
 	public Join<Case, Region> getCaseRegion() {
-		return getOrCreate(caseRegion, Case.REGION, JoinType.LEFT, getCaze(), this::setCaseRegion);
-	}
-
-	private void setCaseRegion(Join<Case, Region> caseRegion) {
-		this.caseRegion = caseRegion;
+		return getCaseJoins().getRegion();
 	}
 
 	public Join<Case, District> getCaseDistrict() {
-		return getOrCreate(caseDistrict, Case.DISTRICT, JoinType.LEFT, getCaze(), this::setCaseDistrict);
-	}
-
-	private void setCaseDistrict(Join<Case, District> caseDistrict) {
-		this.caseDistrict = caseDistrict;
+		return getCaseJoins().getDistrict();
 	}
 
 	public Join<Case, Community> getCaseCommunity() {
-		return getOrCreate(caseCommunity, Case.COMMUNITY, JoinType.LEFT, getCaze(), this::setCaseCommunity);
-	}
-
-	private void setCaseCommunity(Join<Case, Community> caseCommunity) {
-		this.caseCommunity = caseCommunity;
+		return getCaseJoins().getCommunity();
 	}
 
 	public Join<Case, Facility> getCaseHealthFacility() {
-		return getOrCreate(caseHealthFacility, Case.HEALTH_FACILITY, JoinType.LEFT, getCaze(), this::setCaseHealthFacility);
-	}
-
-	private void setCaseHealthFacility(Join<Case, Facility> caseHealthFacility) {
-		this.caseHealthFacility = caseHealthFacility;
+		return getCaseJoins().getFacility();
 	}
 
 	public Join<Case, PointOfEntry> getCasePointOfEntry() {
-		return getOrCreate(casePointOfEntry, Case.POINT_OF_ENTRY, JoinType.LEFT, getCaze(), this::setCasePointOfEntry);
-	}
-
-	private void setCasePointOfEntry(Join<Case, PointOfEntry> casePointOfEntry) {
-		this.casePointOfEntry = casePointOfEntry;
+		return getCaseJoins().getPointOfEntry();
 	}
 }

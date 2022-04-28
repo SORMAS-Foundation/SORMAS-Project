@@ -5,21 +5,19 @@ import javax.ejb.LocalBean;
 import javax.ejb.SessionContext;
 import javax.ejb.Stateless;
 import javax.enterprise.context.RequestScoped;
-import javax.enterprise.inject.Produces;
 import javax.persistence.EntityManager;
 import javax.persistence.PersistenceContext;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.ParameterExpression;
+import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.transaction.Transactional;
 
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.backend.util.ModelConstants;
 
-/**
- * The class CurrentUserService.
- */
 @Stateless
 @LocalBean
 public class CurrentUserService {
@@ -30,40 +28,62 @@ public class CurrentUserService {
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
 	private EntityManager em;
 
+	private final UserCache userCache;
+
+	public CurrentUserService() {
+		this.userCache = UserCache.getInstance();
+	}
+
 	/**
 	 * Returns the User entity corresponding to the current user.
-	 *
-	 * @return
 	 */
-	@Produces
-	@CurrentUserQualifier
-	@Transactional
 	@RequestScoped
 // FIXME @TransactionScoped would be better for performance, but is not support by novatec.bean-test (see their github #4)
-	public CurrentUser getCurrentUser() {
+	public User getCurrentUser() {
+		final String currentUsername = context.getCallerPrincipal().getName();
 
-		final String userName = context.getCallerPrincipal().getName();
-		if (userName.equalsIgnoreCase("ANONYMOUS")) {
-			return new CurrentUser(null);
+		User cachedUser = userCache.get(currentUsername);
+		if (cachedUser != null) {
+			return cachedUser;
 		}
 
+		// todo prohibit these names
+		if (currentUsername.equals("ANONYMOUS") || currentUsername.equals("SYSTEM")) {
+			return null;
+		}
+
+		final User currentUser = fetchUser(currentUsername);
+
+		if (currentUser == null) {
+			return null;
+		} else {
+			userCache.put(currentUsername, currentUser);
+			return currentUser;
+		}
+	}
+
+	public boolean hasUserRight(UserRight userRight) {
+		return context.isCallerInRole(userRight.name());
+	}
+
+	// We need a clean transaction as we do not want call potential entity listeners which would lead to recursion
+	@Transactional(Transactional.TxType.REQUIRES_NEW)
+	User fetchUser(String userName) {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final ParameterExpression<String> userNameParam = cb.parameter(String.class, User.USER_NAME);
 		final CriteriaQuery<User> cq = cb.createQuery(User.class);
-		final Root<User> from = cq.from(User.class);
-		cq.where(cb.equal(cb.lower(from.get(User.USER_NAME)), userNameParam));
+
+		// avoid "Hibernate could not initialize proxy – no Session" Exception
+		// do eager loading in this case
+		final Root<User> user = cq.from(User.class);
+		user.fetch(User.ADDRESS);
+
+		final Predicate equal = cb.equal(cb.lower(user.get(User.USER_NAME)), userNameParam);
+		cq.select(user).distinct(true);
+		cq.where(equal);
 
 		final TypedQuery<User> q = em.createQuery(cq).setParameter(userNameParam, userName.toLowerCase());
 
-		final User user = q.getResultList().stream().findFirst().orElse(null);
-
-		if (user != null) {
-			user.getUserRoles().size();
-			// TODO
-			user.getAddress().getAddressType();
-			return new CurrentUser(user);
-		} else {
-			return new CurrentUser(null);
-		}
+		return q.getResultList().stream().findFirst().orElse(null);
 	}
 }

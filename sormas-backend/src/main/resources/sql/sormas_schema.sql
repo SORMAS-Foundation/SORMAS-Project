@@ -9932,4 +9932,1341 @@ ALTER TABLE subcontinent_history OWNER TO sormas_user;
 
 INSERT INTO schema_version (version_number, comment) VALUES (438, 'Create missing history tables for entities #7113');
 
+ALTER TABLE testreport ADD COLUMN testeddiseasevariant varchar(255);
+ALTER TABLE testreport ADD COLUMN testeddiseasevariantdetails varchar(255);
+
+ALTER TABLE testreport_history ADD COLUMN testeddiseasevariant varchar(255);
+ALTER TABLE testreport_history ADD COLUMN testeddiseasevariantdetails varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (439, 'Add disease variant mapping to test reports #7209');
+
+-- 2022-02-02 Refactor CoreAdo to include archiving #7246
+
+ALTER TABLE contact ADD COLUMN archived BOOLEAN;
+ALTER TABLE contact_history ADD COLUMN archived BOOLEAN;
+ALTER TABLE eventparticipant ADD COLUMN archived BOOLEAN;
+ALTER TABLE eventparticipant_history ADD COLUMN archived BOOLEAN;
+
+INSERT INTO schema_version (version_number, comment) VALUES (440, 'Refactor CoreAdo to include archiving #7246');
+
+-- 2022-02-09 Align username handling of Keycloak and legacy login #7907
+/*
+* In case the current DB violates the new uniqueness constraint on usernames, please use the following script to detect
+* all conflicting usernames. Usernames are case-insensitive now, that means "ADMIN" and "admin" will both map to the
+* same user in the DB. To resolve the conflict, rename the conflicting usernames found with the script.
+*
+* SELECT username, creationdate, id, uuid FROM users
+* WHERE LOWER(username) IN
+*      (SELECT LOWER(username) FROM users GROUP BY LOWER(username) HAVING COUNT(*) > 1)
+* ORDER BY username, creationdate;
+*
+*/
+
+DROP INDEX idx_users_username;
+CREATE UNIQUE INDEX idx_users_username_lower ON users(LOWER(username));
+REINDEX INDEX idx_users_username_lower;
+
+INSERT INTO schema_version (version_number, comment) VALUES (441, ' Align username handling of Keycloak and legacy login #7907 ');
+
+-- 2022-02-02 Refactor CoreAdo to include archiving #7246
+
+UPDATE contact set archived = false;
+UPDATE contact_history set archived = false;
+UPDATE eventparticipant set archived = false;
+UPDATE eventparticipant_history set archived = false;
+ALTER TABLE contact ALTER COLUMN archived SET NOT NULL;
+ALTER TABLE contact ALTER COLUMN archived SET DEFAULT false;
+ALTER TABLE contact_history ALTER COLUMN archived SET NOT NULL;
+ALTER TABLE contact_history ALTER COLUMN archived SET DEFAULT false;
+ALTER TABLE eventparticipant ALTER COLUMN archived SET NOT NULL;
+ALTER TABLE eventparticipant ALTER COLUMN archived SET DEFAULT false;
+ALTER TABLE eventparticipant_history ALTER COLUMN archived SET NOT NULL;
+ALTER TABLE eventparticipant_history ALTER COLUMN archived SET DEFAULT false;
+
+INSERT INTO schema_version (version_number, comment) VALUES (442, 'Refactor CoreAdo to include archiving #7246');
+
+-- 2022-02-11 Map variant specific Nucleic acid detection methods #5285
+ALTER TABLE testreport ADD COLUMN testpcrtestspecification varchar(255);
+ALTER TABLE testreport_history ADD COLUMN testpcrtestspecification varchar(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (443, 'Map variant specific Nucleic acid detection methods #5285');
+
+-- 2022-02-02 Move health conditions from clinical course to the case #6879
+
+ALTER TABLE cases ADD COLUMN healthconditions_id bigint;
+ALTER TABLE cases_history ADD COLUMN healthconditions_id bigint;
+ALTER TABLE cases ADD CONSTRAINT fk_cases_healthconditions_id FOREIGN KEY (healthconditions_id) REFERENCES healthconditions (id);
+
+UPDATE cases c SET healthconditions_id = (SELECT cc.healthconditions_id from clinicalcourse cc where cc.id = c.clinicalcourse_id);
+
+ALTER TABLE clinicalcourse DROP CONSTRAINT fk_clinicalcourse_healthconditions_id;
+ALTER TABLE clinicalcourse DROP COLUMN healthconditions_id;
+
+INSERT INTO schema_version (version_number, comment) VALUES (444, 'Move health conditions from clinical course to the case #6879');
+
+-- 2022-01-31 CoreAdo: Introduce "end of processing date" #7247
+ALTER TABLE cases ADD COLUMN endofprocessingdate timestamp without time zone;
+ALTER TABLE cases ADD COLUMN archiveundonereason character varying(512);
+
+ALTER TABLE cases_history ADD COLUMN endofprocessingdate timestamp without time zone;
+ALTER TABLE cases_history ADD COLUMN archiveundonereason character varying(512);
+
+ALTER TABLE contact ADD COLUMN endofprocessingdate timestamp without time zone;
+ALTER TABLE contact ADD COLUMN archiveundonereason character varying(512);
+
+ALTER TABLE contact_history ADD COLUMN endofprocessingdate timestamp without time zone;
+ALTER TABLE contact_history ADD COLUMN archiveundonereason character varying(512);
+
+ALTER TABLE events ADD COLUMN endofprocessingdate timestamp without time zone;
+ALTER TABLE events ADD COLUMN archiveundonereason character varying(512);
+
+ALTER TABLE events_history ADD COLUMN endofprocessingdate timestamp without time zone;
+ALTER TABLE events_history ADD COLUMN archiveundonereason character varying(512);
+
+ALTER TABLE eventparticipant ADD COLUMN endofprocessingdate timestamp without time zone;
+ALTER TABLE eventparticipant ADD COLUMN archiveundonereason character varying(512);
+
+ALTER TABLE eventparticipant_history ADD COLUMN endofprocessingdate timestamp without time zone;
+ALTER TABLE eventparticipant_history ADD COLUMN archiveundonereason character varying(512);
+
+ALTER TABLE immunization ADD COLUMN endofprocessingdate timestamp without time zone;
+ALTER TABLE immunization ADD COLUMN archiveundonereason character varying(512);
+
+ALTER TABLE immunization_history ADD COLUMN endofprocessingdate timestamp without time zone;
+ALTER TABLE immunization_history ADD COLUMN archiveundonereason character varying(512);
+
+ALTER TABLE travelentry ADD COLUMN endofprocessingdate timestamp without time zone;
+ALTER TABLE travelentry ADD COLUMN archiveundonereason character varying(512);
+
+ALTER TABLE travelentry_history ADD COLUMN endofprocessingdate timestamp without time zone;
+ALTER TABLE travelentry_history ADD COLUMN archiveundonereason character varying(512);
+
+ALTER TABLE campaigns ADD COLUMN endofprocessingdate timestamp without time zone;
+ALTER TABLE campaigns ADD COLUMN archiveundonereason character varying(512);
+
+ALTER TABLE campaigns_history ADD COLUMN endofprocessingdate timestamp without time zone;
+ALTER TABLE campaigns_history ADD COLUMN archiveundonereason character varying(512);
+
+INSERT INTO schema_version (version_number, comment) VALUES (445, 'CoreAdo: Introduce "end of processing date" #7247');
+
+-- 2022-03-04 Configuration for automatic archiving #7775
+ALTER TABLE featureconfiguration ADD COLUMN entitytype character varying(255);
+ALTER TABLE featureconfiguration_history ADD COLUMN entitytype character varying(255);
+
+INSERT INTO schema_version (version_number, comment) VALUES (446, 'Configuration for automatic archiving #7775');
+
+-- 2022-03-10 change by user #7323
+ALTER TABLE action ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE action_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE activityascase ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE activityascase_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE additionaltest ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE additionaltest_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE aggregatereport ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE aggregatereport_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE areas ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE areas_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE campaigndiagramdefinition ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE campaigndiagramdefinition_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE campaignformdata ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE campaignformdata_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE campaignformmeta ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE campaignformmeta_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE campaigns ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE campaigns_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE cases ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE cases_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE clinicalcourse ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE clinicalcourse_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE clinicalvisit ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE clinicalvisit_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE community ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE community_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE contact ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE contact_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE continent ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE continent_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE country ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE country_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE customizableenumvalue ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE customizableenumvalue_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE deletionconfiguration ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE deletionconfiguration_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE diseaseconfiguration ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE diseaseconfiguration_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE district ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE district_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE documents ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE documents_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE epidata ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE epidata_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE eventgroups ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE eventgroups_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE eventparticipant ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE eventparticipant_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE events ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE events_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE exportconfiguration ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE exportconfiguration_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE exposures ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE exposures_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE externalshareinfo ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE externalshareinfo_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE facility ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE facility_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE featureconfiguration ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE featureconfiguration_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE healthconditions ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE healthconditions_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE hospitalization ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE hospitalization_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE immunization ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE immunization_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE labmessage ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE labmessage_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE location ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE location_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE manualmessagelog ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE manualmessagelog_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE maternalhistory ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE maternalhistory_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE outbreak ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE outbreak_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE pathogentest ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE pathogentest_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE person ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE person_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE personcontactdetail ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE personcontactdetail_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE pointofentry ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE pointofentry_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE populationdata ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE populationdata_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE porthealthinfo ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE porthealthinfo_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE prescription ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE prescription_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE previoushospitalization ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE previoushospitalization_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE region ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE region_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE samples ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE samples_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE sharerequestinfo ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE sharerequestinfo_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE sormastosormasorigininfo ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE sormastosormasorigininfo_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE sormastosormasshareinfo ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE sormastosormasshareinfo_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE sormastosormassharerequest ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE sormastosormassharerequest_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE subcontinent ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE subcontinent_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE surveillancereports ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE surveillancereports_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE symptoms ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE symptoms_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE systemevent ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE task ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE task_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE testreport ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE testreport_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE therapy ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE therapy_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE travelentry ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE travelentry_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE treatment ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE treatment_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE userrolesconfig ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE userrolesconfig_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE users ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE users_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE vaccination ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE vaccination_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE vaccinationinfo_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE visit ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE visit_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE weeklyreport ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE weeklyreport_history ADD COLUMN change_user_id BIGINT;
+
+ALTER TABLE weeklyreportentry ADD COLUMN change_user_id BIGINT,
+                            ADD CONSTRAINT fk_change_user_id
+                            FOREIGN KEY (change_user_id)
+                            REFERENCES users (id);
+
+ALTER TABLE weeklyreportentry_history ADD COLUMN change_user_id BIGINT;
+
+INSERT INTO schema_version (version_number, comment) VALUES (447, 'Changed by user #7323');
+
+-- 2022-03-17 Index on externalshareinfo (caze_id, creationDate) #7656
+DROP INDEX IF EXISTS externalshareinfo_caze_id_creationdate_idx;
+CREATE INDEX externalshareinfo_caze_id_creationdate_idx ON externalshareinfo (caze_id, creationDate DESC);
+
+INSERT INTO schema_version (version_number, comment) VALUES (448, 'Index on externalshareinfo (caze_id, creationDate) #7656');
+
+-- 2022-03-08 Add dateOfArrival to travel entries #7845
+ALTER TABLE travelentry ADD COLUMN dateofarrival timestamp without time zone;
+ALTER TABLE travelentry_history ADD COLUMN dateofarrival timestamp without time zone;
+
+UPDATE travelentry SET dateofarrival = TO_TIMESTAMP(dea_entry->>'value', 'DD.MM.YYYY')
+    FROM travelentry t
+    CROSS JOIN LATERAL json_array_elements(t.deacontent) dea_entry
+    WHERE dea_entry->>'caption' ilike 'eingangsdatum' and t.id = travelentry.id;
+
+UPDATE travelentry SET dateofarrival = creationdate where dateofarrival is null;
+
+ALTER TABLE travelentry ALTER COLUMN dateofarrival SET NOT NULL;
+
+INSERT INTO schema_version (version_number, comment) VALUES (449, 'Add dateOfArrival to travel entries #7845');
+
+-- 2022-03-14 - #7774 Automatic & manual archiving for all core entities
+UPDATE contact ct
+SET archived = TRUE
+FROM cases cs
+WHERE ct.caze_id = cs.id AND cs.archived IS TRUE AND ct.archived IS FALSE;
+
+UPDATE eventparticipant ep
+SET archived = TRUE
+FROM events ev
+WHERE ep.event_id = ev.id AND ev.archived IS TRUE AND ep.archived IS FALSE;
+
+INSERT INTO schema_version (version_number, comment) VALUES (450, 'Automatic & manual archiving for all core entities #7774 ');
+
+-- 2022-03-16 Delete history data on permanent deletion of entities #7713
+
+CREATE OR REPLACE FUNCTION delete_history_trigger()
+    RETURNS trigger AS
+$$
+BEGIN
+    EXECUTE format('DELETE FROM %s WHERE %s = %s', TG_ARGV[0], TG_ARGV[1], OLD.ID);
+    RETURN NEW;
+END;
+$$
+    language 'plpgsql';
+
+DROP TRIGGER IF EXISTS versioning_trigger ON deletionconfiguration;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON deletionconfiguration
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'deletionconfiguration_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON deletionconfiguration;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON deletionconfiguration
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('deletionconfiguration_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON contact;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON contact
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'contact_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON contact;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON contact
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('contact_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_contacts_visits ON contact;
+CREATE TRIGGER delete_history_trigger_contacts_visits
+    AFTER DELETE ON contact
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('contacts_visits_history', 'contact_id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON events;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON events
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'events_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON events;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON events
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('events_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_events_eventgroups ON events;
+CREATE TRIGGER delete_history_trigger_events_eventgroups
+    AFTER DELETE ON events
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('events_eventgroups_history', 'event_id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON populationdata;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON populationdata
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'populationdata_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON populationdata;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON populationdata
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('populationdata_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON users;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON users
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'users_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON users;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON users
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('users_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_task_observer ON users;
+CREATE TRIGGER delete_history_trigger_task_observer
+    AFTER DELETE ON users
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('task_observer_history', 'user_id');
+DROP TRIGGER IF EXISTS delete_history_trigger_users_userroles ON users;
+CREATE TRIGGER delete_history_trigger_users_userroles
+    AFTER DELETE ON users
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('users_userroles_history', 'user_id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON customizableenumvalue;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON customizableenumvalue
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'customizableenumvalue_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON customizableenumvalue;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON customizableenumvalue
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('customizableenumvalue_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON eventparticipant;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON eventparticipant
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'eventparticipant_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON eventparticipant;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON eventparticipant
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('eventparticipant_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON clinicalvisit;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON clinicalvisit
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'clinicalvisit_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON clinicalvisit;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON clinicalvisit
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('clinicalvisit_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON clinicalcourse;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON clinicalcourse
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'clinicalcourse_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON clinicalcourse;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON clinicalcourse
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('clinicalcourse_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON immunization;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON immunization
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'immunization_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON immunization;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON immunization
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('immunization_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON labmessage;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON labmessage
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'labmessage_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON labmessage;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON labmessage
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('labmessage_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON outbreak;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON outbreak
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'outbreak_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON outbreak;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON outbreak
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('outbreak_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON porthealthinfo;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON porthealthinfo
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'porthealthinfo_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON porthealthinfo;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON porthealthinfo
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('porthealthinfo_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON prescription;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON prescription
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'prescription_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON prescription;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON prescription
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('prescription_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON additionaltest;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON additionaltest
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'additionaltest_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON additionaltest;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON additionaltest
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('additionaltest_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON sharerequestinfo;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON sharerequestinfo
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'sharerequestinfo_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON sharerequestinfo;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON sharerequestinfo
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('sharerequestinfo_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_sharerequestinfo_shareinfo ON sharerequestinfo;
+CREATE TRIGGER delete_history_trigger_sharerequestinfo_shareinfo
+    AFTER DELETE ON sharerequestinfo
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('sharerequestinfo_shareinfo_history', 'sharerequestinfo_id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON sormastosormassharerequest;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON sormastosormassharerequest
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'sormastosormassharerequest_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON sormastosormassharerequest;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON sormastosormassharerequest
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('sormastosormassharerequest_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON aggregatereport;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON aggregatereport
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'aggregatereport_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON aggregatereport;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON aggregatereport
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('aggregatereport_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON featureconfiguration;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON featureconfiguration
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'featureconfiguration_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON featureconfiguration;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON featureconfiguration
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('featureconfiguration_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON pointofentry;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON pointofentry
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'pointofentry_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON pointofentry;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON pointofentry
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('pointofentry_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON task;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON task
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'task_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON task;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON task
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('task_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_task_observer ON task;
+CREATE TRIGGER delete_history_trigger_task_observer
+    AFTER DELETE ON task
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('task_observer_history', 'task_id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON testreport;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON testreport
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'testreport_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON testreport;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON testreport
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('testreport_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON therapy;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON therapy
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'therapy_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON therapy;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON therapy
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('therapy_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON travelentry;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON travelentry
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'travelentry_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON travelentry;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON travelentry
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('travelentry_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON treatment;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON treatment
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'treatment_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON treatment;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON treatment
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('treatment_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON areas;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON areas
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'areas_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON areas;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON areas
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('areas_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON userrolesconfig;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON userrolesconfig
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'userrolesconfig_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON userrolesconfig;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON userrolesconfig
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('userrolesconfig_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON vaccination;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON vaccination
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'vaccination_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON vaccination;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON vaccination
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('vaccination_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON weeklyreport;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON weeklyreport
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'weeklyreport_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON weeklyreport;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON weeklyreport
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('weeklyreport_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON healthconditions;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON healthconditions
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'healthconditions_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON healthconditions;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON healthconditions
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('healthconditions_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON weeklyreportentry;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON weeklyreportentry
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'weeklyreportentry_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON weeklyreportentry;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON weeklyreportentry
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('weeklyreportentry_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON campaignformdata;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON campaignformdata
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaignformdata_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON campaignformdata;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON campaignformdata
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('campaignformdata_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON symptoms;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON symptoms
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'symptoms_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON symptoms;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON symptoms
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('symptoms_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON campaignformmeta;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON campaignformmeta
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaignformmeta_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON campaignformmeta;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON campaignformmeta
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('campaignformmeta_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_campaign_campaignformmeta ON campaignformmeta;
+CREATE TRIGGER delete_history_trigger_campaign_campaignformmeta
+    AFTER DELETE ON campaignformmeta
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('campaign_campaignformmeta_history', 'campaignformmeta_id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON campaigns;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON campaigns
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaigns_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON campaigns;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON campaigns
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('campaigns_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_campaign_campaignformmeta ON campaigns;
+CREATE TRIGGER delete_history_trigger_campaign_campaignformmeta
+    AFTER DELETE ON campaigns
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('campaign_campaignformmeta_history', 'campaign_id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON visit;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON visit
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'visit_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON visit;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON visit
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('visit_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_contacts_visits ON visit;
+CREATE TRIGGER delete_history_trigger_contacts_visits
+    AFTER DELETE ON visit
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('contacts_visits_history', 'visit_id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON documents;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON documents
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'documents_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON documents;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON documents
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('documents_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON manualmessagelog;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON manualmessagelog
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'manualmessagelog_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON manualmessagelog;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON manualmessagelog
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('manualmessagelog_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON action;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON action
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'action_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON action;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON action
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('action_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON exportconfiguration;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON exportconfiguration
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'exportconfiguration_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON exportconfiguration;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON exportconfiguration
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('exportconfiguration_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON district;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON district
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'district_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON district;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON district
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('district_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON hospitalization;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON hospitalization
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'hospitalization_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON hospitalization;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON hospitalization
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('hospitalization_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON surveillancereports;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON surveillancereports
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'surveillancereports_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON surveillancereports;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON surveillancereports
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('surveillancereports_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON activityascase;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON activityascase
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'activityascase_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON activityascase;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON activityascase
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('activityascase_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON epidata;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON epidata
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'epidata_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON epidata;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON epidata
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('epidata_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON sormastosormasorigininfo;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON sormastosormasorigininfo
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'sormastosormasorigininfo_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON sormastosormasorigininfo;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON sormastosormasorigininfo
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('sormastosormasorigininfo_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON campaigndiagramdefinition;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON campaigndiagramdefinition
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'campaigndiagramdefinition_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON campaigndiagramdefinition;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON campaigndiagramdefinition
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('campaigndiagramdefinition_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON samples;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON samples
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'samples_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON samples;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON samples
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('samples_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON sormastosormasshareinfo;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON sormastosormasshareinfo
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'sormastosormasshareinfo_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON sormastosormasshareinfo;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON sormastosormasshareinfo
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('sormastosormasshareinfo_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_sharerequestinfo_shareinfo ON sormastosormasshareinfo;
+CREATE TRIGGER delete_history_trigger_sharerequestinfo_shareinfo
+    AFTER DELETE ON sormastosormasshareinfo
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('sharerequestinfo_shareinfo_history', 'shareinfo_id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON diseaseconfiguration;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON diseaseconfiguration
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'diseaseconfiguration_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON diseaseconfiguration;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON diseaseconfiguration
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('diseaseconfiguration_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON externalshareinfo;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON externalshareinfo
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'externalshareinfo_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON externalshareinfo;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON externalshareinfo
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('externalshareinfo_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON personcontactdetail;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON personcontactdetail
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'personcontactdetail_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON personcontactdetail;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON personcontactdetail
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('personcontactdetail_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON previoushospitalization;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON previoushospitalization
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'previoushospitalization_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON previoushospitalization;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON previoushospitalization
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('previoushospitalization_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON continent;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON continent
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'continent_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON continent;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON continent
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('continent_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON country;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON country
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'country_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON country;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON country
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('country_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON exposures;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON exposures
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'exposures_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON exposures;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON exposures
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('exposures_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON region;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON region
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'region_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON region;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON region
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('region_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON subcontinent;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON subcontinent
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'subcontinent_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON subcontinent;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON subcontinent
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('subcontinent_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON cases;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON cases
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'cases_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON cases;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON cases
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('cases_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON community;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON community
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'community_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON community;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON community
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('community_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON eventgroups;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON eventgroups
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'eventgroups_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON eventgroups;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON eventgroups
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('eventgroups_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_events_eventgroups ON eventgroups;
+CREATE TRIGGER delete_history_trigger_events_eventgroups
+    AFTER DELETE ON eventgroups
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('events_eventgroups_history', 'eventgroup_id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON facility;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON facility
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'facility_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON facility;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON facility
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('facility_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON location;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON location
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'location_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON location;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON location
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('location_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_person_locations ON location;
+CREATE TRIGGER delete_history_trigger_person_locations
+    AFTER DELETE ON location
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('person_locations_history', 'location_id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON pathogentest;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON pathogentest
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'pathogentest_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON pathogentest;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON pathogentest
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('pathogentest_history', 'id');
+
+DROP TRIGGER IF EXISTS versioning_trigger ON person;
+CREATE TRIGGER versioning_trigger
+    BEFORE INSERT OR UPDATE ON person
+    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'person_history', true);
+DROP TRIGGER IF EXISTS delete_history_trigger ON person;
+CREATE TRIGGER delete_history_trigger
+    AFTER DELETE ON person
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('person_history', 'id');
+DROP TRIGGER IF EXISTS delete_history_trigger_person_locations ON person;
+CREATE TRIGGER delete_history_trigger_person_locations
+    AFTER DELETE ON person
+    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('person_locations_history', 'person_id');
+
+INSERT INTO schema_version (version_number, comment) VALUES (451, 'Delete history data on permanent deletion of entities #7713');
+
+-- 2022-03-29 Persisting systemevent on latest develop fails with SQL error #8585
+
+DROP TRIGGER IF EXISTS versioning_trigger ON systemevent;
+DROP TRIGGER IF EXISTS delete_history_trigger ON systemevent;
+
+INSERT INTO schema_version (version_number, comment) VALUES (452, 'Persisting systemevent on latest develop fails with SQL error #8585');
+
+-- 2022-04-08 Initial UI support for physician's reports #8276
+
+ALTER TABLE labmessage ADD COLUMN type varchar(255);
+ALTER TABLE labmessage_history ADD COLUMN type varchar(255);
+
+UPDATE labmessage SET type = CASE
+    WHEN labmessagedetails LIKE '%profile value="https://demis.rki.de/fhir/StructureDefinition/NotificationDiseaseCVDD"%' THEN 'PHYSICIANS_REPORT'
+    ELSE 'LAB_MESSAGE'
+    END;
+
+INSERT INTO schema_version (version_number, comment) VALUES (453, 'Initial UI support for physicians reports #8276');
+
+-- 2022-04-07 Refactor unique constraint on deletionconfiguration table #8295
+
+ALTER TABLE deletionconfiguration DROP CONSTRAINT IF EXISTS deletionconfiguration_entity_key;
+ALTER TABLE deletionconfiguration ADD CONSTRAINT unq_deletionconfiguration_entity_reference UNIQUE (entitytype, deletionreference);
+
+INSERT INTO schema_version (version_number, comment) VALUES (454, 'Refactor unique constraint on deletionconfiguration table #8295');
+
+-- 2022-04-08 Drop deleted column from lab messages and remove deleted lab messages #8295
+
+DELETE FROM testreport USING labmessage WHERE testreport.labmessage_id = labmessage.id AND labmessage.deleted IS TRUE;
+DELETE FROM labmessage WHERE deleted IS TRUE;
+ALTER TABLE labmessage DROP COLUMN deleted;
+ALTER TABLE labmessage_history DROP COLUMN deleted;
+
+INSERT INTO schema_version (version_number, comment) VALUES (455, 'Drop deleted column from lab messages and remove deleted lab messages #8295');
+
+-- 2022-04-11 Remove DELETE_PERMANENT feature type #8295
+
+DELETE FROM featureconfiguration WHERE featuretype = 'DELETE_PERMANENT';
+
+INSERT INTO schema_version (version_number, comment) VALUES (456, 'Remove DELETE_PERMANENT feature type #8295');
+
+-- 2022-04-11 Investigate and add indexes #8778
+
+CREATE INDEX IF NOT EXISTS idx_cases_responsibleregion_id ON cases (responsibleregion_id);
+CREATE INDEX IF NOT EXISTS idx_cases_responsibledistrict_id ON cases (responsibledistrict_id);
+
+CREATE INDEX IF NOT EXISTS idx_cases_archived ON cases (archived);
+CREATE INDEX IF NOT EXISTS idx_contact_archived ON contact (archived);
+CREATE INDEX IF NOT EXISTS idx_events_archived ON events (archived);
+CREATE INDEX IF NOT EXISTS idx_eventpartivipant_archived ON eventparticipant (archived);
+CREATE INDEX IF NOT EXISTS idx_immunization_archived ON immunization (archived);
+CREATE INDEX IF NOT EXISTS idx_travelentry_archived ON travelentry (archived);
+CREATE INDEX IF NOT EXISTS idx_campaigns_archived ON campaigns (archived);
+CREATE INDEX IF NOT EXISTS idx_task_archived ON task (archived);
+
+INSERT INTO schema_version (version_number, comment) VALUES (457, 'Investigate and add indexes #8778');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

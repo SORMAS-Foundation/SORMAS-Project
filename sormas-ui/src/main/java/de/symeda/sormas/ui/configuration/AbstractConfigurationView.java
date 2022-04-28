@@ -27,7 +27,6 @@ import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.ui.SubMenu;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.configuration.docgeneration.DocumentTemplatesView;
@@ -104,7 +103,7 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 			navigator.addView(DocumentTemplatesView.VIEW_NAME, DocumentTemplatesView.class);
 		}
 
-		if (FacadeProvider.getConfigFacade().isDevMode() && UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
+		if (FacadeProvider.getConfigFacade().isDevMode() && UserProvider.getCurrent().hasUserRight(UserRight.DEV_MODE)) {
 			navigator.addView(DevModeView.VIEW_NAME, DevModeView.class);
 		}
 	}
@@ -113,7 +112,8 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 	public void refreshMenu(SubMenu menu, String params) {
 		menu.removeAllViews();
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.OUTBREAK_VIEW)
+			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.OUTBREAKS)) {
 			menu.addView(
 				OutbreaksView.VIEW_NAME,
 				I18nProperties.getPrefixCaption("View", OutbreaksView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),
@@ -207,7 +207,7 @@ public abstract class AbstractConfigurationView extends AbstractSubNavigationVie
 				null,
 				false);
 		}
-		if (FacadeProvider.getConfigFacade().isDevMode() && UserProvider.getCurrent().hasUserRole(UserRole.ADMIN)) {
+		if (FacadeProvider.getConfigFacade().isDevMode() && UserProvider.getCurrent().hasUserRight(UserRight.DEV_MODE)) {
 			menu.addView(
 				DevModeView.VIEW_NAME,
 				I18nProperties.getPrefixCaption("View", DevModeView.VIEW_NAME.replaceAll("/", ".") + ".short", ""),

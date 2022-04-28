@@ -17,8 +17,11 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.utils;
 
+import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.util.function.Consumer;
 import java.util.function.Function;
+import java.util.function.UnaryOperator;
 
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.server.Sizeable.Unit;
@@ -127,17 +130,25 @@ public final class VaadinUiUtil {
 			window.setWidth(width, Unit.PERCENTAGE);
 		}
 
-
 		UI.getCurrent().addWindow(window);
 		return window;
 	}
 
 	public static Window showModalPopupWindow(CommitDiscardWrapperComponent<?> content, String caption) {
+		return showModalPopupWindow(content, caption, null);
+	}
+
+	public static Window showModalPopupWindow(CommitDiscardWrapperComponent<?> content, String caption, Consumer<Boolean> callback) {
 		final Window popupWindow = VaadinUiUtil.showPopupWindow(content);
 		popupWindow.setCaption(caption);
 		content.setMargin(true);
 
 		content.addDoneListener(popupWindow::close);
+
+		if (callback != null) {
+			content.addCommitListener(() -> callback.accept(true));
+			content.addDiscardListener(() -> callback.accept(false));
+		}
 
 		return popupWindow;
 	}
@@ -171,6 +182,22 @@ public final class VaadinUiUtil {
 		Component content,
 		String confirmCaption,
 		String cancelCaption,
+		Consumer<Boolean> resultConsumer) {
+
+		return showConfirmationPopup(caption, content, confirmCaption, cancelCaption, getEstimatedWidth(caption.length()), resultConsumer);
+	}
+
+	public static Integer getEstimatedWidth(int length) {
+		BigDecimal width = new BigDecimal(length).multiply(BigDecimal.valueOf(13.6));
+		width = width.setScale(0, RoundingMode.HALF_UP);
+		return width.intValue();
+	}
+
+	public static Window showConfirmationPopup(
+		String caption,
+		Component content,
+		String confirmCaption,
+		String cancelCaption,
 		Integer width,
 		Consumer<Boolean> resultConsumer) {
 
@@ -189,6 +216,41 @@ public final class VaadinUiUtil {
 				protected void onCancel() {
 					resultConsumer.accept(false);
 					popupWindow.close();
+				}
+			};
+
+			confirmationComponent.getConfirmButton().setCaption(confirmCaption);
+			confirmationComponent.getCancelButton().setCaption(cancelCaption);
+
+			return confirmationComponent;
+		}, width);
+	}
+
+	public static Window showConfirmationPopup(
+		String caption,
+		Component content,
+		String confirmCaption,
+		String cancelCaption,
+		Integer width,
+		UnaryOperator<Boolean> resultConsumer) {
+
+		return showConfirmationPopup(caption, content, popupWindow -> {
+			ConfirmationComponent confirmationComponent = new ConfirmationComponent(false) {
+
+				private static final long serialVersionUID = 1L;
+
+				@Override
+				protected void onConfirm() {
+					if (Boolean.TRUE.equals(resultConsumer.apply(true))) {
+						popupWindow.close();
+					}
+				}
+
+				@Override
+				protected void onCancel() {
+					if (Boolean.TRUE.equals(resultConsumer.apply(false))) {
+						popupWindow.close();
+					}
 				}
 			};
 

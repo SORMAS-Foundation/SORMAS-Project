@@ -8,9 +8,9 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.inject.Inject;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Immunization;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.pojo.web.Immunization;
 import org.testng.asserts.SoftAssert;
 
 public class EditImmunizationPersonSteps implements En {
@@ -41,11 +41,17 @@ public class EditImmunizationPersonSteps implements En {
                   "primaryEmailAddress",
                   "dateOfBirth"));
         });
+
+    Then(
+        "I click on Person tab from Immunization page",
+        () -> {
+          webDriverHelpers.scrollToElement(IMMUNIZATION_PERSON_TAB);
+          webDriverHelpers.clickOnWebElementBySelector(IMMUNIZATION_PERSON_TAB);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(FIRST_NAME_INPUT);
+        });
   }
 
   private Immunization collectImmunizationPersonData() {
-    webDriverHelpers.scrollToElement(IMMUNIZATION_PERSON_TAB);
-    webDriverHelpers.clickOnWebElementBySelector(IMMUNIZATION_PERSON_TAB);
     return Immunization.builder()
         .firstName(webDriverHelpers.getValueFromWebElement(FIRST_NAME_INPUT))
         .lastName(webDriverHelpers.getValueFromWebElement(LAST_NAME_INPUT))

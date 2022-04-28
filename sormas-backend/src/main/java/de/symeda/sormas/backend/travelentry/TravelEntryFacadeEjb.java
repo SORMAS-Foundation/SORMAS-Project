@@ -1,18 +1,27 @@
 package de.symeda.sormas.backend.travelentry;
 
+import java.sql.Timestamp;
+import java.time.LocalDate;
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
-import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.inject.Inject;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
-import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
+import de.symeda.sormas.api.EditPermissionType;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.Page;
+import de.symeda.sormas.api.deletionconfiguration.DeletionReference;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
@@ -29,8 +38,7 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.deletionconfiguration.AbstractCoreEntityFacade;
-import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
+import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.CommunityService;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
@@ -49,16 +57,15 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless(name = "TravelEntryFacade")
-public class TravelEntryFacadeEjb extends AbstractCoreEntityFacade<TravelEntry> implements TravelEntryFacade {
+@RolesAllowed(UserRight._TRAVEL_ENTRY_VIEW)
+public class TravelEntryFacadeEjb
+	extends AbstractCoreFacadeEjb<TravelEntry, TravelEntryDto, TravelEntryIndexDto, TravelEntryReferenceDto, TravelEntryService, TravelEntryCriteria>
+	implements TravelEntryFacade {
 
 	@EJB
-	TravelEntryService travelEntryService;
-	@EJB
-	TravelEntryListService travelEntryListService;
+	private TravelEntryListService travelEntryListService;
 	@EJB
 	private PersonService personService;
-	@EJB
-	private UserService userService;
 	@EJB
 	private RegionService regionService;
 	@EJB
@@ -73,7 +80,6 @@ public class TravelEntryFacadeEjb extends AbstractCoreEntityFacade<TravelEntry> 
 	private CaseFacadeEjb.CaseFacadeEjbLocal caseFacade;
 
 	public TravelEntryFacadeEjb() {
-		super(TravelEntry.class);
 	}
 
 	public static TravelEntryReferenceDto toReferenceDto(TravelEntry entity) {
@@ -88,92 +94,40 @@ public class TravelEntryFacadeEjb extends AbstractCoreEntityFacade<TravelEntry> 
 			entity.getPerson().getLastName());
 	}
 
-	@Override
-	public TravelEntryDto getByUuid(String uuid) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return convertToDto(travelEntryService.getByUuid(uuid), pseudonymizer);
-	}
-
-	@Override
-	public TravelEntryReferenceDto getReferenceByUuid(String uuid) {
-		return Optional.of(uuid).map(u -> travelEntryService.getByUuid(u)).map(TravelEntryFacadeEjb::toReferenceDto).orElse(null);
-	}
-
-	@Override
-	public void archive(String uuid) {
-		TravelEntry travelEntry = travelEntryService.getByUuid(uuid);
-		if (travelEntry != null) {
-			travelEntry.setArchived(true);
-			travelEntryService.ensurePersisted(travelEntry);
-		}
-	}
-
-	@Override
-	public void dearchive(String uuid) {
-		TravelEntry travelEntry = travelEntryService.getByUuid(uuid);
-		if (travelEntry != null) {
-			travelEntry.setArchived(false);
-			travelEntryService.ensurePersisted(travelEntry);
-		}
+	@Inject
+	public TravelEntryFacadeEjb(TravelEntryService service, UserService userService) {
+		super(TravelEntry.class, TravelEntryDto.class, service, userService);
 	}
 
 	@Override
 	public boolean isDeleted(String travelEntryUuid) {
-		return travelEntryService.isDeleted(travelEntryUuid);
+		return service.isDeleted(travelEntryUuid);
 	}
 
 	@Override
-	public boolean isArchived(String travelEntryUuid) {
-		return travelEntryService.isArchived(travelEntryUuid);
+	public EditPermissionType isTravelEntryEditAllowed(String travelEntryUuid) {
+		TravelEntry travelEntry = service.getByUuid(travelEntryUuid);
+		return service.isTravelEntryEditAllowed(travelEntry);
 	}
 
 	@Override
-	public void archiveOrDearchiveTravelEntry(String travelEntryUuid, boolean archive) {
-		TravelEntry travelEntry = travelEntryService.getByUuid(travelEntryUuid);
-		travelEntry.setArchived(archive);
-		travelEntryService.ensurePersisted(travelEntry);
-	}
-
-	@Override
-	public Boolean isTravelEntryEditAllowed(String travelEntryUuid) {
-		TravelEntry travelEntry = travelEntryService.getByUuid(travelEntryUuid);
-		return travelEntryService.isTravelEntryEditAllowed(travelEntry);
-	}
-
-	@Override
-	public void deleteTravelEntry(String travelEntryUuid) {
-		if (!userService.hasRight(UserRight.TRAVEL_ENTRY_DELETE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete travel entries");
-		}
-
-		TravelEntry travelEntry = travelEntryService.getByUuid(travelEntryUuid);
-		travelEntryService.delete(travelEntry);
+	@RolesAllowed(UserRight._TRAVEL_ENTRY_DELETE)
+	public void delete(String travelEntryUuid) {
+		TravelEntry travelEntry = service.getByUuid(travelEntryUuid);
+		service.delete(travelEntry);
 
 		if (travelEntry.getResultingCase() != null) {
-			caseFacade.onCaseChanged(CaseFacadeEjb.toDto(travelEntry.getResultingCase()), travelEntry.getResultingCase());
+			caseFacade.onCaseChanged(caseFacade.toDto(travelEntry.getResultingCase()), travelEntry.getResultingCase());
 		}
 	}
 
 	@Override
-	public List<TravelEntryDto> getAllAfter(Date date) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return travelEntryService.getAllActiveAfter(date).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
-	}
-
-	@Override
-	public List<TravelEntryDto> getByUuids(List<String> uuids) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return travelEntryService.getByUuids(uuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
-	}
-
-	@Override
-	public List<String> getAllUuids() {
-		return travelEntryService.getAllUuids();
+	protected void selectDtoFields(CriteriaQuery<TravelEntryDto> cq, Root<TravelEntry> root) {
 	}
 
 	@Override
 	public List<DeaContentEntry> getDeaContentOfLastTravelEntry() {
-		final TravelEntry lastTravelEntry = travelEntryService.getLastTravelEntry();
+		final TravelEntry lastTravelEntry = service.getLastTravelEntry();
 
 		if (lastTravelEntry != null) {
 			Pseudonymizer aDefault = Pseudonymizer.getDefault(userService::hasRight);
@@ -191,39 +145,13 @@ public class TravelEntryFacadeEjb extends AbstractCoreEntityFacade<TravelEntry> 
 
 	@Override
 	public long count(TravelEntryCriteria criteria, boolean ignoreUserFilter) {
-		return travelEntryService.count(criteria, ignoreUserFilter);
+		return service.count(criteria, ignoreUserFilter);
 	}
 
 	@Override
-	public TravelEntryDto save(TravelEntryDto dto, boolean allowMerge) {
-		TravelEntry existingTravelEntry = dto.getUuid() != null ? travelEntryService.getByUuid(dto.getUuid()) : null;
-		TravelEntryDto existingDto = toDto(existingTravelEntry);
-
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		restorePseudonymizedDto(dto, existingDto, existingTravelEntry, pseudonymizer);
-
-		validate(dto);
-
-		existingTravelEntry = fillOrBuildEntity(dto, existingTravelEntry);
-		travelEntryService.ensurePersisted(existingTravelEntry);
-
-		return convertToDto(existingTravelEntry, pseudonymizer);
-	}
-
-	@Override
-	public TravelEntryDto save(TravelEntryDto dto) {
-		return save(dto, false);
-	}
-
-	public TravelEntryDto convertToDto(TravelEntry source, Pseudonymizer pseudonymizer) {
-		TravelEntryDto dto = toDto(source);
-		pseudonimyzeDto(source, dto, pseudonymizer);
-		return dto;
-	}
-
-	private void pseudonimyzeDto(TravelEntry source, TravelEntryDto dto, Pseudonymizer pseudonymizer) {
+	protected void pseudonymizeDto(TravelEntry source, TravelEntryDto dto, Pseudonymizer pseudonymizer) {
 		if (dto != null) {
-			boolean inJurisdiction = travelEntryService.inJurisdictionOrOwned(source);
+			boolean inJurisdiction = service.inJurisdictionOrOwned(source);
 			pseudonymizer.pseudonymizeDto(TravelEntryDto.class, dto, inJurisdiction, c -> {
 				User currentUser = userService.getCurrentUser();
 				pseudonymizer.pseudonymizeUser(source.getReportingUser(), currentUser, dto::setReportingUser);
@@ -231,23 +159,19 @@ public class TravelEntryFacadeEjb extends AbstractCoreEntityFacade<TravelEntry> 
 		}
 	}
 
-	private void restorePseudonymizedDto(TravelEntryDto dto, TravelEntryDto existingDto, TravelEntry travelEntry, Pseudonymizer pseudonymizer) {
+	@Override
+	protected void restorePseudonymizedDto(TravelEntryDto dto, TravelEntryDto existingDto, TravelEntry entity, Pseudonymizer pseudonymizer) {
 		if (existingDto != null) {
-			final boolean inJurisdiction = travelEntryService.inJurisdictionOrOwned(travelEntry);
+			final boolean inJurisdiction = service.inJurisdictionOrOwned(entity);
 			final User currentUser = userService.getCurrentUser();
-			pseudonymizer.restoreUser(travelEntry.getReportingUser(), currentUser, dto, dto::setReportingUser);
+			pseudonymizer.restoreUser(entity.getReportingUser(), currentUser, dto, dto::setReportingUser);
 			pseudonymizer.restorePseudonymizedValues(TravelEntryDto.class, dto, existingDto, inJurisdiction);
 		}
 	}
 
 	@Override
-	public boolean exists(String uuid) {
-		return travelEntryService.exists(uuid);
-	}
-
-	@Override
 	public List<TravelEntryIndexDto> getIndexList(TravelEntryCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
-		List<TravelEntryIndexDto> resultList = travelEntryService.getIndexList(criteria, first, max, sortProperties);
+		List<TravelEntryIndexDto> resultList = service.getIndexList(criteria, first, max, sortProperties);
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
 		pseudonymizer.pseudonymizeDtoCollection(TravelEntryIndexDto.class, resultList, TravelEntryIndexDto::isInJurisdiction, null);
@@ -256,9 +180,36 @@ public class TravelEntryFacadeEjb extends AbstractCoreEntityFacade<TravelEntry> 
 	}
 
 	public Page<TravelEntryIndexDto> getIndexPage(TravelEntryCriteria criteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
-		List<TravelEntryIndexDto> travelEntryIndexList = travelEntryService.getIndexList(criteria, offset, size, sortProperties);
+		List<TravelEntryIndexDto> travelEntryIndexList = service.getIndexList(criteria, offset, size, sortProperties);
 		long totalElementCount = count(criteria);
 		return new Page<>(travelEntryIndexList, offset, size, totalElementCount);
+	}
+
+	@Override
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	@RolesAllowed(UserRight._SYSTEM)
+	public void archiveAllArchivableTravelEntries(int daysAfterTravelEntryGetsArchived) {
+		archiveAllArchivableTravelEntry(daysAfterTravelEntryGetsArchived, LocalDate.now());
+	}
+
+	private void archiveAllArchivableTravelEntry(int daysAfterTravelEntryGetsArchived, @NotNull LocalDate referenceDate) {
+		LocalDate notChangedSince = referenceDate.minusDays(daysAfterTravelEntryGetsArchived);
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<TravelEntry> from = cq.from(TravelEntry.class);
+
+		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
+		cq.where(
+			cb.equal(from.get(TravelEntry.ARCHIVED), false),
+			cb.equal(from.get(TravelEntry.DELETED), false),
+			cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
+		cq.select(from.get(TravelEntry.UUID)).distinct(true);
+		List<String> travelEntryUuids = em.createQuery(cq).getResultList();
+
+		if (!travelEntryUuids.isEmpty()) {
+			archive(travelEntryUuids);
+		}
 	}
 
 	@Override
@@ -280,8 +231,8 @@ public class TravelEntryFacadeEjb extends AbstractCoreEntityFacade<TravelEntry> 
 	}
 
 	@Override
-	public AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid) {
-		return getAutomaticDeletionInfo(uuid, CoreEntityType.TRAVEL_ENTRY);
+	protected CoreEntityType getCoreEntityType() {
+		return CoreEntityType.TRAVEL_ENTRY;
 	}
 
 	@Override
@@ -303,6 +254,9 @@ public class TravelEntryFacadeEjb extends AbstractCoreEntityFacade<TravelEntry> 
 		}
 		if (travelEntryDto.getPointOfEntry() == null) {
 			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validPointOfEntry));
+		}
+		if (travelEntryDto.getDateOfArrival() == null) {
+			throw new ValidationRuntimeException(I18nProperties.getValidationError(Validations.validDateOfArrival));
 		}
 	}
 
@@ -354,12 +308,26 @@ public class TravelEntryFacadeEjb extends AbstractCoreEntityFacade<TravelEntry> 
 		dto.setQuarantineReduced(entity.isQuarantineReduced());
 		dto.setQuarantineOfficialOrderSent(entity.isQuarantineOfficialOrderSent());
 		dto.setQuarantineOfficialOrderSentDate(entity.getQuarantineOfficialOrderSentDate());
+		dto.setDateOfArrival(entity.getDateOfArrival());
 
 		return dto;
 	}
 
-	private TravelEntry fillOrBuildEntity(@NotNull TravelEntryDto source, TravelEntry target) {
-		target = DtoHelper.fillOrBuildEntity(source, target, TravelEntry::new, true);
+	@Override
+	public TravelEntryReferenceDto toRefDto(TravelEntry entity) {
+		if (entity == null) {
+			return null;
+		}
+		return new TravelEntryReferenceDto(
+			entity.getUuid(),
+			entity.getExternalId(),
+			entity.getPerson().getFirstName(),
+			entity.getPerson().getLastName());
+	}
+
+	@Override
+	protected TravelEntry fillOrBuildEntity(@NotNull TravelEntryDto source, TravelEntry target, boolean checkChangeDate) {
+		target = DtoHelper.fillOrBuildEntity(source, target, TravelEntry::new, checkChangeDate);
 
 		target.setPerson(personService.getByReferenceDto(source.getPerson()));
 		target.setReportDate(source.getReportDate());
@@ -401,6 +369,7 @@ public class TravelEntryFacadeEjb extends AbstractCoreEntityFacade<TravelEntry> 
 		target.setQuarantineReduced(source.isQuarantineReduced());
 		target.setQuarantineOfficialOrderSent(source.isQuarantineOfficialOrderSent());
 		target.setQuarantineOfficialOrderSentDate(source.getQuarantineOfficialOrderSentDate());
+		target.setDateOfArrival(source.getDateOfArrival());
 
 		return target;
 	}
@@ -408,18 +377,45 @@ public class TravelEntryFacadeEjb extends AbstractCoreEntityFacade<TravelEntry> 
 	@Override
 	protected String getDeleteReferenceField(DeletionReference deletionReference) {
 		if (deletionReference.equals(DeletionReference.ORIGIN)) {
-			return TravelEntry.REPORT_DATE;
+			return TravelEntry.DATE_OF_ARRIVAL;
 		}
 		return super.getDeleteReferenceField(deletionReference);
 	}
 
 	@Override
-	protected void delete(TravelEntry entity) {
-		travelEntryService.delete(entity);
+	@RolesAllowed(UserRight._TRAVEL_ENTRY_ARCHIVE)
+	public void archive(String entityUuid, Date endOfProcessingDate) {
+		super.archive(entityUuid, endOfProcessingDate);
+	}
+
+	@Override
+	@RolesAllowed(UserRight._TRAVEL_ENTRY_ARCHIVE)
+	public void archive(List<String> entityUuids) {
+		super.archive(entityUuids);
+	}
+
+	@Override
+	@RolesAllowed(UserRight._TRAVEL_ENTRY_ARCHIVE)
+	public void dearchive(List<String> entityUuids, String dearchiveReason) {
+		super.dearchive(entityUuids, dearchiveReason);
+	}
+
+	@Override
+	@RolesAllowed(UserRight._TRAVEL_ENTRY_EDIT)
+	public TravelEntryDto save(@Valid @NotNull TravelEntryDto travelEntryDto) {
+		return doSave(travelEntryDto);
 	}
 
 	@LocalBean
 	@Stateless
 	public static class TravelEntryFacadeEjbLocal extends TravelEntryFacadeEjb {
+
+		public TravelEntryFacadeEjbLocal() {
+		}
+
+		@Inject
+		public TravelEntryFacadeEjbLocal(TravelEntryService service, UserService userService) {
+			super(service, userService);
+		}
 	}
 }

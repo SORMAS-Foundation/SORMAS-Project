@@ -38,6 +38,7 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
 import de.symeda.sormas.app.BaseEditFragment;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.caze.Case;
@@ -213,11 +214,6 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		});
 
 		contentBinding.caseDataDisease.initializeSpinner(diseaseList, DiseaseConfigurationCache.getInstance().getDefaultDisease());
-		contentBinding.caseDataDisease.addValueChangedListener(e -> {
-			contentBinding.rapidCaseEntryCheckBox.setVisibility(
-				e.getValue() != null && ((CaseNewActivity) getActivity()).getLineListingDiseases().contains(e.getValue()) ? VISIBLE : GONE);
-			updateDiseaseVariantsField(contentBinding);
-		});
 		contentBinding.caseDataDiseaseVariant.initializeSpinner(diseaseVariantList);
 
 		contentBinding.caseDataPlagueType.initializeSpinner(plagueTypeList);
@@ -252,12 +248,16 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 				contentBinding.facilityTypeGroup.setValue(FacilityTypeGroup.MEDICAL_FACILITY);
 				contentBinding.caseDataFacilityType.setValue(FacilityType.HOSPITAL);
 				User user = ConfigProvider.getUser();
-				boolean userHasFacilityJurisdictionLevel =
-					user.getUserRoles().stream().anyMatch(userRole -> userRole.getJurisdictionLevel().equals(JurisdictionLevel.HEALTH_FACILITY));
-				if (!userHasFacilityJurisdictionLevel) {
+				if (!user.hasJurisdictionLevel(JurisdictionLevel.HEALTH_FACILITY)) {
 					contentBinding.caseDataHealthFacility.setValue(null);
 				}
 			}
+		});
+		contentBinding.caseDataDisease.addValueChangedListener(e -> {
+			contentBinding.rapidCaseEntryCheckBox.setVisibility(
+				e.getValue() != null && ((CaseNewActivity) getActivity()).getLineListingDiseases().contains(e.getValue()) ? VISIBLE : GONE);
+			updateDiseaseVariantsField(contentBinding);
+			updatePresentConditionField(contentBinding);
 		});
 	}
 
@@ -287,7 +287,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 			contentBinding.facilityOrHome.setValue(TypeOfPlace.FACILITY);
 		}
 
-		if (user.hasUserRole(UserRole.HOSPITAL_INFORMANT) && user.getHealthFacility() != null) {
+		if (user.hasJurisdictionLevel(JurisdictionLevel.HEALTH_FACILITY)) {
 			// Hospital Informants are not allowed to create cases in another health facility
 			contentBinding.caseDataCommunity.setEnabled(false);
 			contentBinding.caseDataCommunity.setRequired(false);
@@ -300,12 +300,12 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 			contentBinding.caseDataDifferentPlaceOfStayJurisdiction.setVisibility(GONE);
 		}
 
-		if (user.hasUserRole(UserRole.POE_INFORMANT) && user.getPointOfEntry() != null) {
+		if (user.getPointOfEntry() != null) {
 			contentBinding.caseDataPointOfEntry.setEnabled(false);
 			contentBinding.caseDataPointOfEntry.setRequired(false);
 		}
 
-		if (user.hasUserRole(UserRole.COMMUNITY_INFORMANT) && user.getCommunity() != null) {
+		if (user.hasJurisdictionLevel(JurisdictionLevel.COMMUNITY)) {
 			// Community Informants are not allowed to create cases in another community
 			contentBinding.caseDataCommunity.setEnabled(false);
 			contentBinding.caseDataCommunity.setRequired(false);
@@ -373,6 +373,27 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 		contentBinding.caseDataDiseaseVariant.setSpinnerData(diseaseVariantList);
 		contentBinding.caseDataDiseaseVariant.setValue(null);
 		contentBinding.caseDataDiseaseVariant.setVisibility(diseaseVariants.isEmpty() ? GONE : VISIBLE);
+	}
+
+	private void updatePresentConditionField(FragmentCaseNewLayoutBinding contentBinding) {
+		Disease diseaseValue = (Disease) contentBinding.caseDataDisease.getValue();
+		PresentCondition presentConditionValue = (PresentCondition) contentBinding.personPresentCondition.getValue();
+		List<Item> items;
+		if (diseaseValue == null) {
+			items = DataUtils.getEnumItems(PresentCondition.class, true);
+		} else {
+			items = DataUtils.getEnumItems(PresentCondition.class, true, FieldVisibilityCheckers.withDisease(diseaseValue));
+		}
+		if (presentConditionValue != null) {
+			Item currentValueItem = new Item(presentConditionValue.toString(), presentConditionValue);
+			if (!items.contains(currentValueItem)) {
+				items.add(currentValueItem);
+			}
+		}
+		contentBinding.personPresentCondition.initializeSpinner(items);
+		if (presentConditionValue != null) {
+			contentBinding.personPresentCondition.setValue(presentConditionValue);
+		}
 	}
 
 	@Override

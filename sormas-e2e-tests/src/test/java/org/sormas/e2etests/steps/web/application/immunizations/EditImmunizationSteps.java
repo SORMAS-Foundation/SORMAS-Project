@@ -1,23 +1,19 @@
 package org.sormas.e2etests.steps.web.application.immunizations;
 
-import static org.sormas.e2etests.pages.application.cases.EditCasePage.*;
-import static org.sormas.e2etests.pages.application.immunizations.CreateNewImmunizationPage.MEANS_OF_IMMUNIZATIONS_COMBOBOX;
-import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.DISEASE_COMBOBOX;
-import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.FACILITY_COMBOBOX_IMMUNIZATION_INPUT;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.*;
+import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.DISEASE_INPUT;
 import static org.sormas.e2etests.pages.application.immunizations.EditImmunizationPage.FACILITY_NAME_DESCRIPTION_VALUE;
-import static org.sormas.e2etests.pages.application.users.EditUserPage.*;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
 import javax.inject.Inject;
-import javax.inject.Named;
 import lombok.SneakyThrows;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.Immunization;
+import org.sormas.e2etests.entities.services.ImmunizationService;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.pojo.web.Immunization;
-import org.sormas.e2etests.services.ImmunizationService;
 
 public class EditImmunizationSteps implements En {
 
@@ -29,14 +25,13 @@ public class EditImmunizationSteps implements En {
   @SneakyThrows
   @Inject
   public EditImmunizationSteps(
-      WebDriverHelpers webDriverHelpers,
-      ImmunizationService immunizationService,
-      @Named("ENVIRONMENT_URL") String environmentUrl) {
+      WebDriverHelpers webDriverHelpers, ImmunizationService immunizationService) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
         "I check the created data is correctly displayed on Edit immunization page",
         () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID);
           collectedImmunization = collectImmunizationData();
           createdImmunization = CreateNewImmunizationSteps.immunization;
           ComparisonHelper.compareEqualFieldsOfEntities(
@@ -58,21 +53,21 @@ public class EditImmunizationSteps implements En {
   private Immunization collectImmunizationData() {
     return Immunization.builder()
         .dateOfReport(getDateOfReport())
-        .disease(webDriverHelpers.getValueFromCombobox(DISEASE_COMBOBOX))
-        .meansOfImmunization(webDriverHelpers.getValueFromCombobox(MEANS_OF_IMMUNIZATIONS_COMBOBOX))
-        .responsibleRegion(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_REGION_COMBOBOX))
-        .responsibleDistrict(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_DISTRICT_COMBOBOX))
-        .responsibleCommunity(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_COMMUNITY_COMBOBOX))
+        .disease(webDriverHelpers.getValueFromWebElement(DISEASE_INPUT))
+        .meansOfImmunization(webDriverHelpers.getValueFromWebElement(MEANS_OF_IMMUNIZATIONS_INPUT))
+        .responsibleRegion(webDriverHelpers.getValueFromWebElement(RESPONSIBLE_REGION_INPUT))
+        .responsibleDistrict(webDriverHelpers.getValueFromWebElement(RESPONSIBLE_DISTRICT_INPUT))
+        .responsibleCommunity(webDriverHelpers.getValueFromWebElement(RESPONSIBLE_COMMUNITY_INPUT))
         .facilityDescription(
             webDriverHelpers.getValueFromWebElement(FACILITY_NAME_DESCRIPTION_VALUE))
-        .facilityCategory(webDriverHelpers.getValueFromWebElement(FACILITY_CATEGORY_COMBOBOX_INPUT))
-        .facilityType(webDriverHelpers.getValueFromWebElement(FACILITY_TYPE_COMBOBOX_INPUT))
+        .facilityCategory(webDriverHelpers.getValueFromWebElement(FACILITY_CATEGORY_INPUT))
+        .facilityType(webDriverHelpers.getValueFromWebElement(FACILITY_TYPE_INPUT))
         .facility(webDriverHelpers.getValueFromWebElement(FACILITY_COMBOBOX_IMMUNIZATION_INPUT))
         .build();
   }
 
   private LocalDate getDateOfReport() {
-    String dateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE_INPUT);
+    String dateOfReport = webDriverHelpers.getValueFromWebElement(DATE_OF_REPORT_INPUT);
     return LocalDate.parse(dateOfReport, DATE_FORMATTER);
   }
 }

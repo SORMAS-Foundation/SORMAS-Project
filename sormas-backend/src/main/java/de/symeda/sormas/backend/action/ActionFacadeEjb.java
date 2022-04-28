@@ -22,6 +22,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -48,6 +49,7 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 
 @Stateless(name = "ActionFacade")
+@RolesAllowed(UserRight._EVENT_VIEW)
 public class ActionFacadeEjb implements ActionFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
@@ -124,6 +126,7 @@ public class ActionFacadeEjb implements ActionFacade {
 	}
 
 	@Override
+	@RolesAllowed({UserRight._ACTION_CREATE, UserRight._ACTION_EDIT})
 	public ActionDto saveAction(@Valid ActionDto dto) {
 
 		Action ado = fromDto(dto, true);
@@ -137,14 +140,10 @@ public class ActionFacadeEjb implements ActionFacade {
 	}
 
 	@Override
+	@RolesAllowed(UserRight._ACTION_DELETE)
 	public void deleteAction(ActionDto actionDto) {
-
-		if (!userService.hasRight(UserRight.ACTION_DELETE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete action.");
-		}
-
 		Action action = actionService.getByUuid(actionDto.getUuid());
-		actionService.delete(action);
+		actionService.deletePermanent(action);
 	}
 
 	@Override

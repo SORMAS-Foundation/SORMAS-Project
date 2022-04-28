@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -34,9 +34,11 @@ public class EditCasePersonPage {
   public static final By DATE_OF_BIRTH_YEAR_INPUT = By.cssSelector("#birthdateYYYY input");
   public static final By DATE_OF_BIRTH_MONTH_INPUT = By.cssSelector("#birthdateMM input");
   public static final By DATE_OF_BIRTH_DAY_INPUT = By.cssSelector("#birthdateDD input");
-  public static final By PRESENT_CONDITION_COMBOBOX = By.cssSelector("#presentCondition div");
+  public static final By PRESENT_CONDITION_COMBOBOX =
+      By.cssSelector("[id='presentCondition'] [class='v-filterselect-button']");
   public static final By DATE_OF_DEATH_INPUT = By.cssSelector("#deathDate input");
   public static final By CASE_OF_DEATH = By.cssSelector("#causeOfDeath");
+  public static final By CASE_OF_DEATH_COMBOBOX = By.cssSelector("#causeOfDeath div");
   public static final By DEATH_PLACE_TYPE_COMBOBOX = By.cssSelector("#deathPlaceType div");
   public static final By DEATH_PLACE_DESCRIPTION = By.cssSelector("#deathPlaceDescription");
   public static final By DATE_OF_BURIAL_INPUT = By.cssSelector("#burialDate input");
@@ -52,4 +54,5 @@ public class EditCasePersonPage {
   public static final By AREA_TYPE_COMBOBOX = By.cssSelector("#areaType div");
   public static final By COUNTRY_COMBOBOX = By.cssSelector("#country div");
   public static final By GEOCODE_BUTTON = By.cssSelector("#geocodeButton");
+  public static final By SEE_CASES_FOR_THIS_PERSON_BUTTON = By.id("See cases for this person");
 }

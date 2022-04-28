@@ -6,6 +6,7 @@ import java.lang.annotation.RetentionPolicy;
 import java.lang.annotation.Target;
 
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.feature.FeatureTypeProperty;
 
 @Retention(RetentionPolicy.RUNTIME)
 @Target({
@@ -15,4 +16,14 @@ public @interface DependingOnFeatureType {
 
 	FeatureType featureType();
 
+	FeatureProperty[] properties() default {};
+
+	boolean hide() default false;
+
+	@interface FeatureProperty {
+
+		FeatureTypeProperty property();
+
+		String value() default "";
+	}
 }

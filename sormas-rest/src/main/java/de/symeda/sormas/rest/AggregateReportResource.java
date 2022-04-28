@@ -3,7 +3,6 @@ package de.symeda.sormas.rest;
 import java.util.Date;
 import java.util.List;
 
-import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -15,14 +14,13 @@ import javax.ws.rs.core.MediaType;
 
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.PushResult;
+import de.symeda.sormas.api.report.AggregateReportCriteria;
 import de.symeda.sormas.api.report.AggregateReportDto;
+import de.symeda.sormas.api.report.AggregatedCaseCountDto;
 
 @Path("/aggregatereports")
 @Produces(MediaType.APPLICATION_JSON + "; charset=UTF-8")
 @Consumes(MediaType.APPLICATION_JSON + "; charset=UTF-8")
-@RolesAllowed({
-	"USER",
-	"REST_USER" })
 public class AggregateReportResource extends EntityDtoResource {
 
 	@GET
@@ -43,6 +41,12 @@ public class AggregateReportResource extends EntityDtoResource {
 	public List<PushResult> postAggregateReports(@Valid List<AggregateReportDto> dtos) {
 		List<PushResult> result = savePushedDto(dtos, FacadeProvider.getAggregateReportFacade()::saveAggregateReport);
 		return result;
+	}
+
+	@POST
+	@Path("/indexList")
+	public List<AggregatedCaseCountDto> getIndexList(AggregateReportCriteria criteria) {
+		return FacadeProvider.getAggregateReportFacade().getIndexList(criteria);
 	}
 
 	@GET

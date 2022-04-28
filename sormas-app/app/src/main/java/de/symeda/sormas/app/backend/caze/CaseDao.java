@@ -17,6 +17,19 @@ package de.symeda.sormas.app.backend.caze;
 
 import static android.content.Context.NOTIFICATION_SERVICE;
 
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+import java.util.Objects;
+import java.util.Set;
+
+import org.apache.commons.lang3.StringUtils;
+
+import com.j256.ormlite.dao.Dao;
+import com.j256.ormlite.stmt.QueryBuilder;
+import com.j256.ormlite.stmt.Where;
+
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
@@ -28,19 +41,6 @@ import android.util.Log;
 
 import androidx.core.app.NotificationCompat;
 
-import com.j256.ormlite.dao.Dao;
-import com.j256.ormlite.stmt.QueryBuilder;
-import com.j256.ormlite.stmt.Where;
-
-import org.apache.commons.lang3.StringUtils;
-
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
-
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseOrigin;
@@ -50,6 +50,7 @@ import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.task.TaskStatus;
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -165,11 +166,7 @@ public class CaseDao extends AbstractAdoDao<Case> {
 			date = clinicalCourseDate;
 		}
 
-		Date healthConditionsDate = getLatestChangeDateSubJoinReverse(
-			ClinicalCourse.TABLE_NAME,
-			Case.CLINICAL_COURSE,
-			HealthConditions.TABLE_NAME,
-			ClinicalCourse.HEALTH_CONDITIONS);
+		Date healthConditionsDate = getLatestChangeDateJoin(HealthConditions.TABLE_NAME, Case.HEALTH_CONDITIONS);
 		if (healthConditionsDate != null && healthConditionsDate.after(date)) {
 			date = healthConditionsDate;
 		}
@@ -226,11 +223,9 @@ public class CaseDao extends AbstractAdoDao<Case> {
 		User user = ConfigProvider.getUser();
 		caze.setReportingUser(user);
 
-		if (user.hasUserRole(UserRole.SURVEILLANCE_OFFICER)) {
+		if (ConfigProvider.hasUserRight(UserRight.CASE_RESPONSIBLE)) {
 			caze.setSurveillanceOfficer(user);
-		} else if (user.hasUserRole(UserRole.HOSPITAL_INFORMANT)
-			|| user.hasUserRole(UserRole.COMMUNITY_INFORMANT)
-			|| user.hasUserRole(UserRole.POE_INFORMANT)) {
+		} else if (user.hasJurisdictionLevel(JurisdictionLevel.HEALTH_FACILITY, JurisdictionLevel.COMMUNITY, JurisdictionLevel.POINT_OF_ENTRY)) {
 			caze.setSurveillanceOfficer(user.getAssociatedOfficer());
 		}
 
@@ -258,6 +253,9 @@ public class CaseDao extends AbstractAdoDao<Case> {
 
 		// Port Health Info
 		caze.setPortHealthInfo(DatabaseHelper.getPortHealthInfoDao().build());
+
+		// health conditions
+		caze.setHealthConditions(DatabaseHelper.getHealthConditionsDao().build());
 
 		// Location
 		User currentUser = ConfigProvider.getUser();
@@ -488,8 +486,10 @@ public class CaseDao extends AbstractAdoDao<Case> {
 			boolean facilityChanged = !DataHelper.isSame(changedCase.getHealthFacility(), existingCase.getHealthFacility());
 
 			// If the case is moved from the surveillance officer's jurisdiction, assign a new surveillance officer
-			if (DatabaseHelper.getFeatureConfigurationDao().isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.AUTOMATIC_RESPONSIBILITY_ASSIGNMENT)
-					&& changedCase.getSurveillanceOfficer() == null || ((responsibleDistrictChanged || districtChanged)
+			if (DatabaseHelper.getFeatureConfigurationDao()
+				.isPropertyValueTrue(FeatureType.CASE_SURVEILANCE, FeatureTypeProperty.AUTOMATIC_RESPONSIBILITY_ASSIGNMENT)
+				&& changedCase.getSurveillanceOfficer() == null
+				|| ((responsibleDistrictChanged || districtChanged)
 					&& !DataHelper.isSame(changedCase.getResponsibleDistrict(), changedCase.getSurveillanceOfficer().getDistrict())
 					&& !DataHelper.isSame(changedCase.getDistrict(), changedCase.getSurveillanceOfficer().getDistrict()))) {
 				List<User> districtOfficers =
@@ -544,44 +544,26 @@ public class CaseDao extends AbstractAdoDao<Case> {
 			// 1) The surveillance officer that is responsible for the case
 			assignee = changedCase.getSurveillanceOfficer();
 		} else {
-			// 2) A random surveillance officer from the case responsible district
-			List<User> survOffsResponsibleDistrict =
-				DatabaseHelper.getUserDao().getByDistrictAndRole(changedCase.getResponsibleDistrict(), UserRole.SURVEILLANCE_OFFICER);
-			assignee = DataUtils.getRandomCandidate(survOffsResponsibleDistrict);
+			// 2) A random user with UserRight.CASE_RESPONSIBLE from the case responsible district
+			assignee = getRandomDistrictCaseResponsible(changedCase.getResponsibleDistrict());
 		}
 
 		if (assignee == null && changedCase.getDistrict() != null) {
 			// 3) A random surveillance officer from the case district
-			List<User> survOffsDistrict = DatabaseHelper.getUserDao().getByDistrictAndRole(changedCase.getDistrict(), UserRole.SURVEILLANCE_OFFICER);
-			assignee = DataUtils.getRandomCandidate(survOffsDistrict);
+			assignee = getRandomDistrictCaseResponsible(changedCase.getDistrict());
 		}
 
 		if (assignee == null) {
-			if (changedCase.getReportingUser() != null
-				&& (changedCase.getReportingUser().getUserRoles().contains(UserRole.SURVEILLANCE_SUPERVISOR)
-					|| changedCase.getReportingUser().getUserRoles().contains(UserRole.ADMIN_SUPERVISOR))) {
+			if (changedCase.getReportingUser() != null && (ConfigProvider.hasUserRight(UserRight.TASK_ASSIGN))) {
 				// 4) If the case was created by a surveillance supervisor, assign them
 				assignee = changedCase.getReportingUser();
 			} else {
 				// 5) Assign a random surveillance supervisor from the case responsible region
-				List<User> survSupsResponsibleRegion =
-					DatabaseHelper.getUserDao().getByRegionAndRole(changedCase.getResponsibleRegion(), UserRole.SURVEILLANCE_SUPERVISOR);
-				assignee = DataUtils.getRandomCandidate(survSupsResponsibleRegion);
-
-				if (assignee == null) {
-					List<User> adminSupsResponsibleRegion =
-						DatabaseHelper.getUserDao().getByRegionAndRole(changedCase.getResponsibleRegion(), UserRole.ADMIN_SUPERVISOR);
-					assignee = DataUtils.getRandomCandidate(adminSupsResponsibleRegion);
-				}
+				assignee = getRandomRegionCaseResponsible(changedCase.getResponsibleRegion());
 			}
 			if (assignee == null && changedCase.getRegion() != null) {
 				// 6) Assign a random surveillance supervisor from the case region
-				List<User> survSupsRegion = DatabaseHelper.getUserDao().getByRegionAndRole(changedCase.getRegion(), UserRole.SURVEILLANCE_SUPERVISOR);
-				assignee = DataUtils.getRandomCandidate(survSupsRegion);
-				if (assignee == null) {
-					List<User> adminSupsRegion = DatabaseHelper.getUserDao().getByRegionAndRole(changedCase.getRegion(), UserRole.ADMIN_SUPERVISOR);
-					assignee = DataUtils.getRandomCandidate(adminSupsRegion);
-				}
+				assignee = getRandomRegionCaseResponsible(changedCase.getRegion());
 			}
 		}
 
@@ -589,6 +571,16 @@ public class CaseDao extends AbstractAdoDao<Case> {
 		if (assignee == null) {
 			Log.w(getClass().getSimpleName(), "No valid assignee user found for task " + task.getUuid());
 		}
+	}
+
+	private User getRandomDistrictCaseResponsible(District district) {
+
+		return DatabaseHelper.getUserDao().getRandomDistrictUser(district, UserRight.CASE_RESPONSIBLE);
+	}
+
+	private User getRandomRegionCaseResponsible(Region region) {
+
+		return DatabaseHelper.getUserDao().getRandomRegionUser(region, UserRight.CASE_RESPONSIBLE);
 	}
 
 	private Float calculateCompleteness(Case caze) {

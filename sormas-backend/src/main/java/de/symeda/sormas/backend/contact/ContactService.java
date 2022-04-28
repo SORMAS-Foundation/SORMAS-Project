@@ -25,6 +25,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.NoSuchElementException;
+import java.util.Optional;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -45,11 +46,12 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactCriteria;
@@ -62,6 +64,7 @@ import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.contact.MapContactDto;
 import de.symeda.sormas.api.dashboard.DashboardContactDto;
+import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
 import de.symeda.sormas.api.externaldata.ExternalDataUpdateException;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -69,33 +72,33 @@ import de.symeda.sormas.api.feature.FeatureTypeProperty;
 import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.task.TaskCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.visit.VisitStatus;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.caze.CaseUserFilterCriteria;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
-import de.symeda.sormas.backend.clinicalcourse.HealthConditionsService;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
+import de.symeda.sormas.backend.common.ChangeDateBuilder;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
-import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.contact.transformers.ContactListEntryDtoResultTransformer;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb.DiseaseConfigurationFacadeEjbLocal;
+import de.symeda.sormas.backend.document.DocumentService;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.epidata.EpiDataService;
 import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.exposure.ExposureService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
-import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
@@ -105,6 +108,7 @@ import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.task.Task;
@@ -117,6 +121,7 @@ import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
+import de.symeda.sormas.backend.visit.VisitService;
 
 @Stateless
 @LocalBean
@@ -133,21 +138,21 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	@EJB
 	private EpiDataService epiDataService;
 	@EJB
-	private HealthConditionsService healthConditionsService;
-	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
 	@EJB
 	private ExposureService exposureService;
 	@EJB
 	private ContactFacadeEjb.ContactFacadeEjbLocal contactFacade;
 	@EJB
-	private VisitFacadeEjb.VisitFacadeEjbLocal visitFacade;
-	@EJB
 	private ExternalJournalService externalJournalService;
 	@EJB
 	private UserService userService;
 	@EJB
-	private FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal featureConfigurationFacade;
+	private DocumentService documentService;
+	@EJB
+	private SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal sormasToSormasShareInfoFacade;
+	@EJB
+	private VisitService visitService;
 
 	public ContactService() {
 		super(Contact.class);
@@ -173,7 +178,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public List<Contact> getAllActiveContactsAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
+	public List<Contact> getAllAfter(Date date, Integer batchSize, String lastSynchronizedUuid) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Contact> cq = cb.createQuery(getElementClass());
@@ -213,16 +218,26 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	public Predicate createChangeDateFilter(CriteriaBuilder cb, From<?, Contact> from, Timestamp date, String lastSynchronizedUuid) {
-
 		ChangeDateFilterBuilder changeDateFilterBuilder = new ChangeDateFilterBuilder(cb, date, from, lastSynchronizedUuid);
-		Join<Object, EpiData> epiData = from.join(Contact.EPI_DATA, JoinType.LEFT);
-		Join<Object, HealthConditions> healthCondition = from.join(Contact.HEALTH_CONDITIONS, JoinType.LEFT);
+		return addChangeDates(changeDateFilterBuilder, from, false).build();
+	}
 
-		changeDateFilterBuilder.add(from);
-		epiDataService.addChangeDateFilters(changeDateFilterBuilder, epiData);
-		changeDateFilterBuilder.add(healthCondition).add(from, Contact.SORMAS_TO_SORMAS_ORIGIN_INFO).add(from, Contact.SORMAS_TO_SORMAS_SHARES);
+	@Override
+	protected <T extends ChangeDateBuilder<T>> T addChangeDates(T builder, From<?, Contact> contactFrom, boolean includeExtendedChangeDateFilters) {
+		Join<Object, HealthConditions> healthCondition = contactFrom.join(Contact.HEALTH_CONDITIONS, JoinType.LEFT);
+		Join<Object, EpiData> epiData = contactFrom.join(Contact.EPI_DATA, JoinType.LEFT);
+		Join<Contact, Sample> contactSampleJoin = contactFrom.join(Contact.SAMPLES, JoinType.LEFT);
+		Join<Contact, Visit> contactVisitJoin = contactFrom.join(Contact.VISITS, JoinType.LEFT);
 
-		return changeDateFilterBuilder.build();
+		builder = super.addChangeDates(builder, contactFrom, includeExtendedChangeDateFilters).add(healthCondition)
+			.add(contactFrom, Contact.SORMAS_TO_SORMAS_ORIGIN_INFO)
+			.add(contactFrom, Contact.SORMAS_TO_SORMAS_SHARES)
+			.add(contactSampleJoin)
+			.add(contactVisitJoin);
+
+		builder = epiDataService.addChangeDates(builder, epiData);
+
+		return builder;
 	}
 
 	public List<String> getAllActiveUuids(User user) {
@@ -245,13 +260,32 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	public List<Contact> getAllByResultingCase(Case caze) {
+		return getAllByResultingCase(caze, false);
+	}
+
+	public List<Contact> getAllByResultingCase(Case caze, boolean includeDeleted) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Contact> cq = cb.createQuery(getElementClass());
 		Root<Contact> from = cq.from(getElementClass());
 
-		cq.where(cb.and(createDefaultFilter(cb, from), cb.equal(from.get(Contact.RESULTING_CASE), caze)));
+		Predicate filter = includeDeleted ? null : createDefaultFilter(cb, from);
+		filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Contact.RESULTING_CASE), caze));
+		cq.where(filter);
+
 		cq.orderBy(cb.desc(from.get(Contact.REPORT_DATE_TIME)));
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	public List<String> getAllUuidsByCaseUuids(List<String> uuids) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Contact> from = cq.from(getElementClass());
+
+		cq.select(from.get(Contact.UUID));
+		cq.where(cb.and(createDefaultFilter(cb, from), cb.in(from.join(Contact.CAZE).get(Case.UUID)).value(uuids)));
 
 		return em.createQuery(cq).getResultList();
 	}
@@ -372,6 +406,35 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					DateHelper.subtractDays(referenceDateStart, FollowUpLogic.ALLOWED_DATE_OFFSET))));
 
 		return filter;
+	}
+
+	public List<String> getArchivedUuidsSince(Date since) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<Contact> contact = cq.from(Contact.class);
+
+		Predicate filter = createUserFilter(cb, cq, contact);
+		if (since != null) {
+			Predicate dateFilter = cb.greaterThanOrEqualTo(contact.get(Contact.CHANGE_DATE), since);
+			if (filter != null) {
+				filter = cb.and(filter, dateFilter);
+			} else {
+				filter = dateFilter;
+			}
+		}
+
+		Predicate archivedFilter = cb.equal(contact.get(Contact.ARCHIVED), true);
+		if (filter != null) {
+			filter = cb.and(filter, archivedFilter);
+		} else {
+			filter = archivedFilter;
+		}
+
+		cq.where(filter);
+		cq.select(contact.get(Contact.UUID));
+
+		return em.createQuery(cq).getResultList();
 	}
 
 	public List<String> getDeletedUuidsSince(User user, Date since) {
@@ -809,23 +872,17 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				statusChangedBySystem = true;
 			}
 		} else {
-			ContactDto contactDto = contactFacade.toDto(contact);
+			ContactDto contactDto = ContactFacadeEjb.toContactDto(contact);
 			Date currentFollowUpUntil = contact.getFollowUpUntil();
 
-			Date earliestSampleDate = null;
-			for (Sample sample : contact.getSamples()) {
-				if (sample.getPathogenTestResult() == PathogenTestResultType.POSITIVE
-					&& (earliestSampleDate == null || sample.getSampleDateTime().before(earliestSampleDate))) {
-					earliestSampleDate = sample.getSampleDateTime();
-				}
-			}
+			Date earliestSampleDate = sampleService.getEarliestSampleDate(contact.getSamples());
 
 			Date untilDate =
 				ContactLogic
 					.calculateFollowUpUntilDate(
 						contactDto,
 						ContactLogic.getFollowUpStartDate(contact.getLastContactDate(), contact.getReportDateTime(), earliestSampleDate),
-						contact.getVisits().stream().map(visit -> visitFacade.toDto(visit)).collect(Collectors.toList()),
+						contact.getVisits().stream().map(VisitFacadeEjb::toDto).collect(Collectors.toList()),
 						diseaseConfigurationFacade.getFollowUpDuration(contact.getDisease()),
 						false,
 						featureConfigurationFacade
@@ -871,8 +928,10 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	}
 
 	private void addToFollowUpStatusComment(Contact contact, String comment) {
-		String followUpComment = DataHelper.joinStrings("\n", contact.getFollowUpComment(), comment);
-		contact.setFollowUpComment(followUpComment);
+		String finalFollowUpComment = ContactLogic.extendFollowUpStatusComment(contact.getFollowUpComment(), comment);
+		if (finalFollowUpComment.length() <= FieldConstraints.CHARACTER_LIMIT_BIG) {
+			contact.setFollowUpComment(finalFollowUpComment);
+		}
 	}
 
 	// Used only for testing; directly retrieve the contacts from the visit instead
@@ -920,7 +979,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		Predicate filter;
 		if (userFilter != null) {
-			filter = cb.or(createUserFilterWithoutCase(contactQueryContext, contactCriteria), userFilter);
+			filter = CriteriaBuilderHelper.or(cb, createUserFilterWithoutCase(contactQueryContext, contactCriteria), userFilter);
 		} else {
 			filter = createUserFilterWithoutCase(contactQueryContext, contactCriteria);
 		}
@@ -933,14 +992,18 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 	public Predicate createUserFilterWithoutCase(ContactQueryContext qc, ContactCriteria contactCriteria) {
 
+		User currentUser = getCurrentUser();
+		if (currentUser == null) {
+			return null;
+		}
+
 		CriteriaBuilder cb = qc.getCriteriaBuilder();
 		CriteriaQuery cq = qc.getQuery();
 		From contactPath = qc.getRoot();
 		// National users can access all contacts in the system
-		User currentUser = getCurrentUser();
-		final JurisdictionLevel jurisdictionLevel = currentUser.getCalculatedJurisdictionLevel();
+		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if ((jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
-			|| currentUser.hasAnyUserRole(UserRole.REST_USER, UserRole.REST_EXTERNAL_VISITS_USER)) {
+			|| currentUser.hasUserRole(UserRole.REST_USER)) {
 			if (currentUser.getLimitedDisease() != null) {
 				return cb.equal(contactPath.get(Contact.DISEASE), currentUser.getLimitedDisease());
 			} else {
@@ -985,6 +1048,13 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			filter = CriteriaBuilderHelper.or(cb, filter, cb.exists(sampleSubQuery));
 			break;
 		default:
+		}
+
+		if (currentUser.getLimitedDisease() != null) {
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.or(cb.equal(contactPath.get(Contact.DISEASE), currentUser.getLimitedDisease()), cb.isNull(contactPath.get(Contact.DISEASE))));
 		}
 
 		return filter;
@@ -1155,9 +1225,10 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		}
 		if (contactCriteria.getRelevanceStatus() != null) {
 			if (contactCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(caze.get(Case.ARCHIVED), false), cb.isNull(caze.get(Case.ARCHIVED))));
+				filter = CriteriaBuilderHelper
+					.and(cb, filter, cb.and(cb.or(cb.equal(from.get(Contact.ARCHIVED), false), cb.isNull(from.get(Contact.ARCHIVED)))));
 			} else if (contactCriteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
-				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(caze.get(Case.ARCHIVED), true));
+				filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Contact.ARCHIVED), true));
 			}
 		}
 		if (contactCriteria.getDeleted() != null) {
@@ -1175,10 +1246,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					CriteriaBuilderHelper.ilikePrecise(cb, person.get(Person.UUID), textFilter + "%"),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
-					phoneNumberPredicate(
-						cb,
-						(Expression<String>) contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY),
-						textFilter),
+					phoneNumberPredicate(cb, contactQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
 					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter)));
 
@@ -1206,10 +1274,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 					CriteriaBuilderHelper.ilikePrecise(cb, casePerson.get(Person.UUID), textFilter + "%"),
 					CriteriaBuilderHelper.unaccentedIlike(cb, casePerson.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, casePerson.get(Person.LAST_NAME), textFilter),
-					phoneNumberPredicate(
-						cb,
-						(Expression<String>) contactQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY),
-						textFilter));
+					phoneNumberPredicate(cb, contactQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
@@ -1259,12 +1324,8 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			Join<Person, EventParticipant> eventParticipant = joins.getEventParticipants();
 			Join<EventParticipant, Event> event = joins.getEvent();
 
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.isFalse(event.get(Event.DELETED)),
-				cb.isFalse(event.get(Event.ARCHIVED)),
-				cb.isFalse(eventParticipant.get(EventParticipant.DELETED)));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.isFalse(event.get(Event.DELETED)), cb.isFalse(eventParticipant.get(EventParticipant.DELETED)));
 
 			if (hasEventLikeCriteria) {
 				String[] textFilters = contactCriteria.getEventLike().trim().split("\\s+");
@@ -1315,11 +1376,10 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 	@Override
 	public void delete(Contact contact) {
-
 		// Delete all tasks associated with this contact
 		List<Task> tasks = taskService.findBy(new TaskCriteria().contact(new ContactReferenceDto(contact.getUuid())), true);
 		for (Task task : tasks) {
-			taskService.delete(task);
+			taskService.deletePermanent(task);
 		}
 
 		// Delete all samples only associated with this contact
@@ -1333,18 +1393,86 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 
 		// Notify external journal if necessary
 		externalJournalService.handleExternalJournalPersonUpdateAsync(contact.getPerson().toReference());
+		deleteContactLinks(contact);
+
 		super.delete(contact);
+	}
+
+	@Override
+	public void deletePermanent(Contact contact) {
+
+		// Delete all tasks associated with this case
+		Optional.ofNullable(contact.getTasks()).ifPresent(tl -> tl.forEach(t -> taskService.deletePermanent(t)));
+
+		// Delete all samples that are only associated with this contact
+		contact.getSamples()
+			.stream()
+			.filter(sample -> sample.getAssociatedCase() == null && sample.getAssociatedEventParticipant() == null)
+			.forEach(sample -> sampleService.deletePermanent(sample));
+
+		// Delete all visits that are only associated with this contact and Remove the deleted contact from contact_visits
+		contact.getVisits().forEach(visit -> {
+			if (visit.getCaze() == null && visit.getContacts().size() <= 1) {
+				visitService.deletePermanent(visit);
+			} else {
+				Set<Contact> visitContacts = new HashSet<>(visit.getContacts());
+				visit.getContacts().clear();
+				visit.getContacts()
+					.addAll(visitContacts.stream().filter(contact1 -> !DataHelper.isSame(contact1, contact)).collect(Collectors.toSet()));
+				visitService.ensurePersisted(visit);
+			}
+		});
+
+		// Delete documents related to this contact
+		documentService.getRelatedToEntity(DocumentRelatedEntityType.CONTACT, contact.getUuid()).forEach(d -> documentService.markAsDeleted(d));
+
+		// Remove the contact from any S2S share info referencing it
+		sormasToSormasShareInfoService.getByAssociatedEntity(SormasToSormasShareInfo.CONTACT, contact.getUuid()).forEach(s -> {
+			s.setContact(null);
+			if (sormasToSormasShareInfoFacade.hasAnyEntityReference(s)) {
+				sormasToSormasShareInfoService.ensurePersisted(s);
+			} else {
+				sormasToSormasShareInfoService.deletePermanent(s);
+			}
+		});
+
+		deleteContactFromDuplicateOf(contact);
+
+		deleteContactLinks(contact);
+
+		super.deletePermanent(contact);
+	}
+
+	private void deleteContactLinks(Contact contact) {
+		// Remove the contact from any sample that is also connected to other entities
+		contact.getSamples().stream().filter(s -> s.getAssociatedCase() != null || s.getAssociatedEventParticipant() != null).forEach(s -> {
+			s.setAssociatedContact(null);
+			sampleService.ensurePersisted(s);
+		});
+
+		// Remove the contactToCase from all exposures
+		exposureService.removeContactFromExposures(contact.getId());
+	}
+
+	private void deleteContactFromDuplicateOf(Contact contact) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaUpdate<Contact> cu = cb.createCriteriaUpdate(Contact.class);
+		Root<Contact> root = cu.from(Contact.class);
+
+		cu.where(cb.equal(root.get(Contact.DUPLICATE_OF), contact.getId()));
+		cu.set(Contact.DUPLICATE_OF, null);
+
+		em.createQuery(cu).executeUpdate();
 	}
 
 	/**
 	 * Creates a filter that excludes all contacts that are either
-	 * {@link CoreAdo#isDeleted()} or associated with cases that are
+	 * {@link DeletableAdo#isDeleted()} or associated with cases that are
 	 * {@link Case#isArchived()}.
 	 */
 	public Predicate createActiveContactsFilter(CriteriaBuilder cb, Root<Contact> root) {
 
-		Join<Contact, Case> caze = root.join(Contact.CAZE, JoinType.LEFT);
-		return cb.and(cb.or(cb.isNull(root.get(Contact.CAZE)), cb.isFalse(caze.get(Case.ARCHIVED))), cb.isFalse(root.get(Contact.DELETED)));
+		return cb.and(cb.isFalse(root.get(Contact.ARCHIVED)), cb.isFalse(root.get(Contact.DELETED)));
 	}
 
 	public Predicate createActiveContactsFilter(CriteriaBuilder cb, Join<?, Contact> contactJoin) {
@@ -1357,7 +1485,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 	/**
 	 * Creates a default filter that should be used as the basis of queries that do
 	 * not use {@link ContactCriteria}. This essentially removes
-	 * {@link CoreAdo#isDeleted()} contacts from the queries.
+	 * {@link DeletableAdo#isDeleted()} contacts from the queries.
 	 */
 	public Predicate createDefaultFilter(CriteriaBuilder cb, From<?, Contact> root) {
 		return cb.isFalse(root.get(Contact.DELETED));
@@ -1406,12 +1534,17 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return ContactJurisdictionPredicateValidator.of(contactQueryContext, user).inJurisdictionOrOwned();
 	}
 
-	public boolean isContactEditAllowed(Contact contact) {
+	public EditPermissionType isContactEditAllowed(Contact contact) {
+
 		if (contact.getSormasToSormasOriginInfo() != null && !contact.getSormasToSormasOriginInfo().isOwnershipHandedOver()) {
-			return false;
+			return EditPermissionType.REFUSED;
 		}
 
-		return inJurisdictionOrOwned(contact).getInJurisdiction() && !sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact);
+		if (!inJurisdictionOrOwned(contact).getInJurisdiction() || sormasToSormasShareInfoService.isContactOwnershipHandedOver(contact)) {
+			return EditPermissionType.REFUSED;
+		}
+
+		return super.getEditPermissionType(contact);
 	}
 
 	public List<Selection<?>> getJurisdictionSelections(ContactQueryContext qc) {
@@ -1422,23 +1555,19 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(qc, userService.getCurrentUser())),
 			JurisdictionHelper.booleanSelector(
 				cb,
-				cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, qc.getQuery(), joins.getCaze())))));
+				cb.and(
+					cb.isNotNull(joins.getCaze()),
+					caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, qc.getQuery(), joins.getCaseJoins())))));
 	}
 
 	public List<Contact> getByPersonUuids(List<String> personUuids) {
-		if (CollectionUtils.isEmpty(personUuids)) {
-			// Avoid empty IN clause
-			return Collections.emptyList();
-		} else if (personUuids.size() > ModelConstants.PARAMETER_LIMIT) {
-			List<Contact> contacts = new LinkedList<>();
-			IterableHelper.executeBatched(
-				personUuids,
-				ModelConstants.PARAMETER_LIMIT,
-				batchedPersonUuids -> contacts.addAll(getContactsByPersonUuids(batchedPersonUuids)));
-			return contacts;
-		} else {
-			return getContactsByPersonUuids(personUuids);
-		}
+
+		List<Contact> contacts = new LinkedList<>();
+		IterableHelper.executeBatched(
+			personUuids,
+			ModelConstants.PARAMETER_LIMIT,
+			batchedPersonUuids -> contacts.addAll(getContactsByPersonUuids(batchedPersonUuids)));
+		return contacts;
 	}
 
 	private List<Contact> getContactsByPersonUuids(List<String> personUuids) {
@@ -1505,7 +1634,7 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		final Root<Contact> contact = cq.from(Contact.class);
 
-		ContactQueryContext<Contact> contactQueryContext = new ContactQueryContext<>(cb, cq, contact);
+		ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, contact);
 
 		cq.multiselect(
 			contact.get(Contact.UUID),
@@ -1527,6 +1656,19 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 		return createQuery(cq, first, max).unwrap(org.hibernate.query.Query.class)
 			.setResultTransformer(new ContactListEntryDtoResultTransformer())
 			.getResultList();
+	}
+
+	public long getContactCount(CaseReferenceDto caze) {
+
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		final Root<Contact> contact = cq.from(Contact.class);
+		final Join<Contact, Case> caseJoin = contact.join(Contact.CAZE, JoinType.LEFT);
+
+		cq.where(cb.equal(caseJoin.get(AbstractDomainObject.UUID), caze.getUuid()));
+		cq.select(cb.count(contact.get(AbstractDomainObject.ID)));
+
+		return em.createQuery(cq).getSingleResult();
 	}
 
 }

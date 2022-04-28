@@ -18,6 +18,7 @@
 package de.symeda.sormas.backend.sample;
 
 import static org.hamcrest.MatcherAssert.assertThat;
+import static org.hamcrest.Matchers.containsString;
 import static org.hamcrest.Matchers.is;
 import static org.hamcrest.Matchers.isEmptyString;
 import static org.hamcrest.Matchers.notNullValue;
@@ -33,7 +34,7 @@ import java.util.Optional;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseDataDto;
@@ -75,8 +76,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		rdcf2 = creator.createRDCF("Region 2", "District 2", "Community 2", "Facility 2", "Point of entry 2");
 		user2 = creator
 			.createUser(rdcf2.region.getUuid(), rdcf2.district.getUuid(), rdcf2.facility.getUuid(), "Surv", "Off2", UserRole.SURVEILLANCE_OFFICER);
-		labUser = creator
-			.createUser(null, null, null, "Lab", "Off", UserRole.LAB_USER);
+		labUser = creator.createUser(null, null, null, "Lab", "Off", UserRole.LAB_USER);
 		labUser.setLaboratory(rdcf1.facility);
 		getUserFacade().saveUser(labUser);
 
@@ -154,7 +154,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		SampleDto sample = createContactSample(contact);
 
 		SampleDto savedSample = getSampleFacade().getSampleByUuid(sample.getUuid());
-		assertThat(savedSample.getAssociatedContact().getCaption(), is("James SMITH to case John Doe"));
+		assertThat(savedSample.getAssociatedContact().getCaption(), containsString("James SMITH to case John Doe"));
 	}
 
 	@Test
@@ -214,7 +214,7 @@ public class SampleFacadeEjbPseudonymizationTest extends AbstractBeanTest {
 		assertThat(index2.getAssociatedCase().getLastName(), isEmptyString());
 
 		SampleIndexDto index3 = indexList.stream().filter(t -> t.getUuid().equals(sample3.getUuid())).findFirst().get();
-		assertThat(index3.getAssociatedContact().getCaption(), is("John SMITH"));
+		assertThat(index3.getAssociatedContact().getCaption(), containsString("John SMITH"));
 
 		SampleIndexDto index4 = indexList.stream().filter(t -> t.getUuid().equals(sample4.getUuid())).findFirst().get();
 		assertThat(index4.getAssociatedContact().getCaption(), is(DataHelper.getShortUuid(index4.getAssociatedContact().getUuid())));

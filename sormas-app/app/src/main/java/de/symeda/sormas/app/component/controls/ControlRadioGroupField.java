@@ -65,6 +65,7 @@ public class ControlRadioGroupField extends ControlPropertyEditField<Object> {
 	private List<Object> radioGroupElements = new ArrayList<>();
 	private boolean enumClassSet = false;
 	private AttributeSet attrs;
+	private Object previousValue = null;
 
 	// Constructors
 
@@ -88,9 +89,14 @@ public class ControlRadioGroupField extends ControlPropertyEditField<Object> {
 		for (int i = 0; i < items.size(); i++) {
 			this.addItem(i, items.get(i));
 		}
+
+		if (previousValue != null) {
+			setFieldValue(previousValue);
+			previousValue = null;
+		}
 	}
 
-	public void addItem(int index, Item item) {
+	private void addItem(int index, Item item) {
 		if (item.getValue() == null) {
 			return;
 		}
@@ -107,6 +113,11 @@ public class ControlRadioGroupField extends ControlPropertyEditField<Object> {
 	}
 
 	public void clear() {
+		clear(false);
+	}
+
+	public void clear(boolean preserveValueIfPossible) {
+		previousValue = getFieldValue();
 		input.removeAllViews();
 		radioGroupElements.clear();
 	}
@@ -256,6 +267,7 @@ public class ControlRadioGroupField extends ControlPropertyEditField<Object> {
 				LinearLayout frame = (LinearLayout) input.getChildAt(checkedButtonIndex);
 				RadioButton button = (RadioButton) frame.getChildAt(0);
 				input.check(button.getId());
+				button.setChecked(true);
 			}
 		}
 	}

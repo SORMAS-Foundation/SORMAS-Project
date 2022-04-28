@@ -26,7 +26,7 @@ import java.util.List;
 
 import org.junit.Test;
 import org.junit.runner.RunWith;
-import org.mockito.runners.MockitoJUnitRunner;
+import org.mockito.junit.MockitoJUnitRunner;
 
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
@@ -126,7 +126,7 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 		assertThat(savedPerson.getAddress().getAdditionalInformation(), is(nullValue()));
 		assertThat(savedPerson.getAddress().getCity(), is(nullValue()));
 
-		getEventParticipantFacade().saveEventParticipant(participant);
+		getEventParticipantFacade().save(participant);
 		EventParticipant savedParticipant = getEventParticipantService().getByUuid(participant.getUuid());
 
 //		assertThat(savedParticipant.getInvolvementDescription(), is("Test involvement descr"));
@@ -148,7 +148,7 @@ public class EventParticipantFacadeEjbPseudonymizationTest extends AbstractBeanT
 		participant.getPerson().getAddress().setAdditionalInformation(null);
 		participant.getPerson().getAddress().setCity(null);
 
-		getEventParticipantFacade().saveEventParticipant(participant);
+		getEventParticipantFacade().save(participant);
 
 		EventParticipant saved = getEventParticipantService().getByUuid(participant.getUuid());
 

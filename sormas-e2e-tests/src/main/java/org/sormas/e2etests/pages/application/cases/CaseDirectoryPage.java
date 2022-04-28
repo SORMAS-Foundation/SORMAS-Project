@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -36,6 +36,7 @@ public class CaseDirectoryPage {
       By.cssSelector("div.v-grid-tablewrapper tbody tr");
   public static final By FIRST_CASE_ID_BUTTON = By.cssSelector(".v-grid-row-has-data a[title]");
   public static final By NAME_UUID_EPID_NUMBER_LIKE_INPUT = By.cssSelector("input#caseLike");
+  public static final By EPI_DATA_TAB = By.id("tab-cases-epidata");
   public static final By PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT =
       By.cssSelector("#personLike");
   public static final By CASE_OUTCOME_FILTER_COMBOBOX =
@@ -44,9 +45,15 @@ public class CaseDirectoryPage {
       By.cssSelector("[id='caseClassification'] [class='v-filterselect-button']");
   public static final By CASE_DISEASE_FILTER_COMBOBOX =
       By.cssSelector("[id='disease'] [class='v-filterselect-button']");
+  public static final By CASE_DISEASE_VARIANT_FILTER_COMBOBOX =
+      By.cssSelector("[id='diseaseVariant'] [class='v-filterselect-button']");
   public static final By CASE_APPLY_FILTERS_BUTTON = By.cssSelector("[id='actionApplyFilters']");
   public static final By CASE_RESET_FILTERS_BUTTON = By.cssSelector("[id='actionResetFilters']");
-  public static final String CASE_RESULTS_UUID_LOCATOR = "[title = '%s']";
+
+  public static final By getCaseResultsUuidLocator(String uuid) {
+    return By.cssSelector(String.format("[title = '%s']", uuid));
+  }
+
   public static final By CASE_GRID_RESULTS_ROWS = By.cssSelector("[role=rowgroup] tr a");
   public static final By LINE_LISTING_BUTTON = By.id("lineListing");
   public static final By GRID_HEADERS = By.xpath("//thead//tr//th");
@@ -68,7 +75,6 @@ public class CaseDirectoryPage {
   public static final By SHOW_MORE_LESS_FILTERS = By.id("showHideMoreFilters");
   public static final By CASE_ORIGIN_FILTER_COMBOBOX =
       By.cssSelector("[id='caseOrigin'] [class='v-filterselect-button']");
-
   public static final By CASE_COMMUNITY_FILTER_COMBOBOX =
       By.cssSelector("[id='community'] [class='v-filterselect-button']");
   public static final By CASE_PRESENT_CONDITION_COMBOBOX =
@@ -93,6 +99,8 @@ public class CaseDirectoryPage {
       By.cssSelector("[id='dateType'] [class='v-filterselect-button']");
   public static final By CASE_DISPLAY_FILTER_COMBOBOX =
       By.cssSelector("[id='relevanceStatus'] [class='v-filterselect-button']");
+  public static final By BULK_ACTIONS = By.id("bulkActions-2");
+  public static final By BULK_ACTIONS_VALUES = By.id("bulkActions-10");
   public static final By CASE_REPORTING_USER_FILTER = By.cssSelector("[id='reportingUserLike']");
   public static final By CASE_YEAR_FILTER =
       By.cssSelector("[id='birthdateYYYY'] [class='v-filterselect-button']");
@@ -125,5 +133,38 @@ public class CaseDirectoryPage {
   public static final By INVESTIGATION_DISCARDED_BUTTON = By.id("Investigation discarded");
   public static final By DATE_FROM_COMBOBOX = By.cssSelector("#dateFrom input");
   public static final By DATE_TO_COMBOBOX = By.cssSelector("#dateTo input");
+  public static final By MORE_BUTTON = By.id("more");
+  public static final By ENTER_BULK_EDIT_MODE = By.id("actionEnterBulkEditMode");
+  public static final By ALL_RESULTS_CHECKBOX =
+      By.xpath("//th[@role='columnheader']//input[@type='checkbox']/../..");
+  public static final By NEW_EVENT_CHECKBOX = By.xpath("//*[contains(text(),'New event')]/..");
+  public static final By FIRST_RESULT_IN_GRID =
+      By.xpath("//div[contains(@class, 'popupContent')]//tr[@role='row']");
+  public static final By SEARCH_BUTTON = By.id("search");
+  public static final By CASE_EPIDEMIOLOGICAL_DATA_TAB = By.cssSelector("#tab-cases-epidata");
+  public static final By EPIDEMIOLOGICAL_DATA_TAB = By.cssSelector("#tab-cases-epidata");
+  public static final By FIRST_PERSON_ID = By.xpath("//td[10]//a");
+  public static final By FIRST_CASE_ID = By.xpath("//td[1]//a");
+  public static final By IMPORT_BUTTON = By.id("actionImport");
+  public static final By DETAILED_IMPORT_BUTTON = By.id("importDetailed");
+  public static final By DOWNLOAD_IMPORT_GUIDE_BUTTON = By.id("import-step-1");
+  public static final By DOWNLOAD_DATA_DICTIONARY_BUTTON = By.id("importDownloadDataDictionary");
+  public static final By FACILITY_ACTIVITY_AS_CASE_COMBOBOX =
+      By.cssSelector(".v-window #typeOfPlace div");
+  public static final By CASE_MEANS_OF_TRANSPORT =
+      By.cssSelector(".v-window #meansOfTransport div");
+  public static final By CASE_MEANS_OF_TRANSPORT_DETAILS = By.id("meansOfTransportDetails");
+  public static final By CASE_CONNECTION_NUMBER = By.id("connectionNumber");
+  public static final By CASE_SEAT_NUMBER = By.id("seatNumber");
+  public static final By CASE_ACTION_CONFIRM = By.id("actionConfirm");
+  public static final By CASE_ACTION_CANCEL = By.id("actionCancel");
+
+  public static By getResultByIndex(String rowNumber) {
+    return By.xpath(String.format("//tr[%s]//a", rowNumber));
+  }
+
+  public static final By CASE_CLOSE_WINDOW_BUTTON =
+      By.xpath("//div[contains(@class,'v-window-closebox')]");
+  public static final By CASE_INFO_BUTTON = By.cssSelector("[id='info']");
   // TODO refactor the other headers based on the last one added
 }

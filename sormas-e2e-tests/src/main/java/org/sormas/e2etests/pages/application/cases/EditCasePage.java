@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -26,6 +26,8 @@ public class EditCasePage {
   public static final By FOLLOW_UP_TAB = By.cssSelector("[id='tab-cases-visits'] a");
   public static final By SYMPTOMS_TAB = By.cssSelector("[id='tab-cases-symptoms']");
   public static final By THERAPY_TAB = By.cssSelector("[id='tab-cases-therapy']");
+  public static final By HOSPITALIZATION_TAB = By.cssSelector("[id='tab-cases-hospitalization']");
+  public static final By BACK_TO_CASES_LIST_BUTTON = By.id("tab-cases");
   public static final By REGION_INPUT = By.cssSelector("#responsibleRegion input");
   public static final By DISTRICT_INPUT = By.cssSelector("#responsibleDistrict input");
   public static final By COMMUNITY_INPUT = By.cssSelector("#responsibleCommunity input");
@@ -35,12 +37,14 @@ public class EditCasePage {
   public static final By EXTERNAL_ID_INPUT = By.id("externalID");
   public static final By UUID_INPUT = By.id("uuid");
   public static final By DISEASE_INPUT = By.cssSelector("#disease input");
+  public static final By DISEASE_VARIANT_INPUT = By.cssSelector("#diseaseVariant input");
   public static final By USER_INFORMATION =
       By.cssSelector(".v-slot-view-header .v-slot-primary div");
   public static final By CASE_PERSON_TAB = By.cssSelector("div#tab-cases-person");
   public static final By NEW_TASK_BUTTON = By.cssSelector("div#taskNewTask");
   public static final By EDIT_TASK_BUTTON = By.cssSelector("div[id*='edit-task']");
   public static final By NEW_SAMPLE_BUTTON = By.cssSelector("[id='New sample']");
+  public static final By NEW_SAMPLE_BUTTON_DE = By.cssSelector("[id='Neue Probe']");
   public static final By EDIT_SAMPLE_BUTTON =
       By.cssSelector(
           "[location='samples'] [class='v-button v-widget link v-button-link compact v-button-compact']");
@@ -61,6 +65,7 @@ public class EditCasePage {
   public static final By REINFECTION_OPTIONS = By.cssSelector("#reInfection label");
   public static final By OUTCOME_OF_CASE_OPTIONS = By.cssSelector("#outcome label");
   public static final By DATE_OF_OUTCOME = By.cssSelector("#outcomeDate");
+  public static final By DATE_OF_OUTCOME_INPUT = By.cssSelector("#outcomeDate input");
   public static final By SEQUELAE_OPTIONS = By.cssSelector("#sequelae label");
   public static final By SEQUELAE_DETAILS = By.cssSelector("#sequelaeDetails");
   public static final By PLACE_OF_STAY_CHECKBOX_LABEL =
@@ -77,6 +82,8 @@ public class EditCasePage {
   public static final By FACILITY_CATEGORY_COMBOBOX = By.cssSelector("#typeGroup div");
   public static final By FACILITY_TYPE_COMBOBOX = By.cssSelector("#facilityType div");
   public static final By FACILITY_HEALTH_COMBOBOX = By.cssSelector("#healthFacility div");
+  public static final By FACILITY_ACTIVITY_COMBOBOX =
+      By.cssSelector("[id='typeOfPlace'] [class='v-filterselect-button']");
   public static final By REGION_COMBOBOX = By.cssSelector("#responsibleRegion div");
   public static final By DISTRICT_COMBOBOX = By.cssSelector("#responsibleDistrict div");
   public static final By COMMUNITY_COMBOBOX = By.cssSelector("#responsibleCommunity div");
@@ -90,7 +97,17 @@ public class EditCasePage {
       By.cssSelector("#quarantineHomePossible label");
   public static final By QUARANTINE_COMBOBOX = By.cssSelector("#quarantine div");
   public static final By QUARANTINE_DATE_FROM = By.cssSelector("#quarantineFrom");
+  public static final By QUARANTINE_DATE_FROM_INPUT = By.cssSelector("#quarantineFrom input");
   public static final By QUARANTINE_DATE_TO = By.cssSelector("#quarantineTo");
+  public static final By QUARANTINE_DATE_TO_INPUT = By.cssSelector("#quarantineTo input");
+  public static final By QUARANTINE_CHANGE_COMMENT = By.cssSelector("#quarantineChangeComment");
+  public static final By QUARANTINE_POPUP_MESSAGE =
+      By.xpath("//div[@class='v-label v-widget v-has-width']");
+  public static final By QUARANTINE_POPUP_SAVE_BUTTON =
+      By.cssSelector(".popupContent #actionConfirm");
+  public static final By QUARANTINE_POPUP_DISCARD_BUTTON =
+      By.cssSelector(".popupContent #actionCancel");
+  public static final By DISCARD_BUTTON_POPUP = By.cssSelector(".popupContent #discard");
   public static final By QUARANTINE_ORDERED_VERBALLY_CHECKBOX_LABEL =
       By.xpath("//*[@id='quarantineOrderedVerbally']/label");
   public static final By QUARANTINE_ORDERED_VERBALLY_CHECKBOX_INPUT =
@@ -141,4 +158,28 @@ public class EditCasePage {
       By.cssSelector(".popupContent [class='v-textfield v-widget v-has-width']");
   public static final By QUARANTINE_ORDER_COMBOBOX =
       By.cssSelector(".popupContent div[role='combobox'] div");
+  public static final By CLINICAL_COURSE_TAB = By.id("tab-cases-clinicalcourse");
+  public static final By NEW_TRAVEL_ENTRY_BUTTON_DE = By.id("Neue Einreise");
+  public static final By PICK_OR_CREATE_PERSON_TITLE = By.xpath("//div[@class='v-window-header']");
+  public static final By SAVE_POPUP_CONTENT = By.cssSelector(".popupContent #commit");
+  public static final By BACK_TO_THE_CASES_LIST_BUTTON =
+      By.xpath("//div[@class='v-link v-widget v-caption v-link-v-caption']/a[@href='#!cases']");
+  public static final By EDIT_TRAVEL_ENTRY_FROM_CASE_BUTTON =
+      By.xpath("//div[@class='v-slot v-slot-s-list']//div[@role='button']");
+  public static final By REFERENCE_DEFINITION_TEXT =
+      By.cssSelector("#caseReferenceDefinition input");
+  public static final By BACK_TO_CASES_BUTTON = By.id("tab-cases");
+  public static final By CASE_DATA_TITLE = By.cssSelector("[location='caseDataHeadingLoc']");
+  public static final By EDIT_CASE_EPIDEMIOLOGICAL_DATA = By.cssSelector("#tab-cases-epidata");
+  public static final By PICK_OR_CREATE_PERSON_POPUP_HEADER =
+      By.xpath("//*[contains(text(),'Pick or create person')]");
+  public static final By PICK_OR_CREATE_CASE_POPUP_HEADER =
+      By.xpath("//*[contains(text(),'Pick or create case')]");
+  public static final By CREATE_NEW_PERSON_CHECKBOX =
+      By.xpath("//label[text()='Create a new person']");
+  public static final By CREATE_NEW_CASE_CHECKBOX = By.xpath("//label[text()='Create a new case']");
+  public static final By CURRENT_HOSPITALIZATION_POPUP =
+      By.xpath("//*[contains(text(),'Current hospitalization')]");
+  public static final By SAVE_AND_OPEN_HOSPITALIZATION_BUTTON =
+      By.cssSelector(".popupContent #actionConfirm");
 }

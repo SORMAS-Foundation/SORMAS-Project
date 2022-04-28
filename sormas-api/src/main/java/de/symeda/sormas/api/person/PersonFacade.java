@@ -64,7 +64,7 @@ public interface PersonFacade {
 	 * 
 	 * @return
 	 */
-	List<SimilarPersonDto> getSimilarPersonDtos(UserReferenceDto user, PersonSimilarityCriteria criteria);
+	List<SimilarPersonDto> getSimilarPersonDtos(PersonSimilarityCriteria criteria);
 
 	boolean checkMatchingNameInDatabase(UserReferenceDto userRef, PersonSimilarityCriteria criteria);
 
@@ -73,8 +73,6 @@ public interface PersonFacade {
 	List<PersonFollowUpEndDto> getLatestFollowUpEndDates(Date since, boolean forSymptomsJournal);
 
 	Date getLatestFollowUpEndDateByUuid(String uuid);
-
-	FollowUpStatus getMostRelevantFollowUpStatusByUuid(String uuid);
 
 	boolean setSymptomJournalStatus(String personUuid, SymptomJournalStatus status);
 
@@ -103,4 +101,6 @@ public interface PersonFacade {
 	void mergePerson(PersonDto leadPerson, PersonDto otherPerson, boolean overrideValues, boolean skipValidation);
 
 	PersonDto getByContext(PersonContext context, String contextUuid);
+
+    boolean isEnrolledInExternalJournal(String uuid);
 }

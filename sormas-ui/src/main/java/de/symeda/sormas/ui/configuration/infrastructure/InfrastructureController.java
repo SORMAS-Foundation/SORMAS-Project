@@ -446,7 +446,7 @@ public class InfrastructureController {
 		FacilityType facilityType) {
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.INFRASTRUCTURE_ARCHIVE)) {
-			Button archiveButton = ButtonHelper.createButton(isArchived ? Captions.actionDearchive : Captions.actionArchive, e -> {
+			Button archiveButton = ButtonHelper.createButton(isArchived ? Captions.actionDearchiveInfrastructure : Captions.actionArchiveInfrastructure, e -> {
 				if (!isArchived) {
 					if (InfrastructureType.CONTINENT.equals(infrastructureType)
 						&& FacadeProvider.getContinentFacade().isUsedInOtherInfrastructureData(Arrays.asList(uuid))

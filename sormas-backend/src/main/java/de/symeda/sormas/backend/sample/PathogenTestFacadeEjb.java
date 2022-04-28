@@ -1,28 +1,26 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
+
 package de.symeda.sormas.backend.sample;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
-import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
-import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 import javax.ejb.EJB;
@@ -45,12 +43,12 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Validations;
-import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.sample.PathogenTestCriteria;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.PathogenTestFacade;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
+import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -58,9 +56,10 @@ import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.common.CoreAdo;
+import de.symeda.sormas.backend.common.NotificationService;
 import de.symeda.sormas.backend.common.messaging.MessageContents;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
-import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
@@ -95,6 +94,8 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	@EJB
 	private EventParticipantFacadeEjbLocal eventParticipantFacade;
 	@EJB
+	private EventFacadeEjbLocal eventFacade;
+	@EJB
 	private PathogenTestService pathogenTestService;
 	@EJB
 	private SampleService sampleService;
@@ -103,7 +104,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 	@EJB
 	private UserService userService;
 	@EJB
-	private MessagingService messagingService;
+	private NotificationService notificationService;
 	@EJB
 	private UserRoleConfigFacadeEjbLocal userRoleConfigFacade;
 
@@ -188,7 +189,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		Root<PathogenTest> pathogenTestRoot = cq.from(PathogenTest.class);
 		Join<PathogenTest, Sample> sampleJoin = pathogenTestRoot.join(PathogenTest.SAMPLE);
 
-		Predicate filter = cb.equal(sampleJoin.get(Sample.UUID), sampleUuid);
+		Predicate filter = cb.and(cb.equal(sampleJoin.get(Sample.UUID), sampleUuid), cb.isFalse(pathogenTestRoot.get(CoreAdo.DELETED)));
 		cq.where(filter);
 		cq.orderBy(cb.desc(pathogenTestRoot.get(PathogenTest.CREATION_DATE)));
 
@@ -252,21 +253,21 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		// Update case classification if necessary
 		final Case associatedCase = pathogenTest.getSample().getAssociatedCase();
 		if (associatedCase != null) {
-			caseFacade.onCaseChanged(CaseFacadeEjbLocal.toDto(associatedCase), associatedCase, syncShares);
+			caseFacade.onCaseChanged(caseFacade.toDto(associatedCase), associatedCase, syncShares);
 		}
 
 		// update contact if necessary
 		Contact associatedContact = pathogenTest.getSample().getAssociatedContact();
 		if (associatedContact != null) {
-			contactFacade.onContactChanged(ContactFacadeEjbLocal.toDto(associatedContact), syncShares);
+			contactFacade.onContactChanged(contactFacade.toDto(associatedContact), syncShares);
 		}
 
 		// update event participant if necessary
 		EventParticipant associatedEventParticipant = pathogenTest.getSample().getAssociatedEventParticipant();
 		if (associatedEventParticipant != null) {
 			eventParticipantFacade.onEventParticipantChanged(
-				EventFacadeEjbLocal.toDto(associatedEventParticipant.getEvent()),
-				EventParticipantFacadeEjbLocal.toDto(associatedEventParticipant),
+				eventFacade.toDto(associatedEventParticipant.getEvent()),
+				eventParticipantFacade.toDto(associatedEventParticipant),
 				associatedEventParticipant,
 				syncShares);
 		}
@@ -350,7 +351,7 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 			.collect(
 				Collectors.toMap(
 					s -> s.getSample().getUuid(),
-					(s) -> s,
+					s -> s,
 					(s1, s2) -> {
 
 						// keep the positive one
@@ -469,48 +470,36 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		final Case caze = sample.getAssociatedCase();
 		final Contact contact = sample.getAssociatedContact();
 		final EventParticipant eventParticipant = sample.getAssociatedEventParticipant();
-		final List<User> messageRecipients = new ArrayList<>();
+
 		Disease disease = null;
+		Set<NotificationType> notificationTypes = new HashSet<>();
+		List<Region> regions = new ArrayList<>();
 
 		if (caze != null) {
 			disease = caze.getDisease();
-			messageRecipients.addAll(
-				userService.getAllByRegionsAndUserRoles(
-					JurisdictionHelper.getCaseRegions(caze),
-					UserRole.SURVEILLANCE_SUPERVISOR,
-					UserRole.CASE_SUPERVISOR));
-
+			notificationTypes.add(NotificationType.CASE_LAB_RESULT_ARRIVED);
+			regions.addAll(JurisdictionHelper.getCaseRegions(caze));
 		}
 
 		if (contact != null) {
 			disease = contact.getDisease() != null ? contact.getDisease() : contact.getCaze().getDisease();
-			messageRecipients.addAll(
-				userService
-					.getAllByRegionsAndUserRoles(
-						JurisdictionHelper.getContactRegions(contact),
-						UserRole.SURVEILLANCE_SUPERVISOR,
-						UserRole.CONTACT_SUPERVISOR)
-					.stream()
-					.filter(user -> !messageRecipients.contains(user))
-					.collect(Collectors.toList()));
+			notificationTypes.add(NotificationType.CONTACT_LAB_RESULT_ARRIVED);
+			regions.addAll(JurisdictionHelper.getContactRegions(contact));
 		}
 
 		if (eventParticipant != null) {
-			final Region region = eventParticipant.getEvent().getEventLocation().getRegion();
 			disease = eventParticipant.getEvent().getDisease();
-			messageRecipients.addAll(
-				userService.getAllByRegionAndUserRoles(region, UserRole.EVENT_OFFICER)
-					.stream()
-					.filter(user -> !messageRecipients.contains(user))
-					.collect(Collectors.toList()));
+			notificationTypes.add(NotificationType.EVENT_PARTICIPANT_LAB_RESULT_ARRIVED);
+			regions.add(eventParticipant.getRegion());
+
 			if (disease == null) {
 				sendMessageOnPathogenTestChanged(
 					existingPathogenTest,
 					newPathogenTest,
 					null,
-					messageRecipients,
+					notificationTypes,
+					regions,
 					MessageContents.CONTENT_LAB_RESULT_ARRIVED_EVENT_PARTICIPANT_NO_DISEASE,
-					MessageContents.CONTENT_LAB_RESULT_SPECIFIED_EVENT_PARTICIPANT_NO_DISEASE,
 					DataHelper.getShortUuid(eventParticipant.getUuid()));
 			}
 		}
@@ -520,20 +509,15 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 				? MessageContents.CONTENT_LAB_RESULT_ARRIVED
 				: contact != null ? MessageContents.CONTENT_LAB_RESULT_ARRIVED_CONTACT : MessageContents.CONTENT_LAB_RESULT_ARRIVED_EVENT_PARTICIPANT;
 
-			final String contentLabResultSpecified = caze != null
-				? MessageContents.CONTENT_LAB_RESULT_SPECIFIED
-				: contact != null
-					? MessageContents.CONTENT_LAB_RESULT_SPECIFIED_CONTACT
-					: MessageContents.CONTENT_LAB_RESULT_SPECIFIED_EVENT_PARTICIPANT;
 			final String shortUuid =
 				DataHelper.getShortUuid(caze != null ? caze.getUuid() : contact != null ? contact.getUuid() : eventParticipant.getUuid());
 			sendMessageOnPathogenTestChanged(
 				existingPathogenTest,
 				newPathogenTest,
 				disease,
-				messageRecipients,
+				notificationTypes,
+				regions,
 				contentLabResultArrived,
-				contentLabResultSpecified,
 				shortUuid);
 		}
 	}
@@ -542,50 +526,27 @@ public class PathogenTestFacadeEjb implements PathogenTestFacade {
 		PathogenTestDto existingPathogenTest,
 		PathogenTest newPathogenTest,
 		Disease disease,
-		List<User> messageRecipients,
+		Set<NotificationType> notificationTypes,
+		List<Region> regions,
 		String contentLabResultArrived,
-		String contentLabResultSpecified,
 		String shortUuid) {
-		if (existingPathogenTest == null && newPathogenTest.getTestResult() != PathogenTestResultType.PENDING) {
-			try {
-				messagingService.sendMessages(() -> {
-					final Map<User, String> mapToReturn = new HashMap<>();
-					messageRecipients.forEach(
-						user -> mapToReturn.put(
-							user,
-							String.format(
-								I18nProperties.getString(contentLabResultArrived),
-								newPathogenTest.getTestResult().toString(),
-								disease,
-								shortUuid,
-								newPathogenTest.getTestType(),
-								newPathogenTest.getTestedDisease())));
-					return mapToReturn;
-				}, MessageSubject.LAB_RESULT_ARRIVED, MessageType.EMAIL, MessageType.SMS);
-			} catch (NotificationDeliveryFailedException e) {
-				logger.error(String.format("EmailDeliveryFailedException when trying to notify supervisors " + "about the arrival of a lab result."));
-			}
-		} else if (existingPathogenTest != null
+		boolean isNewTestWithResult = existingPathogenTest == null && newPathogenTest.getTestResult() != PathogenTestResultType.PENDING;
+		boolean testResultChanged = existingPathogenTest != null
 			&& existingPathogenTest.getTestResult() == PathogenTestResultType.PENDING
-			&& newPathogenTest.getTestResult() != PathogenTestResultType.PENDING) {
+			&& newPathogenTest.getTestResult() != PathogenTestResultType.PENDING;
+		if (newPathogenTest.getTestResult() != null && isNewTestWithResult || testResultChanged) {
 			try {
-				messagingService.sendMessages(() -> {
-					final Map<User, String> mapToReturn = new HashMap<>();
-					messageRecipients.forEach(
-						user -> mapToReturn.put(
-							user,
-							String.format(
-								I18nProperties.getString(contentLabResultSpecified),
-								disease,
-								shortUuid,
-								newPathogenTest.getTestResult().toString(),
-								newPathogenTest.getTestType(),
-								newPathogenTest.getTestedDisease())));
-					return mapToReturn;
-				}, MessageSubject.LAB_RESULT_SPECIFIED, MessageType.EMAIL, MessageType.SMS);
+				String message = String.format(
+					I18nProperties.getString(contentLabResultArrived),
+					newPathogenTest.getTestResult().toString(),
+					disease,
+					shortUuid,
+					newPathogenTest.getTestType(),
+					newPathogenTest.getTestedDisease());
+
+				notificationService.sendNotifications(notificationTypes, regions, null, MessageSubject.LAB_RESULT_ARRIVED, message);
 			} catch (NotificationDeliveryFailedException e) {
-				logger.error(
-					String.format("EmailDeliveryFailedException when trying to notify supervisors " + "about the specification of a lab result"));
+				logger.error("EmailDeliveryFailedException when trying to notify supervisors " + "about the arrival of a lab result.");
 			}
 		}
 	}

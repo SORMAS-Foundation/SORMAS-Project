@@ -47,6 +47,7 @@ import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PresentCondition;
 import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.Sex;
+import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Order;
 import de.symeda.sormas.api.utils.PersonalData;
@@ -116,7 +117,7 @@ public class EventParticipantExportDto implements Serializable {
 	private String approximateAge;
 	private String ageGroup;
 	private BirthDateDto birthdate;
-	private String personNationalHealthId;
+	private String nationalHealthId;
 
 	private PresentCondition presentCondition;
 	private Date deathDate;
@@ -176,7 +177,7 @@ public class EventParticipantExportDto implements Serializable {
 	private long contactCount;
 
 	//@formatter:off
-    public EventParticipantExportDto(long id, long personId, String personUuid, String eventParticipantUuid, String personNationalHealthId, long personAddressId, boolean isInJurisdiction, String eventUuid,
+    public EventParticipantExportDto(long id, long personId, String personUuid, String eventParticipantUuid, String nationalHealthId, long personAddressId, boolean isInJurisdiction, String eventUuid,
 
 									 EventStatus eventStatus, EventInvestigationStatus eventInvestigationStatus, Disease eventDisease, TypeOfPlace typeOfPlace, Date eventStartDate, Date eventEndDate, String eventTitle, String eventDesc,
 									 String eventRegion, String eventDistrict, String eventCommunity, String eventCity, String eventStreet, String eventHouseNumber,
@@ -193,7 +194,7 @@ public class EventParticipantExportDto implements Serializable {
 		this.personId = personId;
 		this.personUuid = personUuid;
 		this.eventParticipantUuid = eventParticipantUuid;
-		this.personNationalHealthId = personNationalHealthId;
+		this.nationalHealthId = nationalHealthId;
 		this.personAddressId = personAddressId;
 		this.eventUuid = eventUuid;
 
@@ -283,8 +284,9 @@ public class EventParticipantExportDto implements Serializable {
 		EventParticipantDto.PERSON,
 		PersonDto.NATIONAL_HEALTH_ID })
 	@ExportGroup(ExportGroupType.PERSON)
-	public String getPersonNationalHealthId() {
-		return personNationalHealthId;
+	@HideForCountries
+	public String getNationalHealthId() {
+		return nationalHealthId;
 	}
 
 	@Order(12)
@@ -399,6 +401,7 @@ public class EventParticipantExportDto implements Serializable {
 	@Order(23)
 	@ExportProperty(EventParticipantExportDto.BURIAL_INFO)
 	@ExportGroup(ExportGroupType.CORE)
+	@HideForCountries
 	public BurialInfoDto getBurialInfo() {
 		return burialInfo;
 	}

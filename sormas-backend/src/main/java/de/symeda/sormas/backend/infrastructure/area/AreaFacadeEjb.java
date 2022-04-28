@@ -25,14 +25,14 @@ import de.symeda.sormas.api.infrastructure.area.AreaFacade;
 import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.feature.FeatureConfigurationFacadeEjb.FeatureConfigurationFacadeEjbLocal;
-import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureEjb;
+import de.symeda.sormas.backend.infrastructure.AbstractInfrastructureFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "AreaFacade")
-public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaDto, AreaDto, AreaReferenceDto, AreaService, AreaCriteria>
+public class AreaFacadeEjb extends AbstractInfrastructureFacadeEjb<Area, AreaDto, AreaDto, AreaReferenceDto, AreaService, AreaCriteria>
 	implements AreaFacade {
 
 	public AreaFacadeEjb() {
@@ -114,7 +114,7 @@ public class AreaFacadeEjb extends AbstractInfrastructureEjb<Area, AreaDto, Area
 	}
 
 	@Override
-	public List<AreaReferenceDto> getByExternalId(String externalId, boolean includeArchivedEntities) {
+	public List<AreaReferenceDto> getReferencesByExternalId(String externalId, boolean includeArchivedEntities) {
 
 		return service.getByExternalId(externalId, includeArchivedEntities).stream().map(AreaFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}

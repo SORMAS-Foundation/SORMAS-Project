@@ -23,11 +23,14 @@ import java.util.Map;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
+
+import com.fasterxml.jackson.databind.JsonNode;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
@@ -56,6 +59,8 @@ import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourseFacadeEjb;
+import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
+import de.symeda.sormas.backend.clinicalcourse.HealthConditionsMapper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
@@ -70,9 +75,11 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserFacadeEjb;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
+import de.symeda.sormas.backend.util.PatchHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless(name = "VaccinationFacade")
+@RolesAllowed(UserRight._IMMUNIZATION_VIEW)
 public class VaccinationFacadeEjb implements VaccinationFacade {
 
 	@EJB
@@ -91,7 +98,12 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	private ContactService contactService;
 	@EJB
 	private EventParticipantService eventParticipantService;
+	@EJB
+	private HealthConditionsMapper healthConditionsMapper;
 
+	@RolesAllowed({
+		UserRight._IMMUNIZATION_CREATE,
+		UserRight._IMMUNIZATION_EDIT })
 	public VaccinationDto save(@Valid VaccinationDto dto) {
 
 		Vaccination existingVaccination = dto.getUuid() != null ? vaccinationService.getByUuid(dto.getUuid()) : null;
@@ -116,6 +128,8 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._IMMUNIZATION_CREATE })
 	public VaccinationDto createWithImmunization(
 		VaccinationDto dto,
 		RegionReferenceDto region,
@@ -163,6 +177,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		return convertToDto(vaccination, Pseudonymizer.getDefault(userService::hasRight));
 	}
 
+	@RolesAllowed(UserRight._IMMUNIZATION_EDIT)
 	private boolean addImmunizationToVaccination(Vaccination vaccination, String personUuid, Disease disease) {
 
 		List<Immunization> immunizations = immunizationService.getByPersonAndDisease(personUuid, disease, true);
@@ -226,7 +241,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	public List<VaccinationDto> getAllVaccinations(String personUuid, Disease disease) {
 
 		List<Immunization> immunizations = immunizationService.getByPersonAndDisease(personUuid, disease, false);
-		return immunizations.stream().flatMap(i -> i.getVaccinations().stream()).map(VaccinationFacadeEjb::toDto).collect(Collectors.toList());
+		return immunizations.stream().flatMap(i -> i.getVaccinations().stream()).map(v -> toDto(v)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -361,6 +376,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		}
 	}
 
+	@RolesAllowed(UserRight._IMMUNIZATION_EDIT)
 	public void updateVaccinationStatuses(Date newVaccinationDate, Date oldVaccinationDate, Long personId, Disease disease) {
 
 		if (oldVaccinationDate == null || newVaccinationDate != oldVaccinationDate) {
@@ -370,6 +386,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		}
 	}
 
+	@RolesAllowed(UserRight._CASE_EDIT)
 	public void updateVaccinationStatuses(Case caze) {
 		List<Immunization> casePersonImmunizations = immunizationService.getByPersonAndDisease(caze.getPerson().getUuid(), caze.getDisease(), true);
 
@@ -384,6 +401,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		}
 	}
 
+	@RolesAllowed(UserRight._CONTACT_EDIT)
 	public void updateVaccinationStatuses(Contact contact) {
 		List<Immunization> contactPersonImmunizations =
 			immunizationService.getByPersonAndDisease(contact.getPerson().getUuid(), contact.getDisease(), true);
@@ -399,6 +417,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		}
 	}
 
+	@RolesAllowed(UserRight._EVENTPARTICIPANT_EDIT)
 	public void updateVaccinationStatuses(EventParticipant eventParticipant) {
 		if (eventParticipant.getEvent().getDisease() == null) {
 			return;
@@ -419,12 +438,8 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 	}
 
 	@Override
+	@RolesAllowed(UserRight._IMMUNIZATION_DELETE)
 	public void deleteWithImmunization(String uuid) {
-
-		if (!userService.hasRight(UserRight.IMMUNIZATION_DELETE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete vaccinations");
-		}
-
 		Vaccination vaccination = vaccinationService.getByUuid(uuid);
 		Immunization immunization = vaccination.getImmunization();
 		immunization.getVaccinations().remove(vaccination);
@@ -440,6 +455,13 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		return toDto(vaccinationService.getByUuid(uuid));
 	}
 
+	@RolesAllowed(UserRight._IMMUNIZATION_EDIT)
+	public VaccinationDto postUpdate(String uuid, JsonNode vaccinationDtoJson) {
+		VaccinationDto existingVaccinationDto = toDto(vaccinationService.getByUuid(uuid));
+		PatchHelper.postUpdate(vaccinationDtoJson, existingVaccinationDto);
+		return this.save(existingVaccinationDto);
+	}
+
 	@Override
 	public Map<String, String> getLastVaccinationType() {
 		return vaccinationService.getLastVaccinationType();
@@ -449,7 +471,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		target = DtoHelper.fillOrBuildEntity(source, target, Vaccination::new, checkChangeDate);
 
 		target.setImmunization(immunizationService.getByReferenceDto(source.getImmunization()));
-		target.setHealthConditions(clinicalCourseFacade.fromHealthConditionsDto(source.getHealthConditions(), checkChangeDate));
+		target.setHealthConditions(healthConditionsMapper.fromDto(source.getHealthConditions(), checkChangeDate));
 		target.setReportDate(source.getReportDate());
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setVaccinationDate(source.getVaccinationDate());
@@ -470,7 +492,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		return target;
 	}
 
-	public static VaccinationDto toDto(Vaccination entity) {
+	public VaccinationDto toDto(Vaccination entity) {
 		if (entity == null) {
 			return null;
 		}
@@ -478,7 +500,7 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		DtoHelper.fillDto(dto, entity);
 
 		dto.setImmunization(ImmunizationFacadeEjb.toReferenceDto(entity.getImmunization()));
-		dto.setHealthConditions(ClinicalCourseFacadeEjb.toHealthConditionsDto(entity.getHealthConditions()));
+		dto.setHealthConditions(healthConditionsMapper.toDto(entity.getHealthConditions()));
 		dto.setReportDate(entity.getReportDate());
 		dto.setReportingUser(UserFacadeEjb.toReferenceDto(entity.getReportingUser()));
 		dto.setVaccinationDate(entity.getVaccinationDate());
@@ -503,12 +525,18 @@ public class VaccinationFacadeEjb implements VaccinationFacade {
 		return fillOrBuildEntity(source, vaccinationService.getByUuid(source.getUuid()), checkChangeDate);
 	}
 
+	@RolesAllowed(UserRight._IMMUNIZATION_EDIT)
 	public void copyExistingVaccinationsToNewImmunization(ImmunizationDto immunizationDto, Immunization newImmunization) {
 		List<Vaccination> vaccinationEntities = new ArrayList<>();
 		for (VaccinationDto vaccinationDto : immunizationDto.getVaccinations()) {
 			Vaccination vaccination = new Vaccination();
 			vaccination.setUuid(DataHelper.createUuid());
 			vaccination = fillOrBuildEntity(vaccinationDto, vaccination, false);
+
+			HealthConditions healthConditions = new HealthConditions();
+			healthConditions.setUuid(DataHelper.createUuid());
+			healthConditions = healthConditionsMapper.fillOrBuildEntity(vaccinationDto.getHealthConditions(), healthConditions, false);
+			vaccination.setHealthConditions(healthConditions);
 
 			vaccination.setImmunization(newImmunization);
 			vaccinationEntities.add(vaccination);

@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -40,6 +40,11 @@ public enum PresentCondition {
     return String.valueOf(PresentCondition.values()[random.nextInt(values().length)]);
   }
 
+  public static String getRandomUIPresentCondition() {
+    Random random = new Random();
+    return String.valueOf(PresentCondition.values()[random.nextInt(values().length)].condition);
+  }
+
   @SneakyThrows
   public static String getValueFor(String option) {
     PresentCondition[] caseOutcomeOptions = PresentCondition.values();
@@ -47,5 +52,14 @@ public enum PresentCondition {
       if (value.getCondition().equalsIgnoreCase(option)) return value.getCondition();
     }
     throw new Exception("Unable to find " + option + " value in PresentCondition Enum");
+  }
+
+  @SneakyThrows
+  public static String getRandomConditionDifferentThan(String excludedOption) {
+    PresentCondition[] caseOutcomeOptions = PresentCondition.values();
+    for (PresentCondition value : caseOutcomeOptions) {
+      if (!value.getCondition().equalsIgnoreCase(excludedOption)) return value.getCondition();
+    }
+    throw new Exception("Unable to provide option different than: " + excludedOption);
   }
 }

@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,8 +15,10 @@
 
 package de.symeda.sormas.backend.event;
 
+import java.sql.Timestamp;
 import java.time.Duration;
 import java.time.Instant;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
@@ -29,11 +31,14 @@ import java.util.Optional;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
-import javax.persistence.EntityManager;
-import javax.persistence.PersistenceContext;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
+import javax.inject.Inject;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Expression;
@@ -46,19 +51,21 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.vaccination.VaccinationService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.Disease;
+import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.Language;
 import de.symeda.sormas.api.caze.BirthDateDto;
 import de.symeda.sormas.api.caze.BurialInfoDto;
 import de.symeda.sormas.api.caze.CaseExportDto;
 import de.symeda.sormas.api.caze.EmbeddedSampleExportDto;
+import de.symeda.sormas.api.common.CoreEntityType;
 import de.symeda.sormas.api.common.Page;
-import de.symeda.sormas.api.deletionconfiguration.AutomaticDeletionInfoDto;
 import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.event.EventParticipantDto;
@@ -69,6 +76,7 @@ import de.symeda.sormas.api.event.EventParticipantListEntryDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.event.EventReferenceDto;
 import de.symeda.sormas.api.event.SimilarEventParticipantDto;
+import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
@@ -79,9 +87,9 @@ import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityHelper;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.location.LocationDto;
-import de.symeda.sormas.api.messaging.MessageType;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.user.NotificationType;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.AccessDeniedException;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -90,17 +98,16 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.AbstractCoreFacadeEjb;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
-import de.symeda.sormas.backend.common.CoreAdo;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.DeletableAdo;
+import de.symeda.sormas.backend.common.NotificationService;
 import de.symeda.sormas.backend.common.messaging.MessageContents;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
-import de.symeda.sormas.backend.common.messaging.MessagingService;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactService;
-import de.symeda.sormas.backend.deletionconfiguration.AbstractCoreEntityFacade;
-import de.symeda.sormas.backend.deletionconfiguration.CoreEntityType;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.immunization.ImmunizationEntityHelper;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
@@ -131,28 +138,26 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.vaccination.Vaccination;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
-import de.symeda.sormas.utils.EventParticipantJoins;
 
 @Stateless(name = "EventParticipantFacade")
-public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventParticipant> implements EventParticipantFacade {
+@RolesAllowed(UserRight._EVENTPARTICIPANT_VIEW)
+public class EventParticipantFacadeEjb
+	extends
+	AbstractCoreFacadeEjb<EventParticipant, EventParticipantDto, EventParticipantIndexDto, EventParticipantReferenceDto, EventParticipantService, EventParticipantCriteria>
+	implements EventParticipantFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
-
-	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
-	private EntityManager em;
 
 	@EJB
 	private EventService eventService;
 	@EJB
 	private EventFacadeEjbLocal eventFacade;
 	@EJB
-	private EventParticipantService eventParticipantService;
+	private EventParticipantService service;
 	@EJB
 	private PersonService personService;
 	@EJB
 	private CaseService caseService;
-	@EJB
-	private UserService userService;
 	@EJB
 	private ContactService contactService;
 	@EJB
@@ -160,14 +165,31 @@ public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventPar
 	@EJB
 	private DistrictService districtService;
 	@EJB
-	private MessagingService messagingService;
+	private NotificationService notificationService;
 	@EJB
 	private SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal sormasToSormasOriginInfoFacade;
 	@EJB
 	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
+	@EJB
+	private VaccinationService vaccinationService;
 
 	public EventParticipantFacadeEjb() {
-		super(EventParticipant.class);
+	}
+
+	@Inject
+	public EventParticipantFacadeEjb(EventParticipantService service, UserService userService) {
+		super(EventParticipant.class, EventParticipantDto.class, service, userService);
+	}
+
+	public static EventParticipantReferenceDto toReferenceDto(EventParticipant entity) {
+
+		if (entity == null) {
+			return null;
+		}
+
+		Person person = entity.getPerson();
+
+		return new EventParticipantReferenceDto(entity.getUuid(), person.getFirstName(), person.getFirstName());
 	}
 
 	@Override
@@ -185,7 +207,7 @@ public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventPar
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return eventParticipantService.getAllByEventAfter(date, event).stream().map(e -> convertToDto(e, pseudonymizer)).collect(Collectors.toList());
+		return service.getAllByEventAfter(date, event).stream().map(e -> convertToDto(e, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -196,7 +218,7 @@ public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventPar
 			return Collections.emptyList();
 		}
 
-		return eventParticipantService.getAllActiveUuids(user);
+		return service.getAllActiveUuids(user);
 	}
 
 	@Override
@@ -213,10 +235,58 @@ public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventPar
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return eventParticipantService.getAllActiveEventParticipantsAfter(date, user, batchSize, lastSynchronizedUuid)
+		return service.getAllAfter(date, user, batchSize, lastSynchronizedUuid)
 			.stream()
 			.map(c -> convertToDto(c, pseudonymizer))
 			.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<String> getArchivedUuidsSince(Date since) {
+		if (userService.getCurrentUser() == null) {
+			return Collections.emptyList();
+		}
+
+		return service.getArchivedUuidsSince(since);
+	}
+
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	@RolesAllowed(UserRight._SYSTEM)
+	public void archiveAllArchivableEventParticipants(int daysAfterEventParticipantGetsArchived) {
+		archiveAllArchivableEventParticipants(daysAfterEventParticipantGetsArchived, LocalDate.now());
+	}
+
+	private void archiveAllArchivableEventParticipants(int daysAfterEventParticipantGetsArchived, @NotNull LocalDate referenceDate) {
+		LocalDate notChangedSince = referenceDate.minusDays(daysAfterEventParticipantGetsArchived);
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<EventParticipant> from = cq.from(EventParticipant.class);
+
+		Timestamp notChangedTimestamp = Timestamp.valueOf(notChangedSince.atStartOfDay());
+		cq.where(
+			cb.equal(from.get(EventParticipant.ARCHIVED), false),
+			cb.equal(from.get(EventParticipant.DELETED), false),
+			cb.not(service.createChangeDateFilter(cb, from, notChangedTimestamp)));
+		cq.select(from.get(EventParticipant.UUID)).distinct(true);
+		List<String> eventParticipantUuids = em.createQuery(cq).getResultList();
+
+		if (!eventParticipantUuids.isEmpty()) {
+			archive(eventParticipantUuids);
+		}
+	}
+
+	private List<Vaccination> getRelevantSortedVaccinations(String eventUuid, List<Vaccination> vaccinations) {
+		Event event = eventService.getByUuid(eventUuid);
+
+		return vaccinations.stream()
+			.filter(v -> vaccinationService.isVaccinationRelevant(event, v))
+			.sorted(Comparator.comparing(ImmunizationEntityHelper::getVaccinationDateForComparison))
+			.collect(Collectors.toList());
+	}
+
+	private String getNumberOfDosesFromVaccinations(Vaccination vaccination) {
+		return vaccination != null ? vaccination.getVaccineDose() : "";
 	}
 
 	@Override
@@ -227,19 +297,18 @@ public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventPar
 			return Collections.emptyList();
 		}
 
-		List<String> deletedEventParticipants = eventParticipantService.getDeletedUuidsSince(since, user);
+		List<String> deletedEventParticipants = service.getDeletedUuidsSince(since, user);
 		return deletedEventParticipants;
 	}
 
 	@Override
-	public List<EventParticipantDto> getByUuids(List<String> uuids) {
-		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return eventParticipantService.getByUuids(uuids).stream().map(c -> convertToDto(c, pseudonymizer)).collect(Collectors.toList());
+	protected void selectDtoFields(CriteriaQuery<EventParticipantDto> cq, Root<EventParticipant> root) {
+
 	}
 
 	@Override
 	public EventParticipantDto getEventParticipantByUuid(String uuid) {
-		return convertToDto(eventParticipantService.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
+		return convertToDto(service.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
 	}
 
 	@Override
@@ -254,14 +323,22 @@ public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventPar
 	}
 
 	@Override
-	public EventParticipantDto saveEventParticipant(@Valid EventParticipantDto dto) {
+	@RolesAllowed({
+		UserRight._EVENTPARTICIPANT_CREATE,
+		UserRight._EVENTPARTICIPANT_EDIT })
+	public EventParticipantDto save(@Valid @NotNull EventParticipantDto dto) {
 		return saveEventParticipant(dto, true, true);
 	}
 
+	@RolesAllowed({
+		UserRight._EVENTPARTICIPANT_CREATE,
+		UserRight._EVENTPARTICIPANT_EDIT })
 	public EventParticipantDto saveEventParticipant(@Valid EventParticipantDto dto, boolean checkChangeDate, boolean internal) {
-		EventParticipant existingParticipant = dto.getUuid() != null ? eventParticipantService.getByUuid(dto.getUuid()) : null;
+		EventParticipant existingParticipant = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 
-		if (internal && existingParticipant != null && !eventParticipantService.isEventParticipantEditAllowed(existingParticipant)) {
+		if (internal
+			&& existingParticipant != null
+			&& !service.isEventParticipantEditAllowed(existingParticipant).equals(EditPermissionType.ALLOWED)) {
 			throw new AccessDeniedException(I18nProperties.getString(Strings.errorEventParticipantNotEditable));
 		}
 
@@ -284,8 +361,8 @@ public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventPar
 
 		validate(dto);
 
-		EventParticipant entity = fromDto(dto, checkChangeDate);
-		eventParticipantService.ensurePersisted(entity);
+		EventParticipant entity = fillOrBuildEntity(dto, existingParticipant, checkChangeDate);
+		service.ensurePersisted(entity);
 
 		if (existingParticipant == null) {
 			// The Event Participant is newly created, let's check if the related person is related to other events
@@ -293,11 +370,12 @@ public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventPar
 			notifyEventResponsibleUsersOfCommonEventParticipant(entity, event);
 		}
 
-		onEventParticipantChanged(EventFacadeEjbLocal.toDto(entity.getEvent()), existingDto, entity, internal);
+		onEventParticipantChanged(eventFacade.toDto(entity.getEvent()), existingDto, entity, internal);
 
 		return convertToDto(entity, pseudonymizer);
 	}
 
+	@PermitAll
 	public void onEventParticipantChanged(
 		EventDto event,
 		EventParticipantDto existingEventParticipant,
@@ -313,36 +391,39 @@ public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventPar
 
 	private void notifyEventResponsibleUsersOfCommonEventParticipant(EventParticipant eventParticipant, Event event) {
 		try {
-			messagingService.sendMessages(() -> {
 
-				final Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
-				final Map<String, Optional<User>> responsibleUserByEventUuid =
-					eventService.getAllEventUuidsWithResponsibleUserByPersonAndDiseaseAfterDateForNotification(
-						eventParticipant.getPerson().getUuid(),
-						event.getDisease(),
-						fromDate);
-				if (responsibleUserByEventUuid.size() == 1 && responsibleUserByEventUuid.containsKey(event.getUuid())) {
-					// it means the event participant is only appearing into the current event
-					return new HashMap<>();
-				}
+			notificationService.sendNotifications(
+				NotificationType.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS,
+				MessageSubject.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS,
+				() -> {
 
-				final Map<User, String> mapToReturn = new HashMap<>();
-				for (Map.Entry<String, Optional<User>> entry : responsibleUserByEventUuid.entrySet()) {
-					entry.getValue().filter(user -> StringUtils.isNotEmpty(user.getUserEmail())).ifPresent(user -> {
-						mapToReturn.put(
-							user,
-							String.format(
+					final Date fromDate = Date.from(Instant.now().minus(Duration.ofDays(30)));
+					final Map<String, Optional<User>> responsibleUserByEventUuid =
+						eventService.getAllEventUuidsWithResponsibleUserByPersonAndDiseaseAfterDateForNotification(
+							eventParticipant.getPerson().getUuid(),
+							event.getDisease(),
+							fromDate);
+					if (responsibleUserByEventUuid.size() == 1 && responsibleUserByEventUuid.containsKey(event.getUuid())) {
+						// it means the event participant is only appearing into the current event
+						return new HashMap<>();
+					}
+
+					final Map<User, String> mapToReturn = new HashMap<>();
+					for (Map.Entry<String, Optional<User>> entry : responsibleUserByEventUuid.entrySet()) {
+						entry.getValue().filter(user -> StringUtils.isNotEmpty(user.getUserEmail())).ifPresent(user -> {
+							String message = String.format(
 								I18nProperties.getString(MessageContents.CONTENT_EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS),
 								DataHelper.getShortUuid(eventParticipant.getPerson().getUuid()),
 								DataHelper.getShortUuid(eventParticipant.getUuid()),
 								DataHelper.getShortUuid(event.getUuid()),
 								User.buildCaptionForNotification(event.getResponsibleUser()),
 								User.buildCaptionForNotification(userService.getCurrentUser()),
-								buildEventListContentForNotification(responsibleUserByEventUuid)));
-					});
-				}
-				return mapToReturn;
-			}, MessageSubject.EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS, MessageType.EMAIL, MessageType.SMS);
+								buildEventListContentForNotification(responsibleUserByEventUuid));
+							mapToReturn.put(user, message);
+						});
+					}
+					return mapToReturn;
+				});
 		} catch (NotificationDeliveryFailedException e) {
 			logger.error(
 				String.format(
@@ -374,21 +455,10 @@ public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventPar
 	}
 
 	@Override
-	public void deleteEventParticipant(EventParticipantReferenceDto eventParticipantRef) {
-
-		if (!userService.hasRight(UserRight.EVENTPARTICIPANT_DELETE)) {
-			throw new UnsupportedOperationException("Your user is not allowed to delete event participants");
-		}
-
-		EventParticipant eventParticipant = eventParticipantService.getByReferenceDto(eventParticipantRef);
-		eventParticipantService.delete(eventParticipant);
-	}
-
-	@Override
-	public EventParticipantDto getByUuid(String uuid) {
-		return convertToDto(
-			eventParticipantService.getByUuid(uuid),
-			Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue)));
+	@RolesAllowed(UserRight._EVENTPARTICIPANT_DELETE)
+	public void delete(String uuid) throws ExternalSurveillanceToolException {
+		EventParticipant eventParticipant = service.getByUuid(uuid);
+		service.delete(eventParticipant);
 	}
 
 	@Override
@@ -406,7 +476,7 @@ public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventPar
 		final CriteriaQuery<EventParticipantIndexDto> cq = cb.createQuery(EventParticipantIndexDto.class);
 		final Root<EventParticipant> eventParticipant = cq.from(EventParticipant.class);
 		final EventParticipantQueryContext queryContext = new EventParticipantQueryContext(cb, cq, eventParticipant);
-		EventParticipantJoins<EventParticipant> joins = (EventParticipantJoins<EventParticipant>) queryContext.getJoins();
+		EventParticipantJoins joins = queryContext.getJoins();
 
 		Join<EventParticipant, Person> person = joins.getPerson();
 		Join<EventParticipant, Case> resultingCase = joins.getResultingCase();
@@ -414,12 +484,11 @@ public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventPar
 		final Join<EventParticipant, Sample> samples = eventParticipant.join(EventParticipant.SAMPLES, JoinType.LEFT);
 		samples.on(
 			cb.and(
-				cb.isFalse(samples.get(CoreAdo.DELETED)),
+				cb.isFalse(samples.get(DeletableAdo.DELETED)),
 				cb.equal(samples.get(Sample.ASSOCIATED_EVENT_PARTICIPANT), eventParticipant.get(AbstractDomainObject.ID))));
 
-		Expression<Object> inJurisdictionSelector = JurisdictionHelper.booleanSelector(cb, eventParticipantService.inJurisdiction(queryContext));
-		Expression<Object> inJurisdictionOrOwnedSelector =
-			JurisdictionHelper.booleanSelector(cb, eventParticipantService.inJurisdictionOrOwned(queryContext));
+		Expression<Object> inJurisdictionSelector = JurisdictionHelper.booleanSelector(cb, service.inJurisdiction(queryContext));
+		Expression<Object> inJurisdictionOrOwnedSelector = JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(queryContext));
 		cq.multiselect(
 			eventParticipant.get(EventParticipant.UUID),
 			person.get(Person.UUID),
@@ -457,7 +526,7 @@ public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventPar
 			inJurisdictionSelector,
 			inJurisdictionOrOwnedSelector);
 
-		Predicate filter = eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, queryContext);
+		Predicate filter = service.buildCriteriaFilter(eventParticipantCriteria, queryContext);
 
 		if (eventParticipantCriteria.getPathogenTestResult() != null) {
 			filter = CriteriaBuilderHelper
@@ -535,10 +604,10 @@ public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventPar
 			event.get(Event.EVENT_STATUS),
 			event.get(Event.DISEASE),
 			event.get(Event.EVENT_TITLE),
-			JurisdictionHelper.booleanSelector(cb, eventParticipantService.inJurisdictionOrOwned(queryContext)));
+			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(queryContext)));
 
-		Predicate filter = CriteriaBuilderHelper
-			.and(cb, eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, queryContext), cb.isFalse(event.get(Event.DELETED)));
+		Predicate filter =
+			CriteriaBuilderHelper.and(cb, service.buildCriteriaFilter(eventParticipantCriteria, queryContext), cb.isFalse(event.get(Event.DELETED)));
 
 		cq.where(filter);
 		cq.orderBy(cb.desc(eventParticipant.get(EventParticipant.CREATION_DATE)));
@@ -564,7 +633,7 @@ public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventPar
 		CriteriaQuery<EventParticipantExportDto> cq = cb.createQuery(EventParticipantExportDto.class);
 		Root<EventParticipant> eventParticipant = cq.from(EventParticipant.class);
 		EventParticipantQueryContext eventParticipantQueryContext = new EventParticipantQueryContext(cb, cq, eventParticipant);
-		EventParticipantJoins<EventParticipant> joins = (EventParticipantJoins<EventParticipant>) eventParticipantQueryContext.getJoins();
+		EventParticipantJoins joins = eventParticipantQueryContext.getJoins();
 
 		Join<EventParticipant, Person> person = joins.getPerson();
 
@@ -586,7 +655,7 @@ public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventPar
 			eventParticipant.get(EventParticipant.UUID),
 			person.get(Person.NATIONAL_HEALTH_ID),
 			person.get(Location.ID),
-			JurisdictionHelper.booleanSelector(cb, eventParticipantService.inJurisdictionOrOwned(eventParticipantQueryContext)),
+			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(eventParticipantQueryContext)),
 
 			event.get(Event.UUID),
 
@@ -642,7 +711,7 @@ public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventPar
 			citizenship.get(Country.DEFAULT_NAME),
 			eventParticipant.get(EventParticipant.VACCINATION_STATUS));
 
-		Predicate filter = eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, eventParticipantQueryContext);
+		Predicate filter = service.buildCriteriaFilter(eventParticipantCriteria, eventParticipantQueryContext);
 		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, eventParticipant.get(EventParticipant.UUID));
 		cq.where(filter);
 
@@ -734,16 +803,16 @@ public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventPar
 							epImmunizations.stream().filter(i -> i.getDisease() == exportDto.getEventDisease()).collect(Collectors.toList());
 						filteredImmunizations.sort(Comparator.comparing(i -> ImmunizationEntityHelper.getDateForComparison(i, false)));
 						Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
-						exportDto.setVaccinationDoses(String.valueOf(mostRecentImmunization.getNumberOfDoses()));
+						Integer numberOfDoses = mostRecentImmunization.getNumberOfDoses();
 
-						if (CollectionUtils.isNotEmpty(mostRecentImmunization.getVaccinations())) {
-							List<Vaccination> sortedVaccinations = mostRecentImmunization.getVaccinations()
-								.stream()
-								.sorted(Comparator.comparing(ImmunizationEntityHelper::getVaccinationDateForComparison))
-								.collect(Collectors.toList());
-							Vaccination firstVaccination = sortedVaccinations.get(0);
-							Vaccination lastVaccination = sortedVaccinations.get(sortedVaccinations.size() - 1);
+						List<Vaccination> relevantSortedVaccinations =
+							getRelevantSortedVaccinations(exportDto.getEventUuid(), mostRecentImmunization.getVaccinations());
+						Vaccination firstVaccination = null;
+						Vaccination lastVaccination = null;
 
+						if (CollectionUtils.isNotEmpty(relevantSortedVaccinations)) {
+							firstVaccination = relevantSortedVaccinations.get(0);
+							lastVaccination = relevantSortedVaccinations.get(relevantSortedVaccinations.size() - 1);
 							exportDto.setFirstVaccinationDate(firstVaccination.getVaccinationDate());
 							exportDto.setLastVaccinationDate(lastVaccination.getVaccinationDate());
 							exportDto.setVaccineName(lastVaccination.getVaccineName());
@@ -756,6 +825,9 @@ public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventPar
 							exportDto.setVaccineUniiCode(lastVaccination.getVaccineUniiCode());
 							exportDto.setVaccineInn(lastVaccination.getVaccineInn());
 						}
+
+						exportDto.setVaccinationDoses(
+							numberOfDoses != null ? String.valueOf(numberOfDoses) : getNumberOfDosesFromVaccinations(lastVaccination));
 					});
 				}
 
@@ -781,7 +853,7 @@ public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventPar
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<EventParticipant> root = cq.from(EventParticipant.class);
-		Predicate filter = eventParticipantService.buildCriteriaFilter(eventParticipantCriteria, new EventParticipantQueryContext(cb, cq, root));
+		Predicate filter = service.buildCriteriaFilter(eventParticipantCriteria, new EventParticipantQueryContext(cb, cq, root));
 		cq.where(filter);
 		cq.select(cb.count(root));
 		return em.createQuery(cq).getSingleResult();
@@ -831,36 +903,32 @@ public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventPar
 	}
 
 	@Override
-	public boolean exists(String uuid) {
-		return eventParticipantService.exists(uuid);
-	}
-
-	@Override
 	public boolean exists(String personUuid, String eventUuid) {
-		return eventParticipantService.exists(
+		return service.exists(
 			(cb, root, cq) -> cb.and(
+				cb.isFalse(root.get(EventParticipant.DELETED)),
 				cb.equal(root.get(EventParticipant.PERSON).get(AbstractDomainObject.UUID), personUuid),
 				cb.equal(root.get(EventParticipant.EVENT).get(AbstractDomainObject.UUID), eventUuid)));
 	}
 
 	@Override
 	public EventParticipantReferenceDto getReferenceByUuid(String uuid) {
-		EventParticipant eventParticipant = eventParticipantService.getByUuid(uuid);
+		EventParticipant eventParticipant = service.getByUuid(uuid);
 		return new EventParticipantReferenceDto(eventParticipant.getUuid());
 	}
 
 	@Override
 	public EventParticipantReferenceDto getReferenceByEventAndPerson(String eventUuid, String personUuid) {
-		return Optional.ofNullable(eventParticipantService.getByEventAndPerson(eventUuid, personUuid))
+		return Optional.ofNullable(service.getByEventAndPerson(eventUuid, personUuid))
 			.map(eventParticipant -> new EventParticipantReferenceDto(eventParticipant.getUuid()))
 			.orElse(null);
 	}
 
 	@Override
-	public boolean isEventParticipantEditAllowed(String uuid) {
-		EventParticipant eventParticipant = eventParticipantService.getByUuid(uuid);
+	public EditPermissionType isEventParticipantEditAllowed(String uuid) {
+		EventParticipant eventParticipant = service.getByUuid(uuid);
 
-		return eventParticipantService.isEventParticipantEditAllowed(eventParticipant);
+		return service.isEventParticipantEditAllowed(eventParticipant);
 	}
 
 	@Override
@@ -870,15 +938,14 @@ public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventPar
 			return null;
 		}
 
-		return eventParticipantService.getFirst(criteria)
+		return service.getFirst(criteria)
 			.map(e -> convertToDto(e, Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue))))
 			.orElse(null);
 	}
 
-	public EventParticipant fromDto(@NotNull EventParticipantDto source, boolean checkChangeDate) {
+	public EventParticipant fillOrBuildEntity(@NotNull EventParticipantDto source, EventParticipant target, boolean checkChangeDate) {
 
-		EventParticipant target =
-			DtoHelper.fillOrBuildEntity(source, eventParticipantService.getByUuid(source.getUuid()), EventParticipant::new, checkChangeDate);
+		target = DtoHelper.fillOrBuildEntity(source, target, EventParticipant::new, checkChangeDate);
 
 		target.setReportingUser(userService.getByReferenceDto(source.getReportingUser()));
 		target.setEvent(eventService.getByReferenceDto(source.getEvent()));
@@ -897,52 +964,35 @@ public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventPar
 		return target;
 	}
 
-	public EventParticipantDto convertToDto(EventParticipant source, Pseudonymizer pseudonymizer) {
-		EventParticipantDto dto = toDto(source);
-		pseudonymizeDto(source, dto, pseudonymizer);
-
-		return dto;
-	}
-
-	private void pseudonymizeDto(EventParticipant source, EventParticipantDto dto, Pseudonymizer pseudonymizer) {
+	protected void pseudonymizeDto(EventParticipant source, EventParticipantDto dto, Pseudonymizer pseudonymizer) {
 
 		if (source != null) {
 			validate(dto);
 
-			boolean inJurisdiction = eventParticipantService.inJurisdictionOrOwned(source);
+			boolean inJurisdiction = service.inJurisdictionOrOwned(source);
 
 			pseudonymizer.pseudonymizeDto(EventParticipantDto.class, dto, inJurisdiction, null);
 			dto.getPerson().getAddresses().forEach(l -> pseudonymizer.pseudonymizeDto(LocationDto.class, l, inJurisdiction, null));
 		}
 	}
 
-	private void restorePseudonymizedDto(
+	protected void restorePseudonymizedDto(
 		EventParticipantDto dto,
 		EventParticipantDto originalDto,
 		EventParticipant originalEventParticipant,
 		Pseudonymizer pseudonymizer) {
 
 		if (originalDto != null) {
-			pseudonymizer.restorePseudonymizedValues(
-				EventParticipantDto.class,
-				dto,
-				originalDto,
-				eventParticipantService.inJurisdictionOrOwned(originalEventParticipant));
+			pseudonymizer
+				.restorePseudonymizedValues(EventParticipantDto.class, dto, originalDto, service.inJurisdictionOrOwned(originalEventParticipant));
 		}
 	}
 
-	public static EventParticipantReferenceDto toReferenceDto(EventParticipant entity) {
-
-		if (entity == null) {
-			return null;
-		}
-
-		Person person = entity.getPerson();
-
-		return new EventParticipantReferenceDto(entity.getUuid(), person.getFirstName(), person.getFirstName());
+	public EventParticipantDto toDto(EventParticipant source) {
+		return toEventParticipantDto(source);
 	}
 
-	public static EventParticipantDto toDto(EventParticipant source) {
+	public static EventParticipantDto toEventParticipantDto(EventParticipant source) {
 
 		if (source == null) {
 			return null;
@@ -965,10 +1015,9 @@ public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventPar
 		return target;
 	}
 
-	@LocalBean
-	@Stateless
-	public static class EventParticipantFacadeEjbLocal extends EventParticipantFacadeEjb {
-
+	@Override
+	public EventParticipantReferenceDto toRefDto(EventParticipant eventParticipant) {
+		return toReferenceDto(eventParticipant);
 	}
 
 	@Override
@@ -985,13 +1034,13 @@ public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventPar
 			return Collections.emptyList();
 		}
 
-		return eventParticipantService.getAllActiveByEvent(event).stream().map(e -> toDto(e)).collect(Collectors.toList());
+		return service.getAllActiveByEvent(event).stream().map(e -> toDto(e)).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<EventParticipantDto> getByEventUuids(List<String> eventUuids) {
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight);
-		return eventParticipantService.getByEventUuids(eventUuids).stream().map(e -> convertToDto(e, pseudonymizer)).collect(Collectors.toList());
+		return service.getByEventUuids(eventUuids).stream().map(e -> convertToDto(e, pseudonymizer)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -1005,8 +1054,8 @@ public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventPar
 		Join<Object, Object> personJoin = eventParticipantRoot.join(EventParticipant.PERSON, JoinType.LEFT);
 		Join<Object, Object> eventJoin = eventParticipantRoot.join(EventParticipant.EVENT, JoinType.LEFT);
 
-		Expression<Object> jurisdictionSelector = JurisdictionHelper
-			.booleanSelector(cb, eventParticipantService.inJurisdictionOrOwned(new EventParticipantQueryContext(cb, cq, eventParticipantRoot)));
+		Expression<Object> jurisdictionSelector =
+			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(new EventParticipantQueryContext(cb, cq, eventParticipantRoot)));
 		cq.multiselect(
 			eventParticipantRoot.get(EventParticipant.UUID),
 			personJoin.get(Person.FIRST_NAME),
@@ -1028,8 +1077,8 @@ public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventPar
 			eventJoin.get(Event.START_DATE),
 			jurisdictionSelector);
 
-		final Predicate defaultFilter = eventParticipantService.createDefaultFilter(cb, eventParticipantRoot);
-		final Predicate userFilter = eventParticipantService.createUserFilter(cb, cq, eventParticipantRoot);
+		final Predicate defaultFilter = service.createDefaultFilter(cb, eventParticipantRoot);
+		final Predicate userFilter = service.createUserFilter(cb, cq, eventParticipantRoot);
 
 		final PersonReferenceDto person = criteria.getPerson();
 		final Predicate samePersonFilter = person != null ? cb.equal(personJoin.get(Person.UUID), person.getUuid()) : null;
@@ -1063,7 +1112,7 @@ public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventPar
 
 	@Override
 	public List<EventParticipantDto> getByPersonUuids(List<String> personUuids) {
-		return eventParticipantService.getByPersonUuids(personUuids).stream().map(EventParticipantFacadeEjb::toDto).collect(Collectors.toList());
+		return service.getByPersonUuids(personUuids).stream().map(ep -> toDto(ep)).collect(Collectors.toList());
 	}
 
 	@Override
@@ -1077,16 +1126,37 @@ public class EventParticipantFacadeEjb extends AbstractCoreEntityFacade<EventPar
 		cq.where(cb.and(cb.equal(eventJoin.get(Event.UUID), eventUuid), cb.in(personJoin.get(EventParticipant.UUID)).value(personUuids)));
 
 		List<EventParticipant> resultList = em.createQuery(cq).getResultList();
-		return resultList.stream().map(EventParticipantFacadeEjb::toDto).collect(Collectors.toList());
+		return resultList.stream().map(ep -> toDto(ep)).collect(Collectors.toList());
 	}
 
 	@Override
-	public AutomaticDeletionInfoDto getAutomaticDeletionInfo(String uuid) {
-		return getAutomaticDeletionInfo(uuid, CoreEntityType.EVENT_PARTICIPANT);
+	@RolesAllowed(UserRight._EVENTPARTICIPANT_ARCHIVE)
+	public void archive(String entityUuid, Date endOfProcessingDate) {
+		super.archive(entityUuid, endOfProcessingDate);
 	}
 
 	@Override
-	protected void delete(EventParticipant entity) {
-		eventParticipantService.delete(entity);
+	@RolesAllowed(UserRight._EVENTPARTICIPANT_ARCHIVE)
+	public void dearchive(List<String> entityUuids, String dearchiveReason) {
+		super.dearchive(entityUuids, dearchiveReason);
 	}
+
+	@LocalBean
+	@Stateless
+	public static class EventParticipantFacadeEjbLocal extends EventParticipantFacadeEjb {
+
+		public EventParticipantFacadeEjbLocal() {
+		}
+
+		@Inject
+		public EventParticipantFacadeEjbLocal(EventParticipantService service, UserService userService) {
+			super(service, userService);
+		}
+	}
+
+	@Override
+	protected CoreEntityType getCoreEntityType() {
+		return CoreEntityType.EVENT_PARTICIPANT;
+	}
+
 }

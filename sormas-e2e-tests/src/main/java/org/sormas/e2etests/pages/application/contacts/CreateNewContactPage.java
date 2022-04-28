@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -65,12 +65,16 @@ public class CreateNewContactPage {
   public static final By MULTI_DAY_CONTACT_LABEL = By.xpath("//*[@id='multiDayContact']/label");
   public static final By FIRST_DAY_CONTACT_DATE = By.cssSelector("#firstContactDate input");
   public static final By CHOOSE_CASE_BUTTON = By.id("contactChooseCase");
+  public static final By SOURCE_CASE_WINDOW_CONTACT_DE =
+      By.xpath("//div[contains(@class, 'popupContent')]//input[@placeholder='Suche...']");
   public static final By SOURCE_CASE_WINDOW_CONTACT =
       By.xpath("//div[contains(@class, 'popupContent')]//input[@placeholder='Search...']");
-
   public static final By SOURCE_CASE_CONTACT_WINDOW_FIRST_RESULT_OPTION =
       By.xpath("//div[contains(@class, 'popupContent')]//table//tbody//tr[1]");
   public static final By SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON =
       By.xpath(
           "//div[contains(@class, 'popupContent')]//span[contains(text(), 'Confirm')]//ancestor::div[@id='commit']");
+  public static final By SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON_DE =
+      By.xpath(
+          "//div[contains(@class, 'popupContent')]//span[contains(text(), 'Best\u00E4tigen')]//ancestor::div[@id='commit']");
 }

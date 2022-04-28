@@ -22,6 +22,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -35,6 +36,7 @@ import de.symeda.sormas.api.outbreak.OutbreakCriteria;
 import de.symeda.sormas.api.outbreak.OutbreakDto;
 import de.symeda.sormas.api.outbreak.OutbreakFacade;
 import de.symeda.sormas.api.user.UserReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.SortProperty;
 import de.symeda.sormas.backend.infrastructure.district.DistrictFacadeEjb;
 import de.symeda.sormas.backend.infrastructure.district.DistrictService;
@@ -44,6 +46,7 @@ import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "OutbreakFacade")
+@RolesAllowed(UserRight._OUTBREAK_VIEW)
 public class OutbreakFacadeEjb implements OutbreakFacade {
 
 	@EJB
@@ -108,6 +111,9 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._CASE_VIEW,
+		UserRight._OUTBREAK_VIEW })
 	public boolean hasOutbreak(DistrictReferenceDto district, Disease disease) {
 
 		Long count = outbreakService.countByCriteria(new OutbreakCriteria().district(district).disease(disease).active(true), null);
@@ -115,6 +121,7 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 	}
 
 	@Override
+	@RolesAllowed(UserRight._OUTBREAK_EDIT)
 	public OutbreakDto startOutbreak(DistrictReferenceDto district, Disease disease) {
 
 		OutbreakDto outbreak = getActiveByDistrictAndDisease(district, disease);
@@ -130,6 +137,7 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 	}
 
 	@Override
+	@RolesAllowed(UserRight._OUTBREAK_EDIT)
 	public OutbreakDto endOutbreak(DistrictReferenceDto district, Disease disease) {
 
 		OutbreakDto outbreak = getActiveByDistrictAndDisease(district, disease);
@@ -141,18 +149,21 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 	}
 
 	@Override
+	@RolesAllowed(UserRight._OUTBREAK_EDIT)
 	public OutbreakDto saveOutbreak(@Valid OutbreakDto outbreakDto) {
-
+		final User currentUser = userService.getCurrentUser();
+		outbreakDto.setReportingUser(currentUser.toReference());
 		Outbreak outbreak = fromDto(outbreakDto, true);
 		outbreakService.ensurePersisted(outbreak);
 		return toDto(outbreak);
 	}
 
 	@Override
+	@RolesAllowed(UserRight._OUTBREAK_EDIT)
 	public void deleteOutbreak(OutbreakDto outbreakDto) {
 
 		Outbreak outbreak = outbreakService.getByUuid(outbreakDto.getUuid());
-		outbreakService.delete(outbreak);
+		outbreakService.deletePermanent(outbreak);
 	}
 
 	public Outbreak fromDto(OutbreakDto source, boolean checkChangeDate) {
@@ -191,6 +202,9 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 		return target;
 	}
 
+	@RolesAllowed({
+		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
+		UserRight._DASHBOARD_CONTACT_VIEW })
 	public Map<Disease, Long> getOutbreakDistrictCountByDisease(OutbreakCriteria criteria) {
 		User user = userService.getCurrentUser();
 
@@ -198,6 +212,9 @@ public class OutbreakFacadeEjb implements OutbreakFacade {
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
+		UserRight._DASHBOARD_CONTACT_VIEW })
 	public Long getOutbreakDistrictCount(OutbreakCriteria criteria) {
 		User user = userService.getCurrentUser();
 

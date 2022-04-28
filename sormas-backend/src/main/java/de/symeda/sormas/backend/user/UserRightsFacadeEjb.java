@@ -1,6 +1,6 @@
 /*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
@@ -15,7 +15,6 @@
 
 package de.symeda.sormas.backend.user;
 
-import java.awt.*;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.nio.file.Files;
@@ -73,7 +72,7 @@ public class UserRightsFacadeEjb implements UserRightsFacade {
 		}
 
 		try (OutputStream fos = Files.newOutputStream(documentPath)) {
-			generateUserRightsDocument(withDbOverrides ? userRoleConfigFacade.getAllAsMap() : new HashMap<>(0), fos);
+			generateUserRightsDocument(withDbOverrides ? userRoleConfigFacade.getUserRoleRights() : new HashMap<>(0), fos);
 		} catch (IOException e) {
 			Files.deleteIfExists(documentPath);
 			throw e;
@@ -89,31 +88,36 @@ public class UserRightsFacadeEjb implements UserRightsFacade {
 		String safeName = WorkbookUtil.createSafeSheetName(I18nProperties.getCaption(Captions.userRights));
 		XSSFSheet sheet = workbook.createSheet(safeName);
 
+		// Define colors
+		final XSSFColor green = XssfHelper.createColor(0, 153, 0);
+		final XSSFColor red = XssfHelper.createColor(255, 0, 0);
+		final XSSFColor black = XssfHelper.createColor(0, 0, 0);
+
 		// Initialize cell styles
 		// Authorized style
 		XSSFCellStyle authorizedStyle = workbook.createCellStyle();
 		authorizedStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-		authorizedStyle.setFillForegroundColor(new XSSFColor(new Color(0, 153, 0)));
+		authorizedStyle.setFillForegroundColor(green);
 		authorizedStyle.setBorderBottom(BorderStyle.THIN);
 		authorizedStyle.setBorderLeft(BorderStyle.THIN);
 		authorizedStyle.setBorderTop(BorderStyle.THIN);
 		authorizedStyle.setBorderRight(BorderStyle.THIN);
-		authorizedStyle.setBorderColor(BorderSide.BOTTOM, new XSSFColor(Color.BLACK));
-		authorizedStyle.setBorderColor(BorderSide.LEFT, new XSSFColor(Color.BLACK));
-		authorizedStyle.setBorderColor(BorderSide.TOP, new XSSFColor(Color.BLACK));
-		authorizedStyle.setBorderColor(BorderSide.RIGHT, new XSSFColor(Color.BLACK));
+		authorizedStyle.setBorderColor(BorderSide.BOTTOM, black);
+		authorizedStyle.setBorderColor(BorderSide.LEFT, black);
+		authorizedStyle.setBorderColor(BorderSide.TOP, black);
+		authorizedStyle.setBorderColor(BorderSide.RIGHT, black);
 		// Unauthorized style
 		XSSFCellStyle unauthorizedStyle = workbook.createCellStyle();
 		unauthorizedStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-		unauthorizedStyle.setFillForegroundColor(new XSSFColor(Color.RED));
+		unauthorizedStyle.setFillForegroundColor(red);
 		unauthorizedStyle.setBorderBottom(BorderStyle.THIN);
 		unauthorizedStyle.setBorderLeft(BorderStyle.THIN);
 		unauthorizedStyle.setBorderTop(BorderStyle.THIN);
 		unauthorizedStyle.setBorderRight(BorderStyle.THIN);
-		unauthorizedStyle.setBorderColor(BorderSide.BOTTOM, new XSSFColor(Color.BLACK));
-		unauthorizedStyle.setBorderColor(BorderSide.LEFT, new XSSFColor(Color.BLACK));
-		unauthorizedStyle.setBorderColor(BorderSide.TOP, new XSSFColor(Color.BLACK));
-		unauthorizedStyle.setBorderColor(BorderSide.RIGHT, new XSSFColor(Color.BLACK));
+		unauthorizedStyle.setBorderColor(BorderSide.BOTTOM, black);
+		unauthorizedStyle.setBorderColor(BorderSide.LEFT, black);
+		unauthorizedStyle.setBorderColor(BorderSide.TOP, black);
+		unauthorizedStyle.setBorderColor(BorderSide.RIGHT, black);
 		// Bold style
 		XSSFFont boldFont = workbook.createFont();
 		boldFont.setBold(true);
@@ -127,17 +131,22 @@ public class UserRightsFacadeEjb implements UserRightsFacade {
 		Cell userRightHeadlineCell = headerRow.createCell(0);
 		userRightHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.userRight));
 		userRightHeadlineCell.setCellStyle(boldStyle);
-		Cell descHeadlineCell = headerRow.createCell(1);
+		Cell captionHeadlineCell = headerRow.createCell(1);
+		captionHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRight_caption));
+		captionHeadlineCell.setCellStyle(boldStyle);
+		Cell descHeadlineCell = headerRow.createCell(2);
 		descHeadlineCell.setCellValue(I18nProperties.getCaption(Captions.UserRight_description));
 		descHeadlineCell.setCellStyle(boldStyle);
 		sheet.setColumnWidth(0, 256 * 35);
 		sheet.setColumnWidth(1, 256 * 50);
+		sheet.setColumnWidth(2, 256 * 75);
+		sheet.createFreezePane(2,2,2,2);
 		for (UserRole userRole : UserRole.values()) {
 			String columnCaption = userRole.toString();
-			Cell headerCell = headerRow.createCell(userRole.ordinal() + 2);
+			Cell headerCell = headerRow.createCell(userRole.ordinal() + 3);
 			headerCell.setCellValue(columnCaption);
 			headerCell.setCellStyle(boldStyle);
-			sheet.setColumnWidth(userRole.ordinal() + 2, 256 * 14);
+			sheet.setColumnWidth(userRole.ordinal() + 3, 256 * 14);
 		}
 
 		// Jurisdiction row (header)
@@ -150,7 +159,7 @@ public class UserRightsFacadeEjb implements UserRightsFacade {
 		jurDescHeadlineCell.setCellStyle(boldStyle);
 		for (UserRole userRole : UserRole.values()) {
 			final String columnCaption = userRole.getJurisdictionLevel().toString();
-			final Cell headerCell = jurisdictionRow.createCell(userRole.ordinal() + 2);
+			final Cell headerCell = jurisdictionRow.createCell(userRole.ordinal() + 3);
 			headerCell.setCellValue(columnCaption);
 			headerCell.setCellStyle(boldStyle);
 		}
@@ -164,13 +173,17 @@ public class UserRightsFacadeEjb implements UserRightsFacade {
 			nameCell.setCellValue(userRight.name());
 			nameCell.setCellStyle(boldStyle);
 
+			// User right caption
+			Cell captionCell = row.createCell(1);
+			captionCell.setCellValue(userRight.toString());
+
 			// User right description
-			Cell descCell = row.createCell(1);
-			descCell.setCellValue(userRight.toString());
+			Cell descCell = row.createCell(2);
+			descCell.setCellValue(userRight.getDescription());
 
 			// Add styled cells for all user roles
 			for (UserRole userRole : UserRole.values()) {
-				Cell roleRightCell = row.createCell(userRole.ordinal() + 2);
+				Cell roleRightCell = row.createCell(userRole.ordinal() + 3);
 				if (userRoleRights.containsKey(userRole) && userRoleRights.get(userRole).contains(userRight) || userRole.hasDefaultRight(userRight)) {
 					roleRightCell.setCellStyle(authorizedStyle);
 					roleRightCell.setCellValue(I18nProperties.getString(Strings.yes));

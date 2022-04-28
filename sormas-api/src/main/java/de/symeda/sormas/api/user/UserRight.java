@@ -1,6 +1,6 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -16,6 +16,12 @@
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
  *******************************************************************************/
 package de.symeda.sormas.api.user;
+
+import de.symeda.sormas.api.i18n.I18nProperties;
+import java.util.Arrays;
+import java.util.Collections;
+import java.util.EnumSet;
+import java.util.Set;
 
 import static de.symeda.sormas.api.user.UserRole.ADMIN;
 import static de.symeda.sormas.api.user.UserRole.ADMIN_SUPERVISOR;
@@ -39,17 +45,10 @@ import static de.symeda.sormas.api.user.UserRole.POE_INFORMANT;
 import static de.symeda.sormas.api.user.UserRole.POE_NATIONAL_USER;
 import static de.symeda.sormas.api.user.UserRole.POE_SUPERVISOR;
 import static de.symeda.sormas.api.user.UserRole.REST_EXTERNAL_VISITS_USER;
-import static de.symeda.sormas.api.user.UserRole.SORMAS_TO_SORMAS_CLIENT;
+import static de.symeda.sormas.api.user.UserRole.REST_USER;
 import static de.symeda.sormas.api.user.UserRole.STATE_OBSERVER;
 import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_OFFICER;
 import static de.symeda.sormas.api.user.UserRole.SURVEILLANCE_SUPERVISOR;
-
-import java.util.Arrays;
-import java.util.Collections;
-import java.util.EnumSet;
-import java.util.Set;
-
-import de.symeda.sormas.api.i18n.I18nProperties;
 
 public enum UserRight {
 
@@ -95,7 +94,8 @@ public enum UserRight {
 			COMMUNITY_INFORMANT,
 			LAB_USER,
 			EVENT_OFFICER,
-			COMMUNITY_OFFICER
+			COMMUNITY_OFFICER,
+			UserRole.SORMAS_TO_SORMAS_CLIENT
 	),
 	CASE_EDIT(
 			ADMIN,
@@ -229,6 +229,11 @@ public enum UserRight {
 	CASE_MERGE(
 			ADMIN,
 			ADMIN_SUPERVISOR
+	),
+	CASE_RESPONSIBLE(
+			SURVEILLANCE_SUPERVISOR,
+			ADMIN_SUPERVISOR,
+			SURVEILLANCE_OFFICER
 	),
 	IMMUNIZATION_VIEW(
 			ADMIN,
@@ -525,6 +530,9 @@ public enum UserRight {
 			LAB_USER
 
 	),
+	CONTACT_ARCHIVE(
+			ADMIN
+	),
 	CONTACT_ASSIGN(
 			ADMIN,
 			NATIONAL_USER,
@@ -587,6 +595,9 @@ public enum UserRight {
 	CONTACT_MERGE(
 		ADMIN,
 		ADMIN_SUPERVISOR
+	),
+	CONTACT_RESPONSIBLE(
+			CONTACT_OFFICER
 	),
 	MANAGE_EXTERNAL_SYMPTOM_JOURNAL(
 			NATIONAL_USER,
@@ -812,6 +823,13 @@ public enum UserRight {
 			NATIONAL_USER,
 			ADMIN_SUPERVISOR
 	),
+	EVENT_RESPONSIBLE(
+			SURVEILLANCE_SUPERVISOR,
+			SURVEILLANCE_OFFICER
+	),
+	EVENTPARTICIPANT_ARCHIVE(
+			ADMIN
+	),
 	EVENTPARTICIPANT_CREATE(
 			ADMIN,
 			NATIONAL_USER,
@@ -843,6 +861,29 @@ public enum UserRight {
 			SURVEILLANCE_OFFICER,
 			EVENT_OFFICER,
 			IMPORT_USER,
+			COMMUNITY_OFFICER
+	),
+	EVENTPARTICIPANT_VIEW(
+			ADMIN,
+			NATIONAL_USER,
+			NATIONAL_CLINICIAN,
+			NATIONAL_OBSERVER,
+			POE_NATIONAL_USER,
+			STATE_OBSERVER,
+			DISTRICT_OBSERVER,
+			SURVEILLANCE_SUPERVISOR,
+			ADMIN_SUPERVISOR,
+			SURVEILLANCE_OFFICER,
+			CASE_SUPERVISOR,
+			CASE_OFFICER,
+			CONTACT_SUPERVISOR,
+			CONTACT_OFFICER,
+			POE_SUPERVISOR,
+			POE_INFORMANT,
+			HOSPITAL_INFORMANT,
+			COMMUNITY_INFORMANT,
+			LAB_USER,
+			EVENT_OFFICER,
 			COMMUNITY_OFFICER
 	),
 	EVENTGROUP_CREATE(
@@ -933,26 +974,6 @@ public enum UserRight {
 			//			LAB_USER,
 			//			EVENT_OFFICER
 	),
-	CONFIGURATION_ACCESS(
-			ADMIN,
-			NATIONAL_USER,
-			NATIONAL_CLINICIAN,
-			NATIONAL_OBSERVER,
-			POE_NATIONAL_USER,
-			STATE_OBSERVER,
-			DISTRICT_OBSERVER,
-			SURVEILLANCE_SUPERVISOR,
-			ADMIN_SUPERVISOR,
-			POE_SUPERVISOR
-	),
-	OUTBREAK_CONFIGURE_ALL(
-			ADMIN,
-			NATIONAL_USER
-	),
-	OUTBREAK_CONFIGURE_RESTRICTED(
-			SURVEILLANCE_SUPERVISOR,
-			ADMIN_SUPERVISOR
-	),
 	SEND_MANUAL_EXTERNAL_MESSAGES(
 			ADMIN,
 			NATIONAL_USER
@@ -998,6 +1019,11 @@ public enum UserRight {
 		SURVEILLANCE_SUPERVISOR,
 		CONTACT_SUPERVISOR
 	),
+	PERFORM_BULK_OPERATIONS_EVENTPARTICIPANT(
+		ADMIN,
+		SURVEILLANCE_SUPERVISOR,
+		CONTACT_SUPERVISOR
+	),
 	MANAGE_PUBLIC_EXPORT_CONFIGURATION(
 			ADMIN,
 			ADMIN_SUPERVISOR,
@@ -1006,6 +1032,9 @@ public enum UserRight {
 	PERFORM_BULK_OPERATIONS_CASE_SAMPLES(
 			ADMIN,
 			ADMIN_SUPERVISOR
+	),
+	PERFORM_BULK_OPERATIONS_PSEUDONYM(
+			ADMIN
 	),
 	INFRASTRUCTURE_CREATE(
 			ADMIN
@@ -1041,10 +1070,7 @@ public enum UserRight {
 			ADMIN,
 			NATIONAL_USER
 	),
-	USER_RIGHTS_MANAGE(
-			ADMIN
-	),
-	DASHBOARD_SURVEILLANCE_ACCESS(
+	DASHBOARD_SURVEILLANCE_VIEW(
 			ADMIN,
 			NATIONAL_USER,
 			NATIONAL_CLINICIAN,
@@ -1062,7 +1088,7 @@ public enum UserRight {
 			CASE_OFFICER,
 			COMMUNITY_OFFICER
 	),
-	DASHBOARD_CONTACT_ACCESS(
+	DASHBOARD_CONTACT_VIEW(
 			ADMIN,
 			NATIONAL_USER,
 			NATIONAL_OBSERVER,
@@ -1080,7 +1106,7 @@ public enum UserRight {
 			DISTRICT_OBSERVER,
 			CONTACT_SUPERVISOR
 	),
-	DASHBOARD_CAMPAIGNS_ACCESS(
+	DASHBOARD_CAMPAIGNS_VIEW(
 			ADMIN,
 			NATIONAL_USER,
 			SURVEILLANCE_SUPERVISOR,
@@ -1095,7 +1121,7 @@ public enum UserRight {
 			COMMUNITY_INFORMANT,
 			COMMUNITY_OFFICER
 	),
-	CASE_MANAGEMENT_ACCESS(
+	CASE_CLINICIAN_VIEW(
 			ADMIN,
 			NATIONAL_CLINICIAN,
 			CASE_SUPERVISOR,
@@ -1227,9 +1253,6 @@ public enum UserRight {
 			NATIONAL_USER,
 			SURVEILLANCE_SUPERVISOR,
 			ADMIN_SUPERVISOR),
-	LINE_LISTING_CONFIGURE_NATION(
-			ADMIN,
-			NATIONAL_USER),
 	AGGREGATE_REPORT_VIEW(
 			ADMIN,
 			NATIONAL_USER,
@@ -1280,13 +1303,14 @@ public enum UserRight {
 			COMMUNITY_INFORMANT,
 			POE_INFORMANT,
 			REST_EXTERNAL_VISITS_USER,
-            SORMAS_TO_SORMAS_CLIENT,
+            UserRole.SORMAS_TO_SORMAS_CLIENT,
 			COMMUNITY_OFFICER,
-			LAB_USER
+			LAB_USER,
+			NATIONAL_CLINICIAN
 	),
 	SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION(
 			REST_EXTERNAL_VISITS_USER,
-            SORMAS_TO_SORMAS_CLIENT
+			UserRole.SORMAS_TO_SORMAS_CLIENT
 	),
 	SEE_SENSITIVE_DATA_IN_JURISDICTION(
 			SURVEILLANCE_SUPERVISOR,
@@ -1305,12 +1329,13 @@ public enum UserRight {
 			POE_INFORMANT,
 			LAB_USER,
 			REST_EXTERNAL_VISITS_USER,
-            SORMAS_TO_SORMAS_CLIENT,
-			COMMUNITY_OFFICER
+			UserRole.SORMAS_TO_SORMAS_CLIENT,
+			COMMUNITY_OFFICER,
+			NATIONAL_CLINICIAN
 	),
 	SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION(
 			REST_EXTERNAL_VISITS_USER,
-            SORMAS_TO_SORMAS_CLIENT
+			UserRole.SORMAS_TO_SORMAS_CLIENT
 	),
 	CAMPAIGN_VIEW(
       		ADMIN,
@@ -1504,8 +1529,236 @@ public enum UserRight {
 	),
 	EXPORT_DATA_PROTECTION_DATA(
 			ADMIN
+	),
+	OUTBREAK_VIEW(
+			ADMIN,
+			NATIONAL_USER,
+			NATIONAL_CLINICIAN,
+			NATIONAL_OBSERVER,
+			POE_NATIONAL_USER,
+			STATE_OBSERVER,
+			DISTRICT_OBSERVER,
+			SURVEILLANCE_SUPERVISOR,
+			ADMIN_SUPERVISOR,
+			POE_SUPERVISOR
+	),
+	OUTBREAK_EDIT(
+			ADMIN,
+			NATIONAL_USER,
+			SURVEILLANCE_SUPERVISOR,
+			ADMIN_SUPERVISOR
+	),
+	SORMAS_REST(
+			SURVEILLANCE_OFFICER,
+			HOSPITAL_INFORMANT,
+			COMMUNITY_OFFICER,
+			CASE_OFFICER,
+			CONTACT_OFFICER,
+			POE_INFORMANT,
+
+			REST_USER,
+			REST_EXTERNAL_VISITS_USER,
+			UserRole.SORMAS_TO_SORMAS_CLIENT,
+			BAG_USER
+	),
+	SORMAS_UI(
+			ADMIN,
+			ADMIN_SUPERVISOR,
+			SURVEILLANCE_SUPERVISOR,
+			CASE_SUPERVISOR,
+			CONTACT_SUPERVISOR,
+			EVENT_OFFICER,
+			LAB_USER,
+			EXTERNAL_LAB_USER,
+			NATIONAL_USER,
+			NATIONAL_OBSERVER,
+			STATE_OBSERVER,
+			DISTRICT_OBSERVER,
+			COMMUNITY_INFORMANT,
+			COMMUNITY_OFFICER,
+			NATIONAL_CLINICIAN,
+			HOSPITAL_INFORMANT,
+			POE_SUPERVISOR,
+			POE_NATIONAL_USER,
+			SURVEILLANCE_OFFICER,
+			CONTACT_OFFICER,
+			CASE_OFFICER
+	),
+	SORMAS_TO_SORMAS_CLIENT(
+			UserRole.SORMAS_TO_SORMAS_CLIENT
+	),
+	EXTERNAL_VISITS(
+			REST_EXTERNAL_VISITS_USER
+	),
+	DEV_MODE(
+			ADMIN
 	);
 	//@formatter:on
+
+	/*
+	 * Hint for SonarQube issues:
+	 * 1. java:S115: Violation of name convention for String constants of this class is accepted: Close as false positive.
+	 */
+	public static final String _SYSTEM = "SYSTEM";
+	public static final String _CASE_CREATE = "CASE_CREATE";
+	public static final String _CASE_VIEW = "CASE_VIEW";
+	public static final String _CASE_EDIT = "CASE_EDIT";
+	public static final String _CASE_TRANSFER = "CASE_TRANSFER";
+	public static final String _CASE_REFER_FROM_POE = "CASE_REFER_FROM_POE";
+	public static final String _CASE_INVESTIGATE = "CASE_INVESTIGATE";
+	public static final String _CASE_CLASSIFY = "CASE_CLASSIFY";
+	public static final String _CASE_CHANGE_DISEASE = "CASE_CHANGE_DISEASE";
+	public static final String _CASE_CHANGE_EPID_NUMBER = "CASE_CHANGE_EPID_NUMBER";
+	public static final String _CASE_DELETE = "CASE_DELETE";
+	public static final String _CASE_IMPORT = "CASE_IMPORT";
+	public static final String _CASE_EXPORT = "CASE_EXPORT";
+	public static final String _CASE_SHARE = "CASE_SHARE";
+	public static final String _CASE_ARCHIVE = "CASE_ARCHIVE";
+	public static final String _CASE_MERGE = "CASE_MERGE";
+	public static final String _IMMUNIZATION_VIEW = "IMMUNIZATION_VIEW";
+	public static final String _IMMUNIZATION_CREATE = "IMMUNIZATION_CREATE";
+	public static final String _IMMUNIZATION_EDIT = "IMMUNIZATION_EDIT";
+	public static final String _IMMUNIZATION_DELETE = "IMMUNIZATION_DELETE";
+	public static final String _IMMUNIZATION_ARCHIVE = "IMMUNIZATION_ARCHIVE";
+	public static final String _PERSON_VIEW = "PERSON_VIEW";
+	public static final String _PERSON_EDIT = "PERSON_EDIT";
+	public static final String _PERSON_DELETE = "PERSON_DELETE";
+	public static final String _PERSON_CONTACT_DETAILS_DELETE = "PERSON_CONTACT_DETAILS_DELETE";
+	public static final String _PERSON_EXPORT = "PERSON_EXPORT";
+	public static final String _SAMPLE_CREATE = "SAMPLE_CREATE";
+	public static final String _SAMPLE_VIEW = "SAMPLE_VIEW";
+	public static final String _SAMPLE_EDIT = "SAMPLE_EDIT";
+	public static final String _SAMPLE_EDIT_NOT_OWNED = "SAMPLE_EDIT_NOT_OWNED";
+	public static final String _SAMPLE_DELETE = "SAMPLE_DELETE";
+	public static final String _SAMPLE_TRANSFER = "SAMPLE_TRANSFER";
+	public static final String _SAMPLE_EXPORT = "SAMPLE_EXPORT";
+	public static final String _PATHOGEN_TEST_CREATE = "PATHOGEN_TEST_CREATE";
+	public static final String _PATHOGEN_TEST_EDIT = "PATHOGEN_TEST_EDIT";
+	public static final String _PATHOGEN_TEST_DELETE = "PATHOGEN_TEST_DELETE";
+	public static final String _ADDITIONAL_TEST_VIEW = "ADDITIONAL_TEST_VIEW";
+	public static final String _ADDITIONAL_TEST_CREATE = "ADDITIONAL_TEST_CREATE";
+	public static final String _ADDITIONAL_TEST_EDIT = "ADDITIONAL_TEST_EDIT";
+	public static final String _ADDITIONAL_TEST_DELETE = "ADDITIONAL_TEST_DELETE";
+	public static final String _CONTACT_CREATE = "CONTACT_CREATE";
+	public static final String _CONTACT_IMPORT = "CONTACT_IMPORT";
+	public static final String _CONTACT_VIEW = "CONTACT_VIEW";
+	public static final String _CONTACT_ARCHIVE = "CONTACT_ARCHIVE";
+	public static final String _CONTACT_ASSIGN = "CONTACT_ASSIGN";
+	public static final String _CONTACT_EDIT = "CONTACT_EDIT";
+	public static final String _CONTACT_DELETE = "CONTACT_DELETE";
+	public static final String _CONTACT_CLASSIFY = "CONTACT_CLASSIFY";
+	public static final String _CONTACT_CONVERT = "CONTACT_CONVERT";
+	public static final String _CONTACT_EXPORT = "CONTACT_EXPORT";
+	public static final String _CONTACT_REASSIGN_CASE = "CONTACT_REASSIGN_CASE";
+	public static final String _CONTACT_MERGE = "CONTACT_MERGE";
+	public static final String _MANAGE_EXTERNAL_SYMPTOM_JOURNAL = "MANAGE_EXTERNAL_SYMPTOM_JOURNAL";
+	public static final String _VISIT_CREATE = "VISIT_CREATE";
+	public static final String _VISIT_EDIT = "VISIT_EDIT";
+	public static final String _VISIT_DELETE = "VISIT_DELETE";
+	public static final String _VISIT_EXPORT = "VISIT_EXPORT";
+	public static final String _TASK_CREATE = "TASK_CREATE";
+	public static final String _TASK_VIEW = "TASK_VIEW";
+	public static final String _TASK_EDIT = "TASK_EDIT";
+	public static final String _TASK_ASSIGN = "TASK_ASSIGN";
+	public static final String _TASK_DELETE = "TASK_DELETE";
+	public static final String _TASK_EXPORT = "TASK_EXPORT";
+	public static final String _ACTION_CREATE = "ACTION_CREATE";
+	public static final String _ACTION_DELETE = "ACTION_DELETE";
+	public static final String _ACTION_EDIT = "ACTION_EDIT";
+	public static final String _EVENT_CREATE = "EVENT_CREATE";
+	public static final String _EVENT_VIEW = "EVENT_VIEW";
+	public static final String _EVENT_EDIT = "EVENT_EDIT";
+	public static final String _EVENT_IMPORT = "EVENT_IMPORT";
+	public static final String _EVENT_EXPORT = "EVENT_EXPORT";
+	public static final String _EVENT_ARCHIVE = "EVENT_ARCHIVE";
+	public static final String _EVENT_DELETE = "EVENT_DELETE";
+	public static final String _EVENTPARTICIPANT_ARCHIVE = "EVENTPARTICIPANT_ARCHIVE";
+	public static final String _EVENTPARTICIPANT_CREATE = "EVENTPARTICIPANT_CREATE";
+	public static final String _EVENTPARTICIPANT_EDIT = "EVENTPARTICIPANT_EDIT";
+	public static final String _EVENTPARTICIPANT_DELETE = "EVENTPARTICIPANT_DELETE";
+	public static final String _EVENTPARTICIPANT_IMPORT = "EVENTPARTICIPANT_IMPORT";
+	public static final String _EVENTPARTICIPANT_VIEW = "EVENTPARTICIPANT_VIEW";
+	public static final String _EVENTGROUP_CREATE = "EVENTGROUP_CREATE";
+	public static final String _EVENTGROUP_EDIT = "EVENTGROUP_EDIT";
+	public static final String _EVENTGROUP_LINK = "EVENTGROUP_LINK";
+	public static final String _EVENTGROUP_ARCHIVE = "EVENTGROUP_ARCHIVE";
+	public static final String _EVENTGROUP_DELETE = "EVENTGROUP_DELETE";
+	public static final String _WEEKLYREPORT_CREATE = "WEEKLYREPORT_CREATE";
+	public static final String _WEEKLYREPORT_VIEW = "WEEKLYREPORT_VIEW";
+	public static final String _USER_CREATE = "USER_CREATE";
+	public static final String _USER_EDIT = "USER_EDIT";
+	public static final String _USER_VIEW = "USER_VIEW";
+	public static final String _SEND_MANUAL_EXTERNAL_MESSAGES = "SEND_MANUAL_EXTERNAL_MESSAGES";
+	public static final String _STATISTICS_ACCESS = "STATISTICS_ACCESS";
+	public static final String _STATISTICS_EXPORT = "STATISTICS_EXPORT";
+	public static final String _DATABASE_EXPORT_ACCESS = "DATABASE_EXPORT_ACCESS";
+	public static final String _PERFORM_BULK_OPERATIONS = "PERFORM_BULK_OPERATIONS";
+	public static final String _PERFORM_BULK_OPERATIONS_EVENT = "PERFORM_BULK_OPERATIONS_EVENT";
+	public static final String _MANAGE_PUBLIC_EXPORT_CONFIGURATION = "MANAGE_PUBLIC_EXPORT_CONFIGURATION";
+	public static final String _PERFORM_BULK_OPERATIONS_CASE_SAMPLES = "PERFORM_BULK_OPERATIONS_CASE_SAMPLES";
+	public static final String _PERFORM_BULK_OPERATIONS_LAB_MESSAGES = "PERFORM_BULK_OPERATIONS_LAB_MESSAGES";
+	public static final String _PERFORM_BULK_OPERATIONS_PSEUDONYM = "PERFORM_BULK_OPERATIONS_PSEUDONYM";
+	public static final String _INFRASTRUCTURE_CREATE = "INFRASTRUCTURE_CREATE";
+	public static final String _INFRASTRUCTURE_EDIT = "INFRASTRUCTURE_EDIT";
+	public static final String _INFRASTRUCTURE_VIEW = "INFRASTRUCTURE_VIEW";
+	public static final String _INFRASTRUCTURE_EXPORT = "INFRASTRUCTURE_EXPORT";
+	public static final String _INFRASTRUCTURE_IMPORT = "INFRASTRUCTURE_IMPORT";
+	public static final String _INFRASTRUCTURE_ARCHIVE = "INFRASTRUCTURE_ARCHIVE";
+	public static final String _DASHBOARD_SURVEILLANCE_VIEW = "DASHBOARD_SURVEILLANCE_VIEW";
+	public static final String _DASHBOARD_CONTACT_VIEW = "DASHBOARD_CONTACT_VIEW";
+	public static final String _DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS = "DASHBOARD_CONTACT_VIEW_TRANSMISSION_CHAINS";
+	public static final String _DASHBOARD_CAMPAIGNS_VIEW = "DASHBOARD_CAMPAIGNS_VIEW";
+	public static final String _CASE_CLINICIAN_VIEW = "CASE_CLINICIAN_VIEW";
+	public static final String _THERAPY_VIEW = "THERAPY_VIEW";
+	public static final String _PRESCRIPTION_CREATE = "PRESCRIPTION_CREATE";
+	public static final String _PRESCRIPTION_EDIT = "PRESCRIPTION_EDIT";
+	public static final String _PRESCRIPTION_DELETE = "PRESCRIPTION_DELETE";
+	public static final String _TREATMENT_CREATE = "TREATMENT_CREATE";
+	public static final String _TREATMENT_EDIT = "TREATMENT_EDIT";
+	public static final String _TREATMENT_DELETE = "TREATMENT_DELETE";
+	public static final String _CLINICAL_COURSE_VIEW = "CLINICAL_COURSE_VIEW";
+	public static final String _CLINICAL_COURSE_EDIT = "CLINICAL_COURSE_EDIT";
+	public static final String _CLINICAL_VISIT_CREATE = "CLINICAL_VISIT_CREATE";
+	public static final String _CLINICAL_VISIT_EDIT = "CLINICAL_VISIT_EDIT";
+	public static final String _CLINICAL_VISIT_DELETE = "CLINICAL_VISIT_DELETE";
+	public static final String _PORT_HEALTH_INFO_VIEW = "PORT_HEALTH_INFO_VIEW";
+	public static final String _PORT_HEALTH_INFO_EDIT = "PORT_HEALTH_INFO_EDIT";
+	public static final String _POPULATION_MANAGE = "POPULATION_MANAGE";
+	public static final String _DOCUMENT_TEMPLATE_MANAGEMENT = "DOCUMENT_TEMPLATE_MANAGEMENT";
+	public static final String _QUARANTINE_ORDER_CREATE = "QUARANTINE_ORDER_CREATE";
+	public static final String _LINE_LISTING_CONFIGURE = "LINE_LISTING_CONFIGURE";
+	public static final String _AGGREGATE_REPORT_VIEW = "AGGREGATE_REPORT_VIEW";
+	public static final String _AGGREGATE_REPORT_EXPORT = "AGGREGATE_REPORT_EXPORT";
+	public static final String _AGGREGATE_REPORT_EDIT = "AGGREGATE_REPORT_EDIT";
+	public static final String _SEE_PERSONAL_DATA_IN_JURISDICTION = "SEE_PERSONAL_DATA_IN_JURISDICTION";
+	public static final String _SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION = "SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION";
+	public static final String _SEE_SENSITIVE_DATA_IN_JURISDICTION = "SEE_SENSITIVE_DATA_IN_JURISDICTION";
+	public static final String _SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION = "SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION";
+	public static final String _CAMPAIGN_VIEW = "CAMPAIGN_VIEW";
+	public static final String _CAMPAIGN_EDIT = "CAMPAIGN_EDIT";
+	public static final String _CAMPAIGN_ARCHIVE = "CAMPAIGN_ARCHIVE";
+	public static final String _CAMPAIGN_DELETE = "CAMPAIGN_DELETE";
+	public static final String _CAMPAIGN_FORM_DATA_VIEW = "CAMPAIGN_FORM_DATA_VIEW";
+	public static final String _CAMPAIGN_FORM_DATA_EDIT = "CAMPAIGN_FORM_DATA_EDIT";
+	public static final String _CAMPAIGN_FORM_DATA_ARCHIVE = "CAMPAIGN_FORM_DATA_ARCHIVE";
+	public static final String _CAMPAIGN_FORM_DATA_DELETE = "CAMPAIGN_FORM_DATA_DELETE";
+	public static final String _CAMPAIGN_FORM_DATA_EXPORT = "CAMPAIGN_FORM_DATA_EXPORT";
+	public static final String _BAG_EXPORT = "BAG_EXPORT";
+	public static final String _SORMAS_TO_SORMAS_SHARE = "SORMAS_TO_SORMAS_SHARE";
+	public static final String _LAB_MESSAGES = "LAB_MESSAGES";
+	public static final String _TRAVEL_ENTRY_MANAGEMENT_ACCESS = "TRAVEL_ENTRY_MANAGEMENT_ACCESS";
+	public static final String _TRAVEL_ENTRY_VIEW = "TRAVEL_ENTRY_VIEW";
+	public static final String _TRAVEL_ENTRY_CREATE = "TRAVEL_ENTRY_CREATE";
+	public static final String _TRAVEL_ENTRY_EDIT = "TRAVEL_ENTRY_EDIT";
+	public static final String _TRAVEL_ENTRY_DELETE = "TRAVEL_ENTRY_DELETE";
+	public static final String _TRAVEL_ENTRY_ARCHIVE = "TRAVEL_ENTRY_ARCHIVE";
+	public static final String _EXPORT_DATA_PROTECTION_DATA = "EXPORT_DATA_PROTECTION_DATA";
+	public static final String _OUTBREAK_VIEW = "OUTBREAK_VIEW";
+	public static final String _OUTBREAK_EDIT = "OUTBREAK_EDIT";
+	public static final String _SORMAS_REST = "SORMAS_REST";
+	public static final String _SORMAS_UI = "SORMAS_UI";
+	public static final String _SORMAS_TO_SORMAS_CLIENT = "SORMAS_TO_SORMAS_CLIENT";
+	public static final String _EXTERNAL_VISITS = "EXTERNAL_VISITS";
 
 	private final Set<UserRole> defaultUserRoles;
 
@@ -1526,5 +1779,9 @@ public enum UserRight {
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
+	}
+
+	public String getDescription() {
+		return I18nProperties.getEnumDescription(this);
 	}
 }

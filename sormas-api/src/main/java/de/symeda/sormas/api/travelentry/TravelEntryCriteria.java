@@ -1,10 +1,12 @@
 package de.symeda.sormas.api.travelentry;
 
 import java.io.Serializable;
+import java.util.Date;
 
-import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.EntityRelevanceStatus;
+import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.api.utils.DateFilterOption;
 import de.symeda.sormas.api.utils.criteria.BaseCriteria;
 
 public class TravelEntryCriteria extends BaseCriteria implements Serializable, Cloneable {
@@ -24,6 +26,9 @@ public class TravelEntryCriteria extends BaseCriteria implements Serializable, C
 	private CaseReferenceDto caze;
 	private Boolean deleted = Boolean.FALSE;
 	private EntityRelevanceStatus relevanceStatus;
+	private Date reportDateFrom;
+	private Date reportDateTo;
+	private DateFilterOption dateFilterOption = DateFilterOption.DATE;
 
 	public String getNameUuidExternalIDLike() {
 		return nameUuidExternalIDLike;
@@ -104,5 +109,39 @@ public class TravelEntryCriteria extends BaseCriteria implements Serializable, C
 
 	public void relevanceStatus(EntityRelevanceStatus relevanceStatus) {
 		this.relevanceStatus = relevanceStatus;
+	}
+
+	public Date getReportDateFrom() {
+		return reportDateFrom;
+	}
+
+	public void setReportDateFrom(Date reportDateFrom) {
+		this.reportDateFrom = reportDateFrom;
+	}
+
+	public Date getReportDateTo() {
+		return reportDateTo;
+	}
+
+	public void setReportDateTo(Date reportDateTo) {
+		this.reportDateTo = reportDateTo;
+	}
+
+	public DateFilterOption getDateFilterOption() {
+		return dateFilterOption;
+	}
+
+	public void setDateFilterOption(DateFilterOption dateFilterOption) {
+		this.dateFilterOption = dateFilterOption;
+	}
+
+	public TravelEntryCriteria reportDateBetween(
+			Date reportDateFrom,
+			Date reportDateTo,
+			DateFilterOption dateFilterOption) {
+		this.reportDateFrom = reportDateFrom;
+		this.reportDateTo = reportDateTo;
+		this.dateFilterOption = dateFilterOption;
+		return this;
 	}
 }

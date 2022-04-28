@@ -56,15 +56,15 @@ public class PersonJurisdictionPredicateValidator extends PredicateJurisdictionV
 		boolean includeImmunizations) {
 		final List<PredicateJurisdictionValidator> associatedJurisdictionValidators = new ArrayList<>();
 
-		associatedJurisdictionValidators.add(CaseJurisdictionPredicateValidator.of(new CaseQueryContext(cb, cq, joins.getCaze()), user));
-		associatedJurisdictionValidators.add(ContactJurisdictionPredicateValidator.of(new ContactQueryContext<>(cb, cq, joins.getContact()), user));
+		associatedJurisdictionValidators.add(CaseJurisdictionPredicateValidator.of(new CaseQueryContext(cb, cq, joins.getCaseJoins()), user));
+		associatedJurisdictionValidators.add(ContactJurisdictionPredicateValidator.of(new ContactQueryContext(cb, cq, joins.getContactJoins()), user));
 		associatedJurisdictionValidators
-			.add(EventParticipantJurisdictionPredicateValidator.of(new EventParticipantQueryContext<>(cb, cq, joins.getEventParticipant()), user));
+			.add(EventParticipantJurisdictionPredicateValidator.of(new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins()), user));
 		associatedJurisdictionValidators
 			.add(TravelEntryJurisdictionPredicateValidator.of(new TravelEntryQueryContext(cb, cq, joins.getTravelEntry()), user));
 		if (includeImmunizations) {
 			associatedJurisdictionValidators
-				.add(ImmunizationJurisdictionPredicateValidator.of(new ImmunizationQueryContext<>(cb, cq, joins.getImmunization()), user));
+				.add(ImmunizationJurisdictionPredicateValidator.of(new ImmunizationQueryContext(cb, cq, joins.getImmunization()), user));
 		}
 
 		return new PersonJurisdictionPredicateValidator(cb, joins, user, associatedJurisdictionValidators);
@@ -77,7 +77,7 @@ public class PersonJurisdictionPredicateValidator extends PredicateJurisdictionV
 
 	@Override
 	protected Predicate isInJurisdiction() {
-		return isInJurisdictionByJurisdictionLevel(user.getCalculatedJurisdictionLevel());
+		return isInJurisdictionByJurisdictionLevel(user.getJurisdictionLevel());
 	}
 
 	@Override

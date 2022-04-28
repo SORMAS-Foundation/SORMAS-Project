@@ -31,17 +31,16 @@ import de.symeda.sormas.ui.exposure.ExposuresField;
 import de.symeda.sormas.ui.hospitalization.PreviousHospitalizationsField;
 import de.symeda.sormas.ui.location.LocationEditForm;
 import de.symeda.sormas.ui.person.LocationsField;
+import de.symeda.sormas.ui.person.PersonContactDetailsField;
 import de.symeda.sormas.ui.utils.components.JsonForm;
 import de.symeda.sormas.ui.utils.components.MultiSelect;
 import de.symeda.sormas.ui.vaccination.VaccinationsField;
 
 public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory {
 
-	private static final long serialVersionUID = 471700572643936674L;
-
 	public static final int TEXT_AREA_MAX_LENGTH = FieldConstraints.CHARACTER_LIMIT_BIG;
 	public static final int TEXT_FIELD_MAX_LENGTH = FieldConstraints.CHARACTER_LIMIT_DEFAULT;
-
+	private static final long serialVersionUID = 471700572643936674L;
 	private final FieldVisibilityCheckers fieldVisibilityCheckers;
 	private final UiFieldAccessCheckers fieldAccessCheckers;
 
@@ -126,6 +125,8 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			return (T) new ActivityAsCaseField(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (LocationsField.class.isAssignableFrom(fieldType)) {
 			return (T) new LocationsField(fieldVisibilityCheckers, fieldAccessCheckers);
+		} else if (PersonContactDetailsField.class.isAssignableFrom(fieldType)) {
+			return (T) new PersonContactDetailsField(fieldVisibilityCheckers, fieldAccessCheckers);
 		} else if (VaccinationsField.class.isAssignableFrom(fieldType)) {
 			return (T) new VaccinationsField(fieldAccessCheckers);
 		} else if (JsonForm.class.isAssignableFrom(fieldType)) {
@@ -214,6 +215,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			if (fieldVisibilityCheckers != null) {
 				visible = fieldVisibilityCheckers.isVisible(enumClass, ((Enum<?>) r).name());
 			}
+
 			if (visible) {
 				Item newItem = select.addItem(r);
 				newItem.getItemProperty(CAPTION_PROPERTY_ID).setValue(r.toString());

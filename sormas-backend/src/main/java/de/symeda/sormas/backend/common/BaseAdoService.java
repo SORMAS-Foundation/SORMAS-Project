@@ -25,7 +25,8 @@ import java.util.List;
 import java.util.function.BiFunction;
 import java.util.stream.Collectors;
 
-import javax.enterprise.inject.Instance;
+import javax.ejb.TransactionAttribute;
+import javax.ejb.TransactionAttributeType;
 import javax.inject.Inject;
 import javax.persistence.EntityExistsException;
 import javax.persistence.EntityManager;
@@ -48,9 +49,9 @@ import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.EntityDto;
 import de.symeda.sormas.api.ReferenceDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.backend.user.CurrentUser;
-import de.symeda.sormas.backend.user.CurrentUserQualifier;
+import de.symeda.sormas.backend.user.CurrentUserService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
@@ -63,8 +64,7 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 	private final Class<ADO> elementClass;
 
 	@Inject
-	@CurrentUserQualifier
-	private Instance<CurrentUser> currentUser;
+	private CurrentUserService currentUserService;
 
 	// protected to be used by implementations
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
@@ -74,18 +74,12 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		this.elementClass = elementClass;
 	}
 
-	protected User getCurrentUser() {
-		return currentUser.get().getUser();
+	public User getCurrentUser() {
+		return currentUserService.getCurrentUser();
 	}
 
-	/**
-	 * Should only be used for testing scenarios of user rights & jurisdiction!
-	 * 
-	 * @param user
-	 */
-	@Deprecated
-	public void setCurrentUser(User user) {
-		currentUser.get().setUser(user);
+	public boolean hasCurrentUserRight(UserRight userRight) {
+		return currentUserService.hasUserRight(userRight);
 	}
 
 	protected Class<ADO> getElementClass() {
@@ -165,6 +159,20 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 		CriteriaQuery<ADO> cq = cb.createQuery(getElementClass());
 		Root<ADO> from = cq.from(getElementClass());
 		cq.orderBy(asc ? cb.asc(from.get(orderProperty)) : cb.desc(from.get(orderProperty)));
+
+		return em.createQuery(cq).getResultList();
+	}
+
+	public List<String> getAllUuids(BiFunction<CriteriaBuilder, Root<ADO>, Predicate> filterBuilder) {
+
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<String> cq = cb.createQuery(String.class);
+		Root<ADO> from = cq.from(getElementClass());
+		Predicate filter = filterBuilder.apply(cb, from);
+		if (filter != null) {
+			cq.where(filter);
+		}
+		cq.select(from.get(ADO.UUID));
 
 		return em.createQuery(cq).getResultList();
 	}
@@ -302,9 +310,14 @@ public class BaseAdoService<ADO extends AbstractDomainObject> implements AdoServ
 	}
 
 	@Override
-	public void delete(ADO deleteme) {
-		em.remove(em.contains(deleteme) ? deleteme : em.merge(deleteme)); // todo: investigate why the entity might be detached (example: AdditionalTest)
+	public void deletePermanent(ADO ado) {
+		em.remove(em.contains(ado) ? ado : em.merge(ado)); // todo: investigate why the entity might be detached (example: AdditionalTest)
 		em.flush();
+	}
+
+	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
+	public void deletePermanentByUuids(List<String> uuids) {
+		uuids.forEach(uuid -> deletePermanent(getByUuid(uuid)));
 	}
 
 	@Override
