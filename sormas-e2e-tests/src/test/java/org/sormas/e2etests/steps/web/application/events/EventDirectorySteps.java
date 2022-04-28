@@ -706,8 +706,8 @@ public class EventDirectorySteps implements En {
               SEARCH_EVENT_BY_FREE_TEXT_INPUT, 20);
           webDriverHelpers.fillAndSubmitInWebElement(SEARCH_EVENT_BY_FREE_TEXT_INPUT, eventUuid);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
-            TimeUnit.SECONDS.sleep(5);
-            webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
+          TimeUnit.SECONDS.sleep(5);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
         });
 
     When(
@@ -739,7 +739,6 @@ public class EventDirectorySteps implements En {
         "I check if filtered participant for existing person appears in the event participants list",
         () -> {
           final String personUuid = apiState.getLastCreatedPerson().getUuid();
-          ;
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(personUuid));
         });
 

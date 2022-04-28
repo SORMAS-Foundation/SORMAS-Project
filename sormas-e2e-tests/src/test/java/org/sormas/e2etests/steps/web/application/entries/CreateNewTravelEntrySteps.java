@@ -194,9 +194,7 @@ public class CreateNewTravelEntrySteps implements En {
     When(
         "I collect travel UUID from travel entry",
         () -> {
-          TimeUnit.SECONDS.sleep(2);
           TravelEntryUuid = collectTravelEntryUuid();
-          System.out.println("TRavel uuid:" + TravelEntryUuid.getUuid());
         });
 
     When(

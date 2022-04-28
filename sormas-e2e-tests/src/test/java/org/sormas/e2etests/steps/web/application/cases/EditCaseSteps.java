@@ -373,8 +373,6 @@ public class EditCaseSteps implements En {
                   "firstName",
                   "lastName",
                   "dateOfBirth"));
-          System.out.println("FN" + aCase.getFirstName());
-          System.out.println("LN" + aCase.getLastName());
         });
 
     When(
