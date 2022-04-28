@@ -182,4 +182,35 @@ public class EditCasePage {
       By.xpath("//*[contains(text(),'Current hospitalization')]");
   public static final By SAVE_AND_OPEN_HOSPITALIZATION_BUTTON =
       By.cssSelector(".popupContent #actionConfirm");
+  public static final By PREVIOUS_COVID_INFECTION_IS_KNOWN_DE_LABEL =
+      By.xpath(
+          "//label[text()='Genomsequenz des Virus von vorausgehender SARS-CoV-2-Infektion ist bekannt']");
+  public static final By CURRENT_COVID_INFECTION_IS_KNOWN_DE_LABEL =
+      By.xpath(
+          "//label[text()='Genomsequenz des Virus der aktuellen SARS-CoV-2-Infektion ist bekannt']");
+  public static final By PREVIOUS_AND_CURRENT_COVID_INFECTION_IS_KNOWN_DE_LABEL =
+      By.xpath(
+          "//label[text()='Genomsequenzen der Viren von vorausgehender und aktueller SARS-CoV-2-Infektion stimmen nicht \u00FCberein']");
+  public static final By PERSON_HAS_OVERCOME_ACUTE_RESPIRATORY_DE_LABEL =
+      By.xpath(
+          "//label[text()='Person hat nach einer best\u00E4tigten SARS-CoV-2-Infektion die akute respiratorische Erkrankung \u00FCberwunden']");
+  public static final By PERSON_HAD_AN_ASYMPTOMATIC_COVID_INFECTION_DE_LABEL =
+      By.xpath("//label[text()='Person hatte eine asymptomatische SARS-CoV-2-Infektion']");
+  public static final By COVID_GENOME_COPY_NUMBER_DE_LABEL =
+      By.xpath(
+          "//label[text()='Anzahl der SARS-CoV-2-Genomkopien im Rahmen des aktuellen PCR-Nachweises >=10^6/ml oder Ct-Wert < 30']");
+  public static final By INDIVIDUAL_TESTED_POSITIVE_FOR_COVID_BY_PCR_DE_LABEL =
+      By.xpath(
+          "//label[text()='Person wurde mittels PCR positiv auf SARS-CoV-2 getestet, aber Anzahl der SARS-CoV-2-Genomkopien im Rahmen des aktuellen PCR-Nachweises <10^6/ml oder Ct-Wert >= 30 oder beide Angaben nicht bekannt']");
+  public static final By PERSON_TESTED_CONCLUSIVELY_NEGATIVE_BY_PRC_LABEL =
+      By.xpath(
+          "//label[text()='Person wurde nach der vorausgehenden SARS-CoV-2-Infektion mittels PCR abschlie\u00DFend mindestens einmal negativ getestet']");
+  public static final By THE_LAST_POSITIVE_PCR_DETECTION_WAS_MORE_THAN_3_MONTHS_AGO_DE_LABEL =
+      By.xpath(
+          "//label[text()='Der letzte positive PCR-Nachweis der vorausgehenden Infektion ist l\u00E4nger als 3 Monate zur\u00FCckliegend']");
+  public static final By CREATE_A_NEW_CASE_FOR_THE_SAME_PERSON_DE_CHECKBOX =
+      By.xpath("//*[text()='Neuen Fall erstellen']");
+  public static final By REINFECTION_EYE_ICON = By.xpath("//span[@class='v-icon v-icon-eye']");
+  public static final By TOOLTIP_EYE_ICON_HOVER = By.xpath("//div[@class='v-tooltip-text']");
+  public static final By REINFECTION_STATUS_LABEL = By.cssSelector("#reinfectionStatus input");
 }
