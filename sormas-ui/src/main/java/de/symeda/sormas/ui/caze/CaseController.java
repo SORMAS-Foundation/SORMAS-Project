@@ -291,7 +291,7 @@ public class CaseController {
 	private void convertSamePersonContactsAndEventparticipants(CaseDataDto caze) {
 
 		List<SimilarContactDto> matchingContacts;
-		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_VIEW)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)) {
 			ContactSimilarityCriteria contactCriteria = new ContactSimilarityCriteria().withPerson(caze.getPerson())
 				.withDisease(caze.getDisease())
 				.withContactClassification(ContactClassification.CONFIRMED)
@@ -303,7 +303,7 @@ public class CaseController {
 		}
 
 		List<SimilarEventParticipantDto> matchingEventParticipants ;
-		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_VIEW)) {
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT)) {
 			EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria().withPerson(caze.getPerson())
 				.withDisease(caze.getDisease())
 				.withExcludePseudonymized(true)
