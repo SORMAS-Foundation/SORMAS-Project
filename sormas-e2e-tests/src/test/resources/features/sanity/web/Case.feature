@@ -917,7 +917,7 @@ Feature: Case end to end tests
     And I click on Bulk Actions combobox on Case Directory Page
     And I click on Create Quarantine Order from Bulk Actions combobox on Case Directory Page
     And I click on checkbox to upload generated document to entities in Create Quarantine Order form in Case directory
-    And I select "ExampleDocumentTemplateCases.docx" Quarantine Order in Create Quarantine Order form in Edit Case directory
+    And I select "ExampleDocumentTemplateCases.docx" Quarantine Order in Create Quarantine Order form in Case directory
     And I click on Create button in Create Quarantine Order form
     And I click on close button in Create Quarantine Order form
     And I check if downloaded zip file for Quarantine Order is correct
