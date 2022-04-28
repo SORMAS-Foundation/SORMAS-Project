@@ -354,34 +354,6 @@ public class EditCaseSteps implements En {
         });
 
     When(
-        "I check the created data for existing person is correctly displayed on Edit case page",
-        () -> {
-          TimeUnit.SECONDS.sleep(5);
-          aCase = collectCasePersonData();
-          createdCase =
-              CreateNewCaseSteps.caze.toBuilder()
-                  .firstName(aCase.getFirstName())
-                  .lastName(aCase.getLastName())
-                  .build();
-
-          ComparisonHelper.compareEqualFieldsOfEntities(
-              aCase,
-              createdCase,
-              List.of(
-                  "dateOfReport",
-                  "disease",
-                  "externalId",
-                  "responsibleRegion",
-                  "responsibleDistrict",
-                  "responsibleCommunity",
-                  "placeOfStay",
-                  "placeDescription",
-                  "firstName",
-                  "lastName",
-                  "dateOfBirth"));
-        });
-
-    When(
         "I check the created data is correctly displayed on Edit case page for DE version",
         () -> {
           aCase = collectCasePersonDataDE();

@@ -50,8 +50,7 @@ public class PersonDirectoryPage {
   public static final By PERSON_DETAILED_COLUMN_HEADERS =
       By.cssSelector("thead .v-grid-column-default-header-content");
   public static final By PERSON_RESULTS_UUID_LOCATOR_FROM_GRID =
-      By.xpath(
-          "//*[@id=\"sormasui-1655777373\"]/div/div[2]/div/div[2]/div/div/div/div[2]/div/div/div[3]/div/div[3]/table/tbody/tr/td[1]/a");
+      By.xpath("//table/tbody/tr[1]/td[1]");
 
   public static final By getPersonResultsUuidLocator(String uuid) {
     return By.cssSelector(String.format("[title = '%s']", uuid));

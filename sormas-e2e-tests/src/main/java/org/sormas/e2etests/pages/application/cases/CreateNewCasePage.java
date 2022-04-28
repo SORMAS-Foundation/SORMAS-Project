@@ -83,10 +83,5 @@ public class CreateNewCasePage {
           "//div[contains(@class, 'popupContent')]//span[contains(text(), 'Best\u00E4tigen')]//ancestor::div[@id='commit']");
   public static final By PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION =
       By.xpath(
-          "//*[@id=\"sormasui-1655777373-overlays\"]/div[5]/div/div/div[3]/div/div/div[1]/div/div[2]/div/div/div[5]/div/div[3]/table/tbody/tr");
-  //  public static final By PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION =
-  //      By.xpath(
-  //
-  // "//div[@class=\"v-grid-tablewrapper\"]//tbody[@class=\"v-grid-body\"]//tr[@class=\"v-grid-row
-  // v-grid-row-has-data v-grid-row-focused v-grid-row-selected\"][1]");
+          "//div[@class='v-grid v-widget v-has-width']//div[@class='v-grid-tablewrapper']/table/tbody[@class='v-grid-body']/tr[@class='v-grid-row v-grid-row-has-data']");
 }

@@ -502,6 +502,8 @@ Feature: Create events
     And I confirm navigation popup
     And I navigate to EVENT PARTICIPANT from edit event page
     And I confirm navigation popup
+    Then I click on Apply filters button in event participant list
+    Then I check if filtered participant for existing person appears in the event participants list
     When I click on the Persons button from navbar
     And I open the last created Person via API
     And I check that SEE EVENTS FOR THIS PERSON button is visible and clickable
