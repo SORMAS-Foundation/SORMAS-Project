@@ -898,7 +898,7 @@ Feature: Case end to end tests
     And I click on Save button in Case form
     When I click on the Persons button from navbar
     And I open the last created Person via API
-    And I check that SEE CASES FOR THIS PERSON button is visible and clickable
+    And I check that SEE CASES FOR THIS PERSON button appears on Edit Person page
     Then I click on the Cases button from navbar
     And I open last created case
     And I navigate to Contacts tab in Edit case page
@@ -912,8 +912,10 @@ Feature: Case end to end tests
     And I search for the last created person via Api by uuid in popup on Select Person window
     And I open the first found result in the popup of Select Person window
     Then I click on SAVE new contact button
+
     Then I check the created data for existing person is correctly displayed on Edit Contact page based on Case
+
     When I click on the Persons button from navbar
     And I click on the RESET FILTERS button for Person
     And I open the last created Person via API
-    And I check that SEE CONTACTS FOR THIS PERSON button is visible and clickable
+    And I check that SEE CONTACTS FOR THIS PERSON button appears on Edit Person page

@@ -46,6 +46,7 @@ import org.sormas.e2etests.entities.services.ContactService;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.contacts.EditContactPage;
+import org.sormas.e2etests.state.ApiState;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
 
@@ -65,6 +66,7 @@ public class EditContactSteps implements En {
       WebDriverHelpers webDriverHelpers,
       ContactService contactService,
       SoftAssert softly,
+      ApiState apiState,
       AssertHelpers assertHelpers,
       ContactDocumentService contactDocumentService) {
     this.webDriverHelpers = webDriverHelpers;
@@ -136,8 +138,8 @@ public class EditContactSteps implements En {
           collectedContact = collectContactData();
           createdContact =
               CreateNewContactSteps.contact.toBuilder()
-                  .firstName(collectedContact.getFirstName())
-                  .lastName(collectedContact.getLastName())
+                      .firstName(apiState.getLastCreatedPerson().getFirstName())
+                      .lastName(apiState.getLastCreatedPerson().getLastName())
                   .build();
           ComparisonHelper.compareEqualFieldsOfEntities(
               collectedContact,
@@ -167,9 +169,9 @@ public class EditContactSteps implements En {
           collectedContact = collectContactDataFromCase();
           createdContact =
               CreateNewContactSteps.contact.toBuilder()
-                  .firstName(collectedContact.getFirstName())
-                  .lastName(collectedContact.getLastName())
-                  .reportDate(collectedContact.getReportDate())
+                  .firstName(apiState.getLastCreatedPerson().getFirstName())
+                  .lastName(apiState.getLastCreatedPerson().getLastName())
+                  // .reportDate(apiState.getLastCreatedPerson().)
                   .build();
           ComparisonHelper.compareEqualFieldsOfEntities(
               collectedContact,

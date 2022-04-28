@@ -113,4 +113,4 @@ Feature: Create travel entries
     And I check the created data is correctly displayed on Edit travel entry page for DE version
     When I click on the Persons button from navbar
     And I open the last created person linked with Case
-    And I check that EDIT TRAVEL ENTRY button is visible and clickable
+    And I check that EDIT TRAVEL ENTRY button appears on Edit Person page

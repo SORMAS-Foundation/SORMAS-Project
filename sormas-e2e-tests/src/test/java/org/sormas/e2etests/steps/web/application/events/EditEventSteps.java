@@ -519,7 +519,7 @@ public class EditEventSteps implements En {
           webDriverHelpers.waitForPageLoaded();
         });
     Then(
-        "I check that SEE EVENTS FOR THIS PERSON button is visible and clickable",
+        "I check that SEE EVENTS FOR THIS PERSON button appears on Edit Person page",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEE_EVENTS_FOR_PERSON);

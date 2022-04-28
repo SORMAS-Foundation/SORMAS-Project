@@ -195,14 +195,14 @@ public class EditPersonSteps implements En {
         });
 
     Then(
-        "I check that SEE CASES FOR THIS PERSON button is visible and clickable",
+        "I check that SEE CASES FOR THIS PERSON button appears on Edit Person page",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEE_CASES_FOR_PERSON_BUTTON);
         });
 
     Then(
-        "I check that SEE CONTACTS FOR THIS PERSON button is visible and clickable",
+        "I check that SEE CONTACTS FOR THIS PERSON button appears on Edit Person page",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEE_CONTACTS_FOR_PERSON_BUTTON);

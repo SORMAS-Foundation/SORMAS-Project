@@ -390,4 +390,4 @@ Feature: Contacts end to end tests
     Then I check the created data for existing person is correctly displayed on Edit Contact page
     When I click on the Persons button from navbar
     And I open the last created Person via API
-    And I check that SEE CASES FOR THIS PERSON button is visible and clickable
+    And I check that SEE CONTACTS FOR THIS PERSON button appears on Edit Person page

@@ -115,7 +115,7 @@ public class PersonDirectorySteps implements En {
         });
 
     When(
-        "^I check that EDIT TRAVEL ENTRY button is visible and clickable",
+        "^I check that EDIT TRAVEL ENTRY button appears on Edit Person page",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               getByTravelEntryPersonUuid(TravelEntryUuid.getUuid()));
