@@ -211,7 +211,7 @@ public class EditEventSteps implements En {
         });
 
     When(
-        "I check that all options for Study on Epidemiological evidence are visible and clickable for De version",
+        "I check that all options for Study on Epidemiological evidence appears and there are checked for De version",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               STUDY_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
@@ -233,7 +233,7 @@ public class EditEventSteps implements En {
         });
 
     When(
-        "I check the all options for Explorative survey of affected people on Epidemiological evidence are visible and clickable for De version",
+        "I check the all options for Explorative survey of affected people on Epidemiological evidence appears and there are checked for De version",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               EXPLORATIVE_SURVEY_OF_AFFECTED_PEOPLE_EVIDENCE_BUTTON_DE);
@@ -254,7 +254,7 @@ public class EditEventSteps implements En {
         });
 
     When(
-        "I check the all options for Descriptive analysis of ascertained data on Epidemiological evidence are visible and clickable for De version",
+        "I check the all options for Descriptive analysis of ascertained data on Epidemiological evidence appears and there are checked for De version",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               DESCRIPTIVE_ANALYSIS_OF_ASCETAINED_DATA_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
@@ -304,7 +304,7 @@ public class EditEventSteps implements En {
         });
 
     When(
-        "I check the all options for Verification of at least two infected or diseased persons on Laboratory diagnostic evidence are visible and clickable for De version",
+        "I check the all options for Verification of at least two infected or diseased persons on Laboratory diagnostic evidence appears and there are checked for De version",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               VERIFICATION_OF_AT_LEAST_TWO_INFECTED_OR_DISEASED_PERSONS_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE);
@@ -328,7 +328,7 @@ public class EditEventSteps implements En {
         });
 
     When(
-        "I check the all options for Verification on materials on Laboratory diagnostic evidence are visible and clickable for De version",
+        "I check the all options for Verification on materials on Laboratory diagnostic evidence appears and there are checked for De version",
         () -> {
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(
               VERIFICATION_ON_MATERIALS_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE);
