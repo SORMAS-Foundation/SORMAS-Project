@@ -486,7 +486,6 @@ public class CreateNewCaseSteps implements En {
           selectResponsibleDistrict(caze.getResponsibleDistrict());
           selectResponsibleCommunity(caze.getResponsibleCommunity());
           selectPlaceOfStay(caze.getPlaceOfStay());
-          fillDateOfBirth(caze.getDateOfBirth(), Locale.ENGLISH);
           selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
           fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.ENGLISH);
           fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
@@ -499,6 +498,14 @@ public class CreateNewCaseSteps implements En {
         "^I click on Enter Home Address of the Case Person Now in the Create New Case popup$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ENTER_HOME_ADDRESS_CHECKBOX);
+        });
+
+    When(
+        "I click on save button in the case popup",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          TimeUnit.SECONDS.sleep(2); // wait for spinner
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
   }
 
