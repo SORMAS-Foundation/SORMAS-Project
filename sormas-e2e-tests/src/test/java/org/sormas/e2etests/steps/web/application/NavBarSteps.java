@@ -310,7 +310,7 @@ public class NavBarSteps implements En {
             elapsedTime = "Couldn't load page under 20s";
           }
           log.info("Adding page [ {} ] loading results to report", page);
-          TableDataManager.addRowEntity(page + " page", elapsedTime);
+          TableDataManager.addPagesRowEntity(page + " page", elapsedTime);
         });
   }
 }
