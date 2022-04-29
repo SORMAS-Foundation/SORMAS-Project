@@ -486,7 +486,6 @@ public class CreateNewCaseSteps implements En {
           selectResponsibleDistrict(caze.getResponsibleDistrict());
           selectResponsibleCommunity(caze.getResponsibleCommunity());
           selectPlaceOfStay(caze.getPlaceOfStay());
-          fillDateOfBirth(caze.getDateOfBirth(), Locale.ENGLISH);
           selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
           fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.ENGLISH);
           fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());

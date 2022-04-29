@@ -99,8 +99,7 @@ public class EditPersonPage {
   public static final By POPUP_RESPONSIBLE_DISTRICT_COMBOBOX = By.cssSelector("#district div");
   public static final By PERSON_DATA_SAVED = By.cssSelector(".v-Notification-caption");
   public static final By PERSON_DATA_ADDED_AS_A_PARTICIPANT_MESSAGE =
-      By.xpath(
-          "//*[contains(text(),'The case person was added as an event participant to the selected event.')]");
+      By.xpath("//*[contains(text(),'The new event participant was created.')]");
   public static final By SEE_EVENTS_FOR_PERSON =
       By.cssSelector("div#See\\ events\\ for\\ this\\ person");
   public static final By INVALID_DATA_ERROR =
