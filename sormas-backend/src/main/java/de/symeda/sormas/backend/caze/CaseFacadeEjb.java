@@ -762,6 +762,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			&& ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.NUMBER_OF_TREATMENTS);
 		boolean exportClinicalVisitNumber = (exportType == null || exportType == CaseExportType.CASE_MANAGEMENT)
 			&& ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.NUMBER_OF_CLINICAL_VISITS);
+		boolean exportHealthConditions = (exportType == null || exportType == CaseExportType.CASE_MANAGEMENT)
+			&& ExportHelper.shouldExportFields(exportConfiguration, CaseDataDto.HEALTH_CONDITIONS);
+		boolean exportSymptoms = ExportHelper.shouldExportFields(exportConfiguration, CaseDataDto.SYMPTOMS);
 
 		//@formatter:off
 		cq.multiselect(caseRoot.get(Case.ID), joins.getPerson().get(Person.ID),
@@ -769,9 +772,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				exportGpsCoordinates ? joins.getPersonAddress().get(Location.LONGITUDE) : cb.nullLiteral(Double.class),
 				exportGpsCoordinates ? joins.getPersonAddress().get(Location.LATLONACCURACY) : cb.nullLiteral(Float.class),
 				joins.getEpiData().get(EpiData.ID),
-				ExportHelper.shouldExportFields(exportConfiguration, CaseDataDto.SYMPTOMS) ? joins.getSymptoms() : null,
+				exportSymptoms ? joins.getSymptoms() : null,
 				joins.getHospitalization().get(Hospitalization.ID),
-				joins.getHealthConditions().get(HealthConditions.ID), caseRoot.get(Case.UUID),
+				exportHealthConditions ? joins.getHealthConditions() : null,
+				caseRoot.get(Case.UUID),
 				caseRoot.get(Case.EPID_NUMBER), caseRoot.get(Case.DISEASE), caseRoot.get(Case.DISEASE_VARIANT), caseRoot.get(Case.DISEASE_DETAILS),
 				caseRoot.get(Case.DISEASE_VARIANT_DETAILS), joins.getPerson().get(Person.UUID), joins.getPerson().get(Person.FIRST_NAME), joins.getPerson().get(Person.LAST_NAME),
 				joins.getPerson().get(Person.SALUTATION), joins.getPerson().get(Person.OTHER_SALUTATION), joins.getPerson().get(Person.SEX),
@@ -889,20 +893,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 			long timestamp3 = System.currentTimeMillis();
 			System.out.println(">>*<< Person addresses query time: " + (timestamp3 - timestamp2));
-
-			Map<Long, HealthConditions> healthConditions = null;
-			if (exportType == null || exportType == CaseExportType.CASE_MANAGEMENT) {
-				if (ExportHelper.shouldExportFields(exportConfiguration, CaseDataDto.HEALTH_CONDITIONS)) {
-					List<HealthConditions> healthConditionsList = null;
-					CriteriaQuery<HealthConditions> healthConditionsCq = cb.createQuery(HealthConditions.class);
-					Root<HealthConditions> healthConditionsRoot = healthConditionsCq.from(HealthConditions.class);
-					Expression<String> healthConditionsIdsExpr = healthConditionsRoot.get(HealthConditions.ID);
-					healthConditionsCq.where(
-						healthConditionsIdsExpr.in(resultList.stream().map(CaseExportDto::getHealthConditionsId).collect(Collectors.toList())));
-					healthConditionsList = em.createQuery(healthConditionsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
-					healthConditions = healthConditionsList.stream().collect(Collectors.toMap(HealthConditions::getId, Function.identity()));
-				}
-			}
 
 			long timestamp4 = System.currentTimeMillis();
 			System.out.println(">>*<< Pres Treat Clin HealthCond query time: " + (timestamp4 - timestamp3));
@@ -1066,10 +1056,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 				if (exportConfiguration == null || exportConfiguration.getProperties().contains(CaseExportDto.COUNTRY)) {
 					exportDto.setCountry(configFacade.getEpidPrefix());
-				}
-				if (healthConditions != null) {
-					Optional.ofNullable(healthConditions.get(exportDto.getHealthConditionsId()))
-						.ifPresent(healthCondition -> exportDto.setHealthConditions(HealthConditionsMapper.toDto(healthCondition)));
 				}
 				if (firstPreviousHospitalizations != null) {
 					Optional.ofNullable(firstPreviousHospitalizations.get(exportDto.getHospitalizationId()))

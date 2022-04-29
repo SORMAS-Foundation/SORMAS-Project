@@ -121,7 +121,6 @@ public class CaseExportDto implements Serializable {
 	private long personId;
 	private long epiDataId;
 	private long hospitalizationId;
-	private long healthConditionsId;
 	private String uuid;
 	private String epidNumber;
 	private Disease disease;
@@ -347,7 +346,7 @@ public class CaseExportDto implements Serializable {
 
 	//@formatter:off
 	public CaseExportDto(long id, long personId, String addressGpsCoordinates, long epiDataId, SymptomsDto symptoms,
-						 long hospitalizationId, long healthConditionsId, String uuid, String epidNumber,
+						 long hospitalizationId, HealthConditionsDto healthConditions, String uuid, String epidNumber,
 						 Disease disease, DiseaseVariant diseaseVariant, String diseaseDetails, String diseaseVariantDetails,
 						 String personUuid, String firstName, String lastName, Salutation salutation, String otherSalutation, Sex sex, YesNoUnknown pregnant,
 						 String approximateAge, String ageGroup,  BirthDateDto birthdate, Date reportDate, String region, String district, String community,
@@ -397,7 +396,7 @@ public class CaseExportDto implements Serializable {
 		this.epiDataId = epiDataId;
 		this.symptoms = symptoms;
 		this.hospitalizationId = hospitalizationId;
-		this.healthConditionsId = healthConditionsId;
+		this.healthConditions = healthConditions;
 		this.uuid = uuid;
 		this.epidNumber = epidNumber;
 		this.armedForcesRelationType = armedForcesRelationType;
@@ -560,10 +559,6 @@ public class CaseExportDto implements Serializable {
 
 	public long getHospitalizationId() {
 		return hospitalizationId;
-	}
-
-	public long getHealthConditionsId() {
-		return healthConditionsId;
 	}
 
 	@Order(2)
@@ -2366,10 +2361,6 @@ public class CaseExportDto implements Serializable {
 
 	public void setHospitalizationId(long hospitalizationId) {
 		this.hospitalizationId = hospitalizationId;
-	}
-
-	public void setHealthConditionsId(long healthConditionsId) {
-		this.healthConditionsId = healthConditionsId;
 	}
 
 	public void setUuid(String uuid) {

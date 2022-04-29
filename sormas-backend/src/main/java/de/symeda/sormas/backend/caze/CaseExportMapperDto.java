@@ -60,6 +60,8 @@ import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.YesNoUnknown;
+import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
+import de.symeda.sormas.backend.clinicalcourse.HealthConditionsMapper;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.symptoms.Symptoms;
 import de.symeda.sormas.backend.symptoms.SymptomsFacadeEjb;
@@ -71,7 +73,6 @@ public class CaseExportMapperDto implements Serializable {
 	private long personId;
 	private long epiDataId;
 	private long hospitalizationId;
-	private long healthConditionsId;
 	private String uuid;
 	private String epidNumber;
 	private Disease disease;
@@ -274,52 +275,52 @@ public class CaseExportMapperDto implements Serializable {
 
     //@formatter:off
     public CaseExportMapperDto(long id, long personId, Double personAddressLatitude, Double personAddressLongitude, Float personAddressLatLonAcc, long epiDataId, Symptoms symptoms,
-                               long hospitalizationId, long healthConditionsId, String uuid, String epidNumber,
-                               Disease disease, DiseaseVariant diseaseVariant, String diseaseDetails, String diseaseVariantDetails,
-                               String personUuid, String firstName, String lastName, Salutation salutation, String otherSalutation, Sex sex, YesNoUnknown pregnant,
-                               Integer approximateAge, ApproximateAgeType approximateAgeType, Integer birthdateDD, Integer birthdateMM,
-                               Integer birthdateYYYY, Date reportDate, String region, String district, String community,
-                               FacilityType facilityType, String healthFacility, String healthFacilityUuid, String healthFacilityDetails, String pointOfEntry,
-                               String pointOfEntryUuid, String pointOfEntryDetails, CaseClassification caseClassification,
-                               YesNoUnknown clinicalConfirmation, YesNoUnknown epidemiologicalConfirmation, YesNoUnknown laboratoryDiagnosticConfirmation,
-                               Boolean notACaseReasonNegativeTest, Boolean notACaseReasonPhysicianInformation, Boolean notACaseReasonDifferentPathogen, Boolean notACaseReasonOther,
-                               String notACaseReasonDetails, InvestigationStatus investigationStatus, Date investigatedDate,
-                               CaseOutcome outcome, Date outcomeDate,
-                               YesNoUnknown sequelae, String sequelaeDetails,
-                               YesNoUnknown bloodOrganOrTissueDonated,
-                               FollowUpStatus followUpStatus, Date followUpUntil,
-                               Boolean nosocomialOutbreak, InfectionSetting infectionSetting,
-                               YesNoUnknown prohibitionToWork, Date prohibitionToWorkFrom, Date prohibitionToWorkUntil,
-                               YesNoUnknown reInfection, Date previousInfectionDate, ReinfectionStatus reinfectionStatus, Object reinfectionDetails,
-                               // Quarantine
-                               QuarantineType quarantine, String quarantineTypeDetails, Date quarantineFrom, Date quarantineTo,
-                               String quarantineHelpNeeded,
-                               boolean quarantineOrderedVerbally, boolean quarantineOrderedOfficialDocument, Date quarantineOrderedVerballyDate,
-                               Date quarantineOrderedOfficialDocumentDate, boolean quarantineExtended, boolean quarantineReduced,
-                               boolean quarantineOfficialOrderSent, Date quarantineOfficialOrderSentDate,
-                               YesNoUnknown admittedToHealthFacility, Date admissionDate, Date dischargeDate, YesNoUnknown leftAgainstAdvice, PresentCondition presentCondition,
-                               Date deathDate, Date burialDate, BurialConductor burialConductor, String burialPlaceDescription,
-                               String addressRegion, String addressDistrict, String addressCommunity, String city, String street, String houseNumber, String additionalInformation, String postalCode,
-                               String facility, String facilityUuid, String facilityDetails,
-                               String phone, String phoneOwner, String emailAddress, String otherContactDetails, EducationType educationType, String educationDetails,
-                               OccupationType occupationType, String occupationDetails, ArmedForcesRelationType ArmedForcesRelationType, YesNoUnknown contactWithSourceCaseKnown,
-                               //Date onsetDate,
-                               VaccinationStatus vaccinationStatus, YesNoUnknown postpartum, Trimester trimester,
-                               long eventCount,
+							   long hospitalizationId, HealthConditions healthConditions, String uuid, String epidNumber,
+							   Disease disease, DiseaseVariant diseaseVariant, String diseaseDetails, String diseaseVariantDetails,
+							   String personUuid, String firstName, String lastName, Salutation salutation, String otherSalutation, Sex sex, YesNoUnknown pregnant,
+							   Integer approximateAge, ApproximateAgeType approximateAgeType, Integer birthdateDD, Integer birthdateMM,
+							   Integer birthdateYYYY, Date reportDate, String region, String district, String community,
+							   FacilityType facilityType, String healthFacility, String healthFacilityUuid, String healthFacilityDetails, String pointOfEntry,
+							   String pointOfEntryUuid, String pointOfEntryDetails, CaseClassification caseClassification,
+							   YesNoUnknown clinicalConfirmation, YesNoUnknown epidemiologicalConfirmation, YesNoUnknown laboratoryDiagnosticConfirmation,
+							   Boolean notACaseReasonNegativeTest, Boolean notACaseReasonPhysicianInformation, Boolean notACaseReasonDifferentPathogen, Boolean notACaseReasonOther,
+							   String notACaseReasonDetails, InvestigationStatus investigationStatus, Date investigatedDate,
+							   CaseOutcome outcome, Date outcomeDate,
+							   YesNoUnknown sequelae, String sequelaeDetails,
+							   YesNoUnknown bloodOrganOrTissueDonated,
+							   FollowUpStatus followUpStatus, Date followUpUntil,
+							   Boolean nosocomialOutbreak, InfectionSetting infectionSetting,
+							   YesNoUnknown prohibitionToWork, Date prohibitionToWorkFrom, Date prohibitionToWorkUntil,
+							   YesNoUnknown reInfection, Date previousInfectionDate, ReinfectionStatus reinfectionStatus, Object reinfectionDetails,
+							   // Quarantine
+							   QuarantineType quarantine, String quarantineTypeDetails, Date quarantineFrom, Date quarantineTo,
+							   String quarantineHelpNeeded,
+							   boolean quarantineOrderedVerbally, boolean quarantineOrderedOfficialDocument, Date quarantineOrderedVerballyDate,
+							   Date quarantineOrderedOfficialDocumentDate, boolean quarantineExtended, boolean quarantineReduced,
+							   boolean quarantineOfficialOrderSent, Date quarantineOfficialOrderSentDate,
+							   YesNoUnknown admittedToHealthFacility, Date admissionDate, Date dischargeDate, YesNoUnknown leftAgainstAdvice, PresentCondition presentCondition,
+							   Date deathDate, Date burialDate, BurialConductor burialConductor, String burialPlaceDescription,
+							   String addressRegion, String addressDistrict, String addressCommunity, String city, String street, String houseNumber, String additionalInformation, String postalCode,
+							   String facility, String facilityUuid, String facilityDetails,
+							   String phone, String phoneOwner, String emailAddress, String otherContactDetails, EducationType educationType, String educationDetails,
+							   OccupationType occupationType, String occupationDetails, ArmedForcesRelationType ArmedForcesRelationType, YesNoUnknown contactWithSourceCaseKnown,
+							   //Date onsetDate,
+							   VaccinationStatus vaccinationStatus, YesNoUnknown postpartum, Trimester trimester,
+							   long eventCount,
 							   Long prescriptionCount,
 							   Long treatmentCount,
 							   Long clinicalVisitCount,
 							   String externalID, String externalToken, String internalToken,
-                               String birthName, String birthCountryIsoCode, String birthCountryName, String citizenshipIsoCode, String citizenshipCountryName,
-                               CaseIdentificationSource caseIdentificationSource, ScreeningType screeningType,
-                               // responsible jurisdiction
-                               String responsibleRegion, String responsibleDistrict, String responsibleCommunity,
-                               // clinician
-                               String clinicianName, String clinicianPhone, String clinicianEmail,
-                               // users
-                               Long reportingUserId, Long followUpStatusChangeUserId,
-                               Date previousQuarantineTo, String quarantineChangeComment,
-                               boolean isInJurisdiction
+							   String birthName, String birthCountryIsoCode, String birthCountryName, String citizenshipIsoCode, String citizenshipCountryName,
+							   CaseIdentificationSource caseIdentificationSource, ScreeningType screeningType,
+							   // responsible jurisdiction
+							   String responsibleRegion, String responsibleDistrict, String responsibleCommunity,
+							   // clinician
+							   String clinicianName, String clinicianPhone, String clinicianEmail,
+							   // users
+							   Long reportingUserId, Long followUpStatusChangeUserId,
+							   Date previousQuarantineTo, String quarantineChangeComment,
+							   boolean isInJurisdiction
     ) {
         //@formatter:on
 
@@ -329,7 +330,7 @@ public class CaseExportMapperDto implements Serializable {
         this.epiDataId = epiDataId;
         this.symptoms = SymptomsFacadeEjb.toDto(symptoms);
         this.hospitalizationId = hospitalizationId;
-        this.healthConditionsId = healthConditionsId;
+        this.healthConditions = HealthConditionsMapper.toDto(healthConditions);
         this.uuid = uuid;
         this.epidNumber = epidNumber;
         this.armedForcesRelationType = ArmedForcesRelationType;
@@ -465,7 +466,7 @@ public class CaseExportMapperDto implements Serializable {
 				epiDataId,
 				symptoms,
 				hospitalizationId,
-				healthConditionsId,
+				healthConditions,
 				uuid,
 				epidNumber,
 				disease,
