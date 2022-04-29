@@ -97,6 +97,45 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	}
 
 	@Override
+	public List<TreatmentIndexDto> getTreatmentForPrescription(String prescriptionUuid) {
+		CriteriaBuilder cb = em.getCriteriaBuilder();
+		CriteriaQuery<TreatmentIndexDto> cq = cb.createQuery(TreatmentIndexDto.class);
+		Root<Treatment> treatment = cq.from(Treatment.class);
+		TreatmentJoins joins = new TreatmentJoins(treatment);
+
+		cq.multiselect(
+				treatment.get(Treatment.UUID),
+				treatment.get(Treatment.TREATMENT_TYPE),
+				treatment.get(Treatment.TREATMENT_DETAILS),
+				treatment.get(Treatment.TYPE_OF_DRUG),
+				treatment.get(Treatment.TREATMENT_DATE_TIME),
+				treatment.get(Treatment.DOSE),
+				treatment.get(Treatment.ROUTE),
+				treatment.get(Treatment.ROUTE_DETAILS),
+				treatment.get(Treatment.EXECUTING_CLINICIAN),
+				JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, joins.getCaseJoins()))));
+
+		Predicate filter = null;
+		filter = cb.equal(joins.getPrescription().get(Prescription.UUID), prescriptionUuid);
+
+		if(filter != null) {
+			cq.where(filter);
+		}
+
+		cq.orderBy(cb.desc(treatment.get(Treatment.TREATMENT_DATE_TIME)));
+
+		List<TreatmentIndexDto> treatmentIndexDtos = em.createQuery(cq).getResultList();
+
+		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
+		pseudonymizer.pseudonymizeDtoCollection(TreatmentIndexDto.class, treatmentIndexDtos, t -> t.getInJurisdiction(), (t, inJurisdiction) -> {
+			pseudonymizer.pseudonymizeDto(TreatmentIndexDto.TreatmentIndexType.class, t.getTreatmentIndexType(), inJurisdiction, null);
+			pseudonymizer.pseudonymizeDto(TreatmentIndexDto.TreatmentIndexRoute.class, t.getTreatmentIndexRoute(), inJurisdiction, null);
+		});
+
+		return treatmentIndexDtos;
+	}
+
+	@Override
 	public TreatmentDto getTreatmentByUuid(String uuid) {
 		return convertToDto(service.getByUuid(uuid), Pseudonymizer.getDefault(userService::hasRight));
 	}

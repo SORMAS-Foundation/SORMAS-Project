@@ -1,10 +1,13 @@
 package de.symeda.sormas.ui.therapy;
 
 import java.util.Collection;
+import java.util.List;
+import java.util.function.Consumer;
 
 import com.vaadin.server.Page;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
 import com.vaadin.ui.Window;
@@ -88,10 +91,41 @@ public class TherapyController {
 
 				@Override
 				public void onDelete() {
-					FacadeProvider.getPrescriptionFacade().deletePrescription(prescription.getUuid());
-					popupWindow.close();
-					if (callback != null) {
-						callback.run();
+					List<TreatmentIndexDto> treatmentDtos = FacadeProvider.getTreatmentFacade().getTreatmentForPrescription(prescription.getUuid());
+					if(treatmentDtos.size() > 0 ){
+						Consumer<Boolean> resultConsumer = new Consumer<Boolean>() {
+
+							@Override
+							public void accept(Boolean option) {
+								if (option) {
+									//delete just prescription and leave the treatments standalone
+									System.out.println();
+								}
+								else {
+									//delete the prescription and all the treatments assign with
+									System.out.println();
+								}
+
+								popupWindow.close();
+								if (callback != null) {
+									callback.run();
+								}
+							}
+						};
+						VaadinUiUtil.showChooseOptionPopup(
+								I18nProperties.getCaption(Captions.titleDeletePrescriptionWithTreatment),
+								new Label(I18nProperties.getString(Strings.confirmationDeletePrescriptionWithTreatment)),
+								I18nProperties.getCaption(Captions.prescriptionAlone),
+								I18nProperties.getCaption(Captions.prescriptionWithTreatment),
+								500,
+								resultConsumer);
+					}
+					else {
+						FacadeProvider.getPrescriptionFacade().deletePrescription(prescription.getUuid());
+						popupWindow.close();
+						if (callback != null) {
+							callback.run();
+						}
 					}
 				}
 			}, I18nProperties.getString(Strings.entityPrescription));

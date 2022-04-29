@@ -1753,6 +1753,9 @@ public interface Captions {
 	String PrescriptionExport_caseName = "PrescriptionExport.caseName";
 	String PrescriptionExport_caseUuid = "PrescriptionExport.caseUuid";
 	String prescriptionNewPrescription = "prescriptionNewPrescription";
+	String titleDeletePrescriptionWithTreatment = "titleDeletePrescriptionWithTreatment";
+	String prescriptionAlone = "prescriptionAlone";
+	String prescriptionWithTreatment = "prescriptionWithTreatment";
 	String Region = "Region";
 	String Region_archived = "Region.archived";
 	String Region_country = "Region.country";
