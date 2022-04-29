@@ -159,6 +159,8 @@ public class CaseDirectoryPage {
   public static final By CASE_SEAT_NUMBER = By.id("seatNumber");
   public static final By CASE_ACTION_CONFIRM = By.id("actionConfirm");
   public static final By CASE_ACTION_CANCEL = By.id("actionCancel");
+  public static final By REINFECTION_STATUS_COMBOBOX =
+      By.cssSelector("[id='reinfectionStatus'] [class='v-filterselect-button']");
 
   public static By getResultByIndex(String rowNumber) {
     return By.xpath(String.format("//tr[%s]//a", rowNumber));

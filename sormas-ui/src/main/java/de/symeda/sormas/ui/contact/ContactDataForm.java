@@ -651,7 +651,6 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 											verticalLayout,
 											I18nProperties.getString(Strings.messageContactConversionFollowUpCommentLargeOmitMessage),
 											I18nProperties.getString(Strings.messageContactConversionFollowUpCommentLargeAdjustComment),
-											770,
 											confirm -> {
 												if (Boolean.TRUE.equals(confirm)) {
 													ControllerProvider.getCaseController().createFromContact(getValue());
