@@ -179,7 +179,7 @@ Feature: Create events
     When I create and download an event document from template
     And I verify that the event document is downloaded and correctly named
 
-  @issue=SORDEV-5491 @env_main @ignore
+  @issue=SORDEV-5491 @env_main
   Scenario: Add a participant to an event and create case
     Given I log in with National User
     And I click on the Events button from navbar
@@ -474,6 +474,33 @@ Feature: Create events
       Then I click on Edit event group button from event groups box
       And I click on the Navigate to event directory filtered on this event group
       And I check the if Event is displayed correctly in Events Directory table
+
+  @issue=SORDEV-7461 @env_main
+  Scenario: Testing bulk edit of Events
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    When I create a new event with specific data
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    Then I check the created data is correctly displayed in event edit page
+    And I click on the Events button from navbar
+    Then I click on the RESET FILTERS button from Event
+    And I click on the More button on Event directory page
+    And I click Enter Bulk Edit Mode on Event directory page
+    And I select first 2 results in grid in Event Directory
+    And I click on Bulk Actions combobox on Event Directory Page
+    And I click on Edit Events from Bulk Actions combobox on Event Directory Page
+    Then I click to bulk change event managements status for selected events
+    And I click on SAVE button in Link Event to group form
+    And I navigate to the last created through API Event page via URL
+    Then I check if Event Management Status is set to "PENDING"
+    And I navigate to the last created Event page via URL
+    Then I check if Event Management Status is set to "PENDING"
 
   @issue=SORDEV-5967 @env_de
   Scenario: Add evidence fields for event clusters

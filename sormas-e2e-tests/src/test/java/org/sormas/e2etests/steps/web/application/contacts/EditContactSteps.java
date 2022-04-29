@@ -303,7 +303,7 @@ public class EditContactSteps implements En {
           fillExtraComment(aQuarantineOrder.getExtraComment());
           webDriverHelpers.clickOnWebElementBySelector(
               EditContactPage.CREATE_QUARANTINE_ORDER_BUTTON);
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CONTACT_SAVED_POPUP);
+          TimeUnit.SECONDS.sleep(2); // wait for download
         });
 
     And(
