@@ -73,8 +73,6 @@ public interface SampleFacade {
 
 	boolean isDeleted(String sampleUuid);
 
-	Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(List<Long> caseIds);
-
 	List<SampleDto> getByCaseUuids(List<String> caseUuids);
 
 	Boolean isSampleEditAllowed(String sampleUuid);

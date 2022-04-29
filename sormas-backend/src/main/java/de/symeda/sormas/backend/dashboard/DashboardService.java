@@ -32,6 +32,8 @@ import de.symeda.sormas.api.dashboard.DashboardCriteria;
 import de.symeda.sormas.api.dashboard.DashboardEventDto;
 import de.symeda.sormas.api.event.EventStatus;
 import de.symeda.sormas.api.person.PresentCondition;
+import de.symeda.sormas.api.sample.PathogenTestResultType;
+import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseJoins;
@@ -44,11 +46,12 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventJoins;
 import de.symeda.sormas.backend.event.EventQueryContext;
 import de.symeda.sormas.backend.event.EventService;
-import de.symeda.sormas.backend.location.Location;
-import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.region.Region;
+import de.symeda.sormas.backend.location.Location;
+import de.symeda.sormas.backend.person.Person;
+import de.symeda.sormas.backend.sample.Sample;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.util.JurisdictionHelper;
 import de.symeda.sormas.backend.util.ModelConstants;
@@ -99,6 +102,50 @@ public class DashboardService {
 			result = em.createQuery(cq).getResultList();
 		} else {
 			result = Collections.emptyList();
+		}
+
+		return result;
+	}
+
+	public Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(DashboardCriteria dashboardCriteria) {
+
+		// 1. Get all pathogen test results for relevant cases
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<PathogenTestResultDto> cq = cb.createQuery(PathogenTestResultDto.class);
+		final Root<Case> caze = cq.from(Case.class);
+		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
+		final CaseJoins joins = caseQueryContext.getJoins();
+		final Join<Case, Sample> sample = joins.getSamples();
+
+		cq.multiselect(caze.get(Case.ID), sample.get(Sample.PATHOGEN_TEST_RESULT), sample.get(Sample.SAMPLE_DATE_TIME));
+		cq.distinct(true);
+
+		final Predicate userFilter = caseService.createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
+		final Predicate criteriaFilter = createCaseCriteriaFilter(dashboardCriteria, caseQueryContext);
+		final Predicate sampleFilter = cb.and(
+			cb.isFalse(sample.get(Sample.DELETED)),
+			cb.or(cb.isNull(sample.get(Sample.SPECIMEN_CONDITION)), cb.equal(sample.get(Sample.SPECIMEN_CONDITION), SpecimenCondition.ADEQUATE)));
+		cq.where(CriteriaBuilderHelper.and(cb, userFilter, criteriaFilter, sampleFilter));
+
+		final List<PathogenTestResultDto> queryResult = QueryHelper.getResultList(em, cq, null, null);
+
+		// 2. Get most recent pathogen test result for each case
+		final Map<Long, PathogenTestResultDto> caseTestResults = new HashMap<>();
+		queryResult.forEach(caseTestsDto -> {
+			final Long caseId = caseTestsDto.getCaseId();
+			if (!caseTestResults.containsKey(caseId) || caseTestResults.get(caseId).getSampleDateTime().before(caseTestsDto.getSampleDateTime())) {
+				caseTestResults.put(caseId, caseTestsDto);
+			}
+		});
+
+		// 3. Count test results by PathogenTestResultType
+		final Map<PathogenTestResultType, Long> result = new HashMap<>();
+		for (PathogenTestResultType pathogenTestResultType : PathogenTestResultType.values()) {
+			long count =
+				caseTestResults.values().stream().filter(caseTestsDto -> caseTestsDto.getPathogenTestResultType() == pathogenTestResultType).count();
+			if (count > 0) {
+				result.put(pathogenTestResultType, count);
+			}
 		}
 
 		return result;
@@ -295,8 +342,11 @@ public class DashboardService {
 		List<Object[]> results = em.createQuery(cq).getResultList();
 
 		Map<PresentCondition, Integer> resultMap = results.stream()
-			.collect(Collectors.toMap(e -> e[0] != null ? (PresentCondition) e[0] : PresentCondition.UNKNOWN,
-				e -> ((Number) e[1]).intValue(), (v1, v2) -> v1 + v2));
+			.collect(
+				Collectors.toMap(
+					e -> e[0] != null ? (PresentCondition) e[0] : PresentCondition.UNKNOWN,
+					e -> ((Number) e[1]).intValue(),
+					(v1, v2) -> v1 + v2));
 		return resultMap;
 	}
 
