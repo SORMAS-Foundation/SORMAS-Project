@@ -193,7 +193,7 @@ public class CampaignFormDataImporter extends DataImporter {
 									I18nProperties.getValidationError(Validations.importEntryDistrictNotInUsersJurisdiction, entry[i], propertyPath));
 							}
 							List<DistrictReferenceDto> district =
-								FacadeProvider.getDistrictFacade().getByName(entry[i], campaignFormData.getRegion(), true);
+								FacadeProvider.getDistrictFacade().getByExternalID(Long.parseLong(entry[i]), campaignFormData.getRegion(), true);
 							if (district.isEmpty()) {
 								throw new ImportErrorException(
 									I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrRegion, entry[i], propertyPath));
@@ -210,7 +210,7 @@ public class CampaignFormDataImporter extends DataImporter {
 										.getValidationError(Validations.importEntryCommunityNotInUsersJurisdiction, entry[i], propertyPath));
 							}
 							List<CommunityReferenceDto> community =
-								FacadeProvider.getCommunityFacade().getByName(entry[i], campaignFormData.getDistrict(), true);
+								FacadeProvider.getCommunityFacade().getByExternalID(Long.parseLong(entry[i]), campaignFormData.getDistrict(), true);
 							if (community.isEmpty()) {
 								throw new ImportErrorException(
 									I18nProperties.getValidationError(Validations.importEntryDoesNotExistDbOrDistrict, entry[i], propertyPath));

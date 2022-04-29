@@ -15,8 +15,11 @@
 
 package de.symeda.sormas.ui.campaign.campaigndata;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -40,7 +43,9 @@ import com.vaadin.v7.ui.CustomField;
 import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.data.Property.ReadOnlyException;
 import com.vaadin.v7.data.Validator;
+import com.vaadin.v7.data.util.converter.Converter.ConversionException;
 import com.vaadin.v7.shared.ui.label.ContentMode;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
@@ -277,15 +282,15 @@ public class CampaignFormBuilder {
 					(Class<T>) BasicCheckboxHelper.class);
 
 		} else if (type == CampaignFormElementType.DATE) {
-			// Flash class is only use as a placeholder
+			// DateField class is only use as a placeholder
 			field = fieldFactory.createField(CampaignFormElementEnumOptions.class, (Class<T>) DateField.class);
 
 		} else if (type == CampaignFormElementType.ARRAY) {
-			// Flash class is only use as a placeholder
+			// DateField class is only use as a placeholder
 			field = fieldFactory.createField(CampaignFormElementEnumOptions.class, (Class<T>) DateField.class);
 
 		} else if (type == CampaignFormElementType.RANGE) {
-			// Flash class is only use as a placeholder
+			// DateField class is only use as a placeholder
 			field = fieldFactory.createField(CampaignFormElementEnumOptions.class, (Class<T>) DateField.class);
 
 		} else {
@@ -438,16 +443,19 @@ if(value != null) {
 			((TextArea) field).setValue(value != null ? value.toString() : null);
 			break;
 		case DATE:
-if(value != null) {
-				
-				if(value.equals(true)) {
-					field.setEnabled(true);
-				} else if(value.equals(false)){
-					field.setEnabled(false);
-					//Notification.show("Warning:", "Expression resulted in wrong value please check your data 2", Notification.TYPE_WARNING_MESSAGE);
+			if(value != null) {
+				SimpleDateFormat dateFormat = new SimpleDateFormat("MM/dd/yyyy");
+				try {
+					Date date = (Date) dateFormat.parseObject(value + "");
+						((DateField) field).setValue(value != null ? date : null);
+						 System.out.println(">>>>>>>>>>>>>>>>>>> daTE VALEUE been checked >>" +date);
+					} catch (ReadOnlyException | ConversionException | ParseException e) {
+									// TODO Auto-generated catch block
+					((DateField) field).setValue(null);
+					 System.out.println(">>>>>>>>>>>>>>>>>>> daTE VALEUE been checked >>" +value);
+					e.printStackTrace();
 				}
 			};
-			// ((TextArea) field).setValue(value != null ? value.toString() : null);
 			break;
 		case RADIO:
 			((OptionGroup) field).select(Sets.newHashSet(value).toString().replace("[", "").replace("]", ""));

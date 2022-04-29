@@ -109,6 +109,8 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			} else if (DateField.class.isAssignableFrom(fieldType)
 					&& CampaignFormElementEnumOptions.class.isAssignableFrom(type)) {
 				
+				System.out.println("sssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssssss");
+				
 				DateField field = new DateField();
 				field.setDateFormat(DateFormatHelper.getDateFormatPattern());
 				field.setLenient(true);

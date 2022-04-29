@@ -280,7 +280,6 @@ public class CampaignEditForm extends AbstractEditForm<CampaignDto> { //Create n
 		
 		//To Do: Check why set this to nulll in the first place
 		final List<CampaignDashboardElement> campaignDashboardElements = FacadeProvider.getCampaignFacade().getCampaignDashboardElements(null, PRE_CAMPAIGN);
-		System.out.println(campaignDashboardElements.get(1).getPhase());
 		campaignDashboardGridComponent = new CampaignDashboardElementsGridComponent(
 			this.campaignDto == null
 				? Collections.EMPTY_LIST

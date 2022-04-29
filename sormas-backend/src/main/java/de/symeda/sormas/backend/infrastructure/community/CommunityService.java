@@ -81,7 +81,7 @@ public class CommunityService extends AbstractInfrastructureAdoService<Community
 		CriteriaQuery<Community> cq = cb.createQuery(getElementClass());
 		Root<Community> from = cq.from(getElementClass());
 
-		Predicate filter = cb.equal(from.get("externalId"), ext_id);
+		Predicate filter = cb.equal(from.get("externalID"), ext_id);
 		
 		if (!includeArchivedEntities) {
 			filter = cb.and(filter, createBasicFilter(cb, from));

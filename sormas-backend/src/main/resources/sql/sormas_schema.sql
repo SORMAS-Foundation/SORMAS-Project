@@ -8497,6 +8497,31 @@ alter table campaigndiagramdefinition alter column formtype set not null;
 
 INSERT INTO schema_version (version_number, comment) VALUES (419, 'patch for #99 5.c and forget password');
 
+
+--adjust integer function to exclude date long
+
+CREATE OR REPLACE FUNCTION public.cast_to_int(IN text,IN integer)
+    RETURNS integer
+    LANGUAGE 'plpgsql'
+    IMMUTABLE
+    PARALLEL UNSAFE
+    COST 100
+AS $BODY$
+begin
+    return cast($1 as integer);
+exception
+    when invalid_text_representation then
+        return $2;
+	when OTHERS then
+        return 0;
+end;
+$BODY$;
+
+INSERT INTO schema_version (version_number, comment) VALUES (420 'patch for integer out of range');
+
+
+
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
 
 

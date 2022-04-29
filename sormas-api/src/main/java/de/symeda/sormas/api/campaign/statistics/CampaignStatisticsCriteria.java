@@ -25,7 +25,7 @@ public class CampaignStatisticsCriteria extends BaseCriteria implements Serializ
 	private AreaReferenceDto area;
 	private RegionReferenceDto region;
 	private DistrictReferenceDto district;
-	private CommunityReferenceDto community;
+	private CommunityReferenceDto community; 
 
 	private CampaignJurisdictionLevel groupingLevel;
 

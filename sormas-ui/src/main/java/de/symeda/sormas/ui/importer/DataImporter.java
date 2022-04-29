@@ -60,6 +60,7 @@ import de.symeda.sormas.api.person.SimilarPersonDto;
 import de.symeda.sormas.api.infrastructure.area.AreaReferenceDto;
 import de.symeda.sormas.api.infrastructure.continent.ContinentReferenceDto;
 import de.symeda.sormas.api.infrastructure.country.CountryReferenceDto;
+import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
@@ -462,6 +463,9 @@ public abstract class DataImporter {
 				return true;
 			}
 		}
+		
+	
+		
 		/*
 		if (propertyType.isAssignableFrom(SubcontinentReferenceDto.class)) {
 			List<SubcontinentReferenceDto> subcontinents = FacadeProvider.getSubcontinentFacade().getByDefaultName(entry, false);

@@ -1,6 +1,7 @@
 package de.symeda.sormas.backend.campaign.form;
 
 import java.io.IOException;
+import java.text.SimpleDateFormat;
 import java.util.Arrays;
 import java.util.Collections;
 import java.util.Comparator;
@@ -23,6 +24,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.jsoup.safety.Whitelist;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import com.google.protobuf.TextFormat.ParseException;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormElement;
@@ -322,9 +324,23 @@ System.out.println("dssssssssssssssefaasdgasdgasdgasdfasdfasdfasfeasfdasdfs " +s
 			}
 		}
 		
+		if (type.equals(CampaignFormElementType.DATE.toString())) {
+			 SimpleDateFormat dateFormat = new SimpleDateFormat("dd-MM-yyyy HH:mm:ss:ms");
+		        dateFormat.setLenient(false);
+			
+			        try {
+			            dateFormat.parse(value.trim());
+			            System.out.println(">>>>>>>>>>>>>>>>>>> daTE VALEUE been checked >>" +value);
+			     
+			} catch (java.text.ParseException e) {
+						// TODO Auto-generated catch block
+				return false;
+					}
+		}
+		
 		if (type.equals(CampaignFormElementType.DECIMAL.toString())) {
 			try {
-				System.out.println(">>>>>>>>>>>>>>>>>>> " +CampaignFormElementType.DECIMAL.toString());
+				
 				if (value.contains(".")) {
 					if (value.length() - value.indexOf(".") - 1 == 2) {
 

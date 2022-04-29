@@ -56,8 +56,9 @@ public class CampaignFormDataEditForm extends AbstractEditForm<CampaignFormDataD
 		this.area = area;
 	}
 
-	private static final String HTML_LAYOUT = fluidRowLocs(CampaignFormDataDto.CAMPAIGN, CampaignFormDataDto.FORM_DATE, CampaignFormDataEditForm.AREA)
-		+ fluidRowLocs(CampaignFormDataDto.REGION, CampaignFormDataDto.DISTRICT, CampaignFormDataDto.COMMUNITY, CampaignFormDataDto.FORM_TYPE)
+	private static final String HTML_LAYOUT =
+		fluidRowLocs(CampaignFormDataDto.CAMPAIGN, CampaignFormDataDto.FORM_DATE, CampaignFormDataEditForm.AREA)
+		+ fluidRowLocs(CampaignFormDataDto.REGION, CampaignFormDataDto.DISTRICT, CampaignFormDataDto.COMMUNITY)//, CampaignFormDataDto.FORM_TYPE)
 		+ loc(CAMPAIGN_FORM_LOC);
 
 	private static final long serialVersionUID = -8974009722689546941L;
