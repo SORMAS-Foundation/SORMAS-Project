@@ -529,67 +529,6 @@ public class SampleFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testGetNewTestResultCountByResultType() {
-
-		RDCFEntities rdcf = creator.createRDCFEntities();
-		UserReferenceDto user = creator.createUser(rdcf).toReference();
-		PersonReferenceDto person1 = creator.createPerson("Heinz", "First").toReference();
-		PersonReferenceDto person2 = creator.createPerson("Heinz", "Second").toReference();
-		CaseDataDto case1 = creator.createCase(user, person1, rdcf);
-		CaseDataDto case2 = creator.createCase(user, person2, rdcf);
-
-		Date date = new Date();
-		DashboardCriteria dashboardCriteria = new DashboardCriteria().region(case1.getResponsibleRegion())
-				.district(case1.getDistrict())
-				.disease(case1.getDisease())
-				.newCaseDateType(NewCaseDateType.REPORT)
-				.dateBetween(DateHelper.subtractDays(date, 1), DateHelper.addDays(date, 1));
-
-		DashboardFacade dashboardFacade = getDashboardFacade();
-		// no existing samples
-		Map<PathogenTestResultType, Long> resultMap = dashboardFacade.getTestResultCountByResultType(dashboardCriteria);
-		assertEquals(new Long(0), resultMap.values().stream().collect(Collectors.summingLong(Long::longValue)));
-		assertNull(resultMap.getOrDefault(PathogenTestResultType.INDETERMINATE, null));
-		assertNull(resultMap.getOrDefault(PathogenTestResultType.NEGATIVE, null));
-		assertNull(resultMap.getOrDefault(PathogenTestResultType.PENDING, null));
-		assertNull(resultMap.getOrDefault(PathogenTestResultType.POSITIVE, null));
-
-		// one pending sample with in one case
-		Facility lab = creator.createFacility("facility", rdcf.region, rdcf.district, rdcf.community);
-		creator.createSample(case1.toReference(), user, lab);
-
-		resultMap = dashboardFacade.getTestResultCountByResultType(dashboardCriteria);
-		assertEquals(new Long(1), resultMap.values().stream().collect(Collectors.summingLong(Long::longValue)));
-		assertNull(resultMap.getOrDefault(PathogenTestResultType.INDETERMINATE, null));
-		assertNull(resultMap.getOrDefault(PathogenTestResultType.NEGATIVE, null));
-		assertEquals(new Long(1), resultMap.getOrDefault(PathogenTestResultType.PENDING, null));
-		assertNull(resultMap.getOrDefault(PathogenTestResultType.POSITIVE, null));
-
-		// one pending sample in each of two cases
-		creator.createSample(case2.toReference(), user, lab);
-
-		resultMap = dashboardFacade.getTestResultCountByResultType(dashboardCriteria);
-		assertEquals(new Long(2), resultMap.values().stream().collect(Collectors.summingLong(Long::longValue)));
-		assertNull(resultMap.getOrDefault(PathogenTestResultType.INDETERMINATE, null));
-		assertNull(resultMap.getOrDefault(PathogenTestResultType.NEGATIVE, null));
-		assertEquals(new Long(2), resultMap.getOrDefault(PathogenTestResultType.PENDING, null));
-		assertNull(resultMap.getOrDefault(PathogenTestResultType.POSITIVE, null));
-
-		// one pending sample in each of two cases
-		// and one positive sample in one of the two cases
-		SampleDto sample = creator.createSample(case1.toReference(), user, lab);
-		sample.setPathogenTestResult(PathogenTestResultType.POSITIVE);
-		getSampleFacade().saveSample(sample);
-
-		resultMap = dashboardFacade.getTestResultCountByResultType(dashboardCriteria);
-		assertEquals(new Long(2), resultMap.values().stream().collect(Collectors.summingLong(Long::longValue)));
-		assertNull(resultMap.getOrDefault(PathogenTestResultType.INDETERMINATE, null));
-		assertNull(resultMap.getOrDefault(PathogenTestResultType.NEGATIVE, null));
-		assertEquals(new Long(1), resultMap.getOrDefault(PathogenTestResultType.PENDING, null));
-		assertEquals(new Long(1), resultMap.getOrDefault(PathogenTestResultType.POSITIVE, null));
-	}
-
-	@Test
 	public void testGetByCaseUuids() {
 
 		RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");

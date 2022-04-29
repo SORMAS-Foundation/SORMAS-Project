@@ -1,11 +1,16 @@
 package de.symeda.sormas.backend.dashboard;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
+import de.symeda.sormas.api.dashboard.DashboardFacade;
+import de.symeda.sormas.api.person.PersonReferenceDto;
+import de.symeda.sormas.backend.infrastructure.facility.Facility;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -80,76 +85,62 @@ public class DashboardFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testGetTestResultCountByResultType() {
 
-		TestDataCreator.RDCFEntities rdcf = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		UserDto user = creator
-			.createUser(rdcf.region.getUuid(), rdcf.district.getUuid(), rdcf.facility.getUuid(), "Surv", "Sup", UserRole.SURVEILLANCE_SUPERVISOR);
-		PersonDto cazePerson = creator.createPerson("Case", "Person");
-		Date reportAndOnsetDate = new Date();
-		CaseDataDto caze = creator.createCase(
-			user.toReference(),
-			cazePerson.toReference(),
-			Disease.EVD,
-			CaseClassification.PROBABLE,
-			InvestigationStatus.PENDING,
-			reportAndOnsetDate,
-			rdcf);
+		TestDataCreator.RDCFEntities rdcf = creator.createRDCFEntities();
+		UserReferenceDto user = creator.createUser(rdcf).toReference();
+		PersonReferenceDto person1 = creator.createPerson("Heinz", "First").toReference();
+		PersonReferenceDto person2 = creator.createPerson("Heinz", "Second").toReference();
+		CaseDataDto case1 = creator.createCase(user, person1, rdcf);
+		CaseDataDto case2 = creator.createCase(user, person2, rdcf);
 
-		SampleDto sample = creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
-		sample.setPathogenTestResult(PathogenTestResultType.NEGATIVE);
-		sample.setSpecimenCondition(SpecimenCondition.ADEQUATE);
+		Date date = new Date();
+		DashboardCriteria dashboardCriteria = new DashboardCriteria().region(case1.getResponsibleRegion())
+				.district(case1.getDistrict())
+				.disease(case1.getDisease())
+				.newCaseDateType(NewCaseDateType.REPORT)
+				.dateBetween(DateHelper.subtractDays(date, 1), DateHelper.addDays(date, 1));
 
+		DashboardFacade dashboardFacade = getDashboardFacade();
+		// no existing samples
+		Map<PathogenTestResultType, Long> resultMap = dashboardFacade.getTestResultCountByResultType(dashboardCriteria);
+		assertEquals(new Long(0), resultMap.values().stream().collect(Collectors.summingLong(Long::longValue)));
+		assertNull(resultMap.getOrDefault(PathogenTestResultType.INDETERMINATE, null));
+		assertNull(resultMap.getOrDefault(PathogenTestResultType.NEGATIVE, null));
+		assertNull(resultMap.getOrDefault(PathogenTestResultType.PENDING, null));
+		assertNull(resultMap.getOrDefault(PathogenTestResultType.POSITIVE, null));
+
+		// one pending sample with in one case
+		Facility lab = creator.createFacility("facility", rdcf.region, rdcf.district, rdcf.community);
+		creator.createSample(case1.toReference(), user, lab);
+
+		resultMap = dashboardFacade.getTestResultCountByResultType(dashboardCriteria);
+		assertEquals(new Long(1), resultMap.values().stream().collect(Collectors.summingLong(Long::longValue)));
+		assertNull(resultMap.getOrDefault(PathogenTestResultType.INDETERMINATE, null));
+		assertNull(resultMap.getOrDefault(PathogenTestResultType.NEGATIVE, null));
+		assertEquals(new Long(1), resultMap.getOrDefault(PathogenTestResultType.PENDING, null));
+		assertNull(resultMap.getOrDefault(PathogenTestResultType.POSITIVE, null));
+
+		// one pending sample in each of two cases
+		creator.createSample(case2.toReference(), user, lab);
+
+		resultMap = dashboardFacade.getTestResultCountByResultType(dashboardCriteria);
+		assertEquals(new Long(2), resultMap.values().stream().collect(Collectors.summingLong(Long::longValue)));
+		assertNull(resultMap.getOrDefault(PathogenTestResultType.INDETERMINATE, null));
+		assertNull(resultMap.getOrDefault(PathogenTestResultType.NEGATIVE, null));
+		assertEquals(new Long(2), resultMap.getOrDefault(PathogenTestResultType.PENDING, null));
+		assertNull(resultMap.getOrDefault(PathogenTestResultType.POSITIVE, null));
+
+		// one pending sample in each of two cases
+		// and one positive sample in one of the two cases
+		SampleDto sample = creator.createSample(case1.toReference(), user, lab);
+		sample.setPathogenTestResult(PathogenTestResultType.POSITIVE);
 		getSampleFacade().saveSample(sample);
 
-		DashboardCriteria dashboardCriteria = new DashboardCriteria().region(caze.getResponsibleRegion())
-			.district(caze.getDistrict())
-			.disease(caze.getDisease())
-			.newCaseDateType(NewCaseDateType.REPORT)
-			.dateBetween(DateHelper.subtractDays(reportAndOnsetDate, 1), DateHelper.addDays(reportAndOnsetDate, 1));
-
-		Map<PathogenTestResultType, Long> testResultCountByResultType = getDashboardFacade().getTestResultCountByResultType(dashboardCriteria);
-		Assert.assertNotNull(testResultCountByResultType);
-		Assert.assertEquals(1, (long) testResultCountByResultType.get(PathogenTestResultType.NEGATIVE));
-		Assert.assertNull(testResultCountByResultType.get(PathogenTestResultType.INDETERMINATE));
-		Assert.assertNull(testResultCountByResultType.get(PathogenTestResultType.NOT_DONE));
-		Assert.assertNull(testResultCountByResultType.get(PathogenTestResultType.PENDING));
-		Assert.assertNull(testResultCountByResultType.get(PathogenTestResultType.POSITIVE));
-
-		SampleDto sample2 = creator.createSample(caze.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
-		sample2.setPathogenTestResult(PathogenTestResultType.POSITIVE);
-		sample2.setSpecimenCondition(SpecimenCondition.ADEQUATE);
-
-		getSampleFacade().saveSample(sample2);
-
-		Map<PathogenTestResultType, Long> testResultCountByResultType2 = getDashboardFacade().getTestResultCountByResultType(dashboardCriteria);
-		Assert.assertNotNull(testResultCountByResultType2);
-		Assert.assertNull(testResultCountByResultType2.get(PathogenTestResultType.NEGATIVE));
-		Assert.assertNull(testResultCountByResultType2.get(PathogenTestResultType.INDETERMINATE));
-		Assert.assertNull(testResultCountByResultType2.get(PathogenTestResultType.NOT_DONE));
-		Assert.assertNull(testResultCountByResultType2.get(PathogenTestResultType.PENDING));
-		Assert.assertEquals(1, (long) testResultCountByResultType2.get(PathogenTestResultType.POSITIVE));
-
-		CaseDataDto caze2 = creator.createCase(
-				user.toReference(),
-				cazePerson.toReference(),
-				Disease.EVD,
-				CaseClassification.PROBABLE,
-				InvestigationStatus.PENDING,
-				reportAndOnsetDate,
-				rdcf);
-
-		SampleDto sample3 = creator.createSample(caze2.toReference(), new Date(), new Date(), user.toReference(), SampleMaterial.BLOOD, rdcf.facility);
-		sample3.setPathogenTestResult(PathogenTestResultType.NEGATIVE);
-		sample3.setSpecimenCondition(SpecimenCondition.ADEQUATE);
-
-		getSampleFacade().saveSample(sample3);
-
-		Map<PathogenTestResultType, Long> testResultCountByResultType3 = getDashboardFacade().getTestResultCountByResultType(dashboardCriteria);
-		Assert.assertNotNull(testResultCountByResultType3);
-		Assert.assertEquals(1, (long) testResultCountByResultType3.get(PathogenTestResultType.NEGATIVE));
-		Assert.assertNull(testResultCountByResultType3.get(PathogenTestResultType.INDETERMINATE));
-		Assert.assertNull(testResultCountByResultType3.get(PathogenTestResultType.NOT_DONE));
-		Assert.assertNull(testResultCountByResultType3.get(PathogenTestResultType.PENDING));
-		Assert.assertEquals(1, (long) testResultCountByResultType3.get(PathogenTestResultType.POSITIVE));
+		resultMap = dashboardFacade.getTestResultCountByResultType(dashboardCriteria);
+		assertEquals(new Long(2), resultMap.values().stream().collect(Collectors.summingLong(Long::longValue)));
+		assertNull(resultMap.getOrDefault(PathogenTestResultType.INDETERMINATE, null));
+		assertNull(resultMap.getOrDefault(PathogenTestResultType.NEGATIVE, null));
+		assertEquals(new Long(1), resultMap.getOrDefault(PathogenTestResultType.PENDING, null));
+		assertEquals(new Long(1), resultMap.getOrDefault(PathogenTestResultType.POSITIVE, null));
 	}
 
 	@Test
