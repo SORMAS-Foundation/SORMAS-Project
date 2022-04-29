@@ -384,9 +384,6 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		// add option to create additional pathogen tests
 		sampleController.addPathogenTestButton(sampleCreateComponent, true);
 
-		sampleCreateComponent.addCommitListener(window::close);
-		sampleCreateComponent.addDiscardListener(window::close);
-
 		LabMessageUiHelper.establishFinalCommitButtons(sampleCreateComponent);
 
 		return sampleCreateComponent;

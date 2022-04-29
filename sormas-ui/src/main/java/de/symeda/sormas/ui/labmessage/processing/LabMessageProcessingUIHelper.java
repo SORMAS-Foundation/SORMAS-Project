@@ -62,6 +62,7 @@ import de.symeda.sormas.ui.samples.SampleEditForm;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import javax.naming.CannotProceedException;
+import org.apache.commons.lang3.mutable.MutableObject;
 
 public class LabMessageProcessingUIHelper {
 	private LabMessageProcessingUIHelper() {
@@ -70,8 +71,25 @@ public class LabMessageProcessingUIHelper {
 	public static void showEditSampleWindow(SampleDto sample, List<PathogenTestDto> newPathogenTests, LabMessageDto labMessage, Consumer<SampleAndPathogenTests> commitHandler,
 											Runnable cancelHandler) {
 		Window window = VaadinUiUtil.createPopupWindow();
-		CommitDiscardWrapperComponent<SampleEditForm> sampleEditComponent = LabMessageProcessingUIHelper.getSampleEditComponent(sample, newPathogenTests, labMessage, commitHandler, cancelHandler, window);
-		showFormWithLabMessage(labMessage, sampleEditComponent, window, I18nProperties.getString(Strings.headingEditSample), false);
+		MutableObject<CommitDiscardWrapperComponent<SampleEditForm>> editComponentWrapper = new MutableObject<>();
+		// discard on close without commit or discard button clicked
+		Registration closeListener = window.addCloseListener((e) -> {
+			editComponentWrapper.getValue().discard();
+		});
+
+		CommitDiscardWrapperComponent<SampleEditForm> sampleEditComponent = LabMessageProcessingUIHelper.getSampleEditComponent(sample, newPathogenTests, labMessage, commitHandler, cancelHandler, () -> {
+			// do not discard
+			closeListener.remove();
+			window.close();
+		});
+
+		showFormWithLabMessage(labMessage, sampleEditComponent, window, I18nProperties.getString(Strings.headingEditSample), false, false);
+		sampleEditComponent.addDoneListener(() -> {
+			// prevent discard on close
+			closeListener.remove();
+			// close after commit/discard
+			window.close();
+		});
 	}
 
 	private static CommitDiscardWrapperComponent<SampleEditForm> getSampleEditComponent(
@@ -80,7 +98,7 @@ public class LabMessageProcessingUIHelper {
 			LabMessageDto labMessage,
 			Consumer<SampleAndPathogenTests> commitHandler,
 			Runnable cancelHandler,
-			Window window) {
+			Runnable closeOnNavigateToRefer) {
 		SampleController sampleController = ControllerProvider.getSampleController();
 		CommitDiscardWrapperComponent<SampleEditForm> sampleEditComponent =
 				sampleController.getSampleEditComponent(sample.getUuid(), sample.isPseudonymized(), sampleController.getDiseaseOf(sample), false);
@@ -132,11 +150,11 @@ public class LabMessageProcessingUIHelper {
 					FacadeProvider.getSampleFacade().getSampleByUuid(sampleEditComponent.getWrappedComponent().getValue().getUuid());
 			createSampleReferral(existingSample, disease, labMessage, commitHandler, cancelHandler);
 
-			window.close();
+			closeOnNavigateToRefer.run();
 		};
 		Consumer<SampleDto> editSample = referredTo -> {
 			showEditSampleWindow(referredTo, newPathogenTests, labMessage, commitHandler, cancelHandler);
-			window.close();
+			closeOnNavigateToRefer.run();
 		};
 
 		sampleController.addReferOrLinkToOtherLabButton(sampleEditComponent, sampleController.getDiseaseOf(sample), createReferral, editSample);
@@ -163,13 +181,22 @@ public class LabMessageProcessingUIHelper {
 	}
 
 	public static void showFormWithLabMessage(
-			LabMessageDto labMessageDto,
+			LabMessageDto labMessage,
 			CommitDiscardWrapperComponent<? extends Component> editComponent,
 			Window window,
 			String heading,
 			boolean entityCreated) {
+		showFormWithLabMessage(labMessage, editComponent, window, heading, entityCreated, true);
+	}
+	public static void showFormWithLabMessage(
+			LabMessageDto labMessage,
+			CommitDiscardWrapperComponent<? extends Component> editComponent,
+			Window window,
+			String heading,
+			boolean entityCreated,
+			boolean discardOnClose) {
 
-		addProcessedInMeantimeCheck(editComponent, labMessageDto, entityCreated);
+		addProcessedInMeantimeCheck(editComponent, labMessage, entityCreated);
 		LabMessageForm form = new LabMessageForm();
 		form.setWidth(550, Sizeable.Unit.PIXELS);
 
@@ -192,10 +219,18 @@ public class LabMessageProcessingUIHelper {
 		window.setCaption(heading);
 		UI.getCurrent().addWindow(window);
 
-		form.setValue(labMessageDto);
+		form.setValue(labMessage);
 
-		Registration closeListener = window.addCloseListener((e) -> editComponent.discard());
+		// discard on close without clicking discard/commit button
+		Registration closeListener = window.addCloseListener((e) -> {
+			if(discardOnClose) {
+				editComponent.discard();
+			}
+		});
+
+		// close after clicking commit or discard button
 		editComponent.addDoneListener(() -> {
+			// prevent discard on close
 			closeListener.remove();
 			window.close();
 		});
