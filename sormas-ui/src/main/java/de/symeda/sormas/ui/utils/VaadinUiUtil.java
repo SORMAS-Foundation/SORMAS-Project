@@ -260,12 +260,11 @@ public final class VaadinUiUtil {
 		String caption,
 		Component content,
 		String confirmCaption,
-		String cancelCaption,
-		Integer width) {
+		String cancelCaption) {
 
 		CompletableFuture<Boolean> ret = new CompletableFuture<>();
 
-		VaadinUiUtil.showConfirmationPopup(caption, content, confirmCaption, cancelCaption, width, ret::complete, true);
+		VaadinUiUtil.showConfirmationPopup(caption, content, confirmCaption, cancelCaption, null, ret::complete, true);
 
 		return ret;
 	}

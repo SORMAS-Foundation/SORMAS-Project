@@ -17,13 +17,6 @@ package de.symeda.sormas.ui.labmessage;
 
 import static de.symeda.sormas.ui.labmessage.processing.LabMessageProcessingUIHelper.showFormWithLabMessage;
 
-import de.symeda.sormas.ui.labmessage.processing.AbstractLabMessageProcessingFlow;
-import de.symeda.sormas.ui.labmessage.processing.LabMessageProcessingHelper;
-import de.symeda.sormas.ui.labmessage.processing.LabMessageProcessingUIHelper;
-import de.symeda.sormas.ui.labmessage.processing.PickOrCreateEntryResult;
-import de.symeda.sormas.ui.labmessage.processing.PickOrCreateEventResult;
-import de.symeda.sormas.ui.labmessage.processing.PickOrCreateSampleResult;
-import de.symeda.sormas.ui.labmessage.processing.SampleAndPathogenTests;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.concurrent.CompletableFuture;
@@ -64,9 +57,13 @@ import de.symeda.sormas.ui.contact.ContactCreateForm;
 import de.symeda.sormas.ui.events.EventDataForm;
 import de.symeda.sormas.ui.events.EventParticipantEditForm;
 import de.symeda.sormas.ui.events.eventLink.EventSelectionField;
-import de.symeda.sormas.ui.labmessage.EntrySelectionField;
-import de.symeda.sormas.ui.labmessage.LabMessageMapper;
-import de.symeda.sormas.ui.labmessage.LabMessageUiHelper;
+import de.symeda.sormas.ui.labmessage.processing.AbstractLabMessageProcessingFlow;
+import de.symeda.sormas.ui.labmessage.processing.LabMessageProcessingHelper;
+import de.symeda.sormas.ui.labmessage.processing.LabMessageProcessingUIHelper;
+import de.symeda.sormas.ui.labmessage.processing.PickOrCreateEntryResult;
+import de.symeda.sormas.ui.labmessage.processing.PickOrCreateEventResult;
+import de.symeda.sormas.ui.labmessage.processing.PickOrCreateSampleResult;
+import de.symeda.sormas.ui.labmessage.processing.SampleAndPathogenTests;
 import de.symeda.sormas.ui.samples.PathogenTestForm;
 import de.symeda.sormas.ui.samples.SampleController;
 import de.symeda.sormas.ui.samples.SampleCreateForm;
@@ -86,8 +83,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 			I18nProperties.getCaption(Captions.labMessageNoDisease),
 			new Label(I18nProperties.getString(Strings.messageDiseaseNotSpecifiedInLabMessage)),
 			I18nProperties.getCaption(Captions.actionContinue),
-			I18nProperties.getCaption(Captions.actionCancel),
-			null);
+			I18nProperties.getCaption(Captions.actionCancel));
 	}
 
 	@Override
@@ -96,8 +92,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 			I18nProperties.getCaption(Captions.labMessageForwardedMessageFound),
 			new Label(I18nProperties.getString(Strings.messageForwardedLabMessageFound)),
 			I18nProperties.getCaption(Captions.actionYes),
-			I18nProperties.getCaption(Captions.actionCancel),
-			null);
+			I18nProperties.getCaption(Captions.actionCancel));
 	}
 
 	@Override
@@ -336,10 +331,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 	}
 
 	@Override
-	protected void handlePickOrCreateSample(
-		List<SampleDto> samples,
-		LabMessageDto labMessage,
-		HandlerCallback<PickOrCreateSampleResult> callback) {
+	protected void handlePickOrCreateSample(List<SampleDto> samples, LabMessageDto labMessage, HandlerCallback<PickOrCreateSampleResult> callback) {
 		SampleSelectionField selectField = new SampleSelectionField(samples, I18nProperties.getString(Strings.infoPickOrCreateSample));
 
 		Window window = VaadinUiUtil.createPopupWindow();
@@ -378,11 +370,11 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 	}
 
 	private CommitDiscardWrapperComponent<SampleCreateForm> getSampleCreateComponent(
-			SampleDto sample,
-			List<PathogenTestDto> pathogenTests,
-			LabMessageDto labMessageDto,
-			Disease disease,
-			Window window) {
+		SampleDto sample,
+		List<PathogenTestDto> pathogenTests,
+		LabMessageDto labMessageDto,
+		Disease disease,
+		Window window) {
 		SampleController sampleController = ControllerProvider.getSampleController();
 		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent = sampleController.getSampleCreateComponent(sample, disease, () -> {
 		});
@@ -401,9 +393,9 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 	}
 
 	public void addPathogenTests(
-			List<PathogenTestDto> pathogenTests,
-			LabMessageDto labMessage,
-			CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent) {
+		List<PathogenTestDto> pathogenTests,
+		LabMessageDto labMessage,
+		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent) {
 
 		SampleController sampleController = ControllerProvider.getSampleController();
 		SampleDto sample = sampleCreateComponent.getWrappedComponent().getValue();
@@ -417,16 +409,16 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 
 		for (PathogenTestDto pathogenTest : pathogenTestsToAdd) {
 			PathogenTestForm pathogenTestCreateComponent =
-					sampleController.addPathogenTestComponent(sampleCreateComponent, pathogenTest, caseSampleCount);
+				sampleController.addPathogenTestComponent(sampleCreateComponent, pathogenTest, caseSampleCount);
 			sampleController.setViaLimsFieldChecked(pathogenTestCreateComponent);
 		}
 	}
 
 	private void updateAddressAndSavePerson(PersonDto personDto, LabMessageDto labMessageDto) {
 		if (personDto.getAddress().getCity() == null
-				&& personDto.getAddress().getHouseNumber() == null
-				&& personDto.getAddress().getPostalCode() == null
-				&& personDto.getAddress().getStreet() == null) {
+			&& personDto.getAddress().getHouseNumber() == null
+			&& personDto.getAddress().getPostalCode() == null
+			&& personDto.getAddress().getStreet() == null) {
 			LabMessageMapper.forLabMessage(labMessageDto).mapToLocation(personDto.getAddress());
 		}
 		FacadeProvider.getPersonFacade().savePerson(personDto);

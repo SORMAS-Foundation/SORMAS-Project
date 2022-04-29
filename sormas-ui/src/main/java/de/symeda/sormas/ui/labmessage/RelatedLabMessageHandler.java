@@ -114,8 +114,7 @@ public class RelatedLabMessageHandler extends AbstractRelatedLabMessageHandler {
 			I18nProperties.getString(Strings.headingLabMessageCorrection),
 			new Label(I18nProperties.getString(Strings.confirmationLabMessageCorrection), ContentMode.HTML),
 			I18nProperties.getString(Strings.yes),
-			I18nProperties.getString(Strings.no),
-			null);
+			I18nProperties.getString(Strings.no));
 	}
 
 	@Override
