@@ -29,6 +29,7 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
@@ -202,13 +203,12 @@ public class EventGroupController {
 			});
 		}
 
-		// TODO #8851: Enable temporarily removed button when EventGroup deletion works
-//		if (user.hasUserRight(UserRight.EVENTGROUP_DELETE) && hasRegion) {
-//			editView.addDeleteListener(() -> {
-//				deleteEventGroup(eventGroup);
-//				UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
-//			}, I18nProperties.getString(Strings.entityEventGroup));
-//		}
+		if (user.hasUserRight(UserRight.EVENTGROUP_DELETE) && hasRegion) {
+			editView.addDeleteListener(() -> {
+				deleteEventGroup(eventGroup);
+				UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
+			}, I18nProperties.getString(Strings.entityEventGroup));
+		}
 
 		// Initialize 'Archive' button
 		if (user.hasUserRight(UserRight.EVENTGROUP_ARCHIVE) && hasRegion) {
