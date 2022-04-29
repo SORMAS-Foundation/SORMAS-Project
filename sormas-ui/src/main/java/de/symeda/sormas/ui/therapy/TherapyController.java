@@ -100,6 +100,7 @@ public class TherapyController {
 								if (option) {
 									//delete just prescription and leave the treatments standalone
 									System.out.println();
+
 								}
 								else {
 									//delete the prescription and all the treatments assign with

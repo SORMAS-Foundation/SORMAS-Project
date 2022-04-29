@@ -22,6 +22,10 @@ public interface TreatmentFacade {
 
 	void deleteTreatment(String treatmentUuid);
 
+	void deleteTreatments(List<String> treatmentUuids);
+
+	void unlinkPrescriptionFromTreatments(List<String> treatmentUuids);
+
 	List<TreatmentDto> getAllActiveTreatmentsAfter(Date date);
 
 	List<TreatmentDto> getAllActiveTreatmentsAfter(Date date, Integer batchSize, String lastSynchronizedUuid);

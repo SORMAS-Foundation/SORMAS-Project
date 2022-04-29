@@ -154,10 +154,22 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	}
 
 	@Override
+	@RolesAllowed({UserRight._TREATMENT_EDIT})
+	public void unlinkPrescriptionFromTreatments(List<String> treatmentUuids){
+		service.unlinkPrescriptionFromTreatments(treatmentUuids);
+	}
+
+	@Override
 	@RolesAllowed(UserRight._TREATMENT_DELETE)
 	public void deleteTreatment(String treatmentUuid) {
 		Treatment treatment = service.getByUuid(treatmentUuid);
 		service.deletePermanent(treatment);
+	}
+
+	@Override
+	@RolesAllowed(UserRight._TREATMENT_DELETE)
+	public void deleteTreatments(List<String> treatmentUuids) {
+		service.deletePermanentByUuids(treatmentUuids);
 	}
 
 	@Override
