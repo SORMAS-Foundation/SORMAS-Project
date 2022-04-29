@@ -189,7 +189,6 @@ import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
-import org.openqa.selenium.By;
 import org.sormas.e2etests.common.DataOperations;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Case;
@@ -344,16 +343,14 @@ public class EditCaseSteps implements En {
     When(
         "I select {string} Quarantine Order in Create Quarantine Order form in Edit Case directory",
         (String name) -> {
-
           webDriverHelpers.selectFromCombobox(QUARANTINE_ORDER_COMBOBOX, name);
-            webDriverHelpers.waitUntilANumberOfElementsAreVisibleAndClickable(
-                    POPUPS_INPUTS, 5);
+          webDriverHelpers.waitUntilANumberOfElementsAreVisibleAndClickable(POPUPS_INPUTS, 5);
         });
-      When(
-              "I select {string} Quarantine Order in Create Quarantine Order form in Case directory",
-              (String name) -> {
-                  webDriverHelpers.selectFromCombobox(QUARANTINE_ORDER_COMBOBOX, name);
-              });
+    When(
+        "I select {string} Quarantine Order in Create Quarantine Order form in Case directory",
+        (String name) -> {
+          webDriverHelpers.selectFromCombobox(QUARANTINE_ORDER_COMBOBOX, name);
+        });
     When(
         "I check if downloaded file is correct for {string} Quarantine Order in Edit Case directory",
         (String name) -> {

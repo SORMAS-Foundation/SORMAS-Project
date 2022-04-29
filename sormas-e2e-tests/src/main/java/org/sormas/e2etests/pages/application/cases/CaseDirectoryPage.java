@@ -164,10 +164,12 @@ public class CaseDirectoryPage {
       By.xpath("//label[text()='Also upload the generated documents to the selected entities']");
   public static final By CLOSE_FORM_BUTTON = By.xpath("//div[@class='v-window-closebox']");
   public static final By REINFECTION_STATUS_COMBOBOX =
-          By.cssSelector("[id='reinfectionStatus'] [class='v-filterselect-button']");
+      By.cssSelector("[id='reinfectionStatus'] [class='v-filterselect-button']");
+
   public static By getCheckboxByIndex(String idx) {
     return By.xpath(String.format("(//input[@type=\"checkbox\"])[%s]", idx));
   }
+
   public static By getResultByIndex(String rowNumber) {
     return By.xpath(String.format("//tr[%s]//a", rowNumber));
   }

@@ -250,9 +250,7 @@ public class CaseDirectorySteps implements En {
 
     And(
         "I click on close button in Create Quarantine Order form",
-        () ->
-            webDriverHelpers.clickOnWebElementBySelector(
-                    CLOSE_FORM_BUTTON));
+        () -> webDriverHelpers.clickOnWebElementBySelector(CLOSE_FORM_BUTTON));
 
     When(
         "^I select first (\\d+) results in grid in Case Directory$",
