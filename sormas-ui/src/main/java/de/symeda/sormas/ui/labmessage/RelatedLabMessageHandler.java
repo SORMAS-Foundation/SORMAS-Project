@@ -59,6 +59,9 @@ import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.CssStyles;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
+/**
+ * Related lab messages handler implemented with vaadin dialogs/components for handling confirmation and object edit/save steps
+ */
 public class RelatedLabMessageHandler extends AbstractRelatedLabMessageHandler {
 
 	@Override

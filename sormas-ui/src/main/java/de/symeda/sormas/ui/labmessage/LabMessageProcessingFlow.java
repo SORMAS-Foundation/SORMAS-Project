@@ -71,6 +71,9 @@ import de.symeda.sormas.ui.samples.SampleSelectionField;
 import de.symeda.sormas.ui.utils.CommitDiscardWrapperComponent;
 import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
+/**
+ * Lab message processing flow implemented with vaadin dialogs/components for handling confirmation and object edit/save steps
+ */
 public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 
 	public LabMessageProcessingFlow() {

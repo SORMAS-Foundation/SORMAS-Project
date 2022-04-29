@@ -17,6 +17,10 @@ package de.symeda.sormas.ui.labmessage.processing.flow;
 
 import java.util.concurrent.CompletionStage;
 
+/**
+ * Class used for initializing and building async flow/chain
+ * @param <R>
+ */
 public class FlowThen<R> {
 
 	private final CompletionStage<ProcessingResult<R>> currentResult;

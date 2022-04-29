@@ -64,6 +64,9 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 import javax.naming.CannotProceedException;
 import org.apache.commons.lang3.mutable.MutableObject;
 
+/**
+ * Collection of common UI related functions used by processing related code placed in multiple classes
+ */
 public class LabMessageProcessingUIHelper {
 	private LabMessageProcessingUIHelper() {
 	}

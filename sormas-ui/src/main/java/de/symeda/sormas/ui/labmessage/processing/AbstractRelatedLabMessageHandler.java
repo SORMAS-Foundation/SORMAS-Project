@@ -46,20 +46,14 @@ import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.ui.labmessage.LabMessageMapper;
 
+/**
+ * Abstract class for having a clear flow for handling lab messages the contain only corrections to prevoius ones
+ * e.g. Changing some person sample or pathogen test details
+ *
+ * The flow is coded in the `handle` method.
+ *
+ */
 public abstract class AbstractRelatedLabMessageHandler {
-	public interface CorrectedEntityHandler<T> {
-
-		void handle(LabMessageDto labMessage, T original, T updated, List<String[]> changedFields, RelatedLabMessageHandlerChain chain);
-	}
-
-	public enum HandlerResultStatus {
-		NOT_HANDLED,
-		HANDLED,
-		CANCELED,
-		CANCELED_WITH_UPDATES,
-		CONTINUE
-	}
-
 	public static class HandlerResult {
 		private final HandlerResultStatus status;
 		private final SampleDto sample;
@@ -78,13 +72,12 @@ public abstract class AbstractRelatedLabMessageHandler {
 		}
 	}
 
-	public interface RelatedLabMessageHandlerChain {
-
-		void next(boolean savePerformed);
-
-		void cancel();
-
-		boolean done();
+	public enum HandlerResultStatus {
+		NOT_HANDLED,
+		HANDLED,
+		CANCELED,
+		CANCELED_WITH_UPDATES,
+		CONTINUE
 	}
 
 	public AbstractRelatedLabMessageHandler() {
@@ -447,6 +440,20 @@ public abstract class AbstractRelatedLabMessageHandler {
 		public boolean isRelatedLabMessagesFound() {
 			return relatedLabMessagesFound;
 		}
+	}
+
+	public interface CorrectedEntityHandler<T> {
+
+		void handle(LabMessageDto labMessage, T original, T updated, List<String[]> changedFields, RelatedLabMessageHandlerChain chain);
+	}
+
+	public interface RelatedLabMessageHandlerChain {
+
+		void next(boolean savePerformed);
+
+		void cancel();
+
+		boolean done();
 	}
 
 	private static class ChainHandler {

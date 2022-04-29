@@ -19,6 +19,11 @@ import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 
+/**
+ * Class used for building conditional async flow/chain
+ * @param <T>
+ * @param <R>
+ */
 public class FlowSwitch<T, R> {
 
 	private final CompletionStage<ProcessingResult<T>> currentResult;

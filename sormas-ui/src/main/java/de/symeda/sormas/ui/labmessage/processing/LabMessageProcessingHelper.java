@@ -18,10 +18,6 @@
 
 package de.symeda.sormas.ui.labmessage.processing;
 
-import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.labmessage.LabMessageStatus;
-import de.symeda.sormas.api.sample.SampleReferenceDto;
-import de.symeda.sormas.api.user.UserDto;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -29,8 +25,12 @@ import de.symeda.sormas.api.labmessage.LabMessageDto;
 import de.symeda.sormas.api.labmessage.TestReportDto;
 import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.user.UserDto;
 import de.symeda.sormas.ui.labmessage.LabMessageMapper;
 
+/**
+ * Collection of common non UI related functions used by processing related code placed in multiple classes
+ */
 public class LabMessageProcessingHelper {
 	private LabMessageProcessingHelper() {
 	}
