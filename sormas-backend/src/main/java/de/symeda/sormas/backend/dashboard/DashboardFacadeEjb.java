@@ -5,7 +5,6 @@ import static de.symeda.sormas.api.dashboard.DashboardContactStatisticDto.PREVIO
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.Date;
 import java.util.EnumMap;
 import java.util.HashMap;
@@ -124,18 +123,8 @@ public class DashboardFacadeEjb implements DashboardFacade {
 	@RolesAllowed({
 		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
 		UserRight._DASHBOARD_CONTACT_VIEW })
-	public Map<PathogenTestResultType, Long> getTestResultCountByResultType(List<DashboardCaseDto> cases) {
-		if (cases.isEmpty()) {
-			return Collections.emptyMap();
-		}
-		return sampleFacade.getNewTestResultCountByResultType(cases.stream().map(DashboardCaseDto::getId).collect(Collectors.toList()));
-	}
-
-	@RolesAllowed({
-		UserRight._DASHBOARD_SURVEILLANCE_VIEW,
-		UserRight._DASHBOARD_CONTACT_VIEW })
 	public Map<PathogenTestResultType, Long> getTestResultCountByResultType(DashboardCriteria dashboardCriteria) {
-		return getTestResultCountByResultType(getCases(dashboardCriteria));
+		return dashboardService.getNewTestResultCountByResultType(dashboardCriteria);
 	}
 
 	@RolesAllowed({
