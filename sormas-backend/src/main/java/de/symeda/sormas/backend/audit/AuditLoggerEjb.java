@@ -266,16 +266,7 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 		restCall.setRecorded(Calendar.getInstance(TimeZone.getDefault()).getTime());
 
 		// agent
-		AuditEvent.AuditEventAgentComponent agent = new AuditEvent.AuditEventAgentComponent();
-
-		AgentDetails agentDetails = new AgentDetails(currentUserService, sessionContext);
-
-		agent.setName(agentDetails.name);
-		Reference who = new Reference();
-		Identifier identifier = new Identifier();
-		identifier.setValue(agentDetails.uuid);
-		who.setIdentifier(identifier);
-		agent.setWho(who);
+		AuditEvent.AuditEventAgentComponent agent = getAuditEventAgentComponent();
 		restCall.addAgent(agent);
 
 		// source
@@ -326,6 +317,7 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 
 		AuditEvent.AuditEventSourceComponent source = new AuditEvent.AuditEventSourceComponent();
 		source.setSite(String.format("%s - REST MultiAuthenticationMechanism", auditSourceSite));
+		restLoginFail.setSource(source);
 
 		AuditEvent.AuditEventEntityComponent entity = new AuditEvent.AuditEventEntityComponent();
 		entity.setWhat(new Reference(String.format("%s %s", method, pathInfo)));
@@ -354,12 +346,144 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 
 		AuditEvent.AuditEventSourceComponent source = new AuditEvent.AuditEventSourceComponent();
 		source.setSite(String.format("%s - UI MultiAuthenticationMechanism", auditSourceSite));
+		uiLoginFail.setSource(source);
 
 		AuditEvent.AuditEventEntityComponent entity = new AuditEvent.AuditEventEntityComponent();
 		entity.setWhat(new Reference(String.format("%s %s", method, pathInfo)));
 		uiLoginFail.addEntity(entity);
 
 		accept(uiLoginFail);
+	}
+
+	@Override
+	public void logGetExternalLabMessagesSuccess(Date since, List<String> externalLabMessages) {
+		Coding type = new Coding("https://hl7.org/fhir/R4/valueset-audit-event-type.html", "110107", "Import");
+		String outcome = String.format("%d external lab messages since %s fetched", externalLabMessages.size(), since);
+		Reference what = new Reference("getExternalLabMessages");
+		List<AuditEvent.AuditEventEntityDetailComponent> details = new ArrayList<>();
+		externalLabMessages.forEach(m -> {
+			AuditEvent.AuditEventEntityDetailComponent detail =
+				new AuditEvent.AuditEventEntityDetailComponent(new StringType("externalLabMessage"), new StringType(m));
+			details.add(detail);
+		});
+		logLabMessageSuccess(type, what, outcome, details);
+	}
+
+	@Override
+	public void logExternalLabMessagesHtmlSuccess(String uuid, int length) {
+		Coding type = new Coding("https://hl7.org/fhir/R4/valueset-audit-event-type.html", "110106", "Export");
+		Reference what = new Reference("convertToHTML");
+
+		String outcome = "Successfully exported HTML report";
+		List<AuditEvent.AuditEventEntityDetailComponent> details = new ArrayList<>();
+
+		details.add(new AuditEvent.AuditEventEntityDetailComponent(new StringType("uuid"), new StringType(uuid)));
+		details.add(new AuditEvent.AuditEventEntityDetailComponent(new StringType("length"), new StringType(String.valueOf(length))));
+
+		logLabMessageSuccess(type, what, outcome, details);
+	}
+
+	@Override
+	public void logExternalLabMessagesPdfSuccess(String uuid, int length) {
+		Coding type = new Coding("https://hl7.org/fhir/R4/valueset-audit-event-type.html", "110106", "Export");
+		Reference what = new Reference("convertToPDF");
+
+		String outcome = "Successfully exported PDF report";
+		List<AuditEvent.AuditEventEntityDetailComponent> details = new ArrayList<>();
+
+		details.add(new AuditEvent.AuditEventEntityDetailComponent(new StringType("uuid"), new StringType(uuid)));
+		details.add(new AuditEvent.AuditEventEntityDetailComponent(new StringType("length"), new StringType(String.valueOf(length))));
+
+		logLabMessageSuccess(type, what, outcome, details);
+	}
+
+	private void logLabMessageSuccess(Coding type, Reference what, String outcome, List<AuditEvent.AuditEventEntityDetailComponent> details) {
+		AuditEvent logLabMessage = new AuditEvent();
+
+		logLabMessage.setType(type);
+		logLabMessage.setAction(AuditEvent.AuditEventAction.E);
+		logLabMessage.setRecorded(Calendar.getInstance(TimeZone.getDefault()).getTime());
+
+		logLabMessage.setOutcome(AuditEvent.AuditEventOutcome._0);
+		logLabMessage.setOutcomeDesc(outcome);
+
+		AuditEvent.AuditEventAgentComponent agent = getAuditEventAgentComponent();
+		logLabMessage.addAgent(agent);
+
+		AuditEvent.AuditEventSourceComponent source = new AuditEvent.AuditEventSourceComponent();
+		source.setSite(String.format("%s - DEMIS", auditSourceSite));
+		logLabMessage.setSource(source);
+
+		AuditEvent.AuditEventEntityComponent entity = new AuditEvent.AuditEventEntityComponent();
+		entity.setWhat(what);
+
+		entity.setDetail(details);
+		logLabMessage.addEntity(entity);
+
+		accept(logLabMessage);
+	}
+
+	@Override
+	public void logGetExternalLabMessagesError(String outcome, String error) {
+		Coding type = new Coding("https://hl7.org/fhir/R4/valueset-audit-event-type.html", "110107", "Import");
+		Reference what = new Reference("getExternalLabMessages");
+		logLabMessageError(type, what, outcome, error);
+	}
+
+	@Override
+	public void logExternalLabMessagesHtmlError(String outcome, String error) {
+		Coding type = new Coding("https://hl7.org/fhir/R4/valueset-audit-event-type.html", "110107", "Import");
+		Reference what = new Reference("getExternalLabMessages");
+		logLabMessageError(type, what, outcome, error);
+	}
+
+	@Override
+	public void logExternalLabMessagesPdfError(String outcome, String error) {
+		Coding type = new Coding("https://hl7.org/fhir/R4/valueset-audit-event-type.html", "110107", "Import");
+		Reference what = new Reference("getExternalLabMessages");
+		logLabMessageError(type, what, outcome, error);
+	}
+
+	private void logLabMessageError(Coding type, Reference what, String outcome, String error) {
+		AuditEvent logLabMessage = new AuditEvent();
+
+		logLabMessage.setType(type);
+		logLabMessage.setAction(AuditEvent.AuditEventAction.E);
+		logLabMessage.setRecorded(Calendar.getInstance(TimeZone.getDefault()).getTime());
+
+		logLabMessage.setOutcome(AuditEvent.AuditEventOutcome._8);
+		logLabMessage.setOutcomeDesc(outcome);
+
+		AuditEvent.AuditEventAgentComponent agent = getAuditEventAgentComponent();
+		logLabMessage.addAgent(agent);
+
+		AuditEvent.AuditEventSourceComponent source = new AuditEvent.AuditEventSourceComponent();
+		source.setSite(String.format("%s - DEMIS", auditSourceSite));
+		logLabMessage.setSource(source);
+
+		AuditEvent.AuditEventEntityComponent entity = new AuditEvent.AuditEventEntityComponent();
+		entity.setWhat(what);
+		AuditEvent.AuditEventEntityDetailComponent errorMessage =
+			new AuditEvent.AuditEventEntityDetailComponent(new StringType("errorMessage"), new StringType(error));
+		entity.addDetail(errorMessage);
+		logLabMessage.addEntity(entity);
+
+		accept(logLabMessage);
+
+	}
+
+	private AuditEvent.AuditEventAgentComponent getAuditEventAgentComponent() {
+		AuditEvent.AuditEventAgentComponent agent = new AuditEvent.AuditEventAgentComponent();
+
+		AgentDetails agentDetails = new AgentDetails(currentUserService, sessionContext);
+
+		agent.setName(agentDetails.name);
+		Reference who = new Reference();
+		Identifier identifier = new Identifier();
+		identifier.setValue(agentDetails.uuid);
+		who.setIdentifier(identifier);
+		agent.setWho(who);
+		return agent;
 	}
 
 	private class AgentDetails {
