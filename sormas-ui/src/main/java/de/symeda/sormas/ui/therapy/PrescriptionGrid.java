@@ -78,7 +78,7 @@ public class PrescriptionGrid extends Grid implements V7AbstractGrid<Prescriptio
 
 		VaadinUiUtil.setupEditColumn(getColumn(EDIT_BTN_ID));
 
-		if (isPseudonymized) {
+		if (!isPseudonymized) {
 			getColumn(DOCUMENT_TREATMENT_BTN_ID).setRenderer(new GridButtonRenderer());
 			getColumn(DOCUMENT_TREATMENT_BTN_ID).setHeaderCaption("");
 		} else {
