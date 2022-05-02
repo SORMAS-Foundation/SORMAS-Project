@@ -130,11 +130,11 @@ public interface Strings {
 	String confirmationDeleteLabMessages = "confirmationDeleteLabMessages";
 	String confirmationDeletePathogenTests = "confirmationDeletePathogenTests";
 	String confirmationDeletePrescriptions = "confirmationDeletePrescriptions";
+	String confirmationDeletePrescriptionWithTreatment = "confirmationDeletePrescriptionWithTreatment";
 	String confirmationDeleteSamples = "confirmationDeleteSamples";
 	String confirmationDeleteTasks = "confirmationDeleteTasks";
 	String confirmationDeleteTravelEntries = "confirmationDeleteTravelEntries";
 	String confirmationDeleteTreatments = "confirmationDeleteTreatments";
-	String confirmationDeletePrescriptionWithTreatment = "confirmationDeletePrescriptionWithTreatment";
 	String confirmationDeleteVisits = "confirmationDeleteVisits";
 	String confirmationDisableAllLineListingNational = "confirmationDisableAllLineListingNational";
 	String confirmationDisableAllLineListingRegion = "confirmationDisableAllLineListingRegion";

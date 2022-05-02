@@ -129,7 +129,7 @@ public class TherapyController {
 			}
 		};
 		VaadinUiUtil.showChooseOptionPopup(
-				I18nProperties.getCaption(Captions.titleDeletePrescriptionWithTreatment),
+				I18nProperties.getCaption(Captions.prescriptionWithTreatmentTitleDelete),
 				new Label(I18nProperties.getString(Strings.confirmationDeletePrescriptionWithTreatment)),
 				I18nProperties.getCaption(Captions.prescriptionAlone),
 				I18nProperties.getCaption(Captions.prescriptionWithTreatment),

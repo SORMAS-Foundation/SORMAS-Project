@@ -1750,12 +1750,12 @@ public interface Captions {
 	String Prescription_route = "Prescription.route";
 	String Prescription_routeDetails = "Prescription.routeDetails";
 	String Prescription_typeOfDrug = "Prescription.typeOfDrug";
+	String prescriptionAlone = "prescriptionAlone";
 	String PrescriptionExport_caseName = "PrescriptionExport.caseName";
 	String PrescriptionExport_caseUuid = "PrescriptionExport.caseUuid";
 	String prescriptionNewPrescription = "prescriptionNewPrescription";
-	String titleDeletePrescriptionWithTreatment = "titleDeletePrescriptionWithTreatment";
-	String prescriptionAlone = "prescriptionAlone";
 	String prescriptionWithTreatment = "prescriptionWithTreatment";
+	String prescriptionWithTreatmentTitleDelete = "prescriptionWithTreatmentTitleDelete";
 	String Region = "Region";
 	String Region_archived = "Region.archived";
 	String Region_country = "Region.country";

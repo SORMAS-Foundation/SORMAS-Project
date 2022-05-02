@@ -159,16 +159,10 @@ public class TreatmentService extends AdoServiceWithUserFilter<Treatment> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaUpdate<Treatment> criteriaUpdate = cb.createCriteriaUpdate(getElementClass());
 		Root<Treatment> from = criteriaUpdate.from(getElementClass());
-//		Join<Treatment, Prescription> prescriptionJoin = from.join(Treatment.THERAPY, JoinType.LEFT);
 
 		criteriaUpdate.set(Treatment.PRESCRIPTION, null);
 
-//		Predicate filter = cb.and(from.get(Treatment.UUID).in(treatmentUuids),
-//				cb.equal(prescriptionJoin.get(Prescription.UUID), prescriptionUuid));
-
-//		if(filter != null){
-			criteriaUpdate.where(from.get(Treatment.UUID).in(treatmentUuids));
-//		}
+		criteriaUpdate.where(from.get(Treatment.UUID).in(treatmentUuids));
 
 		this.em.createQuery(criteriaUpdate).executeUpdate();
 	}
