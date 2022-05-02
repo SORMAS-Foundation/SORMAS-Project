@@ -53,7 +53,7 @@ import de.symeda.sormas.ui.utils.VaadinUiUtil;
 
 public class CampaignController {
 
-	public void createOrEditCampaign(String uuid) {
+	public void createOrEditCampaign(String uuid) {//sormas-logo
 
 		CommitDiscardWrapperComponent<CampaignEditForm> campaignComponent;
 		String heading;

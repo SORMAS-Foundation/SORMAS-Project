@@ -91,7 +91,7 @@ public class Menu extends CssLayout {
 			Path logoPath = Paths.get(FacadeProvider.getConfigFacade().getCustomBrandingLogoPath());
 			image = new Image(null, new FileResource(logoPath.toFile()));
 		} else {
-			image = new Image(null, new ThemeResource("img/sormas-logo.png"));
+			image = new Image(null, new ThemeResource("img/sormsasd-logo.png"));
 		}
 		CssStyles.style(image, ValoTheme.MENU_LOGO, ValoTheme.BUTTON_LINK);
 		top.addComponent(image);

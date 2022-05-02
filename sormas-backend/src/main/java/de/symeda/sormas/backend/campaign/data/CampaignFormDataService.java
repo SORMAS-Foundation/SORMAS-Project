@@ -67,8 +67,7 @@ public class CampaignFormDataService extends AdoServiceWithUserFilter<CampaignFo
 		System.out.println(criteria.getCampaign()+"  ===========_++++++++++++++_================ "+criteria.getFormType());
 		
 		if (criteria.getCampaign() != null && criteria.getFormType() == null) {
-			System.out.println(criteria.getCampaign()+"  ===========_++++++++++++++_================ "+criteria.getFormType());
-			
+
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(campaignJoin.get(Campaign.UUID), criteria.getCampaign().getUuid()));
 		} else if (criteria.getCampaign() != null && criteria.getFormType() != null && !"ALL PHASES".equals(criteria.getFormType())) {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.and(cb.equal(campaignFormJoin.get(CampaignFormMeta.FORM_TYPE), criteria.getFormType().toLowerCase())), cb.equal(campaignJoin.get(Campaign.UUID), criteria.getCampaign().getUuid()));
