@@ -17,6 +17,8 @@
  *******************************************************************************/
 package de.symeda.sormas.ui.contact;
 
+import java.util.function.Consumer;
+
 import com.vaadin.icons.VaadinIcons;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
@@ -43,7 +45,7 @@ public class ContactListComponent extends VerticalLayout {
 
 	private final ContactList list;
 
-	public ContactListComponent(EventParticipantReferenceDto eventParticipantRef) {
+	public ContactListComponent(EventParticipantReferenceDto eventParticipantRef, Consumer<Runnable> actionCallback) {
 		HorizontalLayout componentHeader = new HorizontalLayout();
 		componentHeader.setMargin(false);
 		componentHeader.setSpacing(false);
@@ -80,7 +82,7 @@ public class ContactListComponent extends VerticalLayout {
 			Button createButton = ButtonHelper.createButton(I18nProperties.getCaption(Captions.contactNewContact));
 			createButton.addStyleName(ValoTheme.BUTTON_PRIMARY);
 			createButton.setIcon(VaadinIcons.PLUS_CIRCLE);
-			createButton.addClickListener(e -> ControllerProvider.getContactController().create(eventParticipantRef));
+			createButton.addClickListener(e -> actionCallback.accept(() -> ControllerProvider.getContactController().create(eventParticipantRef)));
 			componentHeader.addComponent(createButton);
 			componentHeader.setComponentAlignment(createButton, Alignment.MIDDLE_RIGHT);
 		}
