@@ -50,6 +50,8 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
@@ -880,8 +882,20 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		RDCF rdcf = new RDCF(rdcfEntities);
 		UserDto user = getUser(rdcfEntities);
 
+		getOutbreakFacade().startOutbreak(rdcf.district, Disease.CORONAVIRUS);
+
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
-		CaseDataDto caze = getCaze(user, cazePerson, rdcfEntities);
+		CaseDataDto caze = creator.createCase(
+				user.toReference(),
+				cazePerson.toReference(),
+				Disease.CORONAVIRUS,
+				CaseClassification.PROBABLE,
+				InvestigationStatus.PENDING,
+				DateHelper.addDays(new Date(), 1),
+				rdcfEntities);
+
+		caze.setRegion(rdcf.region);
+		caze.setDistrict(rdcf.district);
 		cazePerson.getAddress().setCity("City");
 		getPersonFacade().savePerson(cazePerson);
 
@@ -924,6 +938,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(1, results.size());
 		CaseExportDto exportDto = results.get(0);
 
+		assertEquals(I18nProperties.getString(Strings.yes), exportDto.getAssociatedWithOutbreak());
 		assertNull(exportDto.getFirstVaccinationDate());
 		assertNull(exportDto.getVaccineName());
 		assertNull(exportDto.getLastVaccinationDate());

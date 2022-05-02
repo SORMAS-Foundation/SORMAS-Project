@@ -320,6 +320,7 @@ public class CaseExportMapperDto implements Serializable {
 							   // users
 							   Long reportingUserId, Long followUpStatusChangeUserId,
 							   Date previousQuarantineTo, String quarantineChangeComment,
+							   String associatedWithOutbreak,
 							   boolean isInJurisdiction
     ) {
         //@formatter:on
@@ -455,6 +456,7 @@ public class CaseExportMapperDto implements Serializable {
         this.previousQuarantineTo = previousQuarantineTo;
         this.quarantineChangeComment = quarantineChangeComment;
 
+        this.associatedWithOutbreak = associatedWithOutbreak;
         this.isInJurisdiction = isInJurisdiction;
     }
 
@@ -590,6 +592,7 @@ public class CaseExportMapperDto implements Serializable {
 		caseExportDto.setNumberOfPrescriptions(numberOfPrescriptions);
 		caseExportDto.setNumberOfTreatments(numberOfTreatments);
 		caseExportDto.setNumberOfClinicalVisits(numberOfClinicalVisits);
+		caseExportDto.setAssociatedWithOutbreak(associatedWithOutbreak);
 		return caseExportDto;
 	}
  

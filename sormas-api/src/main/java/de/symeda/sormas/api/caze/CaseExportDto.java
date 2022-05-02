@@ -2491,8 +2491,8 @@ public class CaseExportDto implements Serializable {
 		this.outcomeDate = outcomeDate;
 	}
 
-	public void setAssociatedWithOutbreak(boolean associatedWithOutbreak) {
-		this.associatedWithOutbreak = associatedWithOutbreak ? I18nProperties.getString(Strings.yes) : I18nProperties.getString(Strings.no);
+	public void setAssociatedWithOutbreak(String associatedWithOutbreak) {
+		this.associatedWithOutbreak = associatedWithOutbreak;
 	}
 
 	public void setDeathDate(Date deathDate) {

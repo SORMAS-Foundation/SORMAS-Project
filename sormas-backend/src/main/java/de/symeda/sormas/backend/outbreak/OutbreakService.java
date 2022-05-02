@@ -230,29 +230,4 @@ public class OutbreakService extends AdoServiceWithUserFilter<Outbreak> {
 
 		return em.createQuery(cq).getResultList().stream().findFirst().orElse(0L);
 	}
-
-	public List<Long> getCaseIdsWithOutbreak(List<Long> caseIds) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Outbreak> outbreakRoot = cq.from(getElementClass());
-		Join<Outbreak, District> districtJoin = outbreakRoot.join(Outbreak.DISTRICT, JoinType.LEFT);
-		Root<Case> caseRoot = cq.from(Case.class);
-		Join<Case, District> caseDistrictJoin = caseRoot.join(Case.DISTRICT, JoinType.LEFT);
-
-		cq.select(caseRoot.get(Case.ID));
-
-		Expression<String> caseIdsExpression = caseRoot.get(Case.ID);
-		cq.where(
-			cb.and(
-				caseIdsExpression.in(caseIds),
-				cb.equal(districtJoin.get(District.ID), caseDistrictJoin.get(District.ID)),
-				cb.equal(outbreakRoot.get(Outbreak.DISEASE), caseRoot.get(Case.DISEASE)),
-				cb.lessThanOrEqualTo(outbreakRoot.get(Outbreak.START_DATE), caseRoot.get(Case.REPORT_DATE)),
-				cb.or(
-					cb.isNull(outbreakRoot.get(Outbreak.END_DATE)),
-					cb.greaterThanOrEqualTo(outbreakRoot.get(Outbreak.END_DATE), caseRoot.get(Case.REPORT_DATE)))));
-
-		return em.createQuery(cq).getResultList();
-	}
 }
