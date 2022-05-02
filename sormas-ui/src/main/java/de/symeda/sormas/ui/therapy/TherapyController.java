@@ -217,6 +217,8 @@ public class TherapyController {
 		if (treatment.getPrescription() != null) {
 			Button openPrescriptionButton = ButtonHelper.createButton(Captions.treatmentOpenPrescription, e -> {
 				openPrescriptionEditForm(treatment.getPrescription(), null, true);
+				popupWindow.close();
+				callback.run();
 			});
 
 			view.getButtonsPanel().addComponent(openPrescriptionButton, view.getButtonsPanel().getComponentIndex(view.getDiscardButton()));
