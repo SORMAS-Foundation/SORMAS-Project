@@ -17,6 +17,7 @@ package de.symeda.sormas.app.rest;
 
 import java.io.IOException;
 import java.sql.SQLException;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
@@ -28,10 +29,27 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.feature.FeatureType;
+import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureChangeDatesDto;
 import de.symeda.sormas.api.infrastructure.InfrastructureSyncDto;
+import de.symeda.sormas.api.outbreak.OutbreakDto;
+import de.symeda.sormas.api.person.PersonDto;
+import de.symeda.sormas.api.report.AggregateReportDto;
+import de.symeda.sormas.api.report.WeeklyReportDto;
+import de.symeda.sormas.api.sample.AdditionalTestDto;
+import de.symeda.sormas.api.sample.PathogenTestDto;
+import de.symeda.sormas.api.sample.SampleDto;
+import de.symeda.sormas.api.task.TaskDto;
+import de.symeda.sormas.api.therapy.PrescriptionDto;
+import de.symeda.sormas.api.therapy.TreatmentDto;
 import de.symeda.sormas.api.utils.DateHelper;
+import de.symeda.sormas.api.visit.VisitDto;
 import de.symeda.sormas.app.R;
 import de.symeda.sormas.app.backend.campaign.CampaignDtoHelper;
 import de.symeda.sormas.app.backend.campaign.data.CampaignFormDataDtoHelper;
@@ -41,8 +59,8 @@ import de.symeda.sormas.app.backend.classification.DiseaseClassificationDtoHelpe
 import de.symeda.sormas.app.backend.clinicalcourse.ClinicalVisitDtoHelper;
 import de.symeda.sormas.app.backend.common.DaoException;
 import de.symeda.sormas.app.backend.common.DatabaseHelper;
+import de.symeda.sormas.app.backend.common.DtoUserRightsHelper;
 import de.symeda.sormas.app.backend.config.ConfigProvider;
-import de.symeda.sormas.app.backend.contact.Contact;
 import de.symeda.sormas.app.backend.contact.ContactDtoHelper;
 import de.symeda.sormas.app.backend.customizableenum.CustomizableEnumValueDtoHelper;
 import de.symeda.sormas.app.backend.disease.DiseaseConfigurationDtoHelper;
@@ -482,41 +500,54 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 		try {
 			// Cases
-			List<String> caseUuids = executeUuidCall(RetroProvider.getCaseFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
-			for (String caseUuid : caseUuids) {
-				DatabaseHelper.getCaseDao().deleteCaseAndAllDependingEntities(caseUuid);
+			if (DtoUserRightsHelper.isViewAllowed(CaseDataDto.class)) {
+				List<String> caseUuids = executeUuidCall(RetroProvider.getCaseFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
+				for (String caseUuid : caseUuids) {
+					DatabaseHelper.getCaseDao().deleteCaseAndAllDependingEntities(caseUuid);
+				}
 			}
 
 			// Contacts
-			List<String> contactUuids = executeUuidCall(RetroProvider.getContactFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
-			for (String contactUuid : contactUuids) {
-				DatabaseHelper.getContactDao().deleteContactAndAllDependingEntities(contactUuid);
+			if (DtoUserRightsHelper.isViewAllowed(ContactDto.class)) {
+				List<String> contactUuids =
+					executeUuidCall(RetroProvider.getContactFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
+				for (String contactUuid : contactUuids) {
+					DatabaseHelper.getContactDao().deleteContactAndAllDependingEntities(contactUuid);
+				}
 			}
 
 			// Events
-			List<String> eventUuids = executeUuidCall(RetroProvider.getEventFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
-			for (String eventUuid : eventUuids) {
-				DatabaseHelper.getEventDao().deleteEventAndAllDependingEntities(eventUuid);
+			if (DtoUserRightsHelper.isViewAllowed(EventDto.class)) {
+				List<String> eventUuids = executeUuidCall(RetroProvider.getEventFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
+				for (String eventUuid : eventUuids) {
+					DatabaseHelper.getEventDao().deleteEventAndAllDependingEntities(eventUuid);
+				}
 			}
 
 			// EventParticipant
-			List<String> eventParticipantUuids =
-				executeUuidCall(RetroProvider.getEventParticipantFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
-			for (String eventParticipantUuid : eventParticipantUuids) {
-				DatabaseHelper.getEventParticipantDao().deleteEventParticipantAndAllDependingEntities(eventParticipantUuid);
+			if (DtoUserRightsHelper.isViewAllowed(EventParticipantDto.class)) {
+				List<String> eventParticipantUuids =
+					executeUuidCall(RetroProvider.getEventParticipantFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
+				for (String eventParticipantUuid : eventParticipantUuids) {
+					DatabaseHelper.getEventParticipantDao().deleteEventParticipantAndAllDependingEntities(eventParticipantUuid);
+				}
 			}
 
 			// Tasks
-			List<String> taskUuids = executeUuidCall(RetroProvider.getTaskFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
-			for (String taskUuid : taskUuids) {
-				DatabaseHelper.getTaskDao().deleteTaskAndAllDependingEntities(taskUuid);
+			if (DtoUserRightsHelper.isViewAllowed(TaskDto.class)) {
+				List<String> taskUuids = executeUuidCall(RetroProvider.getTaskFacade().pullArchivedUuidsSince(since != null ? since.getTime() : 0));
+				for (String taskUuid : taskUuids) {
+					DatabaseHelper.getTaskDao().deleteTaskAndAllDependingEntities(taskUuid);
+				}
 			}
 
 			// Inactive outbreaks
-			List<String> outbreakUuids =
-				executeUuidCall(RetroProvider.getOutbreakFacade().pullInactiveUuidsSince(since != null ? since.getTime() : 0));
-			for (String outbreakUuid : outbreakUuids) {
-				DatabaseHelper.getOutbreakDao().deleteOutbreakAndAllDependingEntities(outbreakUuid);
+			if (DtoUserRightsHelper.isViewAllowed(OutbreakDto.class)) {
+				List<String> outbreakUuids =
+					executeUuidCall(RetroProvider.getOutbreakFacade().pullInactiveUuidsSince(since != null ? since.getTime() : 0));
+				for (String outbreakUuid : outbreakUuids) {
+					DatabaseHelper.getOutbreakDao().deleteOutbreakAndAllDependingEntities(outbreakUuid);
+				}
 			}
 
 			ConfigProvider.setLastArchivedSyncDate(new Date());
@@ -531,41 +562,55 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 		try {
 			// Cases
-			List<String> caseUuids = executeUuidCall(RetroProvider.getCaseFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
-			for (String caseUuid : caseUuids) {
-				DatabaseHelper.getCaseDao().deleteCaseAndAllDependingEntities(caseUuid);
+			if (DtoUserRightsHelper.isViewAllowed(CaseDataDto.class)) {
+				List<String> caseUuids = executeUuidCall(RetroProvider.getCaseFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+				for (String caseUuid : caseUuids) {
+					DatabaseHelper.getCaseDao().deleteCaseAndAllDependingEntities(caseUuid);
+				}
 			}
 
 			// Immunization
-			List<String> immunizationUuids =
-				executeUuidCall(RetroProvider.getImmunizationFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
-			for (String immunizationUuid : immunizationUuids) {
-				DatabaseHelper.getImmunizationDao().deleteImmunizationAndAllDependingEntities(immunizationUuid);
+			if (DtoUserRightsHelper.isViewAllowed(ImmunizationDto.class)) {
+				List<String> immunizationUuids =
+					executeUuidCall(RetroProvider.getImmunizationFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+				for (String immunizationUuid : immunizationUuids) {
+					DatabaseHelper.getImmunizationDao().deleteImmunizationAndAllDependingEntities(immunizationUuid);
+				}
 			}
 
 			// Events
-			List<String> eventUuids = executeUuidCall(RetroProvider.getEventFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
-			for (String eventUuid : eventUuids) {
-				DatabaseHelper.getEventDao().deleteEventAndAllDependingEntities(eventUuid);
+			if (DtoUserRightsHelper.isViewAllowed(EventDto.class)) {
+				List<String> eventUuids = executeUuidCall(RetroProvider.getEventFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+				for (String eventUuid : eventUuids) {
+					DatabaseHelper.getEventDao().deleteEventAndAllDependingEntities(eventUuid);
+				}
 			}
 
 			//Event participants
-			List<String> eventParticipantUuids =
-				executeUuidCall(RetroProvider.getEventParticipantFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
-			for (String eventParticipantUuid : eventParticipantUuids) {
-				DatabaseHelper.getEventParticipantDao().deleteEventParticipant(eventParticipantUuid);
+			if (DtoUserRightsHelper.isViewAllowed(EventParticipantDto.class)) {
+				List<String> eventParticipantUuids =
+					executeUuidCall(RetroProvider.getEventParticipantFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+				for (String eventParticipantUuid : eventParticipantUuids) {
+					DatabaseHelper.getEventParticipantDao().deleteEventParticipant(eventParticipantUuid);
+				}
 			}
 
 			// Contacts
-			List<String> contactUuids = executeUuidCall(RetroProvider.getContactFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
-			for (String contactUuid : contactUuids) {
-				DatabaseHelper.getContactDao().deleteContactAndAllDependingEntities(contactUuid);
+			if (DtoUserRightsHelper.isViewAllowed(ContactDto.class)) {
+				List<String> contactUuids =
+					executeUuidCall(RetroProvider.getContactFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+				for (String contactUuid : contactUuids) {
+					DatabaseHelper.getContactDao().deleteContactAndAllDependingEntities(contactUuid);
+				}
 			}
 
 			// Samples
-			List<String> sampleUuids = executeUuidCall(RetroProvider.getSampleFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
-			for (String sampleUuid : sampleUuids) {
-				DatabaseHelper.getSampleDao().deleteSampleAndAllDependingEntities(sampleUuid);
+			if (DtoUserRightsHelper.isViewAllowed(SampleDto.class)) {
+				List<String> sampleUuids =
+					executeUuidCall(RetroProvider.getSampleFacade().pullDeletedUuidsSince(since != null ? since.getTime() : 0));
+				for (String sampleUuid : sampleUuids) {
+					DatabaseHelper.getSampleDao().deleteSampleAndAllDependingEntities(sampleUuid);
+				}
 			}
 
 			ConfigProvider.setLastDeletedSyncDate(new Date());
@@ -587,56 +632,75 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		// Example: Case is created using an existing person, meanwhile user loses access to the person
 		pushNewData();
 
+		boolean viewAllowed;
+
 		// weekly reports and entries
-		List<String> weeklyReportUuids = executeUuidCall(RetroProvider.getWeeklyReportFacade().pullUuids());
+		viewAllowed = DtoUserRightsHelper.isViewAllowed(WeeklyReportDto.class);
+		List<String> weeklyReportUuids = viewAllowed ? executeUuidCall(RetroProvider.getWeeklyReportFacade().pullUuids()) : new ArrayList<>();
 		DatabaseHelper.getWeeklyReportDao().deleteInvalid(weeklyReportUuids);
 		// aggregate reports
-		List<String> aggregateReportUuids = executeUuidCall(RetroProvider.getAggregateReportFacade().pullUuids());
+		viewAllowed = DtoUserRightsHelper.isViewAllowed(AggregateReportDto.class);
+		List<String> aggregateReportUuids = viewAllowed ? executeUuidCall(RetroProvider.getAggregateReportFacade().pullUuids()) : new ArrayList<>();
 		DatabaseHelper.getAggregateReportDao().deleteInvalid(aggregateReportUuids);
 		// tasks
-		List<String> taskUuids = executeUuidCall(RetroProvider.getTaskFacade().pullUuids());
+		viewAllowed = DtoUserRightsHelper.isViewAllowed(TaskDto.class);
+		List<String> taskUuids = viewAllowed ? executeUuidCall(RetroProvider.getTaskFacade().pullUuids()) : new ArrayList<>();
 		DatabaseHelper.getTaskDao().deleteInvalid(taskUuids);
 		// visits
-		List<String> visitUuids = executeUuidCall(RetroProvider.getVisitFacade().pullUuids());
+		viewAllowed = DtoUserRightsHelper.isViewAllowed(VisitDto.class);
+		List<String> visitUuids = viewAllowed ? executeUuidCall(RetroProvider.getVisitFacade().pullUuids()) : new ArrayList<>();
 		DatabaseHelper.getVisitDao().deleteInvalid(visitUuids);
 		// contacts
-		List<String> contactUuids = executeUuidCall(RetroProvider.getContactFacade().pullUuids());
+		viewAllowed = DtoUserRightsHelper.isViewAllowed(ContactDto.class);
+		List<String> contactUuids = viewAllowed ? executeUuidCall(RetroProvider.getContactFacade().pullUuids()) : new ArrayList<>();
 		DatabaseHelper.getContactDao().deleteInvalid(contactUuids);
 		// sample tests
-		List<String> sampleTestUuids = executeUuidCall(RetroProvider.getSampleTestFacade().pullUuids());
+		viewAllowed = DtoUserRightsHelper.isViewAllowed(PathogenTestDto.class);
+		List<String> sampleTestUuids = viewAllowed ? executeUuidCall(RetroProvider.getSampleTestFacade().pullUuids()) : new ArrayList<>();
 		DatabaseHelper.getSampleTestDao().deleteInvalid(sampleTestUuids);
 		// additional tests
-		List<String> additionalTestUuids = executeUuidCall(RetroProvider.getAdditionalTestFacade().pullUuids());
+		viewAllowed = DtoUserRightsHelper.isViewAllowed(AdditionalTestDto.class);
+		List<String> additionalTestUuids = viewAllowed ? executeUuidCall(RetroProvider.getAdditionalTestFacade().pullUuids()) : new ArrayList<>();
 		DatabaseHelper.getAdditionalTestDao().deleteInvalid(additionalTestUuids);
 		// samples
-		List<String> sampleUuids = executeUuidCall(RetroProvider.getSampleFacade().pullUuids());
+		viewAllowed = DtoUserRightsHelper.isViewAllowed(SampleDto.class);
+		List<String> sampleUuids = viewAllowed ? executeUuidCall(RetroProvider.getSampleFacade().pullUuids()) : new ArrayList<>();
 		DatabaseHelper.getSampleDao().deleteInvalid(sampleUuids);
 		// event participants
-		List<String> eventParticipantUuids = executeUuidCall(RetroProvider.getEventParticipantFacade().pullUuids());
+		viewAllowed = DtoUserRightsHelper.isViewAllowed(EventParticipantDto.class);
+		List<String> eventParticipantUuids = viewAllowed ? executeUuidCall(RetroProvider.getEventParticipantFacade().pullUuids()) : new ArrayList<>();
 		DatabaseHelper.getEventParticipantDao().deleteInvalid(eventParticipantUuids);
 		// events
-		List<String> eventUuids = executeUuidCall(RetroProvider.getEventFacade().pullUuids());
+		viewAllowed = DtoUserRightsHelper.isViewAllowed(EventDto.class);
+		List<String> eventUuids = viewAllowed ? executeUuidCall(RetroProvider.getEventFacade().pullUuids()) : new ArrayList<>();
 		DatabaseHelper.getEventDao().deleteInvalid(eventUuids);
 		// treatments
-		List<String> treatmentUuids = executeUuidCall(RetroProvider.getTreatmentFacade().pullUuids());
+		viewAllowed = DtoUserRightsHelper.isViewAllowed(TreatmentDto.class);
+		List<String> treatmentUuids = viewAllowed ? executeUuidCall(RetroProvider.getTreatmentFacade().pullUuids()) : new ArrayList<>();
 		DatabaseHelper.getTreatmentDao().deleteInvalid(treatmentUuids);
 		// prescriptions
-		List<String> prescriptionUuids = executeUuidCall(RetroProvider.getPrescriptionFacade().pullUuids());
+		viewAllowed = DtoUserRightsHelper.isViewAllowed(PrescriptionDto.class);
+		List<String> prescriptionUuids = viewAllowed ? executeUuidCall(RetroProvider.getPrescriptionFacade().pullUuids()) : new ArrayList<>();
 		DatabaseHelper.getPrescriptionDao().deleteInvalid(prescriptionUuids);
 		// clinical visits
-		List<String> clinicalVisitUuids = executeUuidCall(RetroProvider.getClinicalVisitFacade().pullUuids());
+		viewAllowed = DtoUserRightsHelper.isViewAllowed(ClinicalVisitDto.class);
+		List<String> clinicalVisitUuids = viewAllowed ? executeUuidCall(RetroProvider.getClinicalVisitFacade().pullUuids()) : new ArrayList<>();
 		DatabaseHelper.getClinicalVisitDao().deleteInvalid(clinicalVisitUuids);
 		// immunizations
-		List<String> immunizationUuids = executeUuidCall(RetroProvider.getImmunizationFacade().pullUuids());
+		viewAllowed = DtoUserRightsHelper.isViewAllowed(ImmunizationDto.class);
+		List<String> immunizationUuids = viewAllowed ? executeUuidCall(RetroProvider.getImmunizationFacade().pullUuids()) : new ArrayList<>();
 		DatabaseHelper.getImmunizationDao().deleteInvalid(immunizationUuids);
 		// cases
-		List<String> caseUuids = executeUuidCall(RetroProvider.getCaseFacade().pullUuids());
+		viewAllowed = DtoUserRightsHelper.isViewAllowed(CaseDataDto.class);
+		List<String> caseUuids = viewAllowed ? executeUuidCall(RetroProvider.getCaseFacade().pullUuids()) : new ArrayList<>();
 		DatabaseHelper.getCaseDao().deleteInvalid(caseUuids);
 		// persons
-		List<String> personUuids = executeUuidCall(RetroProvider.getPersonFacade().pullUuids());
+		viewAllowed = DtoUserRightsHelper.isViewAllowed(PersonDto.class);
+		List<String> personUuids = viewAllowed ? executeUuidCall(RetroProvider.getPersonFacade().pullUuids()) : new ArrayList<>();
 		DatabaseHelper.getPersonDao().deleteInvalid(personUuids);
 		// outbreak
-		List<String> outbreakUuids = executeUuidCall(RetroProvider.getOutbreakFacade().pullActiveUuids());
+		viewAllowed = DtoUserRightsHelper.isViewAllowed(OutbreakDto.class);
+		List<String> outbreakUuids = viewAllowed ? executeUuidCall(RetroProvider.getOutbreakFacade().pullActiveUuids()) : new ArrayList<>();
 		DatabaseHelper.getOutbreakDao().deleteInvalid(outbreakUuids);
 
 		// order is important, due to dependencies (e.g. case & person)
