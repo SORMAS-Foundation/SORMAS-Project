@@ -356,7 +356,7 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 	}
 
 	@Override
-	public void logGetExternalLabMessagesSuccess(Date since, List<String> externalLabMessages) {
+	public void logGetExternalLabMessagesSuccess(Date since, List<String> externalLabMessages, Date start, Date end) {
 		Coding type = new Coding("https://hl7.org/fhir/R4/valueset-audit-event-type.html", "110107", "Import");
 		String outcome = String.format("%d external lab messages since %s fetched", externalLabMessages.size(), since);
 		Reference what = new Reference("getExternalLabMessages");
@@ -366,11 +366,11 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 				new AuditEvent.AuditEventEntityDetailComponent(new StringType("externalLabMessage"), new StringType(m));
 			details.add(detail);
 		});
-		logLabMessageSuccess(type, what, outcome, details);
+		logLabMessageSuccess(type, what, outcome, details, start, end);
 	}
 
 	@Override
-	public void logExternalLabMessagesHtmlSuccess(String uuid, int length) {
+	public void logExternalLabMessagesHtmlSuccess(String uuid, int length, Date start, Date end) {
 		Coding type = new Coding("https://hl7.org/fhir/R4/valueset-audit-event-type.html", "110106", "Export");
 		Reference what = new Reference("convertToHTML");
 
@@ -380,11 +380,11 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 		details.add(new AuditEvent.AuditEventEntityDetailComponent(new StringType("uuid"), new StringType(uuid)));
 		details.add(new AuditEvent.AuditEventEntityDetailComponent(new StringType("length"), new StringType(String.valueOf(length))));
 
-		logLabMessageSuccess(type, what, outcome, details);
+		logLabMessageSuccess(type, what, outcome, details, start, end);
 	}
 
 	@Override
-	public void logExternalLabMessagesPdfSuccess(String uuid, int length) {
+	public void logExternalLabMessagesPdfSuccess(String uuid, int length, Date start, Date end) {
 		Coding type = new Coding("https://hl7.org/fhir/R4/valueset-audit-event-type.html", "110106", "Export");
 		Reference what = new Reference("convertToPDF");
 
@@ -394,10 +394,16 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 		details.add(new AuditEvent.AuditEventEntityDetailComponent(new StringType("uuid"), new StringType(uuid)));
 		details.add(new AuditEvent.AuditEventEntityDetailComponent(new StringType("length"), new StringType(String.valueOf(length))));
 
-		logLabMessageSuccess(type, what, outcome, details);
+		logLabMessageSuccess(type, what, outcome, details, start, end);
 	}
 
-	private void logLabMessageSuccess(Coding type, Reference what, String outcome, List<AuditEvent.AuditEventEntityDetailComponent> details) {
+	private void logLabMessageSuccess(
+		Coding type,
+		Reference what,
+		String outcome,
+		List<AuditEvent.AuditEventEntityDetailComponent> details,
+		Date start,
+		Date end) {
 		AuditEvent logLabMessage = new AuditEvent();
 
 		logLabMessage.setType(type);
@@ -424,27 +430,27 @@ public class AuditLoggerEjb implements AuditLoggerFacade {
 	}
 
 	@Override
-	public void logGetExternalLabMessagesError(String outcome, String error) {
+	public void logGetExternalLabMessagesError(String outcome, String error, Date start, Date end) {
 		Coding type = new Coding("https://hl7.org/fhir/R4/valueset-audit-event-type.html", "110107", "Import");
 		Reference what = new Reference("getExternalLabMessages");
-		logLabMessageError(type, what, outcome, error);
+		logLabMessageError(type, what, outcome, error, start, end);
 	}
 
 	@Override
-	public void logExternalLabMessagesHtmlError(String outcome, String error) {
+	public void logExternalLabMessagesHtmlError(String outcome, String error, Date start, Date end) {
 		Coding type = new Coding("https://hl7.org/fhir/R4/valueset-audit-event-type.html", "110107", "Import");
 		Reference what = new Reference("getExternalLabMessages");
-		logLabMessageError(type, what, outcome, error);
+		logLabMessageError(type, what, outcome, error, start, end);
 	}
 
 	@Override
-	public void logExternalLabMessagesPdfError(String outcome, String error) {
+	public void logExternalLabMessagesPdfError(String outcome, String error, Date start, Date end) {
 		Coding type = new Coding("https://hl7.org/fhir/R4/valueset-audit-event-type.html", "110107", "Import");
 		Reference what = new Reference("getExternalLabMessages");
-		logLabMessageError(type, what, outcome, error);
+		logLabMessageError(type, what, outcome, error, start, end);
 	}
 
-	private void logLabMessageError(Coding type, Reference what, String outcome, String error) {
+	private void logLabMessageError(Coding type, Reference what, String outcome, String error, Date start, Date end) {
 		AuditEvent logLabMessage = new AuditEvent();
 
 		logLabMessage.setType(type);

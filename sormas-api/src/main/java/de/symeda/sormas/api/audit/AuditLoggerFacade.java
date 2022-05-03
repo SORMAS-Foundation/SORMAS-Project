@@ -1,8 +1,10 @@
 package de.symeda.sormas.api.audit;
 
 import javax.ejb.Remote;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
+import java.util.TimeZone;
 
 @Remote
 public interface AuditLoggerFacade {
@@ -13,16 +15,16 @@ public interface AuditLoggerFacade {
 
 	void logFailedRestLogin(String authorizationHeader, String method, String pathInfo);
 
-	void logGetExternalLabMessagesSuccess(Date since, List<String> externalLabMessages);
+	void logGetExternalLabMessagesSuccess(Date since, List<String> externalLabMessages, Date start, Date end);
 
-	void logExternalLabMessagesHtmlSuccess(String uuid, int length);
+	void logExternalLabMessagesHtmlSuccess(String uuid, int length, Date start, Date end);
 
-	void logExternalLabMessagesPdfSuccess(String uuid, int length);
+	void logExternalLabMessagesPdfSuccess(String uuid, int length, Date start, Date end);
 
-	void logGetExternalLabMessagesError(String outcome, String error);
+	void logGetExternalLabMessagesError(String outcome, String error, Date start, Date end);
 
-	void logExternalLabMessagesHtmlError(String outcome, String error);
+	void logExternalLabMessagesHtmlError(String outcome, String error, Date start, Date end);
 
-	void logExternalLabMessagesPdfError(String outcome, String error);
+	void logExternalLabMessagesPdfError(String outcome, String error, Date start, Date end);
 
 }
