@@ -958,17 +958,20 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			long timestamp8 = System.currentTimeMillis();
 			System.out.println(">>*<< exposures query time: " + (timestamp8 - timestamp7));
 
-			Map<Long, List<Sample>> samples = null;
+			Map<Long, List<EmbeddedSampleExportDto>> samples = null;
 			if ((exportType == null || exportType == CaseExportType.CASE_SURVEILLANCE)
 					&& ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.SAMPLE_INFORMATION)) {
-				List<Sample> samplesList = null;
-				CriteriaQuery<Sample> samplesCq = cb.createQuery(Sample.class);
+				List<EmbeddedSampleExportDto> samplesList = null;
+				CriteriaQuery<EmbeddedSampleExportDto> samplesCq = cb.createQuery(EmbeddedSampleExportDto.class);
 				Root<Sample> samplesRoot = samplesCq.from(Sample.class);
 				Join<Sample, Case> samplesCaseJoin = samplesRoot.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
 				Expression<String> caseIdsExpr = samplesCaseJoin.get(Case.ID);
+				samplesCq.multiselect(samplesRoot.get(Sample.UUID), samplesRoot.get(Sample.SAMPLE_DATE_TIME),
+						samplesRoot.get(Sample.LAB).get(Facility.UUID), samplesRoot.get(Sample.LAB).get(Facility.NAME),
+						samplesRoot.get(Sample.LAB_DETAILS), samplesRoot.get(Sample.PATHOGEN_TEST_RESULT), caseIdsExpr);
 				samplesCq.where(caseIdsExpr.in(resultCaseIds));
 				samplesList = em.createQuery(samplesCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
-				samples = samplesList.stream().collect(Collectors.groupingBy(s -> s.getAssociatedCase().getId()));
+				samples = samplesList.stream().collect(Collectors.groupingBy(s -> s.getCaseId()));
 			}
 
 			long timestamp9 = System.currentTimeMillis();
@@ -1109,15 +1112,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				if (samples != null) {
 					Optional.ofNullable(samples.get(exportDto.getId())).ifPresent(caseSamples -> {
 						int count = 0;
-						caseSamples.sort((o1, o2) -> o2.getSampleDateTime().compareTo(o1.getSampleDateTime()));
-						for (Sample sample : caseSamples) {
-							EmbeddedSampleExportDto sampleDto = new EmbeddedSampleExportDto(
-									sample.getUuid(),
-									sample.getSampleDateTime(),
-									sample.getLab() != null
-											? FacilityHelper.buildFacilityString(sample.getLab().getUuid(), sample.getLab().getName(), sample.getLabDetails())
-											: null,
-									sample.getPathogenTestResult());
+						caseSamples.sort((o1, o2) -> o2.getDateTime().compareTo(o1.getDateTime()));
+						for (EmbeddedSampleExportDto sampleDto : caseSamples) {
 
 							switch (++count) {
 								case 1:
