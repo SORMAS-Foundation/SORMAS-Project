@@ -99,6 +99,7 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.TO
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.UNLINK_EVENT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getCheckboxByIndex;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getCheckboxByUUID;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.RESET_FILTERS_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
@@ -117,7 +118,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.common.DataOperations;
@@ -812,6 +812,25 @@ public class EventDirectorySteps implements En {
                       webDriverHelpers.getTextFromWebElement(EVENT_MANAGEMENT_STATUS_CHECK),
                       eventManagementStatus,
                       "Event Management status is not correct"));
+        });
+    When(
+        "^I select last created API result in grid in Event Directory for Bulk Action$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.scrollToElement(getCheckboxByUUID(apiState.getCreatedEvent().getUuid()));
+          webDriverHelpers.clickOnWebElementBySelector(
+              getCheckboxByUUID(apiState.getCreatedEvent().getUuid()));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+    When(
+        "^I select last created UI result in grid in Event Directory for Bulk Action$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.scrollToElement(
+              getCheckboxByUUID(CreateNewEventSteps.newEvent.getUuid()));
+          webDriverHelpers.clickOnWebElementBySelector(
+              getCheckboxByUUID(CreateNewEventSteps.newEvent.getUuid()));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(
