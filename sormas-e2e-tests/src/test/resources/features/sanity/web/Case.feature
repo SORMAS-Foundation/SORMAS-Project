@@ -870,3 +870,62 @@ Feature: Case end to end tests
     And I open the first found result in the CHOOSE SOURCE popup of Create Contact window
     And I click on SAVE new contact button in the CHOOSE SOURCE popup of Create Contact window
     Then I check that Selected case is listed as Source Case in the CONTACTS WITH SOURCE CASE Box
+
+  @issue=SORDEV-9124 @env_main
+  Scenario: Document Templates create quarantine order
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I open the last created Case via API
+    Then I click on Create button in Document Templates box in Edit Case directory
+    And I click on checkbox to upload generated document to entity in Create Quarantine Order form in Edit Case directory
+    And I select "ExampleDocumentTemplateCases.docx" Quarantine Order in Create Quarantine Order form in Edit Case directory
+    And I click on Create button in Create Quarantine Order form
+    Then I navigate to the last created case via the url
+    And I check if downloaded file is correct for "ExampleDocumentTemplateCases.docx" Quarantine Order in Edit Case directory
+    And I check if generated document based on "ExampleDocumentTemplateCases.docx" appeared in Documents tab for API created case in Edit Case directory
+    And I delete downloaded file created from "ExampleDocumentTemplateCases.docx" Document Template
+
+  @issue=SORDEV-9124 @env_main
+  Scenario: Document Templates create quarantine order for Case bulk
+    When API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data
+    Then I check the created data is correctly displayed on Edit case page
+    And I click on the Cases button from navbar
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I apply Date type filter to "Case report date" on Case directory page
+    And I fill Cases from input to 1 days before mocked Cases created on Case directory page
+    And I click APPLY BUTTON in Case Directory Page
+    And I click SHOW MORE FILTERS button on Case directory page
+    And I click on the More button on Case directory page
+    And I click Enter Bulk Edit Mode on Case directory page
+    And I select last created UI result in grid in Case Directory for Bulk Action
+    And I select last created API result in grid in Case Directory for Bulk Action
+    And I click on Bulk Actions combobox on Case Directory Page
+    And I click on Create Quarantine Order from Bulk Actions combobox on Case Directory Page
+    And I click on checkbox to upload generated document to entities in Create Quarantine Order form in Case directory
+    And I select "ExampleDocumentTemplateCases.docx" Quarantine Order in Create Quarantine Order form in Case directory
+    And I click on Create button in Create Quarantine Order form
+    And I click on close button in Create Quarantine Order form
+    And I check if downloaded zip file for Quarantine Order is correct
+    Then I click Leave Bulk Edit Mode on Case directory page
+    And I open the last created Case via API
+    And I check if generated document based on "ExampleDocumentTemplateCases.docx" appeared in Documents tab for API created case in Edit Case directory
+    Then I click on the Cases button from navbar
+    And I filter by CaseID of last created UI Case on Case directory page
+    Then I open last created case
+    And I check if generated document based on "ExampleDocumentTemplateCases.docx" appeared in Documents tab for UI created case in Edit Case directory
+    And I delete downloaded file created from Quarantine order
