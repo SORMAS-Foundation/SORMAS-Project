@@ -492,7 +492,8 @@ Feature: Create events
     Then I click on the RESET FILTERS button from Event
     And I click on the More button on Event directory page
     And I click Enter Bulk Edit Mode on Event directory page
-    And I select first 2 results in grid in Event Directory
+    And I select last created UI result in grid in Event Directory for Bulk Action
+    And I select last created API result in grid in Event Directory for Bulk Action
     And I click on Bulk Actions combobox on Event Directory Page
     And I click on Edit Events from Bulk Actions combobox on Event Directory Page
     Then I click to bulk change event managements status for selected events
@@ -501,6 +502,37 @@ Feature: Create events
     Then I check if Event Management Status is set to "PENDING"
     And I navigate to the last created Event page via URL
     Then I check if Event Management Status is set to "PENDING"
+
+  @issue=SORDEV-5967 @env_de
+  Scenario: Add evidence fields for event clusters
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    And I click on the Events button from navbar
+    Then I open the last created event via api
+    And I check CLUSTER option on edit Event page
+    And I select "Hauptsächlich von Mensch zu Mensch" option from Primary Mode Of Transmission Combobox on edit Event page
+    And I click on Epidemiological evidence with UNBEKANNT option
+    And I click on Epidemiological evidence with NEIN option
+    And I click on Epidemiological evidence with JA option
+    And I tick the all options for Study on Epidemiological evidence for De version
+    Then I check that all options for Study on Epidemiological evidence appears and there are checked for De version
+    And I tick the all options for Explorative survey of affected people on Epidemiological evidence for De version
+    Then I check the all options for Explorative survey of affected people on Epidemiological evidence appears and there are checked for De version
+    And I tick the all options for Descriptive analysis of ascertained data on Epidemiological evidence for De version
+    Then I check the all options for Descriptive analysis of ascertained data on Epidemiological evidence appears and there are checked for De version
+    And I tick the all options for Suspicion on Epidemiological evidence for De version
+    Then I check the all options for Suspicion on Epidemiological evidence are visible and clickable for De version
+    Then I click on Laboratory diagnostic evidence with UNBEKANNT option
+    And I click on Laboratory diagnostic evidence with NEIN option
+    And I click on Laboratory diagnostic evidence with JA option
+    And I tick the all options for Verification of at least two infected or diseased persons on Laboratory diagnostic evidence for De version
+    Then I check the all options for Verification of at least two infected or diseased persons on Laboratory diagnostic evidence appears and there are checked for De version
+    And I tick the all options for Verification on materials on Laboratory diagnostic evidence for De version
+    Then I check the all options for Verification on materials on Laboratory diagnostic evidence appears and there are checked for De version
+    And I click on SAVE button in edit event form
+
 
   @issue=SORDEV-9477 @env_main
   Scenario: Add a person search option on creation forms

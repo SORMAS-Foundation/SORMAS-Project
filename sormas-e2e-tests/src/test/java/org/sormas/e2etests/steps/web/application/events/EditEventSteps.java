@@ -22,22 +22,35 @@ import static org.sormas.e2etests.pages.application.actions.CreateNewActionPage.
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALL_RESULTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PERSON_SEARCH_LOCATOR_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.CASE_CONTROL_STUDY_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.COHORT_STUDY_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.COMPLIANT_PATHOGEN_FINE_TYPING_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.CONTACT_TO_CONTAMINATED_MATERIALS_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.CONTACT_TO_SICK_PERSON_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.CREATE_CONTACTS_BULK_EDIT_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.DESCRIPTIVE_ANALYSIS_OF_ASCETAINED_DATA_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DISEASE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.DISEASE_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EDIT_EVENT_GROUP_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EDIT_FIRST_TASK;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.EPIDEMIOLOGICAL_EVIDENCE_OPTIONS;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_ACTIONS_TAB;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_CLUSTER_EDIT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_DATA_SAVED_MESSAGE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_HANDOUT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_INVESTIGATION_STATUS_OPTIONS;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_MANAGEMENT_STATUS_OPTIONS;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_STATUS_OPTIONS;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.EXPLORATIVE_SURVEY_OF_AFFECTED_PEOPLE_EVIDENCE_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.EXPRESSED_BY_THE_DISEASE_PERSON_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.EXPRESSED_BY_THE_HEALTH_DEPARTMENT_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FACILITY_CATEGORY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FACILITY_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_GROUP_ID;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.GROUP_EVENT_NAME_POPUP_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.GROUP_EVENT_UUID;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.IMPRESSION_TEST_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.LABORATORY_DIAGNOSTIC_EVIDENCE_OPTIONS;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.LINK_EVENT_GROUP_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NAVIGATE_TO_EVENT_DIRECTORY_EVENT_GROUP_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NAVIGATE_TO_EVENT_DIRECTORY_LIST_GROUP_BUTTON;
@@ -45,7 +58,11 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.NAVIGAT
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_ACTION_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_EVENT_GROUP_RADIOBUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_GROUP_EVENT_CREATED_MESSAGE;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.OTHER_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.PATHOGEN_FINE_TYPING_COMPLIANT_WITH_THE_ONE_OF_CASES_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.PERSON_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.PLACE_OF_STAY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.PRIMARY_MODE_OF_TRANSMISSION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.REPORT_DATE_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.RISK_LEVEL_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.RISK_LEVEL_INPUT;
@@ -55,12 +72,19 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.SAVE_BU
 import static org.sormas.e2etests.pages.application.events.EditEventPage.SELECT_EVENT_GROUP_RADIOBUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.SOURCE_TYPE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.SOURCE_TYPE_INPUT;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.SPATIAL_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.START_DATA_INPUT;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.STUDY_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.SUSPICION_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.TEMPORAL_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.TITLE_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.TOTAL_ACTIONS_COUNTER;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.TYPE_OF_PLACE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.TYPE_OF_PLACE_INPUT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.UNLINK_EVENT_BUTTON;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.VERIFICATION_OF_AT_LEAST_TWO_INFECTED_OR_DISEASED_PERSONS_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.VERIFICATION_ON_MATERIALS_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.WATER_SAMPLE_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.getGroupEventName;
 import static org.sormas.e2etests.pages.application.events.EventActionsPage.CREATE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BULK_ACTIONS_EVENT_DIRECTORY;
@@ -161,6 +185,166 @@ public class EditEventSteps implements En {
           webDriverHelpers.scrollToElement(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_DATA_SAVED_MESSAGE);
+        });
+
+    When(
+        "I check CLUSTER option on edit Event page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(EVENT_CLUSTER_EDIT);
+        });
+
+    When(
+        "I select {string} option from Primary Mode Of Transmission Combobox on edit Event page",
+        (String option) -> {
+          webDriverHelpers.selectFromCombobox(PRIMARY_MODE_OF_TRANSMISSION_COMBOBOX, option);
+        });
+
+    When(
+        "I click on Epidemiological evidence with ([^\"]*) option",
+        (String option) -> {
+          webDriverHelpers.clickWebElementByText(EPIDEMIOLOGICAL_EVIDENCE_OPTIONS, option);
+        });
+
+    When(
+        "I tick the all options for Study on Epidemiological evidence for De version",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(STUDY_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(
+              CASE_CONTROL_STUDY_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(
+              COHORT_STUDY_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+        });
+
+    When(
+        "I check that all options for Study on Epidemiological evidence appears and there are checked for De version",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              STUDY_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              CASE_CONTROL_STUDY_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              COHORT_STUDY_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+        });
+
+    When(
+        "I tick the all options for Explorative survey of affected people on Epidemiological evidence for De version",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              EXPLORATIVE_SURVEY_OF_AFFECTED_PEOPLE_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(
+              CONTACT_TO_SICK_PERSON_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(
+              CONTACT_TO_CONTAMINATED_MATERIALS_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+        });
+
+    When(
+        "I check the all options for Explorative survey of affected people on Epidemiological evidence appears and there are checked for De version",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              EXPLORATIVE_SURVEY_OF_AFFECTED_PEOPLE_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              CONTACT_TO_SICK_PERSON_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              CONTACT_TO_CONTAMINATED_MATERIALS_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+        });
+
+    When(
+        "I tick the all options for Descriptive analysis of ascertained data on Epidemiological evidence for De version",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              DESCRIPTIVE_ANALYSIS_OF_ASCETAINED_DATA_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(TEMPORAL_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(SPATIAL_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(PERSON_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+        });
+
+    When(
+        "I check the all options for Descriptive analysis of ascertained data on Epidemiological evidence appears and there are checked for De version",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              DESCRIPTIVE_ANALYSIS_OF_ASCETAINED_DATA_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              TEMPORAL_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SPATIAL_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              PERSON_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+        });
+
+    When(
+        "I tick the all options for Suspicion on Epidemiological evidence for De version",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              SUSPICION_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(
+              EXPRESSED_BY_THE_DISEASE_PERSON_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(
+              EXPRESSED_BY_THE_HEALTH_DEPARTMENT_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+        });
+
+    When(
+        "I check the all options for Suspicion on Epidemiological evidence are visible and clickable for De version",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SUSPICION_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              EXPRESSED_BY_THE_DISEASE_PERSON_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              EXPRESSED_BY_THE_HEALTH_DEPARTMENT_EPIDEMIOLOGICAL_EVIDENCE_BUTTON_DE);
+        });
+
+    When(
+        "I click on Laboratory diagnostic evidence with ([^\"]*) option",
+        (String option) -> {
+          webDriverHelpers.clickWebElementByText(LABORATORY_DIAGNOSTIC_EVIDENCE_OPTIONS, option);
+        });
+
+    When(
+        "I tick the all options for Verification of at least two infected or diseased persons on Laboratory diagnostic evidence for De version",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              VERIFICATION_OF_AT_LEAST_TWO_INFECTED_OR_DISEASED_PERSONS_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(
+              COMPLIANT_PATHOGEN_FINE_TYPING_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE);
+        });
+
+    When(
+        "I check the all options for Verification of at least two infected or diseased persons on Laboratory diagnostic evidence appears and there are checked for De version",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              VERIFICATION_OF_AT_LEAST_TWO_INFECTED_OR_DISEASED_PERSONS_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              COMPLIANT_PATHOGEN_FINE_TYPING_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE);
+        });
+
+    When(
+        "I tick the all options for Verification on materials on Laboratory diagnostic evidence for De version",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              VERIFICATION_ON_MATERIALS_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(
+              IMPRESSION_TEST_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(
+              WATER_SAMPLE_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(
+              OTHER_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(
+              PATHOGEN_FINE_TYPING_COMPLIANT_WITH_THE_ONE_OF_CASES_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE);
+        });
+
+    When(
+        "I check the all options for Verification on materials on Laboratory diagnostic evidence appears and there are checked for De version",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              VERIFICATION_ON_MATERIALS_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              IMPRESSION_TEST_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              WATER_SAMPLE_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              OTHER_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              PATHOGEN_FINE_TYPING_COMPLIANT_WITH_THE_ONE_OF_CASES_LABORATORY_DIAGNOSTIC_EVIDENCE_BUTTON_DE);
         });
 
     // TODO refactor this
@@ -361,6 +545,12 @@ public class EditEventSteps implements En {
 
     When(
         "I save changes in participant window",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
+        });
+
+    When(
+        "I click on SAVE button in edit event form",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(PICK_OR_CREATE_POPUP_SAVE_BUTTON);
         });
