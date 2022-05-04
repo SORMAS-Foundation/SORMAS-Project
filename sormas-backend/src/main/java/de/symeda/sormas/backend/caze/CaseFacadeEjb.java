@@ -71,6 +71,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -2525,6 +2526,18 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		if (includeContacts) {
 			List<String> caseContacts = contactService.getAllUuidsByCaseUuids(entityUuids);
 			contactService.dearchive(caseContacts, dearchiveReason);
+		}
+	}
+
+	@Override
+	@RolesAllowed({
+			UserRight._CASE_CREATE,
+			UserRight._CASE_EDIT })
+	public void setResultingCase(EventParticipantReferenceDto eventParticipantReferenceDto, CaseReferenceDto caseReferenceDto) {
+		final EventParticipant eventParticipant = eventParticipantService.getByUuid(eventParticipantReferenceDto.getUuid());
+		if (eventParticipant != null) {
+			eventParticipant.setResultingCase(caseService.getByUuid(caseReferenceDto.getUuid()));
+			eventParticipantService.ensurePersisted(eventParticipant);
 		}
 	}
 
