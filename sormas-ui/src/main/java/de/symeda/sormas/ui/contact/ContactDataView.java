@@ -39,9 +39,9 @@ import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.vaccination.VaccinationAssociationType;
 import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.CaseInfoLayout;
 import de.symeda.sormas.ui.docgeneration.QuarantineOrderDocumentsComponent;
@@ -148,10 +148,10 @@ public class ContactDataView extends AbstractContactView {
 					confirmed -> {
 						if (confirmed) {
 							editComponent.discard();
-							Disease selectedDisease = ((ContactDataForm) editComponent.getWrappedComponent()).getSelectedDisease();
+							Disease selectedDisease = editComponent.getWrappedComponent().getSelectedDisease();
 							ControllerProvider.getContactController().openSelectCaseForContactWindow(selectedDisease, selectedCase -> {
 								if (selectedCase != null) {
-									((ContactDataForm) editComponent.getWrappedComponent()).setSourceCase(selectedCase.toReference());
+									editComponent.getWrappedComponent().setSourceCase(selectedCase.toReference());
 									ContactDto contactToChange = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
 									contactToChange.setCaze(selectedCase.toReference());
 									FacadeProvider.getContactFacade().save(contactToChange);
@@ -183,7 +183,7 @@ public class ContactDataView extends AbstractContactView {
 							if (confirmed) {
 								editComponent.discard();
 								layout.removeComponent(CASE_LOC);
-								((ContactDataForm) editComponent.getWrappedComponent()).setSourceCase(null);
+								editComponent.getWrappedComponent().setSourceCase(null);
 								ContactDto contactToChange = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
 								contactToChange.setCaze(null);
 								FacadeProvider.getContactFacade().save(contactToChange);
@@ -207,16 +207,9 @@ public class ContactDataView extends AbstractContactView {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)) {
-			SampleListComponent sampleList =
-				new SampleListComponent(new SampleCriteria().contact(getContactRef()).sampleAssociationType(SampleAssociationType.CONTACT));
-			sampleList.addSideComponentCreateEventListener(
-				e -> showNavigationConfirmPopupIfDirty(
-					() -> ControllerProvider.getSampleController().create(getContactRef(), contactDto.getDisease(), () -> {
-						final ContactDto contactByUuid = FacadeProvider.getContactFacade().getByUuid(getContactRef().getUuid());
-						FacadeProvider.getContactFacade().save(contactByUuid);
-						SormasUI.refreshView();
-					})));
-
+			SampleListComponent sampleList = new SampleListComponent(
+				new SampleCriteria().contact(getContactRef()).disease(contactDto.getDisease()).sampleAssociationType(SampleAssociationType.CONTACT),
+				this::showUnsavedChangesPopup);
 			SampleListComponentLayout sampleListComponentLayout =
 				new SampleListComponentLayout(sampleList, I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesContact));
 			layout.addSidePanelComponent(sampleListComponentLayout, SAMPLES_LOC);
@@ -228,7 +221,7 @@ public class ContactDataView extends AbstractContactView {
 			eventsLayout.setMargin(false);
 			eventsLayout.setSpacing(false);
 
-			EventListComponent eventList = new EventListComponent(getContactRef());
+			EventListComponent eventList = new EventListComponent(getContactRef(), this::showUnsavedChangesPopup);
 			eventList.addStyleName(CssStyles.SIDE_COMPONENT);
 			eventsLayout.addComponent(eventList);
 
@@ -241,18 +234,18 @@ public class ContactDataView extends AbstractContactView {
 				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
 				final ImmunizationListCriteria immunizationListCriteria =
 					new ImmunizationListCriteria.Builder(contactDto.getPerson()).wihDisease(contactDto.getDisease()).build();
-				layout.addSidePanelComponent(new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria)), IMMUNIZATION_LOC);
-			} else {
-				VaccinationListCriteria criteria =
-					new VaccinationListCriteria.Builder(contactDto.getPerson()).withDisease(contactDto.getDisease()).build();
 				layout.addSidePanelComponent(
-					new SideComponentLayout(
-						new VaccinationListComponent(
-							getContactRef(),
-							criteria,
-							contactDto.getRegion() != null ? contactDto.getRegion() : caseDto.getResponsibleRegion(),
-							contactDto.getDistrict() != null ? contactDto.getDistrict() : caseDto.getResponsibleDistrict(),
-							this)),
+					new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria, this::showUnsavedChangesPopup)),
+					IMMUNIZATION_LOC);
+			} else {
+				VaccinationListCriteria criteria = new VaccinationListCriteria.Builder(contactDto.getPerson()).withDisease(contactDto.getDisease())
+					.build()
+					.vaccinationAssociationType(VaccinationAssociationType.CONTACT)
+					.contactReference(getContactRef())
+					.region(contactDto.getRegion() != null ? contactDto.getRegion() : caseDto.getResponsibleRegion())
+					.district(contactDto.getDistrict() != null ? contactDto.getDistrict() : caseDto.getResponsibleDistrict());
+				layout.addSidePanelComponent(
+					new SideComponentLayout(new VaccinationListComponent(criteria, this::showUnsavedChangesPopup)),
 					VACCINATIONS_LOC);
 			}
 		}

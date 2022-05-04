@@ -36,4 +36,12 @@ public class FacilitiesTabPage {
   public static final By CLOSE_POPUP_FACILITIES_BUTTON = By.id("actionCancel");
   public static final By CLOSE_FACILITIES_IMPORT_BUTTON =
       By.xpath("//div[@class='v-window-closebox']");
+  public static final By FACILITIES_NEW_ENTRY_BUTTON = By.id("create");
+  public static final By FACILITY_NAME_INPUT = By.cssSelector("#name");
+  public static final By REGION_COMBOBOX =
+      By.cssSelector(".v-window [location='region'] [role='combobox'] div");
+  public static final By DISTRICT_COMBOBOX =
+      By.cssSelector(".v-window [location='district'] [role='combobox'] div");
+  public static final By FACILITY_CATEGORY_COMBOBOX = By.cssSelector(".v-window #typeGroup div");
+  public static final By FACILITY_TYPE_COMBOBOX = By.cssSelector(".v-window #type div");
 }

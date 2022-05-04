@@ -29,8 +29,11 @@ import io.qameta.allure.listener.StepLifecycleListener;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
 import java.time.Duration;
+import java.util.Collection;
+import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Assert;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.sormas.e2etests.webdriver.DriverManager;
@@ -83,14 +86,23 @@ public class BaseSteps implements StepLifecycleListener {
     log.info("Finished test: {}", scenario.getName());
   }
 
-  @After(value = "@PublishCustomReport")
-  public void generateMeasurementsReport() {
+  @After(value = "@PublishPagesCustomReport")
+  public void generatePagesMeasurementsReport() {
     log.info("Parsing results collected in results.txt and converting them into Row Objects");
-    TableDataManager.convertData();
-    log.info("Creating Chart for UI Meassurements report");
-    ReportChartBuilder.buildChartForData(TableDataManager.getTableRowsDataList());
+    TableDataManager.convertPagesData();
+    log.info("Creating Chart for UI Measurements report");
+    ReportChartBuilder.buildChartForData(TableDataManager.getTablePageRowsDataList());
     log.info("Generating Sormas Custom report");
-    CustomReportBuilder.generateReport(TableDataManager.getTableRowsAsHtml());
+    CustomReportBuilder.generatePagesMeasurementsReport(TableDataManager.getPageRowsAsHtml());
+    log.info("Custom report was created!");
+  }
+
+  @After(value = "@PublishApiCustomReport")
+  public void generateApiMeasurementsReport() {
+    log.info("Parsing results collected in results.txt and converting them into Row Objects");
+    TableDataManager.convertApiData();
+    log.info("Generating Sormas Custom report");
+    CustomReportBuilder.generateApiMeasurementsReport(TableDataManager.getApiRowsAsHtml());
     log.info("Custom report was created!");
   }
 
@@ -99,12 +111,24 @@ public class BaseSteps implements StepLifecycleListener {
   }
 
   private void setLocale(Scenario scenario) {
-    String localeTag =
-        scenario.getSourceTagNames().stream()
-            .filter(value -> value.startsWith("@env"))
-            .findFirst()
-            .get();
+    Collection<String> tags = scenario.getSourceTagNames();
+    checkDeclaredEnvironment(tags);
+    String localeTag = tags.stream().filter(value -> value.startsWith("@env")).findFirst().get();
     int indexOfSubstring = localeTag.indexOf("_");
     locale = localeTag.substring(indexOfSubstring + 1);
+  }
+
+  private void checkDeclaredEnvironment(Collection<String> tags) {
+    AtomicBoolean foundEnvironment = new AtomicBoolean(false);
+    tags.stream()
+        .forEach(
+            tag -> {
+              if (foundEnvironment.get() && tag.startsWith("@env")) {
+                Assert.fail("Cannot have more than one environment declared per test!");
+              }
+              if (tag.startsWith("@env")) {
+                foundEnvironment.set(true);
+              }
+            });
   }
 }

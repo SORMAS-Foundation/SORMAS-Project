@@ -103,14 +103,16 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Action> actionPath) {
 
-		// National users can access all actions in the system
 		User currentUser = getCurrentUser();
+		if (currentUser == null) {
+			return null;
+		}
+
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (jurisdictionLevel == JurisdictionLevel.NATION || currentUser.hasUserRole(UserRole.REST_USER)) {
 			return null;
 		}
 
-		// whoever created the action is allowed to access it
 		Predicate filter = cb.equal(actionPath.join(Action.CREATOR_USER, JoinType.LEFT), currentUser);
 
 		Predicate eventFilter = eventService.createUserFilter(cb, cq, actionPath.join(Action.EVENT, JoinType.LEFT));
@@ -229,10 +231,9 @@ public class ActionService extends AdoServiceWithUserFilter<Action> {
 		CriteriaBuilder cb = actionQueryContext.getCriteriaBuilder();
 		ActionJoins joins = (ActionJoins) actionQueryContext.getJoins();
 
-		From<Action, Action> action = joins.getRoot();
-		From<Action, Event> event = joins.getEvent(JoinType.INNER);
+		From<?, Action> action = joins.getRoot();
 
-		Predicate filter = eventService.buildCriteriaFilter(criteria, new EventQueryContext(cb, actionQueryContext.getQuery(), event));
+		Predicate filter = eventService.buildCriteriaFilter(criteria, new EventQueryContext(cb, actionQueryContext.getQuery(), joins.getEventJoins()));
 
 		if (criteria.getActionChangeDateFrom() != null && criteria.getActionChangeDateTo() != null) {
 			filter = CriteriaBuilderHelper

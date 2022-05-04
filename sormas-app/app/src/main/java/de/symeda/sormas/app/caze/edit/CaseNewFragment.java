@@ -248,9 +248,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 				contentBinding.facilityTypeGroup.setValue(FacilityTypeGroup.MEDICAL_FACILITY);
 				contentBinding.caseDataFacilityType.setValue(FacilityType.HOSPITAL);
 				User user = ConfigProvider.getUser();
-				boolean userHasFacilityJurisdictionLevel =
-					user.getUserRoles().stream().anyMatch(userRole -> userRole.getJurisdictionLevel().equals(JurisdictionLevel.HEALTH_FACILITY));
-				if (!userHasFacilityJurisdictionLevel) {
+				if (!user.hasJurisdictionLevel(JurisdictionLevel.HEALTH_FACILITY)) {
 					contentBinding.caseDataHealthFacility.setValue(null);
 				}
 			}
@@ -289,7 +287,7 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 			contentBinding.facilityOrHome.setValue(TypeOfPlace.FACILITY);
 		}
 
-		if (user.hasUserRole(UserRole.HOSPITAL_INFORMANT) && user.getHealthFacility() != null) {
+		if (user.hasJurisdictionLevel(JurisdictionLevel.HEALTH_FACILITY)) {
 			// Hospital Informants are not allowed to create cases in another health facility
 			contentBinding.caseDataCommunity.setEnabled(false);
 			contentBinding.caseDataCommunity.setRequired(false);
@@ -302,12 +300,12 @@ public class CaseNewFragment extends BaseEditFragment<FragmentCaseNewLayoutBindi
 			contentBinding.caseDataDifferentPlaceOfStayJurisdiction.setVisibility(GONE);
 		}
 
-		if (user.hasUserRole(UserRole.POE_INFORMANT) && user.getPointOfEntry() != null) {
+		if (user.getPointOfEntry() != null) {
 			contentBinding.caseDataPointOfEntry.setEnabled(false);
 			contentBinding.caseDataPointOfEntry.setRequired(false);
 		}
 
-		if (user.hasUserRole(UserRole.COMMUNITY_INFORMANT) && user.getCommunity() != null) {
+		if (user.hasJurisdictionLevel(JurisdictionLevel.COMMUNITY)) {
 			// Community Informants are not allowed to create cases in another community
 			contentBinding.caseDataCommunity.setEnabled(false);
 			contentBinding.caseDataCommunity.setRequired(false);

@@ -53,6 +53,15 @@ public class NavBarSteps implements En {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.CASES_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
+        });
+
+    When(
+        "^I click on the Cases button from navbar and start timer$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.CASES_BUTTON);
           startTime = ZonedDateTime.now().toInstant().toEpochMilli();
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
         });
@@ -62,11 +71,27 @@ public class NavBarSteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.CONTACTS_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
+        });
+
+    When(
+        "^I click on the Contacts button from navbar and start timer$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.CONTACTS_BUTTON);
           startTime = ZonedDateTime.now().toInstant().toEpochMilli();
         });
 
     When(
         "^I click on the Events button from navbar$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.EVENTS_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
+        });
+
+    When(
+        "^I click on the Events button from navbar and start timer$",
         () -> {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.EVENTS_BUTTON);
@@ -88,6 +113,15 @@ public class NavBarSteps implements En {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NavBarPage.TASKS_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.TASKS_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
+        });
+
+    When(
+        "^I click on the Tasks button from navbar and start timer$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NavBarPage.TASKS_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.TASKS_BUTTON);
           startTime = ZonedDateTime.now().toInstant().toEpochMilli();
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
@@ -98,6 +132,29 @@ public class NavBarSteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.PERSONS_BUTTON);
+        });
+
+    When(
+        "^I click on the Persons button from navbar and start timer$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.PERSONS_BUTTON);
+          startTime = ZonedDateTime.now().toInstant().toEpochMilli();
+        });
+
+    When(
+        "^I click on the About button from navbar$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.ABOUT_BUTTON);
+          startTime = ZonedDateTime.now().toInstant().toEpochMilli();
+        });
+
+    When(
+        "^I click on the User Settings button from navbar$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.USER_SETTINGS_BUTTON);
           startTime = ZonedDateTime.now().toInstant().toEpochMilli();
         });
 
@@ -146,11 +203,27 @@ public class NavBarSteps implements En {
         () -> {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.SAMPLE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
+        });
+
+    When(
+        "^I click on the Sample button from navbar and start timer$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.SAMPLE_BUTTON);
           startTime = ZonedDateTime.now().toInstant().toEpochMilli();
         });
 
     When(
         "^I click on the Immunizations button from navbar$",
+        () -> {
+          webDriverHelpers.waitForPageLoaded();
+          webDriverHelpers.clickOnWebElementBySelector(NavBarPage.IMMUNIZATIONS_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
+        });
+
+    When(
+        "^I click on the Immunizations button from navbar and start timer$",
         () -> {
           webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(NavBarPage.IMMUNIZATIONS_BUTTON);
@@ -193,36 +266,39 @@ public class NavBarSteps implements En {
           try {
             switch (page) {
               case ("Surveillance Dashboard"):
-                webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
+                webDriverHelpers.isElementDisplayedAndNoLoadingSpinnerOrThrowException(
                     SURVEILLANCE_DASHBOARD_NAME);
                 break;
               case ("Contacts Dashboard"):
-                webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
+                webDriverHelpers.isElementDisplayedAndNoLoadingSpinnerOrThrowException(
                     CONTACTS_DASHBOARD_NAME);
                 break;
               case ("Tasks"):
-                webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
+                webDriverHelpers.isElementDisplayedAndNoLoadingSpinnerOrThrowException(
                     GENERAL_SEARCH_INPUT);
                 break;
               case ("Persons"):
-                webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
+                webDriverHelpers.isElementDisplayedAndNoLoadingSpinnerOrThrowException(
                     SEARCH_PERSON_BY_FREE_TEXT);
                 break;
               case ("Cases"):
-                webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(NEW_CASE_BUTTON);
+                webDriverHelpers.isElementDisplayedAndNoLoadingSpinnerOrThrowException(
+                    NEW_CASE_BUTTON);
                 break;
               case ("Contacts"):
-                webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
+                webDriverHelpers.isElementDisplayedAndNoLoadingSpinnerOrThrowException(
                     NEW_CONTACT_PAGE_BUTTON);
                 break;
               case ("Events"):
-                webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(NEW_EVENT_BUTTON);
+                webDriverHelpers.isElementDisplayedAndNoLoadingSpinnerOrThrowException(
+                    NEW_EVENT_BUTTON);
                 break;
               case ("Samples"):
-                webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(SAMPLE_SEARCH_INPUT);
+                webDriverHelpers.isElementDisplayedAndNoLoadingSpinnerOrThrowException(
+                    SAMPLE_SEARCH_INPUT);
                 break;
               case ("Immunizations"):
-                webDriverHelpers.isElementDisplayedIn20SecondsOrThrowException(
+                webDriverHelpers.isElementDisplayedAndNoLoadingSpinnerOrThrowException(
                     ADD_NEW_IMMUNIZATION_BUTTON);
                 break;
             }
@@ -233,8 +309,8 @@ public class NavBarSteps implements En {
           } catch (Exception exception) {
             elapsedTime = "Couldn't load page under 20s";
           }
-          log.info("Collecting test results");
-          TableDataManager.addRowEntity(page + " page", elapsedTime);
+          log.info("Adding page [ {} ] loading results to report", page);
+          TableDataManager.addPagesRowEntity(page + " page", elapsedTime);
         });
   }
 }

@@ -24,6 +24,7 @@ import java.util.Set;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
+import de.symeda.sormas.api.caze.VaccinationInfoSource;
 import org.jetbrains.annotations.NotNull;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
@@ -596,6 +597,31 @@ public class TestDataCreator {
 		return vaccination;
 	}
 
+	public VaccinationDto createVaccinationWithDetails(
+		UserReferenceDto reportingUser,
+		ImmunizationReferenceDto immunization,
+		HealthConditionsDto healthConditions,
+		Date vaccinationDate,
+		Vaccine vaccine,
+		VaccineManufacturer vaccineManufacturer,
+		VaccinationInfoSource infoSource,
+		String vaccineInn,
+		String vaccineBatchNumber,
+		String vaccineAtcCode,
+		String vaccineDose) {
+
+		VaccinationDto vaccinationDto =
+			createVaccination(reportingUser, immunization, healthConditions, vaccinationDate, vaccine, vaccineManufacturer);
+
+		vaccinationDto.setVaccinationInfoSource(infoSource);
+		vaccinationDto.setVaccineInn(vaccineInn);
+		vaccinationDto.setVaccineBatchNumber(vaccineBatchNumber);
+		vaccinationDto.setVaccineAtcCode(vaccineAtcCode);
+		vaccinationDto.setVaccineDose(vaccineDose);
+
+		return beanTest.getVaccinationFacade().save(vaccinationDto);
+	}
+
 	public VaccinationDto createVaccination(
 		UserReferenceDto reportingUser,
 		ImmunizationReferenceDto immunization,
@@ -799,6 +825,19 @@ public class TestDataCreator {
 
 	public TaskDto createTask(UserReferenceDto assigneeUser) {
 		return createTask(TaskContext.GENERAL, TaskType.OTHER, TaskStatus.PENDING, null, null, null, new Date(), assigneeUser);
+	}
+
+	public TaskDto createTask(TaskContext context, ReferenceDto entityRef, Consumer<TaskDto> customConfig) {
+
+		TaskDto task = TaskDto.build(context, entityRef);
+
+		if (customConfig != null) {
+			customConfig.accept(task);
+		}
+
+		task = beanTest.getTaskFacade().saveTask(task);
+
+		return task;
 	}
 
 	public TaskDto createTask(
@@ -1023,7 +1062,7 @@ public class TestDataCreator {
 			eventParticipant.setDistrict(rdcf.district);
 		}
 
-		eventParticipant = beanTest.getEventParticipantFacade().saveEventParticipant(eventParticipant);
+		eventParticipant = beanTest.getEventParticipantFacade().save(eventParticipant);
 		return eventParticipant;
 	}
 

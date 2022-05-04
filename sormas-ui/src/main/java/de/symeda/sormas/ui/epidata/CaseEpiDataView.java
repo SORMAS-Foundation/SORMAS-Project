@@ -122,7 +122,9 @@ public class CaseEpiDataView extends AbstractCaseView {
 			&& currentUser != null
 			&& currentUser.hasUserRight(UserRight.TRAVEL_ENTRY_VIEW)) {
 			TravelEntryListCriteria travelEntryListCriteria = new TravelEntryListCriteria.Builder().withCase(getCaseRef()).build();
-			layout.addComponent(new SideComponentLayout(new TravelEntryListComponent(travelEntryListCriteria)), TRAVEL_ENTRIES_LOC);
+			layout.addComponent(
+				new SideComponentLayout(new TravelEntryListComponent(travelEntryListCriteria, this::showUnsavedChangesPopup)),
+				TRAVEL_ENTRIES_LOC);
 		}
 
 		setCaseEditPermission(container);

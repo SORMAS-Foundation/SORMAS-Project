@@ -30,6 +30,7 @@ import java.util.Set;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -82,8 +83,8 @@ import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
-import de.symeda.sormas.backend.common.NotificationService;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
+import de.symeda.sormas.backend.common.NotificationService;
 import de.symeda.sormas.backend.common.messaging.MessageContents;
 import de.symeda.sormas.backend.common.messaging.MessageSubject;
 import de.symeda.sormas.backend.common.messaging.NotificationDeliveryFailedException;
@@ -106,6 +107,9 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "VisitFacade")
+@RolesAllowed({
+	UserRight._CONTACT_VIEW,
+	UserRight._CASE_VIEW })
 public class VisitFacadeEjb implements VisitFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -208,6 +212,9 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._VISIT_CREATE,
+		UserRight._VISIT_EDIT })
 	public VisitDto saveVisit(@Valid VisitDto dto) {
 		final String visitUuid = dto.getUuid();
 		final Visit existingVisit = visitUuid != null ? visitService.getByUuid(visitUuid) : null;
@@ -232,6 +239,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
+	@RolesAllowed(UserRight._EXTERNAL_VISITS)
 	public ExternalVisitDto saveExternalVisit(@Valid final ExternalVisitDto dto) {
 
 		final String personUuid = dto.getPersonUuid();
@@ -285,6 +293,7 @@ public class VisitFacadeEjb implements VisitFacade {
 	}
 
 	@Override
+	@RolesAllowed(UserRight._VISIT_DELETE)
 	public void deleteVisit(String visitUuid) {
 
 		if (!userService.hasRight(UserRight.VISIT_DELETE)) {
@@ -304,11 +313,12 @@ public class VisitFacadeEjb implements VisitFacade {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<VisitIndexDto> cq = cb.createQuery(VisitIndexDto.class);
+		
 		Root<Visit> visit = cq.from(Visit.class);
-		Join<Visit, Symptoms> symptoms = visit.join(Visit.SYMPTOMS, JoinType.LEFT);
-		Join<Visit, Case> caseJoin = visit.join(Visit.CAZE, JoinType.LEFT);
-		Join<Visit, Contact> contactJoin = visit.join(Visit.CONTACTS, JoinType.LEFT);
-		Join<Visit, User> visitUser = visit.join(Visit.VISIT_USER, JoinType.LEFT);
+		
+		VisitJoins visitJoins = new VisitJoins(visit, JoinType.LEFT);
+		Join<Visit, Symptoms> symptoms = visitJoins.getSymptoms();
+		Join<Visit, User> visitUser = visitJoins.getUser();
 
 		cq.multiselect(
 			visit.get(Visit.ID),
@@ -324,7 +334,7 @@ public class VisitFacadeEjb implements VisitFacade {
 			visitUser.get(User.UUID),
 			visitUser.get(User.FIRST_NAME),
 			visitUser.get(User.LAST_NAME),
-			jurisdictionSelector(cq, cb, caseJoin, contactJoin));
+			jurisdictionSelector(cq, cb, visitJoins));
 
 		cq.distinct(true);
 		cq.where(visitService.buildCriteriaFilter(visitCriteria, cb, visit));
@@ -399,11 +409,11 @@ public class VisitFacadeEjb implements VisitFacade {
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<VisitExportDto> cq = cb.createQuery(VisitExportDto.class);
 		final Root<Visit> visitRoot = cq.from(Visit.class);
-		final Join<Visit, Symptoms> symptomsJoin = visitRoot.join(Visit.SYMPTOMS, JoinType.LEFT);
-		final Join<Visit, Person> personJoin = visitRoot.join(Visit.PERSON, JoinType.LEFT);
-		final Join<Visit, User> userJoin = visitRoot.join(Visit.VISIT_USER, JoinType.LEFT);
-		final Join<Visit, Case> caseJoin = visitRoot.join(Visit.CAZE, JoinType.LEFT);
-		final Join<Visit, Contact> contactJoin = visitRoot.join(Visit.CONTACTS, JoinType.LEFT);
+
+		final VisitJoins visitJoins = new VisitJoins(visitRoot, JoinType.LEFT);
+		final Join<Visit, Symptoms> symptomsJoin = visitJoins.getSymptoms();
+		final Join<Visit, User> userJoin = visitJoins.getUser();
+		final Join<Visit, Person> personJoin = visitJoins.getPerson();
 
 		cq.multiselect(
 			visitRoot.get(Visit.ID),
@@ -421,7 +431,7 @@ public class VisitFacadeEjb implements VisitFacade {
 			visitRoot.get(Visit.REPORT_LON),
 			visitRoot.get(Visit.ORIGIN),
 			personJoin.get(Person.UUID),
-			jurisdictionSelector(cq, cb, caseJoin, contactJoin));
+			jurisdictionSelector(cq, cb, visitJoins));
 
 		Predicate filter = visitService.buildCriteriaFilter(visitCriteria, cb, visitRoot);
 		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, visitRoot.get(Visit.UUID));
@@ -471,13 +481,12 @@ public class VisitFacadeEjb implements VisitFacade {
 	private Expression<Object> jurisdictionSelector(
 		CriteriaQuery cq,
 		CriteriaBuilder cb,
-		Join<Visit, Case> caseJoin,
-		Join<Visit, Contact> contactJoin) {
+		VisitJoins visitJoins) {
 		return JurisdictionHelper.booleanSelector(
 			cb,
 			cb.or(
-				caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, caseJoin)),
-				contactService.inJurisdictionOrOwned(new ContactQueryContext(cb, cq, contactJoin))));
+				caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, visitJoins.getCaseJoins())),
+				contactService.inJurisdictionOrOwned(new ContactQueryContext(cb, cq, visitJoins.getContactJoins()))));
 	}
 
 	public Visit fromDto(@NotNull VisitDto source, boolean checkChangeDate) {
@@ -619,10 +628,7 @@ public class VisitFacadeEjb implements VisitFacade {
 
 		if (newVisit.getCaze() != null) {
 			// Update case symptoms
-			CaseDataDto caze = caseFacade.toDto(newVisit.getCaze());
-			SymptomsDto caseSymptoms = caze.getSymptoms();
-			SymptomsHelper.updateSymptoms(toDto(newVisit).getSymptoms(), caseSymptoms);
-			caseFacade.save(caze, true);
+			caseFacade.updateSymptomsByVisit(newVisit);
 		}
 	}
 

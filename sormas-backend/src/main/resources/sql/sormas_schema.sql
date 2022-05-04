@@ -10960,15 +10960,6 @@ CREATE TRIGGER delete_history_trigger
     AFTER DELETE ON action
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('action_history', 'id');
 
-DROP TRIGGER IF EXISTS versioning_trigger ON systemevent;
-CREATE TRIGGER versioning_trigger
-    BEFORE INSERT OR UPDATE ON systemevent
-    FOR EACH ROW EXECUTE PROCEDURE versioning('sys_period', 'systemevent_history', true);
-DROP TRIGGER IF EXISTS delete_history_trigger ON systemevent;
-CREATE TRIGGER delete_history_trigger
-    AFTER DELETE ON systemevent
-    FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('systemevent_history', 'id');
-
 DROP TRIGGER IF EXISTS versioning_trigger ON exportconfiguration;
 CREATE TRIGGER versioning_trigger
     BEFORE INSERT OR UPDATE ON exportconfiguration
@@ -11220,4 +11211,153 @@ CREATE TRIGGER delete_history_trigger_person_locations
     FOR EACH ROW EXECUTE PROCEDURE delete_history_trigger('person_locations_history', 'person_id');
 
 INSERT INTO schema_version (version_number, comment) VALUES (451, 'Delete history data on permanent deletion of entities #7713');
+
+-- 2022-03-29 Persisting systemevent on latest develop fails with SQL error #8585
+
+DROP TRIGGER IF EXISTS versioning_trigger ON systemevent;
+DROP TRIGGER IF EXISTS delete_history_trigger ON systemevent;
+
+INSERT INTO schema_version (version_number, comment) VALUES (452, 'Persisting systemevent on latest develop fails with SQL error #8585');
+
+-- 2022-04-08 Initial UI support for physician's reports #8276
+
+ALTER TABLE labmessage ADD COLUMN type varchar(255);
+ALTER TABLE labmessage_history ADD COLUMN type varchar(255);
+
+UPDATE labmessage SET type = CASE
+    WHEN labmessagedetails LIKE '%profile value="https://demis.rki.de/fhir/StructureDefinition/NotificationDiseaseCVDD"%' THEN 'PHYSICIANS_REPORT'
+    ELSE 'LAB_MESSAGE'
+    END;
+
+INSERT INTO schema_version (version_number, comment) VALUES (453, 'Initial UI support for physicians reports #8276');
+
+-- 2022-04-07 Refactor unique constraint on deletionconfiguration table #8295
+
+ALTER TABLE deletionconfiguration DROP CONSTRAINT IF EXISTS deletionconfiguration_entity_key;
+ALTER TABLE deletionconfiguration ADD CONSTRAINT unq_deletionconfiguration_entity_reference UNIQUE (entitytype, deletionreference);
+
+INSERT INTO schema_version (version_number, comment) VALUES (454, 'Refactor unique constraint on deletionconfiguration table #8295');
+
+-- 2022-04-08 Drop deleted column from lab messages and remove deleted lab messages #8295
+
+DELETE FROM testreport USING labmessage WHERE testreport.labmessage_id = labmessage.id AND labmessage.deleted IS TRUE;
+DELETE FROM labmessage WHERE deleted IS TRUE;
+ALTER TABLE labmessage DROP COLUMN deleted;
+ALTER TABLE labmessage_history DROP COLUMN deleted;
+
+INSERT INTO schema_version (version_number, comment) VALUES (455, 'Drop deleted column from lab messages and remove deleted lab messages #8295');
+
+-- 2022-04-11 Remove DELETE_PERMANENT feature type #8295
+
+DELETE FROM featureconfiguration WHERE featuretype = 'DELETE_PERMANENT';
+
+INSERT INTO schema_version (version_number, comment) VALUES (456, 'Remove DELETE_PERMANENT feature type #8295');
+
+-- 2022-04-11 Investigate and add indexes #8778
+
+CREATE INDEX IF NOT EXISTS idx_cases_responsibleregion_id ON cases (responsibleregion_id);
+CREATE INDEX IF NOT EXISTS idx_cases_responsibledistrict_id ON cases (responsibledistrict_id);
+
+CREATE INDEX IF NOT EXISTS idx_cases_archived ON cases (archived);
+CREATE INDEX IF NOT EXISTS idx_contact_archived ON contact (archived);
+CREATE INDEX IF NOT EXISTS idx_events_archived ON events (archived);
+CREATE INDEX IF NOT EXISTS idx_eventpartivipant_archived ON eventparticipant (archived);
+CREATE INDEX IF NOT EXISTS idx_immunization_archived ON immunization (archived);
+CREATE INDEX IF NOT EXISTS idx_travelentry_archived ON travelentry (archived);
+CREATE INDEX IF NOT EXISTS idx_campaigns_archived ON campaigns (archived);
+CREATE INDEX IF NOT EXISTS idx_task_archived ON task (archived);
+
+INSERT INTO schema_version (version_number, comment) VALUES (457, 'Investigate and add indexes #8778');
+
+-- 2022-05-03 Permanent Deletion | Immunization | healthconditions_id violates not-null constraint error #8983
+DROP TABLE IF EXISTS tmp_healthconditions;
+DROP TABLE IF EXISTS added_healthconditions;
+CREATE TEMP TABLE tmp_healthconditions
+(
+    LIKE healthconditions
+);
+insert into tmp_healthconditions
+select *
+from healthconditions hc
+where hc.id in (select distinct v.healthconditions_id
+                from vaccination v
+                         join (select vc.healthconditions_id
+                               from vaccination vc
+                               group by healthconditions_id
+                               HAVING count(*) > 1) b
+                              on v.healthconditions_id = b.healthconditions_id);
+
+CREATE TEMP TABLE added_healthconditions(LIKE healthconditions);
+
+CREATE OR REPLACE FUNCTION clone_healthconditions(healthconditions_id bigint)
+    RETURNS bigint
+    LANGUAGE plpgsql
+    SECURITY DEFINER AS
+$BODY$
+DECLARE
+    new_id bigint;
+BEGIN
+    INSERT INTO added_healthconditions SELECT * FROM healthconditions WHERE id = healthconditions_id;
+    UPDATE added_healthconditions
+    SET id           = nextval('entity_seq'),
+        uuid         = generate_base32_uuid(),
+        sys_period   = tstzrange(now(), null)
+    WHERE id = healthconditions_id
+    RETURNING id INTO new_id;
+    INSERT INTO healthconditions SELECT * FROM added_healthconditions WHERE id = new_id;
+    RETURN new_id;
+END;
+$BODY$;
+ALTER FUNCTION clone_healthconditions(bigint) OWNER TO sormas_user;
+
+CREATE OR REPLACE FUNCTION create_additional_healthconditions()
+    RETURNS bigint
+    LANGUAGE plpgsql
+    SECURITY DEFINER AS
+
+$BODY$
+DECLARE
+    new_id bigint;
+BEGIN
+    INSERT INTO healthconditions (id, uuid, changedate, creationdate)
+    VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now())
+    RETURNING id INTO new_id;
+    RETURN new_id;
+END;
+$BODY$;
+
+ALTER FUNCTION create_additional_healthconditions() OWNER TO sormas_user;
+DO
+$$
+    DECLARE
+        rec_health         RECORD;
+        rec_vaccination    RECORD;
+        count_vaccinations integer;
+        new_healthcondition_id bigint;
+    BEGIN
+        FOR rec_health IN SELECT * FROM tmp_healthconditions
+            LOOP
+                BEGIN
+                    count_vaccinations = (SELECT count(*) FROM vaccination WHERE healthconditions_id = rec_health.id);
+                    FOR rec_vaccination IN (SELECT * FROM vaccination WHERE healthconditions_id = rec_health.id)
+                        LOOP
+                            if count_vaccinations > 1 then
+                                new_healthcondition_id = clone_healthconditions(rec_health.id);
+                                update vaccination set healthconditions_id = new_healthcondition_id where id = rec_vaccination.id;
+                            end if;
+                            count_vaccinations = count_vaccinations - 1;
+                        end loop;
+                end;
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+DROP TABLE IF EXISTS tmp_healthconditions;
+DROP TABLE IF EXISTS added_healthconditions;
+
+DROP FUNCTION IF EXISTS clone_healthconditions(bigint);
+DROP FUNCTION IF EXISTS create_additional_healthconditions();
+
+INSERT INTO schema_version (version_number, comment) VALUES (458, 'Permanent Deletion | Immunization | healthconditions_id violates not-null constraint error #8983');
+
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

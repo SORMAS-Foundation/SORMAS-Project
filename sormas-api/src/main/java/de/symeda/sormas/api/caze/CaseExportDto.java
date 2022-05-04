@@ -59,8 +59,10 @@ import de.symeda.sormas.api.person.Salutation;
 import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.symptoms.SymptomsDto;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.api.utils.DependingOnUserRight;
 import de.symeda.sormas.api.utils.HideForCountries;
 import de.symeda.sormas.api.utils.HideForCountriesExcept;
 import de.symeda.sormas.api.utils.Order;
@@ -323,10 +325,13 @@ public class CaseExportDto implements Serializable {
 	private String responsibleCommunity;
 
 	@SensitiveData
+	@DependingOnUserRight(UserRight.CASE_CLINICIAN_VIEW)
 	private String clinicianName;
 	@SensitiveData
+	@DependingOnUserRight(UserRight.CASE_CLINICIAN_VIEW)
 	private String clinicianPhone;
 	@SensitiveData
+	@DependingOnUserRight(UserRight.CASE_CLINICIAN_VIEW)
 	private String clinicianEmail;
 
 	private Long reportingUserId;
@@ -1030,7 +1035,7 @@ public class CaseExportDto implements Serializable {
 	@ExportTarget(caseExportTypes = {
 		CaseExportType.CASE_SURVEILLANCE,
 		CaseExportType.CASE_MANAGEMENT })
-	@ExportProperty(value = CaseDataDto.SEQUELAE, combined = true)
+	@ExportProperty(value = CaseDataDto.SEQUELAE_DETAILS, combined = true)
 	@ExportGroup(ExportGroupType.ADDITIONAL)
 	public String getSequelaeDetails() {
 		return sequelaeDetails;

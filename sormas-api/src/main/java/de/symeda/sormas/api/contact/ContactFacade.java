@@ -61,7 +61,7 @@ public interface ContactFacade extends CoreFacade<ContactDto, ContactIndexDto, C
 
 	List<String> deleteContacts(List<String> contactUuids);
 
-	FollowUpPeriodDto calculateFollowUpUntilDate(ContactDto contactDto, boolean ignoreOverwrite);
+	FollowUpPeriodDto getCalculatedFollowUpUntilDate(ContactDto contactDto, boolean ignoreOverwrite);
 
 	List<ContactListEntryDto> getEntriesList(String personUuid, Integer first, Integer max);
 

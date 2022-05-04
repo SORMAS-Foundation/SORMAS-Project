@@ -48,6 +48,7 @@ import de.symeda.sormas.api.sormastosormas.validation.SormasToSormasValidationEx
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorGroup;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrorMessage;
 import de.symeda.sormas.api.sormastosormas.validation.ValidationErrors;
+import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseService;
@@ -100,6 +101,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.function.Function;
 import java.util.stream.Collectors;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.inject.Inject;
 import javax.transaction.Transactional;
@@ -195,6 +197,7 @@ public abstract class AbstractSormasToSormasInterface<ADO extends AbstractDomain
 	@Override
 	@Transactional(rollbackOn = {
 		Exception.class })
+	@RolesAllowed(UserRight._SORMAS_TO_SORMAS_SHARE)
 	public void share(List<String> entityUuids, @Valid SormasToSormasOptionsDto options) throws SormasToSormasException {
 		if (featureConfigurationFacade.isFeatureEnabled(FeatureType.SORMAS_TO_SORMAS_ACCEPT_REJECT)) {
 			sendShareRequest(entityUuids, options);

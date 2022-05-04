@@ -108,10 +108,10 @@ public class ContactListCriteriaBuilder {
 			JurisdictionHelper.booleanSelector(
 				cb,
 				caseService.inJurisdictionOrOwned(
-					new CaseQueryContext<>(
+					new CaseQueryContext(
 						contactQueryContext.getCriteriaBuilder(),
 						contactQueryContext.getQuery(),
-						((ContactJoins) contactQueryContext.getJoins()).getCaze()))));
+						contactQueryContext.getJoins().getCaseJoins()))));
 	}
 
 	public List<Selection<?>> getMergeContactIndexSelections(Root<Contact> contact, ContactQueryContext contactQueryContext) {
@@ -143,7 +143,7 @@ public class ContactListCriteriaBuilder {
 			contact.get(Contact.REPORT_DATE_TIME));
 	}
 
-	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Contact> contact, ContactJoins<Contact> joins, CriteriaBuilder cb) {
+	private List<Expression<?>> getIndexOrders(SortProperty sortProperty, Root<Contact> contact, ContactJoins joins, CriteriaBuilder cb) {
 
 		List<Expression<?>> expressions = new ArrayList<>();
 		switch (sortProperty.propertyName) {
@@ -202,7 +202,8 @@ public class ContactListCriteriaBuilder {
 			joins.getAddress().get(Location.HOUSE_NUMBER),
 			joins.getAddress().get(Location.ADDITIONAL_INFORMATION),
 			joins.getAddress().get(Location.POSTAL_CODE),
-			((Selection<String>) contactQueryContext.getSubqueryExpression(CaseQueryContext.PERSON_PHONE_SUBQUERY)),
+			contactQueryContext.getSubqueryExpression(
+				CaseQueryContext.PERSON_PHONE_SUBQUERY),
 			joins.getReportingUser().get(User.FIRST_NAME),
 			joins.getReportingUser().get(User.LAST_NAME),
 			contact.get(Contact.RELATION_TO_CASE));
@@ -214,7 +215,7 @@ public class ContactListCriteriaBuilder {
 	private List<Expression<?>> getIndexDetailOrders(
 		SortProperty sortProperty,
 		Root<Contact> contact,
-		ContactJoins<Contact> joins,
+		ContactJoins joins,
 		CriteriaBuilder cb) {
 
 		switch (sortProperty.propertyName) {
@@ -251,7 +252,7 @@ public class ContactListCriteriaBuilder {
 		final CriteriaQuery<T> cq = cb.createQuery(type);
 		final Root<Contact> contact = cq.from(Contact.class);
 		final ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, contact);
-		final ContactJoins<Contact> joins = (ContactJoins<Contact>) contactQueryContext.getJoins();
+		final ContactJoins joins = contactQueryContext.getJoins();
 
 		List<Selection<?>> selections = new ArrayList<>(selectionProvider.apply(contact, contactQueryContext));
 		selections.add(cb.size(contact.get(Contact.VISITS)));
@@ -304,6 +305,6 @@ public class ContactListCriteriaBuilder {
 
 	private interface OrderExpressionProvider {
 
-		List<Expression<?>> forProperty(SortProperty sortProperty, Root<Contact> contact, ContactJoins<Contact> joins, CriteriaBuilder cb);
+		List<Expression<?>> forProperty(SortProperty sortProperty, Root<Contact> contact, ContactJoins joins, CriteriaBuilder cb);
 	}
 }

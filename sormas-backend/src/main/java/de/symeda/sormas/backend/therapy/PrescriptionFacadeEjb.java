@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -42,6 +43,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "PrescriptionFacade")
+@RolesAllowed(UserRight._CASE_VIEW)
 public class PrescriptionFacadeEjb implements PrescriptionFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
@@ -76,7 +78,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 			prescription.get(Prescription.ROUTE),
 			prescription.get(Prescription.ROUTE_DETAILS),
 			prescription.get(Prescription.PRESCRIBING_CLINICIAN),
-			JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, joins.getCaze()))));
+			JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, joins.getCaseJoins()))));
 
 		if (criteria != null) {
 			cq.where(service.buildCriteriaFilter(criteria, cb, prescription));
@@ -101,6 +103,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 	}
 
 	@Override
+	@RolesAllowed({UserRight._PRESCRIPTION_CREATE, UserRight._PRESCRIPTION_EDIT})
 	public PrescriptionDto savePrescription(@Valid PrescriptionDto prescription) {
 		Prescription existingPrescription = service.getByUuid(prescription.getUuid());
 		PrescriptionDto existingPrescriptionDto = toDto(existingPrescription);
@@ -115,12 +118,8 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 	}
 
 	@Override
+	@RolesAllowed(UserRight._PRESCRIPTION_DELETE)
 	public void deletePrescription(String prescriptionUuid) {
-
-		if (!userService.hasRight(UserRight.PRESCRIPTION_DELETE)) {
-			throw new UnsupportedOperationException("Your user is not allowed to delete prescriptions");
-		}
-
 		Prescription prescription = service.getByUuid(prescriptionUuid);
 		service.deletePermanent(prescription);
 	}
@@ -174,7 +173,7 @@ public class PrescriptionFacadeEjb implements PrescriptionFacade {
 
 		PrescriptionJoins joins = new PrescriptionJoins(prescription);
 
-		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, joins.getCaze());
+		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, joins.getCaseJoins());
 		cq.multiselect(
 			joins.getCaze().get(Case.UUID),
 			joins.getCasePerson().get(Person.FIRST_NAME),

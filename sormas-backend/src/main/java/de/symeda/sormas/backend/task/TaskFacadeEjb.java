@@ -1,20 +1,17 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.backend.task;
 
 import java.util.ArrayList;
@@ -32,6 +29,7 @@ import java.util.Set;
 import java.util.function.Supplier;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -120,6 +118,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "TaskFacade")
+@RolesAllowed(UserRight._TASK_VIEW)
 public class TaskFacadeEjb implements TaskFacade {
 
 	private static final int ARCHIVE_BATCH_SIZE = 1000;
@@ -294,6 +293,9 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
+	@RolesAllowed({
+		UserRight._TASK_CREATE,
+		UserRight._TASK_EDIT })
 	public TaskDto saveTask(@Valid TaskDto dto) {
 		// Let's retrieve the old assignee before updating the task
 		User oldAssignee = taskService.getTaskAssigneeByUuid(dto.getUuid());
@@ -363,10 +365,7 @@ public class TaskFacadeEjb implements TaskFacade {
 						MessageContents.CONTENT_TASK_GENERAL_UPDATED_ASSIGNEE_TARGET,
 						MessageContents.CONTENT_TASK_SPECIFIC_UPDATED_ASSIGNEE_TARGET));
 			}
-			notificationService.sendNotifications(
-				NotificationType.TASK_UPDATED_ASSIGNEE,
-				MessageSubject.TASK_UPDATED_ASSIGNEE,
-				() -> userMessages);
+			notificationService.sendNotifications(NotificationType.TASK_UPDATED_ASSIGNEE, MessageSubject.TASK_UPDATED_ASSIGNEE, () -> userMessages);
 		} catch (NotificationDeliveryFailedException e) {
 			logger.error(String.format("EmailDeliveryFailedException when trying to notify a user about an updated task assignee."));
 		}
@@ -428,7 +427,7 @@ public class TaskFacadeEjb implements TaskFacade {
 
 		Predicate filter = null;
 		if (taskCriteria == null || !taskCriteria.hasContextCriteria()) {
-			filter = taskService.createUserFilter(cb, cq, task);
+			filter = taskService.createUserFilterForJoin(new TaskQueryContext(cb, cq, task));
 		} else {
 			filter = CriteriaBuilderHelper.and(cb, filter, taskService.createAssigneeFilter(cb, joins.getAssignee()));
 		}
@@ -454,7 +453,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		Root<Task> task = cq.from(Task.class);
 
 		TaskQueryContext taskQueryContext = new TaskQueryContext(cb, cq, task);
-		TaskJoins<Task> joins = (TaskJoins<Task>) taskQueryContext.getJoins();
+		TaskJoins joins = taskQueryContext.getJoins();
 
 		// Filter select based on case/contact/event region/district/community
 		Expression<Object> region = cb.selectCase()
@@ -546,7 +545,7 @@ public class TaskFacadeEjb implements TaskFacade {
 
 		Predicate filter = null;
 		if (taskCriteria == null || !taskCriteria.hasContextCriteria()) {
-			filter = taskService.createUserFilter(cb, cq, task);
+			filter = taskService.createUserFilterForJoin(taskQueryContext);
 		} else {
 			filter = CriteriaBuilderHelper.and(cb, filter, taskService.createAssigneeFilter(cb, joins.getAssignee()));
 		}
@@ -668,18 +667,18 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
+	@RolesAllowed(UserRight._TASK_EXPORT)
 	public List<TaskExportDto> getExportList(TaskCriteria criteria, Collection<String> selectedRows, int first, int max) {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<TaskExportDto> cq = cb.createQuery(TaskExportDto.class);
 		Root<Task> task = cq.from(Task.class);
 
-		TaskQueryContext<Task> taskQueryContext = new TaskQueryContext<>(cb, cq, task);
-		TaskJoins<Task> joins = (TaskJoins<Task>) taskQueryContext.getJoins();
-		CaseQueryContext<Task> caseQueryContext = new CaseQueryContext<>(cb, cq, joins.getCaze());
-		ContactQueryContext<Task> contactQueryContext = new ContactQueryContext<>(cb, cq, joins.getContact());
-
-		LocationJoins<Person> casePersonAddressJoins = joins.getCasePersonJoins().getAddressJoins();
-		LocationJoins<Person> contactPersonAddressJoins = joins.getContactPersonJoins().getAddressJoins();
+		TaskQueryContext taskQueryContext = new TaskQueryContext(cb, cq, task);
+		TaskJoins joins = taskQueryContext.getJoins();
+		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, joins.getCaseJoins());
+		ContactQueryContext contactQueryContext = new ContactQueryContext(cb, cq, joins.getContactJoins());
+		LocationJoins casePersonAddressJoins = caseQueryContext.getJoins().getPersonJoins().getAddressJoins();
+		LocationJoins contactPersonAddressJoins = contactQueryContext.getJoins().getPersonJoins().getAddressJoins();
 
 		//@formatter:off
 		cq.multiselect(task.get(Task.UUID), task.get(Task.TASK_CONTEXT),
@@ -710,7 +709,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		//@formatter:on
 		Predicate filter = null;
 		if (criteria == null || !criteria.hasContextCriteria()) {
-			filter = taskService.createUserFilter(cb, cq, task);
+			filter = taskService.createUserFilterForJoin(new TaskQueryContext(cb, cq, task));
 		} else {
 			filter = CriteriaBuilderHelper.and(cb, filter, taskService.createAssigneeFilter(cb, joins.getAssignee()));
 		}
@@ -741,11 +740,11 @@ public class TaskFacadeEjb implements TaskFacade {
 		return tasks;
 	}
 
-	private Expression<String> getPersonFieldPath(CriteriaBuilder cb, TaskJoins<?> joins, String fieldName) {
+	private Expression<String> getPersonFieldPath(CriteriaBuilder cb, TaskJoins joins, String fieldName) {
 		return CriteriaBuilderHelper.coalesce(cb, joins.getCasePerson().get(fieldName), joins.getContactPerson().get(fieldName));
 	}
 
-	private Expression<String> getPersonAddressFieldPath(CriteriaBuilder cb, TaskJoins<?> joins, String fieldName) {
+	private Expression<String> getPersonAddressFieldPath(CriteriaBuilder cb, TaskJoins joins, String fieldName) {
 		return CriteriaBuilderHelper.coalesce(cb, joins.getCasePersonAddress().get(fieldName), joins.getContactPersonAddress().get(fieldName));
 	}
 
@@ -865,20 +864,14 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
+	@RolesAllowed(UserRight._TASK_DELETE)
 	public void deleteTask(TaskDto taskDto) {
-
-		if (!userService.hasRight(UserRight.TASK_DELETE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete tasks.");
-		}
-
 		Task task = taskService.getByUuid(taskDto.getUuid());
 		taskService.deletePermanent(task);
 	}
 
+	@RolesAllowed(UserRight._TASK_DELETE)
 	public List<String> deleteTasks(List<String> tasksUuids) {
-		if (!userService.hasRight(UserRight.TASK_DELETE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete tasks.");
-		}
 		List<String> deletedTaskUuids = new ArrayList<>();
 		List<Task> tasksToBeDeleted = taskService.getByUuids(tasksUuids);
 		if (tasksToBeDeleted != null) {
@@ -891,6 +884,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
+	@RolesAllowed(UserRight._SYSTEM)
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	public void sendNewAndDueTaskMessages() {
 
@@ -901,7 +895,10 @@ public class TaskFacadeEjb implements TaskFacade {
 		final Date before = calendar.getTime();
 
 		try {
-			notificationService.sendNotifications(NotificationType.TASK_START, MessageSubject.TASK_START, () -> buildTaskUserMessages(
+			notificationService.sendNotifications(
+				NotificationType.TASK_START,
+				MessageSubject.TASK_START,
+				() -> buildTaskUserMessages(
 					taskService.findBy(new TaskCriteria().taskStatus(TaskStatus.PENDING).startDateBetween(before, now), true),
 					MessageContents.CONTENT_TASK_START_GENERAL,
 					MessageContents.CONTENT_TASK_START_SPECIFIC));
@@ -961,6 +958,7 @@ public class TaskFacadeEjb implements TaskFacade {
 	}
 
 	@Override
+	@RolesAllowed(UserRight._TASK_EDIT)
 	public void updateArchived(List<String> taskUuids, boolean archived) {
 		IterableHelper.executeBatched(taskUuids, ARCHIVE_BATCH_SIZE, e -> taskService.updateArchived(e, archived));
 	}

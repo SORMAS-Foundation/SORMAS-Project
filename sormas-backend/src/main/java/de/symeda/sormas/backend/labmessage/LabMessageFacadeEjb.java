@@ -9,6 +9,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -28,12 +30,14 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.api.user.UserRight;
 import org.apache.commons.collections4.CollectionUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
+import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
 import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.I18nProperties;
@@ -65,10 +69,12 @@ import de.symeda.sormas.backend.util.ModelConstants;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "LabMessageFacade")
+@RolesAllowed(UserRight._LAB_MESSAGES)
 public class LabMessageFacadeEjb implements LabMessageFacade {
 
 	public static final List<String> VALID_SORT_PROPERTY_NAMES = Arrays.asList(
 		LabMessageIndexDto.UUID,
+		LabMessageIndexDto.TYPE,
 		LabMessageIndexDto.PERSON_FIRST_NAME,
 		LabMessageIndexDto.PERSON_LAST_NAME,
 		LabMessageIndexDto.PERSON_POSTAL_CODE,
@@ -101,6 +107,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 
 		target = DtoHelper.fillOrBuildEntity(source, target, LabMessage::new, checkChangeDate);
 
+		target.setType(source.getType());
 		target.setLabMessageDetails(source.getLabMessageDetails());
 		target.setLabSampleId(source.getLabSampleId());
 		target.setTestedDisease(source.getTestedDisease());
@@ -167,6 +174,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		LabMessageDto target = new LabMessageDto();
 		DtoHelper.fillDto(target, source);
 
+		target.setType(source.getType());
 		target.setLabMessageDetails(source.getLabMessageDetails());
 		target.setLabSampleId(source.getLabSampleId());
 		target.setTestedDisease(source.getTestedDisease());
@@ -209,14 +217,13 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	}
 
 	@Override
-	// Also returns deleted lab messages
 	public LabMessageDto getByUuid(String uuid) {
 		return toDto(labMessageService.getByUuid(uuid));
 	}
 
 	@Override
 	public void deleteLabMessage(String uuid) {
-		labMessageService.delete(labMessageService.getByUuid(uuid));
+		labMessageService.deletePermanent(labMessageService.getByUuid(uuid));
 	}
 
 	@Override
@@ -224,7 +231,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		List<LabMessage> labMessages = labMessageService.getByUuids(uuids);
 		for (LabMessage labMessage : labMessages) {
 			if (labMessage.getStatus() != LabMessageStatus.PROCESSED) {
-				labMessageService.delete(labMessage);
+				labMessageService.deletePermanent(labMessage);
 			}
 		}
 	}
@@ -240,7 +247,6 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	}
 
 	@Override
-	// Does not return deleted lab messages
 	public List<LabMessageDto> getForSample(SampleReferenceDto sample) {
 
 		List<LabMessage> labMessages = labMessageService.getForSample(sample);
@@ -291,6 +297,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 
 		cq.multiselect(
 			labMessage.get(LabMessage.UUID),
+			labMessage.get(LabMessage.TYPE),
 			labMessage.get(LabMessage.MESSAGE_DATE_TIME),
 			labMessage.get(LabMessage.LAB_NAME),
 			labMessage.get(LabMessage.LAB_POSTAL_CODE),
@@ -307,12 +314,15 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 			userJoin.get(User.FIRST_NAME),
 			userJoin.get(User.LAST_NAME));
 
-		Predicate whereFilter = null;
+		Predicate filter = null;
+
 		if (criteria != null) {
-			whereFilter = labMessageService.buildCriteriaFilter(cb, labMessage, criteria);
+			filter = labMessageService.buildCriteriaFilter(cb, labMessage, criteria);
 		}
 
-		cq.where(whereFilter);
+		if (filter != null) {
+			cq.where(filter);
+		}
 
 		// Distinct is necessary here to avoid duplicate results due to the user role join in taskService.createAssigneeFilter
 		cq.distinct(true);
@@ -341,6 +351,12 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 		return QueryHelper.getResultList(em, cq, first, max);
 	}
 
+	public Page<LabMessageIndexDto> getIndexPage(LabMessageCriteria criteria, Integer offset, Integer size, List<SortProperty> sortProperties) {
+		List<LabMessageIndexDto> labMessageIndexList = getIndexList(criteria, offset, size, sortProperties);
+		long totalElementCount = count(criteria);
+		return new Page<>(labMessageIndexList, offset, size, totalElementCount);
+	}
+
 	/**
 	 * This method marks the previously unfinished system events as UNCLEAR(if any exists) and creates a new event with status STARTED.
 	 * If the fetching succeeds, the status of the currentSync is changed to SUCCESS.
@@ -349,6 +365,9 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	 * @return An indication whether the fetching of new labMessage was successful. If it was not, an error message meant for UI users.
 	 */
 	@Override
+	@RolesAllowed({
+		UserRight._SYSTEM,
+		UserRight._LAB_MESSAGES })
 	public LabMessageFetchResult fetchAndSaveExternalLabMessages(Date since) {
 
 		SystemEventDto currentSync = syncFacadeEjb.startSyncFor(SystemEventType.FETCH_LAB_MESSAGES);
@@ -400,6 +419,7 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	}
 
 	@Override
+	@PermitAll
 	public String getLabMessagesAdapterVersion() throws NamingException {
 		ExternalLabResultsFacade labResultsFacade = getExternalLabResultsFacade();
 		return labResultsFacade.getVersion();

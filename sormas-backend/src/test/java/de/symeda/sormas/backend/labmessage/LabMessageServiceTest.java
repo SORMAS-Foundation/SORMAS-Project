@@ -6,14 +6,15 @@ import static org.junit.Assert.assertEquals;
 import java.util.Date;
 import java.util.List;
 
-import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.event.EventDto;
-import de.symeda.sormas.api.event.EventParticipantDto;
 import org.hamcrest.Matchers;
 import org.junit.Test;
 
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.event.EventDto;
+import de.symeda.sormas.api.event.EventParticipantDto;
 import de.symeda.sormas.api.labmessage.LabMessageDto;
+import de.symeda.sormas.api.labmessage.TestReportDto;
 import de.symeda.sormas.api.person.PersonDto;
 import de.symeda.sormas.api.sample.SampleDto;
 import de.symeda.sormas.api.sample.SampleMaterial;
@@ -174,6 +175,17 @@ public class LabMessageServiceTest extends AbstractBeanTest {
 		assertEquals(3L, sut.countForEventParticipant(eventParticipant.getUuid()));
 		assertEquals(0L, sut.countForContact(eventParticipant.getUuid()));
 		assertEquals(0L, sut.countForCase(eventParticipant.getUuid()));
+	}
 
+	@Test
+	public void testLabMessagePermanentDeletion() {
+
+		LabMessageDto labMessage = creator.createLabMessage(null);
+		TestReportDto testReport = creator.createTestReport(labMessage.toReference());
+
+		getLabMessageFacade().deleteLabMessage(labMessage.getUuid());
+
+		assertEquals(0, getLabMessageService().count());
+		assertEquals(0, getTestReportService().count());
 	}
 }

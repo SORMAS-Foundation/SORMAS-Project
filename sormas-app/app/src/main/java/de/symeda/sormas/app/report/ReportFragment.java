@@ -31,8 +31,8 @@ import android.view.View;
 import androidx.recyclerview.widget.LinearLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
+import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.user.UserRight;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.EpiWeek;
@@ -84,8 +84,8 @@ public class ReportFragment extends BaseReportFragment<FragmentReportWeeklyLayou
 	protected String getSubHeadingTitle() {
 		Resources r = getResources();
 		String defaultValue = r.getString(R.string.hint_report_not_submitted);
-		boolean isInformant =
-			ConfigProvider.getUser().hasUserRole(UserRole.HOSPITAL_INFORMANT) || ConfigProvider.getUser().hasUserRole(UserRole.COMMUNITY_INFORMANT);
+		boolean isInformant = ConfigProvider.hasUserRight(UserRight.WEEKLYREPORT_CREATE)
+			&& ConfigProvider.getUser().hasJurisdictionLevel(JurisdictionLevel.HEALTH_FACILITY, JurisdictionLevel.COMMUNITY);
 		if (DataHelper.isNullOrEmpty(reportDate)) {
 			if (isInformant) {
 				return defaultValue;

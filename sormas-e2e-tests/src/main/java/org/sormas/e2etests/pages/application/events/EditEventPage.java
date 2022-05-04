@@ -44,6 +44,9 @@ public class EditEventPage {
   public static final By EVENT_INVESTIGATION_STATUS_OPTIONS =
       By.cssSelector("#eventInvestigationStatus label");
   public static final By DISEASE_COMBOBOX = By.cssSelector("#disease div");
+  public static final By FACILITY_TYPE_COMBOBOX = By.cssSelector("#facilityType div");
+  public static final By FACILITY_CATEGORY_COMBOBOX = By.cssSelector("#typeGroup div");
+  public static final By PLACE_OF_STAY_COMBOBOX = By.cssSelector("#typeOfPlace div");
   public static final By SOURCE_TYPE_COMBOBOX = By.cssSelector("#srcType div");
   public static final By TYPE_OF_PLACE_COMBOBOX = By.cssSelector(" #typeOfPlace div");
   public static final By NEW_ACTION_BUTTON = By.id("actionNewAction");
@@ -74,7 +77,7 @@ public class EditEventPage {
   public static final By FIRST_GROUP_ID = By.xpath("//table/tbody/tr[1]/td[2]");
   public static final By TOTAL_ACTIONS_COUNTER = By.cssSelector(".badge");
   public static final By CREATE_CONTACTS_BULK_EDIT_BUTTON = By.id("bulkActions-3");
-
+  public static final By EVENT_MANAGEMENT_STATUS_CHECK = By.cssSelector("#eventManagementStatus input:checked[type='checkbox'] ~ label");
   public static By getGroupEventName(String groupEventName) {
     return By.xpath("//*[contains(text(),'" + groupEventName + "')]");
   }

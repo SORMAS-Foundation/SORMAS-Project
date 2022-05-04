@@ -69,14 +69,10 @@ public class PathogenTestController {
 		return facade.getAllBySample(sampleRef);
 	}
 
-	public void create(
-		SampleReferenceDto sampleRef,
-		int caseSampleCount,
-		Runnable callback,
-		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest) {
+	public void create(SampleReferenceDto sampleRef, int caseSampleCount, BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest) {
 		SampleDto sampleDto = FacadeProvider.getSampleFacade().getSampleByUuid(sampleRef.getUuid());
 		final CommitDiscardWrapperComponent<PathogenTestForm> editView =
-			getPathogenTestCreateComponent(sampleDto, caseSampleCount, callback, onSavedPathogenTest, false);
+			getPathogenTestCreateComponent(sampleDto, caseSampleCount, onSavedPathogenTest, false);
 
 		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreatePathogenTestResult));
 	}
@@ -84,7 +80,6 @@ public class PathogenTestController {
 	public CommitDiscardWrapperComponent<PathogenTestForm> getPathogenTestCreateComponent(
 		SampleDto sampleDto,
 		int caseSampleCount,
-		Runnable callback,
 		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest,
 		boolean suppressNavigateToCase) {
 		PathogenTestForm createForm = new PathogenTestForm(sampleDto, true, caseSampleCount, false);
@@ -97,7 +92,6 @@ public class PathogenTestController {
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
 				savePathogenTest(createForm.getValue(), onSavedPathogenTest, false, suppressNavigateToCase);
-				callback.run();
 				SormasUI.refreshView();
 			}
 		});
@@ -276,6 +270,10 @@ public class PathogenTestController {
 		final boolean equalDisease = dto.getTestedDisease() == contact.getDisease();
 
 		Runnable callback = () -> {
+			if (!UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)) {
+				return;
+			}
+
 			if (equalDisease
 				&& PathogenTestResultType.NEGATIVE.equals(dto.getTestResult())
 				&& dto.getTestResultVerified()
@@ -284,9 +282,7 @@ public class PathogenTestController {
 			} else if (PathogenTestResultType.POSITIVE.equals(dto.getTestResult()) && dto.getTestResultVerified()) {
 				if (equalDisease) {
 					if (contact.getResultingCase() == null && !ContactStatus.CONVERTED.equals(contact.getContactStatus())) {
-						showConvertContactToCaseDialog(contact, converted -> {
-							handleCaseCreationFromContactOrEventParticipant(converted, dto);
-						});
+						showConvertContactToCaseDialog(contact, converted -> handleCaseCreationFromContactOrEventParticipant(converted, dto));
 					} else if (!suppressSampleResultUpdatePopup) {
 						showChangeAssociatedSampleResultDialog(dto, null);
 					}

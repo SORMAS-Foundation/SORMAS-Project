@@ -77,6 +77,33 @@ public class EditContactSteps implements En {
         });
 
     When(
+        "I check the created data for DE version is correctly displayed on Edit Contact page",
+        () -> {
+          collectedContact = collectContactDataDE();
+          createdContact = CreateNewContactSteps.contact;
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              collectedContact,
+              createdContact,
+              List.of(
+                  "firstName",
+                  "lastName",
+                  "returningTraveler",
+                  "reportDate",
+                  "diseaseOfSourceCase",
+                  "caseIdInExternalSystem",
+                  "dateOfLastContact",
+                  "caseOrEventInformation",
+                  "responsibleRegion",
+                  "responsibleDistrict",
+                  "responsibleCommunity",
+                  "additionalInformationOnContactType",
+                  "typeOfContact",
+                  "contactCategory",
+                  "relationshipWithCase",
+                  "descriptionOfHowContactTookPlace"));
+        });
+
+    When(
         "I check the created data is correctly displayed on Edit Contact page",
         () -> {
           collectedContact = collectContactData();
@@ -93,6 +120,31 @@ public class EditContactSteps implements En {
                   "caseIdInExternalSystem",
                   "dateOfLastContact",
                   "caseOrEventInformation",
+                  "responsibleRegion",
+                  "responsibleDistrict",
+                  "responsibleCommunity",
+                  "additionalInformationOnContactType",
+                  "typeOfContact",
+                  "contactCategory",
+                  "relationshipWithCase",
+                  "descriptionOfHowContactTookPlace"));
+        });
+
+    When(
+        "I check the created data is correctly displayed on Edit Contact page related with CHOSEN SOURCE CASE",
+        () -> {
+          collectedContact = collectContactDataRelatedWithChooseSourceCase();
+          createdContact = CreateNewContactSteps.contact;
+          ComparisonHelper.compareEqualFieldsOfEntities(
+              collectedContact,
+              createdContact,
+              List.of(
+                  "firstName",
+                  "lastName",
+                  "returningTraveler",
+                  "reportDate",
+                  "diseaseOfSourceCase",
+                  "dateOfLastContact",
                   "responsibleRegion",
                   "responsibleDistrict",
                   "responsibleCommunity",
@@ -251,7 +303,7 @@ public class EditContactSteps implements En {
           fillExtraComment(aQuarantineOrder.getExtraComment());
           webDriverHelpers.clickOnWebElementBySelector(
               EditContactPage.CREATE_QUARANTINE_ORDER_BUTTON);
-          webDriverHelpers.waitUntilIdentifiedElementIsPresent(CONTACT_SAVED_POPUP);
+          TimeUnit.SECONDS.sleep(2); // wait for download
         });
 
     And(
@@ -563,6 +615,39 @@ public class EditContactSteps implements En {
         .dateOfLastContact(parsedLastDateOfContact)
         .caseOrEventInformation(
             webDriverHelpers.getValueFromWebElement(CASE_OR_EVENT_INFORMATION_INPUT))
+        .responsibleRegion(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_REGION_COMBOBOX))
+        .responsibleDistrict(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_DISTRICT_COMBOBOX))
+        .responsibleCommunity(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_COMMUNITY_COMBOBOX))
+        .additionalInformationOnContactType(
+            webDriverHelpers.getValueFromWebElement(
+                ADDITIONAL_INFORMATION_OF_THE_TYPE_OF_CONTACT_INPUT))
+        .typeOfContact(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(TYPE_OF_CONTACT_OPTIONS))
+        .contactCategory(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CATEGORY_OPTIONS))
+        .relationshipWithCase(
+            webDriverHelpers.getValueFromCombobox(RELATIONSHIP_WITH_CASE_COMBOBOX))
+        .descriptionOfHowContactTookPlace(
+            webDriverHelpers.getValueFromWebElement(DESCRIPTION_OF_HOW_CONTACT_TOOK_PLACE_INPUT))
+        .uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT))
+        .build();
+  }
+
+  private Contact collectContactDataRelatedWithChooseSourceCase() {
+    String collectedDateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE);
+    String collectedLastDateOfContact = webDriverHelpers.getValueFromWebElement(LAST_CONTACT_DATE);
+    LocalDate parsedDateOfReport = LocalDate.parse(collectedDateOfReport, formatter);
+    LocalDate parsedLastDateOfContact = LocalDate.parse(collectedLastDateOfContact, formatter);
+    Contact contactInfo = getContactInformation();
+
+    return Contact.builder()
+        .firstName(contactInfo.getFirstName())
+        .lastName(contactInfo.getLastName())
+        .returningTraveler(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RETURNING_TRAVELER_OPTIONS))
+        .reportDate(parsedDateOfReport)
+        .diseaseOfSourceCase(webDriverHelpers.getTextFromPresentWebElement(DISEASE_VALUE))
+        .dateOfLastContact(parsedLastDateOfContact)
         .responsibleRegion(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_REGION_COMBOBOX))
         .responsibleDistrict(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_DISTRICT_COMBOBOX))
         .responsibleCommunity(webDriverHelpers.getValueFromCombobox(RESPONSIBLE_COMMUNITY_COMBOBOX))

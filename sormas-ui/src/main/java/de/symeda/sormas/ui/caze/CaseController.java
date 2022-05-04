@@ -17,6 +17,7 @@ package de.symeda.sormas.ui.caze;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -66,7 +67,6 @@ import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.SimilarContactDto;
@@ -201,10 +201,7 @@ public class CaseController {
 			if (updatedEventparticipant.getResultingCase() != null) {
 				String caseUuid = updatedEventparticipant.getResultingCase().getUuid();
 				CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
-				Date relevantDate = event.getStartDate() != null
-					? event.getStartDate()
-					: (event.getEndDate() != null ? event.getEndDate() : event.getReportDateTime());
-				convertSamePersonContactsAndEventparticipants(caze, relevantDate);
+				convertSamePersonContactsAndEventparticipants(caze);
 			}
 		});
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
@@ -243,9 +240,7 @@ public class CaseController {
 					if (contactDto.getResultingCase() != null) {
 						String caseUuid = contactDto.getResultingCase().getUuid();
 						CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
-						convertSamePersonContactsAndEventparticipants(
-							caze,
-							ContactLogic.getStartDate(contactDto.getLastContactDate(), contactDto.getReportDateTime()));
+						convertSamePersonContactsAndEventparticipants(caze);
 					}
 				});
 				VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
@@ -262,9 +257,7 @@ public class CaseController {
 
 				FacadeProvider.getCaseFacade().setSampleAssociations(updatedContact.toReference(), selectedCase.toReference());
 
-				convertSamePersonContactsAndEventparticipants(
-					selectedCase,
-					ContactLogic.getStartDate(updatedContact.getLastContactDate(), updatedContact.getReportDateTime()));
+				convertSamePersonContactsAndEventparticipants(selectedCase);
 
 				navigateToView(CaseDataView.VIEW_NAME, selectedCase.getUuid(), null);
 			}
@@ -295,21 +288,31 @@ public class CaseController {
 		});
 	}
 
-	private void convertSamePersonContactsAndEventparticipants(CaseDataDto caze, Date relevantDate) {
+	private void convertSamePersonContactsAndEventparticipants(CaseDataDto caze) {
 
-		ContactSimilarityCriteria contactCriteria = new ContactSimilarityCriteria().withPerson(caze.getPerson())
-			.withDisease(caze.getDisease())
-			.withContactClassification(ContactClassification.CONFIRMED)
-			.withExcludePseudonymized(true)
-			.withNoResultingCase(true);
-		List<SimilarContactDto> matchingContacts = FacadeProvider.getContactFacade().getMatchingContacts(contactCriteria);
+		List<SimilarContactDto> matchingContacts;
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)) {
+			ContactSimilarityCriteria contactCriteria = new ContactSimilarityCriteria().withPerson(caze.getPerson())
+				.withDisease(caze.getDisease())
+				.withContactClassification(ContactClassification.CONFIRMED)
+				.withExcludePseudonymized(true)
+				.withNoResultingCase(true);
+			matchingContacts = FacadeProvider.getContactFacade().getMatchingContacts(contactCriteria);
+		} else {
+			matchingContacts = Collections.emptyList();
+		}
 
-		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria().withPerson(caze.getPerson())
-			.withDisease(caze.getDisease())
-			.withExcludePseudonymized(true)
-			.withNoResultingCase(true);
-		List<SimilarEventParticipantDto> matchingEventParticipants =
-			FacadeProvider.getEventParticipantFacade().getMatchingEventParticipants(eventParticipantCriteria);
+		List<SimilarEventParticipantDto> matchingEventParticipants ;
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT)) {
+			EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria().withPerson(caze.getPerson())
+				.withDisease(caze.getDisease())
+				.withExcludePseudonymized(true)
+				.withNoResultingCase(true);
+
+			matchingEventParticipants = FacadeProvider.getEventParticipantFacade().getMatchingEventParticipants(eventParticipantCriteria);
+		} else {
+			matchingEventParticipants = Collections.emptyList();
+		}
 
 		if (matchingContacts.size() > 0 || matchingEventParticipants.size() > 0) {
 			String infoText = matchingEventParticipants.isEmpty()
@@ -404,7 +407,7 @@ public class CaseController {
 			List<EventParticipantDto> eventParticipants = FacadeProvider.getEventParticipantFacade().getByUuids(eventParticipantUuids);
 			for (EventParticipantDto eventParticipant : eventParticipants) {
 				eventParticipant.setResultingCase(caze.toReference());
-				FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipant);
+				FacadeProvider.getEventParticipantFacade().save(eventParticipant);
 			}
 		}
 
@@ -685,8 +688,6 @@ public class CaseController {
 					}
 					FacadeProvider.getContactFacade().save(updatedContact);
 					FacadeProvider.getCaseFacade().setSampleAssociations(updatedContact.toReference(), dto.toReference());
-					CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getUuid());
-					FacadeProvider.getCaseFacade().save(caseDataByUuid);
 					Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
 					if (!createdFromLabMessage) {
 						navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
@@ -703,8 +704,7 @@ public class CaseController {
 								FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(convertedEventParticipant.getUuid());
 							if (unrelatedDisease == null) {
 								// set resulting case on event participant and save it
-								updatedEventParticipant.setResultingCase(dto.toReference());
-								FacadeProvider.getEventParticipantFacade().saveEventParticipant(updatedEventParticipant);
+								FacadeProvider.getCaseFacade().setResultingCase(updatedEventParticipant.toReference(), dto.toReference());
 								FacadeProvider.getCaseFacade().setSampleAssociations(updatedEventParticipant.toReference(), dto.toReference());
 							} else {
 								FacadeProvider.getCaseFacade()
@@ -717,7 +717,7 @@ public class CaseController {
 							if (unrelatedDisease == null && convertedEventParticipant.getResultingCase() == null) {
 								convertedEventParticipant.setResultingCase(FacadeProvider.getCaseFacade().getReferenceByUuid(uuid));
 							}
-							FacadeProvider.getEventParticipantFacade().saveEventParticipant(convertedEventParticipant);
+							FacadeProvider.getEventParticipantFacade().save(convertedEventParticipant);
 							if (!createdFromLabMessage) {
 								navigateToView(CaseDataView.VIEW_NAME, uuid, null);
 							}
@@ -893,7 +893,7 @@ public class CaseController {
 				districtUuid = currentDistrictUuid;
 				first = false;
 			} else {
-				if (!DataHelper.equal(regionUuid, currentDistrictUuid)) {
+				if (!DataHelper.equal(regionUuid, currentRegionUuid)) {
 					regionUuid = null;
 				}
 				if (!DataHelper.equal(districtUuid, currentDistrictUuid)) {

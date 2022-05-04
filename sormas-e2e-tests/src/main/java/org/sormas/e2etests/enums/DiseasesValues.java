@@ -42,7 +42,6 @@ public enum DiseasesValues {
       "Unspecified VHF",
       "Nicht n\u00E4her bezeichnete h\u00E4morrhagische Viruskrankheit"),
   POLIO("POLIO", "Poliomyelitis", "Poliomyelitis"),
-  OTHER("OTHER", "Other Epidemic Disease", "Andere epidemische Krankheit"),
   YELLOW_FEVER("YELLOW_FEVER", "Yellow Fever", "Gelbfieber");
 
   private final String diseaseName;

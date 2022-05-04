@@ -81,12 +81,22 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 		this.region = region;
 	}
 
+	public SampleCriteria region(RegionReferenceDto region) {
+		this.region = region;
+		return this;
+	}
+
 	public DistrictReferenceDto getDistrict() {
 		return district;
 	}
 
 	public void setDistrict(DistrictReferenceDto district) {
 		this.district = district;
+	}
+
+	public SampleCriteria district(DistrictReferenceDto district) {
+		this.district = district;
+		return this;
 	}
 
 	public FacilityReferenceDto getLaboratory() {
@@ -178,6 +188,11 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 
 	public void setDisease(Disease disease) {
 		this.disease = disease;
+	}
+
+	public SampleCriteria disease(Disease disease) {
+		this.disease = disease;
+		return this;
 	}
 
 	public CaseReferenceDto getCaze() {

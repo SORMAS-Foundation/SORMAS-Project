@@ -161,6 +161,7 @@ public class ExternalShareInfoService extends AdoServiceWithUserFilter<ExternalS
 		countSubQuery.groupBy(countAssociatedObject);
 
 		cq.multiselect(associatedObjectUuid, countSubQuery, creationDate, root.get(ExternalShareInfo.STATUS));
+		cq.distinct(true);
 		cq.where(
 			cb.function(ExtendedPostgreSQL94Dialect.CONCAT_FUNCTION, String.class, associatedObjectId, creationDate).in(latestShareInfoSubQuery),
 			associatedObjectId.in(ids));

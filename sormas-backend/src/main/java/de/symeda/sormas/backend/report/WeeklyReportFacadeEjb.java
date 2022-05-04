@@ -77,6 +77,7 @@ import de.symeda.sormas.backend.util.DateHelper8;
 import de.symeda.sormas.backend.util.DtoHelper;
 
 @Stateless(name = "WeeklyReportFacade")
+@RolesAllowed(UserRight._WEEKLYREPORT_VIEW)
 public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 
 	private final Logger logger = LoggerFactory.getLogger(getClass());
@@ -125,6 +126,7 @@ public class WeeklyReportFacadeEjb implements WeeklyReportFacade {
 	}
 
 	@Override
+	@RolesAllowed(UserRight._WEEKLYREPORT_CREATE)
 	public WeeklyReportDto saveWeeklyReport(@Valid WeeklyReportDto dto) {
 
 		// Don't create a new report if there already is one in the database for the user/epi week combination

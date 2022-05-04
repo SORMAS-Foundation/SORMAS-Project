@@ -162,7 +162,6 @@ public interface Strings {
 	String confirmationSeeAllPersons = "confirmationSeeAllPersons";
 	String confirmationSetMissingGeoCoordinates = "confirmationSetMissingGeoCoordinates";
 	String confirmationSinceLabMessages = "confirmationSinceLabMessages";
-	String confirmationSuperordinateEventDiscardUnsavedChanges = "confirmationSuperordinateEventDiscardUnsavedChanges";
 	String confirmationUnclearLabMessage = "confirmationUnclearLabMessage";
 	String confirmationUnlinkCaseFromEvent = "confirmationUnlinkCaseFromEvent";
 	String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
@@ -403,6 +402,7 @@ public interface Strings {
 	String headingConfirmUnclearLabMessage = "headingConfirmUnclearLabMessage";
 	String headingConfirmUpdateCompleteness = "headingConfirmUpdateCompleteness";
 	String headingContactConfirmationRequired = "headingContactConfirmationRequired";
+	String headingContactConversionFollowUpCommentLarge = "headingContactConversionFollowUpCommentLarge";
 	String headingContactData = "headingContactData";
 	String headingContactDataNotComplete = "headingContactDataNotComplete";
 	String headingContactInformation = "headingContactInformation";
@@ -948,6 +948,9 @@ public interface Strings {
 	String messageContactArchived = "messageContactArchived";
 	String messageContactCaseChanged = "messageContactCaseChanged";
 	String messageContactCaseRemoved = "messageContactCaseRemoved";
+	String messageContactConversionFollowUpCommentLarge = "messageContactConversionFollowUpCommentLarge";
+	String messageContactConversionFollowUpCommentLargeAdjustComment = "messageContactConversionFollowUpCommentLargeAdjustComment";
+	String messageContactConversionFollowUpCommentLargeOmitMessage = "messageContactConversionFollowUpCommentLargeOmitMessage";
 	String messageContactCreated = "messageContactCreated";
 	String messageContactDearchived = "messageContactDearchived";
 	String messageContactDuplicateDeleted = "messageContactDuplicateDeleted";
@@ -1048,7 +1051,6 @@ public interface Strings {
 	String messageFacilityMulitChanged = "messageFacilityMulitChanged";
 	String messageFollowUpCanceled = "messageFollowUpCanceled";
 	String messageFollowUpStatusChanged = "messageFollowUpStatusChanged";
-	String messageFormHasErrorsPathogenTest = "messageFormHasErrorsPathogenTest";
 	String messageForwardedLabMessageFound = "messageForwardedLabMessageFound";
 	String messageGdpr = "messageGdpr";
 	String messageGdprCheck = "messageGdprCheck";

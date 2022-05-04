@@ -43,15 +43,26 @@ Feature: Contacts end to end tests
 
   @issue=SORDEV-5476 @env_main
     Scenario: Add a task from contact and verify the fields
-    Given I log in with National User
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in with National User
     And I click on the Contacts button from navbar
     And I click on the NEW CONTACT button
     And I fill a new contact form
     And I click on SAVE new contact button
+    And I click on the CHOOSE SOURCE CASE button from CONTACT page
+    And I click yes on the DISCARD UNSAVED CHANGES popup from CONTACT page
+    And I search for the last case uuid created via Api in the CHOOSE SOURCE Contact window
+    And I open the first found result in the CHOOSE SOURCE window
+    Then I click SAVE button on Edit Contact Page
     And I click on the Tasks button from navbar
     Then I search created task by Contact first and last name
     And I open the last created UI Contact
-    Then I check the created data is correctly displayed on Edit Contact page
+    Then I check the created data is correctly displayed on Edit Contact page related with CHOSEN SOURCE CASE
 
   @env_main
   Scenario: Source case selected for contact
@@ -152,7 +163,7 @@ Feature: Contacts end to end tests
     And I open Follow up Visits tab from contact directory
     Then I am validating the From and To dates displayed
 
-  @issue=SORDEV-5490 @env_main @ignore
+  @issue=SORDEV-5490 @env_main
   Scenario: Create a contact and create a case for contact person
     Given I log in with National User
     When I click on the Contacts button from navbar
@@ -355,3 +366,38 @@ Feature: Contacts end to end tests
     Then I fill Location form for Type of place by chosen "FACILITY" options in Exposure for Epidemiological data
     And I click on save button in Exposure for Epidemiological data tab in Contacts
     And I click on save button from Epidemiological Data
+
+  @env_main @#7768
+  Scenario: Create new contact using line listing and select source case
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in with National User
+    When I click on the Contacts button from navbar
+    Then I click on Line Listing button
+    Then I click Choose Case button from Contact Directory Line Listing popup window
+    And I search for the last case uuid in the CHOOSE SOURCE popup of Create Contact window
+    And I open the first found result in the CHOOSE SOURCE popup of Create Contact window
+    And I create a new Contact with specific data through Line Listing when disease prefilled
+    And I save the new contact using line listing feature
+    Then I check that contact created from Line Listing is saved and displayed in results grid
+
+  @env_main @#7769
+  Scenario: Create a new Contact via Line Listing and validate that the selected Source Case data is correctly displayed
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in with National User
+    When I click on the Contacts button from navbar
+    Then I click on Line Listing button
+    Then I click Choose Case button from Contact Directory Line Listing popup window
+    And I search for the last case uuid in the CHOOSE SOURCE popup of Create Contact window
+    And I open the first found result in the CHOOSE SOURCE popup of Create Contact window
+    Then I check the name and uuid of selected case information is correctly displayed in new Contact Line Listing popup window
+    Then I check disease dropdown is automatically filled with disease of selected Case in new Contact Line Listing popup window

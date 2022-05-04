@@ -19,7 +19,6 @@ package de.symeda.sormas.backend.event;
 
 import java.sql.Timestamp;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,15 +30,12 @@ import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
-
-import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
@@ -172,7 +168,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	public Predicate buildCriteriaFilter(EventParticipantCriteria criteria, EventParticipantQueryContext eventParticipantQueryContext) {
 
 		CriteriaBuilder cb = eventParticipantQueryContext.getCriteriaBuilder();
-		Root<EventParticipant> from = (Root<EventParticipant>) eventParticipantQueryContext.getRoot();
+		From<?, EventParticipant> from = eventParticipantQueryContext.getRoot();
 		CriteriaQuery cq = eventParticipantQueryContext.getQuery();
 		Join<EventParticipant, Event> event = from.join(EventParticipant.EVENT, JoinType.LEFT);
 		Join<Case, Person> person = from.join(EventParticipant.PERSON, JoinType.LEFT);
@@ -196,10 +192,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 				Predicate likeFilters = cb.or(
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
-					phoneNumberPredicate(
-						cb,
-						(Expression<String>) personQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY),
-						textFilter));
+					phoneNumberPredicate(cb, personQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
@@ -503,19 +496,13 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	}
 
 	public Collection<EventParticipant> getByPersonUuids(List<String> personUuids) {
-		if (CollectionUtils.isEmpty(personUuids)) {
-			// Avoid empty IN clause
-			return Collections.emptyList();
-		} else if (personUuids.size() > ModelConstants.PARAMETER_LIMIT) {
-			List<EventParticipant> eventParticipants = new LinkedList<>();
-			IterableHelper.executeBatched(
-				personUuids,
-				ModelConstants.PARAMETER_LIMIT,
-				batchedPersonUuids -> eventParticipants.addAll(getEventParticipantsByPersonUuids(batchedPersonUuids)));
-			return eventParticipants;
-		} else {
-			return getEventParticipantsByPersonUuids(personUuids);
-		}
+
+		List<EventParticipant> eventParticipants = new LinkedList<>();
+		IterableHelper.executeBatched(
+			personUuids,
+			ModelConstants.PARAMETER_LIMIT,
+			batchedPersonUuids -> eventParticipants.addAll(getEventParticipantsByPersonUuids(batchedPersonUuids)));
+		return eventParticipants;
 	}
 
 	private List<EventParticipant> getEventParticipantsByPersonUuids(List<String> personUuids) {
