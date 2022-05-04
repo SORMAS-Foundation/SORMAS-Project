@@ -719,13 +719,6 @@ Feature: Case end to end tests
 
   @issue=SORDEV-5477 @env_main
   Scenario: Import Case from csv in Case Directory
-#    When API: I create a new person
-#    Then API: I check that POST call body is "OK"
-#    And API: I check that POST call status code is 200
-#    Then API: I create a new case
-#    Then API: I check that POST call body is "OK"
-#    And API: I check that POST call status code is 200
-#    Given I log in as a Admin
     Given I log in as a Admin User
     And I click on the Cases button from navbar
     And I click on the NEW CASE button
@@ -733,7 +726,6 @@ Feature: Case end to end tests
     Then I check the created data is correctly displayed on Edit case page
     And I collect the case person UUID displayed on Edit case page
     And I click on the Cases button from navbar
-#    And I apply uuid filter for last created via API Person in Case directory page
     And I filter by CaseID of last created UI Case on Case directory page
     And I click on export button in Case Directory page
     And I click on the "DETAILED EXPORT" button from Export Cases Entries
@@ -746,7 +738,7 @@ Feature: Case end to end tests
     And I check that an import success notification appears in the Import Cases popup
     And I click on Close button from the Import Cases Entries popup
     And I delete exported file from Cases Directory
-  And I click on Close button from Import Cases
+    And I click on Close button from Import Cases
     And I check that four new cases have appeared in Cases directory
 
   @issue=SORDEV-7466 @env_de
