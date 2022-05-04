@@ -442,7 +442,7 @@ public class CommitDiscardWrapperComponent<C extends Component> extends Vertical
 	}
 
 	@Override
-	public void commit() {
+	public void commit() throws InvalidValueException, SourceException, CommitRuntimeException {
 
 		if (preCommitListener != null) {
 			preCommitListener.onPreCommit(this::doCommit);
