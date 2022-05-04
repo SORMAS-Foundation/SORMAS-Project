@@ -716,8 +716,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			ExportConfigurationDto exportConfiguration,
 			Language userLanguage) {
 
-		long startTime = System.currentTimeMillis();
-
 		Boolean previousCaseManagementDataCriteria = caseCriteria.getMustHaveCaseManagementData();
 		if (CaseExportType.CASE_MANAGEMENT == exportType) {
 			caseCriteria.setMustHaveCaseManagementData(Boolean.TRUE);
