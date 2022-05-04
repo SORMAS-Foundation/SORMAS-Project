@@ -376,6 +376,14 @@ public class CreateNewSampleSteps implements En {
           softly.assertAll();
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
         });
+
+    When(
+        "I check if default disease value for new Pathogen test is set for ([^\"]*)",
+        (String disease) -> {
+          String testedDisease = webDriverHelpers.getValueFromCombobox(TESTED_DISEASE_COMBOBOX);
+          softly.assertEquals(disease, testedDisease, "Diseases are not equal");
+          softly.assertAll();
+        });
   }
 
   private void selectPurposeOfSample(String samplePurpose, By element) {
