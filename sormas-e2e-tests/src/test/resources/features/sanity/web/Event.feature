@@ -533,6 +533,22 @@ Feature: Create events
     Then I check the all options for Verification on materials on Laboratory diagnostic evidence appears and there are checked for De version
     And I click on SAVE button in edit event form
 
+  @issue=SORDEV-8048 @env_de
+  Scenario: Test Default value for disease if only one is used by the server for Events and Pathogen test
+    Given I log in with National User
+    Then I click on the Events button from navbar
+    When I click on the NEW EVENT button
+    Then I check if default disease value is set for COVID-19
+    Then I click on the NEW EVENT button
+    When I create a new event with specific data for DE version
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    Then I check the created data for DE version is correctly displayed in event edit page
+    Then I click on the Sample button from navbar
+    When I open created Sample
+    Then I click on the new pathogen test from the Edit Sample page for DE version
+    And I check if default disease value for new Pathogen test is set for COVID-19
 
   @issue=SORDEV-9477 @env_main
   Scenario: Add a person search option on creation forms

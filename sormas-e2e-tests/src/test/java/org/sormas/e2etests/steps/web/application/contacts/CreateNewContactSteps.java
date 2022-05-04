@@ -18,6 +18,8 @@
 
 package org.sormas.e2etests.steps.web.application.contacts;
 
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DISEASE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LINE_LISTING_DISCARD_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PERSON_SEARCH_LOCATOR_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_NEW_PERSON_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_PERSON_POPUP_HEADER;
@@ -40,17 +42,23 @@ import org.sormas.e2etests.entities.pojo.web.Contact;
 import org.sormas.e2etests.entities.services.ContactService;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
+import org.testng.asserts.SoftAssert;
 
 public class CreateNewContactSteps implements En {
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
   private final WebDriverHelpers webDriverHelpers;
   public static Contact contact;
+  private final SoftAssert softly;
   public static Contact collectedContactUUID;
 
   @Inject
   public CreateNewContactSteps(
-      WebDriverHelpers webDriverHelpers, ContactService contactService, ApiState apiState) {
+      WebDriverHelpers webDriverHelpers,
+      ContactService contactService,
+      ApiState apiState,
+      SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
+    this.softly = softly;
 
     When(
         "^I fill a new contact form for DE version$",
@@ -211,6 +219,15 @@ public class CreateNewContactSteps implements En {
               SOURCE_CASE_WINDOW_CONFIRM_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_CONFIRM_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+        });
+
+    When(
+        "^I check if default disease value for contacts in the Line listing is set for ([^\"]*)$",
+        (String disease) -> {
+          String getDisease = webDriverHelpers.getValueFromCombobox(DISEASE_COMBOBOX);
+          softly.assertEquals(disease, getDisease, "Diseases are not equal");
+          softly.assertAll();
+          webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_DISCARD_BUTTON);
         });
   }
 
