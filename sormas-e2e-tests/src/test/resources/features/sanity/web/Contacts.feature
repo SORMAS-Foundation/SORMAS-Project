@@ -455,3 +455,13 @@ Feature: Contacts end to end tests
     And I navigate to the last created contact via the url
     And I check if generated document based on "ExampleDocumentTemplateContacts.docx" appeared in Documents tab in Edit Contact directory
     And I delete downloaded file created from Quarantine order
+
+  @issue=SORDEV-8048 @env_de
+  Scenario: Test Default value for disease if only one is used by the server for Contacts
+    Given I log in with National User
+    When I click on the Contacts button from navbar
+    Then I click on the NEW CONTACT button
+    And I check if default disease value is set for COVID-19
+    Then I click on the Contacts button from navbar
+    Then I click on Line Listing button
+    And I check if default disease value for contacts in the Line listing is set for COVID-19

@@ -31,6 +31,7 @@ import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_T
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_NEW_CASE_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_NEW_PERSON_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISCARD_BUTTON_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_CASE_POPUP_HEADER;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_PERSON_POPUP_HEADER;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_PERSON_TITLE;
@@ -506,6 +507,22 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           TimeUnit.SECONDS.sleep(2); // wait for spinner
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "^I check if default disease value is set for ([^\"]*)$",
+        (String disease) -> {
+          String getDisease = webDriverHelpers.getValueFromCombobox(DISEASE_COMBOBOX);
+          softly.assertEquals(disease, getDisease, "Diseases are not equal");
+          webDriverHelpers.clickOnWebElementBySelector(DISCARD_BUTTON_POPUP);
+        });
+
+    When(
+        "^I check if default disease value in the Line listing is set for ([^\"]*)$",
+        (String disease) -> {
+          String getDisease = webDriverHelpers.getValueFromCombobox(LINE_LISTING_DISEASE_COMBOBOX);
+          softly.assertEquals(disease, getDisease, "Diseases are not equal");
+          webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_DISCARD_BUTTON);
         });
   }
 
