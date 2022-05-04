@@ -73,11 +73,16 @@ public class EditEventPage {
   public static final By UNLINK_EVENT_BUTTON = By.id("unlink-event-1");
   public static final By EDIT_EVENT_GROUP_BUTTON = By.id("add-event-0");
   public static final By NAVIGATE_TO_EVENT_DIRECTORY_EVENT_GROUP_BUTTON = By.id("list-events-0");
+  public static final By NAVIGATE_TO_EVENT_DIRECTORY_LIST_GROUP_BUTTON = By.id("tab-events");
+  public static final By NAVIGATE_TO_EVENT_PARTICIPANTS_BUTTON =
+      By.id("tab-events-eventparticipants");
   public static final By SAVE_BUTTON_FOR_EDIT_EVENT_GROUP = By.id("commit");
   public static final By FIRST_GROUP_ID = By.xpath("//table/tbody/tr[1]/td[2]");
   public static final By TOTAL_ACTIONS_COUNTER = By.cssSelector(".badge");
   public static final By CREATE_CONTACTS_BULK_EDIT_BUTTON = By.id("bulkActions-3");
-  public static final By EVENT_MANAGEMENT_STATUS_CHECK = By.cssSelector("#eventManagementStatus input:checked[type='checkbox'] ~ label");
+  public static final By EVENT_MANAGEMENT_STATUS_CHECK =
+      By.cssSelector("#eventManagementStatus input:checked[type='checkbox'] ~ label");
+
   public static final By EVENT_CLUSTER_EDIT = By.xpath("//span[.='Cluster']");
   public static final By PRIMARY_MODE_OF_TRANSMISSION_COMBOBOX =
       By.cssSelector("[id='diseaseTransmissionMode'] [class='v-filterselect-button']");

@@ -465,3 +465,28 @@ Feature: Contacts end to end tests
     Then I click on the Contacts button from navbar
     Then I click on Line Listing button
     And I check if default disease value for contacts in the Line listing is set for COVID-19
+
+  @issue=SORDEV-9477 @env_main
+  Scenario: Add a person search option on creation forms
+    Then API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And I log in with National User
+    Then I click on the Contacts button from navbar
+    And  I click on the NEW CONTACT button
+    And I fill a new contact form with chosen data without personal data on Contact directory page
+    And I click on the person search button in create new contact form
+    And I search for the last created person via Api by uuid in popup on Select Person window
+    And I open the first found result in the popup of Select Person window
+    And I click on the clear button in new contact form
+    And I click on the person search button in create new contact form
+    And I search for the last created person via Api by uuid in popup on Select Person window
+    And I open the first found result in the popup of Select Person window
+    And I click on SAVE new contact button
+    Then I check the created data for existing person is correctly displayed on Edit Contact page
+    When I click on the Persons button from navbar
+    And I open the last created Person via API
+    And I check that SEE CONTACTS FOR THIS PERSON button appears on Edit Person page

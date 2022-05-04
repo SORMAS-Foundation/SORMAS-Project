@@ -549,3 +549,36 @@ Feature: Create events
     When I open created Sample
     Then I click on the new pathogen test from the Edit Sample page for DE version
     And I check if default disease value for new Pathogen test is set for COVID-19
+
+  @issue=SORDEV-9477 @env_main
+  Scenario: Add a person search option on creation forms
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And I log in with National User
+    And I click on the Events button from navbar
+    Then I open the last created event via api
+    And I navigate to Event Participants tab in Edit case page
+    And I add participant responsible region and responsible district only
+    And I click on the person search button in add new event participant form
+    And I search for the last created person via Api by uuid in popup on Select Person window
+    And I open the first found result in the popup of Select Person window
+    And I click on the clear button in new add new event participant form
+    And I click on the person search button in add new event participant form
+    And I search for the last created person via Api by uuid in popup on Select Person window
+    And I open the first found result in the popup of Select Person window
+    And I save changes in participant window
+    And I confirm navigation popup
+    And I navigate to EVENT PARTICIPANT from edit event page
+    And I confirm navigation popup
+    Then I click on Apply filters button in event participant list
+    Then I check if filtered participant for existing person appears in the event participants list
+    When I click on the Persons button from navbar
+    And I open the last created Person via API
+    And I check that SEE EVENTS FOR THIS PERSON button appears on Edit Person page

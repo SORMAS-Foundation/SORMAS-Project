@@ -65,6 +65,7 @@ import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.entities.services.CaseService;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.cases.EditCasePage;
+import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.asserts.SoftAssert;
 
@@ -80,6 +81,7 @@ public class CreateNewCaseSteps implements En {
   public CreateNewCaseSteps(
       WebDriverHelpers webDriverHelpers,
       CaseService caseService,
+      ApiState apiState,
       Faker faker,
       SoftAssert softly,
       BaseSteps baseSteps) {
@@ -402,6 +404,96 @@ public class CreateNewCaseSteps implements En {
           selectFacilityType(facilityType);
           selectFacility("Other facility");
           fillPlaceDescription(caze.getPlaceDescription());
+        });
+
+    When(
+        "^I fill new case form with chosen data without personal data on Case directory page$",
+        () -> {
+          caze = caseService.buildGeneratedCase();
+          selectCaseOrigin(caze.getCaseOrigin());
+          fillExternalId(caze.getExternalId());
+          fillDisease(caze.getDisease());
+          selectResponsibleRegion(caze.getResponsibleRegion());
+          selectResponsibleDistrict(caze.getResponsibleDistrict());
+          selectResponsibleCommunity(caze.getResponsibleCommunity());
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+          fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.ENGLISH);
+          fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
+          fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
+          fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
+          fillPlaceDescription(caze.getPlaceDescription());
+        });
+
+    When(
+        "^I click on the clear button in new add new event participant form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(PERSON_SEARCH_LOCATOR_BUTTON);
+        });
+
+    When(
+        "^I click on the person search button in new case form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(PERSON_SEARCH_LOCATOR_BUTTON);
+        });
+    When(
+        "^I click on the clear button in new case form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(PERSON_SEARCH_LOCATOR_BUTTON);
+        });
+
+    When(
+        "^I search for the last created person via Api by uuid in popup on Select Person window$",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE_INPUT,
+              apiState.getLastCreatedPerson().getUuid());
+          webDriverHelpers.clickOnWebElementBySelector(PERSON_CASE_WINDOW_SEARCH_CASE_BUTTON);
+        });
+
+    When(
+        "^I search for the last created person by First Name and Last Name in popup on Select Person window$",
+        () -> {
+          webDriverHelpers.fillInWebElement(FIRST_NAME_LIKE_INPUT, aCase.getFirstName());
+          webDriverHelpers.fillInWebElement(LAST_NAME_LIKE_INPUT, aCase.getLastName());
+          webDriverHelpers.clickOnWebElementBySelector(PERSON_CASE_WINDOW_SEARCH_CASE_BUTTON);
+        });
+
+    When(
+        "^I open the first found result in the popup of Select Person window$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION);
+          webDriverHelpers.clickOnWebElementBySelector(
+              PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SELECT_PERSON_WINDOW_CONFIRM_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SELECT_PERSON_WINDOW_CONFIRM_BUTTON);
+        });
+
+    When(
+        "^I open the first found result in the popup of Select Person window for DE version$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION);
+          webDriverHelpers.clickOnWebElementBySelector(
+              PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SELECT_PERSON_WINDOW_CONFIRM_BUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(SELECT_PERSON_WINDOW_CONFIRM_BUTTON_DE);
+        });
+
+    When(
+        "^I click on Save button in Case form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
+
+    When(
+        "^I Pick an existing case in Pick or create person popup in Case entry$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_A_NEW_CASE_CONFIRMATION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
 
     When(

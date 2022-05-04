@@ -900,3 +900,51 @@ Feature: Case end to end tests
     Then I open last created case
     And I check if generated document based on "ExampleDocumentTemplateCases.docx" appeared in Documents tab for UI created case in Edit Case directory
     And I delete downloaded file created from Quarantine order
+
+  @issue=SORDEV-9477 @env_main
+  Scenario: Add a person search option on creation forms
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    And I fill new case form with chosen data without personal data on Case directory page
+    And I click on the person search button in new case form
+    And I search for the last created person via Api by uuid in popup on Select Person window
+    And I open the first found result in the popup of Select Person window
+    And I click on the clear button in new case form
+    And I click on the person search button in new case form
+    And I search for the last created person via Api by uuid in popup on Select Person window
+    And I open the first found result in the popup of Select Person window
+    Then I click on Save button in Case form
+    And I Pick an existing case in Pick or create person popup in Case entry
+    And I check the created data for existing person is correctly displayed on Edit case page
+    And I click on Save button in Case form
+    When I click on the Persons button from navbar
+    And I open the last created Person via API
+    And I check that SEE CASES FOR THIS PERSON button appears on Edit Person page
+    Then I click on the Cases button from navbar
+    And I open last created case
+    And I navigate to Contacts tab in Edit case page
+    Then I click on the NEW CONTACT button
+    And I fill a new contact form with chosen data without personal data
+    And I click on the person search button in create new contact form
+    And I search for the last created person via Api by uuid in popup on Select Person window
+    And I open the first found result in the popup of Select Person window
+    And I click on the clear button in new contact form
+    And I click on the person search button in create new contact form
+    And I search for the last created person via Api by uuid in popup on Select Person window
+    And I open the first found result in the popup of Select Person window
+    Then I click on SAVE new contact button
+    Then I check the created data for existing person is correctly displayed on Edit Contact page based on Case
+    When I click on the Persons button from navbar
+    And I click on the RESET FILTERS button for Person
+    And I open the last created Person via API
+    And I check that SEE CONTACTS FOR THIS PERSON button appears on Edit Person page
