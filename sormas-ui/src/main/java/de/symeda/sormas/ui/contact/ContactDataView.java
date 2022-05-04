@@ -293,8 +293,7 @@ public class ContactDataView extends AbstractContactView {
 		if (contactDataForm.getValue().getResultingCase() == null) {
 			if (!ContactClassification.NO_CONTACT.equals(contactDataForm.getValue().getContactClassification())) {
 				if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CONVERT)) {
-					Button toCaseButton1 = contactDataForm.getToCaseButton();
-					toCaseButton1.addClickListener(event -> {
+					contactDataForm.getToCaseButton().addClickListener(event -> {
 						if (!ContactClassification.CONFIRMED.equals(contactDataForm.getValue().getContactClassification())) {
 							VaadinUiUtil.showSimplePopupWindow(
 								I18nProperties.getString(Strings.headingContactConfirmationRequired),
