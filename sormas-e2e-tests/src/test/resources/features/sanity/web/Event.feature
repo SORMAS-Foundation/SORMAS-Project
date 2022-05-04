@@ -492,7 +492,8 @@ Feature: Create events
     Then I click on the RESET FILTERS button from Event
     And I click on the More button on Event directory page
     And I click Enter Bulk Edit Mode on Event directory page
-    And I select first 2 results in grid in Event Directory
+    And I select last created UI result in grid in Event Directory for Bulk Action
+    And I select last created API result in grid in Event Directory for Bulk Action
     And I click on Bulk Actions combobox on Event Directory Page
     And I click on Edit Events from Bulk Actions combobox on Event Directory Page
     Then I click to bulk change event managements status for selected events
