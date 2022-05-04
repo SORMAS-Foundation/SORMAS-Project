@@ -886,21 +886,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		List<CaseExportMapperDto> caseExportMapperDtos = QueryHelper.getResultList(em, cq, first, max);
 		List<CaseExportDto> resultList = caseExportMapperDtos.stream().map(caseExportMapperDto -> caseExportMapperDto.toCaseExportDto()).collect(Collectors.toList());
 
-		long timestamp1 = System.currentTimeMillis();
-		System.out.println(">>*<< Main query time: " + (timestamp1 - startTime));
-
 		List<Long> resultCaseIds = resultList.stream().map(CaseExportDto::getId).collect(Collectors.toList());
-		long timestamp13 = 0l;
 		if (!resultList.isEmpty()) {
-
-			long timestamp2 = System.currentTimeMillis();
-			System.out.println(">>*<< Symptoms query time: " + (timestamp2 - timestamp1));
-
-			long timestamp3 = System.currentTimeMillis();
-			System.out.println(">>*<< Person addresses query time: " + (timestamp3 - timestamp2));
-
-			long timestamp4 = System.currentTimeMillis();
-			System.out.println(">>*<< Pres Treat Clin HealthCond query time: " + (timestamp4 - timestamp3));
 
 			Map<Long, PreviousHospitalization> firstPreviousHospitalizations = null;
 			if (ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.INITIAL_DETECTION_PLACE)) {
@@ -918,9 +905,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 						prevHospsList.stream().collect(Collectors.toMap(p -> p.getHospitalization().getId(), Function.identity(), (id1, id2) -> id1));
 			}
 
-			long timestamp5 = System.currentTimeMillis();
-			System.out.println(">>*<< Prev hosp query time: " + (timestamp5 - timestamp4));
-
 			Map<Long, CaseClassification> sourceCaseClassifications = null;
 			if (ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.MAX_SOURCE_CASE_CLASSIFICATION)) {
 				sourceCaseClassifications = contactService.getSourceCaseClassifications(resultCaseIds)
@@ -929,12 +913,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 								Collectors
 										.toMap(e -> (Long) e[0], e -> (CaseClassification) e[1], (c1, c2) -> c1.getSeverity() >= c2.getSeverity() ? c1 : c2));
 			}
-
-			long timestamp6 = System.currentTimeMillis();
-			System.out.println(">>*<< Source CaseClassifications query time: " + (timestamp6 - timestamp5));
-
-			long timestamp7 = System.currentTimeMillis();
-			System.out.println(">>*<< caseIdsWithOutbreak query time: " + (timestamp7 - timestamp6));
 
 			Map<Long, List<Exposure>> exposures = null;
 			if ((exportType == null || exportType == CaseExportType.CASE_SURVEILLANCE)
@@ -955,9 +933,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				exposures = exposureList.stream().collect(Collectors.groupingBy(e -> e.getEpiData().getId()));
 			}
 
-			long timestamp8 = System.currentTimeMillis();
-			System.out.println(">>*<< exposures query time: " + (timestamp8 - timestamp7));
-
 			Map<Long, List<EmbeddedSampleExportDto>> samples = null;
 			if ((exportType == null || exportType == CaseExportType.CASE_SURVEILLANCE)
 					&& ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.SAMPLE_INFORMATION)) {
@@ -973,9 +948,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				samplesList = em.createQuery(samplesCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
 				samples = samplesList.stream().collect(Collectors.groupingBy(s -> s.getCaseId()));
 			}
-
-			long timestamp9 = System.currentTimeMillis();
-			System.out.println(">>*<< samples query time: " + (timestamp9 - timestamp8));
 
 			List<VisitSummaryExportDetails> visitSummaries = null;
 			if (featureConfigurationFacade.isFeatureEnabled(FeatureType.CASE_FOLLOWUP)
@@ -1002,9 +974,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				visitSummaries = em.createQuery(visitsCq).getResultList();
 			}
 
-			long timestamp10 = System.currentTimeMillis();
-			System.out.println(">>*<< visitsummaries query time: " + (timestamp10 - timestamp9));
-
 			Map<Long, List<Immunization>> immunizations = null;
 			if ((exportType == null || exportType == CaseExportType.CASE_SURVEILLANCE)
 					&& (exportConfiguration == null
@@ -1028,9 +997,6 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				immunizations = immunizationList.stream().collect(Collectors.groupingBy(i -> i.getPerson().getId()));
 			}
 
-			long timestamp11 = System.currentTimeMillis();
-			System.out.println(">>*<< immunizations query time: " + (timestamp11 - timestamp10));
-
 			// Load latest events info
 			// Adding a second query here is not perfect, but selecting the last event with a criteria query
 			// doesn't seem to be possible and using a native query is not an option because of user filters
@@ -1044,13 +1010,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				eventSummaries = eventService.getEventSummaryDetailsByCases(resultCaseIds);
 			}
 
-			long timestamp12 = System.currentTimeMillis();
-			System.out.println(">>*<< eventSummaries query time: " + (timestamp12 - timestamp11));
-
 			Map<Long, UserReference> caseUsers = getCaseUsersForExport(resultList, exportConfiguration);
-
-			timestamp13 = System.currentTimeMillis();
-			System.out.println(">>*<< caseUsers query time: " + (timestamp13 - timestamp12));
 
 			Pseudonymizer pseudonymizer = getPseudonymizerForDtoWithClinician(I18nProperties.getCaption(Captions.inaccessibleValue));
 
@@ -1229,12 +1189,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			}
 		}
 
-		long timestamp14 = System.currentTimeMillis();
-		System.out.println(">>*<< applying subqueris to main dto + pseudonymization time: " + (timestamp14 - timestamp13));
-
 		caseCriteria.setMustHaveCaseManagementData(previousCaseManagementDataCriteria);
 
-		System.out.println(">>*<< Total export queries time: " + (System.currentTimeMillis() - startTime));
 		return resultList;
 	}
 
