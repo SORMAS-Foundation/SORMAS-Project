@@ -29,6 +29,9 @@ import android.content.Context;
 import android.os.AsyncTask;
 import android.util.Log;
 
+import de.symeda.sormas.api.campaign.CampaignDto;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
+import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitDto;
 import de.symeda.sormas.api.contact.ContactDto;
@@ -244,7 +247,10 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 	public static boolean hasAnyUnsynchronizedData() {
 		final boolean hasUnsynchronizedCampaignData = !DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)
-			&& (DatabaseHelper.getCampaignFormDataDao().isAnyModified());
+			&& (DatabaseHelper.getCampaignDao().isAnyModified()
+				|| DatabaseHelper.getCampaignFormMetaDao().isAnyModified()
+				|| DatabaseHelper.getCampaignFormDataDao().isAnyModified());
+
 		return DatabaseHelper.getCaseDao().isAnyModified()
 			|| DatabaseHelper.getImmunizationDao().isAnyModified()
 			|| DatabaseHelper.getContactDao().isAnyModified()
@@ -364,6 +370,14 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 		// Campaigns
 		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
+			final CampaignDtoHelper campaignDtoHelper = new CampaignDtoHelper();
+			if (campaignDtoHelper.pullAndPushEntities(context))
+				campaignDtoHelper.pullEntities(true, context);
+
+			final CampaignFormMetaDtoHelper campaignFormMetaDtoHelper = new CampaignFormMetaDtoHelper();
+			if (campaignFormMetaDtoHelper.pullAndPushEntities(context))
+				campaignFormMetaDtoHelper.pullEntities(true, context);
+
 			final CampaignFormDataDtoHelper campaignFormDataDtoHelper = new CampaignFormDataDtoHelper();
 			if (campaignFormDataDtoHelper.pullAndPushEntities(context))
 				campaignFormDataDtoHelper.pullEntities(true, context);
@@ -417,6 +431,12 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 		// Campaigns
 		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
+			final CampaignDtoHelper campaignDtoHelper = new CampaignDtoHelper();
+			campaignDtoHelper.repullEntities(context);
+
+			final CampaignFormMetaDtoHelper campaignFormMetaDtoHelper = new CampaignFormMetaDtoHelper();
+			campaignFormMetaDtoHelper.repullEntities(context);
+
 			final CampaignFormDataDtoHelper campaignFormDataDtoHelper = new CampaignFormDataDtoHelper();
 			campaignFormDataDtoHelper.repullEntities(context);
 		}
@@ -485,11 +505,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		DatabaseHelper.getFeatureConfigurationDao().delete(featureConfigurationConfigUuids);
 
 		new FeatureConfigurationDtoHelper().pullEntities(false, context);
-
-		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
-			new CampaignFormMetaDtoHelper().pullEntities(false, context);
-			new CampaignDtoHelper().pullEntities(false, context);
-		}
 
 		ConfigProvider.setInitialSyncRequired(false);
 	}
@@ -726,9 +741,29 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 		// CampaignData
 		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
+			final CampaignDtoHelper campaignDtoHelper = new CampaignDtoHelper();
+			campaignDtoHelper.pushEntities(true);
+
+			viewAllowed = DtoUserRightsHelper.isViewAllowed(CampaignDto.class);
+			final List<String> campaignUuids = viewAllowed ? executeUuidCall(RetroProvider.getCampaignFacade().pullUuids()) : new ArrayList<>();
+			DatabaseHelper.getCampaignDao().deleteInvalid(campaignUuids);
+			campaignDtoHelper.pullMissing(campaignUuids);
+
+			final CampaignFormMetaDtoHelper campaignFormMetaDtoHelper = new CampaignFormMetaDtoHelper();
+			campaignFormMetaDtoHelper.pushEntities(true);
+
+			viewAllowed = DtoUserRightsHelper.isViewAllowed(CampaignFormMetaDto.class);
+			final List<String> campaignFormMetaUuids =
+				viewAllowed ? executeUuidCall(RetroProvider.getCampaignFormMetaFacade().pullUuids()) : new ArrayList<>();
+			DatabaseHelper.getCampaignFormMetaDao().deleteInvalid(campaignFormMetaUuids);
+			campaignFormMetaDtoHelper.pullMissing(campaignFormMetaUuids);
+
 			final CampaignFormDataDtoHelper campaignFormDataDtoHelper = new CampaignFormDataDtoHelper();
 			campaignFormDataDtoHelper.pushEntities(true);
-			final List<String> campaignFormDataUuids = executeUuidCall(RetroProvider.getCampaignFormDataFacade().pullUuids());
+
+			viewAllowed = DtoUserRightsHelper.isViewAllowed(CampaignFormDataDto.class);
+			final List<String> campaignFormDataUuids =
+				viewAllowed ? executeUuidCall(RetroProvider.getCampaignFormDataFacade().pullUuids()) : new ArrayList<>();
 			DatabaseHelper.getCampaignFormDataDao().deleteInvalid(campaignFormDataUuids);
 			campaignFormDataDtoHelper.pullMissing(campaignFormDataUuids);
 		}
@@ -806,18 +841,6 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 		new DiseaseConfigurationDtoHelper().pullMissing(diseaseConfigurationUuids);
 		new CustomizableEnumValueDtoHelper().pullMissing(customizableEnumValueUuids);
 		new FeatureConfigurationDtoHelper().pullMissing(featureConfigurationUuids);
-
-		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
-			// campaigns
-			List<String> campaignUuids = executeUuidCall(RetroProvider.getCampaignFacade().pullUuids());
-			DatabaseHelper.getCampaignDao().deleteInvalid(campaignUuids);
-			// campaignFormMetas
-			List<String> campaignFormMetaUuids = executeUuidCall(RetroProvider.getCampaignFormMetaFacade().pullUuids());
-			DatabaseHelper.getCampaignFormMetaDao().deleteInvalid(campaignFormMetaUuids);
-
-			new CampaignFormMetaDtoHelper().pullMissing(campaignFormMetaUuids);
-			new CampaignDtoHelper().pullMissing(campaignUuids);
-		}
 	}
 
 	private List<String> executeUuidCall(Call<List<String>> call) throws ServerConnectionException, ServerCommunicationException {
