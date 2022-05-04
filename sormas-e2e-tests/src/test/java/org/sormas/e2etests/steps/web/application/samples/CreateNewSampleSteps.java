@@ -382,6 +382,7 @@ public class CreateNewSampleSteps implements En {
         (String disease) -> {
           String testedDisease = webDriverHelpers.getValueFromCombobox(TESTED_DISEASE_COMBOBOX);
           softly.assertEquals(disease, testedDisease, "Diseases are not equal");
+          softly.assertAll();
         });
   }
 

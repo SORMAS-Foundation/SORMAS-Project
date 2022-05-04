@@ -514,6 +514,7 @@ public class CreateNewCaseSteps implements En {
         (String disease) -> {
           String getDisease = webDriverHelpers.getValueFromCombobox(DISEASE_COMBOBOX);
           softly.assertEquals(disease, getDisease, "Diseases are not equal");
+          softly.assertAll();
           webDriverHelpers.clickOnWebElementBySelector(DISCARD_BUTTON_POPUP);
         });
 
@@ -522,6 +523,7 @@ public class CreateNewCaseSteps implements En {
         (String disease) -> {
           String getDisease = webDriverHelpers.getValueFromCombobox(LINE_LISTING_DISEASE_COMBOBOX);
           softly.assertEquals(disease, getDisease, "Diseases are not equal");
+          softly.assertAll();
           webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_DISCARD_BUTTON);
         });
   }

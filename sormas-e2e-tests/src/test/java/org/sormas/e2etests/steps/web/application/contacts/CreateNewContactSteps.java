@@ -167,6 +167,7 @@ public class CreateNewContactSteps implements En {
         (String disease) -> {
           String getDisease = webDriverHelpers.getValueFromCombobox(DISEASE_COMBOBOX);
           softly.assertEquals(disease, getDisease, "Diseases are not equal");
+          softly.assertAll();
           webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_DISCARD_BUTTON);
         });
   }
