@@ -467,16 +467,15 @@ public class PathogenTestController {
 			800,
 			confirmed -> {
 				if (confirmed) {
+					existingCaseDto.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
+					existingCaseDto.setClassificationUser(null);
+					existingCaseDto.setDisease(disease);
+					existingCaseDto.setDiseaseDetails(diseaseDetails);
+					existingCaseDto.setDiseaseVariant(diseaseVariant);
+					existingCaseDto.setDiseaseVariantDetails(diseaseVariantDetails);
+					existingCaseDto.setEpidNumber(null);
+					existingCaseDto.setReportDate(new Date());
 					CaseDataDto clonedCase = FacadeProvider.getCaseFacade().cloneCase(existingCaseDto);
-					clonedCase.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
-					clonedCase.setClassificationUser(null);
-					clonedCase.setDisease(disease);
-					clonedCase.setDiseaseDetails(diseaseDetails);
-					clonedCase.setDiseaseVariant(diseaseVariant);
-					clonedCase.setDiseaseVariantDetails(diseaseVariantDetails);
-					clonedCase.setEpidNumber(null);
-					clonedCase.setReportDate(new Date());
-					FacadeProvider.getCaseFacade().save(clonedCase);
 					ControllerProvider.getCaseController().navigateToCase(clonedCase.getUuid());
 				}
 			});
