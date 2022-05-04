@@ -75,7 +75,7 @@ public class DtoViewAndEditRights {
 		viewRights.put(PersonDto.class.getSimpleName(), UserRight.PERSON_VIEW);
 		editRights.put(PersonDto.class.getSimpleName(), UserRight.PERSON_EDIT);
 
-		// no explicit UserRight to view PrescriptionDto
+		viewRights.put(PrescriptionDto.class.getSimpleName(), UserRight.CASE_VIEW);
 		editRights.put(PrescriptionDto.class.getSimpleName(), UserRight.PRESCRIPTION_EDIT);
 
 		viewRights.put(SampleDto.class.getSimpleName(), UserRight.SAMPLE_VIEW);
@@ -84,10 +84,12 @@ public class DtoViewAndEditRights {
 		viewRights.put(TaskDto.class.getSimpleName(), UserRight.TASK_VIEW);
 		editRights.put(TaskDto.class.getSimpleName(), UserRight.TASK_EDIT);
 
-		// no explicit UserRight to view TreatmentDto
+		viewRights.put(TreatmentDto.class.getSimpleName(), UserRight.CASE_VIEW);
 		editRights.put(TreatmentDto.class.getSimpleName(), UserRight.TREATMENT_EDIT);
 
-		// no explicit UserRight to view VisitDto
+		// can be with CONTACT_VIEW, too. Currently all user roles that can view
+		// cases can also view contacts.
+		viewRights.put(VisitDto.class.getSimpleName(), UserRight.CASE_VIEW);
 		editRights.put(VisitDto.class.getSimpleName(), UserRight.VISIT_EDIT);
 
 		viewRights.put(WeeklyReportDto.class.getSimpleName(), UserRight.WEEKLYREPORT_VIEW);
