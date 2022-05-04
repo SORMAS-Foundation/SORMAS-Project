@@ -60,7 +60,6 @@ public class RestConfig extends ResourceConfig {
 		// Resources.
 		packages(getClass().getPackage().getName());
 
-		// as described in https://jersey.github.io/documentation/latest/security.html
 		register(JacksonFeature.class);
 
 		SwaggerConfig.init();
