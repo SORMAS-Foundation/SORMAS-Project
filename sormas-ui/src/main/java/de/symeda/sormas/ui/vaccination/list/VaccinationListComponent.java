@@ -16,140 +16,69 @@
 package de.symeda.sormas.ui.vaccination.list;
 
 import java.util.List;
+import java.util.function.Consumer;
 import java.util.function.Function;
 
 import de.symeda.sormas.api.FacadeProvider;
-import de.symeda.sormas.api.ReferenceDto;
-import de.symeda.sormas.api.caze.CaseReferenceDto;
-import de.symeda.sormas.api.contact.ContactReferenceDto;
-import de.symeda.sormas.api.event.EventParticipantReferenceDto;
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
-import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.api.vaccination.VaccinationListEntryDto;
 import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
-import de.symeda.sormas.ui.utils.AbstractDetailView;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
-import de.symeda.sormas.ui.utils.components.sidecomponent.event.SideComponentFieldEditEventListener;
 
 public class VaccinationListComponent extends SideComponent {
 
-	private final AbstractDetailView<? extends ReferenceDto> view;
-
-	public VaccinationListComponent(VaccinationListCriteria criteria, AbstractDetailView<? extends ReferenceDto> view) {
-		this(criteria, maxDisplayedEntries -> FacadeProvider.getVaccinationFacade().getEntriesList(criteria, 0, maxDisplayedEntries, null), view);
+	public VaccinationListComponent(VaccinationListCriteria criteria) {
+		this(criteria, null);
 	}
 
-	public VaccinationListComponent(
-		CaseReferenceDto caseReferenceDto,
-		VaccinationListCriteria criteria,
-		RegionReferenceDto region,
-		DistrictReferenceDto district,
-		AbstractDetailView<? extends ReferenceDto> view) {
+	public VaccinationListComponent(VaccinationListCriteria criteria, Consumer<Runnable> actionCallback) {
 
-		this(
-			criteria,
-			region,
-			district,
-			maxDisplayedEntries -> FacadeProvider.getVaccinationFacade()
-				.getEntriesListWithRelevance(caseReferenceDto, criteria, 0, maxDisplayedEntries),
-			view);
-	}
+		super(I18nProperties.getString(Strings.entityVaccinations), actionCallback);
 
-	public VaccinationListComponent(
-		ContactReferenceDto contactReferenceDto,
-		VaccinationListCriteria criteria,
-		RegionReferenceDto region,
-		DistrictReferenceDto district,
-		AbstractDetailView<? extends ReferenceDto> view) {
+		addCreateButton(
+			I18nProperties.getCaption(Captions.vaccinationNewVaccination),
+			() -> ControllerProvider.getVaccinationController()
+				.create(
+					criteria.getRegion(),
+					criteria.getDistrict(),
+					criteria.getPerson(),
+					criteria.getDisease(),
+					UiFieldAccessCheckers.getNoop(),
+					v -> SormasUI.refreshView()),
+			UserRight.IMMUNIZATION_CREATE);
 
-		this(
-			criteria,
-			region,
-			district,
-			maxDisplayedEntries -> FacadeProvider.getVaccinationFacade()
-				.getEntriesListWithRelevance(contactReferenceDto, criteria, 0, maxDisplayedEntries),
-			view);
-	}
+		Function<Integer, List<VaccinationListEntryDto>> entriesListSupplier;
 
-	public VaccinationListComponent(
-		EventParticipantReferenceDto eventParticipantReferenceDto,
-		VaccinationListCriteria criteria,
-		RegionReferenceDto region,
-		DistrictReferenceDto district,
-		AbstractDetailView<? extends ReferenceDto> view) {
+		if (criteria.getVaccinationAssociationType() != null) {
+			switch (criteria.getVaccinationAssociationType()) {
+			case CASE:
+				entriesListSupplier = maxDisplayedEntries -> FacadeProvider.getVaccinationFacade()
+					.getEntriesListWithRelevance(criteria.getCaseReference(), criteria, 0, maxDisplayedEntries);
+				break;
+			case CONTACT:
+				entriesListSupplier = maxDisplayedEntries -> FacadeProvider.getVaccinationFacade()
+					.getEntriesListWithRelevance(criteria.getContactReference(), criteria, 0, maxDisplayedEntries);
+				break;
+			case EVENT_PARTICIPANT:
+				entriesListSupplier = maxDisplayedEntries -> FacadeProvider.getVaccinationFacade()
+					.getEntriesListWithRelevance(criteria.getEventParticipantReference(), criteria, 0, maxDisplayedEntries);
+				break;
+			default:
+				throw new IllegalArgumentException("Invalid vaccination association type: " + criteria.getVaccinationAssociationType());
+			}
+		} else {
+			entriesListSupplier = maxDisplayedEntries -> FacadeProvider.getVaccinationFacade().getEntriesList(criteria, 0, maxDisplayedEntries, null);
+		}
 
-		this(
-			criteria,
-			region,
-			district,
-			maxDisplayedEntries -> FacadeProvider.getVaccinationFacade()
-				.getEntriesListWithRelevance(eventParticipantReferenceDto, criteria, 0, maxDisplayedEntries),
-			view);
-	}
-
-	private VaccinationListComponent(
-		VaccinationListCriteria criteria,
-		RegionReferenceDto region,
-		DistrictReferenceDto district,
-		Function<Integer, List<VaccinationListEntryDto>> entriesListSupplier,
-		AbstractDetailView<? extends ReferenceDto> view) {
-
-		this(criteria, entriesListSupplier, view);
-		createNewVaccinationButton(criteria, region, district, SormasUI::refreshView);
-	}
-
-	private VaccinationListComponent(
-		VaccinationListCriteria criteria,
-		Function<Integer, List<VaccinationListEntryDto>> entriesListSupplier,
-		AbstractDetailView<? extends ReferenceDto> view) {
-
-		super(I18nProperties.getString(Strings.entityVaccinations));
-		this.view = view;
-
-		VaccinationList vaccinationList = new VaccinationList(criteria.getDisease(), entriesListSupplier);
-		vaccinationList.addSideComponentFieldEditEventListener(editSideComponentFieldEventListener(vaccinationList));
-
+		VaccinationList vaccinationList = new VaccinationList(criteria.getDisease(), entriesListSupplier, actionCallback);
 		addComponent(vaccinationList);
 		vaccinationList.reload();
 	}
 
-	private void createNewVaccinationButton(
-		VaccinationListCriteria criteria,
-		RegionReferenceDto region,
-		DistrictReferenceDto district,
-		Runnable refreshCallback) {
-		addCreateButton(
-			I18nProperties.getCaption(Captions.vaccinationNewVaccination),
-			UserRight.IMMUNIZATION_CREATE,
-			e -> view.showNavigationConfirmPopupIfDirty(
-				() -> ControllerProvider.getVaccinationController()
-					.create(
-						region,
-						district,
-						criteria.getPerson(),
-						criteria.getDisease(),
-						UiFieldAccessCheckers.getNoop(),
-						v -> refreshCallback.run())));
-	}
-
-	private SideComponentFieldEditEventListener editSideComponentFieldEventListener(VaccinationList vaccinationList) {
-		return e -> view.showNavigationConfirmPopupIfDirty(() -> {
-			VaccinationListEntry listEntry = (VaccinationListEntry) e.getComponent();
-			ControllerProvider.getVaccinationController()
-				.edit(
-					FacadeProvider.getVaccinationFacade().getByUuid(listEntry.getVaccination().getUuid()),
-					listEntry.getVaccination().getDisease(),
-					UiFieldAccessCheckers.getDefault(listEntry.getVaccination().isPseudonymized()),
-					true,
-					v -> SormasUI.refreshView(),
-					vaccinationList.deleteCallback());
-		});
-	}
 }

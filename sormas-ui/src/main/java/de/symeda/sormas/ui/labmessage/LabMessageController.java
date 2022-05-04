@@ -822,8 +822,7 @@ public class LabMessageController {
 		Disease disease,
 		Window window) {
 		SampleController sampleController = ControllerProvider.getSampleController();
-		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent = sampleController.getSampleCreateComponent(sample, disease, () -> {
-		});
+		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent = sampleController.getSampleCreateComponent(sample, disease, null);
 
 		// add pathogen test create components
 		addAllTestReportsOf(labMessageDto, sampleCreateComponent);
@@ -1256,8 +1255,7 @@ public class LabMessageController {
 		int caseSampleCount = ControllerProvider.getSampleController().caseSampleCountOf(sample);
 
 		CommitDiscardWrapperComponent<PathogenTestForm> pathogenTestCreateComponent =
-			ControllerProvider.getPathogenTestController().getPathogenTestCreateComponent(sample, caseSampleCount, () -> {
-			}, (savedPathogenTest, callback) -> {
+			ControllerProvider.getPathogenTestController().getPathogenTestCreateComponent(sample, caseSampleCount, (savedPathogenTest, callback) -> {
 				chain.next(true);
 				window.close();
 			}, true);
