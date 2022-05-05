@@ -620,7 +620,7 @@ public class CaseDirectorySteps implements En {
               DATE_FROM_COMBOBOX,
               formatter.format(
                   LocalDate.ofInstant(
-                          apiState.getCreatedCase().getReportDate().toInstant(),
+                          apiState.getCreatedCases().get(0).getReportDate().toInstant(),
                           ZoneId.systemDefault())
                       .minusDays(number)));
         });
