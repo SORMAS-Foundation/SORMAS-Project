@@ -370,13 +370,15 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 		// Campaigns
 		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
-			final CampaignDtoHelper campaignDtoHelper = new CampaignDtoHelper();
-			if (campaignDtoHelper.pullAndPushEntities(context))
-				campaignDtoHelper.pullEntities(true, context);
 
+			// meta first
 			final CampaignFormMetaDtoHelper campaignFormMetaDtoHelper = new CampaignFormMetaDtoHelper();
-			if (campaignFormMetaDtoHelper.pullAndPushEntities(context))
-				campaignFormMetaDtoHelper.pullEntities(true, context);
+			// no meta editing in mobile app - if (campaignFormMetaDtoHelper.pullAndPushEntities(context))
+			campaignFormMetaDtoHelper.pullEntities(true, context);
+
+			final CampaignDtoHelper campaignDtoHelper = new CampaignDtoHelper();
+			// no campaign editing yet - if (campaignDtoHelper.pullAndPushEntities(context))
+			campaignDtoHelper.pullEntities(true, context);
 
 			final CampaignFormDataDtoHelper campaignFormDataDtoHelper = new CampaignFormDataDtoHelper();
 			if (campaignFormDataDtoHelper.pullAndPushEntities(context))
@@ -431,11 +433,12 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 		// Campaigns
 		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
-			final CampaignDtoHelper campaignDtoHelper = new CampaignDtoHelper();
-			campaignDtoHelper.repullEntities(context);
-
+			// meta first
 			final CampaignFormMetaDtoHelper campaignFormMetaDtoHelper = new CampaignFormMetaDtoHelper();
 			campaignFormMetaDtoHelper.repullEntities(context);
+
+			final CampaignDtoHelper campaignDtoHelper = new CampaignDtoHelper();
+			campaignDtoHelper.repullEntities(context);
 
 			final CampaignFormDataDtoHelper campaignFormDataDtoHelper = new CampaignFormDataDtoHelper();
 			campaignFormDataDtoHelper.repullEntities(context);
@@ -741,26 +744,24 @@ public class SynchronizeDataAsync extends AsyncTask<Void, Void, Void> {
 
 		// CampaignData
 		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
-			final CampaignDtoHelper campaignDtoHelper = new CampaignDtoHelper();
-			campaignDtoHelper.pushEntities(true);
+			// meta first
+			final CampaignFormMetaDtoHelper campaignFormMetaDtoHelper = new CampaignFormMetaDtoHelper();
+			// no editing of meta - campaignFormMetaDtoHelper.pushEntities(true);
+			viewAllowed = DtoUserRightsHelper.isViewAllowed(CampaignFormMetaDto.class);
+			final List<String> campaignFormMetaUuids =
+					viewAllowed ? executeUuidCall(RetroProvider.getCampaignFormMetaFacade().pullUuids()) : new ArrayList<>();
+			DatabaseHelper.getCampaignFormMetaDao().deleteInvalid(campaignFormMetaUuids);
+			campaignFormMetaDtoHelper.pullMissing(campaignFormMetaUuids);
 
+			final CampaignDtoHelper campaignDtoHelper = new CampaignDtoHelper();
+			// no editing of campaigns yet - campaignDtoHelper.pushEntities(true);
 			viewAllowed = DtoUserRightsHelper.isViewAllowed(CampaignDto.class);
 			final List<String> campaignUuids = viewAllowed ? executeUuidCall(RetroProvider.getCampaignFacade().pullUuids()) : new ArrayList<>();
 			DatabaseHelper.getCampaignDao().deleteInvalid(campaignUuids);
 			campaignDtoHelper.pullMissing(campaignUuids);
 
-			final CampaignFormMetaDtoHelper campaignFormMetaDtoHelper = new CampaignFormMetaDtoHelper();
-			campaignFormMetaDtoHelper.pushEntities(true);
-
-			viewAllowed = DtoUserRightsHelper.isViewAllowed(CampaignFormMetaDto.class);
-			final List<String> campaignFormMetaUuids =
-				viewAllowed ? executeUuidCall(RetroProvider.getCampaignFormMetaFacade().pullUuids()) : new ArrayList<>();
-			DatabaseHelper.getCampaignFormMetaDao().deleteInvalid(campaignFormMetaUuids);
-			campaignFormMetaDtoHelper.pullMissing(campaignFormMetaUuids);
-
 			final CampaignFormDataDtoHelper campaignFormDataDtoHelper = new CampaignFormDataDtoHelper();
 			campaignFormDataDtoHelper.pushEntities(true);
-
 			viewAllowed = DtoUserRightsHelper.isViewAllowed(CampaignFormDataDto.class);
 			final List<String> campaignFormDataUuids =
 				viewAllowed ? executeUuidCall(RetroProvider.getCampaignFormDataFacade().pullUuids()) : new ArrayList<>();

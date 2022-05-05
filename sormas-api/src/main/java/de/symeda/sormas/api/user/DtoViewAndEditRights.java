@@ -16,6 +16,7 @@
 package de.symeda.sormas.api.user;
 
 import de.symeda.sormas.api.campaign.CampaignDto;
+import de.symeda.sormas.api.campaign.data.CampaignFormDataDto;
 import de.symeda.sormas.api.campaign.form.CampaignFormMetaDto;
 import java.util.HashMap;
 import java.util.Map;
@@ -97,14 +98,14 @@ public class DtoViewAndEditRights {
 		viewRights.put(WeeklyReportDto.class.getSimpleName(), UserRight.WEEKLYREPORT_VIEW);
 		// no explicit UserRight to edit WeeklyReportDto
 
-		viewRights.put(CampaignDto.class.getSimpleName(), UserRight.CAMPAIGN_VIEW);
-		editRights.put(CampaignDto.class.getSimpleName(), UserRight.CAMPAIGN_EDIT);
-
 		viewRights.put(CampaignFormMetaDto.class.getSimpleName(), UserRight.CAMPAIGN_VIEW);
 		editRights.put(CampaignFormMetaDto.class.getSimpleName(), UserRight.CAMPAIGN_EDIT);
 
 		viewRights.put(CampaignDto.class.getSimpleName(), UserRight.CAMPAIGN_VIEW);
 		editRights.put(CampaignDto.class.getSimpleName(), UserRight.CAMPAIGN_EDIT);
+
+		viewRights.put(CampaignFormDataDto.class.getSimpleName(), UserRight.CAMPAIGN_VIEW);
+		editRights.put(CampaignFormDataDto.class.getSimpleName(), UserRight.CAMPAIGN_EDIT);
 	}
 
 	public static UserRight getUserRightView(Class clazz) {
