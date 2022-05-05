@@ -72,7 +72,6 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.joda.time.DateTime;
@@ -502,10 +501,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	private List<CaseDataDto> getAllActiveCasesAfter(
-			Date date,
-			boolean includeExtendedChangeDateFilters,
-			Integer batchSize,
-			String lastSynchronizedUuid) {
+		Date date,
+		boolean includeExtendedChangeDateFilters,
+		Integer batchSize,
+		String lastSynchronizedUuid) {
 
 		if (userService.getCurrentUser() == null) {
 			return Collections.emptyList();
@@ -513,9 +512,9 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		Pseudonymizer pseudonymizer = getPseudonymizerForDtoWithClinician("");
 		return service.getAllActiveCasesAfter(date, includeExtendedChangeDateFilters, batchSize, lastSynchronizedUuid)
-				.stream()
-				.map(c -> convertToDto(c, pseudonymizer))
-				.collect(Collectors.toList());
+			.stream()
+			.map(c -> convertToDto(c, pseudonymizer))
+			.collect(Collectors.toList());
 	}
 
 	@Override
@@ -572,10 +571,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	}
 
 	public Page<CaseIndexDetailedDto> getIndexDetailedPage(
-			CaseCriteria caseCriteria,
-			Integer offset,
-			Integer size,
-			List<SortProperty> sortProperties) {
+		CaseCriteria caseCriteria,
+		Integer offset,
+		Integer size,
+		List<SortProperty> sortProperties) {
 		List<CaseIndexDetailedDto> caseIndexDetailedList = getIndexDetailedList(caseCriteria, offset * size, size, sortProperties);
 		long totalElementCount = count(caseCriteria);
 		return new Page<>(caseIndexDetailedList, offset, size, totalElementCount);
@@ -592,8 +591,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		Map<String, ExternalShareInfoCountAndLatestDate> survToolShareCountAndDates = null;
 		if (externalSurveillanceToolGatewayFacade.isFeatureEnabled()) {
 			survToolShareCountAndDates = externalShareInfoService.getCaseShareCountAndLatestDate(caseIds)
-					.stream()
-					.collect(Collectors.toMap(ExternalShareInfoCountAndLatestDate::getAssociatedObjectUuid, Function.identity()));
+				.stream()
+				.collect(Collectors.toMap(ExternalShareInfoCountAndLatestDate::getAssociatedObjectUuid, Function.identity()));
 		}
 
 		Pseudonymizer pseudonymizer = Pseudonymizer.getDefault(userService::hasRight, I18nProperties.getCaption(Captions.inaccessibleValue));
@@ -610,10 +609,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 			Boolean isInJurisdiction = caze.getInJurisdiction();
 			pseudonymizer.pseudonymizeDto(
-					CaseIndexDto.class,
-					caze,
-					isInJurisdiction,
-					c -> pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, caze.getAgeAndBirthDate(), isInJurisdiction, null));
+				CaseIndexDto.class,
+				caze,
+				isInJurisdiction,
+				c -> pseudonymizer.pseudonymizeDto(AgeAndBirthDateDto.class, caze.getAgeAndBirthDate(), isInJurisdiction, null));
 		}
 
 		return cases;
@@ -654,13 +653,13 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 			if (caze.getEventCount() > 0) {
 				eventSummaries.stream()
-						.filter(v -> v.getCaseId() == caze.getId())
-						.max(Comparator.comparing(EventSummaryDetails::getEventDate))
-						.ifPresent(eventSummary -> {
-							caze.setLatestEventId(eventSummary.getEventUuid());
-							caze.setLatestEventStatus(eventSummary.getEventStatus());
-							caze.setLatestEventTitle(eventSummary.getEventTitle());
-						});
+					.filter(v -> v.getCaseId() == caze.getId())
+					.max(Comparator.comparing(EventSummaryDetails::getEventDate))
+					.ifPresent(eventSummary -> {
+						caze.setLatestEventId(eventSummary.getEventUuid());
+						caze.setLatestEventStatus(eventSummary.getEventStatus());
+						caze.setLatestEventTitle(eventSummary.getEventTitle());
+					});
 			}
 
 			Boolean isInJurisdiction = caze.getInJurisdiction();
@@ -709,13 +708,13 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@TransactionAttribute(TransactionAttributeType.REQUIRES_NEW)
 	@RolesAllowed(UserRight._CASE_EXPORT)
 	public List<CaseExportDto> getExportList(
-			CaseCriteria caseCriteria,
-			Collection<String> selectedRows,
-			CaseExportType exportType,
-			int first,
-			int max,
-			ExportConfigurationDto exportConfiguration,
-			Language userLanguage) {
+		CaseCriteria caseCriteria,
+		Collection<String> selectedRows,
+		CaseExportType exportType,
+		int first,
+		int max,
+		ExportConfigurationDto exportConfiguration,
+		Language userLanguage) {
 
 		Boolean previousCaseManagementDataCriteria = caseCriteria.getMustHaveCaseManagementData();
 		if (CaseExportType.CASE_MANAGEMENT == exportType) {
@@ -735,36 +734,34 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		Join<EventParticipant, Event> event = eventCountRoot.join(EventParticipant.EVENT, JoinType.INNER);
 		Join<EventParticipant, Case> resultingCase = eventCountRoot.join(EventParticipant.RESULTING_CASE, JoinType.INNER);
 		eventCountSq.where(
-				cb.and(
-						cb.equal(resultingCase.get(Case.ID), caseRoot.get(Case.ID)),
-						cb.isFalse(event.get(Event.DELETED)),
-						cb.isFalse(event.get(Event.ARCHIVED)),
-						cb.isFalse(eventCountRoot.get(EventParticipant.DELETED))));
+			cb.and(
+				cb.equal(resultingCase.get(Case.ID), caseRoot.get(Case.ID)),
+				cb.isFalse(event.get(Event.DELETED)),
+				cb.isFalse(event.get(Event.ARCHIVED)),
+				cb.isFalse(eventCountRoot.get(EventParticipant.DELETED))));
 		eventCountSq.select(cb.countDistinct(event.get(Event.ID)));
 
 		Subquery<Long> prescriptionCountSq = cq.subquery(Long.class);
 		Root<Prescription> prescriptionCountRoot = prescriptionCountSq.from(Prescription.class);
 		Join<Prescription, Therapy> prescriptionTherapyJoin = prescriptionCountRoot.join(Prescription.THERAPY, JoinType.LEFT);
-		prescriptionCountSq.where(
-				cb.and(cb.equal(prescriptionTherapyJoin.get(Therapy.ID), caseRoot.get(Case.THERAPY).get(Therapy.ID))));
+		prescriptionCountSq.where(cb.and(cb.equal(prescriptionTherapyJoin.get(Therapy.ID), caseRoot.get(Case.THERAPY).get(Therapy.ID))));
 		prescriptionCountSq.select(cb.countDistinct(prescriptionCountRoot.get(Prescription.ID)));
 
 		Subquery<Long> treatmentCountSq = cq.subquery(Long.class);
 		Root<Treatment> treatmentCountRoot = treatmentCountSq.from(Treatment.class);
 		Join<Treatment, Therapy> treatmentTherapyJoin = treatmentCountRoot.join(Treatment.THERAPY, JoinType.LEFT);
-		treatmentCountSq.where(
-				cb.and(cb.equal(treatmentTherapyJoin.get(Therapy.ID), caseRoot.get(Case.THERAPY).get(Therapy.ID))));
+		treatmentCountSq.where(cb.and(cb.equal(treatmentTherapyJoin.get(Therapy.ID), caseRoot.get(Case.THERAPY).get(Therapy.ID))));
 		treatmentCountSq.select(cb.countDistinct(treatmentCountRoot.get(Treatment.ID)));
 
 		boolean exportGpsCoordinates = ExportHelper.shouldExportFields(exportConfiguration, PersonDto.ADDRESS, CaseExportDto.ADDRESS_GPS_COORDINATES);
 		boolean exportPrescriptionNumber = (exportType == null || exportType == CaseExportType.CASE_MANAGEMENT)
-				&& ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.NUMBER_OF_PRESCRIPTIONS);
+			&& ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.NUMBER_OF_PRESCRIPTIONS);
 		boolean exportTreatmentNumber = (exportType == null || exportType == CaseExportType.CASE_MANAGEMENT)
-				&& ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.NUMBER_OF_TREATMENTS);
+			&& ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.NUMBER_OF_TREATMENTS);
 		boolean exportClinicalVisitNumber = (exportType == null || exportType == CaseExportType.CASE_MANAGEMENT)
-				&& ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.NUMBER_OF_CLINICAL_VISITS);
+			&& ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.NUMBER_OF_CLINICAL_VISITS);
 		boolean exportHealthConditions = (exportType == null || exportType == CaseExportType.CASE_MANAGEMENT)
-				&& ExportHelper.shouldExportFields(exportConfiguration, CaseDataDto.HEALTH_CONDITIONS);
+			&& ExportHelper.shouldExportFields(exportConfiguration, CaseDataDto.HEALTH_CONDITIONS);
 		boolean exportSymptoms = ExportHelper.shouldExportFields(exportConfiguration, CaseDataDto.SYMPTOMS);
 		boolean exportOutbreakInfo = ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.ASSOCIATED_WITH_OUTBREAK);
 
@@ -883,7 +880,8 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 		cq.orderBy(cb.desc(caseRoot.get(Case.REPORT_DATE)), cb.desc(caseRoot.get(Case.ID)));
 
 		List<CaseExportMapperDto> caseExportMapperDtos = QueryHelper.getResultList(em, cq, first, max);
-		List<CaseExportDto> resultList = caseExportMapperDtos.stream().map(caseExportMapperDto -> caseExportMapperDto.toCaseExportDto()).collect(Collectors.toList());
+		List<CaseExportDto> resultList =
+			caseExportMapperDtos.stream().map(caseExportMapperDto -> caseExportMapperDto.toCaseExportDto()).collect(Collectors.toList());
 
 		List<Long> resultCaseIds = resultList.stream().map(CaseExportDto::getId).collect(Collectors.toList());
 		if (!resultList.isEmpty()) {
@@ -894,38 +892,38 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				CriteriaQuery<PreviousHospitalization> prevHospsCq = cb.createQuery(PreviousHospitalization.class);
 				Root<PreviousHospitalization> prevHospsRoot = prevHospsCq.from(PreviousHospitalization.class);
 				Join<PreviousHospitalization, Hospitalization> prevHospsHospitalizationJoin =
-						prevHospsRoot.join(PreviousHospitalization.HOSPITALIZATION, JoinType.LEFT);
+					prevHospsRoot.join(PreviousHospitalization.HOSPITALIZATION, JoinType.LEFT);
 				Expression<String> hospitalizationIdsExpr = prevHospsHospitalizationJoin.get(Hospitalization.ID);
 				prevHospsCq
-						.where(hospitalizationIdsExpr.in(resultList.stream().map(CaseExportDto::getHospitalizationId).collect(Collectors.toList())));
+					.where(hospitalizationIdsExpr.in(resultList.stream().map(CaseExportDto::getHospitalizationId).collect(Collectors.toList())));
 				prevHospsCq.orderBy(cb.asc(prevHospsRoot.get(PreviousHospitalization.ADMISSION_DATE)));
 				prevHospsList = em.createQuery(prevHospsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
 				firstPreviousHospitalizations =
-						prevHospsList.stream().collect(Collectors.toMap(p -> p.getHospitalization().getId(), Function.identity(), (id1, id2) -> id1));
+					prevHospsList.stream().collect(Collectors.toMap(p -> p.getHospitalization().getId(), Function.identity(), (id1, id2) -> id1));
 			}
 
 			Map<Long, CaseClassification> sourceCaseClassifications = null;
 			if (ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.MAX_SOURCE_CASE_CLASSIFICATION)) {
 				sourceCaseClassifications = contactService.getSourceCaseClassifications(resultCaseIds)
-						.stream()
-						.collect(
-								Collectors
-										.toMap(e -> (Long) e[0], e -> (CaseClassification) e[1], (c1, c2) -> c1.getSeverity() >= c2.getSeverity() ? c1 : c2));
+					.stream()
+					.collect(
+						Collectors
+							.toMap(e -> (Long) e[0], e -> (CaseClassification) e[1], (c1, c2) -> c1.getSeverity() >= c2.getSeverity() ? c1 : c2));
 			}
 
 			Map<Long, List<Exposure>> exposures = null;
 			if ((exportType == null || exportType == CaseExportType.CASE_SURVEILLANCE)
-					&& ExportHelper
+				&& ExportHelper
 					.shouldExportFields(exportConfiguration, CaseExportDto.TRAVELED, CaseExportDto.TRAVEL_HISTORY, CaseExportDto.BURIAL_ATTENDED)) {
 				CriteriaQuery<Exposure> exposuresCq = cb.createQuery(Exposure.class);
 				Root<Exposure> exposuresRoot = exposuresCq.from(Exposure.class);
 				Join<Exposure, EpiData> exposuresEpiDataJoin = exposuresRoot.join(Exposure.EPI_DATA, JoinType.LEFT);
 				Expression<String> epiDataIdsExpr = exposuresEpiDataJoin.get(EpiData.ID);
 				Predicate exposuresPredicate = cb.and(
-						epiDataIdsExpr.in(resultList.stream().map(CaseExportDto::getEpiDataId).collect(Collectors.toList())),
-						cb.or(
-								cb.equal(exposuresRoot.get(Exposure.EXPOSURE_TYPE), ExposureType.TRAVEL),
-								cb.equal(exposuresRoot.get(Exposure.EXPOSURE_TYPE), ExposureType.BURIAL)));
+					epiDataIdsExpr.in(resultList.stream().map(CaseExportDto::getEpiDataId).collect(Collectors.toList())),
+					cb.or(
+						cb.equal(exposuresRoot.get(Exposure.EXPOSURE_TYPE), ExposureType.TRAVEL),
+						cb.equal(exposuresRoot.get(Exposure.EXPOSURE_TYPE), ExposureType.BURIAL)));
 				exposuresCq.where(exposuresPredicate);
 				exposuresCq.orderBy(cb.asc(exposuresEpiDataJoin.get(EpiData.ID)));
 				List<Exposure> exposureList = em.createQuery(exposuresCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
@@ -934,15 +932,20 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 			Map<Long, List<EmbeddedSampleExportDto>> samples = null;
 			if ((exportType == null || exportType == CaseExportType.CASE_SURVEILLANCE)
-					&& ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.SAMPLE_INFORMATION)) {
+				&& ExportHelper.shouldExportFields(exportConfiguration, CaseExportDto.SAMPLE_INFORMATION)) {
 				List<EmbeddedSampleExportDto> samplesList = null;
 				CriteriaQuery<EmbeddedSampleExportDto> samplesCq = cb.createQuery(EmbeddedSampleExportDto.class);
 				Root<Sample> samplesRoot = samplesCq.from(Sample.class);
 				Join<Sample, Case> samplesCaseJoin = samplesRoot.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
 				Expression<String> caseIdsExpr = samplesCaseJoin.get(Case.ID);
-				samplesCq.multiselect(samplesRoot.get(Sample.UUID), samplesRoot.get(Sample.SAMPLE_DATE_TIME),
-						samplesRoot.get(Sample.LAB).get(Facility.UUID), samplesRoot.get(Sample.LAB).get(Facility.NAME),
-						samplesRoot.get(Sample.LAB_DETAILS), samplesRoot.get(Sample.PATHOGEN_TEST_RESULT), caseIdsExpr);
+				samplesCq.multiselect(
+					samplesRoot.get(Sample.UUID),
+					samplesRoot.get(Sample.SAMPLE_DATE_TIME),
+					samplesRoot.get(Sample.LAB).get(Facility.UUID),
+					samplesRoot.get(Sample.LAB).get(Facility.NAME),
+					samplesRoot.get(Sample.LAB_DETAILS),
+					samplesRoot.get(Sample.PATHOGEN_TEST_RESULT),
+					caseIdsExpr);
 				samplesCq.where(caseIdsExpr.in(resultCaseIds));
 				samplesList = em.createQuery(samplesCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
 				samples = samplesList.stream().collect(Collectors.groupingBy(s -> s.getCaseId()));
@@ -950,7 +953,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 			List<VisitSummaryExportDetails> visitSummaries = null;
 			if (featureConfigurationFacade.isFeatureEnabled(FeatureType.CASE_FOLLOWUP)
-					&& ExportHelper.shouldExportFields(
+				&& ExportHelper.shouldExportFields(
 					exportConfiguration,
 					CaseExportDto.NUMBER_OF_VISITS,
 					CaseExportDto.LAST_COOPERATIVE_VISIT_DATE,
@@ -962,35 +965,35 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				Join<Visit, Symptoms> visitSymptomsJoin = visitsJoin.join(Visit.SYMPTOMS, JoinType.LEFT);
 
 				visitsCq.where(
-						CriteriaBuilderHelper
-								.and(cb, visitsCqRoot.get(AbstractDomainObject.ID).in(resultCaseIds), cb.isNotEmpty(visitsCqRoot.get(Case.VISITS))));
+					CriteriaBuilderHelper
+						.and(cb, visitsCqRoot.get(AbstractDomainObject.ID).in(resultCaseIds), cb.isNotEmpty(visitsCqRoot.get(Case.VISITS))));
 				visitsCq.multiselect(
-						visitsCqRoot.get(AbstractDomainObject.ID),
-						visitsJoin.get(Visit.VISIT_DATE_TIME),
-						visitsJoin.get(Visit.VISIT_STATUS),
-						visitSymptomsJoin);
+					visitsCqRoot.get(AbstractDomainObject.ID),
+					visitsJoin.get(Visit.VISIT_DATE_TIME),
+					visitsJoin.get(Visit.VISIT_STATUS),
+					visitSymptomsJoin);
 
 				visitSummaries = em.createQuery(visitsCq).getResultList();
 			}
 
 			Map<Long, List<Immunization>> immunizations = null;
 			if ((exportType == null || exportType == CaseExportType.CASE_SURVEILLANCE)
-					&& (exportConfiguration == null
+				&& (exportConfiguration == null
 					|| exportConfiguration.getProperties()
-					.stream()
-					.anyMatch(p -> StringUtils.equalsAny(p, ExportHelper.getVaccinationExportProperties())))) {
+						.stream()
+						.anyMatch(p -> StringUtils.equalsAny(p, ExportHelper.getVaccinationExportProperties())))) {
 				List<Immunization> immunizationList;
 				CriteriaQuery<Immunization> immunizationsCq = cb.createQuery(Immunization.class);
 				Root<Immunization> immunizationsCqRoot = immunizationsCq.from(Immunization.class);
 				Join<Immunization, Person> personJoin = immunizationsCqRoot.join(Immunization.PERSON, JoinType.LEFT);
 				Expression<String> personIdsExpr = personJoin.get(Person.ID);
 				immunizationsCq.where(
-						CriteriaBuilderHelper.and(
-								cb,
-								cb.or(
-										cb.equal(immunizationsCqRoot.get(Immunization.MEANS_OF_IMMUNIZATION), MeansOfImmunization.VACCINATION),
-										cb.equal(immunizationsCqRoot.get(Immunization.MEANS_OF_IMMUNIZATION), MeansOfImmunization.VACCINATION_RECOVERY)),
-								personIdsExpr.in(resultList.stream().map(CaseExportDto::getPersonId).collect(Collectors.toList()))));
+					CriteriaBuilderHelper.and(
+						cb,
+						cb.or(
+							cb.equal(immunizationsCqRoot.get(Immunization.MEANS_OF_IMMUNIZATION), MeansOfImmunization.VACCINATION),
+							cb.equal(immunizationsCqRoot.get(Immunization.MEANS_OF_IMMUNIZATION), MeansOfImmunization.VACCINATION_RECOVERY)),
+						personIdsExpr.in(resultList.stream().map(CaseExportDto::getPersonId).collect(Collectors.toList()))));
 				immunizationsCq.select(immunizationsCqRoot);
 				immunizationList = em.createQuery(immunizationsCq).setHint(ModelConstants.HINT_HIBERNATE_READ_ONLY, true).getResultList();
 				immunizations = immunizationList.stream().collect(Collectors.groupingBy(i -> i.getPerson().getId()));
@@ -1001,10 +1004,10 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			// doesn't seem to be possible and using a native query is not an option because of user filters
 			List<EventSummaryDetails> eventSummaries = null;
 			if (ExportHelper.shouldExportFields(
-					exportConfiguration,
-					CaseExportDto.LATEST_EVENT_ID,
-					CaseExportDto.LATEST_EVENT_STATUS,
-					CaseExportDto.LATEST_EVENT_TITLE)) {
+				exportConfiguration,
+				CaseExportDto.LATEST_EVENT_ID,
+				CaseExportDto.LATEST_EVENT_STATUS,
+				CaseExportDto.LATEST_EVENT_TITLE)) {
 
 				eventSummaries = eventService.getEventSummaryDetailsByCases(resultCaseIds);
 			}
@@ -1021,17 +1024,17 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				}
 				if (firstPreviousHospitalizations != null) {
 					Optional.ofNullable(firstPreviousHospitalizations.get(exportDto.getHospitalizationId()))
-							.ifPresent(firstPreviousHospitalization -> {
-								if (firstPreviousHospitalization.getHealthFacility() != null) {
-									exportDto.setInitialDetectionPlace(
-											FacilityHelper.buildFacilityString(
-													firstPreviousHospitalization.getHealthFacility().getUuid(),
-													firstPreviousHospitalization.getHealthFacility().getName(),
-													firstPreviousHospitalization.getHealthFacilityDetails()));
-								} else {
-									exportDto.setInitialDetectionPlace(I18nProperties.getCaption(Captions.unknown));
-								}
-							});
+						.ifPresent(firstPreviousHospitalization -> {
+							if (firstPreviousHospitalization.getHealthFacility() != null) {
+								exportDto.setInitialDetectionPlace(
+									FacilityHelper.buildFacilityString(
+										firstPreviousHospitalization.getHealthFacility().getUuid(),
+										firstPreviousHospitalization.getHealthFacility().getName(),
+										firstPreviousHospitalization.getHealthFacilityDetails()));
+							} else {
+								exportDto.setInitialDetectionPlace(I18nProperties.getCaption(Captions.unknown));
+							}
+						});
 					if (StringUtils.isEmpty(exportDto.getInitialDetectionPlace())) {
 						if (!StringUtils.isEmpty(exportDto.getHealthFacility())) {
 							exportDto.setInitialDetectionPlace(exportDto.getHealthFacility());
@@ -1042,7 +1045,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				}
 				if (sourceCaseClassifications != null) {
 					Optional.ofNullable(sourceCaseClassifications.get(exportDto.getId()))
-							.ifPresent(sourceCaseClassification -> exportDto.setMaxSourceCaseClassification(sourceCaseClassification));
+						.ifPresent(sourceCaseClassification -> exportDto.setMaxSourceCaseClassification(sourceCaseClassification));
 				}
 				if (exposures != null) {
 					Optional.ofNullable(exposures.get(exportDto.getEpiDataId())).ifPresent(caseExposures -> {
@@ -1051,16 +1054,16 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 							exportDto.setBurialAttended(true);
 						}
 						caseExposures.stream()
-								.filter(e -> ExposureType.TRAVEL.equals(e.getExposureType()))
-								.forEach(
-										exposure -> travelHistoryBuilder.append(
-												EpiDataHelper.buildDetailedTravelString(
-														exposure.getLocation().toString(),
-														exposure.getDescription(),
-														exposure.getStartDate(),
-														exposure.getEndDate(),
-														userLanguage))
-												.append(", "));
+							.filter(e -> ExposureType.TRAVEL.equals(e.getExposureType()))
+							.forEach(
+								exposure -> travelHistoryBuilder.append(
+									EpiDataHelper.buildDetailedTravelString(
+										exposure.getLocation().toString(),
+										exposure.getDescription(),
+										exposure.getStartDate(),
+										exposure.getEndDate(),
+										userLanguage))
+									.append(", "));
 						if (travelHistoryBuilder.length() > 0) {
 							exportDto.setTraveled(true);
 							travelHistoryBuilder.delete(travelHistoryBuilder.lastIndexOf(", "), travelHistoryBuilder.length() - 1);
@@ -1075,17 +1078,17 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 						for (EmbeddedSampleExportDto sampleDto : caseSamples) {
 
 							switch (++count) {
-								case 1:
-									exportDto.setSample1(sampleDto);
-									break;
-								case 2:
-									exportDto.setSample2(sampleDto);
-									break;
-								case 3:
-									exportDto.setSample3(sampleDto);
-									break;
-								default:
-									exportDto.addOtherSample(sampleDto);
+							case 1:
+								exportDto.setSample1(sampleDto);
+								break;
+							case 2:
+								exportDto.setSample2(sampleDto);
+								break;
+							case 3:
+								exportDto.setSample3(sampleDto);
+								break;
+							default:
+								exportDto.addOtherSample(sampleDto);
 							}
 						}
 					});
@@ -1093,14 +1096,14 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 				if (immunizations != null) {
 					Optional.ofNullable(immunizations.get(exportDto.getPersonId())).ifPresent(caseImmunizations -> {
 						List<Immunization> filteredImmunizations =
-								caseImmunizations.stream().filter(i -> i.getDisease() == exportDto.getDisease()).collect(Collectors.toList());
+							caseImmunizations.stream().filter(i -> i.getDisease() == exportDto.getDisease()).collect(Collectors.toList());
 						if (!filteredImmunizations.isEmpty()) {
 							filteredImmunizations.sort(Comparator.comparing(i -> ImmunizationEntityHelper.getDateForComparison(i, false)));
 							Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
 							Integer numberOfDoses = mostRecentImmunization.getNumberOfDoses();
 
 							List<Vaccination> relevantSortedVaccinations =
-									getRelevantSortedVaccinations(exportDto.getUuid(), mostRecentImmunization.getVaccinations());
+								getRelevantSortedVaccinations(exportDto.getUuid(), mostRecentImmunization.getVaccinations());
 							Vaccination firstVaccination = null;
 							Vaccination lastVaccination = null;
 
@@ -1121,18 +1124,18 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 							}
 
 							exportDto.setNumberOfDoses(
-									numberOfDoses != null ? String.valueOf(numberOfDoses) : getNumberOfDosesFromVaccinations(lastVaccination));
+								numberOfDoses != null ? String.valueOf(numberOfDoses) : getNumberOfDosesFromVaccinations(lastVaccination));
 						}
 					});
 				}
 				if (visitSummaries != null) {
 					List<VisitSummaryExportDetails> visits =
-							visitSummaries.stream().filter(v -> v.getContactId() == exportDto.getId()).collect(Collectors.toList());
+						visitSummaries.stream().filter(v -> v.getContactId() == exportDto.getId()).collect(Collectors.toList());
 
 					VisitSummaryExportDetails lastCooperativeVisit = visits.stream()
-							.filter(v -> v.getVisitStatus() == VisitStatus.COOPERATIVE)
-							.max(Comparator.comparing(VisitSummaryExportDetails::getVisitDateTime))
-							.orElse(null);
+						.filter(v -> v.getVisitStatus() == VisitStatus.COOPERATIVE)
+						.max(Comparator.comparing(VisitSummaryExportDetails::getVisitDateTime))
+						.orElse(null);
 
 					exportDto.setNumberOfVisits(visits.size());
 					if (lastCooperativeVisit != null) {
@@ -1143,21 +1146,21 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 						exportDto.setLastCooperativeVisitSymptoms(SymptomsHelper.buildSymptomsHumanString(visitSymptoms, true, userLanguage));
 						exportDto.setLastCooperativeVisitSymptomatic(
-								visitSymptoms.getSymptomatic() == null
-										? YesNoUnknown.UNKNOWN
-										: (visitSymptoms.getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO));
+							visitSymptoms.getSymptomatic() == null
+								? YesNoUnknown.UNKNOWN
+								: (visitSymptoms.getSymptomatic() ? YesNoUnknown.YES : YesNoUnknown.NO));
 					}
 				}
 
 				if (eventSummaries != null && exportDto.getEventCount() != 0) {
 					eventSummaries.stream()
-							.filter(v -> v.getCaseId() == exportDto.getId())
-							.max(Comparator.comparing(EventSummaryDetails::getEventDate))
-							.ifPresent(eventSummary -> {
-								exportDto.setLatestEventId(eventSummary.getEventUuid());
-								exportDto.setLatestEventStatus(eventSummary.getEventStatus());
-								exportDto.setLatestEventTitle(eventSummary.getEventTitle());
-							});
+						.filter(v -> v.getCaseId() == exportDto.getId())
+						.max(Comparator.comparing(EventSummaryDetails::getEventDate))
+						.ifPresent(eventSummary -> {
+							exportDto.setLatestEventId(eventSummary.getEventUuid());
+							exportDto.setLatestEventStatus(eventSummary.getEventStatus());
+							exportDto.setLatestEventTitle(eventSummary.getEventTitle());
+						});
 				}
 
 				if (!caseUsers.isEmpty()) {
