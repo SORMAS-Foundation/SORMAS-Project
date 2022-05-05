@@ -501,3 +501,22 @@ Feature: Create events
     Then I check if Event Management Status is set to "PENDING"
     And I navigate to the last created Event page via URL
     Then I check if Event Management Status is set to "PENDING"
+
+  @env_main @#8555
+  Scenario: Add back a person to an event who was previously deleted as event participant
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    When I am accessing the event tab using the created event via api
+    Then I add a participant created by API create person
+    Then I check if participant appears in the participants list of event created with API
+    Then I delete an event participant created by API create person
+    Then I add a participant created by API create person
+    Then I check if participant appears in the participants list of event created with API
