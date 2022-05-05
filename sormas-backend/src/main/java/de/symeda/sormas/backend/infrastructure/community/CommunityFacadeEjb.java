@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.backend.infrastructure.community;
 
+import de.symeda.sormas.api.user.UserRight;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -60,6 +63,7 @@ import de.symeda.sormas.backend.util.QueryHelper;
 import org.apache.commons.collections.CollectionUtils;
 
 @Stateless(name = "CommunityFacade")
+@RolesAllowed(UserRight._INFRASTRUCTURE_VIEW)
 public class CommunityFacadeEjb
 	extends AbstractInfrastructureFacadeEjb<Community, CommunityDto, CommunityDto, CommunityReferenceDto, CommunityService, CommunityCriteria>
 	implements CommunityFacade {
@@ -76,6 +80,7 @@ public class CommunityFacadeEjb
 	}
 
 	@Override
+	@PermitAll
 	public List<CommunityReferenceDto> getAllActiveByDistrict(String districtUuid) {
 
 		District district = districtService.getByUuid(districtUuid);
@@ -165,11 +170,13 @@ public class CommunityFacadeEjb
 	}
 
 	@Override
+	@RolesAllowed(UserRight._STATISTICS_ACCESS)
 	public CommunityReferenceDto getCommunityReferenceById(long id) {
 		return toReferenceDto(service.getById(id));
 	}
 
 	@Override
+	@RolesAllowed(UserRight._STATISTICS_ACCESS)
 	public Map<String, String> getDistrictUuidsForCommunities(List<CommunityReferenceDto> communities) {
 
 		if (communities.isEmpty()) {
@@ -196,6 +203,7 @@ public class CommunityFacadeEjb
 	}
 
 	@Override
+	@PermitAll
 	public List<CommunityReferenceDto> getByName(String name, DistrictReferenceDto districtRef, boolean includeArchivedEntities) {
 
 		return service.getByName(name, districtService.getByReferenceDto(districtRef), includeArchivedEntities)
@@ -205,6 +213,7 @@ public class CommunityFacadeEjb
 	}
 
 	@Override
+	@PermitAll
 	public List<CommunityReferenceDto> getReferencesByExternalId(String externalId, boolean includeArchivedEntities) {
 
 		return service.getByExternalId(externalId, includeArchivedEntities)
@@ -214,6 +223,7 @@ public class CommunityFacadeEjb
 	}
 
 	@Override
+	@PermitAll
 	public List<CommunityReferenceDto> getReferencesByName(String name, boolean includeArchived) {
 		return getByName(name, null, false);
 	}
@@ -271,7 +281,7 @@ public class CommunityFacadeEjb
 	}
 
 	@Override
-	public CommunityReferenceDto toRefDto(Community community) {
+	protected CommunityReferenceDto toRefDto(Community community) {
 		return toReferenceDto(community);
 	}
 

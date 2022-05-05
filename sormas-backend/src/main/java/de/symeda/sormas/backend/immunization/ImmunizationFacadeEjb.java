@@ -459,7 +459,7 @@ public class ImmunizationFacadeEjb
 	}
 
 	@Override
-	public ImmunizationReferenceDto toRefDto(Immunization immunization) {
+	protected ImmunizationReferenceDto toRefDto(Immunization immunization) {
 		return toReferenceDto(immunization);
 	}
 

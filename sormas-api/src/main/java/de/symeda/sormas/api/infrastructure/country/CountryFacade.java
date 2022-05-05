@@ -14,8 +14,6 @@ public interface CountryFacade extends GeoLocationFacade<CountryDto, CountryInde
 
 	List<CountryReferenceDto> getByDefaultName(String name, boolean includeArchivedEntities);
 
-	CountryDto getByIsoCode(String isoCode, boolean includeArchivedEntities);
-
 	List<CountryReferenceDto> getAllActiveBySubcontinent(String uuid);
 
 	List<CountryReferenceDto> getAllActiveByContinent(String uuid);

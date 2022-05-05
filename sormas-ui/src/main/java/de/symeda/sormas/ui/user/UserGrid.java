@@ -97,9 +97,7 @@ public class UserGrid extends FilteredGrid<UserDto, UserCriteria> {
 						.map(sortOrder -> new SortProperty(sortOrder.getSorted(), sortOrder.getDirection() == SortDirection.ASCENDING))
 						.collect(Collectors.toList()))
 				.stream(),
-			query -> {
-				return (int) FacadeProvider.getUserFacade().count(query.getFilter().orElse(null));
-			});
+			query -> (int) FacadeProvider.getUserFacade().count(query.getFilter().orElse(null)));
 		setDataProvider(dataProvider);
 		setSelectionMode(SelectionMode.NONE);
 	}

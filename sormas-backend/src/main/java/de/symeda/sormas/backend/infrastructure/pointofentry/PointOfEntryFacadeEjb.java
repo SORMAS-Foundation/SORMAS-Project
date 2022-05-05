@@ -1,10 +1,13 @@
 package de.symeda.sormas.backend.infrastructure.pointofentry;
 
+import de.symeda.sormas.api.user.UserRight;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -48,6 +51,7 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "PointOfEntryFacade")
+@RolesAllowed(UserRight._INFRASTRUCTURE_VIEW)
 public class PointOfEntryFacadeEjb
 	extends
         AbstractInfrastructureFacadeEjb<PointOfEntry, PointOfEntryDto, PointOfEntryDto, PointOfEntryReferenceDto, PointOfEntryService, PointOfEntryCriteria>
@@ -77,6 +81,7 @@ public class PointOfEntryFacadeEjb
 	}
 
 	@Override
+	@PermitAll
 	public List<PointOfEntryReferenceDto> getAllActiveByDistrict(String districtUuid, boolean includeOthers) {
 
 		District district = districtService.getByUuid(districtUuid);
@@ -113,6 +118,7 @@ public class PointOfEntryFacadeEjb
 	}
 
 	@Override
+	@PermitAll
 	public List<PointOfEntryReferenceDto> getByName(String name, DistrictReferenceDto district, boolean includeArchivedEntities) {
 		return service.getByName(name, districtService.getByReferenceDto(district), includeArchivedEntities)
 			.stream()
@@ -128,6 +134,7 @@ public class PointOfEntryFacadeEjb
 	}
 
 	@Override
+	@PermitAll
 	public List<PointOfEntryReferenceDto> getReferencesByExternalId(String name, boolean includeArchivedEntities) {
 		return service.getByExternalId(name, includeArchivedEntities)
 			.stream()
@@ -136,12 +143,14 @@ public class PointOfEntryFacadeEjb
 	}
 
 	@Override
+	@RolesAllowed({UserRight._INFRASTRUCTURE_CREATE, UserRight._INFRASTRUCTURE_EDIT})
 	public PointOfEntryDto save(PointOfEntryDto dto, boolean allowMerge) {
 		validate(dto);
 		return super.save(dto, allowMerge);
 	}
 
 	@Override
+	@RolesAllowed(UserRight._SYSTEM)
 	public PointOfEntryDto saveFromCentral(PointOfEntryDto dto) {
 		return save(dto);
 	}
@@ -156,8 +165,7 @@ public class PointOfEntryFacadeEjb
 		// poe are excluded from infra. data locking for now...
 	}
 
-	@Override
-	public void validate(PointOfEntryDto pointOfEntry) throws ValidationRuntimeException {
+	private void validate(PointOfEntryDto pointOfEntry) throws ValidationRuntimeException {
 
 		if (StringUtils.isEmpty(pointOfEntry.getName())) {
 			throw new ValidationRuntimeException(
@@ -242,6 +250,7 @@ public class PointOfEntryFacadeEjb
 	}
 
 	@Override
+	@RolesAllowed({UserRight._INFRASTRUCTURE_VIEW, UserRight._SYSTEM})
 	public long count(PointOfEntryCriteria criteria) {
 
 		CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -330,7 +339,7 @@ public class PointOfEntryFacadeEjb
 	}
 
 	@Override
-	public PointOfEntryReferenceDto toRefDto(PointOfEntry pointOfEntry) {
+	protected PointOfEntryReferenceDto toRefDto(PointOfEntry pointOfEntry) {
 		return toReferenceDto(pointOfEntry);
 	}
 

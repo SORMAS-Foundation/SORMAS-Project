@@ -14,6 +14,7 @@
  */
 package de.symeda.sormas.backend.infrastructure.district;
 
+import de.symeda.sormas.api.user.UserRight;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -21,6 +22,8 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -65,6 +68,7 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "DistrictFacade")
+@RolesAllowed(UserRight._INFRASTRUCTURE_VIEW)
 public class DistrictFacadeEjb
 	extends AbstractInfrastructureFacadeEjb<District, DistrictDto, DistrictIndexDto, DistrictReferenceDto, DistrictService, DistrictCriteria>
 	implements DistrictFacade {
@@ -85,11 +89,13 @@ public class DistrictFacadeEjb
 	}
 
 	@Override
+	@PermitAll
 	public List<DistrictReferenceDto> getAllActiveAsReference() {
 		return service.getAllActive(District.NAME, true).stream().map(DistrictFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	@Override
+	@PermitAll
 	public List<DistrictReferenceDto> getAllActiveByArea(String areaUuid) {
 
 		Area area = areaService.getByUuid(areaUuid);
@@ -97,6 +103,7 @@ public class DistrictFacadeEjb
 	}
 
 	@Override
+	@PermitAll
 	public List<DistrictReferenceDto> getAllActiveByRegion(String regionUuid) {
 		Region region = regionService.getByUuid(regionUuid);
 		return region.getDistricts().stream().filter(d -> !d.isArchived()).map(DistrictFacadeEjb::toReferenceDto).collect(Collectors.toList());
@@ -173,17 +180,20 @@ public class DistrictFacadeEjb
 	}
 
 	@Override
+	@PermitAll
 	public int getCountByRegion(String regionUuid) {
 		Region region = regionService.getByUuid(regionUuid);
 		return service.getCountByRegion(region);
 	}
 
 	@Override
+	@RolesAllowed(UserRight._STATISTICS_ACCESS)
 	public DistrictReferenceDto getDistrictReferenceById(long id) {
 		return toReferenceDto(service.getById(id));
 	}
 
 	@Override
+	@RolesAllowed(UserRight._STATISTICS_ACCESS)
 	public Map<String, String> getRegionUuidsForDistricts(List<DistrictReferenceDto> districts) {
 
 		if (districts.isEmpty()) {
@@ -208,6 +218,7 @@ public class DistrictFacadeEjb
 	}
 
 	@Override
+	@PermitAll
 	public List<DistrictReferenceDto> getByName(String name, RegionReferenceDto regionRef, boolean includeArchivedEntities) {
 
 		return service.getByName(name, regionService.getByReferenceDto(regionRef), includeArchivedEntities)
@@ -217,6 +228,7 @@ public class DistrictFacadeEjb
 	}
 
 	@Override
+	@PermitAll
 	public List<DistrictReferenceDto> getReferencesByExternalId(String externalId, boolean includeArchivedEntities) {
 
 		return service.getByExternalId(externalId, includeArchivedEntities)
@@ -225,6 +237,7 @@ public class DistrictFacadeEjb
 			.collect(Collectors.toList());
 	}
 
+	@PermitAll
 	public List<DistrictDto> getByExternalId(String externalId, boolean includeArchivedEntities) {
 
 		return service.getByExternalId(externalId, includeArchivedEntities)
@@ -234,21 +247,9 @@ public class DistrictFacadeEjb
 	}
 
 	@Override
+	@PermitAll
 	public List<DistrictReferenceDto> getReferencesByName(String name, boolean includeArchived) {
 		return getByName(name, null, false);
-	}
-
-	@Override
-	public List<String> getNamesByIds(List<Long> districtIds) {
-
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<String> cq = cb.createQuery(String.class);
-		Root<District> root = cq.from(District.class);
-
-		Predicate filter = root.get(AbstractDomainObject.ID).in(districtIds);
-		cq.where(filter);
-		cq.select(root.get(District.NAME));
-		return em.createQuery(cq).getResultList();
 	}
 
 	@Override
@@ -305,7 +306,7 @@ public class DistrictFacadeEjb
 	}
 
 	@Override
-	public DistrictReferenceDto toRefDto(District district) {
+	protected DistrictReferenceDto toRefDto(District district) {
 		return toReferenceDto(district);
 	}
 
@@ -345,15 +346,14 @@ public class DistrictFacadeEjb
 	}
 
 	@Override
+	@PermitAll
 	public String getFullEpidCodeForDistrict(String districtUuid) {
 
 		District district = service.getByUuid(districtUuid);
-		return getFullEpidCodeForDistrict(district);
-	}
 
-	private String getFullEpidCodeForDistrict(District district) {
 		return (district.getRegion().getEpidCode() != null ? district.getRegion().getEpidCode() : "") + "-"
-			+ (district.getEpidCode() != null ? district.getEpidCode() : "");
+				+ (district.getEpidCode() != null ? district.getEpidCode() : "");
+
 	}
 
 	@LocalBean

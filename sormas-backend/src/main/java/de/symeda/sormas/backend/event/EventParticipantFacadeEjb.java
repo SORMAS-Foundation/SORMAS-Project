@@ -1016,7 +1016,7 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
-	public EventParticipantReferenceDto toRefDto(EventParticipant eventParticipant) {
+	protected EventParticipantReferenceDto toRefDto(EventParticipant eventParticipant) {
 		return toReferenceDto(eventParticipant);
 	}
 

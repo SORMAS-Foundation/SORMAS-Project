@@ -22,8 +22,6 @@ public interface PointOfEntryFacade
 	 */
 	List<PointOfEntryReferenceDto> getAllActiveByDistrict(String districtUuid, boolean includeOthers);
 
-	void validate(PointOfEntryDto pointOfEntry) throws ValidationRuntimeException;
-
 	List<PointOfEntryReferenceDto> getByName(String name, DistrictReferenceDto district, boolean includeArchivedEntities);
 
 	Page<PointOfEntryDto> getIndexPage(PointOfEntryCriteria criteria, Integer offset, Integer size, List<SortProperty> sortProperties);

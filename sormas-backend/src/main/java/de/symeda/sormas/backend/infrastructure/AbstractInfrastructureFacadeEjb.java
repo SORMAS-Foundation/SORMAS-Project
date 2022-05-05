@@ -20,6 +20,7 @@ import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
 import de.symeda.sormas.backend.util.DtoHelper;
 
+import javax.annotation.security.RolesAllowed;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
@@ -47,16 +48,19 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	}
 
 	@Override
+	@RolesAllowed({UserRight._INFRASTRUCTURE_CREATE, UserRight._INFRASTRUCTURE_EDIT})
 	public DTO save(@Valid @NotNull DTO dtoToSave) {
 		return save(dtoToSave, false);
 	}
 
+	@RolesAllowed({UserRight._INFRASTRUCTURE_CREATE, UserRight._INFRASTRUCTURE_EDIT})
 	public DTO save(DTO dto, boolean allowMerge) {
 		checkInfraDataLocked();
 		// default behaviour is to include archived data and check for the change date
 		return doSave(dto, allowMerge, true, true, duplicateErrorMessageProperty);
 	}
 
+	@RolesAllowed(UserRight._SYSTEM)
 	public DTO saveFromCentral(DTO dtoToSave) {
 		// merge, but do not include archived data (we consider archive data to be completely broken)
 		// also ignore change date as merging will always cause the date to be newer to what is present in central
@@ -112,6 +116,7 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	}
 
 	@Override
+	@RolesAllowed(UserRight._INFRASTRUCTURE_ARCHIVE)
 	public void archive(String uuid) {
 		// todo this should be really in the parent but right now there the setter for archived is not available there
 		checkInfraDataLocked();
@@ -122,6 +127,7 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 		}
 	}
 
+	@RolesAllowed(UserRight._INFRASTRUCTURE_ARCHIVE)
 	public void dearchive(String uuid) {
 		checkInfraDataLocked();
 
@@ -139,6 +145,7 @@ public abstract class AbstractInfrastructureFacadeEjb<ADO extends Infrastructure
 	}
 
 	// todo this can be moved up later
+	@RolesAllowed({UserRight._INFRASTRUCTURE_VIEW, UserRight._SYSTEM})
 	public long count(CRITERIA criteria) {
 		return service.count((cb, root) -> service.buildCriteriaFilter(criteria, cb, root));
 	}

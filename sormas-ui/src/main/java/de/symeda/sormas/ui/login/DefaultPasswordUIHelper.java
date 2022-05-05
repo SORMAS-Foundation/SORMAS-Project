@@ -27,16 +27,12 @@ import de.symeda.sormas.api.utils.DefaultEntityHelper;
 
 public class DefaultPasswordUIHelper {
 
-	static List<UserDto> getUsersWithDefaultPassword() {
-		return FacadeProvider.getUserFacade().getUsersWithDefaultPassword();
-	}
-
 	/**
 	 * Intercepts the default login
 	 * If the logged in user is a default user with the default password or
 	 * if the user is a privileged user and there is at least one user with a default password
 	 * the according dialogs will be shown.
-	 * 
+	 *
 	 * @param originalLoginListener
 	 *            the default login listener that will be invoked when the
 	 *            default password actions are finished
@@ -66,6 +62,10 @@ public class DefaultPasswordUIHelper {
 				}
 			}
 		};
+	}
+
+	private static List<UserDto> getUsersWithDefaultPassword() {
+		return FacadeProvider.getUserFacade().getUsersWithDefaultPassword();
 	}
 
 	/**

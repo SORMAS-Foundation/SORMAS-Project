@@ -76,5 +76,5 @@ public abstract class AbstractBaseEjb<ADO extends AbstractDomainObject, DTO exte
 
 	public abstract DTO toDto(ADO ado);
 
-	public abstract REF_DTO toRefDto(ADO ado);
+	protected abstract REF_DTO toRefDto(ADO ado);
 }

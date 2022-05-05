@@ -314,7 +314,7 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
-	public TravelEntryReferenceDto toRefDto(TravelEntry entity) {
+	protected TravelEntryReferenceDto toRefDto(TravelEntry entity) {
 		if (entity == null) {
 			return null;
 		}

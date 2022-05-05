@@ -64,7 +64,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "ClinicalVisitFacade")
-@RolesAllowed(UserRight._CLINICAL_COURSE_VIEW)
+@RolesAllowed({UserRight._CLINICAL_COURSE_VIEW, UserRight._SORMAS_REST})
 public class ClinicalVisitFacadeEjb implements ClinicalVisitFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)

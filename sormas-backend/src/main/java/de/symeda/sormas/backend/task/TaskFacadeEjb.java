@@ -256,7 +256,7 @@ public class TaskFacadeEjb implements TaskFacade {
 		target.setCaze(CaseFacadeEjb.toReferenceDto(source.getCaze()));
 		target.setContact(ContactFacadeEjb.toReferenceDto(source.getContact()));
 		target.setEvent(EventFacadeEjb.toReferenceDto(source.getEvent()));
-		target.setTravelEntry(travelEntryFacade.toRefDto(source.getTravelEntry()));
+		target.setTravelEntry(TravelEntryFacadeEjb.toReferenceDto(source.getTravelEntry()));
 
 		target.setClosedLat(source.getClosedLat());
 		target.setClosedLon(source.getClosedLon());

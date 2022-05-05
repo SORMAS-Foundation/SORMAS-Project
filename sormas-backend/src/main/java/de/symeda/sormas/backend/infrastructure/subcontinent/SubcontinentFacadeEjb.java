@@ -15,12 +15,15 @@
 
 package de.symeda.sormas.backend.infrastructure.subcontinent;
 
+import de.symeda.sormas.api.user.UserRight;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Comparator;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.PermitAll;
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -61,6 +64,7 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "SubcontinentFacade")
+@RolesAllowed(UserRight._INFRASTRUCTURE_VIEW)
 public class SubcontinentFacadeEjb
 	extends
 	AbstractInfrastructureFacadeEjb<Subcontinent, SubcontinentDto, SubcontinentIndexDto, SubcontinentReferenceDto, SubcontinentService, SubcontinentCriteria>
@@ -94,6 +98,7 @@ public class SubcontinentFacadeEjb
 	}
 
 	@Override
+	@PermitAll
 	public List<SubcontinentReferenceDto> getByDefaultName(String name, boolean includeArchivedEntities) {
 		return service.getByDefaultName(name, includeArchivedEntities)
 			.stream()
@@ -102,11 +107,13 @@ public class SubcontinentFacadeEjb
 	}
 
 	@Override
+	@PermitAll
 	public SubcontinentReferenceDto getByCountry(CountryReferenceDto countryDto) {
 		return toReferenceDto(countryService.getByUuid(countryDto.getUuid()).getSubcontinent());
 	}
 
 	@Override
+	@PermitAll
 	public List<SubcontinentReferenceDto> getAllActiveByContinent(String uuid) {
 		Continent continent = continentService.getByUuid(uuid);
 		return continent.getSubcontinents()
@@ -189,6 +196,7 @@ public class SubcontinentFacadeEjb
 	}
 
 	@Override
+	@PermitAll
 	public List<SubcontinentReferenceDto> getAllActiveAsReference() {
 		return service.getAllActive(Subcontinent.DEFAULT_NAME, true)
 			.stream()
@@ -225,7 +233,7 @@ public class SubcontinentFacadeEjb
 	}
 
 	@Override
-	public SubcontinentReferenceDto toRefDto(Subcontinent subcontinent) {
+	protected SubcontinentReferenceDto toRefDto(Subcontinent subcontinent) {
 		return toReferenceDto(subcontinent);
 	}
 
@@ -247,11 +255,13 @@ public class SubcontinentFacadeEjb
 	}
 
 	@Override
+	@PermitAll
 	public List<SubcontinentReferenceDto> getReferencesByExternalId(String externalId, boolean includeArchived) {
 		return service.getByExternalId(externalId, includeArchived).stream().map(SubcontinentFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}
 
 	@Override
+	@PermitAll
 	public List<SubcontinentReferenceDto> getReferencesByName(String caption, boolean includeArchived) {
 		return service.getByDefaultName(caption, includeArchived).stream().map(SubcontinentFacadeEjb::toReferenceDto).collect(Collectors.toList());
 	}

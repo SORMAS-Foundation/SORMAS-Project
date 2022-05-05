@@ -1715,7 +1715,7 @@ public class ContactFacadeEjb
 	}
 
 	@Override
-	public ContactReferenceDto toRefDto(Contact contact) {
+	protected ContactReferenceDto toRefDto(Contact contact) {
 		return convertToReferenceDto(contact);
 	}
 

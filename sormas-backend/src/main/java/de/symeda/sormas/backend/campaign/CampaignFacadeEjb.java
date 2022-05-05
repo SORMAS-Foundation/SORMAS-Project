@@ -300,7 +300,7 @@ public class CampaignFacadeEjb
 	}
 
 	@Override
-	public CampaignReferenceDto toRefDto(Campaign campaign) {
+	protected CampaignReferenceDto toRefDto(Campaign campaign) {
 		return toReferenceDto(campaign);
 	}
 
