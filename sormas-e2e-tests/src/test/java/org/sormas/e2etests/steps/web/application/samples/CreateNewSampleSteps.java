@@ -249,7 +249,6 @@ public class CreateNewSampleSteps implements En {
     When(
         "I check if Pathogen test result in Samples is displayed correctly and save",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(EDIT_PATHOGEN_TEST_BUTTON);
           final Sample actualSampleTestResult = collectPathogenTestResultsData();
           ComparisonHelper.compareEqualFieldsOfEntities(
@@ -356,7 +355,6 @@ public class CreateNewSampleSteps implements En {
     When(
         "I confirm the Create case from contact with positive test result",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONFIRM_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
         });

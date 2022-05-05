@@ -594,14 +594,12 @@ public class EditEventSteps implements En {
     When(
         "I choose select event group Radiobutton",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(SELECT_EVENT_GROUP_RADIOBUTTON);
         });
 
     When(
         "I select the first row from table and I click on save button",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(FIRST_GROUP_ID);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_FOR_POPUP_WINDOWS);
         });
@@ -609,7 +607,6 @@ public class EditEventSteps implements En {
     When(
         "I unlinked the first chosen group by click on Unlink event group button",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.scrollToElement(UNLINK_EVENT_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(UNLINK_EVENT_BUTTON);
           TimeUnit.SECONDS.sleep(3); // waiting for unlinked
@@ -618,7 +615,6 @@ public class EditEventSteps implements En {
     When(
         "I click on Edit event group button from event groups box",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.scrollToElement(EDIT_EVENT_GROUP_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(EDIT_EVENT_GROUP_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON_FOR_EDIT_EVENT_GROUP);
@@ -627,7 +623,6 @@ public class EditEventSteps implements En {
     When(
         "I click on Edit event button for the first event in Events section",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(EDIT_EVENT_GROUP_BUTTON);
         });
 
@@ -720,7 +715,6 @@ public class EditEventSteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CREATE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CREATE_BUTTON);
-          webDriverHelpers.waitForPageLoaded();
         });
 
     Then(
@@ -762,7 +756,6 @@ public class EditEventSteps implements En {
         "I check that number of displayed Event Participants is {int}",
         (Integer number) -> {
           webDriverHelpers.clickOnWebElementBySelector(EditEventPage.EVENT_PARTICIPANTS_TAB);
-          webDriverHelpers.waitForPageLoaded();
           assertHelpers.assertWithPoll20Second(
               () ->
                   Assert.assertEquals(

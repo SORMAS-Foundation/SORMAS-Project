@@ -314,7 +314,6 @@ public class EditContactSteps implements En {
     When(
         "^I change all contact fields and save$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           editedContact = contactService.buildEditContact();
           selectContactClassification(editedContact.getClassification());
           selectMultiDayContact(editedContact.getMultiDay());
@@ -470,7 +469,6 @@ public class EditContactSteps implements En {
     When(
         "^I click Create Case from Contact button$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.scrollToElement(CREATE_CASE_FROM_CONTACT_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CREATE_CASE_FROM_CONTACT_BUTTON);
         });
@@ -828,7 +826,6 @@ public class EditContactSteps implements En {
   }
 
   private Contact collectContactDataAfterEdit() {
-    webDriverHelpers.waitForPageLoaded();
     String collectedDateOfReport = webDriverHelpers.getValueFromWebElement(REPORT_DATE);
     String classification =
         webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CONTACT_CLASSIFICATION_OPTIONS);
