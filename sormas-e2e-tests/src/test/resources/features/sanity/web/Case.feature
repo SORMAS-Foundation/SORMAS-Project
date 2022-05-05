@@ -878,7 +878,7 @@ Feature: Case end to end tests
     And I click on the Cases button from navbar
     And I click SHOW MORE FILTERS button on Case directory page
     And I apply Date type filter to "Case report date" on Case directory page
-    And I fill Cases from input to 1 days before mocked Cases created on Case directory page
+    And I fill Cases from input to 1 days before mocked Case created on Case directory page
     And I click APPLY BUTTON in Case Directory Page
     And I click SHOW MORE FILTERS button on Case directory page
     And I click on the More button on Case directory page
