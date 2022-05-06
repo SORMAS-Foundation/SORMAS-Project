@@ -13,3 +13,9 @@ Feature: About end to end tests
     And I delete exported xlsx file from user downloads directory
     Then I click on the User Settings button from navbar
     And I set on default language as English in User settings
+
+  @issue=SORQA-219 @env_main
+  Scenario: Check current Sormas version is show
+    Given I log in with National User
+    And I click on the About button from navbar
+    Then I check that current Sormas version is shown on About directory page

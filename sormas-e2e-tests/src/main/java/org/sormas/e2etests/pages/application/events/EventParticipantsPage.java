@@ -42,6 +42,7 @@ public class EventParticipantsPage {
   public static final By APPLY_FILTERS_BUTTON = By.id("actionApplyFilters");
   public static final By EXPORT_EVENT_PARTICIPANT_CONFIGURATION_DATA_REGION_CHECKBOX =
       By.xpath("//label[text()='Region']");
+  public static final By CONFIRM_NAVIGATION_POPUP = By.id("actionConfirm");
   public static final By SEARCH_FOR_PERSON_BUTTON_IN_ADD_PARTICIPANT_POPUP_WINDOW =
       By.id("personSearchLoc");
   public static final By SELECT_PERSON_ID_INPUT_AT_ADD_PARTICIPANT =

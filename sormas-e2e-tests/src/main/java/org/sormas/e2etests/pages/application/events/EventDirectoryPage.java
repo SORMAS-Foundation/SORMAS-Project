@@ -130,6 +130,13 @@ public class EventDirectoryPage {
     return By.xpath(String.format("(//input[@type=\"checkbox\"])[%s]", idx));
   }
 
+  public static By getCheckboxByUUID(String uuid) {
+    return By.xpath(
+        String.format(
+            "//td//a[text()=\"%s\"]/../preceding-sibling::td//input[@type=\"checkbox\"]",
+            uuid.substring(0, 6).toUpperCase()));
+  }
+
   public static By getByEventUuid(String eventUuid) {
     return By.xpath(String.format("//a[@title='%s']", eventUuid));
   }

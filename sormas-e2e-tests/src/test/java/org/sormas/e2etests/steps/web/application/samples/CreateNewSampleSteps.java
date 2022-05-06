@@ -249,7 +249,6 @@ public class CreateNewSampleSteps implements En {
     When(
         "I check if Pathogen test result in Samples is displayed correctly and save",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(EDIT_PATHOGEN_TEST_BUTTON);
           final Sample actualSampleTestResult = collectPathogenTestResultsData();
           ComparisonHelper.compareEqualFieldsOfEntities(
@@ -356,7 +355,6 @@ public class CreateNewSampleSteps implements En {
     When(
         "I confirm the Create case from contact with positive test result",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(CONFIRM_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
         });
@@ -375,6 +373,14 @@ public class CreateNewSampleSteps implements En {
               "Case creation confirmation popup message is not correct");
           softly.assertAll();
           webDriverHelpers.clickOnWebElementBySelector(CONFIRM_BUTTON);
+        });
+
+    When(
+        "I check if default disease value for new Pathogen test is set for ([^\"]*)",
+        (String disease) -> {
+          String testedDisease = webDriverHelpers.getValueFromCombobox(TESTED_DISEASE_COMBOBOX);
+          softly.assertEquals(disease, testedDisease, "Diseases are not equal");
+          softly.assertAll();
         });
   }
 

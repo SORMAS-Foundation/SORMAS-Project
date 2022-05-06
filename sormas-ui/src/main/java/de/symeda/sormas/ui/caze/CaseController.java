@@ -1101,14 +1101,14 @@ public class CaseController {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_REFER_FROM_POE) && caze.checkIsUnreferredPortHealthCase()) {
-			Button btnReferToFacility = ButtonHelper.createButton(Captions.caseReferToFacility, e -> {
+			Button btnReferFromPointOfEntry = ButtonHelper.createButton(Captions.caseReferFromPointOfEntry, e -> {
 				editView.commit();
 				CaseDataDto caseDto = findCase(caze.getUuid());
 				referFromPointOfEntry(caseDto);
 			});
 
-			editView.getButtonsPanel().addComponentAsFirst(btnReferToFacility);
-			editView.getButtonsPanel().setComponentAlignment(btnReferToFacility, Alignment.BOTTOM_LEFT);
+			editView.getButtonsPanel().addComponentAsFirst(btnReferFromPointOfEntry);
+			editView.getButtonsPanel().setComponentAlignment(btnReferFromPointOfEntry, Alignment.BOTTOM_LEFT);
 		}
 	}
 
@@ -1421,7 +1421,7 @@ public class CaseController {
 			form,
 			UserProvider.getCurrent().hasUserRight(UserRight.CASE_REFER_FROM_POE),
 			form.getFieldGroup());
-		view.getCommitButton().setCaption(I18nProperties.getCaption(Captions.caseReferToFacility));
+		view.getCommitButton().setCaption(I18nProperties.getCaption(Captions.caseReferFromPointOfEntry));
 
 		Window window = VaadinUiUtil.showPopupWindow(view);
 		window.setCaption(I18nProperties.getString(Strings.headingReferCaseFromPointOfEntry));
