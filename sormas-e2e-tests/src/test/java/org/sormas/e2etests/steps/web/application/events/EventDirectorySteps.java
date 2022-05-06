@@ -99,6 +99,7 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.TO
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.UNLINK_EVENT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getCheckboxByIndex;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getCheckboxByUUID;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.RESET_FILTERS_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
@@ -117,7 +118,6 @@ import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicInteger;
 import javax.inject.Inject;
-import org.openqa.selenium.By;
 import org.openqa.selenium.WebDriverException;
 import org.openqa.selenium.WebElement;
 import org.sormas.e2etests.common.DataOperations;
@@ -197,7 +197,6 @@ public class EventDirectorySteps implements En {
         "I click checkbox to choose all Event results on Event Directory Page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(FIRST_CHECKBOX_EVENT_DIRECTORY);
-          webDriverHelpers.waitForPageLoaded();
         });
 
     When(
@@ -232,7 +231,6 @@ public class EventDirectorySteps implements En {
     When(
         "I chose District option in Event Group Directory",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           String district = apiState.getCreatedEvent().getEventLocation().getDistrict().getUuid();
           webDriverHelpers.selectFromCombobox(
               EVENT_DISTRICT_COMBOBOX_INPUT, DistrictsValues.getNameValueForUuid(district));
@@ -241,7 +239,6 @@ public class EventDirectorySteps implements En {
     When(
         "I chose Community option in Event Group Directory",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           String community = apiState.getCreatedEvent().getEventLocation().getCommunity().getUuid();
           webDriverHelpers.selectFromCombobox(
               EVENT_COMMUNITY_COMBOBOX_INPUT, CommunityValues.getNameValueForUuid(community));
@@ -250,20 +247,17 @@ public class EventDirectorySteps implements En {
     When(
         "I chose Region {string} option in Event Group Directory",
         (String regionOption) -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(EVENT_REGION_COMBOBOX_INPUT, regionOption);
         });
 
     When(
         "I chose District {string} option in Event Group Directory",
         (String districtOption) -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(EVENT_DISTRICT_COMBOBOX_INPUT, districtOption);
         });
     When(
         "I chose Community {string} option in Event Group Directory",
         (String communityOption) -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(EVENT_COMMUNITY_COMBOBOX_INPUT, communityOption);
         });
 
@@ -282,7 +276,6 @@ public class EventDirectorySteps implements En {
               searchText = "All groups";
               break;
           }
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(EVENT_STATUS_FILTER_COMBOBOX, searchText);
         });
 
@@ -353,14 +346,12 @@ public class EventDirectorySteps implements En {
                   .build();
           ComparisonHelper.compareEqualFieldsOfEntities(
               collectedGroup, createdGroup, List.of("name"));
-          webDriverHelpers.waitForPageLoaded();
         });
 
     When(
         "^I click on ([^\"]*) Radiobutton on Event Directory Page$",
         (String buttonName) -> {
           webDriverHelpers.clickWebElementByText(EVENTS_RADIO_BUTTON, buttonName);
-          webDriverHelpers.waitForPageLoaded();
         });
 
     When(
@@ -407,7 +398,6 @@ public class EventDirectorySteps implements En {
         "I apply {string} to combobox on Event Directory Page",
         (String eventParameter) -> {
           webDriverHelpers.selectFromCombobox(EVENT_DISPLAY_COMBOBOX, eventParameter);
-          webDriverHelpers.waitForPageLoaded();
         });
     And(
         "I apply Date type filter to {string} on Event directory page",
@@ -479,7 +469,6 @@ public class EventDirectorySteps implements En {
     When(
         "I fill Reporting User filter to {string} on Event Directory Page",
         (String reportingUser) -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(FILTER_BY_REPORTING_USER, reportingUser);
         });
     And(
@@ -539,7 +528,6 @@ public class EventDirectorySteps implements En {
     When(
         "I filter by last created group in Event Directory Page",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.fillInWebElement(EVENT_GROUP_INPUT, EditEventSteps.groupEvent.getUuid());
         });
 
@@ -552,7 +540,6 @@ public class EventDirectorySteps implements En {
     When(
         "I select Signal filter from quick filter",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           TimeUnit.SECONDS.sleep(5);
           webDriverHelpers.clickOnWebElementBySelector(EventDirectoryPage.EVENT_SIGNAL);
         });
@@ -560,7 +547,6 @@ public class EventDirectorySteps implements En {
     When(
         "I select Event filter from quick filter",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           TimeUnit.SECONDS.sleep(5);
           webDriverHelpers.clickOnWebElementBySelector(EventDirectoryPage.EVENT_EVENT);
         });
@@ -568,7 +554,6 @@ public class EventDirectorySteps implements En {
     When(
         "I select Screening filter from quick filter",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           TimeUnit.SECONDS.sleep(5);
           webDriverHelpers.clickOnWebElementBySelector(EventDirectoryPage.EVENT_SCREENING);
         });
@@ -576,7 +561,6 @@ public class EventDirectorySteps implements En {
     When(
         "I select Cluster filter from quick filter",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           TimeUnit.SECONDS.sleep(5);
           webDriverHelpers.clickOnWebElementBySelector(EventDirectoryPage.EVENT_CLUSTER);
         });
@@ -584,7 +568,6 @@ public class EventDirectorySteps implements En {
     When(
         "I select Dropped filter from quick filter",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           TimeUnit.SECONDS.sleep(5);
           webDriverHelpers.clickOnWebElementBySelector(EventDirectoryPage.EVENT_DROPPED);
         });
@@ -660,7 +643,6 @@ public class EventDirectorySteps implements En {
     When(
         "I select Report Date among Event Reference Date options",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
               DATE_TYPE_COMBOBOX, EventReferenceDateOptions.REPORT_DATE.toString());
         });
@@ -668,7 +650,6 @@ public class EventDirectorySteps implements En {
     When(
         "I fill in a date range in Date of Event From Epi Week and ...To fields",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           eventService.timeRange = buildTimeRange();
           webDriverHelpers.fillInWebElement(
               DATE_FROM_COMBOBOX,
@@ -687,7 +668,6 @@ public class EventDirectorySteps implements En {
     When(
         "I check that the dates of displayed Event results are correct",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           List<Map<String, String>> tableRowsData = getTableRowsData();
           for (int i = 0; i < tableRowsData.size(); i++) {
             String dateCell =
@@ -755,6 +735,13 @@ public class EventDirectorySteps implements En {
         });
 
     When(
+        "I check if filtered participant for existing person appears in the event participants list",
+        () -> {
+          final String personUuid = apiState.getLastCreatedPerson().getUuid();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(personUuid));
+        });
+
+    When(
         "I click on the first row from event participant",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_PARTICIPANT);
@@ -813,6 +800,25 @@ public class EventDirectorySteps implements En {
                       eventManagementStatus,
                       "Event Management status is not correct"));
         });
+    When(
+        "^I select last created API result in grid in Event Directory for Bulk Action$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.scrollToElement(getCheckboxByUUID(apiState.getCreatedEvent().getUuid()));
+          webDriverHelpers.clickOnWebElementBySelector(
+              getCheckboxByUUID(apiState.getCreatedEvent().getUuid()));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+    When(
+        "^I select last created UI result in grid in Event Directory for Bulk Action$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.scrollToElement(
+              getCheckboxByUUID(CreateNewEventSteps.newEvent.getUuid()));
+          webDriverHelpers.clickOnWebElementBySelector(
+              getCheckboxByUUID(CreateNewEventSteps.newEvent.getUuid()));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
 
     When(
         "I click on the More button on Event directory page",
@@ -821,7 +827,6 @@ public class EventDirectorySteps implements En {
         "I click Enter Bulk Edit Mode on Event directory page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ENTER_BULK_EDIT_MODE_EVENT_DIRECTORY);
-          webDriverHelpers.waitForPageLoaded();
         });
     When(
         "I click on the created event participant from the list",

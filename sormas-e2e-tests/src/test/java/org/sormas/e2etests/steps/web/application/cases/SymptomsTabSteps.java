@@ -87,7 +87,6 @@ public class SymptomsTabSteps implements En {
     When(
         "^I click on save case button in Symptoms tab$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
 

@@ -193,6 +193,21 @@ public class EditPersonSteps implements En {
           //          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_BUTTON);
           //          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
         });
+
+    Then(
+        "I check that SEE CASES FOR THIS PERSON button appears on Edit Person page",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEE_CASES_FOR_PERSON_BUTTON);
+        });
+
+    Then(
+        "I check that SEE CONTACTS FOR THIS PERSON button appears on Edit Person page",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEE_CONTACTS_FOR_PERSON_BUTTON);
+        });
+
     Then(
         "I click on See CONTACTS for this Person button from Edit Person page",
         () -> {

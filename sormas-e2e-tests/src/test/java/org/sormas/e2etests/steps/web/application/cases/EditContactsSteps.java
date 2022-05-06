@@ -87,7 +87,6 @@ public class EditContactsSteps implements En {
                   + "/sormas-webdriver/#!cases/contacts/"
                   + apiState.getCreatedCase().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_CASE_CONTACTS_TAB_URL);
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NEW_CONTACT_BUTTON);
         });
     When(
@@ -171,6 +170,7 @@ public class EditContactsSteps implements En {
               new File(userDirPath + "/downloads/sormas_kontakte_" + LocalDate.now() + "_.csv");
           toDelete.deleteOnExit();
         });
+
     When(
         "^I create a new contact from Cases Contacts tab$",
         () -> {
