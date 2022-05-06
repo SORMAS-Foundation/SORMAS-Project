@@ -32,6 +32,7 @@ import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.PERS
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.RECOVERED_ENTRIES;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.START_DATA_IMPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.TRAVEL_ENTRY_AGGREGATION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.TRAVEL_ENTRY_DATA_FILTER_OPTION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.TRAVEL_ENTRY_DIRECTORY_PAGE_APPLY_FILTER_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.TRAVEL_ENTRY_DIRECTORY_PAGE_SHOW_MORE_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.TRAVEL_ENTRY_FIRST_RECORD_IN_TABLE;
@@ -105,6 +106,7 @@ public class TravelEntryDirectorySteps implements En {
         () -> {
           webDriverHelpers.fillAndSubmitInWebElement(
               PERSON_FILTER_INPUT, CreateNewTravelEntrySteps.aTravelEntry.getUuid());
+          System.out.println("UUID: " + CreateNewTravelEntrySteps.aTravelEntry.getUuid());
         });
     And(
         "I click {string} checkbox on Travel Entry directory page",
@@ -167,6 +169,16 @@ public class TravelEntryDirectorySteps implements En {
               formatter.format(
                   CreateNewTravelEntrySteps.travelEntry.getReportDate().plusDays(number)));
         });
+
+    And(
+        "I fill Travel Entry to input to {int} days before UI Travel Entry created on Travel Entry directory page",
+        (Integer number) -> {
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
+          webDriverHelpers.fillInWebElement(
+              DATE_TO_COMBOBOX,
+              formatter.format(
+                  CreateNewTravelEntrySteps.travelEntry.getReportDate().minusDays(number)));
+        });
     And(
         "I fill Travel Entry from input to {int} days after before UI Travel Entry created on Travel Entry directory page",
         (Integer number) -> {
@@ -180,6 +192,10 @@ public class TravelEntryDirectorySteps implements En {
         "I apply {string} to aggregation combobox on Travel Entry directory page",
         (String value) ->
             webDriverHelpers.selectFromCombobox(TRAVEL_ENTRY_AGGREGATION_COMBOBOX, value));
+    Then(
+        "I apply {string} to data filter option combobox on Travel Entry directory page",
+        (String value) ->
+            webDriverHelpers.selectFromCombobox(TRAVEL_ENTRY_DATA_FILTER_OPTION_COMBOBOX, value));
     When(
         "I click on first filtered record in Travel Entry",
         () -> {
