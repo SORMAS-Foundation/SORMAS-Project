@@ -29,14 +29,14 @@ import org.sormas.e2etests.entities.pojo.api.Lab;
 import org.sormas.e2etests.entities.pojo.api.ReportingUser;
 import org.sormas.e2etests.entities.pojo.api.Sample;
 import org.sormas.e2etests.enums.UserRoles;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 
 public class SampleApiService {
-  EnvironmentManager environmentManager;
+  RunningConfiguration runningConfiguration;
 
   @Inject
-  public SampleApiService(EnvironmentManager environmentManager) {
-    this.environmentManager = environmentManager;
+  public SampleApiService(RunningConfiguration runningConfiguration) {
+    this.runningConfiguration = runningConfiguration;
   }
 
   public Sample buildGeneratedSample(Case caze) {
@@ -45,7 +45,7 @@ public class SampleApiService {
         .reportingUser(
             ReportingUser.builder()
                 .uuid(
-                    environmentManager
+                    runningConfiguration
                         .getUserByRole(locale, UserRoles.RestUser.getRole())
                         .getUuid())
                 .build())

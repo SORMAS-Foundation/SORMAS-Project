@@ -31,15 +31,15 @@ import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.enums.UserRoles;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 
 public class CaseApiService {
 
-  private static EnvironmentManager environmentManager;
+  private static RunningConfiguration runningConfiguration;
 
   @Inject
-  public CaseApiService(EnvironmentManager environmentManager) {
-    this.environmentManager = environmentManager;
+  public CaseApiService(RunningConfiguration runningConfiguration) {
+    this.runningConfiguration = runningConfiguration;
   }
 
   public Case buildGeneratedCase(Person person) {
@@ -52,7 +52,7 @@ public class CaseApiService {
         .reportingUser(
             ReportingUser.builder()
                 .uuid(
-                    environmentManager
+                    runningConfiguration
                         .getUserByRole(locale, UserRoles.RestUser.getRole())
                         .getUuid())
                 .build())
@@ -117,7 +117,7 @@ public class CaseApiService {
         .surveillanceOfficer(
             SurveillanceOfficer.builder()
                 .uuid(
-                    environmentManager
+                    runningConfiguration
                         .getUserByRole(locale, UserRoles.SurveillanceOfficer.getRole())
                         .getUuid())
                 .build())

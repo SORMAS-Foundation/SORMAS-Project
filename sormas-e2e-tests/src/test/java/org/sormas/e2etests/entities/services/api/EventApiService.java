@@ -37,15 +37,15 @@ import org.sormas.e2etests.enums.EventManagementStatusValues;
 import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.enums.SourceTypeValues;
 import org.sormas.e2etests.enums.UserRoles;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 
 public class EventApiService {
-  EnvironmentManager environmentManager;
+  RunningConfiguration runningConfiguration;
   private final Faker faker;
 
   @Inject
-  public EventApiService(EnvironmentManager environmentManager, Faker faker) {
-    this.environmentManager = environmentManager;
+  public EventApiService(RunningConfiguration runningConfiguration, Faker faker) {
+    this.runningConfiguration = runningConfiguration;
     this.faker = faker;
   }
 
@@ -60,7 +60,7 @@ public class EventApiService {
         .reportingUser(
             ReportingUser.builder()
                 .uuid(
-                    environmentManager
+                    runningConfiguration
                         .getUserByRole(locale, UserRoles.RestUser.getRole())
                         .getUuid())
                 .build())

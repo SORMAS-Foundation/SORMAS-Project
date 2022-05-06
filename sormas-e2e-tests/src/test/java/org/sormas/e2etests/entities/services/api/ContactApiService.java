@@ -35,18 +35,18 @@ import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.RegionsValues;
 import org.sormas.e2etests.enums.UserRoles;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 
 public class ContactApiService {
 
   private static PersonApiService personApiService;
-  private static EnvironmentManager environmentManager;
+  private static RunningConfiguration runningConfiguration;
 
   @Inject
   public ContactApiService(
-      PersonApiService personApiService, EnvironmentManager environmentManager) {
+      PersonApiService personApiService, RunningConfiguration runningConfiguration) {
     this.personApiService = personApiService;
-    this.environmentManager = environmentManager;
+    this.runningConfiguration = runningConfiguration;
   }
 
   public Contact buildGeneratedContact(Person person) {
@@ -57,7 +57,7 @@ public class ContactApiService {
         .reportingUser(
             ReportingUser.builder()
                 .uuid(
-                    environmentManager
+                    runningConfiguration
                         .getUserByRole(locale, UserRoles.RestUser.getRole())
                         .getUuid())
                 .build())
@@ -98,7 +98,7 @@ public class ContactApiService {
         .reportingUser(
             ReportingUser.builder()
                 .uuid(
-                    environmentManager
+                    runningConfiguration
                         .getUserByRole(locale, UserRoles.RestUser.getRole())
                         .getUuid())
                 .build())

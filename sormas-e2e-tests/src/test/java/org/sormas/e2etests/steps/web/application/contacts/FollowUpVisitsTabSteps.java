@@ -24,7 +24,7 @@ import static org.sormas.e2etests.steps.BaseSteps.locale;
 import cucumber.api.java8.En;
 import java.time.format.DateTimeFormatter;
 import javax.inject.Inject;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.NavBarPage;
 import org.sormas.e2etests.state.ApiState;
@@ -35,7 +35,7 @@ public class FollowUpVisitsTabSteps implements En {
 
   @Inject
   public FollowUpVisitsTabSteps(
-      WebDriverHelpers webDriverHelpers, ApiState apiState, EnvironmentManager environmentManager) {
+      WebDriverHelpers webDriverHelpers, ApiState apiState, RunningConfiguration runningConfiguration) {
 
     When(
         "^I am accessing the Follow-up visits tab using of created contact via api$",
@@ -44,7 +44,7 @@ public class FollowUpVisitsTabSteps implements En {
               NavBarPage.CONTACTS_BUTTON);
           String visitLinkPath = "/sormas-webdriver/#!contacts/visits/";
           String uuid = apiState.getCreatedContact().getUuid();
-          String URL = environmentManager.getEnvironmentUrlForMarket(locale) + visitLinkPath + uuid;
+          String URL = runningConfiguration.getEnvironmentUrlForMarket(locale) + visitLinkPath + uuid;
           webDriverHelpers.accessWebSite(URL);
         });
 

@@ -34,18 +34,18 @@ import org.sormas.e2etests.enums.UserRoles;
 import org.sormas.e2etests.enums.immunizations.ImmunizationManagementStatusValues;
 import org.sormas.e2etests.enums.immunizations.MeansOfImmunizationValues;
 import org.sormas.e2etests.enums.immunizations.StatusValues;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.steps.BaseSteps;
 
 public class ImmunizationApiService {
   private final Faker faker;
-  private static EnvironmentManager environmentManager;
+  private static RunningConfiguration runningConfiguration;
 
   @Inject
   public ImmunizationApiService(
-      Faker faker, BaseSteps baseSteps, EnvironmentManager environmentManager) {
+      Faker faker, BaseSteps baseSteps, RunningConfiguration runningConfiguration) {
     this.faker = faker;
-    this.environmentManager = environmentManager;
+    this.runningConfiguration = runningConfiguration;
   }
 
   public Immunization buildGeneratedImmunizationForPerson(Person person) {
@@ -61,7 +61,7 @@ public class ImmunizationApiService {
         .endDate(Calendar.getInstance().getTimeInMillis())
         .externalId(faker.number().digits(9))
         .reportingUser(
-            environmentManager.getUserByRole(locale, UserRoles.NationalUser.getRole()).getUuid())
+            runningConfiguration.getUserByRole(locale, UserRoles.NationalUser.getRole()).getUuid())
         .archived(false)
         .disease(DiseasesValues.getRandomDiseaseName())
         .immunizationStatus(StatusValues.getRandomImmunizationStatus())

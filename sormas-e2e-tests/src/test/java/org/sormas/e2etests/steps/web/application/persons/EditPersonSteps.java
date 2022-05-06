@@ -89,7 +89,7 @@ import org.openqa.selenium.ElementClickInterceptedException;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Person;
 import org.sormas.e2etests.entities.services.PersonService;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
@@ -112,7 +112,7 @@ public class EditPersonSteps implements En {
       BaseSteps baseSteps,
       AssertHelpers assertHelpers,
       ApiState apiState,
-      EnvironmentManager environmentManager) {
+      RunningConfiguration runningConfiguration) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
@@ -263,7 +263,7 @@ public class EditPersonSteps implements En {
         () -> {
           final String personUuid = EditEventSteps.person.getUuid();
           webDriverHelpers.accessWebSite(
-              environmentManager.getEnvironmentUrlForMarket(locale)
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!persons/data/"
                   + personUuid);
         });

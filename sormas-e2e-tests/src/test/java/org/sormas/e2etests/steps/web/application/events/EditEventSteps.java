@@ -33,7 +33,7 @@ import org.sormas.e2etests.entities.services.EventService;
 import org.sormas.e2etests.enums.DistrictsValues;
 import org.sormas.e2etests.enums.GenderValues;
 import org.sormas.e2etests.enums.RegionsValues;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.envconfig.manager.RunningConfiguration;
 import org.sormas.e2etests.helpers.AssertHelpers;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.events.EditEventPage;
@@ -184,7 +184,7 @@ public class EditEventSteps implements En {
       SoftAssert softly,
       EventParticipantService eventParticipant,
       AssertHelpers assertHelpers,
-      EnvironmentManager environmentManager,
+      RunningConfiguration runningConfiguration,
       ApiState apiState) {
     this.webDriverHelpers = webDriverHelpers;
 
@@ -690,7 +690,7 @@ public class EditEventSteps implements En {
         "I open the last created event via api",
         () -> {
           String LAST_CREATED_EVENT_URL =
-              environmentManager.getEnvironmentUrlForMarket(locale)
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!events/data/"
                   + apiState.getCreatedEvent().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_EVENT_URL);
@@ -707,7 +707,7 @@ public class EditEventSteps implements En {
         "I navigate to Event Action tab for created Event",
         () -> {
           String LAST_CREATED_EVENT_ACTIONS_URL =
-              environmentManager.getEnvironmentUrlForMarket(locale)
+              runningConfiguration.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!events/eventactions/"
                   + apiState.getCreatedEvent().getUuid();
           webDriverHelpers.accessWebSite(LAST_CREATED_EVENT_ACTIONS_URL);
