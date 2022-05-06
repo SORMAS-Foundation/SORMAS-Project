@@ -1,10 +1,5 @@
 package org.sormas.e2etests.steps.web.application;
 
-import static org.sormas.e2etests.pages.application.AboutPage.DATA_DICTIONARY_BUTTON;
-import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_HYPERLINK;
-import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.LANGUAGE_COMBOBOX;
-import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.SAVE_BUTTON;
-
 import com.detectlanguage.DetectLanguage;
 import com.google.inject.Inject;
 import cucumber.api.java8.En;
@@ -36,6 +31,7 @@ import static org.sormas.e2etests.pages.application.AboutPage.OFFICIAL_SORMAS_WE
 import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_GITHUB_HYPERLINK;
 import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_HYPERLINK;
 import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_HYPERLINK_TARGET;
+import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_LINK;
 import static org.sormas.e2etests.pages.application.AboutPage.WHATS_NEW_HYPERLINK;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.LANGUAGE_COMBOBOX;
 import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.SAVE_BUTTON;
@@ -146,8 +142,8 @@ public class AboutDirectorySteps implements En {
     When(
         "^I click on Sormas version in About directory and i get redirected to github$",
         () -> {
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SORMAS_VERSION_HYPERLINK);
-          webDriverHelpers.clickOnWebElementBySelector(SORMAS_VERSION_HYPERLINK);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SORMAS_VERSION_LINK);
+          webDriverHelpers.clickOnWebElementBySelector(SORMAS_VERSION_LINK);
           TimeUnit.SECONDS.sleep(1);
           String link =
               webDriverHelpers.getAttributeFromWebElement(SORMAS_VERSION_HYPERLINK_TARGET, "href");

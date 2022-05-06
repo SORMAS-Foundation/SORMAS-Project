@@ -928,17 +928,26 @@ public class WebDriverHelpers {
   public void switchToOtherWindow() {
     String parent = baseSteps.getDriver().getWindowHandle();
     Set<String> S = baseSteps.getDriver().getWindowHandles();
-    for (String actual : S) {
-      if (!actual.equalsIgnoreCase(parent)) {
-        baseSteps.getDriver().switchTo().window(actual);
-        break;
+    if (S.size() > 1) {
+      for (String actual : S) {
+        if (!actual.equalsIgnoreCase(parent)) {
+          baseSteps.getDriver().switchTo().window(actual);
+          break;
+        }
       }
+    } else {
+      throw new NotFoundException("Cannot switch window because only one is available!");
     }
   }
 
   public void closeActiveWindow() {
     var tabs = new ArrayList<>(baseSteps.getDriver().getWindowHandles());
-    baseSteps.getDriver().close();
-    baseSteps.getDriver().switchTo().window(tabs.get(0));
+    if (tabs.size() > 1) {
+      baseSteps.getDriver().close();
+      baseSteps.getDriver().switchTo().window(tabs.get(0));
+    } else {
+      throw new NotFoundException(
+          "Cannot close active window and switch to parent window because only one is available!");
+    }
   }
 }
