@@ -46,9 +46,6 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
-import de.symeda.sormas.backend.caze.CaseCriteriaHelper;
-import de.symeda.sormas.utils.CaseJoins;
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -1090,34 +1087,43 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(resultingCase.get(Case.UUID), contactCriteria.getResultingCase().getUuid()));
 		}
 		if (contactCriteria.getRegion() != null) {
+			String regionUuid = contactCriteria.getRegion().getUuid();
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				cb.or(
-					cb.equal(joins.getRegion().get(Region.UUID), contactCriteria.getRegion().getUuid()),
-					cb.and(
-						cb.isNull(from.get(Contact.REGION)),
-						cb.equal(caseJoins.getRegion().get(Region.UUID), contactCriteria.getRegion().getUuid()))));
+				CriteriaBuilderHelper.or(
+					cb,
+					cb.equal(joins.getRegion().get(AbstractDomainObject.UUID), regionUuid),
+					cb.equal(joins.getCaseRegion().get(AbstractDomainObject.UUID), regionUuid),
+					cb.equal(joins.getCaseResponsibleRegion().get(AbstractDomainObject.UUID), regionUuid),
+					cb.equal(joins.getResultingCaseJoins().getRegion().get(AbstractDomainObject.UUID), regionUuid),
+					cb.equal(joins.getResultingCaseJoins().getResponsibleRegion().get(AbstractDomainObject.UUID), regionUuid)));
 		}
 		if (contactCriteria.getDistrict() != null) {
+			String districtUuid = contactCriteria.getDistrict().getUuid();
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				cb.or(
-					cb.equal(joins.getDistrict().get(District.UUID), contactCriteria.getDistrict().getUuid()),
-					cb.and(
-						cb.isNull(from.get(Contact.DISTRICT)),
-						cb.equal(caseJoins.getDistrict().get(District.UUID), contactCriteria.getDistrict().getUuid()))));
+				CriteriaBuilderHelper.or(
+					cb,
+					cb.equal(joins.getDistrict().get(AbstractDomainObject.UUID), districtUuid),
+					cb.equal(joins.getCaseDistrict().get(AbstractDomainObject.UUID), districtUuid),
+					cb.equal(joins.getCaseResponsibleDistrict().get(AbstractDomainObject.UUID), districtUuid),
+					cb.equal(joins.getResultingCaseJoins().getDistrict().get(AbstractDomainObject.UUID), districtUuid),
+					cb.equal(joins.getResultingCaseJoins().getResponsibleDistrict().get(AbstractDomainObject.UUID), districtUuid)));
 		}
 		if (contactCriteria.getCommunity() != null) {
+			String communityUuid = contactCriteria.getDistrict().getUuid();
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				cb.or(
-					cb.equal(joins.getCommunity().get(Community.UUID), contactCriteria.getCommunity().getUuid()),
-					cb.and(
-						cb.isNull(from.get(Contact.COMMUNITY)),
-						cb.equal(caseJoins.getCommunity().get(Community.UUID), contactCriteria.getCommunity().getUuid()))));
+				CriteriaBuilderHelper.or(
+					cb,
+					cb.equal(joins.getCommunity().get(AbstractDomainObject.UUID), communityUuid),
+					cb.equal(joins.getCaseCommunity().get(AbstractDomainObject.UUID), communityUuid),
+					cb.equal(joins.getCaseResponsibleCommunity().get(AbstractDomainObject.UUID), communityUuid),
+					cb.equal(joins.getResultingCaseJoins().getCommunity().get(AbstractDomainObject.UUID), communityUuid),
+					cb.equal(joins.getResultingCaseJoins().getResponsibleCommunity().get(AbstractDomainObject.UUID), communityUuid)));
 		}
 		if (contactCriteria.getContactOfficer() != null) {
 			filter = CriteriaBuilderHelper

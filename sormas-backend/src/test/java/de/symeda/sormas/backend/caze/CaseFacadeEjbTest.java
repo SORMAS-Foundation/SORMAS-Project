@@ -216,22 +216,27 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			.district(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
 		Assert.assertEquals(1, getCaseFacade().getIndexList(caseCriteria, 0, 100, null).size());
 
+		Assert.assertEquals(3, getSampleFacade().getIndexList(new SampleCriteria(), 0, 100, null).size());
+
 		final SampleCriteria sampleCriteria = new SampleCriteria().region(new RegionReferenceDto(rdcf.region.getUuid(), null, null))
 			.district(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
 		Assert.assertEquals(3, getSampleFacade().getIndexList(sampleCriteria, 0, 100, null).size());
-		resulting caze of samples contact is requested to be used here - check answer on ticket
+
+		Assert.assertEquals(1, getTaskFacade().getIndexList(new TaskCriteria(), 0, 100, null).size());
 
 		final TaskCriteria taskCriteria = new TaskCriteria().region(new RegionReferenceDto(rdcf.region.getUuid(), null, null))
 			.district(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
 		Assert.assertEquals(1, getTaskFacade().getIndexList(taskCriteria, 0, 100, null).size());
 
+		Assert.assertEquals(2, getContactFacade().getIndexList(new ContactCriteria(), 0, 100, null).size());
+
 		final ContactCriteria contactCriteriaRdcf2 = new ContactCriteria().region(new RegionReferenceDto(rdcf2.region.getUuid(), null, null))
 				.district(new DistrictReferenceDto(rdcf2.district.getUuid(), null, null));
-		Assert.assertEquals(1, getContactFacade().getIndexList(contactCriteriaRdcf2, 0, 100, null).size());
+		Assert.assertEquals(2, getContactFacade().getIndexList(contactCriteriaRdcf2, 0, 100, null).size());
 
-		final ContactCriteria contactCriteria = new ContactCriteria().region(new RegionReferenceDto(rdcf.region.getUuid(), null, null))
+		final ContactCriteria contactCriteriaRdcf1 = new ContactCriteria().region(new RegionReferenceDto(rdcf.region.getUuid(), null, null))
 			.district(new DistrictReferenceDto(rdcf.district.getUuid(), null, null));
-		Assert.assertEquals(1, getContactFacade().getIndexList(contactCriteria, 0, 100, null).size());
+		Assert.assertEquals(2, getContactFacade().getIndexList(contactCriteriaRdcf1, 0, 100, null).size());
 	}
 
 	@Test

@@ -33,7 +33,6 @@ import javax.persistence.NoResultException;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
@@ -53,6 +52,7 @@ import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
+import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.TaskCreationException;
@@ -363,28 +363,36 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(Task.TASK_CONTEXT), taskCriteria.getTaskContext()));
 		}
 		if (taskCriteria.getRegion() != null) {
-			Expression<Object> region = cb.selectCase()
-				.when(cb.isNotNull(joins.getCaseRegion()), joins.getCaseRegion().get(Region.UUID))
-				.otherwise(
-					cb.selectCase()
-						.when(cb.isNotNull(joins.getContactRegion()), joins.getContactRegion().get(Region.UUID))
-						.otherwise(joins.getEventRegion().get(Region.UUID)));
 			String regionUuid = taskCriteria.getRegion().getUuid();
-			filter = CriteriaBuilderHelper
-				.and(cb, filter, cb.or(cb.equal(region, regionUuid), cb.equal(joins.getCaseResponsibleRegion().get(Region.UUID), regionUuid)));
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				CriteriaBuilderHelper.or(
+					cb,
+					cb.equal(joins.getCaseRegion().get(AbstractDomainObject.UUID), regionUuid),
+					cb.equal(joins.getCaseResponsibleRegion().get(AbstractDomainObject.UUID), regionUuid),
+					cb.equal(joins.getContactRegion().get(AbstractDomainObject.UUID), regionUuid),
+					cb.equal(joins.getContactJoins().getCaseRegion().get(AbstractDomainObject.UUID), regionUuid),
+					cb.equal(joins.getContactJoins().getCaseResponsibleRegion().get(AbstractDomainObject.UUID), regionUuid),
+					cb.equal(joins.getContactJoins().getResultingCaseJoins().getRegion().get(AbstractDomainObject.UUID), regionUuid),
+					cb.equal(joins.getContactJoins().getResultingCaseJoins().getResponsibleRegion().get(AbstractDomainObject.UUID), regionUuid),
+					cb.equal(joins.getEventRegion().get(AbstractDomainObject.UUID), regionUuid)));
 		}
 		if (taskCriteria.getDistrict() != null) {
-			Expression<Object> district = cb.selectCase()
-				.when(cb.isNotNull(joins.getCaseDistrict()), joins.getCaseDistrict().get(District.UUID))
-				.otherwise(
-					cb.selectCase()
-						.when(cb.isNotNull(joins.getContactDistrict()), joins.getContactDistrict().get(District.UUID))
-						.otherwise(joins.getEventDistrict().get(District.UUID)));
 			String districtUuid = taskCriteria.getDistrict().getUuid();
 			filter = CriteriaBuilderHelper.and(
 				cb,
 				filter,
-				cb.or(cb.equal(district, districtUuid), cb.equal(joins.getCaseResponsibleDistrict().get(District.UUID), districtUuid)));
+				CriteriaBuilderHelper.or(
+					cb,
+					cb.equal(joins.getCaseDistrict().get(AbstractDomainObject.UUID), districtUuid),
+					cb.equal(joins.getCaseResponsibleDistrict().get(AbstractDomainObject.UUID), districtUuid),
+					cb.equal(joins.getContactDistrict().get(AbstractDomainObject.UUID), districtUuid),
+					cb.equal(joins.getContactJoins().getCaseDistrict().get(AbstractDomainObject.UUID), districtUuid),
+					cb.equal(joins.getContactJoins().getCaseResponsibleDistrict().get(AbstractDomainObject.UUID), districtUuid),
+					cb.equal(joins.getContactJoins().getResultingCaseJoins().getDistrict().get(AbstractDomainObject.UUID), districtUuid),
+					cb.equal(joins.getContactJoins().getResultingCaseJoins().getResponsibleDistrict().get(AbstractDomainObject.UUID), districtUuid),
+					cb.equal(joins.getEventDistrict().get(AbstractDomainObject.UUID), districtUuid)));
 		}
 		if (taskCriteria.getFreeText() != null) {
 			String[] textFilters = taskCriteria.getFreeText().split("\\s+");
