@@ -75,6 +75,12 @@ public class CreateNewTaskSteps implements En {
           final Task actualTask = collectTaskData();
           ComparisonHelper.compareEqualEntities(task, actualTask);
         });
+    When(
+        "^I click on Save button in New Task form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
 
     When(
         "^I change all Task's fields and save$",

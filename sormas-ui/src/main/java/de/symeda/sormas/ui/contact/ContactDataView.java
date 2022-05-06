@@ -15,6 +15,7 @@
 package de.symeda.sormas.ui.contact;
 
 import com.vaadin.server.Page;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.HorizontalLayout;
 import com.vaadin.ui.Label;
@@ -27,7 +28,9 @@ import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.FacadeProvider;
 import de.symeda.sormas.api.caze.CaseDataDto;
+import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
+import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.feature.FeatureTypeProperty;
@@ -39,6 +42,7 @@ import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.vaccination.VaccinationAssociationType;
 import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
@@ -95,6 +99,8 @@ public class ContactDataView extends AbstractContactView {
 
 		editComponent = ControllerProvider.getContactController()
 			.getContactDataEditComponent(getContactRef().getUuid(), ViewMode.NORMAL, contactDto.isPseudonymized());
+
+		addCreateFromCaseButtonLogic();
 
 		DetailSubComponentWrapper container = new DetailSubComponentWrapper(() -> editComponent);
 		container.setWidth(100, Unit.PERCENTAGE);
@@ -278,6 +284,67 @@ public class ContactDataView extends AbstractContactView {
 			layout.disable(ArchivingController.ARCHIVE_DEARCHIVE_BUTTON_ID);
 		} else if (contactEditAllowed.equals(EditPermissionType.REFUSED)) {
 			layout.disable();
+		}
+	}
+
+	private void addCreateFromCaseButtonLogic() {
+		ContactDataForm contactDataForm = editComponent.getWrappedComponent();
+
+		if (contactDataForm.getValue().getResultingCase() == null) {
+			if (!ContactClassification.NO_CONTACT.equals(contactDataForm.getValue().getContactClassification())) {
+				if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CONVERT)) {
+					contactDataForm.getToCaseButton().addClickListener(event -> {
+						if (!ContactClassification.CONFIRMED.equals(contactDataForm.getValue().getContactClassification())) {
+							VaadinUiUtil.showSimplePopupWindow(
+								I18nProperties.getString(Strings.headingContactConfirmationRequired),
+								I18nProperties.getString(Strings.messageContactToCaseConfirmationRequired));
+						} else {
+							if (contactDataForm.getValue().getFollowUpComment() != null) {
+								int finalFollowUpCommentLenght =
+									ContactLogic
+										.extendFollowUpStatusComment(
+											contactDataForm.getValue().getFollowUpComment(),
+											I18nProperties.getString(Strings.messageSystemFollowUpCanceled))
+										.length();
+								if (finalFollowUpCommentLenght > FieldConstraints.CHARACTER_LIMIT_BIG) {
+									VerticalLayout verticalLayout = new VerticalLayout();
+									Label contentLabel = new Label(
+										String.format(
+											I18nProperties.getString(Strings.messageContactConversionFollowUpCommentLarge),
+											I18nProperties.getString(Strings.messageSystemFollowUpCanceled)),
+										ContentMode.HTML);
+									contentLabel.setWidth(100, Unit.PERCENTAGE);
+									verticalLayout.addComponent(contentLabel);
+									verticalLayout.setMargin(false);
+
+									VaadinUiUtil.showConfirmationPopup(
+										I18nProperties.getString(Strings.headingContactConversionFollowUpCommentLarge),
+										verticalLayout,
+										I18nProperties.getString(Strings.messageContactConversionFollowUpCommentLargeOmitMessage),
+										I18nProperties.getString(Strings.messageContactConversionFollowUpCommentLargeAdjustComment),
+										confirm -> {
+											if (Boolean.TRUE.equals(confirm)) {
+												createFromContactWithCheckChanges(contactDataForm);
+											}
+										});
+								} else {
+									createFromContactWithCheckChanges(contactDataForm);
+								}
+							} else {
+								createFromContactWithCheckChanges(contactDataForm);
+							}
+						}
+					});
+				}
+			}
+		}
+	}
+
+	private void createFromContactWithCheckChanges(ContactDataForm contactDataForm) {
+		if (editComponent.isModified()) {
+			showUnsavedChangesPopup(() -> ControllerProvider.getCaseController().createFromContact(contactDataForm.getValue()));
+		} else {
+			ControllerProvider.getCaseController().createFromContact(contactDataForm.getValue());
 		}
 	}
 
