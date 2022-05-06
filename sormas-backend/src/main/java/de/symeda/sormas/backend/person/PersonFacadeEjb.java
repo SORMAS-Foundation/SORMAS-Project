@@ -18,8 +18,6 @@ import static java.util.Comparator.comparing;
 import static java.util.stream.Collectors.groupingBy;
 import static java.util.stream.Collectors.maxBy;
 
-import de.symeda.sormas.backend.event.EventFacadeEjb;
-import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
@@ -121,15 +119,21 @@ import de.symeda.sormas.api.utils.ValidationRuntimeException;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb;
 import de.symeda.sormas.backend.caze.CaseFacadeEjb.CaseFacadeEjbLocal;
+import de.symeda.sormas.backend.caze.CaseJoins;
+import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb;
 import de.symeda.sormas.backend.contact.ContactFacadeEjb.ContactFacadeEjbLocal;
+import de.symeda.sormas.backend.contact.ContactJoins;
+import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
+import de.symeda.sormas.backend.event.EventFacadeEjb;
 import de.symeda.sormas.backend.event.EventFacadeEjb.EventFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.event.EventParticipantFacadeEjb;
 import de.symeda.sormas.backend.event.EventParticipantFacadeEjb.EventParticipantFacadeEjbLocal;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
@@ -672,7 +676,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		Root<Contact> contactRoot = cq.from(Contact.class);
 		Join<Contact, Person> personJoin = contactRoot.join(Contact.PERSON, JoinType.LEFT);
 
-		Predicate filter = contactService.createUserFilter(cb, cq, contactRoot);
+		Predicate filter = contactService.createUserFilter(new ContactQueryContext(cb, cq, new ContactJoins(contactRoot)));
 
 		if (since != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, contactService.createChangeDateFilter(cb, contactRoot, since));
@@ -702,7 +706,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		Root<Case> caseRoot = cq.from(Case.class);
 		Join<Case, Person> personJoin = caseRoot.join(Case.PERSON, JoinType.LEFT);
 
-		Predicate filter = caseService.createUserFilter(cb, cq, caseRoot);
+		Predicate filter = caseService.createUserFilter(new CaseQueryContext(cb, cq, new CaseJoins(caseRoot)));
 		if (since != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, caseService.createChangeDateFilter(cb, caseRoot, since));
 		}
@@ -744,7 +748,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		Root<Contact> contactRoot = cq.from(Contact.class);
 		Join<Contact, Person> personJoin = contactRoot.join(Contact.PERSON, JoinType.LEFT);
 
-		Predicate filter = contactService.createUserFilter(cb, cq, contactRoot);
+		Predicate filter = contactService.createUserFilter(new ContactQueryContext(cb, cq, new ContactJoins(contactRoot)));
 		filter = CriteriaBuilderHelper.and(cb, filter, cb.notEqual(contactRoot.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.CANCELED));
 		filter = CriteriaBuilderHelper.and(cb, filter, cb.notEqual(contactRoot.get(Contact.FOLLOW_UP_STATUS), FollowUpStatus.NO_FOLLOW_UP));
 
@@ -775,7 +779,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		Root<Case> caseRoot = cq.from(Case.class);
 		Join<Case, Person> personJoin = caseRoot.join(Case.PERSON, JoinType.LEFT);
 
-		Predicate filter = caseService.createUserFilter(cb, cq, caseRoot);
+		Predicate filter = caseService.createUserFilter(new CaseQueryContext(cb, cq, new CaseJoins(caseRoot)));
 
 		filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(caseRoot.get(Case.DELETED), false));
 
@@ -805,7 +809,7 @@ public class PersonFacadeEjb implements PersonFacade {
 
 		Root<Contact> contactRoot = cq.from(Contact.class);
 		Join<Contact, Person> personContactJoin = contactRoot.join(Contact.PERSON, JoinType.LEFT);
-		Predicate contactFilter = contactService.createUserFilter(cb, cq, contactRoot);
+		Predicate contactFilter = contactService.createUserFilter(new ContactQueryContext(cb, cq, new ContactJoins(contactRoot)));
 
 		contactFilter = CriteriaBuilderHelper.and(cb, contactFilter, cb.equal(contactRoot.get(Contact.DELETED), false));
 
@@ -821,7 +825,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		cq = cb.createQuery(FollowUpStatusDto.class);
 		Root<Case> caseRoot = cq.from(Case.class);
 		Join<Case, Person> personCaseJoin = caseRoot.join(Case.PERSON, JoinType.LEFT);
-		Predicate caseFilter = caseService.createUserFilter(cb, cq, caseRoot);
+		Predicate caseFilter = caseService.createUserFilter(new CaseQueryContext(cb, cq, new CaseJoins(caseRoot)));
 
 		caseFilter = CriteriaBuilderHelper.and(cb, caseFilter, cb.equal(caseRoot.get(Case.DELETED), false));
 

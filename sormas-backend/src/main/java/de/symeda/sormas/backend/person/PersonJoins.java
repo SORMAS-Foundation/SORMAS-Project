@@ -31,11 +31,13 @@ import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantJoins;
+import de.symeda.sormas.backend.immunization.ImmunizationJoins;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
 import de.symeda.sormas.backend.infrastructure.country.Country;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.location.LocationJoins;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
+import de.symeda.sormas.backend.travelentry.TravelEntryJoins;
 
 public class PersonJoins extends QueryJoins<Person> {
 
@@ -55,6 +57,8 @@ public class PersonJoins extends QueryJoins<Person> {
 	private CaseJoins caseJoins;
 	private ContactJoins contactJoins;
 	private EventParticipantJoins eventParticipantJoins;
+	private ImmunizationJoins immunizationJoins;
+	private TravelEntryJoins travelEntryJoins;
 
 	public PersonJoins(From<?, Person> root) {
 		super(root);
@@ -178,5 +182,21 @@ public class PersonJoins extends QueryJoins<Person> {
 
 	private void setAddressJoins(LocationJoins addressJoins) {
 		this.addressJoins = addressJoins;
+	}
+
+	public ImmunizationJoins getImmunizationJoins() {
+		return getOrCreate(immunizationJoins, () -> new ImmunizationJoins(getImmunization()), this::setImmunizationJoins);
+	}
+
+	private void setImmunizationJoins(ImmunizationJoins immunizationJoins) {
+		this.immunizationJoins = immunizationJoins;
+	}
+
+	public TravelEntryJoins getTravelEntryJoins() {
+		return getOrCreate(travelEntryJoins, () -> new TravelEntryJoins(getTravelEntry()), this::setTravelEntryJoins);
+	}
+
+	private void setTravelEntryJoins(TravelEntryJoins travelEntryJoins) {
+		this.travelEntryJoins = travelEntryJoins;
 	}
 }

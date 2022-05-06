@@ -17,8 +17,6 @@
  *******************************************************************************/
 package de.symeda.sormas.backend.event;
 
-import static de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
-
 import java.sql.Timestamp;
 import java.time.LocalDate;
 import java.util.ArrayList;
@@ -112,6 +110,7 @@ import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLoca
 import de.symeda.sormas.backend.share.ExternalShareInfoCountAndLatestDate;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
 import de.symeda.sormas.backend.sormastosormas.SormasToSormasFacadeEjb.SormasToSormasFacadeEjbLocal;
+import de.symeda.sormas.backend.sormastosormas.entities.event.SormasToSormasEventFacadeEjb.SormasToSormasEventFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb;
 import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.ShareInfoHelper;
@@ -330,15 +329,16 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Event> event = cq.from(Event.class);
+		EventQueryContext queryContext = new EventQueryContext(cb, cq, event);
 
 		Predicate filter = null;
 
 		if (eventCriteria != null) {
 			if (eventCriteria.getUserFilterIncluded()) {
-				filter = service.createUserFilter(cb, cq, event);
+				filter = service.createUserFilter(queryContext);
 			}
 
-			Predicate criteriaFilter = service.buildCriteriaFilter(eventCriteria, new EventQueryContext(cb, cq, event));
+			Predicate criteriaFilter = service.buildCriteriaFilter(eventCriteria, queryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -419,7 +419,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			if (eventCriteria.getUserFilterIncluded()) {
 				EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
 				eventUserFilterCriteria.includeUserCaseAndEventParticipantFilter(true);
-				filter = service.createUserFilter(cb, cq, event, eventUserFilterCriteria);
+				filter = service.createUserFilter(eventQueryContext, eventUserFilterCriteria);
 			}
 
 			Predicate criteriaFilter = service.buildCriteriaFilter(eventCriteria, eventQueryContext);
@@ -725,7 +725,7 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 
 		cq.distinct(true);
 
-		Predicate filter = service.createUserFilter(cb, cq, event);
+		Predicate filter = service.createUserFilter(eventQueryContext);
 
 		if (eventCriteria != null) {
 			Predicate criteriaFilter = service.buildCriteriaFilter(eventCriteria, eventQueryContext);
@@ -1286,14 +1286,13 @@ public class EventFacadeEjb extends AbstractCoreFacadeEjb<Event, EventDto, Event
 			CriteriaBuilder cb = em.getCriteriaBuilder();
 			CriteriaQuery<String> cq = cb.createQuery(String.class);
 			Root<Event> from = cq.from(Event.class);
-
-			EventJoins eventJoins = new EventJoins(from);
+			EventQueryContext queryContext = new EventQueryContext(cb, cq, from);
 
 			Predicate filters = CriteriaBuilderHelper.and(
 				cb,
-				service.createUserFilter(cb, cq, from),
+				service.createUserFilter(queryContext),
 				service.createActiveEventsFilter(cb, from),
-				eventJoins.getSuperordinateEvent().get(Event.UUID).in(batchedUuids));
+				queryContext.getJoins().getSuperordinateEvent().get(Event.UUID).in(batchedUuids));
 
 			cq.where(filters);
 			cq.select(from.get(Event.UUID));
