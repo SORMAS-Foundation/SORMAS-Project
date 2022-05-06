@@ -43,6 +43,7 @@ import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.data.validator.DateRangeValidator;
 import com.vaadin.v7.shared.ui.datefield.Resolution;
+import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
@@ -105,7 +106,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 	private static final String CONTACT_DATA_HEADING_LOC = "contactDataHeadingLoc";
 	private static final String FOLLOW_UP_STATUS_HEADING_LOC = "followUpStatusHeadingLoc";
-	private static final String TO_CASE_BTN_LOC = "toCaseBtnLoc";
+	protected static final String TO_CASE_BTN_LOC = "toCaseBtnLoc";
 	private static final String CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC = "cancelOrResumeFollowUpBtnLoc";
 	private static final String LOST_FOLLOW_UP_BTN_LOC = "lostFollowUpBtnLoc";
 	private static final String GENERAL_COMMENT_LOC = "generalCommentLoc";
@@ -187,6 +188,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private DateField firstContactDate;
 	private DateField lastContactDate;
 	private DateField reportDate;
+	private Button toCaseButton;
 
 	public ContactDataForm(Disease disease, ViewMode viewMode, boolean isPseudonymized) {
 		super(
@@ -199,6 +201,10 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		this.viewMode = viewMode;
 		this.disease = disease;
 		addFields();
+	}
+
+	public Button getToCaseButton() {
+		return toCaseButton;
 	}
 
 	@SuppressWarnings("deprecation")
@@ -233,6 +239,13 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		firstContactDate = addDateField(ContactDto.FIRST_CONTACT_DATE, DateField.class, 0);
 		lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
 		reportDate = addField(ContactDto.REPORT_DATE_TIME, DateField.class);
+
+		List<AbstractField<Date>> validatedFields = Arrays.asList(firstContactDate, lastContactDate, reportDate);
+		validatedFields.forEach(field -> field.addValueChangeListener(r -> {
+			validatedFields.forEach(otherField -> {
+				otherField.setValidationVisible(!otherField.isValid());
+			});
+		}));
 
 		FieldHelper
 			.setVisibleWhen(getFieldGroup(), ContactDto.FIRST_CONTACT_DATE, ContactDto.MULTI_DAY_CONTACT, Collections.singletonList(true), true);
@@ -610,16 +623,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					getContent().addComponent(linkToData, TO_CASE_BTN_LOC);
 				} else if (!ContactClassification.NO_CONTACT.equals(getValue().getContactClassification())) {
 					if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CONVERT)) {
-						Button toCaseButton = ButtonHelper.createButton(Captions.contactCreateContactCase, event -> {
-							if (!ContactClassification.CONFIRMED.equals(getValue().getContactClassification())) {
-								VaadinUiUtil.showSimplePopupWindow(
-									I18nProperties.getString(Strings.headingContactConfirmationRequired),
-									I18nProperties.getString(Strings.messageContactToCaseConfirmationRequired));
-							} else {
-								ControllerProvider.getCaseController().createFromContact(getValue());
-							}
-						}, ValoTheme.BUTTON_LINK);
-
+						toCaseButton = ButtonHelper.createButton(Captions.contactCreateContactCase);
+						toCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
 						getContent().addComponent(toCaseButton, TO_CASE_BTN_LOC);
 					}
 				}
@@ -1017,7 +1022,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	public void setValue(ContactDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
 
-		FollowUpPeriodDto followUpPeriodDto = FacadeProvider.getContactFacade().calculateFollowUpUntilDate(newFieldValue, true);
+		FollowUpPeriodDto followUpPeriodDto = FacadeProvider.getContactFacade().getCalculatedFollowUpUntilDate(newFieldValue, true);
 		tfExpectedFollowUpUntilDate.setValue(DateHelper.formatLocalDate(followUpPeriodDto.getFollowUpEndDate(), I18nProperties.getUserLanguage()));
 		tfExpectedFollowUpUntilDate.setReadOnly(true);
 		tfExpectedFollowUpUntilDate.setDescription(

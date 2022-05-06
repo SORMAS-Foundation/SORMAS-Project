@@ -96,6 +96,11 @@ public class EventDirectoryPage {
       By.xpath("//th[@role='columnheader']//input[@type='checkbox']/../..");
   public static final By BULK_ACTIONS_EVENT_DIRECTORY = By.id("bulkActions-2");
   public static final By GROUP_EVENTS_EVENT_DIRECTORY = By.id("bulkActions-7");
+  public static final By BULK_EDIT_EVENT_DIRECTORY = By.id("bulkActions-3");
+  public static final By CHANGE_EVENT_MANAGEMENT_STATUS_CHECKBOX =
+      By.xpath("//label[text()='Change event management status']");
+  public static final By EVENT_MANAGEMENT_STATUS_COMBOBOX =
+      By.cssSelector("#eventManagementStatus .v-select-option");
   public static final By GROUP_ID_COLUMN = By.xpath("(//td//a)[2]");
   public static final By EXPORT_PARTICIPANT_BUTTON = By.id("export");
   public static final By BASIC_EXPORT_PARTICIPANT_BUTTON = By.id("exportBasic");
@@ -118,6 +123,19 @@ public class EventDirectoryPage {
   public static final By IMPORT_PARTICIPANT_BUTTON = By.id("actionImport");
   public static final By COMMIT_BUTTON = By.id("commit");
   public static final By CUSTOM_EXPORT_PARTICIPANT_BUTTON = By.id("exportCustom");
+  public static final By DETAILED_EVENT_EXPORT_BUTTON = By.id("exportDetailed");
+  public static final By BASIC_EVENT_EXPORT_BUTTON = By.id("exportBasic");
+
+  public static By getCheckboxByIndex(String idx) {
+    return By.xpath(String.format("(//input[@type=\"checkbox\"])[%s]", idx));
+  }
+
+  public static By getCheckboxByUUID(String uuid) {
+    return By.xpath(
+        String.format(
+            "//td//a[text()=\"%s\"]/../preceding-sibling::td//input[@type=\"checkbox\"]",
+            uuid.substring(0, 6).toUpperCase()));
+  }
 
   public static By getByEventUuid(String eventUuid) {
     return By.xpath(String.format("//a[@title='%s']", eventUuid));

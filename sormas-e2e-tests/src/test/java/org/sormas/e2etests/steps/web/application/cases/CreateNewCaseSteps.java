@@ -29,6 +29,11 @@ import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.*;
 import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.CONTACT_CASE_SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.BACK_TO_THE_CASES_LIST_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_NEW_CASE_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_NEW_PERSON_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISCARD_BUTTON_POPUP;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_CASE_POPUP_HEADER;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_PERSON_POPUP_HEADER;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_PERSON_TITLE;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACTS_DETAILED_COLUMN_HEADERS;
@@ -60,6 +65,7 @@ import org.sormas.e2etests.entities.pojo.web.Case;
 import org.sormas.e2etests.entities.services.CaseService;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.pages.application.cases.EditCasePage;
+import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.asserts.SoftAssert;
 
@@ -75,6 +81,7 @@ public class CreateNewCaseSteps implements En {
   public CreateNewCaseSteps(
       WebDriverHelpers webDriverHelpers,
       CaseService caseService,
+      ApiState apiState,
       Faker faker,
       SoftAssert softly,
       BaseSteps baseSteps) {
@@ -179,7 +186,6 @@ public class CreateNewCaseSteps implements En {
             webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           }
           webDriverHelpers.clickOnWebElementBySelector(FIRST_CASE_ID_BUTTON);
-          webDriverHelpers.waitForPageLoaded();
         });
 
     When(
@@ -197,7 +203,6 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.scrollToElement(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           TimeUnit.SECONDS.sleep(2); // wait for reaction
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
@@ -268,6 +273,7 @@ public class CreateNewCaseSteps implements En {
               SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON);
         });
+
     When(
         "I create a new case with specific data for DE version",
         () -> {
@@ -339,25 +345,29 @@ public class CreateNewCaseSteps implements En {
         "^I create a new case with specific data$",
         () -> {
           caze = caseService.buildGeneratedCase();
-          selectCaseOrigin(caze.getCaseOrigin());
-          fillExternalId(caze.getExternalId());
-          fillDisease(caze.getDisease());
-          selectResponsibleRegion(caze.getResponsibleRegion());
-          selectResponsibleDistrict(caze.getResponsibleDistrict());
-          selectResponsibleCommunity(caze.getResponsibleCommunity());
-          selectPlaceOfStay(caze.getPlaceOfStay());
-          fillFirstName(caze.getFirstName());
-          fillLastName(caze.getLastName());
-          fillDateOfBirth(caze.getDateOfBirth(), Locale.ENGLISH);
-          selectSex(caze.getSex());
-          selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
-          fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.ENGLISH);
-          fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
-          fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
-          fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
-          fillPlaceDescription(caze.getPlaceDescription());
+          fillAllCaseFields(caze);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
+          webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
+        });
+
+    When(
+        "I create a new case with disease {string}",
+        (String caseDisease) -> {
+          caze = caseService.buildCaseWithDisease(caseDisease);
+          fillAllCaseFields(caze);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(20);
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_POPUP_HEADER, 1)) {
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_CHECKBOX);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+            TimeUnit.SECONDS.sleep(1);
+            if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_CASE_POPUP_HEADER, 1)) {
+              webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_CASE_CHECKBOX);
+              webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+            }
+          }
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(EditCasePage.REPORT_DATE_INPUT);
           webDriverHelpers.clickOnWebElementBySelector(CASE_SAVED_POPUP);
         });
@@ -383,6 +393,105 @@ public class CreateNewCaseSteps implements En {
           fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
           fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
           fillPlaceDescription(caze.getPlaceDescription());
+        });
+    When(
+        "I set Place of stay to {string}, Facility Category to {string} and  Facility Type to {string} in Case creation",
+        (String placeOfStay, String facilityCategory, String facilityType) -> {
+          selectPlaceOfStay(placeOfStay);
+          selectFacilityCategory(facilityCategory);
+          selectFacilityType(facilityType);
+          selectFacility("Other facility");
+          fillPlaceDescription(caze.getPlaceDescription());
+        });
+
+    When(
+        "^I fill new case form with chosen data without personal data on Case directory page$",
+        () -> {
+          caze = caseService.buildGeneratedCase();
+          selectCaseOrigin(caze.getCaseOrigin());
+          fillExternalId(caze.getExternalId());
+          fillDisease(caze.getDisease());
+          selectResponsibleRegion(caze.getResponsibleRegion());
+          selectResponsibleDistrict(caze.getResponsibleDistrict());
+          selectResponsibleCommunity(caze.getResponsibleCommunity());
+          selectPlaceOfStay(caze.getPlaceOfStay());
+          selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+          fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.ENGLISH);
+          fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
+          fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
+          fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
+          fillPlaceDescription(caze.getPlaceDescription());
+        });
+
+    When(
+        "^I click on the clear button in new add new event participant form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(PERSON_SEARCH_LOCATOR_BUTTON);
+        });
+
+    When(
+        "^I click on the person search button in new case form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(PERSON_SEARCH_LOCATOR_BUTTON);
+        });
+    When(
+        "^I click on the clear button in new case form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(PERSON_SEARCH_LOCATOR_BUTTON);
+        });
+
+    When(
+        "^I search for the last created person via Api by uuid in popup on Select Person window$",
+        () -> {
+          webDriverHelpers.fillInWebElement(
+              UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE_INPUT,
+              apiState.getLastCreatedPerson().getUuid());
+          webDriverHelpers.clickOnWebElementBySelector(PERSON_CASE_WINDOW_SEARCH_CASE_BUTTON);
+        });
+
+    When(
+        "^I search for the last created person by First Name and Last Name in popup on Select Person window$",
+        () -> {
+          webDriverHelpers.fillInWebElement(FIRST_NAME_LIKE_INPUT, aCase.getFirstName());
+          webDriverHelpers.fillInWebElement(LAST_NAME_LIKE_INPUT, aCase.getLastName());
+          webDriverHelpers.clickOnWebElementBySelector(PERSON_CASE_WINDOW_SEARCH_CASE_BUTTON);
+        });
+
+    When(
+        "^I open the first found result in the popup of Select Person window$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION);
+          webDriverHelpers.clickOnWebElementBySelector(
+              PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SELECT_PERSON_WINDOW_CONFIRM_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SELECT_PERSON_WINDOW_CONFIRM_BUTTON);
+        });
+
+    When(
+        "^I open the first found result in the popup of Select Person window for DE version$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION);
+          webDriverHelpers.clickOnWebElementBySelector(
+              PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+              SELECT_PERSON_WINDOW_CONFIRM_BUTTON_DE);
+          webDriverHelpers.clickOnWebElementBySelector(SELECT_PERSON_WINDOW_CONFIRM_BUTTON_DE);
+        });
+
+    When(
+        "^I click on Save button in Case form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
+
+    When(
+        "^I Pick an existing case in Pick or create person popup in Case entry$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CREATE_A_NEW_CASE_CONFIRMATION_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
 
     When(
@@ -468,7 +577,6 @@ public class CreateNewCaseSteps implements En {
           selectResponsibleDistrict(caze.getResponsibleDistrict());
           selectResponsibleCommunity(caze.getResponsibleCommunity());
           selectPlaceOfStay(caze.getPlaceOfStay());
-          fillDateOfBirth(caze.getDateOfBirth(), Locale.ENGLISH);
           selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
           fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.ENGLISH);
           fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
@@ -481,6 +589,32 @@ public class CreateNewCaseSteps implements En {
         "^I click on Enter Home Address of the Case Person Now in the Create New Case popup$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ENTER_HOME_ADDRESS_CHECKBOX);
+        });
+
+    When(
+        "I click on save button in the case popup",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          TimeUnit.SECONDS.sleep(2); // wait for spinner
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+
+    When(
+        "^I check if default disease value is set for ([^\"]*)$",
+        (String disease) -> {
+          String getDisease = webDriverHelpers.getValueFromCombobox(DISEASE_COMBOBOX);
+          softly.assertEquals(disease, getDisease, "Diseases are not equal");
+          softly.assertAll();
+          webDriverHelpers.clickOnWebElementBySelector(DISCARD_BUTTON_POPUP);
+        });
+
+    When(
+        "^I check if default disease value in the Line listing is set for ([^\"]*)$",
+        (String disease) -> {
+          String getDisease = webDriverHelpers.getValueFromCombobox(LINE_LISTING_DISEASE_COMBOBOX);
+          softly.assertEquals(disease, getDisease, "Diseases are not equal");
+          softly.assertAll();
+          webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_DISCARD_BUTTON);
         });
   }
 
@@ -517,6 +651,18 @@ public class CreateNewCaseSteps implements En {
 
   private void selectResponsibleCommunity(String responsibleCommunity) {
     webDriverHelpers.selectFromCombobox(RESPONSIBLE_COMMUNITY_COMBOBOX, responsibleCommunity);
+  }
+
+  private void selectFacilityCategory(String selectFacilityCategory) {
+    webDriverHelpers.selectFromCombobox(FACILITY_CATEGORY_COMBOBOX, selectFacilityCategory);
+  }
+
+  private void selectFacilityType(String selectFacilityType) {
+    webDriverHelpers.selectFromCombobox(FACILITY_TYPE_COMBOBOX, selectFacilityType);
+  }
+
+  private void selectFacility(String selectFacility) {
+    webDriverHelpers.selectFromCombobox(FACILITY_COMBOBOX, selectFacility);
   }
 
   private void selectPlaceOfStay(String placeOfStay) {
@@ -571,6 +717,26 @@ public class CreateNewCaseSteps implements En {
 
   private void fillPrimaryEmailAddress(String primaryPhoneNumber) {
     webDriverHelpers.fillInWebElement(PRIMARY_EMAIL_ADDRESS_INPUT, primaryPhoneNumber);
+  }
+
+  private void fillAllCaseFields(Case caze) {
+    selectCaseOrigin(caze.getCaseOrigin());
+    fillExternalId(caze.getExternalId());
+    fillDisease(caze.getDisease());
+    selectResponsibleRegion(caze.getResponsibleRegion());
+    selectResponsibleDistrict(caze.getResponsibleDistrict());
+    selectResponsibleCommunity(caze.getResponsibleCommunity());
+    selectPlaceOfStay(caze.getPlaceOfStay());
+    fillFirstName(caze.getFirstName());
+    fillLastName(caze.getLastName());
+    fillDateOfBirth(caze.getDateOfBirth(), Locale.ENGLISH);
+    selectSex(caze.getSex());
+    selectPresentConditionOfPerson(caze.getPresentConditionOfPerson());
+    fillDateOfSymptomOnset(caze.getDateOfSymptomOnset(), Locale.ENGLISH);
+    fillPrimaryPhoneNumber(caze.getPrimaryPhoneNumber());
+    fillPrimaryEmailAddress(caze.getPrimaryEmailAddress());
+    fillDateOfReport(caze.getDateOfReport(), Locale.ENGLISH);
+    fillPlaceDescription(caze.getPlaceDescription());
   }
 
   private List<WebElement> getTableRows() {

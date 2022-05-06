@@ -2,6 +2,7 @@ package de.symeda.sormas.backend.travelentry;
 
 import java.sql.Timestamp;
 import java.time.LocalDate;
+import java.util.Date;
 import java.util.List;
 
 import javax.annotation.security.RolesAllowed;
@@ -14,6 +15,7 @@ import javax.inject.Inject;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Root;
+import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
 import de.symeda.sormas.api.EditPermissionType;
@@ -55,6 +57,7 @@ import de.symeda.sormas.backend.util.DtoHelper;
 import de.symeda.sormas.backend.util.Pseudonymizer;
 
 @Stateless(name = "TravelEntryFacade")
+@RolesAllowed(UserRight._TRAVEL_ENTRY_VIEW)
 public class TravelEntryFacadeEjb
 	extends AbstractCoreFacadeEjb<TravelEntry, TravelEntryDto, TravelEntryIndexDto, TravelEntryReferenceDto, TravelEntryService, TravelEntryCriteria>
 	implements TravelEntryFacade {
@@ -108,11 +111,8 @@ public class TravelEntryFacadeEjb
 	}
 
 	@Override
+	@RolesAllowed(UserRight._TRAVEL_ENTRY_DELETE)
 	public void delete(String travelEntryUuid) {
-		if (!userService.hasRight(UserRight.TRAVEL_ENTRY_DELETE)) {
-			throw new UnsupportedOperationException("User " + userService.getCurrentUser().getUuid() + " is not allowed to delete travel entries");
-		}
-
 		TravelEntry travelEntry = service.getByUuid(travelEntryUuid);
 		service.delete(travelEntry);
 
@@ -380,6 +380,30 @@ public class TravelEntryFacadeEjb
 			return TravelEntry.DATE_OF_ARRIVAL;
 		}
 		return super.getDeleteReferenceField(deletionReference);
+	}
+
+	@Override
+	@RolesAllowed(UserRight._TRAVEL_ENTRY_ARCHIVE)
+	public void archive(String entityUuid, Date endOfProcessingDate) {
+		super.archive(entityUuid, endOfProcessingDate);
+	}
+
+	@Override
+	@RolesAllowed(UserRight._TRAVEL_ENTRY_ARCHIVE)
+	public void archive(List<String> entityUuids) {
+		super.archive(entityUuids);
+	}
+
+	@Override
+	@RolesAllowed(UserRight._TRAVEL_ENTRY_ARCHIVE)
+	public void dearchive(List<String> entityUuids, String dearchiveReason) {
+		super.dearchive(entityUuids, dearchiveReason);
+	}
+
+	@Override
+	@RolesAllowed(UserRight._TRAVEL_ENTRY_EDIT)
+	public TravelEntryDto save(@Valid @NotNull TravelEntryDto travelEntryDto) {
+		return doSave(travelEntryDto);
 	}
 
 	@LocalBean

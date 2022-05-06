@@ -407,7 +407,7 @@ public class UserFacadeEjb implements UserFacade {
 			final Subquery<Contact> contactJurisdictionSubquery = cq.subquery(Contact.class);
 			final Root<Contact> contactRoot = contactJurisdictionSubquery.from(Contact.class);
 			final ContactJurisdictionPredicateValidator contactJurisdictionPredicateValidator =
-				ContactJurisdictionPredicateValidator.of(new ContactQueryContext<>(cb, cq, contactRoot), userRoot);
+				ContactJurisdictionPredicateValidator.of(new ContactQueryContext(cb, cq, contactRoot), userRoot);
 
 			contactJurisdictionSubquery.select(contactRoot)
 				.where(
@@ -429,7 +429,7 @@ public class UserFacadeEjb implements UserFacade {
 			final Subquery<de.symeda.sormas.backend.event.Event> eventJurisdictionSubquery = cq.subquery(de.symeda.sormas.backend.event.Event.class);
 			final Root<de.symeda.sormas.backend.event.Event> eventRoot = eventJurisdictionSubquery.from(de.symeda.sormas.backend.event.Event.class);
 			final EventJurisdictionPredicateValidator eventJurisdictionPredicateValidator =
-				EventJurisdictionPredicateValidator.of(new EventQueryContext<>(cb, cq, eventRoot), userRoot);
+				EventJurisdictionPredicateValidator.of(new EventQueryContext(cb, cq, eventRoot), userRoot);
 
 			eventJurisdictionSubquery.select(eventRoot)
 				.where(
@@ -451,7 +451,7 @@ public class UserFacadeEjb implements UserFacade {
 			final Subquery<TravelEntry> travelEntrySubquery = cq.subquery(TravelEntry.class);
 			final Root<TravelEntry> travelEntryRoot = travelEntrySubquery.from(TravelEntry.class);
 			final TravelEntryJurisdictionPredicateValidator travelEntryJurisdictionPredicateValidator =
-				TravelEntryJurisdictionPredicateValidator.of(new TravelEntryQueryContext<>(cb, cq, travelEntryRoot), userRoot);
+				TravelEntryJurisdictionPredicateValidator.of(new TravelEntryQueryContext(cb, cq, travelEntryRoot), userRoot);
 
 			travelEntrySubquery.select(travelEntryRoot)
 				.where(

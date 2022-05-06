@@ -1,20 +1,17 @@
-/*******************************************************************************
+/*
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
  * Copyright © 2016-2018 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
- *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
  * the Free Software Foundation, either version 3 of the License, or
  * (at your option) any later version.
- *
  * This program is distributed in the hope that it will be useful,
  * but WITHOUT ANY WARRANTY; without even the implied warranty of
  * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See the
  * GNU General Public License for more details.
- *
  * You should have received a copy of the GNU General Public License
  * along with this program. If not, see <https://www.gnu.org/licenses/>.
- *******************************************************************************/
+ */
 package de.symeda.sormas.backend.caze;
 
 import java.sql.Timestamp;
@@ -24,7 +21,6 @@ import java.util.Collection;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
 import java.util.Optional;
@@ -52,7 +48,6 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -60,7 +55,6 @@ import de.symeda.sormas.api.EditPermissionType;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseClassification;
 import de.symeda.sormas.api.caze.CaseCriteria;
-import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseIndexDto;
 import de.symeda.sormas.api.caze.CaseListEntryDto;
 import de.symeda.sormas.api.caze.CaseLogic;
@@ -76,6 +70,7 @@ import de.symeda.sormas.api.caze.PreviousCaseDto;
 import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.clinicalcourse.ClinicalCourseReferenceDto;
 import de.symeda.sormas.api.clinicalcourse.ClinicalVisitCriteria;
+import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.FollowUpStatus;
 import de.symeda.sormas.api.document.DocumentRelatedEntityType;
 import de.symeda.sormas.api.externaldata.ExternalDataDto;
@@ -86,7 +81,6 @@ import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.infrastructure.facility.FacilityType;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.person.Sex;
-import de.symeda.sormas.api.sample.PathogenTestResultType;
 import de.symeda.sormas.api.therapy.PrescriptionCriteria;
 import de.symeda.sormas.api.therapy.TherapyReferenceDto;
 import de.symeda.sormas.api.therapy.TreatmentCriteria;
@@ -122,7 +116,6 @@ import de.symeda.sormas.backend.event.Event;
 import de.symeda.sormas.backend.event.EventParticipant;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.externaljournal.ExternalJournalService;
-import de.symeda.sormas.backend.externalsurveillancetool.ExternalSurveillanceToolGatewayFacadeEjb;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.immunization.ImmunizationService;
 import de.symeda.sormas.backend.infrastructure.community.Community;
@@ -137,7 +130,6 @@ import de.symeda.sormas.backend.sample.SampleJoins;
 import de.symeda.sormas.backend.sample.SampleService;
 import de.symeda.sormas.backend.share.ExternalShareInfo;
 import de.symeda.sormas.backend.share.ExternalShareInfoService;
-import de.symeda.sormas.backend.sormastosormas.origin.SormasToSormasOriginInfoService;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
@@ -158,7 +150,6 @@ import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.visit.Visit;
 import de.symeda.sormas.backend.visit.VisitFacadeEjb;
 import de.symeda.sormas.backend.visit.VisitService;
-import de.symeda.sormas.utils.CaseJoins;
 
 @Stateless
 @LocalBean
@@ -195,13 +186,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	@EJB
 	private CaseFacadeEjbLocal caseFacade;
 	@EJB
-	private VisitFacadeEjb.VisitFacadeEjbLocal visitFacade;
-	@EJB
 	private SormasToSormasShareInfoFacadeEjbLocal sormasToSormasShareInfoFacade;
 	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
-	@EJB
-	private SormasToSormasOriginInfoService sormasToSormasOriginInfoService;
 	@EJB
 	private ExternalShareInfoService externalShareInfoService;
 	@EJB
@@ -212,8 +199,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	private SurveillanceReportService surveillanceReportService;
 	@EJB
 	private DocumentService documentService;
-	@EJB
-	private ExternalSurveillanceToolGatewayFacadeEjb.ExternalSurveillanceToolGatewayFacadeEjbLocal externalSurveillanceToolGatewayFacade;
 
 	public CaseService() {
 		super(Case.class);
@@ -304,7 +289,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Case> caze = cq.from(getElementClass());
 
-		CaseJoins<Case> joins = new CaseJoins<>(caze);
+		CaseJoins joins = new CaseJoins(caze);
 
 		Predicate filter = createMapCasesFilter(cb, cq, caze, joins, region, district, disease, from, to, dateType);
 
@@ -325,7 +310,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		Root<Case> caze = cq.from(getElementClass());
 
 		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
-		CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+		CaseJoins joins = caseQueryContext.getJoins();
 
 		Predicate filter = createMapCasesFilter(cb, cq, caze, joins, region, district, disease, from, to, dateType);
 
@@ -361,7 +346,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaBuilder cb,
 		CriteriaQuery<?> cq,
 		Root<Case> root,
-		CaseJoins<Case> joins,
+		CaseJoins joins,
 		Region region,
 		District district,
 		Disease disease,
@@ -582,7 +567,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		final From<?, Case> from = caseQueryContext.getRoot();
 		final CriteriaBuilder cb = caseQueryContext.getCriteriaBuilder();
 		final CriteriaQuery<?> cq = caseQueryContext.getQuery();
-		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+		final CaseJoins joins = caseQueryContext.getJoins();
 
 		Join<Case, Person> person = joins.getPerson();
 		Join<Case, User> reportingUser = joins.getReportingUser();
@@ -774,10 +759,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 					CriteriaBuilderHelper.ilikePrecise(cb, person.get(Person.UUID), textFilter + "%"),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
-					phoneNumberPredicate(
-						cb,
-						(Expression<String>) caseQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY),
-						textFilter),
+					phoneNumberPredicate(cb, caseQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
 					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter)));
 
@@ -805,12 +787,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			Join<Case, EventParticipant> eventParticipant = joins.getEventParticipants();
 			Join<EventParticipant, Event> event = eventParticipant.join(EventParticipant.EVENT, JoinType.LEFT);
 
-			filter = CriteriaBuilderHelper.and(
-				cb,
-				filter,
-				cb.isFalse(event.get(Event.DELETED)),
-				cb.isFalse(event.get(Event.ARCHIVED)),
-				cb.isFalse(eventParticipant.get(EventParticipant.DELETED)));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.isFalse(event.get(Event.DELETED)), cb.isFalse(eventParticipant.get(EventParticipant.DELETED)));
 
 			if (hasEventLikeCriteria) {
 				String[] textFilters = caseCriteria.getEventLike().trim().split("\\s+");
@@ -907,7 +885,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		caze.getSamples()
 			.stream()
 			.filter(sample -> sample.getAssociatedContact() == null && sample.getAssociatedEventParticipant() == null)
-			.forEach(sample -> sampleService.delete(sample));
+			.forEach(sample -> sampleService.deletePermanent(sample));
 
 		caze.getVisits().stream().forEach(visit -> {
 			if (visit.getContacts() == null || visit.getContacts().isEmpty()) {
@@ -1001,6 +979,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		contactService.getAllByResultingCase(caze, true).forEach(c -> {
 			c.setResultingCase(null);
+			c.setContactStatus(ContactStatus.DROPPED);
 			externalJournalService.handleExternalJournalPersonUpdateAsync(c.getPerson().toReference());
 			contactService.ensurePersisted(c);
 		});
@@ -1100,13 +1079,21 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return builder;
 	}
 
+	public Predicate createUserFilter(CaseQueryContext caseQueryContext) {
+		return createUserFilter(caseQueryContext, null);
+	}
+
 	@SuppressWarnings("rawtypes")
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Case> casePath, CaseUserFilterCriteria userFilterCriteria) {
+	public Predicate createUserFilter(CaseQueryContext caseQueryContext, CaseUserFilterCriteria userFilterCriteria) {
 
 		User currentUser = getCurrentUser();
 		if (currentUser == null) {
 			return null;
 		}
+
+		final CriteriaQuery<?> cq = caseQueryContext.getQuery();
+		final CriteriaBuilder cb = caseQueryContext.getCriteriaBuilder();
+		final From<?, Case> casePath = caseQueryContext.getRoot();
 
 		Predicate filterResponsible = null;
 		Predicate filter = null;
@@ -1216,10 +1203,17 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return filter;
 	}
 
+	// XXX To be removed when merging with #8747
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Case> casePath) {
-		return createUserFilter(cb, cq, casePath, null);
+		return createUserFilter(new CaseQueryContext(cb, cq, casePath));
+	}
+
+	// XXX To be removed when merging with #8747
+	@SuppressWarnings("rawtypes")
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Case> casePath, CaseUserFilterCriteria userFilterCriteria) {
+		return createUserFilter(new CaseQueryContext(cb, cq, casePath), userFilterCriteria);		
 	}
 
 	/**
@@ -1335,27 +1329,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 				statusChangedBySystem = true;
 			}
 		} else {
-			CaseDataDto caseDto = caseFacade.toDto(caze);
-			Date currentFollowUpUntil = caseDto.getFollowUpUntil();
-
-			Date earliestSampleDate = null;
-			for (Sample sample : caze.getSamples()) {
-				if (!sample.isDeleted()
-					&& sample.getPathogenTestResult() == PathogenTestResultType.POSITIVE
-					&& (earliestSampleDate == null || sample.getSampleDateTime().before(earliestSampleDate))) {
-					earliestSampleDate = sample.getSampleDateTime();
-				}
-			}
-
-			Date untilDate = CaseLogic
-				.calculateFollowUpUntilDate(
-					caseDto,
-					CaseLogic.getFollowUpStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate(), earliestSampleDate),
-					caze.getVisits().stream().map(visit -> visitFacade.toDto(visit)).collect(Collectors.toList()),
-					diseaseConfigurationFacade.getCaseFollowUpDuration(caze.getDisease()),
-					false,
-					featureConfigurationFacade.isPropertyValueTrue(FeatureType.CASE_FOLLOWUP, FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE))
-				.getFollowUpEndDate();
+			Date currentFollowUpUntil = caze.getFollowUpUntil();
+			Date untilDate = computeFollowUpuntilDate(caze);
 			caze.setFollowUpUntil(untilDate);
 			if (DateHelper.getStartOfDay(currentFollowUpUntil).before(DateHelper.getStartOfDay(untilDate))) {
 				caze.setOverwriteFollowUpUntil(false);
@@ -1381,6 +1356,24 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 		externalJournalService.handleExternalJournalPersonUpdateAsync(caze.getPerson().toReference());
 		ensurePersisted(caze);
+	}
+
+	private Date computeFollowUpuntilDate(Case caze) {
+		return computeFollowUpuntilDate(caze, caze.getSamples());
+	}
+
+	public Date computeFollowUpuntilDate(Case caze, Collection<Sample> samples) {
+		Date earliestSampleDate = sampleService.getEarliestSampleDate(samples);
+
+		return CaseLogic
+			.calculateFollowUpUntilDate(
+				CaseFacadeEjb.toCaseDto(caze),
+				CaseLogic.getFollowUpStartDate(caze.getSymptoms().getOnsetDate(), caze.getReportDate(), earliestSampleDate),
+				caze.getVisits().stream().map(VisitFacadeEjb::toDto).collect(Collectors.toList()),
+				diseaseConfigurationFacade.getCaseFollowUpDuration(caze.getDisease()),
+				false,
+				featureConfigurationFacade.isPropertyValueTrue(FeatureType.CASE_FOLLOWUP, FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE))
+			.getFollowUpEndDate();
 	}
 
 	@Override
@@ -1433,17 +1426,11 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	public Collection<Case> getByPersonUuids(List<String> personUuids) {
-		if (CollectionUtils.isEmpty(personUuids)) {
-			// Avoid empty IN clause
-			return Collections.emptyList();
-		} else if (personUuids.size() > ModelConstants.PARAMETER_LIMIT) {
-			List<Case> cases = new LinkedList<>();
-			IterableHelper
-				.executeBatched(personUuids, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> cases.addAll(getCasesByPersonUuids(personUuids)));
-			return cases;
-		} else {
-			return getCasesByPersonUuids(personUuids);
-		}
+
+		List<Case> cases = new ArrayList<>();
+		IterableHelper
+			.executeBatched(personUuids, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> cases.addAll(getCasesByPersonUuids(personUuids)));
+		return cases;
 	}
 
 	private List<Case> getCasesByPersonUuids(List<String> personUuids) {
@@ -1473,8 +1460,8 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		final Root<Case> root = cq.from(Case.class);
 
-		CaseQueryContext<Case> caseQueryContext = new CaseQueryContext<>(cb, cq, root);
-		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, root);
+		final CaseJoins joins = caseQueryContext.getJoins();
 
 		// This is needed in selection because of the combination of distinct and orderBy clauses - every operator in the orderBy has to be part of the select IF distinct is used
 		Expression<Date> latestChangedDateFunction =
@@ -1545,7 +1532,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		final Root<Case> caze = cq.from(Case.class);
 
-		CaseQueryContext<Case> caseQueryContext = new CaseQueryContext<>(cb, cq, caze);
+		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
 
 		cq.multiselect(
 			caze.get(Case.UUID),
@@ -1593,7 +1580,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> root = cq.from(Case.class);
-		CaseJoins<Case> joins = new CaseJoins<>(root);
+		CaseJoins joins = new CaseJoins(root);
 
 		cq.multiselect(
 			root.get(Case.UUID),
@@ -1664,7 +1651,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
 		Root<Case> root = cq.from(Case.class);
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, root);
-		final CaseJoins<Case> joins = (CaseJoins<Case>) caseQueryContext.getJoins();
+		final CaseJoins joins = caseQueryContext.getJoins();
 
 		Root<Case> root2 = cq.from(Case.class);
 		Join<Case, Person> person = joins.getPerson();
@@ -1967,6 +1954,6 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 
 	private void selectIndexDtoFields(CaseQueryContext caseQueryContext) {
 		CriteriaQuery cq = caseQueryContext.getQuery();
-		cq.multiselect(listQueryBuilder.getCaseIndexSelections((Root<Case>) caseQueryContext.getRoot(), caseQueryContext));
+		cq.multiselect(listQueryBuilder.getCaseIndexSelections(caseQueryContext.getRoot(), caseQueryContext));
 	}
 }

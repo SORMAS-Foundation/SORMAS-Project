@@ -46,7 +46,7 @@ public class CreateNewTaskSteps implements En {
           task = taskService.buildGeneratedTask();
           fillAllFields(task);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(
@@ -62,6 +62,12 @@ public class CreateNewTaskSteps implements En {
         () -> {
           final Task actualTask = collectTaskData();
           ComparisonHelper.compareEqualEntities(task, actualTask);
+        });
+    When(
+        "^I click on Save button in New Task form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(

@@ -72,15 +72,19 @@ public class SampleList extends PaginationList<SampleListEntryDto> {
 					"edit-sample-" + sampleUuid,
 					(ClickListener) event -> ControllerProvider.getSampleController().navigateToData(sampleUuid));
 			}
-			addViewLabMessageButton(listEntry);
+			if(UserProvider.getCurrent().getUserRights().contains(UserRight.LAB_MESSAGES)){
+				addViewLabMessageButton(listEntry);
+			}
 			listLayout.addComponent(listEntry);
 		}
 	}
 
 	private void addViewLabMessageButton(SampleListEntry listEntry) {
-		List<LabMessageDto> labMessages = FacadeProvider.getLabMessageFacade().getForSample(listEntry.getSampleListEntryDto().toReference());
-		if (!labMessages.isEmpty()) {
-			listEntry.addAssociatedLabMessagesListener(clickEvent -> ControllerProvider.getLabMessageController().showLabMessagesSlider(labMessages));
+		if (UserProvider.getCurrent().hasUserRight(UserRight.LAB_MESSAGES)) {
+			List<LabMessageDto> labMessages = FacadeProvider.getLabMessageFacade().getForSample(listEntry.getSampleListEntryDto().toReference());
+			if (!labMessages.isEmpty()) {
+				listEntry.addAssociatedLabMessagesListener(clickEvent -> ControllerProvider.getLabMessageController().showLabMessagesSlider(labMessages));
+			}
 		}
 	}
 

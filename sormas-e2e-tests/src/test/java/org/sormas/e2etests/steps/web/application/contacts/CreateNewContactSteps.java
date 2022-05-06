@@ -18,9 +18,16 @@
 
 package org.sormas.e2etests.steps.web.application.contacts;
 
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.DISEASE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.LINE_LISTING_DISCARD_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PERSON_SEARCH_LOCATOR_BUTTON;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.CREATE_NEW_PERSON_CHECKBOX;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.PICK_OR_CREATE_PERSON_POPUP_HEADER;
+import static org.sormas.e2etests.pages.application.cases.EditCasePage.SAVE_POPUP_CONTENT;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.*;
 import static org.sormas.e2etests.pages.application.contacts.CreateNewContactPage.SOURCE_CASE_CONTACT_WINDOW_CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.CONTACT_CREATED_POPUP;
+import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_CONFIRM_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.SOURCE_CASE_WINDOW_SEARCH_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.EditContactPage.UUID_INPUT;
 
@@ -29,22 +36,29 @@ import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.web.Contact;
 import org.sormas.e2etests.entities.services.ContactService;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
+import org.testng.asserts.SoftAssert;
 
 public class CreateNewContactSteps implements En {
   private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("M/d/yyyy");
   private final WebDriverHelpers webDriverHelpers;
   public static Contact contact;
+  private final SoftAssert softly;
   public static Contact collectedContactUUID;
 
   @Inject
   public CreateNewContactSteps(
-      WebDriverHelpers webDriverHelpers, ContactService contactService, ApiState apiState) {
+      WebDriverHelpers webDriverHelpers,
+      ContactService contactService,
+      ApiState apiState,
+      SoftAssert softly) {
     this.webDriverHelpers = webDriverHelpers;
+    this.softly = softly;
 
     When(
         "^I fill a new contact form for DE version$",
@@ -79,6 +93,7 @@ public class CreateNewContactSteps implements En {
         "^I fill a new contact form$",
         () -> {
           contact = contactService.buildGeneratedContact();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           fillFirstName(contact.getFirstName());
           fillLastName(contact.getLastName());
           fillDateOfBirth(contact.getDateOfBirth(), Locale.ENGLISH);
@@ -102,6 +117,64 @@ public class CreateNewContactSteps implements En {
           selectContactCategory(contact.getContactCategory().toUpperCase());
           fillRelationshipWithCase(contact.getRelationshipWithCase());
           fillDescriptionOfHowContactTookPlace(contact.getDescriptionOfHowContactTookPlace());
+        });
+
+    When(
+        "^I fill a new contact form with chosen data without personal data$",
+        () -> {
+          contact = contactService.buildGeneratedContact();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          fillPrimaryPhoneNumber(contact.getPrimaryPhoneNumber());
+          fillPrimaryEmailAddress(contact.getPrimaryEmailAddress());
+          selectReturningTraveler(contact.getReturningTraveler());
+          fillDateOfReport(contact.getReportDate(), Locale.ENGLISH);
+          fillDateOfLastContact(contact.getDateOfLastContact(), Locale.ENGLISH);
+          selectResponsibleRegion(contact.getResponsibleRegion());
+          selectResponsibleDistrict(contact.getResponsibleDistrict());
+          selectResponsibleCommunity(contact.getResponsibleCommunity());
+          selectTypeOfContact(contact.getTypeOfContact());
+          fillAdditionalInformationOnTheTypeOfContact(
+              contact.getAdditionalInformationOnContactType());
+          selectContactCategory(contact.getContactCategory().toUpperCase());
+          fillRelationshipWithCase(contact.getRelationshipWithCase());
+          fillDescriptionOfHowContactTookPlace(contact.getDescriptionOfHowContactTookPlace());
+        });
+
+    When(
+        "^I fill a new contact form with chosen data without personal data on Contact directory page$",
+        () -> {
+          contact = contactService.buildGeneratedContact();
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          fillPrimaryPhoneNumber(contact.getPrimaryPhoneNumber());
+          fillPrimaryEmailAddress(contact.getPrimaryEmailAddress());
+          selectReturningTraveler(contact.getReturningTraveler());
+          fillDateOfReport(contact.getReportDate(), Locale.ENGLISH);
+          fillDiseaseOfSourceCase(contact.getDiseaseOfSourceCase());
+          fillCaseIdInExternalSystem(contact.getCaseIdInExternalSystem());
+          selectMultiDayContact();
+          fillDateOfFirstContact(contact.getDateOfFirstContact(), Locale.ENGLISH);
+          fillDateOfLastContact(contact.getDateOfLastContact(), Locale.ENGLISH);
+          fillCaseOrEventInformation(contact.getCaseOrEventInformation());
+          selectResponsibleRegion(contact.getResponsibleRegion());
+          selectResponsibleDistrict(contact.getResponsibleDistrict());
+          selectResponsibleCommunity(contact.getResponsibleCommunity());
+          selectTypeOfContact(contact.getTypeOfContact());
+          fillAdditionalInformationOnTheTypeOfContact(
+              contact.getAdditionalInformationOnContactType());
+          selectContactCategory(contact.getContactCategory().toUpperCase());
+          fillRelationshipWithCase(contact.getRelationshipWithCase());
+          fillDescriptionOfHowContactTookPlace(contact.getDescriptionOfHowContactTookPlace());
+        });
+
+    When(
+        "^I click on the person search button in create new contact form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(PERSON_SEARCH_LOCATOR_BUTTON);
+        });
+    When(
+        "^I click on the clear button in new contact form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(PERSON_SEARCH_LOCATOR_BUTTON);
         });
     When(
         "^I click CHOOSE CASE button$",
@@ -128,10 +201,33 @@ public class CreateNewContactSteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          if (webDriverHelpers.isElementVisibleWithTimeout(PICK_OR_CREATE_PERSON_POPUP_HEADER, 5)) {
+            webDriverHelpers.clickOnWebElementBySelector(CREATE_NEW_PERSON_CHECKBOX);
+            webDriverHelpers.clickOnWebElementBySelector(SAVE_POPUP_CONTENT);
+            TimeUnit.SECONDS.sleep(1);
+          }
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CONTACT_CREATED_POPUP);
           webDriverHelpers.clickOnWebElementBySelector(CONTACT_CREATED_POPUP);
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(UUID_INPUT);
+        });
+
+    When(
+        "^I click on SAVE new contact button in the CHOOSE SOURCE popup of Create Contact window$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
+              SOURCE_CASE_WINDOW_CONFIRM_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(SOURCE_CASE_WINDOW_CONFIRM_BUTTON);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(10);
+        });
+
+    When(
+        "^I check if default disease value for contacts in the Line listing is set for ([^\"]*)$",
+        (String disease) -> {
+          String getDisease = webDriverHelpers.getValueFromCombobox(DISEASE_COMBOBOX);
+          softly.assertEquals(disease, getDisease, "Diseases are not equal");
+          softly.assertAll();
+          webDriverHelpers.clickOnWebElementBySelector(LINE_LISTING_DISCARD_BUTTON);
         });
   }
 

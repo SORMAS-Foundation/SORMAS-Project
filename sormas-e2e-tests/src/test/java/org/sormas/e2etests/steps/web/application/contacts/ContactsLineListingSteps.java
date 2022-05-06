@@ -18,18 +18,44 @@
 
 package org.sormas.e2etests.steps.web.application.contacts;
 
-import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.*;
-import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.*;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.APPLY_FILTERS_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.DISEASE_COLUMNS;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.FIRST_CONTACT_ID_BUTTON;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.FIRST_NAME_COLUMNS;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.LAST_NAME_COLUMNS;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.PERSON_LIKE_SEARCH_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.TYPE_OF_CONTACT_COLUMNS;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.CONTACT_CHOOSE_CASE;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_ACTION_SAVE;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_BIRTHDATE_DAY_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_BIRTHDATE_MONTH_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_BIRTHDATE_YEAR_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_DATE_LAST_CONTACT_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_DATE_REPORT_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_DISEASE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_DISEASE_OF_SOURCE_CASE;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_DISTRICT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_FIRST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_LAST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_REGION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_RELATIONSHIP_TO_CASE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_SELECTED_SOURCE_CASE_NAME_AND_ID_TEXT;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_SEX_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.LINE_LISTING_TYPE_OF_CONTACT_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactsLineListingPage.getLineListingDateReportInputByIndex;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.time.format.TextStyle;
 import java.util.Locale;
+import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.sormas.e2etests.entities.pojo.web.ContactsLineListing;
 import org.sormas.e2etests.entities.services.ContactsLineListingService;
+import org.sormas.e2etests.enums.DiseasesValues;
 import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.state.ApiState;
 import org.testng.asserts.SoftAssert;
 
 public class ContactsLineListingSteps implements En {
@@ -42,14 +68,14 @@ public class ContactsLineListingSteps implements En {
   public ContactsLineListingSteps(
       WebDriverHelpers webDriverHelpers,
       ContactsLineListingService contactsLineListingService,
-      SoftAssert softly) {
+      SoftAssert softly,
+      ApiState apiState) {
     this.webDriverHelpers = webDriverHelpers;
 
     When(
         "^I create a new Contact with specific data for DE version through Line Listing$",
         () -> {
           contactsLineListing = contactsLineListingService.buildGeneratedLineListingContactsDE();
-          selectDisease(contactsLineListing.getDisease());
           selectRegion(contactsLineListing.getRegion());
           selectDistrict(contactsLineListing.getDistrict());
           fillDateOfReport(contactsLineListing.getDateOfReport(), Locale.GERMAN);
@@ -65,21 +91,15 @@ public class ContactsLineListingSteps implements En {
     When(
         "^I create a new Contact with specific data through Line Listing$",
         () -> {
-          contactsLineListing = contactsLineListingService.buildGeneratedLineListingContacts();
-          selectDisease(contactsLineListing.getDisease());
-          selectRegion(contactsLineListing.getRegion());
-          selectDistrict(contactsLineListing.getDistrict());
-          fillDateOfReport(contactsLineListing.getDateOfReport(), Locale.ENGLISH);
-          fillDateOfLastContact(contactsLineListing.getDateOfLastContact(), Locale.ENGLISH);
-          selectTypeOfContact(contactsLineListing.getTypeOfContact());
-          selectRelationshipWithCase(contactsLineListing.getRelationshipWithCase());
-          fillFirstName(contactsLineListing.getFirstName());
-          fillLastName(contactsLineListing.getLastName());
-          selectBirthYear(contactsLineListing.getBirthYear());
-          selectBirthMonth(contactsLineListing.getBirthMonth());
-          selectBirthDay(contactsLineListing.getBirthDay());
-          selectSex(contactsLineListing.getSex());
+          createNewContactTroughLineListing(contactsLineListingService, false);
         });
+
+    When(
+        "^I create a new Contact with specific data through Line Listing when disease prefilled$",
+        () -> {
+          createNewContactTroughLineListing(contactsLineListingService, true);
+        });
+
     When(
         "^I create a new Contacts from Event Participants using Line Listing$",
         () -> {
@@ -112,7 +132,7 @@ public class ContactsLineListingSteps implements En {
               contactsLineListing.getFirstName() + " " + contactsLineListing.getLastName();
           webDriverHelpers.fillInWebElement(PERSON_LIKE_SEARCH_INPUT, caseName);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
-          webDriverHelpers.waitUntilNumberOfElementsIsReduceToGiven(CONTACT_GRID_RESULTS_ROWS, 2);
+          TimeUnit.SECONDS.sleep(2); // wait for filter
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(FIRST_CONTACT_ID_BUTTON);
 
           softly.assertTrue(
@@ -137,6 +157,62 @@ public class ContactsLineListingSteps implements En {
               "Last name is not correct");
           softly.assertAll();
         });
+
+    When(
+        "^I click Choose Case button from Contact Directory Line Listing popup window$",
+        () -> {
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(CONTACT_CHOOSE_CASE);
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_CHOOSE_CASE);
+        });
+
+    When(
+        "^I check the name and uuid of selected case information is correctly displayed in new Contact Line Listing popup window$",
+        () -> {
+          String displayedCaseNameAndId =
+              webDriverHelpers.getTextFromWebElement(
+                  LINE_LISTING_SELECTED_SOURCE_CASE_NAME_AND_ID_TEXT);
+          String caseNameAndId =
+              "Selected source case:\n"
+                  + apiState.getLastCreatedPerson().getFirstName()
+                  + " "
+                  + apiState.getLastCreatedPerson().getLastName()
+                  + " ("
+                  + apiState.getCreatedCase().getUuid().substring(0, 6).toUpperCase()
+                  + ")";
+          softly.assertEquals(
+              displayedCaseNameAndId, caseNameAndId, "Person name or ID is not correct");
+          softly.assertAll();
+        });
+
+    When(
+        "^I check disease dropdown is automatically filled with disease of selected Case in new Contact Line Listing popup window$",
+        () -> {
+          softly.assertEquals(
+              webDriverHelpers.getValueFromWebElement(LINE_LISTING_DISEASE_OF_SOURCE_CASE),
+              DiseasesValues.getCaptionForName(apiState.getCreatedCase().getDisease()),
+              "Displayed disease is not correct");
+          softly.assertAll();
+        });
+  }
+
+  private void createNewContactTroughLineListing(
+      ContactsLineListingService contactsLineListingService, boolean diseasePrefilled) {
+    contactsLineListing = contactsLineListingService.buildGeneratedLineListingContacts();
+    if (!diseasePrefilled) {
+      selectDisease(contactsLineListing.getDisease());
+    }
+    selectRegion(contactsLineListing.getRegion());
+    selectDistrict(contactsLineListing.getDistrict());
+    fillDateOfReport(contactsLineListing.getDateOfReport(), Locale.ENGLISH);
+    fillDateOfLastContact(contactsLineListing.getDateOfLastContact(), Locale.ENGLISH);
+    selectTypeOfContact(contactsLineListing.getTypeOfContact());
+    selectRelationshipWithCase(contactsLineListing.getRelationshipWithCase());
+    fillFirstName(contactsLineListing.getFirstName());
+    fillLastName(contactsLineListing.getLastName());
+    selectBirthYear(contactsLineListing.getBirthYear());
+    selectBirthMonth(contactsLineListing.getBirthMonth());
+    selectBirthDay(contactsLineListing.getBirthDay());
+    selectSex(contactsLineListing.getSex());
   }
 
   private void selectDisease(String disease) {
@@ -152,7 +228,7 @@ public class ContactsLineListingSteps implements En {
   }
 
   private void fillDateOfReport(LocalDate dateOfReport, Locale locale) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     if (locale.equals(Locale.GERMAN))
       webDriverHelpers.clearAndFillInWebElement(
           LINE_LISTING_DATE_REPORT_INPUT, formatter.format(dateOfReport));
@@ -162,7 +238,7 @@ public class ContactsLineListingSteps implements En {
   }
 
   private void fillDateOfLastContact(LocalDate dateOfLastContact, Locale locale) {
-    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+    DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
     if (locale.equals(Locale.GERMAN))
       webDriverHelpers.clearAndFillInWebElement(
           LINE_LISTING_DATE_LAST_CONTACT_INPUT, formatter.format(dateOfLastContact));

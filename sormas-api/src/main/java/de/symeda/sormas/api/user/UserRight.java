@@ -1,6 +1,6 @@
 /*******************************************************************************
  * SORMAS® - Surveillance Outbreak Response Management & Analysis System
- * Copyright © 2016-2021 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
+ * Copyright © 2016-2022 Helmholtz-Zentrum für Infektionsforschung GmbH (HZI)
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -1305,7 +1305,8 @@ public enum UserRight {
 			REST_EXTERNAL_VISITS_USER,
             UserRole.SORMAS_TO_SORMAS_CLIENT,
 			COMMUNITY_OFFICER,
-			LAB_USER
+			LAB_USER,
+			NATIONAL_CLINICIAN
 	),
 	SEE_PERSONAL_DATA_OUTSIDE_JURISDICTION(
 			REST_EXTERNAL_VISITS_USER,
@@ -1329,7 +1330,8 @@ public enum UserRight {
 			LAB_USER,
 			REST_EXTERNAL_VISITS_USER,
 			UserRole.SORMAS_TO_SORMAS_CLIENT,
-			COMMUNITY_OFFICER
+			COMMUNITY_OFFICER,
+			NATIONAL_CLINICIAN
 	),
 	SEE_SENSITIVE_DATA_OUTSIDE_JURISDICTION(
 			REST_EXTERNAL_VISITS_USER,
@@ -1777,5 +1779,9 @@ public enum UserRight {
 
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
+	}
+
+	public String getDescription() {
+		return I18nProperties.getEnumDescription(this);
 	}
 }

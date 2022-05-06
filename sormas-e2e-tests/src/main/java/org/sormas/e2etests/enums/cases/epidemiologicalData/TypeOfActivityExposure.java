@@ -25,6 +25,16 @@ public enum TypeOfActivityExposure {
     "Work", "Travel", "Sport", "Visit", "Habitation", "Personal Services", "Unknown"
   };
 
+  public static String[] ListOfTypeOfActivityExposureDE = {
+    "Arbeit",
+    "Reisen",
+    "Sport",
+    "Besuch",
+    "Wohnen /Aufhalten",
+    "Pers\u00F6nliche Dienstleistungen",
+    "Unbekannt"
+  };
+
   public String getActivity() {
     return activity;
   }

@@ -29,9 +29,9 @@ import de.symeda.sormas.api.sample.SampleAssociationType;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.task.TaskContext;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.vaccination.VaccinationAssociationType;
 import de.symeda.sormas.api.vaccination.VaccinationListCriteria;
 import de.symeda.sormas.ui.ControllerProvider;
-import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.caze.messaging.SmsListComponent;
 import de.symeda.sormas.ui.caze.surveillancereport.SurveillanceReportListComponent;
@@ -125,26 +125,21 @@ public class CaseDataView extends AbstractCaseView {
 		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.SAMPLES_LAB)
 			&& UserProvider.getCurrent().hasUserRight(UserRight.SAMPLE_VIEW)
 			&& !caze.checkIsUnreferredPortHealthCase()) {
-			SampleListComponent sampleList =
-				new SampleListComponent(new SampleCriteria().caze(getCaseRef()).sampleAssociationType(SampleAssociationType.CASE));
-			sampleList.addSideComponentCreateEventListener(
-				e -> showNavigationConfirmPopupIfDirty(() -> ControllerProvider.getSampleController().create(getCaseRef(), caze.getDisease(), () -> {
-					final CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(getCaseRef().getUuid());
-					FacadeProvider.getCaseFacade().save(caseDataByUuid);
-					SormasUI.refreshView();
-				})));
-
+			SampleListComponent sampleList = new SampleListComponent(
+				new SampleCriteria().caze(getCaseRef()).sampleAssociationType(SampleAssociationType.CASE).disease(caze.getDisease()),
+				this::showUnsavedChangesPopup);
 			SampleListComponentLayout sampleListComponentLayout =
 				new SampleListComponentLayout(sampleList, I18nProperties.getString(Strings.infoCreateNewSampleDiscardsChangesCase));
 			layout.addSidePanelComponent(sampleListComponentLayout, SAMPLES_LOC);
 		}
 
-		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)) {
+		if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE)
+			&& UserProvider.getCurrent().hasUserRight(UserRight.EVENT_VIEW)) {
 			VerticalLayout eventLayout = new VerticalLayout();
 			eventLayout.setMargin(false);
 			eventLayout.setSpacing(false);
 
-			EventListComponent eventList = new EventListComponent(getCaseRef());
+			EventListComponent eventList = new EventListComponent(getCaseRef(), this::showUnsavedChangesPopup);
 			eventList.addStyleName(CssStyles.SIDE_COMPONENT);
 			eventLayout.addComponent(eventList);
 			layout.addSidePanelComponent(eventLayout, EVENTS_LOC);
@@ -156,12 +151,18 @@ public class CaseDataView extends AbstractCaseView {
 				.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED)) {
 				final ImmunizationListCriteria immunizationListCriteria =
 					new ImmunizationListCriteria.Builder(caze.getPerson()).wihDisease(caze.getDisease()).build();
-				layout.addSidePanelComponent(new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria)), IMMUNIZATION_LOC);
-			} else {
-				VaccinationListCriteria criteria = new VaccinationListCriteria.Builder(caze.getPerson()).withDisease(caze.getDisease()).build();
 				layout.addSidePanelComponent(
-					new SideComponentLayout(
-						new VaccinationListComponent(getCaseRef(), criteria, caze.getResponsibleRegion(), caze.getResponsibleDistrict(), this)),
+					new SideComponentLayout(new ImmunizationListComponent(immunizationListCriteria, this::showUnsavedChangesPopup)),
+					IMMUNIZATION_LOC);
+			} else {
+				VaccinationListCriteria criteria = new VaccinationListCriteria.Builder(caze.getPerson()).withDisease(caze.getDisease())
+					.build()
+					.vaccinationAssociationType(VaccinationAssociationType.CASE)
+					.caseReference(getCaseRef())
+					.region(caze.getResponsibleRegion())
+					.district(caze.getResponsibleDistrict());
+				layout.addSidePanelComponent(
+					new SideComponentLayout(new VaccinationListComponent(criteria, this::showUnsavedChangesPopup)),
 					VACCINATIONS_LOC);
 			}
 		}

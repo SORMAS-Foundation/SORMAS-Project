@@ -18,6 +18,10 @@
 
 package org.sormas.e2etests.steps.web.application.cases;
 
+import static org.sormas.e2etests.enums.YesNoUnknownOptions.NO;
+import static org.sormas.e2etests.enums.YesNoUnknownOptions.UNKNOWN;
+import static org.sormas.e2etests.enums.YesNoUnknownOptions.YES;
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.cases.SymptomsTabPage.*;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
@@ -57,6 +61,13 @@ public class SymptomsTabSteps implements En {
         });
 
     When(
+        "I check the created data that describes Clinical signs and Symptoms are correctly displayed for No or UNKNOWN option in Symptoms tab page",
+        () -> {
+          Symptoms actualSymptoms = collectSymptomsDataForNoOption();
+          ComparisonHelper.compareEqualEntities(actualSymptoms, symptoms);
+        });
+
+    When(
         "I am accessing the Symptoms tab using of created case via api",
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
@@ -65,6 +76,18 @@ public class SymptomsTabSteps implements En {
           String uuid = apiState.getCreatedCase().getUuid();
           webDriverHelpers.accessWebSite(
               environmentManager.getEnvironmentUrlForMarket(locale) + caseLinkPath + uuid);
+        });
+
+    When(
+        "I change Other symptoms to {string} option",
+        (String option) -> {
+          selectOtherNonHemorrhagicSymptoms(option);
+        });
+
+    When(
+        "^I click on save case button in Symptoms tab$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
 
     When(
@@ -101,6 +124,46 @@ public class SymptomsTabSteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
         });
 
+    When(
+        "I change all symptoms fields to {string} option field and save",
+        (String option) -> {
+          switch (option) {
+            case "NO":
+              symptoms = symptomService.buildEditGeneratedSymptomsWithNoOptions();
+              FillSymptomsDataForNoUnknown(symptoms);
+              selectOtherNonHemorrhagicSymptoms(NO.toString());
+              fillSymptomsComments(symptoms.getSymptomsComments());
+              webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+              break;
+            case "NO_AND_OTHER_SYMPTOMS_TO_YES":
+              symptoms = symptomService.buildEditGeneratedSymptomsWithNoOptions();
+              FillSymptomsDataForNoUnknown(symptoms);
+              selectOtherNonHemorrhagicSymptoms(YES.toString());
+              fillOtherNonHemorrhagicSymptoms(symptoms.getSymptomsComments());
+              fillSymptomsComments(symptoms.getSymptomsComments());
+              selectFistSymptom("Other clinical symptoms");
+              fillDateOfSymptom(LocalDate.now().minusDays(2));
+              webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+              break;
+            case "UNKNOWN":
+              symptoms = symptomService.buildEditGeneratedSymptomsWithUnknownOptions();
+              FillSymptomsDataForNoUnknown(symptoms);
+              selectOtherNonHemorrhagicSymptoms(UNKNOWN.toString());
+              fillSymptomsComments(symptoms.getSymptomsComments());
+              webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+              break;
+            case "YES":
+              symptoms = symptomService.buildEditGeneratedSymptoms();
+              FillSymptomsData(symptoms);
+              fillOtherNonHemorrhagicSymptoms(symptoms.getSymptomsComments());
+              fillSymptomsComments(symptoms.getSymptomsComments());
+              selectFistSymptom(symptoms.getFirstSymptom());
+              fillDateOfSymptom(symptoms.getDateOfSymptom());
+              webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+              break;
+          }
+        });
+
     // TODO refactor this to be provide the checkbox and select any option not only yes
     And(
         "I check Yes Option for Soar Throat on Symptoms tab page",
@@ -115,17 +178,68 @@ public class SymptomsTabSteps implements En {
         });
 
     Then(
-        "From Symptoms Tab I click on Case tab",
+        "I click on Case tab from Symptoms tab directory",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CASE_TAB);
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(UUID_INPUT);
         });
 
     And(
-        "From Symptoms Tab I click on Clear All button",
+        "I click on Clear all button From Symptoms tab",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CLEAR_ALL_BUTTON);
         });
+  }
+
+  private void FillSymptomsData(Symptoms symptoms) {
+    selectMaximumBodyTemperatureInCCombobox(symptoms.getMaximumBodyTemperatureInC());
+    selectSourceOfBodyTemperature(symptoms.getSourceOfBodyTemperature());
+    selectChillsOrSweats(symptoms.getChillsOrSweats());
+    selectHeadache(symptoms.getHeadache());
+    selectFeelingIll(symptoms.getFeelingIll());
+    selectMusclePain(symptoms.getMusclePain());
+    selectFever(symptoms.getFever());
+    selectShivering(symptoms.getShivering());
+    selectAcuteRespiratoryDistressSyndrome(symptoms.getAcuteRespiratoryDistressSyndrome());
+    selectOxygenSaturationLower94(symptoms.getOxygenSaturationLower94());
+    selectCough(symptoms.getCough());
+    selectPneumoniaClinicalOrRadiologic(symptoms.getPneumoniaClinicalOrRadiologic());
+    selectDifficultyBreathing(symptoms.getDifficultyBreathing());
+    selectRapidBreathing(symptoms.getRapidBreathing());
+    selectRespiratoryDiseaseVentilation(symptoms.getRespiratoryDiseaseVentilation());
+    selectRunnyNose(symptoms.getRunnyNose());
+    selectSoreThroat(symptoms.getSoreThroat());
+    selectFastHeartRate(symptoms.getFastHeartRate());
+    selectDiarrhea(symptoms.getDiarrhea());
+    selectNausea(symptoms.getNausea());
+    selectLossOfSmell(symptoms.getLossOfSmell());
+    selectLossOfTaste(symptoms.getLossOfTaste());
+    selectOtherNonHemorrhagicSymptoms(symptoms.getOtherNonHemorrhagicSymptoms());
+  }
+
+  private void FillSymptomsDataForNoUnknown(Symptoms symptoms) {
+    selectMaximumBodyTemperatureInCCombobox(symptoms.getMaximumBodyTemperatureInC());
+    selectSourceOfBodyTemperature(symptoms.getSourceOfBodyTemperature());
+    selectChillsOrSweats(symptoms.getChillsOrSweats());
+    selectHeadache(symptoms.getHeadache());
+    selectFeelingIll(symptoms.getFeelingIll());
+    selectMusclePain(symptoms.getMusclePain());
+    selectFever(symptoms.getFever());
+    selectShivering(symptoms.getShivering());
+    selectAcuteRespiratoryDistressSyndrome(symptoms.getAcuteRespiratoryDistressSyndrome());
+    selectOxygenSaturationLower94(symptoms.getOxygenSaturationLower94());
+    selectCough(symptoms.getCough());
+    selectPneumoniaClinicalOrRadiologic(symptoms.getPneumoniaClinicalOrRadiologic());
+    selectDifficultyBreathing(symptoms.getDifficultyBreathing());
+    selectRapidBreathing(symptoms.getRapidBreathing());
+    selectRespiratoryDiseaseVentilation(symptoms.getRespiratoryDiseaseVentilation());
+    selectRunnyNose(symptoms.getRunnyNose());
+    selectSoreThroat(symptoms.getSoreThroat());
+    selectFastHeartRate(symptoms.getFastHeartRate());
+    selectDiarrhea(symptoms.getDiarrhea());
+    selectNausea(symptoms.getNausea());
+    selectLossOfSmell(symptoms.getLossOfSmell());
+    selectLossOfTaste(symptoms.getLossOfTaste());
   }
 
   private Symptoms collectSymptomsData() {
@@ -179,6 +293,54 @@ public class SymptomsTabSteps implements En {
             webDriverHelpers.getValueFromWebElement(OTHER_NON_HEMORRHAGIC_SYMPTOMS_INPUT))
         .firstSymptom(webDriverHelpers.getValueFromCombobox(FIRST_SYMPTOM_COMBOBOX))
         .dateOfSymptom(getDateOfSymptomOnset())
+        .build();
+  }
+
+  private Symptoms collectSymptomsDataForNoOption() {
+
+    return Symptoms.builder()
+        .maximumBodyTemperatureInC(
+            webDriverHelpers
+                .getValueFromCombobox(MAXIMUM_BODY_TEMPERATURE_IN_C_COMBOBOX)
+                .substring(0, 4))
+        .sourceOfBodyTemperature(
+            webDriverHelpers.getValueFromCombobox(SOURCE_OF_BODY_TEMPERATURE_COMBOBOX))
+        .chillsOrSweats(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(CHILLS_OR_SWEATS_OPTIONS))
+        .headache(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(HEADACHE_OPTIONS))
+        .feelingIll(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FEELING_ILL_OPTIONS))
+        .musclePain(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(MUSCLE_PAIN_OPTIONS))
+        .fever(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FEVER_OPTIONS))
+        .shivering(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SHIVERING_OPTIONS))
+        .acuteRespiratoryDistressSyndrome(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                ACUTE_RESPIRATORY_DISTRESS_SYNDROME_OPTIONS))
+        .oxygenSaturationLower94(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                OXYGEN_SATURATION_LOWER_94_OPTIONS))
+        .cough(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(COUGH_OPTIONS))
+        .pneumoniaClinicalOrRadiologic(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                PNEUMONIA_CLINICAL_OR_RADIOLOGIC_OPTIONS))
+        .difficultyBreathing(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                DIFFICULTY_BREATHING_OPTIONS))
+        .rapidBreathing(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RAPID_BREATHING_OPTIONS))
+        .respiratoryDiseaseVentilation(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(
+                RESPIRATORY_DISEASE_VENTILATION_OPTIONS))
+        .runnyNose(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(RUNNY_NOSE_OPTIONS))
+        .soreThroat(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(SORE_THROAT_OPTIONS))
+        .fastHeartRate(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(FAST_HEART_RATE_OPTIONS))
+        .diarrhea(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(DIARRHEA_OPTIONS))
+        .nausea(webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(NAUSEA_OPTIONS))
+        .lossOfSmell(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(LOSS_OF_SMELL_OPTIONS))
+        .lossOfTaste(
+            webDriverHelpers.getCheckedOptionFromHorizontalOptionGroup(LOSS_OF_TASTE_OPTIONS))
+        .symptomsComments(webDriverHelpers.getValueFromWebElement(SYMPTOMS_COMMENTS_INPUT))
         .build();
   }
 

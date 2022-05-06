@@ -51,6 +51,7 @@ import javax.persistence.criteria.Subquery;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import de.symeda.sormas.backend.vaccination.VaccinationService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -137,9 +138,9 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 import de.symeda.sormas.backend.vaccination.Vaccination;
 import de.symeda.sormas.backend.vaccination.VaccinationFacadeEjb;
-import de.symeda.sormas.utils.EventParticipantJoins;
 
 @Stateless(name = "EventParticipantFacade")
+@RolesAllowed(UserRight._EVENTPARTICIPANT_VIEW)
 public class EventParticipantFacadeEjb
 	extends
 	AbstractCoreFacadeEjb<EventParticipant, EventParticipantDto, EventParticipantIndexDto, EventParticipantReferenceDto, EventParticipantService, EventParticipantCriteria>
@@ -169,6 +170,8 @@ public class EventParticipantFacadeEjb
 	private SormasToSormasOriginInfoFacadeEjb.SormasToSormasOriginInfoFacadeEjbLocal sormasToSormasOriginInfoFacade;
 	@EJB
 	private VaccinationFacadeEjb.VaccinationFacadeEjbLocal vaccinationFacade;
+	@EJB
+	private VaccinationService vaccinationService;
 
 	public EventParticipantFacadeEjb() {
 	}
@@ -273,6 +276,19 @@ public class EventParticipantFacadeEjb
 		}
 	}
 
+	private List<Vaccination> getRelevantSortedVaccinations(String eventUuid, List<Vaccination> vaccinations) {
+		Event event = eventService.getByUuid(eventUuid);
+
+		return vaccinations.stream()
+			.filter(v -> vaccinationService.isVaccinationRelevant(event, v))
+			.sorted(Comparator.comparing(ImmunizationEntityHelper::getVaccinationDateForComparison))
+			.collect(Collectors.toList());
+	}
+
+	private String getNumberOfDosesFromVaccinations(Vaccination vaccination) {
+		return vaccination != null ? vaccination.getVaccineDose() : "";
+	}
+
 	@Override
 	public List<String> getDeletedUuidsSince(Date since) {
 
@@ -307,10 +323,16 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
-	public EventParticipantDto saveEventParticipant(@Valid EventParticipantDto dto) {
+	@RolesAllowed({
+		UserRight._EVENTPARTICIPANT_CREATE,
+		UserRight._EVENTPARTICIPANT_EDIT })
+	public EventParticipantDto save(@Valid @NotNull EventParticipantDto dto) {
 		return saveEventParticipant(dto, true, true);
 	}
 
+	@RolesAllowed({
+		UserRight._EVENTPARTICIPANT_CREATE,
+		UserRight._EVENTPARTICIPANT_EDIT })
 	public EventParticipantDto saveEventParticipant(@Valid EventParticipantDto dto, boolean checkChangeDate, boolean internal) {
 		EventParticipant existingParticipant = dto.getUuid() != null ? service.getByUuid(dto.getUuid()) : null;
 
@@ -433,12 +455,8 @@ public class EventParticipantFacadeEjb
 	}
 
 	@Override
+	@RolesAllowed(UserRight._EVENTPARTICIPANT_DELETE)
 	public void delete(String uuid) throws ExternalSurveillanceToolException {
-
-		if (!userService.hasRight(UserRight.EVENTPARTICIPANT_DELETE)) {
-			throw new UnsupportedOperationException("Your user is not allowed to delete event participants");
-		}
-
 		EventParticipant eventParticipant = service.getByUuid(uuid);
 		service.delete(eventParticipant);
 	}
@@ -458,7 +476,7 @@ public class EventParticipantFacadeEjb
 		final CriteriaQuery<EventParticipantIndexDto> cq = cb.createQuery(EventParticipantIndexDto.class);
 		final Root<EventParticipant> eventParticipant = cq.from(EventParticipant.class);
 		final EventParticipantQueryContext queryContext = new EventParticipantQueryContext(cb, cq, eventParticipant);
-		EventParticipantJoins<EventParticipant> joins = (EventParticipantJoins<EventParticipant>) queryContext.getJoins();
+		EventParticipantJoins joins = queryContext.getJoins();
 
 		Join<EventParticipant, Person> person = joins.getPerson();
 		Join<EventParticipant, Case> resultingCase = joins.getResultingCase();
@@ -615,7 +633,7 @@ public class EventParticipantFacadeEjb
 		CriteriaQuery<EventParticipantExportDto> cq = cb.createQuery(EventParticipantExportDto.class);
 		Root<EventParticipant> eventParticipant = cq.from(EventParticipant.class);
 		EventParticipantQueryContext eventParticipantQueryContext = new EventParticipantQueryContext(cb, cq, eventParticipant);
-		EventParticipantJoins<EventParticipant> joins = (EventParticipantJoins<EventParticipant>) eventParticipantQueryContext.getJoins();
+		EventParticipantJoins joins = eventParticipantQueryContext.getJoins();
 
 		Join<EventParticipant, Person> person = joins.getPerson();
 
@@ -785,16 +803,16 @@ public class EventParticipantFacadeEjb
 							epImmunizations.stream().filter(i -> i.getDisease() == exportDto.getEventDisease()).collect(Collectors.toList());
 						filteredImmunizations.sort(Comparator.comparing(i -> ImmunizationEntityHelper.getDateForComparison(i, false)));
 						Immunization mostRecentImmunization = filteredImmunizations.get(filteredImmunizations.size() - 1);
-						exportDto.setVaccinationDoses(String.valueOf(mostRecentImmunization.getNumberOfDoses()));
+						Integer numberOfDoses = mostRecentImmunization.getNumberOfDoses();
 
-						if (CollectionUtils.isNotEmpty(mostRecentImmunization.getVaccinations())) {
-							List<Vaccination> sortedVaccinations = mostRecentImmunization.getVaccinations()
-								.stream()
-								.sorted(Comparator.comparing(ImmunizationEntityHelper::getVaccinationDateForComparison))
-								.collect(Collectors.toList());
-							Vaccination firstVaccination = sortedVaccinations.get(0);
-							Vaccination lastVaccination = sortedVaccinations.get(sortedVaccinations.size() - 1);
+						List<Vaccination> relevantSortedVaccinations =
+							getRelevantSortedVaccinations(exportDto.getEventUuid(), mostRecentImmunization.getVaccinations());
+						Vaccination firstVaccination = null;
+						Vaccination lastVaccination = null;
 
+						if (CollectionUtils.isNotEmpty(relevantSortedVaccinations)) {
+							firstVaccination = relevantSortedVaccinations.get(0);
+							lastVaccination = relevantSortedVaccinations.get(relevantSortedVaccinations.size() - 1);
 							exportDto.setFirstVaccinationDate(firstVaccination.getVaccinationDate());
 							exportDto.setLastVaccinationDate(lastVaccination.getVaccinationDate());
 							exportDto.setVaccineName(lastVaccination.getVaccineName());
@@ -807,6 +825,9 @@ public class EventParticipantFacadeEjb
 							exportDto.setVaccineUniiCode(lastVaccination.getVaccineUniiCode());
 							exportDto.setVaccineInn(lastVaccination.getVaccineInn());
 						}
+
+						exportDto.setVaccinationDoses(
+							numberOfDoses != null ? String.valueOf(numberOfDoses) : getNumberOfDosesFromVaccinations(lastVaccination));
 					});
 				}
 
@@ -968,6 +989,10 @@ public class EventParticipantFacadeEjb
 	}
 
 	public EventParticipantDto toDto(EventParticipant source) {
+		return toEventParticipantDto(source);
+	}
+
+	public static EventParticipantDto toEventParticipantDto(EventParticipant source) {
 
 		if (source == null) {
 			return null;
@@ -1104,6 +1129,18 @@ public class EventParticipantFacadeEjb
 		return resultList.stream().map(ep -> toDto(ep)).collect(Collectors.toList());
 	}
 
+	@Override
+	@RolesAllowed(UserRight._EVENTPARTICIPANT_ARCHIVE)
+	public void archive(String entityUuid, Date endOfProcessingDate) {
+		super.archive(entityUuid, endOfProcessingDate);
+	}
+
+	@Override
+	@RolesAllowed(UserRight._EVENTPARTICIPANT_ARCHIVE)
+	public void dearchive(List<String> entityUuids, String dearchiveReason) {
+		super.dearchive(entityUuids, dearchiveReason);
+	}
+
 	@LocalBean
 	@Stateless
 	public static class EventParticipantFacadeEjbLocal extends EventParticipantFacadeEjb {
@@ -1121,4 +1158,5 @@ public class EventParticipantFacadeEjb
 	protected CoreEntityType getCoreEntityType() {
 		return CoreEntityType.EVENT_PARTICIPANT;
 	}
+
 }

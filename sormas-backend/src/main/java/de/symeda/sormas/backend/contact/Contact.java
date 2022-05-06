@@ -76,7 +76,7 @@ import de.symeda.sormas.backend.task.Task;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.visit.Visit;
 
-@Entity
+@Entity(name = "contact")
 @Audited
 public class Contact extends CoreAdo implements SormasToSormasShareable, HasExternalData {
 
@@ -166,6 +166,7 @@ public class Contact extends CoreAdo implements SormasToSormasShareable, HasExte
 	public static final String TRACING_APP_DETAILS = "tracingAppDetails";
 	public static final String VACCINATION_STATUS = "vaccinationStatus";
 	public static final String VISITS = "visits";
+	public static final String DUPLICATE_OF	= "duplicateOf";
 
 	private Date reportDateTime;
 	private User reportingUser;
@@ -949,10 +950,10 @@ public class Contact extends CoreAdo implements SormasToSormasShareable, HasExte
 
 	@Override
 	@ManyToOne(cascade = {
-			CascadeType.PERSIST,
-			CascadeType.MERGE,
-			CascadeType.DETACH,
-			CascadeType.REFRESH })
+		CascadeType.PERSIST,
+		CascadeType.MERGE,
+		CascadeType.DETACH,
+		CascadeType.REFRESH })
 	@AuditedIgnore
 	public SormasToSormasOriginInfo getSormasToSormasOriginInfo() {
 		return sormasToSormasOriginInfo;

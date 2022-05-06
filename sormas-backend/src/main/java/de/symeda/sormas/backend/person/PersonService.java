@@ -55,7 +55,6 @@ import javax.persistence.criteria.Subquery;
 import javax.transaction.Transactional;
 import javax.validation.constraints.NotNull;
 
-import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import de.symeda.sormas.api.Disease;
@@ -256,7 +255,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			caseService.createDefaultFilter(cb, joins.getCaze()));
 		final Supplier<Predicate> contactFilter = () -> {
 			final Predicate contactUserFilter = contactService.createUserFilterForJoin(
-				new ContactQueryContext(cb, cq, joins.getContact()),
+				new ContactQueryContext(cb, cq, joins.getContactJoins()),
 				new ContactCriteria().includeContactsFromOtherJurisdictions(false));
 			return CriteriaBuilderHelper.and(cb, contactUserFilter, contactService.createDefaultFilter(cb, joins.getContact()));
 		};
@@ -340,14 +339,8 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 					CriteriaBuilderHelper.unaccentedIlike(cb, personFrom.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, personFrom.get(Person.LAST_NAME), textFilter),
 					CriteriaBuilderHelper.ilike(cb, personFrom.get(Person.UUID), textFilter),
-					CriteriaBuilderHelper.ilike(
-						cb,
-						(Expression<String>) personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY),
-						textFilter),
-					phoneNumberPredicate(
-						cb,
-						(Expression<String>) personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY),
-						textFilter),
+					CriteriaBuilderHelper.ilike(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_EMAIL_SUBQUERY), textFilter),
+					phoneNumberPredicate(cb, personQueryContext.getSubqueryExpression(PersonQueryContext.PERSON_PHONE_SUBQUERY), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.STREET), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, location.get(Location.CITY), textFilter),
 					CriteriaBuilderHelper.ilike(cb, location.get(Location.POSTAL_CODE), textFilter),
@@ -868,20 +861,6 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		ExternalDataUtil.updateExternalData(externalData, this::getByUuids, this::ensurePersisted);
 	}
 
-	public List<Person> getByExternalIdsBatched(List<String> externalIds) {
-		if (CollectionUtils.isEmpty(externalIds)) {
-			// Avoid empty IN clause
-			return Collections.emptyList();
-		} else if (externalIds.size() > ModelConstants.PARAMETER_LIMIT) {
-			List<Person> persons = new LinkedList<>();
-			IterableHelper
-				.executeBatched(externalIds, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> persons.addAll(getByExternalIds(externalIds)));
-			return persons;
-		} else {
-			return getByExternalIds(externalIds);
-		}
-	}
-
 	public Long getIdByUuid(@NotNull String uuid) {
 
 		if (uuid == null) {
@@ -900,24 +879,22 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		return q.getResultList().stream().findFirst().orElse(null);
 	}
 
-	private List<Person> getByExternalIds(List<String> externalIds) {
-		if (externalIds == null || externalIds.isEmpty()) {
-			return null;
-		}
+	public List<Person> getByExternalIds(List<String> externalIds) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Person> cq = cb.createQuery(getElementClass());
-		Root<Person> from = cq.from(getElementClass());
-		cq.where(from.get(Person.EXTERNAL_ID).in(externalIds));
+		List<Person> persons = new LinkedList<>();
+		IterableHelper.executeBatched(externalIds, ModelConstants.PARAMETER_LIMIT, batchedPersonUuids -> {
+			CriteriaBuilder cb = em.getCriteriaBuilder();
+			CriteriaQuery<Person> cq = cb.createQuery(getElementClass());
+			Root<Person> from = cq.from(getElementClass());
 
-		return em.createQuery(cq).getResultList();
+			cq.where(from.get(Person.EXTERNAL_ID).in(externalIds));
+
+			persons.addAll(em.createQuery(cq).getResultList());
+		});
+		return persons;
 	}
 
-	public void executePermanentDeletion(int batchSize) {
-		IterableHelper.executeBatched(getAllNonReferencedPersonUuids(), batchSize, batchedUuids -> deletePermanent(batchedUuids));
-	}
-
-	private List<String> getAllNonReferencedPersonUuids() {
+	public List<String> getAllNonReferencedPersonUuids() {
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<String> cq = cb.createQuery(String.class);
