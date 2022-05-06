@@ -729,6 +729,44 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
+	public void testCaseExportWithSamples() {
+		RDCFEntities rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
+		RDCF rdcf = new RDCF(rdcfEntities);
+		UserDto user = getUser(rdcfEntities);
+
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+        CaseDataDto caze = getCaze(user, cazePerson, rdcfEntities);
+		cazePerson.getAddress().setCity("City");
+		getPersonFacade().savePerson(cazePerson);
+
+		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		SampleDto sample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+		SampleDto lastSample = creator.createSample(caze.toReference(), user.toReference(), rdcf.facility);
+
+		lastSample.setPathogenTestResult(PathogenTestResultType.NEGATIVE);
+
+		List<CaseExportDto> results =
+			getCaseFacade().getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_SURVEILLANCE, 0, 100, null, Language.EN);
+		assertEquals(1, results.size());
+		CaseExportDto exportDto = results.get(0);
+		assertNotNull(exportDto.getSymptoms());
+
+		assertEquals(lastSample.getUuid(), exportDto.getSample1().getUuid());
+		assertEquals("Facility", exportDto.getSample1().getLab());
+		assertEquals(lastSample.getPathogenTestResult(), PathogenTestResultType.NEGATIVE);
+
+		assertEquals(sample.getUuid(), exportDto.getSample2().getUuid());
+		assertEquals("Facility", exportDto.getSample2().getLab());
+		assertEquals(sample.getPathogenTestResult(), PathogenTestResultType.PENDING);
+		assertEquals(sample.getPathogenTestResult(), PathogenTestResultType.PENDING);
+
+		assertEquals(2, exportDto.getOtherSamples().size());
+		assertEquals("Facility", exportDto.getOtherSamples().get(0).getLab());
+	}
+
+	@Test
 	public void testGetExportListWithRelevantVaccinations() {
 		RDCFEntities rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
 		RDCF rdcf = new RDCF(rdcfEntities);
