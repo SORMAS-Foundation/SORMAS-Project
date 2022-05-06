@@ -85,6 +85,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
+import org.openqa.selenium.By;
 import org.openqa.selenium.ElementClickInterceptedException;
 import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
 import org.sormas.e2etests.entities.pojo.web.Person;
@@ -249,6 +250,12 @@ public class EditPersonSteps implements En {
           previousCreatedPerson = collectedPerson;
         });
 
+    When(
+        "I check if there is no travel entry assigned to Person",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(
+             NO_TRAVEL_ENTRY_LABEL_DE);
+        });
     When(
         "I check if event is available at person information",
         () -> {
