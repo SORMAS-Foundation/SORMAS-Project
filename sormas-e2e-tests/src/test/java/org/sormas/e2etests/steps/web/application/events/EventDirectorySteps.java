@@ -27,6 +27,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_TO_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_MANAGEMENT_STATUS_CHECK;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_PARTICIPANTS_TAB;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_EVENT_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_TASK_BUTTON;
@@ -35,6 +36,8 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.AP
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BASIC_EVENT_EXPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BASIC_EXPORT_PARTICIPANT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BULK_ACTIONS_EVENT_DIRECTORY;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BULK_EDIT_EVENT_DIRECTORY;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CHANGE_EVENT_MANAGEMENT_STATUS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CLOSE_POPUP_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.COMMIT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CREATED_PARTICIPANT;
@@ -60,6 +63,7 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EV
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_GROUP_NAME_SORT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_INVESTIGATION_STATUS;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_MANAGEMENT_FILTER;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_MANAGEMENT_STATUS_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_REGION_COMBOBOX_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_STATUS_FILTER_BUTTONS;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_STATUS_FILTER_COMBOBOX;
@@ -94,6 +98,8 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SE
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.TOTAL_EVENTS_COUNTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.UNLINK_EVENT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getCheckboxByIndex;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getCheckboxByUUID;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.RESET_FILTERS_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
@@ -191,7 +197,6 @@ public class EventDirectorySteps implements En {
         "I click checkbox to choose all Event results on Event Directory Page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(FIRST_CHECKBOX_EVENT_DIRECTORY);
-          webDriverHelpers.waitForPageLoaded();
         });
 
     When(
@@ -226,7 +231,6 @@ public class EventDirectorySteps implements En {
     When(
         "I chose District option in Event Group Directory",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           String district = apiState.getCreatedEvent().getEventLocation().getDistrict().getUuid();
           webDriverHelpers.selectFromCombobox(
               EVENT_DISTRICT_COMBOBOX_INPUT, DistrictsValues.getNameValueForUuid(district));
@@ -235,7 +239,6 @@ public class EventDirectorySteps implements En {
     When(
         "I chose Community option in Event Group Directory",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           String community = apiState.getCreatedEvent().getEventLocation().getCommunity().getUuid();
           webDriverHelpers.selectFromCombobox(
               EVENT_COMMUNITY_COMBOBOX_INPUT, CommunityValues.getNameValueForUuid(community));
@@ -244,20 +247,17 @@ public class EventDirectorySteps implements En {
     When(
         "I chose Region {string} option in Event Group Directory",
         (String regionOption) -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(EVENT_REGION_COMBOBOX_INPUT, regionOption);
         });
 
     When(
         "I chose District {string} option in Event Group Directory",
         (String districtOption) -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(EVENT_DISTRICT_COMBOBOX_INPUT, districtOption);
         });
     When(
         "I chose Community {string} option in Event Group Directory",
         (String communityOption) -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(EVENT_COMMUNITY_COMBOBOX_INPUT, communityOption);
         });
 
@@ -276,7 +276,6 @@ public class EventDirectorySteps implements En {
               searchText = "All groups";
               break;
           }
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(EVENT_STATUS_FILTER_COMBOBOX, searchText);
         });
 
@@ -307,10 +306,23 @@ public class EventDirectorySteps implements En {
     And(
         "I click on Bulk Actions combobox on Event Directory Page",
         () -> webDriverHelpers.clickOnWebElementBySelector(BULK_ACTIONS_EVENT_DIRECTORY));
+    When(
+        "^I select first (\\d+) results in grid in Event Directory$",
+        (Integer number) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          for (int i = 2; i <= number + 1; i++) {
+            webDriverHelpers.scrollToElement(getCheckboxByIndex(String.valueOf(i)));
+            webDriverHelpers.clickOnWebElementBySelector(getCheckboxByIndex(String.valueOf(i)));
+          }
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
 
     And(
         "I click on Group Events from Bulk Actions combobox on Event Directory Page",
         () -> webDriverHelpers.clickOnWebElementBySelector(GROUP_EVENTS_EVENT_DIRECTORY));
+    And(
+        "I click on Edit Events from Bulk Actions combobox on Event Directory Page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(BULK_EDIT_EVENT_DIRECTORY));
     When(
         "I navigate to the last created Event page via URL",
         () -> {
@@ -334,14 +346,12 @@ public class EventDirectorySteps implements En {
                   .build();
           ComparisonHelper.compareEqualFieldsOfEntities(
               collectedGroup, createdGroup, List.of("name"));
-          webDriverHelpers.waitForPageLoaded();
         });
 
     When(
         "^I click on ([^\"]*) Radiobutton on Event Directory Page$",
         (String buttonName) -> {
           webDriverHelpers.clickWebElementByText(EVENTS_RADIO_BUTTON, buttonName);
-          webDriverHelpers.waitForPageLoaded();
         });
 
     When(
@@ -388,7 +398,6 @@ public class EventDirectorySteps implements En {
         "I apply {string} to combobox on Event Directory Page",
         (String eventParameter) -> {
           webDriverHelpers.selectFromCombobox(EVENT_DISPLAY_COMBOBOX, eventParameter);
-          webDriverHelpers.waitForPageLoaded();
         });
     And(
         "I apply Date type filter to {string} on Event directory page",
@@ -460,7 +469,6 @@ public class EventDirectorySteps implements En {
     When(
         "I fill Reporting User filter to {string} on Event Directory Page",
         (String reportingUser) -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(FILTER_BY_REPORTING_USER, reportingUser);
         });
     And(
@@ -520,7 +528,6 @@ public class EventDirectorySteps implements En {
     When(
         "I filter by last created group in Event Directory Page",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.fillInWebElement(EVENT_GROUP_INPUT, EditEventSteps.groupEvent.getUuid());
         });
 
@@ -533,7 +540,6 @@ public class EventDirectorySteps implements En {
     When(
         "I select Signal filter from quick filter",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           TimeUnit.SECONDS.sleep(5);
           webDriverHelpers.clickOnWebElementBySelector(EventDirectoryPage.EVENT_SIGNAL);
         });
@@ -541,7 +547,6 @@ public class EventDirectorySteps implements En {
     When(
         "I select Event filter from quick filter",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           TimeUnit.SECONDS.sleep(5);
           webDriverHelpers.clickOnWebElementBySelector(EventDirectoryPage.EVENT_EVENT);
         });
@@ -549,7 +554,6 @@ public class EventDirectorySteps implements En {
     When(
         "I select Screening filter from quick filter",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           TimeUnit.SECONDS.sleep(5);
           webDriverHelpers.clickOnWebElementBySelector(EventDirectoryPage.EVENT_SCREENING);
         });
@@ -557,7 +561,6 @@ public class EventDirectorySteps implements En {
     When(
         "I select Cluster filter from quick filter",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           TimeUnit.SECONDS.sleep(5);
           webDriverHelpers.clickOnWebElementBySelector(EventDirectoryPage.EVENT_CLUSTER);
         });
@@ -565,7 +568,6 @@ public class EventDirectorySteps implements En {
     When(
         "I select Dropped filter from quick filter",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           TimeUnit.SECONDS.sleep(5);
           webDriverHelpers.clickOnWebElementBySelector(EventDirectoryPage.EVENT_DROPPED);
         });
@@ -641,7 +643,6 @@ public class EventDirectorySteps implements En {
     When(
         "I select Report Date among Event Reference Date options",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
               DATE_TYPE_COMBOBOX, EventReferenceDateOptions.REPORT_DATE.toString());
         });
@@ -649,7 +650,6 @@ public class EventDirectorySteps implements En {
     When(
         "I fill in a date range in Date of Event From Epi Week and ...To fields",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           eventService.timeRange = buildTimeRange();
           webDriverHelpers.fillInWebElement(
               DATE_FROM_COMBOBOX,
@@ -668,7 +668,6 @@ public class EventDirectorySteps implements En {
     When(
         "I check that the dates of displayed Event results are correct",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           List<Map<String, String>> tableRowsData = getTableRowsData();
           for (int i = 0; i < tableRowsData.size(); i++) {
             String dateCell =
@@ -699,12 +698,15 @@ public class EventDirectorySteps implements En {
         () -> {
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NEW_EVENT_BUTTON, 35);
           webDriverHelpers.clickOnWebElementBySelector(RESET_FILTER);
-          TimeUnit.SECONDS.sleep(3);
+          TimeUnit.SECONDS.sleep(5);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
           final String eventUuid = CreateNewEventSteps.newEvent.getUuid();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               SEARCH_EVENT_BY_FREE_TEXT_INPUT, 20);
           webDriverHelpers.fillAndSubmitInWebElement(SEARCH_EVENT_BY_FREE_TEXT_INPUT, eventUuid);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
+          TimeUnit.SECONDS.sleep(5);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
         });
 
     When(
@@ -729,6 +731,13 @@ public class EventDirectorySteps implements En {
         "I check if filtered participant appears in the event participants list",
         () -> {
           final String personUuid = EditEventSteps.person.getUuid();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(personUuid));
+        });
+
+    When(
+        "I check if filtered participant for existing person appears in the event participants list",
+        () -> {
+          final String personUuid = apiState.getLastCreatedPerson().getUuid();
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(personUuid));
         });
 
@@ -771,6 +780,44 @@ public class EventDirectorySteps implements En {
               RESET_FILTERS_BUTTON, 30);
           webDriverHelpers.clickOnWebElementBySelector(RESET_FILTERS_BUTTON);
           TimeUnit.SECONDS.sleep(3);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
+        });
+
+    When(
+        "I click to bulk change event managements status for selected events",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CHANGE_EVENT_MANAGEMENT_STATUS_CHECKBOX);
+          webDriverHelpers.clickWebElementByText(EVENT_MANAGEMENT_STATUS_COMBOBOX, "PENDING");
+        });
+    When(
+        "I check if Event Management Status is set to {string}",
+        (String eventManagementStatus) -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_MANAGEMENT_STATUS_COMBOBOX);
+          assertHelpers.assertWithPoll20Second(
+              () ->
+                  Assert.assertEquals(
+                      webDriverHelpers.getTextFromWebElement(EVENT_MANAGEMENT_STATUS_CHECK),
+                      eventManagementStatus,
+                      "Event Management status is not correct"));
+        });
+    When(
+        "^I select last created API result in grid in Event Directory for Bulk Action$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.scrollToElement(getCheckboxByUUID(apiState.getCreatedEvent().getUuid()));
+          webDriverHelpers.clickOnWebElementBySelector(
+              getCheckboxByUUID(apiState.getCreatedEvent().getUuid()));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+    When(
+        "^I select last created UI result in grid in Event Directory for Bulk Action$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.scrollToElement(
+              getCheckboxByUUID(CreateNewEventSteps.newEvent.getUuid()));
+          webDriverHelpers.clickOnWebElementBySelector(
+              getCheckboxByUUID(CreateNewEventSteps.newEvent.getUuid()));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
     When(
@@ -780,7 +827,6 @@ public class EventDirectorySteps implements En {
         "I click Enter Bulk Edit Mode on Event directory page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(ENTER_BULK_EDIT_MODE_EVENT_DIRECTORY);
-          webDriverHelpers.waitForPageLoaded();
         });
     When(
         "I click on the created event participant from the list",

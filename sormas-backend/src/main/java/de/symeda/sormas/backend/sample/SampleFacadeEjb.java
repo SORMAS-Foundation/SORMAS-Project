@@ -727,11 +727,6 @@ public class SampleFacadeEjb implements SampleFacade {
 		return deletedSampleUuids;
 	}
 
-	@Override
-	public Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(List<Long> caseIds) {
-		return sampleService.getNewTestResultCountByResultType(caseIds);
-	}
-
 	public Sample fromDto(@NotNull SampleDto source, boolean checkChangeDate) {
 
 		Sample target = DtoHelper.fillOrBuildEntity(source, sampleService.getByUuid(source.getUuid()), Sample::new, checkChangeDate);

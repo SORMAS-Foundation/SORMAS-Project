@@ -29,9 +29,11 @@ import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Notification;
 import com.vaadin.ui.Notification.Type;
+import com.vaadin.ui.UI;
 import com.vaadin.ui.themes.ValoTheme;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.event.EventDto;
 import de.symeda.sormas.api.event.EventGroupCriteria;
 import de.symeda.sormas.api.event.EventGroupDto;
 import de.symeda.sormas.api.event.EventGroupFacade;
@@ -45,6 +47,7 @@ import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.region.RegionReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DataHelper;
+import de.symeda.sormas.ui.ControllerProvider;
 import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.events.groups.EventGroupSelectionField;
@@ -55,8 +58,47 @@ import de.symeda.sormas.ui.utils.components.page.title.TitleLayout;
 
 public class EventGroupController {
 
-	public EventGroupDto create(EventReferenceDto event) {
-		return create(Collections.singletonList(event), null);
+	public void create(EventReferenceDto eventReference) {
+
+		EventDto eventByUuid = FacadeProvider.getEventFacade().getEventByUuid(eventReference.getUuid(), false);
+		UserProvider user = UserProvider.getCurrent();
+		if (!user.hasNationJurisdictionLevel() && !user.hasRegion(eventByUuid.getEventLocation().getRegion())) {
+			new Notification(
+				I18nProperties.getString(Strings.headingEventGroupLinkEventIssue),
+				I18nProperties.getString(Strings.errorEventFromAnotherJurisdiction),
+				Notification.Type.ERROR_MESSAGE,
+				false).show(Page.getCurrent());
+			return;
+		}
+
+		EventGroupCriteria eventGroupCriteria = new EventGroupCriteria();
+		Set<String> eventGroupUuids = FacadeProvider.getEventGroupFacade()
+			.getCommonEventGroupsByEvents(Collections.singletonList(eventByUuid.toReference()))
+			.stream()
+			.map(EventGroupReferenceDto::getUuid)
+			.collect(Collectors.toSet());
+		eventGroupCriteria.setExcludedUuids(eventGroupUuids);
+		if (user.hasUserRight(UserRight.EVENTGROUP_CREATE) && user.hasUserRight(UserRight.EVENTGROUP_LINK)) {
+			long events = FacadeProvider.getEventGroupFacade().count(eventGroupCriteria);
+			if (events > 0) {
+				ControllerProvider.getEventGroupController().selectOrCreate(eventReference);
+			} else {
+				ControllerProvider.getEventGroupController().create(Collections.singletonList(eventReference), null);
+			}
+		} else if (user.hasUserRight(UserRight.EVENTGROUP_CREATE)) {
+			ControllerProvider.getEventGroupController().create(Collections.singletonList(eventReference), null);
+		} else {
+			long events = FacadeProvider.getEventGroupFacade().count(eventGroupCriteria);
+			if (events > 0) {
+				ControllerProvider.getEventGroupController().select(eventReference);
+			} else {
+				new Notification(
+					I18nProperties.getString(Strings.headingEventGroupLinkEventIssue),
+					I18nProperties.getString(Strings.errorNotRequiredRights),
+					Notification.Type.ERROR_MESSAGE,
+					false).show(Page.getCurrent());
+			}
+		}
 	}
 
 	public EventGroupDto create(List<EventReferenceDto> events, Runnable callback) {
@@ -202,13 +244,12 @@ public class EventGroupController {
 			});
 		}
 
-		// TODO #8851: Enable temporarily removed button when EventGroup deletion works
-//		if (user.hasUserRight(UserRight.EVENTGROUP_DELETE) && hasRegion) {
-//			editView.addDeleteListener(() -> {
-//				deleteEventGroup(eventGroup);
-//				UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
-//			}, I18nProperties.getString(Strings.entityEventGroup));
-//		}
+		if (user.hasUserRight(UserRight.EVENTGROUP_DELETE) && hasRegion) {
+			editView.addDeleteListener(() -> {
+				deleteEventGroup(eventGroup);
+				UI.getCurrent().getNavigator().navigateTo(EventsView.VIEW_NAME);
+			}, I18nProperties.getString(Strings.entityEventGroup));
+		}
 
 		// Initialize 'Archive' button
 		if (user.hasUserRight(UserRight.EVENTGROUP_ARCHIVE) && hasRegion) {
