@@ -18,8 +18,6 @@ package de.symeda.sormas.app.caze.read;
 import static android.view.View.GONE;
 import static android.view.View.VISIBLE;
 
-import java.util.Arrays;
-
 import android.os.Bundle;
 import android.view.View;
 import android.webkit.WebView;
@@ -32,7 +30,6 @@ import de.symeda.sormas.api.caze.CaseDataDto;
 import de.symeda.sormas.api.caze.CaseOrigin;
 import de.symeda.sormas.api.event.TypeOfPlace;
 import de.symeda.sormas.api.infrastructure.facility.FacilityDto;
-import de.symeda.sormas.api.person.Sex;
 import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;

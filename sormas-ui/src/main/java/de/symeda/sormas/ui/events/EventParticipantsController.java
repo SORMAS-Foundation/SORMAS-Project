@@ -114,7 +114,7 @@ public class EventParticipantsController {
 										throw new Validator.InvalidValueException(I18nProperties.getString(Strings.messageAlreadyEventParticipant));
 									} else {
 										dto.setPerson(FacadeProvider.getPersonFacade().getPersonByUuid(selectedPerson.getUuid()));
-										EventParticipantDto savedDto = eventParticipantFacade.saveEventParticipant(dto);
+										EventParticipantDto savedDto = eventParticipantFacade.save(dto);
 
 										Notification notification = new Notification(
 											I18nProperties.getString(Strings.messagePersonAddedAsEventParticipant),
@@ -137,7 +137,7 @@ public class EventParticipantsController {
 					if (FacadeProvider.getEventParticipantFacade().exists(dto.getPerson().getUuid(), eventRef.getUuid())) {
 						throw new Validator.InvalidValueException(I18nProperties.getString(Strings.messageAlreadyEventParticipant));
 					}
-					EventParticipantDto savedDto = eventParticipantFacade.saveEventParticipant(dto);
+					EventParticipantDto savedDto = eventParticipantFacade.save(dto);
 					Notification.show(I18nProperties.getString(Strings.messageEventParticipantCreated), Type.ASSISTIVE_NOTIFICATION);
 					if (navigateOnCommit) {
 						navigateToData(savedDto.getUuid());
@@ -308,7 +308,7 @@ public class EventParticipantsController {
 
 	private void savePersonAndEventParticipant(Consumer<EventParticipantReferenceDto> doneConsumer, EventParticipantDto dto) {
 		personFacade.savePerson(dto.getPerson());
-		eventParticipantFacade.saveEventParticipant(dto);
+		eventParticipantFacade.save(dto);
 		Notification.show(I18nProperties.getString(Strings.messageEventParticipantSaved), Type.WARNING_MESSAGE);
 		if (doneConsumer != null)
 			doneConsumer.accept(null);

@@ -38,11 +38,9 @@ import de.symeda.sormas.ui.vaccination.VaccinationsField;
 
 public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory {
 
-	private static final long serialVersionUID = 471700572643936674L;
-
 	public static final int TEXT_AREA_MAX_LENGTH = FieldConstraints.CHARACTER_LIMIT_BIG;
 	public static final int TEXT_FIELD_MAX_LENGTH = FieldConstraints.CHARACTER_LIMIT_DEFAULT;
-
+	private static final long serialVersionUID = 471700572643936674L;
 	private final FieldVisibilityCheckers fieldVisibilityCheckers;
 	private final UiFieldAccessCheckers fieldAccessCheckers;
 
@@ -217,6 +215,7 @@ public class SormasFieldGroupFieldFactory extends DefaultFieldGroupFieldFactory 
 			if (fieldVisibilityCheckers != null) {
 				visible = fieldVisibilityCheckers.isVisible(enumClass, ((Enum<?>) r).name());
 			}
+
 			if (visible) {
 				Item newItem = select.addItem(r);
 				newItem.getItemProperty(CAPTION_PROPERTY_ID).setValue(r.toString());

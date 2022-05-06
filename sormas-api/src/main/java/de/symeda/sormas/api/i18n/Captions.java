@@ -524,8 +524,10 @@ public interface Captions {
 	String CasePreviousHospitalization_admissionAndDischargeDate = "CasePreviousHospitalization.admissionAndDischargeDate";
 	String CasePreviousHospitalization_admissionDate = "CasePreviousHospitalization.admissionDate";
 	String CasePreviousHospitalization_admittedToHealthFacility = "CasePreviousHospitalization.admittedToHealthFacility";
+	String CasePreviousHospitalization_community = "CasePreviousHospitalization.community";
 	String CasePreviousHospitalization_description = "CasePreviousHospitalization.description";
 	String CasePreviousHospitalization_dischargeDate = "CasePreviousHospitalization.dischargeDate";
+	String CasePreviousHospitalization_district = "CasePreviousHospitalization.district";
 	String CasePreviousHospitalization_editColumn = "CasePreviousHospitalization.editColumn";
 	String CasePreviousHospitalization_healthFacility = "CasePreviousHospitalization.healthFacility";
 	String CasePreviousHospitalization_healthFacilityDetails = "CasePreviousHospitalization.healthFacilityDetails";
@@ -537,6 +539,7 @@ public interface Captions {
 	String CasePreviousHospitalization_isolationDate = "CasePreviousHospitalization.isolationDate";
 	String CasePreviousHospitalization_otherHospitalizationReason = "CasePreviousHospitalization.otherHospitalizationReason";
 	String CasePreviousHospitalization_prevHospPeriod = "CasePreviousHospitalization.prevHospPeriod";
+	String CasePreviousHospitalization_region = "CasePreviousHospitalization.region";
 	String caseReferToFacility = "caseReferToFacility";
 	String caseSearchCase = "caseSearchCase";
 	String caseSearchSpecificCase = "caseSearchSpecificCase";
@@ -1418,6 +1421,7 @@ public interface Captions {
 	String LabMessage_specimenCondition = "LabMessage.specimenCondition";
 	String LabMessage_status = "LabMessage.status";
 	String LabMessage_testedDisease = "LabMessage.testedDisease";
+	String LabMessage_type = "LabMessage.type";
 	String LabMessageCriteria_birthDateFrom = "LabMessageCriteria.birthDateFrom";
 	String LabMessageCriteria_birthDateTo = "LabMessageCriteria.birthDateTo";
 	String LabMessageCriteria_messageDateFrom = "LabMessageCriteria.messageDateFrom";
@@ -1458,6 +1462,8 @@ public interface Captions {
 	String Location_contactPersonFirstName = "Location.contactPersonFirstName";
 	String Location_contactPersonLastName = "Location.contactPersonLastName";
 	String Location_contactPersonPhone = "Location.contactPersonPhone";
+	String Location_continent = "Location.continent";
+	String Location_country = "Location.country";
 	String Location_details = "Location.details";
 	String Location_district = "Location.district";
 	String Location_facility = "Location.facility";
@@ -1469,7 +1475,9 @@ public interface Captions {
 	String Location_latLonAccuracy = "Location.latLonAccuracy";
 	String Location_longitude = "Location.longitude";
 	String Location_postalCode = "Location.postalCode";
+	String Location_region = "Location.region";
 	String Location_street = "Location.street";
+	String Location_subcontinent = "Location.subcontinent";
 	String Login_doLogIn = "Login.doLogIn";
 	String Login_login = "Login.login";
 	String Login_password = "Login.password";
@@ -2337,6 +2345,7 @@ public interface Captions {
 	String userNewUser = "userNewUser";
 	String userResetPassword = "userResetPassword";
 	String userRight = "userRight";
+	String UserRight_caption = "UserRight.caption";
 	String UserRight_description = "UserRight.description";
 	String UserRight_jurisdiction = "UserRight.jurisdiction";
 	String UserRight_jurisdictionOfRole = "UserRight.jurisdictionOfRole";

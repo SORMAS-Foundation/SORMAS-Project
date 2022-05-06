@@ -34,6 +34,7 @@ import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.STAR
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.TRAVEL_ENTRY_AGGREGATION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.TRAVEL_ENTRY_DIRECTORY_PAGE_APPLY_FILTER_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.TRAVEL_ENTRY_DIRECTORY_PAGE_SHOW_MORE_FILTERS_BUTTON;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.TRAVEL_ENTRY_FIRST_RECORD_IN_TABLE;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.TRAVEL_ENTRY_GRID_RESULTS_ROWS;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.VACCINATED_ENTRIES;
 
@@ -67,7 +68,7 @@ public class TravelEntryDirectorySteps implements En {
         "I select the German travel entry CSV file in the file picker",
         () -> {
           webDriverHelpers.sendFile(
-              FILE_PICKER, userDirPath + "/uploads/Importvorlage_Einreise_21.11.04.csv");
+              FILE_PICKER, userDirPath + "/uploads/Importvorlage_Einreise_22.04.01.csv");
         });
 
     When(
@@ -151,7 +152,7 @@ public class TravelEntryDirectorySteps implements En {
     And(
         "I fill Travel Entry from input to {int} days before UI Travel Entry created on Travel Entry directory page",
         (Integer number) -> {
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
           webDriverHelpers.fillInWebElement(
               DATE_FROM_COMBOBOX,
               formatter.format(
@@ -160,7 +161,7 @@ public class TravelEntryDirectorySteps implements En {
     And(
         "I fill Travel Entry to input to {int} days after UI Travel Entry created on Travel Entry directory page",
         (Integer number) -> {
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
           webDriverHelpers.fillInWebElement(
               DATE_TO_COMBOBOX,
               formatter.format(
@@ -169,7 +170,7 @@ public class TravelEntryDirectorySteps implements En {
     And(
         "I fill Travel Entry from input to {int} days after before UI Travel Entry created on Travel Entry directory page",
         (Integer number) -> {
-          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy");
+          DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy");
           webDriverHelpers.fillInWebElement(
               DATE_FROM_COMBOBOX,
               formatter.format(
@@ -179,5 +180,12 @@ public class TravelEntryDirectorySteps implements En {
         "I apply {string} to aggregation combobox on Travel Entry directory page",
         (String value) ->
             webDriverHelpers.selectFromCombobox(TRAVEL_ENTRY_AGGREGATION_COMBOBOX, value));
+    When(
+        "I click on first filtered record in Travel Entry",
+        () -> {
+          TimeUnit.SECONDS.sleep(2); // wait for filter
+          webDriverHelpers.scrollToElement(TRAVEL_ENTRY_FIRST_RECORD_IN_TABLE);
+          webDriverHelpers.doubleClickOnWebElementBySelector(TRAVEL_ENTRY_FIRST_RECORD_IN_TABLE);
+        });
   }
 }

@@ -36,7 +36,6 @@ import javax.persistence.criteria.CriteriaUpdate;
 import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
-import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
@@ -58,7 +57,6 @@ import de.symeda.sormas.backend.common.AdoServiceWithUserFilter;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.TaskCreationException;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
@@ -98,11 +96,12 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Task> cq = cb.createQuery(getElementClass());
 		Root<Task> from = cq.from(getElementClass());
+		final TaskQueryContext taskQueryContext = new TaskQueryContext(cb, cq, from);
 
-		Predicate filter = buildActiveTasksFilter(cb, from);
+		Predicate filter = buildActiveTasksFilter(taskQueryContext);
 
 		if (user != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from);
+			Predicate userFilter = createUserFilter(taskQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
 		}
 
@@ -119,14 +118,15 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 
 	public List<String> getAllActiveUuids(User user) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<String> cq = cb.createQuery(String.class);
-		Root<Task> from = cq.from(getElementClass());
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<String> cq = cb.createQuery(String.class);
+		final Root<Task> from = cq.from(getElementClass());
+		final TaskQueryContext taskQueryContext = new TaskQueryContext(cb, cq, from);
 
-		Predicate filter = buildActiveTasksFilter(cb, from);
+		Predicate filter = buildActiveTasksFilter(taskQueryContext);
 
 		if (user != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from);
+			Predicate userFilter = createUserFilter(taskQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
 		}
 
@@ -139,43 +139,58 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 	/**
 	 * @see /sormas-backend/doc/UserDataAccess.md
 	 */
-	@SuppressWarnings("rawtypes")
 	@Override
+	@SuppressWarnings("rawtypes")
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Task> taskPath) {
+		return createUserFilter(new TaskQueryContext(cb, cq, taskPath));
+	}
 
-		Join<Object, User> assigneeUser = taskPath.join(Task.ASSIGNEE_USER, JoinType.LEFT);
-
-		Predicate assigneeFilter = createAssigneeFilter(cb, assigneeUser);
+	public Predicate createUserFilter(TaskQueryContext taskQueryContext) {
 
 		User currentUser = getCurrentUser();
 		if (currentUser == null) {
 			return null;
 		}
 
-		// National users can access all tasks in the system that are assigned in their jurisdiction
+		CriteriaQuery<?> cq = taskQueryContext.getQuery();
+		CriteriaBuilder cb = taskQueryContext.getCriteriaBuilder();
+		From<?, Task> taskPath = taskQueryContext.getRoot();
+
+		Predicate assigneeFilter = createAssigneeFilter(cb, taskQueryContext.getJoins().getAssignee());
+
+		Predicate contactRightsPredicate = this.createContactFilter(
+			cb,
+			taskQueryContext.getRoot(),
+			(taskQueryContext.getJoins()).getAssignee(),
+			(taskQueryContext.getJoins()).getTaskObservers(),
+			currentUser);
+		if (contactRightsPredicate != null) {
+			assigneeFilter = cb.and(assigneeFilter, contactRightsPredicate);
+		}
+
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if ((jurisdictionLevel == JurisdictionLevel.NATION && !UserRole.isPortHealthUser(currentUser.getUserRoles()))
 			|| currentUser.hasUserRole(UserRole.REST_USER)) {
 			return assigneeFilter;
 		}
 
-		// whoever created the task or is assigned to it is allowed to access it
 		Predicate filter = cb.equal(taskPath.get(Task.CREATOR_USER), currentUser);
-		filter = cb.or(filter, cb.equal(assigneeUser, currentUser));
+		filter = cb.or(filter, cb.equal(taskPath.get(Task.ASSIGNEE_USER), currentUser));
 
-		Predicate caseFilter = caseService.createUserFilter(cb, cq, taskPath.join(Task.CAZE, JoinType.LEFT));
+		Predicate caseFilter = caseService.createUserFilter(new CaseQueryContext(cb, cq, taskQueryContext.getJoins().getCaseJoins()));
 		if (caseFilter != null) {
 			filter = cb.or(filter, caseFilter);
 		}
-		Predicate contactFilter = contactService.createUserFilter(cb, cq, taskPath.join(Task.CONTACT, JoinType.LEFT));
+		Predicate contactFilter = contactService.createUserFilter(new ContactQueryContext(cb, cq, taskQueryContext.getJoins().getContactJoins()));
 		if (contactFilter != null) {
 			filter = cb.or(filter, contactFilter);
 		}
-		Predicate eventFilter = eventService.createUserFilter(cb, cq, taskPath.join(Task.EVENT, JoinType.LEFT));
+		Predicate eventFilter = eventService.createUserFilter(new EventQueryContext(cb, cq, taskQueryContext.getJoins().getEventJoins()));
 		if (eventFilter != null) {
 			filter = cb.or(filter, eventFilter);
 		}
-		Predicate travelEntryFilter = travelEntryService.createUserFilter(cb, cq, taskPath.join(Task.TRAVEL_ENTRY, JoinType.LEFT));
+		Predicate travelEntryFilter =
+			travelEntryService.createUserFilter(new TravelEntryQueryContext(cb, cq, taskQueryContext.getJoins().getTravelEntryJoins()));
 		if (travelEntryFilter != null) {
 			filter = cb.or(filter, travelEntryFilter);
 		}
@@ -188,13 +203,35 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 			.or(cb, cb.isNull(assigneeUserJoin.get(User.UUID)), userService.createCurrentUserJurisdictionFilter(cb, assigneeUserJoin));
 	}
 
+	/*
+	 * A user that not have CONTACT_VIEW or CONTACT_EDIT rights is allowed to see the tasks assign to it or where it is
+	 * set as an observer. This restriction should be applied only for tasks of type CONTACT.
+	 */
+	private Predicate createContactFilter(
+		CriteriaBuilder cb,
+		From<?, Task> task,
+		Join<?, User> assigneeUserJoin,
+		Join<?, User> observersJoin,
+		User user) {
+		Predicate predicate = null;
+		if (!userService.hasRight(UserRight.CONTACT_VIEW) && !userService.hasRight(UserRight.CONTACT_EDIT)) {
+			predicate = cb.or(
+				cb.notEqual(task.get(Task.TASK_CONTEXT), TaskContext.CONTACT),
+				cb.equal(assigneeUserJoin.get(User.UUID), user.getUuid()),
+				cb.equal(observersJoin.get(User.UUID), user.getUuid()));
+		}
+
+		return predicate;
+	}
+
 	public long getCount(TaskCriteria taskCriteria) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
-		Root<Task> from = cq.from(getElementClass());
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+		final Root<Task> from = cq.from(getElementClass());
+		final TaskQueryContext taskQueryContext = new TaskQueryContext(cb, cq, from);
 
-		Predicate filter = buildCriteriaFilter(taskCriteria, cb, from);
+		Predicate filter = buildCriteriaFilter(taskCriteria, taskQueryContext);
 		if (filter != null) {
 			cq.where(filter);
 		}
@@ -206,13 +243,14 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 
 	public List<Task> findBy(TaskCriteria taskCriteria, boolean ignoreUserFilter) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Task> cq = cb.createQuery(getElementClass());
-		Root<Task> from = cq.from(getElementClass());
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Task> cq = cb.createQuery(getElementClass());
+		final Root<Task> from = cq.from(getElementClass());
+		final TaskQueryContext taskQueryContext = new TaskQueryContext(cb, cq, from);
 
-		Predicate filter = buildCriteriaFilter(taskCriteria, cb, from);
+		Predicate filter = buildCriteriaFilter(taskCriteria, taskQueryContext);
 		if (!ignoreUserFilter) {
-			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, from));
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(taskQueryContext));
 		}
 
 		if (filter != null) {
@@ -225,11 +263,12 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 
 	public List<String> getArchivedUuidsSince(Date since) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<String> cq = cb.createQuery(String.class);
-		Root<Task> taskRoot = cq.from(Task.class);
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<String> cq = cb.createQuery(String.class);
+		final Root<Task> taskRoot = cq.from(Task.class);
+		final TaskQueryContext taskQueryContext = new TaskQueryContext(cb, cq, taskRoot);
 
-		Predicate filter = createUserFilter(cb, cq, taskRoot);
+		Predicate filter = createUserFilter(taskQueryContext);
 		if (since != null) {
 			Predicate dateFilter = cb.greaterThanOrEqualTo(taskRoot.get(Task.CHANGE_DATE), since);
 			if (filter != null) {
@@ -252,11 +291,11 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		return em.createQuery(cq).getResultList();
 	}
 
-	public Predicate buildCriteriaFilter(TaskCriteria taskCriteria, CriteriaBuilder cb, Root<Task> from) {
-		return buildCriteriaFilter(taskCriteria, cb, from, new TaskJoins(from));
-	}
+	public Predicate buildCriteriaFilter(TaskCriteria taskCriteria, TaskQueryContext taskQueryContext) {
 
-	public Predicate buildCriteriaFilter(TaskCriteria taskCriteria, CriteriaBuilder cb, Root<Task> from, TaskJoins joins) {
+		final CriteriaBuilder cb = taskQueryContext.getCriteriaBuilder();
+		final TaskJoins joins = taskQueryContext.getJoins();
+		final From<?, Task> from = taskQueryContext.getRoot();
 
 		Predicate filter = null;
 
@@ -305,7 +344,7 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		}
 		if (taskCriteria.getRelevanceStatus() != null) {
 			if (taskCriteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
-				filter = CriteriaBuilderHelper.and(cb, filter, buildActiveTasksFilter(cb, from));
+				filter = CriteriaBuilderHelper.and(cb, filter, buildActiveTasksFilter(taskQueryContext));
 			} else if (taskCriteria.getRelevanceStatus() == EntityRelevanceStatus.ARCHIVED) {
 				filter = CriteriaBuilderHelper.and(
 					cb,
@@ -331,7 +370,8 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 						.when(cb.isNotNull(joins.getContactRegion()), joins.getContactRegion().get(Region.UUID))
 						.otherwise(joins.getEventRegion().get(Region.UUID)));
 			String regionUuid = taskCriteria.getRegion().getUuid();
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(region, regionUuid), cb.equal(joins.getCaseResponsibleRegion().get(Region.UUID), regionUuid)));
+			filter = CriteriaBuilderHelper
+				.and(cb, filter, cb.or(cb.equal(region, regionUuid), cb.equal(joins.getCaseResponsibleRegion().get(Region.UUID), regionUuid)));
 		}
 		if (taskCriteria.getDistrict() != null) {
 			Expression<Object> district = cb.selectCase()
@@ -341,7 +381,10 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 						.when(cb.isNotNull(joins.getContactDistrict()), joins.getContactDistrict().get(District.UUID))
 						.otherwise(joins.getEventDistrict().get(District.UUID)));
 			String districtUuid = taskCriteria.getDistrict().getUuid();
-			filter = CriteriaBuilderHelper.and(cb, filter, cb.or(cb.equal(district, districtUuid), cb.equal(joins.getCaseResponsibleDistrict().get(District.UUID), districtUuid)));
+			filter = CriteriaBuilderHelper.and(
+				cb,
+				filter,
+				cb.or(cb.equal(district, districtUuid), cb.equal(joins.getCaseResponsibleDistrict().get(District.UUID), districtUuid)));
 		}
 		if (taskCriteria.getFreeText() != null) {
 			String[] textFilters = taskCriteria.getFreeText().split("\\s+");
@@ -404,13 +447,17 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 		return filter;
 	}
 
-	private Predicate buildActiveTasksFilter(CriteriaBuilder cb, Root<Task> from) {
+	private Predicate buildActiveTasksFilter(TaskQueryContext taskQueryContext) {
 
-		Join<Task, Case> caze = from.join(Task.CAZE, JoinType.LEFT);
-		Join<Task, Contact> contact = from.join(Task.CONTACT, JoinType.LEFT);
-		Join<Contact, Case> contactCaze = contact.join(Contact.CAZE, JoinType.LEFT);
-		Join<Task, Event> event = from.join(Task.EVENT, JoinType.LEFT);
-		Join<Task, TravelEntry> travelEntry = from.join(Task.TRAVEL_ENTRY, JoinType.LEFT);
+		From<?, Task> from = taskQueryContext.getRoot();
+		CriteriaBuilder cb = taskQueryContext.getCriteriaBuilder();
+		TaskJoins joins = taskQueryContext.getJoins();
+
+		Join<Task, Case> caze = joins.getCaze();
+		Join<Task, Contact> contact = joins.getContact();
+		Join<Contact, Case> contactCaze = joins.getContactCase();
+		Join<Task, Event> event = joins.getEvent();
+		Join<Task, TravelEntry> travelEntry = joins.getTravelEntry();
 
 		return cb.and(
 			cb.isFalse(from.get(Task.ARCHIVED)),
@@ -418,16 +465,25 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 				cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.GENERAL),
 				cb.and(
 					cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CASE),
-					cb.and(cb.notEqual(caze.get(Case.ARCHIVED), true), cb.notEqual(caze.get(Case.DELETED), true))),
+					cb.and(
+						cb.or(cb.isNull(caze.get(Case.ARCHIVED)), cb.isFalse(caze.get(Case.ARCHIVED))),
+						cb.or(cb.isNull(caze.get(Case.DELETED)), cb.isFalse(caze.get(Case.DELETED))))),
 				cb.and(
 					cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.CONTACT),
-					cb.and(cb.notEqual(contactCaze.get(Case.ARCHIVED), true), cb.notEqual(contactCaze.get(Case.DELETED), true))),
+					cb.and(
+						cb.or(cb.isNull(contactCaze.get(Case.ARCHIVED)), cb.isFalse(contactCaze.get(Case.ARCHIVED))),
+						cb.or(cb.isNull(contactCaze.get(Case.DELETED)), cb.isFalse(contactCaze.get(Case.DELETED))))),
 				cb.and(
 					cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.EVENT),
-					cb.and(cb.notEqual(event.get(Event.ARCHIVED), true), cb.notEqual(event.get(Event.DELETED), true))),
+					cb.and(
+						cb.or(cb.isNull(event.get(Event.ARCHIVED)), cb.isFalse(event.get(Event.ARCHIVED))),
+						cb.or(cb.isNull(event.get(Event.DELETED)), cb.isFalse(event.get(Event.DELETED))))),
+
 				cb.and(
 					cb.equal(from.get(Task.TASK_CONTEXT), TaskContext.TRAVEL_ENTRY),
-					cb.and(cb.notEqual(travelEntry.get(TravelEntry.ARCHIVED), true), cb.notEqual(travelEntry.get(TravelEntry.DELETED), true)))));
+					cb.and(
+						cb.or(cb.isNull(travelEntry.get(TravelEntry.ARCHIVED)), cb.isFalse(travelEntry.get(TravelEntry.ARCHIVED))),
+						cb.or(cb.isNull(travelEntry.get(TravelEntry.DELETED)), cb.isFalse(travelEntry.get(TravelEntry.DELETED)))))));
 	}
 
 	public Task buildTask(User creatorUser) {
@@ -529,36 +585,37 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 	}
 
 	public List<Selection<?>> getJurisdictionSelections(TaskQueryContext qc) {
-		CriteriaBuilder cb = qc.getCriteriaBuilder();
-		TaskJoins joins = (TaskJoins) qc.getJoins();
+		final CriteriaBuilder cb = qc.getCriteriaBuilder();
+		final TaskJoins joins = qc.getJoins();
 
-		ContactJoins<Task> contactJoins = new ContactJoins<>(joins.getContact());
 		return Arrays.asList(
 			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(qc)),
 			JurisdictionHelper.booleanSelector(
 				cb,
-				cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, qc.getQuery(), joins.getCaze())))),
+				cb.and(
+					cb.isNotNull(joins.getCaze()),
+					caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, qc.getQuery(), joins.getCaseJoins())))),
 			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(
 					cb.isNotNull(joins.getContact()),
-					contactService.inJurisdictionOrOwned(new ContactQueryContext<>(cb, qc.getQuery(), joins.getContact())))),
+					contactService.inJurisdictionOrOwned(new ContactQueryContext(cb, qc.getQuery(), joins.getContactJoins())))),
 			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(
 					cb.isNotNull(joins.getContact()),
-					cb.isNotNull(contactJoins.getCaze()),
-					caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, qc.getQuery(), contactJoins.getCaze())))),
+					cb.isNotNull(joins.getContactJoins().getCaze()),
+					caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, qc.getQuery(), joins.getContactJoins().getCaseJoins())))),
 			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(
 					cb.isNotNull(joins.getEvent()),
-					eventService.inJurisdictionOrOwned(new EventQueryContext<>(cb, qc.getQuery(), joins.getEvent())))),
+					eventService.inJurisdictionOrOwned(new EventQueryContext(cb, qc.getQuery(), joins.getEventJoins())))),
 			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(
 					cb.isNotNull(joins.getTravelEntry()),
-					travelEntryService.inJurisdictionOrOwned(new TravelEntryQueryContext(cb, qc.getQuery(), joins.getTravelEntry())))));
+					travelEntryService.inJurisdictionOrOwned(new TravelEntryQueryContext(cb, qc.getQuery(), joins.getTravelEntryJoins())))));
 	}
 
 	public Predicate inJurisdictionOrOwned(TaskQueryContext qc) {

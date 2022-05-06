@@ -46,6 +46,7 @@ import de.symeda.sormas.api.followup.FollowUpLogic;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.visit.VisitCriteria;
 import de.symeda.sormas.backend.caze.Case;
+import de.symeda.sormas.backend.caze.CaseJoins;
 import de.symeda.sormas.backend.caze.CaseQueryContext;
 import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
@@ -53,6 +54,7 @@ import de.symeda.sormas.backend.common.BaseAdoService;
 import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.person.Person;
@@ -78,20 +80,18 @@ public class VisitService extends BaseAdoService<Visit> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Boolean> cq = cb.createQuery(Boolean.class);
 		Root<Visit> root = cq.from(Visit.class);
-		Expression<Object> objectExpression = JurisdictionHelper.booleanSelector(
-			cb,
-			cb.and(
-				cb.equal(root.get(AbstractDomainObject.ID), visit.getId()),
-				inJurisdiction(cq, cb, root.join(Visit.CAZE, JoinType.LEFT), root.join(Visit.CONTACTS, JoinType.LEFT))));
+		VisitJoins visitJoins = new VisitJoins(root, JoinType.LEFT);
+		Expression<Object> objectExpression = JurisdictionHelper
+			.booleanSelector(cb, cb.and(cb.equal(root.get(AbstractDomainObject.ID), visit.getId()), inJurisdiction(cq, cb, visitJoins)));
 		cq.multiselect(objectExpression);
 		cq.where(cb.equal(root.get(Visit.UUID), visit.getUuid()));
 		return em.createQuery(cq).getResultList().stream().findFirst().orElse(null);
 	}
 
-	private Predicate inJurisdiction(CriteriaQuery cq, CriteriaBuilder cb, Join<Visit, Case> caseJoin, Join<Visit, Contact> contactJoin) {
+	private Predicate inJurisdiction(CriteriaQuery cq, CriteriaBuilder cb, VisitJoins visitJoins) {
 		return cb.or(
-			caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, caseJoin)),
-			contactService.inJurisdictionOrOwned(new ContactQueryContext(cb, cq, contactJoin)));
+			caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, visitJoins.getCaseJoins())),
+			contactService.inJurisdictionOrOwned(new ContactQueryContext(cb, cq, visitJoins.getContactJoins())));
 	}
 
 	public List<String> getAllActiveUuids(User user) {
@@ -111,7 +111,7 @@ public class VisitService extends BaseAdoService<Visit> {
 		visitsQuery.where(
 			CriteriaBuilderHelper.and(
 				cb,
-				contactService.createUserFilter(cb, visitsQuery, contactRoot),
+				contactService.createUserFilter(new ContactQueryContext(cb, visitsQuery, new ContactJoins(contactRoot))),
 				contactService.createActiveContactsFilter(cb, contactRoot),
 				cb.isNotEmpty(contactRoot.get(Contact.VISITS))));
 		visitsQuery.select(visitJoin.get(Visit.UUID));
@@ -130,7 +130,7 @@ public class VisitService extends BaseAdoService<Visit> {
 		visitsQuery.where(
 			CriteriaBuilderHelper.and(
 				cb,
-				caseService.createUserFilter(cb, visitsQuery, caseRoot),
+				caseService.createUserFilter(new CaseQueryContext(cb, visitsQuery, new CaseJoins(caseRoot))),
 				caseService.createActiveCasesFilter(cb, caseRoot),
 				cb.isNotEmpty(caseRoot.get(Case.VISITS))));
 		visitsQuery.select(visitJoin.get(Visit.UUID));
@@ -161,11 +161,14 @@ public class VisitService extends BaseAdoService<Visit> {
 		Fetch<Visit, Person> personFetch = visitJoin.fetch(Visit.PERSON);
 		personFetch.fetch(Person.ADDRESS);
 
-		Predicate filter = CriteriaBuilderHelper
-			.and(cb, contactService.createUserFilter(cb, visitsQuery, contactRoot), contactService.createActiveContactsFilter(cb, contactRoot));
+		Predicate filter = CriteriaBuilderHelper.and(
+			cb,
+			contactService.createUserFilter(new ContactQueryContext(cb, visitsQuery, new ContactJoins(contactRoot))),
+			contactService.createActiveContactsFilter(cb, contactRoot));
 
 		if (date != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, createChangeDateFilter(cb, visitJoin, DateHelper.toTimestampUpper(date), lastSynchronizedUuid));
+			filter =
+				CriteriaBuilderHelper.and(cb, filter, createChangeDateFilter(cb, visitJoin, DateHelper.toTimestampUpper(date), lastSynchronizedUuid));
 		}
 
 		visitsQuery.select(visitJoin);
@@ -185,8 +188,10 @@ public class VisitService extends BaseAdoService<Visit> {
 		Fetch<Visit, Person> personFetch = visitJoin.fetch(Visit.PERSON);
 		personFetch.fetch(Person.ADDRESS);
 
-		Predicate filter =
-			CriteriaBuilderHelper.and(cb, caseService.createUserFilter(cb, visitsQuery, caseRoot), caseService.createActiveCasesFilter(cb, caseRoot));
+		Predicate filter = CriteriaBuilderHelper.and(
+			cb,
+			caseService.createUserFilter(new CaseQueryContext(cb, visitsQuery, new CaseJoins(caseRoot))),
+			caseService.createActiveCasesFilter(cb, caseRoot));
 
 		if (date != null) {
 			filter = CriteriaBuilderHelper.and(cb, filter, createChangeDateFilter(cb, visitJoin, DateHelper.toTimestampUpper(date)));
@@ -286,8 +291,9 @@ public class VisitService extends BaseAdoService<Visit> {
 
 		Join<Visit, Symptoms> symptoms = visitPath.join(Visit.SYMPTOMS, JoinType.LEFT);
 
-		ChangeDateFilterBuilder changeDateFilterBuilder =
-				lastSynchronizedUuid == null ? new ChangeDateFilterBuilder(cb, date) : new ChangeDateFilterBuilder(cb, date, visitPath, lastSynchronizedUuid);
+		ChangeDateFilterBuilder changeDateFilterBuilder = lastSynchronizedUuid == null
+			? new ChangeDateFilterBuilder(cb, date)
+			: new ChangeDateFilterBuilder(cb, date, visitPath, lastSynchronizedUuid);
 		return changeDateFilterBuilder.add(visitPath).add(symptoms).build();
 	}
 }

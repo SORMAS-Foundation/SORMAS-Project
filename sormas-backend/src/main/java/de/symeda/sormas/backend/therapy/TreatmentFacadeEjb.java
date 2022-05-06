@@ -6,6 +6,7 @@ import java.util.Date;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import javax.annotation.security.RolesAllowed;
 import javax.ejb.EJB;
 import javax.ejb.LocalBean;
 import javax.ejb.Stateless;
@@ -41,6 +42,7 @@ import de.symeda.sormas.backend.util.Pseudonymizer;
 import de.symeda.sormas.backend.util.QueryHelper;
 
 @Stateless(name = "TreatmentFacade")
+@RolesAllowed(UserRight._CASE_VIEW)
 public class TreatmentFacadeEjb implements TreatmentFacade {
 
 	@PersistenceContext(unitName = ModelConstants.PERSISTENCE_UNIT_NAME)
@@ -75,7 +77,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 			treatment.get(Treatment.ROUTE),
 			treatment.get(Treatment.ROUTE_DETAILS),
 			treatment.get(Treatment.EXECUTING_CLINICIAN),
-			JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, joins.getCaze()))));
+			JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, joins.getCaseJoins()))));
 
 		if (criteria != null) {
 			cq.where(service.buildCriteriaFilter(criteria, cb, treatment));
@@ -100,6 +102,7 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	}
 
 	@Override
+	@RolesAllowed({UserRight._TREATMENT_CREATE, UserRight._TREATMENT_EDIT})
 	public TreatmentDto saveTreatment(@Valid TreatmentDto source) {
 		Treatment existingTreatment = service.getByUuid(source.getUuid());
 		TreatmentDto existingDto = toDto(existingTreatment);
@@ -112,12 +115,8 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 	}
 
 	@Override
+	@RolesAllowed(UserRight._TREATMENT_DELETE)
 	public void deleteTreatment(String treatmentUuid) {
-
-		if (!userService.hasRight(UserRight.TREATMENT_DELETE)) {
-			throw new UnsupportedOperationException("Your user is not allowed to delete treatments");
-		}
-
 		Treatment treatment = service.getByUuid(treatmentUuid);
 		service.deletePermanent(treatment);
 	}
@@ -166,6 +165,8 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 		Root<Treatment> treatment = cq.from(Treatment.class);
 		TreatmentJoins joins = new TreatmentJoins(treatment);
 
+		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, joins.getCaseJoins());
+
 		cq.multiselect(
 			joins.getCaze().get(Case.UUID),
 			joins.getCasePerson().get(Person.FIRST_NAME),
@@ -179,10 +180,10 @@ public class TreatmentFacadeEjb implements TreatmentFacade {
 			treatment.get(Treatment.ROUTE),
 			treatment.get(Treatment.ROUTE_DETAILS),
 			treatment.get(Treatment.ADDITIONAL_NOTES),
-			JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, joins.getCaze()))));
+			JurisdictionHelper.booleanSelector(cb, caseService.inJurisdictionOrOwned(caseQueryContext)));
 
 		Predicate filter = service.createUserFilter(cb, cq, treatment);
-		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, new CaseQueryContext(cb, cq, joins.getCaze()));
+		Predicate criteriaFilter = caseService.createCriteriaFilter(criteria, caseQueryContext);
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		filter = CriteriaBuilderHelper.andInValues(selectedRows, filter, cb, joins.getCaze().get(Case.UUID));
 		cq.where(filter);

@@ -20,10 +20,13 @@ package de.symeda.sormas.api.task;
 import de.symeda.sormas.api.feature.FeatureType;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
+import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.api.utils.DependingOnUserRight;
 
 public enum TaskContext {
 
 	CASE(FeatureType.TASK_GENERATION_CASE_SURVEILLANCE, "cases", Strings.notificationTaskAssociatedCaseLink),
+	@DependingOnUserRight(UserRight.CONTACT_VIEW)
 	CONTACT(FeatureType.TASK_GENERATION_CONTACT_TRACING, "contacts", Strings.notificationTaskAssociatedContactLink),
 	EVENT(FeatureType.TASK_GENERATION_EVENT_SURVEILLANCE, "events", Strings.notificationTaskAssociatedEventLink),
 	GENERAL(FeatureType.TASK_GENERATION_GENERAL, null, null),
@@ -54,4 +57,5 @@ public enum TaskContext {
 	public String toString() {
 		return I18nProperties.getEnumCaption(this);
 	}
+
 }

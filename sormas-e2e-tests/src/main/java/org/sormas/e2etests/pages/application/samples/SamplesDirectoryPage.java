@@ -41,6 +41,8 @@ public class SamplesDirectoryPage {
       By.cssSelector(("tbody>tr:first-child>td:last-child"));
   public static final By EDIT_TEST_RESULTS_BUTTON =
       By.cssSelector("[location='pathogenTests'] [class='v-slot v-slot-s-list'] [role='button']");
+  public static final By EDIT_ADDITIONAL_TEST_RESULTS_BUTTON =
+      By.cssSelector("[location='additionalTests'] [class='v-slot v-slot-s-list'] [role='button']");
   public static final By SAMPLE_CLASIFICATION_SEARCH_COMBOBOX =
       By.cssSelector("[id='caseClassification'] [class='v-filterselect-button']");
   public static final By SAMPLE_DISEASE_SEARCH_COMBOBOX =
@@ -58,4 +60,7 @@ public class SamplesDirectoryPage {
   public static final By CONFIRM_BUTTON = By.cssSelector(".popupContent [id='actionConfirm']");
   public static final By EDIT_PATHOGEN_TEST_BUTTON =
       By.xpath("//div[@class='v-button v-widget link v-button-link compact v-button-compact']");
+  public static final By EXPORT_SAMPLE_BUTTON = By.id("export");
+  public static final By BASIC_EXPORT_SAMPLE_BUTTON = By.id("exportBasic");
+  public static final By DETAILED_EXPORT_SAMPLE_BUTTON = By.id("exportDetailed");
 }

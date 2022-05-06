@@ -34,15 +34,19 @@ import java.util.List;
 
 import com.google.common.collect.Sets;
 import com.vaadin.server.ErrorMessage;
+import com.vaadin.server.Sizeable;
+import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.ErrorLevel;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
+import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.util.converter.Converter;
 import com.vaadin.v7.data.validator.DateRangeValidator;
 import com.vaadin.v7.shared.ui.datefield.Resolution;
+import com.vaadin.v7.ui.AbstractField;
 import com.vaadin.v7.ui.CheckBox;
 import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.DateField;
@@ -82,6 +86,7 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.api.utils.ExtendedReduced;
+import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -233,6 +238,13 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		firstContactDate = addDateField(ContactDto.FIRST_CONTACT_DATE, DateField.class, 0);
 		lastContactDate = addField(ContactDto.LAST_CONTACT_DATE, DateField.class);
 		reportDate = addField(ContactDto.REPORT_DATE_TIME, DateField.class);
+
+		List<AbstractField<Date>> validatedFields = Arrays.asList(firstContactDate, lastContactDate, reportDate);
+		validatedFields.forEach(field -> field.addValueChangeListener(r -> {
+			validatedFields.forEach(otherField -> {
+				otherField.setValidationVisible(!otherField.isValid());
+			});
+		}));
 
 		FieldHelper
 			.setVisibleWhen(getFieldGroup(), ContactDto.FIRST_CONTACT_DATE, ContactDto.MULTI_DAY_CONTACT, Collections.singletonList(true), true);
@@ -616,10 +628,43 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 									I18nProperties.getString(Strings.headingContactConfirmationRequired),
 									I18nProperties.getString(Strings.messageContactToCaseConfirmationRequired));
 							} else {
-								ControllerProvider.getCaseController().createFromContact(getValue());
+								if (getValue().getFollowUpComment() != null) {
+									int finalFollowUpCommentLenght =
+										ContactLogic
+											.extendFollowUpStatusComment(
+												getValue().getFollowUpComment(),
+												I18nProperties.getString(Strings.messageSystemFollowUpCanceled))
+											.length();
+									if (finalFollowUpCommentLenght > FieldConstraints.CHARACTER_LIMIT_BIG) {
+										VerticalLayout verticalLayout = new VerticalLayout();
+										Label contentLabel = new Label(
+											String.format(
+												I18nProperties.getString(Strings.messageContactConversionFollowUpCommentLarge),
+												I18nProperties.getString(Strings.messageSystemFollowUpCanceled)),
+											ContentMode.HTML);
+										contentLabel.setWidth(100, Sizeable.Unit.PERCENTAGE);
+										verticalLayout.addComponent(contentLabel);
+										verticalLayout.setMargin(false);
+
+										VaadinUiUtil.showConfirmationPopup(
+											I18nProperties.getString(Strings.headingContactConversionFollowUpCommentLarge),
+											verticalLayout,
+											I18nProperties.getString(Strings.messageContactConversionFollowUpCommentLargeOmitMessage),
+											I18nProperties.getString(Strings.messageContactConversionFollowUpCommentLargeAdjustComment),
+											770,
+											confirm -> {
+												if (Boolean.TRUE.equals(confirm)) {
+													ControllerProvider.getCaseController().createFromContact(getValue());
+												}
+											});
+									} else {
+										ControllerProvider.getCaseController().createFromContact(getValue());
+									}
+								} else {
+									ControllerProvider.getCaseController().createFromContact(getValue());
+								}
 							}
 						}, ValoTheme.BUTTON_LINK);
-
 						getContent().addComponent(toCaseButton, TO_CASE_BTN_LOC);
 					}
 				}
@@ -1017,7 +1062,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	public void setValue(ContactDto newFieldValue) throws ReadOnlyException, Converter.ConversionException {
 		super.setValue(newFieldValue);
 
-		FollowUpPeriodDto followUpPeriodDto = FacadeProvider.getContactFacade().calculateFollowUpUntilDate(newFieldValue, true);
+		FollowUpPeriodDto followUpPeriodDto = FacadeProvider.getContactFacade().getCalculatedFollowUpUntilDate(newFieldValue, true);
 		tfExpectedFollowUpUntilDate.setValue(DateHelper.formatLocalDate(followUpPeriodDto.getFollowUpEndDate(), I18nProperties.getUserLanguage()));
 		tfExpectedFollowUpUntilDate.setReadOnly(true);
 		tfExpectedFollowUpUntilDate.setDescription(

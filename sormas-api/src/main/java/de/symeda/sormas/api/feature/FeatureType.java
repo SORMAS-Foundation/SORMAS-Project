@@ -46,7 +46,8 @@ public enum FeatureType {
 		true,
 		new FeatureType[] {
 			CASE_SURVEILANCE },
-			null, ImmutableMap.of(
+		null,
+		ImmutableMap.of(
 			FeatureTypeProperty.AUTOMATIC_RESPONSIBILITY_ASSIGNMENT,
 			Boolean.TRUE,
 			FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE,
@@ -57,12 +58,14 @@ public enum FeatureType {
 		new FeatureType[] {
 			CASE_SURVEILANCE,
 			EVENT_SURVEILLANCE },
-			null, null),
+		null,
+		null),
 	ADDITIONAL_TESTS(true,
 		false,
 		new FeatureType[] {
 			SAMPLES_LAB },
-			null, null),
+		null,
+		null),
 	TASK_MANAGEMENT(true, true, null, null, ImmutableMap.of(FeatureTypeProperty.ALLOW_FREE_EDITING, Boolean.FALSE)),
 	WEEKLY_REPORTING(true, true, null, null, null),
 	IMMUNIZATION_MANAGEMENT(true, true, null, null, ImmutableMap.of(FeatureTypeProperty.REDUCED, Boolean.FALSE)),
@@ -75,87 +78,104 @@ public enum FeatureType {
 		true,
 		new FeatureType[] {
 			TASK_MANAGEMENT },
-			null, null),
+		null,
+		null),
 	CASE_FOLLOWUP(true,
 		false,
 		new FeatureType[] {
 			CASE_SURVEILANCE },
-			null, ImmutableMap.of(FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE, Boolean.FALSE)),
+		null,
+		ImmutableMap.of(FeatureTypeProperty.ALLOW_FREE_FOLLOW_UP_OVERWRITE, Boolean.FALSE)),
 	DOCUMENTS(true,
 		false,
 		new FeatureType[] {
 			CASE_SURVEILANCE,
 			EVENT_SURVEILLANCE },
-			null, null),
+		null,
+		null),
 	DOCUMENTS_MULTI_UPLOAD(true,
 		true,
 		new FeatureType[] {
 			DOCUMENTS },
-			null, null),
+		null,
+		null),
 	EVENT_GROUPS(true,
 		true,
 		new FeatureType[] {
 			EVENT_SURVEILLANCE },
-			null, null),
+		null,
+		null),
 	EVENT_HIERARCHIES(true,
 		true,
 		new FeatureType[] {
 			EVENT_SURVEILLANCE },
-			null, null),
+		null,
+		null),
 	LAB_MESSAGES(true,
 		false,
 		new FeatureType[] {
 			SAMPLES_LAB },
-			null, null),
+		null,
+		null),
 	MANUAL_EXTERNAL_MESSAGES(true,
 		true,
 		new FeatureType[] {
 			CASE_SURVEILANCE },
-			null, null),
+		null,
+		null),
 	NATIONAL_CASE_SHARING(true,
 		false,
 		new FeatureType[] {
 			CASE_SURVEILANCE },
-			null, null),
+		null,
+		null),
 	SURVEILLANCE_REPORTS(true,
 		false,
 		new FeatureType[] {
 			CASE_SURVEILANCE },
-			null, null),
+		null,
+		null),
 	SORMAS_TO_SORMAS_ACCEPT_REJECT(true,
 		false,
 		new FeatureType[] {
 			CASE_SURVEILANCE,
 			CONTACT_TRACING,
 			EVENT_SURVEILLANCE },
-			null, null),
+		null,
+		null),
 	SORMAS_TO_SORMAS_SHARE_CASES_WITH_CONTACTS_AND_SAMPLES(true,
 		true,
 		new FeatureType[] {
 			CASE_SURVEILANCE,
 			CONTACT_TRACING,
 			SAMPLES_LAB },
-			null, null),
+		null,
+		null),
 	SORMAS_TO_SORMAS_SHARE_EVENTS(true,
 		false,
 		new FeatureType[] {
 			EVENT_SURVEILLANCE },
-			null, null),
+		null,
+		null),
 	SORMAS_TO_SORMAS_SHARE_LAB_MESSAGES(true,
 		false,
 		new FeatureType[] {
 			LAB_MESSAGES },
-			null, null),
+		null,
+		null),
 	IMMUNIZATION_STATUS_AUTOMATION(true,
 		true,
 		new FeatureType[] {
 			IMMUNIZATION_MANAGEMENT },
-			null, null),
+		null,
+		null),
 	PERSON_DUPLICATE_CUSTOM_SEARCH(true, false, null, null, null),
 	EDIT_INFRASTRUCTURE_DATA(true, true, null, null, null),
-	DELETE_PERMANENT(true, false, null, null, null),
-	AUTOMATIC_ARCHIVING(true, true, null, Arrays.asList(CASE, CONTACT, EVENT, EVENT_PARTICIPANT, IMMUNIZATION, TRAVEL_ENTRY),
-			ImmutableMap.of(FeatureTypeProperty.THRESHOLD_IN_DAYS, 90)),
+	AUTOMATIC_ARCHIVING(true,
+		true,
+		null,
+		Arrays.asList(CASE, CONTACT, EVENT, EVENT_PARTICIPANT, IMMUNIZATION, TRAVEL_ENTRY),
+		ImmutableMap.of(FeatureTypeProperty.THRESHOLD_IN_DAYS, 90)),
 	EDIT_ARCHIVED_ENTITIES(true, true, null, null, null),
 
 	// SHOW/HIDE VIEW TAB FEATURES
@@ -163,42 +183,50 @@ public enum FeatureType {
 		true,
 		new FeatureType[] {
 			CASE_SURVEILANCE },
-			null, null),
+		null,
+		null),
 	VIEW_TAB_CASES_SYMPTOMS(true,
 		true,
 		new FeatureType[] {
 			CASE_SURVEILANCE },
-			null, null),
+		null,
+		null),
 	VIEW_TAB_CASES_EPIDEMIOLOGICAL_DATA(true,
 		true,
 		new FeatureType[] {
 			CASE_SURVEILANCE },
-			null, null),
+		null,
+		null),
 	VIEW_TAB_CASES_THERAPY(true,
 		true,
 		new FeatureType[] {
 			CASE_SURVEILANCE },
-			null, null),
+		null,
+		null),
 	VIEW_TAB_CASES_FOLLOW_UP(true,
 		true,
 		new FeatureType[] {
 			CASE_SURVEILANCE },
-			null, null),
+		null,
+		null),
 	VIEW_TAB_CASES_CLINICAL_COURSE(true,
 		true,
 		new FeatureType[] {
 			CASE_SURVEILANCE },
-			null, null),
+		null,
+		null),
 	VIEW_TAB_CONTACTS_EPIDEMIOLOGICAL_DATA(true,
 		true,
 		new FeatureType[] {
 			CONTACT_TRACING },
-			null, null),
+		null,
+		null),
 	VIEW_TAB_CONTACTS_FOLLOW_UP_VISITS(true,
 		true,
 		new FeatureType[] {
 			CONTACT_TRACING },
-			null, null),
+		null,
+		null),
 
 	// ADDITIONAL FEATURES
 	GDPR_CONSENT_POPUP(true, false, null, null, null),
@@ -209,7 +237,8 @@ public enum FeatureType {
 		new FeatureType[] {
 			CASE_SURVEILANCE,
 			EVENT_SURVEILLANCE },
-			null, null),
+		null,
+		null),
 
 	// REGION- AND DISEASE-BASED FEATURES
 	LINE_LISTING(false, false, null, null, null),
@@ -219,22 +248,26 @@ public enum FeatureType {
 		false,
 		new FeatureType[] {
 			EVENT_GROUPS },
-			null, null),
+		null,
+		null),
 	EVENT_PARTICIPANT_CASE_CONFIRMED_NOTIFICATIONS(true,
 		true,
 		new FeatureType[] {
 			EVENT_SURVEILLANCE },
-			null, null),
+		null,
+		null),
 	EVENT_PARTICIPANT_RELATED_TO_OTHER_EVENTS_NOTIFICATIONS(true,
 		true,
 		new FeatureType[] {
 			EVENT_SURVEILLANCE },
-			null, null),
+		null,
+		null),
 	TASK_NOTIFICATIONS(true,
 		true,
 		new FeatureType[] {
 			TASK_MANAGEMENT },
-			null, null),
+		null,
+		null),
 	OTHER_NOTIFICATIONS(true, true, null, null, null),
 
 	// TASK GENERATION FEATURES
@@ -242,22 +275,26 @@ public enum FeatureType {
 		true,
 		new FeatureType[] {
 			TASK_MANAGEMENT },
-			null, null),
+		null,
+		null),
 	TASK_GENERATION_CONTACT_TRACING(true,
 		true,
 		new FeatureType[] {
 			TASK_MANAGEMENT },
-			null, null),
+		null,
+		null),
 	TASK_GENERATION_EVENT_SURVEILLANCE(true,
 		true,
 		new FeatureType[] {
 			TASK_MANAGEMENT },
-			null, null),
+		null,
+		null),
 	TASK_GENERATION_GENERAL(true,
 		true,
 		new FeatureType[] {
 			TASK_MANAGEMENT },
-		null, null);
+		null,
+		null);
 
 	/**
 	 * Server feature means that the feature only needs to be configured once per server since they define the way the system

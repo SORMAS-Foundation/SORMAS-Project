@@ -404,7 +404,7 @@ public class CaseController {
 			List<EventParticipantDto> eventParticipants = FacadeProvider.getEventParticipantFacade().getByUuids(eventParticipantUuids);
 			for (EventParticipantDto eventParticipant : eventParticipants) {
 				eventParticipant.setResultingCase(caze.toReference());
-				FacadeProvider.getEventParticipantFacade().saveEventParticipant(eventParticipant);
+				FacadeProvider.getEventParticipantFacade().save(eventParticipant);
 			}
 		}
 
@@ -685,8 +685,6 @@ public class CaseController {
 					}
 					FacadeProvider.getContactFacade().save(updatedContact);
 					FacadeProvider.getCaseFacade().setSampleAssociations(updatedContact.toReference(), dto.toReference());
-					CaseDataDto caseDataByUuid = FacadeProvider.getCaseFacade().getCaseDataByUuid(dto.getUuid());
-					FacadeProvider.getCaseFacade().save(caseDataByUuid);
 					Notification.show(I18nProperties.getString(Strings.messageCaseCreated), Type.ASSISTIVE_NOTIFICATION);
 					if (!createdFromLabMessage) {
 						navigateToView(CaseDataView.VIEW_NAME, dto.getUuid(), null);
@@ -704,7 +702,7 @@ public class CaseController {
 							if (unrelatedDisease == null) {
 								// set resulting case on event participant and save it
 								updatedEventParticipant.setResultingCase(dto.toReference());
-								FacadeProvider.getEventParticipantFacade().saveEventParticipant(updatedEventParticipant);
+								FacadeProvider.getEventParticipantFacade().save(updatedEventParticipant);
 								FacadeProvider.getCaseFacade().setSampleAssociations(updatedEventParticipant.toReference(), dto.toReference());
 							} else {
 								FacadeProvider.getCaseFacade()
@@ -717,7 +715,7 @@ public class CaseController {
 							if (unrelatedDisease == null && convertedEventParticipant.getResultingCase() == null) {
 								convertedEventParticipant.setResultingCase(FacadeProvider.getCaseFacade().getReferenceByUuid(uuid));
 							}
-							FacadeProvider.getEventParticipantFacade().saveEventParticipant(convertedEventParticipant);
+							FacadeProvider.getEventParticipantFacade().save(convertedEventParticipant);
 							if (!createdFromLabMessage) {
 								navigateToView(CaseDataView.VIEW_NAME, uuid, null);
 							}
@@ -893,7 +891,7 @@ public class CaseController {
 				districtUuid = currentDistrictUuid;
 				first = false;
 			} else {
-				if (!DataHelper.equal(regionUuid, currentDistrictUuid)) {
+				if (!DataHelper.equal(regionUuid, currentRegionUuid)) {
 					regionUuid = null;
 				}
 				if (!DataHelper.equal(districtUuid, currentDistrictUuid)) {

@@ -18,19 +18,35 @@
 package org.sormas.e2etests.enums;
 
 import lombok.Getter;
+import lombok.SneakyThrows;
 
 @Getter
 public enum SubcontinentUUIDs {
-  WesternEurope("VMRXWX-EAGV7L-JFKP26-F3DBSBFU");
+  WesternEurope("VMRXWX-EAGV7L-JFKP26-F3DBSBFU", "ST63QN-LZAE3C-L5QMQJ-LCTEKGIA");
 
-  private final String option;
+  private final String uuidMain;
+  private final String uuidDe;
 
-  SubcontinentUUIDs(String option) {
-    this.option = option;
+  SubcontinentUUIDs(String uuidMain, String uuidDe) {
+    this.uuidMain = uuidMain;
+    this.uuidDe = uuidDe;
   }
 
-  @Override
-  public String toString() {
-    return this.option;
+  @SneakyThrows
+  public static String getUuidValueForLocale(String subContinent, String locale) {
+    SubcontinentUUIDs[] subContinentUUIDs = SubcontinentUUIDs.values();
+    for (SubcontinentUUIDs value : subContinentUUIDs) {
+      if (value.name().equalsIgnoreCase(subContinent)) {
+        if (locale.equalsIgnoreCase("main") || locale.equalsIgnoreCase("performance")) {
+          return value.getUuidMain();
+        }
+        if (locale.equalsIgnoreCase("DE")) {
+          return value.getUuidDe();
+        }
+      }
+    }
+    throw new Exception(
+        String.format(
+            "Unable to find uuid for subcontinent: %s and locale: %s", subContinent, locale));
   }
 }

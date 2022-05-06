@@ -22,12 +22,15 @@ import javax.persistence.criteria.From;
 
 import de.symeda.sormas.backend.common.QueryContext;
 import de.symeda.sormas.backend.immunization.entity.Immunization;
-import de.symeda.sormas.backend.immunization.joins.ImmunizationJoins;
 
-public class ImmunizationQueryContext<T> extends QueryContext<T, Immunization> {
+public class ImmunizationQueryContext extends QueryContext<Immunization, ImmunizationJoins> {
 
-	public ImmunizationQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Immunization> root) {
-		super(cb, query, root, new ImmunizationJoins(root));
+	protected ImmunizationQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Immunization> root) {
+		this(cb, query, new ImmunizationJoins(root));
+	}
+
+	public ImmunizationQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, ImmunizationJoins joins) {
+		super(cb, query, joins.getRoot(), joins);
 	}
 
 	@Override

@@ -29,8 +29,11 @@ import io.qameta.allure.listener.StepLifecycleListener;
 import io.restassured.RestAssured;
 import io.restassured.parsing.Parser;
 import java.time.Duration;
+import java.util.Collection;
+import java.util.concurrent.atomic.AtomicBoolean;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
+import org.junit.Assert;
 import org.openqa.selenium.WebDriver;
 import org.openqa.selenium.remote.RemoteWebDriver;
 import org.sormas.e2etests.webdriver.DriverManager;
@@ -99,12 +102,24 @@ public class BaseSteps implements StepLifecycleListener {
   }
 
   private void setLocale(Scenario scenario) {
-    String localeTag =
-        scenario.getSourceTagNames().stream()
-            .filter(value -> value.startsWith("@env"))
-            .findFirst()
-            .get();
+    Collection<String> tags = scenario.getSourceTagNames();
+    checkDeclaredEnvironment(tags);
+    String localeTag = tags.stream().filter(value -> value.startsWith("@env")).findFirst().get();
     int indexOfSubstring = localeTag.indexOf("_");
     locale = localeTag.substring(indexOfSubstring + 1);
+  }
+
+  private void checkDeclaredEnvironment(Collection<String> tags) {
+    AtomicBoolean foundEnvironment = new AtomicBoolean(false);
+    tags.stream()
+        .forEach(
+            tag -> {
+              if (foundEnvironment.get() && tag.startsWith("@env")) {
+                Assert.fail("Cannot have more than one environment declared per test!");
+              }
+              if (tag.startsWith("@env")) {
+                foundEnvironment.set(true);
+              }
+            });
   }
 }

@@ -8,15 +8,19 @@ import javax.persistence.criteria.From;
 import de.symeda.sormas.api.person.PersonContactDetailType;
 import de.symeda.sormas.backend.common.QueryContext;
 
-public class PersonQueryContext<T> extends QueryContext<T, Person> {
+public class PersonQueryContext extends QueryContext<Person, PersonJoins> {
 
 	public static final String PERSON_PHONE_SUBQUERY = "personPhoneSubquery";
 	public static final String PERSON_EMAIL_SUBQUERY = "personEmailSubquery";
 	public static final String PERSON_PHONE_OWNER_SUBQUERY = "personPhoneOwnerSubquery";
 	public static final String PERSON_OTHER_CONTACT_DETAILS_SUBQUERY = "personOtherContactDetailsSubQuery";
 
-	public PersonQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<T, Person> root) {
-		super(cb, query, root, new PersonJoins<>(root));
+	protected PersonQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Person> root) {
+		this(cb, query, new PersonJoins(root));
+	}
+
+	public PersonQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, PersonJoins personJoins) {
+		super(cb, query, personJoins.getRoot(), personJoins);
 	}
 
 	@Override

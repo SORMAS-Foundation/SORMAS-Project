@@ -218,8 +218,7 @@ Feature: Case filter functionality
     And I apply "Archived cases" to combobox on Case Directory Page
     And I check that number of displayed cases results is 0
 
-    #todo requires more checks,the failure from jenkins cannot be reproduced
-  @issue=SORQA-30 @env_main @ignore
+  @issue=SORQA-30 @env_main
   Scenario: Check Case report date filters on Case directory page
     Given API: I create a new person
     Then API: I check that POST call body is "OK"
@@ -390,7 +389,7 @@ Feature: Case filter functionality
     And I check that number of displayed cases results is 0
     And I click "Nur Einreisefälle ohne zugewiesene Einrichtung" checkbox on Case directory page
 
-  @issue=SORQA-83 @env_de @ignore
+  @issue=SORQA-83 @env_de
   Scenario: Check Case report date filters on Case directory page for De specific
     Given I log in with National User
     And I click on the Cases button from navbar

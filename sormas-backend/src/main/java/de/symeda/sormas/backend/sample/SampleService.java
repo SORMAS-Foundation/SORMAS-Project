@@ -22,6 +22,7 @@ import java.sql.Timestamp;
 import java.time.Instant;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
@@ -54,8 +55,6 @@ import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Selection;
 import javax.persistence.criteria.Subquery;
 
-import org.apache.commons.collections.CollectionUtils;
-
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -69,6 +68,7 @@ import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.sample.SampleIndexDto;
 import de.symeda.sormas.api.sample.SampleJurisdictionFlagsDto;
 import de.symeda.sormas.api.sample.SampleListEntryDto;
+import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.sample.SpecimenCondition;
 import de.symeda.sormas.api.user.JurisdictionLevel;
 import de.symeda.sormas.api.utils.DataHelper;
@@ -83,7 +83,6 @@ import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.contact.Contact;
-import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.event.Event;
@@ -92,9 +91,12 @@ import de.symeda.sormas.backend.event.EventParticipantQueryContext;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.labmessage.LabMessageService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
 import de.symeda.sormas.backend.sample.transformers.SampleListEntryDtoResultTransformer;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfo;
+import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoFacadeEjb.SormasToSormasShareInfoFacadeEjbLocal;
 import de.symeda.sormas.backend.sormastosormas.share.shareinfo.SormasToSormasShareInfoService;
 import de.symeda.sormas.backend.user.User;
 import de.symeda.sormas.backend.user.UserService;
@@ -123,7 +125,11 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 	@EJB
 	private AdditionalTestService additionalTestService;
 	@EJB
+	private SormasToSormasShareInfoFacadeEjbLocal sormasToSormasShareInfoFacade;
+	@EJB
 	private SormasToSormasShareInfoService sormasToSormasShareInfoService;
+	@EJB
+	private LabMessageService labMessageService;
 
 	public SampleService() {
 		super(Sample.class);
@@ -134,12 +140,13 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Sample> cq = cb.createQuery(getElementClass());
 		Root<Sample> from = cq.from(getElementClass());
-		SampleJoins joins = new SampleJoins(from);
 
-		Predicate filter = buildCriteriaFilter(criteria, cb, joins);
+		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, from);
+
+		Predicate filter = buildCriteriaFilter(criteria, sampleQueryContext);
 
 		if (user != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, from));
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(sampleQueryContext, null));
 		}
 		if (filter != null) {
 			cq.where(filter);
@@ -164,7 +171,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 		final Root<Sample> sample = cq.from(Sample.class);
 
 		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, sample);
-		SampleJoins<Sample> joins = (SampleJoins<Sample>) sampleQueryContext.getJoins();
+		SampleJoins joins = sampleQueryContext.getJoins();
 
 		final Join<Sample, Case> caze = joins.getCaze();
 		final Join<Case, District> caseDistrict = joins.getCaseDistrict();
@@ -239,10 +246,10 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 		selections.addAll(getJurisdictionSelections(sampleQueryContext));
 		cq.multiselect(selections);
 
-		Predicate filter = createUserFilter(cq, cb, joins, sampleCriteria);
+		Predicate filter = createUserFilter(sampleQueryContext, sampleCriteria);
 
 		if (sampleCriteria != null) {
-			Predicate criteriaFilter = buildCriteriaFilter(sampleCriteria, cb, joins);
+			Predicate criteriaFilter = buildCriteriaFilter(sampleCriteria, sampleQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -385,7 +392,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 		final Root<Sample> sample = cq.from(Sample.class);
 
 		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, sample);
-		SampleJoins<Sample> joins = (SampleJoins<Sample>) sampleQueryContext.getJoins();
+		SampleJoins joins = sampleQueryContext.getJoins();
 
 		cq.distinct(true);
 
@@ -419,7 +426,7 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 		selections.addAll(getJurisdictionSelections(sampleQueryContext));
 		cq.multiselect(selections);
 
-		Predicate filter = CriteriaBuilderHelper.and(cb, createDefaultFilter(cb, sample), createUserFilter(cq, cb, joins, sampleCriteria));
+		Predicate filter = CriteriaBuilderHelper.and(cb, createDefaultFilter(cb, sample), createUserFilter(sampleQueryContext, sampleCriteria));
 		Predicate criteriaFilter = buildSampleListCriteriaFilter(sampleCriteria, cb, joins);
 		filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 
@@ -439,11 +446,12 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Sample> cq = cb.createQuery(getElementClass());
 		Root<Sample> from = cq.from(getElementClass());
+		SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, from);
 
-		Predicate filter = createActiveSamplesFilter(cb, from);
+		Predicate filter = createActiveSamplesFilter(sampleQueryContext);
 
 		if (user != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from);
+			Predicate userFilter = createUserFilter(sampleQueryContext, null);
 			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
 		}
 
@@ -460,14 +468,15 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 
 	public List<String> getAllActiveUuids(User user) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<String> cq = cb.createQuery(String.class);
-		Root<Sample> from = cq.from(getElementClass());
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<String> cq = cb.createQuery(String.class);
+		final Root<Sample> from = cq.from(getElementClass());
+		final SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, from);
 
-		Predicate filter = createActiveSamplesFilter(cb, from);
+		Predicate filter = createActiveSamplesFilter(sampleQueryContext);
 
 		if (user != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from);
+			Predicate userFilter = createUserFilter(sampleQueryContext, null);
 			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
 		}
 
@@ -497,11 +506,12 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 
 	public List<String> getDeletedUuidsSince(User user, Date since) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<String> cq = cb.createQuery(String.class);
-		Root<Sample> sample = cq.from(Sample.class);
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<String> cq = cb.createQuery(String.class);
+		final Root<Sample> sample = cq.from(Sample.class);
+		final SampleQueryContext sampleQueryContext = new SampleQueryContext(cb, cq, sample);
 
-		Predicate filter = createUserFilter(cb, cq, sample);
+		Predicate filter = createUserFilter(sampleQueryContext, null);
 		if (since != null) {
 			Predicate dateFilter = cb.greaterThanOrEqualTo(sample.get(Sample.CHANGE_DATE), since);
 			if (filter != null) {
@@ -563,17 +573,13 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 		return em.createQuery(cq).getResultList();
 	}
 
+	@SuppressWarnings("unchecked")
 	public Map<PathogenTestResultType, Long> getNewTestResultCountByResultType(List<Long> caseIds) {
-
-		if (CollectionUtils.isEmpty(caseIds)) {
-			// Avoid empty IN clause
-			return new HashMap<>();
-		}
 
 		// Avoid parameter limit by joining caseIds to a String instead of n parameters 
 		StringBuilder queryBuilder = new StringBuilder();
 		//@formatter:off
-			queryBuilder.append("WITH sortedsamples AS (SELECT DISTINCT ON (").append(Sample.ASSOCIATED_CASE).append("_id) ")
+		queryBuilder.append("WITH sortedsamples AS (SELECT DISTINCT ON (").append(Sample.ASSOCIATED_CASE).append("_id) ")
 					.append(Sample.ASSOCIATED_CASE).append("_id, ").append(Sample.PATHOGEN_TEST_RESULT).append(", ").append(Sample.SAMPLE_DATE_TIME)
 					.append(" FROM ").append(Sample.TABLE_NAME).append(" WHERE (").append(Sample.SPECIMEN_CONDITION).append(" IS NULL OR ")
 					.append(Sample.SPECIMEN_CONDITION).append(" = '").append(SpecimenCondition.ADEQUATE.name()).append("') AND ").append(Sample.TABLE_NAME)
@@ -583,43 +589,41 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 					.append(Sample.ASSOCIATED_CASE).append("_id = ").append(Case.TABLE_NAME).append(".id ")
 					.append(" WHERE sortedsamples.").append(Sample.ASSOCIATED_CASE).append("_id IN (:caseIds)")
 					.append(" GROUP BY sortedsamples." + Sample.PATHOGEN_TEST_RESULT);
-			//@formatter:on
+		//@formatter:on
 
-		if (caseIds.size() < ModelConstants.PARAMETER_LIMIT) {
-			List<Object[]> results;
+		List<Object[]> results = new LinkedList<>();
+		IterableHelper.executeBatched(caseIds, ModelConstants.PARAMETER_LIMIT, batchedCaseIds -> {
 			Query query = em.createNativeQuery(queryBuilder.toString());
-			query.setParameter("caseIds", caseIds);
-			results = query.getResultList();
+			query.setParameter("caseIds", batchedCaseIds);
+			results.addAll(query.getResultList());
+		});
 
-			return results.stream()
-				.filter(e -> e[0] != null)
-				.collect(Collectors.toMap(e -> PathogenTestResultType.valueOf((String) e[0]), e -> ((BigInteger) e[1]).longValue()));
-		} else {
-			List<Object[]> results = new LinkedList<>();
-			IterableHelper.executeBatched(caseIds, ModelConstants.PARAMETER_LIMIT, batchedCaseIds -> {
-				Query query = em.createNativeQuery(queryBuilder.toString());
-				query.setParameter("caseIds", batchedCaseIds);
-				results.addAll(query.getResultList());
-			});
-			return results.stream()
-				.filter(e -> e[0] != null)
-				.collect(Collectors.toMap(e -> PathogenTestResultType.valueOf((String) e[0]), e -> ((BigInteger) e[1]).longValue(), Long::sum));
-		}
+		return results.stream()
+			.filter(e -> e[0] != null)
+			.collect(Collectors.toMap(e -> PathogenTestResultType.valueOf((String) e[0]), e -> ((BigInteger) e[1]).longValue(), Long::sum));
 	}
 
 	@Override
 	@SuppressWarnings("rawtypes")
 	@Deprecated
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Sample> samplePath) {
-		return createUserFilter(cq, cb, new SampleJoins<>(samplePath), new SampleCriteria());
+		return createUserFilter(new SampleQueryContext(cb, cq, samplePath), null);
 	}
 
 	@SuppressWarnings("rawtypes")
-	public Predicate createUserFilter(CriteriaQuery cq, CriteriaBuilder cb, SampleJoins joins, SampleCriteria criteria) {
+	public Predicate createUserFilter(SampleQueryContext sampleQueryContext, SampleCriteria criteria) {
+
+		final CriteriaQuery cq = sampleQueryContext.getQuery();
+		final CriteriaBuilder cb = sampleQueryContext.getCriteriaBuilder();
+		final SampleJoins joins = sampleQueryContext.getJoins();
+
+		User currentUser = getCurrentUser();
+		if (currentUser == null) {
+			return null;
+		}
 
 		Predicate filter = createUserFilterWithoutAssociations(cb, joins);
 
-		User currentUser = getCurrentUser();
 		final JurisdictionLevel jurisdictionLevel = currentUser.getJurisdictionLevel();
 		if (jurisdictionLevel == JurisdictionLevel.LABORATORY || jurisdictionLevel == JurisdictionLevel.EXTERNAL_LABORATORY) {
 			return filter;
@@ -628,11 +632,15 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 		if (criteria != null && criteria.getSampleAssociationType() != null && criteria.getSampleAssociationType() != SampleAssociationType.ALL) {
 			final SampleAssociationType sampleAssociationType = criteria.getSampleAssociationType();
 			if (sampleAssociationType == SampleAssociationType.CASE) {
-				filter = CriteriaBuilderHelper.or(cb, filter, caseService.createUserFilter(cb, cq, joins.getCaze(), null));
+				filter = CriteriaBuilderHelper.or(cb, filter, caseService.createUserFilter(new CaseQueryContext(cb, cq, joins.getCaseJoins()), null));
 			} else if (sampleAssociationType == SampleAssociationType.CONTACT) {
-				filter = CriteriaBuilderHelper.or(cb, filter, contactService.createUserFilterForJoin(cb, cq, joins.getContact()));
+				filter = CriteriaBuilderHelper
+					.or(cb, filter, contactService.createUserFilter(new ContactQueryContext(cb, cq, joins.getContactJoins()), null));
 			} else if (sampleAssociationType == SampleAssociationType.EVENT_PARTICIPANT) {
-				filter = CriteriaBuilderHelper.or(cb, filter, eventParticipantService.createUserFilterForJoin(cb, cq, joins.getEventParticipant()));
+				filter = CriteriaBuilderHelper.or(
+					cb,
+					filter,
+					eventParticipantService.createUserFilter(new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins())));
 			}
 		} else if (currentUser.getLimitedDisease() != null) {
 			filter = CriteriaBuilderHelper.and(
@@ -640,16 +648,16 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 				filter,
 				CriteriaBuilderHelper.or(
 					cb,
-					caseService.createUserFilter(cb, cq, joins.getCaze(), null),
-					contactService.createUserFilterForJoin(cb, cq, joins.getContact()),
-					eventParticipantService.createUserFilterForJoin(cb, cq, joins.getEventParticipant())));
+					caseService.createUserFilter(new CaseQueryContext(cb, cq, joins.getCaseJoins()), null),
+					contactService.createUserFilter(new ContactQueryContext(cb, cq, joins.getContactJoins()), null),
+					eventParticipantService.createUserFilter(new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins()))));
 		} else {
 			filter = CriteriaBuilderHelper.or(
 				cb,
 				filter,
-				caseService.createUserFilter(cb, cq, joins.getCaze(), null),
-				contactService.createUserFilterForJoin(cb, cq, joins.getContact()),
-				eventParticipantService.createUserFilterForJoin(cb, cq, joins.getEventParticipant()));
+				caseService.createUserFilter(new CaseQueryContext(cb, cq, joins.getCaseJoins()), null),
+				contactService.createUserFilter(new ContactQueryContext(cb, cq, joins.getContactJoins()), null),
+				eventParticipantService.createUserFilter(new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins())));
 		}
 
 		return filter;
@@ -702,29 +710,30 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 
 	public List<Selection<?>> getJurisdictionSelections(SampleQueryContext qc) {
 
-		CriteriaBuilder cb = qc.getCriteriaBuilder();
-		SampleJoins joins = (SampleJoins) qc.getJoins();
-		CriteriaQuery cq = qc.getQuery();
-		ContactJoins<Sample> contactJoins = new ContactJoins(joins.getContact());
+		final CriteriaBuilder cb = qc.getCriteriaBuilder();
+		final SampleJoins joins = qc.getJoins();
+		final CriteriaQuery cq = qc.getQuery();
 		return Arrays.asList(
 			JurisdictionHelper.booleanSelector(cb, inJurisdictionOrOwned(qc)),
 			JurisdictionHelper.booleanSelector(
 				cb,
-				cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, joins.getCaze())))),
-			JurisdictionHelper.booleanSelector(
-				cb,
-				cb.and(cb.isNotNull(joins.getContact()), contactService.inJurisdictionOrOwned(new ContactQueryContext(cb, cq, joins.getContact())))),
+				cb.and(cb.isNotNull(joins.getCaze()), caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, joins.getCaseJoins())))),
 			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(
 					cb.isNotNull(joins.getContact()),
-					cb.isNotNull(contactJoins.getCaze()),
-					caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, contactJoins.getCaze())))),
+					contactService.inJurisdictionOrOwned(new ContactQueryContext(cb, cq, joins.getContactJoins())))),
+			JurisdictionHelper.booleanSelector(
+				cb,
+				cb.and(
+					cb.isNotNull(joins.getContact()),
+					cb.isNotNull(joins.getContactJoins().getCaze()),
+					caseService.inJurisdictionOrOwned(new CaseQueryContext(cb, cq, joins.getContactJoins().getCaseJoins())))),
 			JurisdictionHelper.booleanSelector(
 				cb,
 				cb.and(
 					cb.isNotNull(joins.getEventParticipant()),
-					eventParticipantService.inJurisdictionOrOwned(new EventParticipantQueryContext(cb, cq, joins.getEventParticipant())))));
+					eventParticipantService.inJurisdictionOrOwned(new EventParticipantQueryContext(cb, cq, joins.getEventParticipantJoins())))));
 	}
 
 	public Predicate inJurisdictionOrOwned(SampleQueryContext qc) {
@@ -732,7 +741,9 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 		return SampleJurisdictionPredicateValidator.of(qc, currentUser).inJurisdictionOrOwned();
 	}
 
-	public Predicate buildCriteriaFilter(SampleCriteria criteria, CriteriaBuilder cb, SampleJoins joins) {
+	public Predicate buildCriteriaFilter(SampleCriteria criteria, SampleQueryContext sampleQueryContext) {
+		SampleJoins joins = sampleQueryContext.getJoins();
+		CriteriaBuilder cb = sampleQueryContext.getCriteriaBuilder();
 		final From<?, ?> sample = joins.getRoot();
 
 		Predicate filter = null;
@@ -903,6 +914,34 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 	}
 
 	@Override
+	public void deletePermanent(Sample sample) {
+
+		// Delete all pathogen tests of this sample
+		for (PathogenTest pathogenTest : sample.getPathogenTests()) {
+			pathogenTestService.deletePermanent(pathogenTest);
+		}
+
+		// Delete all additional tests of this sample
+		for (AdditionalTest additionalTest : sample.getAdditionalTests()) {
+			additionalTestService.deletePermanent(additionalTest);
+		}
+
+		// Remove the case from any S2S share info referencing it
+		sormasToSormasShareInfoService.getByAssociatedEntity(SormasToSormasShareInfo.SAMPLE, sample.getUuid()).forEach(s -> {
+			s.setSample(null);
+			if (sormasToSormasShareInfoFacade.hasAnyEntityReference(s)) {
+				sormasToSormasShareInfoService.ensurePersisted(s);
+			} else {
+				sormasToSormasShareInfoService.deletePermanent(s);
+			}
+		});
+
+		deleteSampleLinks(sample);
+
+		super.deletePermanent(sample);
+	}
+
+	@Override
 	public void delete(Sample sample) {
 
 		// Mark all pathogen tests of this sample as deleted
@@ -910,10 +949,12 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 			pathogenTestService.delete(pathogenTest);
 		}
 
-		// Delete all additional tests of this sample
-		for (AdditionalTest additionalTest : sample.getAdditionalTests()) {
-			additionalTestService.deletePermanent(additionalTest);
-		}
+		deleteSampleLinks(sample);
+
+		super.delete(sample);
+	}
+
+	private void deleteSampleLinks(Sample sample) {
 
 		// Remove the reference from another sample to this sample if existing
 		Sample referralSample = getReferredFrom(sample.getUuid());
@@ -922,7 +963,11 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 			ensurePersisted(referralSample);
 		}
 
-		super.delete(sample);
+		// Remove the reference from all lab messages
+		labMessageService.getForSample(new SampleReferenceDto(sample.getUuid())).forEach(labMessage -> {
+			labMessage.setSample(null);
+			labMessageService.ensurePersisted(labMessage);
+		});
 	}
 
 	/**
@@ -1013,13 +1058,17 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 	/**
 	 * Creates a filter that excludes all samples that are deleted or associated with archived or deleted entities
 	 */
-	public Predicate createActiveSamplesFilter(CriteriaBuilder cb, From<?, Sample> root) {
+	public Predicate createActiveSamplesFilter(SampleQueryContext sampleQueryContext) {
+		final From<?, Sample> root = sampleQueryContext.getRoot();
+		final CriteriaBuilder cb = sampleQueryContext.getCriteriaBuilder();
+		final SampleJoins joins = sampleQueryContext.getJoins();
 
-		Join<Sample, Case> caze = root.join(Sample.ASSOCIATED_CASE, JoinType.LEFT);
-		Join<Sample, Contact> contact = root.join(Sample.ASSOCIATED_CONTACT, JoinType.LEFT);
-		Join<Contact, Case> contactCase = contact.join(Contact.CAZE, JoinType.LEFT);
-		Join<Sample, EventParticipant> eventParticipant = root.join(Sample.ASSOCIATED_EVENT_PARTICIPANT, JoinType.LEFT);
-		Join<EventParticipant, Event> event = eventParticipant.join(EventParticipant.EVENT, JoinType.LEFT);
+		final Join<Sample, Case> caze = joins.getCaze();
+		final Join<Sample, Contact> contact = joins.getContact();
+		final Join<Contact, Case> contactCase = joins.getContactCase();
+		final Join<Sample, EventParticipant> eventParticipant = joins.getEventParticipant();
+		final Join<EventParticipant, Event> event = joins.getEvent();
+
 		Predicate pred = cb.or(
 			cb.and(cb.isFalse(caze.get(Case.ARCHIVED)), cb.isFalse(caze.get(Case.DELETED))),
 			cb.and(
@@ -1048,6 +1097,18 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 		}
 
 		return inJurisdictionOrOwned(sample).getInJurisdiction() && !sormasToSormasShareInfoService.isSamlpeOwnershipHandedOver(sample);
+	}
+
+	public Date getEarliestSampleDate(Collection<Sample> samples) {
+		Date earliestSampleDate = null;
+		for (Sample sample : samples) {
+			if (!sample.isDeleted()
+				&& sample.getPathogenTestResult() == PathogenTestResultType.POSITIVE
+				&& (earliestSampleDate == null || sample.getSampleDateTime().before(earliestSampleDate))) {
+				earliestSampleDate = sample.getSampleDateTime();
+			}
+		}
+		return earliestSampleDate;
 	}
 
 	private <T> java.util.function.Predicate<T> distinctByKey(Function<? super T, ?> keyExtractor) {

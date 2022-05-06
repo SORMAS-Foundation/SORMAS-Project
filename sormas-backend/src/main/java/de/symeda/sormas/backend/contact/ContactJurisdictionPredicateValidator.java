@@ -37,7 +37,7 @@ import de.symeda.sormas.backend.util.PredicateJurisdictionValidator;
 
 public class ContactJurisdictionPredicateValidator extends PredicateJurisdictionValidator {
 
-	private final ContactJoins<?> joins;
+	private final ContactJoins joins;
 	private final CriteriaQuery<?> cq;
 
 	private ContactJurisdictionPredicateValidator(ContactQueryContext qc, User user) {
@@ -47,9 +47,9 @@ public class ContactJurisdictionPredicateValidator extends PredicateJurisdiction
 			null,
 			Collections.singletonList(
 				CaseJurisdictionPredicateValidator
-					.of(new CaseQueryContext<>(qc.getCriteriaBuilder(), qc.getQuery(), ((ContactJoins) qc.getJoins()).getCaze()), user)));
+					.of(new CaseQueryContext(qc.getCriteriaBuilder(), qc.getQuery(), (qc.getJoins()).getCaseJoins()), user)));
 
-		this.joins = (ContactJoins<?>) qc.getJoins();
+		this.joins = qc.getJoins();
 		this.cq = qc.getQuery();
 	}
 
@@ -60,9 +60,9 @@ public class ContactJurisdictionPredicateValidator extends PredicateJurisdiction
 			userPath,
 			Collections.singletonList(
 				CaseJurisdictionPredicateValidator
-					.of(new CaseQueryContext<>(qc.getCriteriaBuilder(), qc.getQuery(), ((ContactJoins) qc.getJoins()).getCaze()), userPath)));
+					.of(new CaseQueryContext(qc.getCriteriaBuilder(), qc.getQuery(), (qc.getJoins()).getCaseJoins()), userPath)));
 
-		this.joins = (ContactJoins<?>) qc.getJoins();
+		this.joins = qc.getJoins();
 		this.cq = qc.getQuery();
 	}
 

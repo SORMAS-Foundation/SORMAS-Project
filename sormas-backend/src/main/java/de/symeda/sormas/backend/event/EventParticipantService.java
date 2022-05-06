@@ -19,7 +19,6 @@ package de.symeda.sormas.backend.event;
 
 import java.sql.Timestamp;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -31,15 +30,12 @@ import javax.ejb.Stateless;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.CriteriaUpdate;
-import javax.persistence.criteria.Expression;
 import javax.persistence.criteria.From;
 import javax.persistence.criteria.Join;
 import javax.persistence.criteria.JoinType;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.persistence.criteria.Subquery;
-
-import org.apache.commons.collections.CollectionUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EditPermissionType;
@@ -48,7 +44,6 @@ import de.symeda.sormas.api.caze.VaccinationStatus;
 import de.symeda.sormas.api.event.EventParticipantCriteria;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.api.utils.DateHelper;
-import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.common.AbstractCoreAdoService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.ChangeDateBuilder;
@@ -91,7 +86,10 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<EventParticipant> cq = cb.createQuery(getElementClass());
 		Root<EventParticipant> from = cq.from(getElementClass());
-		Join<EventParticipant, Event> event = from.join(EventParticipant.EVENT, JoinType.LEFT);
+
+		EventParticipantQueryContext eventParticipantQueryContext = new EventParticipantQueryContext(cb, cq, from);
+
+		Join<EventParticipant, Event> event = eventParticipantQueryContext.getJoins().getEvent(JoinType.LEFT);
 
 		Predicate filter = cb
 			.and(cb.or(cb.isFalse(event.get(Event.ARCHIVED)), cb.isNull(event.get(Event.ARCHIVED))), cb.isFalse(from.get(EventParticipant.ARCHIVED)));
@@ -99,7 +97,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		filter = cb.and(filter, createDefaultFilter(cb, from));
 
 		if (user != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from);
+			Predicate userFilter = createUserFilter(eventParticipantQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
 		}
 
@@ -119,14 +117,16 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<EventParticipant> from = cq.from(getElementClass());
-		Join<EventParticipant, Event> event = from.join(EventParticipant.EVENT, JoinType.LEFT);
+		EventParticipantQueryContext eventParticipantQueryContext = new EventParticipantQueryContext(cb, cq, from);
+
+		Join<EventParticipant, Event> event = eventParticipantQueryContext.getJoins().getEvent(JoinType.LEFT);
 
 		Predicate filter = cb.or(cb.equal(event.get(Event.ARCHIVED), false), cb.isNull(event.get(Event.ARCHIVED)));
 
 		filter = cb.and(filter, createDefaultFilter(cb, from));
 
 		if (user != null) {
-			Predicate userFilter = createUserFilter(cb, cq, from);
+			Predicate userFilter = createUserFilter(eventParticipantQueryContext);
 			filter = CriteriaBuilderHelper.and(cb, filter, userFilter);
 		}
 
@@ -171,12 +171,13 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 
 	public Predicate buildCriteriaFilter(EventParticipantCriteria criteria, EventParticipantQueryContext eventParticipantQueryContext) {
 
-		CriteriaBuilder cb = eventParticipantQueryContext.getCriteriaBuilder();
-		Root<EventParticipant> from = (Root<EventParticipant>) eventParticipantQueryContext.getRoot();
-		CriteriaQuery cq = eventParticipantQueryContext.getQuery();
-		Join<EventParticipant, Event> event = from.join(EventParticipant.EVENT, JoinType.LEFT);
-		Join<Case, Person> person = from.join(EventParticipant.PERSON, JoinType.LEFT);
-		PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
+		final CriteriaBuilder cb = eventParticipantQueryContext.getCriteriaBuilder();
+		final From<?, EventParticipant> from = eventParticipantQueryContext.getRoot();
+		final CriteriaQuery cq = eventParticipantQueryContext.getQuery();
+		final EventParticipantJoins joins = eventParticipantQueryContext.getJoins();
+		final Join<EventParticipant, Event> event = joins.getEvent(JoinType.LEFT);
+		final Join<EventParticipant, Person> person = joins.getPerson();
+		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, joins.getPersonJoins());
 
 		Predicate filter = null;
 		if (criteria.getEvent() != null) {
@@ -196,10 +197,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 				Predicate likeFilters = cb.or(
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.FIRST_NAME), textFilter),
 					CriteriaBuilderHelper.unaccentedIlike(cb, person.get(Person.LAST_NAME), textFilter),
-					phoneNumberPredicate(
-						cb,
-						(Expression<String>) personQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY),
-						textFilter));
+					phoneNumberPredicate(cb, personQueryContext.getSubqueryExpression(ContactQueryContext.PERSON_PHONE_SUBQUERY), textFilter));
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
@@ -243,17 +241,22 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		return filter;
 	}
 
-	public Predicate createActiveEventParticipantsFilter(CriteriaBuilder cb, Root<EventParticipant> root) {
+	public Predicate createActiveEventParticipantsFilter(EventParticipantQueryContext eventParticipantQueryContext) {
 
-		Join<EventParticipant, Event> event = root.join(EventParticipant.EVENT, JoinType.LEFT);
+		final EventParticipantJoins joins = eventParticipantQueryContext.getJoins();
+		final Join<EventParticipant, Event> event = joins.getEvent(JoinType.LEFT);
+		final CriteriaBuilder cb = eventParticipantQueryContext.getCriteriaBuilder();
 		return cb.and(cb.isFalse(event.get(Event.ARCHIVED)), cb.isFalse(event.get(Event.DELETED)));
 	}
 
-	public Predicate createActiveEventParticipantsInActiveEventsFilter(CriteriaBuilder cb, Join<?, EventParticipant> eventParticipantJoin) {
+	public Predicate createActiveEventParticipantsInActiveEventsFilter(EventParticipantQueryContext eventParticipantQueryContext) {
 
-		Join<EventParticipant, Event> event = eventParticipantJoin.join(EventParticipant.EVENT, JoinType.LEFT);
+		final EventParticipantJoins joins = eventParticipantQueryContext.getJoins();
+		final From<?, EventParticipant> eventParticipant = eventParticipantQueryContext.getRoot();
+		final Join<EventParticipant, Event> event = joins.getEvent(JoinType.LEFT);
+		final CriteriaBuilder cb = eventParticipantQueryContext.getCriteriaBuilder();
 		return cb.and(
-			cb.isFalse(eventParticipantJoin.get(EventParticipant.DELETED)),
+			cb.isFalse(eventParticipant.get(EventParticipant.DELETED)),
 			cb.isFalse(event.get(Event.ARCHIVED)),
 			cb.isFalse(event.get(Event.DELETED)));
 	}
@@ -263,29 +266,28 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		return cb.and(cb.isFalse(eventParticipantJoin.get(EventParticipant.DELETED)));
 	}
 
-	/**
-	 * @see /sormas-backend/doc/UserDataAccess.md
-	 */
-	@SuppressWarnings("rawtypes")
 	@Override
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, EventParticipant> eventParticipantPath) {
-		return createUserFilterForJoin(cb, cq, eventParticipantPath);
+	@SuppressWarnings("rawtypes")
+	protected Predicate createUserFilterInternal(CriteriaBuilder cb, CriteriaQuery cq, From<?, EventParticipant> from) {
+		return createUserFilter(new EventParticipantQueryContext(cb, cq, from));
 	}
 
-	public Predicate createUserFilterForJoin(CriteriaBuilder cb, CriteriaQuery cq, From<?, EventParticipant> eventParticipantPath) {
-		EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
+	public Predicate createUserFilter(EventParticipantQueryContext eventParticipantQueryContext) {
+
+		final EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
 		eventUserFilterCriteria.includeUserCaseAndEventParticipantFilter(true);
 		eventUserFilterCriteria.forceRegionJurisdiction(true);
-		return createUserFilterForJoin(cb, cq, eventParticipantPath, eventUserFilterCriteria);
 
+		return createUserFilter(eventParticipantQueryContext, eventUserFilterCriteria);
 	}
 
-	public Predicate createUserFilterForJoin(
-		CriteriaBuilder cb,
-		CriteriaQuery cq,
-		From<?, EventParticipant> eventParticipantPath,
-		EventUserFilterCriteria eventUserFilterCriteria) {
-		return eventService.createUserFilter(cb, cq, null, eventParticipantPath, eventUserFilterCriteria);
+	public Predicate createUserFilter(EventParticipantQueryContext epqc, EventUserFilterCriteria eventUserFilterCriteria) {
+
+		final CriteriaBuilder cb = epqc.getCriteriaBuilder();
+		final CriteriaQuery<?> cq = epqc.getQuery();
+		final EventParticipantJoins joins = epqc.getJoins();
+
+		return eventService.createUserFilter(new EventQueryContext(cb, cq, joins.getEventJoins()), eventUserFilterCriteria);
 	}
 
 	public List<EventParticipant> getAllByPerson(Person person) {
@@ -293,8 +295,10 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<EventParticipant> cq = cb.createQuery(getElementClass());
 		Root<EventParticipant> from = cq.from(getElementClass());
+		EventParticipantQueryContext eventParticipantQueryContext = new EventParticipantQueryContext(cb, cq, from);
 
-		Predicate userFilter = eventService.createUserFilter(cb, cq, from.join(EventParticipant.EVENT, JoinType.INNER));
+		Predicate userFilter =
+			eventService.createUserFilter(new EventQueryContext(cb, cq, eventParticipantQueryContext.getJoins().getEvent(JoinType.INNER)));
 
 		Predicate filter = CriteriaBuilderHelper.and(cb, cb.equal(from.get(EventParticipant.PERSON), person), userFilter);
 
@@ -346,8 +350,9 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<EventParticipant> eventParticipant = cq.from(EventParticipant.class);
+		EventParticipantQueryContext epqc = new EventParticipantQueryContext(cb, cq, eventParticipant);
 
-		Predicate filter = createUserFilter(cb, cq, eventParticipant);
+		Predicate filter = createUserFilter(epqc);
 		if (since != null) {
 			Predicate dateFilter = cb.greaterThanOrEqualTo(eventParticipant.get(EventParticipant.CHANGE_DATE), since);
 			if (filter != null) {
@@ -357,7 +362,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 			}
 		}
 
-		Join<EventParticipant, Event> eventJoin = eventParticipant.join(EventParticipant.EVENT, JoinType.INNER);
+		Join<EventParticipant, Event> eventJoin = epqc.getJoins().getEvent(JoinType.INNER);
 		Predicate archivedFilter =
 			cb.or(cb.equal(eventParticipant.get(EventParticipant.ARCHIVED), true), cb.equal(eventJoin.get(Event.ARCHIVED), true));
 		if (filter != null) {
@@ -377,14 +382,13 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<String> cq = cb.createQuery(String.class);
 		Root<EventParticipant> eventParticipantRoot = cq.from(EventParticipant.class);
-		Join<EventParticipant, Event> event = eventParticipantRoot.join(EventParticipant.EVENT, JoinType.LEFT);
-
 		EventUserFilterCriteria eventUserFilterCriteria = new EventUserFilterCriteria();
 		eventUserFilterCriteria.includeUserCaseAndEventParticipantFilter(true);
 		eventUserFilterCriteria.forceRegionJurisdiction(true);
 
-		Predicate filter =
-			eventService.createUserFilter(cb, cq, eventParticipantRoot.join(EventParticipant.EVENT, JoinType.LEFT), eventUserFilterCriteria);
+		Predicate filter = eventService.createUserFilter(
+			new EventQueryContext(cb, cq, new EventJoins(eventParticipantRoot, eventParticipantRoot.join(EventParticipant.EVENT, JoinType.LEFT))),
+			eventUserFilterCriteria);
 
 		if (since != null) {
 			Predicate dateFilter = createChangeDateFilter(cb, eventParticipantRoot, since);
@@ -412,10 +416,13 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		return cb.isFalse(root.get(EventParticipant.DELETED));
 	}
 
-	public Predicate createDefaultInUndeletedEventsFilter(CriteriaBuilder cb, From<?, EventParticipant> root) {
+	public Predicate createDefaultInUndeletedEventsFilter(EventParticipantQueryContext eventParticipantQueryContext) {
 
-		Join<EventParticipant, Event> eventJoin = root.join(EventParticipant.EVENT, JoinType.LEFT);
-		return CriteriaBuilderHelper.and(cb, createDefaultFilter(cb, root), cb.isFalse(eventJoin.get(Event.DELETED)));
+		final EventParticipantJoins joins = eventParticipantQueryContext.getJoins();
+		final From<?, EventParticipant> eventParticipant = eventParticipantQueryContext.getRoot();
+		final Join<EventParticipant, Event> event = joins.getEvent(JoinType.LEFT);
+		final CriteriaBuilder cb = eventParticipantQueryContext.getCriteriaBuilder();
+		return CriteriaBuilderHelper.and(cb, createDefaultFilter(cb, eventParticipant), cb.isFalse(event.get(Event.DELETED)));
 	}
 
 	public List<EventParticipant> findBy(EventParticipantCriteria criteria, User user) {
@@ -428,7 +435,7 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 		Predicate filter = buildCriteriaFilter(criteria, queryContext);
 
 		if (user != null) {
-			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(cb, cq, from));
+			filter = CriteriaBuilderHelper.and(cb, filter, createUserFilter(queryContext));
 		}
 		if (filter != null) {
 			cq.where(filter);
@@ -503,19 +510,13 @@ public class EventParticipantService extends AbstractCoreAdoService<EventPartici
 	}
 
 	public Collection<EventParticipant> getByPersonUuids(List<String> personUuids) {
-		if (CollectionUtils.isEmpty(personUuids)) {
-			// Avoid empty IN clause
-			return Collections.emptyList();
-		} else if (personUuids.size() > ModelConstants.PARAMETER_LIMIT) {
-			List<EventParticipant> eventParticipants = new LinkedList<>();
-			IterableHelper.executeBatched(
-				personUuids,
-				ModelConstants.PARAMETER_LIMIT,
-				batchedPersonUuids -> eventParticipants.addAll(getEventParticipantsByPersonUuids(batchedPersonUuids)));
-			return eventParticipants;
-		} else {
-			return getEventParticipantsByPersonUuids(personUuids);
-		}
+
+		List<EventParticipant> eventParticipants = new LinkedList<>();
+		IterableHelper.executeBatched(
+			personUuids,
+			ModelConstants.PARAMETER_LIMIT,
+			batchedPersonUuids -> eventParticipants.addAll(getEventParticipantsByPersonUuids(batchedPersonUuids)));
+		return eventParticipants;
 	}
 
 	private List<EventParticipant> getEventParticipantsByPersonUuids(List<String> personUuids) {

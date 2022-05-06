@@ -171,11 +171,11 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 
 		Disease disease = null;
 		final CaseReferenceDto associatedCase = getValue().getAssociatedCase();
-		if (associatedCase != null) {
+		if (associatedCase != null && UserProvider.getCurrent().hasAllUserRights(UserRight.CASE_VIEW)) {
 			disease = FacadeProvider.getCaseFacade().getCaseDataByUuid(associatedCase.getUuid()).getDisease();
 		} else {
 			final ContactReferenceDto associatedContact = getValue().getAssociatedContact();
-			if (associatedContact != null) {
+			if (associatedContact != null && UserProvider.getCurrent().hasAllUserRights(UserRight.CONTACT_VIEW)) {
 				disease = FacadeProvider.getContactFacade().getByUuid(associatedContact.getUuid()).getDisease();
 			}
 		}
@@ -192,7 +192,6 @@ public abstract class AbstractSampleForm extends AbstractEditForm<SampleDto> {
 			Arrays.asList(true),
 			Arrays.asList(SampleDto.RECEIVED_DATE, SampleDto.LAB_SAMPLE_ID, SampleDto.SPECIMEN_CONDITION),
 			true);
-		FieldHelper.setRequiredWhen(getFieldGroup(), receivedField, Arrays.asList(SampleDto.SPECIMEN_CONDITION), Arrays.asList(true));
 
 		if (disease != Disease.NEW_INFLUENZA) {
 			getField(SampleDto.SAMPLE_SOURCE).setVisible(false);

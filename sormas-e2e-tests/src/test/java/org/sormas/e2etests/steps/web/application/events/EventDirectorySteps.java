@@ -32,6 +32,7 @@ import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_E
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_TASK_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.UUID_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.APPLY_FILTER;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BASIC_EVENT_EXPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BASIC_EXPORT_PARTICIPANT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BULK_ACTIONS_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CLOSE_POPUP_BUTTON;
@@ -40,6 +41,7 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CR
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CREATE_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CUSTOM_EXPORT_PARTICIPANT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.DATE_TYPE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.DETAILED_EVENT_EXPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.DETAILED_EXPORT_PARTICIPANT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.ENTER_BULK_EDIT_MODE_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENTS_COLUMN_HEADERS;
@@ -84,6 +86,7 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LI
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LINK_EVENT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.LINK_EVENT_BUTTON_EDIT_PAGE;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.MORE_BUTTON_EVENT_DIRECTORY;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.NEW_EVENT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.RESET_FILTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SAVE_BUTTON_IN_LINK_FORM;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SEARCH_EVENT_BY_FREE_TEXT;
@@ -162,6 +165,7 @@ public class EventDirectorySteps implements En {
               SEARCH_EVENT_BY_FREE_TEXT,
               dataOperations.getPartialUuidFromAssociatedLink(eventUuid));
         });
+
     When(
         "I navigate to the last created through API Event page via URL",
         () -> {
@@ -216,7 +220,7 @@ public class EventDirectorySteps implements En {
         () -> {
           String region = apiState.getCreatedEvent().getEventLocation().getRegion().getUuid();
           webDriverHelpers.selectFromCombobox(
-              EVENT_REGION_COMBOBOX_INPUT, RegionsValues.getValueFor(region));
+              EVENT_REGION_COMBOBOX_INPUT, RegionsValues.getNameValueForUuid(region));
         });
 
     When(
@@ -225,7 +229,7 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.waitForPageLoaded();
           String district = apiState.getCreatedEvent().getEventLocation().getDistrict().getUuid();
           webDriverHelpers.selectFromCombobox(
-              EVENT_DISTRICT_COMBOBOX_INPUT, DistrictsValues.getNameByUUID(district));
+              EVENT_DISTRICT_COMBOBOX_INPUT, DistrictsValues.getNameValueForUuid(district));
         });
 
     When(
@@ -234,7 +238,7 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.waitForPageLoaded();
           String community = apiState.getCreatedEvent().getEventLocation().getCommunity().getUuid();
           webDriverHelpers.selectFromCombobox(
-              EVENT_COMMUNITY_COMBOBOX_INPUT, CommunityValues.getValueFor(community));
+              EVENT_COMMUNITY_COMBOBOX_INPUT, CommunityValues.getNameValueForUuid(community));
         });
 
     When(
@@ -321,12 +325,6 @@ public class EventDirectorySteps implements En {
         });
 
     When(
-        "^I click on ([^\"]*) Radiobutton on Event Directory Page$",
-        (String buttonName) -> {
-          webDriverHelpers.clickWebElementByText(EVENTS_RADIO_BUTTON, buttonName);
-          webDriverHelpers.waitForPageLoaded();
-        });
-    When(
         "I check that name appearing in hover is equal to name of linked Event group",
         () -> {
           EventGroup createdGroup = EditEventSteps.groupEvent;
@@ -340,6 +338,13 @@ public class EventDirectorySteps implements En {
         });
 
     When(
+        "^I click on ([^\"]*) Radiobutton on Event Directory Page$",
+        (String buttonName) -> {
+          webDriverHelpers.clickWebElementByText(EVENTS_RADIO_BUTTON, buttonName);
+          webDriverHelpers.waitForPageLoaded();
+        });
+
+    When(
         "^I click on Link Event button on Event Directory Page$",
         () -> webDriverHelpers.clickOnWebElementBySelector(LINK_EVENT_BUTTON));
     When(
@@ -349,6 +354,7 @@ public class EventDirectorySteps implements En {
     When(
         "^I click on Unlink Event button on Event Directory Page$",
         () -> webDriverHelpers.clickOnWebElementBySelector(UNLINK_EVENT_BUTTON));
+
     When(
         "^I fill Id filter with Id of last created event in Link Event to group form$",
         () ->
@@ -445,6 +451,13 @@ public class EventDirectorySteps implements En {
               FILTER_BY_RISK_LEVEL, RiskLevelValues.getCaptionForName(riskLevel));
         });
     When(
+        "I select a German Risk level filter based on the event created with API",
+        () -> {
+          String riskLevel = apiState.getCreatedEvent().getRiskLevel();
+          webDriverHelpers.selectFromCombobox(
+              FILTER_BY_RISK_LEVEL, RiskLevelValues.getCaptionForNameDE(riskLevel));
+        });
+    When(
         "I fill Reporting User filter to {string} on Event Directory Page",
         (String reportingUser) -> {
           webDriverHelpers.waitForPageLoaded();
@@ -478,6 +491,14 @@ public class EventDirectorySteps implements En {
           webDriverHelpers.selectFromCombobox(
               FILTER_BY_RISK_LEVEL,
               RiskLevelValues.getRandomUIRiskLevelDifferentThan(apiRiskLevel));
+        });
+    When(
+        "I select random German risk level value different than risk level value of last created via API Event in Event Directory",
+        () -> {
+          String apiRiskLevel = apiState.getCreatedEvent().getRiskLevel();
+          webDriverHelpers.selectFromCombobox(
+              FILTER_BY_RISK_LEVEL,
+              RiskLevelValues.getRandomUIRiskLevelDifferentThanDE(apiRiskLevel));
         });
 
     When(
@@ -558,12 +579,29 @@ public class EventDirectorySteps implements En {
         });
 
     When(
+        "I select German Source Type based on the event created with API",
+        () -> {
+          String sourceType = apiState.getCreatedEvent().getSrcType();
+          webDriverHelpers.selectFromCombobox(
+              FILTER_BY_SOURCE_TYPE, SourceTypeValues.getCaptionForNameDE((sourceType)));
+        });
+
+    When(
         "I select source Type filter value different than the source type value of the last created via API case in Event Directory",
         () -> {
           String apiSourceType = apiState.getCreatedEvent().getSrcType();
           webDriverHelpers.selectFromCombobox(
               FILTER_BY_SOURCE_TYPE,
               SourceTypeValues.getRandomSourceTypeDifferentThan(apiSourceType));
+        });
+
+    When(
+        "I select German source Type filter value different than the source type value of the last created via API case in Event Directory",
+        () -> {
+          String apiSourceType = apiState.getCreatedEvent().getSrcType();
+          webDriverHelpers.selectFromCombobox(
+              FILTER_BY_SOURCE_TYPE,
+              SourceTypeValues.getRandomSourceTypeDifferentThanDE(apiSourceType));
         });
 
     When(
@@ -575,12 +613,29 @@ public class EventDirectorySteps implements En {
         });
 
     When(
+        "I select German Type of Place field based on the event created with API",
+        () -> {
+          String sourceTypeOfPlace = apiState.getCreatedEvent().getTypeOfPlace();
+          webDriverHelpers.selectFromCombobox(
+              FILTER_BY_TYPE_OF_PLACE, TypeOfPlace.getValueForDE(sourceTypeOfPlace));
+        });
+
+    When(
         "I select type of place filter value different than the type of place value of the last created via API case in Event Directory",
         () -> {
           String apiValueTypeOfPlace = apiState.getCreatedEvent().getTypeOfPlace();
           webDriverHelpers.selectFromCombobox(
               FILTER_BY_TYPE_OF_PLACE,
               TypeOfPlace.getRandomUITypeOfPlaceDifferentThan(apiValueTypeOfPlace));
+        });
+
+    When(
+        "I select German type of place filter value different than the type of place value of the last created via API case in Event Directory",
+        () -> {
+          String apiValueTypeOfPlace = apiState.getCreatedEvent().getTypeOfPlace();
+          webDriverHelpers.selectFromCombobox(
+              FILTER_BY_TYPE_OF_PLACE,
+              TypeOfPlace.getRandomUITypeOfPlaceDifferentThanDE(apiValueTypeOfPlace));
         });
 
     When(
@@ -600,13 +655,13 @@ public class EventDirectorySteps implements En {
               DATE_FROM_COMBOBOX,
               eventService
                   .timeRange[0]
-                  .format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+                  .format(DateTimeFormatter.ofPattern("MM/dd/yyyy"))
                   .toString());
           webDriverHelpers.fillInWebElement(
               DATE_TO_COMBOBOX,
               eventService
                   .timeRange[1]
-                  .format(DateTimeFormatter.ofPattern("dd.MM.yyyy"))
+                  .format(DateTimeFormatter.ofPattern("MM/dd/yyyy"))
                   .toString());
         });
 
@@ -642,8 +697,9 @@ public class EventDirectorySteps implements En {
     When(
         "^I search for specific event in event directory",
         () -> {
-          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(RESET_FILTER, 35);
+          webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(NEW_EVENT_BUTTON, 35);
           webDriverHelpers.clickOnWebElementBySelector(RESET_FILTER);
+          TimeUnit.SECONDS.sleep(3);
           final String eventUuid = CreateNewEventSteps.newEvent.getUuid();
           webDriverHelpers.waitUntilIdentifiedElementIsVisibleAndClickable(
               SEARCH_EVENT_BY_FREE_TEXT_INPUT, 20);
@@ -736,6 +792,10 @@ public class EventDirectorySteps implements En {
 
     When(
         "I open the first event from events list",
+        () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_ID_BUTTON));
+
+    When(
+        "I open the first event group from events list group",
         () -> webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_ID_BUTTON));
 
     And(
@@ -831,6 +891,36 @@ public class EventDirectorySteps implements En {
                         number.intValue(),
                         "Number of displayed cases is not correct")));
 
+    Then(
+        "I check the if Event is displayed correctly in Events Directory table",
+        () -> {
+          List<Map<String, String>> tableRowsData = getTableRowsData();
+          softly.assertEquals(
+              apiState.getCreatedEvent().getUuid().toUpperCase().substring(0, 6),
+              tableRowsData.get(0).get(EventsTableColumnsHeaders.EVENT_ID_HEADER.toString()),
+              "Event IDs are not equal");
+          softly.assertEquals(
+              DiseasesValues.getCaptionForName(apiState.getCreatedEvent().getDisease()),
+              tableRowsData.get(0).get(EventsTableColumnsHeaders.DISEASE_HEADER.toString()),
+              "Diseases are not equal");
+          softly.assertEquals(
+              RegionsValues.getNameValueForUuid(
+                  apiState.getCreatedEvent().getEventLocation().getRegion().getUuid()),
+              tableRowsData.get(0).get(EventsTableColumnsHeaders.REGION_HEADER.toString()),
+              "Regions are not equal");
+          softly.assertEquals(
+              DistrictsValues.getNameValueForUuid(
+                  apiState.getCreatedEvent().getEventLocation().getDistrict().getUuid()),
+              tableRowsData.get(0).get(EventsTableColumnsHeaders.DISTRICT_HEADER.toString()),
+              "Districts are not equal");
+          softly.assertEquals(
+              CommunityValues.getNameValueForUuid(
+                  apiState.getCreatedEvent().getEventLocation().getCommunity().getUuid()),
+              tableRowsData.get(0).get(EventsTableColumnsHeaders.COMMUNITY_HEADER.toString()),
+              "Communities are not equal");
+          softly.assertAll();
+        });
+
     When(
         "I click on the Import button from Events directory",
         () -> {
@@ -877,6 +967,8 @@ public class EventDirectorySteps implements En {
     When(
         "I check that four new events have appeared in Events directory",
         () -> {
+          TimeUnit.SECONDS.sleep(2); // wait for spinner
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(50);
           List<String> eventUUIDs = new ArrayList<>();
           List<String> eventTitles = new ArrayList<>();
           List<Map<String, String>> tableRowsData = getTableRowsData();
@@ -895,6 +987,25 @@ public class EventDirectorySteps implements En {
                           "ImportEvent1", "ImportEvent2", "ImportEvent3", "ImportEvent4")),
               "The imported events did not show up correctly in Events directory.");
           softly.assertAll();
+        });
+
+    When(
+        "I click on the Export Event button",
+        () -> webDriverHelpers.clickOnWebElementBySelector(EVENT_EXPORT_BUTTON));
+
+    When(
+        "I click on the Basic Event Export button",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(BASIC_EVENT_EXPORT_BUTTON);
+          TimeUnit.SECONDS.sleep(2); // wait for download
+        });
+
+    When(
+        "I click on the Detailed Event Export button",
+        () -> {
+          TimeUnit.SECONDS.sleep(8); // wait for basic download if in parallel
+          webDriverHelpers.clickOnWebElementBySelector(DETAILED_EVENT_EXPORT_BUTTON);
+          TimeUnit.SECONDS.sleep(4); // wait for download
         });
   }
 
