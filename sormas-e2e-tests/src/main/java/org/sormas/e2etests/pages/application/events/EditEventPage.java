@@ -139,9 +139,6 @@ public class EditEventPage {
           By.xpath(
               "//label[text()='Erreger-Feintypisierung stimmt mit der der F\u00E4lle \u00FCberein']");
 
-  public static final By EVENT_MANAGEMENT_STATUS_CHECK =
-      By.cssSelector("#eventManagementStatus input:checked[type='checkbox'] ~ label");
-
   public static By getGroupEventName(String groupEventName) {
     return By.xpath("//*[contains(text(),'" + groupEventName + "')]");
   }
