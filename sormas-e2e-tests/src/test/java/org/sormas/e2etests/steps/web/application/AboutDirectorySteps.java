@@ -1,5 +1,10 @@
 package org.sormas.e2etests.steps.web.application;
 
+import static org.sormas.e2etests.pages.application.AboutPage.DATA_DICTIONARY_BUTTON;
+import static org.sormas.e2etests.pages.application.AboutPage.SORMAS_VERSION_HYPERLINK;
+import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.LANGUAGE_COMBOBOX;
+import static org.sormas.e2etests.pages.application.users.CreateNewUserPage.SAVE_BUTTON;
+
 import com.detectlanguage.DetectLanguage;
 import com.google.inject.Inject;
 import cucumber.api.java8.En;
@@ -43,6 +48,12 @@ public class AboutDirectorySteps implements En {
 
   @Inject
   public AboutDirectorySteps(WebDriverHelpers webDriverHelpers, SoftAssert softly) {
+
+    When(
+        "I check that current Sormas version is shown on About directory page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SORMAS_VERSION_HYPERLINK);
+        });
 
     When(
         "I select {string} language from Combobox in User settings",

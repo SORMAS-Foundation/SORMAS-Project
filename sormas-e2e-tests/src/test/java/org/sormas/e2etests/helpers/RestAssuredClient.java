@@ -136,4 +136,24 @@ public class RestAssuredClient {
     }
     apiState.setResponse(response);
   }
+
+  @SneakyThrows
+  public Response sendRequestAndGetResponse(Request request) {
+    setIsScreenshotEnabled(false);
+    RequestSpecification authorization = request();
+    switch (request.getMethod()) {
+      case POST:
+        return authorization.body(request.getBody()).post(request.getPath());
+      case GET:
+        return authorization.get(request.getPath());
+      case PUT:
+        return authorization.body(request.getBody()).put(request.getPath());
+      case PATCH:
+        return authorization.body(request.getBody()).patch(request.getPath());
+      case DELETE:
+        return authorization.delete(request.getPath());
+      default:
+        throw new IllegalAccessException("Incorrect calling method");
+    }
+  }
 }

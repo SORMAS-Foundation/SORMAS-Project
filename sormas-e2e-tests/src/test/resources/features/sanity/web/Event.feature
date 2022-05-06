@@ -179,7 +179,7 @@ Feature: Create events
     When I create and download an event document from template
     And I verify that the event document is downloaded and correctly named
 
-  @issue=SORDEV-5491 @env_main @ignore
+  @issue=SORDEV-5491 @env_main
   Scenario: Add a participant to an event and create case
     Given I log in with National User
     And I click on the Events button from navbar
@@ -474,3 +474,111 @@ Feature: Create events
       Then I click on Edit event group button from event groups box
       And I click on the Navigate to event directory filtered on this event group
       And I check the if Event is displayed correctly in Events Directory table
+
+  @issue=SORDEV-7461 @env_main
+  Scenario: Testing bulk edit of Events
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Events button from navbar
+    And I click on the NEW EVENT button
+    When I create a new event with specific data
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    Then I check the created data is correctly displayed in event edit page
+    And I click on the Events button from navbar
+    Then I click on the RESET FILTERS button from Event
+    And I click on the More button on Event directory page
+    And I click Enter Bulk Edit Mode on Event directory page
+    And I select last created UI result in grid in Event Directory for Bulk Action
+    And I select last created API result in grid in Event Directory for Bulk Action
+    And I click on Bulk Actions combobox on Event Directory Page
+    And I click on Edit Events from Bulk Actions combobox on Event Directory Page
+    Then I click to bulk change event managements status for selected events
+    And I click on SAVE button in Link Event to group form
+    And I navigate to the last created through API Event page via URL
+    Then I check if Event Management Status is set to "PENDING"
+    And I navigate to the last created Event page via URL
+    Then I check if Event Management Status is set to "PENDING"
+
+  @issue=SORDEV-5967 @env_de
+  Scenario: Add evidence fields for event clusters
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in with National User
+    And I click on the Events button from navbar
+    Then I open the last created event via api
+    And I check CLUSTER option on edit Event page
+    And I select "Hauptsächlich von Mensch zu Mensch" option from Primary Mode Of Transmission Combobox on edit Event page
+    And I click on Epidemiological evidence with UNBEKANNT option
+    And I click on Epidemiological evidence with NEIN option
+    And I click on Epidemiological evidence with JA option
+    And I tick the all options for Study on Epidemiological evidence for De version
+    Then I check that all options for Study on Epidemiological evidence appears and there are checked for De version
+    And I tick the all options for Explorative survey of affected people on Epidemiological evidence for De version
+    Then I check the all options for Explorative survey of affected people on Epidemiological evidence appears and there are checked for De version
+    And I tick the all options for Descriptive analysis of ascertained data on Epidemiological evidence for De version
+    Then I check the all options for Descriptive analysis of ascertained data on Epidemiological evidence appears and there are checked for De version
+    And I tick the all options for Suspicion on Epidemiological evidence for De version
+    Then I check the all options for Suspicion on Epidemiological evidence are visible and clickable for De version
+    Then I click on Laboratory diagnostic evidence with UNBEKANNT option
+    And I click on Laboratory diagnostic evidence with NEIN option
+    And I click on Laboratory diagnostic evidence with JA option
+    And I tick the all options for Verification of at least two infected or diseased persons on Laboratory diagnostic evidence for De version
+    Then I check the all options for Verification of at least two infected or diseased persons on Laboratory diagnostic evidence appears and there are checked for De version
+    And I tick the all options for Verification on materials on Laboratory diagnostic evidence for De version
+    Then I check the all options for Verification on materials on Laboratory diagnostic evidence appears and there are checked for De version
+    And I click on SAVE button in edit event form
+
+  @issue=SORDEV-8048 @env_de
+  Scenario: Test Default value for disease if only one is used by the server for Events and Pathogen test
+    Given I log in with National User
+    Then I click on the Events button from navbar
+    When I click on the NEW EVENT button
+    Then I check if default disease value is set for COVID-19
+    Then I click on the NEW EVENT button
+    When I create a new event with specific data for DE version
+    And I click on the Events button from navbar
+    And I search for specific event in event directory
+    And I click on the searched event
+    Then I check the created data for DE version is correctly displayed in event edit page
+    Then I click on the Sample button from navbar
+    When I open created Sample
+    Then I click on the new pathogen test from the Edit Sample page for DE version
+    And I check if default disease value for new Pathogen test is set for COVID-19
+
+  @issue=SORDEV-9477 @env_main
+  Scenario: Add a person search option on creation forms
+    Given API: I create a new event
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And I log in with National User
+    And I click on the Events button from navbar
+    Then I open the last created event via api
+    And I navigate to Event Participants tab in Edit case page
+    And I add participant responsible region and responsible district only
+    And I click on the person search button in add new event participant form
+    And I search for the last created person via Api by uuid in popup on Select Person window
+    And I open the first found result in the popup of Select Person window
+    And I click on the clear button in new add new event participant form
+    And I click on the person search button in add new event participant form
+    And I search for the last created person via Api by uuid in popup on Select Person window
+    And I open the first found result in the popup of Select Person window
+    And I save changes in participant window
+    And I confirm navigation popup
+    And I navigate to EVENT PARTICIPANT from edit event page
+    And I confirm navigation popup
+    Then I click on Apply filters button in event participant list
+    Then I check if filtered participant for existing person appears in the event participants list
+    When I click on the Persons button from navbar
+    And I open the last created Person via API
+    And I check that SEE EVENTS FOR THIS PERSON button appears on Edit Person page

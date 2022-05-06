@@ -1079,13 +1079,21 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return builder;
 	}
 
+	public Predicate createUserFilter(CaseQueryContext caseQueryContext) {
+		return createUserFilter(caseQueryContext, null);
+	}
+
 	@SuppressWarnings("rawtypes")
-	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Case> casePath, CaseUserFilterCriteria userFilterCriteria) {
+	public Predicate createUserFilter(CaseQueryContext caseQueryContext, CaseUserFilterCriteria userFilterCriteria) {
 
 		User currentUser = getCurrentUser();
 		if (currentUser == null) {
 			return null;
 		}
+
+		final CriteriaQuery<?> cq = caseQueryContext.getQuery();
+		final CriteriaBuilder cb = caseQueryContext.getCriteriaBuilder();
+		final From<?, Case> casePath = caseQueryContext.getRoot();
 
 		Predicate filterResponsible = null;
 		Predicate filter = null;
@@ -1195,10 +1203,17 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		return filter;
 	}
 
+	// XXX To be removed when merging with #8747
 	@SuppressWarnings("rawtypes")
 	@Override
 	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Case> casePath) {
-		return createUserFilter(cb, cq, casePath, null);
+		return createUserFilter(new CaseQueryContext(cb, cq, casePath));
+	}
+
+	// XXX To be removed when merging with #8747
+	@SuppressWarnings("rawtypes")
+	public Predicate createUserFilter(CriteriaBuilder cb, CriteriaQuery cq, From<?, Case> casePath, CaseUserFilterCriteria userFilterCriteria) {
+		return createUserFilter(new CaseQueryContext(cb, cq, casePath), userFilterCriteria);		
 	}
 
 	/**

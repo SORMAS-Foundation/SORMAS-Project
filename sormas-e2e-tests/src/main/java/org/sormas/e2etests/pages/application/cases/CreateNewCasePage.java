@@ -23,6 +23,8 @@ import org.openqa.selenium.By;
 public class CreateNewCasePage {
   public static final By DATE_OF_REPORT_INPUT = By.cssSelector(".v-window #reportDate input");
   public static final By DISEASE_COMBOBOX = By.cssSelector(".v-window #disease div");
+  public static final By LINE_LISTING_DISEASE_COMBOBOX = By.cssSelector("#lineListingDisease div");
+  public static final By LINE_LISTING_DISCARD_BUTTON = By.cssSelector(".v-window #actionDiscard");
   public static final By DISEASE_VARIANT_COMBOBOX = By.cssSelector(".v-window #diseaseVariant div");
   public static final By RESPONSIBLE_REGION_COMBOBOX =
       By.cssSelector(".v-window #responsibleRegion div");
@@ -65,4 +67,23 @@ public class CreateNewCasePage {
       By.cssSelector("[location='enterHomeAddressNow'] span.v-checkbox");
   public static final By CASE_DISEASE_VARIANT_COMBOBOX =
       By.cssSelector(".v-window #diseaseVariant div");
+  public static final By PERSON_SEARCH_LOCATOR_BUTTON = By.id("personSearchLoc");
+  public static final By UUID_EXTERNAL_ID_EXTERNAL_TOKEN_LIKE_INPUT =
+      By.id("uuidExternalIdExternalTokenLike");
+  public static final By FIRST_NAME_LIKE_INPUT =
+      By.xpath("//div[@class= 'filters-container']//div[contains(@location, 'firstName')]//input");
+  public static final By LAST_NAME_LIKE_INPUT =
+      By.xpath("//div[@class= 'filters-container']//div[contains(@location, 'lastName')]//input");
+  public static final By PERSON_CASE_WINDOW_SEARCH_CASE_BUTTON = By.id("actionSearch");
+  public static final By CREATE_A_NEW_CASE_CONFIRMATION_BUTTON =
+      By.xpath("//*[text()='Create a new case']");
+  public static final By SELECT_PERSON_WINDOW_CONFIRM_BUTTON =
+      By.xpath(
+          "//div[contains(@class, 'popupContent')]//span[contains(text(), 'Confirm')]//ancestor::div[@id='commit']");
+  public static final By SELECT_PERSON_WINDOW_CONFIRM_BUTTON_DE =
+      By.xpath(
+          "//div[contains(@class, 'popupContent')]//span[contains(text(), 'Best\u00E4tigen')]//ancestor::div[@id='commit']");
+  public static final By PERSON_CASE_WINDOW_SEARCH_FIRST_RESULT_OPTION =
+      By.xpath(
+          "//div[@class='v-grid v-widget v-has-width']//div[@class='v-grid-tablewrapper']/table/tbody[@class='v-grid-body']/tr[@class='v-grid-row v-grid-row-has-data']");
 }
