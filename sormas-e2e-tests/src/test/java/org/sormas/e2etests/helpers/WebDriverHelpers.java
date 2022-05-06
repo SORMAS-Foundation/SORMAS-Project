@@ -15,18 +15,6 @@
 
 package org.sormas.e2etests.helpers;
 
-import static com.google.common.truth.Truth.assertWithMessage;
-import static java.time.Duration.ofSeconds;
-import static org.awaitility.Awaitility.await;
-import static org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
-
-import java.time.Instant;
-import java.time.temporal.ChronoUnit;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-import java.util.function.Predicate;
-import java.util.stream.Collectors;
-import javax.inject.Inject;
 import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.awaitility.core.ConditionTimeoutException;
@@ -43,6 +31,21 @@ import org.openqa.selenium.interactions.Actions;
 import org.sormas.e2etests.common.TimerLite;
 import org.sormas.e2etests.steps.BaseSteps;
 import org.testng.Assert;
+
+import javax.inject.Inject;
+import java.time.Instant;
+import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
+import java.util.concurrent.TimeUnit;
+import java.util.function.Predicate;
+import java.util.stream.Collectors;
+
+import static com.google.common.truth.Truth.assertWithMessage;
+import static java.time.Duration.ofSeconds;
+import static org.awaitility.Awaitility.await;
+import static org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
 
 @Slf4j
 public class WebDriverHelpers {
@@ -916,5 +919,35 @@ public class WebDriverHelpers {
             + ").getPropertyValue('content')";
     String content = javascriptExecutor.executeScript(script).toString();
     return content;
+  }
+
+  public String returnURL() {
+    return baseSteps.getDriver().getCurrentUrl();
+  }
+
+  public void switchToOtherWindow() {
+    String parent = baseSteps.getDriver().getWindowHandle();
+    Set<String> S = baseSteps.getDriver().getWindowHandles();
+    if (S.size() > 1) {
+      for (String actual : S) {
+        if (!actual.equalsIgnoreCase(parent)) {
+          baseSteps.getDriver().switchTo().window(actual);
+          break;
+        }
+      }
+    } else {
+      throw new NotFoundException("Cannot switch window because only one is available!");
+    }
+  }
+
+  public void closeActiveWindow() {
+    var tabs = new ArrayList<>(baseSteps.getDriver().getWindowHandles());
+    if (tabs.size() > 1) {
+      baseSteps.getDriver().close();
+      baseSteps.getDriver().switchTo().window(tabs.get(0));
+    } else {
+      throw new NotFoundException(
+          "Cannot close active window and switch to parent window because only one is available!");
+    }
   }
 }
