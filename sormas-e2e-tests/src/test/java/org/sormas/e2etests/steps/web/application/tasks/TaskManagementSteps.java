@@ -346,7 +346,6 @@ public class TaskManagementSteps implements En {
     When(
         "^I collect the task column objects$",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           List<Map<String, String>> tableRowsData = getTableRowsData();
           taskTableRows = new ArrayList<>();

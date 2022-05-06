@@ -163,7 +163,6 @@ public class EpidemiologicalDataCaseSteps implements En {
               environmentManager.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!cases/epidata/"
                   + uuid);
-          webDriverHelpers.waitForPageLoaded();
         });
 
     When(
@@ -418,7 +417,6 @@ public class EpidemiologicalDataCaseSteps implements En {
                       .getCreatedCase()
                       .getDisease()
                       .equalsIgnoreCase(DiseasesValues.CORONAVIRUS.getDiseaseName()));
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickWebElementByText(
               EXPOSURE_DETAILS_KNOWN_OPTIONS,
               epidemiologicalData.getExposureDetailsKnown().toString());

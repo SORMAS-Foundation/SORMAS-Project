@@ -186,7 +186,6 @@ public class CreateNewCaseSteps implements En {
             webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
           }
           webDriverHelpers.clickOnWebElementBySelector(FIRST_CASE_ID_BUTTON);
-          webDriverHelpers.waitForPageLoaded();
         });
 
     When(
@@ -204,7 +203,6 @@ public class CreateNewCaseSteps implements En {
           webDriverHelpers.scrollToElement(SAVE_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
           TimeUnit.SECONDS.sleep(2); // wait for reaction
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 

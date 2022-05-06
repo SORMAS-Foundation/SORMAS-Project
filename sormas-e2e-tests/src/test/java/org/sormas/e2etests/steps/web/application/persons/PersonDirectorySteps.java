@@ -152,7 +152,6 @@ public class PersonDirectorySteps implements En {
         "I fill Year of birth filter in Persons with the year of the last created person via API",
         () -> {
           String yearOfBirth = apiState.getLastCreatedPerson().getBirthdateYYYY().toString();
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(BIRTH_YEAR_COMBOBOX, yearOfBirth);
         });
 
@@ -191,7 +190,6 @@ public class PersonDirectorySteps implements En {
         "I choose random value of Region in Persons for the last created person by API",
         () -> {
           String regionName = apiState.getLastCreatedPerson().getAddress().getRegion();
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
               REGIONS_COMBOBOX, RegionsValues.getNameValueForUuid(regionName));
         });
@@ -200,7 +198,6 @@ public class PersonDirectorySteps implements En {
         "I choose random value of District in Persons for the last created person by API",
         () -> {
           String districtName = apiState.getLastCreatedPerson().getAddress().getDistrict();
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
               DISTRICTS_COMBOBOX, DistrictsValues.getNameValueForUuid(districtName));
         });
@@ -209,7 +206,6 @@ public class PersonDirectorySteps implements En {
         "I choose random value of Community in Persons for the last created person by API",
         () -> {
           String communityName = apiState.getLastCreatedPerson().getAddress().getCommunity();
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(
               COMMUNITY_PERSON_COMBOBOX, CommunityValues.getNameValueForUuid(communityName));
         });
@@ -264,7 +260,6 @@ public class PersonDirectorySteps implements En {
     Then(
         "I change REGION filter to {string} for Person",
         (String region) -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.selectFromCombobox(REGIONS_COMBOBOX, region);
         });
 
