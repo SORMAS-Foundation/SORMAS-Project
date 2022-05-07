@@ -80,6 +80,7 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -406,7 +407,7 @@ public class UserFacadeEjb implements UserFacade {
 			final Subquery<Contact> contactJurisdictionSubquery = cq.subquery(Contact.class);
 			final Root<Contact> contactRoot = contactJurisdictionSubquery.from(Contact.class);
 			final ContactJurisdictionPredicateValidator contactJurisdictionPredicateValidator =
-				ContactJurisdictionPredicateValidator.of(new ContactQueryContext(cb, cq, contactRoot), userRoot);
+				ContactJurisdictionPredicateValidator.of(new ContactQueryContext(cb, cq, new ContactJoins(contactRoot)), userRoot);
 
 			contactJurisdictionSubquery.select(contactRoot)
 				.where(
