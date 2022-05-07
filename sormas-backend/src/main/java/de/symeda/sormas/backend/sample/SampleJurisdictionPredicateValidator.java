@@ -82,10 +82,10 @@ public class SampleJurisdictionPredicateValidator extends PredicateJurisdictionV
 	@Override
 	protected Predicate isInJurisdictionOrOwned() {
 		final Predicate reportedByCurrentUser = cb.and(
-			cb.isNotNull(joins.getReportingUser()),
+			cb.isNotNull(joins.getRoot().get(Sample.REPORTING_USER)),
 			user != null
-				? cb.equal(joins.getReportingUser().get(User.ID), user.getId())
-				: cb.equal(joins.getReportingUser().get(User.ID), userPath.get(User.ID)));
+				? cb.equal(joins.getRoot().get(Sample.REPORTING_USER).get(User.ID), user.getId())
+				: cb.equal(joins.getRoot().get(Sample.REPORTING_USER).get(User.ID), userPath.get(User.ID)));
 		return cb.or(reportedByCurrentUser, isInJurisdiction());
 	}
 
@@ -127,7 +127,7 @@ public class SampleJurisdictionPredicateValidator extends PredicateJurisdictionV
 	@Override
 	protected Predicate whenLaboratoryLevel() {
 		return user != null
-			? cb.equal(joins.getLab().get(Facility.ID), user.getLaboratory().getId())
-			: cb.equal(joins.getLab().get(Facility.ID), userPath.get(User.LABORATORY).get(Facility.ID));
+			? cb.equal(joins.getRoot().get(Sample.LAB).get(Facility.ID), user.getLaboratory().getId())
+			: cb.equal(joins.getRoot().get(Sample.LAB).get(Facility.ID), userPath.get(User.LABORATORY).get(Facility.ID));
 	}
 }
