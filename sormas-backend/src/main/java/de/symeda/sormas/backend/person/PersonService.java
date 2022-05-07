@@ -325,7 +325,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		final CriteriaBuilder cb = personQueryContext.getCriteriaBuilder();
 		final From<?, Person> personFrom = personQueryContext.getRoot();
 
-		final PersonJoins personJoins = (PersonJoins) personQueryContext.getJoins();
+		final PersonJoins personJoins = personQueryContext.getJoins();
 		final Join<Person, Location> location = personJoins.getAddress();
 		final Join<Location, Region> region = personJoins.getAddressJoins().getRegion();
 		final Join<Location, District> district = personJoins.getAddressJoins().getDistrict();
@@ -563,7 +563,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			.of(
 				personQueryContext.getQuery(),
 				personQueryContext.getCriteriaBuilder(),
-				(PersonJoins) personQueryContext.getJoins(),
+				personQueryContext.getJoins(),
 				currentUser,
 				!featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED))
 			.inJurisdictionOrOwned();
