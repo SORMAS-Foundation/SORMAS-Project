@@ -80,6 +80,10 @@ public class LoginSteps implements En {
           webDriverHelpers.accessWebSite(environmentManager.getEnvironmentUrlForMarket(locale));
           webDriverHelpers.waitUntilIdentifiedElementIsPresent(LoginPage.USER_NAME_INPUT);
           EnvUser user = environmentManager.getUserByRole(locale, userRole);
+            System.out.println("User name: " +  user.getUsername());
+            System.out.println("Password: " +  user.getPassword());
+            log.info("User name: " +  user.getUsername());
+            log.info("Password: " +  user.getPassword());
           log.info("Filling username");
           webDriverHelpers.fillInWebElement(LoginPage.USER_NAME_INPUT, user.getUsername());
           log.info("Filling password");

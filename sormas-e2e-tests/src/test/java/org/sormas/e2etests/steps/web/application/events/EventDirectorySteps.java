@@ -18,46 +18,6 @@
 
 package org.sormas.e2etests.steps.web.application.events;
 
-import cucumber.api.java8.En;
-import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebElement;
-import org.sormas.e2etests.common.DataOperations;
-import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.entities.pojo.web.EventGroup;
-import org.sormas.e2etests.entities.services.EventGroupService;
-import org.sormas.e2etests.entities.services.EventService;
-import org.sormas.e2etests.enums.CommunityValues;
-import org.sormas.e2etests.enums.DiseasesValues;
-import org.sormas.e2etests.enums.DistrictsValues;
-import org.sormas.e2etests.enums.EventReferenceDateOptions;
-import org.sormas.e2etests.enums.RegionsValues;
-import org.sormas.e2etests.enums.RiskLevelValues;
-import org.sormas.e2etests.enums.SourceTypeValues;
-import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
-import org.sormas.e2etests.helpers.AssertHelpers;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pages.application.NavBarPage;
-import org.sormas.e2etests.pages.application.events.EventDirectoryPage;
-import org.sormas.e2etests.state.ApiState;
-import org.sormas.e2etests.steps.BaseSteps;
-import org.testng.Assert;
-import org.testng.asserts.SoftAssert;
-
-import javax.inject.Inject;
-import java.io.File;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_COMMUNITY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DATA_TYPE_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DISTRICT_FILTER_COMBOBOX;
@@ -142,6 +102,45 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.ge
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.RESET_FILTERS_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
+
+import cucumber.api.java8.En;
+import java.io.File;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+import javax.inject.Inject;
+import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebElement;
+import org.sormas.e2etests.common.DataOperations;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.EventGroup;
+import org.sormas.e2etests.entities.services.EventGroupService;
+import org.sormas.e2etests.entities.services.EventService;
+import org.sormas.e2etests.enums.CommunityValues;
+import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.EventReferenceDateOptions;
+import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.enums.RiskLevelValues;
+import org.sormas.e2etests.enums.SourceTypeValues;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.helpers.AssertHelpers;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.NavBarPage;
+import org.sormas.e2etests.pages.application.events.EventDirectoryPage;
+import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.BaseSteps;
+import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
 
 public class EventDirectorySteps implements En {
   private final WebDriverHelpers webDriverHelpers;
