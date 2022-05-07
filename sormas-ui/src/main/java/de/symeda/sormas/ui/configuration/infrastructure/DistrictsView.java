@@ -69,6 +69,7 @@ public class DistrictsView extends AbstractConfigurationView {
 	private SearchField searchField;
 	private ComboBox countryFilter;
 	private ComboBox regionFilter;
+	private ComboBox riskFilter;
 	private ComboBox relevanceStatusFilter;
 	private Button resetButton;
 
@@ -201,9 +202,36 @@ public class DistrictsView extends AbstractConfigurationView {
 		regionFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
 		regionFilter.addValueChangeListener(e -> {
 			criteria.region((RegionReferenceDto) e.getProperty().getValue());
-			navigateTo(criteria);
+			//navigateTo(criteria);
+			grid.reload();
 		});
 		filterLayout.addComponent(regionFilter);
+		
+		
+		riskFilter = ComboBoxHelper.createComboBoxV7();
+		riskFilter.setId(DistrictDto.RISK);
+		riskFilter.setWidth(140, Unit.PIXELS);
+		riskFilter.setCaption(I18nProperties.getPrefixCaption(DistrictDto.I18N_PREFIX, DistrictDto.RISK));
+		
+		riskFilter.addItem("None Risk District (NRD)");
+		riskFilter.addItem("High Risk District (HRD)");
+		riskFilter.addItem("Very High Risk District (VHRD)");
+		
+	//	riskFilter.addItems(FacadeProvider.getRegionFacade().getAllActiveByServerCountry());
+		riskFilter.addValueChangeListener(e -> {
+			
+			if(e.getProperty().getValue() != null) {
+				System.out.println("ddddddddddfasdfasdfasdvaseafsdvas "+e.getProperty().getValue().toString());
+				criteria.risk(e.getProperty().getValue().toString());
+				//navigateTo(criteria);
+				
+			} else {
+				criteria.risk(null);
+			}
+			grid.reload();
+			
+		});
+		filterLayout.addComponent(riskFilter);
 
 		resetButton = ButtonHelper.createButton(Captions.actionResetFilters, event -> {
 			ViewModelProviders.of(DistrictsView.class).remove(DistrictCriteria.class);

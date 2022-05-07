@@ -129,11 +129,9 @@ public class DistrictService extends AbstractInfrastructureAdoService<District> 
 	
 	
 	public List<District> getByExternalID(Long ext_id, Region reg_ext_id, boolean includeArchivedEntities) {
-System.out.println("++++REGION IN USE TO QUERY DISTRICT == "+reg_ext_id.getExternalID());
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<District> cq = cb.createQuery(getElementClass());  
 		Root<District> from = cq.from(getElementClass());
-		System.out.println("SSSSSSDDDSSSSSSSSSSSSSSSSSSSSDDSSSSS45 - "+SQLExtractor.from(em.createQuery(cq)));
 		Predicate filter = cb.equal(from.get("externalID"), ext_id);
 		
 		//suspending region here temporarily
@@ -145,13 +143,10 @@ System.out.println("++++REGION IN USE TO QUERY DISTRICT == "+reg_ext_id.getExter
 		}
 
 		cq.where(filter);
-		System.out.println("SSSSSSDDDDFFFFFFFFFFFFFFFFFFFFFFFFFDSSSSS45 - "+SQLExtractor.from(em.createQuery(cq)));
 		return em.createQuery(cq).getResultList();
 	}
 
 	public List<District> getByExternalId(Long externalId, boolean includeArchivedEntities) {
-		
-		System.out.println("++++REGION Idddddddddddddddddddddddddddddd");
 		return getByExternalId(externalId, District.EXTERNAL_ID, includeArchivedEntities);
 	}
 
@@ -184,6 +179,12 @@ System.out.println("++++REGION IN USE TO QUERY DISTRICT == "+reg_ext_id.getExter
 			filter = CriteriaBuilderHelper
 				.and(cb, filter, cb.equal(from.join(District.REGION, JoinType.LEFT).get(Region.UUID), criteria.getRegion().getUuid()));
 		}
+		
+		if (criteria.getRisk() != null) {
+			filter = CriteriaBuilderHelper.and(cb, filter, cb.equal(from.get(District.RISK), criteria.getRisk()));
+			}
+		
+		
 		if (criteria.getNameEpidLike() != null) {
 			String[] textFilters = criteria.getNameEpidLike().split("\\s+");
 			for (String textFilter : textFilters) {
@@ -197,6 +198,7 @@ System.out.println("++++REGION IN USE TO QUERY DISTRICT == "+reg_ext_id.getExter
 				filter = CriteriaBuilderHelper.and(cb, filter, likeFilters);
 			}
 		}
+		
 		if (criteria.getRelevanceStatus() != null) {
 			if (criteria.getRelevanceStatus() == EntityRelevanceStatus.ACTIVE) {
 				filter = CriteriaBuilderHelper

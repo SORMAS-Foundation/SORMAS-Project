@@ -72,6 +72,14 @@ public class District extends InfrastructureAdo {
 	public void setEpidCode(String epidCode) {
 		this.epidCode = epidCode;
 	}
+	
+	public String getRisk() {
+		return risk;
+	}
+
+	public void setRisk(String risk) {
+		this.risk = risk;
+	}
 
 	public Region getRegion() {
 		return region;

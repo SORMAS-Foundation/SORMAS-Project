@@ -10,6 +10,8 @@ import javax.persistence.criteria.Join;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
+import com.vladmihalcea.hibernate.type.util.SQLExtractor;
+
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.backend.util.QueryHelper;
 
@@ -48,7 +50,7 @@ public abstract class AbstractInfrastructureAdoService<ADO extends Infrastructur
 		Root<ADO> from = cq.from(getElementClass());
 		cq.where(createBasicFilter(cb, from));
 		cq.orderBy(asc ? cb.asc(from.get(orderProperty)) : cb.desc(from.get(orderProperty)));
-
+		
 		return em.createQuery(cq).getResultList();
 	}
 

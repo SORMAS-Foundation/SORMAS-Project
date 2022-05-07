@@ -32,6 +32,7 @@ public class DistrictCriteria extends BaseCriteria implements Serializable, Clon
 	private CountryReferenceDto country;
 	private RegionReferenceDto region;
 	private String nameEpidLike;
+	private String risk;
 	private EntityRelevanceStatus relevanceStatus;
 
 	public CountryReferenceDto getCountry() {
@@ -60,6 +61,15 @@ public class DistrictCriteria extends BaseCriteria implements Serializable, Clon
 
 	public DistrictCriteria nameEpidLike(String nameEpidLike) {
 		this.nameEpidLike = nameEpidLike;
+		return this;
+	}
+	
+	public String getRisk() {
+		return risk;
+	}
+
+	public DistrictCriteria risk(String risk) {
+		this.risk = risk;
 		return this;
 	}
 

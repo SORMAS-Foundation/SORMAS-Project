@@ -8517,10 +8517,15 @@ exception
 end;
 $BODY$;
 
-INSERT INTO schema_version (version_number, comment) VALUES (420 'patch for integer out of range');
+INSERT INTO schema_version (version_number, comment) VALUES (420, 'patch for integer out of range');
 
 
+--#111
 
+ALTER TABLE ONLY district
+ ADD COLUMN risk character varying(45);
+ 
+INSERT INTO schema_version (version_number, comment) VALUES (421, 'adding risk to district table');
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
 

@@ -36,6 +36,7 @@ public class DistrictDto extends EntityDto {
 
 	public static final String NAME = "name";
 	public static final String EPID_CODE = "epidCode";
+	public static final String RISK = "risk";
 	public static final String GROWTH_RATE = "growthRate";
 	public static final String REGION = "region";
 	public static final String EXTERNAL_ID = "externalID";
@@ -44,6 +45,7 @@ public class DistrictDto extends EntityDto {
 	private String name;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String epidCode;
+	private String risk;
 	private Float growthRate;
 	private RegionReferenceDto region;
 	private boolean archived;
@@ -59,6 +61,7 @@ public class DistrictDto extends EntityDto {
 		boolean archived,
 		String name,
 		String epidCode,
+		String risk,
 		Float growthRate,
 		String regionUuid,
 		String regionName,
@@ -69,6 +72,7 @@ public class DistrictDto extends EntityDto {
 		this.archived = archived;
 		this.name = name;
 		this.epidCode = epidCode;
+		this.risk = risk;
 		this.growthRate = growthRate;
 		this.region = new RegionReferenceDto(regionUuid, regionName, regionExternalId);
 		this.externalID = externalID;
@@ -92,6 +96,14 @@ public class DistrictDto extends EntityDto {
 
 	public void setEpidCode(String epidCode) {
 		this.epidCode = epidCode;
+	}
+
+	public String getRisk() {
+		return risk;
+	}
+
+	public void setRisk(String risk) {
+		this.risk = risk;
 	}
 
 	public RegionReferenceDto getRegion() {

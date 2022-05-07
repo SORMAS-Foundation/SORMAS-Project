@@ -63,8 +63,8 @@ public class DistrictsGrid extends FilteredGrid<DistrictIndexDto, DistrictCriter
 			DistrictIndexDto.REGION,
 			//DistrictIndexDto.EPID_CODE,
 			DistrictIndexDto.EXTERNAL_ID,
-			DistrictIndexDto.POPULATION);
-		//	DistrictIndexDto.GROWTH_RATE);
+			DistrictIndexDto.POPULATION,
+			DistrictIndexDto.RISK);
 
 		getColumn(DistrictIndexDto.POPULATION).setSortable(false);
 
@@ -74,6 +74,7 @@ public class DistrictsGrid extends FilteredGrid<DistrictIndexDto, DistrictCriter
 			addItemClickListener(new ShowDetailsListener<>(DistrictIndexDto.REGION, e -> ControllerProvider.getInfrastructureController().editDistrict(e.getUuid())));
 			addItemClickListener(new ShowDetailsListener<>(DistrictIndexDto.EXTERNAL_ID, e -> ControllerProvider.getInfrastructureController().editDistrict(e.getUuid())));
 			addItemClickListener(new ShowDetailsListener<>(DistrictIndexDto.POPULATION, e -> ControllerProvider.getInfrastructureController().editDistrict(e.getUuid())));
+			addItemClickListener(new ShowDetailsListener<>(DistrictIndexDto.RISK, e -> ControllerProvider.getInfrastructureController().editDistrict(e.getUuid())));
 			
 		//	addEditColumn(e -> ControllerProvider.getInfrastructureController().editDistrict(e.getUuid()));
 		}

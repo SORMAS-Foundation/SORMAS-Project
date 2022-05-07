@@ -929,6 +929,7 @@ public interface Captions {
 	String district = "district";
 	String District_archived = "District.archived";
 	String District_epidCode = "District.epidCode";
+	String District_risk = "District.risk";
 	String District_externalID = "District.externalID";
 	String District_growthRate = "District.growthRate";
 	String District_population = "District.population";

@@ -30,6 +30,7 @@ public class DistrictIndexDto extends EntityDto {
 
 	public static final String NAME = "name";
 	public static final String EPID_CODE = "epidCode";
+	public static final String RISK = "risk";
 	public static final String POPULATION = "population";
 	public static final String GROWTH_RATE = "growthRate";
 	public static final String REGION = "region";
@@ -37,6 +38,7 @@ public class DistrictIndexDto extends EntityDto {
 
 	private String name;
 	private String epidCode;
+	private String risk;
 	private Integer population;
 	private Float growthRate;
 	private RegionReferenceDto region;
@@ -60,6 +62,14 @@ public class DistrictIndexDto extends EntityDto {
 
 	public void setEpidCode(String epidCode) {
 		this.epidCode = epidCode;
+	}
+
+	public String getRisk() {
+		return risk;
+	}
+
+	public void setRisk(String risk) {
+		this.risk = risk;
 	}
 
 	public RegionReferenceDto getRegion() {

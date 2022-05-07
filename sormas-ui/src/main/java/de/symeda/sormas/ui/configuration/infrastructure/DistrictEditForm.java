@@ -23,6 +23,10 @@ import com.vaadin.v7.ui.ComboBox;
 import com.vaadin.v7.ui.TextField;
 
 import de.symeda.sormas.api.FacadeProvider;
+import de.symeda.sormas.api.InfrastructureDataReferenceDto;
+import de.symeda.sormas.api.campaign.CampaignDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.infrastructure.region.RegionDto;
 import de.symeda.sormas.ui.utils.AbstractEditForm;
@@ -32,7 +36,8 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 	private static final long serialVersionUID = 7573666294384000190L;
 
 	private static final String HTML_LAYOUT =
-		fluidRowLocs(DistrictDto.NAME, DistrictDto.EXTERNAL_ID) + fluidRowLocs(DistrictDto.REGION); // ,DistrictDto.GROWTH_RATE,+ fluidRowLocs(RegionDto.EXTERNAL_ID);
+		fluidRowLocs(DistrictDto.NAME, DistrictDto.EXTERNAL_ID)
+		+ fluidRowLocs(DistrictDto.REGION, DistrictDto.RISK); // ,DistrictDto.GROWTH_RATE,+ fluidRowLocs(RegionDto.EXTERNAL_ID);
 
 	private final boolean create;
 
@@ -57,7 +62,15 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 		//addField(DistrictDto.EPID_CODE, TextField.class);
 		ComboBox region = addInfrastructureField(DistrictDto.REGION);
 		
-//		TextField growthRate = addField(DistrictDto.GROWTH_RATE, TextField.class);
+		ComboBox riskField = addRiskCombo(DistrictDto.RISK);
+		
+		//ComboBox riskField = addField(DistrictDto.RISK, ComboBox.class);
+		riskField.addItem("None Risk District (NRD)");
+		riskField.addItem("High Risk District (HRD)");
+		riskField.addItem("Very High Risk District (VHRD)");
+		riskField.setNullSelectionAllowed(true);
+		
+//		TextField growthRate = addField(DistrictDto.GROWTH_RATE, TextField.class); NID
 //		growthRate.setConverter(new StringToFloatConverter());
 //		growthRate.setConversionError(I18nProperties.getValidationError(Validations.onlyDecimalNumbersAllowed, growthRate.getCaption()));
 
@@ -69,6 +82,19 @@ public class DistrictEditForm extends AbstractEditForm<DistrictDto> {
 		if (!create) {
 			region.setEnabled(false);
 		}
+	}
+	
+	protected ComboBox addRiskCombo(String fieldId) {
+		//System.out.println("=========================== "+fieldId);
+		ComboBox field = addField(fieldId, ComboBox.class);
+		// Make sure that the ComboBox still contains a pre-selected inactive infrastructure entity
+		field.addValueChangeListener(e -> {
+			String value = e.getProperty().getValue().toString();
+			if (value != null && !field.containsId(value)) {
+				field.addItem(value);
+			}
+		});
+		return field;
 	}
 
 	@Override

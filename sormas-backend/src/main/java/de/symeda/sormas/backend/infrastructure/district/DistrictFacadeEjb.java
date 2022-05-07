@@ -40,6 +40,8 @@ import javax.persistence.criteria.Root;
 import javax.validation.Valid;
 import javax.validation.constraints.NotNull;
 
+import com.vladmihalcea.hibernate.type.util.SQLExtractor;
+
 import de.symeda.sormas.api.ReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.feature.FeatureType;
@@ -141,6 +143,7 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 			root.get(District.ARCHIVED),
 			root.get(District.NAME),
 			root.get(District.EPID_CODE),
+			root.get(District.RISK),
 			root.get(District.GROWTH_RATE),
 			region.get(Region.UUID),
 			region.get(Region.NAME),
@@ -164,6 +167,7 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 		Predicate filter = null;
 		if (criteria != null) {
 			filter = service.buildCriteriaFilter(criteria, cb, district);
+			
 		}
 
 		if (filter != null) {
@@ -177,6 +181,7 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 				switch (sortProperty.propertyName) {
 				case District.NAME:
 				case District.EPID_CODE:
+				case District.RISK:
 				case District.GROWTH_RATE:
 				case District.EXTERNAL_ID:
 					expression = district.get(sortProperty.propertyName);
@@ -195,7 +200,7 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 		}
 
 		cq.select(district);
-
+		
 		return QueryHelper.getResultList(em, cq, first, max, this::toIndexDto);
 	}
 
@@ -216,6 +221,7 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 
 		if (criteria != null) {
 			filter = service.buildCriteriaFilter(criteria, cb, root);
+			
 		}
 
 		if (filter != null) {
@@ -223,6 +229,7 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 		}
 
 		cq.select(cb.count(root));
+		
 		return em.createQuery(cq).getSingleResult();
 	}
 
@@ -405,6 +412,7 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 
 		dto.setName(entity.getName());
 		dto.setEpidCode(entity.getEpidCode());
+		dto.setRisk(entity.getRisk());
 		dto.setGrowthRate(entity.getGrowthRate());
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
 		dto.setArchived(entity.isArchived());
@@ -425,6 +433,7 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 
 		dto.setName(entity.getName());
 		dto.setEpidCode(entity.getEpidCode());
+		dto.setRisk(entity.getRisk());
 		dto.setGrowthRate(entity.getGrowthRate());
 		dto.setPopulation(populationDataFacade.getDistrictPopulation(dto.getUuid()));
 		dto.setRegion(RegionFacadeEjb.toReferenceDto(entity.getRegion()));
@@ -439,6 +448,7 @@ public class DistrictFacadeEjb extends AbstractInfrastructureEjb<District, Distr
 
 		target.setName(source.getName());
 		target.setEpidCode(source.getEpidCode());
+		target.setRisk(source.getRisk());
 		target.setGrowthRate(source.getGrowthRate());
 		target.setRegion(regionService.getByReferenceDto(source.getRegion()));
 		target.setArchived(source.isArchived());

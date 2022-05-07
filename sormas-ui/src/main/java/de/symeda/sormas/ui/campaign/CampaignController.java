@@ -170,7 +170,6 @@ public class CampaignController {
 		CampaignEditForm campaignEditForm = new CampaignEditForm(campaignDto);
 		boolean isCreate = false;
 		if (campaignDto == null) {
-			System.out.println("11111ssssssssssssssssssssssssssssss");
 			isCreate = true;
 			campaignDto = CampaignDto.build();
 			campaignDto.setCreatingUser(UserProvider.getCurrent().getUserReference());
@@ -186,7 +185,6 @@ public class CampaignController {
 
 			@Override
 			public void discard() {
-				System.out.println("2222222222222ssssssssssssssssssssssssssssss");
 				super.discard();
 				campaignEditForm.discard();
 			}

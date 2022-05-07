@@ -44,6 +44,7 @@ public class District extends InfrastructureAdo {
 	public static final String NAME = "name";
 	public static final String REGION = "region";
 	public static final String EPID_CODE = "epidCode";
+	public static final String RISK = "risk";
 	public static final String COMMUNITIES = "communities";
 	public static final String GROWTH_RATE = "growthRate";
 	public static final String EXTERNAL_ID = "externalID";
@@ -51,12 +52,13 @@ public class District extends InfrastructureAdo {
 	private String name;
 	private Region region;
 	private String epidCode;
+	private String risk;
 	private List<Community> communities;
 	private Float growthRate;
 	private Long externalID;
 
 	public String getName() {
-		return name;
+		return name; 
 	}
 
 	public void setName(String name) {
@@ -79,6 +81,14 @@ public class District extends InfrastructureAdo {
 
 	public void setEpidCode(String epidCode) {
 		this.epidCode = epidCode;
+	}
+
+	public String getRisk() {
+		return risk;
+	}
+
+	public void setRisk(String risk) {
+		this.risk = risk;
 	}
 
 	@OneToMany(mappedBy = Community.DISTRICT, cascade = {}, fetch = FetchType.LAZY)
