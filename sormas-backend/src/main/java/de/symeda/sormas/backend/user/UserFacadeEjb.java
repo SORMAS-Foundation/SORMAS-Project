@@ -104,6 +104,7 @@ import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.task.TaskFacadeEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
+import de.symeda.sormas.backend.travelentry.TravelEntryJoins;
 import de.symeda.sormas.backend.travelentry.TravelEntryJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
 import de.symeda.sormas.backend.user.UserRoleConfigFacadeEjb.UserRoleConfigFacadeEjbLocal;
@@ -451,7 +452,7 @@ public class UserFacadeEjb implements UserFacade {
 			final Subquery<TravelEntry> travelEntrySubquery = cq.subquery(TravelEntry.class);
 			final Root<TravelEntry> travelEntryRoot = travelEntrySubquery.from(TravelEntry.class);
 			final TravelEntryJurisdictionPredicateValidator travelEntryJurisdictionPredicateValidator =
-				TravelEntryJurisdictionPredicateValidator.of(new TravelEntryQueryContext(cb, cq, travelEntryRoot), userRoot);
+				TravelEntryJurisdictionPredicateValidator.of(new TravelEntryQueryContext(cb, cq, new TravelEntryJoins(travelEntryRoot)), userRoot);
 
 			travelEntrySubquery.select(travelEntryRoot)
 				.where(
