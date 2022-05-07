@@ -47,7 +47,6 @@ import org.apache.commons.beanutils.BeanUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -391,7 +390,7 @@ public class UserFacadeEjb implements UserFacade {
 			caseJurisdictionSubquery.select(caseRoot)
 				.where(
 					cb.and(
-						cb.equal(caseRoot.get(AbstractDomainObject.UUID), caseReferenceDto.getUuid()),
+						cb.equal(caseRoot.get(Case.UUID), caseReferenceDto.getUuid()),
 						cb.isTrue(caseJurisdictionPredicateValidator.inJurisdictionOrOwned()),
 						cb.or(
 							cb.isNull(userRoot.get(User.LIMITED_DISEASE)),
