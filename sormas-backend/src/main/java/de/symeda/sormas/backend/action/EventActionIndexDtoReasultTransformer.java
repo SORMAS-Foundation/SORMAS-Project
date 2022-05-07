@@ -1,4 +1,4 @@
-package de.symeda.sormas.backend.action.transformers;
+package de.symeda.sormas.backend.action;
 
 import java.util.Date;
 import java.util.List;
@@ -19,6 +19,8 @@ import de.symeda.sormas.api.event.RiskLevel;
 import de.symeda.sormas.api.user.UserReferenceDto;
 
 public class EventActionIndexDtoReasultTransformer implements ResultTransformer {
+
+	private static final long serialVersionUID = 1L;
 
 	@Override
 	public Object transformTuple(Object[] objects, String[] strings) {
@@ -53,6 +55,7 @@ public class EventActionIndexDtoReasultTransformer implements ResultTransformer 
 	}
 
 	@Override
+	@SuppressWarnings("rawtypes")
 	public List transformList(List list) {
 		return list;
 	}

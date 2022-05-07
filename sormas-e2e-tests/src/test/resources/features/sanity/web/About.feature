@@ -19,3 +19,16 @@ Feature: About end to end tests
     Given I log in with National User
     And I click on the About button from navbar
     Then I check that current Sormas version is shown on About directory page
+
+  @env_main @#8399
+  Scenario: Check all main important redirects in About section
+    Given I log in with National User
+    Then I click on the About button from navbar
+    Then I click on Sormas version in About directory and i get redirected to github
+    Then I click on What's new in About directory and i get redirected to Sormas what's new page
+    Then I click on Official SORMAS Website in About directory and i get redirected to the offical Sormas website
+    Then I click on SORMAS Github in About directory and i get redirected to github page of sormas
+    Then I click on Full Changelog in About directory and i get redirected to github project release page of sormas
+    Then I click on Case Classification Rules hyperlink and download HTML file in About directory
+    Then I click on Data Dictionary hyperlink and download XLSX file in About directory
+    Then I delete the downloaded Case Classification Rules html and Data Dictionary xlsx file from download directory
