@@ -55,7 +55,6 @@ public class CreateNewImmunizationSteps implements En {
     When(
         "I check Overwrite immunization management status option",
         () -> {
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(
               OVERWRITE_IMMUNIZATION_MANAGEMENT_STATUS_INPUT);
         });

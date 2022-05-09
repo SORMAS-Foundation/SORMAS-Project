@@ -381,7 +381,6 @@ public class CreateNewUserSteps implements En {
   }
 
   private void selectAreaType(String areaType) {
-    webDriverHelpers.waitForPageLoaded();
     webDriverHelpers.selectFromCombobox(AREA_TYPE_COMBOBOX, areaType);
   }
 

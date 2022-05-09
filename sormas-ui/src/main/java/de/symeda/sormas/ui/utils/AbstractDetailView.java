@@ -85,10 +85,10 @@ public abstract class AbstractDetailView<R extends ReferenceDto> extends Abstrac
 
 	@Override
 	public void beforeLeave(ViewBeforeLeaveEvent event) {
-		showNavigationConfirmPopupIfDirty(event::navigate);
+		showUnsavedChangesPopup(event::navigate);
 	}
 
-	public void showNavigationConfirmPopupIfDirty(Runnable navigate) {
+	public void showUnsavedChangesPopup(Runnable navigate) {
 		if (subComponent != null && subComponent.isDirty()) {
 			Window warningPopup = VaadinUiUtil.showConfirmationPopup(
 				I18nProperties.getString(Strings.unsavedChanges_warningTitle),

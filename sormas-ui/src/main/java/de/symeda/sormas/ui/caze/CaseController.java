@@ -17,6 +17,7 @@ package de.symeda.sormas.ui.caze;
 
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -66,7 +67,6 @@ import de.symeda.sormas.api.caze.classification.ClassificationHtmlRenderer;
 import de.symeda.sormas.api.caze.classification.DiseaseClassificationCriteriaDto;
 import de.symeda.sormas.api.contact.ContactClassification;
 import de.symeda.sormas.api.contact.ContactDto;
-import de.symeda.sormas.api.contact.ContactLogic;
 import de.symeda.sormas.api.contact.ContactSimilarityCriteria;
 import de.symeda.sormas.api.contact.ContactStatus;
 import de.symeda.sormas.api.contact.SimilarContactDto;
@@ -201,10 +201,7 @@ public class CaseController {
 			if (updatedEventparticipant.getResultingCase() != null) {
 				String caseUuid = updatedEventparticipant.getResultingCase().getUuid();
 				CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
-				Date relevantDate = event.getStartDate() != null
-					? event.getStartDate()
-					: (event.getEndDate() != null ? event.getEndDate() : event.getReportDateTime());
-				convertSamePersonContactsAndEventparticipants(caze, relevantDate);
+				convertSamePersonContactsAndEventparticipants(caze);
 			}
 		});
 		VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
@@ -243,9 +240,7 @@ public class CaseController {
 					if (contactDto.getResultingCase() != null) {
 						String caseUuid = contactDto.getResultingCase().getUuid();
 						CaseDataDto caze = FacadeProvider.getCaseFacade().getCaseDataByUuid(caseUuid);
-						convertSamePersonContactsAndEventparticipants(
-							caze,
-							ContactLogic.getStartDate(contactDto.getLastContactDate(), contactDto.getReportDateTime()));
+						convertSamePersonContactsAndEventparticipants(caze);
 					}
 				});
 				VaadinUiUtil.showModalPopupWindow(caseCreateComponent, I18nProperties.getString(Strings.headingCreateNewCase));
@@ -262,9 +257,7 @@ public class CaseController {
 
 				FacadeProvider.getCaseFacade().setSampleAssociations(updatedContact.toReference(), selectedCase.toReference());
 
-				convertSamePersonContactsAndEventparticipants(
-					selectedCase,
-					ContactLogic.getStartDate(updatedContact.getLastContactDate(), updatedContact.getReportDateTime()));
+				convertSamePersonContactsAndEventparticipants(selectedCase);
 
 				navigateToView(CaseDataView.VIEW_NAME, selectedCase.getUuid(), null);
 			}
@@ -295,21 +288,31 @@ public class CaseController {
 		});
 	}
 
-	private void convertSamePersonContactsAndEventparticipants(CaseDataDto caze, Date relevantDate) {
+	private void convertSamePersonContactsAndEventparticipants(CaseDataDto caze) {
 
-		ContactSimilarityCriteria contactCriteria = new ContactSimilarityCriteria().withPerson(caze.getPerson())
-			.withDisease(caze.getDisease())
-			.withContactClassification(ContactClassification.CONFIRMED)
-			.withExcludePseudonymized(true)
-			.withNoResultingCase(true);
-		List<SimilarContactDto> matchingContacts = FacadeProvider.getContactFacade().getMatchingContacts(contactCriteria);
+		List<SimilarContactDto> matchingContacts;
+		if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_EDIT)) {
+			ContactSimilarityCriteria contactCriteria = new ContactSimilarityCriteria().withPerson(caze.getPerson())
+				.withDisease(caze.getDisease())
+				.withContactClassification(ContactClassification.CONFIRMED)
+				.withExcludePseudonymized(true)
+				.withNoResultingCase(true);
+			matchingContacts = FacadeProvider.getContactFacade().getMatchingContacts(contactCriteria);
+		} else {
+			matchingContacts = Collections.emptyList();
+		}
 
-		EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria().withPerson(caze.getPerson())
-			.withDisease(caze.getDisease())
-			.withExcludePseudonymized(true)
-			.withNoResultingCase(true);
-		List<SimilarEventParticipantDto> matchingEventParticipants =
-			FacadeProvider.getEventParticipantFacade().getMatchingEventParticipants(eventParticipantCriteria);
+		List<SimilarEventParticipantDto> matchingEventParticipants ;
+		if (UserProvider.getCurrent().hasUserRight(UserRight.EVENTPARTICIPANT_EDIT)) {
+			EventParticipantCriteria eventParticipantCriteria = new EventParticipantCriteria().withPerson(caze.getPerson())
+				.withDisease(caze.getDisease())
+				.withExcludePseudonymized(true)
+				.withNoResultingCase(true);
+
+			matchingEventParticipants = FacadeProvider.getEventParticipantFacade().getMatchingEventParticipants(eventParticipantCriteria);
+		} else {
+			matchingEventParticipants = Collections.emptyList();
+		}
 
 		if (matchingContacts.size() > 0 || matchingEventParticipants.size() > 0) {
 			String infoText = matchingEventParticipants.isEmpty()
@@ -701,8 +704,7 @@ public class CaseController {
 								FacadeProvider.getEventParticipantFacade().getEventParticipantByUuid(convertedEventParticipant.getUuid());
 							if (unrelatedDisease == null) {
 								// set resulting case on event participant and save it
-								updatedEventParticipant.setResultingCase(dto.toReference());
-								FacadeProvider.getEventParticipantFacade().save(updatedEventParticipant);
+								FacadeProvider.getCaseFacade().setResultingCase(updatedEventParticipant.toReference(), dto.toReference());
 								FacadeProvider.getCaseFacade().setSampleAssociations(updatedEventParticipant.toReference(), dto.toReference());
 							} else {
 								FacadeProvider.getCaseFacade()
@@ -1099,14 +1101,14 @@ public class CaseController {
 		}
 
 		if (UserProvider.getCurrent().hasUserRight(UserRight.CASE_REFER_FROM_POE) && caze.checkIsUnreferredPortHealthCase()) {
-			Button btnReferToFacility = ButtonHelper.createButton(Captions.caseReferToFacility, e -> {
+			Button btnReferFromPointOfEntry = ButtonHelper.createButton(Captions.caseReferFromPointOfEntry, e -> {
 				editView.commit();
 				CaseDataDto caseDto = findCase(caze.getUuid());
 				referFromPointOfEntry(caseDto);
 			});
 
-			editView.getButtonsPanel().addComponentAsFirst(btnReferToFacility);
-			editView.getButtonsPanel().setComponentAlignment(btnReferToFacility, Alignment.BOTTOM_LEFT);
+			editView.getButtonsPanel().addComponentAsFirst(btnReferFromPointOfEntry);
+			editView.getButtonsPanel().setComponentAlignment(btnReferFromPointOfEntry, Alignment.BOTTOM_LEFT);
 		}
 	}
 
@@ -1419,7 +1421,7 @@ public class CaseController {
 			form,
 			UserProvider.getCurrent().hasUserRight(UserRight.CASE_REFER_FROM_POE),
 			form.getFieldGroup());
-		view.getCommitButton().setCaption(I18nProperties.getCaption(Captions.caseReferToFacility));
+		view.getCommitButton().setCaption(I18nProperties.getCaption(Captions.caseReferFromPointOfEntry));
 
 		Window window = VaadinUiUtil.showPopupWindow(view);
 		window.setCaption(I18nProperties.getString(Strings.headingReferCaseFromPointOfEntry));

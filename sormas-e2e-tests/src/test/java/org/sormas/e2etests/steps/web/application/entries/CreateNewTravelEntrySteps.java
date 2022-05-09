@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.entries;
 
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PERSON_SEARCH_LOCATOR_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.COMMUNITY_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISTRICT_INPUT;
@@ -68,6 +69,7 @@ public class CreateNewTravelEntrySteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   public static TravelEntry travelEntry;
   public static TravelEntry aTravelEntry;
+  public static TravelEntry TravelEntryUuid;
   public static TravelEntry newCaseFromTravelEntryData;
   public static Case aCase;
   String firstName;
@@ -94,6 +96,23 @@ public class CreateNewTravelEntrySteps implements En {
           lastName = travelEntry.getLastName();
           selectSex(travelEntry.getSex());
           sex = travelEntry.getSex();
+          fillDateOfArrival(travelEntry.getDateOfArrival(), Locale.GERMAN);
+          selectResponsibleRegion(travelEntry.getResponsibleRegion());
+          selectResponsibleDistrict(travelEntry.getResponsibleDistrict());
+          selectResponsibleCommunity(travelEntry.getResponsibleCommunity());
+          fillDisease(travelEntry.getDisease());
+          disease = travelEntry.getDisease();
+          if (travelEntry.getDisease().equals("Andere epidemische Krankheit"))
+            fillOtherDisease("Test");
+
+          fillPointOfEntry(travelEntry.getPointOfEntry());
+          fillPointOfEntryDetails(travelEntry.getPointOfEntryDetails());
+        });
+
+    When(
+        "^I fill the required fields in a new travel entry form without personal data$",
+        () -> {
+          travelEntry = travelEntryService.buildGeneratedEntryDE();
           fillDateOfArrival(travelEntry.getDateOfArrival(), Locale.GERMAN);
           selectResponsibleRegion(travelEntry.getResponsibleRegion());
           selectResponsibleDistrict(travelEntry.getResponsibleDistrict());
@@ -138,6 +157,12 @@ public class CreateNewTravelEntrySteps implements En {
         });
 
     When(
+        "^I click on the person search button in create new travel entry form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(PERSON_SEARCH_LOCATOR_BUTTON);
+        });
+
+    When(
         "^I click on Save button from the new travel entry form$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
@@ -164,6 +189,12 @@ public class CreateNewTravelEntrySteps implements En {
                   "responsibleCommunity",
                   "pointOfEntry",
                   "pointOfEntryDetails"));
+        });
+
+    When(
+        "I collect travel UUID from travel entry",
+        () -> {
+          TravelEntryUuid = collectTravelEntryUuid();
         });
 
     When(
@@ -369,6 +400,10 @@ public class CreateNewTravelEntrySteps implements En {
             webDriverHelpers.getValueFromWebElement(
                 EditTravelEntryPage.POINT_OF_ENTRY_DETAILS_INPUT))
         .build();
+  }
+
+  private TravelEntry collectTravelEntryUuid() {
+    return TravelEntry.builder().uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT)).build();
   }
 
   private TravelEntry collectTravelEntryPersonData() {

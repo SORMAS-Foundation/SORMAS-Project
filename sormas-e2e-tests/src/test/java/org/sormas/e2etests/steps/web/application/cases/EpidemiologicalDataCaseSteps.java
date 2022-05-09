@@ -1,30 +1,5 @@
 package org.sormas.e2etests.steps.web.application.cases;
 
-import cucumber.api.java8.En;
-import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.entities.pojo.web.EpidemiologicalData;
-import org.sormas.e2etests.entities.pojo.web.epidemiologicalData.Activity;
-import org.sormas.e2etests.entities.pojo.web.epidemiologicalData.Exposure;
-import org.sormas.e2etests.entities.services.EpidemiologicalDataService;
-import org.sormas.e2etests.enums.DiseasesValues;
-import org.sormas.e2etests.enums.YesNoUnknownOptions;
-import org.sormas.e2etests.enums.cases.epidemiologicalData.ActivityAsCaseType;
-import org.sormas.e2etests.enums.cases.epidemiologicalData.ExposureDetailsRole;
-import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfActivityExposure;
-import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfGathering;
-import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.state.ApiState;
-import org.testng.asserts.SoftAssert;
-
-import javax.inject.Inject;
-import java.time.LocalDate;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
-
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.CASE_SAVED_POPUP;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_CONTINENT_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_COUNTRY_COMBOBOX;
@@ -90,6 +65,30 @@ import static org.sormas.e2etests.pages.application.contacts.ExposureNewEntryPag
 import static org.sormas.e2etests.steps.BaseSteps.locale;
 import static org.sormas.e2etests.steps.web.application.cases.FollowUpStep.faker;
 import static org.sormas.e2etests.steps.web.application.contacts.ContactsLineListingSteps.DATE_FORMATTER_DE;
+
+import cucumber.api.java8.En;
+import java.time.LocalDate;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.EpidemiologicalData;
+import org.sormas.e2etests.entities.pojo.web.epidemiologicalData.Activity;
+import org.sormas.e2etests.entities.pojo.web.epidemiologicalData.Exposure;
+import org.sormas.e2etests.entities.services.EpidemiologicalDataService;
+import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.enums.YesNoUnknownOptions;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.ActivityAsCaseType;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.ExposureDetailsRole;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfActivityExposure;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfGathering;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.state.ApiState;
+import org.testng.asserts.SoftAssert;
 
 public class EpidemiologicalDataCaseSteps implements En {
 
@@ -164,7 +163,6 @@ public class EpidemiologicalDataCaseSteps implements En {
               environmentManager.getEnvironmentUrlForMarket(locale)
                   + "/sormas-webdriver/#!cases/epidata/"
                   + uuid);
-          webDriverHelpers.waitForPageLoaded();
         });
 
     When(
@@ -419,7 +417,6 @@ public class EpidemiologicalDataCaseSteps implements En {
                       .getCreatedCase()
                       .getDisease()
                       .equalsIgnoreCase(DiseasesValues.CORONAVIRUS.getDiseaseName()));
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickWebElementByText(
               EXPOSURE_DETAILS_KNOWN_OPTIONS,
               epidemiologicalData.getExposureDetailsKnown().toString());
