@@ -34,6 +34,7 @@ import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntry
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.PICK_A_EXISTING_CASE_LABEL_DE;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.PICK_A_EXISTING_PERSON_LABEL_DE;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.PICK_OR_CREATE_PERSON_TITLE_DE;
+import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.REPORT_DATE;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.SAVE_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.CreateNewTravelEntryPage.SAVE_POPUP_CONTENT;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.CASE_PERSON_NAME;
@@ -43,12 +44,14 @@ import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.INFO_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.LAST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.POINT_OF_ENTRY_CASE;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.SAVE_EDIT_TRAVEL_PAGE;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.SAVE_NEW_CASE_FOR_TRAVEL_ENTRY_POPUP;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.TRAVEL_ENTRY_PERSON_TAB;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.IsoFields;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -113,7 +116,12 @@ public class CreateNewTravelEntrySteps implements En {
     When(
         "^I change a Report Date for previous week date$",
         () -> {
-          travelEntry.getReportDate().minusDays(7);
+          fillReportDate(travelEntry.getReportDate().minusDays(7), Locale.GERMAN);
+          LocalDate dateReport =
+              LocalDate.parse(
+                  webDriverHelpers.getValueFromWebElement(REPORT_DATE), DATE_FORMATTER_DE);
+          int week = dateReport.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+          System.out.println("Week of year: " + week);
         });
 
     When(
@@ -181,6 +189,13 @@ public class CreateNewTravelEntrySteps implements En {
         "^I click on Save button from the new travel entry form$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+        });
+
+    When(
+        "I click on Save button from the edit travel entry form",
+        () -> {
+          webDriverHelpers.scrollToElement(SAVE_EDIT_TRAVEL_PAGE);
+          webDriverHelpers.clickOnWebElementBySelector(SAVE_EDIT_TRAVEL_PAGE);
         });
 
     When(
@@ -359,6 +374,12 @@ public class CreateNewTravelEntrySteps implements En {
       webDriverHelpers.clearAndFillInWebElement(
           ARRIVAL_DATE, DATE_FORMATTER_DE.format(dateOfArrival));
     else webDriverHelpers.clearAndFillInWebElement(ARRIVAL_DATE, formatter.format(dateOfArrival));
+  }
+
+  private void fillReportDate(LocalDate reportDate, Locale locale) {
+    if (locale.equals(Locale.GERMAN))
+      webDriverHelpers.clearAndFillInWebElement(REPORT_DATE, DATE_FORMATTER_DE.format(reportDate));
+    else webDriverHelpers.clearAndFillInWebElement(REPORT_DATE, formatter.format(reportDate));
   }
 
   private void selectSex(String sex) {
