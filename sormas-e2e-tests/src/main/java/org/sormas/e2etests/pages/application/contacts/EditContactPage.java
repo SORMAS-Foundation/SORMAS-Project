@@ -107,7 +107,7 @@ public class EditContactPage {
   public static final By SOURCE_CASE_WINDOW_CONFIRM_BUTTON =
       By.cssSelector(".v-window-wrap #commit");
   public static final By SOURCE_CASE_WINDOW_FIRST_RESULT_OPTION =
-      By.cssSelector("tr[class*='v-grid-row-has-data']");
+      By.cssSelector(".v-window-contents tr[class*='v-grid-row-has-data']");
   public static final By CHANGE_CASE_BUTTON = By.id("contactChangeCase");
   public static final By CASE_ID_LABEL = By.id("caseIdLabel");
   public static final By CONTACT_CLASSIFICATION_RADIO_BUTTON = By.cssSelector(".v-radiobutton");

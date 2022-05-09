@@ -41,8 +41,6 @@ public class InfrastructureSyncDto implements Serializable {
 	private List<String> deletedUserRoleConfigurationUuids;
 	private List<FeatureConfigurationDto> featureConfigurations;
 	private List<String> deletedFeatureConfigurationUuids;
-	private List<CampaignDto> campaigns;
-	private List<CampaignFormMetaDto> campaignFormMetas;
 
 	public boolean isInitialSyncRequired() {
 		return initialSyncRequired;
@@ -178,21 +176,5 @@ public class InfrastructureSyncDto implements Serializable {
 
 	public void setDeletedFeatureConfigurationUuids(List<String> deletedFeatureConfigurationUuids) {
 		this.deletedFeatureConfigurationUuids = deletedFeatureConfigurationUuids;
-	}
-
-	public List<CampaignDto> getCampaigns() {
-		return campaigns;
-	}
-
-	public void setCampaigns(List<CampaignDto> campaigns) {
-		this.campaigns = campaigns;
-	}
-
-	public List<CampaignFormMetaDto> getCampaignFormMetas() {
-		return campaignFormMetas;
-	}
-
-	public void setCampaignFormMetas(List<CampaignFormMetaDto> campaignFormMetas) {
-		this.campaignFormMetas = campaignFormMetas;
 	}
 }

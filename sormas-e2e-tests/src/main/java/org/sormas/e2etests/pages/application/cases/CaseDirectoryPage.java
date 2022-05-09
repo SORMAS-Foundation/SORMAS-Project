@@ -101,6 +101,7 @@ public class CaseDirectoryPage {
       By.cssSelector("[id='relevanceStatus'] [class='v-filterselect-button']");
   public static final By BULK_ACTIONS = By.id("bulkActions-2");
   public static final By BULK_ACTIONS_VALUES = By.id("bulkActions-10");
+  public static final By BULK_CREATE_QUARANTINE_ORDER = By.id("bulkActions-9");
   public static final By CASE_REPORTING_USER_FILTER = By.cssSelector("[id='reportingUserLike']");
   public static final By CASE_YEAR_FILTER =
       By.cssSelector("[id='birthdateYYYY'] [class='v-filterselect-button']");
@@ -135,6 +136,7 @@ public class CaseDirectoryPage {
   public static final By DATE_TO_COMBOBOX = By.cssSelector("#dateTo input");
   public static final By MORE_BUTTON = By.id("more");
   public static final By ENTER_BULK_EDIT_MODE = By.id("actionEnterBulkEditMode");
+  public static final By LEAVE_BULK_EDIT_MODE = By.id("actionLeaveBulkEditMode");
   public static final By ALL_RESULTS_CHECKBOX =
       By.xpath("//th[@role='columnheader']//input[@type='checkbox']/../..");
   public static final By NEW_EVENT_CHECKBOX = By.xpath("//*[contains(text(),'New event')]/..");
@@ -143,6 +145,7 @@ public class CaseDirectoryPage {
   public static final By SEARCH_BUTTON = By.id("search");
   public static final By CASE_EPIDEMIOLOGICAL_DATA_TAB = By.cssSelector("#tab-cases-epidata");
   public static final By EPIDEMIOLOGICAL_DATA_TAB = By.cssSelector("#tab-cases-epidata");
+  public static final By CONTACTS_DATA_TAB = By.cssSelector("#tab-cases-contacts");
   public static final By FIRST_PERSON_ID = By.xpath("//td[10]//a");
   public static final By FIRST_CASE_ID = By.xpath("//td[1]//a");
   public static final By IMPORT_BUTTON = By.id("actionImport");
@@ -158,6 +161,15 @@ public class CaseDirectoryPage {
   public static final By CASE_SEAT_NUMBER = By.id("seatNumber");
   public static final By CASE_ACTION_CONFIRM = By.id("actionConfirm");
   public static final By CASE_ACTION_CANCEL = By.id("actionCancel");
+  public static final By UPLOAD_DOCUMENT_TO_ENTITIES_CHECKBOX =
+      By.xpath("//label[text()='Also upload the generated documents to the selected entities']");
+  public static final By CLOSE_FORM_BUTTON = By.xpath("//div[@class='v-window-closebox']");
+  public static final By REINFECTION_STATUS_COMBOBOX =
+      By.cssSelector("[id='reinfectionStatus'] [class='v-filterselect-button']");
+
+  public static By getCheckboxByIndex(String idx) {
+    return By.xpath(String.format("(//input[@type=\"checkbox\"])[%s]", idx));
+  }
 
   public static By getResultByIndex(String rowNumber) {
     return By.xpath(String.format("//tr[%s]//a", rowNumber));
