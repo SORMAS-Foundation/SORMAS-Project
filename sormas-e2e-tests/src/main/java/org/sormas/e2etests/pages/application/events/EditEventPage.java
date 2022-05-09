@@ -82,7 +82,6 @@ public class EditEventPage {
   public static final By CREATE_CONTACTS_BULK_EDIT_BUTTON = By.id("bulkActions-3");
   public static final By EVENT_MANAGEMENT_STATUS_CHECK =
       By.cssSelector("#eventManagementStatus input:checked[type='checkbox'] ~ label");
-
   public static final By EVENT_CLUSTER_EDIT = By.xpath("//span[.='Cluster']");
   public static final By PRIMARY_MODE_OF_TRANSMISSION_COMBOBOX =
       By.cssSelector("[id='diseaseTransmissionMode'] [class='v-filterselect-button']");
