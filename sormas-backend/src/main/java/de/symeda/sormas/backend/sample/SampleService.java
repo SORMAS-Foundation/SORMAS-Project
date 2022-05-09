@@ -91,6 +91,7 @@ import de.symeda.sormas.backend.event.EventParticipantQueryContext;
 import de.symeda.sormas.backend.event.EventParticipantService;
 import de.symeda.sormas.backend.infrastructure.district.District;
 import de.symeda.sormas.backend.infrastructure.facility.Facility;
+import de.symeda.sormas.backend.infrastructure.region.Region;
 import de.symeda.sormas.backend.labmessage.LabMessageService;
 import de.symeda.sormas.backend.location.Location;
 import de.symeda.sormas.backend.person.Person;
@@ -732,14 +733,14 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 				filter,
 				CriteriaBuilderHelper.or(
 					cb,
-					cb.equal(joins.getCaseRegion().get(AbstractDomainObject.UUID), regionUuid),
-					cb.equal(joins.getCaseResponsibleRegion().get(AbstractDomainObject.UUID), regionUuid),
-					cb.equal(joins.getContactRegion().get(AbstractDomainObject.UUID), regionUuid),
-					cb.equal(joins.getContactCaseRegion().get(AbstractDomainObject.UUID), regionUuid),
-					cb.equal(joins.getContactCaseResponsibleRegion().get(AbstractDomainObject.UUID), regionUuid),
-					cb.equal(joins.getContactJoins().getResultingCaseJoins().getRegion().get(AbstractDomainObject.UUID), regionUuid),
-					cb.equal(joins.getContactJoins().getResultingCaseJoins().getResponsibleRegion().get(AbstractDomainObject.UUID), regionUuid),
-					cb.equal(joins.getEventRegion().get(AbstractDomainObject.UUID), regionUuid)));
+					cb.equal(joins.getCaseRegion().get(Region.UUID), regionUuid),
+					cb.equal(joins.getCaseResponsibleRegion().get(Region.UUID), regionUuid),
+					cb.equal(joins.getContactRegion().get(Region.UUID), regionUuid),
+					cb.equal(joins.getContactCaseRegion().get(Region.UUID), regionUuid),
+					cb.equal(joins.getContactCaseResponsibleRegion().get(Region.UUID), regionUuid),
+					cb.equal(joins.getContactJoins().getResultingCaseJoins().getRegion().get(Region.UUID), regionUuid),
+					cb.equal(joins.getContactJoins().getResultingCaseJoins().getResponsibleRegion().get(Region.UUID), regionUuid),
+					cb.equal(joins.getEventRegion().get(Region.UUID), regionUuid)));
 		}
 		if (criteria.getDistrict() != null) {
 			final String districtUuid = criteria.getDistrict().getUuid();
@@ -748,14 +749,14 @@ public class SampleService extends AbstractDeletableAdoService<Sample> {
 				filter,
 				CriteriaBuilderHelper.or(
 					cb,
-					cb.equal(joins.getCaseDistrict().get(AbstractDomainObject.UUID), districtUuid),
-					cb.equal(joins.getCaseResponsibleDistrict().get(AbstractDomainObject.UUID), districtUuid),
-					cb.equal(joins.getContactDistrict().get(AbstractDomainObject.UUID), districtUuid),
-					cb.equal(joins.getContactCaseDistrict().get(AbstractDomainObject.UUID), districtUuid),
-					cb.equal(joins.getContactCaseResponsibleDistrict().get(AbstractDomainObject.UUID), districtUuid),
-					cb.equal(joins.getContactJoins().getResultingCaseJoins().getDistrict().get(AbstractDomainObject.UUID), districtUuid),
-					cb.equal(joins.getContactJoins().getResultingCaseJoins().getResponsibleDistrict().get(AbstractDomainObject.UUID), districtUuid),
-					cb.equal(joins.getEventDistrict().get(AbstractDomainObject.UUID), districtUuid)));
+					cb.equal(joins.getCaseDistrict().get(District.UUID), districtUuid),
+					cb.equal(joins.getCaseResponsibleDistrict().get(District.UUID), districtUuid),
+					cb.equal(joins.getContactDistrict().get(District.UUID), districtUuid),
+					cb.equal(joins.getContactCaseDistrict().get(District.UUID), districtUuid),
+					cb.equal(joins.getContactCaseResponsibleDistrict().get(District.UUID), districtUuid),
+					cb.equal(joins.getContactJoins().getResultingCaseJoins().getDistrict().get(District.UUID), districtUuid),
+					cb.equal(joins.getContactJoins().getResultingCaseJoins().getResponsibleDistrict().get(District.UUID), districtUuid),
+					cb.equal(joins.getEventDistrict().get(District.UUID), districtUuid)));
 		}
 		if (criteria.getLaboratory() != null) {
 			filter =

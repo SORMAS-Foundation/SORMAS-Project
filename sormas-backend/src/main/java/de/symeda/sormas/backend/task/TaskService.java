@@ -369,14 +369,14 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 				filter,
 				CriteriaBuilderHelper.or(
 					cb,
-					cb.equal(joins.getCaseRegion().get(AbstractDomainObject.UUID), regionUuid),
-					cb.equal(joins.getCaseResponsibleRegion().get(AbstractDomainObject.UUID), regionUuid),
-					cb.equal(joins.getContactRegion().get(AbstractDomainObject.UUID), regionUuid),
-					cb.equal(joins.getContactJoins().getCaseRegion().get(AbstractDomainObject.UUID), regionUuid),
-					cb.equal(joins.getContactJoins().getCaseResponsibleRegion().get(AbstractDomainObject.UUID), regionUuid),
-					cb.equal(joins.getContactJoins().getResultingCaseJoins().getRegion().get(AbstractDomainObject.UUID), regionUuid),
-					cb.equal(joins.getContactJoins().getResultingCaseJoins().getResponsibleRegion().get(AbstractDomainObject.UUID), regionUuid),
-					cb.equal(joins.getEventRegion().get(AbstractDomainObject.UUID), regionUuid)));
+					cb.equal(joins.getCaseRegion().get(Region.UUID), regionUuid),
+					cb.equal(joins.getCaseResponsibleRegion().get(Region.UUID), regionUuid),
+					cb.equal(joins.getContactRegion().get(Region.UUID), regionUuid),
+					cb.equal(joins.getContactJoins().getCaseRegion().get(Region.UUID), regionUuid),
+					cb.equal(joins.getContactJoins().getCaseResponsibleRegion().get(Region.UUID), regionUuid),
+					cb.equal(joins.getContactJoins().getResultingCaseJoins().getRegion().get(Region.UUID), regionUuid),
+					cb.equal(joins.getContactJoins().getResultingCaseJoins().getResponsibleRegion().get(Region.UUID), regionUuid),
+					cb.equal(joins.getEventRegion().get(Region.UUID), regionUuid)));
 		}
 		if (taskCriteria.getDistrict() != null) {
 			String districtUuid = taskCriteria.getDistrict().getUuid();
@@ -385,14 +385,14 @@ public class TaskService extends AdoServiceWithUserFilter<Task> {
 				filter,
 				CriteriaBuilderHelper.or(
 					cb,
-					cb.equal(joins.getCaseDistrict().get(AbstractDomainObject.UUID), districtUuid),
-					cb.equal(joins.getCaseResponsibleDistrict().get(AbstractDomainObject.UUID), districtUuid),
-					cb.equal(joins.getContactDistrict().get(AbstractDomainObject.UUID), districtUuid),
-					cb.equal(joins.getContactJoins().getCaseDistrict().get(AbstractDomainObject.UUID), districtUuid),
-					cb.equal(joins.getContactJoins().getCaseResponsibleDistrict().get(AbstractDomainObject.UUID), districtUuid),
-					cb.equal(joins.getContactJoins().getResultingCaseJoins().getDistrict().get(AbstractDomainObject.UUID), districtUuid),
-					cb.equal(joins.getContactJoins().getResultingCaseJoins().getResponsibleDistrict().get(AbstractDomainObject.UUID), districtUuid),
-					cb.equal(joins.getEventDistrict().get(AbstractDomainObject.UUID), districtUuid)));
+					cb.equal(joins.getCaseDistrict().get(District.UUID), districtUuid),
+					cb.equal(joins.getCaseResponsibleDistrict().get(District.UUID), districtUuid),
+					cb.equal(joins.getContactDistrict().get(District.UUID), districtUuid),
+					cb.equal(joins.getContactJoins().getCaseDistrict().get(District.UUID), districtUuid),
+					cb.equal(joins.getContactJoins().getCaseResponsibleDistrict().get(District.UUID), districtUuid),
+					cb.equal(joins.getContactJoins().getResultingCaseJoins().getDistrict().get(District.UUID), districtUuid),
+					cb.equal(joins.getContactJoins().getResultingCaseJoins().getResponsibleDistrict().get(District.UUID), districtUuid),
+					cb.equal(joins.getEventDistrict().get(District.UUID), districtUuid)));
 		}
 		if (taskCriteria.getFreeText() != null) {
 			String[] textFilters = taskCriteria.getFreeText().split("\\s+");

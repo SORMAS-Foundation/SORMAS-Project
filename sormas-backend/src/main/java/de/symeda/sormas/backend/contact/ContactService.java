@@ -1093,11 +1093,11 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				filter,
 				CriteriaBuilderHelper.or(
 					cb,
-					cb.equal(joins.getRegion().get(AbstractDomainObject.UUID), regionUuid),
-					cb.equal(joins.getCaseRegion().get(AbstractDomainObject.UUID), regionUuid),
-					cb.equal(joins.getCaseResponsibleRegion().get(AbstractDomainObject.UUID), regionUuid),
-					cb.equal(joins.getResultingCaseJoins().getRegion().get(AbstractDomainObject.UUID), regionUuid),
-					cb.equal(joins.getResultingCaseJoins().getResponsibleRegion().get(AbstractDomainObject.UUID), regionUuid)));
+					cb.equal(joins.getRegion().get(Region.UUID), regionUuid),
+					cb.equal(joins.getCaseRegion().get(Region.UUID), regionUuid),
+					cb.equal(joins.getCaseResponsibleRegion().get(Region.UUID), regionUuid),
+					cb.equal(joins.getResultingCaseJoins().getRegion().get(Region.UUID), regionUuid),
+					cb.equal(joins.getResultingCaseJoins().getResponsibleRegion().get(Region.UUID), regionUuid)));
 		}
 		if (contactCriteria.getDistrict() != null) {
 			String districtUuid = contactCriteria.getDistrict().getUuid();
@@ -1106,11 +1106,11 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				filter,
 				CriteriaBuilderHelper.or(
 					cb,
-					cb.equal(joins.getDistrict().get(AbstractDomainObject.UUID), districtUuid),
-					cb.equal(joins.getCaseDistrict().get(AbstractDomainObject.UUID), districtUuid),
-					cb.equal(joins.getCaseResponsibleDistrict().get(AbstractDomainObject.UUID), districtUuid),
-					cb.equal(joins.getResultingCaseJoins().getDistrict().get(AbstractDomainObject.UUID), districtUuid),
-					cb.equal(joins.getResultingCaseJoins().getResponsibleDistrict().get(AbstractDomainObject.UUID), districtUuid)));
+					cb.equal(joins.getDistrict().get(District.UUID), districtUuid),
+					cb.equal(joins.getCaseDistrict().get(District.UUID), districtUuid),
+					cb.equal(joins.getCaseResponsibleDistrict().get(District.UUID), districtUuid),
+					cb.equal(joins.getResultingCaseJoins().getDistrict().get(District.UUID), districtUuid),
+					cb.equal(joins.getResultingCaseJoins().getResponsibleDistrict().get(District.UUID), districtUuid)));
 		}
 		if (contactCriteria.getCommunity() != null) {
 			String communityUuid = contactCriteria.getDistrict().getUuid();
@@ -1119,11 +1119,11 @@ public class ContactService extends AbstractCoreAdoService<Contact> {
 				filter,
 				CriteriaBuilderHelper.or(
 					cb,
-					cb.equal(joins.getCommunity().get(AbstractDomainObject.UUID), communityUuid),
-					cb.equal(joins.getCaseCommunity().get(AbstractDomainObject.UUID), communityUuid),
-					cb.equal(joins.getCaseResponsibleCommunity().get(AbstractDomainObject.UUID), communityUuid),
-					cb.equal(joins.getResultingCaseJoins().getCommunity().get(AbstractDomainObject.UUID), communityUuid),
-					cb.equal(joins.getResultingCaseJoins().getResponsibleCommunity().get(AbstractDomainObject.UUID), communityUuid)));
+					cb.equal(joins.getCommunity().get(Community.UUID), communityUuid),
+					cb.equal(joins.getCaseCommunity().get(Community.UUID), communityUuid),
+					cb.equal(joins.getCaseResponsibleCommunity().get(Community.UUID), communityUuid),
+					cb.equal(joins.getResultingCaseJoins().getCommunity().get(Community.UUID), communityUuid),
+					cb.equal(joins.getResultingCaseJoins().getResponsibleCommunity().get(Community.UUID), communityUuid)));
 		}
 		if (contactCriteria.getContactOfficer() != null) {
 			filter = CriteriaBuilderHelper
