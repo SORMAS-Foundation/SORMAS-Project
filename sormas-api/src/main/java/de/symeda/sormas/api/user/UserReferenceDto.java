@@ -49,7 +49,7 @@ public class UserReferenceDto extends ReferenceDto {
 		this.lastName = lastName;
 	}
 
-	protected UserReferenceDto(String uuid, String firstName, String lastName, String caption) {
+	public UserReferenceDto(String uuid, String firstName, String lastName, String caption) {
 		this.firstName = firstName;
 		this.lastName = lastName;
 		setUuid(uuid);

@@ -20,7 +20,7 @@ package de.symeda.sormas.backend.user;
 import java.util.Arrays;
 
 import org.junit.Assert;
-import org.junit.jupiter.api.Test;
+import org.junit.Test;
 
 import de.symeda.sormas.api.user.DefaultUserRole;
 import de.symeda.sormas.api.user.JurisdictionLevel;

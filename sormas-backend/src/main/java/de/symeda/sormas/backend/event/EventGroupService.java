@@ -35,7 +35,6 @@ import org.apache.commons.lang3.StringUtils;
 import de.symeda.sormas.api.EntityRelevanceStatus;
 import de.symeda.sormas.api.event.EventGroupCriteria;
 import de.symeda.sormas.api.user.JurisdictionLevel;
-import de.symeda.sormas.api.user.UserRole;
 import de.symeda.sormas.api.utils.DataHelper;
 import de.symeda.sormas.backend.caze.Case;
 import de.symeda.sormas.backend.caze.CaseJoins;

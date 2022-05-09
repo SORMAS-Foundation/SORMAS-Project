@@ -50,7 +50,6 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
-import de.symeda.sormas.api.disease.DiseaseVariant;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
@@ -1743,12 +1742,15 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	}
 
 	@Test
-	public void testCloneCaseWithOtherDieseseDontChangeOriginalCase(){
+	public void testCloneCaseWithOtherDieseseDontChangeOriginalCase() {
 		RDCF rdcf = creator.createRDCF();
-		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.ADMIN);
+		UserDto user = creator.createUser(
+			rdcf,
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.SURVEILLANCE_SUPERVISOR),
+			creator.getUserRoleReferenceDtoMap().get(DefaultUserRole.ADMIN));
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
 		String diseaseDetails = "this is a test disease";
-		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf, c->{
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf, c -> {
 			c.setCaseClassification(CaseClassification.SUSPECT);
 			c.setDisease(Disease.CORONAVIRUS);
 			c.setDiseaseDetails(diseaseDetails);
@@ -1777,7 +1779,6 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(caze.getPerson(), cloneCase.getPerson());
 		assertEquals(caze.getDistrict(), cloneCase.getDistrict());
 		assertEquals(caze.getRegion(), cloneCase.getRegion());
-
 
 		// recheck values for the original DTO it has the same values.
 		originalCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
