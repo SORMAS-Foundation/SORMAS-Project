@@ -325,7 +325,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		final CriteriaBuilder cb = personQueryContext.getCriteriaBuilder();
 		final From<?, Person> personFrom = personQueryContext.getRoot();
 
-		final PersonJoins personJoins = (PersonJoins) personQueryContext.getJoins();
+		final PersonJoins personJoins = personQueryContext.getJoins();
 		final Join<Person, Location> location = personJoins.getAddress();
 		final Join<Location, Region> region = personJoins.getAddressJoins().getRegion();
 		final Join<Location, District> district = personJoins.getAddressJoins().getDistrict();
@@ -563,7 +563,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 			.of(
 				personQueryContext.getQuery(),
 				personQueryContext.getCriteriaBuilder(),
-				(PersonJoins) personQueryContext.getJoins(),
+				personQueryContext.getJoins(),
 				currentUser,
 				!featureConfigurationFacade.isPropertyValueTrue(FeatureType.IMMUNIZATION_MANAGEMENT, FeatureTypeProperty.REDUCED))
 			.inJurisdictionOrOwned();
@@ -928,11 +928,7 @@ public class PersonService extends AdoServiceWithUserFilter<Person> {
 		return persons;
 	}
 
-	public void deleteUnreferencedPersons(int batchSize) {
-		IterableHelper.executeBatched(getAllNonReferencedPersonUuids(), batchSize, batchedUuids -> deletePermanent(batchedUuids));
-	}
-
-	private List<String> getAllNonReferencedPersonUuids() {
+	public List<String> getAllNonReferencedPersonUuids() {
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
 		final CriteriaQuery<String> cq = cb.createQuery(String.class);

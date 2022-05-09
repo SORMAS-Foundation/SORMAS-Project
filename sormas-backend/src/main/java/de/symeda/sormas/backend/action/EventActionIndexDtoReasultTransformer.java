@@ -11,7 +11,6 @@ import de.symeda.sormas.api.action.ActionPriority;
 import de.symeda.sormas.api.action.ActionStatus;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventActionIndexDto;
-import de.symeda.sormas.api.event.EventHelper;
 import de.symeda.sormas.api.event.EventIdentificationSource;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventManagementStatus;
@@ -27,7 +26,6 @@ public class EventActionIndexDtoReasultTransformer implements ResultTransformer 
 	public Object transformTuple(Object[] objects, String[] strings) {
 		UserReferenceDto eventReportingUser = new UserReferenceDto((String) objects[12], (String) objects[13], (String) objects[14], null);
 		UserReferenceDto eventResponsibleUser = new UserReferenceDto((String) objects[15], (String) objects[16], (String) objects[17], null);
-		String actionTitle = EventHelper.buildEventActionTitleString((ActionMeasure) objects[18], (String) objects[20]);
 		UserReferenceDto actionLastModifiedBy = new UserReferenceDto((String) objects[26], (String) objects[27], (String) objects[28], null);
 		UserReferenceDto actionCreatorUser = new UserReferenceDto((String) objects[29], (String) objects[30], (String) objects[31], null);
 		return new EventActionIndexDto(
@@ -45,7 +43,7 @@ public class EventActionIndexDtoReasultTransformer implements ResultTransformer 
 			(EventManagementStatus) objects[11],
 			eventReportingUser,
 			eventResponsibleUser,
-			actionTitle,
+			(String) objects[20],
 			(Date) objects[19],
 			(Date) objects[21],
 			(Date) objects[22],

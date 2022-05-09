@@ -190,6 +190,11 @@ public class SampleCriteria extends BaseCriteria implements Serializable {
 		this.disease = disease;
 	}
 
+	public SampleCriteria disease(Disease disease) {
+		this.disease = disease;
+		return this;
+	}
+
 	public CaseReferenceDto getCaze() {
 		return caze;
 	}

@@ -1,0 +1,51 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<style>
+table, td, tr, th {
+  width: 100px;
+  text-align: left;
+   border: 1px solid black;
+}
+
+.headers {
+   text-align: left;
+}
+</style>
+
+</head>
+
+<body>
+<div class="container-fluid">
+<div class="row"><div class="col">
+    <div> <img src="images/logo.png" alt="Logo" style="width:200;height:200px"></div>
+<div id="date">
+   <p>$Date_text</p>
+</div>
+<div class="shadow p-3 mb-5 bg-white rounded" style="width:100%;">
+	<h1 class="font-weight-bold"> API endpoints loading measurements results </h1>
+</div>
+</div>
+</div>
+<div class="row">
+<div class="col-lg-12 col-xl-4">
+<br>
+<table style="width: 65%;">
+	  <thead>
+		  <tr>
+			<th class="headers">Endpoint path</th>
+			<th class="headers">Endpoint loading time (milliseconds)</th>
+			<th class="headers">Maximum response time (milliseconds)</th>
+		  </tr>
+	  </thead>
+<tbody>
+ $table_data_placeholder
+</tbody>
+</table>
+</div>
+</div>
+</div>
+</body>
+</html>
+

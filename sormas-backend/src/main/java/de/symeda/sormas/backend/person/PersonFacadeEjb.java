@@ -1026,9 +1026,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		return count;
 	}
 
-	@SuppressWarnings({
-		"rawtypes",
-		"unchecked" })
 	private List<Long> getPersonIds(PersonCriteria criteria) {
 
 		final CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -1036,7 +1033,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		final Root<Person> person = cq.from(Person.class);
 
 		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
-		((PersonJoins) personQueryContext.getJoins()).configure(criteria);
+		personQueryContext.getJoins().configure(criteria);
 
 		Predicate filter = createIndexListFilter(criteria, personQueryContext);
 		if (filter != null) {
@@ -1287,9 +1284,6 @@ public class PersonFacadeEjb implements PersonFacade {
 	}
 
 	@Override
-	@SuppressWarnings({
-		"rawtypes",
-		"unchecked" })
 	public List<PersonIndexDto> getIndexList(PersonCriteria criteria, Integer first, Integer max, List<SortProperty> sortProperties) {
 
 		long startTime = DateHelper.startTime();
@@ -1298,7 +1292,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		final Root<Person> person = cq.from(Person.class);
 
 		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
-		final PersonJoins personJoins = (PersonJoins) personQueryContext.getJoins();
+		final PersonJoins personJoins = personQueryContext.getJoins();
 		personJoins.configure(criteria);
 
 		final Join<Person, Location> location = personJoins.getAddress();
@@ -1414,7 +1408,7 @@ public class PersonFacadeEjb implements PersonFacade {
 		final Root<Person> person = cq.from(Person.class);
 
 		final PersonQueryContext personQueryContext = new PersonQueryContext(cb, cq, person);
-		PersonJoins joins = (PersonJoins) personQueryContext.getJoins();
+		PersonJoins joins = personQueryContext.getJoins();
 		joins.configure(criteria);
 
 		cq.multiselect(
@@ -1510,7 +1504,6 @@ public class PersonFacadeEjb implements PersonFacade {
 		return persons;
 	}
 
-	@SuppressWarnings("rawtypes")
 	private Predicate createIndexListFilter(PersonCriteria criteria, PersonQueryContext personQueryContext) {
 
 		CriteriaBuilder cb = personQueryContext.getCriteriaBuilder();

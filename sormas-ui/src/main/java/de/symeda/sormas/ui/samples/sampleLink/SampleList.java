@@ -72,7 +72,9 @@ public class SampleList extends PaginationList<SampleListEntryDto> {
 					"edit-sample-" + sampleUuid,
 					(ClickListener) event -> ControllerProvider.getSampleController().navigateToData(sampleUuid));
 			}
-			addViewLabMessageButton(listEntry);
+			if(UserProvider.getCurrent().getUserRights().contains(UserRight.LAB_MESSAGES)){
+				addViewLabMessageButton(listEntry);
+			}
 			listLayout.addComponent(listEntry);
 		}
 	}

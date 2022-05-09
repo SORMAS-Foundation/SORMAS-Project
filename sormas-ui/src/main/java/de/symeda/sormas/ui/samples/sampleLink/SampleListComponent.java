@@ -15,22 +15,41 @@
 
 package de.symeda.sormas.ui.samples.sampleLink;
 
+import java.util.function.Consumer;
+
 import de.symeda.sormas.api.i18n.Captions;
 import de.symeda.sormas.api.i18n.I18nProperties;
 import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.sample.SampleCriteria;
 import de.symeda.sormas.api.user.UserRight;
+import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.utils.components.sidecomponent.SideComponent;
 
-@SuppressWarnings("serial")
 public class SampleListComponent extends SideComponent {
 
-	public SampleListComponent(SampleCriteria sampleCriteria) {
-		super(I18nProperties.getString(Strings.entitySamples));
-
-		addCreateButton(I18nProperties.getCaption(Captions.sampleNewSample), UserRight.SAMPLE_CREATE);
+	public SampleListComponent(SampleCriteria sampleCriteria, Consumer<Runnable> actionCallback) {
+		super(I18nProperties.getString(Strings.entitySamples), actionCallback);
 
 		SampleList sampleList = new SampleList(sampleCriteria);
+
+		addCreateButton(I18nProperties.getCaption(Captions.sampleNewSample), () -> {
+			switch (sampleCriteria.getSampleAssociationType()) {
+			case CASE:
+				ControllerProvider.getSampleController().create(sampleCriteria.getCaze(), sampleCriteria.getDisease(), SormasUI::refreshView);
+				break;
+			case CONTACT:
+				ControllerProvider.getSampleController().create(sampleCriteria.getContact(), sampleCriteria.getDisease(), SormasUI::refreshView);
+				break;
+			case EVENT_PARTICIPANT:
+				ControllerProvider.getSampleController()
+					.create(sampleCriteria.getEventParticipant(), sampleCriteria.getDisease(), SormasUI::refreshView);
+				break;
+			default:
+				throw new IllegalArgumentException("Invalid sample association type:" + sampleCriteria.getSampleAssociationType());
+			}
+		}, UserRight.SAMPLE_CREATE);
+
 		addComponent(sampleList);
 		sampleList.reload();
 	}

@@ -18,6 +18,7 @@
 package de.symeda.sormas.ui.samples.pathogentestlink;
 
 import java.util.List;
+import java.util.function.Consumer;
 
 import com.vaadin.ui.Label;
 
@@ -27,9 +28,9 @@ import de.symeda.sormas.api.sample.PathogenTestDto;
 import de.symeda.sormas.api.sample.SampleReferenceDto;
 import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.ui.ControllerProvider;
+import de.symeda.sormas.ui.SormasUI;
 import de.symeda.sormas.ui.UserProvider;
 import de.symeda.sormas.ui.utils.PaginationList;
-import de.symeda.sormas.ui.utils.components.sidecomponent.event.SideComponentFieldEditEvent;
 
 @SuppressWarnings("serial")
 public class PathogenTestList extends PaginationList<PathogenTestDto> {
@@ -37,11 +38,13 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 	private static final int MAX_DISPLAYED_ENTRIES = 5;
 
 	private final SampleReferenceDto sampleRef;
+	private final Consumer<Runnable> actionCallback;
 
-	public PathogenTestList(SampleReferenceDto sampleRef) {
+	public PathogenTestList(SampleReferenceDto sampleRef, Consumer<Runnable> actionCallback) {
 		super(MAX_DISPLAYED_ENTRIES);
 
 		this.sampleRef = sampleRef;
+		this.actionCallback = actionCallback;
 	}
 
 	@Override
@@ -66,7 +69,11 @@ public class PathogenTestList extends PaginationList<PathogenTestDto> {
 			PathogenTestListEntry listEntry = new PathogenTestListEntry(pathogenTest);
 			if (UserProvider.getCurrent().hasUserRight(UserRight.PATHOGEN_TEST_EDIT)) {
 				String pathogenTestUuid = pathogenTest.getUuid();
-				listEntry.addEditButton("edit-test-" + pathogenTestUuid, e -> fireEvent(new SideComponentFieldEditEvent(listEntry)));
+				listEntry.addEditButton(
+					"edit-test-" + pathogenTestUuid,
+					e -> actionCallback.accept(
+						() -> ControllerProvider.getPathogenTestController()
+							.edit(pathogenTestUuid, SormasUI::refreshView, (pathogenTestDto, callback) -> callback.run())));
 			}
 			listLayout.addComponent(listEntry);
 		}

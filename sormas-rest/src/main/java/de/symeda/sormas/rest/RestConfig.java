@@ -40,7 +40,6 @@ import io.swagger.v3.oas.models.info.License;
 import org.apache.commons.collections4.SetUtils;
 import org.glassfish.jersey.jackson.JacksonFeature;
 import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.server.filter.RolesAllowedDynamicFeature;
 
 import de.symeda.sormas.rest.swagger.SwaggerConfig;
 import org.slf4j.Logger;
@@ -61,8 +60,6 @@ public class RestConfig extends ResourceConfig {
 		// Resources.
 		packages(getClass().getPackage().getName());
 
-		// as described in https://jersey.github.io/documentation/latest/security.html
-		register(RolesAllowedDynamicFeature.class);
 		register(JacksonFeature.class);
 
 		SwaggerConfig.init();

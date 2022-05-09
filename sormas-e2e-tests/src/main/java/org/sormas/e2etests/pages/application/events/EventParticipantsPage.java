@@ -42,4 +42,27 @@ public class EventParticipantsPage {
   public static final By APPLY_FILTERS_BUTTON = By.id("actionApplyFilters");
   public static final By EXPORT_EVENT_PARTICIPANT_CONFIGURATION_DATA_REGION_CHECKBOX =
       By.xpath("//label[text()='Region']");
+  public static final By CONFIRM_NAVIGATION_POPUP = By.id("actionConfirm");
+  public static final By SEARCH_FOR_PERSON_BUTTON_IN_ADD_PARTICIPANT_POPUP_WINDOW =
+      By.id("personSearchLoc");
+  public static final By SELECT_PERSON_ID_INPUT_AT_ADD_PARTICIPANT =
+      By.cssSelector("input#uuidExternalIdExternalTokenLike");
+  public static final By SELECT_PERSON_SEARCH_BUTTON_AT_ADD_PARTICIPANT = By.id("actionSearch");
+  public static final By SELECT_FIRST_PERSON_IN_SEARCHED_LIST_FROM_ADD_PARTICIPANT =
+      By.cssSelector("[scroll] [aria-live] .v-grid-body tr:nth-of-type(1)");
+  public static final By PERSON_ID_IN_EVENT_PARTICIPANTS_COLUMN_HEADER =
+      By.cssSelector(
+          "th:nth-of-type(2) > .v-grid-column-default-header-content.v-grid-column-header-content");
+  public static final By CASE_GRID_RESULTS_ROWS = By.cssSelector("[role=rowgroup] tr a");
+  public static final By PERSON_ID_IN_EVENT_PARTICIPANTS_RESULTS_ROWS =
+      By.cssSelector("tr[role='row'] > td:nth-of-type(2) a");
+  public static final By CONFIRM_BUTTON_FOR_SELECT_PERSON_FROM_ADD_PARTICIPANTS_WINDOW =
+      By.cssSelector("[scroll] [role='dialog']:nth-of-type(5) #commit");
+  public static final By DELETE_EVENT_PARTICIPANT_BUTTTON = By.cssSelector("div#delete");
+  public static final By CONFIRM_DELETION_OF_EVENT_PARTICIPANT = By.id("actionConfirm");
+  public static final By POPUP_DISCARD_CHANGES_BUTTON = By.id("actionCancel");
+
+  public static final By getEventsByCaseUuid(String uuid) {
+    return By.cssSelector(String.format("[title = '%s']", uuid));
+  }
 }

@@ -15,21 +15,20 @@
 
 package org.sormas.e2etests.steps.web.application.dashboard.surveillance;
 
-import cucumber.api.java8.En;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pages.application.NavBarPage;
-import org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage;
-import org.testng.asserts.SoftAssert;
-
-import javax.inject.Inject;
-import java.util.concurrent.TimeUnit;
-
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.DATE_TYPE;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.REFERENCE_DEFINITION_FULFILLED_CASES_NUMBER;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.REGION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.REGION_COMBOBOX_DROPDOWN;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.TIME_PERIOD_COMBOBOX;
 import static org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage.TIME_PERIOD_YESTERDAY_BUTTON;
+
+import cucumber.api.java8.En;
+import java.util.concurrent.TimeUnit;
+import javax.inject.Inject;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.NavBarPage;
+import org.sormas.e2etests.pages.application.dashboard.Surveillance.SurveillanceDashboardPage;
+import org.testng.asserts.SoftAssert;
 
 public class SurveillanceDashboardSteps implements En {
 

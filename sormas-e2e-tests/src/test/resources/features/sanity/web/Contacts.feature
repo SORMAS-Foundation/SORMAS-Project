@@ -366,3 +366,127 @@ Feature: Contacts end to end tests
     Then I fill Location form for Type of place by chosen "FACILITY" options in Exposure for Epidemiological data
     And I click on save button in Exposure for Epidemiological data tab in Contacts
     And I click on save button from Epidemiological Data
+
+  @env_main @#7768
+  Scenario: Create new contact using line listing and select source case
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in with National User
+    When I click on the Contacts button from navbar
+    Then I click on Line Listing button
+    Then I click Choose Case button from Contact Directory Line Listing popup window
+    And I search for the last case uuid in the CHOOSE SOURCE popup of Create Contact window
+    And I open the first found result in the CHOOSE SOURCE popup of Create Contact window
+    And I create a new Contact with specific data through Line Listing when disease prefilled
+    And I save the new contact using line listing feature
+    Then I check that contact created from Line Listing is saved and displayed in results grid
+
+  @env_main @#7769
+  Scenario: Create a new Contact via Line Listing and validate that the selected Source Case data is correctly displayed
+    Given API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then I log in with National User
+    When I click on the Contacts button from navbar
+    Then I click on Line Listing button
+    Then I click Choose Case button from Contact Directory Line Listing popup window
+    And I search for the last case uuid in the CHOOSE SOURCE popup of Create Contact window
+    And I open the first found result in the CHOOSE SOURCE popup of Create Contact window
+    Then I check the name and uuid of selected case information is correctly displayed in new Contact Line Listing popup window
+    Then I check disease dropdown is automatically filled with disease of selected Case in new Contact Line Listing popup window
+
+  @issue=SORDEV-9124 @env_main
+  Scenario: Document Templates create quarantine order in Contacts
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    When I click on the Contacts button from navbar
+    Then I navigate to the last created contact via the url
+    Then I click on Create button in Document Templates box in Edit Contact directory
+    And I click on checkbox to upload generated document to entity in Create Quarantine Order form in Edit Contact directory
+    And I select "ExampleDocumentTemplateContacts.docx" Quarantine Order in Create Quarantine Order form in Edit Contact directory
+    And I click on Create button in Create Quarantine Order form
+    Then I navigate to the last created contact via the url
+    And I check if downloaded file is correct for "ExampleDocumentTemplateContacts.docx" Quarantine Order in Edit Contact directory
+    And I check if generated document based on "ExampleDocumentTemplateContacts.docx" appeared in Documents tab in Edit Contact directory
+    And I delete downloaded file created from "ExampleDocumentTemplateContacts.docx" Document Template for Contact
+
+  @issue=SORDEV-9124 @env_main
+  Scenario: Document Templates create quarantine order for Contact bulk
+    Given API: I create a new person
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new contact
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Given I log in as a Admin User
+    And I click on the Contacts button from navbar
+    And I click on the NEW CONTACT button
+    When I fill a new contact form
+    And I click on SAVE new contact button
+    Then I check the created data is correctly displayed on Edit Contact page
+    And I click on the Contacts button from navbar
+    And I click on the More button on Contact directory page
+    And I click Enter Bulk Edit Mode on Contact directory page
+    And I select last created UI result in grid in Contact Directory for Bulk Action
+    And I select last created API result in grid in Contact Directory for Bulk Action
+    And I click on Bulk Actions combobox on Contact Directory Page
+    And I click on Create Quarantine Order from Bulk Actions combobox on Contact Directory Page
+    And I click on checkbox to upload generated document to entities in Create Quarantine Order form in Contact directory
+    And I select "ExampleDocumentTemplateContacts.docx" Quarantine Order in Create Quarantine Order form in Edit Contact directory
+    And I click on Create button in Create Quarantine Order form
+    And I click on close button in Create Quarantine Order form
+    And I check if downloaded zip file for Quarantine Order is correct
+    And I click on the More button on Contact directory page
+    Then I click Leave Bulk Edit Mode on Contact directory page
+    Then I navigate to the last created UI contact via the url
+    And I check if generated document based on "ExampleDocumentTemplateContacts.docx" appeared in Documents tab for UI created contact in Edit Contact directory
+    And I navigate to the last created contact via the url
+    And I check if generated document based on "ExampleDocumentTemplateContacts.docx" appeared in Documents tab in Edit Contact directory
+    And I delete downloaded file created from Quarantine order
+
+  @issue=SORDEV-8048 @env_de
+  Scenario: Test Default value for disease if only one is used by the server for Contacts
+    Given I log in with National User
+    When I click on the Contacts button from navbar
+    Then I click on the NEW CONTACT button
+    And I check if default disease value is set for COVID-19
+    Then I click on the Contacts button from navbar
+    Then I click on Line Listing button
+    And I check if default disease value for contacts in the Line listing is set for COVID-19
+
+  @issue=SORDEV-9477 @env_main
+  Scenario: Add a person search option on creation forms
+    Then API: I create a new person
+    And API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    Then API: I create a new case
+    Then API: I check that POST call body is "OK"
+    And API: I check that POST call status code is 200
+    And I log in with National User
+    Then I click on the Contacts button from navbar
+    And  I click on the NEW CONTACT button
+    And I fill a new contact form with chosen data without personal data on Contact directory page
+    And I click on the person search button in create new contact form
+    And I search for the last created person via Api by uuid in popup on Select Person window
+    And I open the first found result in the popup of Select Person window
+    And I click on the clear button in new contact form
+    And I click on the person search button in create new contact form
+    And I search for the last created person via Api by uuid in popup on Select Person window
+    And I open the first found result in the popup of Select Person window
+    And I click on SAVE new contact button
+    Then I check the created data for existing person is correctly displayed on Edit Contact page
+    When I click on the Persons button from navbar
+    And I open the last created Person via API
+    And I check that SEE CONTACTS FOR THIS PERSON button appears on Edit Person page

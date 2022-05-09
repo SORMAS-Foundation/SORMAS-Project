@@ -107,6 +107,7 @@ import de.symeda.sormas.backend.common.ChangeDateFilterBuilder;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.common.DeletableAdo;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
 import de.symeda.sormas.backend.disease.DiseaseConfigurationFacadeEjb;
@@ -285,13 +286,12 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 	}
 
 	public Long countCasesForMap(Region region, District district, Disease disease, Date from, Date to, NewCaseDateType dateType) {
+
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Case> caze = cq.from(getElementClass());
 
 		CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
-
-		CaseJoins joins = new CaseJoins(caze);
 
 		Predicate filter = createMapCasesFilter(caseQueryContext, region, district, disease, from, to, dateType);
 
@@ -1173,9 +1173,9 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 			if (userFilterCriteria == null
 				|| (!userFilterCriteria.isExcludeCasesFromContacts()
 					&& Boolean.TRUE.equals(userFilterCriteria.getIncludeCasesFromOtherJurisdictions()))) {
-				CaseJoins caseJoins = caseQueryContext.getJoins();
-				filter = CriteriaBuilderHelper
-					.or(cb, filter, contactService.createUserFilterWithoutCase(new ContactQueryContext(cb, cq, caseJoins.getContacts())));
+				ContactQueryContext contactQueryContext =
+					new ContactQueryContext(cb, cq, new ContactJoins(caseQueryContext.getJoins().getContacts()));
+				filter = CriteriaBuilderHelper.or(cb, filter, contactService.createUserFilterWithoutCase(contactQueryContext));
 			}
 
 			// users can only be assigned to a task when they have also access to the case
@@ -1386,7 +1386,7 @@ public class CaseService extends AbstractCoreAdoService<Case> {
 		cq.multiselect(
 			JurisdictionHelper
 				.booleanSelector(cb, CaseJurisdictionPredicateValidator.of(new CaseQueryContext(cb, cq, root), user).isInJurisdiction()));
-		cq.where(cb.equal(root.get(Event.UUID), caze.getUuid()));
+		cq.where(cb.equal(root.get(Case.UUID), caze.getUuid()));
 		return em.createQuery(cq).getResultList().stream().anyMatch(aBoolean -> aBoolean);
 	}
 
