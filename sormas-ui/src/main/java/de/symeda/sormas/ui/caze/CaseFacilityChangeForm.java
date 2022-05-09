@@ -219,10 +219,9 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 		if (cbFacility.getValue() != null) {
 			boolean otherHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid().equals(FacilityDto.OTHER_FACILITY_UUID);
 			boolean noneHealthFacility = ((FacilityReferenceDto) cbFacility.getValue()).getUuid().equals(FacilityDto.NONE_FACILITY_UUID);
-			boolean visibleAndRequired = otherHealthFacility || noneHealthFacility;
+			boolean visible = otherHealthFacility || noneHealthFacility;
 
-			tfFacilityDetails.setVisible(visibleAndRequired);
-			tfFacilityDetails.setRequired(visibleAndRequired);
+			tfFacilityDetails.setVisible(visible);
 
 			if (otherHealthFacility) {
 				tfFacilityDetails.setCaption(I18nProperties.getPrefixCaption(CaseDataDto.I18N_PREFIX, CaseDataDto.HEALTH_FACILITY_DETAILS));
@@ -230,12 +229,11 @@ public class CaseFacilityChangeForm extends AbstractEditForm<CaseDataDto> {
 			if (noneHealthFacility) {
 				tfFacilityDetails.setCaption(I18nProperties.getCaption(Captions.CaseData_noneHealthFacilityDetails));
 			}
-			if (!visibleAndRequired) {
+			if (!visible) {
 				tfFacilityDetails.clear();
 			}
-		} else {
+		} else if (!TypeOfPlace.HOME.equals(facilityOrHome.getValue())) {
 			tfFacilityDetails.setVisible(false);
-			tfFacilityDetails.setRequired(false);
 			tfFacilityDetails.clear();
 		}
 	}

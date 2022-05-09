@@ -2974,6 +2974,11 @@ public class DatabaseHelper extends OrmLiteSqliteOpenHelper {
 
 			case 334:
 				currentVersion = 334;
+				getDao(FeatureConfiguration.class).executeRaw("DELETE from featureConfiguration WHERE featureType = 'DELETE_PERMANENT';");
+				fillJurisdictionLevels();
+
+			case 334:
+				currentVersion = 334;
 				getDao(UserRole.class).executeRaw("DROP TABLE userrolesconfig;");
 				getDao(UserRole.class).executeRaw(
 					"CREATE TABLE userRoles(id integer primary key autoincrement, uuid varchar(36), changeDate timestamp, creationDate timestamp, lastOpenedDate timestamp, "

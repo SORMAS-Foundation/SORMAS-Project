@@ -1,4 +1,4 @@
-package de.symeda.sormas.backend.action.transformers;
+package de.symeda.sormas.backend.action;
 
 import java.util.Date;
 import java.util.List;
@@ -11,7 +11,6 @@ import de.symeda.sormas.api.action.ActionPriority;
 import de.symeda.sormas.api.action.ActionStatus;
 import de.symeda.sormas.api.disease.DiseaseVariant;
 import de.symeda.sormas.api.event.EventActionIndexDto;
-import de.symeda.sormas.api.event.EventHelper;
 import de.symeda.sormas.api.event.EventIdentificationSource;
 import de.symeda.sormas.api.event.EventInvestigationStatus;
 import de.symeda.sormas.api.event.EventManagementStatus;
@@ -21,13 +20,14 @@ import de.symeda.sormas.api.user.UserReferenceDto;
 
 public class EventActionIndexDtoReasultTransformer implements ResultTransformer {
 
+	private static final long serialVersionUID = 1L;
+
 	@Override
 	public Object transformTuple(Object[] objects, String[] strings) {
-		UserReferenceDto eventReportingUser = new UserReferenceDto((String) objects[12], (String) objects[13], (String) objects[14]);
-		UserReferenceDto eventResponsibleUser = new UserReferenceDto((String) objects[15], (String) objects[16], (String) objects[17]);
-		String actionTitle = EventHelper.buildEventActionTitleString((ActionMeasure) objects[18], (String) objects[20]);
-		UserReferenceDto actionLastModifiedBy = new UserReferenceDto((String) objects[26], (String) objects[27], (String) objects[28]);
-		UserReferenceDto actionCreatorUser = new UserReferenceDto((String) objects[29], (String) objects[30], (String) objects[31]);
+		UserReferenceDto eventReportingUser = new UserReferenceDto((String) objects[12], (String) objects[13], (String) objects[14], null);
+		UserReferenceDto eventResponsibleUser = new UserReferenceDto((String) objects[15], (String) objects[16], (String) objects[17], null);
+		UserReferenceDto actionLastModifiedBy = new UserReferenceDto((String) objects[26], (String) objects[27], (String) objects[28], null);
+		UserReferenceDto actionCreatorUser = new UserReferenceDto((String) objects[29], (String) objects[30], (String) objects[31], null);
 		return new EventActionIndexDto(
 			(String) objects[0],
 			(String) objects[1],
@@ -43,7 +43,7 @@ public class EventActionIndexDtoReasultTransformer implements ResultTransformer 
 			(EventManagementStatus) objects[11],
 			eventReportingUser,
 			eventResponsibleUser,
-			actionTitle,
+			(String) objects[20],
 			(Date) objects[19],
 			(Date) objects[21],
 			(Date) objects[22],
@@ -55,6 +55,7 @@ public class EventActionIndexDtoReasultTransformer implements ResultTransformer 
 	}
 
 	@Override
+	@SuppressWarnings("rawtypes")
 	public List transformList(List list) {
 		return list;
 	}

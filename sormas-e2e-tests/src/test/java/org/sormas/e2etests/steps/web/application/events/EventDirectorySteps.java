@@ -18,6 +18,46 @@
 
 package org.sormas.e2etests.steps.web.application.events;
 
+import cucumber.api.java8.En;
+import org.openqa.selenium.WebDriverException;
+import org.openqa.selenium.WebElement;
+import org.sormas.e2etests.common.DataOperations;
+import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
+import org.sormas.e2etests.entities.pojo.web.EventGroup;
+import org.sormas.e2etests.entities.services.EventGroupService;
+import org.sormas.e2etests.entities.services.EventService;
+import org.sormas.e2etests.enums.CommunityValues;
+import org.sormas.e2etests.enums.DiseasesValues;
+import org.sormas.e2etests.enums.DistrictsValues;
+import org.sormas.e2etests.enums.EventReferenceDateOptions;
+import org.sormas.e2etests.enums.RegionsValues;
+import org.sormas.e2etests.enums.RiskLevelValues;
+import org.sormas.e2etests.enums.SourceTypeValues;
+import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
+import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
+import org.sormas.e2etests.helpers.AssertHelpers;
+import org.sormas.e2etests.helpers.WebDriverHelpers;
+import org.sormas.e2etests.pages.application.NavBarPage;
+import org.sormas.e2etests.pages.application.events.EventDirectoryPage;
+import org.sormas.e2etests.state.ApiState;
+import org.sormas.e2etests.steps.BaseSteps;
+import org.testng.Assert;
+import org.testng.asserts.SoftAssert;
+
+import javax.inject.Inject;
+import java.io.File;
+import java.time.LocalDate;
+import java.time.ZoneId;
+import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.ConcurrentHashMap;
+import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicInteger;
+
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_COMMUNITY_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DATA_TYPE_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.CASE_DISTRICT_FILTER_COMBOBOX;
@@ -27,6 +67,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_TO_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.PERSON_ID_NAME_CONTACT_INFORMATION_LIKE_INPUT;
 import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
+import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_MANAGEMENT_STATUS_CHECK;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.EVENT_PARTICIPANTS_TAB;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.FIRST_EVENT_PARTICIPANT;
 import static org.sormas.e2etests.pages.application.events.EditEventPage.NEW_TASK_BUTTON;
@@ -35,6 +76,8 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.AP
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BASIC_EVENT_EXPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BASIC_EXPORT_PARTICIPANT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BULK_ACTIONS_EVENT_DIRECTORY;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BULK_EDIT_EVENT_DIRECTORY;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CHANGE_EVENT_MANAGEMENT_STATUS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CLOSE_POPUP_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.COMMIT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.CREATED_PARTICIPANT;
@@ -60,6 +103,7 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EV
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_GROUP_NAME_SORT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_INVESTIGATION_STATUS;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_MANAGEMENT_FILTER;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_MANAGEMENT_STATUS_COMBOBOX;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_REGION_COMBOBOX_INPUT;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_STATUS_FILTER_BUTTONS;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.EVENT_STATUS_FILTER_COMBOBOX;
@@ -94,48 +138,10 @@ import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.SE
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.TOTAL_EVENTS_COUNTER;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.UNLINK_EVENT_BUTTON;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getByEventUuid;
+import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.getCheckboxByIndex;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.APPLY_FILTERS_BUTTON;
 import static org.sormas.e2etests.pages.application.persons.PersonDirectoryPage.RESET_FILTERS_BUTTON;
 import static org.sormas.e2etests.steps.BaseSteps.locale;
-
-import cucumber.api.java8.En;
-import java.io.File;
-import java.time.LocalDate;
-import java.time.ZoneId;
-import java.time.format.DateTimeFormatter;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.concurrent.TimeUnit;
-import java.util.concurrent.atomic.AtomicInteger;
-import javax.inject.Inject;
-import org.openqa.selenium.WebDriverException;
-import org.openqa.selenium.WebElement;
-import org.sormas.e2etests.common.DataOperations;
-import org.sormas.e2etests.entities.pojo.helpers.ComparisonHelper;
-import org.sormas.e2etests.entities.pojo.web.EventGroup;
-import org.sormas.e2etests.entities.services.EventGroupService;
-import org.sormas.e2etests.entities.services.EventService;
-import org.sormas.e2etests.enums.CommunityValues;
-import org.sormas.e2etests.enums.DiseasesValues;
-import org.sormas.e2etests.enums.DistrictsValues;
-import org.sormas.e2etests.enums.EventReferenceDateOptions;
-import org.sormas.e2etests.enums.RegionsValues;
-import org.sormas.e2etests.enums.RiskLevelValues;
-import org.sormas.e2etests.enums.SourceTypeValues;
-import org.sormas.e2etests.enums.cases.epidemiologicalData.TypeOfPlace;
-import org.sormas.e2etests.envconfig.manager.EnvironmentManager;
-import org.sormas.e2etests.helpers.AssertHelpers;
-import org.sormas.e2etests.helpers.WebDriverHelpers;
-import org.sormas.e2etests.pages.application.NavBarPage;
-import org.sormas.e2etests.pages.application.events.EventDirectoryPage;
-import org.sormas.e2etests.state.ApiState;
-import org.sormas.e2etests.steps.BaseSteps;
-import org.testng.Assert;
-import org.testng.asserts.SoftAssert;
 
 public class EventDirectorySteps implements En {
   private final WebDriverHelpers webDriverHelpers;
@@ -307,10 +313,23 @@ public class EventDirectorySteps implements En {
     And(
         "I click on Bulk Actions combobox on Event Directory Page",
         () -> webDriverHelpers.clickOnWebElementBySelector(BULK_ACTIONS_EVENT_DIRECTORY));
+    When(
+        "^I select first (\\d+) results in grid in Event Directory$",
+        (Integer number) -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          for (int i = 2; i <= number + 1; i++) {
+            webDriverHelpers.scrollToElement(getCheckboxByIndex(String.valueOf(i)));
+            webDriverHelpers.clickOnWebElementBySelector(getCheckboxByIndex(String.valueOf(i)));
+          }
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
 
     And(
         "I click on Group Events from Bulk Actions combobox on Event Directory Page",
         () -> webDriverHelpers.clickOnWebElementBySelector(GROUP_EVENTS_EVENT_DIRECTORY));
+    And(
+        "I click on Edit Events from Bulk Actions combobox on Event Directory Page",
+        () -> webDriverHelpers.clickOnWebElementBySelector(BULK_EDIT_EVENT_DIRECTORY));
     When(
         "I navigate to the last created Event page via URL",
         () -> {
@@ -706,8 +725,8 @@ public class EventDirectorySteps implements En {
               SEARCH_EVENT_BY_FREE_TEXT_INPUT, 20);
           webDriverHelpers.fillAndSubmitInWebElement(SEARCH_EVENT_BY_FREE_TEXT_INPUT, eventUuid);
           webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTER);
-            TimeUnit.SECONDS.sleep(5);
-            webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
+          TimeUnit.SECONDS.sleep(5);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
         });
 
     When(
@@ -774,6 +793,25 @@ public class EventDirectorySteps implements En {
               RESET_FILTERS_BUTTON, 30);
           webDriverHelpers.clickOnWebElementBySelector(RESET_FILTERS_BUTTON);
           TimeUnit.SECONDS.sleep(3);
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(100);
+        });
+
+    When(
+        "I click to bulk change event managements status for selected events",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CHANGE_EVENT_MANAGEMENT_STATUS_CHECKBOX);
+          webDriverHelpers.clickWebElementByText(EVENT_MANAGEMENT_STATUS_COMBOBOX, "PENDING");
+        });
+    When(
+        "I check if Event Management Status is set to {string}",
+        (String eventManagementStatus) -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(EVENT_MANAGEMENT_STATUS_COMBOBOX);
+          assertHelpers.assertWithPoll20Second(
+              () ->
+                  Assert.assertEquals(
+                      webDriverHelpers.getTextFromWebElement(EVENT_MANAGEMENT_STATUS_CHECK),
+                      eventManagementStatus,
+                      "Event Management status is not correct"));
         });
 
     When(

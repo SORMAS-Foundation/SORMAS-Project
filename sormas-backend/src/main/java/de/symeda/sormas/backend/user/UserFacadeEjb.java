@@ -48,7 +48,6 @@ import org.apache.commons.beanutils.BeanUtils;
 
 import de.symeda.sormas.api.Disease;
 import de.symeda.sormas.api.EntityDto;
-import de.symeda.sormas.api.HasUuid;
 import de.symeda.sormas.api.caze.CaseReferenceDto;
 import de.symeda.sormas.api.common.Page;
 import de.symeda.sormas.api.contact.ContactReferenceDto;
@@ -81,6 +80,7 @@ import de.symeda.sormas.backend.caze.CaseService;
 import de.symeda.sormas.backend.common.AbstractDomainObject;
 import de.symeda.sormas.backend.common.CriteriaBuilderHelper;
 import de.symeda.sormas.backend.contact.Contact;
+import de.symeda.sormas.backend.contact.ContactJoins;
 import de.symeda.sormas.backend.contact.ContactJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.contact.ContactQueryContext;
 import de.symeda.sormas.backend.contact.ContactService;
@@ -104,6 +104,7 @@ import de.symeda.sormas.backend.location.LocationFacadeEjb;
 import de.symeda.sormas.backend.location.LocationFacadeEjb.LocationFacadeEjbLocal;
 import de.symeda.sormas.backend.task.TaskFacadeEjb;
 import de.symeda.sormas.backend.travelentry.TravelEntry;
+import de.symeda.sormas.backend.travelentry.TravelEntryJoins;
 import de.symeda.sormas.backend.travelentry.TravelEntryJurisdictionPredicateValidator;
 import de.symeda.sormas.backend.travelentry.TravelEntryQueryContext;
 import de.symeda.sormas.backend.user.UserRoleFacadeEjb.UserRoleFacadeEjbLocal;
@@ -399,7 +400,7 @@ public class UserFacadeEjb implements UserFacade {
 			caseJurisdictionSubquery.select(caseRoot)
 				.where(
 					cb.and(
-						cb.equal(caseRoot.get(AbstractDomainObject.UUID), caseReferenceDto.getUuid()),
+						cb.equal(caseRoot.get(Case.UUID), caseReferenceDto.getUuid()),
 						cb.isTrue(caseJurisdictionPredicateValidator.inJurisdictionOrOwned()),
 						cb.or(
 							cb.isNull(userRoot.get(User.LIMITED_DISEASE)),
@@ -415,7 +416,7 @@ public class UserFacadeEjb implements UserFacade {
 			final Subquery<Contact> contactJurisdictionSubquery = cq.subquery(Contact.class);
 			final Root<Contact> contactRoot = contactJurisdictionSubquery.from(Contact.class);
 			final ContactJurisdictionPredicateValidator contactJurisdictionPredicateValidator =
-				ContactJurisdictionPredicateValidator.of(new ContactQueryContext(cb, cq, contactRoot), userRoot);
+				ContactJurisdictionPredicateValidator.of(new ContactQueryContext(cb, cq, new ContactJoins(contactRoot)), userRoot);
 
 			contactJurisdictionSubquery.select(contactRoot)
 				.where(
@@ -459,7 +460,7 @@ public class UserFacadeEjb implements UserFacade {
 			final Subquery<TravelEntry> travelEntrySubquery = cq.subquery(TravelEntry.class);
 			final Root<TravelEntry> travelEntryRoot = travelEntrySubquery.from(TravelEntry.class);
 			final TravelEntryJurisdictionPredicateValidator travelEntryJurisdictionPredicateValidator =
-				TravelEntryJurisdictionPredicateValidator.of(new TravelEntryQueryContext(cb, cq, travelEntryRoot), userRoot);
+				TravelEntryJurisdictionPredicateValidator.of(new TravelEntryQueryContext(cb, cq, new TravelEntryJoins(travelEntryRoot)), userRoot);
 
 			travelEntrySubquery.select(travelEntryRoot)
 				.where(

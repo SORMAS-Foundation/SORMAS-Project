@@ -540,7 +540,7 @@ public interface Captions {
 	String CasePreviousHospitalization_otherHospitalizationReason = "CasePreviousHospitalization.otherHospitalizationReason";
 	String CasePreviousHospitalization_prevHospPeriod = "CasePreviousHospitalization.prevHospPeriod";
 	String CasePreviousHospitalization_region = "CasePreviousHospitalization.region";
-	String caseReferToFacility = "caseReferToFacility";
+	String caseReferFromPointOfEntry = "caseReferFromPointOfEntry";
 	String caseSearchCase = "caseSearchCase";
 	String caseSearchSpecificCase = "caseSearchSpecificCase";
 	String caseSelect = "caseSelect";

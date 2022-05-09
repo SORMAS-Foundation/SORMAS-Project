@@ -11269,8 +11269,98 @@ CREATE INDEX IF NOT EXISTS idx_task_archived ON task (archived);
 
 INSERT INTO schema_version (version_number, comment) VALUES (457, 'Investigate and add indexes #8778');
 
--- 2022-03-18 Replace hard-coded user roles with fully configurable user roles #4461
+-- 2022-05-03 Permanent Deletion | Immunization | healthconditions_id violates not-null constraint error #8983
+DROP TABLE IF EXISTS tmp_healthconditions;
+DROP TABLE IF EXISTS added_healthconditions;
+CREATE TEMP TABLE tmp_healthconditions
+(
+    LIKE healthconditions
+);
+insert into tmp_healthconditions
+select *
+from healthconditions hc
+where hc.id in (select distinct v.healthconditions_id
+                from vaccination v
+                         join (select vc.healthconditions_id
+                               from vaccination vc
+                               group by healthconditions_id
+                               HAVING count(*) > 1) b
+                              on v.healthconditions_id = b.healthconditions_id);
 
+CREATE TEMP TABLE added_healthconditions(LIKE healthconditions);
+
+CREATE OR REPLACE FUNCTION clone_healthconditions(healthconditions_id bigint)
+    RETURNS bigint
+    LANGUAGE plpgsql
+    SECURITY DEFINER AS
+$BODY$
+DECLARE
+    new_id bigint;
+BEGIN
+    INSERT INTO added_healthconditions SELECT * FROM healthconditions WHERE id = healthconditions_id;
+    UPDATE added_healthconditions
+    SET id           = nextval('entity_seq'),
+        uuid         = generate_base32_uuid(),
+        sys_period   = tstzrange(now(), null)
+    WHERE id = healthconditions_id
+    RETURNING id INTO new_id;
+    INSERT INTO healthconditions SELECT * FROM added_healthconditions WHERE id = new_id;
+    RETURN new_id;
+END;
+$BODY$;
+ALTER FUNCTION clone_healthconditions(bigint) OWNER TO sormas_user;
+
+CREATE OR REPLACE FUNCTION create_additional_healthconditions()
+    RETURNS bigint
+    LANGUAGE plpgsql
+    SECURITY DEFINER AS
+
+$BODY$
+DECLARE
+    new_id bigint;
+BEGIN
+    INSERT INTO healthconditions (id, uuid, changedate, creationdate)
+    VALUES (nextval('entity_seq'), generate_base32_uuid(), now(), now())
+    RETURNING id INTO new_id;
+    RETURN new_id;
+END;
+$BODY$;
+
+ALTER FUNCTION create_additional_healthconditions() OWNER TO sormas_user;
+DO
+$$
+    DECLARE
+        rec_health         RECORD;
+        rec_vaccination    RECORD;
+        count_vaccinations integer;
+        new_healthcondition_id bigint;
+    BEGIN
+        FOR rec_health IN SELECT * FROM tmp_healthconditions
+            LOOP
+                BEGIN
+                    count_vaccinations = (SELECT count(*) FROM vaccination WHERE healthconditions_id = rec_health.id);
+                    FOR rec_vaccination IN (SELECT * FROM vaccination WHERE healthconditions_id = rec_health.id)
+                        LOOP
+                            if count_vaccinations > 1 then
+                                new_healthcondition_id = clone_healthconditions(rec_health.id);
+                                update vaccination set healthconditions_id = new_healthcondition_id where id = rec_vaccination.id;
+                            end if;
+                            count_vaccinations = count_vaccinations - 1;
+                        end loop;
+                end;
+            END LOOP;
+    END;
+$$ LANGUAGE plpgsql;
+
+DROP TABLE IF EXISTS tmp_healthconditions;
+DROP TABLE IF EXISTS added_healthconditions;
+
+DROP FUNCTION IF EXISTS clone_healthconditions(bigint);
+DROP FUNCTION IF EXISTS create_additional_healthconditions();
+
+INSERT INTO schema_version (version_number, comment) VALUES (458, 'Permanent Deletion | Immunization | healthconditions_id violates not-null constraint error #8983');
+
+-- 2022-03-18 Replace hard-coded user roles with fully configurable user roles #4461
 ALTER TABLE userrolesconfig DROP COLUMN userrole;
 ALTER TABLE userrolesconfig_history DROP COLUMN userrole;
 ALTER TABLE userrolesconfig RENAME TO userroles;
@@ -11346,6 +11436,6 @@ CREATE TABLE userroles_smsnotifications (
 ALTER TABLE userroles_smsnotifications ADD CONSTRAINT fk_userrole_id FOREIGN KEY (userrole_id) REFERENCES userroles (id);
 ALTER TABLE userroles_smsnotifications OWNER TO sormas_user;
 
-INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (458, 'Replace hard-coded user roles with fully configurable user roles #4461', true);
+INSERT INTO schema_version (version_number, comment, upgradeNeeded) VALUES (459, 'Replace hard-coded user roles with fully configurable user roles #4461', true);
 
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***

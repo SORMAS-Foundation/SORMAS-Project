@@ -85,13 +85,14 @@ public class CampaignFacadeEjb
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<CampaignIndexDto> cq = cb.createQuery(CampaignIndexDto.class);
 		Root<Campaign> campaign = cq.from(Campaign.class);
+		CampaignQueryContext queryContext = new CampaignQueryContext(cb, cq, campaign);
 
 		cq.multiselect(campaign.get(Campaign.UUID), campaign.get(Campaign.NAME), campaign.get(Campaign.START_DATE), campaign.get(Campaign.END_DATE));
 
-		Predicate filter = service.createUserFilter(cb, cq, campaign);
+		Predicate filter = service.createUserFilter(queryContext);
 
 		if (campaignCriteria != null) {
-			Predicate criteriaFilter = service.buildCriteriaFilter(campaignCriteria, cb, campaign);
+			Predicate criteriaFilter = service.buildCriteriaFilter(queryContext, campaignCriteria);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 
@@ -152,11 +153,12 @@ public class CampaignFacadeEjb
 		CriteriaBuilder cb = em.getCriteriaBuilder();
 		CriteriaQuery<Long> cq = cb.createQuery(Long.class);
 		Root<Campaign> campaign = cq.from(Campaign.class);
+		CampaignQueryContext queryContext = new CampaignQueryContext(cb, cq, campaign);
 
-		Predicate filter = service.createUserFilter(cb, cq, campaign);
+		Predicate filter = service.createUserFilter(queryContext);
 
 		if (campaignCriteria != null) {
-			Predicate criteriaFilter = service.buildCriteriaFilter(campaignCriteria, cb, campaign);
+			Predicate criteriaFilter = service.buildCriteriaFilter(queryContext, campaignCriteria);
 			filter = CriteriaBuilderHelper.and(cb, filter, criteriaFilter);
 		}
 

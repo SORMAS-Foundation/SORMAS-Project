@@ -50,6 +50,7 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
+import de.symeda.sormas.api.disease.DiseaseVariant;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
@@ -1739,6 +1740,55 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		final List<ActivityAsCaseDto> activitiesAsCase = epiData.getActivitiesAsCase();
 		assertEquals(1, activitiesAsCase.size());
 		assertEquals(ActivityAsCaseType.GATHERING, activitiesAsCase.get(0).getActivityAsCaseType());
+	}
+
+	@Test
+	public void testCloneCaseWithOtherDieseseDontChangeOriginalCase(){
+		RDCF rdcf = creator.createRDCF();
+		UserDto user = creator.createUser(rdcf, UserRole.SURVEILLANCE_SUPERVISOR, UserRole.ADMIN);
+		PersonDto cazePerson = creator.createPerson("Case", "Person");
+		String diseaseDetails = "this is a test disease";
+		CaseDataDto caze = creator.createCase(user.toReference(), cazePerson.toReference(), rdcf, c->{
+			c.setCaseClassification(CaseClassification.SUSPECT);
+			c.setDisease(Disease.CORONAVIRUS);
+			c.setDiseaseDetails(diseaseDetails);
+		});
+
+		// check values on original case
+		CaseDataDto originalCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(caze.getUuid(), originalCase.getUuid());
+		assertEquals(Disease.CORONAVIRUS, originalCase.getDisease());
+		assertEquals(CaseClassification.SUSPECT, originalCase.getCaseClassification());
+		assertEquals(diseaseDetails, originalCase.getDiseaseDetails());
+		assertEquals(caze.getPerson(), originalCase.getPerson());
+		assertEquals(caze.getDistrict(), originalCase.getDistrict());
+		assertEquals(caze.getRegion(), originalCase.getRegion());
+
+		// make changes on original DTO and clone it. check the clone DTO has the new values
+		originalCase.setDisease(Disease.DENGUE);
+		originalCase.setCaseClassification(CaseClassification.CONFIRMED);
+		originalCase.setDiseaseDetails(null);
+
+		CaseDataDto cloneCase = getCaseFacade().cloneCase(originalCase);
+		assertNotEquals(caze.getUuid(), cloneCase.getUuid());
+		assertEquals(Disease.DENGUE, cloneCase.getDisease());
+		assertEquals(CaseClassification.CONFIRMED, cloneCase.getCaseClassification());
+		assertNull(cloneCase.getDiseaseDetails());
+		assertEquals(caze.getPerson(), cloneCase.getPerson());
+		assertEquals(caze.getDistrict(), cloneCase.getDistrict());
+		assertEquals(caze.getRegion(), cloneCase.getRegion());
+
+
+		// recheck values for the original DTO it has the same values.
+		originalCase = getCaseFacade().getCaseDataByUuid(caze.getUuid());
+		assertEquals(caze.getUuid(), originalCase.getUuid());
+		assertEquals(Disease.CORONAVIRUS, originalCase.getDisease());
+		assertEquals(CaseClassification.SUSPECT, originalCase.getCaseClassification());
+		assertEquals(diseaseDetails, originalCase.getDiseaseDetails());
+		assertEquals(caze.getPerson(), originalCase.getPerson());
+		assertEquals(caze.getDistrict(), originalCase.getDistrict());
+		assertEquals(caze.getRegion(), originalCase.getRegion());
+
 	}
 
 	@Test

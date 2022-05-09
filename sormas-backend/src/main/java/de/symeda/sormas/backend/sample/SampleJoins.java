@@ -172,7 +172,7 @@ public class SampleJoins extends QueryJoins<Sample> {
 	}
 
 	public Join<EventParticipant, Event> getEvent() {
-		return getEventParticipantJoins().getEvent();
+		return getEventParticipantJoins().getEvent(JoinType.LEFT);
 	}
 
 	public Join<Event, Location> getEventLocation() {

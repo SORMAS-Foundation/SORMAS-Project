@@ -42,8 +42,6 @@ public class InfrastructureHelper {
 		changeDates.setDiseaseConfigurationChangeDate(DatabaseHelper.getDiseaseConfigurationDao().getLatestChangeDate());
 		changeDates.setUserRoleChangeDate(DatabaseHelper.getUserRoleDao().getLatestChangeDate());
 		changeDates.setFeatureConfigurationChangeDate(DatabaseHelper.getFeatureConfigurationDao().getLatestChangeDate());
-		changeDates.setCampaignChangeDate(DatabaseHelper.getCampaignDao().getLatestChangeDate());
-		changeDates.setCampaignFormMetaChangeDate(DatabaseHelper.getCampaignFormMetaDao().getLatestChangeDate());
 		changeDates.setAreaChangeDate(DatabaseHelper.getAreaDao().getLatestChangeDate());
 
 		return changeDates;
@@ -74,9 +72,5 @@ public class InfrastructureHelper {
 		DatabaseHelper.getFeatureConfigurationDao().delete(infrastructureData.getDeletedFeatureConfigurationUuids());
 		new FeatureConfigurationDtoHelper()
 			.handlePulledList(DatabaseHelper.getFeatureConfigurationDao(), infrastructureData.getFeatureConfigurations());
-		if (!DatabaseHelper.getFeatureConfigurationDao().isFeatureDisabled(FeatureType.CAMPAIGNS)) {
-			new CampaignDtoHelper().handlePulledList(DatabaseHelper.getCampaignDao(), infrastructureData.getCampaigns());
-			new CampaignFormMetaDtoHelper().handlePulledList(DatabaseHelper.getCampaignFormMetaDao(), infrastructureData.getCampaignFormMetas());
-		}
 	}
 }
