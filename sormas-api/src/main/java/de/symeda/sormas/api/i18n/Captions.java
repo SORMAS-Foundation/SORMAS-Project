@@ -1191,6 +1191,7 @@ public interface Captions {
 	String exportCustom = "exportCustom";
 	String exportDetailed = "exportDetailed";
 	String exportEditExportConfiguration = "exportEditExportConfiguration";
+	String exportExternalData = "exportExternalData";
 	String exportFollowUp = "exportFollowUp";
 	String exportInfrastructureData = "exportInfrastructureData";
 	String exportNewExportConfiguration = "exportNewExportConfiguration";

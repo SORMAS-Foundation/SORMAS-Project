@@ -537,6 +537,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 		return config;
 	}
 
+	@Override
+	public Boolean isS2SConfigured() {
+		return !StringUtils.isEmpty(getS2SConfig().getPath());
+	}
+
 	private Map<String, Boolean> getS2SIgnoreProperties() {
 		return props.stringPropertyNames()
 			.stream()
@@ -548,6 +553,11 @@ public class ConfigFacadeEjb implements ConfigFacade {
 	@Override
 	public String getExternalSurveillanceToolGatewayUrl() {
 		return getProperty(EXTERNAL_SURVEILLANCE_TOOL_GATEWAY_URL, null);
+	}
+
+	@Override
+	public boolean isExternalSurveillanceToolGatewayConfigured() {
+		return StringUtils.isNoneBlank(getExternalSurveillanceToolGatewayUrl());
 	}
 
 	@Override
