@@ -160,9 +160,7 @@ public final class VaadinUiUtil {
 
 		final Registration closeListener;
 		if (discardOnClose) {
-			closeListener = popupWindow.addCloseListener((e) -> {
-				content.discard();
-			});
+			closeListener = popupWindow.addCloseListener(e -> content.discard());
 		} else {
 			closeListener = null;
 		}
@@ -256,11 +254,7 @@ public final class VaadinUiUtil {
 		}, width);
 	}
 
-	public static CompletionStage<Boolean> showConfirmationPopup(
-		String caption,
-		Component content,
-		String confirmCaption,
-		String cancelCaption) {
+	public static CompletionStage<Boolean> showConfirmationPopup(String caption, Component content, String confirmCaption, String cancelCaption) {
 
 		CompletableFuture<Boolean> ret = new CompletableFuture<>();
 

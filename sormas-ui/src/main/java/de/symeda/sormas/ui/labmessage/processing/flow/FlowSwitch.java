@@ -21,6 +21,7 @@ import java.util.function.Function;
 
 /**
  * Class used for building conditional async flow/chain
+ * 
  * @param <T>
  * @param <R>
  */
@@ -45,14 +46,14 @@ public class FlowSwitch<T, R> {
 			ProcessingResultStatus status = r.getStatus();
 			if (status.isCanceled() || status.isDone()) {
 				//noinspection unchecked
-				return ProcessingResult.completed(status, (RR)r.getData());
+				return ProcessingResult.of(status, (RR) r.getData()).asCompletedFuture();
 			}
 
 			if (condition.apply(r.getData())) {
 				return switchFlow.apply(new FlowThen<>(currentResult), r.getData()).getResult().thenCompose(switchResult -> {
 					ProcessingResultStatus switchStatus = switchResult.getStatus();
 					if (switchStatus.isCanceled() || switchStatus.isDone()) {
-						return ProcessingResult.completed(switchStatus, switchResult.getData());
+						return ProcessingResult.of(switchStatus, switchResult.getData()).asCompletedFuture();
 					}
 
 					return CompletableFuture.completedFuture(switchResult);

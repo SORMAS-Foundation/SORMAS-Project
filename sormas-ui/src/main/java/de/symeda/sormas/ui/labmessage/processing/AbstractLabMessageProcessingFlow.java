@@ -85,7 +85,7 @@ public abstract class AbstractLabMessageProcessingFlow {
 				.when(PersonAndPickOrCreateEntryResult::isSelectedContact, (f, p) -> doContactSelectedFlow(p.getContact(), f, labMessage))
 				.when(PersonAndPickOrCreateEntryResult::isEventParticipantSelected, (f, p) -> doEventParticipantSelectedFlow(p.getEventParticipant(), f, labMessage))
 			//@formatter:on
-			.then((sampleResult) -> ProcessingResult.completed(ProcessingResultStatus.DONE, sampleResult.getData()))
+			.then((sampleResult) -> ProcessingResult.of(ProcessingResultStatus.DONE, sampleResult.getData()).asCompletedFuture())
 			.getResult();
 	}
 
@@ -123,8 +123,8 @@ public abstract class AbstractLabMessageProcessingFlow {
 					.when(
 						EventValidationResult::isEventSelectionCanceled,
 						(vf, v) -> vf.then((ignored) -> doCreateEventParticipantFlow(flow, labMessage).getResult()))
-					.then(s -> ProcessingResult.completedContinue(s.getData())))
-			.then(s -> ProcessingResult.completedContinue(s.getData()));
+					.then(s -> ProcessingResult.continueWith(s.getData()).asCompletedFuture()))
+			.then(s -> ProcessingResult.continueWith(s.getData()).asCompletedFuture());
 	}
 
 	private FlowThen<SampleAndPathogenTests> doCreateEventParticipantAndSampleFlow(
@@ -159,7 +159,7 @@ public abstract class AbstractLabMessageProcessingFlow {
 			.thenSwitch()
 			.when(PickOrCreateSampleResult::isNewSample, (sf, p) -> sf.then(ignored -> createSampleAndPathogenTests.get()))
 			.when(PickOrCreateSampleResult::isSelectedSample, (sf, p) -> sf.then(s -> editSample(s.getData().getSample(), labMessage)))
-			.then(s -> ProcessingResult.completedContinue(s.getData()));
+			.then(s -> ProcessingResult.continueWith(s.getData()).asCompletedFuture());
 	}
 
 	private FlowThen<SampleAndPathogenTests> doContactSelectedFlow(
@@ -191,10 +191,11 @@ public abstract class AbstractLabMessageProcessingFlow {
 
 	private CompletionStage<ProcessingResult<Void>> checkDisease(LabMessageDto labMessage) {
 		if (labMessage.getTestedDisease() == null) {
-			return handleMissingDisease()
-				.thenCompose(next -> ProcessingResult.completedStatus(next ? ProcessingResultStatus.CONTINUE : ProcessingResultStatus.CANCELED));
+			return handleMissingDisease().thenCompose(
+				next -> ProcessingResult.<Void> withStatus(next ? ProcessingResultStatus.CONTINUE : ProcessingResultStatus.CANCELED)
+					.asCompletedFuture());
 		} else {
-			return ProcessingResult.completedContinue();
+			return ProcessingResult.<Void> continueWith(null).asCompletedFuture();
 		}
 	}
 
@@ -202,10 +203,11 @@ public abstract class AbstractLabMessageProcessingFlow {
 
 	private CompletionStage<ProcessingResult<Void>> checkRelatedForwardedMessages(LabMessageDto labMessage) {
 		if (FacadeProvider.getLabMessageFacade().existsForwardedLabMessageWith(labMessage.getReportId())) {
-			return handleRelatedForwardedMessages()
-				.thenCompose(next -> ProcessingResult.completedStatus(next ? ProcessingResultStatus.CONTINUE : ProcessingResultStatus.CANCELED));
+			return handleRelatedForwardedMessages().thenCompose(
+				next -> ProcessingResult.<Void> withStatus(next ? ProcessingResultStatus.CONTINUE : ProcessingResultStatus.CANCELED)
+					.asCompletedFuture());
 		} else {
-			return ProcessingResult.completedStatus(ProcessingResultStatus.CONTINUE);
+			return ProcessingResult.<Void> continueWith(null).asCompletedFuture();
 		}
 	}
 
@@ -217,21 +219,23 @@ public abstract class AbstractLabMessageProcessingFlow {
 		return relatedLabMessageHandler.handle(labMessage).thenCompose((result) -> {
 			HandlerResultStatus status = result.getStatus();
 			if (status == HandlerResultStatus.CANCELED) {
-				return ProcessingResult.completedStatus(ProcessingResultStatus.CANCELED);
+				return ProcessingResult.<SampleAndPathogenTests> withStatus(ProcessingResultStatus.CANCELED).asCompletedFuture();
 			}
 
 			if (status == HandlerResultStatus.CANCELED_WITH_UPDATES) {
-				return ProcessingResult.completedStatus(ProcessingResultStatus.CANCELED_WITH_CORRECTIONS);
+				return ProcessingResult.<SampleAndPathogenTests> withStatus(ProcessingResultStatus.CANCELED_WITH_CORRECTIONS).asCompletedFuture();
 			}
 
 			if (status == HandlerResultStatus.HANDLED) {
 				SampleDto relatedSample = result.getSample();
-				return ProcessingResult.completed(
-					ProcessingResultStatus.DONE,
-					new SampleAndPathogenTests(relatedSample, FacadeProvider.getPathogenTestFacade().getAllBySample(relatedSample.toReference())));
+				return ProcessingResult
+					.of(
+						ProcessingResultStatus.DONE,
+						new SampleAndPathogenTests(relatedSample, FacadeProvider.getPathogenTestFacade().getAllBySample(relatedSample.toReference())))
+					.asCompletedFuture();
 			}
 
-			return ProcessingResult.completedContinue(null);
+			return ProcessingResult.<SampleAndPathogenTests> continueWith(null).asCompletedFuture();
 		});
 	}
 
@@ -267,10 +271,10 @@ public abstract class AbstractLabMessageProcessingFlow {
 
 		return callback.futureResult.thenCompose(p -> {
 			if (p.getStatus().isCanceled()) {
-				return ProcessingResult.completedStatus(p.getStatus());
+				return ProcessingResult.<PersonAndPickOrCreateEntryResult> withStatus(p.getStatus()).asCompletedFuture();
 			}
 
-			return ProcessingResult.completed(p.getStatus(), new PersonAndPickOrCreateEntryResult(person, p.getData()));
+			return ProcessingResult.of(p.getStatus(), new PersonAndPickOrCreateEntryResult(person, p.getData())).asCompletedFuture();
 		});
 	}
 
@@ -401,10 +405,10 @@ public abstract class AbstractLabMessageProcessingFlow {
 
 		return callback.futureResult.thenCompose(p -> {
 			if (p.getStatus().isCanceled()) {
-				return ProcessingResult.completedStatus(p.getStatus());
+				return ProcessingResult.<PersonAndPickOrCreateEventResult> withStatus(p.getStatus()).asCompletedFuture();
 			}
 
-			return ProcessingResult.completed(p.getStatus(), new PersonAndPickOrCreateEventResult(person, p.getData()));
+			return ProcessingResult.of(p.getStatus(), new PersonAndPickOrCreateEventResult(person, p.getData())).asCompletedFuture();
 		});
 	}
 
@@ -432,10 +436,10 @@ public abstract class AbstractLabMessageProcessingFlow {
 
 		return callback.futureResult.thenCompose((ep) -> {
 			if (ep.getStatus().isCanceled()) {
-				return ProcessingResult.completedStatus(ep.getStatus());
+				return ProcessingResult.<EventAndParticipant> withStatus(ep.getStatus()).asCompletedFuture();
 			}
 
-			return ProcessingResult.completed(ep.getStatus(), new EventAndParticipant(event, ep.getData()));
+			return ProcessingResult.of(ep.getStatus(), new EventAndParticipant(event, ep.getData())).asCompletedFuture();
 		});
 	}
 
@@ -471,7 +475,7 @@ public abstract class AbstractLabMessageProcessingFlow {
 					validationResult.setEventSelectionCanceled(true);
 				}
 
-				return ProcessingResult.completedContinue(validationResult);
+				return ProcessingResult.continueWith(validationResult).asCompletedFuture();
 			});
 		} else {
 			validationResult.setEvent(FacadeProvider.getEventFacade().getEventByUuid(event.getUuid(), false));
@@ -495,7 +499,7 @@ public abstract class AbstractLabMessageProcessingFlow {
 		PickOrCreateSampleResult result = new PickOrCreateSampleResult();
 		if (samples.isEmpty()) {
 			result.setNewSample(true);
-			return ProcessingResult.completedContinue(result);
+			return ProcessingResult.continueWith(result).asCompletedFuture();
 		}
 
 		HandlerCallback<PickOrCreateSampleResult> callback = new HandlerCallback<>();

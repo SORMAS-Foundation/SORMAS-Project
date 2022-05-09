@@ -172,7 +172,7 @@ public class RelatedLabMessageHandler extends AbstractRelatedLabMessageHandler {
 		SampleDto sample = FacadeProvider.getSampleFacade().getSampleByUuid(pathogenTest.getSample().getUuid());
 		int caseSampleCount = ControllerProvider.getSampleController().caseSampleCountOf(sample);
 
-		CorrectionPanel<PathogenTestDto> personCorrectionPanel = new CorrectionPanel<>(
+		CorrectionPanel<PathogenTestDto> pathogenTestCorrectionPanel = new CorrectionPanel<>(
 			() -> new PathogenTestForm(sample, false, caseSampleCount, sample.isPseudonymized()),
 			pathogenTest,
 			updatedPathogenTest,
@@ -180,7 +180,7 @@ public class RelatedLabMessageHandler extends AbstractRelatedLabMessageHandler {
 			Strings.headingUpdatedPathogenTestInformation,
 			changedFields);
 
-		showCorrectionWindow(labMessage, Strings.headingCorrectPathogenTest, personCorrectionPanel, (t) -> {
+		showCorrectionWindow(labMessage, Strings.headingCorrectPathogenTest, pathogenTestCorrectionPanel, (t) -> {
 			FacadeProvider.getPathogenTestFacade().savePathogenTest(t);
 			Notification.show(I18nProperties.getString(Strings.messagePathogenTestSavedShort), Notification.Type.TRAY_NOTIFICATION);
 		}, chain);

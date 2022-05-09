@@ -232,7 +232,7 @@ public class StartupShutdownService {
 		deletionConfigurationService.createMissingDeletionConfigurations();
 
 		configFacade.validateAppUrls();
-//		configFacade.validateConfigUrls();
+		configFacade.validateConfigUrls();
 
 		centralInfraSync.syncAll();
 	}

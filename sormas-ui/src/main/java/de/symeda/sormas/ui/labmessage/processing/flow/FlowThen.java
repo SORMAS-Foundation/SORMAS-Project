@@ -19,6 +19,7 @@ import java.util.concurrent.CompletionStage;
 
 /**
  * Class used for initializing and building async flow/chain
+ * 
  * @param <R>
  */
 public class FlowThen<R> {
@@ -26,7 +27,7 @@ public class FlowThen<R> {
 	private final CompletionStage<ProcessingResult<R>> currentResult;
 
 	public FlowThen() {
-		this(ProcessingResult.completedContinue(null));
+		this(ProcessingResult.<R> continueWith(null).asCompletedFuture());
 	}
 
 	public FlowThen(CompletionStage<ProcessingResult<R>> currentResult) {
@@ -38,7 +39,7 @@ public class FlowThen<R> {
 			ProcessingResultStatus status = r.getStatus();
 			if (status.isCanceled() || status.isDone()) {
 				//noinspection unchecked
-				return ProcessingResult.completed(status, (RR)r.getData());
+				return ProcessingResult.of(status, (RR) r.getData()).asCompletedFuture();
 			}
 
 			return action.apply(r);
