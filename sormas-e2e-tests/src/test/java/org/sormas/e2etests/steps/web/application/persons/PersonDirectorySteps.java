@@ -179,11 +179,11 @@ public class PersonDirectorySteps implements En {
           webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, personUUID);
         });
     Then(
-        "I fill UUID of the collected person from Travel Entry",
+        "I fill UUID of the collected person from last created Travel Entry",
         () -> {
           String personUUID =
               dataOperations.getPartialUuidFromAssociatedLink(
-                  CreateNewTravelEntrySteps.collectTravelEntryPersonUuid);
+                  CreateNewTravelEntrySteps.aTravelEntry.getUuid());
           webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, personUUID);
         });
 

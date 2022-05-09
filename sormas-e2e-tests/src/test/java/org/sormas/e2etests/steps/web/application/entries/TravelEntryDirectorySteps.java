@@ -121,10 +121,20 @@ public class TravelEntryDirectorySteps implements En {
           webDriverHelpers.clickOnWebElementBySelector(NEW_TRAVEL_ENTRY_BUTTON);
         });
     When(
-        "^I select last (\\d+) results in grid in Travel Entry Directory$",
+        "^I select last created UI result in grid in Travel Entry Directory for Bulk Action$",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+          webDriverHelpers.scrollToElement(
+              getCheckboxByUUID(CreateNewTravelEntrySteps.TravelEntryUuid.getUuid()));
+          webDriverHelpers.clickOnWebElementBySelector(
+              getCheckboxByUUID(CreateNewTravelEntrySteps.TravelEntryUuid.getUuid()));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+        });
+    When(
+        "^I select (\\d+) results in grid in Travel Entry Directory$",
         (Integer number) -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
-          for (int i = 10; i <= number+10; i++) {
+          for (int i = 10; i < number + 10; i++) {
             webDriverHelpers.scrollToElement(getCheckboxByIndex(String.valueOf(i)));
             webDriverHelpers.clickOnWebElementBySelector(getCheckboxByIndex(String.valueOf(i)));
           }

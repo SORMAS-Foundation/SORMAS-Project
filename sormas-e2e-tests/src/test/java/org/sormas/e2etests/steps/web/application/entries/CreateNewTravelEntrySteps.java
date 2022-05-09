@@ -45,6 +45,7 @@ import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.POINT_OF_ENTRY_CASE;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.SAVE_NEW_CASE_FOR_TRAVEL_ENTRY_POPUP;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.TRAVEL_ENTRY_PERSON_TAB;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.TRAVEL_ENTRY_TAB;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -175,6 +176,11 @@ public class CreateNewTravelEntrySteps implements En {
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(TRAVEL_ENTRY_PERSON_TAB);
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(PERSON_ID_LABEL);
+        });
+    When(
+        "^I navigate to Edit travel entry page$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(TRAVEL_ENTRY_TAB);
         });
     When(
         "I collect the Travel Entry person UUID displayed on Travel Entry Person page",
