@@ -735,18 +735,17 @@ public class EventDirectorySteps implements En {
         });
 
     When(
-        "I check if filtered participant for existing person appears in the event participants list",
-        () -> {
-          final String personUuid = apiState.getLastCreatedPerson().getUuid();
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(personUuid));
-        });
-
-    When(
         "I click on the first row from event participant",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_PARTICIPANT);
         });
 
+      When(
+              "I check if filtered participant for existing person appears in the event participants list",
+              () -> {
+                  final String personUuid = apiState.getLastCreatedPerson().getUuid();
+                  webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(personUuid));
+              });
     When(
         "I am accessing the event tab using the created event via api",
         () -> {
@@ -800,26 +799,25 @@ public class EventDirectorySteps implements En {
                       eventManagementStatus,
                       "Event Management status is not correct"));
         });
-    When(
-        "^I select last created API result in grid in Event Directory for Bulk Action$",
-        () -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
-          webDriverHelpers.scrollToElement(getCheckboxByUUID(apiState.getCreatedEvent().getUuid()));
-          webDriverHelpers.clickOnWebElementBySelector(
-              getCheckboxByUUID(apiState.getCreatedEvent().getUuid()));
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
-        });
-    When(
-        "^I select last created UI result in grid in Event Directory for Bulk Action$",
-        () -> {
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
-          webDriverHelpers.scrollToElement(
-              getCheckboxByUUID(CreateNewEventSteps.newEvent.getUuid()));
-          webDriverHelpers.clickOnWebElementBySelector(
-              getCheckboxByUUID(CreateNewEventSteps.newEvent.getUuid()));
-          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
-        });
-
+      When(
+              "^I select last created API result in grid in Event Directory for Bulk Action$",
+              () -> {
+                  webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+                  webDriverHelpers.scrollToElement(getCheckboxByUUID(apiState.getCreatedEvent().getUuid()));
+                  webDriverHelpers.clickOnWebElementBySelector(
+                          getCheckboxByUUID(apiState.getCreatedEvent().getUuid()));
+                  webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+              });
+      When(
+              "^I select last created UI result in grid in Event Directory for Bulk Action$",
+              () -> {
+                  webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+                  webDriverHelpers.scrollToElement(
+                          getCheckboxByUUID(CreateNewEventSteps.newEvent.getUuid()));
+                  webDriverHelpers.clickOnWebElementBySelector(
+                          getCheckboxByUUID(CreateNewEventSteps.newEvent.getUuid()));
+                  webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
+              });
     When(
         "I click on the More button on Event directory page",
         () -> webDriverHelpers.clickOnWebElementBySelector(MORE_BUTTON_EVENT_DIRECTORY));
