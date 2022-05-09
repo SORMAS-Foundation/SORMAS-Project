@@ -176,9 +176,8 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		boolean entityCreated,
 		HandlerCallback<SampleAndPathogenTests> callback) {
 
-		Window window = VaadinUiUtil.createPopupWindow();
 		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent =
-			getSampleCreateComponent(sample, pathogenTests, labMessage, disease, window);
+			getSampleCreateComponent(sample, pathogenTests, labMessage, disease);
 
 		sampleCreateComponent.addCommitListener(() -> {
 			List<PathogenTestDto> createdPathogenTests = new ArrayList<>();
@@ -193,6 +192,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		});
 		sampleCreateComponent.addDiscardListener(callback::cancel);
 
+		Window window = VaadinUiUtil.createPopupWindow();
 		showFormWithLabMessage(labMessage, sampleCreateComponent, window, I18nProperties.getString(Strings.headingCreateNewSample), entityCreated);
 	}
 
@@ -376,8 +376,7 @@ public class LabMessageProcessingFlow extends AbstractLabMessageProcessingFlow {
 		SampleDto sample,
 		List<PathogenTestDto> pathogenTests,
 		LabMessageDto labMessageDto,
-		Disease disease,
-		Window window) {
+		Disease disease) {
 		SampleController sampleController = ControllerProvider.getSampleController();
 		CommitDiscardWrapperComponent<SampleCreateForm> sampleCreateComponent = sampleController.getSampleCreateComponent(sample, disease, () -> {
 		});
