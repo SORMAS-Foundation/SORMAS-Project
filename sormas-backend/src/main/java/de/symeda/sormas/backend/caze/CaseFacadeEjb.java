@@ -552,7 +552,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			if (caseCriteria != null) {
 				caseUserFilterCriteria.setIncludeCasesFromOtherJurisdictions(caseCriteria.getIncludeCasesFromOtherJurisdictions());
 			}
-			filter = service.createUserFilter(cb, cq, root, caseUserFilterCriteria);
+			filter = service.createUserFilter(caseQueryContext, caseUserFilterCriteria);
 		}
 
 		if (caseCriteria != null) {
@@ -823,7 +823,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		cq.distinct(true);
 
-		Predicate filter = service.createUserFilter(cb, cq, caseRoot);
+		Predicate filter = service.createUserFilter(caseQueryContext);
 
 		if (caseCriteria != null) {
 			Predicate criteriaFilter = service.createCriteriaFilter(caseCriteria, caseQueryContext);
@@ -1336,7 +1336,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 
 		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caze);
 
-		Predicate filter = service.createUserFilter(cb, cq, caze, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
+		Predicate filter = service.createUserFilter(caseQueryContext, new CaseUserFilterCriteria().excludeCasesFromContacts(true));
 		filter = CriteriaBuilderHelper.and(cb, filter, service.createCriteriaFilter(criteria, caseQueryContext));
 		if (filter != null) {
 			cq.where(filter);
@@ -3297,14 +3297,16 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 	@Override
 	public List<Pair<DistrictDto, BigDecimal>> getCaseMeasurePerDistrict(Date fromDate, Date toDate, Disease disease, CaseMeasure caseMeasure) {
 
-		CriteriaBuilder cb = em.getCriteriaBuilder();
-		CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
-		Root<Case> caseRoot = cq.from(Case.class);
+		final CriteriaBuilder cb = em.getCriteriaBuilder();
+		final CriteriaQuery<Object[]> cq = cb.createQuery(Object[].class);
+		final Root<Case> caseRoot = cq.from(Case.class);
+		final CaseQueryContext caseQueryContext = new CaseQueryContext(cb, cq, caseRoot);
+
 		Root<District> districtRoot = cq.from(District.class);
 
 		Predicate filter = service.createDefaultFilter(cb, caseRoot);
 		if (fromDate != null || toDate != null) {
-			filter = service.createCaseRelevanceFilter(cb, caseRoot, fromDate, toDate);
+			filter = service.createCaseRelevanceFilter(caseQueryContext, fromDate, toDate);
 		}
 
 		if (disease != null) {
@@ -3727,7 +3729,7 @@ public class CaseFacadeEjb extends AbstractCoreFacadeEjb<Case, CaseDataDto, Case
 			JurisdictionHelper.booleanSelector(cb, service.inJurisdictionOrOwned(caseQueryContext)));
 
 		Predicate filter =
-			CriteriaBuilderHelper.and(cb, service.createUserFilter(cb, cq, caze), service.createCriteriaFilter(caseCriteria, caseQueryContext));
+			CriteriaBuilderHelper.and(cb, service.createUserFilter(caseQueryContext), service.createCriteriaFilter(caseCriteria, caseQueryContext));
 
 		if (filter != null) {
 			cq.where(filter);

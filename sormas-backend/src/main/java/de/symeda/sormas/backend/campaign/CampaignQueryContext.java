@@ -1,4 +1,4 @@
-package de.symeda.sormas.backend.action;
+package de.symeda.sormas.backend.campaign;
 
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -7,13 +7,13 @@ import javax.persistence.criteria.From;
 
 import de.symeda.sormas.backend.common.QueryContext;
 
-public class ActionQueryContext extends QueryContext<Action, ActionJoins> {
+public class CampaignQueryContext extends QueryContext<Campaign, CampaignJoins> {
 
-	protected ActionQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Action> root) {
-		this(cb, query, new ActionJoins(root));
+	protected CampaignQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, Campaign> root) {
+		this(cb, query, new CampaignJoins(root));
 	}
 
-	public ActionQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, ActionJoins joins) {
+	public CampaignQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, CampaignJoins joins) {
 		super(cb, query, joins.getRoot(), joins);
 	}
 

@@ -10,7 +10,11 @@ import de.symeda.sormas.backend.common.QueryContext;
 public class TravelEntryQueryContext extends QueryContext<TravelEntry, TravelEntryJoins> {
 
 	public TravelEntryQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, From<?, TravelEntry> root) {
-		super(cb, query, root, new TravelEntryJoins(root));
+		this(cb, query, new TravelEntryJoins(root));
+	}
+
+	public TravelEntryQueryContext(CriteriaBuilder cb, CriteriaQuery<?> query, TravelEntryJoins joins) {
+		super(cb, query, joins.getRoot(), joins);
 	}
 
 	@Override
