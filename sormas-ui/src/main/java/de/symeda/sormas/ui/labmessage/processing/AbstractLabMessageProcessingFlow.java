@@ -52,7 +52,7 @@ import de.symeda.sormas.ui.labmessage.processing.flow.ProcessingResult;
 import de.symeda.sormas.ui.labmessage.processing.flow.ProcessingResultStatus;
 
 /**
- * Abstract class defining the flow of processing a lab message allowing to chose between multiple options like create or select a
+ * Abstract class defining the flow of processing a lab message allowing to choose between multiple options like create or select a
  * case/contact/event participant and then create or update a sample with pathogen tests
  *
  * The flow is coded in the `run` method.
