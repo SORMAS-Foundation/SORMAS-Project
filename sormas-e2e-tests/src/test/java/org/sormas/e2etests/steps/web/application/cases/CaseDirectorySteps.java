@@ -214,7 +214,6 @@ public class CaseDirectorySteps implements En {
         () -> {
           webDriverHelpers.fillAndSubmitInWebElement(
               NAME_UUID_EPID_NUMBER_LIKE_INPUT, EditCaseSteps.aCase.getUuid());
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
     When(
@@ -411,7 +410,6 @@ public class CaseDirectorySteps implements En {
         "^I click on ([^\"]*) Radiobutton on Epidemiological Data Page$",
         (String buttonName) -> {
           webDriverHelpers.clickWebElementByText(ACTIVITY_AS_CASE_OPTIONS, buttonName);
-          webDriverHelpers.waitForPageLoaded();
         });
     Then(
         "I click on new entry button from Epidemiological Data tab",
@@ -620,7 +618,7 @@ public class CaseDirectorySteps implements En {
               DATE_FROM_COMBOBOX,
               formatter.format(
                   LocalDate.ofInstant(
-                          apiState.getCreatedCase().getReportDate().toInstant(),
+                          apiState.getCreatedCases().get(0).getReportDate().toInstant(),
                           ZoneId.systemDefault())
                       .minusDays(number)));
         });

@@ -299,7 +299,6 @@ public class EditCaseSteps implements En {
         "I click on INFO button on Case Edit page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(CASE_INFO_BUTTON);
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.clickOnWebElementBySelector(CASE_CLOSE_WINDOW_BUTTON);
         });
 
@@ -491,7 +490,6 @@ public class EditCaseSteps implements En {
               Case.builder()
                   .investigationStatus("Investigation " + investigationStatus)
                   .build(); // TODO: Create POJO updater class
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
@@ -516,7 +514,6 @@ public class EditCaseSteps implements En {
               Case.builder()
                   .investigationStatus(investigationStatus)
                   .build(); // TODO: Create POJO updater class
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
@@ -564,7 +561,6 @@ public class EditCaseSteps implements En {
           webDriverHelpers.clickWebElementByText(
               SEQUELAE_OPTIONS, CaseOutcome.getValueFor(option).toUpperCase());
           editedCase = editedCase.toBuilder().sequelae(option).build();
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
@@ -585,7 +581,6 @@ public class EditCaseSteps implements En {
           }
           webDriverHelpers.clickWebElementByText(SEQUELAE_OPTIONS, sequelaeStatus.toUpperCase());
           editedCase = editedCase.toBuilder().sequelae(sequelaeStatus).build();
-          webDriverHelpers.waitForPageLoaded();
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
