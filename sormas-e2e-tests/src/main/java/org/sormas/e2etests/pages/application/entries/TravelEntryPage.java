@@ -47,4 +47,13 @@ public class TravelEntryPage {
   public static By getCheckboxByIndex(String idx) {
     return By.xpath(String.format("(//td//input[@type=\"checkbox\"])[%s]", idx));
   }
+
+  public static final By CLOSE_DATA_IMPORT_POPUP_BUTTON = By.id("actionCancel");
+  public static final By CLOSE_IMPORT_TRAVEL_ENTRY_BUTTON =
+      By.xpath("//div[@class='v-window-closebox']");
+  public static final By FIRST_NAME_IMPORTED_PERSON =
+      By.xpath("//span[text()='Vorname']/../following-sibling::div");
+  public static final By LAST_NAME_IMPORTED_PERSON =
+      By.xpath("//span[text()='Nachname']/../following-sibling::div");
+  public static final By FIRST_RESULT_ID = By.xpath("//table/tbody/tr[2]/td[1]");
 }

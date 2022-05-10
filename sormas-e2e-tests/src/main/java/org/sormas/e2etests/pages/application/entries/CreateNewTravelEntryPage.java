@@ -47,4 +47,10 @@ public class CreateNewTravelEntryPage {
   public static final By PICK_A_EXISTING_CASE_LABEL_DE =
       By.xpath("//*[text()='Einen vorhandenen Fall w\u00E4hlen']");
   public static final By ARRIVAL_DATE = By.cssSelector("#dateOfArrival input");
+  public static final By REPORT_DATE = By.cssSelector("#reportDate input");
+  public static final By DATE_OF_ARRIVAL_POPUP_CLOSE =
+      By.xpath(
+          "//div[@class='v-Notification error v-Notification-error']//div[@class='popupContent']");
+  public static final By DATE_OF_ARRIVAL_LABEL_DE =
+      By.xpath("//div[@location='dateOfArrival']//div/div/div[@class='v-captiontext']");
 }
