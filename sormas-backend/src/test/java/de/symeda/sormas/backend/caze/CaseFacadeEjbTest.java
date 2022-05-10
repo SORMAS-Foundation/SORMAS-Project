@@ -15,6 +15,7 @@
 
 package de.symeda.sormas.backend.caze;
 
+import static org.hamcrest.Matchers.empty;
 import static org.hamcrest.Matchers.equalTo;
 import static org.hamcrest.Matchers.hasSize;
 import static org.hamcrest.Matchers.is;
@@ -107,6 +108,8 @@ import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
 import de.symeda.sormas.api.immunization.MeansOfImmunization;
+import de.symeda.sormas.api.importexport.ExportConfigurationDto;
+import de.symeda.sormas.api.importexport.ImportExportUtils;
 import de.symeda.sormas.api.infrastructure.community.CommunityReferenceDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictDto;
 import de.symeda.sormas.api.infrastructure.district.DistrictReferenceDto;
@@ -911,6 +914,17 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals(secondVaccination.getVaccineBatchNumber(), exportDto.getVaccineBatchNumber());
 		assertEquals(secondVaccination.getVaccineAtcCode(), exportDto.getVaccineAtcCode());
 		assertEquals(secondVaccination.getVaccineDose(), exportDto.getNumberOfDoses());
+
+		// Test with full export columns
+		results = getCaseFacade().getExportList(
+			new CaseCriteria(),
+			Collections.emptySet(),
+			CaseExportType.CASE_SURVEILLANCE,
+			0,
+			100,
+			createFullExportConfig(),
+			Language.EN);
+		assertThat(results, hasSize(1));
 	}
 
 	@Test
@@ -1040,6 +1054,35 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		assertEquals("50.0, 10.0 +-3m", exportDto.getAddressGpsCoordinates());
 		assertThat(exportDto.getUuid(), equalTo(caze.getUuid()));
 		assertTrue(exportDto.isTraveled());
+	}
+
+	/**
+	 * Test with {@link CaseExportType#CASE_MANAGEMENT} and full export columns.
+	 */
+	@Test
+	public void testGetExportListCaseManagement() {
+
+		// 0. Run without data
+		List<CaseExportDto> result = getCaseFacade()
+			.getExportList(new CaseCriteria(), Collections.emptySet(), CaseExportType.CASE_MANAGEMENT, 0, 100, createFullExportConfig(), Language.EN);
+		assertThat(result, is(empty()));
+	}
+
+	private ExportConfigurationDto createFullExportConfig() {
+
+		boolean withFollowUp = true;
+		boolean withClinicalCourse = true;
+		boolean withTherapy = true;
+		String countryLocale = getConfigFacade().getCountryLocale();
+
+		ExportConfigurationDto config = new ExportConfigurationDto();
+		config.setProperties(
+			ImportExportUtils.getCaseExportProperties((a, b) -> "Case", withFollowUp, withClinicalCourse, withTherapy, countryLocale)
+				.stream()
+				.map(e -> e.getPropertyId())
+				.collect(Collectors.toSet()));
+
+		return config;
 	}
 
 	@Test
