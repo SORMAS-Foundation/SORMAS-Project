@@ -22,11 +22,16 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.DATE_TO_COMBOBOX;
 import static org.sormas.e2etests.pages.application.configuration.DocumentTemplatesPage.FILE_PICKER;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.getCheckboxByUUID;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOSE_DATA_IMPORT_POPUP_BUTTON;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CLOSE_IMPORT_TRAVEL_ENTRY_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.COMMIT_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.CONVERTE_TO_CASE_ENTRIES;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.DELETE_BULK;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.FIRST_NAME_IMPORTED_PERSON;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.FIRST_RESULT_ID;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.IMPORT_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.IMPORT_SUCCESS_DE;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.LAST_NAME_IMPORTED_PERSON;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.NEGATIVE_TESTES_ENTRIES;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.NEW_PERSON_RADIOBUTTON_DE;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.NEW_TRAVEL_ENTRY_BUTTON;
@@ -58,6 +63,7 @@ import org.testng.asserts.SoftAssert;
 public class TravelEntryDirectorySteps implements En {
   public static final String userDirPath = System.getProperty("user.dir");
   private final WebDriverHelpers webDriverHelpers;
+  public static String fullName;
 
   @Inject
   public TravelEntryDirectorySteps(
@@ -75,6 +81,27 @@ public class TravelEntryDirectorySteps implements En {
         });
 
     When(
+        "I close Import Travel Entries form",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CLOSE_IMPORT_TRAVEL_ENTRY_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CLOSE_IMPORT_TRAVEL_ENTRY_BUTTON);
+        });
+
+    When(
+        "I close Data import popup for Travel Entries",
+        () -> {
+          TimeUnit.SECONDS.sleep(4);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(CLOSE_DATA_IMPORT_POPUP_BUTTON);
+          webDriverHelpers.clickOnWebElementBySelector(CLOSE_DATA_IMPORT_POPUP_BUTTON);
+        });
+
+    When(
+        "I select the attached CSV file in the file picker from Travel Entries directory",
+        () -> {
+          webDriverHelpers.sendFile(FILE_PICKER, userDirPath + "/uploads/DEA_TestImport.csv");
+        });
+
+    When(
         "I select the German travel entry CSV file in the file picker",
         () -> {
           webDriverHelpers.sendFile(
@@ -85,6 +112,14 @@ public class TravelEntryDirectorySteps implements En {
         "I click on the START DATA IMPORT button from the Import Travel Entries popup",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(START_DATA_IMPORT_BUTTON);
+        });
+
+    When(
+        "I acquire the first name and last name imported person",
+        () -> {
+          String firstName = webDriverHelpers.getTextFromWebElement(FIRST_NAME_IMPORTED_PERSON);
+          String lastName = webDriverHelpers.getTextFromWebElement(LAST_NAME_IMPORTED_PERSON);
+          fullName = firstName + " " + lastName;
         });
 
     When(
@@ -168,6 +203,21 @@ public class TravelEntryDirectorySteps implements En {
               expectedText,
               "Bulk action went wrong");
           softly.assertAll();
+        });
+    When(
+        "I filter by Person full name on Travel Entry directory page",
+        () -> {
+          TimeUnit.SECONDS.sleep(3); // waiting for grid refresh
+          webDriverHelpers.fillAndSubmitInWebElement(PERSON_FILTER_INPUT, fullName);
+          webDriverHelpers.clickOnWebElementBySelector(
+              TRAVEL_ENTRY_DIRECTORY_PAGE_APPLY_FILTER_BUTTON);
+        });
+    When(
+        "I open the imported person on Travel entry directory page",
+        () -> {
+          TimeUnit.SECONDS.sleep(3); // waiting for grid refresh
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(FIRST_RESULT_ID);
+          webDriverHelpers.clickOnWebElementBySelector(FIRST_RESULT_ID);
         });
     And(
         "I click {string} checkbox on Travel Entry directory page",
