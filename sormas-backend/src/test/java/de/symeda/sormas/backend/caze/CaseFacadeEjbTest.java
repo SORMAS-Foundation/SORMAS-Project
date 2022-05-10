@@ -50,9 +50,6 @@ import javax.validation.Validation;
 import javax.validation.Validator;
 import javax.validation.ValidatorFactory;
 
-import de.symeda.sormas.api.i18n.I18nProperties;
-import de.symeda.sormas.api.i18n.Strings;
-import de.symeda.sormas.api.disease.DiseaseVariant;
 import org.apache.commons.lang3.time.DateUtils;
 import org.hamcrest.MatcherAssert;
 import org.hibernate.internal.SessionImpl;
@@ -104,6 +101,8 @@ import de.symeda.sormas.api.exposure.ExposureDto;
 import de.symeda.sormas.api.exposure.ExposureType;
 import de.symeda.sormas.api.externalsurveillancetool.ExternalSurveillanceToolException;
 import de.symeda.sormas.api.hospitalization.PreviousHospitalizationDto;
+import de.symeda.sormas.api.i18n.I18nProperties;
+import de.symeda.sormas.api.i18n.Strings;
 import de.symeda.sormas.api.immunization.ImmunizationDto;
 import de.symeda.sormas.api.immunization.ImmunizationManagementStatus;
 import de.symeda.sormas.api.immunization.ImmunizationStatus;
@@ -677,7 +676,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 			new Date(),
 			rdcf);
 
-		CaseDataDto case2 = creator.createCase(
+		creator.createCase(
 			user.toReference(),
 			person2.toReference(),
 			Disease.EVD,
@@ -697,11 +696,10 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 	@Test
 	public void testCaseExportWithPrescriptionsTreatmentsVisits() {
 		RDCFEntities rdcfEntities = creator.createRDCFEntities("Region", "District", "Community", "Facility");
-		RDCF rdcf = new RDCF(rdcfEntities);
 		UserDto user = getUser(rdcfEntities);
 
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
-        CaseDataDto caze = getCaze(user, cazePerson, rdcfEntities);
+		CaseDataDto caze = getCaze(user, cazePerson, rdcfEntities);
 		cazePerson.getAddress().setCity("City");
 		getPersonFacade().savePerson(cazePerson);
 
@@ -736,7 +734,7 @@ public class CaseFacadeEjbTest extends AbstractBeanTest {
 		UserDto user = getUser(rdcfEntities);
 
 		PersonDto cazePerson = creator.createPerson("Case", "Person");
-        CaseDataDto caze = getCaze(user, cazePerson, rdcfEntities);
+		CaseDataDto caze = getCaze(user, cazePerson, rdcfEntities);
 		cazePerson.getAddress().setCity("City");
 		getPersonFacade().savePerson(cazePerson);
 
