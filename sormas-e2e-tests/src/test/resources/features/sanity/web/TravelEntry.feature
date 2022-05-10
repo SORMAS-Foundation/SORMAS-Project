@@ -132,7 +132,7 @@ Feature: Create travel entries
     Then I click on the Import button from Travel Entries directory
     And I select the attached CSV file in the file picker from Travel Entries directory
     And I click on the START DATA IMPORT button from the Import Travel Entries popup
-    And I acquires the first name and last name imported person
+    And I acquire the first name and last name imported person
     And I select to create new person from the Import Travel Entries popup
     And I confirm the save Travel Entries Import popup
     Then I check that an import success notification appears in the Import Travel Entries popup

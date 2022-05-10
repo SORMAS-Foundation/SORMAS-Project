@@ -83,7 +83,6 @@ public class TravelEntryDirectorySteps implements En {
     When(
         "I close Import Travel Entries form",
         () -> {
-          //   TimeUnit.SECONDS.sleep(5); // waiting for close Data import popup
           webDriverHelpers.waitUntilElementIsVisibleAndClickable(CLOSE_IMPORT_TRAVEL_ENTRY_BUTTON);
           webDriverHelpers.clickOnWebElementBySelector(CLOSE_IMPORT_TRAVEL_ENTRY_BUTTON);
         });
@@ -99,8 +98,7 @@ public class TravelEntryDirectorySteps implements En {
     When(
         "I select the attached CSV file in the file picker from Travel Entries directory",
         () -> {
-          TimeUnit.SECONDS.sleep(5);
-          webDriverHelpers.sendFile(FILE_PICKER, userDirPath + "\\uploads\\DEA_TestImport.csv");
+          webDriverHelpers.sendFile(FILE_PICKER, userDirPath + "/uploads/DEA_TestImport.csv");
         });
 
     When(
@@ -117,7 +115,7 @@ public class TravelEntryDirectorySteps implements En {
         });
 
     When(
-        "I acquires the first name and last name imported person",
+        "I acquire the first name and last name imported person",
         () -> {
           String firstName = webDriverHelpers.getTextFromWebElement(FIRST_NAME_IMPORTED_PERSON);
           String lastName = webDriverHelpers.getTextFromWebElement(LAST_NAME_IMPORTED_PERSON);

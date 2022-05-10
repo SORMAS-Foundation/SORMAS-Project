@@ -975,7 +975,7 @@ public class EventDirectorySteps implements En {
         "I select the Event CSV file in the file picker",
         () -> {
           webDriverHelpers.sendFile(
-              FILE_PICKER, userDirPath + "uploads/ImportTestData_Events_INT.csv");
+              FILE_PICKER, userDirPath + "/uploads/ImportTestData_Events_INT.csv");
         });
 
     When(
