@@ -125,7 +125,7 @@
 		<ant dir="../sormas-ear" target="3-collect" />
 		<ant dir="../sormas-ui" target="3-collect" />
 		<ant dir="../sormas-rest" target="3-collect" />
-		<!--ant dir="../sormas-app" target="3-collect" /-->
+		<ant dir="../sormas-app" target="3-collect" />
 		<ant dir="../sormas-keycloak-service-provider" target="3-collect" />
 	</target>
 

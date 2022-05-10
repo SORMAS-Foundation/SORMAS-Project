@@ -135,9 +135,37 @@
 			</plugin>
 
 			<!-- Swagger Generation -->
-		<!-- 	<plugin>
+			<plugin>
 				<groupId>io.openapitools.swagger</groupId>
 				<artifactId>swagger-maven-plugin</artifactId>
+				
+				<configuration>
+					<!-- Swagger Generation Config -->
+					<resourcePackages>
+						<resourcePackage>de.symeda.sormas.rest</resourcePackage>
+						<resourcePackage>de.symeda.sormas.rest.security</resourcePackage>
+						<resourcePackage>de.symeda.sormas.rest.swagger</resourcePackage>
+					</resourcePackages>
+					<outputDirectory>${basedir}/target/</outputDirectory>
+					<outputFilename>swagger</outputFilename>
+					<outputFormats>JSON,YAML</outputFormats>
+					<prettyPrint>true</prettyPrint>
+
+					<!-- Swagger API documentation metadata -->
+					<swaggerConfig>
+						<info>
+							<title>SORMAS REST API</title>
+							<version>${project.version}</version>
+						</info>
+						<servers>
+							<server>
+								<url>${sormasRest.apiRoot}</url>
+							</server>
+						</servers>
+					</swaggerConfig>
+				</configuration>
+				
+				
 				<executions>
 					<execution>
 						<id>generate-swagger</id>
@@ -169,36 +197,8 @@
 						</configuration>
 					</execution>
 				</executions>
-				<configuration>
-				
-				 -->
-					<!-- Swagger Generation Config
-					<resourcePackages>
-						<resourcePackage>de.symeda.sormas.rest</resourcePackage>
-						<resourcePackage>de.symeda.sormas.rest.security</resourcePackage>
-						<resourcePackage>de.symeda.sormas.rest.swagger</resourcePackage>
-					</resourcePackages>
-					<outputDirectory>${basedir}/target/</outputDirectory>
-					<outputFilename>swagger</outputFilename>
-					<outputFormats>JSON,YAML</outputFormats>
-					<prettyPrint>true</prettyPrint>
- -->
-					<!-- Swagger API documentation metadata 
-					<swaggerConfig>
-						<info>
-							<title>SORMAS REST API</title>
-							<version>${project.version}</version>
-						</info>
-						<servers>
-							<server>
-								<url>${sormasRest.apiRoot}</url>
-							</server>
-						</servers>
-					</swaggerConfig>
-				</configuration>
 				
 			</plugin>
-			 -->
 		</plugins>
 	</build>
 

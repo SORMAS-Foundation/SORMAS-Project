@@ -8464,6 +8464,7 @@ CREATE TRIGGER trig_copy_forgot_password
 
 
 
+
 CREATE OR REPLACE FUNCTION function_update() RETURNS TRIGGER AS
 $BODY$
 BEGIN
@@ -8474,6 +8475,32 @@ $BODY$
 language plpgsql;
 
 
+     CREATE OR REPLACE FUNCTION function_update() RETURNS TRIGGER AS
+     $BODY$
+     BEGIN
+
+     IF EXISTS(SELECT id FROM user_account where id = new.id limit 1) THEN
+
+     UPDATE user_account set username = new.username, email = new.useremail where id = new.id;
+     RETURN new;
+
+     ELSEIF EXISTS(SELECT id FROM users where useremail = new.useremail) THEN
+
+
+     INSERT INTO user_account(id,username,email)
+          VALUES(new.id,new.username,new.useremail);
+
+               RETURN new;
+
+
+     END IF;
+
+     END;
+     $BODY$
+     language plpgsql;
+
+
+
 
 CREATE TRIGGER triggger_copy_password_restet_update
      AFTER UPDATE ON users
@@ -8481,8 +8508,7 @@ CREATE TRIGGER triggger_copy_password_restet_update
      EXECUTE PROCEDURE function_update();
 
 
-INSERT INTO user_account(id,username,email)
-      select id, username, useremail from users
+--INSERT INTO user_account(id,username,email) select id, username, useremail from users
 
 
 INSERT INTO schema_version (version_number, comment) VALUES (418, 'patch for #99 5.c and forget password');

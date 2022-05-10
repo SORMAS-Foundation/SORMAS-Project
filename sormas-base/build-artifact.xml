@@ -24,9 +24,7 @@
 			<fileset dir="${target.dir}">
 				<include name="**/*.${file.suffix}" />
 			</fileset>
-
 			<!-- This mapper strips off all leading directory information and versions from the jars -->
-				
 			<mapper classpathref="maven-ant-tasks.classpath" classname="org.apache.maven.artifact.ant.VersionMapper" from="${dependency.versions}"
 				to="flatten" />
 		</copy>
