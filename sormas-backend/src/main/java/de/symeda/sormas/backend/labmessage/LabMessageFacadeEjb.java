@@ -422,7 +422,12 @@ public class LabMessageFacadeEjb implements LabMessageFacade {
 	@PermitAll
 	public String getLabMessagesAdapterVersion() throws NamingException {
 		ExternalLabResultsFacade labResultsFacade = getExternalLabResultsFacade();
-		return labResultsFacade.getVersion();
+		String version = "version is missing";
+		try {
+			version = labResultsFacade.getVersion();
+		} finally {
+			return version;
+		}
 	}
 
 	private LabMessageFetchResult getSuccessfulFetchResult(ExternalMessageResult<List<LabMessageDto>> externalMessageResult) {
