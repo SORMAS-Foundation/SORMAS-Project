@@ -70,6 +70,8 @@ public class User extends AbstractDomainObject {
 	public static final String FIRST_NAME = "firstName";
 	public static final String LAST_NAME = "lastName";
 	public static final String USER_EMAIL = "userEmail";
+	public static final String USER_POSITION = "userPosition";
+	public static final String USER_ORGANISATION = "userOrganisation";
 	public static final String PHONE = "phone";
 	public static final String ADDRESS = "address";
 	public static final String AREA = "area";
@@ -93,6 +95,8 @@ public class User extends AbstractDomainObject {
 	private String firstName;
 	private String lastName;
 	private String userEmail;
+	private String userPosition;
+	private String userOrganisation;
 	private String phone;
 	private Location address;
 
@@ -173,6 +177,22 @@ public class User extends AbstractDomainObject {
 
 	public void setLastName(String lastName) {
 		this.lastName = lastName;
+	}
+	
+	public String getUserPosition() {
+		return userPosition;
+	}
+
+	public void setUserPosition(String userPosition) {
+		this.userPosition = userPosition;
+	}
+
+	public String getUserOrganisation() {
+		return userOrganisation;
+	}
+
+	public void setUserOrganisation(String userOrganisation) {
+		this.userOrganisation = userOrganisation;
 	}
 
 	public String getUserEmail() {

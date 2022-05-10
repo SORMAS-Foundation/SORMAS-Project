@@ -8553,6 +8553,13 @@ ALTER TABLE ONLY district
  
 INSERT INTO schema_version (version_number, comment) VALUES (421, 'adding risk to district table');
 
+--add organisation and position to user table
+
+ALTER TABLE users
+ADD COLUMN userorganisation VARCHAR,
+ADD COLUMN userposition VARCHAR;
+
+INSERT INTO schema_version (version_number, comment) VALUES (422, 'adding organisation and position to user table');
 -- *** Insert new sql commands BEFORE this line. Remember to always consider _history tables. ***
 
 

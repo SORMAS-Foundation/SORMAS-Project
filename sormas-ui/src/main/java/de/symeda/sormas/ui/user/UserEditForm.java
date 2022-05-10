@@ -71,6 +71,7 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
                     fluidRowLocs(UserDto.FIRST_NAME, UserDto.LAST_NAME) +
                     fluidRowLocs(UserDto.USER_EMAIL, UserDto.PHONE) +
                     fluidRowLocs(USER_EMAIL_DESC_LOC, USER_PHONE_DESC_LOC) +
+                    fluidRowLocs(UserDto.USER_POSITION, UserDto.USER_ORGANISATION) +
                     fluidRowLocsCss(VSPACE_TOP_3, UserDto.LANGUAGE, "") +
 
                     loc(ADDRESS_HEADING_LOC) +
@@ -114,6 +115,8 @@ public class UserEditForm extends AbstractEditForm<UserDto> {
         addField(UserDto.FIRST_NAME, TextField.class);
         addField(UserDto.LAST_NAME, TextField.class);
         addField(UserDto.USER_EMAIL, TextField.class);
+        addField(UserDto.USER_POSITION, TextField.class);
+        addField(UserDto.USER_ORGANISATION, TextField.class);
         TextField phone = addField(UserDto.PHONE, TextField.class);
         phone.addValidator(new UserPhoneNumberValidator(I18nProperties.getValidationError(Validations.phoneNumberValidation)));
         if (FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.AGGREGATE_REPORTING) || FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE) || FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.WEEKLY_REPORTING) || FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)) {
