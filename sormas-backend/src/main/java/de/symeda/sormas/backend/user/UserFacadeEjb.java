@@ -150,6 +150,8 @@ public class UserFacadeEjb implements UserFacade {
 		target.setUserName(source.getUserName());
 		target.setFirstName(source.getFirstName());
 		target.setLastName(source.getLastName());
+		target.setUserPosition(source.getUserPosition());
+		target.setUserOrganisation(source.getUserOrganisation());
 		target.setUserEmail(source.getUserEmail());
 		target.setPhone(source.getPhone());
 		target.setAddress(LocationFacadeEjb.toDto(source.getAddress()));
@@ -543,6 +545,8 @@ public class UserFacadeEjb implements UserFacade {
 		target.setActive(source.isActive());
 		target.setFirstName(source.getFirstName());
 		target.setLastName(source.getLastName());
+		target.setUserPosition(source.getUserPosition());
+		target.setUserOrganisation(source.getUserOrganisation());
 		target.setPhone(source.getPhone());
 		target.setAddress(locationFacade.fromDto(source.getAddress(), checkChangeDate));
 

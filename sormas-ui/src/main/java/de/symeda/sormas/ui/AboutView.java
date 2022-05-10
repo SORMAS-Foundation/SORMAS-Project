@@ -37,17 +37,27 @@ import com.vaadin.server.ExternalResource;
 import com.vaadin.server.FileDownloader;
 import com.vaadin.server.FileResource;
 import com.vaadin.server.StreamResource;
+import com.vaadin.server.ThemeResource;
 import com.vaadin.server.VaadinService;
 import com.vaadin.server.VaadinServletRequest;
 import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.MarginInfo;
 import com.vaadin.ui.Alignment;
 import com.vaadin.ui.Button;
+import com.vaadin.ui.Embedded;
+import com.vaadin.ui.GridLayout;
 import com.vaadin.ui.HorizontalLayout;
+import com.vaadin.ui.Image;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
+import com.vaadin.ui.PopupView;
+import com.vaadin.ui.TabSheet;
 import com.vaadin.ui.VerticalLayout;
+import com.vaadin.ui.Video;
+import com.vaadin.ui.Window;
 import com.vaadin.ui.themes.ValoTheme;
+import com.vaadin.v7.ui.Grid;
+import com.vaadin.flow.component.dialog.Dialog;
 
 import de.symeda.sormas.api.ConfigFacade;
 import de.symeda.sormas.api.FacadeProvider;
@@ -71,6 +81,7 @@ public class AboutView extends VerticalLayout implements View {
 		// Info section
 		HorizontalLayout aboutLayout = new HorizontalLayout();
 		{
+
 			VerticalLayout infoLayout = new VerticalLayout();
 			infoLayout.setMargin(new MarginInfo(true, false, false, false));
 			infoLayout.addComponent(createInfoSection());
@@ -78,21 +89,22 @@ public class AboutView extends VerticalLayout implements View {
 
 			// Documents section
 			if (shouldShowDocumentsSection()) {
-				infoLayout.addComponent(createDocumentsSection());
+				// infoLayout.addComponent(createDocumentsSection());
 			}
 
 			aboutLayout.addComponent(infoLayout);
 		}
 
 		// Additional Info section
-		VerticalLayout additionalInfoSection =
-			createCustomHtmlSection(I18nProperties.getCaption(Captions.aboutAdditionalInfo), "additionalinfo.html");
+		VerticalLayout additionalInfoSection = createCustomHtmlSection(
+				I18nProperties.getCaption(Captions.aboutAdditionalInfo), "additionalinfo.html");
 		if (additionalInfoSection != null) {
 			aboutLayout.addComponent(additionalInfoSection);
 		}
 
 		// Copyright section
-		VerticalLayout copyrightSection = createCustomHtmlSection(I18nProperties.getCaption(Captions.aboutCopyright), "copyrightnotices.html");
+		VerticalLayout copyrightSection = createCustomHtmlSection(I18nProperties.getCaption(Captions.aboutCopyright),
+				"copyrightnotices.html");
 		if (copyrightSection != null) {
 			aboutLayout.addComponent(copyrightSection);
 		}
@@ -100,7 +112,7 @@ public class AboutView extends VerticalLayout implements View {
 		setSizeFull();
 		setStyleName("about-view");
 		addComponent(aboutLayout);
-		setComponentAlignment(aboutLayout, Alignment.MIDDLE_CENTER);
+		setComponentAlignment(aboutLayout, Alignment.MIDDLE_LEFT);
 	}
 
 	@Override
@@ -109,55 +121,305 @@ public class AboutView extends VerticalLayout implements View {
 	}
 
 	private VerticalLayout createInfoSection() {
+		
+		AboutViewVideoWindow  newwind = null; 
 
 		VerticalLayout infoLayout = new VerticalLayout();
 		infoLayout.setSpacing(false);
 		infoLayout.setMargin(false);
 
+		// ADD HEADER IMAGE TO THE ABOUT PAGE
+		// Image image = new Image(null, new ThemeResource("img/About_us.jpg"));
+		// infoLayout.addComponent(image); To
+
 		Label aboutLabel = new Label(I18nProperties.getCaption(Captions.about), ContentMode.HTML);
-		aboutLabel.addStyleName(CssStyles.H1);
-		//setComponentAlignment(aboutLabel, Alignment.MIDDLE_CENTER);
+		aboutLabel.addStyleName(CssStyles.H2);
+		// setComponentAlignment(aboutLabel, Alignment.MIDDLE_CENTER);
 		infoLayout.addComponent(aboutLabel);
 
 		ConfigFacade configFacade = FacadeProvider.getConfigFacade();
 		String infoLabelStr = configFacade.isCustomBranding()
-			? String.format(I18nProperties.getCaption(Captions.aboutBrandedSormasVersion), configFacade.getCustomBrandingName())
-			: "";
-		Label infoLabel = new Label(I18nProperties.getCaption(Captions.aboutApmisVersion) + ": " + InfoProvider.InfoProvider_apmis(), ContentMode.HTML);
-	//	setComponentAlignment(infoLayout, Alignment.MIDDLE_CENTER);
+				? String.format(I18nProperties.getCaption(Captions.aboutBrandedSormasVersion),
+						configFacade.getCustomBrandingName())
+				: "";
+		Label infoLabel = new Label(
+				I18nProperties.getCaption(Captions.aboutApmisVersion) + ": " + InfoProvider.InfoProvider_apmis(),
+				ContentMode.HTML);
+		Label aboutText = new Label(I18nProperties.getCaption(Captions.aboutText), ContentMode.TEXT);
+		Label guideLabel = new Label(I18nProperties.getCaption(Captions.aboutGuides), ContentMode.HTML);
+		guideLabel.addStyleName(CssStyles.H2);
+
 		infoLayout.addComponent(infoLabel);
+		infoLayout.addComponent(aboutText);
 
-		//Label versionLabel =
-			//new Label(I18nProperties.getCaption(Captions.aboutSormasVersion) + ": " + InfoProvider.get().getVersion(), ContentMode.HTML);
-		//CssStyles.style(versionLabel, CssStyles.VSPACE_3);
-	//	infoLayout.addComponent(versionLabel);
+		infoLayout.addComponent(guideLabel);
+
+		VerticalLayout apmisguideLayout = new VerticalLayout();
+
+		ThemeResource resource = new ThemeResource("img/APMIS_User_Guide.pdf");
+		Link link = new Link("User Guide", resource);
+		apmisguideLayout.addComponent(link);
+
+		VerticalLayout techguideLayout = new VerticalLayout();
+		ThemeResource techguideresource = new ThemeResource("img/APMIS_Technical_Manual.pdf");
+		Link apmisTechGuidelink = new Link("Technical Guide", techguideresource);
+		apmisTechGuidelink.setTargetName("_blank");
+		techguideLayout.addComponent(apmisTechGuidelink);
+
+		/*
+		 * VerticalLayout hziguideLayout = new VerticalLayout(); ThemeResource
+		 * hziresource1 = new ThemeResource("img/4_Configuration.pdf"); Link hzilink1 =
+		 * new Link("Configuration", hziresource1); link.setTargetName("_blank");
+		 * hziguideLayout.addComponent(hzilink1);
+		 * 
+		 * 
+		 * ThemeResource hziresource2 = new ThemeResource("img/5_User management.pdf");
+		 * Link hzilink2 = new Link("User Management", hziresource2);
+		 * hzilink2.setTargetName("_blank"); hziguideLayout.addComponent(hzilink2);
+		 * 
+		 * ThemeResource hziresource3 = new
+		 * ThemeResource("img/3_l_Create_Campaign_Data_Form.pdf"); Link hzilink3 = new
+		 * Link("Campaign Data Form", hziresource3); hzilink3.setTargetName("_blank");
+		 * hziguideLayout.addComponent(hzilink3);
+		 * 
+		 * ThemeResource hziresource4 = new
+		 * ThemeResource("img/3_k_Edit_CampaignFormData_new.pdf"); Link hzilink4 = new
+		 * Link("Edit_CampaignFormData_new", hziresource4);
+		 * hzilink4.setTargetName("_blank"); hziguideLayout.addComponent(hzilink4);
+		 * 
+		 * ThemeResource hziresource5 = new
+		 * ThemeResource("img/3_j_Edit_ExistingCampaign_Configuration_new.pdf"); Link
+		 * hzilink5 = new Link("Edit Existing Campaign Configuration", hziresource5);
+		 * hzilink5.setTargetName("_blank"); hziguideLayout.addComponent(hzilink5);
+		 * 
+		 * ThemeResource hziresource6 = new
+		 * ThemeResource("img/3_j_Edit_ExistingCampaign.pdf"); Link hzilink6 = new
+		 * Link("Edit Existing Campaign", hziresource6);
+		 * hzilink6.setTargetName("_blank"); hziguideLayout.addComponent(hzilink6);
+		 * 
+		 * ThemeResource hziresource7 = new
+		 * ThemeResource("img/3_h_Create_New_Campaign.pdf"); Link hzilink7 = new
+		 * Link("Create New Campaign", hziresource7); hzilink7.setTargetName("_blank");
+		 * hziguideLayout.addComponent(hzilink7);
+		 * 
+		 * ThemeResource hziresource8 = new
+		 * ThemeResource("img/3_g_Export_SpecificCampaign_Data.pdf"); Link hzilink8 =
+		 * new Link("Export Specific Campaign Data", hziresource8);
+		 * hzilink8.setTargetName("_blank"); hziguideLayout.addComponent(hzilink8);
+		 * 
+		 * ThemeResource hziresource9 = new
+		 * ThemeResource("img/3_f_Export_AllCampaign_Data.pdf"); Link hzilink9 = new
+		 * Link("Export All Campaign Data", hziresource9);
+		 * hzilink9.setTargetName("_blank"); hziguideLayout.addComponent(hzilink9);
+		 * 
+		 * ThemeResource hziresource10 = new
+		 * ThemeResource("img/3_e_Validate_Campaigns.pdf"); Link hzilink10 = new
+		 * Link("Validate Campaigns", hziresource10); hzilink10.setTargetName("_blank");
+		 * hziguideLayout.addComponent(hzilink10);
+		 * 
+		 * ThemeResource hziresource11 = new
+		 * ThemeResource("img/3_d_Edit_Campaign_data.pdf"); Link hzilink11 = new
+		 * Link("Edit Campaign Data", hziresource11); hzilink11.setTargetName("_blank");
+		 * hziguideLayout.addComponent(hzilink11);
+		 * 
+		 * ThemeResource hziresource12 = new
+		 * ThemeResource("img/3_c_ViewCampaignData.pdf"); Link hzilink12 = new
+		 * Link("View Campaign Data", hziresource12); hzilink12.setTargetName("_blank");
+		 * hziguideLayout.addComponent(hzilink12);
+		 * 
+		 * ThemeResource hziresource13 = new
+		 * ThemeResource("img/3_b_SearchCampaigns.pdf"); Link hzilink13 = new
+		 * Link("Search Campaigns", hziresource13); hzilink13.setTargetName("_blank");
+		 * hziguideLayout.addComponent(hzilink13);
+		 * 
+		 * ThemeResource hziresource14 = new ThemeResource("img/3_a_ViewCampaigns.pdf");
+		 * Link hzilink14 = new Link("View Campaigns", hziresource14);
+		 * hzilink14.setTargetName("_blank"); hziguideLayout.addComponent(hzilink14);
+		 * 
+		 * ThemeResource hziresource15 = new ThemeResource("img/2_Dashboard.pdf"); Link
+		 * hzilink15 = new Link("Dashboard", hziresource15);
+		 * hzilink15.setTargetName("_blank"); hziguideLayout.addComponent(hzilink15);
+		 * 
+		 * ThemeResource hziresource16 = new
+		 * ThemeResource("img/1_b_SettingsPersonalisation.pdf"); Link hzilink16 = new
+		 * Link("Settings Personalisation", hziresource16);
+		 * hzilink16.setTargetName("_blank"); hziguideLayout.addComponent(hzilink16);
+		 * 
+		 * ThemeResource hziresource17 = new ThemeResource("img/1_a_Login_logout.pdf");
+		 * Link hzilink17 = new Link("Login and logout", hziresource17);
+		 * hzilink17.setTargetName("_blank"); hziguideLayout.addComponent(hzilink17);
+		 * 
+		 * ThemeResource hziresource18 = new
+		 * ThemeResource("img/0_OnePageInstructions_APMIS.pdf"); Link hzilink18 = new
+		 * Link("One Page Instructions APMIS", hziresource18);
+		 * hzilink18.setTargetName("_blank"); hziguideLayout.addComponent(hzilink18);
+		 */
+
+		VerticalLayout videoguideLayout = new VerticalLayout();
+
+		ThemeResource videoresource1 = new ThemeResource("img/5_UserManagement_subtitles.mp4");
+		Link videolink1 = new Link("User Management", videoresource1);
+		videolink1.setTargetName("_blank");
+		videoguideLayout.addComponent(videolink1);
+
+		ThemeResource videoresource2 = new ThemeResource("img/4_Configuration_10052021_subtitles.mp4");
+		Link videolink2 = new Link("Configurationt", videoresource2);
+		videolink2.setTargetName("_blank");
+		videoguideLayout.addComponent(videolink2);
+
+		ThemeResource videoresource3 = new ThemeResource("img/3_l_CreateCampaignDataForm_21032021_subtitles.mp4");
+		Link videolink3 = new Link("Create Campaign Data Form", videoresource3);
+		videolink3.setTargetName("_blank");
+		videoguideLayout.addComponent(videolink3);
+
+		ThemeResource videoresource4 = new ThemeResource("img/3_k_EditCampaignFormData_21032021_subtitles.mp4");
+		Link videolink4 = new Link("Edit Campaign Form Data", videoresource4);
+		videolink4.setTargetName("_blank");
+		videoguideLayout.addComponent(videolink4);
+
+		ThemeResource videoresource5 = new ThemeResource(
+				"img/3_j_EditExistingCampaignConfiguration_21032021_subtitles.mp4");
+		Link videolink5 = new Link("Edit Existing Campaign Configuration", videoresource5);
+		videolink5.setTargetName("_blank");
+		videoguideLayout.addComponent(videolink5);
+
+		ThemeResource videoresource6 = new ThemeResource("img/3_i_EditExistingCampaign_21032021_subtitles.mp4");
+		Link videolink6 = new Link("Edit Existing Campaign", videoresource6);
+		videolink6.setTargetName("_blank");
+		videoguideLayout.addComponent(videolink6);
+
+		ThemeResource videoresource7 = new ThemeResource("img/3_h_CreateNewCampaign_21032021_subtitles.mp4");
+		Link videolink7 = new Link("Create New Campaign", videoresource7);
+		videolink7.setTargetName("_blank");
+		videoguideLayout.addComponent(videolink7);
+
+		ThemeResource videoresource8 = new ThemeResource("img/3_g_Export_SpecificCampaign_Data.mp4");
+		Link videolink8 = new Link("Export Specific Campaign Data", videoresource8);
+		videolink8.setTargetName("_blank");
+		videoguideLayout.addComponent(videolink8);
+
+		ThemeResource videoresource9 = new ThemeResource("img/3_f_ExportAllCampaignData_21032021_subtitles.mp4");
+		Link videolink9 = new Link("Export All Campaign Data", videoresource9);
+		videolink9.setTargetName("_blank");
+		videoguideLayout.addComponent(videolink9);
+
+		ThemeResource videoresource10 = new ThemeResource("img/3_e_ValidateCampaigns_21032021_subtitles.mp4");
+		Link videolink10 = new Link("Validate Campaigns", videoresource10);
+		videolink10.setTargetName("_blank");
+		videoguideLayout.addComponent(videolink10);
+
+		ThemeResource videoresource11 = new ThemeResource("img/3_d_EditCampaignsData_21032021_subtitles.mp4");
+		Link videolink11 = new Link("Edit Campaigns Data", videoresource11);
+		videolink11.setTargetName("_blank");
+		videoguideLayout.addComponent(videolink11);
+
+		ThemeResource videoresource12 = new ThemeResource("img/3_c_ViewCampaignData2_21032021_subtitles.mp4");
+		Link videolink12 = new Link("View Campaign Data", videoresource12);
+		videolink12.setTargetName("_blank");
+		videoguideLayout.addComponent(videolink12);
+
+		ThemeResource videoresource13 = new ThemeResource("img/3_b_SearchCampaigns_21032021_subtitles.mp4");
+		Link videolink13 = new Link("Search Campaigns", videoresource13);
+		videolink13.setTargetName("_blank");
+		videoguideLayout.addComponent(videolink13);
+
+		ThemeResource videoresource14 = new ThemeResource("img/3_a_ViewCampaigns_21032021_subtitles.mp4");
+		Link videolink14 = new Link("View Campaigns", videoresource14);
+		videolink14.setTargetName("_blank");
+		videoguideLayout.addComponent(videolink14);
+
+		ThemeResource videoresource15 = new ThemeResource("img/2_Dashboard_21032021_subtitles.mp4");
+		Link videolink15 = new Link("Dashboard", videoresource15);
+		videolink15.setTargetName("_blank");
+		videoguideLayout.addComponent(videolink15);
+
+		ThemeResource videoresource16 = new ThemeResource("img/1_b_SettingsPersonalisation_subtitles.mp4");
+		Link videolink16 = new Link("Settings Personalisation", videoresource16);
+		videolink16.setTargetName("_blank");
+		videoguideLayout.addComponent(videolink16);
+
+		ThemeResource videoresource17 = new ThemeResource("img/1_a_LoginLogout_subtitles.mp4");
+		Link videolink17 = new Link("Login and Logout", videoresource17);
+		videolink17.setTargetName("_blank");
+		videoguideLayout.addComponent(videolink17);
+		videolink17.addContextClickListener(e -> {
+			if (e.isDoubleClick()) {
+				Video v = new Video( "video" ); // Instantiate video player widget.
+				// Specify a list of your video in one or more formats.
+				// Different browsers support various different video formats.
+				v.setSources( 
+				    new ThemeResource( "img/1_a_LoginLogout_subtitles.mp4" )
+				    
+				); 
+				v.setWidth( "640px" ); // Set size of the video player's display area on-screen.
+				v.setHeight( "360px" );
+				videoguideLayout.addComponent( v ); // Add the component to the window or layout.
+			}
+			
+		});
 		
-	//	Label versionApmisLabel =
-	//			new Label(I18nProperties.getCaption(Captions.aboutApmisVersion) + ": " + InfoProvider.InfoProvider_apmis(), ContentMode.HTML);
-	//		CssStyles.style(versionApmisLabel, CssStyles.VSPACE_3);
-	//		infoLayout.addComponent(versionApmisLabel);
-/*
-		Link whatsNewLink = new Link(
-			I18nProperties.getCaption(Captions.aboutWhatsNew),
-			new ExternalResource("https://github.com/hzi-braunschweig/SORMAS-Project/releases/tag/v" + InfoProvider.get().getBaseVersion()));
-		whatsNewLink.setTargetName("_blank");
-		infoLayout.addComponent(whatsNewLink);
 
-		Link sormasWebsiteLink =
-			new Link(I18nProperties.getCaption(Captions.aboutSormasWebsite), new ExternalResource("https://sormasorg.helmholtz-hzi.de/"));
-		sormasWebsiteLink.setTargetName("_blank");
-		infoLayout.addComponent(sormasWebsiteLink);
+		
+				Video v = new Video( "video" ); // Instantiate video player widget.
+				// Specify a list of your video in one or more formats.
+				// Different browsers support various different video formats.
+				v.setSources( 
+				    new ThemeResource( "img/1_a_LoginLogout_subtitles.mp4" )
+				    
+				); 
+				v.setWidth( "640px" ); // Set size of the video player's display area on-screen.
+				v.setHeight( "360px" );
+			
+				PopupView popup = new PopupView("Pop it up", v);
+				
+				videoguideLayout.addComponent(popup);
+				
+				
+				
+		TabSheet tabs = new TabSheet();
+		tabs.addTab(apmisguideLayout, I18nProperties.getCaption(Captions.apmisaboutguides));
+		// tabs.addTab(hziguideLayout,
+		// I18nProperties.getCaption(Captions.apmishziguides));
+		tabs.addTab(techguideLayout, I18nProperties.getCaption(Captions.abouttechguides));
+		tabs.addTab(videoguideLayout, I18nProperties.getCaption(Captions.aboutvideos));
 
-		Link sormasGithubLink = new Link("SORMAS Github", new ExternalResource("https://github.com/hzi-braunschweig/SORMAS-Project"));
-		sormasGithubLink.setTargetName("_blank");
-		infoLayout.addComponent(sormasGithubLink);
+		infoLayout.addComponent(tabs);
 
-		Link changelogLink = new Link(
-			I18nProperties.getCaption(Captions.aboutChangelog),
-			new ExternalResource("https://github.com/hzi-braunschweig/SORMAS-Project/releases"));
-		changelogLink.setTargetName("_blank");
-		infoLayout.addComponent(changelogLink);
-*/
+		// Label versionLabel =
+		// new Label(I18nProperties.getCaption(Captions.aboutSormasVersion) + ": " +
+		// InfoProvider.get().getVersion(), ContentMode.HTML);
+		// CssStyles.style(versionLabel, CssStyles.VSPACE_3);
+		// infoLayout.addComponent(versionLabel);
+
+		// Label versionApmisLabel =
+		// new Label(I18nProperties.getCaption(Captions.aboutApmisVersion) + ": " +
+		// InfoProvider.InfoProvider_apmis(), ContentMode.HTML);
+		// CssStyles.style(versionApmisLabel, CssStyles.VSPACE_3);
+		// infoLayout.addComponent(versionApmisLabel);
+		/*
+		 * Link whatsNewLink = new Link(
+		 * I18nProperties.getCaption(Captions.aboutWhatsNew), new ExternalResource(
+		 * "https://github.com/hzi-braunschweig/SORMAS-Project/releases/tag/v" +
+		 * InfoProvider.get().getBaseVersion())); whatsNewLink.setTargetName("_blank");
+		 * infoLayout.addComponent(whatsNewLink);
+		 * 
+		 * Link sormasWebsiteLink = new
+		 * Link(I18nProperties.getCaption(Captions.aboutSormasWebsite), new
+		 * ExternalResource("https://sormasorg.helmholtz-hzi.de/"));
+		 * sormasWebsiteLink.setTargetName("_blank");
+		 * infoLayout.addComponent(sormasWebsiteLink);
+		 * 
+		 * Link sormasGithubLink = new Link("SORMAS Github", new
+		 * ExternalResource("https://github.com/hzi-braunschweig/SORMAS-Project"));
+		 * sormasGithubLink.setTargetName("_blank");
+		 * infoLayout.addComponent(sormasGithubLink);
+		 * 
+		 * Link changelogLink = new Link(
+		 * I18nProperties.getCaption(Captions.aboutChangelog), new ExternalResource(
+		 * "https://github.com/hzi-braunschweig/SORMAS-Project/releases"));
+		 * changelogLink.setTargetName("_blank");
+		 * infoLayout.addComponent(changelogLink);
+		 */
 		return infoLayout;
 	}
 
@@ -174,30 +436,28 @@ public class AboutView extends VerticalLayout implements View {
 		List<String> customDocuments = listCustomDocumentsFiles();
 		if (!customDocuments.isEmpty()) {
 			customDocuments.stream().forEach(customDocument -> {
-				Button customDocumentButton = ButtonHelper.createButton(customDocument, null, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
+				Button customDocumentButton = ButtonHelper.createButton(customDocument, null, ValoTheme.BUTTON_LINK,
+						CssStyles.BUTTON_COMPACT);
 				documentsLayout.addComponent(customDocumentButton);
 				String customDocumentPath = getCustomDocumentsPath() + File.separator + customDocument;
-				FileDownloader customDocumentDownloader = new FileDownloader(new FileResource(new File(customDocumentPath)));
+				FileDownloader customDocumentDownloader = new FileDownloader(
+						new FileResource(new File(customDocumentPath)));
 				customDocumentDownloader.extend(customDocumentButton);
 			});
 		}
 
 		if (shouldShowClassificationDocumentLink()) {
-			Button classificationDocumentButton =
-				ButtonHelper.createButton(Captions.aboutCaseClassificationRules, null, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
+			Button classificationDocumentButton = ButtonHelper.createButton(Captions.aboutCaseClassificationRules, null,
+					ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
 			documentsLayout.addComponent(classificationDocumentButton);
 
 			try {
-				String serverUrl =
-					new URL(((VaadinServletRequest) VaadinService.getCurrentRequest()).getHttpServletRequest().getRequestURL().toString())
-						.getAuthority();
-				StreamResource classificationResource = DownloadUtil.createStringStreamResource(
-					ClassificationHtmlRenderer.createHtmlForDownload(
-						serverUrl,
-						FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true),
-						I18nProperties.getUserLanguage()),
-					"classification_rules.html",
-					"text/html");
+				String serverUrl = new URL(((VaadinServletRequest) VaadinService.getCurrentRequest())
+						.getHttpServletRequest().getRequestURL().toString()).getAuthority();
+				StreamResource classificationResource = DownloadUtil
+						.createStringStreamResource(ClassificationHtmlRenderer.createHtmlForDownload(serverUrl,
+								FacadeProvider.getDiseaseConfigurationFacade().getAllDiseases(true, true, true),
+								I18nProperties.getUserLanguage()), "classification_rules.html", "text/html");
 				new FileDownloader(classificationResource).extend(classificationDocumentButton);
 			} catch (MalformedURLException e) {
 
@@ -205,8 +465,8 @@ public class AboutView extends VerticalLayout implements View {
 		}
 
 		if (shouldShowDataDictionaryLink()) {
-			Button dataDictionaryButton =
-				ButtonHelper.createButton(Captions.aboutDataDictionary, null, ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
+			Button dataDictionaryButton = ButtonHelper.createButton(Captions.aboutDataDictionary, null,
+					ValoTheme.BUTTON_LINK, CssStyles.BUTTON_COMPACT);
 			documentsLayout.addComponent(dataDictionaryButton);
 			DownloadUtil.attachDataDictionaryDownloader(dataDictionaryButton);
 		}
@@ -214,10 +474,10 @@ public class AboutView extends VerticalLayout implements View {
 		// This link is hidden until an updated version of the document is provided
 		/*
 		 * Link technicalManualLink = new Link(
-		 * I18nProperties.getCaption(Captions.aboutTechnicalManual),
-		 * new ExternalResource(
-		 * "https://github.com/hzi-braunschweig/SORMAS-Project/files/2585973/SORMAS_Technical_Manual_Webversion_20180911.pdf"));
-		 * technicalManualLink.setTargetName("_blank");
+		 * I18nProperties.getCaption(Captions.aboutTechnicalManual), new
+		 * ExternalResource(
+		 * "https://github.com/hzi-braunschweig/SORMAS-Project/files/2585973/SORMAS_Technical_Manual_Webversion_20180911.pdf"
+		 * )); technicalManualLink.setTargetName("_blank");
 		 * documentsLayout.addComponent(technicalManualLink);
 		 */
 
@@ -259,7 +519,8 @@ public class AboutView extends VerticalLayout implements View {
 	}
 
 	private boolean shouldShowDocumentsSection() {
-		return !listCustomDocumentsFiles().isEmpty() || shouldShowClassificationDocumentLink() || shouldShowDataDictionaryLink();
+		return !listCustomDocumentsFiles().isEmpty() || shouldShowClassificationDocumentLink()
+				|| shouldShowDataDictionaryLink();
 	}
 
 	private List<String> listCustomDocumentsFiles() {
@@ -276,16 +537,38 @@ public class AboutView extends VerticalLayout implements View {
 
 	private boolean shouldShowClassificationDocumentLink() {
 		return FacadeProvider.getConfigFacade().isFeatureAutomaticCaseClassification()
-			&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE);
+				&& FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE);
 	}
 
 	private boolean shouldShowDataDictionaryLink() {
 		return FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.CASE_SURVEILANCE)
-			|| FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE);
+				|| FacadeProvider.getFeatureConfigurationFacade().isFeatureEnabled(FeatureType.EVENT_SURVEILLANCE);
 	}
 
 	private String getCustomDocumentsPath() {
 		return FacadeProvider.getConfigFacade().getCustomFilesPath() + "aboutfiles";
 	}
+	
+	/*public void DialogHeader() {
+        Dialog dialog = new Dialog();
+        
+        Video v = new Video( "video" ); // Instantiate video player widget.
+		// Specify a list of your video in one or more formats.
+		// Different browsers support various different video formats.
+		v.setSources( 
+		    new ThemeResource( "img/1_a_LoginLogout_subtitles.mp4" )
+		    
+		); 
+		v.setWidth( "640px" ); // Set size of the video player's display area on-screen.
+		v.setHeight( "360px" );
+		videoguideLayout.addComponent( v ); // Add the component to the window or layout.
+
+     //   Button closeButton = new Button(new Icon("lumo", "cross"), (e) -> dialog.close());
+      //  closeButton.addThemeVariants(ButtonVariant.LUMO_TERTIARY);
+       // dialog.getHeader().add(closeButton);
+
+        Button button = new Button("Show dialog", e -> dialog.open());
+        add(dialog, button);
+    }*/
 
 }

@@ -50,6 +50,8 @@ public class UserDto extends EntityDto {
 	public static final String USER_NAME = "userName";
 	public static final String FIRST_NAME = "firstName";
 	public static final String LAST_NAME = "lastName";
+	public static final String USER_POSITION = "userPosition";
+	public static final String USER_ORGANISATION = "userOrganisation";
 	public static final String NAME = "name";
 	public static final String USER_EMAIL = "userEmail";
 	public static final String PHONE = "phone";
@@ -79,6 +81,8 @@ public class UserDto extends EntityDto {
 	private String firstName;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_DEFAULT, message = Validations.textTooLong)
 	private String lastName;
+	private String userPosition;
+	private String userOrganisation;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
 	private String userEmail;
 	@Size(max = FieldConstraints.CHARACTER_LIMIT_SMALL, message = Validations.textTooLong)
@@ -149,6 +153,22 @@ public class UserDto extends EntityDto {
 
 	public String getName() {
 		return firstName + " " + lastName;
+	}
+
+	public String getUserPosition() {
+		return userPosition;
+	}
+
+	public void setUserPosition(String userPosition) {
+		this.userPosition = userPosition;
+	}
+
+	public String getUserOrganisation() {
+		return userOrganisation;
+	}
+
+	public void setUserOrganisation(String userOrganisation) {
+		this.userOrganisation = userOrganisation;
 	}
 
 	public String getUserEmail() {

@@ -1,7 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<parent>
 		<artifactId>sormas-base</artifactId>
 		<groupId>de.symeda.sormas</groupId>
@@ -16,7 +14,7 @@
 
 	<properties>
 		<m2e.jpa.activation>false</m2e.jpa.activation>
-	</properties>  
+	</properties>
 
 	<dependencies>
 
@@ -63,7 +61,7 @@
 			<groupId>org.vaadin.addons</groupId>
 			<artifactId>popupbutton</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.vaadin.addons</groupId>
 			<artifactId>extended-token-field</artifactId>
@@ -121,13 +119,13 @@
 		<dependency>
 			<groupId>org.glassfish</groupId>
 			<artifactId>javax.el</artifactId>
-		</dependency> 
+		</dependency>
 
 		<dependency>
 			<groupId>org.glassfish.corba</groupId>
 			<artifactId>glassfish-corba-omgapi</artifactId>
 		</dependency>
-		
+
 
 		<dependency>
 			<groupId>com.h2database</groupId>
@@ -141,7 +139,7 @@
 		<dependency>
 			<groupId>org.glassfish.jersey.core</groupId>
 			<artifactId>jersey-client</artifactId>
-		</dependency> 
+		</dependency>
 		<dependency>
 			<groupId>com.fasterxml.jackson.core</groupId>
 			<artifactId>jackson-databind</artifactId>
@@ -172,7 +170,13 @@
 			<groupId>org.eclipse.microprofile.config</groupId>
 			<artifactId>microprofile-config-api</artifactId>
 		</dependency>
-		
+		<!-- https://mvnrepository.com/artifact/com.vaadin/vaadin-dialog-flow -->
+		<dependency>
+			<groupId>com.vaadin</groupId>
+			<artifactId>vaadin-dialog-flow</artifactId>
+			<version>18.0.5</version>
+		</dependency>
+
 	</dependencies>
 
 	<build>

@@ -10,7 +10,12 @@ public interface Captions {
 	 * constants of this class is accepted: Close as false positive.
 	 */
 
-	String about = "APMIS About";
+	String about = "ABOUT APMIS";
+	String aboutGuides= "GUIDES";
+	String aboutvideos= "Videos";
+	String apmisaboutguides = "User Guides";
+	String abouttechguides = "Technical Guides";
+	String apmishziguides = "HZI Guides";
 	String aboutAdditionalInfo = "aboutAdditionalInfo";
 	String aboutBrandedSormasVersion = "aboutBrandedSormasVersion";
 	String aboutCaseClassificationRules = "aboutCaseClassificationRules";
@@ -20,6 +25,7 @@ public interface Captions {
 	String aboutDocuments = "aboutDocuments";
 	String aboutSormasVersion = "aboutSormasVersion";
 	String aboutApmisVersion = "APMIS Version:";
+	String aboutText = "The Afghanistan Polio Management Information System (APMIS) is an online data system for inputting, storing, managing, and visualizing monitoring data of Polio immunization activities in Afghanistan.";
 	String aboutSormasWebsite = "aboutSormasWebsite";
 	String aboutTechnicalManual = "aboutTechnicalManual";
 	String aboutWhatsNew = "aboutWhatsNew";
@@ -2264,6 +2270,9 @@ public interface Captions {
 	String User_laboratory = "User.laboratory";
 	String User_limitedDisease = "User.limitedDisease";
 	String User_phone = "User.phone";
+	String User_userPosition = "User.userPosition";
+	String User_userOrganisation ="User.userOrganisation";
+	String User_language ="User.language";
 	String User_pointOfEntry = "User.pointOfEntry";
 	String User_userEmail = "User.userEmail";
 	String User_userName = "User.userName";

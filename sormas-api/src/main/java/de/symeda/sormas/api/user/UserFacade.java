@@ -41,7 +41,7 @@ public interface UserFacade {
 
 	String resetPassword(String uuid);
 
-	List<UserDto> getAllAfter(Date date);
+	List<UserDto> getAllAfter(Date date); 
 
 	UserDto getByUserName(String userName);
 
