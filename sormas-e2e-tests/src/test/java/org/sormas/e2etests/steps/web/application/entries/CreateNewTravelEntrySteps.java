@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.entries;
 
+import static org.sormas.e2etests.pages.application.cases.CreateNewCasePage.PERSON_SEARCH_LOCATOR_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.COMMUNITY_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISEASE_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EditCasePage.DISTRICT_INPUT;
@@ -40,9 +41,11 @@ import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.FIRST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.INFO_BUTTON;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.LAST_NAME_INPUT;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.PERSON_ID_LABEL;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.POINT_OF_ENTRY_CASE;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.SAVE_NEW_CASE_FOR_TRAVEL_ENTRY_POPUP;
 import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.TRAVEL_ENTRY_PERSON_TAB;
+import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.TRAVEL_ENTRY_TAB;
 
 import cucumber.api.java8.En;
 import java.time.LocalDate;
@@ -68,8 +71,10 @@ public class CreateNewTravelEntrySteps implements En {
   private final WebDriverHelpers webDriverHelpers;
   public static TravelEntry travelEntry;
   public static TravelEntry aTravelEntry;
+  public static TravelEntry TravelEntryUuid;
   public static TravelEntry newCaseFromTravelEntryData;
   public static Case aCase;
+  public static String collectTravelEntryPersonUuid;
   String firstName;
   String lastName;
   String sex;
@@ -94,6 +99,23 @@ public class CreateNewTravelEntrySteps implements En {
           lastName = travelEntry.getLastName();
           selectSex(travelEntry.getSex());
           sex = travelEntry.getSex();
+          fillDateOfArrival(travelEntry.getDateOfArrival(), Locale.GERMAN);
+          selectResponsibleRegion(travelEntry.getResponsibleRegion());
+          selectResponsibleDistrict(travelEntry.getResponsibleDistrict());
+          selectResponsibleCommunity(travelEntry.getResponsibleCommunity());
+          fillDisease(travelEntry.getDisease());
+          disease = travelEntry.getDisease();
+          if (travelEntry.getDisease().equals("Andere epidemische Krankheit"))
+            fillOtherDisease("Test");
+
+          fillPointOfEntry(travelEntry.getPointOfEntry());
+          fillPointOfEntryDetails(travelEntry.getPointOfEntryDetails());
+        });
+
+    When(
+        "^I fill the required fields in a new travel entry form without personal data$",
+        () -> {
+          travelEntry = travelEntryService.buildGeneratedEntryDE();
           fillDateOfArrival(travelEntry.getDateOfArrival(), Locale.GERMAN);
           selectResponsibleRegion(travelEntry.getResponsibleRegion());
           selectResponsibleDistrict(travelEntry.getResponsibleDistrict());
@@ -138,16 +160,32 @@ public class CreateNewTravelEntrySteps implements En {
         });
 
     When(
+        "^I click on the person search button in create new travel entry form$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(PERSON_SEARCH_LOCATOR_BUTTON);
+        });
+
+    When(
         "^I click on Save button from the new travel entry form$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(SAVE_BUTTON);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
         });
 
     When(
         "^I navigate to person tab in Edit travel entry page$",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(TRAVEL_ENTRY_PERSON_TAB);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(PERSON_ID_LABEL);
         });
+    When(
+        "^I navigate to Edit travel entry page$",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(TRAVEL_ENTRY_TAB);
+        });
+    When(
+        "I collect the Travel Entry person UUID displayed on Travel Entry Person page",
+        () -> collectTravelEntryPersonUuid = collectTravelEntryPersonUuid());
 
     When(
         "I check the created data is correctly displayed on Edit travel entry page for DE version",
@@ -164,6 +202,12 @@ public class CreateNewTravelEntrySteps implements En {
                   "responsibleCommunity",
                   "pointOfEntry",
                   "pointOfEntryDetails"));
+        });
+
+    When(
+        "I collect travel UUID from travel entry",
+        () -> {
+          TravelEntryUuid = collectTravelEntryUuid();
         });
 
     When(
@@ -369,6 +413,14 @@ public class CreateNewTravelEntrySteps implements En {
             webDriverHelpers.getValueFromWebElement(
                 EditTravelEntryPage.POINT_OF_ENTRY_DETAILS_INPUT))
         .build();
+  }
+
+  private TravelEntry collectTravelEntryUuid() {
+    return TravelEntry.builder().uuid(webDriverHelpers.getValueFromWebElement(UUID_INPUT)).build();
+  }
+
+  private String collectTravelEntryPersonUuid() {
+    return webDriverHelpers.getValueFromWebElement(UUID_INPUT);
   }
 
   private TravelEntry collectTravelEntryPersonData() {

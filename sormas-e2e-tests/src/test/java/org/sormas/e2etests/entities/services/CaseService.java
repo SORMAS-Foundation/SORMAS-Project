@@ -169,6 +169,36 @@ public class CaseService {
         .build();
   }
 
+  public Case buildGeneratedCaseDEForOnePerson(
+      String firstName,
+      String lastName,
+      LocalDate dateOfBirth,
+      LocalDate reportDate,
+      String personSex) {
+    return Case.builder()
+        .firstName(firstName)
+        .lastName(lastName)
+        .caseOrigin("IM LAND")
+        .dateOfReport(reportDate)
+        .externalId(UUID.randomUUID().toString())
+        .disease("COVID-19")
+        .diseaseVariant("B.1.617.1")
+        .responsibleRegion(RegionsValues.VoreingestellteBundeslander.getName())
+        .responsibleDistrict(DistrictsValues.VoreingestellterLandkreis.getName())
+        .responsibleCommunity(CommunityValues.VoreingestellteGemeinde.getName())
+        .placeOfStay("ZUHAUSE")
+        .placeDescription(faker.harryPotter().location())
+        .dateOfBirth(dateOfBirth)
+        .sex(personSex)
+        .presentConditionOfPerson("Lebendig")
+        .dateOfSymptomOnset(LocalDate.now().minusDays(1))
+        .primaryPhoneNumber(faker.phoneNumber().phoneNumber())
+        .primaryEmailAddress(
+            ASCIIHelper.convertASCIIToLatin(firstName + "." + lastName + emailDomain))
+        .outcomeOfCase("VERSTORBEN")
+        .build();
+  }
+
   public Case buildEditGeneratedCase() {
     return Case.builder()
         .dateOfReport(LocalDate.now().minusDays(3))

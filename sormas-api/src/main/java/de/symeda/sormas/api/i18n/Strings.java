@@ -163,7 +163,6 @@ public interface Strings {
 	String confirmationSeeAllPersons = "confirmationSeeAllPersons";
 	String confirmationSetMissingGeoCoordinates = "confirmationSetMissingGeoCoordinates";
 	String confirmationSinceLabMessages = "confirmationSinceLabMessages";
-	String confirmationSuperordinateEventDiscardUnsavedChanges = "confirmationSuperordinateEventDiscardUnsavedChanges";
 	String confirmationUnclearLabMessage = "confirmationUnclearLabMessage";
 	String confirmationUnlinkCaseFromEvent = "confirmationUnlinkCaseFromEvent";
 	String confirmationUpdateCompleteness = "confirmationUpdateCompleteness";
@@ -1053,7 +1052,6 @@ public interface Strings {
 	String messageFacilityMulitChanged = "messageFacilityMulitChanged";
 	String messageFollowUpCanceled = "messageFollowUpCanceled";
 	String messageFollowUpStatusChanged = "messageFollowUpStatusChanged";
-	String messageFormHasErrorsPathogenTest = "messageFormHasErrorsPathogenTest";
 	String messageForwardedLabMessageFound = "messageForwardedLabMessageFound";
 	String messageGdpr = "messageGdpr";
 	String messageGdprCheck = "messageGdprCheck";

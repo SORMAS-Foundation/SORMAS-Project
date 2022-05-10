@@ -69,14 +69,10 @@ public class PathogenTestController {
 		return facade.getAllBySample(sampleRef);
 	}
 
-	public void create(
-		SampleReferenceDto sampleRef,
-		int caseSampleCount,
-		Runnable callback,
-		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest) {
+	public void create(SampleReferenceDto sampleRef, int caseSampleCount, BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest) {
 		SampleDto sampleDto = FacadeProvider.getSampleFacade().getSampleByUuid(sampleRef.getUuid());
 		final CommitDiscardWrapperComponent<PathogenTestForm> editView =
-			getPathogenTestCreateComponent(sampleDto, caseSampleCount, callback, onSavedPathogenTest, false);
+			getPathogenTestCreateComponent(sampleDto, caseSampleCount, onSavedPathogenTest, false);
 
 		VaadinUiUtil.showModalPopupWindow(editView, I18nProperties.getString(Strings.headingCreatePathogenTestResult));
 	}
@@ -84,7 +80,6 @@ public class PathogenTestController {
 	public CommitDiscardWrapperComponent<PathogenTestForm> getPathogenTestCreateComponent(
 		SampleDto sampleDto,
 		int caseSampleCount,
-		Runnable callback,
 		BiConsumer<PathogenTestDto, Runnable> onSavedPathogenTest,
 		boolean suppressNavigateToCase) {
 		PathogenTestForm createForm = new PathogenTestForm(sampleDto, true, caseSampleCount, false);
@@ -97,7 +92,6 @@ public class PathogenTestController {
 		editView.addCommitListener(() -> {
 			if (!createForm.getFieldGroup().isModified()) {
 				savePathogenTest(createForm.getValue(), onSavedPathogenTest, false, suppressNavigateToCase);
-				callback.run();
 				SormasUI.refreshView();
 			}
 		});
@@ -473,16 +467,15 @@ public class PathogenTestController {
 			800,
 			confirmed -> {
 				if (confirmed) {
+					existingCaseDto.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
+					existingCaseDto.setClassificationUser(null);
+					existingCaseDto.setDisease(disease);
+					existingCaseDto.setDiseaseDetails(diseaseDetails);
+					existingCaseDto.setDiseaseVariant(diseaseVariant);
+					existingCaseDto.setDiseaseVariantDetails(diseaseVariantDetails);
+					existingCaseDto.setEpidNumber(null);
+					existingCaseDto.setReportDate(new Date());
 					CaseDataDto clonedCase = FacadeProvider.getCaseFacade().cloneCase(existingCaseDto);
-					clonedCase.setCaseClassification(CaseClassification.NOT_CLASSIFIED);
-					clonedCase.setClassificationUser(null);
-					clonedCase.setDisease(disease);
-					clonedCase.setDiseaseDetails(diseaseDetails);
-					clonedCase.setDiseaseVariant(diseaseVariant);
-					clonedCase.setDiseaseVariantDetails(diseaseVariantDetails);
-					clonedCase.setEpidNumber(null);
-					clonedCase.setReportDate(new Date());
-					FacadeProvider.getCaseFacade().save(clonedCase);
 					ControllerProvider.getCaseController().navigateToCase(clonedCase.getUuid());
 				}
 			});

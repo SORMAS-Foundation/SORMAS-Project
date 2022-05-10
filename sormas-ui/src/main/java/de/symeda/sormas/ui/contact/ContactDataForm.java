@@ -34,13 +34,10 @@ import java.util.List;
 
 import com.google.common.collect.Sets;
 import com.vaadin.server.ErrorMessage;
-import com.vaadin.server.Sizeable;
-import com.vaadin.shared.ui.ContentMode;
 import com.vaadin.shared.ui.ErrorLevel;
 import com.vaadin.ui.Button;
 import com.vaadin.ui.Label;
 import com.vaadin.ui.Link;
-import com.vaadin.ui.VerticalLayout;
 import com.vaadin.ui.themes.ValoTheme;
 import com.vaadin.v7.data.Property;
 import com.vaadin.v7.data.util.converter.Converter;
@@ -86,7 +83,6 @@ import de.symeda.sormas.api.user.UserRight;
 import de.symeda.sormas.api.utils.DateHelper;
 import de.symeda.sormas.api.utils.Diseases.DiseasesConfiguration;
 import de.symeda.sormas.api.utils.ExtendedReduced;
-import de.symeda.sormas.api.utils.FieldConstraints;
 import de.symeda.sormas.api.utils.YesNoUnknown;
 import de.symeda.sormas.api.utils.fieldaccess.UiFieldAccessCheckers;
 import de.symeda.sormas.api.utils.fieldvisibility.FieldVisibilityCheckers;
@@ -110,7 +106,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 
 	private static final String CONTACT_DATA_HEADING_LOC = "contactDataHeadingLoc";
 	private static final String FOLLOW_UP_STATUS_HEADING_LOC = "followUpStatusHeadingLoc";
-	private static final String TO_CASE_BTN_LOC = "toCaseBtnLoc";
+	protected static final String TO_CASE_BTN_LOC = "toCaseBtnLoc";
 	private static final String CANCEL_OR_RESUME_FOLLOW_UP_BTN_LOC = "cancelOrResumeFollowUpBtnLoc";
 	private static final String LOST_FOLLOW_UP_BTN_LOC = "lostFollowUpBtnLoc";
 	private static final String GENERAL_COMMENT_LOC = "generalCommentLoc";
@@ -192,6 +188,7 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 	private DateField firstContactDate;
 	private DateField lastContactDate;
 	private DateField reportDate;
+	private Button toCaseButton;
 
 	public ContactDataForm(Disease disease, ViewMode viewMode, boolean isPseudonymized) {
 		super(
@@ -204,6 +201,10 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 		this.viewMode = viewMode;
 		this.disease = disease;
 		addFields();
+	}
+
+	public Button getToCaseButton() {
+		return toCaseButton;
 	}
 
 	@SuppressWarnings("deprecation")
@@ -622,49 +623,8 @@ public class ContactDataForm extends AbstractEditForm<ContactDto> {
 					getContent().addComponent(linkToData, TO_CASE_BTN_LOC);
 				} else if (!ContactClassification.NO_CONTACT.equals(getValue().getContactClassification())) {
 					if (UserProvider.getCurrent().hasUserRight(UserRight.CONTACT_CONVERT)) {
-						Button toCaseButton = ButtonHelper.createButton(Captions.contactCreateContactCase, event -> {
-							if (!ContactClassification.CONFIRMED.equals(getValue().getContactClassification())) {
-								VaadinUiUtil.showSimplePopupWindow(
-									I18nProperties.getString(Strings.headingContactConfirmationRequired),
-									I18nProperties.getString(Strings.messageContactToCaseConfirmationRequired));
-							} else {
-								if (getValue().getFollowUpComment() != null) {
-									int finalFollowUpCommentLenght =
-										ContactLogic
-											.extendFollowUpStatusComment(
-												getValue().getFollowUpComment(),
-												I18nProperties.getString(Strings.messageSystemFollowUpCanceled))
-											.length();
-									if (finalFollowUpCommentLenght > FieldConstraints.CHARACTER_LIMIT_BIG) {
-										VerticalLayout verticalLayout = new VerticalLayout();
-										Label contentLabel = new Label(
-											String.format(
-												I18nProperties.getString(Strings.messageContactConversionFollowUpCommentLarge),
-												I18nProperties.getString(Strings.messageSystemFollowUpCanceled)),
-											ContentMode.HTML);
-										contentLabel.setWidth(100, Sizeable.Unit.PERCENTAGE);
-										verticalLayout.addComponent(contentLabel);
-										verticalLayout.setMargin(false);
-
-										VaadinUiUtil.showConfirmationPopup(
-											I18nProperties.getString(Strings.headingContactConversionFollowUpCommentLarge),
-											verticalLayout,
-											I18nProperties.getString(Strings.messageContactConversionFollowUpCommentLargeOmitMessage),
-											I18nProperties.getString(Strings.messageContactConversionFollowUpCommentLargeAdjustComment),
-											770,
-											confirm -> {
-												if (Boolean.TRUE.equals(confirm)) {
-													ControllerProvider.getCaseController().createFromContact(getValue());
-												}
-											});
-									} else {
-										ControllerProvider.getCaseController().createFromContact(getValue());
-									}
-								} else {
-									ControllerProvider.getCaseController().createFromContact(getValue());
-								}
-							}
-						}, ValoTheme.BUTTON_LINK);
+						toCaseButton = ButtonHelper.createButton(Captions.contactCreateContactCase);
+						toCaseButton.addStyleName(ValoTheme.BUTTON_LINK);
 						getContent().addComponent(toCaseButton, TO_CASE_BTN_LOC);
 					}
 				}

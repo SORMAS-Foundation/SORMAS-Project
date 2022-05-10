@@ -90,3 +90,68 @@ Feature: Create travel entries
     Then I click on the Entries button from navbar
     And I click on the New Travel Entry button from Travel Entries directory
     Then I check if archived district is unavailable
+
+  @issue=SORDEV-9477 @env_de
+  Scenario: Add a person search option on creation forms
+    Given I log in with National User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I create a new case with specific data for DE version
+    Then I check the created data is correctly displayed on Edit case page for DE version
+    And I click on the Entries button from navbar
+    And I click on the New Travel Entry button from Travel Entries directory
+    When I fill the required fields in a new travel entry form without personal data
+    Then I click on the person search button in create new travel entry form
+    And I search for the last created person by First Name and Last Name in popup on Select Person window
+    And I open the first found result in the popup of Select Person window for DE version
+    And I click on the clear button in new case form
+    And I click on the person search button in new case form
+    And I search for the last created person by First Name and Last Name in popup on Select Person window
+    And I open the first found result in the popup of Select Person window for DE version
+    And I click on Save button from the new travel entry form
+    And I collect travel UUID from travel entry
+    And I check the created data is correctly displayed on Edit travel entry page for DE version
+    When I click on the Persons button from navbar
+    And I open the last created person linked with Case
+    And I check that EDIT TRAVEL ENTRY button appears on Edit Person page
+
+  @issue=SORDEV-9818 @env_de
+  Scenario: Bulk deleting entries in Travel Entry Directory
+    Given I log in as a Admin User
+    And I click on the Entries button from navbar
+    And I click on Enter Bulk Edit Mode from Travel Entry Directory
+    And I select 3 results in grid in Travel Entry Directory
+    And I click on Bulk Actions combobox in Travel Entry Directory
+    And I click on Delete button from Bulk Actions Combobox in Travel Entry Directory
+    And I click yes on the CONFIRM REMOVAL popup from Task Directory page
+    And I check if popup deletion message appeared
+
+  @issue=SORDEV-9818 @env_de
+  Scenario: Deleting entry assigned to a person in Travel Entry Directory
+    Given I log in as a Admin User
+    And I click on the Entries button from navbar
+    And I click on the New Travel Entry button from Travel Entries directory
+    When I fill the required fields in a new travel entry form
+    And I click on Save button from the new travel entry form
+    Then I check the created data is correctly displayed on Edit travel entry page for DE version
+    And I collect travel UUID from travel entry
+    And I navigate to person tab in Edit travel entry page
+    And I check the created data is correctly displayed on Edit travel entry person page for DE version
+    And I navigate to Edit travel entry page
+    When I click on new case button for travel entry
+    Then I check if data from travel entry for new case is correct
+    And I save the new case for travel entry
+    And I click on the Entries button from navbar
+    And I click on Enter Bulk Edit Mode from Travel Entry Directory
+    And I click "Nur in Fälle konvertierte Einreisen" checkbox on Travel Entry directory page
+    And I click APPLY BUTTON in Travel Entry Directory Page
+    And I select last created UI result in grid in Travel Entry Directory for Bulk Action
+    And I click on Bulk Actions combobox in Travel Entry Directory
+    And I click on Delete button from Bulk Actions Combobox in Travel Entry Directory
+    And I click yes on the CONFIRM REMOVAL popup from Task Directory page
+    And I check if popup deletion message appeared
+    When I click on the Persons button from navbar
+    And I fill UUID of the collected person from last created Travel Entry
+    Then I apply on the APPLY FILTERS button
+    And I click on first person in person directory
+    Then I check if there is no travel entry assigned to Person

@@ -53,6 +53,7 @@ import static org.sormas.e2etests.pages.application.persons.EditPersonPage.HOUSE
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.INVALID_DATA_ERROR;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.LAST_NAME_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.NAMES_OF_GUARDIANS_INPUT;
+import static org.sormas.e2etests.pages.application.persons.EditPersonPage.NO_TRAVEL_ENTRY_LABEL_DE;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PERSON_CONTACT_DETAILS_CONTACT_INFORMATION_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PERSON_CONTACT_DETAILS_TYPE_OF_DETAILS_INPUT;
 import static org.sormas.e2etests.pages.application.persons.EditPersonPage.PHONE_FIELD;
@@ -193,6 +194,21 @@ public class EditPersonSteps implements En {
           //          webDriverHelpers.clickOnWebElementBySelector(CONFIRM_NAVIGATION_BUTTON);
           //          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
         });
+
+    Then(
+        "I check that SEE CASES FOR THIS PERSON button appears on Edit Person page",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEE_CASES_FOR_PERSON_BUTTON);
+        });
+
+    Then(
+        "I check that SEE CONTACTS FOR THIS PERSON button appears on Edit Person page",
+        () -> {
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(150);
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(SEE_CONTACTS_FOR_PERSON_BUTTON);
+        });
+
     Then(
         "I click on See CONTACTS for this Person button from Edit Person page",
         () -> {
@@ -234,6 +250,11 @@ public class EditPersonSteps implements En {
           previousCreatedPerson = collectedPerson;
         });
 
+    When(
+        "I check if there is no travel entry assigned to Person",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(NO_TRAVEL_ENTRY_LABEL_DE);
+        });
     When(
         "I check if event is available at person information",
         () -> {
