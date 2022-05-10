@@ -42,6 +42,11 @@ public class TravelEntryPage {
   public static final By TRAVEL_ENTRY_AGGREGATION_COMBOBOX =
       By.cssSelector("[id='relevanceStatus'] [class='v-filterselect-button']");
   public static final By TRAVEL_ENTRY_FIRST_RECORD_IN_TABLE = By.cssSelector("[role='gridcell'] a");
+  public static final By DELETE_BULK = By.id("bulkActions-3");
+
+  public static By getCheckboxByIndex(String idx) {
+    return By.xpath(String.format("(//td//input[@type=\"checkbox\"])[%s]", idx));
+  }
   public static final By TRAVEL_ENTRY_DATA_FILTER_OPTION_COMBOBOX =
       By.cssSelector("[id='dateFilterOption'] [class='v-filterselect-button']");
 }

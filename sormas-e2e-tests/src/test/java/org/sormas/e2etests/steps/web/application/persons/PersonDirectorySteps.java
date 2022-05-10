@@ -48,6 +48,7 @@ import org.sormas.e2etests.helpers.WebDriverHelpers;
 import org.sormas.e2etests.state.ApiState;
 import org.sormas.e2etests.steps.web.application.cases.EditCaseSteps;
 import org.sormas.e2etests.steps.web.application.contacts.EditContactPersonSteps;
+import org.sormas.e2etests.steps.web.application.entries.CreateNewTravelEntrySteps;
 import org.sormas.e2etests.steps.web.application.events.EditEventSteps;
 import org.testng.Assert;
 import org.testng.asserts.SoftAssert;
@@ -175,6 +176,14 @@ public class PersonDirectorySteps implements En {
           String personUUID =
               dataOperations.getPartialUuidFromAssociatedLink(
                   apiState.getLastCreatedPerson().getUuid());
+          webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, personUUID);
+        });
+    Then(
+        "I fill UUID of the collected person from last created Travel Entry",
+        () -> {
+          String personUUID =
+              dataOperations.getPartialUuidFromAssociatedLink(
+                  CreateNewTravelEntrySteps.aTravelEntry.getUuid());
           webDriverHelpers.fillInWebElement(MULTIPLE_OPTIONS_SEARCH_INPUT, personUUID);
         });
 
