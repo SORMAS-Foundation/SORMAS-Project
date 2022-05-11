@@ -138,6 +138,7 @@ public class CaseDirectoryPage {
   public static final By NEW_CASE_DATE_FROM_COMBOBOX = By.cssSelector("#newCaseDateFrom input");
   public static final By DATE_TO_COMBOBOX = By.cssSelector("#dateTo input");
   public static final By MORE_BUTTON = By.id("more");
+  public static final By ACTION_OKAY = By.id("actionOkay");
   public static final By MERGE_DUPLICATES_BUTTON = By.id("caseMergeDuplicates");
   public static final By ENTER_BULK_EDIT_MODE = By.id("actionEnterBulkEditMode");
   public static final By LEAVE_BULK_EDIT_MODE = By.id("actionLeaveBulkEditMode");

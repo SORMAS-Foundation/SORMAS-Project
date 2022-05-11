@@ -29,6 +29,7 @@ import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.FACI
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.LEAVE_BULK_EDIT_MODE;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.MORE_BUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.SHOW_MORE_LESS_FILTERS;
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.getMergeDuplicatesButtonById;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ACTIVITY_TYPE_OF_ACTIVITY_COMBOBOX;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.ADDITIONAL_INFORMATION_INPUT;
 import static org.sormas.e2etests.pages.application.cases.EpidemiologicalDataCasePage.CITY_INPUT;
@@ -87,6 +88,7 @@ import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPag
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DISEASE_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_DISEASE_VARIANT_FILTER_COMBOBOX;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_FOLLOW_UP_FILTER_COMBOBOX;
+import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_MERGE_DUPLICATES;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONTACT_RESULTS_UUID_LOCATOR;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.CONVERTED_TO_CASE_BUTTON;
 import static org.sormas.e2etests.pages.application.contacts.ContactDirectoryPage.DROPPED_BUTTON;
@@ -199,6 +201,17 @@ public class ContactDirectorySteps implements En {
               CONTACT_DIRECTORY_DETAILED_PAGE_FILTER_INPUT, contactUuid);
         });
     When(
+        "I apply filter by duplicated contact Person data on Contact Directory Page",
+        () -> {
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(APPLY_FILTERS_BUTTON);
+          webDriverHelpers.fillInWebElement(
+              PERSON_LIKE_SEARCH_INPUT,
+              CreateNewContactSteps.duplicatedContact.getFirstName()
+                  + ' '
+                  + CreateNewContactSteps.duplicatedContact.getLastName());
+          webDriverHelpers.clickOnWebElementBySelector(APPLY_FILTERS_BUTTON);
+        });
+    When(
         "^I select last created API result in grid in Contact Directory for Bulk Action$",
         () -> {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
@@ -245,6 +258,13 @@ public class ContactDirectorySteps implements En {
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
 
+    And(
+        "I click on Merge button of leading case in Merge Duplicate Contact page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(
+              getMergeDuplicatesButtonById(collectedContact.getUuid()));
+          webDriverHelpers.waitForPageLoadingSpinnerToDisappear(200);
+        });
     When(
         "I open the last created contact",
         () -> {
@@ -284,6 +304,11 @@ public class ContactDirectorySteps implements En {
         "I click on the More button on Contact directory page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(MORE_BUTTON);
+        });
+    When(
+        "I click on Merge Duplicates on Contact directory page",
+        () -> {
+          webDriverHelpers.clickOnWebElementBySelector(CONTACT_MERGE_DUPLICATES);
         });
     When(
         "I click Leave Bulk Edit Mode on Contact directory page",

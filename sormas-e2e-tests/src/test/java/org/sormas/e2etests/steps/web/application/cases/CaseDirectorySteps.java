@@ -18,6 +18,7 @@
 
 package org.sormas.e2etests.steps.web.application.cases;
 
+import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ACTION_OKAY;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALLBUTTON;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.ALL_RESULTS_CHECKBOX;
 import static org.sormas.e2etests.pages.application.cases.CaseDirectoryPage.BULK_ACTIONS;
@@ -238,8 +239,8 @@ public class CaseDirectorySteps implements En {
         "I click on Merge Duplicates on Case directory page",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(MERGE_DUPLICATES_BUTTON);
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(By.id("actionOkay"));
-          webDriverHelpers.clickOnWebElementBySelector(By.id("actionOkay"));
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(ACTION_OKAY);
+          webDriverHelpers.clickOnWebElementBySelector(ACTION_OKAY);
         });
     When(
         "I click Enter Bulk Edit Mode on Case directory page",

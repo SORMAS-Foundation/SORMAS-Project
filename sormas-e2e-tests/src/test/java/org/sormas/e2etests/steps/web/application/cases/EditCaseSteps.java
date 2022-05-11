@@ -732,6 +732,7 @@ public class EditCaseSteps implements En {
     When(
         "I check if Vaccination Status is set to {string} on Edit Case page",
         (String expected) -> {
+            webDriverHelpers.waitUntilElementIsVisibleAndClickable(UUID_INPUT);
           String vaccinationStatus =
               webDriverHelpers.getValueFromWebElement(VACCINATION_STATUS_INPUT);
           softly.assertEquals(
