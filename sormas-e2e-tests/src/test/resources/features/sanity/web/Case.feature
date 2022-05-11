@@ -948,3 +948,31 @@ Feature: Case end to end tests
     And I click on the RESET FILTERS button for Person
     And I open the last created Person via API
     And I check that SEE CONTACTS FOR THIS PERSON button appears on Edit Person page
+
+  @env_main @issue=SORDEV-9155
+  Scenario: Test Vaccinations get lost when merging cases with duplicate persons
+    Given I log in as a Admin User
+    And I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I fill new case data for duplicates merge with for one person data
+    And I click on Save button in Case form
+    Then I click on the Cases button from navbar
+    And I click on the NEW CASE button
+    When I fill new case data for duplicates merge with for one person data
+    And I click on Save button in Case form
+    And I Pick a new person in Pick or create person popup during case creation
+    Then I check the created data for duplicated case is correctly displayed on Edit case page
+    And I set Vaccination status to "Vaccinated" on Edit Case page
+    And I click on save button from Edit Case page
+    And I click on the Cases button from navbar
+    And I click on the More button on Case directory page
+    Then I click on Merge Duplicates on Case directory page
+    And I apply Report on onset date type filter to "Case report date" on Merge duplicate cases page
+    And I fill date from input to today on Merge Duplicate Cases page
+    Then I click to CONFIRM FILTERS on Merge Duplicate Cases page
+    And I click on Merge button of leading case in Merge Duplicate Cases page
+    Then I click to Confirm action in Merge Duplicates Cases popup
+    And I click on the Cases button from navbar
+    And I filter Cases by created person name
+    And I open last created case
+    And I check if Vaccination Status is set to "Vaccinated" on Edit Case page
