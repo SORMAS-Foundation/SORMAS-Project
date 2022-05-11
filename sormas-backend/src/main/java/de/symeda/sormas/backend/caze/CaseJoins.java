@@ -24,8 +24,10 @@ import javax.persistence.criteria.JoinType;
 import de.symeda.sormas.backend.clinicalcourse.ClinicalCourse;
 import de.symeda.sormas.backend.clinicalcourse.HealthConditions;
 import de.symeda.sormas.backend.common.QueryJoins;
+import de.symeda.sormas.backend.contact.Contact;
 import de.symeda.sormas.backend.epidata.EpiData;
 import de.symeda.sormas.backend.event.EventParticipant;
+import de.symeda.sormas.backend.event.EventParticipantJoins;
 import de.symeda.sormas.backend.hospitalization.Hospitalization;
 import de.symeda.sormas.backend.infrastructure.community.Community;
 import de.symeda.sormas.backend.infrastructure.country.Country;
@@ -46,6 +48,7 @@ import de.symeda.sormas.backend.user.User;
 public class CaseJoins extends QueryJoins<Case> {
 
 	private Join<Case, Person> person;
+	private Join<Case, Contact> contacts;
 	private Join<Case, Region> responsibleRegion;
 	private Join<Case, District> responsibleDistrict;
 	private Join<Case, Community> responsibleCommunity;
@@ -69,6 +72,7 @@ public class CaseJoins extends QueryJoins<Case> {
 
 	private PersonJoins personJoins;
 	private SampleJoins sampleJoins;
+	private EventParticipantJoins eventParticipantJoins;
 
 	public CaseJoins(From<?, Case> caze) {
 		super(caze);
@@ -80,6 +84,14 @@ public class CaseJoins extends QueryJoins<Case> {
 
 	private void setPerson(Join<Case, Person> person) {
 		this.person = person;
+	}
+
+	public Join<Case, Contact> getContacts() {
+		return getOrCreate(contacts, Case.CONTACTS, JoinType.LEFT, this::setContacts);
+	}
+
+	private void setContacts(Join<Case, Contact> contacts) {
+		this.contacts = contacts;
 	}
 
 	public Join<Case, Region> getResponsibleRegion() {
@@ -292,5 +304,13 @@ public class CaseJoins extends QueryJoins<Case> {
 
 	private void setSampleJoins(SampleJoins sampleJoins) {
 		this.sampleJoins = sampleJoins;
+	}
+
+	public EventParticipantJoins getEventParticipantJoins() {
+		return getOrCreate(eventParticipantJoins, () -> new EventParticipantJoins(getEventParticipants()), this::setEventParticipantJoins);
+	}
+
+	private void setEventParticipantJoins(EventParticipantJoins eventParticipantJoins) {
+		this.eventParticipantJoins = eventParticipantJoins;
 	}
 }

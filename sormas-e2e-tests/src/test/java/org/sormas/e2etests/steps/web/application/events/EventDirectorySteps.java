@@ -735,18 +735,17 @@ public class EventDirectorySteps implements En {
         });
 
     When(
-        "I check if filtered participant for existing person appears in the event participants list",
-        () -> {
-          final String personUuid = apiState.getLastCreatedPerson().getUuid();
-          webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(personUuid));
-        });
-
-    When(
         "I click on the first row from event participant",
         () -> {
           webDriverHelpers.clickOnWebElementBySelector(FIRST_EVENT_PARTICIPANT);
         });
 
+    When(
+        "I check if filtered participant for existing person appears in the event participants list",
+        () -> {
+          final String personUuid = apiState.getLastCreatedPerson().getUuid();
+          webDriverHelpers.waitUntilElementIsVisibleAndClickable(getByEventUuid(personUuid));
+        });
     When(
         "I am accessing the event tab using the created event via api",
         () -> {
@@ -819,7 +818,6 @@ public class EventDirectorySteps implements En {
               getCheckboxByUUID(CreateNewEventSteps.newEvent.getUuid()));
           webDriverHelpers.waitForPageLoadingSpinnerToDisappear(40);
         });
-
     When(
         "I click on the More button on Event directory page",
         () -> webDriverHelpers.clickOnWebElementBySelector(MORE_BUTTON_EVENT_DIRECTORY));

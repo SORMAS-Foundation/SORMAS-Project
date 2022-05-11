@@ -22,7 +22,9 @@ import static org.awaitility.Durations.ONE_HUNDRED_MILLISECONDS;
 
 import java.time.Instant;
 import java.time.temporal.ChronoUnit;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 import java.util.concurrent.TimeUnit;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
@@ -916,5 +918,35 @@ public class WebDriverHelpers {
             + ").getPropertyValue('content')";
     String content = javascriptExecutor.executeScript(script).toString();
     return content;
+  }
+
+  public String returnURL() {
+    return baseSteps.getDriver().getCurrentUrl();
+  }
+
+  public void switchToOtherWindow() {
+    String parent = baseSteps.getDriver().getWindowHandle();
+    Set<String> S = baseSteps.getDriver().getWindowHandles();
+    if (S.size() > 1) {
+      for (String actual : S) {
+        if (!actual.equalsIgnoreCase(parent)) {
+          baseSteps.getDriver().switchTo().window(actual);
+          break;
+        }
+      }
+    } else {
+      throw new NotFoundException("Cannot switch window because only one is available!");
+    }
+  }
+
+  public void closeActiveWindow() {
+    var tabs = new ArrayList<>(baseSteps.getDriver().getWindowHandles());
+    if (tabs.size() > 1) {
+      baseSteps.getDriver().close();
+      baseSteps.getDriver().switchTo().window(tabs.get(0));
+    } else {
+      throw new NotFoundException(
+          "Cannot close active window and switch to parent window because only one is available!");
+    }
   }
 }
