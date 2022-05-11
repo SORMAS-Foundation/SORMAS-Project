@@ -55,7 +55,6 @@ import static org.sormas.e2etests.pages.application.entries.EditTravelEntryPage.
 import cucumber.api.java8.En;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
-import java.time.temporal.IsoFields;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
@@ -81,6 +80,7 @@ public class CreateNewTravelEntrySteps implements En {
   public static TravelEntry newCaseFromTravelEntryData;
   public static Case aCase;
   public static String collectTravelEntryPersonUuid;
+  public static LocalDate previousWeekDate;
   String firstName;
   String lastName;
   String sex;
@@ -121,12 +121,8 @@ public class CreateNewTravelEntrySteps implements En {
     When(
         "^I change a Report Date for previous week date$",
         () -> {
-          fillReportDate(travelEntry.getReportDate().minusDays(7), Locale.GERMAN);
-          LocalDate dateReport =
-              LocalDate.parse(
-                  webDriverHelpers.getValueFromWebElement(REPORT_DATE), DATE_FORMATTER_DE);
-          int week = dateReport.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
-          System.out.println("Week of year: " + week);
+          previousWeekDate = travelEntry.getReportDate().minusDays(7);
+          fillReportDate(previousWeekDate, Locale.GERMAN);
         });
 
     When(

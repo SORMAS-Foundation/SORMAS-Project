@@ -45,12 +45,16 @@ import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.TRAV
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.TRAVEL_ENTRY_FIRST_RECORD_IN_TABLE;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.TRAVEL_ENTRY_GRID_RESULTS_ROWS;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.VACCINATED_ENTRIES;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.WEEK_FROM_OPTION_COMBOBOX;
+import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.WEEK_TO_OPTION_COMBOBOX;
 import static org.sormas.e2etests.pages.application.entries.TravelEntryPage.getCheckboxByIndex;
 import static org.sormas.e2etests.pages.application.events.EventDirectoryPage.BULK_ACTIONS_EVENT_DIRECTORY;
 import static org.sormas.e2etests.pages.application.tasks.TaskManagementPage.BULK_EDIT_BUTTON;
 
 import cucumber.api.java8.En;
+import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.IsoFields;
 import java.util.concurrent.TimeUnit;
 import javax.inject.Inject;
 import org.openqa.selenium.By;
@@ -309,6 +313,32 @@ public class TravelEntryDirectorySteps implements En {
         "I apply {string} to data filter option combobox on Travel Entry directory page",
         (String value) ->
             webDriverHelpers.selectFromCombobox(TRAVEL_ENTRY_DATA_FILTER_OPTION_COMBOBOX, value));
+    Then(
+        "I apply the last epi week for week from combobox on Travel Entry directory page",
+        () -> {
+          int week =
+              CreateNewTravelEntrySteps.previousWeekDate.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) + 1; //because weeks are counting since end of december previous year
+          String lastEpiWeek = "Wo " + week + "-" + LocalDate.now().getYear();
+          webDriverHelpers.selectFromCombobox(WEEK_FROM_OPTION_COMBOBOX, lastEpiWeek);
+        });
+
+    Then(
+        "I apply the last epi week for week to combobox on Travel Entry directory page",
+        () -> {
+          int week =
+              CreateNewTravelEntrySteps.previousWeekDate.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR) + 1; //because weeks are counting since end of december previous year
+          String lastEpiWeek = "Wo " + week + "-" + LocalDate.now().getYear();
+          webDriverHelpers.selectFromCombobox(WEEK_TO_OPTION_COMBOBOX, lastEpiWeek);
+        });
+    Then(
+        "I apply the week before the last epi week for week to combobox on Travel Entry directory page",
+        () -> {
+          int week =
+              CreateNewTravelEntrySteps.previousWeekDate.get(IsoFields.WEEK_OF_WEEK_BASED_YEAR);
+          String lastEpiWeek = "Wo " + week + "-" + LocalDate.now().getYear();
+          webDriverHelpers.selectFromCombobox(WEEK_TO_OPTION_COMBOBOX, lastEpiWeek);
+        });
+
     When(
         "I click on first filtered record in Travel Entry",
         () -> {
